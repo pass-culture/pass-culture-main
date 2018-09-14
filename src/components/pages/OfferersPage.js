@@ -1,6 +1,8 @@
 import {
+  Icon,
   InfiniteScroller,
   requestData,
+  searchSelector,
   withLogin,
   withSearch,
 } from 'pass-culture-shared'
@@ -32,7 +34,10 @@ class OfferersPage extends Component {
   }
 
   render() {
-    const { offerers } = this.props
+    const { handleSearchChange, queryParams, offerers } = this.props
+
+    const { search, order_by } = queryParams || {}
+
     return (
       <Main name="offerers" handleDataRequest={this.handleDataRequest}>
         <HeroSection title="Vos structures">
@@ -46,6 +51,29 @@ class OfferersPage extends Component {
             + Rattacher une structure supplémentaire
           </NavLink>
         </HeroSection>
+
+        <form className="section" onSubmit={handleSearchChange}>
+          <label className="label">Rechercher une structure :</label>
+          <div className="field is-grouped">
+            <p className="control is-expanded">
+              <input
+                id="search"
+                className="input search-input"
+                placeholder="Saisissez une recherche"
+                type="text"
+                defaultValue={search}
+              />
+            </p>
+            <p className="control">
+              <button type="submit" className="button is-primary is-outlined">
+                OK
+              </button>{' '}
+              <button className="button is-secondary" disabled>
+                &nbsp;<Icon svg="ico-filter" />&nbsp;
+              </button>
+            </p>
+          </div>
+        </form>
 
         <InfiniteScroller
           className="main-list offerers-list"
@@ -68,5 +96,6 @@ export default compose(
   }),
   connect((state, ownProps) => ({
     offerers: offerersSelector(state),
+    queryParams: searchSelector(state, ownProps.location.search),
   }))
 )(OfferersPage)
