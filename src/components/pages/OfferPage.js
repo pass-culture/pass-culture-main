@@ -345,6 +345,7 @@ class OfferPage extends Component {
                       <div className="field-body">
                         <p className="help is-danger">
                           Il faut obligatoirement une structure avec un lieu.
+                          <Field type="hidden" name="venueId" required />
                         </p>
                       </div>
                     </div>
