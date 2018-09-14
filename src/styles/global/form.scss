@@ -144,17 +144,18 @@
           width: auto;
         }
       }
+    }
+  }
 
-      .help {
-        .column {
-          &:first-child {
-            flex: none;
-            width: 6%;
-          }
-
-          line-height: initial;
-          padding-right: 0;
-        }
+  .help {
+    .column {
+      line-height: initial;
+      &:first-child {
+        flex: none;
+        width: 6%;
+      }
+      &:not(:last-child) {
+        padding-right: 0.25rem;
       }
     }
   }
