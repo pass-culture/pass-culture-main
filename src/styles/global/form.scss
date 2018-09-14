@@ -124,19 +124,6 @@
         border-radius: $control-radius;
       }
 
-      input.input,
-      .select select,
-      textarea.textarea {
-        font-weight: 500;
-
-        &[readonly] {
-          border: none;
-          background-color: transparent;
-          padding-left: 0.125rem;
-          resize: none;
-        }
-      }
-
       .control:not(.is-expanded) {
         input,
         .select {
@@ -184,6 +171,19 @@
 ul.help {
   img {
     vertical-align: text-bottom;
+  }
+}
+
+input.input,
+.select select,
+textarea.textarea {
+  font-weight: 500;
+
+  &[readonly] {
+    border: none;
+    background-color: transparent;
+    padding-left: 0.125rem;
+    resize: none;
   }
 }
 

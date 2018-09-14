@@ -400,8 +400,8 @@ class EventOccurrenceAndStockItem extends Component {
             <td className="is-size-7" colSpan={isStockOnly ? '2' : '6'}>
               En confirmant l'annulation de{' '}
               {isStockOnly ? 'ce stock' : 'cette date'}, vous supprimerez aussi
-              toutes les réservations associées. Êtes-vous sûrs de vouloir
-              continuer&nbsp;?
+              toutes les réservations associées. {!isStockOnly && <br />}{' '}
+              Êtes-vous sûrs de vouloir continuer&nbsp;?
             </td>
             <td>
               <button
