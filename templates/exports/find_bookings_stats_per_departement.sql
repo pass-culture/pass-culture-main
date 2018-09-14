@@ -1,8 +1,8 @@
 SELECT
-    booking_departement.department_code,
-    date_trunc('month', activity.issued_at) AS time_intervall,
-    COUNT(booking_departement.booking_id) AS bookings,
-    COUNT(DISTINCT(booking_departement.user_id)) AS unique_bookings
+        booking_with_venue_information.department_code,
+        date_trunc('{{ time_intervall }}', activity.issued_at) AS intervall,
+        COUNT booking_with_venue_information.booking_id) AS bookings,
+        COUNT(DISTINCT booking_with_venue_information.user_id) AS unique_bookings
 FROM
     (SELECT
         booking.id AS booking_id,
@@ -16,7 +16,7 @@ FROM
         LEFT OUTER JOIN offer AS thing_offer ON stock."offerId"=thing_offer.id
         LEFT OUTER JOIN venue AS thing_venue ON thing_offer."venueId"=thing_venue.id
         LEFT OUTER JOIN venue AS event_venue ON event_offer."venueId"=event_venue.id
-    ) AS booking_departement
+    ) AS booking_with_venue_information
 LEFT JOIN activity ON booking_id = CAST(activity.changed_data->>'id' AS INT)
 LEFT JOIN "user" ON "user".id = user_id
 WHERE
@@ -24,5 +24,5 @@ WHERE
     AND NOT cancelled_booking
     AND activity.verb = 'insert'
     AND activity.table_name = 'booking'
-GROUP BY date_trunc('month', activity.issued_at), department_code
-ORDER BY date_trunc('month', activity.issued_at), department_code
+GROUP BY date_trunc('{{ time_intervall }}', activity.issued_at), department_code
+ORDER BY date_trunc('{{ time_intervall }}', activity.issued_at), department_code

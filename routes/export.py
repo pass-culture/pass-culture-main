@@ -7,25 +7,19 @@ from io import BytesIO, StringIO
 
 from flask import current_app as app, jsonify, request, send_file
 from postgresql_audit.flask import versioning_manager
-from sqlalchemy import func
 
 import models
-from models import Booking
-from models import Event
-from models import EventOccurrence
-from models import Offer
-from models import Offerer
-from models import Recommendation
-from models import Stock
-from models import Thing
-from models import User
-from models import UserOfferer
-from models import Venue
 from models.api_errors import ApiErrors
-from models.db import db
 from models.pc_object import PcObject
-from repository.booking_queries import find_bookings_stats_per_department
+from repository import activity_queries
+from repository.booking_queries import find_bookings_stats_per_department, \
+    find_bookings_in_date_range_for_given_user_or_venue_departement
+from repository.offer_queries import find_offers_in_date_range_for_given_venue_departement
+from repository.offerer_queries import find_offerers_in_date_range_for_given_departement, \
+    find_offerers_with_user_venues_and_bookings_by_departement
+from repository.recommendation_queries import find_recommendations_in_date_range_for_given_departement
 from repository.user_queries import find_users_by_department_and_date_range, find_users_stats_per_department
+from repository.venue_queries import count_venues_by_departement
 
 Activity = versioning_manager.activity_cls
 
@@ -98,7 +92,7 @@ def get_users_per_date_per_department():
 @app.route('/exports/users_stats', methods=['GET'])
 def get_users_stats():
     _check_token()
-    date_intervall = valid_time_intervall_or_default(request.args.get('type_date'))
+    date_intervall = valid_time_intervall_or_default(request.args.get('date_intervall'))
 
     users_stats = find_users_stats_per_department(date_intervall)
 
@@ -129,33 +123,13 @@ def get_bookings_per_date_per_departement():
     user_department = request.args.get('user_department')
     venue_department = request.args.get('venue_department')
 
-    query = db.session.query(User.id, User.departementCode, Booking.id, Activity.issued_at, EventOccurrence.id, EventOccurrence.beginningDatetime, Venue.departementCode, Offerer.id, Offerer.name, Event.id, Event.name, Activity.id) \
-        .join(Booking) \
-        .join(Activity, Activity.table_name == 'booking') \
-        .filter(Activity.verb == 'insert', Activity.data['id'].astext.cast(db.Integer) == Booking.id) \
-        .join(Stock) \
-        .join(EventOccurrence) \
-        .join(Offer) \
-        .join(Venue) \
-        .join(Offerer) \
-        .join(Event)
-
-    if booking_date_min:
-        query = query.filter(Activity.issued_at >= booking_date_min)
-    if booking_date_max:
-        query = query.filter(Activity.issued_at <=  booking_date_max)
-    if event_date_min:
-        query = query.filter(EventOccurrence.beginningDatetime >= event_date_min)
-    if event_date_max:
-        query = query.filter(EventOccurrence.beginningDatetime <= event_date_max)
-    if user_department:
-        query = query.filter(User.departementCode == user_department)
-    if venue_department:
-        query = query.filter(Venue.departementCode == venue_department)
-
-    result = query.group_by(Booking.id, User.id, Activity.issued_at, EventOccurrence.id, EventOccurrence.beginningDatetime, Venue.departementCode, Offerer.id, Offerer.name, Event.id, Event.name, Activity.id).order_by(Booking.id, Activity.issued_at).all()
+    result = find_bookings_in_date_range_for_given_user_or_venue_departement(booking_date_max, booking_date_min,
+                                                                             event_date_max, event_date_min,
+                                                                             user_department, venue_department)
     file_name = 'export_%s_bookings.csv' % datetime.utcnow().strftime('%y_%m_%d')
-    headers = ['User_id', 'User_departementCode', 'Booking_id', 'Booking_issued_at', 'EventOccurrence_id', 'EventOccurrence_beginningDatetime', 'Venue_departementCode', 'Offerer_id', 'Offerer_name', 'Event_id', 'Event_name', 'Activity_id']
+    headers = ['User_id', 'User_departementCode', 'Booking_id', 'Booking_issued_at', 'EventOccurrence_id',
+               'EventOccurrence_beginningDatetime', 'Venue_departementCode', 'Offerer_id', 'Offerer_name', 'Event_id',
+               'Event_name', 'Activity_id']
     return _make_csv_response(file_name, headers, result)
 
 
@@ -166,21 +140,7 @@ def get_offers_per_date_per_department():
     date_max = request.args.get('date_max')
     department = request.args.get('department')
 
-    query = db.session.query(Offer.id, Event.id, Event.name, EventOccurrence.beginningDatetime, Venue.departementCode, Offerer.id, Offerer.name) \
-        .join(Event) \
-        .join(EventOccurrence) \
-        .join(Venue) \
-        .join(Offerer)
-
-    if department:
-        query = query.filter(Venue.departementCode == department)
-    if date_min:
-        query = query.filter(EventOccurrence.beginningDatetime >= date_min)
-    if date_max:
-        query = query.filter(EventOccurrence.beginningDatetime <= date_max)
-
-    result = query.order_by(EventOccurrence.beginningDatetime) \
-        .all()
+    result = find_offers_in_date_range_for_given_venue_departement(date_max, date_min, department)
     file_name = 'export_%s_offers.csv' % datetime.utcnow().strftime('%y_%m_%d')
     headers = ['offer_id', 'event_id', 'event_name', 'event_date', 'departement_code', 'Offerer_id', 'Offerer_name']
     return _make_csv_response(file_name, headers, result)
@@ -193,20 +153,7 @@ def get_offerers_per_date_per_departement():
     date_max = request.args.get('date_max')
     department = request.args.get('department')
 
-    query = db.session.query(func.distinct(Offerer.id), Offerer.name, Activity.issued_at, Venue.departementCode) \
-        .join(Venue) \
-        .join(Activity, Activity.table_name == 'offerer') \
-        .filter(Activity.verb == 'insert', Activity.data['id'].astext.cast(db.Integer) == Offerer.id)
-
-    if department:
-        query = query.filter(Venue.departementCode == department)
-    if date_min:
-        query = query.filter(Activity.issued_at >= date_min)
-    if date_max:
-        query = query.filter(Activity.issued_at <= date_max)
-
-    result = query.order_by(Activity.issued_at) \
-        .all()
+    result = find_offerers_in_date_range_for_given_departement(date_max, date_min, department)
 
     file_name = 'export_%s_offerers.csv' % datetime.utcnow().strftime('%y_%m_%d')
     headers = ['Offerer_id', 'Offerer_name', 'dateCreated', 'departement_code']
@@ -217,10 +164,7 @@ def get_offerers_per_date_per_departement():
 def get_venue_per_department():
     _check_token()
 
-    result = db.session.query(Venue.departementCode, func.count(Venue.id)) \
-        .group_by(Venue.departementCode) \
-        .order_by(Venue.departementCode) \
-        .all()
+    result = count_venues_by_departement()
 
     file_name = 'export_%s_venue_per_department.csv' % datetime.utcnow().strftime('%y_%m_%d')
     headers = ['departement_code', 'nb_Venue']
@@ -233,10 +177,7 @@ def get_tracked_activity_from_id():
     object_id = _check_int(request.args.get('object_id'))
     table_name = request.args.get('table_name')
 
-    result = db.session.query(Activity.id, Activity.verb, Activity.issued_at, Activity.changed_data) \
-        .filter(Activity.table_name == table_name, 
-        Activity.data['id'].astext.cast(db.Integer) == object_id) \
-        .all()
+    result = activity_queries.find_by_id_and_table_name(object_id, table_name)
 
     file_name = 'export_%s_tracked_activity.csv' % datetime.utcnow().strftime('%y_%m_%d')
     headers = []
@@ -248,24 +189,10 @@ def get_offerers_users_offers_bookings():
     _check_token()
     department = request.args.get('department')
 
-    query = db.session.query(Offerer.name, UserOfferer.id, User.email, User.dateCreated, Venue.departementCode, Offer.dateCreated, Event.name, Activity.issued_at, Booking.dateModified) \
-        .join(Venue) \
-        .outerjoin(Offer) \
-        .outerjoin(EventOccurrence)\
-        .join(Stock)\
-        .outerjoin(Booking) \
-        .join(Event) \
-        .outerjoin(UserOfferer) \
-        .outerjoin (User) \
-        .join(Activity, Activity.table_name == 'event') \
-        .filter(Activity.verb == 'insert', Activity.data['id'].astext.cast(db.Integer) == Event.id)
-
-    if department:
-        query = query.filter(Venue.departementCode == department)
-
-    result = query.order_by(Offerer.id).all()
+    result = find_offerers_with_user_venues_and_bookings_by_departement(department)
     file_name = 'export_%s_offerers_users_offers_bookings.csv' % datetime.utcnow().strftime('%y_%m_%d')
-    headers = ['Offerer_name', 'UserOfferer_id', 'User_email', 'User_dateCreated', 'Venue_departementCode', 'Offer_dateCreated', 'Event_name', 'Activity_issued_at', 'Booking_dateModified']
+    headers = ['Offerer_name', 'UserOfferer_id', 'User_email', 'User_dateCreated', 'Venue_departementCode',
+               'Offer_dateCreated', 'Event_name', 'Activity_issued_at', 'Booking_dateModified']
     return _make_csv_response(file_name, headers, result)
 
 
@@ -276,22 +203,10 @@ def get_recommendations():
     date_min = request.args.get('date_min')
     date_max = request.args.get('date_max')
 
-    query = db.session.query(Offer.id, Event.name, Thing.name, func.count(Offer.id), Venue.departementCode, Recommendation.isClicked, Recommendation.isFavorite) \
-        .join(Recommendation) \
-        .outerjoin(Event) \
-        .outerjoin(Thing) \
-        .join(Venue) \
-
-    if department:
-        query = query.filter(Venue.departementCode == department)
-    if date_min:
-        query = query.filter(Recommendation.dateCreated >= date_min)
-    if date_max:
-        query = query.filter(Recommendation.dateCreated <= date_max)
-
-    result = query.group_by(Offer.id, Event.name, Thing.name, Venue.departementCode, Recommendation.isClicked, Recommendation.isFavorite).order_by(Offer.id).all()
+    result = find_recommendations_in_date_range_for_given_departement(date_max, date_min, department)
     file_name = 'export_%s_recommendations.csv' % datetime.utcnow().strftime('%y_%m_%d')
-    headers = ['Offer_id', 'Event_name', 'Thing_name', 'countOffer_id', 'Venue_departementCode', 'Recommendation_isClicked', 'Recommendation_isFavorite']
+    headers = ['Offer_id', 'Event_name', 'Thing_name', 'countOffer_id', 'Venue_departementCode',
+               'Recommendation_isClicked', 'Recommendation_isFavorite']
     return _make_csv_response(file_name, headers, result)
 
 
@@ -342,7 +257,7 @@ def valid_time_intervall_or_default(time_intervall):
 
 
 def _check_int(checked_int):
-    try: 
+    try:
         int(checked_int)
         return checked_int
     except:
