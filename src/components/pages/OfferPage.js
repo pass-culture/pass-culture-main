@@ -282,11 +282,9 @@ class OfferPage extends Component {
                 required
                 type="select"
               />
-            </div>
-            {!isNew &&
-              hasEventOrThing && (
-                <div className="field">
-                  <div className="field form-field is-horizontal">
+              {!isNew &&
+                hasEventOrThing && (
+                  <div className="field is-horizontal field-text">
                     <div className="field-label">
                       <label className="label" htmlFor="input_offers_name">
                         <div className="subtitle">
@@ -295,8 +293,12 @@ class OfferPage extends Component {
                       </label>
                     </div>
                     <div className="field-body">
-                      <div className="field">
-                        <div className="nb-dates">
+                      <div
+                        className="control"
+                        style={{ paddingTop: '0.25rem' }}>
+                        <span
+                          className="nb-dates"
+                          style={{ paddingTop: '0.25rem' }}>
                           {pluralize(
                             get(
                               isEventType ? eventOccurrences : stocks,
@@ -304,7 +306,7 @@ class OfferPage extends Component {
                             ),
                             isEventType ? 'date' : 'stock'
                           )}
-                        </div>
+                        </span>
                         <NavLink
                           className="button is-primary is-outlined is-small"
                           to={`/offres/${get(offer, 'id')}?gestion`}>
@@ -320,9 +322,9 @@ class OfferPage extends Component {
                       </div>
                     </div>
                   </div>
-                  <MediationsManager />
-                </div>
-              )}
+                )}
+            </div>
+            <MediationsManager />
             {showAllForm && (
               <div>
                 <h2 className="main-list-title">Infos pratiques</h2>
@@ -399,7 +401,7 @@ class OfferPage extends Component {
                     label="Description"
                     maxLength={1000}
                     name="description"
-                    rows={5}
+                    rows={isReadOnly ? 1 : 5}
                     type="textarea"
                   />
                   <Field name="author" label="Auteur" isExpanded />

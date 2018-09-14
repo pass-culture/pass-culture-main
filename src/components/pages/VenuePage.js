@@ -53,9 +53,9 @@ class VenuePage extends Component {
         params: { offererId, venueId },
       },
       requestData,
-      venue,
+      venuePatch,
     } = this.props
-    if (!venue && venueId !== 'nouveau') {
+    if (!venuePatch && venueId !== 'nouveau') {
       requestData('GET', `offerers/${offererId}`, {
         handleSuccess: () => {
           requestData('GET', `venues/${venueId}`, {

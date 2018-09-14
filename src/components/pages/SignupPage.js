@@ -16,8 +16,8 @@ const SignupPage = ({ errors, sirenName }) => {
       <div className="container">
         <div className="columns">
           <div className="column is-offset-6 is-two-fifths">
-            <section className="hero">
-              <div>
+            <section className="has-text-grey">
+              <div className="hero-body">
                 <h1 className="title is-spaced is-1">Créez votre compte</h1>
                 <h2 className="subtitle is-2">
                   Nous vous invitons à prendre connaissance des{' '}
