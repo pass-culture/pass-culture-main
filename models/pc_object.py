@@ -271,16 +271,7 @@ class PcObject():
                     except InvalidOperation:
                         raise TypeError('Invalid value for %s: %r' % (key, value), 'decimal', key)
                 elif isinstance(value, str) and isinstance(col.type, DateTime):
-                    datetime_value = None
-                    valid_patterns = ['%Y-%m-%dT%H:%M:%S.%fZ', '%Y-%m-%dT%H:%M:%S', '%Y-%m-%dT%H:%M:%SZ']
-
-                    for pattern in valid_patterns:
-                        if match_format(value, pattern):
-                            datetime_value = datetime.strptime(value, pattern)
-
-                    if not datetime_value:
-                        raise TypeError('Invalid value for %s: %r' % (key, value), 'datetime', key)
-
+                    datetime_value = self._deserialize_datetime(key, value)
                     setattr(self, key, datetime_value)
                 else:
                     setattr(self, key, value)
@@ -339,3 +330,16 @@ class PcObject():
             else str(self.id) + "/" + humanize(self.id)
         return '<%s #%s>' % (self.__class__.__name__,
                              id)
+
+    def _deserialize_datetime(self, key, value):
+        valid_patterns = ['%Y-%m-%dT%H:%M:%S.%fZ', '%Y-%m-%dT%H:%M:%S', '%Y-%m-%dT%H:%M:%SZ']
+        datetime_value = None
+
+        for pattern in valid_patterns:
+            if match_format(value, pattern):
+                datetime_value = datetime.strptime(value, pattern)
+
+        if not datetime_value:
+            raise TypeError('Invalid value for %s: %r' % (key, value), 'datetime', key)
+
+        return datetime_value
