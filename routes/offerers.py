@@ -24,9 +24,11 @@ def list_offerers():
         query = query.join(UserOfferer) \
             .filter_by(user=current_user)
     return handle_rest_get_list(Offerer,
-                                query=query,
                                 include=OFFERER_INCLUDES,
-                                order_by=Offerer.name)
+                                order_by=Offerer.name,
+                                paginate=10,
+                                query=query
+                                )
 
 
 @app.route('/offerers/<id>', methods=['GET'])
