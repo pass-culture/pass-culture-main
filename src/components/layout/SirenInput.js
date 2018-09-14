@@ -30,7 +30,9 @@ class SirenInput extends Component {
       <Fragment>
         {$input}
         {fetchedName
-          ? withFetchedName && <div className="display-name">{fetchedName}</div>
+          ? withFetchedName && (
+              <span className="display-name">{fetchedName}</span>
+            )
           : value &&
             !errors &&
             !readOnly && <button className="button is-loading" />}

@@ -33,6 +33,20 @@
     }
   }
 
+  &.field-siren {
+    input {
+      width: 8rem;
+    }
+    .display-name {
+      color: $text;
+      display: inline-block;
+      font-weight: $weight-semibold;
+      padding-left: 0.25rem;
+      padding-top: 0.5rem;
+      text-transform: uppercase;
+    }
+  }
+
   &.has-addons {
     .control {
       .button {
@@ -186,22 +200,3 @@ textarea.textarea {
     resize: none;
   }
 }
-
-/*
-.with-display-name {
-  input {
-    display: inline-block;
-    width: 50%;
-  }
-  .display-name {
-    display: inline-block;
-    width: 49%;
-    font-weight: $weight-semibold;
-    padding-top: 0.5rem;
-    padding-left: 0.5rem;
-    vertical-align: middle;
-    text-transform: uppercase;
-    color: text;
-  }
-}
-*/
