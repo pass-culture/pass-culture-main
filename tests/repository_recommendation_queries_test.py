@@ -18,12 +18,12 @@ def test_filter_out_recommendation_on_soft_deleted_stocks_returns_recos_with_at_
     user = create_user()
     event_occurrence1 = create_event_occurrence(offer)
     event_occurrence2 = create_event_occurrence(offer)
-    stock1 = create_stock_from_event_occurrence(offerer, event_occurrence1)
-    stock2 = create_stock_from_event_occurrence(offerer, event_occurrence2)
+    stock1 = create_stock_from_event_occurrence(event_occurrence1)
+    stock2 = create_stock_from_event_occurrence(event_occurrence2)
     thing_offer1 = create_thing_offer(venue)
     thing_offer2 = create_thing_offer(venue)
-    stock3 = create_stock_from_offer(offerer, thing_offer1)
-    stock4 = create_stock_from_offer(offerer, thing_offer2)
+    stock3 = create_stock_from_offer(thing_offer1)
+    stock4 = create_stock_from_offer(thing_offer2)
     stock1.isSoftDeleted = True
     stock3.isSoftDeleted = True
     recommendation1 = create_recommendation(offer, user)

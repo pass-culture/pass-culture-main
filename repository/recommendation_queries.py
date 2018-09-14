@@ -24,30 +24,25 @@ def count_read_recommendations_for_user(user):
 
 
 def find_all_unread_recommendations(user, seen_recommendation_ids, limit=BLOB_SIZE):
-    return filter_out_recommendation_on_soft_deleted_stocks() \
-        .outerjoin(Mediation) \
-        .filter((Recommendation.user == user)
-                & ~Recommendation.id.in_(seen_recommendation_ids)
-                & (Mediation.tutoIndex == None)
-                & ((Recommendation.validUntilDate == None) | (Recommendation.validUntilDate > datetime.utcnow()))) \
-        .filter(Recommendation.dateRead == None) \
+    query = filter_out_recommendation_on_soft_deleted_stocks()
+    query = filter_unseen_recommendations_for_user(query, user, seen_recommendation_ids)
+    query = query.filter(Recommendation.dateRead == None) \
+        .group_by(Recommendation) \
         .order_by(func.random()) \
-        .limit(limit) \
-        .all()
+        .limit(limit)
+
+    return query.all()
 
 
 def find_all_read_recommendations(user, seen_recommendation_ids, limit=BLOB_SIZE):
-    return filter_out_recommendation_on_soft_deleted_stocks() \
-        .outerjoin(Mediation) \
-        .filter((Recommendation.user == user)
-                & ~Recommendation.id.in_(seen_recommendation_ids)
-                & (Mediation.tutoIndex == None)
-                & ((Recommendation.validUntilDate == None)
-                   | (Recommendation.validUntilDate > datetime.utcnow()))) \
-        .filter(Recommendation.dateRead != None) \
+    query = filter_out_recommendation_on_soft_deleted_stocks()
+    query = filter_unseen_recommendations_for_user(query, user, seen_recommendation_ids)
+    query = query.filter(Recommendation.dateRead != None) \
+        .group_by(Recommendation) \
         .order_by(func.random()) \
-        .limit(limit) \
-        .all()
+        .limit(limit)
+
+    return query.all()
 
 
 def find_recommendations_for_user_matching_offers_and_search_term(user_id, offer_ids, search):
@@ -70,3 +65,13 @@ def filter_out_recommendation_on_soft_deleted_stocks():
         .filter_by(isSoftDeleted=False)
 
     return join_on_stocks.union_all(join_on_event_occurrences)
+
+
+def filter_unseen_recommendations_for_user(query, user, seen_recommendation_ids):
+    new_query = query \
+        .outerjoin(Mediation) \
+        .filter((Recommendation.user == user)
+                & ~Recommendation.id.in_(seen_recommendation_ids)
+                & (Mediation.tutoIndex == None)
+                & ((Recommendation.validUntilDate == None) | (Recommendation.validUntilDate > datetime.utcnow())))
+    return new_query

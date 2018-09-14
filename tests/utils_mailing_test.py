@@ -759,7 +759,7 @@ def test_make_offerer_driven_cancellation_email_for_user_event(app):
     offer = create_event_offer(venue, 'Mains, sorts et papiers')
     event_occurrence = create_event_occurrence(offer,
                                                beginning_datetime=datetime(2019, 7, 20, 12, 0, 0, tzinfo=timezone.utc))
-    stock = create_stock_from_event_occurrence(offerer, event_occurrence, price=20, available=10)
+    stock = create_stock_from_event_occurrence(event_occurrence, price=20, available=10)
     booking = create_booking(user, stock)
 
     # When
@@ -789,7 +789,7 @@ def test_make_offerer_driven_cancellation_email_for_user_thing(app):
     offerer = create_offerer(name='Test offerer')
     venue = create_venue(offerer)
     offer = create_thing_offer(venue, thing_name='Test Book')
-    stock = create_stock_from_offer(offerer, offer, price=15, available=10)
+    stock = create_stock_from_offer(offer, price=15, available=10)
     booking = create_booking(user, stock, quantity=2)
 
     # When
@@ -821,7 +821,7 @@ def test_make_offerer_driven_cancellation_email_for_offerer_event(app):
     offer = create_event_offer(venue, event_name='Le théâtre des ombres')
     event_occurrence = create_event_occurrence(offer,
                                                beginning_datetime=datetime(2019, 7, 20, 12, 0, 0, tzinfo=timezone.utc))
-    stock = create_stock_from_event_occurrence(offerer, event_occurrence, price=20, available=10)
+    stock = create_stock_from_event_occurrence(event_occurrence, price=20, available=10)
     booking = create_booking(user, stock)
 
     # When
@@ -858,7 +858,7 @@ def test_make_offerer_driven_cancellation_email_for_offerer_thing_and_already_ex
                          postal_code='93100')
     thing = create_thing(thing_name='Le récit de voyage')
     offer = create_thing_offer(venue, thing)
-    stock = create_stock_from_offer(offerer, offer, price=0, available=10)
+    stock = create_stock_from_offer(offer, price=0, available=10)
     booking = create_booking(user, stock)
 
     user2 = create_user(public_name='James Bond', email='bond@james.bond.uk')

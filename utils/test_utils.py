@@ -277,9 +277,8 @@ def create_stock_with_event_offer(offerer, venue, beginning_datetime_future=True
     return stock
 
 
-def create_stock_from_event_occurrence(offerer, event_occurrence, price=10, available=10, soft_deleted=False):
+def create_stock_from_event_occurrence(event_occurrence, price=10, available=10, soft_deleted=False):
     stock = Stock()
-    stock.offerer = offerer
     stock.eventOccurrence = event_occurrence
     stock.price = price
     stock.available = available
@@ -287,9 +286,8 @@ def create_stock_from_event_occurrence(offerer, event_occurrence, price=10, avai
     return stock
 
 
-def create_stock_from_offer(offerer, offer, price=10, available=10, soft_deleted=False):
+def create_stock_from_offer(offer, price=10, available=10, soft_deleted=False):
     stock = Stock()
-    stock.offerer = offerer
     stock.offer = offer
     stock.price = price
     stock.available = available
@@ -334,10 +332,12 @@ def create_thing(thing_type='Book', thing_name='Test Book', media_urls='test/url
     return thing
 
 
-def create_event(event_name='Test event', duration_minutes=60):
+def create_event(event_name='Test event', duration_minutes=60, thumb_count=0, dominant_color=None):
     event = Event()
     event.name = event_name
     event.durationMinutes = duration_minutes
+    event.thumbCount = thumb_count
+    event.firstThumbDominantColor = dominant_color
     return event
 
 
@@ -357,9 +357,10 @@ def create_thing_offer(venue, thing=None, date_created=datetime.utcnow(), bookin
 
 
 def create_event_offer(venue, event_name='Test event', duration_minutes=60, date_created=datetime.utcnow(),
-                       booking_email='booking.email@test.com'):
+                       booking_email='booking.email@test.com', thumb_count=0, dominant_color=None):
     offer = Offer()
-    event = create_event(event_name=event_name, duration_minutes=duration_minutes)
+    event = create_event(event_name=event_name, duration_minutes=duration_minutes, thumb_count=thumb_count,
+                         dominant_color=dominant_color)
     offer.event = event
     offer.venue = venue
     offer.dateCreated = date_created
