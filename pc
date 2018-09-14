@@ -196,7 +196,8 @@ elif [[ "$CMD" == "install" ]]; then
 			 cd $ROOT_PATH/shared && yarn install;
        cd $ROOT_PATH/webapp && yarn;
 			 cd $ROOT_PATH/pro && yarn;
-	   ./pc install-private'
+	   cd $ROOT_PATH && ./pc install-private;
+	         ./pc install-hooks'
 elif [[ "$CMD" == "install-private" ]]; then
   RUN='cd $ROOT_PATH/api;
             rm -rf private;
