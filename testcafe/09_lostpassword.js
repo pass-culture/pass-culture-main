@@ -7,7 +7,7 @@ const inputUsersEmail = Selector('#user-email')
 const forgotPasswordLink = Selector('#lostPasswordLink')
 const sendTokenButton = Selector('#sendTokenByMail')
 const changePasswordButton = Selector('#changePassword')
-const passwordInput = Selector('#user-password')
+const passwordInput = Selector('#user-newPassword')
 const pageH1 = Selector('h1')
 const errorsDiv = Selector('.errors')
 
