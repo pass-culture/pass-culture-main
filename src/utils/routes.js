@@ -16,10 +16,16 @@ import TermsPage from '../components/pages/TermsPage'
 import VenuePage from '../components/pages/VenuePage'
 import LostPasswordPage from '../components/pages/LostPasswordPage'
 
+// NOTE: routes are sorted by PATH alphabetical order
 const routes = [
   {
     path: '/',
     render: () => <Redirect to="/connexion" />,
+  },
+  {
+    component: HomePage,
+    path: '/accueil',
+    title: 'Accueil',
   },
   {
     component: AccoutingPage,
@@ -42,9 +48,14 @@ const routes = [
     title: 'Inscription',
   },
   {
-    component: HomePage,
-    path: '/accueil',
-    title: 'Accueil',
+    component: TermsPage,
+    path: '/mentions-legales',
+    title: 'Mentions Légales',
+  },
+  {
+    component: LostPasswordPage,
+    path: '/mot-de-passe-perdu',
+    title: 'Mot de passe perdu',
   },
   {
     component: OfferersPage,
@@ -100,16 +111,6 @@ const routes = [
     component: ProfilePage,
     path: '/profil',
     title: 'Profil',
-  },
-  {
-    component: TermsPage,
-    path: '/mentions-legales',
-    title: 'Mentions Légales',
-  },
-  {
-    component: LostPasswordPage,
-    path: '/mot-de-passe-perdu',
-    title: 'Mot de passe perdu',
   },
 ]
 
