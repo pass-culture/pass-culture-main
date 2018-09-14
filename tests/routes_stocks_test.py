@@ -13,7 +13,7 @@ from utils.test_utils import req_with_auth, API_URL, create_user, create_offerer
 
 @clean_database
 @pytest.mark.standalone
-def test_10_get_stocks_should_return_a_list_of_stocks(app):
+def test_get_stocks_should_return_a_list_of_stocks(app):
     # Given
     user = create_user(email='test@email.com', password='P@55w0rd', is_admin=True, can_book_free_offers=False)
     offerer = create_offerer()
@@ -257,7 +257,7 @@ def test_should_not_update_stock_if_booking_limit_datetime_after_event_occurrenc
     stockId = stock.id
 
     serialized_date = serialize(stock.eventOccurrence.beginningDatetime + timedelta(days=1))
-
+    print(serialized_date)
     # When
     response = req_with_auth('email@test.com', 'P@55w0rd').patch(API_URL + '/stocks/' + humanize(stockId),
                                                                  json={'bookingLimitDatetime': serialized_date})
