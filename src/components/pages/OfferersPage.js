@@ -1,4 +1,9 @@
-import { requestData, withLogin } from 'pass-culture-shared'
+import {
+  InfiniteScroller,
+  requestData,
+  withLogin,
+  withSearch,
+} from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
@@ -12,12 +17,18 @@ import { offererNormalizer } from '../../utils/normalizers'
 
 class OfferersPage extends Component {
   handleDataRequest = (handleSuccess, handleFail) => {
-    const { requestData } = this.props
-    requestData('GET', 'offerers', {
-      handleSuccess,
-      handleFail,
-      normalizer: offererNormalizer,
-    })
+    const { dispatch, goToNextSearchPage, querySearch } = this.props
+
+    dispatch(
+      requestData('GET', `offerers?${querySearch}`, {
+        handleSuccess: (state, action) => {
+          handleSuccess(state, action)
+          goToNextSearchPage()
+        },
+        handleFail,
+        normalizer: offererNormalizer,
+      })
+    )
   }
 
   render() {
@@ -36,9 +47,11 @@ class OfferersPage extends Component {
           </NavLink>
         </HeroSection>
 
-        <ul className="main-list offerers-list">
+        <InfiniteScroller
+          className="main-list offerers-list"
+          handleLoadMore={this.handleDataRequest}>
           {offerers.map(o => <OffererItem key={o.id} offerer={o} />)}
-        </ul>
+        </InfiniteScroller>
       </Main>
     )
   }
@@ -46,12 +59,14 @@ class OfferersPage extends Component {
 
 export default compose(
   withLogin({ failRedirect: '/connexion' }),
-  connect(
-    (state, ownProps) => ({
-      offerers: offerersSelector(state),
-    }),
-    {
-      requestData,
-    }
-  )
+  withSearch({
+    dataKey: 'offerers',
+    defaultQueryParams: {
+      search: undefined,
+      order_by: `createdAt+desc`,
+    },
+  }),
+  connect((state, ownProps) => ({
+    offerers: offerersSelector(state),
+  }))
 )(OfferersPage)
