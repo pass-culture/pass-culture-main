@@ -1,7 +1,7 @@
 SELECT
         booking_with_venue_information.department_code,
         date_trunc('{{ time_intervall }}', activity.issued_at) AS intervall,
-        COUNT booking_with_venue_information.booking_id) AS bookings,
+        COUNT (booking_with_venue_information.booking_id) AS bookings,
         COUNT(DISTINCT booking_with_venue_information.user_id) AS unique_bookings
 FROM
     (SELECT
