@@ -55,6 +55,14 @@ $intSizes: (0, 3, 5, 7, 8, 12, 16, 18, 20, 22, 28, 30, 32, 36, 40, 48, 60);
   margin: $page-padding !important;
 }
 
+.marged-2x {
+  margin: ($page-padding * 2) !important;
+}
+
 .padded {
   padding: $page-padding !important;
+}
+
+.padded-2x {
+  padding: ($page-padding * 2) !important;
 }

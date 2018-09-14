@@ -88,30 +88,35 @@ class MainMenu extends React.PureComponent {
         {state => (
           <div
             id="main-menu"
-            className="is-overlay p12"
+            className="is-overlay p12 flex-rows flex-end"
             style={{ ...defaultStyle, ...transitionStyles[state] }}
           >
-            <div className="inner is-relative is-clipped flex-rows flex-end">
+            <div className="inner is-relative is-clipped">
               {this.renderCloseButton()}
-              <Scrollbars autoHide>
-                <div className="scroll-container pc-theme-red">
-                  <MenuHeader user={user} />
-                  <nav id="main-menu-navigation" className="flex-rows mt16 pb0">
-                    {menuitems &&
-                      menuitems.map(
-                        obj =>
-                          obj && (
-                            <MenuLink
-                              key={obj.path || obj.href}
-                              item={obj}
-                              clickHandler={this.toggleMainMenu}
-                            />
-                          )
-                      )}
-                    {this.renderLogOutLink()}
-                  </nav>
-                </div>
-              </Scrollbars>
+              <div id="main-menu-fixed-container">
+                <Scrollbars autoHide>
+                  <div className="scroll-container pc-theme-red">
+                    <MenuHeader user={user} />
+                    <nav
+                      id="main-menu-navigation"
+                      className="flex-rows mt16 pb0"
+                    >
+                      {menuitems &&
+                        menuitems.map(
+                          obj =>
+                            obj && (
+                              <MenuLink
+                                key={obj.path || obj.href}
+                                item={obj}
+                                clickHandler={this.toggleMainMenu}
+                              />
+                            )
+                        )}
+                      {this.renderLogOutLink()}
+                    </nav>
+                  </div>
+                </Scrollbars>
+              </div>
             </div>
           </div>
         )}

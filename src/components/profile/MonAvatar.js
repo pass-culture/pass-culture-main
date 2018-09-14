@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-import ProfilePicture from '../../layout/ProfilePicture'
+import ProfilePicture from '../layout/ProfilePicture'
 
 const UserAvatar = ({ provider }) => (
   <div id="mon-avatar" className="padded flex-columns">

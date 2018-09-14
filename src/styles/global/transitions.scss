@@ -1,0 +1,60 @@
+/* -------------------------------------------------
+
+ PAGE TRANSITIONS
+
+------------------------------------------------- */
+
+.transition-wrapper {
+  z-index: 1;
+  height: 100%;
+  min-height: 100%;
+  position: relative;
+}
+
+.transition-wrapper .transition-item {
+  top: 0;
+  left: 0;
+  right: 0;
+  position: absolute;
+}
+
+.transition-wrapper > .pc-page-view,
+.transition-wrapper > .pc-page-view-main {
+  overflow: auto;
+  transition: transform 500ms, opacity 500ms;
+
+  &.transition-appear {
+    transition-delay: 0;
+  }
+
+  &.transition-appear.transition-appear-active {
+    transform: translate3d(0, 0, 0);
+  }
+
+  &.transition-leave {
+    transition-delay: 100ms;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.transition-wrapper > .pc-page-view {
+  &.transition-appear {
+    transform: translate3d(100%, 0, 0);
+  }
+
+  &.transition-leave.transition-leave-active {
+    transform: translate3d(100%, 0, 0);
+  }
+}
+
+.transition-wrapper > .pc-page-view-main {
+  transform: translate3d(0, 0, 0);
+
+  &.transition-appear {
+    transform: translate3d(-100%, 0, 0);
+  }
+
+  &.transition-leave.transition-leave-active {
+    transform: translate3d(-100%, 0, 0);
+  }
+}

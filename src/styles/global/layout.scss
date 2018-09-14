@@ -1,44 +1,108 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+.app .beta-corner {
+  left: 0;
+  bottom: 0;
+  top: inherit;
+  right: inherit;
+  width: $footer-height;
+  height: $footer-height;
+  z-index: $zindex-beta-corner;
 }
 
-html,
-body {
-  height: 100%;
-  min-height: 100%;
-}
+/* -------------------------------------------------
 
-body {
+ LAYOUTS
+
+------------------------------------------------- */
+
+.pc-page-view,
+.pc-page-view-main {
   width: 100%;
   height: 100%;
-  margin: 0 auto;
-  max-width: 500px;
+  min-width: 100%;
   min-height: 100%;
-  max-height: 100%;
-  font-size: $font-size;
-  -webkit-tap-highlight-color: rgba($white, 0);
-  -webkit-tap-highlight-color: transparent;
-  -moz-tap-highlight-color: rgba($white, 0);
-  -webkit-touch-callout: none;
-  // -webkit-user-select: none;
-  // -khtml-user-select: none;
-  // -moz-user-select: none;
-  // -o-user-select: none;
-  // user-select: none;
-
-  // https://stackoverflow.com/questions/29008194/disabling-androids-chrome-pull-down-to-refresh-feature
-  overscroll-behavior: contain;
+  box-shadow: 0 0 23px -1px rgba(0, 0, 0, 0.1);
 }
 
-a,
-button {
-  cursor: pointer;
+.pc-theme-purple {
+  color: $white;
+  background-color: $purple-blue;
 }
 
-button {
-  user-select: none;
+.pc-theme-transparent {
+  color: $white;
+  background-color: transparent;
+}
+
+.pc-theme-default {
+  color: $black;
+  background-color: $white;
+}
+
+.pc-theme-white {
+  color: $primary;
+  background-color: $white;
+}
+
+.pc-theme-red,
+.pc-theme-primary {
+  color: $white;
+  background-color: $primary;
+}
+
+.pc-label {
+  color: $grey;
+  font-size: 0.8rem;
+}
+
+.pc-gradient {
+  background-image: linear-gradient(to bottom right, $primary, $purple-blue);
+}
+
+.pc-main {
+  @extend .flex-1;
+}
+
+.pc-header {
+  @extend .flex-0;
+  @extend .padded;
+  @extend .text-center;
+  @extend .fs19;
+}
+
+.pc-footer {
+  @extend .p12;
+  @extend .flex-0;
+  @extend .items-center;
+  @extend .flex-columns;
+
+  height: $footer-height;
+  min-height: $footer-height;
+
+  .icon-user-circle-outline {
+    font-size: 2.7rem;
+  }
+
+  button {
+    width: auto;
+    display: block;
+    text-align: center;
+  }
+
+  button + button {
+    border-right: 0;
+    border-left: 2px dotted #FFFFFF;
+
+    &:disabled {
+      border: 0;
+    }
+  }
+}
+
+.pc-text-button {
+  @extend .no-border;
+  @extend .no-select;
+  @extend .no-outline;
+  @extend .no-background;
 }
 
 #root,
@@ -76,82 +140,4 @@ button {
   img {
     margin-bottom: $page-padding;
   }
-}
-
-.app .beta-corner {
-  left: 0;
-  bottom: 0;
-  top: inherit;
-  right: inherit;
-  width: $footer-height;
-  height: $footer-height;
-  z-index: $zindex-beta-corner;
-}
-
-/* -------------------------------------------------
-
- LAYOUTS
-
-------------------------------------------------- */
-
-.pc-theme-purple {
-  color: $white;
-  background-color: $purple-blue;
-}
-
-.pc-theme-transparent {
-  color: $white;
-  background-color: transparent;
-}
-
-.pc-theme-white {
-  color: $primary;
-  background-color: $white;
-}
-
-.pc-theme-red,
-.pc-theme-primary {
-  color: $white;
-  background-color: $primary;
-}
-
-.pc-label {
-  color: $grey;
-  font-size: 0.8rem;
-}
-
-.pc-gradient {
-  background-image: linear-gradient(to bottom right, $primary, $purple-blue);
-}
-
-.pc-main {
-  @extend .flex-1;
-}
-
-.pc-header {
-  @extend .flex-0;
-  @extend .padded;
-  @extend .text-center;
-  @extend .fs19;
-}
-
-.pc-footer {
-  @extend .flex-0;
-  @extend .padded;
-  @extend .items-center;
-  @extend .flex-columns;
-
-  height: $footer-height;
-  min-height: $footer-height;
-
-  .icon-user-circle-outline {
-    font-size: 2.7rem;
-  }
-}
-
-.pc-text-button {
-  @extend .no-border;
-  @extend .no-select;
-  @extend .no-outline;
-  @extend .no-background;
 }

@@ -77,9 +77,9 @@ const routes = [
   },
   {
     component: ProfilePage,
-    disabled: true,
+    disabled: false,
     icon: 'user-w',
-    path: '/profil',
+    path: '/profil/:view?',
     title: 'Mon Profil',
   },
   {

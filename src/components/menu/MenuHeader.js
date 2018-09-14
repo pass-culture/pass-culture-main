@@ -10,7 +10,7 @@ const MenuHeader = ({ user }) => {
   const avatar = `${ROOT_PATH}/icons/avatar-default-w-XL.svg`
   return (
     <div id="main-menu-header" className="flex-columns is-relative py16 fs18">
-      <div className="profile text-center">
+      <div className="column-profile text-center">
         <p id="main-menu-header-avatar">
           <img alt="" src={avatar} className="mb3" />
         </p>
@@ -21,7 +21,7 @@ const MenuHeader = ({ user }) => {
           <span>{user && user.publicName}</span>
         </p>
       </div>
-      <div className="account flex-center flex-rows text-center">
+      <div className="column-account flex-center flex-rows text-center">
         <p className="fs30">
           <span>Mon Pass</span>
         </p>

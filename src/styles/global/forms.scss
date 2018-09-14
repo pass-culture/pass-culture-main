@@ -18,4 +18,34 @@
   ) !important;
 }
 
-/* ------ UPDATE UI AVEC ION ------> */
+input[type='text'] {
+  @extend .mt7;
+  @extend .py7;
+  @extend .px18;
+  @extend .fs16;
+
+  width: 100%;
+  border-radius: 20px;
+  border: 2px solid $grey-light;
+}
+
+button[type='reset'],
+button[type='submit'] {
+  transition: opacity 500ms;
+}
+
+.pc-form-controls {
+  // alias pour etre plus lisible
+  // quand on cherche dans la feuille de style forms.scss
+  // NOTE: voir le fichier global/layout.scss
+  @extend .pc-footer;
+}
+
+.pc-form-label {
+  @extend .fs16;
+  @extend .is-black-text;
+
+  small {
+    @extend .fs13;
+  }
+}

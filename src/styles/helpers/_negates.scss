@@ -34,3 +34,13 @@
 .no-select {
   user-select: none !important;
 }
+
+.no-dotted-border {
+  background-image: none !important;
+}
+
+a.no-decoration,
+a.no-decoration:hover,
+a.no-decoration:visited {
+  text-decoration: none;
+}

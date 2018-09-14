@@ -7,14 +7,14 @@ import { ROOT_PATH } from '../../utils/config'
 import PageHeader from '../layout/PageHeader'
 import PageFooter from '../layout/PageFooter'
 
-const FavoritesPage = () => {
+const PageSimple = () => {
   const backgroundImage = `url('${ROOT_PATH}/mosaic-k@2x.png')`
   return (
-    <div id="terms-page" className="page is-relative flex-rows">
-      <PageHeader theme="red" title="Mes préférés" />
-      <main role="main" className="pc-main my12">
+    <div id="single-page-id" className="page is-relative flex-rows">
+      <PageHeader theme="red" title="A Page Title" />
+      <main role="main" className="pc-main">
         <Scrollbars>
-          <div className="padded content" style={{ backgroundImage }} />
+          <div className="padded" style={{ backgroundImage }} />
         </Scrollbars>
       </main>
       <PageFooter theme="white" className="dotted-top-red" />
@@ -22,4 +22,4 @@ const FavoritesPage = () => {
   )
 }
 
-export default FavoritesPage
+export default PageSimple

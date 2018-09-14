@@ -28,6 +28,7 @@
     "prefer-destructuring": 1,
     "react/button-has-type": [2, {
       "button": true,
+      "cancel": true,
       "submit": true,
       "reset": true
     }],

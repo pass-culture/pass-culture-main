@@ -1,17 +1,12 @@
 import React from 'react'
-import moment from 'moment'
-import get from 'lodash.get'
 import PropTypes from 'prop-types'
 
-import withForm from './withForm'
-import { TimeField, CalendarField } from './fields'
+import withForm from '../forms/withForm'
 
 class MyForm extends React.PureComponent {
   render() {
     const { item } = this.props
-    return (
-      <React.Fragment />
-    )
+    return <React.Fragment />
   }
 }
 

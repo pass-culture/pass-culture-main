@@ -27,6 +27,11 @@ yarn version
 
 ## Icons Font (Fontello)
 
+**Modifier les icones**
+
+- Ouvrir [fontello.com](http://fontello.com) dans un navigateur
+- Glisser/Déposer le fichier de configuration `public/static/fontello/config.json`
+
 **Ajouter une nouvelle icone**
 
 - Exporter l'icone depuis InVision
@@ -38,14 +43,23 @@ yarn version
   - Exporter le fichier en `.svg`
   - Remplacer les `<rect>` dans le code svg par des `<g> | <path>`
 - Nettoyer le fichier généré via [SVGMG](https://jakearchibald.github.io/svgomg/)
-- Ouvrir [fontello.com](http://fontello.com)
-- Glisser/Déposer le fichier de configuration `./fontello.json`
+- Ouvrir [fontello.com](http://fontello.com) dans un navigateur
+- Glisser/Déposer le fichier de configuration `./config.json`
 - Ajouter la nouvelle icone par glisser/déposer
 - Cliquer sur le bouton `Download`
 
 **Importer les icones dans le projet**
 
 - Dézipper le fichier téléchargé
-- Renommer le dossier `fontello-<hash>` en `fontello`
-- Couper/Coller le dossier dans `public/static/`
-  
+- Extraire le contennu du fichier zip dans le dossier `public/static/`
+
+## Animations entre les vues d'une même page
+
+- Voir le fichier de la page profil `src/components/pages/ProfilePage`
+- Les pages doivent avoir la classe CSS `transition-item`
+- La page principale doit avoir la classe CSS `pc-page-view-main`
+- La page fille doivent avoir la classe CSS `pc-page-view`
+
+**Templates**
+
+- ./.kiss/page-with-transition.js

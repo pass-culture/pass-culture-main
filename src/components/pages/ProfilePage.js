@@ -5,37 +5,34 @@ import { compose } from 'redux'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { withLogin } from 'pass-culture-shared'
-import { Scrollbars } from 'react-custom-scrollbars'
+import PageTransition from 'react-router-page-transition'
+import { Route, Switch, withRouter } from 'react-router-dom'
 
-import { ROOT_PATH } from '../../utils/config'
 import Loader from '../layout/Loader'
-import MonAvatar from './profile/MonAvatar'
-import PageHeader from '../layout/PageHeader'
-// import MonPassCulture from './profile/MonPassCulture'
-import MesInformations from './profile/MesInformations'
-import NavigationFooter from '../layout/NavigationFooter'
+import ProfileEditView from '../profile/views/ProfileEditView'
+import ProfileMainView from '../profile/views/ProfileMainView'
 
-const ProfilePage = ({ user }) => {
+const ProfilePage = ({ user, location }) => {
   const isloaded = user || typeof user === 'object'
-  const backgroundImage = `url('${ROOT_PATH}/mosaic-k@2x.png')`
   return (
-    <div id="profile-page" className="page is-relative flex-rows">
+    <div id="profile-page" className="page is-relative">
       {isloaded && (
-        <React.Fragment>
-          <PageHeader theme="red" title="Mon profil" />
-          <main
-            role="main"
-            className="is-relative flex-1"
-            style={{ backgroundImage }}
-          >
-            <Scrollbars autoHide>
-              <MonAvatar provider={user} />
-              {/* {user.expenses && <MonPassCulture provider={user} />} */}
-              <MesInformations provider={user} />
-            </Scrollbars>
-          </main>
-          <NavigationFooter theme="red" className="dotted-top-white" />
-        </React.Fragment>
+        <PageTransition timeout={500}>
+          <Switch location={location}>
+            <Route
+              exact
+              path="/profil"
+              component={ProfileMainView}
+              key="route-profile-main-view"
+            />
+            <Route
+              exact
+              path="/profil/:view"
+              component={ProfileEditView}
+              key="route-profile-edit-view"
+            />
+          </Switch>
+        </PageTransition>
       )}
       <Loader isloading={!isloaded} />
     </div>
@@ -43,6 +40,7 @@ const ProfilePage = ({ user }) => {
 }
 
 ProfilePage.propTypes = {
+  location: PropTypes.object.isRequired,
   user: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]).isRequired,
 }
 
@@ -52,6 +50,7 @@ const mapStateToProps = state => {
 }
 
 export default compose(
+  withRouter,
   withLogin({ failRedirect: '/connexion' }),
   connect(mapStateToProps)
 )(ProfilePage)

@@ -37,8 +37,12 @@
   button:disabled .icon-next {
     color: $grey;
   }
-}
 
-#mes-informations .list .item {
-  background-color: $white;
+  #mes-informations {
+    background-color: $white;
+  }
+
+  #mes-informations .list .item:last-child {
+    @extend .no-dotted-border;
+  }
 }
