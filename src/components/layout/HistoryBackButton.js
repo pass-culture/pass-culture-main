@@ -9,6 +9,7 @@ const HistoryBackButton = ({ className, history, theme }) => (
   >
     <button
       type="button"
+      id="history-back-button"
       onClick={history.goBack}
       className="no-border no-background no-outline"
     >

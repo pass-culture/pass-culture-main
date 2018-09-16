@@ -9,6 +9,7 @@ import { withLogin } from 'pass-culture-shared'
 import { Scrollbars } from 'react-custom-scrollbars'
 
 import Loader from '../layout/Loader'
+import PageHeader from '../layout/PageHeader'
 import NavigationFooter from '../layout/NavigationFooter'
 
 const NotificationsPage = ({ user }) => {
@@ -17,11 +18,7 @@ const NotificationsPage = ({ user }) => {
     <div id="notifications-page" className="page is-relative flex-rows">
       {isloaded && (
         <React.Fragment>
-          <header className="padded pc-theme-red has-text-centered flex-0">
-            <h1>
-              <span>Mon profil</span>
-            </h1>
-          </header>
+          <PageHeader theme="red" title="Mes notifications" />
           <main role="main" className="is-relative flex-1">
             <Scrollbars autoHide />
           </main>
