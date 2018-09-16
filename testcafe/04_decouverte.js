@@ -13,8 +13,9 @@ const closeButton = Selector('.close-button')
 // // const spanPrice  = Selector('.price')
 // const draggableImage = Selector('.react-draggable')
 
-fixture`O4_01 Découverte | Je ne suis pas connecté·e` // eslint-disable-line
-  .page`${ROOT_PATH}decouverte`
+fixture('O4_01 Découverte | Je ne suis pas connecté·e').page(
+  `${ROOT_PATH}decouverte`
+)
 
 test('Je suis redirigé vers la page /connexion', async t => {
   await t
@@ -23,11 +24,11 @@ test('Je suis redirigé vers la page /connexion', async t => {
   await t.expect(getPageUrl()).contains('/connexion', { timeout: 10000 })
 })
 
-fixture`O4_02 Découverte | Après connexion | Les offres sont en cours de chargement`.beforeEach(
-  async t => {
-    await t.useRole(regularUser)
-  }
-)
+fixture(
+  'O4_02 Découverte | Après connexion | Les offres sont en cours de chargement'
+).beforeEach(async t => {
+  await t.useRole(regularUser)
+})
 
 test('Je suis informé·e du fait que les offres sont en cours de chargement', async t => {
   await t
@@ -64,7 +65,7 @@ test('Lorsque je clique sur la flêche vers le haut, je vois le verso de la reco
     .notOk()
 })
 
-fixture`O4_03 Découverte | Après connexion | Recommandations`.beforeEach(
+fixture('O4_03 Découverte | Après connexion | Recommandations').beforeEach(
   async t => {
     await t.useRole(regularUser)
     await t.navigateTo(ROOT_PATH + 'decouverte/AH7Q/AU#AM') // eslint-disable-line
