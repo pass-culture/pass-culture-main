@@ -1,12 +1,11 @@
 import { Selector } from 'testcafe'
 
-import regularUser from './helpers/roles'
 import { ROOT_PATH } from '../src/utils/config'
 
-const menuButton = Selector('.profile-button')
+const menuButton = Selector('#open-menu-button')
 
-fixture`09_01 Page Mentions Légales`.beforeEach(async t => {
-  await t.useRole(regularUser).navigateTo(`${ROOT_PATH}mentions-legales`)
+fixture('09_01 Page Mentions Légales').beforeEach(async t => {
+  await t.navigateTo(`${ROOT_PATH}mentions-legales`)
 })
 
 // Je vois le titre de la page dans le header

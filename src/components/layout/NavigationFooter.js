@@ -10,6 +10,7 @@ const NavigationFooter = ({ className, dispatch, theme }) => {
     <footer className={cssclass}>
       <button
         type="button"
+        id="open-menu-button"
         onClick={() => dispatch(toggleMainMenu())}
         className="no-border no-background no-outline no-select"
       >
