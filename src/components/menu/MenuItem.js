@@ -5,9 +5,9 @@ import { withRouter, NavLink, matchPath } from 'react-router-dom'
 
 const noop = () => {}
 
-const renderLinkContent = (icon, title) => (
+const renderLinkContent = (icon, title, styles) => (
   <React.Fragment>
-    <span className="text-center menu-icon">
+    <span style={styles} className="text-center menu-icon mr16 text-center">
       <Icon svg={`ico-${icon}`} alt="" />
     </span>
     <span>
@@ -16,7 +16,7 @@ const renderLinkContent = (icon, title) => (
   </React.Fragment>
 )
 
-class MenuLink extends React.PureComponent {
+class MenuItem extends React.PureComponent {
   renderNavLink = opts => {
     const { clickHandler, item, location } = this.props
     const { title, disabled, icon, path } = item
@@ -30,7 +30,7 @@ class MenuLink extends React.PureComponent {
         disabled={disabled}
         onClick={clickHandler}
         activeClassName={opts.activeClass}
-        className={`navlink ${opts.cssclass}`}
+        className={`navlink mx12 ${opts.cssclass}`}
       >
         {renderLinkContent(icon, title)}
       </NavLink>
@@ -46,7 +46,7 @@ class MenuLink extends React.PureComponent {
         href={href}
         disabled={disabled}
         onClick={clickHandler}
-        className={`navlink ${opts.cssclass}`}
+        className={`navlink mx12 ${opts.cssclass}`}
       >
         {renderLinkContent(icon, title)}
       </a>
@@ -69,14 +69,14 @@ class MenuLink extends React.PureComponent {
   }
 }
 
-MenuLink.defaultProps = {
+MenuItem.defaultProps = {
   clickHandler: noop,
 }
 
-MenuLink.propTypes = {
+MenuItem.propTypes = {
   clickHandler: PropTypes.func,
   item: PropTypes.object.isRequired,
   location: PropTypes.object.isRequired,
 }
 
-export default withRouter(MenuLink)
+export default withRouter(MenuItem)
