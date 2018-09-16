@@ -15,7 +15,7 @@ import {
   selectOtherBookings,
   selectRecommendations,
 } from '../../selectors'
-import Loader from '../Loader'
+import Loader from '../layout/Loader'
 import { toggleMainMenu } from '../../reducers/menu'
 import NavigationFooter from '../layout/NavigationFooter'
 import { bookingNormalizer } from '../../utils/normalizers'

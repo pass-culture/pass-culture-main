@@ -8,7 +8,7 @@ import { withRouter } from 'react-router-dom'
 import { withLogin } from 'pass-culture-shared'
 import { Scrollbars } from 'react-custom-scrollbars'
 
-import Loader from '../Loader'
+import Loader from '../layout/Loader'
 import NavigationFooter from '../layout/NavigationFooter'
 
 const NotificationsPage = ({ user }) => {

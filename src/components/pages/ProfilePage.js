@@ -8,7 +8,7 @@ import { withLogin } from 'pass-culture-shared'
 import { Scrollbars } from 'react-custom-scrollbars'
 
 import { ROOT_PATH } from '../../utils/config'
-import Loader from '../Loader'
+import Loader from '../layout/Loader'
 import MonAvatar from './profile/MonAvatar'
 // import MonPassCulture from './profile/MonPassCulture'
 import MesInformations from './profile/MesInformations'

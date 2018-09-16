@@ -13,7 +13,7 @@ import { bindActionCreators, compose } from 'redux'
 import { Route } from 'react-router-dom'
 
 import Deck from '../Deck'
-import Loader from '../Loader'
+import Loader from '../layout/Loader'
 import Booking from '../Booking'
 import Main from '../layout/Main'
 import Footer from '../layout/Footer'

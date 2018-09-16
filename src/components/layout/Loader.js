@@ -3,6 +3,8 @@ import PropTypes from 'prop-types'
 import { Icon } from 'pass-culture-shared'
 import { Transition } from 'react-transition-group'
 
+import NavigationFooter from './NavigationFooter'
+
 const duration = 500
 
 const defaultStyle = {
@@ -20,6 +22,7 @@ const Loader = ({ haserror, isempty, isloading }) => {
   // on cache pas le loader
   // si il est en court de chargement
   // si il y a aucun produits à afficher pour l'utilisateur
+  const showfooter = isempty || haserror
   const shouldhide = !isloading && !isempty && !haserror
   return (
     <Transition in={!shouldhide} timeout={duration}>
@@ -39,6 +42,7 @@ const Loader = ({ haserror, isempty, isloading }) => {
             {(haserror && 'erreur de chargement') || ''}
             {(!isempty && !haserror && 'chargement des offres') || ''}
           </h2>
+          {showfooter && <NavigationFooter />}
         </div>
       )}
     </Transition>
