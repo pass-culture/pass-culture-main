@@ -1,13 +1,10 @@
 from datetime import datetime, timedelta
-from unittest import mock
-from unittest.mock import patch, Mock
 
 import pytest
 import requests as req
 
+from models import Offerer, PcObject
 from models.db import db
-from models import Booking, Offerer, PcObject
-from tests.conftest import clean_database, mocked_mail
 from models.pc_object import serialize
 from tests.conftest import clean_database
 from utils.human_ids import humanize
