@@ -1,11 +1,10 @@
 #!/bin/bash
 
-#protected_branch='production'
-protected_branch='test-pre-push'
+protected_branch='production'
 
 policy='[Policy] Never force push or delete the '$protected_branch' branch!'
 warning='You are about to deploy a new version in PRODUCTION, are you sure ? [Y/n]'
-warning_different_branch='It seems that you are about to push '$current_branch' (local branch) to the remote '$protected_branch' branch!'
+warning_different_branch='[WARNING] It seems that you are about to push '$current_branch' (local branch) to the remote '$protected_branch' branch!'
 
 # GET PUSH TARGET
 current_branch=$(git symbolic-ref HEAD | sed -e 's,.*/\(.*\),\1,')
