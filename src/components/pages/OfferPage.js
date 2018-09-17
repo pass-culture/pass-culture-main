@@ -324,7 +324,7 @@ class OfferPage extends Component {
                   </div>
                 )}
             </div>
-            <MediationsManager />
+            {!isNew && <MediationsManager />}
             {showAllForm && (
               <div>
                 <h2 className="main-list-title">Infos pratiques</h2>
@@ -392,7 +392,6 @@ class OfferPage extends Component {
                 <h2 className="main-list-title">Infos artistiques</h2>
                 <div className="field-group">
                   <Field
-                    class
                     displayMaxLength
                     isExpanded
                     label="Description"
@@ -401,15 +400,23 @@ class OfferPage extends Component {
                     rows={isReadOnly ? 1 : 5}
                     type="textarea"
                   />
-                  <Field name="author" label="Auteur" isExpanded />
-                  {isEventType && (
+                  {false && (
                     <Fragment>
-                      <Field
-                        isExpanded
-                        label="Metteur en scène"
-                        name="stageDirector"
-                      />
-                      <Field isExpanded label="Interprète" name="performer" />
+                      <Field name="author" label="Auteur" isExpanded />
+                      {isEventType && (
+                        <Fragment>
+                          <Field
+                            isExpanded
+                            label="Metteur en scène"
+                            name="stageDirector"
+                          />
+                          <Field
+                            isExpanded
+                            label="Interprète"
+                            name="performer"
+                          />
+                        </Fragment>
+                      )}
                     </Fragment>
                   )}
                 </div>
