@@ -1,16 +1,16 @@
 import { Selector } from 'testcafe'
-import { ROOT_PATH } from '../src/utils/config'
 
+import { ROOT_PATH } from '../src/utils/config'
 import youngUser from './helpers/users'
 
-const userPublicName = Selector('#user-publicName')
-const userEmail = Selector('#user-email')
-const userPassword = Selector('#user-password')
 const userContactOk = Selector('#user-contact_ok')
-const signUpButton = Selector('button.button.is-primary')
-const signInButton = Selector('.is-secondary')
+const userEmail = Selector('#user-email')
 const userEmailError = Selector('#user-email-error')
+const userPassword = Selector('#user-password')
 const userPasswordError = Selector('#user-password-error')
+const userPublicName = Selector('#user-publicName')
+const signInButton = Selector('.is-secondary')
+const signUpButton = Selector('button.button.is-primary')
 
 fixture('01_01 SignupPage Component | Je crée un compte utilisatrice').page(
   `${ROOT_PATH}inscription`
@@ -24,7 +24,7 @@ test("Je peux cliquer sur lien pour me connecter si j'ai déja un compte", async
 
 test("Lorsque l'un des champs obligatoire est manquant, le bouton créer est desactivé", async t => {
   await t
-    .typeText(userEmail, 'email@email.test')
+    .typeText(userEmail, youngUser.email)
     .wait(500)
     .expect(signUpButton.innerText)
     .eql('Créer')
@@ -33,9 +33,9 @@ test("Lorsque l'un des champs obligatoire est manquant, le bouton créer est des
 
 test('Je crée un compte et je suis redirigé·e vers la page /découverte', async t => {
   await t
-    .typeText(userPublicName, 'Public Name')
-    .typeText(userEmail, 'pctest.cafe@btmx.fr')
-    .typeText(userPassword, 'password1234')
+    .typeText(userPublicName, youngUser.publicName)
+    .typeText(userEmail, youngUser.email)
+    .typeText(userPassword, youngUser.password)
   await t
     .click(userContactOk)
     .wait(1000)
@@ -71,7 +71,7 @@ test('E-mail non autorisé', async t => {
   await t
     .typeText(userPublicName, youngUser.publicName)
     .typeText(userEmail, 'test@test.fr')
-    .typeText(userPassword, 'password1234')
+    .typeText(userPassword, youngUser.password)
     .wait(1000)
     .click(userContactOk)
     .wait(1000)

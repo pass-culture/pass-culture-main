@@ -10,37 +10,33 @@ const showVerso = Selector('button.button.to-recto')
 const versoDiv = Selector('div.verso')
 const clueDiv = Selector('div.clue')
 const closeButton = Selector('.close-button')
-// // const spanPrice  = Selector('.price')
-// const draggableImage = Selector('.react-draggable')
 
-fixture('O4_01 Découverte | Je ne suis pas connecté·e').page(
-  `${ROOT_PATH}decouverte`
-)
+fixture
+  .skip('O3_01 Découverte | Je ne suis pas connecté·e')
+  .page(`${ROOT_PATH}decouverte`)
 
 test('Je suis redirigé vers la page /connexion', async t => {
   await t
-  // const location = await t.eval(() => window.location)
-  // await t.expect(location.pathname).eql('/connexion')
   await t.expect(getPageUrl()).contains('/connexion', { timeout: 10000 })
 })
 
-fixture(
-  'O4_02 Découverte | Après connexion | Les offres sont en cours de chargement'
-).beforeEach(async t => {
-  await t.useRole(regularUser)
-})
+fixture
+  .skip(
+    'O3_02 Découverte | Après connexion | Les offres sont en cours de chargement'
+  )
+  .beforeEach(async t => {
+    await t.useRole(regularUser)
+  })
 
 test('Je suis informé·e du fait que les offres sont en cours de chargement', async t => {
   await t
-    .expect(Selector('.loading').innerText)
-    .eql('\nchargement des offres\n')
+    .expect(Selector('#application-loader').innerText)
+    .eql('\nChargement des offres\n')
 })
 
 test('Je suis redirigé·e vers la première page de tutoriel /decouverte/tuto/AE', async t => {
-  await t.wait(1000)
-  // test instable, reste par moment sur decouverte... Voir si location ne garderait pas la valeur du précédant test...
-  const location = await t.eval(() => window.location)
-  await t.expect(location.pathname).eql('/decouverte/tuto/AE')
+  await t.wait(10000)
+  await t.expect(getPageUrl()).contains('/decouverte/tuto/', { timeout: 1000 })
 })
 
 test('Lorsque je clique sur la flêche suivante, je vois la page suivante du tutoriel', async t => {
@@ -65,14 +61,15 @@ test('Lorsque je clique sur la flêche vers le haut, je vois le verso de la reco
     .notOk()
 })
 
-fixture('O4_03 Découverte | Après connexion | Recommandations').beforeEach(
-  async t => {
+fixture
+  .skip('O3_03 Découverte | Après connexion | Recommandations')
+  .beforeEach(async t => {
     await t.useRole(regularUser)
     await t.navigateTo(ROOT_PATH + 'decouverte/AH7Q/AU#AM') // eslint-disable-line
-  }
-)
+    // TODO
+  })
 
-test.skip("Je vois les informations de l'accroche du recto", async t => {
+test("Je vois les informations de l'accroche du recto", async t => {
   await t
   // TODO
 })
@@ -85,3 +82,6 @@ test('Je vois le verso des cartes lorsque je fais glisser la carte vers le haut'
 })
 
 // TODO tester le drag des images https://devexpress.github.io/testcafe/documentation/test-api/actions/drag-element.html
+
+// S'il n'y a pas d'offres, je vois le message 'Aucune offre pour le moment' et je peux accéder au menu profil
+// Compliqué à tester sans maîtrise de la base de données !

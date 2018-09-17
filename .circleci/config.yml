@@ -17,7 +17,7 @@ jobs:
             curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
             echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
             sudo apt-get update
-            sudo apt-get install -y nodejs yarn google-chrome-stable
+            sudo apt-get install -y nodejs yarn google-chrome-stable realpath
       - checkout:
           path: ~/pass-culture-main/webapp
       - run:
@@ -37,11 +37,18 @@ jobs:
             rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
           environment:
             DOCKERIZE_VERSION: v0.6.1
+            # TODO: replace gpg with ./pc install-private (after merge PR)
       - run:
           name: Running API server
           command: |
+            export PC_GPG_PRIVATE=$PASS_PRIVATE
+            cd ~/pass-culture-main/api
+            rm -rf private
+            gpg --passphrase $PC_GPG_PRIVATE --batch --output private.tar.gz -d private.tar.gz.gpg
+            tar xf private.tar.gz
+            rm private.tar.gz
             cd ~/pass-culture-main
-            docker-compose up
+            ./pc start-backend
           background: true
       - run:
           name: Run Frontend
@@ -52,7 +59,12 @@ jobs:
             cd ~/pass-culture-main/webapp
             yarn start
           background: true
-
+      - run:
+          name: Running Test Backend (Local Providers)
+          command: |
+            cd pass-culture-main
+            dockerize -wait http://localhost/health -timeout 3m -wait-retry-interval 5s
+            ./pc test-backend tests/10_local_providers_test.py
       - run:
           name: Running tests
           command: |
@@ -60,7 +72,6 @@ jobs:
             export NVM_BIN=/usr/bin/nodejs
             export PATH=$NVM_BIN:$PATH
             cd ~/pass-culture-main/webapp
-            dockerize -wait http://localhost/health -timeout 3m -wait-retry-interval 5s
             yarn testcafe
 
   deploy:

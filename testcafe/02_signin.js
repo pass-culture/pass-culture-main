@@ -1,13 +1,16 @@
 import { Selector } from 'testcafe'
 
 import { ROOT_PATH } from '../src/utils/config'
+import youngUser from './helpers/users'
 
-const inputUsersIdentifier = Selector('#input_users_identifier')
-const inputUsersPassword = Selector('#input_users_password')
-const inputUsersIdentifierError = Selector('#input_users_identifier-error')
-const inputUsersPasswordError = Selector('#input_users_password-error')
-const signInButton = Selector('button') // connexion
-const signUpButton = Selector('.is-secondary') // inscription
+
+
+const userIdentifier = Selector('#user-identifier')
+const userPassword = Selector('#user-password')
+const userIdentifierError = Selector('#user-identifier-error')
+const userPasswordError = Selector('#user-password-error')
+const signInButton = Selector('button').withText('Connexion')
+const signUpButton = Selector('.is-secondary')
 
 fixture("02_01 SignInPage Component | J'ai un compte et je me connecte").page(
   `${ROOT_PATH}connexion`
@@ -21,7 +24,8 @@ test('Je peux cliquer sur lien /inscription', async t => {
 
 test("Lorsque l'un des deux champs est manquant, le bouton connexion est désactivé", async t => {
   await t
-    .typeText(inputUsersIdentifier, 'email@email.test')
+
+    .typeText(userIdentifier, youngUser.email)
     .wait(1000)
     .expect(signInButton.hasAttribute('disabled'))
     .ok()
@@ -29,8 +33,8 @@ test("Lorsque l'un des deux champs est manquant, le bouton connexion est désact
 
 test("J'ai un compte valide, je suis redirigé·e vers la page /decouverte sans erreurs", async t => {
   await t
-    .typeText(inputUsersIdentifier, 'pctest.cafe@btmx.fr')
-    .typeText(inputUsersPassword, 'password1234')
+    .typeText(userIdentifier, youngUser.email)
+    .typeText(userPassword, youngUser.password)
     .wait(1000)
     .click(signInButton)
 
@@ -40,14 +44,14 @@ test("J'ai un compte valide, je suis redirigé·e vers la page /decouverte sans 
 
 test("J'ai un identifiant invalide, je vois un messages d'erreur et je reste sur la page /connection", async t => {
   await t
-    .typeText(inputUsersIdentifier, 'email@email.test')
-    .typeText(inputUsersPassword, 'Pa$$word')
+    .typeText(userIdentifier, 'wrongEmail@test.com')
+    .typeText(userPassword, 'Pa$$word')
     .wait(1000)
     .click(signInButton)
     .wait(1000)
-
-    .expect(inputUsersIdentifierError.innerText)
-    .eql(' Identifiant incorrect\n')
+  await t
+    .expect(userIdentifierError.innerText)
+    .eql('\nIdentifiant incorrect\n\n')
 
   const location = await t.eval(() => window.location)
   await t.expect(location.pathname).eql('/connexion')
@@ -55,15 +59,20 @@ test("J'ai un identifiant invalide, je vois un messages d'erreur et je reste sur
 
 test("J'ai un mot de passe invalide, je vois un message d'erreur et je reste sur la page /connection", async t => {
   await t
-    .typeText(inputUsersIdentifier, 'pctest.cafe@btmx.fr')
-    .typeText(inputUsersPassword, 'Pa$$word')
+    .typeText(userIdentifier, youngUser.email)
+    .typeText(userPassword, 'Pa$$word')
     .wait(1000)
     .click(signInButton)
     .wait(1000)
 
-    .expect(inputUsersPasswordError.innerText)
-    .eql(' Mot de passe incorrect\n')
+  await t
+    .expect(userPasswordError.innerText)
+    .eql('\nMot de passe incorrect\n\n')
 
   const location = await t.eval(() => window.location)
   await t.expect(location.pathname).eql('/connexion')
 })
+
+// TODO
+// 1 Quand on clique sur l'icone 'eye' on peut lire le mot de userPasswordError
+// 2 Texte de présentation (Identifiez-vous, etc.)
