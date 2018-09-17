@@ -6,10 +6,12 @@ from flask import current_app as app
 
 from utils.sandbox import do_sandbox
 
-@app.manager.command
-def sandbox():
+@app.manager.option('-n',
+                    '--name',
+                    help='Sandbox name')
+def sandbox(name):
     try:
-        do_sandbox()
+        do_sandbox(name)
     except Exception as e:
         print('ERROR: ' + str(e))
         traceback.print_tb(e.__traceback__)
