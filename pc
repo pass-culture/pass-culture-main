@@ -182,7 +182,13 @@ elif [[ "$CMD" == "psql" ]]; then
 		exit
 	fi
 elif [[ "$CMD" == "python" ]]; then
-  RUN='docker exec -it `docker ps | grep flask | cut -d" " -f 1` bash -c "cd /opt/services/flaskapp/src/ && PYTHONPATH=. python -i scripts/interact.py '"$CMD $*"'"'
+    COLUMNS=${COLUMNS:-''};
+	if [[ "$ENV" == "development" ]]; then
+		RUN='docker exec -it `docker ps | grep flask | cut -d" " -f 1` bash -c "cd /opt/services/flaskapp/src/ && PYTHONPATH=. python -i scripts/interact.py '"$CMD $*"'"'
+	else
+		scalingo -a "$SCALINGO_APP" run "python -i scripts/interact.py"
+		exit
+	fi
 elif [[ "$CMD" == "rebuild-backend" ]]; then
   RUN='docker-compose build --no-cache;
 			 sudo rm -rf $ROOT_PATH/api/static/object_store_data;
