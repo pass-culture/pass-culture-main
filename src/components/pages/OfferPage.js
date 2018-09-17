@@ -427,23 +427,26 @@ class OfferPage extends Component {
                     rows={isReadOnly ? 1 : 5}
                     type="textarea"
                   />
-                  {false && (
+                  <Field
+                    isExpanded
+                    label="Auteur"
+                    name="author"
+                    setKey="extraData"
+                  />
+                  {isEventType && (
                     <Fragment>
-                      <Field name="author" label="Auteur" isExpanded />
-                      {isEventType && (
-                        <Fragment>
-                          <Field
-                            isExpanded
-                            label="Metteur en scène"
-                            name="stageDirector"
-                          />
-                          <Field
-                            isExpanded
-                            label="Interprète"
-                            name="performer"
-                          />
-                        </Fragment>
-                      )}
+                      <Field
+                        isExpanded
+                        label="Metteur en scène"
+                        name="stageDirector"
+                        setKey="extraData"
+                      />
+                      <Field
+                        isExpanded
+                        label="Interprète"
+                        name="performer"
+                        setKey="extraData"
+                      />
                     </Fragment>
                   )}
                 </div>
