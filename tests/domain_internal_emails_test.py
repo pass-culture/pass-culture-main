@@ -20,7 +20,7 @@ def test_send_reset_password_email_sends_a_reset_password_email_to_the_recipient
     mocked_send_create_email.return_value = return_value
 
     # when
-    send_reset_password_email(user, mocked_send_create_email)
+    send_reset_password_email(user, mocked_send_create_email, 'localhost')
 
     # then
     mocked_send_create_email.assert_called_once()
@@ -43,7 +43,7 @@ def test_send_reset_password_email_raises_an_exception_if_mailjet_failed(app):
 
     # when
     with pytest.raises(MailServiceException):
-        send_reset_password_email(user, mocked_send_create_email)
+        send_reset_password_email(user, mocked_send_create_email, 'localhost')
 
 
 @pytest.mark.standalone
