@@ -688,12 +688,12 @@ def test_make_reset_password_email_generates_an_html_email_with_a_reset_link(app
     user = create_user(public_name='bobby', email='bobby@test.com', reset_password_token='AZ45KNB99H')
 
     # when
-    email = make_reset_password_email(user)
+    email = make_reset_password_email(user, 'app-jeune')
 
     # then
     html = BeautifulSoup(email['Html-part'], features="html.parser")
     assert html.select('a.reset-password-link')[
-               0].text.strip() == 'localhost/route-to-form/reset-password?token=AZ45KNB99H'
+               0].text.strip() == 'app-jeune/mot-de-passe-perdu?token=AZ45KNB99H'
     assert html.select('div.validity-info')[
                0].text.strip() == 'Le lien est valable 24h. Au delà de ce délai, vous devrez demander une nouvelle réinitialisation.'
 

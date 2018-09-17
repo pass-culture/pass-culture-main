@@ -86,8 +86,8 @@ def send_offerer_driven_cancellation_email_to_offerer(booking, send_create_email
         check_if_email_sent(mail_result)
 
 
-def send_reset_password_email(user, send_create_email):
-    email = make_reset_password_email(user)
+def send_reset_password_email(user, send_create_email, app_origin_url):
+    email = make_reset_password_email(user, app_origin_url)
     mail_result = send_create_email(data=email)
     check_if_email_sent(mail_result)
 

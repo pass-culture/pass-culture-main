@@ -70,9 +70,10 @@ def post_for_password_token():
 
     generate_reset_token(user)
     PcObject.check_and_save(user)
+    app_origin_url = request.headers.get('origin')
 
     try:
-        send_reset_password_email(user, app.mailjet_client.send.create)
+        send_reset_password_email(user, app.mailjet_client.send.create, app_origin_url)
     except MailServiceException as e:
         app.logger.error('Mail service failure', e)
 

@@ -216,12 +216,12 @@ def make_user_booking_recap_email(booking, is_cancellation=False):
     }
 
 
-def make_reset_password_email(user):
+def make_reset_password_email(user, app_origin_url):
     email_html = render_template(
         'user_reset_password_email.html',
         user_public_name=user.publicName,
         token=user.resetPasswordToken,
-        api_url=API_URL
+        app_origin_url=app_origin_url
     )
 
     return {
