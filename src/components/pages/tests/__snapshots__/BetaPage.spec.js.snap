@@ -27,37 +27,35 @@ ShallowWrapper {
           <h1
             className="text-left fs32"
           >
-            <b>
-              <i
-                className="is-block"
-              >
-                Bienvenue
-              </i>
-            </b>
-            <i
-              className="is-block"
+            <span
+              className="is-bold is-italic is-block"
+            >
+              Bienvenue
+            </span>
+            <span
+              className="is-italic is-block"
             >
               dans la version beta
-            </i>
-            <i
-              className="is-block"
+            </span>
+            <span
+              className="is-italic is-block"
             >
               du Pass Culture
-            </i>
+            </span>
           </h1>
           <p
             className="text-left mt36 fs22"
           >
-            <i
+            <span
               className="is-block"
             >
               Et merci de votre participation
-            </i>
-            <i
+            </span>
+            <span
               className="is-block"
             >
               pour nous aider à l'améliorer !
-            </i>
+            </span>
           </p>
         </main>,
         <footer
@@ -69,13 +67,11 @@ ShallowWrapper {
             replace={false}
             to="/inscription"
           >
-            <b
-              className="fs32"
+            <span
+              className="fs32 is-italic is-bold"
             >
-              <i>
-                C'est par là
-              </i>
-            </b>
+              C'est par là
+            </span>
             <span
               aria-hidden="true"
               className="pc-icon icon-next-long"
@@ -98,37 +94,35 @@ ShallowWrapper {
             <h1
               className="text-left fs32"
             >
-              <b>
-                <i
-                  className="is-block"
-                >
-                  Bienvenue
-                </i>
-              </b>
-              <i
-                className="is-block"
+              <span
+                className="is-bold is-italic is-block"
+              >
+                Bienvenue
+              </span>
+              <span
+                className="is-italic is-block"
               >
                 dans la version beta
-              </i>
-              <i
-                className="is-block"
+              </span>
+              <span
+                className="is-italic is-block"
               >
                 du Pass Culture
-              </i>
+              </span>
             </h1>,
             <p
               className="text-left mt36 fs22"
             >
-              <i
+              <span
                 className="is-block"
               >
                 Et merci de votre participation
-              </i>
-              <i
+              </span>
+              <span
                 className="is-block"
               >
                 pour nous aider à l'améliorer !
-              </i>
+              </span>
             </p>,
           ],
           "className": "pc-main flex-rows flex-center flex-0",
@@ -142,23 +136,21 @@ ShallowWrapper {
             "nodeType": "host",
             "props": Object {
               "children": Array [
-                <b>
-                  <i
-                    className="is-block"
-                  >
-                    Bienvenue
-                  </i>
-                </b>,
-                <i
-                  className="is-block"
+                <span
+                  className="is-bold is-italic is-block"
+                >
+                  Bienvenue
+                </span>,
+                <span
+                  className="is-italic is-block"
                 >
                   dans la version beta
-                </i>,
-                <i
-                  className="is-block"
+                </span>,
+                <span
+                  className="is-italic is-block"
                 >
                   du Pass Culture
-                </i>,
+                </span>,
               ],
               "className": "text-left fs32",
             },
@@ -169,26 +161,12 @@ ShallowWrapper {
                 "key": undefined,
                 "nodeType": "host",
                 "props": Object {
-                  "children": <i
-                    className="is-block"
-                  >
-                    Bienvenue
-                  </i>,
+                  "children": "Bienvenue",
+                  "className": "is-bold is-italic is-block",
                 },
                 "ref": null,
-                "rendered": Object {
-                  "instance": null,
-                  "key": undefined,
-                  "nodeType": "host",
-                  "props": Object {
-                    "children": "Bienvenue",
-                    "className": "is-block",
-                  },
-                  "ref": null,
-                  "rendered": "Bienvenue",
-                  "type": "i",
-                },
-                "type": "b",
+                "rendered": "Bienvenue",
+                "type": "span",
               },
               Object {
                 "instance": null,
@@ -196,11 +174,11 @@ ShallowWrapper {
                 "nodeType": "host",
                 "props": Object {
                   "children": "dans la version beta",
-                  "className": "is-block",
+                  "className": "is-italic is-block",
                 },
                 "ref": null,
                 "rendered": "dans la version beta",
-                "type": "i",
+                "type": "span",
               },
               Object {
                 "instance": null,
@@ -208,11 +186,11 @@ ShallowWrapper {
                 "nodeType": "host",
                 "props": Object {
                   "children": "du Pass Culture",
-                  "className": "is-block",
+                  "className": "is-italic is-block",
                 },
                 "ref": null,
                 "rendered": "du Pass Culture",
-                "type": "i",
+                "type": "span",
               },
             ],
             "type": "h1",
@@ -223,16 +201,16 @@ ShallowWrapper {
             "nodeType": "host",
             "props": Object {
               "children": Array [
-                <i
+                <span
                   className="is-block"
                 >
                   Et merci de votre participation
-                </i>,
-                <i
+                </span>,
+                <span
                   className="is-block"
                 >
                   pour nous aider à l'améliorer !
-                </i>,
+                </span>,
               ],
               "className": "text-left mt36 fs22",
             },
@@ -248,7 +226,7 @@ ShallowWrapper {
                 },
                 "ref": null,
                 "rendered": "Et merci de votre participation",
-                "type": "i",
+                "type": "span",
               },
               Object {
                 "instance": null,
@@ -260,7 +238,7 @@ ShallowWrapper {
                 },
                 "ref": null,
                 "rendered": "pour nous aider à l'améliorer !",
-                "type": "i",
+                "type": "span",
               },
             ],
             "type": "p",
@@ -278,13 +256,11 @@ ShallowWrapper {
             replace={false}
             to="/inscription"
           >
-            <b
-              className="fs32"
+            <span
+              className="fs32 is-italic is-bold"
             >
-              <i>
-                C'est par là
-              </i>
-            </b>
+              C'est par là
+            </span>
             <span
               aria-hidden="true"
               className="pc-icon icon-next-long"
@@ -301,13 +277,11 @@ ShallowWrapper {
           "nodeType": "class",
           "props": Object {
             "children": Array [
-              <b
-                className="fs32"
+              <span
+                className="fs32 is-italic is-bold"
               >
-                <i>
-                  C'est par là
-                </i>
-              </b>,
+                C'est par là
+              </span>,
               <span
                 aria-hidden="true"
                 className="pc-icon icon-next-long"
@@ -325,24 +299,12 @@ ShallowWrapper {
               "key": undefined,
               "nodeType": "host",
               "props": Object {
-                "children": <i>
-                  C'est par là
-                </i>,
-                "className": "fs32",
+                "children": "C'est par là",
+                "className": "fs32 is-italic is-bold",
               },
               "ref": null,
-              "rendered": Object {
-                "instance": null,
-                "key": undefined,
-                "nodeType": "host",
-                "props": Object {
-                  "children": "C'est par là",
-                },
-                "ref": null,
-                "rendered": "C'est par là",
-                "type": "i",
-              },
-              "type": "b",
+              "rendered": "C'est par là",
+              "type": "span",
             },
             Object {
               "instance": null,
@@ -379,37 +341,35 @@ ShallowWrapper {
             <h1
               className="text-left fs32"
             >
-              <b>
-                <i
-                  className="is-block"
-                >
-                  Bienvenue
-                </i>
-              </b>
-              <i
-                className="is-block"
+              <span
+                className="is-bold is-italic is-block"
+              >
+                Bienvenue
+              </span>
+              <span
+                className="is-italic is-block"
               >
                 dans la version beta
-              </i>
-              <i
-                className="is-block"
+              </span>
+              <span
+                className="is-italic is-block"
               >
                 du Pass Culture
-              </i>
+              </span>
             </h1>
             <p
               className="text-left mt36 fs22"
             >
-              <i
+              <span
                 className="is-block"
               >
                 Et merci de votre participation
-              </i>
-              <i
+              </span>
+              <span
                 className="is-block"
               >
                 pour nous aider à l'améliorer !
-              </i>
+              </span>
             </p>
           </main>,
           <footer
@@ -421,13 +381,11 @@ ShallowWrapper {
               replace={false}
               to="/inscription"
             >
-              <b
-                className="fs32"
+              <span
+                className="fs32 is-italic is-bold"
               >
-                <i>
-                  C'est par là
-                </i>
-              </b>
+                C'est par là
+              </span>
               <span
                 aria-hidden="true"
                 className="pc-icon icon-next-long"
@@ -450,37 +408,35 @@ ShallowWrapper {
               <h1
                 className="text-left fs32"
               >
-                <b>
-                  <i
-                    className="is-block"
-                  >
-                    Bienvenue
-                  </i>
-                </b>
-                <i
-                  className="is-block"
+                <span
+                  className="is-bold is-italic is-block"
+                >
+                  Bienvenue
+                </span>
+                <span
+                  className="is-italic is-block"
                 >
                   dans la version beta
-                </i>
-                <i
-                  className="is-block"
+                </span>
+                <span
+                  className="is-italic is-block"
                 >
                   du Pass Culture
-                </i>
+                </span>
               </h1>,
               <p
                 className="text-left mt36 fs22"
               >
-                <i
+                <span
                   className="is-block"
                 >
                   Et merci de votre participation
-                </i>
-                <i
+                </span>
+                <span
                   className="is-block"
                 >
                   pour nous aider à l'améliorer !
-                </i>
+                </span>
               </p>,
             ],
             "className": "pc-main flex-rows flex-center flex-0",
@@ -494,23 +450,21 @@ ShallowWrapper {
               "nodeType": "host",
               "props": Object {
                 "children": Array [
-                  <b>
-                    <i
-                      className="is-block"
-                    >
-                      Bienvenue
-                    </i>
-                  </b>,
-                  <i
-                    className="is-block"
+                  <span
+                    className="is-bold is-italic is-block"
+                  >
+                    Bienvenue
+                  </span>,
+                  <span
+                    className="is-italic is-block"
                   >
                     dans la version beta
-                  </i>,
-                  <i
-                    className="is-block"
+                  </span>,
+                  <span
+                    className="is-italic is-block"
                   >
                     du Pass Culture
-                  </i>,
+                  </span>,
                 ],
                 "className": "text-left fs32",
               },
@@ -521,26 +475,12 @@ ShallowWrapper {
                   "key": undefined,
                   "nodeType": "host",
                   "props": Object {
-                    "children": <i
-                      className="is-block"
-                    >
-                      Bienvenue
-                    </i>,
+                    "children": "Bienvenue",
+                    "className": "is-bold is-italic is-block",
                   },
                   "ref": null,
-                  "rendered": Object {
-                    "instance": null,
-                    "key": undefined,
-                    "nodeType": "host",
-                    "props": Object {
-                      "children": "Bienvenue",
-                      "className": "is-block",
-                    },
-                    "ref": null,
-                    "rendered": "Bienvenue",
-                    "type": "i",
-                  },
-                  "type": "b",
+                  "rendered": "Bienvenue",
+                  "type": "span",
                 },
                 Object {
                   "instance": null,
@@ -548,11 +488,11 @@ ShallowWrapper {
                   "nodeType": "host",
                   "props": Object {
                     "children": "dans la version beta",
-                    "className": "is-block",
+                    "className": "is-italic is-block",
                   },
                   "ref": null,
                   "rendered": "dans la version beta",
-                  "type": "i",
+                  "type": "span",
                 },
                 Object {
                   "instance": null,
@@ -560,11 +500,11 @@ ShallowWrapper {
                   "nodeType": "host",
                   "props": Object {
                     "children": "du Pass Culture",
-                    "className": "is-block",
+                    "className": "is-italic is-block",
                   },
                   "ref": null,
                   "rendered": "du Pass Culture",
-                  "type": "i",
+                  "type": "span",
                 },
               ],
               "type": "h1",
@@ -575,16 +515,16 @@ ShallowWrapper {
               "nodeType": "host",
               "props": Object {
                 "children": Array [
-                  <i
+                  <span
                     className="is-block"
                   >
                     Et merci de votre participation
-                  </i>,
-                  <i
+                  </span>,
+                  <span
                     className="is-block"
                   >
                     pour nous aider à l'améliorer !
-                  </i>,
+                  </span>,
                 ],
                 "className": "text-left mt36 fs22",
               },
@@ -600,7 +540,7 @@ ShallowWrapper {
                   },
                   "ref": null,
                   "rendered": "Et merci de votre participation",
-                  "type": "i",
+                  "type": "span",
                 },
                 Object {
                   "instance": null,
@@ -612,7 +552,7 @@ ShallowWrapper {
                   },
                   "ref": null,
                   "rendered": "pour nous aider à l'améliorer !",
-                  "type": "i",
+                  "type": "span",
                 },
               ],
               "type": "p",
@@ -630,13 +570,11 @@ ShallowWrapper {
               replace={false}
               to="/inscription"
             >
-              <b
-                className="fs32"
+              <span
+                className="fs32 is-italic is-bold"
               >
-                <i>
-                  C'est par là
-                </i>
-              </b>
+                C'est par là
+              </span>
               <span
                 aria-hidden="true"
                 className="pc-icon icon-next-long"
@@ -653,13 +591,11 @@ ShallowWrapper {
             "nodeType": "class",
             "props": Object {
               "children": Array [
-                <b
-                  className="fs32"
+                <span
+                  className="fs32 is-italic is-bold"
                 >
-                  <i>
-                    C'est par là
-                  </i>
-                </b>,
+                  C'est par là
+                </span>,
                 <span
                   aria-hidden="true"
                   className="pc-icon icon-next-long"
@@ -677,24 +613,12 @@ ShallowWrapper {
                 "key": undefined,
                 "nodeType": "host",
                 "props": Object {
-                  "children": <i>
-                    C'est par là
-                  </i>,
-                  "className": "fs32",
+                  "children": "C'est par là",
+                  "className": "fs32 is-italic is-bold",
                 },
                 "ref": null,
-                "rendered": Object {
-                  "instance": null,
-                  "key": undefined,
-                  "nodeType": "host",
-                  "props": Object {
-                    "children": "C'est par là",
-                  },
-                  "ref": null,
-                  "rendered": "C'est par là",
-                  "type": "i",
-                },
-                "type": "b",
+                "rendered": "C'est par là",
+                "type": "span",
               },
               Object {
                 "instance": null,
