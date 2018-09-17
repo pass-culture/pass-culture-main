@@ -41,21 +41,23 @@ const ProfilePage = ({ user }) => {
         </div>
       </Form>
       <hr />
-      <h1 className="title has-text-centered">Avatar</h1>
-      <div className="field">
-        <UploadThumb
-          className="input"
-          image={apiUrl(thumbPath)}
-          collectionName="users"
-          storeKey="thumbedUser"
-          type="thumb"
-          entityId={userId}
-          index={0}
-          width={250}
-          height={250}
-          borderRadius={250}
-        />
-      </div>
+      {false && <h1 className="title has-text-centered">Avatar</h1>}
+      {false && (
+        <div className="field">
+          <UploadThumb
+            className="input"
+            image={apiUrl(thumbPath)}
+            collectionName="users"
+            storeKey="thumbedUser"
+            type="thumb"
+            entityId={userId}
+            index={0}
+            width={250}
+            height={250}
+            borderRadius={250}
+          />
+        </div>
+      )}
     </Main>
   )
 }
