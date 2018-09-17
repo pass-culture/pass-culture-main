@@ -11,20 +11,22 @@ const versoDiv = Selector('div.verso')
 const clueDiv = Selector('div.clue')
 const closeButton = Selector('.close-button')
 
-fixture('O3_01 Découverte | Je ne suis pas connecté·e').page(
-  `${ROOT_PATH}decouverte`
-)
+fixture
+  .skip('O3_01 Découverte | Je ne suis pas connecté·e')
+  .page(`${ROOT_PATH}decouverte`)
 
 test('Je suis redirigé vers la page /connexion', async t => {
   await t
   await t.expect(getPageUrl()).contains('/connexion', { timeout: 10000 })
 })
 
-fixture(
-  'O3_02 Découverte | Après connexion | Les offres sont en cours de chargement'
-).beforeEach(async t => {
-  await t.useRole(regularUser)
-})
+fixture
+  .skip(
+    'O3_02 Découverte | Après connexion | Les offres sont en cours de chargement'
+  )
+  .beforeEach(async t => {
+    await t.useRole(regularUser)
+  })
 
 test('Je suis informé·e du fait que les offres sont en cours de chargement', async t => {
   await t
@@ -59,13 +61,13 @@ test('Lorsque je clique sur la flêche vers le haut, je vois le verso de la reco
     .notOk()
 })
 
-fixture.skip('O3_03 Découverte | Après connexion | Recommandations').beforeEach(
-  async t => {
+fixture
+  .skip('O3_03 Découverte | Après connexion | Recommandations')
+  .beforeEach(async t => {
     await t.useRole(regularUser)
     await t.navigateTo(ROOT_PATH + 'decouverte/AH7Q/AU#AM') // eslint-disable-line
     // TODO
-  }
-)
+  })
 
 test("Je vois les informations de l'accroche du recto", async t => {
   await t
