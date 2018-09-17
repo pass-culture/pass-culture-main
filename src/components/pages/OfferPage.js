@@ -389,33 +389,37 @@ class OfferPage extends Component {
                     />
                   )}
                 </div>
-                {false && (
-                  <h2 className="main-list-title">Infos artistiques</h2>
-                )}
-                {false && (
-                  <div className="field-group">
-                    <Field
-                      displayMaxLength
-                      isExpanded
-                      label="Description"
-                      maxLength={1000}
-                      name="description"
-                      rows={isReadOnly ? 1 : 5}
-                      type="textarea"
-                    />
-                    <Field name="author" label="Auteur" isExpanded />
-                    {isEventType && (
-                      <Fragment>
-                        <Field
-                          isExpanded
-                          label="Metteur en scène"
-                          name="stageDirector"
-                        />
-                        <Field isExpanded label="Interprète" name="performer" />
-                      </Fragment>
-                    )}
-                  </div>
-                )}
+                <h2 className="main-list-title">Infos artistiques</h2>
+                <div className="field-group">
+                  <Field
+                    displayMaxLength
+                    isExpanded
+                    label="Description"
+                    maxLength={1000}
+                    name="description"
+                    rows={isReadOnly ? 1 : 5}
+                    type="textarea"
+                  />
+                  {false && (
+                    <Fragment>
+                      <Field name="author" label="Auteur" isExpanded />
+                      {isEventType && (
+                        <Fragment>
+                          <Field
+                            isExpanded
+                            label="Metteur en scène"
+                            name="stageDirector"
+                          />
+                          <Field
+                            isExpanded
+                            label="Interprète"
+                            name="performer"
+                          />
+                        </Fragment>
+                      )}
+                    </Fragment>
+                  )}
+                </div>
               </div>
             )}
 
