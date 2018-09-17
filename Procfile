@@ -1,2 +1,2 @@
 web: alembic upgrade head && python app.py
-clock: python scripts/clock.py
+clock: dbclient-fetcher postgresql && python scripts/clock.py
