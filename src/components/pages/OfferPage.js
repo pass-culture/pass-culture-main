@@ -324,7 +324,7 @@ class OfferPage extends Component {
                   </div>
                 )}
             </div>
-            <MediationsManager />
+            {!isNew && <MediationsManager />}
             {showAllForm && (
               <div>
                 <h2 className="main-list-title">Infos pratiques</h2>
@@ -389,30 +389,33 @@ class OfferPage extends Component {
                     />
                   )}
                 </div>
-                <h2 className="main-list-title">Infos artistiques</h2>
-                <div className="field-group">
-                  <Field
-                    class
-                    displayMaxLength
-                    isExpanded
-                    label="Description"
-                    maxLength={1000}
-                    name="description"
-                    rows={isReadOnly ? 1 : 5}
-                    type="textarea"
-                  />
-                  <Field name="author" label="Auteur" isExpanded />
-                  {isEventType && (
-                    <Fragment>
-                      <Field
-                        isExpanded
-                        label="Metteur en scène"
-                        name="stageDirector"
-                      />
-                      <Field isExpanded label="Interprète" name="performer" />
-                    </Fragment>
-                  )}
-                </div>
+                {false && (
+                  <h2 className="main-list-title">Infos artistiques</h2>
+                )}
+                {false && (
+                  <div className="field-group">
+                    <Field
+                      displayMaxLength
+                      isExpanded
+                      label="Description"
+                      maxLength={1000}
+                      name="description"
+                      rows={isReadOnly ? 1 : 5}
+                      type="textarea"
+                    />
+                    <Field name="author" label="Auteur" isExpanded />
+                    {isEventType && (
+                      <Fragment>
+                        <Field
+                          isExpanded
+                          label="Metteur en scène"
+                          name="stageDirector"
+                        />
+                        <Field isExpanded label="Interprète" name="performer" />
+                      </Fragment>
+                    )}
+                  </div>
+                )}
               </div>
             )}
 
