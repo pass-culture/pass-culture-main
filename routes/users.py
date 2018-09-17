@@ -40,6 +40,7 @@ def get_profile():
 def patch_profile():
     current_user.populateFromDict(request.json)
     PcObject.check_and_save(current_user)
+    user['expenses'] = get_expenses(current_user)
     return jsonify(current_user._asdict(include=USER_INCLUDES)), 200
 
 
