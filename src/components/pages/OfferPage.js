@@ -474,6 +474,7 @@ export default compose(
     const venueId = get(state, 'form.offer.venueId') || search.venueId
     const venue = venueSelector(state, venueId)
 
+    console.log({ isVirtual: get(venue, 'isVirtual') })
     const types = typesSelector(state, get(venue, 'isVirtual'))
 
     const typeValue =
