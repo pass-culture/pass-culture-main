@@ -756,7 +756,7 @@ def test_make_offerer_driven_cancellation_email_for_user_event(app):
     user = create_user(public_name='John Doe')
     offerer = create_offerer(name='Test offerer')
     venue = create_venue(offerer)
-    offer = create_event_offer(venue, 'Mains, sorts et papiers')
+    offer = create_event_offer(venue, event_name='Mains, sorts et papiers')
     event_occurrence = create_event_occurrence(offer,
                                                beginning_datetime=datetime(2019, 7, 20, 12, 0, 0, tzinfo=timezone.utc))
     stock = create_stock_from_event_occurrence(event_occurrence, price=20, available=10)

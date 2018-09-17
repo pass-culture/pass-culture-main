@@ -19,7 +19,7 @@ def assert_no_duplicate_mediations(recos):
 def assert_recos_offer_venue_is_in_93_is_event_is_not_national(recos):
     recos_without_tutos = [r for r in recos if 'mediation' in r and 'tutoIndex' not in r['mediation']]
     for reco in recos_without_tutos:
-        if not reco['event']['isNational']:
+        if not (reco['event']['isNational'] or reco['thing']['isNational']):
             assert reco.offer.venue.departementCode == '93'
 
 
