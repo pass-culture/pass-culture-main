@@ -1,14 +1,15 @@
 """ venues """
 from flask import current_app as app, jsonify, request
 
-from models.pc_object import PcObject
 from models.user_offerer import RightsType
 from models.venue import Venue
+from repository.venue_queries import save_venue
 from utils.includes import VENUE_INCLUDES
 from utils.rest import ensure_current_user_has_rights, \
     expect_json_data, \
     load_or_404, \
     handle_rest_get_list
+
 
 @app.route('/venues', methods=['GET'])
 def list_venues():
@@ -26,7 +27,7 @@ def get_venue(venueId):
 def create_venue():
     venue = Venue(from_dict=request.json)
     venue.departementCode = 'XX'  # avoid triggerring check on this
-    PcObject.check_and_save(venue)
+    save_venue(venue)
     return jsonify(venue._asdict(include=VENUE_INCLUDES)), 201
 
 
@@ -36,5 +37,5 @@ def edit_venue(venueId):
     venue = load_or_404(Venue, venueId)
     ensure_current_user_has_rights(RightsType.editor, venue.managingOffererId)
     venue.populateFromDict(request.json)
-    PcObject.check_and_save(venue)
+    save_venue(venue)
     return jsonify(venue._asdict(include=VENUE_INCLUDES)), 200
