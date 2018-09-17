@@ -79,7 +79,7 @@ const routes = [
     component: ProfilePage,
     disabled: false,
     icon: 'user-w',
-    path: '/profil/:view?',
+    path: '/profil/:view?/:token?',
     title: 'Mon Profil',
   },
   {

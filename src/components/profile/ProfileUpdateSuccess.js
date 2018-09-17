@@ -3,16 +3,15 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { Scrollbars } from 'react-custom-scrollbars'
 
-import { ROOT_PATH } from '../../../utils/config'
-import MonAvatar from '../MonAvatar'
-import MesInformations from '../MesInformations'
-import PageHeader from '../../layout/PageHeader'
-import NavigationFooter from '../../layout/NavigationFooter'
+import PageHeader from '../layout/PageHeader'
+import NavigationFooter from '../layout/NavigationFooter'
 
-const ProfileMainView = ({ user }) => {
+import { ROOT_PATH } from '../../utils/config'
+
+const ProfileUpdateSuccess = ({ user }) => {
   const backgroundImage = `url('${ROOT_PATH}/mosaic-k@2x.png')`
+  const { publicName } = user
   return (
     <div
       id="profile-page-main-view"
@@ -24,17 +23,19 @@ const ProfileMainView = ({ user }) => {
         className="pc-main is-relative flex-1"
         style={{ backgroundImage }}
       >
-        <Scrollbars autoHide>
-          <MonAvatar provider={user} />
-          <MesInformations provider={user} />
-        </Scrollbars>
+        <h1>
+          <span>
+            Bravo
+            {publicName} votre profil a été mis à jour
+          </span>
+        </h1>
       </main>
       <NavigationFooter theme="red" />
     </div>
   )
 }
 
-ProfileMainView.propTypes = {
+ProfileUpdateSuccess.propTypes = {
   user: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]).isRequired,
 }
 
@@ -43,4 +44,4 @@ const mapStateToProps = state => {
   return { user }
 }
 
-export default connect(mapStateToProps)(ProfileMainView)
+export default connect(mapStateToProps)(ProfileUpdateSuccess)

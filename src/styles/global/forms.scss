@@ -18,19 +18,22 @@
   ) !important;
 }
 
-input[type='text'] {
+// input[type='text'],
+.pc-form-password .inner,
+.pc-form-label:not(.pc-form-password) input[type='text'],
+.pc-form-label:not(.pc-form-password) input[type='password'] {
   @extend .mt7;
   @extend .py7;
   @extend .px18;
   @extend .fs16;
 
   width: 100%;
-  border-radius: 20px;
+  border-radius: rem(20px);
   border: 2px solid $grey-light;
 }
 
-button[type='reset'],
-button[type='submit'] {
+.pc-form button[type='reset'],
+.pc-form button[type='submit'] {
   transition: opacity 500ms;
 }
 
@@ -48,4 +51,8 @@ button[type='submit'] {
   small {
     @extend .fs13;
   }
+}
+
+.pc-form-password .inner {
+  background-color: $white;
 }

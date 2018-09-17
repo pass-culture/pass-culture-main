@@ -29,17 +29,18 @@
 }
 
 #profile-page {
-  button .icon-next {
+  #mes-informations {
+    background-color: $white;
+  }
+
+  #mes-informations .icon-next {
     color: $primary;
     font-size: 1.4rem;
   }
 
-  button:disabled .icon-next {
-    color: $grey;
-  }
-
-  #mes-informations {
-    background-color: $white;
+  #mes-informations a[disabled] {
+    // reset default disabled rule
+    opacity: 1;
   }
 
   #mes-informations .list .item:last-child {

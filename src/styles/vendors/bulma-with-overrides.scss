@@ -26,8 +26,8 @@
   }
 }
 
-[disabled],
-.is-disabled {
+[disabled]:not(form),
+.is-disabled:not(form) {
   cursor: default;
   opacity: $button-disabled-opacity;
 }

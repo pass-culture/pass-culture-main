@@ -23,8 +23,8 @@ const getPercent = (expense, scale) => {
   return percent * scale
 }
 
-const MonPassCulture = ({ provider }) => {
-  const { expenses } = provider
+const MonPassCulture = ({ user }) => {
+  const { expenses } = user
   let scale = 1
   // TODO si le pourentage des jauges digital/physical est en dessous
   // de la globale alors il faut faire en sorte que le pourcentage des juages physical/digital soit égal à celui de la globale
@@ -84,6 +84,6 @@ const MonPassCulture = ({ provider }) => {
 }
 MonPassCulture.defaultProps = {}
 MonPassCulture.propTypes = {
-  provider: PropTypes.object.isRequired,
+  user: PropTypes.object.isRequired,
 }
 export default MonPassCulture

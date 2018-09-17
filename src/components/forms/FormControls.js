@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-const FormFooter = ({
+const FormControls = ({
   canCancel,
   canSubmit,
   cancelLabel,
@@ -11,7 +11,7 @@ const FormFooter = ({
   theme,
 }) => (
   <footer
-    className={`pc-theme-${theme} pc-footer pc-form-controls flex-end flex-columns flex-0 pl48 ${className}`}
+    className={`pc-theme-${theme} pc-form-controls flex-end flex-columns flex-0 pl48 ${className}`}
   >
     {!isLoading && (
       <React.Fragment>
@@ -44,7 +44,7 @@ const FormFooter = ({
   </footer>
 )
 
-FormFooter.defaultProps = {
+FormControls.defaultProps = {
   canCancel: true,
   canSubmit: false,
   cancelLabel: 'Annuler',
@@ -54,7 +54,7 @@ FormFooter.defaultProps = {
   theme: 'red',
 }
 
-FormFooter.propTypes = {
+FormControls.propTypes = {
   canCancel: PropTypes.bool,
   canSubmit: PropTypes.bool,
   cancelLabel: PropTypes.string,
@@ -64,4 +64,4 @@ FormFooter.propTypes = {
   theme: PropTypes.string,
 }
 
-export default FormFooter
+export default FormControls
