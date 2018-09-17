@@ -69,6 +69,12 @@ textarea.textarea {
     }
   }
 
+  &.field-password {
+    .button {
+      border-color: $input-focus-border-color;
+    }
+  }
+
   &:focus-within .button {
     border-color: $input-focus-border-color;
   }
@@ -80,8 +86,6 @@ textarea.textarea {
         height: 100%;
 
         &:focus {
-          border-color: $grey-light;
-
           &:not(:active) {
             box-shadow: none;
           }
