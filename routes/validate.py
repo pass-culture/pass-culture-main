@@ -2,8 +2,10 @@
 from flask import current_app as app, jsonify, request
 
 import models
+from domain.user_emails import send_validation_confirmation_email
 from models import ApiErrors, \
-    PcObject
+    PcObject, UserOfferer, Offerer
+from repository.user_offerer_queries import find_user_offerer_email
 
 
 @app.route("/validate", methods=["GET"])
@@ -40,4 +42,16 @@ def validate():
         obj.validationToken = None
 
     PcObject.check_and_save(*objects_to_validate)
+
+    user_offerers = [obj for obj in model_names if isinstance(obj, UserOfferer)]
+    user_offerer = None
+    if user_offerers :
+        user_offerer = user_offerers[0]
+
+    offerer = None
+    offerers = [obj for obj in model_names if isinstance(obj, Offerer)][0]
+    if offerers:
+        offerer = offerers[0]
+
+    send_validation_confirmation_email(user_offerer, offerer, app.mailjet_client.send.create)
     return "Validation effectuée", 202

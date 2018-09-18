@@ -11,7 +11,7 @@ from utils.mailing import make_user_booking_recap_email, \
     make_offerer_booking_recap_email_after_user_action, make_final_recap_email_for_stock_with_event, \
     write_object_validation_email, make_offerer_driven_cancellation_email_for_user, \
     make_reset_password_email, \
-    make_offerer_driven_cancellation_email_for_offerer
+    make_offerer_driven_cancellation_email_for_offerer, make_validation_confirmation_email
 from utils.test_utils import create_stock_with_event_offer, create_stock_with_thing_offer, \
     create_user, create_booking, MOCKED_SIREN_ENTREPRISES_API_RETURN, create_user_offerer, \
     create_offerer, create_venue, create_thing_offer, create_event_offer, create_stock_from_offer, \
@@ -886,3 +886,63 @@ def test_make_offerer_driven_cancellation_email_for_offerer_thing_and_already_ex
     assert '<td>John Doe</td>' not in html_recap_table
     assert email[
                'Subject'] == 'Confirmation de votre annulation de réservation pour Le récit de voyage, proposé par La petite librairie'
+
+
+@clean_database
+@pytest.mark.standalone
+@pytest.mark.validation_confirmation
+def test_make_validation_confirmation_email_offerer_user_offerer_admin(app):
+    # Given
+    user = create_user(email='admin@letheatresas.com')
+    offerer = create_offerer(name='Le Théâtre SAS')
+    user_offerer = create_user_offerer(user, offerer, is_admin=True)
+    # When
+    with patch('utils.mailing.find_user_offerer_email', return_value='admin@letheatresas.com'):
+        email = make_validation_confirmation_email(user_offerer, offerer)
+    # Then
+    email_html = BeautifulSoup(email['Html-part'], 'html.parser')
+    html_validation_details = str(email_html.find('p', {'id': 'validation-details'}))
+    print(email)
+    assert 'Votre structure "Le Théâtre SAS"' in html_validation_details
+    assert 'L\'utilisateur admin@letheatresas.com' in html_validation_details
+    assert 'en tant qu\'administrateur' in html_validation_details
+
+
+@clean_database
+@pytest.mark.standalone
+@pytest.mark.validation_confirmation
+def test_make_validation_confirmation_email_offerer_user_offerer_editor(app):
+    # Given
+    user = create_user(email='admin@letheatresas.com')
+    offerer = create_offerer(name='Le Théâtre SAS')
+    user_offerer = create_user_offerer(user, offerer)
+    # When
+    with patch('utils.mailing.find_user_offerer_email', return_value='editor@letheatresas.com'):
+        email = make_validation_confirmation_email(user_offerer, offerer)
+    # Then
+    email_html = BeautifulSoup(email['Html-part'], 'html.parser')
+    html_validation_details = str(email_html.find('p', {'id': 'validation-details'}))
+    print(email)
+    assert 'Votre structure "Le Théâtre SAS"' in html_validation_details
+    assert 'L\'utilisateur editor@letheatresas.com' in html_validation_details
+    assert 'en tant qu\'éditeur' in html_validation_details
+
+
+@clean_database
+@pytest.mark.standalone
+@pytest.mark.validation_confirmation
+def test_make_validation_confirmation_email_user_offerer_editor(app):
+    # Given
+    user = create_user(email='admin@letheatresas.com')
+    offerer = create_offerer(name='Le Théâtre SAS')
+    user_offerer = create_user_offerer(user, offerer)
+    # When
+    with patch('utils.mailing.find_user_offerer_email', return_value='editor@letheatresas.com'):
+        email = make_validation_confirmation_email(user_offerer, offerer=None)
+    # Then
+    email_html = BeautifulSoup(email['Html-part'], 'html.parser')
+    html_validation_details = str(email_html.find('p', {'id': 'validation-details'}))
+    print(email)
+    assert 'Votre structure "Le Théâtre SAS"' not in html_validation_details
+    assert 'L\'utilisateur editor@letheatresas.com a été validé' in html_validation_details
+    assert 'en tant qu\'éditeur' in html_validation_details
