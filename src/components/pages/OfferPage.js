@@ -45,6 +45,7 @@ const CONDITIONAL_FIELDS = {
     'PRATIQUE_ARTISTIQUE',
   ],
   author: ['CINEMA', 'MUSIQUE', 'SPECTACLE_VIVANT', 'LIVRE_EDITION'],
+  visa: ['CINEMA'],
 }
 
 class OfferPage extends Component {
@@ -460,6 +461,16 @@ class OfferPage extends Component {
                       label="Auteur"
                       name="author"
                       setKey="extraData"
+                    />
+                  )}
+
+                  {this.hasConditionalField('visa') && (
+                    <Field
+                      type="text"
+                      label="Visa d'exploitation (obligatoire si applicable)"
+                      name="visa"
+                      setKey="extraData"
+                      isExpanded
                     />
                   )}
                   {false && (
