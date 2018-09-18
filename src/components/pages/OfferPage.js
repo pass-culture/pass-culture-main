@@ -38,6 +38,14 @@ import venuesSelector from '../../selectors/venues'
 import { offerNormalizer } from '../../utils/normalizers'
 import { pluralize } from '../../utils/string'
 
+const CONDITIONAL_FIELDS = {
+  speaker: [
+    'CONFERENCE_DEBAT_DEDICACE',
+    'PRATIQUE_ARTISTIQUE_ABO',
+    'PRATIQUE_ARTISTIQUE',
+  ],
+}
+
 class OfferPage extends Component {
   constructor() {
     super()
@@ -232,18 +240,12 @@ class OfferPage extends Component {
     }
   }
 
-  hasSpeaker() {
+  hasConditionalField(fieldName) {
     if (!this.props.type) {
       return false
     }
 
-    const EVENT_TYPES = [
-      'CONFERENCE_DEBAT_DEDICACE',
-      'PRATIQUE_ARTISTIQUE_ABO',
-      'PRATIQUE_ARTISTIQUE',
-    ]
-
-    return EVENT_TYPES.indexOf(this.props.type.value) > -1
+    return CONDITIONAL_FIELDS[fieldName].indexOf(this.props.type.value) > -1
   }
 
   render() {
@@ -442,7 +444,7 @@ class OfferPage extends Component {
                     type="textarea"
                   />
 
-                  {this.hasSpeaker() && (
+                  {this.hasConditionalField('speaker') && (
                     <Field
                       type="text"
                       label="Intervenant"
