@@ -5,6 +5,7 @@ from sqlalchemy.orm import aliased
 
 from models import ApiErrors,\
                    Booking,\
+                   db, \
                    Event,\
                    EventOccurrence,\
                    PcObject,\
