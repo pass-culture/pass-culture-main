@@ -55,6 +55,21 @@ def add_table_if_missing(sql_identifier, modelClass):
         return '"'+dashify(modelClass.__name__)+'".'+sql_identifier
     return sql_identifier
 
+def query_with_order_by(query, order_by):
+    if order_by:
+        try:
+            order_by = [order_by] if not isinstance(order_by, list)\
+                       else order_by
+            query = query.order_by(*order_by)
+        except ProgrammingError as e:
+            field = re.search('column "?(.*?)"? does not exist', e._message, re.IGNORECASE)
+            if field:
+                errors = ApiErrors()
+                errors.addError('order_by', 'order_by value references an unknown field : '+field.group(1))
+                raise errors
+            else:
+                raise e
+    return query
 
 def handle_rest_get_list(modelClass, query=None,
                          refine=None, order_by=None, flask_request=None,
@@ -72,18 +87,8 @@ def handle_rest_get_list(modelClass, query=None,
         query = refine(query)
     # ORDER BY
     if order_by:
-        try:
-            order_by = [order_by] if not isinstance(order_by, list)\
-                       else order_by
-            query = query.order_by(*order_by)
-        except ProgrammingError as e:
-            field = re.search('column "?(.*?)"? does not exist', e._message, re.IGNORECASE)
-            if field:
-                errors = ApiErrors()
-                errors.addError('order_by', 'order_by value references an unknown field : '+field.group(1))
-                raise errors
-            else:
-                raise e
+        query = query_with_order_by(query, order_by)
+
     # PAGINATE
     if paginate:
         if page is not None:
@@ -91,15 +96,16 @@ def handle_rest_get_list(modelClass, query=None,
         query = query.paginate(page, per_page=paginate, error_out=False)\
                      .items
     # DICTIFY
-    elements = list(map(
-        lambda o: o._asdict(
+    elements = [
+        o._asdict(
             include=include,
             resolve=resolve,
-        ),
-        query))
+        ) for o in query
+    ]
     # PRINT
     if print_elements:
         print(elements)
+
     # RETURN
     return jsonify(elements), 200
 

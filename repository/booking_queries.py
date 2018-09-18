@@ -13,6 +13,7 @@ from models import ApiErrors,\
                    Thing,\
                    User,\
                    Venue
+from utils.rest import query_with_order_by
 from utils.search import get_search_filter
 
 class BookingNotFound(ApiErrors):
@@ -27,20 +28,14 @@ def find_all_by_stock_id(stock):
 
 
 def find_offerer_bookings(offerer_id, search=None, order_by=None, page=1):
-    query_event = Booking.query \
-        .join(Stock) \
-        .join(EventOccurrence) \
-        .join(Offer) \
-        .join(Venue) \
-        .filter(Venue.managingOffererId == offerer_id) \
 
-    query_thing = Booking.query \
-        .join(Stock) \
-        .join(Offer) \
-        .join(Venue) \
-        .filter(Venue.managingOffererId == offerer_id)
-
-    query = query_event.union_all(query_thing)
+    query = Booking.query.join(Stock) \
+                         .outerjoin(EventOccurrence) \
+                         .join(Offer,
+                            ((Stock.offerId == Offer.id) |\
+                            (EventOccurrence.offerId == Offer.id))) \
+                         .join(Venue) \
+                         .filter(Venue.managingOffererId == offerer_id)
 
     if search:
         query = query.outerjoin(Event)\
@@ -48,7 +43,7 @@ def find_offerer_bookings(offerer_id, search=None, order_by=None, page=1):
                      .filter(get_search_filter([Event, Thing, Venue], search))
 
     if order_by:
-        query = query.order_by(*order_by)
+        query = query_with_order_by(query, order_by)
 
     bookings = query.paginate(int(page), per_page=10, error_out=False)\
                     .items

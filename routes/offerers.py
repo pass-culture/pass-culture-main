@@ -20,7 +20,6 @@ from utils.search import expect_json_data, \
                          load_or_404, \
                          login_or_api_key_required
 
-
 @app.route('/offerers', methods=['GET'])
 @login_required
 def list_offerers():
@@ -56,10 +55,11 @@ def get_offerer_bookings(id):
 
     ensure_current_user_has_rights(RightsType.editor, dehumanize(id))
 
-    bookings = find_offerer_bookings(dehumanize(id),
+    bookings = find_offerer_bookings(
+        dehumanize(id),
         search=request.args.get('search'),
         order_by=request.args.get('order_by'),
-        page=request.args.get('page', 1),
+        page=request.args.get('page', 1)
     )
 
     bookings_reimbursements = find_all_booking_reimbursement(bookings)
