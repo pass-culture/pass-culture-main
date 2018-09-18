@@ -272,6 +272,7 @@ class EventOccurrenceAndStockItem extends Component {
                   required
                   title="Date"
                   type="date"
+                  tz={tz}
                 />
               </td>
               <td>
