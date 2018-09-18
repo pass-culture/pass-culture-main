@@ -258,6 +258,21 @@ class OfferPage extends Component {
     const showAllForm = type || !isNew
     const venueId = get(venue, 'id')
 
+    const isOffererSelectReadOnly = typeof offererId === 'undefined'
+    const isVenueSelectReadOnly = typeof venueId === 'undefined'
+
+    let title
+    if (isNew) {
+      title = 'Ajouter une offre'
+      if (venueId) {
+        title = title + ` pour ${get(venue, 'name')}`
+      } else if (offererId) {
+        title = title + ` pour ${get(offerer, 'name')}`
+      }
+    } else {
+      title = "Détails de l'offre"
+    }
+
     return (
       <Main
         backTo={{ path: `/offres${search}`, label: 'Vos offres' }}
@@ -265,16 +280,7 @@ class OfferPage extends Component {
         handleDataRequest={this.handleDataRequest}>
         <HeroSection
           subtitle={eventOrThingName && eventOrThingName.toUpperCase()}
-          title={
-            isNew
-              ? 'Ajouter une offre' +
-                (venueId
-                  ? ` pour ${get(venue, 'name')}`
-                  : offererId
-                    ? ` pour ${get(offerer, 'name')}`
-                    : '')
-              : "Détails de l'offre"
-          }>
+          title={title}>
           <p className="subtitle">
             Renseignez les détails de cette offre, puis mettez-la en avant en
             ajoutant une ou plusieurs accroches.
@@ -292,12 +298,7 @@ class OfferPage extends Component {
             patch={eventOrThingPatch}
             readOnly={isReadOnly}>
             <div className="field-group">
-              <Field
-                isExpanded
-                label="Titre de l\'offre"
-                name="name"
-                required
-              />
+              <Field isExpanded label="Titre de l'offre" name="name" required />
               <Field
                 label="Type"
                 name="type"
@@ -361,7 +362,7 @@ class OfferPage extends Component {
                     name="offererId"
                     options={offerers}
                     placeholder="Sélectionnez une structure"
-                    readOnly={offererId}
+                    readOnly={isOffererSelectReadOnly}
                     required
                     type="select"
                   />
@@ -383,7 +384,7 @@ class OfferPage extends Component {
                         name="venueId"
                         options={venues}
                         placeholder="Sélectionnez un lieu"
-                        readOnly={venueId}
+                        readOnly={isVenueSelectReadOnly}
                         required
                         type="select"
                       />
