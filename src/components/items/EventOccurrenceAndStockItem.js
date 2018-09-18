@@ -72,7 +72,6 @@ class EventOccurrenceAndStockItem extends Component {
     if (isStockOnly) {
       return
     }
-    console.log('ben alors', formBeginningDatetime, formEndDatetime)
     if (formEndDatetime < formBeginningDatetime) {
       dispatch(
         mergeForm(`eventOccurrence${get(eventOccurrencePatch, 'id', '')}`, {
@@ -336,16 +335,14 @@ class EventOccurrenceAndStockItem extends Component {
                 title="Prix"
               />
             </td>
-            {!isStockOnly && (
-              <td title="Laissez vide si pas de limite">
-                <Field
-                  maxDate={beginningDatetime}
-                  name="bookingLimitDatetime"
-                  placeholder="Laissez vide si pas de limite"
-                  type="date"
-                />
-              </td>
-            )}
+            <td title="Laissez vide si pas de limite">
+              <Field
+                maxDate={beginningDatetime}
+                name="bookingLimitDatetime"
+                placeholder="Laissez vide si pas de limite"
+                type="date"
+              />
+            </td>
             <td title="Laissez vide si pas de limite">
               <Field
                 name="available"
@@ -397,7 +394,7 @@ class EventOccurrenceAndStockItem extends Component {
         </tr>
         {isDeleting && (
           <tr>
-            <td className="is-size-7" colSpan={isStockOnly ? '2' : '6'}>
+            <td className="is-size-7" colSpan={isStockOnly ? '3' : '6'}>
               En confirmant l'annulation de{' '}
               {isStockOnly ? 'ce stock' : 'cette date'}, vous supprimerez aussi
               toutes les réservations associées. {!isStockOnly && <br />}Êtes-vous

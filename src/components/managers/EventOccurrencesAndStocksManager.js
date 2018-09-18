@@ -80,7 +80,7 @@ class EventOccurrencesAndStocksManager extends Component {
                   </Fragment>
                 )}
                 <td>Prix</td>
-                {!isStockOnly && <td>Date Limite de Réservation</td>}
+                <td>Date Limite de Réservation</td>
                 <td>Places (total)</td>
                 <td>Supprimer</td>
                 <td>Modifier</td>
@@ -133,7 +133,10 @@ class EventOccurrencesAndStocksManager extends Component {
                 />
               ))}
             </tbody>
-            {eventOccurrences.length > 12 && (
+            {Math.max(
+              get(stocks, 'length', 0),
+              get(eventOccurrences, 'length', 0)
+            ) > 12 && (
               <thead>
                 <tr>
                   {!isStockOnly && (
@@ -144,7 +147,7 @@ class EventOccurrencesAndStocksManager extends Component {
                     </Fragment>
                   )}
                   <td>Prix</td>
-                  {!isStockOnly && <td>Date Limite de Réservation</td>}
+                  <td>Date Limite de Réservation</td>
                   <td>Places (total)</td>
                   <td>Supprimer</td>
                   <td>Modifier</td>
@@ -179,10 +182,8 @@ export default compose(
 
     const eventId = get(offer, 'eventId')
     const event = eventSelector(state, eventId)
-    const eventOccurrences = eventOccurrencesSelector(
-      state,
-      ownProps.match.params.offerId
-    )
+    const eventOccurrences =
+      event && eventOccurrencesSelector(state, ownProps.match.params.offerId)
 
     const thingId = get(offer, 'thingId')
     const thing = thingSelector(state, thingId)

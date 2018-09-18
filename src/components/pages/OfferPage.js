@@ -525,7 +525,7 @@ export default compose(
     const offerers = offerersSelector(state)
     const offerer = offererSelector(state, offererId)
 
-    const eventOccurrences = eventOccurrencesSelector(state, offerId)
+    const eventOccurrences = event && eventOccurrencesSelector(state, offerId)
 
     const stocks = stocksSelector(state, offerId, eventOccurrences)
 
