@@ -5,7 +5,6 @@ from sqlalchemy.orm import aliased
 
 from models import ApiErrors,\
                    Booking,\
-                   db, \
                    Event,\
                    EventOccurrence,\
                    PcObject,\
@@ -14,6 +13,7 @@ from models import ApiErrors,\
                    Thing,\
                    User,\
                    Venue
+from models.db import db
 from utils.rest import query_with_order_by
 from utils.search import get_search_filter
 
