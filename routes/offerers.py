@@ -14,11 +14,7 @@ from utils.rest import ensure_current_user_has_rights, \
                        handle_rest_get_list, \
                        load_or_404, \
                        login_or_api_key_required
-from utils.search import expect_json_data, \
-                         get_search_filter, \
-                         handle_rest_get_list, \
-                         load_or_404, \
-                         login_or_api_key_required
+from utils.search import get_search_filter
 
 @app.route('/offerers', methods=['GET'])
 @login_required
