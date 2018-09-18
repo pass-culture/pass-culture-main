@@ -49,7 +49,7 @@ def validate():
         user_offerer = user_offerers[0]
 
     offerer = None
-    offerers = [obj for obj in model_names if isinstance(obj, Offerer)][0]
+    offerers = [obj for obj in model_names if isinstance(obj, Offerer)]
     if offerers:
         offerer = offerers[0]
 
