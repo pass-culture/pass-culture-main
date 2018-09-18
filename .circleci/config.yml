@@ -12,6 +12,7 @@ jobs: # a collection of steps
               DATABASE_URL: postgresql://pass_culture_user:pass_culture_pass@localhost:5432/pass_culture
               MAILJET_API_KEY: $MAILJET_API_KEY
               MAILJET_API_SECRET: $MAILJET_API_SECRET
+              EXPORT_TOKEN: $EXPORT_TOKEN
       - image: circleci/postgres:9.6.2 # database image for service container available at `localhost:<port>`
         environment: # environment variables for database
           POSTGRES_USER: pass_culture_user

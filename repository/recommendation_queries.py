@@ -2,7 +2,8 @@ from datetime import datetime
 
 from sqlalchemy import func
 
-from models import Recommendation, Mediation, Offer, Stock, EventOccurrence
+from models import Recommendation, Mediation, Offer, Stock, EventOccurrence, Event, Thing, Venue
+from models.db import db
 from utils.config import BLOB_SIZE
 
 
@@ -51,6 +52,24 @@ def find_recommendations_for_user_matching_offers_and_search_term(user_id, offer
         .filter(Recommendation.offerId.in_(offer_ids)) \
         .filter(Recommendation.search == search) \
         .all()
+
+
+def find_recommendations_in_date_range_for_given_departement(date_max, date_min, department):
+    query = db.session.query(Offer.id, Event.name, Thing.name, func.count(Offer.id), Venue.departementCode,
+                             Recommendation.isClicked, Recommendation.isFavorite) \
+        .join(Recommendation) \
+        .outerjoin(Event) \
+        .outerjoin(Thing) \
+        .join(Venue)
+    if department:
+        query = query.filter(Venue.departementCode == department)
+    if date_min:
+        query = query.filter(Recommendation.dateCreated >= date_min)
+    if date_max:
+        query = query.filter(Recommendation.dateCreated <= date_max)
+    result = query.group_by(Offer.id, Event.name, Thing.name, Venue.departementCode, Recommendation.isClicked,
+                            Recommendation.isFavorite).order_by(Offer.id).all()
+    return result
 
 
 def filter_out_recommendation_on_soft_deleted_stocks():

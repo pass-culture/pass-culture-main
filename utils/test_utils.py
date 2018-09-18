@@ -6,6 +6,8 @@ from os import path
 from pathlib import Path
 
 import requests as req
+import simplejson
+from postgresql_audit.flask import versioning_manager
 
 from models import Thing, Deposit, UserOfferer, Recommendation, RightsType, Mediation
 from models.booking import Booking
@@ -239,7 +241,8 @@ def create_booking_for_event(amount=50, quantity=1, user=None, isCancelled=False
 
 def create_user(public_name='John Doe', departement_code='93', email='john.doe@test.com', can_book_free_offers=True,
                 password='totallysafepsswd', validation_token=None, is_admin=False, reset_password_token=None,
-                reset_password_token_validity_limit=datetime.utcnow() + timedelta(hours=24)):
+                reset_password_token_validity_limit=datetime.utcnow() + timedelta(hours=24),
+                date_created=datetime.utcnow()):
     user = User()
     user.publicName = public_name
     user.email = email
@@ -250,6 +253,7 @@ def create_user(public_name='John Doe', departement_code='93', email='john.doe@t
     user.isAdmin = is_admin
     user.resetPasswordToken = reset_password_token
     user.resetPasswordTokenValidityLimit = reset_password_token_validity_limit
+    user.dateCreated = date_created
     return user
 
 
@@ -453,3 +457,32 @@ def create_mediation(offer, author=None, date_created=datetime.utcnow(), front_t
     mediation.author = author
     mediation.isActive = is_active
     return mediation
+
+
+def create_booking_activity(booking, table_name, verb, issued_at=datetime.utcnow):
+    Activity = versioning_manager.activity_cls
+    activity = Activity()
+    activity.issued_at = issued_at
+    activity.table_name = table_name
+    activity.verb = verb
+    variables = {"id": booking.id, "token": booking.token, "userId": booking.userId, "stockId": booking.stockId,
+                 "isCancelled": booking.isCancelled, "quantity": booking.quantity,
+                 "recommendationId": booking.recommendationId, "isUsed": booking.isUsed}
+    activity.changed_data = variables
+    return activity
+
+
+def create_user_activity(user, table_name, verb, issued_at=datetime.utcnow):
+    Activity = versioning_manager.activity_cls
+    activity = Activity()
+    activity.issued_at = issued_at
+    activity.table_name = table_name
+    activity.verb = verb
+    variables = {'email': user.email,
+                 'publicName': user.publicName,
+                 'offerers': user.offerers,
+                 'departementCode': user.departementCode,
+                 'canBookFreeOffers': user.canBookFreeOffers,
+                 'isAdmin': user.isAdmin}
+    activity.changed_data = variables
+    return activity

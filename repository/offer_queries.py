@@ -1,4 +1,5 @@
 from datetime import datetime
+
 from sqlalchemy import func
 from sqlalchemy.orm import aliased
 
@@ -9,7 +10,9 @@ from models import Booking, \
     Stock, \
     Offerer, \
     Recommendation, \
-    Venue, Thing
+    Venue
+from models import Thing
+from models.db import db
 from utils.logger import logger
 from utils.search import get_search_filter
 
@@ -66,14 +69,14 @@ def get_offers_by_type(offer_type, user=None, departement_codes=None, offer_id=N
     query = Offer.query
     if offer_type == Event:
         query = query.join(aliased(EventOccurrence))
-    query = query.join(Stock)\
-        .filter_by(isSoftDeleted=False)\
-        .reset_joinpoint()\
-        .join(Venue)\
-        .join(Offerer)\
-        .reset_joinpoint()\
+    query = query.join(Stock) \
+        .filter_by(isSoftDeleted=False) \
+        .reset_joinpoint() \
+        .join(Venue) \
+        .join(Offerer) \
+        .reset_joinpoint() \
         .join(offer_type)
-                 
+
     if offer_id is not None:
         query = query.filter_by(id=offer_id)
     logger.debug(lambda: '(reco) all ' + str(offer_type) + '.count ' + str(query.count()))
@@ -84,6 +87,25 @@ def get_offers_by_type(offer_type, user=None, departement_codes=None, offer_id=N
     query = not_currently_recommended_offers(query, user)
     query = query.distinct(offer_type.id)
     return query.all()
+
+
+def find_offers_in_date_range_for_given_venue_departement(date_max, date_min, department):
+
+    query = db.session.query(Offer.id, Event.id, Event.name, EventOccurrence.beginningDatetime, Venue.departementCode,
+                             Offerer.id, Offerer.name) \
+        .join(Event) \
+        .join(EventOccurrence) \
+        .join(Venue) \
+        .join(Offerer)
+    if department:
+        query = query.filter(Venue.departementCode == department)
+    if date_min:
+        query = query.filter(EventOccurrence.beginningDatetime >= date_min)
+    if date_max:
+        query = query.filter(EventOccurrence.beginningDatetime <= date_max)
+    result = query.order_by(EventOccurrence.beginningDatetime) \
+        .all()
+    return result
 
 
 def get_offers_for_recommendations_search(page=1, search=None):

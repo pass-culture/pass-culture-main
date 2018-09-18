@@ -1,11 +1,17 @@
+from flask import render_template
 from sqlalchemy.exc import InternalError
 from sqlalchemy.orm import aliased
 
-from models import Booking, Stock, EventOccurrence, Offer, Venue, User, PcObject, ApiErrors
+from models import PcObject, ApiErrors
 
 
 class BookingNotFound(ApiErrors):
     pass
+
+
+from models import Booking, Stock, EventOccurrence, User, Venue
+from models import Offer
+from models.db import db
 
 
 def find_all_by_user_id(user_id):
@@ -86,9 +92,22 @@ def save_booking(booking):
         raise api_errors
 
 
+def find_bookings_stats_per_department(time_intervall):
+    query = render_template('exports/find_bookings_stats_per_departement.sql', time_intervall=time_intervall)
+    return db.engine.execute(query).fetchall()
+
+
+def find_bookings_in_date_range_for_given_user_or_venue_departement(booking_date_max, booking_date_min, event_date_max,
+                                                                    event_date_min, user_department, venue_department):
+    query = render_template('exports/find_bookings_in_date_range_for_given_user_or_venue_departement.sql',
+                            booking_date_max=booking_date_max, booking_date_min=booking_date_min,
+                            event_date_max=event_date_max, event_date_min=event_date_min,
+                            user_department=user_department, venue_department=venue_department)
+    return db.engine.execute(query).fetchall()
+
+
 def find_by_id(booking_id):
     return Booking.query.filter_by(id=booking_id).first_or_404()
-
 
 
 def find_all_ongoing_bookings_by_stock(stock):

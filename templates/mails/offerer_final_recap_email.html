@@ -1,6 +1,5 @@
-{% extends "offerer_recap_email.html" %}
-{% block new_reservation %}<p id="action">Vous venez d'annuler la réservation de {{ user_name }} ({{ user_email }}).</p>{% endblock %}
-{% block past_or_future %}des réservations à ce jour{% endblock %}
+{% extends "mails/offerer_recap_email.html" %}
+{% block past_or_future %}final des réservations{% endblock %}
 {% block recap %}
 {% if stock_bookings %}
 <table id="recap-table">
@@ -16,7 +15,7 @@
         <td>{{ booking.token }}</td>
     </tr>
     {% else %}
-    <p id="no-recap">Aucune réservation</p>
+    <p>Aucune réservation</p>
     {% endfor %}
 </table>
 {% endblock %}
