@@ -541,7 +541,7 @@ def test_get_booking_by_token_when_user_has_rights(app):
     assert response_json['offerName'] == 'Event Name'
     assert response_json['date'] == date
     assert response_json['isUsed'] == False
-    assert response_json['bookingId'] == booking.id
+    assert response_json['bookingId'] == humanize(booking.id)
     assert response_json['userName'] == 'John Doe'
     assert response_json['venueDepartementCode'] == venue.departementCode
 

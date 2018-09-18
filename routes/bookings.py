@@ -123,10 +123,12 @@ def get_booking_by_token(token):
     offerer_id = booking.stock.resolvedOffer.venue.managingOffererId
     venue_departement_code = booking.stock.resolvedOffer.venue.departementCode
 
-    current_user_can_validate_bookings = current_user.is_authenticated and current_user.hasRights(RightsType.editor, offerer_id)
+    current_user_can_validate_bookings = current_user.is_authenticated and current_user.hasRights(RightsType.editor,
+                                                                                                  offerer_id)
     if current_user_can_validate_bookings:
-        response = {'bookingId': booking.id, 'email': booking.user.email, 'userName': booking.user.publicName, 'offerName': offer_name, 'date': date,
-                    'isUsed': booking.isUsed, 'venueDepartementCode': venue_departement_code}
+        response = {'bookingId': humanize(booking.id), 'email': booking.user.email, 'userName': booking.user.publicName,
+                    'offerName': offer_name, 'date': date, 'isUsed': booking.isUsed,
+                    'venueDepartementCode': venue_departement_code}
         return jsonify(response), 200
     return '', 204
 
