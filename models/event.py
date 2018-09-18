@@ -30,13 +30,28 @@ class Accessibility(Enum):
 
 
 class EventType(Enum):
-    CINEMA = {'label': "Cinéma (Projections, Séances, Évènements)", 'offlineOnly': True, 'onlineOnly': False}
-    CONFERENCE_DEBAT_DEDICACE = {'label': "Conférence — Débat — Dédicace", 'offlineOnly': True, 'onlineOnly': False}
-    JEUX = {'label': "Jeux (Évenements, Rencontres, Concours)", 'offlineOnly': True, 'onlineOnly': False}
-    MUSIQUE = {'label': "Musique (Concerts, Festivals)", 'offlineOnly': True, 'onlineOnly': False}
-    MUSEES_PATRIMOINE = {'label': "Musées — Patrimoine (Expositions, Visites, Activités spécifiques)", 'offlineOnly': True, 'onlineOnly': False}
-    PRATIQUE_ARTISTIQUE = {'label': "Pratique Artistique (Stages ponctuels)", 'offlineOnly': True, 'onlineOnly': False}
-    SPECTACLE_VIVANT = {'label': "Spectacle vivant", 'offlineOnly': True, 'onlineOnly': False}
+    CINEMA = {
+        'label': "Cinéma (Projections, Séances, Évènements)", 'offlineOnly': True,
+        'onlineOnly': False, 'sublabel': "Regarder"
+    }
+    CONFERENCE_DEBAT_DEDICACE = {
+    'label': "Conférence — Débat — Dédicace", 'offlineOnly': True, 'onlineOnly': False, 'sublabel': "Rencontrer"
+    }
+    JEUX = {
+    'label': "Jeux (Évenements, Rencontres, Concours)", 'offlineOnly': True, 'onlineOnly': False, 'sublabel': "Jouer"
+    }
+    MUSIQUE = {
+    'label': "Musique (Concerts, Festivals)", 'offlineOnly': True, 'onlineOnly': False, 'sublabel': "Écouter"
+    }
+    MUSEES_PATRIMOINE = {
+    'label': "Musées — Patrimoine (Expositions, Visites, Activités spécifiques)", 'offlineOnly': True, 'onlineOnly': False, 'sublabel': "Regarder"
+    }
+    PRATIQUE_ARTISTIQUE = {
+    'label': "Pratique Artistique (Stages ponctuels)", 'offlineOnly': True, 'onlineOnly': False, 'sublabel': "Pratiquer"
+    }
+    SPECTACLE_VIVANT = {
+    'label': "Spectacle vivant", 'offlineOnly': True, 'onlineOnly': False, 'sublabel': "Applaudir"
+    }
 
 
 class Event(PcObject,
