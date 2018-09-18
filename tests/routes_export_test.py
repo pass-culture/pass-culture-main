@@ -2,9 +2,11 @@ import os
 from datetime import datetime
 
 import pytest
+import requests
 
 from models import PcObject
 from tests.conftest import clean_database
+from utils.test_utils import API_URL, create_user, req_with_auth
 
 TOKEN = os.environ.get('EXPORT_TOKEN')
 
@@ -37,11 +39,6 @@ def test_export_model_returns_400_when_given_model_is_not_exportable(app):
     # then
     assert response.status_code == 400
     assert response.json()['global'] == ['Classe non exportable : VersionedMixin']
-import pytest
-import requests
-
-from tests.conftest import clean_database
-from utils.test_utils import API_URL, create_user, req_with_auth
 
 
 @pytest.mark.standalone
@@ -61,7 +58,6 @@ def test_get_users_per_department_returns_the_user_count_by_department_code_as_c
     response = requests.get(API_URL + '/exports/users_stats?token=%s&date_intervall=%s' % (TOKEN, 'year'))
 
     # then
-    print(response.content)
     assert response.status_code == 200
     assert response.content == b'department,date_intervall,distinct_user\r\n' \
                                b'34,2018-01-01 00:00:00,2\r\n' \

@@ -25,14 +25,13 @@ def find_users_by_department_and_date_range(date_max, date_min, department):
 
 
 def find_users_stats_per_department(time_intervall):
-    print('////////',time_intervall)
     if time_intervall:
         return db.session.query(User.departementCode, func.date_trunc(time_intervall, User.dateCreated),
                                 func.count(distinct(User.id))) \
-            .filter(User.canBookFreeOffers == 'true') \
+            .filter(User.canBookFreeOffers is True) \
             .group_by(func.date_trunc(time_intervall, User.dateCreated), User.departementCode) \
             .order_by(func.date_trunc(time_intervall, User.dateCreated), User.departementCode) \
             .all()
     else:
         return db.session.query(User.departementCode, func.count(distinct(User.id))).filter(
-            User.canBookFreeOffers == 'true').group_by(User.departementCode).order_by( User.departementCode).all()
+            User.canBookFreeOffers is True).group_by(User.departementCode).order_by( User.departementCode).all()
