@@ -156,6 +156,15 @@ class OfferPage extends Component {
     }
   }
 
+  handleOffererRedirect = () => {
+    const { history, offer, search } = this.props
+    const venueId = get(offer, 'venueId')
+    if (venueId && !search.venueId) {
+      history.push(`/offres/${offer.id}?lieu=${venueId}`)
+      return
+    }
+  }
+
   handleShowManagerModal = () => {
     const {
       hasEventOrThing,
@@ -173,6 +182,7 @@ class OfferPage extends Component {
   }
 
   componentDidMount() {
+    this.handleOffererRedirect()
     this.handleShowManagerModal()
   }
 
@@ -242,9 +252,26 @@ class OfferPage extends Component {
       user,
     } = this.props
     const { apiPath, isNew, isReadOnly, isEventType } = this.state
-
-    const showAllForm = type || !isNew
     const eventOrThingName = get(event, 'name') || get(thing, 'name')
+    const offerId = get(offer, 'id')
+    const offererId = get(offerer, 'id')
+    const showAllForm = type || !isNew
+    const venueId = get(venue, 'id')
+
+    const isOffererSelectReadOnly = typeof offererId === 'undefined'
+    const isVenueSelectReadOnly = typeof venueId === 'undefined'
+
+    let title
+    if (isNew) {
+      title = 'Ajouter une offre'
+      if (venueId) {
+        title = title + ` pour ${get(venue, 'name')}`
+      } else if (offererId) {
+        title = title + ` pour ${get(offerer, 'name')}`
+      }
+    } else {
+      title = "Détails de l'offre"
+    }
 
     return (
       <Main
@@ -253,7 +280,7 @@ class OfferPage extends Component {
         handleDataRequest={this.handleDataRequest}>
         <HeroSection
           subtitle={eventOrThingName && eventOrThingName.toUpperCase()}
-          title={isNew ? 'Ajouter une offre' : "Détails de l'offre"}>
+          title={title}>
           <p className="subtitle">
             Renseignez les détails de cette offre, puis mettez-la en avant en
             ajoutant une ou plusieurs accroches.
@@ -309,7 +336,7 @@ class OfferPage extends Component {
                         </span>
                         <NavLink
                           className="button is-primary is-outlined is-small"
-                          to={`/offres/${get(offer, 'id')}?gestion`}>
+                          to={`/offres/${offerId}?gestion`}>
                           <span className="icon">
                             <Icon svg="ico-calendar" />
                           </span>
@@ -335,7 +362,7 @@ class OfferPage extends Component {
                     name="offererId"
                     options={offerers}
                     placeholder="Sélectionnez une structure"
-                    readOnly={!isNew}
+                    readOnly={isOffererSelectReadOnly}
                     required
                     type="select"
                   />
@@ -357,7 +384,7 @@ class OfferPage extends Component {
                         name="venueId"
                         options={venues}
                         placeholder="Sélectionnez un lieu"
-                        readOnly={!isNew}
+                        readOnly={isVenueSelectReadOnly}
                         required
                         type="select"
                       />
@@ -430,14 +457,14 @@ class OfferPage extends Component {
               <div className="control">
                 {isReadOnly ? (
                   <NavLink
-                    to={`/offres/${get(offer, 'id')}?modifie`}
+                    to={`/offres/${offerId}?modifie`}
                     className="button is-secondary is-medium">
                     Modifier l'offre
                   </NavLink>
                 ) : (
                   <CancelButton
                     className="button is-secondary is-medium"
-                    to={isNew ? '/offres' : `/offres/${get(offer, 'id')}`}>
+                    to={isNew ? '/offres' : `/offres/${offerId}`}>
                     Annuler
                   </CancelButton>
                 )}
@@ -479,9 +506,9 @@ export default compose(
     const thing = thingSelector(state, thingId)
 
     const venueId = get(state, 'form.offer.venueId') || search.venueId
+
     const venue = venueSelector(state, venueId)
 
-    console.log({ isVirtual: get(venue, 'isVirtual') })
     const types = typesSelector(state, get(venue, 'isVirtual'))
 
     const typeValue =
