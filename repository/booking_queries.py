@@ -32,8 +32,8 @@ def find_offerer_bookings(offerer_id, search=None, order_by=None, page=1):
     query = Booking.query.join(Stock) \
                          .outerjoin(EventOccurrence) \
                          .join(Offer,
-                            ((Stock.offerId == Offer.id) |\
-                            (EventOccurrence.offerId == Offer.id))) \
+                               ((Stock.offerId == Offer.id) |\
+                               (EventOccurrence.offerId == Offer.id))) \
                          .join(Venue) \
                          .filter(Venue.managingOffererId == offerer_id)
 
