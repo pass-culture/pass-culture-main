@@ -2,23 +2,30 @@
 from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
 
-from domain.booking_emails import send_user_driven_cancellation_email_to_user, \
-    send_user_driven_cancellation_email_to_offerer, send_offerer_driven_cancellation_email_to_user, \
-    send_offerer_driven_cancellation_email_to_offerer, send_booking_recap_emails, \
-    send_booking_confirmation_email_to_user
+from domain.booking_emails import send_booking_confirmation_email_to_user, \
+                                  send_offerer_driven_cancellation_email_to_user, \
+                                  send_offerer_driven_cancellation_email_to_offerer, send_booking_recap_emails, \
+                                  send_user_driven_cancellation_email_to_user, \
+                                  send_user_driven_cancellation_email_to_offerer
 from domain.expenses import get_expenses
 from models import ApiErrors, Booking, PcObject, Stock, RightsType
 from models.pc_object import serialize
 from repository import booking_queries
 from utils.human_ids import dehumanize, humanize
 from utils.includes import BOOKING_INCLUDES
-from utils.rest import expect_json_data, ensure_current_user_has_rights
+from utils.rest import ensure_current_user_has_rights, \
+                       expect_json_data
 from utils.token import random_token
-from validation.bookings import check_has_stock_id, check_has_quantity, check_existing_stock, check_can_book_free_offer, \
-    check_offer_is_active, check_stock_booking_limit_date, check_expenses_limits, \
-    check_user_is_logged_in_or_email_is_provided, \
-    check_booking_not_cancelled, check_booking_not_already_used
-
+from validation.bookings import check_booking_not_already_used, \
+                                check_booking_not_cancelled, \
+                                check_can_book_free_offer, \
+                                check_existing_stock, \
+                                check_expenses_limits, \
+                                check_has_quantity, \
+                                check_has_stock_id, \
+                                check_offer_is_active, \
+                                check_stock_booking_limit_date, \
+                                check_user_is_logged_in_or_email_is_provided
 
 @app.route('/bookings', methods=['GET'])
 @login_required

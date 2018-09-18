@@ -1,18 +1,24 @@
+""" repository booking queries test """
 from datetime import datetime, timedelta
 
 import pytest
 
 from models import PcObject
-from repository import booking_queries
-from repository.booking_queries import find_all_by_offerer_sorted_by_date_modified_asc
+from repository.booking_queries import find_all_ongoing_bookings_by_stock, \
+                                       find_offerer_bookings
 from tests.conftest import clean_database
-from utils.test_utils import create_offerer, create_venue, create_stock_with_thing_offer, create_booking, create_user, \
-    create_deposit, create_stock_with_event_offer
+from utils.test_utils import create_booking, \
+                             create_deposit, \
+                             create_offerer, \
+                             create_stock_with_event_offer, \
+                             create_stock_with_thing_offer, \
+                             create_user, \
+                             create_venue
 
 
 @clean_database
 @pytest.mark.standalone
-def test_find_all_by_offerer_sorted_by_date_modified_asc_with_event_and_things(app):
+def test_find_all_by_offerer_with_event_and_things(app):
     # given
     user = create_user()
     now = datetime.utcnow()
@@ -24,20 +30,15 @@ def test_find_all_by_offerer_sorted_by_date_modified_asc_with_event_and_things(a
     stock1 = create_stock_with_event_offer(offerer1, venue1, price=200)
     stock2 = create_stock_with_thing_offer(offerer1, venue1, thing_offer=None, price=300)
     stock3 = create_stock_with_thing_offer(offerer2, venue2, thing_offer=None, price=400)
-    booking1 = create_booking(user, stock1, venue1, recommendation=None, quantity=2,
-                              date_modified=now - timedelta(days=5))
-    booking2 = create_booking(user, stock2, venue1, recommendation=None, quantity=1,
-                              date_modified=now - timedelta(days=10))
-    booking3 = create_booking(user, stock3, venue2, recommendation=None, quantity=2,
-                              date_modified=now - timedelta(days=1))
-
+    booking1 = create_booking(user, stock1, venue1, recommendation=None, quantity=2)
+    booking2 = create_booking(user, stock2, venue1, recommendation=None, quantity=1)
+    booking3 = create_booking(user, stock3, venue2, recommendation=None, quantity=2)
     PcObject.check_and_save(booking1, booking2, booking3)
 
     # when
-    bookings = find_all_by_offerer_sorted_by_date_modified_asc(offerer1.id)
+    bookings = find_offerer_bookings(offerer1.id)
 
     # then
-    assert bookings[0].dateModified < bookings[1].dateModified
     assert booking1 in bookings
     assert booking2 in bookings
     assert booking3 not in bookings
@@ -61,7 +62,7 @@ def test_find_all_ongoing_bookings(app):
 
 
     # When
-    all_ongoing_bookings = booking_queries.find_all_ongoing_bookings_by_stock(stock)
+    all_ongoing_bookings = find_all_ongoing_bookings_by_stock(stock)
 
     # Then
     assert all_ongoing_bookings == [ongoing_booking]

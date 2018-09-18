@@ -115,6 +115,20 @@ BOOKING_INCLUDES = [
     "recommendation"
 ]
 
+PRO_BOOKING_INCLUDES = [
+    {
+        "key": "stock",
+        "sub_joins":
+            [
+                {
+                    "key": "resolvedOffer",
+                    "sub_joins": ["event", "thing"]
+                },
+                "eventOccurrence"
+            ]
+    }
+]
+
 USER_INCLUDES = [
     '-password',
     'wallet_balance'

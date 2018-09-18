@@ -6,16 +6,15 @@ from domain.admin_emails import maybe_send_offerer_validation_email
 from domain.reimbursement import find_all_booking_reimbursement
 from models import Offerer, PcObject, RightsType, UserOfferer
 from models.venue import create_digital_venue
-from repository.booking_queries import find_all_by_offerer_sorted_by_date_modified_asc
+from repository.booking_queries import find_offerer_bookings
 from utils.human_ids import dehumanize
-from utils.includes import OFFERER_INCLUDES
+from utils.includes import PRO_BOOKING_INCLUDES, OFFERER_INCLUDES
 from utils.rest import ensure_current_user_has_rights, \
-    expect_json_data, \
-    handle_rest_get_list, \
-    load_or_404, \
-    login_or_api_key_required
+                       expect_json_data, \
+                       handle_rest_get_list, \
+                       load_or_404, \
+                       login_or_api_key_required
 from utils.search import get_search_filter
-
 
 @app.route('/offerers', methods=['GET'])
 @login_required
@@ -46,15 +45,22 @@ def get_offerer(id):
     offerer = load_or_404(Offerer, id)
     return jsonify(offerer._asdict(include=OFFERER_INCLUDES)), 200
 
-
 @app.route('/offerers/<id>/bookings', methods=['GET'])
 @login_required
 def get_offerer_bookings(id):
-    ensure_current_user_has_rights(RightsType.editor, dehumanize(id))
-    bookings = find_all_by_offerer_sorted_by_date_modified_asc(dehumanize(id))
-    bookings_reimbursements = find_all_booking_reimbursement(bookings)
-    return jsonify(list(map(lambda b: b.as_dict(), bookings_reimbursements))[::-1]), 200
 
+    ensure_current_user_has_rights(RightsType.editor, dehumanize(id))
+
+    bookings = find_offerer_bookings(
+        dehumanize(id),
+        search=request.args.get('search'),
+        order_by=request.args.get('order_by'),
+        page=request.args.get('page', 1)
+    )
+
+    bookings_reimbursements = find_all_booking_reimbursement(bookings)
+
+    return jsonify([b.as_dict(include=PRO_BOOKING_INCLUDES) for b in bookings_reimbursements]), 200
 
 @app.route('/offerers', methods=['POST'])
 @login_or_api_key_required

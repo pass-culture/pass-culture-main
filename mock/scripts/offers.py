@@ -1,11 +1,23 @@
 """ offer """
 offer_mocks = [
-  {
-    "eventIndex": 0,
-    "venueIndex": 0
-  },
-  {
-    "eventIndex": 1,
-    "venueIndex": 0
-  }
+    {
+        "eventName": "Rencontre avec Franck Lepage",
+        "venueName": "LE GRAND REX PARIS"
+    },
+    {
+        "eventName": "Rencontre avec Franck Lepage",
+        "venueName": "LE GRAND REX PARIS"
+    },
+    {
+        "eventName": "Concert de Gael Faye",
+        "venueName": "THEATRE DE L ODEON"
+    },
+    {
+        "eventName": "PNL chante Marx",
+        "venueName": "THEATRE DE L ODEON"
+    },
+    {
+        "thingName": "Ravage",
+        "venueName": "THEATRE DE L ODEON"
+    }
 ]
