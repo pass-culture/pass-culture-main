@@ -42,7 +42,7 @@ def pc_restore_database():
         return
     print("Target database backup : done")
     print("Database restore : start")
-    command = 'pg_restore $DATABASE_URL /tmp/database.pgdump'
+    command = 'pg_restore -d $DATABASE_URL -c /tmp/database.pgdump'
     p = Popen(command,shell=False,stdin=PIPE,stdout=PIPE,stderr=PIPE)
     print(p.communicate())
     if p.returncode != 1:
