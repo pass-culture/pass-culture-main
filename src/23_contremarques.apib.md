@@ -58,16 +58,16 @@ Ceci décrit l'API utilisable par les partenaires techniques de Pass Culture qui
    + offerId (optional, string) - identifiant de l'offre supposée correspondre à la réservation
  
  + Request (application/json)
- 
-     + Headers
-        Authorization: Bearer xxxxx.yyyyy.zzzzz
- 
-     + Body
-        { 
-          "token": "AXB32J", 
-          "email": "test@test.com",
-          "offerId": "ABDE"
-        }
+
+    + Body
+    
+            [
+              {
+                 "token": "AXB32J", 
+                 "email": "test@test.com",
+                 "offerId": "ABDE"
+              }
+            ]
  
  + Response 200 (application/json)
  
