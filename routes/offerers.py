@@ -5,7 +5,7 @@ from flask_login import current_user, login_required
 from domain.admin_emails import maybe_send_offerer_validation_email
 from domain.reimbursement import find_all_booking_reimbursement
 from models import Offerer, PcObject, RightsType, UserOfferer
-from models.venue import create_digital_venue, Venue
+from models.venue import create_digital_venue
 from repository.booking_queries import find_all_by_offerer_sorted_by_date_modified_asc
 from utils.human_ids import dehumanize
 from utils.includes import OFFERER_INCLUDES
@@ -14,19 +14,29 @@ from utils.rest import ensure_current_user_has_rights, \
     handle_rest_get_list, \
     load_or_404, \
     login_or_api_key_required
+from utils.search import get_search_filter
 
 
 @app.route('/offerers', methods=['GET'])
 @login_required
 def list_offerers():
     query = Offerer.query
+
     if not current_user.isAdmin:
         query = query.join(UserOfferer) \
             .filter_by(user=current_user)
+
+    search = request.args.get('search')
+    if search is not None:
+        query = query.filter(get_search_filter([Offerer], search))
+
     return handle_rest_get_list(Offerer,
-                                query=query,
                                 include=OFFERER_INCLUDES,
-                                order_by=Offerer.name)
+                                order_by=Offerer.name,
+                                page=request.args.get('page'),
+                                paginate=10,
+                                query=query
+                                )
 
 
 @app.route('/offerers/<id>', methods=['GET'])
