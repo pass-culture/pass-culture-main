@@ -49,6 +49,7 @@ const CONDITIONAL_FIELDS = {
   visa: ['CINEMA'],
   isbn: ['LIVRE_EDITION'],
   musicType: ['MUSIQUE', 'MUSIQUE_ABO'],
+  showType: ['SPECTACLE_VIVANT'],
 }
 
 class OfferPage extends Component {
@@ -273,6 +274,8 @@ class OfferPage extends Component {
       user,
       musicTypes1,
       musicTypes2,
+      showTypes1,
+      showTypes2,
     } = this.props
     const { apiPath, isNew, isReadOnly, isEventType } = this.state
     const eventOrThingName = get(event, 'name') || get(thing, 'name')
@@ -515,6 +518,32 @@ class OfferPage extends Component {
                     </Fragment>
                   )}
 
+                  {this.hasConditionalField('showType') && (
+                    <Fragment>
+                      <Field
+                        type="select"
+                        label="Type de spectacle"
+                        name="showType1"
+                        setKey="extraData"
+                        options={showTypes1}
+                        optionValue="code"
+                        optionLabel="label"
+                      />
+
+                      {showTypes2.length > 0 && (
+                        <Field
+                          type="select"
+                          label="Sous type"
+                          name="showType2"
+                          setKey="extraData"
+                          options={showTypes2}
+                          optionValue="code"
+                          optionLabel="label"
+                        />
+                      )}
+                    </Fragment>
+                  )}
+
                   {false && (
                     <Fragment>
                       <Field
@@ -640,6 +669,15 @@ export default compose(
       )
     }
 
+    const showTypes1 = eddSelectors.showTypeParentsSelector()
+
+    let showTypes2 = []
+    if (extraData.showType1) {
+      showTypes2 = eddSelectors.showTypeChildrenSelector(
+        Number(extraData.showType1)
+      )
+    }
+
     return {
       event,
       eventOccurrences,
@@ -660,6 +698,8 @@ export default compose(
       venues,
       musicTypes1,
       musicTypes2,
+      showTypes1,
+      showTypes2,
     }
   })
 )(OfferPage)
