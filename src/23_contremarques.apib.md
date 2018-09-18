@@ -53,9 +53,9 @@ Ceci décrit l'API utilisable par les partenaires techniques de Pass Culture qui
  
  + Parameters
  
-  + token (string) - le code de réservation
-  + email (string) - correspond à l'email de la personne qui tente d'utiliser la contremarque pour obtenir une offre
-  + offerId (optional, string) - identifiant de l'offre supposée correspondre à la réservation
+   + token (string) - le code de réservation
+   + email (string) - correspond à l'email de la personne qui tente d'utiliser la contremarque pour obtenir une offre
+   + offerId (optional, string) - identifiant de l'offre supposée correspondre à la réservation
  
  + Request (application/json)
  
