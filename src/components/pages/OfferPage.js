@@ -11,6 +11,7 @@ import {
   showNotification,
   SubmitButton,
   withLogin,
+  eddSelectors,
 } from 'pass-culture-shared'
 import React, { Component, Fragment } from 'react'
 import { connect } from 'react-redux'
@@ -47,6 +48,7 @@ const CONDITIONAL_FIELDS = {
   author: ['CINEMA', 'MUSIQUE', 'SPECTACLE_VIVANT', 'LIVRE_EDITION'],
   visa: ['CINEMA'],
   isbn: ['LIVRE_EDITION'],
+  musicType: ['MUSIQUE', 'MUSIQUE_ABO'],
 }
 
 class OfferPage extends Component {
@@ -269,6 +271,8 @@ class OfferPage extends Component {
       venues,
       url,
       user,
+      musicTypes1,
+      musicTypes2,
     } = this.props
     const { apiPath, isNew, isReadOnly, isEventType } = this.state
     const eventOrThingName = get(event, 'name') || get(thing, 'name')
@@ -484,6 +488,33 @@ class OfferPage extends Component {
                       isExpanded
                     />
                   )}
+
+                  {this.hasConditionalField('musicType') && (
+                    <Fragment>
+                      <Field
+                        type="select"
+                        label="Genre musical"
+                        name="musicType1"
+                        setKey="extraData"
+                        options={musicTypes1}
+                        optionValue="code"
+                        optionLabel="label"
+                      />
+
+                      {musicTypes2.length > 0 && (
+                        <Field
+                          type="select"
+                          label="Sous genre"
+                          name="musicType2"
+                          setKey="extraData"
+                          options={musicTypes2}
+                          optionValue="code"
+                          optionLabel="label"
+                        />
+                      )}
+                    </Fragment>
+                  )}
+
                   {false && (
                     <Fragment>
                       <Field
@@ -598,6 +629,17 @@ export default compose(
       venue
     )
 
+    const extraData = get(state, 'form.offer.extraData') || {}
+
+    const musicTypes1 = eddSelectors.musicTypeParentsSelector()
+
+    let musicTypes2 = []
+    if (extraData.musicType1) {
+      musicTypes2 = eddSelectors.musicTypeChildrenSelector(
+        Number(extraData.musicType1)
+      )
+    }
+
     return {
       event,
       eventOccurrences,
@@ -616,6 +658,8 @@ export default compose(
       user,
       venue,
       venues,
+      musicTypes1,
+      musicTypes2,
     }
   })
 )(OfferPage)
