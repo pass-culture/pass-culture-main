@@ -236,11 +236,14 @@ def make_reset_password_email(user, app_origin_url):
 
 
 def make_validation_confirmation_email(user_offerer, offerer):
-    user_offerer_email = find_user_offerer_email(user_offerer.id)
-    if user_offerer.rights == RightsType.admin:
-        user_offerer_rights = 'administrateur'
-    else:
-        user_offerer_rights = 'éditeur'
+    user_offerer_email = None
+    user_offerer_rights = None
+    if user_offerer is not None:
+        user_offerer_email = find_user_offerer_email(user_offerer.id)
+        if user_offerer.rights == RightsType.admin:
+            user_offerer_rights = 'administrateur'
+        else:
+            user_offerer_rights = 'éditeur'
     email_html = render_template(
         'validation_confirmation_email.html',
         user_offerer_email=user_offerer_email,

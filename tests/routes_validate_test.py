@@ -4,7 +4,8 @@ import pytest
 
 from models import Offerer, PcObject
 from tests.conftest import clean_database
-from utils.test_utils import req, create_user, req_with_auth, API_URL, create_offerer, create_booking
+from utils.test_utils import req, create_user, req_with_auth, API_URL, create_offerer, create_booking, \
+    create_user_offerer
 
 
 @clean_database
@@ -31,7 +32,9 @@ def test_validate_offerer(app):
         'Crédit Coopératif',
         validation_token=offerer_token
     )
-    PcObject.check_and_save(offerer)
+    user = create_user()
+    user_offerer = create_user_offerer(user, offerer, is_admin=True)
+    PcObject.check_and_save(offerer, user_offerer)
     offerer_id = offerer.id
     del (offerer)
 

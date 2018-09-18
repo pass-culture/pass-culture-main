@@ -8,7 +8,7 @@ from domain.user_emails import send_user_driven_cancellation_email_to_user, \
     send_offerer_driven_cancellation_email_to_offerer, \
     send_booking_confirmation_email_to_user, send_booking_recap_emails, send_final_booking_recap_email, \
     send_validation_confirmation_email
-from models import Offerer, UserOfferer, User
+from models import Offerer, UserOfferer, User, RightsType
 from tests.utils_mailing_test import HTML_USER_BOOKING_EVENT_CONFIRMATION_EMAIL, \
     SUBJECT_USER_EVENT_BOOKING_CONFIRMATION_EMAIL
 from utils.config import IS_DEV, IS_STAGING, ENV
@@ -476,6 +476,7 @@ def test_send_validation_confirmation_email(app):
     # Given
     offerer = Offerer()
     user_offerer = UserOfferer()
+    user_offerer.rights = RightsType.editor
     user_offerer.user = User(email='test@email.com')
     mocked_send_create_email = Mock()
     return_value = Mock()
@@ -485,7 +486,7 @@ def test_send_validation_confirmation_email(app):
     with patch('domain.user_emails.feature_send_mail_to_users_enabled', return_value=True), patch(
             'domain.user_emails.make_validation_confirmation_email',
             return_value={'Html-part': ''}) as make_cancellation_email, patch(
-        'domain.user_emails.find_user_offerer_email', return_value='test@email.com'):
+        'domain.user_emails.find_all_admin_offerer_emails', return_value=['admin1@email.com', 'admin2@email.com']):
         # When
         send_validation_confirmation_email(user_offerer, offerer, mocked_send_create_email)
 
@@ -494,7 +495,7 @@ def test_send_validation_confirmation_email(app):
 
     mocked_send_create_email.assert_called_once()
     args = mocked_send_create_email.call_args
-    assert args[1]['data']['To'] == 'test@email.com'
+    assert args[1]['data']['To'] == 'admin1@email.com, admin2@email.com'
     mocked_send_create_email.reset_mock()
     make_cancellation_email.reset_mock()
 

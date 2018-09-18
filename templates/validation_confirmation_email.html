@@ -2,7 +2,7 @@
     <body>
         <p id="mail-greeting">Cher partenaire pass Culture,</p>
         <p id="validation-details">
-            {% if user_offerer_email and offerer %}Votre structure "{{ offerer.name }}" vient d'être validée par notre équipe. L'utilisateur {{ user_offerer_email }} y a été rattaché en tant qu'{{ user_offerer_rights }}.
+            {% if offerer %}Votre structure "{{ offerer.name }}" vient d'être validée par notre équipe. {% if user_offerer_email %}L'utilisateur {{ user_offerer_email }} y a été rattaché en tant qu'{{ user_offerer_rights }}.{% endif %}
             {% else %}L'utilisateur {{ user_offerer_email }} a été validé en tant qu'{{ user_offerer_rights }} par notre équipe.
             {% endif %}
         </p>

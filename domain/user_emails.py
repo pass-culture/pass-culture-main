@@ -1,5 +1,6 @@
 from repository.booking_queries import find_all_ongoing_bookings_by_stock
 from repository.features import feature_send_mail_to_users_enabled
+from repository.offerer_queries import find_all_admin_offerer_emails
 from repository.stock_queries import set_booking_recap_sent_and_save
 from repository.user_offerer_queries import find_user_offerer_email
 from utils.config import ENV
@@ -94,11 +95,20 @@ def send_reset_password_email(user, send_create_email, app_origin_url):
 
 
 def send_validation_confirmation_email(user_offerer, offerer, send_create_email):
-    recipients = [find_user_offerer_email(user_offerer.id)]
+    offerer_id = _get_offerer_id(offerer, user_offerer)
+    recipients = find_all_admin_offerer_emails(offerer_id)
     email = make_validation_confirmation_email(user_offerer, offerer)
     email['Html-part'], email['To'] = _edit_email_html_part_and_recipients(email['Html-part'], recipients)
     mail_result = send_create_email(data=email)
     check_if_email_sent(mail_result)
+
+
+def _get_offerer_id(offerer, user_offerer):
+    if offerer is None:
+        offerer_id = user_offerer.offerer.id
+    else:
+        offerer_id = offerer.id
+    return offerer_id
 
 
 def _edit_email_html_part_and_recipients(email_html_part, recipients):

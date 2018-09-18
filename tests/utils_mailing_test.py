@@ -946,3 +946,20 @@ def test_make_validation_confirmation_email_user_offerer_editor(app):
     assert 'Votre structure "Le Théâtre SAS"' not in html_validation_details
     assert 'L\'utilisateur editor@letheatresas.com a été validé' in html_validation_details
     assert 'en tant qu\'éditeur' in html_validation_details
+
+
+@clean_database
+@pytest.mark.standalone
+@pytest.mark.validation_confirmation
+def test_make_validation_confirmation_email_offerer(app):
+    # Given
+    offerer = create_offerer(name='Le Théâtre SAS')
+    # When
+    with patch('utils.mailing.find_user_offerer_email', return_value='admin@letheatresas.com'):
+        email = make_validation_confirmation_email(user_offerer=None, offerer=offerer)
+    # Then
+    email_html = BeautifulSoup(email['Html-part'], 'html.parser')
+    html_validation_details = str(email_html.find('p', {'id': 'validation-details'}))
+    print(email)
+    assert 'Votre structure "Le Théâtre SAS"' in html_validation_details
+    assert 'L\'utilisateur' not in html_validation_details
