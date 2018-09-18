@@ -272,10 +272,10 @@ class OfferPage extends Component {
       venues,
       url,
       user,
-      musicTypes1,
-      musicTypes2,
-      showTypes1,
-      showTypes2,
+      musicTypes,
+      musicSubTypes,
+      showTypes,
+      showSubTypes,
     } = this.props
     const { apiPath, isNew, isReadOnly, isEventType } = this.state
     const eventOrThingName = get(event, 'name') || get(thing, 'name')
@@ -497,20 +497,20 @@ class OfferPage extends Component {
                       <Field
                         type="select"
                         label="Genre musical"
-                        name="musicType1"
+                        name="musicType"
                         setKey="extraData"
-                        options={musicTypes1}
+                        options={musicTypes}
                         optionValue="code"
                         optionLabel="label"
                       />
 
-                      {musicTypes2.length > 0 && (
+                      {musicSubTypes.length > 0 && (
                         <Field
                           type="select"
                           label="Sous genre"
-                          name="musicType2"
+                          name="musicSubType"
                           setKey="extraData"
-                          options={musicTypes2}
+                          options={musicSubTypes}
                           optionValue="code"
                           optionLabel="label"
                         />
@@ -523,20 +523,20 @@ class OfferPage extends Component {
                       <Field
                         type="select"
                         label="Type de spectacle"
-                        name="showType1"
+                        name="showType"
                         setKey="extraData"
-                        options={showTypes1}
+                        options={showTypes}
                         optionValue="code"
                         optionLabel="label"
                       />
 
-                      {showTypes2.length > 0 && (
+                      {showSubTypes.length > 0 && (
                         <Field
                           type="select"
                           label="Sous type"
-                          name="showType2"
+                          name="showSubType"
                           setKey="extraData"
-                          options={showTypes2}
+                          options={showSubTypes}
                           optionValue="code"
                           optionLabel="label"
                         />
@@ -660,21 +660,21 @@ export default compose(
 
     const extraData = get(state, 'form.offer.extraData') || {}
 
-    const musicTypes1 = eddSelectors.musicTypeParentsSelector()
+    const musicTypes = eddSelectors.musicTypeParentsSelector()
 
-    let musicTypes2 = []
-    if (extraData.musicType1) {
-      musicTypes2 = eddSelectors.musicTypeChildrenSelector(
-        Number(extraData.musicType1)
+    let musicSubTypes = []
+    if (extraData.musicType) {
+      musicSubTypes = eddSelectors.musicTypeChildrenSelector(
+        Number(extraData.musicType)
       )
     }
 
-    const showTypes1 = eddSelectors.showTypeParentsSelector()
+    const showTypes = eddSelectors.showTypeParentsSelector()
 
-    let showTypes2 = []
-    if (extraData.showType1) {
-      showTypes2 = eddSelectors.showTypeChildrenSelector(
-        Number(extraData.showType1)
+    let showSubTypes = []
+    if (extraData.showType) {
+      showSubTypes = eddSelectors.showTypeChildrenSelector(
+        Number(extraData.showType)
       )
     }
 
@@ -696,10 +696,10 @@ export default compose(
       user,
       venue,
       venues,
-      musicTypes1,
-      musicTypes2,
-      showTypes1,
-      showTypes2,
+      musicTypes,
+      musicSubTypes,
+      showTypes,
+      showSubTypes,
     }
   })
 )(OfferPage)
