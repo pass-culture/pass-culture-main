@@ -9,6 +9,7 @@ from utils.rest import ensure_current_user_has_rights, \
     expect_json_data, \
     load_or_404, \
     handle_rest_get_list
+from validation.venues import validate_coordinates
 
 
 @app.route('/venues', methods=['GET'])
@@ -25,6 +26,7 @@ def get_venue(venueId):
 @app.route('/venues', methods=['POST'])
 @expect_json_data
 def create_venue():
+    validate_coordinates(request.json.get('latitude', None), request.json.get('longitude', None))
     venue = Venue(from_dict=request.json)
     venue.departementCode = 'XX'  # avoid triggerring check on this
     save_venue(venue)
@@ -35,6 +37,7 @@ def create_venue():
 @expect_json_data
 def edit_venue(venueId):
     venue = load_or_404(Venue, venueId)
+    validate_coordinates(request.json.get('latitude', None), request.json.get('longitude', None))
     ensure_current_user_has_rights(RightsType.editor, venue.managingOffererId)
     venue.populateFromDict(request.json)
     save_venue(venue)

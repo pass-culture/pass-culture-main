@@ -94,6 +94,27 @@ def test_modify_venue_with_is_virtual_returns_400_if_a_virtual_venue_already_exi
 
 @clean_database
 @pytest.mark.standalone
+def test_modify_venue_with_is_virtual_returns_400_if_a_virtual_venue_already_exist_for_an_offerer(app):
+    # given
+    offerer = create_offerer()
+    user = create_user(email='user.pro@test.com')
+    venue = create_venue(offerer, name='Les petits papiers', is_virtual=False)
+    user_offerer = create_user_offerer(user, offerer)
+    PcObject.check_and_save(user_offerer, venue)
+    auth_request = req_with_auth(email=user.email, password=user.clearTextPassword)
+    data = {'latitude': -98.82387, 'longitude': '112°3534'}
+
+    # when
+    response = auth_request.patch(API_URL + '/venues/%s' % humanize(venue.id), json=data)
+
+    # then
+    assert response.status_code == 400
+    assert response.json()['latitude'] == ['La latitude doit être comprise entre -90.0 et +90.0']
+    assert response.json()['longitude'] == ['Format incorrect']
+
+
+@clean_database
+@pytest.mark.standalone
 def test_create_venue_returns_201_with_the_newly_created_venue(app):
     # given
     offerer = create_offerer(siren='302559178')
@@ -164,3 +185,36 @@ def test_create_venue_returns_400_if_a_virtual_venue_already_exist_for_an_offere
     # then
     assert response.status_code == 400
     assert response.json() == {'isVirtual': ['Un lieu pour les offres numériques existe déjà pour cette structure']}
+
+
+@clean_database
+@pytest.mark.standalone
+def test_create_venue_returns_400_if_given_latitude_and_longitudes_are_invalid(app):
+    # given
+    offerer = create_offerer(siren='302559178')
+    user = create_user(email='user.pro@test.com')
+    user_offerer = create_user_offerer(user, offerer)
+    PcObject.check_and_save(user_offerer)
+
+    data = {
+        'name': 'Ma venue',
+        'siret': '30255917810045',
+        'address': '75 Rue Charles Fourier, 75013 Paris',
+        'postalCode': '75200',
+        'bookingEmail': 'toto@btmx.fr',
+        'city': 'Paris',
+        'managingOffererId': humanize(offerer.id),
+        'latitude': -98.82387,
+        'longitude': '112°3534',
+        'isVirtual': False
+    }
+
+    auth_request = req_with_auth(email=user.email, password=user.clearTextPassword)
+
+    # when
+    response = auth_request.post(API_URL + '/venues/', json=data)
+
+    # then
+    assert response.status_code == 400
+    assert response.json()['latitude'] == ['La latitude doit être comprise entre -90.0 et +90.0']
+    assert response.json()['longitude'] == ['Format incorrect']
