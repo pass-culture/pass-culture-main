@@ -32,7 +32,7 @@ def pc_restore_database():
     if "TARGET_DATABASE" not in os.environ:
         print("Job cancelled : $TARGET_DATABASE is not set.")
         return
-    #
+    
     # print("Install dbclient for postgresql : start")
     # command = 'dbclient-fetcher postgresql 10.4'
     # p = Popen(command,shell=True,stdin=PIPE,stdout=PIPE,stderr=PIPE)
