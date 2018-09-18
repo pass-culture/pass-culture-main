@@ -6,8 +6,6 @@ Ceci décrit l'API utilisable par les partenaires techniques de Pass Culture qui
 
 ##### Vérifier une contremarque [GET /bookings/token/\<token\>]
 
-Vérifie la validité d'une contremarque et récupère les informations de la transaction associée (uniquement si la contremarque est associée à une offre du partenaire identifié sur l'API).
-
 + Parameters
 
   + token (string) - le code de réservation
