@@ -25,7 +25,11 @@ const MenuHeader = ({ user }) => {
         <p className="fs30">
           <span>Mon Pass</span>
         </p>
-        <p id="main-menu-header-wallet-value" className="fs48">
+        <p
+          id="main-menu-header-wallet-value"
+          className="fs52 is-normal"
+          style={{ lineHeight: '42px' }}
+        >
           <span>{`${wallet}€`}</span>
         </p>
       </div>

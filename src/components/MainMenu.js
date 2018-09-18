@@ -5,8 +5,8 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { Transition } from 'react-transition-group'
-import { Scrollbars } from 'react-custom-scrollbars'
 import { withRouter } from 'react-router-dom'
+// import { Scrollbars } from 'react-custom-scrollbars'
 
 import routes from '../utils/routes'
 import MenuItem from './menu/MenuItem'
@@ -70,28 +70,24 @@ class MainMenu extends React.PureComponent {
     const { isVisible, user } = this.props
     return (
       <Transition in={isVisible} timeout={transitionDelay}>
-        {state => (
+        {status => (
           <div
             id="main-menu"
-            className="is-overlay p12 flex-rows flex-end"
-            style={{ ...defaultStyle, ...transitionStyles[state] }}
+            className={`is-overlay ${status}`}
+            style={{ ...defaultStyle, ...transitionStyles[status] }}
           >
-            <div className="inner is-relative is-clipped">
-              {this.renderCloseButton()}
-              <div id="main-menu-fixed-container">
-                <Scrollbars autoHide>
-                  <div className="scroll-container pc-theme-red">
-                    <MenuHeader user={user} />
-                    {/* <!-- Navigation Items --> */}
-                    <nav
-                      id="main-menu-navigation"
-                      className="flex-rows mt16 pb0"
-                    >
-                      {this.renderNavigationLinks()}
-                    </nav>
-                    {/* <!-- Navigation Items --> */}
-                  </div>
-                </Scrollbars>
+            <div className="inner is-full-layout is-relative flex-rows flex-end">
+              <div className="pc-scroll-container">
+                <div
+                  id="main-menu-fixed-container"
+                  className="pc-theme-red is-relative"
+                >
+                  {this.renderCloseButton()}
+                  <MenuHeader user={user} />
+                  <nav id="main-menu-navigation" className="flex-rows mt16 pb0">
+                    {this.renderNavigationLinks()}
+                  </nav>
+                </div>
               </div>
             </div>
           </div>

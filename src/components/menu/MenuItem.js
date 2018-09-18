@@ -10,7 +10,7 @@ const renderLinkContent = (icon, title, styles) => (
     <span style={styles} className="text-center menu-icon mr16 text-center">
       <Icon svg={`ico-${icon}`} alt="" />
     </span>
-    <span>
+    <span className="is-medium">
       {title}
     </span>
   </React.Fragment>

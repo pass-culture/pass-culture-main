@@ -83,8 +83,6 @@ const MonPassCulture = ({ user }) => {
   )
 }
 
-MonPassCulture.defaultProps = {}
-
 MonPassCulture.propTypes = {
   user: PropTypes.object.isRequired,
 }

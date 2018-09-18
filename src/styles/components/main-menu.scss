@@ -1,28 +1,39 @@
 $main-menu-height: 592px;
 $main-menu-header-height: 152px;
+$main-menu-around-padding: 12px;
+$main-menu-height-with-padding: (592px + 24px); // 24 === padding (2 * 12)
 
 #main-menu {
   z-index: $zindex-main-menu;
 }
 
-#main-menu .inner,
-#main-menu .scroll-container {
-  border-radius: rem(16px);
+#main-menu .pc-scroll-container {
+  height: auto;
+  min-height: auto;
+  max-height: auto;
+  overflow: hidden;
+  padding: $main-menu-around-padding;
+}
+
+@media (max-height: $main-menu-height-with-padding) {
+  // prevent scrollbar flickering
+  // cas du flickering car la hauteur est exactement egale a 616px
+  #main-menu .pc-scroll-container {
+    overflow: auto;
+  }
 }
 
 #main-menu-fixed-container {
-  height: 100%;
-}
-
-#main-menu .inner {
-  max-height: 100%;
+  border-radius: rem(16px);
   height: $main-menu-height;
+  max-height: $main-menu-height;
+  min-height: $main-menu-height;
 }
 
 #main-menu-close-button {
   z-index: 1;
-  top: rem(16px);
-  right: rem(16px);
+  top: rem(22px);
+  right: rem(22px);
 }
 
 #main-menu-header {
@@ -32,12 +43,12 @@ $main-menu-header-height: 152px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.4);
 
   .column-profile {
-    width: 40%;
+    width: 45%;
     min-width: 108px;
   }
 
   .column-account {
-    width: 60%;
+    width: 55%;
     border-left: 1px solid $white;
   }
 }
