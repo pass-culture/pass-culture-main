@@ -44,6 +44,7 @@ const CONDITIONAL_FIELDS = {
     'PRATIQUE_ARTISTIQUE_ABO',
     'PRATIQUE_ARTISTIQUE',
   ],
+  author: ['CINEMA', 'MUSIQUE', 'SPECTACLE_VIVANT', 'LIVRE_EDITION'],
 }
 
 class OfferPage extends Component {
@@ -449,6 +450,15 @@ class OfferPage extends Component {
                       type="text"
                       label="Intervenant"
                       name="speaker"
+                      setKey="extraData"
+                    />
+                  )}
+
+                  {this.hasConditionalField('author') && (
+                    <Field
+                      type="text"
+                      label="Auteur"
+                      name="author"
                       setKey="extraData"
                     />
                   )}
