@@ -232,6 +232,20 @@ class OfferPage extends Component {
     }
   }
 
+  hasSpeaker() {
+    if (!this.props.type) {
+      return false
+    }
+
+    const EVENT_TYPES = [
+      'CONFERENCE_DEBAT_DEDICACE',
+      'PRATIQUE_ARTISTIQUE_ABO',
+      'PRATIQUE_ARTISTIQUE',
+    ]
+
+    return EVENT_TYPES.indexOf(this.props.type.value) > -1
+  }
+
   render() {
     const {
       event,
@@ -427,13 +441,16 @@ class OfferPage extends Component {
                     rows={isReadOnly ? 1 : 5}
                     type="textarea"
                   />
-                  <Field
-                    isExpanded
-                    label="Auteur"
-                    name="author"
-                    setKey="extraData"
-                  />
-                  {isEventType && (
+
+                  {this.hasSpeaker() && (
+                    <Field
+                      type="text"
+                      label="Intervenant"
+                      name="speaker"
+                      setKey="extraData"
+                    />
+                  )}
+                  {false && (
                     <Fragment>
                       <Field
                         isExpanded
