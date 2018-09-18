@@ -44,10 +44,10 @@ const BookingItem = ({ booking, recommendation }) => {
         <Thumb src={thumbUrl} />
         <div className="infos">
           <div className="top">
-            <h5 title={name}>
+            <h5 title={name} className="fs18 is-semi-bold">
               <Dotdotdot clamp={date ? 2 : 3}>{name}</Dotdotdot>
             </h5>
-            <span>{dateString}</span>
+            <span className="fs13">{dateString}</span>
           </div>
           {!completedUrl && <div className="token">{token}</div>}
         </div>

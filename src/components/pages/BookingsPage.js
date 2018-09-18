@@ -9,6 +9,7 @@ import { Link } from 'react-router-dom'
 import get from 'lodash.get'
 import { Scrollbars } from 'react-custom-scrollbars'
 
+import { ROOT_PATH } from '../../utils/config'
 import BookingItem from '../layout/BookingItem'
 import {
   selectSoonBookings,
@@ -79,6 +80,7 @@ class BookingsPage extends Component {
     const soonBookingsLength = soonBookings.length
     const otherBookingsLength = otherBookings.length
     const hasNoBooking = soonBookingsLength === 0 && otherBookingsLength === 0
+    const backgroundImage = `url('${ROOT_PATH}/mosaic-k@2x.png')`
     return (
       <div id="bookings-page" className="page is-relative flex-rows">
         {!isloading && (
@@ -89,11 +91,11 @@ class BookingsPage extends Component {
             />
             <main
               role="main"
-              className="pc-main pc-gradient padded flex-rows flex-start"
+              className="pc-main pc-gradient flex-rows flex-start"
             >
-              <Scrollbars>
+              <Scrollbars style={{ backgroundImage }}>
                 {soonBookingsLength > 0 && (
-                  <div>
+                  <div className="px12 mt36">
                     <h4 className="mb16 fs19 is-uppercase is-white-text">
                       <i>C&apos;est bientôt !</i>
                     </h4>
@@ -101,7 +103,7 @@ class BookingsPage extends Component {
                   </div>
                 )}
                 {otherBookingsLength > 0 && (
-                  <div>
+                  <div className="px12 my36">
                     <h4 className="mb16 fs19 is-uppercase is-white-text">
                       <i>Réservations</i>
                     </h4>
