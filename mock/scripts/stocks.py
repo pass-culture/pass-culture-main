@@ -1,12 +1,12 @@
 """ stocks """
 stock_mocks = [
     {
-        "available": 5,
+        "available": 10,
         "eventOccurrenceIndex": 0,
         "price": 10
     },
     {
-        "available": 4,
+        "available": 15,
         "eventOccurrenceIndex": 1,
         "price": 15
     },
