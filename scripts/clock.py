@@ -37,9 +37,9 @@ def pc_restore_database():
     command = 'dbclient-fetcher postgresql 10.4'
     p = Popen(command,shell=True,stdin=PIPE,stdout=PIPE,stderr=PIPE)
     print(p.communicate())
-    if p.returncode != 1:
-        print("An error as occured during the backup process.")
-        return
+    # if p.returncode != 1:
+    #     print("An error as occured during the backup process.")
+    #     return
     print("Install dbclient for postgresql : done")
 
     print("Target database backup : start")
