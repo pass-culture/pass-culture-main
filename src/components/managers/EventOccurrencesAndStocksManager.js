@@ -182,13 +182,15 @@ export default compose(
 
     const eventId = get(offer, 'eventId')
     const event = eventSelector(state, eventId)
-    const eventOccurrences =
-      event && eventOccurrencesSelector(state, ownProps.match.params.offerId)
+    const eventOccurrences = eventOccurrencesSelector(
+      state,
+      ownProps.match.params.offerId
+    )
 
     const thingId = get(offer, 'thingId')
     const thing = thingSelector(state, thingId)
 
-    const stocks = stocksSelector(state, offerId, eventOccurrences)
+    const stocks = stocksSelector(state, offerId, event && eventOccurrences)
 
     console.log(
       'eventOccurrenceIdOrNew, stockIdOrNew',
