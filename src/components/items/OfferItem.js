@@ -209,7 +209,7 @@ export default compose(
         const event = eventSelector(state, eventId)
         const thing = thingSelector(state, thingId)
         const typeValue = get(event, 'type') || get(thing, 'type')
-        const eventOccurrences = eventOccurrencesSelector(state, id)
+        const eventOccurrences = event && eventOccurrencesSelector(state, id)
         const venue = venueSelector(state, ownProps.offer.venueId)
         const offerrer = offerrerSelector(state, venue.managingOffererId)
         return {
