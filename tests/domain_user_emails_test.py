@@ -471,7 +471,6 @@ def test_send_final_booking_recap_email_sends_email_only_to_passculture_if_featu
 
 
 @pytest.mark.standalone
-@pytest.mark.validation_confirmation
 def test_send_validation_confirmation_email(app):
     # Given
     offerer = Offerer()
@@ -501,7 +500,6 @@ def test_send_validation_confirmation_email(app):
 
 
 @pytest.mark.standalone
-@pytest.mark.validation_confirmation
 def test_send_validation_confirmation_email_when_status_code_400(app):
     # Given
     offerer = Offerer()

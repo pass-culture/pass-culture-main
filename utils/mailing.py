@@ -250,11 +250,16 @@ def make_validation_confirmation_email(user_offerer, offerer):
         offerer=offerer,
         user_offerer_rights=user_offerer_rights
     )
-
+    if user_offerer and offerer:
+        subject = 'Validation de votre stucture et de compte {} rattaché'.format(user_offerer_rights)
+    elif user_offerer:
+        subject = 'Validation de compte {} rattaché à votre structure'.format(user_offerer_rights)
+    else:
+        subject = 'Validation de votre stucture'
     return {
-        'FromName': 'Pass Culture',
+        'FromName': 'pass Culture pro',
         'FromEmail': 'passculture@beta.gouv.fr' if feature_send_mail_to_users_enabled() else 'passculture-dev@beta.gouv.fr',
-        'Subject': 'Validation de votre compte pro',
+        'Subject': subject,
         'Html-part': email_html,
     }
 

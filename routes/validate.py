@@ -42,14 +42,10 @@ def validate():
 
     PcObject.check_and_save(*objects_to_validate)
 
-    user_offerers = [obj for obj in objects_to_validate if isinstance(obj, UserOfferer)]
-    user_offerer = None
-    if user_offerers :
-        user_offerer = user_offerers[0]
+    user_offerers = iter([obj for obj in objects_to_validate if isinstance(obj, UserOfferer)])
+    user_offerer = next(user_offerers, None)
 
-    offerer = None
-    offerers = [obj for obj in objects_to_validate if isinstance(obj, Offerer)]
-    if offerers:
-        offerer = offerers[0]
+    offerers = iter([obj for obj in objects_to_validate if isinstance(obj, Offerer)])
+    offerer = next(offerers, None)
     send_validation_confirmation_email(user_offerer, offerer, app.mailjet_client.send.create)
     return "Validation effectuée", 202

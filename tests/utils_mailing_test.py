@@ -890,7 +890,6 @@ def test_make_offerer_driven_cancellation_email_for_offerer_thing_and_already_ex
 
 @clean_database
 @pytest.mark.standalone
-@pytest.mark.validation_confirmation
 def test_make_validation_confirmation_email_offerer_user_offerer_admin(app):
     # Given
     user = create_user(email='admin@letheatresas.com')
@@ -906,11 +905,12 @@ def test_make_validation_confirmation_email_offerer_user_offerer_admin(app):
     assert 'Votre structure "Le Théâtre SAS"' in html_validation_details
     assert 'L\'utilisateur admin@letheatresas.com' in html_validation_details
     assert 'en tant qu\'administrateur' in html_validation_details
+    assert email['FromName'] == 'pass Culture pro'
+    assert email['Subject'] == 'Validation de votre stucture et de compte administrateur rattaché'
 
 
 @clean_database
 @pytest.mark.standalone
-@pytest.mark.validation_confirmation
 def test_make_validation_confirmation_email_offerer_user_offerer_editor(app):
     # Given
     user = create_user(email='admin@letheatresas.com')
@@ -926,11 +926,12 @@ def test_make_validation_confirmation_email_offerer_user_offerer_editor(app):
     assert 'Votre structure "Le Théâtre SAS"' in html_validation_details
     assert 'L\'utilisateur editor@letheatresas.com' in html_validation_details
     assert 'en tant qu\'éditeur' in html_validation_details
+    assert email['FromName'] == 'pass Culture pro'
+    assert email['Subject'] == 'Validation de votre stucture et de compte éditeur rattaché'
 
 
 @clean_database
 @pytest.mark.standalone
-@pytest.mark.validation_confirmation
 def test_make_validation_confirmation_email_user_offerer_editor(app):
     # Given
     user = create_user(email='admin@letheatresas.com')
@@ -946,11 +947,12 @@ def test_make_validation_confirmation_email_user_offerer_editor(app):
     assert 'Votre structure "Le Théâtre SAS"' not in html_validation_details
     assert 'L\'utilisateur editor@letheatresas.com a été validé' in html_validation_details
     assert 'en tant qu\'éditeur' in html_validation_details
+    assert email['FromName'] == 'pass Culture pro'
+    assert email['Subject'] == 'Validation de compte éditeur rattaché à votre structure'
 
 
 @clean_database
 @pytest.mark.standalone
-@pytest.mark.validation_confirmation
 def test_make_validation_confirmation_email_offerer(app):
     # Given
     offerer = create_offerer(name='Le Théâtre SAS')
@@ -963,3 +965,5 @@ def test_make_validation_confirmation_email_offerer(app):
     print(email)
     assert 'Votre structure "Le Théâtre SAS"' in html_validation_details
     assert 'L\'utilisateur' not in html_validation_details
+    assert email['FromName'] == 'pass Culture pro'
+    assert email['Subject'] == 'Validation de votre stucture'
