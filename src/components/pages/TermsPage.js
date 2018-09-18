@@ -1,6 +1,7 @@
 /* eslint
   react/jsx-one-expression-per-line: 0 */
 import React from 'react'
+import PropTypes from 'prop-types'
 import ReactMarkdown from 'react-markdown'
 import { Scrollbars } from 'react-custom-scrollbars'
 
@@ -22,6 +23,7 @@ class TermsPage extends React.PureComponent {
 
   render() {
     const { source } = this.state
+    const { appversion } = this.props
     const backgroundImage = `url('${ROOT_PATH}/mosaic-k@2x.png')`
     return (
       <div id="terms-page" className="page is-relative flex-rows">
@@ -31,7 +33,7 @@ class TermsPage extends React.PureComponent {
             <div className="padded content" style={{ backgroundImage }}>
               <ReactMarkdown source={source} />
               <div className="mt16">
-                <p>Pass Culture version v{APP_VERSION}</p>
+                <p>Pass Culture version v{appversion}</p>
               </div>
             </div>
           </Scrollbars>
@@ -40,6 +42,16 @@ class TermsPage extends React.PureComponent {
       </div>
     )
   }
+}
+
+TermsPage.defaultProps = {
+  appversion: APP_VERSION,
+}
+
+TermsPage.propTypes = {
+  // pass `appversion` from props
+  // only for enzyme snapshots tests
+  appversion: PropTypes.string,
 }
 
 export default TermsPage

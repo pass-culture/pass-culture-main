@@ -1,6 +1,7 @@
 import React from 'react'
-import BetaPage from '../BetaPage'
 import { shallow } from 'enzyme'
+
+import BetaPage from '../BetaPage'
 
 describe('src | components | pages | BetaPage', () => {
   describe('snapshot', () => {
