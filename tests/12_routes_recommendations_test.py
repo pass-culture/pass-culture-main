@@ -17,19 +17,23 @@ def assert_no_duplicate_mediations(recos):
 
 
 def assert_recos_offer_venue_is_in_93_is_event_is_not_national(recos):
-    recos_without_tutos = [r for r in recos if 'mediation' in r and 'tutoIndex' not in r['mediation']]
+    recos_without_tutos = _remove_tutos(recos)
     for reco in recos_without_tutos:
-        if not reco['event']['isNational']:
-            assert reco.offer.venue.departementCode == '93'
+        if not reco['offer']['eventOrThing']['isNational'] :
+            assert reco['offer']['venue']['departementCode'] == '93'
+
+
+def _remove_tutos(recos):
+    return [r for r in recos if 'mediation' not in r or 'tutoIndex' not in r['mediation']]
 
 
 def assert_no_mediations_with_stock_past_their_booking_limit(recos):
-    recos_without_tutos = [r for r in recos if 'mediation' in r and 'tutoIndex' not in r['mediation']]
+    recos_without_tutos = _remove_tutos(recos)
     for reco in recos_without_tutos:
         assert not all([
             stock['bookingLimitDatetime'] is not None
             and parse_date(stock['bookingLimitDatetime']) <= datetime.utcnow()
-            for stock in oc['stocks'] for oc in reco['mediatedOccurrences']]
+            for stock in reco['offer']['stocks']]
         )
 
 

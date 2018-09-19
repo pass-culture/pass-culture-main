@@ -322,7 +322,7 @@ def create_stock_with_thing_offer(offerer, venue, thing_offer, price=10, availab
 
 
 def create_thing(thing_type='Book', thing_name='Test Book', media_urls='test/urls', author_name='Test Author', url=None,
-                 thumb_count=1):
+                 thumb_count=1, is_national=False):
     thing = Thing()
     thing.type = thing_type
     thing.name = thing_name
@@ -331,17 +331,19 @@ def create_thing(thing_type='Book', thing_name='Test Book', media_urls='test/url
     thing.extraData = {'author': author_name}
     thing.url = url
     thing.thumbCount = thumb_count
+    thing.isNational = is_national
     if thumb_count > 0:
         thing.firstThumbDominantColor = b'123'
     return thing
 
 
-def create_event(event_name='Test event', duration_minutes=60, thumb_count=0, dominant_color=None):
+def create_event(event_name='Test event', duration_minutes=60, thumb_count=0, dominant_color=None, is_national=False):
     event = Event()
     event.name = event_name
     event.durationMinutes = duration_minutes
     event.thumbCount = thumb_count
     event.firstThumbDominantColor = dominant_color
+    event.isNational = is_national
     return event
 
 
@@ -360,11 +362,12 @@ def create_thing_offer(venue, thing=None, date_created=datetime.utcnow(), bookin
     return offer
 
 
-def create_event_offer(venue, event_name='Test event', duration_minutes=60, date_created=datetime.utcnow(),
+def create_event_offer(venue, event=None, event_name='Test event', duration_minutes=60, date_created=datetime.utcnow(),
                        booking_email='booking.email@test.com', thumb_count=0, dominant_color=None):
     offer = Offer()
-    event = create_event(event_name=event_name, duration_minutes=duration_minutes, thumb_count=thumb_count,
-                         dominant_color=dominant_color)
+    if event is None:
+        event = create_event(event_name=event_name, duration_minutes=duration_minutes, thumb_count=thumb_count,
+                             dominant_color=dominant_color)
     offer.event = event
     offer.venue = venue
     offer.dateCreated = date_created

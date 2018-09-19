@@ -6,6 +6,7 @@ from pandas import read_csv
 from pathlib import Path
 import re
 
+from models import Thing
 from models.event import Event
 from models.event_occurrence import EventOccurrence
 from models.local_provider import LocalProvider, ProvidableInfo
@@ -134,6 +135,11 @@ class SpreadsheetExpStocks(LocalProvider):
             obj.mediaUrls = [self.line['Lien Internet']]
             obj.durationMinutes = format_duration(self.line['Durée'])
             obj.isNational = is_filled(self.line["Territoire\n(Reporting)"])\
+                             and (str(self.line["Territoire\n(Reporting)"]) == '0'
+                                  or str(self.line["Territoire\n(Reporting)"]) == '0.0')
+
+        elif isinstance(obj, Thing):
+            obj.isNational = is_filled(self.line["Territoire\n(Reporting)"]) \
                              and (str(self.line["Territoire\n(Reporting)"]) == '0'
                                   or str(self.line["Territoire\n(Reporting)"]) == '0.0')
 

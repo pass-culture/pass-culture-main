@@ -21,6 +21,8 @@ def departement_or_national_offers(query, offer_type, departement_codes):
     condition = Venue.departementCode.in_(departement_codes)
     if offer_type == Event:
         condition = (condition | (Event.isNational == True))
+    if offer_type == Thing:
+        condition = (condition | (Thing.isNational == True))
     query = query.filter(condition)
     logger.debug(lambda: '(reco) departement .count ' + str(query.count()))
     return query

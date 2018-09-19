@@ -1,11 +1,11 @@
 """ thing model """
 import enum
-from sqlalchemy import BigInteger,\
-                       CheckConstraint,\
-                       Column,\
-                       Index,\
-                       String,\
-                       Text
+from sqlalchemy import BigInteger, \
+    CheckConstraint, \
+    Column, \
+    Index, \
+    String, \
+    Text, Boolean
 from sqlalchemy.dialects.postgresql import ARRAY, TEXT
 from sqlalchemy.sql.expression import cast
 from sqlalchemy.sql.functions import coalesce
@@ -91,6 +91,10 @@ class Thing(PcObject,
                           default=[])
 
     url = Column(String(255), nullable=True)
+
+    isNational = Column(Boolean,
+                        default=False,
+                        nullable=False)
 
     @property
     def isDigital(self):
