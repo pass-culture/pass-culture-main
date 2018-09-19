@@ -47,18 +47,18 @@ def pc_restore_database():
     p = Popen(command,shell=True,stdin=PIPE,stdout=PIPE,stderr=PIPE)
     print("Target database backup : en cours")
     print(p.communicate())
-    if p.returncode != 1:
-        print("An error as occured during the backup process.")
-        return
+    # if p.returncode != 1:
+    #     print("An error as occured during the backup process.")
+    #     return
     print("Target database backup : done")
 
     print("Database restore : start")
     command = '$HOME/bin/pg_restore -d $DATABASE_URL -c /tmp/database.pgdump'
     p = Popen(command,shell=False,stdin=PIPE,stdout=PIPE,stderr=PIPE)
     print(p.communicate())
-    if p.returncode != 1:
-        print("An error as occured during the restore process.")
-        return
+    # if p.returncode != 1:
+    #     print("An error as occured during the restore process.")
+    #     return
     print("Database restore : done")
 
     print("Cron send_final_booking_recaps: END")
