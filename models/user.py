@@ -52,6 +52,14 @@ class User(PcObject,
 
     resetPasswordTokenValidityLimit = Column(DateTime)
 
+    firstName = Column(String(35), nullable=False)
+
+    lastName = Column(String(35), nullable=False)
+
+    postalCode = Column(String(5), nullable=False)
+
+    phoneNumber = Column(String(10), nullable=True)
+
     def checkPassword(self, passwordToCheck):
         return bcrypt.hashpw(passwordToCheck.encode('utf-8'), self.password) == self.password
 
