@@ -31,7 +31,8 @@ class Accessibility(Enum):
 
 class EventType(Enum):
     CINEMA = {
-        'label': "Cinéma (Projections, Séances, Évènements)", 'offlineOnly': True,
+        'label': "Cinéma (Projections, Séances, Évènements)",
+        'offlineOnly': True,
         'onlineOnly': False,
         'sublabel': "Regarder"
     }

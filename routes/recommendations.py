@@ -7,6 +7,7 @@ from flask_login import current_user, login_required
 from domain.build_recommendations import build_mixed_recommendations, \
     move_requested_recommendation_first, \
     move_tutorial_recommendations_first
+from domain.types import get_type_labels_from_sublabels
 from models import PcObject, Recommendation
 from recommendations_engine import create_recommendations_for_discovery, \
                                    create_recommendations_for_search
@@ -28,13 +29,16 @@ from utils.rest import expect_json_data
 def list_recommendations():
 
     types = None
-    if 'types' in request.args:
-        types = request.args['types'].split(',')
+    if 'types' in request.args and request.args['types']:
+        type_sublabels = request.args['types'].split(',')
+        types = get_type_labels_from_sublabels(type_sublabels)
 
     between_dates = None
-    if 'between_dates' in request.args:
+    if 'between_dates' in request.args and request.args['between_dates']:
         between_dates = request.args['between_dates'].split(',')
 
+
+    print('RRR TYPES', types)
     recommendations = create_recommendations_for_search(
         current_user,
         page=request.args.get('page', 1),

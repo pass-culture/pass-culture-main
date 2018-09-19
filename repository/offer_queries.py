@@ -133,11 +133,16 @@ def get_offers_for_recommendations_search(page=1, keywords=None, types=None, max
                                  .outerjoin(Venue)\
                                  .filter(get_keywords_filter([Event, Thing, Venue], keywords))
 
+    print('TYPES', types)
     if types is not None:
-        offer_query = offer_query.outerjoin(Event)\
-                                 .filter(Event.type.in_(types))\
-                                 .outerjoin(Thing)\
-                                 .filter(Thing.type.in_(types))
+        print('TYPES', types)
+        event_offer_query = offer_query.outerjoin(Event)\
+                                       .filter(Event.type.in_(types))
+
+        thing_offer_query = offer_query.outerjoin(Thing)\
+                                       .filter(Thing.type.in_(types))
+
+        offer_query = event_offer_query.union_all(thing_offer_query)
 
     offers = offer_query.paginate(int(page), per_page=10, error_out=False)\
                         .items

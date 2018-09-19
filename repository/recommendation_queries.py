@@ -105,3 +105,4 @@ def filter_unseen_recommendations_for_user(query, user, seen_recommendation_ids)
 
 def find_favored_recommendations_for_user(user):
     return Recommendation.query.filter_by(user=user, isFavorite=True).all()
+    
