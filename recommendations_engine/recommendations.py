@@ -123,8 +123,25 @@ def _create_recommendation(user, offer, mediation=None):
     return recommendation
 
 
-def create_recommendations_for_search(user, page=1, keywords=None, types=None, max_distance=None, between_dates=None):
-    offers = get_offers_for_recommendations_search(page, keywords, types, max_distance, between_dates)
+def create_recommendations_for_search(
+    user,
+    page=1,
+    keywords=None,
+    types=None,
+    max_distance=None,
+    latitude=None,
+    longitude=None,
+    between_dates=None
+):
+    offers = get_offers_for_recommendations_search(
+        page,
+        keywords,
+        types,
+        max_distance,
+        latitude,
+        longitude,
+        between_dates
+    )
     offer_ids = [offer.id for offer in offers]
     existing_recommendations = find_recommendations_for_user_matching_offers_and_search_term(user.id, offer_ids, keywords)
     offer_ids_with_already_created_recommendations = [reco.offerId for reco in existing_recommendations]

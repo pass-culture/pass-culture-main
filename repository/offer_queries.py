@@ -14,6 +14,7 @@ from models import Booking, \
 from models import Thing
 from models.db import db
 from repository.user_offerer_queries import filter_query_where_user_is_user_offerer_and_is_validated
+from utils.distance import get_geo_distance_in_kilometers
 from utils.logger import logger
 from utils.search import get_keywords_filter
 
@@ -118,7 +119,7 @@ def get_offers_for_recommendations_search(
     page=1,
     keywords=None,
     types=None,
-    latitute=None,
+    latitude=None,
     longitude=None,
     max_distance=None,
     between_dates=None):
@@ -128,11 +129,14 @@ def get_offers_for_recommendations_search(
     # NOTE: which order of the filters is the best for minimal time computation ?
     # Question à 500 patates.
 
-    if max_distance is not None:
-        distance_instrument = func.sqrt(
-           func.pow(Venue.latitude - latitude, 2) +
-           func.pow(Venue.longitude - longitude, 2)
+    if max_distance is not None and latitude is not None and longitude is not None:
+        distance_instrument = get_geo_distance_in_kilometers(
+            Venue.latitude,
+            Venue.longitude,
+            latitude,
+            longitude
         )
+        print('max_distance', max_distance, 'latitude', latitude, 'longitude', longitude)
         offer_query = offer_query.join(Venue)\
                                  .filter(distance_instrument < max_distance)
 

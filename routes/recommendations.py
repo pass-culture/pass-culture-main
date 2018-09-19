@@ -34,15 +34,31 @@ def list_recommendations():
         types = get_type_labels_from_sublabels(type_sublabels)
 
     between_dates = None
-    if 'between_dates' in request.args and request.args['between_dates']:
-        between_dates = request.args['between_dates'].split(',')
+    if 'dates' in request.args and request.args['dates']:
+        between_dates = [
+            interval.split('-') for interval in request.args['dates'].split(',')
+        ]
+
+    distance = None
+    if 'distance' in request.args and request.args['distance']:
+        max_distance = float(request.args['distance'])
+
+    latitude = None
+    if 'latitude' in request.args and request.args['latitude']:
+        latitude = float(request.args['latitude'])
+
+    longitude = None
+    if 'longitude' in request.args and request.args['longitude']:
+        longitude = float(request.args['longitude'])
 
     recommendations = create_recommendations_for_search(
         current_user,
         page=request.args.get('page', 1),
         keywords=request.args.get('keywords'),
         types=types,
-        max_distance=request.args.get('max_distance'),
+        max_distance=max_distance,
+        latitude=latitude,
+        longitude=longitude,
         between_dates=between_dates
     )
 
