@@ -42,10 +42,6 @@ def pc_restore_database():
     #     return
     print("Install dbclient for postgresql : done")
 
-    command = 'ls -al $HOME'
-    p = Popen(command,shell=True,stdin=PIPE,stdout=PIPE,stderr=PIPE)
-    print(p.communicate())
-
     command = 'ls -al $HOME/bin'
     p = Popen(command,shell=True,stdin=PIPE,stdout=PIPE,stderr=PIPE)
     print(p.communicate())
@@ -61,7 +57,7 @@ def pc_restore_database():
     #     return
     print("Target database backup : done")
 
-    command = 'ls -al /tmp'
+    command = 'ls -al $HOME'
     p = Popen(command,shell=True,stdin=PIPE,stdout=PIPE,stderr=PIPE)
     print(p.communicate())
 
