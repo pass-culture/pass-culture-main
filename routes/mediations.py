@@ -6,6 +6,7 @@ from models.api_errors import ApiErrors
 from models.mediation import Mediation
 from models.pc_object import PcObject
 from models.user_offerer import RightsType
+from utils.logger import logger
 from utils.human_ids import dehumanize
 from utils.rest import ensure_current_user_has_rights, load_or_404, expect_json_data
 from utils.thumb import has_thumb, get_crop, read_thumb
@@ -14,9 +15,9 @@ from utils.thumb import has_thumb, get_crop, read_thumb
 @app.route('/mediations', methods=['POST'])
 @login_required
 def create_mediation():
+    api_errors = ApiErrors()
 
     if not has_thumb():
-        api_errors = ApiErrors()
         api_errors.addError('thumb', "Vous devez fournir une image d'accroche")
         return jsonify(api_errors.errors), 400
 
@@ -30,7 +31,12 @@ def create_mediation():
     new_mediation.offererId = offerer_id
     PcObject.check_and_save(new_mediation)
 
-    new_mediation.save_thumb(read_thumb(), 0, crop=get_crop())
+    try:
+        new_mediation.save_thumb(read_thumb(), 0, crop=get_crop())
+    except ValueError as e:
+        logger.error(e)
+        api_errors.addError('thumbUrl', "L'adresse saisie n'est pas valide")
+        raise api_errors
 
     return jsonify(new_mediation), 201
 
