@@ -11,6 +11,7 @@ import {
   showNotification,
   SubmitButton,
   withLogin,
+  eddSelectors,
 } from 'pass-culture-shared'
 import React, { Component, Fragment } from 'react'
 import { connect } from 'react-redux'
@@ -37,6 +38,21 @@ import venueSelector from '../../selectors/venue'
 import venuesSelector from '../../selectors/venues'
 import { offerNormalizer } from '../../utils/normalizers'
 import { pluralize } from '../../utils/string'
+
+const CONDITIONAL_FIELDS = {
+  speaker: [
+    'CONFERENCE_DEBAT_DEDICACE',
+    'PRATIQUE_ARTISTIQUE_ABO',
+    'PRATIQUE_ARTISTIQUE',
+  ],
+  author: ['CINEMA', 'MUSIQUE', 'SPECTACLE_VIVANT', 'LIVRE_EDITION'],
+  visa: ['CINEMA'],
+  isbn: ['LIVRE_EDITION'],
+  musicType: ['MUSIQUE', 'MUSIQUE_ABO'],
+  showType: ['SPECTACLE_VIVANT'],
+  stageDirector: ['CINEMA', 'SPECTACLE_VIVANT'],
+  performer: ['MUSIQUE', 'SPECTACLE_VIVANT'],
+}
 
 class OfferPage extends Component {
   constructor() {
@@ -232,6 +248,14 @@ class OfferPage extends Component {
     }
   }
 
+  hasConditionalField(fieldName) {
+    if (!this.props.type) {
+      return false
+    }
+
+    return CONDITIONAL_FIELDS[fieldName].indexOf(this.props.type.value) > -1
+  }
+
   render() {
     const {
       event,
@@ -250,6 +274,10 @@ class OfferPage extends Component {
       venues,
       url,
       user,
+      musicTypes,
+      musicSubTypes,
+      showTypes,
+      showSubTypes,
     } = this.props
     const { apiPath, isNew, isReadOnly, isEventType } = this.state
     const eventOrThingName = get(event, 'name') || get(thing, 'name')
@@ -427,27 +455,113 @@ class OfferPage extends Component {
                     rows={isReadOnly ? 1 : 5}
                     type="textarea"
                   />
-                  <Field
-                    isExpanded
-                    label="Auteur"
-                    name="author"
-                    setKey="extraData"
-                  />
-                  {isEventType && (
+
+                  {this.hasConditionalField('speaker') && (
+                    <Field
+                      type="text"
+                      label="Intervenant"
+                      name="speaker"
+                      setKey="extraData"
+                    />
+                  )}
+
+                  {this.hasConditionalField('author') && (
+                    <Field
+                      type="text"
+                      label="Auteur"
+                      name="author"
+                      setKey="extraData"
+                    />
+                  )}
+
+                  {this.hasConditionalField('visa') && (
+                    <Field
+                      type="text"
+                      label="Visa d'exploitation (obligatoire si applicable)"
+                      name="visa"
+                      setKey="extraData"
+                      isExpanded
+                    />
+                  )}
+
+                  {this.hasConditionalField('isbn') && (
+                    <Field
+                      type="text"
+                      label="ISBN (obligatoire si applicable)"
+                      name="isbn"
+                      setKey="extraData"
+                      isExpanded
+                    />
+                  )}
+
+                  {this.hasConditionalField('musicType') && (
                     <Fragment>
                       <Field
-                        isExpanded
-                        label="Metteur en scène"
-                        name="stageDirector"
+                        type="select"
+                        label="Genre musical"
+                        name="musicType"
                         setKey="extraData"
+                        options={musicTypes}
+                        optionValue="code"
+                        optionLabel="label"
                       />
-                      <Field
-                        isExpanded
-                        label="Interprète"
-                        name="performer"
-                        setKey="extraData"
-                      />
+
+                      {musicSubTypes.length > 0 && (
+                        <Field
+                          type="select"
+                          label="Sous genre"
+                          name="musicSubType"
+                          setKey="extraData"
+                          options={musicSubTypes}
+                          optionValue="code"
+                          optionLabel="label"
+                        />
+                      )}
                     </Fragment>
+                  )}
+
+                  {this.hasConditionalField('showType') && (
+                    <Fragment>
+                      <Field
+                        type="select"
+                        label="Type de spectacle"
+                        name="showType"
+                        setKey="extraData"
+                        options={showTypes}
+                        optionValue="code"
+                        optionLabel="label"
+                      />
+
+                      {showSubTypes.length > 0 && (
+                        <Field
+                          type="select"
+                          label="Sous type"
+                          name="showSubType"
+                          setKey="extraData"
+                          options={showSubTypes}
+                          optionValue="code"
+                          optionLabel="label"
+                        />
+                      )}
+                    </Fragment>
+                  )}
+
+                  {this.hasConditionalField('stageDirector') && (
+                    <Field
+                      isExpanded
+                      label="Metteur en scène"
+                      name="stageDirector"
+                      setKey="extraData"
+                    />
+                  )}
+
+                  {this.hasConditionalField('performer') && (
+                    <Field
+                      isExpanded
+                      label="Interprète"
+                      name="performer"
+                      setKey="extraData"
+                    />
                   )}
                 </div>
               </div>
@@ -547,6 +661,26 @@ export default compose(
       venue
     )
 
+    const extraData = get(state, 'form.offer.extraData') || {}
+
+    const musicTypes = eddSelectors.musicTypeParentsSelector()
+
+    let musicSubTypes = []
+    if (extraData.musicType) {
+      musicSubTypes = eddSelectors.musicTypeChildrenSelector(
+        Number(extraData.musicType)
+      )
+    }
+
+    const showTypes = eddSelectors.showTypeParentsSelector()
+
+    let showSubTypes = []
+    if (extraData.showType) {
+      showSubTypes = eddSelectors.showTypeChildrenSelector(
+        Number(extraData.showType)
+      )
+    }
+
     return {
       event,
       eventOccurrences,
@@ -565,6 +699,10 @@ export default compose(
       user,
       venue,
       venues,
+      musicTypes,
+      musicSubTypes,
+      showTypes,
+      showSubTypes,
     }
   })
 )(OfferPage)
