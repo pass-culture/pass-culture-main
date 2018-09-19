@@ -102,7 +102,7 @@ def test_make_user_booking_event_recap_email_should_have_standard_subject(app):
     # Given
     venue = create_venue(None, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
     stock = create_stock_with_event_offer(offerer=None, venue=venue)
-    user = create_user('Test', 93, 'test@email.com', True)
+    user = create_user('Test', departement_code=93, email='test@email.com', can_book_free_offers=True)
     booking = create_booking(user, stock, venue, None)
 
     # When
@@ -119,7 +119,7 @@ def test_make_user_booking_event_recap_email_should_have_standard_body(app):
     # Given
     venue = create_venue(None, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
     stock = create_stock_with_event_offer(offerer=None, venue=venue)
-    user = create_user('Test', 93, 'test@email.com', True)
+    user = create_user('Test', departement_code=93, email='test@email.com', can_book_free_offers=True)
     booking = create_booking(user, stock, venue, None)
     booking.token = '56789'
     expected_email_soup = BeautifulSoup(HTML_USER_BOOKING_EVENT_CONFIRMATION_EMAIL, 'html.parser')
@@ -139,7 +139,7 @@ def test_make_user_booking_event_recap_email_should_have_standard_subject_cancel
     # Given
     venue = create_venue(None, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
     stock = create_stock_with_event_offer(offerer=None, venue=venue)
-    user = create_user('Test', 93, 'test@email.com', True)
+    user = create_user('Test', departement_code=93, email='test@email.com', can_book_free_offers=True)
     booking = create_booking(user, stock, venue, None)
 
     # When
@@ -157,7 +157,7 @@ def test_make_user_booking_event_recap_email_should_have_standard_body_cancellat
     venue = create_venue(None, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
     stock = create_stock_with_event_offer(offerer=None,
                                           venue=venue)
-    user = create_user('Test', 93, 'test@email.com', True)
+    user = create_user('Test', departement_code=93, email='test@email.com', can_book_free_offers=True)
     booking = create_booking(user, stock, venue, None)
     expected_email_soup = BeautifulSoup(HTML_USER_BOOKING_EVENT_CANCELLATION_EMAIL, 'html.parser')
 
@@ -178,7 +178,7 @@ def test_maker_user_booking_thing_recap_email_should_have_standard_body(app):
     thing_offer = create_thing_offer(venue=None)
     stock = create_stock_with_thing_offer(offerer=None, venue=venue, thing_offer=thing_offer)
     stock.offer.thing.idAtProviders = '12345'
-    user = create_user('Test', 93, 'test@email.com', True)
+    user = create_user('Test', departement_code=93, email='test@email.com', can_book_free_offers=True)
     booking = create_booking(user, stock, venue, None)
     booking.token = '56789'
     expected_email_soup = BeautifulSoup(HTML_USER_BOOKING_THING_CONFIRMATION_EMAIL, 'html.parser')
@@ -200,7 +200,7 @@ def test_maker_user_booking_thing_recap_email_should_have_standard_subject(app):
     thing_offer = create_thing_offer(venue=None)
     stock = create_stock_with_thing_offer(offerer=None, venue=venue, thing_offer=thing_offer)
     stock.offer.thing.idAtProviders = '12345'
-    user = create_user('Test', 93, 'test@email.com', True)
+    user = create_user('Test', departement_code=93, email='test@email.com', can_book_free_offers=True)
     booking = create_booking(user, stock, venue, None)
 
     # When
@@ -219,7 +219,7 @@ def test_make_user_booking_thing_recap_email_should_have_standard_subject_cancel
     thing_offer = create_thing_offer(venue=None)
     stock = create_stock_with_thing_offer(offerer=None, venue=venue, thing_offer=thing_offer)
     stock.offer.thing.idAtProviders = '12345'
-    user = create_user('Test', 93, 'test@email.com', True)
+    user = create_user('Test', departement_code=93, email='test@email.com', can_book_free_offers=True)
     booking = create_booking(user, stock, venue, None)
 
     # When
@@ -238,7 +238,7 @@ def test_make_user_booking_thing_recap_email_should_have_standard_body_cancellat
     thing_offer = create_thing_offer(venue=None)
     stock = create_stock_with_thing_offer(offerer=None, venue=venue, thing_offer=thing_offer)
     stock.offer.thing.idAtProviders = '12345'
-    user = create_user('Test', 93, 'test@email.com', True)
+    user = create_user('Test', departement_code=93, email='test@email.com', can_book_free_offers=True)
     booking = create_booking(user, stock, venue, None)
     expected_email_soup = BeautifulSoup(HTML_USER_BOOKING_THING_CANCELLATION_EMAIL, 'html.parser')
 
@@ -258,7 +258,7 @@ def test_booking_recap_email_html_should_have_place_and_structure(app):
     venue = create_venue(None, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
     stock = create_stock_with_event_offer(offerer=None,
                                           venue=venue)
-    user = create_user('Test', 93, 'test@email.com', True)
+    user = create_user('Test', departement_code=93, email='test@email.com', can_book_free_offers=True)
     booking = create_booking(user, stock, venue, None)
     booking.token = '56789'
     expected_email_soup = BeautifulSoup(HTML_OFFERER_BOOKING_CONFIRMATION_EMAIL, 'html.parser')
@@ -280,7 +280,7 @@ def test_booking_recap_email_subject_should_have_defined_structure(app):
     venue = create_venue(None, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
     stock = create_stock_with_event_offer(offerer=None,
                                           venue=venue)
-    user = create_user('Test', 93, 'test@email.com', True)
+    user = create_user('Test', departement_code=93, email='test@email.com', can_book_free_offers=True)
     booking = create_booking(user, stock, venue, None)
 
     # When
@@ -300,10 +300,10 @@ def test_booking_recap_email_html_should_not_have_cancelled_or_used_bookings(app
     stock = create_stock_with_event_offer(offerer=Offerer(),
                                           venue=venue)
 
-    user1 = create_user('Test1', 93, 'test@email.com', True)
+    user1 = create_user('Test1', departement_code=93, email='test@email.com', can_book_free_offers=True)
     booking1 = create_booking(user1, stock)
 
-    user2 = create_user('Test2', 93, 'test@email.com', True)
+    user2 = create_user('Test2', departement_code=93, email='test@email.com', can_book_free_offers=True)
     booking2 = create_booking(user2, stock)
 
     user_cancelled = create_user('Cancelled')
@@ -408,7 +408,7 @@ def test_offerer_recap_email_past_offer_with_booking(app):
     stock = create_stock_with_event_offer(offerer=None,
                                           venue=venue,
                                           beginning_datetime_future=False)
-    user = create_user('Test', 93, 'test@email.com', True)
+    user = create_user('Test', departement_code=93, email='test@email.com', can_book_free_offers=True)
     booking = create_booking(user, stock, venue, None)
     booking.token = '56789'
     stock.bookings = [booking]
@@ -431,10 +431,10 @@ def test_offerer_recap_email_does_not_send_cancelled_or_used_booking(app):
     stock = create_stock_with_event_offer(offerer=Offerer(),
                                           venue=venue)
 
-    user1 = create_user('Test1', 93, 'test@email.com', True)
+    user1 = create_user('Test1', departement_code=93, email='test@email.com', can_book_free_offers=True)
     booking1 = create_booking(user1, stock)
 
-    user2 = create_user('Test2', 93, 'test@email.com', True)
+    user2 = create_user('Test2', departement_code=93, email='test@email.com', can_book_free_offers=True)
     booking2 = create_booking(user2, stock)
 
     user_cancelled = create_user('Cancelled')
@@ -495,8 +495,8 @@ def test_offerer_recap_email_future_offer_when_new_booking_with_old_booking(app)
     stock = create_stock_with_event_offer(offerer=None,
                                           venue=venue,
                                           beginning_datetime_future=True)
-    user_1 = create_user('Test', 93, 'test@email.com', True)
-    user_2 = create_user('Test', 93, 'test@email.com', True)
+    user_1 = create_user('Test', departement_code=93, email='test@email.com', can_book_free_offers=True)
+    user_2 = create_user('Test', departement_code=93, email='test@email.com', can_book_free_offers=True)
     user_2.publicName = 'Test 2'
     user_2.email = 'other_test@email.com'
     booking_1 = create_booking(user_1, stock, venue, None)
@@ -547,7 +547,7 @@ def test_offerer_booking_recap_email_book(app):
     thing_offer = create_thing_offer(venue=None)
     expected_html_soup = BeautifulSoup(expected_html, 'html.parser')
     stock = create_stock_with_thing_offer(offerer=None, venue=venue, thing_offer=thing_offer)
-    user = create_user('Test', 93, 'test@email.com', True)
+    user = create_user('Test', departement_code=93, email='test@email.com', can_book_free_offers=True)
     booking = create_booking(user, stock, venue, None)
     booking.token = '56789'
 
@@ -706,8 +706,8 @@ def test_make_offerer_booking_user_cancellation_email(app):
     venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
     thing_offer = create_thing_offer(venue)
     stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=0)
-    user_1 = create_user('Test1', 93, 'test1@email.com')
-    user_2 = create_user('Test2', 93, 'test2@email.com')
+    user_1 = create_user('Test1', departement_code=93, email='test1@email.com')
+    user_2 = create_user('Test2', departement_code=93, email='test2@email.com')
     booking_1 = create_booking(user_1, stock, venue)
     booking_2 = create_booking(user_2, stock, venue)
     booking_2.isCancelled = True

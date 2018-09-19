@@ -85,7 +85,7 @@ def test_post_offerers_create_an_offerer(app):
 def test_get_offerer_bookings_returns_bookings_with_their_reimbursements_ordered_newest_to_oldest(app):
     # given
     now = datetime.utcnow()
-    user_pro = create_user(password='p@55sw0rd', can_book_free_offers=False)
+    user_pro = create_user(can_book_free_offers=False, password='p@55sw0rd')
     user = create_user(email='test@email.com')
     deposit = create_deposit(user, now, amount=24000)
     PcObject.check_and_save(deposit)
@@ -119,7 +119,7 @@ def test_get_offerer_bookings_returns_bookings_with_their_reimbursements_ordered
 def test_get_offerer_bookings_returns_bookings_with_their_reimbursements_infos(app):
     # given
     now = datetime.utcnow()
-    user_pro = create_user(password='p@55sw0rd', can_book_free_offers=False)
+    user_pro = create_user(can_book_free_offers=False, password='p@55sw0rd')
     user = create_user(email='test@email.com')
     deposit = create_deposit(user, now, amount=500)
     PcObject.check_and_save(deposit)

@@ -9,13 +9,7 @@ from utils.test_utils import create_user, create_offerer, create_user_offerer
 @pytest.mark.standalone
 def test_cannot_create_admin_that_can_book(app):
     # Given
-    user = User()
-    user.publicName = 'Admin CanBook'
-    user.email = 'admin_can_book@email.com'
-    user.setPassword('testpsswd')
-    user.departementCode = '93'
-    user.isAdmin = True
-    user.canBookFreeOffers = True
+    user = create_user(can_book_free_offers=True, is_admin=True)
 
     # When
     with pytest.raises(ApiErrors):

@@ -2,17 +2,14 @@ import pytest
 
 from models import Deposit, PcObject, User
 from tests.conftest import clean_database
+from utils.test_utils import create_user
 
 
 @pytest.mark.standalone
 @clean_database
 def test_deposit_creation_1(app):
     # given
-    user = User()
-    user.email = 'test@example.com'
-    user.setPassword('abcd1234../')
-    user.publicName = 'John Bob'
-    user.departementCode = '93'
+    user = create_user()
 
     deposit = Deposit()
     deposit.user = user
@@ -30,11 +27,7 @@ def test_deposit_creation_1(app):
 @clean_database
 def test_deposit_creation_2(app):
     # given
-    user = User()
-    user.email = 'test@example.com'
-    user.setPassword('abcd1234../')
-    user.publicName = 'John Bob'
-    user.departementCode = '93'
+    user = create_user()
 
     deposit = Deposit()
     deposit.user = user

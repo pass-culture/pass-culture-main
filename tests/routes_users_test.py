@@ -15,6 +15,9 @@ from utils.test_utils import API_URL, req, req_with_auth, create_thing_offer, cr
 
 BASE_DATA = {
     'email': 'toto@btmx.fr',
+    'firstName': 'Toto',
+    'lastName': 'Martin',
+    'postalCode': '93100',
     'publicName': 'Toto',
     'password': 'toto12345678',
     'contact_ok': 'true'
@@ -23,6 +26,8 @@ BASE_DATA = {
 BASE_DATA_PRO = {
     'email': 'toto_pro@btmx.fr',
     'publicName': 'Toto Pro',
+    'firstName': 'Toto',
+    'lastName': 'Pro',
     'password': 'toto12345678',
     'contact_ok': 'true',
     'siren': '349974931',
@@ -219,7 +224,7 @@ def test_get_profile_should_work_only_when_logged_in():
 @pytest.mark.standalone
 @clean_database
 def test_get_profile_should_return_the_users_profile_without_password_hash(app):
-    user = create_user(email='toto@btmx.fr', public_name='Toto', departement_code='93', password='toto12345678')
+    user = create_user(public_name='Toto', departement_code='93', email='toto@btmx.fr', password='toto12345678')
     PcObject.check_and_save(user)
     r = req_with_auth(email='toto@btmx.fr',
                       password='toto12345678') \
@@ -400,7 +405,7 @@ def test_pro_signup_with_existing_offerer(app):
 @pytest.mark.standalone
 def test_user_should_have_its_wallet_balance(app):
     # Given
-    user = create_user(email='wallet_test@email.com', public_name='Test', departement_code='93', password='testpsswd')
+    user = create_user(public_name='Test', departement_code='93', email='wallet_test@email.com', password='testpsswd')
     PcObject.check_and_save(user)
 
     offerer = create_offerer('999199987', '2 Test adress', 'Test city', '93000', 'Test offerer')
@@ -442,6 +447,9 @@ def test_user_with_isAdmin_true_and_canBookFreeOffers_raises_error():
     user_json = {
         'email': 'pctest.isAdmin.canBook@btmx.fr',
         'publicName': 'IsAdmin CanBook',
+        'firstName': 'IsAdmin',
+        'lastName': 'CanBook',
+        'postalCode': '93100',
         'password': 'toto12345678',
         'contact_ok': 'true',
         'isAdmin': True,
@@ -462,7 +470,7 @@ def test_user_with_isAdmin_true_and_canBookFreeOffers_raises_error():
 @pytest.mark.standalone
 def test_user_wallet_should_be_30_if_sum_deposit_50_and_one_booking_quantity_2_amount_10(app):
     # Given
-    user = create_user(email='wallet_2_bookings_test@email.com', public_name='Test', departement_code='93',
+    user = create_user(public_name='Test', departement_code='93', email='wallet_2_bookings_test@email.com',
                        password='testpsswd')
     offerer = create_offerer('999199987', '2 Test adress', 'Test city', '93000', 'Test offerer')
     venue = create_venue(offerer)
@@ -488,7 +496,7 @@ def test_user_wallet_should_be_30_if_sum_deposit_50_and_one_booking_quantity_2_a
 @pytest.mark.standalone
 def test_get_current_user_returns_expenses(app):
     # Given
-    user = create_user(email='wallet_2_bookings_test@email.com', public_name='Test', departement_code='93',
+    user = create_user(public_name='Test', departement_code='93', email='wallet_2_bookings_test@email.com',
                        password='testpsswd')
     offerer = create_offerer('999199987', '2 Test adress', 'Test city', '93000', 'Test offerer')
     venue = create_venue(offerer)

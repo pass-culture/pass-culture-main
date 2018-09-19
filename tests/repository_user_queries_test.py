@@ -20,10 +20,10 @@ def test_find_user_by_department_and_date_range(app):
     date_max = '2018-06-06'
     date_min = '2018-05-05'
     department = '34'
-    user1 = create_user(email='a@a.f', departement_code='34', date_created=datetime(2018, 5, 10))
-    user2 = create_user(email='a@b.f', departement_code='93', date_created=datetime(2018, 5, 10))
-    user3 = create_user(email='a@c.f', departement_code='34', date_created=datetime(2018, 4, 10))
-    user4 = create_user(email='a@d.f', departement_code='34', date_created=datetime(2018, 9, 10))
+    user1 = create_user(departement_code='34', email='a@a.f', date_created=datetime(2018, 5, 10))
+    user2 = create_user(departement_code='93', email='a@b.f', date_created=datetime(2018, 5, 10))
+    user3 = create_user(departement_code='34', email='a@c.f', date_created=datetime(2018, 4, 10))
+    user4 = create_user(departement_code='34', email='a@d.f', date_created=datetime(2018, 9, 10))
     PcObject.check_and_save(user1, user2, user3, user4)
 
     # when
@@ -41,14 +41,14 @@ def test_find_user_by_department_and_date_range(app):
 def test_find_users_stats_per_department(app):
     # given
     time_intervall = 'month'
-    user1 = create_user(email='a@1.f', departement_code='34', date_created=datetime(2018, 4, 10))
-    user2 = create_user(email='a@2.f', departement_code='93', date_created=datetime(2018, 5, 10))
-    user3 = create_user(email='a@3.f', departement_code='34', date_created=datetime(2018, 4, 10))
-    user4 = create_user(email='a@4.f', departement_code='34', date_created=datetime(2018, 9, 10))
-    user5 = create_user(email='a@5.f', departement_code='29', date_created=datetime(2018, 3, 10))
-    user6 = create_user(email='a@6.f', departement_code='93', date_created=datetime(2018, 5, 10))
-    user7 = create_user(email='a@7.f', departement_code='34', date_created=datetime(2018, 5, 10))
-    user8 = create_user(email='a@8.f', departement_code='97', date_created=datetime(2018, 10, 10))
+    user1 = create_user(departement_code='34', email='a@1.f', date_created=datetime(2018, 4, 10))
+    user2 = create_user(departement_code='93', email='a@2.f', date_created=datetime(2018, 5, 10))
+    user3 = create_user(departement_code='34', email='a@3.f', date_created=datetime(2018, 4, 10))
+    user4 = create_user(departement_code='34', email='a@4.f', date_created=datetime(2018, 9, 10))
+    user5 = create_user(departement_code='29', email='a@5.f', date_created=datetime(2018, 3, 10))
+    user6 = create_user(departement_code='93', email='a@6.f', date_created=datetime(2018, 5, 10))
+    user7 = create_user(departement_code='34', email='a@7.f', date_created=datetime(2018, 5, 10))
+    user8 = create_user(departement_code='97', email='a@8.f', date_created=datetime(2018, 10, 10))
     PcObject.check_and_save(user1, user2, user3, user4, user5, user6, user7, user8)
 
     # when
@@ -69,12 +69,12 @@ def test_find_users_stats_per_department(app):
 def test_find_bookings_stats_per_department(app):
     # given
     time_intervall = 'month'
-    user1 = create_user(email='a@1.f', departement_code='34', date_created=datetime(2018, 4, 10))
-    user2 = create_user(email='a@2.f', departement_code='93', date_created=datetime(2018, 5, 10))
-    user3 = create_user(email='a@3.f', departement_code='34', date_created=datetime(2018, 4, 10))
-    user4 = create_user(email='a@4.f', departement_code='34', date_created=datetime(2018, 9, 10))
-    user5 = create_user(email='admin@test.com', departement_code='93', date_created=datetime(2018, 6, 10),
-                        can_book_free_offers=False, is_admin=True)
+    user1 = create_user(departement_code='34', email='a@1.f', date_created=datetime(2018, 4, 10))
+    user2 = create_user(departement_code='93', email='a@2.f', date_created=datetime(2018, 5, 10))
+    user3 = create_user(departement_code='34', email='a@3.f', date_created=datetime(2018, 4, 10))
+    user4 = create_user(departement_code='34', email='a@4.f', date_created=datetime(2018, 9, 10))
+    user5 = create_user(departement_code='93', email='admin@test.com', can_book_free_offers=False, is_admin=True,
+                        date_created=datetime(2018, 6, 10))
 
     offerer = create_offerer()
     venue34 = create_venue(offerer, departement_code='34', postal_code='34000')
@@ -241,10 +241,10 @@ def _create_activities_for_test(booking_activity_out_of_date, booking_event_OK, 
 
 
 def _create_bookings_for_test():
-    user_93 = create_user(email='93@email.com', departement_code='93')
-    user_93_2 = create_user(email='93_2@email.com', departement_code='93')
-    user_cant_book_free_offers = create_user(email='cnbfo@email.com', departement_code='93', can_book_free_offers=False)
-    user_34 = create_user(email='34@email.com', departement_code='34')
+    user_93 = create_user(departement_code='93', email='93@email.com')
+    user_93_2 = create_user(departement_code='93', email='93_2@email.com')
+    user_cant_book_free_offers = create_user(departement_code='93', email='cnbfo@email.com', can_book_free_offers=False)
+    user_34 = create_user(departement_code='34', email='34@email.com')
     offerer = create_offerer(name='Librairies et événements')
     venue_75 = create_venue(offerer, postal_code='75001', city='Paris', departement_code='75')
     venue_34 = create_venue(offerer, postal_code='34500', city='Béziers', departement_code='34')

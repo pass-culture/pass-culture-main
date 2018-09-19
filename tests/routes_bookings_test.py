@@ -137,8 +137,7 @@ def test_create_booking_should_work_if_user_can_book_and_enough_credit(app):
 @pytest.mark.standalone
 def test_create_booking_should_not_work_for_free_offer_if_not_userCanBookFreeOffers(app):
     # Given
-    user = create_user(email='cannotBook_freeOffers@email.com', can_book_free_offers=False,
-                       password='testpsswd')
+    user = create_user(email='cannotBook_freeOffers@email.com', can_book_free_offers=False, password='testpsswd')
     PcObject.check_and_save(user)
 
     offerer = create_offerer(siren='899999768', address='2 Test adress', city='Test city', postal_code='93000',
@@ -497,7 +496,7 @@ def test_cancel_booking_for_other_users_returns_403_and_does_not_mark_the_bookin
 @pytest.mark.standalone
 def test_an_admin_cancelling_a_users_booking_returns_200_and_effectively_marks_the_booking_as_cancelled(app):
     # Given
-    admin_user = create_user(email='test@email.com', password='testpsswd', is_admin=True, can_book_free_offers=False)
+    admin_user = create_user(email='test@email.com', can_book_free_offers=False, password='testpsswd', is_admin=True)
     other_user = create_user(email='test2@email.com', password='testpsswd')
     deposit_date = datetime.utcnow() - timedelta(minutes=2)
     deposit = create_deposit(other_user, deposit_date, amount=500)
@@ -519,7 +518,7 @@ def test_an_admin_cancelling_a_users_booking_returns_200_and_effectively_marks_t
 @pytest.mark.token
 def test_get_booking_by_token_when_user_has_rights(app):
     # Given
-    user = create_user(email='user@email.fr', public_name='John Doe')
+    user = create_user(public_name='John Doe', email='user@email.fr')
     admin_user = create_user(email='admin@email.fr', password='P@55w0rd')
     offerer = create_offerer()
     user_offerer = create_user_offerer(admin_user, offerer)

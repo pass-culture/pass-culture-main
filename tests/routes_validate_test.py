@@ -11,7 +11,7 @@ from utils.test_utils import req, create_user, req_with_auth, API_URL, create_of
 @clean_database
 @pytest.mark.standalone
 def test_should_not_be_able_to_validate_offerer_with_wrong_token(app):
-    user = create_user(email='toto@btmx.fr', public_name='Toto', departement_code='93', password='toto12345678')
+    user = create_user(public_name='Toto', departement_code='93', email='toto@btmx.fr', password='toto12345678')
     PcObject.check_and_save(user)
     user.validationToken = secrets.token_urlsafe(20)
     r = req_with_auth(email='toto_pro@btmx.fr', password='toto12345678') \
