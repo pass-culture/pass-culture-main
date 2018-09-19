@@ -46,9 +46,13 @@ def pc_restore_database():
     p = Popen(command,shell=True,stdin=PIPE,stdout=PIPE,stderr=PIPE)
     print(p.communicate())
 
+    command = 'ls -al $HOME/bin'
+    p = Popen(command,shell=True,stdin=PIPE,stdout=PIPE,stderr=PIPE)
+    print(p.communicate())
+
 
     print("Target database backup : start")
-    command = '$HOME/bin/pg_dump $TARGET_DATABASE -Fc > /tmp/database.pgdump; sleep 5;'
+    command = '$HOME/bin/pg_dump $TARGET_DATABASE -Fc > $HOME/database.pgdump; sleep 5;'
     p = Popen(command,shell=True,stdin=PIPE,stdout=PIPE,stderr=PIPE)
     print("Target database backup : en cours")
     print(p.communicate())
@@ -62,7 +66,7 @@ def pc_restore_database():
     print(p.communicate())
 
     print("Database restore : start")
-    command = '$HOME/bin/pg_restore -d $DATABASE_URL -c /tmp/database.pgdump'
+    command = '$HOME/bin/pg_restore -d $DATABASE_URL -c $HOME/database.pgdump'
     p = Popen(command,shell=False,stdin=PIPE,stdout=PIPE,stderr=PIPE)
     print(p.communicate())
     # if p.returncode != 1:
