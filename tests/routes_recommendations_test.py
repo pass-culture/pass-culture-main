@@ -301,3 +301,38 @@ def test_put_recommendations_returns_one_recommendation_for_offer_on_event_with_
     # then
     assert response.status_code == 200
     assert len(response.json()) == 1
+
+
+@clean_database
+@pytest.mark.standalone
+def test_get_favorite_recommendations_works_only_when_logged_in(app):
+    # when
+    response = req.get(RECOMMENDATION_URL + '/favorites')
+
+    # then
+    assert response.status_code == 401
+
+
+@clean_database
+@pytest.mark.standalone
+def test_get_favorite_recommendations_returns_recommendations_favored_by_current_user(app):
+    # given
+    user1 = create_user(email='user1@test.com')
+    user2 = create_user(email='user2@test.com')
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    offer1 = create_event_offer(venue)
+    offer2 = create_event_offer(venue)
+    recommendation1 = create_recommendation(offer1, user1, is_favorite=False)
+    recommendation2 = create_recommendation(offer2, user1, is_favorite=True)
+    recommendation3 = create_recommendation(offer2, user1, is_favorite=True)
+    recommendation4 = create_recommendation(offer2, user2, is_favorite=True)
+    PcObject.check_and_save(user1, user2, recommendation1, recommendation2, recommendation3, recommendation4)
+    auth_request = req_with_auth(user1.email, user1.clearTextPassword)
+
+    # when
+    response = auth_request.get(RECOMMENDATION_URL + '/favorites')
+
+    # then
+    assert response.status_code == 200
+    assert len(response.json()) == 2

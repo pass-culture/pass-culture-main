@@ -94,3 +94,7 @@ def filter_unseen_recommendations_for_user(query, user, seen_recommendation_ids)
                 & (Mediation.tutoIndex == None)
                 & ((Recommendation.validUntilDate == None) | (Recommendation.validUntilDate > datetime.utcnow())))
     return new_query
+
+
+def find_favored_recommendations_for_user(user):
+    return Recommendation.query.filter_by(user=user, isFavorite=True).all()

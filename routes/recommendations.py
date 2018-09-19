@@ -14,7 +14,7 @@ from recommendations_engine import give_requested_recommendation_to_user, Recomm
 from repository.booking_queries import find_bookings_from_recommendation
 from repository.recommendation_queries import count_read_recommendations_for_user, \
     find_all_unread_recommendations, \
-    find_all_read_recommendations
+    find_all_read_recommendations, find_favored_recommendations_for_user
 from utils.config import BLOB_SIZE, BLOB_READ_NUMBER, BLOB_UNREAD_NUMBER
 from utils.human_ids import dehumanize
 from utils.includes import BOOKING_INCLUDES, RECOMMENDATION_INCLUDES
@@ -32,6 +32,7 @@ def list_recommendations():
     )
 
     return jsonify(_serialize_recommendations(recommendations)), 200
+
 
 @app.route('/recommendations/<recommendationId>', methods=['PATCH'])
 @login_required
@@ -107,6 +108,13 @@ def put_recommendations():
                 + str([(reco, reco.mediation, reco.dateRead, reco.offer) for reco in recommendations])
                 + str(len(recommendations)))
 
+    return jsonify(_serialize_recommendations(recommendations)), 200
+
+
+@app.route('/recommendations/favorites', methods=['GET'])
+@login_required
+def get_favorite_recommendations():
+    recommendations = find_favored_recommendations_for_user(current_user)
     return jsonify(_serialize_recommendations(recommendations)), 200
 
 
