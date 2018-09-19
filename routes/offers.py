@@ -30,8 +30,13 @@ def list_offers():
     check_venue_exists_when_requested(venue, venue_id)
     check_user_has_rights_for_query(offerer_id, venue, venue_id)
 
-    query = find_by_venue_id_or_offerer_id_and_search_terms_offers_where_user_has_rights(offerer_id, venue, venue_id,
-                                                                                         current_user, request)
+    query = find_by_venue_id_or_offerer_id_and_search_terms_offers_where_user_has_rights(
+        offerer_id,
+        venue,
+        venue_id,
+        current_user,
+        request.get('search')
+    )
 
     return handle_rest_get_list(Offer,
                                 include=OFFER_INCLUDES,

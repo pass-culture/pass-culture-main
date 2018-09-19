@@ -32,25 +32,44 @@ class Accessibility(Enum):
 class EventType(Enum):
     CINEMA = {
         'label': "Cinéma (Projections, Séances, Évènements)", 'offlineOnly': True,
-        'onlineOnly': False, 'sublabel': "Regarder"
+        'onlineOnly': False,
+        'sublabel': "Regarder"
     }
     CONFERENCE_DEBAT_DEDICACE = {
-    'label': "Conférence — Débat — Dédicace", 'offlineOnly': True, 'onlineOnly': False, 'sublabel': "Rencontrer"
+        'label': "Conférence — Débat — Dédicace",
+        'offlineOnly': True,
+        'onlineOnly': False,
+        'sublabel': "Rencontrer"
     }
     JEUX = {
-    'label': "Jeux (Évenements, Rencontres, Concours)", 'offlineOnly': True, 'onlineOnly': False, 'sublabel': "Jouer"
+        'label': "Jeux (Évenements, Rencontres, Concours)",
+        'offlineOnly': True,
+        'onlineOnly': False,
+        'sublabel': "Jouer"
     }
     MUSIQUE = {
-    'label': "Musique (Concerts, Festivals)", 'offlineOnly': True, 'onlineOnly': False, 'sublabel': "Écouter"
+        'label': "Musique (Concerts, Festivals)",
+        'offlineOnly': True,
+        'onlineOnly': False,
+        'sublabel': "Écouter"
     }
     MUSEES_PATRIMOINE = {
-    'label': "Musées — Patrimoine (Expositions, Visites guidées, Activités spécifiques)", 'offlineOnly': True, 'onlineOnly': False, 'sublabel': "Regarder"
+        'label': "Musées — Patrimoine (Expositions, Visites guidées, Activités spécifiques)",
+        'offlineOnly': True,
+        'onlineOnly': False,
+        'sublabel': "Regarder"
     }
     PRATIQUE_ARTISTIQUE = {
-    'label': "Pratique Artistique (Stages ponctuels)", 'offlineOnly': True, 'onlineOnly': False, 'sublabel': "Pratiquer"
+        'label': "Pratique Artistique (Stages ponctuels)",
+        'offlineOnly': True,
+        'onlineOnly': False,
+        'sublabel': "Pratiquer"
     }
     SPECTACLE_VIVANT = {
-    'label': "Spectacle vivant", 'offlineOnly': True, 'onlineOnly': False, 'sublabel': "Applaudir"
+        'label': "Spectacle vivant",
+        'offlineOnly': True,
+        'onlineOnly': False,
+        'sublabel': "Applaudir"
     }
 
 

@@ -9,8 +9,9 @@ from domain.build_recommendations import build_mixed_recommendations, \
     move_tutorial_recommendations_first
 from models import PcObject, Recommendation
 from recommendations_engine import create_recommendations_for_discovery, \
-    create_recommendations_for_search
-from recommendations_engine import give_requested_recommendation_to_user, RecommendationNotFoundException
+                                   create_recommendations_for_search
+from recommendations_engine import give_requested_recommendation_to_user, \
+                                   RecommendationNotFoundException
 from repository.booking_queries import find_bookings_from_recommendation
 from repository.recommendation_queries import count_read_recommendations_for_user, \
     find_all_unread_recommendations, \
@@ -25,10 +26,22 @@ from utils.rest import expect_json_data
 @app.route('/recommendations', methods=['GET'])
 @login_required
 def list_recommendations():
+
+    types = None
+    if 'types' in request.args:
+        types = request.args['types'].split(',')
+
+    between_dates = None
+    if 'between_dates' in request.args:
+        between_dates = request.args['between_dates'].split(',')
+
     recommendations = create_recommendations_for_search(
         current_user,
         page=request.args.get('page', 1),
-        keywords=request.args.get('keywords')
+        keywords=request.args.get('keywords'),
+        types=types,
+        max_distance=request.args.get('max_distance'),
+        between_dates=between_dates
     )
 
     return jsonify(_serialize_recommendations(recommendations)), 200

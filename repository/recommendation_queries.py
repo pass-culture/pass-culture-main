@@ -1,8 +1,16 @@
+""" recommendation queries """
 from datetime import datetime
 
 from sqlalchemy import func
 
-from models import Recommendation, Mediation, Offer, Stock, EventOccurrence, Event, Thing, Venue
+from models import Event, \
+                   EventOccurrence, \
+                   Mediation, \
+                   Offer, \
+                   Recommendation, \
+                   Stock, \
+                   Thing, \
+                   Venue
 from models.db import db
 from utils.config import BLOB_SIZE
 
@@ -10,10 +18,9 @@ from utils.config import BLOB_SIZE
 def find_unseen_tutorials_for_user(seen_recommendation_ids, user):
     return Recommendation.query.join(Mediation) \
         .filter(
-        (Mediation.tutoIndex != None)
-        & (Recommendation.user == user)
-        & ~Recommendation.id.in_(seen_recommendation_ids)
-    ) \
+            (Mediation.tutoIndex != None)
+            & (Recommendation.user == user)
+            & ~Recommendation.id.in_(seen_recommendation_ids)) \
         .order_by(Mediation.tutoIndex) \
         .all()
 

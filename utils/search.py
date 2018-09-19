@@ -39,6 +39,6 @@ def create_get_search_queries(*models):
     return get_search_queries
 
 
-def get_search_filter(models, search):
+def get_keywords_filter(models, search):
     ts_queries = get_ts_queries(search)
     return and_(*map(create_get_search_queries(*models), ts_queries))
