@@ -50,6 +50,8 @@ const CONDITIONAL_FIELDS = {
   isbn: ['LIVRE_EDITION'],
   musicType: ['MUSIQUE', 'MUSIQUE_ABO'],
   showType: ['SPECTACLE_VIVANT'],
+  stageDirector: ['CINEMA', 'SPECTACLE_VIVANT'],
+  performer: ['MUSIQUE', 'SPECTACLE_VIVANT'],
 }
 
 class OfferPage extends Component {
@@ -544,21 +546,22 @@ class OfferPage extends Component {
                     </Fragment>
                   )}
 
-                  {false && (
-                    <Fragment>
-                      <Field
-                        isExpanded
-                        label="Metteur en scène"
-                        name="stageDirector"
-                        setKey="extraData"
-                      />
-                      <Field
-                        isExpanded
-                        label="Interprète"
-                        name="performer"
-                        setKey="extraData"
-                      />
-                    </Fragment>
+                  {this.hasConditionalField('stageDirector') && (
+                    <Field
+                      isExpanded
+                      label="Metteur en scène"
+                      name="stageDirector"
+                      setKey="extraData"
+                    />
+                  )}
+
+                  {this.hasConditionalField('performer') && (
+                    <Field
+                      isExpanded
+                      label="Interprète"
+                      name="performer"
+                      setKey="extraData"
+                    />
                   )}
                 </div>
               </div>
