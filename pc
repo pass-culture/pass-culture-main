@@ -73,8 +73,41 @@ elif [[ "$CMD" == "build-pg" ]]; then
 elif [[ "$CMD" == "bash" ]]; then
 	RUN='docker exec -it `docker ps | grep flask | cut -d" " -f 1` bash'
 elif [[ "$CMD" == "deploy-backend" ]]; then
-  ensure_remote "Deploy backend cannot be run on the local environment. Use (for example) \"pc -e staging deploy-backend\"."
-  RUN='cd $ROOT_PATH && ./pc reset-git'
+  cd "$ROOT_PATH/api"
+  if [[ ! "$ENV" == 'production' ]] && [[ ! "$ENV" == 'staging' ]]; then
+     echo "Can only deploy-backend in staging and production"
+     exit
+  fi
+  commit_to_deploy=`git log -n 1 --pretty=format:%H`
+  current_branch=$(git symbolic-ref -q HEAD)
+  current_branch=${current_branch##refs/heads/}
+  function exit_restoring_branch
+    {
+    git checkout "$current_branch"
+    exit
+    }
+  git fetch
+  git checkout master
+  git pull || exit_restoring_branch
+  git checkout staging
+  git pull || exit_restoring_branch
+  git checkout production
+  git pull || exit_restoring_branch
+  if [[ `git tag -l --points-at $commit_to_deploy | wc -l` == 0 ]]; then
+    echo "ERROR: Can only deploy tagged commits"
+    exit_restoring_branch
+  fi
+  if [[ "$ENV" == "production" ]]; then
+    staging_commit=`git log -n 1 --pretty=format:%H staging`
+    if [[ "$staging_commit" -ne "$commit_to_deploy" ]]; then
+      echo "ERROR: Can only deploy in production commits that are also deployed in staging"
+      exit_restoring_branch
+    fi
+  fi
+  git checkout $ENV
+  git merge $commit_to_deploy
+  git push origin $ENV
+  exit_restoring_branch
 elif [[ "$CMD" == "diff-schema" ]]; then
   docker exec `docker ps | grep postgres | cut -d" " -f 1` pg_dump -d pass_culture -U pass_culture -s > /tmp/pc_schema_local
   RUN_PROD='ssh deploy@api.passculture.beta.gouv.fr docker exec `docker ps | grep postgres | cut -d" " -f 1` pg_dump -d pass_culture -U pass_culture -s'
