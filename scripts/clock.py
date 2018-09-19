@@ -47,7 +47,7 @@ def pc_restore_database():
     print(p.communicate())
 
     print("Target database backup : start")
-    command = '$HOME/bin/pg_dump $TARGET_DATABASE -Fc > /tmp/database.pgdump'
+    command = '$HOME/bin/pg_dump $TARGET_DATABASE -Fc > /tmp/database.pgdump; sleep 5;'
     p = Popen(command,shell=True,stdin=PIPE,stdout=PIPE,stderr=PIPE)
     print("Target database backup : en cours")
     print(p.communicate())
