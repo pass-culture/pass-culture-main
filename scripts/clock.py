@@ -46,6 +46,7 @@ def pc_restore_database():
     p = Popen(command,shell=True,stdin=PIPE,stdout=PIPE,stderr=PIPE)
     print(p.communicate())
 
+
     print("Target database backup : start")
     command = '$HOME/bin/pg_dump $TARGET_DATABASE -Fc > /tmp/database.pgdump; sleep 5;'
     p = Popen(command,shell=True,stdin=PIPE,stdout=PIPE,stderr=PIPE)
