@@ -4,7 +4,7 @@ from pprint import pprint
 
 from flask import current_app as app
 
-from domain.booking_emails import send_final_booking_recap_email
+from domain.user_emails import send_final_booking_recap_email
 from models.event_occurrence import EventOccurrence
 from models.stock import Stock
 

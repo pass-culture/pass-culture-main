@@ -5,8 +5,10 @@ from pprint import pformat
 from flask import current_app as app, render_template
 
 from connectors import api_entreprises
+from models import RightsType
 from repository.booking_queries import find_all_ongoing_bookings_by_stock
 from repository.features import feature_send_mail_to_users_enabled
+from repository.user_offerer_queries import find_user_offerer_email
 from utils.config import API_URL
 from utils.date import format_datetime, utc_datetime_to_dept_timezone
 
@@ -67,7 +69,7 @@ def make_offerer_booking_recap_email_after_user_action(booking, is_cancellation=
         date_in_tz = _get_event_datetime(booking.stock)
         formatted_datetime = format_datetime(date_in_tz)
         email_subject = '[Reservations] Nouvelle reservation pour {} - {}'.format(stock_name,
-                                                                                   formatted_datetime)
+                                                                                  formatted_datetime)
 
     if is_cancellation:
         template_name = 'mails/offerer_cancellation_by_user_email.html'
@@ -230,6 +232,35 @@ def make_reset_password_email(user, app_origin_url):
         'Subject': 'Réinitialisation de votre mot de passe',
         'Html-part': email_html,
         'To': user.email
+    }
+
+
+def make_validation_confirmation_email(user_offerer, offerer):
+    user_offerer_email = None
+    user_offerer_rights = None
+    if user_offerer is not None:
+        user_offerer_email = find_user_offerer_email(user_offerer.id)
+        if user_offerer.rights == RightsType.admin:
+            user_offerer_rights = 'administrateur'
+        else:
+            user_offerer_rights = 'éditeur'
+    email_html = render_template(
+        'validation_confirmation_email.html',
+        user_offerer_email=user_offerer_email,
+        offerer=offerer,
+        user_offerer_rights=user_offerer_rights
+    )
+    if user_offerer and offerer:
+        subject = 'Validation de votre stucture et de compte {} rattaché'.format(user_offerer_rights)
+    elif user_offerer:
+        subject = 'Validation de compte {} rattaché à votre structure'.format(user_offerer_rights)
+    else:
+        subject = 'Validation de votre stucture'
+    return {
+        'FromName': 'pass Culture pro',
+        'FromEmail': 'passculture@beta.gouv.fr' if feature_send_mail_to_users_enabled() else 'passculture-dev@beta.gouv.fr',
+        'Subject': subject,
+        'Html-part': email_html,
     }
 
 
