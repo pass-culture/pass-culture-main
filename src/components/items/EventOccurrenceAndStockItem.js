@@ -160,13 +160,16 @@ class EventOccurrenceAndStockItem extends Component {
       return
     }
     if (!formBeginningDatetime && get(eventOccurrences, 'length')) {
-      const beginningDatetime = moment(
-        eventOccurrences[0].beginningDatetime
-      ).add(1, 'day')
+      const beginningDatetime = moment(eventOccurrences[0].beginningDatetime)
+        .add(1, 'day')
+        .toISOString()
+      const endDatetime = moment(eventOccurrences[0].endDatetime)
+        .add(1, 'day')
+        .toISOString()
       dispatch(
         mergeForm(`eventOccurrence${get(eventOccurrencePatch, 'id', '')}`, {
           beginningDatetime,
-          endDatetime: moment(beginningDatetime).add(1, 'hour'),
+          endDatetime,
         })
       )
     }
@@ -480,7 +483,7 @@ export default compose(
       event: eventSelector(state, eventId),
       eventId,
       eventOccurrencePatch,
-      eventOccurrences: eventOccurrencesSelector(state, venueId, eventId),
+      eventOccurrences: eventOccurrencesSelector(state, offerId),
       eventOccurrenceIdOrNew,
       formBeginningDatetime: get(
         state,
