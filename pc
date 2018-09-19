@@ -54,6 +54,14 @@ fi
 CMD="$1"
 shift
 
+if [[ "$ENV" == "production" ]]; then
+	SCALINGO_APP=pass-culture-api
+elif [[ "$ENV" == "staging" ]]; then
+	SCALINGO_APP=pass-culture-api-staging
+elif [[ "$ENV" == "testing" ]]; then
+	SCALINGO_APP=pass-culture-api-dev
+fi
+
 if [[ "$CMD" == "alembic" ]]; then
   RUN='docker exec `docker ps | grep flask | cut -d" " -f 1` bash -c "cd /opt/services/flaskapp/src && PYTHONPATH=. alembic '"$*"'"'
 elif [[ "$CMD" == "build-pg" ]]; then
@@ -150,25 +158,37 @@ elif [[ "$CMD" == "install-geoip" ]]; then
 	 		 gzip -df GeoLite2-City.mmdb.gz;
 			 mkdir -p $ROOT_PATH/api/geoip/;
 			 mv GeoLite2-City.mmdb $ROOT_PATH/api/geoip/'
+elif [[ "$CMD" == "logs" ]]; then
+  if [[ "$ENV" == "development" ]]; then
+	docker-compose logs
+	exit
+  else
+	if [[ $# -gt 0 ]]; then
+		scalingo -a $SCALINGO_APP logs $*
+	else
+		scalingo -a $SCALINGO_APP logs -n 100
+	fi
+	exit
+  fi
 elif [[ "$CMD" == "psql-file" ]]; then
   COLUMNS=${COLUMNS:-''};
   RUN='docker exec -t `docker ps | grep postgres | cut -d" " -f 1` bash -c "COLUMNS=\"'$COLUMNS'\" psql -U pass_culture pass_culture -f $1"'
 elif [[ "$CMD" == "psql" ]]; then
 	COLUMNS=${COLUMNS:-''};
-  if [[ "$ENV" == "production" ]]; then
-		scalingo -a pass-culture-api pgsql-console
-		exit
-	elif [[ "$ENV" == "staging" ]]; then
-		scalingo -a pass-culture-api-staging pgsql-console
-		exit
-	elif [[ "$ENV" == "testing" ]]; then
-		scalingo -a pass-culture-api-dev pgsql-console
-		exit
-	else
+	if [[ "$ENV" == "development" ]]; then
 		RUN='docker exec -it `docker ps | grep postgres | cut -d" " -f 1` bash -c "COLUMNS=\"'$COLUMNS'\" psql -U pass_culture pass_culture $*"'
+	else
+		scalingo -a $SCALINGO_APP pgsql-console
+		exit
 	fi
 elif [[ "$CMD" == "python" ]]; then
-  RUN='docker exec -it `docker ps | grep flask | cut -d" " -f 1` bash -c "cd /opt/services/flaskapp/src/ && PYTHONPATH=. python -i scripts/interact.py '"$CMD $*"'"'
+    COLUMNS=${COLUMNS:-''};
+	if [[ "$ENV" == "development" ]]; then
+		RUN='docker exec -it `docker ps | grep flask | cut -d" " -f 1` bash -c "cd /opt/services/flaskapp/src/ && PYTHONPATH=. python -i scripts/interact.py '"$CMD $*"'"'
+	else
+		scalingo -a "$SCALINGO_APP" run "python -i scripts/interact.py"
+		exit
+	fi
 elif [[ "$CMD" == "rebuild-backend" ]]; then
   RUN='docker-compose build --no-cache;
 			 sudo rm -rf $ROOT_PATH/api/static/object_store_data;
