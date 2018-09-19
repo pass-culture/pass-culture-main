@@ -1,15 +1,16 @@
 """ has thumb mixin """
 import io
+
 import requests
-from sqlalchemy import Binary, CheckConstraint, Column, Integer
 from PIL import Image
 from colorthief import ColorThief
+from sqlalchemy import Binary, CheckConstraint, Column, Integer
 
 from models.pc_object import PcObject
 from utils.human_ids import humanize
 from utils.object_storage import delete_public_object, \
-                                 get_public_object_date, \
-                                 store_public_object
+    get_public_object_date, \
+    store_public_object
 from utils.string_processing import inflect_engine
 
 IDEAL_THUMB_WIDTH = 600
@@ -38,18 +39,17 @@ class HasThumbMixin(object):
     def save_thumb(self, thumb, index, image_type=None, dominant_color=None, no_convert=False, crop=None):
         if isinstance(thumb, str):
             if not thumb[0:4] == 'http':
-                raise ValueError('Invalid thumb URL for object '
-                                 + str(self)
-                                 + ' : ' + thumb)
+                raise ValueError('Invalid thumb URL for object %s : %s' % (str(self), thumb))
+
             thumb_response = requests.get(thumb)
             content_type = thumb_response.headers['Content-type']
-            if thumb_response.status_code == 200 and\
-               content_type.split('/')[0] == 'image':
+
+            if thumb_response.status_code == 200 and content_type.split('/')[0] == 'image':
                 thumb = thumb_response.content
             else:
-                raise ValueError('Error downloading thumb for object '
-                                 + str(self)
-                                 + ' status_code: ' + str(thumb_response.status_code))
+                raise ValueError('Error downloading thumb for object %s from url %s (status_code : %s)'
+                                 % (str(self), thumb, str(thumb_response.status_code)))
+
         thumb_bytes = io.BytesIO(thumb)
         img = Image.open(thumb_bytes)
         if not no_convert:
