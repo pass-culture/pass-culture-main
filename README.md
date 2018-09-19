@@ -226,6 +226,15 @@ Une fois connecté:
 cd /home/deploy/pass-culture-main/ && pc update-code
 ```
 
+### Updater le dossier private
+
+Renseigner la variable d'environnement PC_GPG_PRIVATE.
+Puis lancer la commande suivante :
+
+```bash
+./pc install-private
+```
+
 #### Updater la db
 Une fois connecté:
 ```
