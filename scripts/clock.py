@@ -61,7 +61,7 @@ def pc_restore_database():
     print(p.communicate())
 
     print("Database restore : start")
-    command = '$HOME/bin/pg_restore -d $DATABASE_URL -c $HOME/database.pgdump'
+    command = '$HOME/bin/pg_restore -c -d $DATABASE_URL database.pgdump'
     p = Popen(command,shell=False,stdin=PIPE,stdout=PIPE,stderr=PIPE)
     print(p.communicate())
     # if p.returncode != 1:
