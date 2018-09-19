@@ -3,6 +3,7 @@ import { Icon } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
+import moment from 'moment'
 
 import eventSelector from '../../selectors/event'
 import thingSelector from '../../selectors/thing'
@@ -31,10 +32,10 @@ const BookingItem = ({
 }) => {
   // TODO: we need to continue to extract the
   // view attributes from the data
+  const eventOrThing = event || thing
   const eventOrThingName = get(event, 'name') || get(thing, 'name')
   const type = get(offer, 'type')
   const offererName = get(offerer, 'name')
-  const price = get(offer, 'price')
   const venueName = get(venue, 'name')
 
   return (
@@ -43,10 +44,12 @@ const BookingItem = ({
         <td colSpan="5" className="title">
           {eventOrThingName}
         </td>
-        <td rowSpan="2">27/04/2018</td>
+        <td rowSpan="2">
+          {moment(stock.bookingLimitDatetime).format('D/MM/YYYY')}
+        </td>
         <td rowSpan="2">5/10</td>
-        <td rowSpan="2">{price}</td>
-        <td rowSpan="2">4&euro;</td>
+        <td rowSpan="2">{booking.amount}</td>
+        <td rowSpan="2">{booking.reimbursed_amount}</td>
         <td rowSpan="2">
           <Icon svg={statePictoMap['payement']} className="picto tiny" /> Réglé
         </td>
@@ -65,13 +68,17 @@ const BookingItem = ({
         </td>
       </tr>
       <tr className="offer-item first-col">
-        <td>24/04/2018</td>
-        <td>{type}</td>
+        <td>{moment(booking.dateModified).format('D/MM/YYYY')}</td>
+        <td>{eventOrThing.type}</td>
         <td>{offererName}</td>
         <td>{venueName}</td>
         <td>
-          {/*<Icon svg="picto-user" />*/}
-          <Icon svg="picto-group" /> 5
+          {stock.groupSize === 1 && <Icon svg="picto-user" />}
+          {stock.groupSize > 1 && (
+            <React.Fragment>
+              <Icon svg="picto-group" /> {stock.groupSize}
+            </React.Fragment>
+          )}
         </td>
       </tr>
     </React.Fragment>
