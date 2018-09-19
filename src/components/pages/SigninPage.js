@@ -1,3 +1,5 @@
+/* eslint
+  react/jsx-one-expression-per-line: 0 */
 import { Field, Form, SubmitButton } from 'pass-culture-shared'
 import React from 'react'
 import { Portal } from 'react-portal'
@@ -5,7 +7,7 @@ import { NavLink } from 'react-router-dom'
 
 import Main from '../layout/Main'
 
-const inputClassName = 'input block col-12 mb2 red'
+const inputClassName = 'pc-form-text-input input block col-12 mb2 red'
 
 class SigninPage extends React.PureComponent {
   constructor() {
@@ -31,19 +33,14 @@ class SigninPage extends React.PureComponent {
     const { $footer } = this.state
     return (
       <Main name="sign-in" redBg footer={this.renderPageFooter}>
-        <div className="section form-container is-clipped">
-          <h1 className="title is-italic">
-Bonjour&nbsp;!
+        <div className="section form-container pc-form-matthieu is-clipped">
+          <h1 className="text-left fs32">
+            <span className="is-bold is-italic is-block">Bonjour&nbsp;!</span>
           </h1>
-          <h2 className="subtitle is-italic">
-            Identifiez-vous 
-            {' '}
-            <br />
-            pour accéder aux offres.
-            <br />
-            Tous ces champs sont obligatoires.
-          </h2>
-
+          <p className="text-left is-italic is-medium fs22">
+            <span className="is-block">Identifiez-vous</span>
+            <span className="is-block">pour accéder aux offres.</span>
+          </p>
           <br />
           <Form
             action="/users/signin"
@@ -70,6 +67,11 @@ Bonjour&nbsp;!
               type="password"
               required
             />
+            <p>
+              <NavLink to="/mot-de-passe-perdu">
+                <span>Mot de passe oublié&nbsp;?</span>
+              </NavLink>
+            </p>
 
             <Portal node={$footer}>
               <SubmitButton className="button is-primary is-inverted">

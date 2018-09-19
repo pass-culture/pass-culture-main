@@ -1,3 +1,5 @@
+/* eslint
+  react/jsx-one-expression-per-line: 0 */
 import { Field, Form, SubmitButton } from 'pass-culture-shared'
 import React from 'react'
 import { Portal } from 'react-portal'
@@ -28,13 +30,16 @@ class SignupPage extends React.PureComponent {
     const { $footer } = this.state
     return (
       <Main name="sign-up" footer={this.renderPageFooter}>
-        <div className="section">
-          <h2 className="subtitle is-italic">
-            {"Une minute pour créer un compte, et puis c'est tout !"}
-            {'Tous ces champs sont obligatoires'}
+        <div className="section pc-form-matthieu">
+          <h2 className="mb36">
+            <span className="is-block is-italic is-medium fs22">
+              Une minute pour créer un compte, et puis c&apos;est tout&nbsp;!
+            </span>
+            <span className="is-block is-regular fs13 is-grey-text mt18">
+              <span className="is-purple-text">*</span>
+              &nbsp;Champs obligatoires
+            </span>
           </h2>
-
-          <br />
           <Form
             name="user"
             action="/users/signup"
@@ -76,8 +81,7 @@ class SignupPage extends React.PureComponent {
                   {' '}
                   {
                     "J'accepte d'être contacté par mail pour donner mon avis sur le"
-                  }
-                  {' '}
+                  }{' '}
                   <a
                     href="http://passculture.beta.gouv.fr"
                     style={{ textDecoration: 'underline' }}

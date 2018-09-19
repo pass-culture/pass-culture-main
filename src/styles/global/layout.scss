@@ -96,7 +96,12 @@ button {
 
 .pc-theme-purple {
   color: $white;
-  background-color: $purple;
+  background-color: $purple-blue;
+}
+
+.pc-theme-transparent {
+  color: $white;
+  background-color: transparent;
 }
 
 .pc-theme-white {
@@ -116,7 +121,7 @@ button {
 }
 
 .pc-gradient {
-  background-image: linear-gradient(to bottom right, $primary, $purple);
+  background-image: linear-gradient(to bottom right, $primary, $purple-blue);
 }
 
 .pc-main {

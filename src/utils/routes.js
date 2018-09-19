@@ -5,6 +5,7 @@ import BetaPage from '../components/pages/BetaPage'
 import BookingsPage from '../components/pages/BookingsPage'
 import DiscoveryPage from '../components/pages/DiscoveryPage'
 import FavoritesPage from '../components/pages/FavoritesPage'
+import ForgottenPage from '../components/pages/ForgottenPage'
 import ProfilePage from '../components/pages/ProfilePage'
 import SearchPage from '../components/pages/SearchPage'
 import SigninPage from '../components/pages/SigninPage'
@@ -32,6 +33,11 @@ const routes = [
     component: SignupPage,
     path: '/inscription',
     title: 'Inscription',
+  },
+  {
+    component: ForgottenPage,
+    path: '/mot-de-passe-perdu/:view?',
+    title: 'Mot de passe perdu',
   },
   /* ---------------------------------------------------
    *

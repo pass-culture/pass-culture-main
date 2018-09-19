@@ -48,6 +48,10 @@ $intSizes: (13, 14, 15, 16, 17, 18, 19, 20, 22, 30, 32, 48);
   color: $grey;
 }
 
+.is-dark-grey-text {
+  color: $grey-dark;
+}
+
 .is-white-text,
 a.is-white-text,
 a.is-white-text:hover {
@@ -63,13 +67,22 @@ a.is-white-text:hover {
   color: $primary;
 }
 
-/* ------ STYLE / WEIGHT */
-.is-light {
-  font-weight: 200;
+.is-purple-text {
+  color: $purple-red;
 }
 
-.is-normal {
+/* ------ STYLE / WEIGHT */
+.is-light {
+  font-weight: 300;
+}
+
+.is-normal,
+.is-regular {
   font-weight: 400;
+}
+
+.is-medium {
+  font-weight: 500;
 }
 
 .is-semi-bold {
@@ -77,6 +90,10 @@ a.is-white-text:hover {
 }
 
 .is-bold {
+  font-weight: 700;
+}
+
+.is-extra-bold {
   font-weight: 800;
 }
 

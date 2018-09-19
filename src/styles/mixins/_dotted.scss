@@ -1,18 +1,51 @@
-@mixin dotted($color, $position: top) {
-  background-position: $position;
-  background-size: if(
-    $position == top or $position == bottom,
-    6px 1px,
-    1px 6px
-  );
+@mixin dotted-repeat($position) {
   background-repeat: if(
     $position == top or $position == bottom,
     repeat-x,
     repeat-y
   );
-  background-image: if(
-    $position == top or $position == bottom,
-    linear-gradient(to left, $color 10%, rgba($white, 0) 0%),
-    linear-gradient($color 10%, rgba($white, 0) 0%)
-  );
+}
+
+@mixin dotted-size($size, $position) {
+  @if $size == 'large' {
+    background-size: if(
+      $position == top or $position == bottom,
+      5px 2px,
+      2px 5px
+    );
+  }
+
+  @else {
+    background-size: if(
+      $position == top or $position == bottom,
+      6px 1px,
+      1px 6px
+    );
+  }
+}
+
+@mixin dotted-image($color, $size, $position) {
+  @if $size == 'large' {
+    background-image: if(
+      $position == top or $position == bottom,
+      linear-gradient(to left, $color 35%, rgba($white, 0) 0%),
+      linear-gradient($color 35%, rgba($white, 0) 0%)
+    );
+  }
+
+  @else {
+    background-image: if(
+      $position == top or $position == bottom,
+      linear-gradient(to left, $color 10%, rgba($white, 0) 0%),
+      linear-gradient($color 10%, rgba($white, 0) 0%)
+    );
+  }
+}
+
+@mixin dotted($color, $position: top, $size: 'normal') {
+  @include dotted-repeat($position);
+  @include dotted-size($size, $position);
+  @include dotted-image($color, $size, $position);
+
+  background-position: $position;
 }

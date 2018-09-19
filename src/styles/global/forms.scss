@@ -1,0 +1,21 @@
+/* <!------ UPDATE UI AVEC ION ------ */
+.pc-form-matthieu input[type='text'],
+.pc-form-matthieu input[type='email'],
+.pc-form-matthieu input[type='password'] {
+  border: 2px solid $grey-light;
+}
+
+.pc-form-matthieu .field.field-password .button {
+  border-color: $grey-light;
+}
+
+.pc-border-dotted {
+  background-size: 5px 2px !important;
+  background-image: linear-gradient(
+    270deg,
+    #FFFFFF 35%,
+    hsla(0, 0%, 100%, 0) 0
+  ) !important;
+}
+
+/* ------ UPDATE UI AVEC ION ------> */
