@@ -37,8 +37,6 @@ def list_recommendations():
     if 'between_dates' in request.args and request.args['between_dates']:
         between_dates = request.args['between_dates'].split(',')
 
-
-    print('RRR TYPES', types)
     recommendations = create_recommendations_for_search(
         current_user,
         page=request.args.get('page', 1),

@@ -110,22 +110,44 @@ def find_offers_in_date_range_for_given_venue_departement(date_max, date_min, de
         query = query.filter(EventOccurrence.beginningDatetime >= date_min)
     if date_max:
         query = query.filter(EventOccurrence.beginningDatetime <= date_max)
-    result = query.order_by(EventOccurrence.beginningDatetime) \
-        .all()
+    result = query.order_by(EventOccurrence.beginningDatetime).all()
     return result
 
 
-def get_offers_for_recommendations_search(page=1, keywords=None, types=None, max_distance=None, between_dates=None):
-    offer_query = _filter_out_offers_on_soft_deleted_stocks_and_inactive_offers()
+def get_offers_for_recommendations_search(
+    page=1,
+    keywords=None,
+    types=None,
+    latitute=None,
+    longitude=None,
+    max_distance=None,
+    between_dates=None):
+
+    offer_query =  _filter_out_offers_on_soft_deleted_stocks_and_inactive_offers()
 
     # NOTE: which order of the filters is the best for minimal time computation ?
     # Question à 500 patates.
 
     if max_distance is not None:
-        pass
+        distance_instrument = func.sqrt(
+           func.pow(Venue.latitude - latitude, 2) +
+           func.pow(Venue.longitude - longitude, 2)
+        )
+        offer_query = offer_query.join(Venue)\
+                                 .filter(distance_instrument < max_distance)
 
     if between_dates is not None:
-        pass
+        for between_dates in between_dates:
+            date_offer_query = offer_query.join(Stock) \
+                                          .outerjoin(EventOccurrence) \
+                                          .filter(
+                                            (
+                                                (Stock.bookingLimitDatetime >= between_dates[0]) &\
+                                                (Stock.bookingLimitDatetime <= between_dates[1])
+                                            )
+                                           )
+            offer_query = offer_query.union_all(date_offer_query)
+
 
     if keywords is not None:
         offer_query = offer_query.outerjoin(Event)\
@@ -133,9 +155,7 @@ def get_offers_for_recommendations_search(page=1, keywords=None, types=None, max
                                  .outerjoin(Venue)\
                                  .filter(get_keywords_filter([Event, Thing, Venue], keywords))
 
-    print('TYPES', types)
     if types is not None:
-        print('TYPES', types)
         event_offer_query = offer_query.outerjoin(Event)\
                                        .filter(Event.type.in_(types))
 
