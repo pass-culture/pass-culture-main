@@ -42,6 +42,10 @@ def pc_restore_database():
     #     return
     print("Install dbclient for postgresql : done")
 
+    command = 'ls -al $HOME'
+    p = Popen(command,shell=True,stdin=PIPE,stdout=PIPE,stderr=PIPE)
+    print(p.communicate())
+
     print("Target database backup : start")
     command = '$HOME/bin/pg_dump $TARGET_DATABASE -Fc > /tmp/database.pgdump'
     p = Popen(command,shell=True,stdin=PIPE,stdout=PIPE,stderr=PIPE)
@@ -51,6 +55,10 @@ def pc_restore_database():
     #     print("An error as occured during the backup process.")
     #     return
     print("Target database backup : done")
+
+    command = 'ls -al /tmp'
+    p = Popen(command,shell=True,stdin=PIPE,stdout=PIPE,stderr=PIPE)
+    print(p.communicate())
 
     print("Database restore : start")
     command = '$HOME/bin/pg_restore -d $DATABASE_URL -c /tmp/database.pgdump'
