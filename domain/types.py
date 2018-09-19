@@ -1,7 +1,5 @@
 """ types """
-
-from models.event import EventType
-from models.thing import ThingType
+from models.offer_type import EventType, ThingType
 
 def _format_type(t, model_name):
     result = t.value

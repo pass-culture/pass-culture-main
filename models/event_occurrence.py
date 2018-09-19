@@ -4,7 +4,7 @@ from sqlalchemy import Binary, BigInteger, Column, DateTime, Enum, \
 from sqlalchemy.orm import relationship
 
 from models.db import Model
-from models.event import EventType
+from models.offer_type import EventType
 from models.pc_object import PcObject
 from models.providable_mixin import ProvidableMixin
 from models.soft_deletable_mixin import SoftDeletableMixin

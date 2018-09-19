@@ -14,11 +14,12 @@ from models.needs_validation_mixin import NeedsValidationMixin
 from models.offer import Offer
 from models.stock import Stock
 from models.offerer import Offerer
+from models.offer_type import ThingType, EventType
 from models.pc_object import PcObject
 from models.providable_mixin import ProvidableMixin
 from models.provider import Provider
 from models.recommendation import Recommendation
-from models.thing import Thing, ThingType
+from models.thing import Thing
 from models.user import User
 from models.user_offerer import RightsType
 from models.user_offerer import UserOfferer
@@ -34,6 +35,7 @@ __all__ = (
     'PcObject',
     'DeactivableMixin',
     'Deposit',
+    'EventType',
     'ExtraDataMixin',
     'HasAddressMixin',
     'HasThumbMixin',

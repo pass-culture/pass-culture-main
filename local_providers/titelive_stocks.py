@@ -5,10 +5,11 @@ from pathlib import Path
 from zipfile import ZipFile
 import pandas as pd
 
+from models import ThingType
 from models.local_provider import LocalProvider, ProvidableInfo
 from models.offer import Offer
 from models.stock import Stock
-from models.thing import Thing, ThingType
+from models.thing import Thing
 from models.venue import Venue
 
 DATE_FORMAT = "%d/%m/%Y"
