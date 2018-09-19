@@ -128,18 +128,18 @@ def create_recommendations_for_search(
     page=1,
     keywords=None,
     types=None,
-    max_distance=None,
     latitude=None,
     longitude=None,
+    max_distance=None,
     between_dates=None
 ):
     offers = get_offers_for_recommendations_search(
         page,
         keywords,
         types,
-        max_distance,
         latitude,
         longitude,
+        max_distance,
         between_dates
     )
     offer_ids = [offer.id for offer in offers]

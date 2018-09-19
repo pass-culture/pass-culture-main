@@ -13,8 +13,12 @@ from models import Booking, \
     Venue
 from models import Thing
 from models.db import db
+<<<<<<< HEAD
 from repository.user_offerer_queries import filter_query_where_user_is_user_offerer_and_is_validated
 from utils.distance import get_geo_distance_in_kilometers
+=======
+from utils.distance import get_sql_geo_distance_in_kilometers
+>>>>>>> try to compute distance
 from utils.logger import logger
 from utils.search import get_keywords_filter
 
@@ -130,7 +134,7 @@ def get_offers_for_recommendations_search(
     # Question à 500 patates.
 
     if max_distance is not None and latitude is not None and longitude is not None:
-        distance_instrument = get_geo_distance_in_kilometers(
+        distance_instrument = get_sql_geo_distance_in_kilometers(
             Venue.latitude,
             Venue.longitude,
             latitude,

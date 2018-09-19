@@ -39,10 +39,6 @@ def list_recommendations():
             interval.split('-') for interval in request.args['dates'].split(',')
         ]
 
-    distance = None
-    if 'distance' in request.args and request.args['distance']:
-        max_distance = float(request.args['distance'])
-
     latitude = None
     if 'latitude' in request.args and request.args['latitude']:
         latitude = float(request.args['latitude'])
@@ -51,14 +47,18 @@ def list_recommendations():
     if 'longitude' in request.args and request.args['longitude']:
         longitude = float(request.args['longitude'])
 
+    distance = None
+    if 'distance' in request.args and request.args['distance']:
+        max_distance = float(request.args['distance'])
+        
     recommendations = create_recommendations_for_search(
         current_user,
         page=request.args.get('page', 1),
         keywords=request.args.get('keywords'),
         types=types,
-        max_distance=max_distance,
         latitude=latitude,
         longitude=longitude,
+        max_distance=max_distance,
         between_dates=between_dates
     )
 
