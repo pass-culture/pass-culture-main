@@ -17,7 +17,6 @@ def test_departement_or_national_offers_with_national_thing_returns_national_thi
     offer = create_thing_offer(venue, thing)
     PcObject.check_and_save(offer)
     query = Thing.query.filter_by(name='Lire un livre')
-    print(query.all())
     # When
     query = departement_or_national_offers(query, Thing, ['93'])
 
