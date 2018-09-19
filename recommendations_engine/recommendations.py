@@ -123,10 +123,10 @@ def _create_recommendation(user, offer, mediation=None):
     return recommendation
 
 
-def create_recommendations_for_search(user, page=1, search=None):
-    offers = get_offers_for_recommendations_search(page, search)
+def create_recommendations_for_search(user, page=1, keywords=None, filters=None):
+    offers = get_offers_for_recommendations_search(page, keywords)
     offer_ids = [offer.id for offer in offers]
-    existing_recommendations = find_recommendations_for_user_matching_offers_and_search_term(user.id, offer_ids, search)
+    existing_recommendations = find_recommendations_for_user_matching_offers_and_search_term(user.id, offer_ids, keywords)
     offer_ids_with_already_created_recommendations = [reco.offerId for reco in existing_recommendations]
     recommendations = []
     recommendations_to_save = []
@@ -137,7 +137,8 @@ def create_recommendations_for_search(user, page=1, search=None):
             recommendation = existing_recommendations[recommendation_index]
         else:
             recommendation = _create_recommendation(user, offer)
-            recommendation.search = search
+            # TODO build search from keywords and filters
+            recommendation.search = keywords
             recommendations_to_save.append(recommendation)
 
         recommendations.append(recommendation)

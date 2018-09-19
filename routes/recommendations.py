@@ -28,7 +28,7 @@ def list_recommendations():
     recommendations = create_recommendations_for_search(
         current_user,
         page=request.args.get('page', 1),
-        search=request.args.get('search')
+        keywords=request.args.get('keywords')
     )
 
     return jsonify(_serialize_recommendations(recommendations)), 200
