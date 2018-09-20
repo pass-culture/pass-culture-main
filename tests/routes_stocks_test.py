@@ -15,7 +15,7 @@ from utils.test_utils import req_with_auth, API_URL, create_user, create_offerer
 @pytest.mark.standalone
 def test_get_stocks_should_return_a_list_of_stocks(app):
     # Given
-    user = create_user(email='test@email.com', password='P@55w0rd', is_admin=True, can_book_free_offers=False)
+    user = create_user(email='test@email.com', can_book_free_offers=False, password='P@55w0rd', is_admin=True)
     offerer = create_offerer()
     venue = create_venue(offerer)
     stock_1 = create_stock_with_event_offer(offerer, venue, price=10, available=10)
@@ -36,7 +36,7 @@ def test_get_stocks_should_return_a_list_of_stocks(app):
 @pytest.mark.standalone
 def test_getting_stocks_with_admin(app):
     # Given
-    user = create_user(email='test@email.com', password='P@55w0rd', is_admin=True, can_book_free_offers=False)
+    user = create_user(email='test@email.com', can_book_free_offers=False, password='P@55w0rd', is_admin=True)
     offerer = create_offerer()
     venue = create_venue(offerer)
     stock = create_stock_with_event_offer(offerer, venue, price=10, available=10)
@@ -56,7 +56,7 @@ def test_getting_stocks_with_admin(app):
 @pytest.mark.standalone
 def test_patching_stocks_with_admin(app):
     # Given
-    user = create_user(email='test@email.com', password='P@55w0rd', is_admin=True, can_book_free_offers=False)
+    user = create_user(email='test@email.com', can_book_free_offers=False, password='P@55w0rd', is_admin=True)
     offerer = create_offerer()
     venue = create_venue(offerer)
     stock = create_stock_with_event_offer(offerer, venue, price=10, available=10)
@@ -174,7 +174,7 @@ def test_user_with_no_rights_cannot_create_stock_from_event_occurrence(app):
 @pytest.mark.standalone
 def test_if_no_event_occurrence_id_or_offer(app):
     # Given
-    user = create_user(email='test@email.fr', password='P@55w0rd', is_admin=True, can_book_free_offers=False)
+    user = create_user(email='test@email.fr', can_book_free_offers=False, password='P@55w0rd', is_admin=True)
     offerer = create_offerer()
     venue = create_venue(offerer)
     offer = create_event_offer(venue)
@@ -199,7 +199,7 @@ def test_if_no_event_occurrence_id_or_offer(app):
 def test_number_of_available_stocks_cannot_be_updated_below_number_of_already_existing_bookings(app):
     # Given
     user = create_user()
-    user_admin = create_user(email='email@test.com', password='P@55w0rd', is_admin=True, can_book_free_offers=False)
+    user_admin = create_user(email='email@test.com', can_book_free_offers=False, password='P@55w0rd', is_admin=True)
     offerer = create_offerer()
     venue = create_venue(offerer)
     stock = create_stock_with_event_offer(offerer, venue, price=0)
@@ -221,7 +221,7 @@ def test_number_of_available_stocks_cannot_be_updated_below_number_of_already_ex
 def test_should_not_create_stock_if_booking_limit_datetime_after_event_occurrence(app):
     # Given
     from models.pc_object import serialize
-    user = create_user(email='email@test.com', password='P@55w0rd', is_admin=True, can_book_free_offers=False)
+    user = create_user(email='email@test.com', can_book_free_offers=False, password='P@55w0rd', is_admin=True)
     offerer = create_offerer()
     venue = create_venue(offerer)
     offer = create_event_offer(venue)
@@ -248,7 +248,7 @@ def test_should_not_create_stock_if_booking_limit_datetime_after_event_occurrenc
 def test_should_not_update_stock_if_booking_limit_datetime_after_event_occurrence(app):
     # Given
     from models.pc_object import serialize
-    user = create_user(email='email@test.com', password='P@55w0rd', is_admin=True, can_book_free_offers=False)
+    user = create_user(email='email@test.com', can_book_free_offers=False, password='P@55w0rd', is_admin=True)
     offerer = create_offerer()
     venue = create_venue(offerer)
     stock = create_stock_with_event_offer(offerer, venue)
@@ -292,7 +292,7 @@ def test_user_with_no_rights_should_not_be_able_to_patch_stocks(app):
 @pytest.mark.standalone
 def test_delete_should_keep_stock_in_base_with_is_soft_deleted_true(app):
     # Given
-    user = create_user(email='email@test.fr', password='P@55w0rd', is_admin=True, can_book_free_offers=False)
+    user = create_user(email='email@test.fr', can_book_free_offers=False, password='P@55w0rd', is_admin=True)
     offerer = create_offerer()
     venue = create_venue(offerer)
     stock = create_stock_with_event_offer(offerer, venue)

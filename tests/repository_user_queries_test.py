@@ -73,8 +73,8 @@ def test_find_bookings_stats_per_department(app):
     user2 = create_user(email='a@2.f', departement_code='93', date_created=datetime(2018, 5, 10))
     user3 = create_user(email='a@3.f', departement_code='34', date_created=datetime(2018, 4, 10))
     user4 = create_user(email='a@4.f', departement_code='34', date_created=datetime(2018, 9, 10))
-    user5 = create_user(email='admin@test.com', departement_code='93', date_created=datetime(2018, 6, 10),
-                        can_book_free_offers=False, is_admin=True)
+    user5 = create_user(email='admin@test.com', departement_code='93', can_book_free_offers=False, is_admin=True,
+                        date_created=datetime(2018, 6, 10))
 
     offerer = create_offerer()
     venue34 = create_venue(offerer, departement_code='34', postal_code='34000')
@@ -241,10 +241,10 @@ def _create_activities_for_test(booking_activity_out_of_date, booking_event_OK, 
 
 
 def _create_bookings_for_test():
-    user_93 = create_user(email='93@email.com', departement_code='93')
-    user_93_2 = create_user(email='93_2@email.com', departement_code='93')
-    user_cant_book_free_offers = create_user(email='cnbfo@email.com', departement_code='93', can_book_free_offers=False)
-    user_34 = create_user(email='34@email.com', departement_code='34')
+    user_93 = create_user(departement_code='93', email='93@email.com')
+    user_93_2 = create_user(departement_code='93', email='93_2@email.com')
+    user_cant_book_free_offers = create_user(departement_code='93', email='cnbfo@email.com', can_book_free_offers=False)
+    user_34 = create_user(departement_code='34', email='34@email.com')
     offerer = create_offerer(name='Librairies et événements')
     venue_75 = create_venue(offerer, postal_code='75001', city='Paris', departement_code='75')
     venue_34 = create_venue(offerer, postal_code='34500', city='Béziers', departement_code='34')

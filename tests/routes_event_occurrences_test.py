@@ -23,7 +23,7 @@ from utils.test_utils import API_URL,\
 @pytest.mark.standalone
 def test_10_get_event_occurences_should_return_a_list_of_event_occurences(app):
     # Given
-    user = create_user(email='test@email.com', password='P@55w0rd', is_admin=True, can_book_free_offers=False)
+    user = create_user(email='test@email.com', can_book_free_offers=False, password='P@55w0rd', is_admin=True)
     offerer = create_offerer()
     venue = create_venue(offerer)
     offer = create_event_offer(venue)
