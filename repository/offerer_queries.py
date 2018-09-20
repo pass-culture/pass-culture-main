@@ -15,7 +15,7 @@ def get_by_event_occurrence_id(event_occurrence_id):
 
 
 def find_all_admin_offerer_emails(offerer_id):
-    return [result.email for result in Offerer.query.filter_by(id=offerer_id).join(UserOfferer).filter_by(rights=RightsType.admin).join(
+    return [result.email for result in Offerer.query.filter_by(id=offerer_id).join(UserOfferer).filter_by(rights=RightsType.admin).filter_by(validationToken=None).join(
         User).with_entities(User.email)]
 
 
