@@ -10,6 +10,7 @@ from models.offerer import Offerer
 from models.user import User
 from models.user_offerer import UserOfferer, RightsType
 from tests.conftest import clean_database
+from utils.human_ids import humanize
 from utils.test_utils import API_URL, req, req_with_auth, create_thing_offer, create_user, create_offerer, create_venue, \
     create_stock_with_thing_offer, create_recommendation, create_deposit, create_booking
 
@@ -795,3 +796,25 @@ def test_post_new_password_returns_bad_request_if_the_new_password_is_not_strong
         'Le mot de passe doit faire au moins 12 caractères et contenir à minima '
         '1 majuscule, 1 minuscule, 1 chiffre et 1 caractère spécial parmi _-&?~#|^@=+.$,<>%*!:;'
     ]
+
+
+@pytest.mark.standalone
+@clean_database
+def test_patch_user_returns_200(app):
+    # given
+    user = create_user(password='p@55sw0rd')
+    PcObject.check_and_save(user)
+
+    auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
+    data = {'publicName': 'plop'}
+
+    # when
+    response = auth_request.patch(API_URL + '/users/current', json=data)
+
+    # then
+    db.session.refresh(user)
+    assert response.status_code == 200
+    assert response.json()['id'] == humanize(user.id)
+    assert response.json()['publicName'] == user.publicName
+    assert user.publicName == data['publicName']
+    assert 'expenses' in response.json()

@@ -40,8 +40,9 @@ def get_profile():
 def patch_profile():
     current_user.populateFromDict(request.json)
     PcObject.check_and_save(current_user)
+    user = current_user._asdict(include=USER_INCLUDES)
     user['expenses'] = get_expenses(current_user)
-    return jsonify(current_user._asdict(include=USER_INCLUDES)), 200
+    return jsonify(user), 200
 
 
 @app.route('/users/current/change-password', methods=['POST'])
