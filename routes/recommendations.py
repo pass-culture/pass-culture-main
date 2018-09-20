@@ -28,6 +28,14 @@ from utils.rest import expect_json_data
 @login_required
 def list_recommendations():
 
+    page = None
+    if 'page' in request.args and request.args['page']:
+        page = int(request.args['page'])
+
+    keywords = None
+    if 'keywords' in request.args and request.args['keywords']:
+        keywords = request.args['keywords']
+
     types = None
     if 'types' in request.args and request.args['types']:
         type_sublabels = request.args['types'].split(',')
@@ -35,7 +43,7 @@ def list_recommendations():
 
     date = None
     if 'date' in request.args and request.args['date']:
-        date = float(request.args['date'])
+        date = request.args['date']
 
     days_segments = None
     if 'days_segments' in request.args and request.args['days_segments']:
@@ -57,8 +65,8 @@ def list_recommendations():
 
     recommendations = create_recommendations_for_search(
         current_user,
-        page=int(request.args.get('page', 1)),
-        keywords=request.args.get('keywords'),
+        page=page,
+        keywords=keywords,
         types=types,
         latitude=latitude,
         longitude=longitude,
