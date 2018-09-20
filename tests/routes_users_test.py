@@ -470,8 +470,7 @@ def test_user_with_isAdmin_true_and_canBookFreeOffers_raises_error():
 @pytest.mark.standalone
 def test_user_wallet_should_be_30_if_sum_deposit_50_and_one_booking_quantity_2_amount_10(app):
     # Given
-    user = create_user(public_name='Test', departement_code='93', email='wallet_2_bookings_test@email.com',
-                       password='testpsswd')
+    user = create_user(public_name='Test', departement_code='93', email='wallet_2_bookings_test@email.com', password='testpsswd')
     offerer = create_offerer('999199987', '2 Test adress', 'Test city', '93000', 'Test offerer')
     venue = create_venue(offerer)
     thing_offer = create_thing_offer(venue=None)
@@ -496,8 +495,7 @@ def test_user_wallet_should_be_30_if_sum_deposit_50_and_one_booking_quantity_2_a
 @pytest.mark.standalone
 def test_get_current_user_returns_expenses(app):
     # Given
-    user = create_user(public_name='Test', departement_code='93', email='wallet_2_bookings_test@email.com',
-                       password='testpsswd')
+    user = create_user(public_name='Test', departement_code='93', email='wallet_2_bookings_test@email.com', password='testpsswd')
     offerer = create_offerer('999199987', '2 Test adress', 'Test city', '93000', 'Test offerer')
     venue = create_venue(offerer)
     thing_offer = create_thing_offer(venue=None)

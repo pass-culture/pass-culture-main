@@ -20,7 +20,7 @@ def upgrade():
     op.add_column('user', sa.Column('firstName', sa.VARCHAR(35), nullable=False, server_default=''))
     op.add_column('user', sa.Column('lastName', sa.VARCHAR(35), nullable=False, server_default=''))
     op.add_column('user', sa.Column('postalCode', sa.VARCHAR(5), nullable=False, server_default=''))
-    op.add_column('user', sa.Column('phoneNumber', sa.VARCHAR(10), nullable=True))
+    op.add_column('user', sa.Column('phoneNumber', sa.VARCHAR(20), nullable=True))
 
 
 def downgrade():

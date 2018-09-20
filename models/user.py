@@ -3,6 +3,7 @@ from datetime import datetime
 
 import bcrypt
 from sqlalchemy import Binary, Boolean, Column, DateTime, String, func, CheckConstraint
+from sqlalchemy.event import listens_for
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import expression
@@ -58,7 +59,7 @@ class User(PcObject,
 
     postalCode = Column(String(5), nullable=False)
 
-    phoneNumber = Column(String(10), nullable=True)
+    phoneNumber = Column(String(20), nullable=True)
 
     def checkPassword(self, passwordToCheck):
         return bcrypt.hashpw(passwordToCheck.encode('utf-8'), self.password) == self.password

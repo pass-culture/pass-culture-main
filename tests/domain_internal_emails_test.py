@@ -52,7 +52,7 @@ def test_maybe_send_offerer_validation_email_does_not_send_email_if_all_validate
     offerer = create_offerer(siren='732075312', address='122 AVENUE DE FRANCE', city='Paris', postal_code='75013',
                              name='Accenture', validation_token=None)
 
-    user = create_user(public_name='Test', departement_code=75, email='user@accenture.com', can_book_free_offers=False,
+    user = create_user(public_name='Test', departement_code='75', email='user@accenture.com', can_book_free_offers=False,
                        validation_token=None)
 
     user_offerer = create_user_offerer(user, offerer, validation_token=None)
@@ -76,7 +76,7 @@ def test_maybe_send_offerer_validation_email_raises_exception_if_status_code_400
     offerer = create_offerer(siren='732075312', address='122 AVENUE DE FRANCE', city='Paris', postal_code='75013',
                              name='Accenture', validation_token=validation_token)
 
-    user = create_user(public_name='Test', departement_code=75, email='user@accenture.com', can_book_free_offers=False,
+    user = create_user(public_name='Test', departement_code='75', email='user@accenture.com', can_book_free_offers=False,
                        validation_token=validation_token)
 
     user_offerer = create_user_offerer(user, offerer, validation_token)
