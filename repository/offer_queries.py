@@ -120,13 +120,14 @@ def find_offers_in_date_range_for_given_venue_departement(date_max, date_min, de
 
 
 def get_offers_for_recommendations_search(
-    page=1,
-    keywords=None,
-    types=None,
-    latitude=None,
-    longitude=None,
-    max_distance=None,
-    between_dates=None):
+        page=1,
+        keywords=None,
+        types=None,
+        latitude=None,
+        longitude=None,
+        max_distance=None,
+        date=None,
+        days_segments=None):
 
     offer_query =  _filter_out_offers_on_soft_deleted_stocks_and_inactive_offers()
 
@@ -144,18 +145,25 @@ def get_offers_for_recommendations_search(
         offer_query = offer_query.join(Venue)\
                                  .filter(distance_instrument < max_distance)
 
-    if between_dates is not None:
-        for between_dates in between_dates:
+
+    if date is not None and days_segments is not None:
+        for days_segments in days_segments:
+
+            # TODO
+            pass
+
+            start_date = date + datetime(days_segments[0])
+            end_date = date + datetime(days_segments[1])
+
             date_offer_query = offer_query.join(Stock) \
                                           .outerjoin(EventOccurrence) \
                                           .filter(
                                             (
-                                                (Stock.bookingLimitDatetime >= between_dates[0]) &\
-                                                (Stock.bookingLimitDatetime <= between_dates[1])
+                                                (Stock.bookingLimitDatetime >= start_date) &\
+                                                (Stock.bookingLimitDatetime <= end_date)
                                             )
                                            )
             offer_query = offer_query.union_all(date_offer_query)
-
 
     if keywords is not None:
         offer_query = offer_query.outerjoin(Event)\

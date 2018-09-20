@@ -33,10 +33,14 @@ def list_recommendations():
         type_sublabels = request.args['types'].split(',')
         types = get_type_labels_from_sublabels(type_sublabels)
 
-    between_dates = None
-    if 'dates' in request.args and request.args['dates']:
-        between_dates = [
-            interval.split('-') for interval in request.args['dates'].split(',')
+    date = None
+    if 'date' in request.args and request.args['date']:
+        date = float(request.args['date'])
+
+    days_segments = None
+    if 'days_segments' in request.args and request.args['days_segments']:
+        days_segments = [
+            days_segments.split('-') for interval in request.args['days_segments'].split(',')
         ]
 
     latitude = None
@@ -47,10 +51,10 @@ def list_recommendations():
     if 'longitude' in request.args and request.args['longitude']:
         longitude = float(request.args['longitude'])
 
-    distance = None
+    max_distance = None
     if 'distance' in request.args and request.args['distance']:
         max_distance = float(request.args['distance'])
-        
+
     recommendations = create_recommendations_for_search(
         current_user,
         page=request.args.get('page', 1),
@@ -59,7 +63,8 @@ def list_recommendations():
         latitude=latitude,
         longitude=longitude,
         max_distance=max_distance,
-        between_dates=between_dates
+        date=date,
+        days_segments=days_segments
     )
 
     return jsonify(_serialize_recommendations(recommendations)), 200
