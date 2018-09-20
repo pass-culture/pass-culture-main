@@ -14,6 +14,7 @@ from utils.rest import expect_json_data, \
 
 
 @app.route('/things/<ofType>:<identifier>', methods=['GET'])
+@login_or_api_key_required
 def get_thing(ofType, identifier):
     query = Thing.query.filter(
         (Thing.type == ofType) &
@@ -24,6 +25,7 @@ def get_thing(ofType, identifier):
 
 
 @app.route('/things', methods=['GET'])
+@login_or_api_key_required
 def list_things():
     return handle_rest_get_list(Thing)
 

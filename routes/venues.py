@@ -1,5 +1,6 @@
 """ venues """
 from flask import current_app as app, jsonify, request
+from flask_login import login_required
 
 from models.user_offerer import RightsType
 from models.venue import Venue
@@ -13,17 +14,20 @@ from validation.venues import validate_coordinates
 
 
 @app.route('/venues', methods=['GET'])
+@login_required
 def list_venues():
     return handle_rest_get_list(Venue, order_by=Venue.name)
 
 
 @app.route('/venues/<venueId>', methods=['GET'])
+@login_required
 def get_venue(venueId):
     venue = load_or_404(Venue, venueId)
     return jsonify(venue._asdict(include=VENUE_INCLUDES))
 
 
 @app.route('/venues', methods=['POST'])
+@login_required
 @expect_json_data
 def create_venue():
     validate_coordinates(request.json.get('latitude', None), request.json.get('longitude', None))
@@ -34,6 +38,7 @@ def create_venue():
 
 
 @app.route('/venues/<venueId>', methods=['PATCH'])
+@login_required
 @expect_json_data
 def edit_venue(venueId):
     venue = load_or_404(Venue, venueId)

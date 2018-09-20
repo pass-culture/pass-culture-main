@@ -63,6 +63,7 @@ def list_stocks():
            methods=['GET'],
            defaults={'mediation_id': None})
 @app.route('/stocks/<stock_id>/<mediation_id>', methods=['GET'])
+@login_or_api_key_required
 def get_stock(stock_id, mediation_id):
     filters = request.args.copy()
     query = stock_queries.find_stocks_with_possible_filters(filters, current_user).filter_by(id=dehumanize(stock_id))
