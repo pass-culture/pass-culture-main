@@ -45,6 +45,13 @@ jobs:
             yarn start
           background: true
       - run:
+          name: Running sandbox data import
+          command: |
+            cd pass-culture-main
+            dockerize -wait http://localhost/health -timeout 3m -wait-retry-interval 5s
+            ./pc sandbox
+
+      - run:
           name: Run Functional Tests
           command: |
             export PATH=${PATH:44}
