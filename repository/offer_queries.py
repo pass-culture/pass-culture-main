@@ -1,5 +1,6 @@
-from datetime import datetime
-
+""" offer queries """
+from datetime import datetime, timedelta
+import dateutil.parser
 from sqlalchemy import func
 from sqlalchemy.orm import aliased
 
@@ -148,13 +149,12 @@ def get_offers_for_recommendations_search(
 
 
     if date is not None and days_segments is not None:
-        # TODO
-        pass
+        date = dateutil.parser.parse(date)
 
         for days in days_segments:
 
-            start_date = date + datetime(days[0])
-            end_date = date + datetime(days[1])
+            start_date = date + timedelta(days=days[0])
+            end_date = date + timedelta(days=days[1])
 
             date_offer_query = offer_query.join(Stock) \
                                           .outerjoin(EventOccurrence) \

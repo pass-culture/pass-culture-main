@@ -48,7 +48,7 @@ def list_recommendations():
     days_segments = None
     if 'days_segments' in request.args and request.args['days_segments']:
         days_segments = [
-            days_segment.split('-') for days_segment in request.args['days_segments'].split(',')
+            [int(ds) for ds in days_segment.split('-')] for days_segment in request.args['days_segments'].split(',')
         ]
 
     latitude = None
