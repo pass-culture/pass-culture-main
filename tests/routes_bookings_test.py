@@ -515,7 +515,6 @@ def test_an_admin_cancelling_a_users_booking_returns_200_and_effectively_marks_t
 
 @clean_database
 @pytest.mark.standalone
-@pytest.mark.token
 def test_get_booking_by_token_when_user_has_rights(app):
     # Given
     user = create_user(public_name='John Doe', email='user@email.fr')
@@ -547,7 +546,6 @@ def test_get_booking_by_token_when_user_has_rights(app):
 
 @clean_database
 @pytest.mark.standalone
-@pytest.mark.token
 def test_get_booking_by_token_when_user_doesnt_have_rights(app):
     # Given
     user = create_user(email='user@email.fr')
@@ -569,7 +567,6 @@ def test_get_booking_by_token_when_user_doesnt_have_rights(app):
 
 @clean_database
 @pytest.mark.standalone
-@pytest.mark.token
 def test_get_booking_by_token_when_token_does_not_exist(app):
     # Given
     admin_user = create_user(email='admin@email.fr', password='P@55w0rd')
@@ -585,7 +582,6 @@ def test_get_booking_by_token_when_token_does_not_exist(app):
 
 @clean_database
 @pytest.mark.standalone
-@pytest.mark.token
 def test_get_booking_by_token_when_not_logged_in_and_doesnt_give_email(app):
     # Given
     user = create_user(email='user@email.fr')
@@ -611,7 +607,6 @@ def test_get_booking_by_token_when_not_logged_in_and_doesnt_give_email(app):
 
 @clean_database
 @pytest.mark.standalone
-@pytest.mark.token
 def test_get_booking_by_token_when_user_does_not_have_rights_in_and_give_right_email(app):
     # Given
     user = create_user(email='user@email.fr')
@@ -633,7 +628,6 @@ def test_get_booking_by_token_when_user_does_not_have_rights_in_and_give_right_e
 
 @clean_database
 @pytest.mark.standalone
-@pytest.mark.token
 def test_get_booking_by_token_when_not_logged_in_and_give_right_email_and_offer_id(app):
     # Given
     user = create_user(email='user@email.fr')
@@ -655,7 +649,6 @@ def test_get_booking_by_token_when_not_logged_in_and_give_right_email_and_offer_
 
 @clean_database
 @pytest.mark.standalone
-@pytest.mark.token
 def test_get_booking_by_token_when_not_logged_in_and_give_right_email_and_offer_id_thing(app):
     # Given
     user = create_user(email='user@email.fr')
@@ -675,7 +668,6 @@ def test_get_booking_by_token_when_not_logged_in_and_give_right_email_and_offer_
 
 @clean_database
 @pytest.mark.standalone
-@pytest.mark.token
 def test_validate_get_booking_by_token_when_not_logged_in_and_give_right_email_and_wrong_offer(app):
     # Given
     user = create_user(email='user@email.fr')
@@ -696,7 +688,6 @@ def test_validate_get_booking_by_token_when_not_logged_in_and_give_right_email_a
 
 @clean_database
 @pytest.mark.standalone
-@pytest.mark.token
 def test_get_booking_by_token_when_not_logged_in_but_wrong_email(app):
     # Given
     user = create_user(email='user@email.fr')
@@ -720,7 +711,6 @@ def test_get_booking_by_token_when_not_logged_in_but_wrong_email(app):
 
 @clean_database
 @pytest.mark.standalone
-@pytest.mark.token
 def test_patch_booking_by_token_when_user_has_rights(app):
     # Given
     user = create_user()
@@ -744,7 +734,6 @@ def test_patch_booking_by_token_when_user_has_rights(app):
 
 @clean_database
 @pytest.mark.standalone
-@pytest.mark.token
 def test_patch_booking_by_token_when_user_not_editor_and_no_email(app):
     # Given
     user = create_user()
@@ -768,7 +757,6 @@ def test_patch_booking_by_token_when_user_not_editor_and_no_email(app):
 
 @clean_database
 @pytest.mark.standalone
-@pytest.mark.token
 def test_patch_booking_by_token_when_user_not_editor_and_valid_email(app):
     # Given
     user = create_user()
@@ -791,7 +779,6 @@ def test_patch_booking_by_token_when_user_not_editor_and_valid_email(app):
 
 @clean_database
 @pytest.mark.standalone
-@pytest.mark.token
 def test_patch_booking_by_token_when_user_not_editor_and_unvalid_email(app):
     # Given
     user = create_user()
@@ -814,7 +801,6 @@ def test_patch_booking_by_token_when_user_not_editor_and_unvalid_email(app):
 
 @clean_database
 @pytest.mark.standalone
-@pytest.mark.token
 def test_patch_booking_by_token_when_user_not_editor_and_valid_email_but_unvalid_offer_id(app):
     # Given
     user = create_user()
@@ -837,7 +823,6 @@ def test_patch_booking_by_token_when_user_not_editor_and_valid_email_but_unvalid
 
 @clean_database
 @pytest.mark.standalone
-@pytest.mark.token
 def test_patch_booking_by_token_when_user_not_editor_and_valid_email_and_offer_id(app):
     # Given
     user = create_user()
@@ -860,7 +845,6 @@ def test_patch_booking_by_token_when_user_not_editor_and_valid_email_and_offer_i
 
 @clean_database
 @pytest.mark.standalone
-@pytest.mark.token
 def test_patch_booking_by_token_when_booking_is_cancelled(app):
     # Given
     user = create_user()
@@ -886,7 +870,6 @@ def test_patch_booking_by_token_when_booking_is_cancelled(app):
 
 @clean_database
 @pytest.mark.standalone
-@pytest.mark.token
 def test_patch_booking_by_token_when_booking_already_validated(app):
     # Given
     user = create_user()

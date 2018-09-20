@@ -3,22 +3,24 @@ from flask import render_template
 from sqlalchemy.exc import InternalError
 from sqlalchemy.orm import aliased
 
-from models import ApiErrors,\
-                   Booking,\
-                   Event,\
-                   EventOccurrence,\
-                   PcObject,\
-                   Offer,\
-                   Stock,\
-                   Thing,\
-                   User,\
-                   Venue
+from models import ApiErrors, \
+    Booking, \
+    Event, \
+    EventOccurrence, \
+    PcObject, \
+    Offer, \
+    Stock, \
+    Thing, \
+    User, \
+    Venue
 from models.db import db
 from utils.rest import query_with_order_by
 from utils.search import get_search_filter
 
+
 class BookingNotFound(ApiErrors):
     pass
+
 
 def find_all_by_user_id(user_id):
     return Booking.query.filter_by(userId=user_id).all()
@@ -29,25 +31,24 @@ def find_all_by_stock_id(stock):
 
 
 def find_offerer_bookings(offerer_id, search=None, order_by=None, page=1):
-
     query = Booking.query.join(Stock) \
-                         .outerjoin(EventOccurrence) \
-                         .join(Offer,
-                               ((Stock.offerId == Offer.id) |\
-                               (EventOccurrence.offerId == Offer.id))) \
-                         .join(Venue) \
-                         .filter(Venue.managingOffererId == offerer_id)
+        .outerjoin(EventOccurrence) \
+        .join(Offer,
+              ((Stock.offerId == Offer.id) | \
+               (EventOccurrence.offerId == Offer.id))) \
+        .join(Venue) \
+        .filter(Venue.managingOffererId == offerer_id)
 
     if search:
-        query = query.outerjoin(Event)\
-                     .outerjoin(Thing)\
-                     .filter(get_search_filter([Event, Thing, Venue], search))
+        query = query.outerjoin(Event) \
+            .outerjoin(Thing) \
+            .filter(get_search_filter([Event, Thing, Venue], search))
 
     if order_by:
         query = query_with_order_by(query, order_by)
 
-    bookings = query.paginate(int(page), per_page=10, error_out=False)\
-                    .items
+    bookings = query.paginate(int(page), per_page=10, error_out=False) \
+        .items
 
     return bookings
 
@@ -65,20 +66,21 @@ def find_bookings_from_recommendation(reco, user):
 def find_all_with_soft_deleted_stocks():
     return Booking.query.join(Stock).filter_by(isSoftDeleted=True).all()
 
-def find_by_token(token, email=None, offer_id=None):
+
+def find_by(token, email=None, offer_id=None):
     query = Booking.query.filter_by(token=token)
 
     if email:
         query = query.join(User).filter_by(email=email)
 
     if offer_id:
-        query_offer_1 = Booking.query.join(Stock)\
-                                     .join(Offer)\
-                                     .filter_by(id=offer_id)
-        query_offer_2 = Booking.query.join(Stock)\
-                                     .join(EventOccurrence)\
-                                     .join(aliased(Offer))\
-                                     .filter_by(id=offer_id)
+        query_offer_1 = Booking.query.join(Stock) \
+            .join(Offer) \
+            .filter_by(id=offer_id)
+        query_offer_2 = Booking.query.join(Stock) \
+            .join(EventOccurrence) \
+            .join(aliased(Offer)) \
+            .filter_by(id=offer_id)
         query_offer = query_offer_1.union_all(query_offer_2)
         query = query.intersect_all(query_offer)
 
