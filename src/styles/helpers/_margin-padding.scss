@@ -1,50 +1,49 @@
-// used: 3, 8, 12, 16, 20, 22, 40
-$sizes: (0, 3, 5, 7, 8, 12, 16, 20, 22, 28, 30, 32, 36, 40, 48, 60);
+$intSizes: (0, 3, 5, 7, 8, 12, 16, 20, 22, 28, 30, 32, 36, 40, 48, 60);
 
-@each $size in $sizes {
+@each $intSize in $intSizes {
   $sides: (all, topbottom, leftright, top, left, right, bottom);
 
   // convert value to SASS variables with unit
-  $value: number-to-pixel($size);
+  $pixelValue: number-to-pixel($intSize);
 
   @each $side in $sides {
     @if $side == 'all' {
-      .m#{$size} {
-        @include rem(margin, $value);
+      .m#{$intSize} {
+        @include rem(margin, $pixelValue);
       }
 
-      .p#{$size} {
-        @include rem(padding, $value);
+      .p#{$intSize} {
+        @include rem(padding, $pixelValue);
       }
     }
 
     @else if $side == 'topbottom' {
-      .my#{$size} {
-        @include rem(margin, $value 0);
+      .my#{$intSize} {
+        @include rem(margin, $pixelValue 0);
       }
 
-      .py#{$size} {
-        @include rem(padding, $value 0);
+      .py#{$intSize} {
+        @include rem(padding, $pixelValue 0);
       }
     }
 
     @else if $side == 'leftright' {
-      .mx#{$size} {
-        @include rem(margin, 0 $value);
+      .mx#{$intSize} {
+        @include rem(margin, 0 $pixelValue);
       }
 
-      .px#{$size} {
-        @include rem(padding, 0 $value);
+      .px#{$intSize} {
+        @include rem(padding, 0 $pixelValue);
       }
     }
 
     @else {
-      .m#{str-slice($side, 0, 1)}#{$size} {
-        @include rem(margin-#{$side}, $value);
+      .m#{str-slice($side, 0, 1)}#{$intSize} {
+        @include rem(margin-#{$side}, $pixelValue);
       }
 
-      .p#{str-slice($side, 0, 1)}#{$size} {
-        @include rem(padding-#{$side}, $value);
+      .p#{str-slice($side, 0, 1)}#{$intSize} {
+        @include rem(padding-#{$side}, $pixelValue);
       }
     }
   }

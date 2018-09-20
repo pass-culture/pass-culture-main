@@ -1,7 +1,18 @@
+// creation des classes permettant de gerer la taille des polices
+// Exemple: .fs18, .fs32...
+$intSizes: (13, 14, 15, 16, 17, 18, 19, 20, 22, 30, 32, 48);
+
+@each $intSize in $intSizes {
+  $pixelValue: number-to-pixel($intSize);
+
+  .fs#{$intSize} {
+    @include font-size-to-rem($pixelValue);
+  }
+}
+
 /* ------------------------------------------------
 
  Helpers:
- - size
  - color
  - style
  - align
@@ -84,45 +95,4 @@ a.is-white-text:hover {
 .is-capitalized {
   // capitalize each words first letter
   text-transform: capitalize;
-}
-
-/* ------ SIZES */
-.fs48 {
-  @include fontSize(48px);
-}
-
-.fs32 {
-  @include fontSize(32px);
-}
-
-.fs30 {
-  @include fontSize(30px);
-}
-
-.fs22 {
-  @include fontSize(22px);
-}
-
-.fs20 {
-  @include fontSize(20px);
-}
-
-.fs19 {
-  @include fontSize(19px);
-}
-
-.fs18 {
-  @include fontSize(18px);
-}
-
-.fs16 {
-  @include fontSize(16px);
-}
-
-.fs14 {
-  @include fontSize(14px);
-}
-
-.fs13 {
-  @include fontSize(13px);
 }

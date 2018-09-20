@@ -24,7 +24,7 @@
   }
 
   .pc-footer .pc-icon {
-    @include fontSize(38px);
+    @include font-size-to-rem(38px);
   }
 }
 

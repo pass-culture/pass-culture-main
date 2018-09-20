@@ -1,8 +1,13 @@
-@import '_number-to-px.scss';
 @import '_rem.scss';
 @import '_dotted.scss';
 
+// permet de convertir un chiffre sans unité en pixel
+// voir les helpers, margin-padding
+@function number-to-pixel($intSize: 0) {
+  @return ($intSize * 1px);
+}
+
 // Mixin that will include the fall back px declaration as well as the calculated rem value.
-@mixin fontSize($size) {
-  @include rem(font-size, $size);
+@mixin font-size-to-rem($pixelSize) {
+  @include rem(font-size, $pixelSize);
 }
