@@ -20,10 +20,7 @@ const NavByOfferType = ({ handleQueryParamsChange, title, typeSublabels }) => (
           className="input is-normal"
           onChange={() =>
             handleQueryParamsChange(
-              {
-                categories: typeSublabel,
-                // types: typeSublabel
-              },
+              { categories: typeSublabel },
               { pathname: '/recherche/resultats' }
             )
           }

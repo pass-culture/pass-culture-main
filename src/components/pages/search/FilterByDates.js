@@ -21,7 +21,7 @@ const checkboxes = [
 ]
 
 class FilterByDates extends Component {
-  onFilterChange = typeSublabel => {
+  onFilterChange = day => {
     const {
       handleFilterParamsChange,
       handleFilterParamAdd,
@@ -29,32 +29,31 @@ class FilterByDates extends Component {
       filterParams,
     } = this.props
 
-    const daysSegmentsValue = decodeURI(filterParams.days_segments || '')
-    const isAlreadyIncluded = daysSegmentsValue.includes(typeSublabel)
+    const days = decodeURI(filterParams.jours || '')
+    const isAlreadyIncluded = days.includes(day)
 
     // WE ADD THE DATE AT THE FIRST DAYS SEGMENTS CLICKED
     // WE REMOVE THE DATE AT THE LAST DAYS SEGMENTS CLICKED
     let callback
-    if (!get(daysSegmentsValue, 'length')) {
+    if (!get(days, 'length')) {
       const date = moment(moment.now()).toISOString()
       callback = () => handleFilterParamsChange({ date })
-    } else if (isAlreadyIncluded && daysSegmentsValue.split(',').length === 1) {
-      console.log('ON ENLEVE')
+    } else if (isAlreadyIncluded && days.split(',').length === 1) {
       callback = () => handleFilterParamsChange({ date: null })
     }
 
     if (isAlreadyIncluded) {
-      handleFilterParamRemove('days_segments', typeSublabel, callback)
+      handleFilterParamRemove('jours', day, callback)
       return
     }
 
-    handleFilterParamAdd('days_segments', typeSublabel, callback)
+    handleFilterParamAdd('jours', day, callback)
   }
 
   render() {
     const { filterParams } = this.props
 
-    const daysSegmentsValue = decodeURI(filterParams.days_segments || '')
+    const days = decodeURI(filterParams.jours || '')
 
     return (
       <div>
@@ -68,7 +67,7 @@ DATE (Scrollable horizontally)
               {label}
             </label>
             <input
-              checked={daysSegmentsValue.includes(value)}
+              checked={days.includes(value)}
               className="input is-normal"
               onChange={() => this.onFilterChange(value)}
               type="checkbox"

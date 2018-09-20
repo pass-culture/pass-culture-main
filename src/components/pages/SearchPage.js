@@ -59,6 +59,7 @@ class SearchPage extends PureComponent {
     const englishQuerySearch = querySearch
       .replace('mots-cles=', 'keywords=')
       .replace('categories=', 'types=')
+      .replace('jours=', 'days=')
 
     dispatch(
       requestData('GET', `recommendations?${englishQuerySearch}`, {
@@ -223,7 +224,7 @@ export default compose(
     dataKey: 'recommendations',
     defaultQueryParams: {
       date: null,
-      days_segments: null,
+      days: null,
       distance: null,
       latitude: null,
       longitude: null,
