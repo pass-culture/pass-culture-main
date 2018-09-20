@@ -1,10 +1,13 @@
+import secrets
+
 import pytest
 
 from models import PcObject, Venue
 from tests.conftest import clean_database
 from utils.human_ids import dehumanize, humanize
 from utils.test_utils import API_URL, req_with_auth, create_user, create_venue, \
-    create_offerer, create_user_offerer, create_n_mixed_offers_with_same_venue, create_thing, create_event
+    create_offerer, create_user_offerer, create_n_mixed_offers_with_same_venue, create_thing, create_event, \
+    create_thing_offer
 
 
 def insert_offers_for(user, n, siren='123456789'):
@@ -224,3 +227,21 @@ def test_create_event_offer(app):
 
     # then
     assert response.status_code == 201
+
+
+@clean_database
+@pytest.mark.standalone
+def test_get_offers_doesnt_show_anything_to_user_offerer_when_not_validated(app):
+    # Given
+    user = create_user(password='azerty123')
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    user_offerer = create_user_offerer(user, offerer, validation_token=secrets.token_urlsafe(20))
+    offer = create_thing_offer(venue)
+    PcObject.check_and_save(user_offerer, offer)
+    auth_request = req_with_auth(email=user.email, password='azerty123')
+    # When
+    response = auth_request.get(API_URL + '/offers')
+
+    # Then
+    assert response.json() == []

@@ -1,4 +1,5 @@
 """ routes offerer """
+import secrets
 from datetime import timedelta, datetime
 
 import pytest
@@ -301,3 +302,20 @@ def test_patch_offerer_with_none_bic_and_none_iban_returns_status_code_200(app):
     response_json = response.json()
     assert response_json['bic'] is None
     assert response_json['iban'] is None
+
+
+@clean_database
+@pytest.mark.standalone
+def test_get_offerers_should_not_send_offerer_to_user_offerer_not_validated(app):
+    # Given
+    offerer = create_offerer()
+    user = create_user(password='p@55sw0rd!')
+    user_offerer = create_user_offerer(user, offerer, validation_token=secrets.token_urlsafe(20))
+    PcObject.check_and_save(user_offerer)
+    auth_request = req_with_auth(email=user.email, password='p@55sw0rd!')
+
+    # When
+    response = auth_request.get(API_URL + '/offerers/')
+
+    # then
+    assert response.json() == []

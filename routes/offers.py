@@ -5,13 +5,12 @@ from flask_login import current_user
 
 from domain.offers import check_digital_offer_consistency, InconsistentOffer
 from models import ApiErrors
-from models.event import Event
 from models.offer import Offer
-from models.offerer import Offerer
 from models.pc_object import PcObject
-from models.thing import Thing
-from models.user_offerer import UserOfferer, RightsType
+from models.user_offerer import RightsType
 from models.venue import Venue
+from repository import venue_queries
+from repository.offer_queries import find_by_venue_id_or_offerer_id_and_search_terms_offers_where_user_has_rights
 from utils.human_ids import dehumanize
 from utils.includes import OFFER_INCLUDES
 from utils.rest import delete, \
@@ -20,39 +19,21 @@ from utils.rest import delete, \
     handle_rest_get_list, \
     load_or_404, \
     login_or_api_key_required
-from utils.search import get_search_filter
+from validation.offers import check_venue_exists_when_requested, check_user_has_rights_for_query
 
 
 @app.route('/offers', methods=['GET'])
 @login_or_api_key_required
 def list_offers():
-    offererId = dehumanize(request.args.get('offererId'))
-    venueId = dehumanize(request.args.get('venueId'))
-    query = Offer.query
+    offerer_id = dehumanize(request.args.get('offererId'))
+    venue_id = dehumanize(request.args.get('venueId'))
+    venue = venue_queries.find_by_id(venue_id)
 
-    if venueId is not None:
-        venue = Venue.query.filter_by(id=venueId)\
-                           .first_or_404()
-        ensure_current_user_has_rights(RightsType.editor,
-                                       venue.managingOffererId)
-        query = query.filter_by(venue=venue)
-    elif offererId is not None:
-        ensure_current_user_has_rights(RightsType.editor,
-                                       offererId)
-        query = query.join(Venue)\
-                     .join(Offerer)\
-                     .filter_by(id=offererId)
-    elif not current_user.isAdmin:
-        query = query.join(Venue)\
-                     .join(Offerer)\
-                     .join(UserOfferer)\
-                     .filter(UserOfferer.user == current_user)
+    check_venue_exists_when_requested(venue, venue_id)
+    check_user_has_rights_for_query(offerer_id, venue, venue_id)
 
-    search = request.args.get('search')
-    if search is not None:
-        query = query.outerjoin(Event)\
-                     .outerjoin(Thing)\
-                     .filter(get_search_filter([Event, Thing], search))
+    query = find_by_venue_id_or_offerer_id_and_search_terms_offers_where_user_has_rights(offerer_id, venue, venue_id,
+                                                                                         current_user, request)
 
     return handle_rest_get_list(Offer,
                                 include=OFFER_INCLUDES,

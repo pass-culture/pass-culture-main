@@ -13,6 +13,7 @@ from models import Booking, \
     Venue
 from models import Thing
 from models.db import db
+from repository.user_offerer_queries import filter_query_where_user_is_user_offerer_and_is_validated
 from utils.logger import logger
 from utils.search import get_search_filter
 
@@ -122,6 +123,27 @@ def get_offers_for_recommendations_search(page=1, search=None):
                         .items
 
     return offers
+
+
+def find_by_venue_id_or_offerer_id_and_search_terms_offers_where_user_has_rights(offerer_id, venue, venue_id, user,
+                                                                                 request):
+    query = Offer.query
+    if venue_id is not None:
+        query = query.filter_by(venue=venue)
+    elif offerer_id is not None:
+        query = query.join(Venue) \
+            .join(Offerer) \
+            .filter_by(id=offerer_id)
+    elif not user.isAdmin:
+        query = query.join(Venue) \
+            .join(Offerer)
+        query = filter_query_where_user_is_user_offerer_and_is_validated(query, user)
+    search = request.args.get('search')
+    if search is not None:
+        query = query.outerjoin(Event) \
+            .outerjoin(Thing) \
+            .filter(get_search_filter([Event, Thing], search))
+    return query
 
 
 def _filter_out_offers_on_soft_deleted_stocks():
