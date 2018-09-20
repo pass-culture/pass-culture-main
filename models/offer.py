@@ -5,7 +5,7 @@ from itertools import chain
 from sqlalchemy import BigInteger, CheckConstraint, Column, DateTime, desc, ForeignKey, String
 from sqlalchemy.orm import aliased, relationship
 
-from models import Event, EventOccurrence
+from models import DeactivableMixin, Event, EventOccurrence
 from models.db import Model
 from models.pc_object import PcObject
 from models.providable_mixin import ProvidableMixin
@@ -14,7 +14,9 @@ from models.stock import Stock
 
 class Offer(PcObject,
             Model,
+            DeactivableMixin,
             ProvidableMixin):
+
     id = Column(BigInteger,
                 primary_key=True,
                 autoincrement=True)
@@ -86,15 +88,3 @@ class Offer(PcObject,
             .filter(Offer.id == self.id) \
             .order_by(desc(Stock.bookingLimitDatetime)) \
             .first()
-
-    @staticmethod
-    def joinWithAliasedStock(query, offerType):
-        query = Offer.query
-        if offerType == Event:
-            query = query.filter(Offer.eventId != None) \
-                .join(aliased(EventOccurrence))
-        else:
-            query = query.filter(Offer.thingId != None) \
-                .join(aliased(EventOccurrence))
-        stock_alias = aliased(Stock)
-        return query.join(stock_alias).filter_by(isSoftDeleted=False), stock_alias

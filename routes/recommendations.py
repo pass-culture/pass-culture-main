@@ -65,16 +65,6 @@ def put_recommendations():
 
     logger.info('(special) requested_recommendation %s' % (requested_recommendation,))
 
-    # TODO
-    #    if (request.args.get('offerId') is not None
-    #        or request.args.get('mediationId') is not None)\
-    #       and request.args.get('singleReco') is not None\
-    #       and request.args.get('singleReco').lower == 'true':
-    #        if requested_recommendation:
-    #            return jsonify(dictify_recos()), 200
-    #        else:
-    #            return "", 404
-
     # we get more read+unread recos than needed in case we can't make enough new recos
 
     unread_recos = find_all_unread_recommendations(current_user, seen_recommendation_ids)

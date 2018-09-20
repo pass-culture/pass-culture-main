@@ -1,29 +1,25 @@
 """offers"""
 
+from datetime import datetime
 from flask import current_app as app, jsonify, request
-from flask_login import current_user
+from flask_login import current_user, login_required
 
 from domain.offers import check_digital_offer_consistency, InconsistentOffer
-from models import ApiErrors
-from models.offer import Offer
-from models.pc_object import PcObject
-from models.user_offerer import RightsType
-from models.venue import Venue
+from models import ApiErrors, Offer, PcObject, Recommendation,\
+                   RightsType, Venue
 from repository import venue_queries
 from repository.offer_queries import find_by_venue_id_or_offerer_id_and_search_terms_offers_where_user_has_rights
 from utils.human_ids import dehumanize
 from utils.includes import OFFER_INCLUDES
-from utils.rest import delete, \
-    ensure_current_user_has_rights, \
-    expect_json_data, \
-    handle_rest_get_list, \
-    load_or_404, \
-    login_or_api_key_required
+from utils.rest import ensure_current_user_has_rights, \
+                       expect_json_data, \
+                       handle_rest_get_list, \
+                       load_or_404
 from validation.offers import check_venue_exists_when_requested, check_user_has_rights_for_query
 
 
 @app.route('/offers', methods=['GET'])
-@login_or_api_key_required
+@login_required
 def list_offers():
     offerer_id = dehumanize(request.args.get('offererId'))
     venue_id = dehumanize(request.args.get('venueId'))
@@ -44,14 +40,14 @@ def list_offers():
 
 
 @app.route('/offers/<id>', methods=['GET'])
-@login_or_api_key_required
+@login_required
 def get_offer(id):
     offer = load_or_404(Offer, id)
     return jsonify(offer._asdict(include=OFFER_INCLUDES))
 
 
 @app.route('/offers', methods=['POST'])
-@login_or_api_key_required
+@login_required
 @expect_json_data
 def post_offer():
     offer = Offer()
@@ -71,10 +67,23 @@ def post_offer():
     return jsonify(offer._asdict(include=OFFER_INCLUDES)), 201
 
 
-@app.route('/offers/<id>', methods=['DELETE'])
-@login_or_api_key_required
-def delete_offer(id):
-    offer = load_or_404(Offer, id)
-    ensure_current_user_has_rights(RightsType.editor,
-                                   offer.venue.managingOffererId)
-    return delete(offer)
+@app.route('/offers/<offer_id>', methods=['PATCH'])
+@login_required
+@expect_json_data
+def update_offer(offer_id):
+    offer = load_or_404(Offer, offer_id)
+    ensure_current_user_has_rights(RightsType.editor, offer.venue.managingOffererId)
+    offer = Offer.query.filter_by(id=dehumanize(offer_id)).first()
+    # ensure only some properties can be modified
+    newProps = dict()
+    if 'isActive' in request.json:
+        newProps['isActive'] = request.json['isActive']
+    offer.populateFromDict(newProps)
+    PcObject.check_and_save(offer)
+    if 'isActive' in request.json\
+       and not newProps['isActive']\
+       and offer.isActive:
+        Recommendation.query.filter((Recommendation.offerId == offer.id)
+                                    & (Recommendation.validUntilDate > datetime.now()))\
+                            .update({'validUntilDate': datetime.now()})
+    return jsonify(offer._asdict()), 200

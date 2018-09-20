@@ -276,6 +276,7 @@ class PcObject():
                 else:
                     setattr(self, key, value)
 
+
     @staticmethod
     def check_and_save(*objects):
         if not objects:

@@ -8,7 +8,3 @@ class DeactivableMixin(object):
                       nullable=False,
                       server_default=expression.true(),
                       default=True)
-
-    @property
-    def queryActive(self):
-        return self.query.filter_by(isActive=True)

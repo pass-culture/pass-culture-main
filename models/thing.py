@@ -64,7 +64,6 @@ class ThingType(enum.Enum):
 
 class Thing(PcObject,
             Model,
-            DeactivableMixin,
             HasThumbMixin,
             ProvidableMixin,
             ExtraDataMixin):

@@ -126,6 +126,9 @@ def test_patch_mediation_returns_200(app):
     assert response.json()['frontText'] == mediation.frontText
     assert response.json()['backText'] == mediation.backText
     assert response.json()['isActive'] == mediation.isActive
+    assert mediation.isActive == data['isActive']
+    assert mediation.frontText == data['frontText']
+    assert mediation.backText == data['backText']
 
 
 @clean_database

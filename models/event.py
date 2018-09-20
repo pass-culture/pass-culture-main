@@ -56,7 +56,6 @@ class EventType(Enum):
 
 class Event(PcObject,
             Model,
-            DeactivableMixin,
             ExtraDataMixin,
             HasThumbMixin,
             ProvidableMixin

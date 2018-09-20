@@ -69,7 +69,7 @@ def not_currently_recommended_offers(query, user):
 
 
 def get_offers_by_type(offer_type, user=None, departement_codes=None, offer_id=None):
-    query = Offer.query
+    query = Offer.query.filter_by(isActive=True)
     if offer_type == Event:
         query = query.join(aliased(EventOccurrence))
     query = query.join(Stock) \
@@ -147,11 +147,11 @@ def find_by_venue_id_or_offerer_id_and_search_terms_offers_where_user_has_rights
 
 
 def _filter_out_offers_on_soft_deleted_stocks():
-    join_on_stocks = Offer.query \
+    join_on_stocks = Offer.query.filter_by(isActive=True) \
         .join(Stock) \
         .filter_by(isSoftDeleted=False)
 
-    join_on_event_occurrences = Offer.query \
+    join_on_event_occurrences = Offer.query.filter_by(isActive=True) \
         .join(EventOccurrence) \
         .join(Stock) \
         .filter_by(isSoftDeleted=False)

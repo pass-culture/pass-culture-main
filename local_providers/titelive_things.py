@@ -230,7 +230,6 @@ class TiteLiveThings(LocalProvider):
         assert thing.idAtProviders == infos['ean13']
 
         thing.extraData = self.extraData
-        thing.isActive = int(infos['code_dispo']) == 1
         thing.name = trim_with_elipsis(infos['titre'], 140)
         thing.datePublished = read_date(infos['date_parution'])
         thing.extraData['author'] = infos['auteurs']
