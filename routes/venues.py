@@ -13,12 +13,6 @@ from utils.rest import ensure_current_user_has_rights, \
 from validation.venues import validate_coordinates
 
 
-@app.route('/venues', methods=['GET'])
-@login_required
-def list_venues():
-    return handle_rest_get_list(Venue, order_by=Venue.name)
-
-
 @app.route('/venues/<venueId>', methods=['GET'])
 @login_required
 def get_venue(venueId):
