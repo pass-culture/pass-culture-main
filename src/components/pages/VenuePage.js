@@ -191,8 +191,8 @@ class VenuePage extends Component {
                   name="city"
                   required
                 />
-                <Field label="Longitude" name="longitude" required />
                 <Field label="Latitude" name="latitude" required />
+                <Field label="Longitude" name="longitude" required />
               </div>
             </div>
             <hr />
