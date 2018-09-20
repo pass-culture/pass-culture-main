@@ -82,14 +82,18 @@ HTML_USER_BOOKING_EVENT_CANCELLATION_EMAIL = '<html><body>' + \
                                              '</body></html>'
 
 SUBJECT_OFFERER_BOOKING_CONFIRMATION_EMAIL = \
-    '[Reservations] Nouvelle reservation pour Mains, sorts et papiers - 20 juillet 2019 à 14:00'
+    '[Réservations] Nouvelle réservation pour Mains, sorts et papiers - 20 juillet 2019 à 14:00'
 HTML_OFFERER_BOOKING_CONFIRMATION_EMAIL = \
     '<html><body>' + \
     '<p id="mail-greeting">Cher partenaire pass Culture,</p>' + \
     '<p id="action"><strong>Test</strong> (test@email.com) vient de faire une nouvelle réservation.</p>' + \
-    '<p id="recap">Voici le récapitulatif des réservations à ce jour (total 1)' + \
-    ' pour Mains, sorts et papiers le 20 juillet 2019 à 14:00,' + \
-    ' proposé par Test offerer (Adresse : 123 rue test, 93000 Test city).</p>' + \
+    '<p id="recap">Voici le récapitulatif des réservations à ce jour :' + \
+    '<br/>' + \
+    '(total 1) pour Mains, sorts et papiers' + \
+    '<br/>' + \
+    'le 20 juillet 2019 à 14:00,' + \
+    '<br/>' + \
+    'proposé par Test offerer (Adresse : 123 rue test, 93000 Test city).</p>' + \
     '<table id="recap-table"><tr><th>Nom ou pseudo</th><th>Email</th><th>Code réservation</th></tr>' + \
     '<tr><td>Test</td><td>test@email.com</td><td>56789</td></tr></table>' + \
     '</body></html>'
@@ -332,7 +336,7 @@ def test_booking_recap_email_html_should_not_have_cancelled_or_used_bookings(app
 @pytest.mark.standalone
 def test_offerer_recap_email_subject_past_offer_without_booking(app):
     # Given
-    expected_subject = '[Reservations] Récapitulatif pour Mains, sorts et papiers le 20 juillet 2017 à 14:00'
+    expected_subject = '[Réservations] Récapitulatif pour Mains, sorts et papiers le 20 juillet 2017 à 14:00'
     venue = create_venue(None, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
     stock = create_stock_with_event_offer(offerer=None,
                                           venue=venue,
@@ -356,7 +360,13 @@ def test_offerer_recap_email_past_offer_without_booking(app):
             <body>
                 <p id="mail-greeting">Cher partenaire pass Culture,</p>
                 <p id="recap">
-                    Voici le récapitulatif final des réservations (total 0) pour Mains, sorts et papiers le 20 juillet 2017 à 14:00, proposé par Test offerer (Adresse : 123 rue test, 93000 Test city).
+                    Voici le récapitulatif final des réservations :
+                    <br/>
+                    (total 0) pour Mains, sorts et papiers
+                    <br/>
+                    le 20 juillet 2017 à 14:00,
+                    <br/>
+                    proposé par Test offerer (Adresse : 123 rue test, 93000 Test city).
                 </p>
                 <p>Aucune réservation</p>
             </body>
@@ -387,7 +397,13 @@ def test_offerer_recap_email_past_offer_with_booking(app):
             <body>
                 <p id="mail-greeting">Cher partenaire pass Culture,</p>
                 <p id="recap">
-                    Voici le récapitulatif final des réservations (total 1) pour Mains, sorts et papiers le 20 juillet 2017 à 14:00, proposé par Test offerer (Adresse : 123 rue test, 93000 Test city).
+                    Voici le récapitulatif final des réservations :
+                    <br/>
+                    (total 1) pour Mains, sorts et papiers
+                    <br/>
+                    le 20 juillet 2017 à 14:00,
+                    <br/>
+                    proposé par Test offerer (Adresse : 123 rue test, 93000 Test city).
                 </p>
                 <table id="recap-table">
                     <tr>
@@ -469,7 +485,13 @@ def test_offerer_recap_email_future_offer_when_new_booking_with_old_booking(app)
                 <p id="mail-greeting">Cher partenaire pass Culture,</p>
                 <p id="action"><strong>Test 2</strong> (other_test@email.com) vient de faire une nouvelle réservation.</p>
                 <p id="recap">
-                    Voici le récapitulatif des réservations à ce jour (total 2) pour Mains, sorts et papiers le 20 juillet 2019 à 14:00, proposé par Test offerer (Adresse : 123 rue test, 93000 Test city).
+                    Voici le récapitulatif des réservations à ce jour :
+                    <br/>
+                    (total 2) pour Mains, sorts et papiers
+                    <br/>
+                    le 20 juillet 2019 à 14:00,
+                    <br/>
+                    proposé par Test offerer (Adresse : 123 rue test, 93000 Test city).
                 </p>
                 <table id= "recap-table">
                     <tr>
@@ -524,7 +546,11 @@ def test_offerer_booking_recap_email_book(app):
             <p id="mail-greeting">Cher partenaire pass Culture,</p>
             <p id="action"><strong>Test</strong> (test@email.com) vient de faire une nouvelle réservation.</p>
             <p id="recap">
-            Voici le récapitulatif des réservations à ce jour (total 1) pour Test Book, proposé par Test offerer (Adresse : 123 rue test, 93000 Test city).
+            Voici le récapitulatif des réservations à ce jour :
+            <br/>
+            (total 1) pour Test Book,
+            <br/>
+            proposé par Test offerer (Adresse : 123 rue test, 93000 Test city).
             </p>
             <table id="recap-table">
                 <tr>
@@ -718,7 +744,11 @@ def test_make_offerer_booking_user_cancellation_email(app):
                 <p id="mail-greeting">Cher partenaire pass Culture,</p>
                 <p id="action"><strong>Test2</strong> (test2@email.com) vient d'annuler sa réservation.</p>
                 <p id="recap">
-                Voici le récapitulatif des réservations à ce jour (total 1) pour Test Book, proposé par Test offerer (Adresse : 123 rue test, 93000 Test city).
+                Voici le récapitulatif des réservations à ce jour :
+                <br/>
+                (total 1) pour Test Book,
+                <br/>
+                proposé par Test offerer (Adresse : 123 rue test, 93000 Test city).
                 </p>
                 <table id="recap-table">
                     <tr>

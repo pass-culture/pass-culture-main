@@ -35,7 +35,7 @@ def make_final_recap_email_for_stock_with_event(stock):
     venue = stock.resolvedOffer.venue
     date_in_tz = _get_event_datetime(stock)
     formatted_datetime = format_datetime(date_in_tz)
-    email_subject = '[Reservations] Récapitulatif pour {} le {}'.format(stock.eventOccurrence.offer.event.name,
+    email_subject = '[Réservations] Récapitulatif pour {} le {}'.format(stock.eventOccurrence.offer.event.name,
                                                                         formatted_datetime)
     stock_bookings = find_all_ongoing_bookings_by_stock(stock)
     email_html = render_template('mails/offerer_final_recap_email.html',
@@ -63,12 +63,12 @@ def make_offerer_booking_recap_email_after_user_action(booking, is_cancellation=
     stock_name = booking.stock.resolvedOffer.eventOrThing.name
 
     if booking.stock.eventOccurrence is None:
-        email_subject = '[Reservations] Nouvelle reservation pour {}'.format(stock_name)
+        email_subject = '[Réservations] Nouvelle réservation pour {}'.format(stock_name)
         formatted_datetime = None
     else:
         date_in_tz = _get_event_datetime(booking.stock)
         formatted_datetime = format_datetime(date_in_tz)
-        email_subject = '[Reservations] Nouvelle reservation pour {} - {}'.format(stock_name,
+        email_subject = '[Réservations] Nouvelle réservation pour {} - {}'.format(stock_name,
                                                                                   formatted_datetime)
 
     if is_cancellation:

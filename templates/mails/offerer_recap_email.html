@@ -2,7 +2,7 @@
     <body>
         <p id="mail-greeting">Cher partenaire pass Culture,</p>
         {% block new_reservation %}{% endblock %}
-        <p id="recap">Voici le récapitulatif {% block past_or_future %}{% endblock %} (total {{ number_of_bookings }}) pour {{ stock_name }}{% if stock_date_time %} le {{ stock_date_time }}{% endif %}, proposé par {{ venue_name }} (Adresse : {{ venue_address }}, {{ venue_postal_code }} {{ venue_city }}).</p>
+        <p id="recap">Voici le récapitulatif {% block past_or_future %}{% endblock %}<br/> (total {{ number_of_bookings }}) pour {{ stock_name }}{% if stock_date_time %}<br/> le {{ stock_date_time }}{% endif %},<br/> proposé par {{ venue_name }} (Adresse : {{ venue_address }}, {{ venue_postal_code }} {{ venue_city }}).</p>
         {% block recap %}{% endblock %}
     </body>
 </html>
