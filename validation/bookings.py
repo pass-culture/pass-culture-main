@@ -65,7 +65,8 @@ def check_expenses_limits(expenses, booking, stock):
 def check_user_is_logged_in_or_email_is_provided(user, email):
     if not (user.is_authenticated or email):
         api_errors = ApiErrors()
-        api_errors.addError('email', 'Vous devez préciser l\'email de l\'utilisateur quand vous n\'êtes pas connecté(e)')
+        api_errors.addError('email',
+                            'Vous devez préciser l\'email de l\'utilisateur quand vous n\'êtes pas connecté(e)')
         raise api_errors
 
 
@@ -82,6 +83,16 @@ def check_booking_not_already_used(booking):
         resource_gone_error.addError('booking', 'Cette réservation a déjà été validée')
         raise resource_gone_error
 
+
+def check_email_and_offer_id_for_anonymous_user(email, offer_id):
+    api_errors = ApiErrors()
+    if not email:
+        api_errors.addError('email',
+                            "L'adresse email qui a servie à la réservation est obligatoire dans l'URL [?email=<email>]")
+    if not offer_id:
+        api_errors.addError('offer_id', "L'id de l'offre réservée est obligatoire dans l'URL [?offer_id=<id>]")
+    if api_errors.errors:
+        raise api_errors
 
 
 def _check_physical_expense_limit(booking, expenses):

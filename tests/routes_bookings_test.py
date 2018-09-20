@@ -572,12 +572,11 @@ def test_get_booking_by_token_when_token_does_not_exist(app):
     admin_user = create_user(email='admin@email.fr', password='P@55w0rd')
     PcObject.check_and_save(admin_user)
 
-
     # When
     response = req_with_auth('admin@email.fr', 'P@55w0rd').get(API_URL + '/bookings/token/{}'.format('12345'))
     # Then
     assert response.status_code == 404
-    assert response.json()['global'] == ["Ce coupon n'a pas été trouvé"]
+    assert response.json()['global'] == ["Cette contremarque n'a pas été trouvée"]
 
 
 @clean_database
@@ -642,7 +641,8 @@ def test_get_booking_by_token_when_not_logged_in_and_give_right_email_and_offer_
     PcObject.check_and_save(admin_user, booking, event_occurrence)
 
     # When
-    response = req.get(API_URL + '/bookings/token/{}?email={}&offer_id={}'.format(booking.token, 'user@email.fr', humanize(offer.id)))
+    response = req.get(
+        API_URL + '/bookings/token/{}?email={}&offer_id={}'.format(booking.token, 'user@email.fr', humanize(offer.id)))
     # Then
     assert response.status_code == 204
 
@@ -661,7 +661,8 @@ def test_get_booking_by_token_when_not_logged_in_and_give_right_email_and_offer_
     PcObject.check_and_save(admin_user, booking)
 
     # When
-    response = req.get(API_URL + '/bookings/token/{}?email={}&offer_id={}'.format(booking.token, 'user@email.fr', humanize(stock.offerId)))
+    response = req.get(API_URL + '/bookings/token/{}?email={}&offer_id={}'.format(booking.token, 'user@email.fr',
+                                                                                  humanize(stock.offerId)))
     # Then
     assert response.status_code == 204
 
@@ -680,10 +681,11 @@ def test_validate_get_booking_by_token_when_not_logged_in_and_give_right_email_a
     PcObject.check_and_save(admin_user, booking)
 
     # When
-    response = req.get(API_URL + '/bookings/token/{}?email={}&offer_id={}'.format(booking.token, 'user@email.fr', humanize(123)))
+    response = req.get(
+        API_URL + '/bookings/token/{}?email={}&offer_id={}'.format(booking.token, 'user@email.fr', humanize(123)))
     # Then
     assert response.status_code == 404
-    assert response.json()['global'] == ["Ce coupon n'a pas été trouvé"]
+    assert response.json()['global'] == ["Cette contremarque n'a pas été trouvée"]
 
 
 @clean_database
@@ -706,189 +708,234 @@ def test_get_booking_by_token_when_not_logged_in_but_wrong_email(app):
         API_URL + '/bookings/token/{}?email={}'.format(booking.token, 'toto@email.fr'))
     # Then
     assert response.status_code == 404
-    assert response.json()['global'] == ["Ce coupon n'a pas été trouvé"]
+    assert response.json()['global'] == ["Cette contremarque n'a pas été trouvée"]
 
 
-@clean_database
 @pytest.mark.standalone
-def test_patch_booking_by_token_when_user_has_rights(app):
-    # Given
-    user = create_user()
-    admin_user = create_user(email='admin@email.fr', password='P@55w0rd')
-    offerer = create_offerer()
-    user_offerer = create_user_offerer(admin_user, offerer)
-    venue = create_venue(offerer)
-    stock = create_stock_with_event_offer(offerer, venue, price=0)
-    booking = create_booking(user, stock)
-    PcObject.check_and_save(booking, user_offerer)
+class PatchBookingAsAnonymousUserTest:
+    @clean_database
+    def test_patch_booking_with_token_and_valid_email_and_offer_id(self, app):
+        # Given
+        user = create_user()
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        stock = create_stock_with_event_offer(offerer, venue, price=0)
+        booking = create_booking(user, stock)
+        PcObject.check_and_save(booking)
 
-    # When
-    response = req_with_auth('admin@email.fr', 'P@55w0rd').patch(
-        API_URL + '/bookings/token/{}'.format(booking.token))
+        # When
+        response = req.patch(
+            API_URL + '/bookings/token/{}?email={}&offer_id={}'.format(booking.token, user.email,
+                                                                       humanize(stock.resolvedOffer.id)))
 
-    # Then
-    assert response.status_code == 204
-    db.session.refresh(booking)
-    assert booking.isUsed == True
+        # Then
+        assert response.status_code == 204
+        db.session.refresh(booking)
+        assert booking.isUsed is True
+
+    @clean_database
+    def test_patch_booking_with_token_and_offer_id_without_email_returns_400(self, app):
+        # Given
+        user = create_user()
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        stock = create_stock_with_event_offer(offerer, venue, price=0)
+        booking = create_booking(user, stock)
+        PcObject.check_and_save(booking)
+
+        # When
+        response = req.patch(
+            API_URL + '/bookings/token/{}?&offer_id={}'.format(booking.token, humanize(stock.resolvedOffer.id)))
+
+        # Then
+        assert response.status_code == 400
+        assert response.json()['email'] == [
+            "L'adresse email qui a servie à la réservation est obligatoire dans l'URL [?email=<email>]"]
+
+    @clean_database
+    def test_patch_booking_with_token_and_email_without_offer_id_returns_400(self, app):
+        # Given
+        user = create_user()
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        stock = create_stock_with_event_offer(offerer, venue, price=0)
+        booking = create_booking(user, stock)
+        PcObject.check_and_save(booking)
+
+        # When
+        response = req.patch(
+            API_URL + '/bookings/token/{}?email={}'.format(booking.token, user.email))
+
+        # Then
+        assert response.status_code == 400
+        assert response.json()['offer_id'] == ["L'id de l'offre réservée est obligatoire dans l'URL [?offer_id=<id>]"]
+
+    @clean_database
+    def test_patch_booking_with_token_without_offer_id_and_without_email_returns_400_with_both_errors(self, app):
+        # Given
+        user = create_user()
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        stock = create_stock_with_event_offer(offerer, venue, price=0)
+        booking = create_booking(user, stock)
+        PcObject.check_and_save(booking)
+
+        # When
+        response = req.patch(
+            API_URL + '/bookings/token/{}'.format(booking.token, user.email))
+
+        # Then
+        assert response.status_code == 400
+        assert response.json()['offer_id'] == ["L'id de l'offre réservée est obligatoire dans l'URL [?offer_id=<id>]"]
+        assert response.json()['email'] == [
+            "L'adresse email qui a servie à la réservation est obligatoire dans l'URL [?email=<email>]"]
+
+    @clean_database
+    def test_patch_booking_with_token_returns_404_if_booking_missing(self, app):
+        # Given
+        user = create_user()
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        stock = create_stock_with_event_offer(offerer, venue, price=0)
+        booking = create_booking(user, stock)
+        PcObject.check_and_save(booking)
+
+        # When
+        response = req.patch(
+            API_URL + '/bookings/token/{}?email={}&offer_id={}'.format(booking.token, 'wrong.email@test.com',
+                                                                       humanize(stock.resolvedOffer.id)))
+
+        # Then
+        assert response.status_code == 404
+        assert response.json()['global'] == ["Cette contremarque n'a pas été trouvée"]
 
 
-@clean_database
 @pytest.mark.standalone
-def test_patch_booking_by_token_when_user_not_editor_and_no_email(app):
-    # Given
-    user = create_user()
-    admin_user = create_user(email='admin@email.fr', password='P@55w0rd')
-    offerer = create_offerer()
-    venue = create_venue(offerer)
-    stock = create_stock_with_event_offer(offerer, venue, price=0)
-    booking = create_booking(user, stock)
-    PcObject.check_and_save(booking, admin_user)
+class PatchBookingAsLoggedInUserTest:
+    @clean_database
+    def test_patch_booking_by_token_when_user_is_logged_in_and_has_rights(self, app):
+        # Given
+        user = create_user()
+        admin_user = create_user(email='admin@email.fr', password='P@55w0rd')
+        offerer = create_offerer()
+        user_offerer = create_user_offerer(admin_user, offerer)
+        venue = create_venue(offerer)
+        stock = create_stock_with_event_offer(offerer, venue, price=0)
+        booking = create_booking(user, stock)
+        PcObject.check_and_save(booking, user_offerer)
 
-    # When
-    response = req_with_auth('admin@email.fr', 'P@55w0rd').patch(
-        API_URL + '/bookings/token/{}'.format(booking.token))
+        # When
+        response = req_with_auth('admin@email.fr', 'P@55w0rd').patch(
+            API_URL + '/bookings/token/{}'.format(booking.token))
 
-    # Then
-    assert response.status_code == 400
-    assert response.json()['global'] == ["Cette structure n'est pas enregistr\u00e9e chez cet utilisateur."]
-    db.session.refresh(booking)
-    assert booking.isUsed == False
+        # Then
+        assert response.status_code == 204
+        db.session.refresh(booking)
+        assert booking.isUsed == True
 
+    @clean_database
+    def test_patch_booking_by_token_when_user_not_editor(self, app):
+        # Given
+        user = create_user()
+        admin_user = create_user(email='admin@email.fr', password='P@55w0rd')
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        stock = create_stock_with_event_offer(offerer, venue, price=0)
+        booking = create_booking(user, stock)
+        PcObject.check_and_save(booking, admin_user)
 
-@clean_database
-@pytest.mark.standalone
-def test_patch_booking_by_token_when_user_not_editor_and_valid_email(app):
-    # Given
-    user = create_user()
-    admin_user = create_user(email='admin@email.fr', password='P@55w0rd')
-    offerer = create_offerer()
-    venue = create_venue(offerer)
-    stock = create_stock_with_event_offer(offerer, venue, price=0)
-    booking = create_booking(user, stock)
-    PcObject.check_and_save(booking, admin_user)
+        # When
+        response = req_with_auth('admin@email.fr', 'P@55w0rd').patch(
+            API_URL + '/bookings/token/{}?email={}'.format(booking.token, user.email))
 
-    # When
-    response = req_with_auth('admin@email.fr', 'P@55w0rd').patch(
-        API_URL + '/bookings/token/{}?email={}'.format(booking.token, user.email))
+        # Then
+        assert response.status_code == 400
+        assert response.json()['global'] == ["Cette structure n'est pas enregistr\u00e9e chez cet utilisateur."]
+        db.session.refresh(booking)
+        assert booking.isUsed == False
 
-    # Then
-    assert response.status_code == 204
-    db.session.refresh(booking)
-    assert booking.isUsed == True
+    @clean_database
+    def test_patch_booking_by_token_when_user_not_editor_and_invalid_email(self, app):
+        # Given
+        user = create_user()
+        admin_user = create_user(email='admin@email.fr', password='P@55w0rd')
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        stock = create_stock_with_event_offer(offerer, venue, price=0)
+        booking = create_booking(user, stock)
+        PcObject.check_and_save(booking, admin_user)
 
+        # When
+        response = req_with_auth('admin@email.fr', 'P@55w0rd').patch(
+            API_URL + '/bookings/token/{}?email={}'.format(booking.token, 'wrong@email.fr'))
 
-@clean_database
-@pytest.mark.standalone
-def test_patch_booking_by_token_when_user_not_editor_and_unvalid_email(app):
-    # Given
-    user = create_user()
-    admin_user = create_user(email='admin@email.fr', password='P@55w0rd')
-    offerer = create_offerer()
-    venue = create_venue(offerer)
-    stock = create_stock_with_event_offer(offerer, venue, price=0)
-    booking = create_booking(user, stock)
-    PcObject.check_and_save(booking, admin_user)
+        # Then
+        assert response.status_code == 404
+        db.session.refresh(booking)
+        assert booking.isUsed == False
 
-    # When
-    response = req_with_auth('admin@email.fr', 'P@55w0rd').patch(
-        API_URL + '/bookings/token/{}?email={}'.format(booking.token, 'wrong@email.fr'))
+    @clean_database
+    def test_patch_booking_by_token_when_user_not_editor_and_valid_email_but_invalid_offer_id(self, app):
+        # Given
+        user = create_user()
+        admin_user = create_user(email='admin@email.fr', password='P@55w0rd')
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        stock = create_stock_with_event_offer(offerer, venue, price=0)
+        booking = create_booking(user, stock)
+        PcObject.check_and_save(booking, admin_user)
 
-    # Then
-    assert response.status_code == 404
-    db.session.refresh(booking)
-    assert booking.isUsed == False
+        # When
+        response = req_with_auth('admin@email.fr', 'P@55w0rd').patch(
+            API_URL + '/bookings/token/{}?email={}&offer_id={}'.format(booking.token, user.email, humanize(123)))
 
+        # Then
+        assert response.status_code == 404
+        db.session.refresh(booking)
+        assert booking.isUsed == False
 
-@clean_database
-@pytest.mark.standalone
-def test_patch_booking_by_token_when_user_not_editor_and_valid_email_but_unvalid_offer_id(app):
-    # Given
-    user = create_user()
-    admin_user = create_user(email='admin@email.fr', password='P@55w0rd')
-    offerer = create_offerer()
-    venue = create_venue(offerer)
-    stock = create_stock_with_event_offer(offerer, venue, price=0)
-    booking = create_booking(user, stock)
-    PcObject.check_and_save(booking, admin_user)
+    @clean_database
+    def test_patch_booking_by_token_when_booking_is_cancelled(self, app):
+        # Given
+        user = create_user()
+        admin_user = create_user(email='admin@email.fr', password='P@55w0rd')
+        offerer = create_offerer()
+        user_offerer = create_user_offerer(admin_user, offerer)
+        venue = create_venue(offerer)
+        stock = create_stock_with_event_offer(offerer, venue, price=0)
+        booking = create_booking(user, stock)
+        booking.isCancelled = True
+        PcObject.check_and_save(booking, user_offerer)
 
-    # When
-    response = req_with_auth('admin@email.fr', 'P@55w0rd').patch(
-        API_URL + '/bookings/token/{}?email={}&offer_id={}'.format(booking.token, user.email, humanize(123)))
+        # When
+        response = req_with_auth('admin@email.fr', 'P@55w0rd').patch(
+            API_URL + '/bookings/token/{}'.format(booking.token))
 
-    # Then
-    assert response.status_code == 404
-    db.session.refresh(booking)
-    assert booking.isUsed == False
+        # Then
+        assert response.status_code == 410
+        assert response.json()['booking'] == ['Cette réservation a été annulée']
+        db.session.refresh(booking)
+        assert booking.isUsed == False
 
+    @clean_database
+    def test_patch_booking_by_token_when_booking_already_validated(self, app):
+        # Given
+        user = create_user()
+        admin_user = create_user(email='admin@email.fr', password='P@55w0rd')
+        offerer = create_offerer()
+        user_offerer = create_user_offerer(admin_user, offerer)
+        venue = create_venue(offerer)
+        stock = create_stock_with_event_offer(offerer, venue, price=0)
+        booking = create_booking(user, stock)
+        booking.isUsed = True
+        PcObject.check_and_save(booking, user_offerer)
 
-@clean_database
-@pytest.mark.standalone
-def test_patch_booking_by_token_when_user_not_editor_and_valid_email_and_offer_id(app):
-    # Given
-    user = create_user()
-    admin_user = create_user(email='admin@email.fr', password='P@55w0rd')
-    offerer = create_offerer()
-    venue = create_venue(offerer)
-    stock = create_stock_with_event_offer(offerer, venue, price=0)
-    booking = create_booking(user, stock)
-    PcObject.check_and_save(booking, admin_user)
+        # When
+        response = req_with_auth('admin@email.fr', 'P@55w0rd').patch(
+            API_URL + '/bookings/token/{}'.format(booking.token))
 
-    # When
-    response = req_with_auth('admin@email.fr', 'P@55w0rd').patch(
-        API_URL + '/bookings/token/{}?email={}&offer_id={}'.format(booking.token, user.email, humanize(stock.resolvedOffer.id)))
-
-    # Then
-    assert response.status_code == 204
-    db.session.refresh(booking)
-    assert booking.isUsed == True
-
-
-@clean_database
-@pytest.mark.standalone
-def test_patch_booking_by_token_when_booking_is_cancelled(app):
-    # Given
-    user = create_user()
-    admin_user = create_user(email='admin@email.fr', password='P@55w0rd')
-    offerer = create_offerer()
-    user_offerer = create_user_offerer(admin_user, offerer)
-    venue = create_venue(offerer)
-    stock = create_stock_with_event_offer(offerer, venue, price=0)
-    booking = create_booking(user, stock)
-    booking.isCancelled = True
-    PcObject.check_and_save(booking, user_offerer)
-
-    # When
-    response = req_with_auth('admin@email.fr', 'P@55w0rd').patch(
-        API_URL + '/bookings/token/{}'.format(booking.token))
-
-    # Then
-    assert response.status_code == 410
-    assert response.json()['booking'] == ['Cette réservation a été annulée']
-    db.session.refresh(booking)
-    assert booking.isUsed == False
-
-
-@clean_database
-@pytest.mark.standalone
-def test_patch_booking_by_token_when_booking_already_validated(app):
-    # Given
-    user = create_user()
-    admin_user = create_user(email='admin@email.fr', password='P@55w0rd')
-    offerer = create_offerer()
-    user_offerer = create_user_offerer(admin_user, offerer)
-    venue = create_venue(offerer)
-    stock = create_stock_with_event_offer(offerer, venue, price=0)
-    booking = create_booking(user, stock)
-    booking.isUsed = True
-    PcObject.check_and_save(booking, user_offerer)
-
-    # When
-    response = req_with_auth('admin@email.fr', 'P@55w0rd').patch(
-        API_URL + '/bookings/token/{}'.format(booking.token))
-
-    # Then
-    assert response.status_code == 410
-    assert response.json()['booking'] == ['Cette réservation a déjà été validée']
-    db.session.refresh(booking)
-    assert booking.isUsed == True
-
+        # Then
+        assert response.status_code == 410
+        assert response.json()['booking'] == ['Cette réservation a déjà été validée']
+        db.session.refresh(booking)
+        assert booking.isUsed == True

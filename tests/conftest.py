@@ -65,7 +65,7 @@ def mocked_mail(f):
 
 def clean_database(f):
     @wraps(f)
-    def decorated_function(app, *args, **kwargs):
+    def decorated_function(*args, **kwargs):
         """ Order of deletions matters because of foreign key constraints """
         VenueProvider.query.delete()
         Booking.query.delete()
@@ -81,6 +81,6 @@ def clean_database(f):
         Offerer.query.delete()
         Deposit.query.delete()
         User.query.delete()
-        return f(app, *args, **kwargs)
+        return f(*args, **kwargs)
 
     return decorated_function

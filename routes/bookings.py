@@ -24,7 +24,7 @@ from validation.bookings import check_booking_not_already_used, \
     check_has_stock_id, \
     check_offer_is_active, \
     check_stock_booking_limit_date, \
-    check_user_is_logged_in_or_email_is_provided
+    check_user_is_logged_in_or_email_is_provided, check_email_and_offer_id_for_anonymous_user
 
 
 @app.route('/bookings', methods=['GET'])
@@ -145,12 +145,14 @@ def patch_booking_by_token(token):
     email = request.args.get('email', None)
     offer_id = dehumanize(request.args.get('offer_id', None))
     booking = booking_queries.find_by(token, email, offer_id)
-    offerer_id = booking.stock.resolvedOffer.venue.managingOffererId
-    if not email:
-        ensure_current_user_has_rights(RightsType.editor, offerer_id)
+
+    if current_user.is_authenticated:
+        ensure_current_user_has_rights(RightsType.editor, booking.stock.resolvedOffer.venue.managingOffererId)
+    else:
+        check_email_and_offer_id_for_anonymous_user(email, offer_id)
+
     check_booking_not_cancelled(booking)
     check_booking_not_already_used(booking)
-    booking.populateFromDict({'isUsed': True})
+    booking.isUsed = True
     PcObject.check_and_save(booking)
-
     return '', 204

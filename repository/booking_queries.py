@@ -90,7 +90,7 @@ def find_by(token, email=None, offer_id=None):
         errors = BookingNotFound()
         errors.addError(
             'global',
-            "Ce coupon n'a pas été trouvé"
+            "Cette contremarque n'a pas été trouvée"
         )
         raise errors
 
