@@ -56,7 +56,9 @@ class SearchPage extends PureComponent {
     const len = get(location, 'search.length')
     if (!len) return
 
-    const englishQuerySearch = querySearch.replace('mots-cles', 'keywords')
+    const englishQuerySearch = querySearch
+      .replace('mots-cles=', 'keywords=')
+      .replace('categories=', 'types=')
 
     dispatch(
       requestData('GET', `recommendations?${englishQuerySearch}`, {
@@ -228,7 +230,7 @@ export default compose(
       [`mots-cles`]: null,
       types: null,
     },
-    keywordsQueryString: 'mots-cles',
+    // keywordsQueryString: 'mots-cles',
   }),
   connect(state => ({
     recommendations: selectRecommendations(state),

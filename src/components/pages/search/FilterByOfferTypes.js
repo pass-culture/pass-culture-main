@@ -12,22 +12,22 @@ class FilterByOfferTypes extends Component {
       filterParams,
     } = this.props
 
-    const typesValue = decodeURI(filterParams.types || '')
+    const typesValue = decodeURI(filterParams.categories || '')
 
     const isAlreadyIncluded = typesValue.includes(typeSublabel)
 
     if (isAlreadyIncluded) {
-      handleFilterParamRemove('types', typeSublabel)
+      handleFilterParamRemove('categories', typeSublabel)
       return
     }
 
-    handleFilterParamAdd('types', typeSublabel)
+    handleFilterParamAdd('categories', typeSublabel)
   }
 
   render() {
     const { filterParams, title, typeSublabels } = this.props
 
-    const typesValue = decodeURI(filterParams.types || '')
+    const typesValue = decodeURI(filterParams.categories || '')
 
     return (
       <div>
