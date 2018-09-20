@@ -26,18 +26,32 @@ const renderPageFooter = () => (
   <NavigationFooter theme="white" className="dotted-top-red" />
 )
 
+const FRENCH_KEYWORDS_KEY = 'mots-cles'
+
 class SearchPage extends PureComponent {
+  constructor(props) {
+    super(props)
+    this.state = {
+      keywordsValue: get(props, `queryParams.${FRENCH_KEYWORDS_KEY}`),
+    }
+  }
+
   onSubmit = e => {
-    const { handleQueryParamsChange } = this.props
+    const { handleQueryParamsChange, queryParams } = this.props
 
     e.preventDefault()
 
-    if (!e.target.elements.keywords.value) {
+    console.log('BEN', e.target.elements.keywords.value)
+
+    if (
+      !e.target.elements.keywords.value ||
+      queryParams.keywords === e.target.elements.keywords.value
+    ) {
       return
     }
 
     handleQueryParamsChange(
-      { [`mots-cles`]: e.target.elements.keywords.value },
+      { [FRENCH_KEYWORDS_KEY]: e.target.elements.keywords.value },
       { pathname: '/recherche/resultats' }
     )
   }
@@ -57,7 +71,7 @@ class SearchPage extends PureComponent {
     if (!len) return
 
     const englishQuerySearch = querySearch
-      .replace('mots-cles=', 'keywords=')
+      .replace(`${FRENCH_KEYWORDS_KEY}=`, 'keywords=')
       .replace('categories=', 'types=')
       .replace('jours=', 'days=')
 
@@ -84,8 +98,11 @@ class SearchPage extends PureComponent {
       querySearch,
       recommendations,
     } = this.props
+    const { keywordsValue } = this.state
 
-    const keywords = queryParams['mots-cles']
+    const keywords = queryParams[FRENCH_KEYWORDS_KEY]
+
+    console.log('keywordsValue', keywordsValue, 'keywords', keywords)
     // https://stackoverflow.com/questions/37946229/how-do-i-reset-the-defaultvalue-for-a-react-input
     // WE NEED TO MAKE THE PARENT OF THE KEYWORD INPUT
     // DEPENDING ON THE KEYWORDS VALUE IN ORDER TO RERENDER
@@ -112,10 +129,11 @@ class SearchPage extends PureComponent {
             >
               <input
                 id="keywords"
+                defaultValue={keywords}
                 className="input search-input"
                 placeholder="Saisissez une recherche"
                 type="text"
-                defaultValue={keywords}
+                onChange={e => this.setState({ keywordsValue: e.target.value })}
               />
               {get(keywords, 'length') && (
                 <span className="icon is-small is-right">
@@ -123,7 +141,10 @@ class SearchPage extends PureComponent {
                     type="button"
                     className="no-border no-background is-red-text"
                     onClick={() =>
-                      handleQueryParamsChange({ [`mots-cles`]: null })
+                      handleQueryParamsChange(
+                        { [FRENCH_KEYWORDS_KEY]: null },
+                        { isRefreshing: false }
+                      )
                     }
                   >
                     <span aria-hidden className="icon-close" title="" />
@@ -132,7 +153,11 @@ class SearchPage extends PureComponent {
               )}
             </p>
             <div className="control">
-              <button className="button is-rounded is-medium" type="submit">
+              <button
+                className="button is-rounded is-medium"
+                disabled={keywordsValue === keywords}
+                type="submit"
+              >
                 Chercher
               </button>
             </div>
@@ -228,10 +253,9 @@ export default compose(
       distance: null,
       latitude: null,
       longitude: null,
-      [`mots-cles`]: null,
+      [FRENCH_KEYWORDS_KEY]: null,
       types: null,
     },
-    // keywordsQueryString: 'mots-cles',
   }),
   connect(state => ({
     recommendations: selectRecommendations(state),
