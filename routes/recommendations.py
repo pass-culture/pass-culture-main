@@ -40,7 +40,7 @@ def list_recommendations():
     days_segments = None
     if 'days_segments' in request.args and request.args['days_segments']:
         days_segments = [
-            days_segments.split('-') for interval in request.args['days_segments'].split(',')
+            days_segment.split('-') for days_segment in request.args['days_segments'].split(',')
         ]
 
     latitude = None
@@ -57,7 +57,7 @@ def list_recommendations():
 
     recommendations = create_recommendations_for_search(
         current_user,
-        page=request.args.get('page', 1),
+        page=int(request.args.get('page', 1)),
         keywords=request.args.get('keywords'),
         types=types,
         latitude=latitude,

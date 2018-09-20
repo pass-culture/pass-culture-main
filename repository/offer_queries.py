@@ -122,11 +122,13 @@ def find_offers_in_date_range_for_given_venue_departement(date_max, date_min, de
 def get_offers_for_recommendations_search(
         page=1,
         keywords=None,
-        types=None,
+        type_labels=None,
         latitude=None,
         longitude=None,
         max_distance=None,
         date=None,
+        # can have a shape like [[0,1],[1,5],[1,20000]]
+        # ie it is an array of days intervals from the date value
         days_segments=None):
 
     offer_query =  _filter_out_offers_on_soft_deleted_stocks_and_inactive_offers()
@@ -136,24 +138,23 @@ def get_offers_for_recommendations_search(
 
     if max_distance is not None and latitude is not None and longitude is not None:
         distance_instrument = get_sql_geo_distance_in_kilometers(
-            Venue.latitude,
-            Venue.longitude,
             latitude,
-            longitude
+            longitude,
+            Venue.latitude,
+            Venue.longitude
         )
-        print('max_distance', max_distance, 'latitude', latitude, 'longitude', longitude)
         offer_query = offer_query.join(Venue)\
-                                 .filter(distance_instrument < max_distance)
+                                 .filter(distance_instrument <= max_distance)
 
 
     if date is not None and days_segments is not None:
-        for days_segments in days_segments:
+        # TODO
+        pass
 
-            # TODO
-            pass
+        for days in days_segments:
 
-            start_date = date + datetime(days_segments[0])
-            end_date = date + datetime(days_segments[1])
+            start_date = date + datetime(days[0])
+            end_date = date + datetime(days[1])
 
             date_offer_query = offer_query.join(Stock) \
                                           .outerjoin(EventOccurrence) \
@@ -171,12 +172,12 @@ def get_offers_for_recommendations_search(
                                  .outerjoin(Venue)\
                                  .filter(get_keywords_filter([Event, Thing, Venue], keywords))
 
-    if types is not None:
+    if type_labels is not None:
         event_offer_query = offer_query.outerjoin(Event)\
-                                       .filter(Event.type.in_(types))
+                                       .filter(Event.type.in_(type_labels))
 
         thing_offer_query = offer_query.outerjoin(Thing)\
-                                       .filter(Thing.type.in_(types))
+                                       .filter(Thing.type.in_(type_labels))
 
         offer_query = event_offer_query.union_all(thing_offer_query)
 
