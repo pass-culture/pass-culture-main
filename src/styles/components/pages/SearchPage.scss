@@ -3,6 +3,7 @@
     font-size: 1.5em;
     font-weight: normal;
   }
+
   .button.is-rounded.is-medium {
     border-radius: $control-radius !important;
     border-bottom-left-radius: 0 !important;
@@ -10,21 +11,17 @@
     background-color: $primary;
     color: white;
   }
-  .button:hover, .button.is-hovered {
+
+  .button:hover,
+  .button.is-hovered {
     border-color: $primary;
   }
+
   .button.is-secondary {
     padding-left: 0.5em;
   }
+
   .input {
     border-color: $grey;
-  }
-}
-
-.recommendations-list {
-  h2 {
-    text-transform: uppercase;
-    font-style: italic;
-    margin-bottom: 1em;
   }
 }
