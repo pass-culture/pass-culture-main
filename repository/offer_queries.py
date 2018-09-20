@@ -130,7 +130,7 @@ def get_offers_for_recommendations_search(
         date=None,
         # can have a shape like [[0,1],[1,5],[1,20000]]
         # ie it is an array of days intervals from the date value
-        days_segments=None):
+        days=None):
 
     offer_query =  _filter_out_offers_on_soft_deleted_stocks_and_inactive_offers()
 
@@ -148,10 +148,10 @@ def get_offers_for_recommendations_search(
                                  .filter(distance_instrument <= max_distance)
 
 
-    if date is not None and days_segments is not None:
+    if date is not None and days is not None:
         date = dateutil.parser.parse(date)
 
-        for days in days_segments:
+        for days in days:
 
             start_date = date + timedelta(days=days[0])
             end_date = date + timedelta(days=days[1])

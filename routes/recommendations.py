@@ -45,10 +45,10 @@ def list_recommendations():
     if 'date' in request.args and request.args['date']:
         date = request.args['date']
 
-    days_segments = None
-    if 'days_segments' in request.args and request.args['days_segments']:
-        days_segments = [
-            [int(ds) for ds in days_segment.split('-')] for days_segment in request.args['days_segments'].split(',')
+    days = None
+    if 'days' in request.args and request.args['days']:
+        days = [
+            [int(ds) for ds in day.split('-')] for day in request.args['days'].split(',')
         ]
 
     latitude = None
@@ -72,7 +72,7 @@ def list_recommendations():
         longitude=longitude,
         max_distance=max_distance,
         date=date,
-        days_segments=days_segments
+        days=days
     )
 
     return jsonify(_serialize_recommendations(recommendations)), 200

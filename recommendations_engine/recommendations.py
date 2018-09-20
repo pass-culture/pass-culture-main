@@ -132,7 +132,7 @@ def create_recommendations_for_search(
     longitude=None,
     max_distance=None,
     date=None,
-    days_segments=None
+    days=None
 ):
     offers = get_offers_for_recommendations_search(
         page,
@@ -142,7 +142,7 @@ def create_recommendations_for_search(
         longitude,
         max_distance,
         date,
-        days_segments
+        days
     )
     offer_ids = [offer.id for offer in offers]
     existing_recommendations = find_recommendations_for_user_matching_offers_and_search_term(user.id, offer_ids, keywords)
