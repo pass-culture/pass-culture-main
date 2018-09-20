@@ -224,6 +224,7 @@ class GeoInput extends Component {
               position={[marker.latitude, marker.longitude]}
               icon={customIcon}
               ref={this.refmarker}
+              alt={[marker.latitude, marker.longitude].join('-')}
             />
           )}
         </Map>
