@@ -86,6 +86,7 @@ class BookingsPage extends Component {
         {!isloading && (
           <React.Fragment>
             <PageHeader
+              useClose
               title="Mes réservations"
               className="dotted-bottom-white"
             />

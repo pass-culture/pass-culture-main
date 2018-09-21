@@ -27,7 +27,7 @@ class TermsPage extends React.PureComponent {
     const backgroundImage = `url('${ROOT_PATH}/mosaic-k@2x.png')`
     return (
       <div id="terms-page" className="page is-relative flex-rows">
-        <PageHeader theme="red" title="Mentions légales" />
+        <PageHeader useClose theme="red" title="Mentions légales" />
         <main role="main" className="pc-main my12">
           <Scrollbars>
             <div className="padded content" style={{ backgroundImage }}>
