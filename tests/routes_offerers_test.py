@@ -8,16 +8,17 @@ from models import PcObject
 from tests.conftest import clean_database
 from utils.human_ids import dehumanize, humanize
 from utils.test_utils import API_URL, \
-                             create_booking, \
-                             create_deposit, \
-                             create_offerer, \
-                             create_stock_with_event_offer, \
-                             create_stock_with_thing_offer, \
-                             create_user, \
-                             create_user_offerer, \
-                             create_venue, \
-                             req, \
-                             req_with_auth
+    create_booking, \
+    create_deposit, \
+    create_offerer, \
+    create_stock_with_event_offer, \
+    create_stock_with_thing_offer, \
+    create_user, \
+    create_user_offerer, \
+    create_venue, \
+    req, \
+    req_with_auth
+
 
 @pytest.mark.standalone
 def test_get_offerers_should_work_only_when_logged_in():
@@ -234,7 +235,7 @@ def test_post_offerer_with_bic_and_no_iban_raises_api_error(app):
 
 @clean_database
 @pytest.mark.standalone
-def test_post_offerer_with_bic_and_iban_satus_code_201(app):
+def test_post_offerer_with_bic_and_iban_returns_status_code_201(app):
     # given
     user = create_user(password='p@55sw0rd')
     PcObject.check_and_save(user)
@@ -258,3 +259,45 @@ def test_post_offerer_with_bic_and_iban_satus_code_201(app):
     response_json = response.json()
     assert response_json['bic'] == 'BDFEFR2LCCB'
     assert response_json['iban'] == 'FR7630006000011234567890189'
+
+
+@clean_database
+@pytest.mark.standalone
+def test_patch_offerer_with_bic_and_iban_returns_status_code_200(app):
+    # given
+    user = create_user()
+    offerer = create_offerer(iban=None, bic=None)
+    user_offerer = create_user_offerer(user, offerer)
+    PcObject.check_and_save(user_offerer)
+    auth_request = req_with_auth(email=user.email, password=user.clearTextPassword)
+    body = {'bic': 'BDFEFR2LCCB', 'iban': 'FR7630006000011234567890189'}
+
+    # when
+    response = auth_request.patch(API_URL + '/offerers/%s' % humanize(offerer.id), json=body)
+
+    # then
+    assert response.status_code == 200
+    response_json = response.json()
+    assert response_json['bic'] == 'BDFEFR2LCCB'
+    assert response_json['iban'] == 'FR7630006000011234567890189'
+
+
+@clean_database
+@pytest.mark.standalone
+def test_patch_offerer_with_none_bic_and_none_iban_returns_status_code_200(app):
+    # given
+    user = create_user()
+    offerer = create_offerer(iban='FR7630006000011234567890189', bic='BDFEFR2LCCB')
+    user_offerer = create_user_offerer(user, offerer)
+    PcObject.check_and_save(user_offerer)
+    auth_request = req_with_auth(email=user.email, password=user.clearTextPassword)
+    body = {'bic': None, 'iban': None}
+
+    # when
+    response = auth_request.patch(API_URL + '/offerers/%s' % humanize(offerer.id), json=body)
+
+    # then
+    assert response.status_code == 200
+    response_json = response.json()
+    assert response_json['bic'] is None
+    assert response_json['iban'] is None

@@ -86,8 +86,7 @@ def create_offerer():
 @login_or_api_key_required
 @expect_json_data
 def patch_offerer(offererId):
-    offerer = Offerer \
-        .query.filter_by(id=dehumanize(offererId))
+    offerer = Offerer.query.filter_by(id=dehumanize(offererId)).first()
     offerer.populateFromDict(request.json, skipped_keys=['validationToken'])
     PcObject.check_and_save(offerer)
     return jsonify(offerer._asdict(include=OFFERER_INCLUDES)), 200
