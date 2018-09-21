@@ -102,7 +102,9 @@ class SearchPage extends PureComponent {
 
     const keywords = queryParams[FRENCH_KEYWORDS_KEY]
 
-    console.log('keywordsValue', keywordsValue, 'keywords', keywords)
+    // console.log('>>>>>>>>>>> location in render', location)
+    // console.log('>>>>>>>>>>> recommendations in render', recommendations)
+    // console.log('kesywordsValue', keywordsValue, 'keywords', keywords)
     // https://stackoverflow.com/questions/37946229/how-do-i-reset-the-defaultvalue-for-a-react-input
     // WE NEED TO MAKE THE PARENT OF THE KEYWORD INPUT
     // DEPENDING ON THE KEYWORDS VALUE IN ORDER TO RERENDER
@@ -140,6 +142,7 @@ class SearchPage extends PureComponent {
                   <button
                     type="button"
                     className="no-border no-background is-red-text"
+                    id="refresh-keywords-button"
                     onClick={() =>
                       handleQueryParamsChange(
                         { [FRENCH_KEYWORDS_KEY]: null },
@@ -156,6 +159,7 @@ class SearchPage extends PureComponent {
               <button
                 className="button is-rounded is-medium"
                 disabled={keywordsValue === keywords}
+                id="keywords-search-button"
                 type="submit"
               >
                 Chercher
@@ -164,6 +168,7 @@ class SearchPage extends PureComponent {
             <button
               type="button"
               className="button is-secondary"
+              id="open-close-filter-menu-button"
               onClick={() => {
                 let pathname = `/recherche/${match.params.view}`
                 if (!match.params.filtres) {
@@ -248,12 +253,12 @@ export default compose(
   withSearch({
     dataKey: 'recommendations',
     defaultQueryParams: {
+      [FRENCH_KEYWORDS_KEY]: null,
       date: null,
       days: null,
       distance: null,
       latitude: null,
       longitude: null,
-      [FRENCH_KEYWORDS_KEY]: null,
       types: null,
     },
   }),

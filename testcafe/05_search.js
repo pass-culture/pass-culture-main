@@ -1,9 +1,15 @@
-import { ClientFunction } from 'testcafe'
+import { ClientFunction, Selector } from 'testcafe'
 
 import regularUser from './helpers/roles'
 import { ROOT_PATH } from '../src/utils/config'
 
 const getPageUrl = ClientFunction(() => window.location.href.toString())
+
+const searchInput = Selector('#search-input')
+const keywordsSearchButton = Selector('#keywords-search-button')
+// const refreshKeywordsButton = Selector('#refresh-keywords-button')
+// const searchResults = Selector('#search-results')
+// const resultsTitle = Selector('#results-title')
 
 fixture('O5_01 Recherche | Je ne suis pas connecté·e').page(
   `${ROOT_PATH}recherche`
@@ -14,13 +20,21 @@ test('Je suis redirigé vers la page /connexion', async t => {
   await t.expect(getPageUrl()).contains('/connexion', { timeout: 5000 })
 })
 
-fixture.skip('O5_02 Recherche | Après connexion').beforeEach(async t => {
+fixture('O5_02 Recherche | Après connexion').beforeEach(async t => {
   await t.useRole(regularUser).navigateTo(`${ROOT_PATH}recherche/`)
 })
 
 test('Je peux accéder à la page /recherche', async t => {
   await t
   await t.expect(getPageUrl()).contains('/recherche', { timeout: 5000 })
+})
+
+fixture.skip('O5_02 Recherche | Recherche textuelle').beforeEach(async t => {
+  await t.useRole(regularUser).navigateTo(`${ROOT_PATH}recherche/`)
+})
+
+test("Je fais une recherche par mots-clés et je n'ai pas de résultats", async t => {
+  await t.typeText(searchInput, 'fake').click(keywordsSearchButton)
 })
 
 // Je clique sur le menu vs navigateTo()
@@ -30,6 +44,7 @@ test('Je peux accéder à la page /recherche', async t => {
 // Je vois le filtre par type sous le formulaire de recherche textuelle
 // Si j'ai des résultats : la page de résultats s'affiche, je ne vois pas le filtre par type sous le formulaire de recherche textuelle
 // Si je n'ai pas de résultats, je vois le filtre par type sous le formulaire de recherche textuelle
+// Si je clique sur la croix, cela efface la selection, si je veux revenir à ma page de début de recherche je clique sur la flêche < back et cela réinitialise tous les filtres
 
 // FILTRE
 // Je fais apparaître et disparaître le menu de filtres

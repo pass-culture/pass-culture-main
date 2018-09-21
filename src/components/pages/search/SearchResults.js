@@ -5,14 +5,22 @@ import { InfiniteScroller, pluralize } from 'pass-culture-shared'
 import SearchResultItem from './SearchResultItem'
 
 const SearchResults = ({ items, keywords, loadMoreHandler, queryParams }) => {
+  // console.log('items', items);
+  // console.log('keywords', keywords);
+  // console.log('queryParams', queryParams);
+  // console.log('loadMoreHandler', loadMoreHandler);
   const count = items.length
   const resultString = pluralize(count, 'résultats')
   const keywordsString = decodeURI(keywords || '')
   const typesString = decodeURI(queryParams.types || '')
   const resultTitle = `${keywordsString} ${typesString}: ${resultString}`
+  // console.log('resultTitle', resultTitle);
   return (
     <div className="search-results">
-      <h2 className="fs15 is-uppercase is-italic is-semi-bold mb12">
+      <h2
+        className="fs15 is-uppercase is-italic is-semi-bold mb12"
+        id="results-title"
+      >
         {resultTitle}
       </h2>
       <InfiniteScroller handleLoadMore={loadMoreHandler}>
