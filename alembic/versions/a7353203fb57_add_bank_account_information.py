@@ -16,14 +16,14 @@ depends_on = None
 
 
 def upgrade():
-    op.add_column('offerer', sa.Column('IBAN', sa.VARCHAR(27), nullable=True))
-    op.add_column('offerer', sa.Column('BIC', sa.VARCHAR(11), nullable=True))
-    op.create_check_constraint(constraint_name='check_IBAN_and_BIC_xor_not_IBAN_and_not_BIC',
+    op.add_column('offerer', sa.Column('iban', sa.VARCHAR(27), nullable=True))
+    op.add_column('offerer', sa.Column('bic', sa.VARCHAR(11), nullable=True))
+    op.create_check_constraint(constraint_name='check_iban_and_bic_xor_not_iban_and_not_bic',
                                table_name='offerer',
-                               condition='("IBAN" IS NULL AND "BIC" IS NULL) OR ("IBAN" IS NOT NULL AND "BIC" IS NOT NULL)'
+                               condition='("iban" IS NULL AND "bic" IS NULL) OR ("iban" IS NOT NULL AND "bic" IS NOT NULL)'
                                )
 
 
 def downgrade():
-    op.drop_column('offerer', 'IBAN')
-    op.drop_column('offerer', 'BIC')
+    op.drop_column('offerer', 'iban')
+    op.drop_column('offerer', 'bic')

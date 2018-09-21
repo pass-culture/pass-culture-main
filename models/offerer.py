@@ -43,11 +43,11 @@ class Offerer(PcObject,
 
     siren = Column(String(9), nullable=True, unique=True)  # FIXME: should not be nullable, is until we have all SIRENs filled in the DB
 
-    IBAN = Column(
+    iban = Column(
         String(27), 
         nullable=True)
 
-    BIC = Column(String(11), nullable=True)
+    bic = Column(String(11), nullable=True)
 
     CheckConstraint(
         '("IBAN" IS NULL AND "BIC" IS NULL) OR ("IBAN" IS NOT NULL AND "BIC" IS NOT NULL)',
