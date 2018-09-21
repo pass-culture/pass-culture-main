@@ -939,3 +939,24 @@ class PatchBookingAsLoggedInUserTest:
         assert response.json()['booking'] == ['Cette réservation a déjà été validée']
         db.session.refresh(booking)
         assert booking.isUsed == True
+
+
+@clean_database
+@pytest.mark.standalone
+def test_cannot_cancel_used_booking(app):
+    # Given
+    user = create_user(email='test@email.com', password='testpsswd')
+    deposit_date = datetime.utcnow() - timedelta(minutes=2)
+    deposit = create_deposit(user, deposit_date, amount=500)
+    booking = create_booking(user, is_used=True)
+    PcObject.check_and_save(user, deposit, booking)
+
+    # When
+    response = req_with_auth(user.email, user.clearTextPassword) \
+        .delete(API_URL + '/bookings/' + humanize(booking.id))
+
+    # Then
+    assert response.status_code == 400
+    assert response.json()['booking'] == ["Impossible d\'annuler une réservation consommée"]
+    db.session.refresh(booking)
+    assert not booking.isCancelled

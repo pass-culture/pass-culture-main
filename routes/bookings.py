@@ -3,10 +3,8 @@ from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
 
 from domain.expenses import get_expenses
-from domain.user_emails import send_user_driven_cancellation_email_to_user, \
-    send_user_driven_cancellation_email_to_offerer, send_offerer_driven_cancellation_email_to_user, \
-    send_offerer_driven_cancellation_email_to_offerer, send_booking_recap_emails, \
-    send_booking_confirmation_email_to_user
+from domain.user_emails import send_booking_recap_emails, \
+    send_booking_confirmation_email_to_user, send_cancellation_emails_to_user_and_offerer
 from models import ApiErrors, Booking, PcObject, Stock, RightsType
 from models.pc_object import serialize
 from repository import booking_queries
@@ -15,8 +13,7 @@ from utils.includes import BOOKING_INCLUDES
 from utils.rest import ensure_current_user_has_rights, \
     expect_json_data
 from utils.token import random_token
-from validation.bookings import check_booking_not_already_used, \
-    check_booking_not_cancelled, \
+from validation.bookings import check_booking_is_usable, \
     check_can_book_free_offer, \
     check_existing_stock, \
     check_expenses_limits, \
@@ -24,7 +21,8 @@ from validation.bookings import check_booking_not_already_used, \
     check_has_stock_id, \
     check_offer_is_active, \
     check_stock_booking_limit_date, \
-    check_user_is_logged_in_or_email_is_provided, check_email_and_offer_id_for_anonymous_user
+    check_user_is_logged_in_or_email_is_provided, check_email_and_offer_id_for_anonymous_user, \
+    check_booking_is_cancellable
 
 
 @app.route('/bookings', methods=['GET'])
@@ -94,6 +92,7 @@ def cancel_booking(booking_id):
     booking = booking_queries.find_by_id(dehumanize(booking_id))
 
     is_user_cancellation = booking.user == current_user
+    check_booking_is_cancellable(booking, False)
     booking_offerer = booking.stock.resolvedOffer.venue.managingOffererId
     is_offerer_cancellation = current_user.hasRights(RightsType.editor, booking_offerer)
 
@@ -103,13 +102,8 @@ def cancel_booking(booking_id):
     booking.isCancelled = True
     PcObject.check_and_save(booking)
 
-    if is_user_cancellation:
-        send_user_driven_cancellation_email_to_user(booking, app.mailjet_client.send.create)
-        send_user_driven_cancellation_email_to_offerer(booking, app.mailjet_client.send.create)
-
-    if is_offerer_cancellation:
-        send_offerer_driven_cancellation_email_to_user(booking, app.mailjet_client.send.create)
-        send_offerer_driven_cancellation_email_to_offerer(booking, app.mailjet_client.send.create)
+    send_cancellation_emails_to_user_and_offerer(booking, is_offerer_cancellation, is_user_cancellation,
+                                                 app.mailjet_client.send.create)
 
     return jsonify(booking._asdict(include=BOOKING_INCLUDES)), 200
 
@@ -151,8 +145,7 @@ def patch_booking_by_token(token):
     else:
         check_email_and_offer_id_for_anonymous_user(email, offer_id)
 
-    check_booking_not_cancelled(booking)
-    check_booking_not_already_used(booking)
+    check_booking_is_usable(booking)
     booking.isUsed = True
     PcObject.check_and_save(booking)
     return '', 204

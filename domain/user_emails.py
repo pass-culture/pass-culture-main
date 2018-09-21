@@ -103,6 +103,16 @@ def send_validation_confirmation_email(user_offerer, offerer, send_create_email)
     check_if_email_sent(mail_result)
 
 
+def send_cancellation_emails_to_user_and_offerer(booking, is_offerer_cancellation, is_user_cancellation,
+                                                 send_create_email):
+    if is_user_cancellation:
+        send_user_driven_cancellation_email_to_user(booking, send_create_email)
+        send_user_driven_cancellation_email_to_offerer(booking, send_create_email)
+    if is_offerer_cancellation:
+        send_offerer_driven_cancellation_email_to_user(booking, send_create_email)
+        send_offerer_driven_cancellation_email_to_offerer(booking, send_create_email)
+
+
 def _get_offerer_id(offerer, user_offerer):
     if offerer is None:
         offerer_id = user_offerer.offerer.id
