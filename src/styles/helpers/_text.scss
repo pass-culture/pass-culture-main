@@ -1,6 +1,6 @@
 // creation des classes permettant de gerer la taille des polices
 // Exemple: .fs18, .fs32...
-$intSizes: (13, 14, 15, 16, 17, 18, 19, 20, 22, 30, 32, 48);
+$intSizes: (13, 14, 15, 16, 17, 18, 19, 20, 22, 30, 32, 48, 80);
 
 @each $intSize in $intSizes {
   $pixelValue: number-to-pixel($intSize);
@@ -63,12 +63,20 @@ a.is-white-text:hover {
 }
 
 .is-red-text,
-.is-primary-text {
+.is-primary-text,
+a.is-red-text,
+a.is-red-text:hover,
+a.is-primary-text,
+a.is-primary-text:hover {
   color: $primary;
 }
 
 .is-purple-text {
   color: $purple-red;
+}
+
+.is-green-text {
+  color: $green;
 }
 
 /* ------ STYLE / WEIGHT */

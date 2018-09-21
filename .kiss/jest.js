@@ -1,7 +1,9 @@
 /* eslint no-console: 0, max-nested-callbacks: 0 */
+// TEST COMMAND
+// ./node_modules/.bin/jest --env=jsdom ./path/to/file --watch
 import MyHelper from './my/helper/relative/path'
 
-describe('MyHelper', function() {
+describe('path | to | my | helper', function() {
   beforeEach(function() {})
   afterEach(function() {})
   it('it expect something', function() {

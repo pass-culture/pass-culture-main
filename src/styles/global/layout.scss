@@ -23,32 +23,6 @@
   box-shadow: 0 0 23px -1px rgba(0, 0, 0, 0.1);
 }
 
-.pc-theme-purple {
-  color: $white;
-  background-color: $purple-blue;
-}
-
-.pc-theme-transparent {
-  color: $white;
-  background-color: transparent;
-}
-
-.pc-theme-default {
-  color: $black;
-  background-color: $white;
-}
-
-.pc-theme-white {
-  color: $primary;
-  background-color: $white;
-}
-
-.pc-theme-red,
-.pc-theme-primary {
-  color: $white;
-  background-color: $primary;
-}
-
 .pc-label {
   color: $grey;
   font-size: 0.8rem;
@@ -58,12 +32,23 @@
   background-image: linear-gradient(to bottom right, $primary, $purple-blue);
 }
 
+/* -------------------------------------------------
+
+ LAYOUTS
+
+------------------------------------------------- */
+
 .pc-main {
   @extend .flex-1;
 }
 
+.pc-scroll-container {
+  @extend .is-full-layout;
+
+  overflow: auto;
+}
+
 .pc-header {
-  @extend .flex-0;
   @extend .padded;
   @extend .text-center;
   @extend .fs19;
@@ -71,7 +56,6 @@
 
 .pc-footer {
   @extend .p12;
-  @extend .flex-0;
   @extend .items-center;
   @extend .flex-columns;
 

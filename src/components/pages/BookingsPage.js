@@ -7,7 +7,6 @@ import { connect } from 'react-redux'
 import { bindActionCreators, compose } from 'redux'
 import { Link } from 'react-router-dom'
 import get from 'lodash.get'
-import { Scrollbars } from 'react-custom-scrollbars'
 
 import { ROOT_PATH } from '../../utils/config'
 import BookingItem from '../layout/BookingItem'
@@ -92,9 +91,9 @@ class BookingsPage extends Component {
             />
             <main
               role="main"
-              className="pc-main pc-gradient flex-rows flex-start"
+              className="pc-main pc-gradient flex-rows flex-start is-clipped"
             >
-              <Scrollbars style={{ backgroundImage }}>
+              <div className="pc-scroll-container" style={{ backgroundImage }}>
                 {soonBookingsLength > 0 && (
                   <div className="px12 mt36">
                     <h4 className="mb16 fs19 is-uppercase is-white-text">
@@ -117,7 +116,7 @@ class BookingsPage extends Component {
                 - si aucune reservations dans les deja charges
               */}
                 {(isempty || hasNoBooking) && renderNoBookingSection()}
-              </Scrollbars>
+              </div>
             </main>
             <NavigationFooter theme="purple" className="dotted-top-white" />
           </React.Fragment>

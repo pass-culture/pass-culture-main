@@ -1,0 +1,80 @@
+/* ------------------------------------------------
+
+ BORDERS
+
+------------------------------------------------ */
+[class*='border-'] {
+  border-width: 0;
+  border-radius: 2px;
+  border-style: solid;
+}
+
+.border-top {
+  border-top-width: 2px;
+}
+
+.border-left {
+  border-left-width: 2px;
+}
+
+.border-right {
+  border-right-width: 2px;
+}
+
+.border-bottom {
+  border-bottom-width: 2px;
+}
+
+.border-x {
+  @extend .border-left;
+  @extend .border-right;
+}
+
+.border-y {
+  @extend .border-top;
+  @extend .border-bottom;
+}
+
+.border-all {
+  @extend .border-x;
+  @extend .border-y;
+}
+
+/* ------------------------------------------------
+
+ DOTTED
+
+------------------------------------------------ */
+$dotted-directions: (top, right, bottom, left);
+// NOTE: genere les classes pour la bordure en pointillé
+// .dotted-top, .dotted-right ...
+@each $direction in $dotted-directions {
+  .dotted-#{$direction} {
+    // white color default
+    @include dotted(white, $direction);
+  }
+
+  .dotted-#{$direction}-2x {
+    // white color default
+    @include dotted(white, $direction, 'large');
+  }
+
+  // NOTE: genere les classes
+  // .dotted-right-primary, .dotted-left-black...
+  $colors: (
+    red: $red,
+    black: $black,
+    white: $white,
+    primary: $primary,
+  );
+
+  @each $colorname, $colorvalue in $colors {
+    .dotted-#{$direction}-#{$colorname} {
+      @include dotted($colorvalue, $direction);
+    }
+
+    .dotted-#{$direction}-#{$colorname}-2x {
+      @include dotted($colorvalue, $direction, 'large');
+    }
+  }
+}

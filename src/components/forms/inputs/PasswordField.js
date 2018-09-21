@@ -4,61 +4,80 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Field } from 'react-final-form'
 
-import InputPassword from '../adapters/InputPassword'
-
-const renderField = options => <InputPassword {...options} />
+import { FormError } from '../FormError'
+import { validatePasswordField } from '../validators/validatePasswordField'
 
 export class PasswordField extends React.PureComponent {
-  renderField() {
-    const {
-      label,
-      name,
-      defaultValue,
-      disabled,
-      fieldClassName,
-      placeholder,
-    } = this.props
-    const options = {
-      className: fieldClassName,
-      defaultValue,
-      disabled,
-      label,
-      name: `${name}`,
-      placeholder,
-    }
-    return renderField(options)
+  constructor(props) {
+    super(props)
+    this.state = { hidden: true }
   }
 
-  renderConfirmField() {
-    const {
-      labelConfirm,
-      name,
-      disabled,
-      fieldClassName,
-      placeholder,
-    } = this.props
-    const options = {
-      className: `${fieldClassName} mt12`,
-      disabled,
-      label: labelConfirm,
-      name: `${name}-confirm`,
-      placeholder,
-    }
-    return renderField(options)
+  onToggleVivisbility = () => {
+    this.setState(prev => ({ hidden: !prev.hidden }))
   }
 
   render() {
-    const { className, disabled, name, single } = this.props
-    const cssclass = (single && className) || `${className} with-confirm`
+    const {
+      autoComplete,
+      className,
+      disabled,
+      label,
+      name,
+      placeholder,
+      required,
+    } = this.props
+    const { hidden } = this.state
+    const status = hidden ? '' : '-close'
+    const inputType = hidden ? 'password' : 'text'
+    const validateFunc =
+      required && typeof required === 'function'
+        ? required
+        : (required && validatePasswordField(name)) || undefined
     return (
       <Field
         name={name}
-        disabled={disabled}
-        render={() => (
-          <div className={cssclass}>
-            {this.renderField()}
-            {!single && this.renderConfirmField()}
-          </div>
+        // fallback to form validator
+        // si le champs n'est pas marqué comme requis
+        validate={validateFunc || undefined}
+        render={({ input, meta }) => (
+          <p className={`${className}`}>
+            <label htmlFor={name} className="pc-final-form-password">
+              {label && (
+                <span className="pc-final-form-label">
+                  <span>{label}</span>
+                  {required && (
+                    <span className="pc-final-form-asterisk">*</span>
+                  )}
+                </span>
+              )}
+              <span className="pc-final-form-inner">
+                <input
+                  {...input}
+                  id={name}
+                  type={inputType}
+                  disabled={disabled}
+                  required={!!required} // cast to boolean
+                  placeholder={placeholder}
+                  autoComplete={autoComplete ? 'on' : 'off'}
+                  className="pc-final-form-input"
+                />
+
+                <button
+                  type="button"
+                  onClick={this.onToggleVivisbility}
+                  className="no-border no-outline no-background mx12 flex-0 is-primary-text"
+                >
+                  <span
+                    aria-hidden
+                    className={`icon-eye${status} fs18`}
+                    title=""
+                  />
+                </button>
+              </span>
+              <FormError meta={meta} />
+            </label>
+          </p>
         )}
       />
     )
@@ -66,26 +85,22 @@ export class PasswordField extends React.PureComponent {
 }
 
 PasswordField.defaultProps = {
+  autoComplete: false,
   className: '',
-  defaultValue: '',
   disabled: false,
-  fieldClassName: '',
-  label: 'Votre mot de passe',
-  labelConfirm: 'Confirmer votre mot de passe',
+  label: 'Saisissez Votre mot de passe',
   placeholder: '',
-  single: false,
+  required: false,
 }
 
 PasswordField.propTypes = {
+  autoComplete: PropTypes.bool,
   className: PropTypes.string,
-  defaultValue: PropTypes.string,
   disabled: PropTypes.bool,
-  fieldClassName: PropTypes.string,
   label: PropTypes.string,
-  labelConfirm: PropTypes.string,
   name: PropTypes.string.isRequired,
   placeholder: PropTypes.string,
-  single: PropTypes.bool,
+  required: PropTypes.oneOfType([PropTypes.bool, PropTypes.func]),
 }
 
 export default PasswordField

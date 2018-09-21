@@ -33,7 +33,7 @@ class SigninPage extends React.PureComponent {
     const { $footer } = this.state
     return (
       <Main name="sign-in" redBg footer={this.renderPageFooter}>
-        <div className="section form-container pc-form-matthieu is-clipped">
+        <div className="section form-container pc-final-form is-clipped">
           <h1 className="text-left fs32">
             <span className="is-bold is-italic is-block">Bonjour&nbsp;!</span>
           </h1>

@@ -1,4 +1,4 @@
-$intSizes: (0, 3, 5, 7, 8, 12, 16, 18, 20, 22, 28, 30, 32, 36, 40, 48, 60);
+$intSizes: (0, 3, 5, 7, 8, 12, 16, 18, 20, 22, 24, 28, 30, 32, 36, 40, 48, 60);
 
 @each $intSize in $intSizes {
   $sides: (all, topbottom, leftright, top, left, right, bottom);
@@ -19,21 +19,25 @@ $intSizes: (0, 3, 5, 7, 8, 12, 16, 18, 20, 22, 28, 30, 32, 36, 40, 48, 60);
 
     @else if $side == 'topbottom' {
       .my#{$intSize} {
-        @include rem(margin, $pixelValue 0);
+        @include rem(margin-top, $pixelValue);
+        @include rem(margin-bottom, $pixelValue);
       }
 
       .py#{$intSize} {
-        @include rem(padding, $pixelValue 0);
+        @include rem(padding-top, $pixelValue);
+        @include rem(padding-bottom, $pixelValue);
       }
     }
 
     @else if $side == 'leftright' {
       .mx#{$intSize} {
-        @include rem(margin, 0 $pixelValue);
+        @include rem(margin-left, $pixelValue);
+        @include rem(margin-right, $pixelValue);
       }
 
       .px#{$intSize} {
-        @include rem(padding, 0 $pixelValue);
+        @include rem(padding-left, $pixelValue);
+        @include rem(padding-right, $pixelValue);
       }
     }
 

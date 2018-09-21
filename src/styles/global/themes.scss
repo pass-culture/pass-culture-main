@@ -1,0 +1,45 @@
+.pc-theme-purple {
+  color: $white;
+  background-color: $purple-blue;
+
+  [class*='border-'] {
+    border-color: $white;
+  }
+}
+
+.pc-theme-transparent {
+  color: $white;
+  background-color: transparent;
+
+  [class*='border-'] {
+    border-color: $white;
+  }
+}
+
+.pc-theme-default {
+  color: $black;
+  background-color: $white;
+
+  [class*='border-'] {
+    border-color: $black;
+  }
+}
+
+.pc-theme-white {
+  color: $primary;
+  background-color: $white;
+
+  [class*='border-'] {
+    border-color: $primary;
+  }
+}
+
+.pc-theme-red,
+.pc-theme-primary {
+  color: $white;
+  background-color: $primary;
+
+  [class*='border-'] {
+    border-color: $white;
+  }
+}

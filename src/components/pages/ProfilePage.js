@@ -8,13 +8,16 @@ import { withLogin } from 'pass-culture-shared'
 import { Route, Switch, withRouter } from 'react-router-dom'
 
 import { getDepartementByCode } from '../../helpers'
+import NotMatch from './NotMatch'
 import Loader from '../layout/Loader'
-import ProfileEditView from '../profile/ProfileEditView'
-import ProfileMainView from '../profile/ProfileMainView'
-import ProfilePasswordView from '../profile/ProfilePasswordView'
-import ProfileUpdateSuccess from '../profile/ProfileUpdateSuccess'
+import ProfileMainView from './profile/ProfileMainView'
+import ProfileEditForm from './profile/forms/ProfileEditForm'
+import ProfileUpdateSuccess from './profile/ProfileUpdateSuccess'
+import ProfilePasswordForm from './profile/forms/ProfilePasswordForm'
 
 const informationFields = [
+  // FIXME -> ajouter une proptypes custom pour pouvoir vérifier dans les vues
+  // que l'objet recu pour les définitions des fields du formulaires est valide
   {
     disabled: false,
     key: 'publicName',
@@ -24,9 +27,14 @@ const informationFields = [
   },
   {
     disabled: true,
-    key: 'firstnameLastname',
+    key: ['firstname', 'lastname'],
     label: 'Nom et prénom',
-    resolver: null,
+    placeholder: 'Renseigner mon nom et prénom',
+    resolver: (user, [firstnameKey, lastnameKey]) => {
+      let result = user[firstnameKey] || ''
+      result = (result && ' ') || ''
+      return `${result}${user[lastnameKey] || ''}`
+    },
     type: 'text',
   },
   {
@@ -40,7 +48,8 @@ const informationFields = [
     disabled: false,
     key: 'password',
     label: 'Mot de passe',
-    resolver: () => '**********',
+    placeholder: 'Changer mon mot de passe',
+    resolver: () => false,
     type: 'password',
   },
   {
@@ -69,20 +78,23 @@ const ProfilePage = ({ isloaded, location }) => (
         <Route
           exact
           path="/profil/:view?/success"
-          key="route-profile-password-view"
+          key="route-profile-update-success"
           render={() => <ProfileUpdateSuccess fields={informationFields} />}
         />
         <Route
           exact
           path="/profil/password"
-          key="route-profile-password-view"
-          render={() => <ProfilePasswordView fields={informationFields} />}
+          key="route-profile-password-form"
+          render={() => <ProfilePasswordForm fields={informationFields} />}
         />
         <Route
           exact
-          path="/profil/:view"
-          key="route-profile-edit-view"
-          render={() => <ProfileEditView fields={informationFields} />}
+          path="/profil/:view(password|profil)"
+          key="route-profile-edit-form"
+          render={() => <ProfileEditForm fields={informationFields} />}
+        />
+        <Route
+          component={route => <NotMatch {...route} redirect="/profil" />}
         />
       </Switch>
     )}

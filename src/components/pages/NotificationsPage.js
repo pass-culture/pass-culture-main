@@ -6,7 +6,6 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import { withLogin } from 'pass-culture-shared'
-import { Scrollbars } from 'react-custom-scrollbars'
 
 import Loader from '../layout/Loader'
 import PageHeader from '../layout/PageHeader'
@@ -19,8 +18,8 @@ const NotificationsPage = ({ user }) => {
       {isloaded && (
         <React.Fragment>
           <PageHeader theme="red" title="Mes notifications" />
-          <main role="main" className="is-relative flex-1">
-            <Scrollbars autoHide />
+          <main role="main" className="pc-main is-clipped is-relative">
+            <div className="pc-scroll-container" />
           </main>
           <NavigationFooter theme="white" className="dotted-top-primary" />
         </React.Fragment>

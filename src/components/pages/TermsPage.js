@@ -3,7 +3,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import ReactMarkdown from 'react-markdown'
-import { Scrollbars } from 'react-custom-scrollbars'
 
 import { ROOT_PATH, APP_VERSION } from '../../utils/config'
 import PageHeader from '../layout/PageHeader'
@@ -28,15 +27,15 @@ class TermsPage extends React.PureComponent {
     return (
       <div id="terms-page" className="page is-relative flex-rows">
         <PageHeader useClose theme="red" title="Mentions légales" />
-        <main role="main" className="pc-main my12">
-          <Scrollbars>
+        <main role="main" className="pc-main is-clipped my12">
+          <div className="pc-scroll-container">
             <div className="padded content" style={{ backgroundImage }}>
               <ReactMarkdown source={source} />
               <div className="mt16">
                 <p>Pass Culture version v{appversion}</p>
               </div>
             </div>
-          </Scrollbars>
+          </div>
         </main>
         <NavigationFooter theme="white" className="dotted-top-red" />
       </div>

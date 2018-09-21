@@ -30,7 +30,7 @@ class SignupPage extends React.PureComponent {
     const { $footer } = this.state
     return (
       <Main name="sign-up" footer={this.renderPageFooter}>
-        <div className="section pc-form-matthieu">
+        <div className="section pc-final-form">
           <h2 className="mb36">
             <span className="is-block is-italic is-medium fs22">
               Une minute pour créer un compte, et puis c&apos;est tout&nbsp;!

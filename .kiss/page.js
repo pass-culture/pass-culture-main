@@ -1,7 +1,6 @@
 /* eslint
   react/jsx-one-expression-per-line: 0 */
 import React from 'react'
-import { Scrollbars } from 'react-custom-scrollbars'
 
 import { ROOT_PATH } from '../../utils/config'
 import PageHeader from '../layout/PageHeader'
@@ -12,10 +11,10 @@ const PageSimple = () => {
   return (
     <div id="single-page-id" className="page is-relative flex-rows">
       <PageHeader theme="red" title="A Page Title" />
-      <main role="main" className="pc-main">
-        <Scrollbars>
+      <main role="main" className="pc-main is-clipped is-relative">
+        <div className="pc-scroll-container">
           <div className="padded" style={{ backgroundImage }} />
-        </Scrollbars>
+        </div>
       </main>
       <PageFooter theme="white" className="dotted-top-red" />
     </div>

@@ -2,16 +2,15 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Redirect } from 'react-router-dom'
 
-const renderRedirect = () => <Redirect to="/" />
 const renderRedirecting = () => (
-  <span>
+  <span className="is-block">
     {'Redirecting...'}
   </span>
 )
 
 const renderTimer = timing => (
-  <span>
-    {`You will be redirect in ${timing} seconds`}
+  <span className="is-block">
+    {`Vous allez être automatiquement redirigé dans ${timing} secondes`}
   </span>
 )
 
@@ -34,10 +33,15 @@ class NoMatch extends React.PureComponent {
     this.timer = null
   }
 
+  renderRedirect = () => {
+    const { redirect } = this.props
+    return <Redirect to={redirect} />
+  }
+
   render() {
     const { timing } = this.state
     const { location } = this.props
-    if (timing < 0) return renderRedirect()
+    if (timing < 0) return this.renderRedirect()
     return (
       <div id="page-redirect">
         <h3 className="title">
@@ -52,8 +56,13 @@ class NoMatch extends React.PureComponent {
   }
 }
 
+NoMatch.defaultProps = {
+  redirect: '/',
+}
+
 NoMatch.propTypes = {
   location: PropTypes.object.isRequired,
+  redirect: PropTypes.string,
 }
 
 export default NoMatch

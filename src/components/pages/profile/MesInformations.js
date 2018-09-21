@@ -4,19 +4,23 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { NavLink } from 'react-router-dom'
 
+import { routes } from './page-config'
+
 const EMPTY_FIELD_PLACEHOLDER = 'Non renseigné'
 
 const renderInformation = (field, user) => {
-  // const cssclass = `${cssclass} ${(disabled && 'no-pointer') || ''}`
-  const { key, label, disabled, resolver } = field
-  const value = (resolver && resolver(user, key)) || user[key]
-  // const strvalue =
-  //   (typeof value === 'string' && value.trim() !== '' && value) || false
+  const { key, label, disabled, placeholder, resolver } = field
+  // NOTE: par défaut on sette la valeur sur la clé de l'objet user
+  // pour le password on ne souhaite pas affiché la valeur
+  // pour ca on utilise le resolver retournant une valeur falsey
+  let value = user[key]
+  const route = routes[key]
+  if (resolver) value = resolver(user, key)
   return (
     <div key={key} className="item dotted-bottom-black">
       <NavLink
         disabled={disabled}
-        to={`/profil/${key}`}
+        to={`/profil/${route}`}
         className="pc-text-button text-left no-decoration flex-columns items-center pt20 pb22"
       >
         {/* label */}
@@ -29,7 +33,7 @@ const renderInformation = (field, user) => {
           {/* placeholder */}
           {!value && (
             <span className="is-block is-grey-text fs18">
-              {EMPTY_FIELD_PLACEHOLDER}
+              {placeholder || EMPTY_FIELD_PLACEHOLDER}
             </span>
           )}
         </span>

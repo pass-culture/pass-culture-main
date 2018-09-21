@@ -2,34 +2,35 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { withRouter } from 'react-router-dom'
 
-const HistoryCloseButton = ({ baseurl, className, history, theme }) => (
+const PageBackButton = ({ className, disabled, history, theme }) => (
   <span
-    style={{ right: 0 }}
-    className={`pc-theme-${theme} is-absolute mr12 ${className}`}
+    style={{ left: 0 }}
+    className={`pc-theme-${theme} is-absolute ml12 ${className}`}
   >
     {/* FIXME: Quand les choses seront stables apres octobre on gérera le close/back button du header via un css ou une prop `type` */}
     <button
       type="button"
-      id="close-back-button"
-      onClick={() => history.push(`/${baseurl}`)}
+      disabled={disabled}
+      id="history-back-button"
+      onClick={history.goBack}
       className="no-border no-background no-outline"
     >
-      <span aria-hidden className="icon-close" title="" />
+      <span aria-hidden className="icon-previous" title="" />
     </button>
   </span>
 )
 
-HistoryCloseButton.defaultProps = {
-  baseurl: 'decouverte',
+PageBackButton.defaultProps = {
   className: '',
+  disabled: false,
   theme: 'red',
 }
 
-HistoryCloseButton.propTypes = {
-  baseurl: PropTypes.string,
+PageBackButton.propTypes = {
   className: PropTypes.string,
+  disabled: PropTypes.bool,
   history: PropTypes.object.isRequired,
   theme: PropTypes.string,
 }
 
-export default withRouter(HistoryCloseButton)
+export default withRouter(PageBackButton)
