@@ -195,3 +195,21 @@ def test_create_venue_returns_400_if_given_latitude_and_longitudes_are_invalid(a
     assert response.status_code == 400
     assert response.json()['latitude'] == ['La latitude doit être comprise entre -90.0 et +90.0']
     assert response.json()['longitude'] == ['Format incorrect']
+
+
+@clean_database
+@pytest.mark.standalone
+def test_get_venue_should_not_work_if_current_user_doesnt_have_rights(app):
+    # given
+    offerer = create_offerer()
+    user = create_user(email='user.pro@test.com')
+    venue = create_venue(offerer, name='L\'encre et la plume')
+    PcObject.check_and_save(user, venue)
+    auth_request = req_with_auth(email=user.email, password=user.clearTextPassword)
+
+    # when
+    response = auth_request.get(API_URL + '/venues/%s' % humanize(venue.id))
+
+    # then
+    assert response.status_code == 400
+    assert response.json()['global'] == ["Cette structure n'est pas enregistrée chez cet utilisateur."]

@@ -17,6 +17,7 @@ from validation.venues import validate_coordinates
 @login_required
 def get_venue(venueId):
     venue = load_or_404(Venue, venueId)
+    ensure_current_user_has_rights(RightsType.editor, venue.managingOffererId)
     return jsonify(venue._asdict(include=VENUE_INCLUDES))
 
 
