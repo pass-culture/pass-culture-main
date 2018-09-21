@@ -1,8 +1,6 @@
 import pytest
 
-from models import ApiErrors, Offerer
 from utils.test_utils import create_offerer
-from validation.offerers import validate_bank_information
 
 
 @pytest.mark.standalone
@@ -20,99 +18,107 @@ def test_offerer_errors_does_not_raises_an_error_if_both_iban_and_bic_are_empty(
 @pytest.mark.standalone
 def test_offerer_errors_does_not_raises_an_error_if_both_iban_and_bic_are_none():
     # given
-    bic = None
-    iban = None
+    offerer = create_offerer(bic=None, iban=None)
 
     # when
-    try:
-        validate_bank_information(iban, bic)
-    except ApiErrors:
-        # then
-        assert False, 'Empty IBAN and BIC are authorized'
+    errors = offerer.errors()
+
+    # then
+    assert not errors.errors
 
 
 @pytest.mark.standalone
 def test_validate_bank_information_raises_an_error_if_both_iban_and_bic_are_invalid():
     # given
-    bic = 'dazdazdaz'
-    iban = 'zefzezefzeffzef'
-
+    offerer = create_offerer(bic='dazdazdaz', iban='zefzezefzeffzef')
     # when
-    with pytest.raises(ApiErrors) as e:
-        validate_bank_information(iban, bic)
+    errors = offerer.errors()
 
     # then
-    assert e.value.errors['iban'] == ["L'IBAN saisi est invalide"]
-    assert e.value.errors['bic'] == ["Le BIC saisi est invalide"]
+    assert errors.errors['iban'] == ["L'IBAN saisi est invalide"]
+    assert errors.errors['bic'] == ["Le BIC saisi est invalide"]
 
 
 @pytest.mark.standalone
 def test_validate_bank_information_raises_an_error_if_iban_is_valid_but_bic_is_not():
     # given
-    iban = 'FR7630006000011234567890189'
-    bic = 'random bic'
-
+    offerer = create_offerer(bic='random bic', iban='FR7630006000011234567890189')
     # when
-    with pytest.raises(ApiErrors) as e:
-        validate_bank_information(iban, bic)
+    errors = offerer.errors()
+
 
     # then
-    assert e.value.errors['bic'] == ["Le BIC saisi est invalide"]
-    assert 'iban' not in e.value.errors
+    assert errors.errors['bic'] == ["Le BIC saisi est invalide"]
+    assert 'iban' not in errors.errors
 
 
 @pytest.mark.standalone
 def test_validate_bank_information_raises_an_error_if_bic_is_valid_but_iban_is_not():
     # given
-    iban = 'random iban'
-    bic = 'BDFEFR2LCCB'
-
+    offerer = create_offerer(bic='BDFEFR2LCCB', iban='random iban')
     # when
-    with pytest.raises(ApiErrors) as e:
-        validate_bank_information(iban, bic)
+    errors = offerer.errors()
 
     # then
-    assert e.value.errors['iban'] == ["L'IBAN saisi est invalide"]
-    assert 'bic' not in e.value.errors
+    assert errors.errors['iban'] == ["L'IBAN saisi est invalide"]
+    assert 'bic' not in errors.errors
 
 
 @pytest.mark.standalone
 def test_validate_bank_information_raises_an_error_if_bic_has_correct_length_of_8_but_is_unknown():
     # given
-    iban = 'FR7630006000011234567890189'
-    bic = 'AZRTAZ22'
+    offerer = create_offerer(bic='AZRTAZ22', iban='FR7630006000011234567890189')
 
     # when
-    with pytest.raises(ApiErrors) as e:
-        validate_bank_information(iban, bic)
+    errors = offerer.errors()
 
     # then
-    assert e.value.errors['bic'] == ["Le BIC saisi est inconnu"]
+    assert errors.errors['bic'] == ["Le BIC saisi est inconnu"]
 
 
 @pytest.mark.standalone
 def test_validate_bank_information_raises_an_error_if_iban_looks_correct_but_does_not_pass_validation_algorithm():
     # given
-    iban = 'FR7630006000011234567890180'
-    bic = 'BDFEFR2LCCB'
+    offerer = create_offerer(bic='BDFEFR2LCCB', iban='FR7630006000011234567890180')
 
     # when
-    with pytest.raises(ApiErrors) as e:
-        validate_bank_information(ibaan, bic)
+    errors = offerer.errors()
 
     # then
-    assert e.value.errors['iban'] == ["L'IBAN saisi est invalide"]
+    assert errors.errors['iban'] == ["L'IBAN saisi est invalide"]
 
 
 @pytest.mark.standalone
 def test_validate_bank_information_raises_an_error_if_bic_has_correct_length_of_11_but_is_unknown():
     # given
-    iban = 'FR7630006000011234567890189'
-    bic = 'CITCCWCUDSK'
+    offerer = create_offerer(bic='CITCCWCUDSK', iban='FR7630006000011234567890189')
 
     # when
-    with pytest.raises(ApiErrors) as e:
-        validate_bank_information(iban, bic)
+    errors = offerer.errors()
 
     # then
-    assert e.value.errors['bic'] == ["Le BIC saisi est inconnu"]
+    assert errors.errors['bic'] == ["Le BIC saisi est inconnu"]
+
+
+@pytest.mark.standalone
+def test_validate_bank_information_raises_an_error_if_bic_has_correct_length_of_11_but_is_unknown():
+    # given
+    offerer = create_offerer(bic=None, iban='FR7630006000011234567890189')
+
+    # when
+    errors = offerer.errors()
+
+    # then
+    assert errors.errors['bic'] == ["Le BIC es manquant"]
+
+
+@pytest.mark.standalone
+def test_validate_bank_information_raises_an_error_if_bic_has_correct_length_of_11_but_is_unknown():
+    # given
+    offerer = create_offerer(bic='BDFEFR2LCCB', iban=None)
+
+    # when
+    errors = offerer.errors()
+
+    # then
+    assert errors.errors['iban'] == ["L'IBAN es manquant"]

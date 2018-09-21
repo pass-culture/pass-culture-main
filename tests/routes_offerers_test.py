@@ -186,7 +186,7 @@ def test_get_offerer_bookings_should_work_only_when_logged_in(app):
 
 @clean_database
 @pytest.mark.standalone
-def test_post_offerer_whith_iban_and_no_bic_raises_integrity_error(app):
+def test_post_offerer_with_iban_and_no_bic_raises_api_error(app):
     # given
     user = create_user(password='p@55sw0rd')
     PcObject.check_and_save(user)
@@ -205,4 +205,56 @@ def test_post_offerer_whith_iban_and_no_bic_raises_integrity_error(app):
 
     # then
     assert response.status_code == 400
-    assert response.json()['bic'] == ''
+    assert response.json()['bic'] == ["Le BIC es manquant"]
+
+
+@clean_database
+@pytest.mark.standalone
+def test_post_offerer_with_bic_and_no_iban_raises_api_error(app):
+    # given
+    user = create_user(password='p@55sw0rd')
+    PcObject.check_and_save(user)
+    auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
+    body = {
+        'name': 'Test Offerer',
+        'siren': '418166096',
+        'address': '123 rue de Paris',
+        'postalCode': '93100',
+        'city': 'Montreuil',
+        'bic': 'BDFEFR2LCCB'
+    }
+
+    # when
+    response = auth_request.post(API_URL + '/offerers', json=body)
+
+    # then
+    assert response.status_code == 400
+    assert response.json()['iban'] == ["L'IBAN es manquant"]
+
+
+@clean_database
+@pytest.mark.standalone
+def test_post_offerer_with_bic_and_iban_satus_code_201(app):
+    # given
+    user = create_user(password='p@55sw0rd')
+    PcObject.check_and_save(user)
+    auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
+    body = {
+        'name': 'Test Offerer',
+        'siren': '418166096',
+        'address': '123 rue de Paris',
+        'postalCode': '93100',
+        'city': 'Montreuil',
+        'bic': 'BDFEFR2LCCB',
+        'iban': 'FR7630006000011234567890189'
+
+    }
+
+    # when
+    response = auth_request.post(API_URL + '/offerers', json=body)
+
+    # then
+    assert response.status_code == 201
+    response_json = response.json()
+    assert response_json['bic'] == 'BDFEFR2LCCB'
+    assert response_json['iban'] == 'FR7630006000011234567890189'

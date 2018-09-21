@@ -212,7 +212,6 @@ class PcObject():
 
     @staticmethod
     def restize_integrity_error(e):
-        print('///////////////', e.orig.pgcode)
         if hasattr(e, 'orig') and hasattr(e.orig, 'pgcode') and e.orig.pgcode == DUPLICATE_KEY_ERROR_CODE:
             field = re.search('Key \((.*?)\)=', str(e._message), re.IGNORECASE).group(1)
             return [field, 'Une entrée avec cet identifiant existe déjà dans notre base de données']

@@ -1,5 +1,7 @@
 """ offerer """
 from datetime import datetime
+
+from schwifty import IBAN, BIC
 from sqlalchemy import BigInteger, \
     Column, \
     DateTime, \
@@ -19,6 +21,7 @@ from models.offer import Offer
 from models.pc_object import PcObject
 from models.providable_mixin import ProvidableMixin
 from models.user_offerer import UserOfferer
+from repository.bic_queries import check_bic_is_known
 from utils.search import create_tsvector
 
 
@@ -61,13 +64,32 @@ class Offerer(PcObject,
             return user_offerer
 
     def errors(self):
-        errors = super(Offerer, self).errors()
-        errors.errors.update(HasAddressMixin.errors(self).errors)
+        api_errors = super(Offerer, self).errors()
+        api_errors.errors.update(HasAddressMixin.errors(self).errors)
         if self.siren is not None \
                 and (not len(self.siren) == 9):
             # TODO: or not verify_luhn(self.siren)):
-            errors.addError('siren', 'Ce code SIREN est invalide')
-        return errors
+            api_errors.addError('siren', 'Ce code SIREN est invalide')
+        if self.iban and self.bic:
+
+            try:
+                IBAN(self.iban)
+            except ValueError:
+                api_errors.addError('iban', "L'IBAN saisi est invalide")
+
+            try:
+                BIC(self.bic)
+            except ValueError:
+                api_errors.addError('bic', "Le BIC saisi est invalide")
+            else:
+                if not check_bic_is_known(self.bic):
+                    api_errors.addError('bic', "Le BIC saisi est inconnu")
+        if not self.bic and self.iban:
+            api_errors.addError('bic', "Le BIC es manquant")
+        if not self.iban and self.bic:
+            api_errors.addError('iban', "L'IBAN es manquant")
+
+        return api_errors
 
     @property
     def nOffers(self):
