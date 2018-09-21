@@ -182,3 +182,27 @@ def test_get_offerer_bookings_should_work_only_when_logged_in(app):
 
     # then
     assert response.status_code == 401
+
+
+@clean_database
+@pytest.mark.standalone
+def test_post_offerer_whith_iban_and_no_bic_raises_integrity_error(app):
+    # given
+    user = create_user(password='p@55sw0rd')
+    PcObject.check_and_save(user)
+    auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
+    body = {
+        'name': 'Test Offerer',
+        'siren': '418166096',
+        'address': '123 rue de Paris',
+        'postalCode': '93100',
+        'city': 'Montreuil',
+        'iban': 'FR7630006000011234567890189'
+    }
+
+    # when
+    response = auth_request.post(API_URL + '/offerers', json=body)
+
+    # then
+    assert response.status_code == 400
+    assert response.json()['bic'] == ''

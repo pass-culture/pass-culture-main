@@ -29,7 +29,6 @@ class Offerer(PcObject,
               NeedsValidationMixin,
               DeactivableMixin,
               Model):
-
     id = Column(BigInteger, primary_key=True)
 
     dateCreated = Column(DateTime,
@@ -41,17 +40,17 @@ class Offerer(PcObject,
     users = relationship('User',
                          secondary='user_offerer')
 
-    siren = Column(String(9), nullable=True, unique=True)  # FIXME: should not be nullable, is until we have all SIRENs filled in the DB
+    siren = Column(String(9), nullable=True,
+                   unique=True)  # FIXME: should not be nullable, is until we have all SIRENs filled in the DB
 
     iban = Column(
         String(27), 
         nullable=True)
 
-    bic = Column(String(11), nullable=True)
-
-    CheckConstraint(
-        '("IBAN" IS NULL AND "BIC" IS NULL) OR ("IBAN" IS NOT NULL AND "BIC" IS NOT NULL)',
-        name='check_IBAN_and_BIC_xor_not_IBAN_and_not_BIC')
+    bic = Column(String(11),
+                 CheckConstraint('(iban IS NULL AND bic IS NULL) OR (iban IS NOT NULL AND bic IS NOT NULL)',
+                                 name='check_iban_and_bic_xor_not_iban_and_not_bic'),
+                 nullable=True)
 
     def give_rights(self, user, rights):
         if user:
@@ -64,17 +63,18 @@ class Offerer(PcObject,
     def errors(self):
         errors = super(Offerer, self).errors()
         errors.errors.update(HasAddressMixin.errors(self).errors)
-        if self.siren is not None\
-           and (not len(self.siren) == 9):
-                #TODO: or not verify_luhn(self.siren)):
+        if self.siren is not None \
+                and (not len(self.siren) == 9):
+            # TODO: or not verify_luhn(self.siren)):
             errors.addError('siren', 'Ce code SIREN est invalide')
         return errors
 
     @property
     def nOffers(self):
-        return Offer.query\
-                  .filter(Offer.venueId.in_(list(map(lambda v: v.id,
-                                                                  self.managedVenues)))).count()
+        return Offer.query \
+            .filter(Offer.venueId.in_(list(map(lambda v: v.id,
+                                               self.managedVenues)))).count()
+
 
 Offerer.__ts_vector__ = create_tsvector(
     cast(coalesce(Offerer.name, ''), TEXT),

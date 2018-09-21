@@ -389,7 +389,7 @@ def create_n_mixed_offers_with_same_venue(venue, n=10):
 
 
 def create_offerer(siren='123456789', address='123 rue de Paris', city='Montreuil', postal_code='93100',
-                   name='Test Offerer', validation_token=None):
+                   name='Test Offerer', validation_token=None, iban=None, bic=None):
     offerer = Offerer()
     offerer.siren = siren
     offerer.isActive = True
@@ -398,6 +398,8 @@ def create_offerer(siren='123456789', address='123 rue de Paris', city='Montreui
     offerer.city = city
     offerer.name = name
     offerer.validationToken = validation_token
+    offerer.bic = bic
+    offerer.iban = iban
     return offerer
 
 

@@ -1,25 +1,24 @@
 import pytest
 
-from models import ApiErrors
+from models import ApiErrors, Offerer
+from utils.test_utils import create_offerer
 from validation.offerers import validate_bank_information
 
 
 @pytest.mark.standalone
-def test_validate_bank_information_does_not_raises_an_error_if_both_iban_and_bic_are_empty():
+def test_offerer_errors_does_not_raises_an_error_if_both_iban_and_bic_are_empty():
     # given
-    bic = ''
-    iban = ''
+    offerer = create_offerer(bic='', iban='')
 
     # when
-    try:
-        validate_bank_information(iban, bic)
-    except ApiErrors:
-        # then
-        assert False, 'Empty IBAN and BIC are authorized'
+    errors = offerer.errors()
+
+    # then
+    assert not errors.errors
 
 
 @pytest.mark.standalone
-def test_validate_bank_information_does_not_raises_an_error_if_both_iban_and_bic_are_none():
+def test_offerer_errors_does_not_raises_an_error_if_both_iban_and_bic_are_none():
     # given
     bic = None
     iban = None
@@ -99,7 +98,7 @@ def test_validate_bank_information_raises_an_error_if_iban_looks_correct_but_doe
 
     # when
     with pytest.raises(ApiErrors) as e:
-        validate_bank_information(iban, bic)
+        validate_bank_information(ibaan, bic)
 
     # then
     assert e.value.errors['iban'] == ["L'IBAN saisi est invalide"]
