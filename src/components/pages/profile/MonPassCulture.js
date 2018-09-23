@@ -82,8 +82,11 @@ const MonPassCulture = ({ user }) => {
     </div>
   )
 }
+
 MonPassCulture.defaultProps = {}
+
 MonPassCulture.propTypes = {
   user: PropTypes.object.isRequired,
 }
+
 export default MonPassCulture

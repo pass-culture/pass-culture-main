@@ -43,6 +43,7 @@ const routes = [
    *
    * MENU ITEMS
    * NOTE les elements ci-dessous sont les elements du main menu
+   * Car ils contiennent une propriété `icon`
    *
    ---------------------------------------------------  */
   {
@@ -79,7 +80,7 @@ const routes = [
     component: ProfilePage,
     disabled: false,
     icon: 'user-w',
-    path: '/profil/:view?/:token?',
+    path: '/profil/:view?/:status?',
     title: 'Mon Profil',
   },
   {

@@ -18,7 +18,7 @@ class NoMatch extends React.PureComponent {
   constructor(props) {
     super(props)
     this.timer = null
-    this.state = { timing: 5 }
+    this.state = { timing: props.delay }
   }
 
   componentDidMount() {
@@ -33,7 +33,7 @@ class NoMatch extends React.PureComponent {
     this.timer = null
   }
 
-  renderRedirect = () => {
+  redirectTo = () => {
     const { redirect } = this.props
     return <Redirect to={redirect} />
   }
@@ -41,7 +41,7 @@ class NoMatch extends React.PureComponent {
   render() {
     const { timing } = this.state
     const { location } = this.props
-    if (timing < 0) return this.renderRedirect()
+    if (timing < 0) return this.redirectTo()
     return (
       <div id="page-redirect">
         <h3 className="title">
@@ -57,10 +57,12 @@ class NoMatch extends React.PureComponent {
 }
 
 NoMatch.defaultProps = {
+  delay: 5, // delay en seconds
   redirect: '/',
 }
 
 NoMatch.propTypes = {
+  delay: PropTypes.number,
   location: PropTypes.object.isRequired,
   redirect: PropTypes.string,
 }
