@@ -3,11 +3,12 @@
 import React from 'react'
 import get from 'lodash.get'
 import PropTypes from 'prop-types'
-import { Logger, Icon, requestData, showModal } from 'pass-culture-shared'
+import { Logger, Icon, requestData } from 'pass-culture-shared'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import { compose, bindActionCreators } from 'redux'
 
+import ShareButton from './share/ShareButton'
 import VersoBookingButton from './VersoBookingButton'
 import { isRecommendationFinished } from '../helpers'
 import { selectBookings } from '../selectors/selectBookings'
@@ -16,8 +17,8 @@ import currentRecommendationSelector from '../selectors/currentRecommendation'
 class VersoControl extends React.PureComponent {
   constructor(props) {
     super(props)
-    const actions = { requestData, showModal }
     const { dispatch } = this.props
+    const actions = { requestData }
     this.actions = bindActionCreators(actions, dispatch)
   }
 
@@ -45,8 +46,11 @@ class VersoControl extends React.PureComponent {
       isFavorite,
       isFinished,
       isReserved,
+      location,
       offer,
+      recommendation,
       url,
+      user,
       // wallet,
     } = this.props
     return (
@@ -54,6 +58,7 @@ class VersoControl extends React.PureComponent {
         <li>
           <small className="pass-label">Mon Pass</small>
           <span className="pass-value">--€</span>
+          {/* <span className="pass-value">{wallet}€</span> */}
         </li>
         <li>
           <button
@@ -68,14 +73,11 @@ class VersoControl extends React.PureComponent {
           </button>
         </li>
         <li>
-          <button
-            type="button"
-            disabled
-            className="button is-secondary"
-            onClick={() => {}}
-          >
-            <Icon svg="ico-share-w" alt="Partager" />
-          </button>
+          <ShareButton
+            user={user}
+            location={location}
+            recommendation={recommendation}
+          />
         </li>
         <li>
           <VersoBookingButton
@@ -95,6 +97,7 @@ VersoControl.defaultProps = {
   isFinished: false,
   isReserved: false,
   offer: null,
+  recommendation: null,
   recommendationId: null,
   // wallet: null,
 }
@@ -104,15 +107,19 @@ VersoControl.propTypes = {
   isFavorite: PropTypes.bool,
   isFinished: PropTypes.bool,
   isReserved: PropTypes.bool,
+  location: PropTypes.object.isRequired,
   offer: PropTypes.object,
+  recommendation: PropTypes.object,
   recommendationId: PropTypes.string,
   url: PropTypes.string.isRequired,
+  user: PropTypes.object.isRequired,
   // wallet: PropTypes.number,
 }
 
 const mapStateToProps = (state, ownProps) => {
+  const { user } = state
   const { mediationId, offerId } = ownProps.match.params
-  const { wallet_balance: wallet } = state.user
+  const { wallet_balance: wallet } = user
   const recommendation = currentRecommendationSelector(
     state,
     offerId,
@@ -130,8 +137,10 @@ const mapStateToProps = (state, ownProps) => {
     isFavorite: recommendation && recommendation.isFavorite,
     isFinished,
     isReserved: booked.length > 0,
+    recommendation,
     recommendationId: recommendation.id,
     url: ownProps.match.url,
+    user,
     wallet,
   }
 }

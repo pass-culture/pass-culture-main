@@ -1,6 +1,6 @@
 // creation des classes permettant de gerer la taille des polices
 // Exemple: .fs18, .fs32...
-$intSizes: (13, 14, 15, 16, 18, 19, 20, 22, 30, 32, 36, 48, 52, 60, 80);
+$intSizes: (12, 13, 14, 15, 16, 18, 19, 20, 22, 30, 32, 36, 48, 52, 60, 80);
 
 @each $intSize in $intSizes {
   $pixelValue: number-to-pixel($intSize);

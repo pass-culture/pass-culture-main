@@ -43,3 +43,13 @@
     border-color: $white;
   }
 }
+
+.pc-theme-gradient {
+  @extend .pc-gradient;
+
+  color: $white;
+
+  [class*='border-'] {
+    border-color: $white;
+  }
+}

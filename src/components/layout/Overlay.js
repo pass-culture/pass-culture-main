@@ -32,6 +32,8 @@ Overlay.propTypes = {
   isVisible: PropTypes.bool.isRequired,
 }
 
-const mapStateToProps = ({ menu }) => ({ isVisible: menu })
+const mapStateToProps = ({ menu, share }) => ({
+  isVisible: menu || share.visible,
+})
 
 export default connect(mapStateToProps)(Overlay)

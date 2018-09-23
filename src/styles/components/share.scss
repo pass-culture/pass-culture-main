@@ -1,0 +1,22 @@
+$share-popin-height: auto;
+
+#share-popin {
+  left: 0;
+  right: 0;
+  z-index: $zindex-share-popin;
+}
+
+#share-popin-close-button {
+  z-index: 1;
+  top: rem(16px);
+  right: rem(16px);
+}
+
+#share-popin .inner {
+  background-color: $white;
+}
+
+#share-popin-fixed-container {
+  height: auto;
+  transition: height 500ms;
+}
