@@ -32,6 +32,7 @@ class SearchPage extends PureComponent {
   constructor(props) {
     super(props)
     this.state = {
+      keywordsKey: 0,
       keywordsValue: get(props, `queryParams.${FRENCH_KEYWORDS_KEY}`),
     }
   }
@@ -96,15 +97,9 @@ class SearchPage extends PureComponent {
       querySearch,
       recommendations,
     } = this.props
-    const { keywordsValue } = this.state
+    const { keywordsKey, keywordsValue } = this.state
 
     const keywords = queryParams[FRENCH_KEYWORDS_KEY]
-
-    // https://stackoverflow.com/questions/37946229/how-do-i-reset-the-defaultvalue-for-a-react-input
-    // WE NEED TO MAKE THE PARENT OF THE KEYWORD INPUT
-    // DEPENDING ON THE KEYWORDS VALUE IN ORDER TO RERENDER
-    // THE IN PUT WITH A SYNCED DEFAULT VALUE
-    const keywordsKey = typeof keywords === 'undefined' ? 'empty' : 'not-empty'
 
     return (
       <Main
@@ -126,23 +121,27 @@ class SearchPage extends PureComponent {
             >
               <input
                 id="keywords"
-                defaultValue={keywords}
+                defaultValue={keywordsValue}
                 className="input search-input"
                 placeholder="Saisissez une recherche"
                 type="text"
                 onChange={e => this.setState({ keywordsValue: e.target.value })}
               />
-              {get(keywords, 'length') && (
+              {get(keywordsValue, 'length') > 0 && (
                 <span className="icon is-small is-right">
                   <button
                     type="button"
                     className="no-border no-background is-red-text"
                     id="refresh-keywords-button"
                     onClick={() =>
-                      handleQueryParamsChange(
-                        { [FRENCH_KEYWORDS_KEY]: null },
-                        { isRefreshing: false }
-                      )
+                      this.setState({
+                        // https://stackoverflow.com/questions/37946229/how-do-i-reset-the-defaultvalue-for-a-react-input
+                        // WE NEED TO MAKE THE PARENT OF THE KEYWORD INPUT
+                        // DEPENDING ON THE KEYWORDS VALUE IN ORDER TO RERENDER
+                        // THE IN PUT WITH A SYNCED DEFAULT VALUE
+                        keywordsKey: keywordsKey + 1,
+                        keywordsValue: '',
+                      })
                     }
                   >
                     <span aria-hidden className="icon-close" title="" />
@@ -153,7 +152,7 @@ class SearchPage extends PureComponent {
             <div className="control">
               <button
                 className="button is-rounded is-medium"
-                disabled={keywordsValue === keywords}
+                disabled={!keywordsValue || keywordsValue === keywords}
                 id="keywords-search-button"
                 type="submit"
               >
