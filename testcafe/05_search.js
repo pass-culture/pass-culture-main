@@ -7,6 +7,7 @@ const getPageUrl = ClientFunction(() => window.location.href.toString())
 
 const searchInput = Selector('#search-input')
 const keywordsSearchButton = Selector('#keywords-search-button')
+const searchTypeCheckbox = Selector('#search-type-checkbox').withText('Lire')
 // const refreshKeywordsButton = Selector('#refresh-keywords-button')
 // const searchResults = Selector('#search-results')
 // const resultsTitle = Selector('#results-title')
@@ -35,6 +36,21 @@ fixture.skip('O5_02 Recherche | Recherche textuelle').beforeEach(async t => {
 
 test("Je fais une recherche par mots-clés et je n'ai pas de résultats", async t => {
   await t.typeText(searchInput, 'fake').click(keywordsSearchButton)
+})
+
+// si j'ai zéro résultats, je peux voir les vignettes de filtre par catégorie
+
+fixture.skip('O5_ Recherche | Recherche par catégorie').beforeEach(async t => {
+  await t.useRole(regularUser).navigateTo(`${ROOT_PATH}recherche/`)
+})
+
+test('Je clique sur la vignette Lire et je suis redirigé vers le résultat de la recherche', async t => {
+  await t
+  const location = await t.eval(() => window.location)
+  await t
+    .expect(location.pathname)
+    .eql('/recherche/categories')
+    .click(searchTypeCheckbox)
 })
 
 // Je clique sur le menu vs navigateTo()

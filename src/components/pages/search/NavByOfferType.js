@@ -10,13 +10,9 @@ const NavByOfferType = ({ handleQueryParamsChange, title, typeSublabels }) => (
       {title}
     </h2>
     {typeSublabels.map(typeSublabel => (
-      <div className="field checkbox" key={typeSublabel}>
-        <label id="type" className="label">
-          {' '}
-          {typeSublabel}
-        </label>
+      <div className="field checkbox" key={typeSublabel} id="search-type-card">
         <input
-          id="type"
+          id="search-type-checkbox"
           className="input is-normal"
           onChange={() =>
             handleQueryParamsChange(
@@ -26,6 +22,14 @@ const NavByOfferType = ({ handleQueryParamsChange, title, typeSublabels }) => (
           }
           type="checkbox"
         />
+        <label
+          className="label"
+          id="search-type-label"
+          htmlFor="search-type-checkbox"
+        >
+          {' '}
+          {typeSublabel}
+        </label>
       </div>
     ))}
   </div>

@@ -41,8 +41,6 @@ class SearchPage extends PureComponent {
 
     e.preventDefault()
 
-    console.log('BEN', e.target.elements.keywords.value)
-
     if (
       !e.target.elements.keywords.value ||
       queryParams.keywords === e.target.elements.keywords.value
@@ -102,9 +100,6 @@ class SearchPage extends PureComponent {
 
     const keywords = queryParams[FRENCH_KEYWORDS_KEY]
 
-    // console.log('>>>>>>>>>>> location in render', location)
-    // console.log('>>>>>>>>>>> recommendations in render', recommendations)
-    // console.log('kesywordsValue', keywordsValue, 'keywords', keywords)
     // https://stackoverflow.com/questions/37946229/how-do-i-reset-the-defaultvalue-for-a-react-input
     // WE NEED TO MAKE THE PARENT OF THE KEYWORD INPUT
     // DEPENDING ON THE KEYWORDS VALUE IN ORDER TO RERENDER
