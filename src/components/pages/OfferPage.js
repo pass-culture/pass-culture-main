@@ -286,8 +286,8 @@ class OfferPage extends Component {
     const showAllForm = type || !isNew
     const venueId = get(venue, 'id')
 
-    const isOffererSelectReadOnly = typeof offererId === 'undefined'
-    const isVenueSelectReadOnly = typeof venueId === 'undefined'
+    const isOffererSelectReadOnly = typeof offererId !== 'undefined'
+    const isVenueSelectReadOnly = typeof venueId !== 'undefined'
 
     let title
     if (isNew) {
