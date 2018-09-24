@@ -102,6 +102,8 @@ class VenuePage extends Component {
 
   render() {
     const {
+      formLatitude,
+      formLongitude,
       match: {
         params: { offererId, venueId },
       },
@@ -174,12 +176,12 @@ class VenuePage extends Component {
                 <Field
                   isExpanded
                   label="Numéro et voie"
+                  latitude={formLatitude}
+                  longitude={formLongitude}
                   name="address"
                   required
                   type="geo"
                   withMap
-                  latitude={get(venuePatch, 'latitude')}
-                  longitude={get(venuePatch, 'longitude')}
                 />
                 <Field
                   autocomplete="postal-code"
@@ -254,6 +256,8 @@ export default compose(
     (state, ownProps) => {
       const { offererId, venueId } = ownProps.match.params
       return {
+        formLatitude: get(state, 'form.venue.latitude'),
+        formLongitude: get(state, 'form.venue.longitude'),
         user: state.user,
         venuePatch: selectVenuePatchByVenueIdByOffererId(
           state,
