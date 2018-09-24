@@ -3,6 +3,7 @@ from flask import current_app as app, jsonify, request
 from flask_login import current_user
 
 from domain.stocks import find_offerer_for_new_stock, soft_delete_stock
+from domain.user_emails import send_cancellation_emails_to_users, send_cancellation_email_to_offerer_after_soft_delete
 from models.event import Event
 from models.event_occurrence import EventOccurrence
 from models.offer import Offer
@@ -119,6 +120,8 @@ def delete_stock(id):
                                    offerer_id)
 
     stock_and_bookings_to_save = soft_delete_stock(stock)
+    send_cancellation_emails_to_users(stock_and_bookings_to_save[1:])
+    send_cancellation_email_to_offerer_after_soft_delete(stock_and_bookings_to_save[1:])
 
     PcObject.check_and_save(*stock_and_bookings_to_save)
 

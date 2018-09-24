@@ -1,4 +1,6 @@
 """ stocks """
+from domain.user_emails import send_offerer_driven_cancellation_email_to_user
+from utils.mailing import make_offerer_driven_cancellation_email_for_user
 from repository import booking_queries, offerer_queries
 from validation.stocks import check_offer_offerer_exists, \
                               check_event_occurrence_offerer_exists

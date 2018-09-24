@@ -31,6 +31,10 @@ def check_if_email_sent(mail_result):
         raise MailServiceException("Email send failed: " + pformat(vars(mail_result)))
 
 
+def make_batch_cancellation_email(bookings):
+    pass
+
+
 def make_final_recap_email_for_stock_with_event(stock):
     venue = stock.resolvedOffer.venue
     date_in_tz = _get_event_datetime(stock)
