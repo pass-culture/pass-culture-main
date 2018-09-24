@@ -2,7 +2,7 @@
 
 Ceci décrit l'API utilisable par les partenaires techniques de Pass Culture qui souhaitent valider des contremarques.
 
-**Statut actuel : ébauche, pour discussions**
+**Statut actuel : protype, pour implémentations pilotes**
 
 ##### Vérifier une contremarque [GET /bookings/token/\<token\>?email=\<email\>&offer_id=\<offer_id\>]
 
