@@ -32,7 +32,17 @@ def check_if_email_sent(mail_result):
 
 
 def make_batch_cancellation_email(bookings):
-    pass
+    booking = next(iter(bookings))
+    offer_name = booking.stock.resolvedOffer.eventOrThing.name
+    email_html = render_template('mails/offerer_batch_cancellation_email.html',
+                                 offer_name=offer_name, bookings=bookings)
+    email_subject = 'Annulation de réservations pour %s' % offer_name
+    return {
+        'FromName': 'pass Culture pro',
+        'FromEmail': 'passculture@beta.gouv.fr',
+        'Subject': email_subject,
+        'Html-part': email_html,
+    }
 
 
 def make_final_recap_email_for_stock_with_event(stock):

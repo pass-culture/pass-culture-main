@@ -8,13 +8,13 @@ from domain.user_emails import send_user_driven_cancellation_email_to_user, \
     send_booking_confirmation_email_to_user, send_booking_recap_emails, send_final_booking_recap_email, \
     send_validation_confirmation_email, send_cancellation_emails_to_users, \
     send_cancellation_email_to_offerer_after_soft_delete
-from models import Offerer, UserOfferer, User, RightsType, Booking, Stock, Venue
+from models import Offerer, UserOfferer, User, RightsType, Booking
 from tests.utils_mailing_test import HTML_USER_BOOKING_EVENT_CONFIRMATION_EMAIL, \
     SUBJECT_USER_EVENT_BOOKING_CONFIRMATION_EMAIL
 from utils.config import IS_DEV, IS_STAGING, ENV
 from utils.mailing import MailServiceException
 from utils.test_utils import create_user, create_booking, create_stock_with_event_offer, create_offerer, create_venue, \
-    create_thing_offer, create_stock_with_thing_offer
+    create_thing_offer, create_stock_with_thing_offer, create_mocked_bookings
 
 
 @pytest.mark.standalone
@@ -526,7 +526,7 @@ def test_send_cancellation_emails_to_users_calls_send_offerer_driven_cancellatio
     return_value.status_code = 200
     mocked_send_create_email.return_value = return_value
     num_bookings = 6
-    bookings = create_bookings(num_bookings, 'offerer@email.com')
+    bookings = create_mocked_bookings(num_bookings, 'offerer@email.com')
     calls = [call(booking, mocked_send_create_email) for booking in bookings]
 
     # When
@@ -541,22 +541,11 @@ def test_send_cancellation_emails_to_users_calls_send_offerer_driven_cancellatio
     send_cancellation_email_one_user.assert_has_calls(calls)
 
 
-def create_bookings(num_bookings):
-    bookings = []
-    for i in range(num_bookings):
-        booking = Booking()
-        user = User()
-        user.email = 'user_email%s' % i
-        booking.user = user
-        bookings.append(booking)
-    return bookings
-
-
 @pytest.mark.standalone
 def test_send_cancellation_email_to_offerer_when_soft_deleting_stock():
     # Given
     num_bookings = 5
-    bookings = create_bookings(num_bookings, 'offerer@email.com')
+    bookings = create_mocked_bookings(num_bookings, 'offerer@email.com')
     mocked_send_create_email = Mock()
     return_value = Mock()
     return_value.status_code = 200
@@ -583,7 +572,7 @@ def test_send_cancellation_email_to_offerer_when_soft_deleting_stock():
 def test_send_cancellation_email_to_offerer_when_soft_deleting_stock_email_status_code_500():
     # Given
     num_bookings = 5
-    bookings = create_bookings(num_bookings, 'offerer@email.com')
+    bookings = create_mocked_bookings(num_bookings, 'offerer@email.com')
     mocked_send_create_email = Mock()
     return_value = Mock()
     return_value.status_code = 500
@@ -601,7 +590,7 @@ def test_send_cancellation_email_to_offerer_when_soft_deleting_stock_email_statu
 def test_send_cancellation_email_to_offerer_when_soft_deleting_stock_feature_send_mail_to_users_enabled_False():
     # Given
     num_bookings = 5
-    bookings = create_bookings(num_bookings, 'offerer@email.com')
+    bookings = create_mocked_bookings(num_bookings, 'offerer@email.com')
     mocked_send_create_email = Mock()
     return_value = Mock()
     return_value.status_code = 200
@@ -627,7 +616,7 @@ def test_send_cancellation_email_to_offerer_when_soft_deleting_stock_feature_sen
 def test_send_cancellation_email_to_offerer_when_soft_deleting_stock_no_venue_email():
     # Given
     num_bookings = 5
-    bookings = create_bookings(num_bookings, None)
+    bookings = create_mocked_bookings(num_bookings, None)
     mocked_send_create_email = Mock()
     return_value = Mock()
     return_value.status_code = 200
@@ -643,15 +632,3 @@ def test_send_cancellation_email_to_offerer_when_soft_deleting_stock_no_venue_em
     # Then
     mocked_send_create_email.assert_not_called()
     mocked_send_create_email.reset_mock()
-
-
-
-def create_bookings(num_bookings, venue_email):
-    bookings = []
-    for i in range(num_bookings):
-        booking = Mock(spec=Booking)
-        booking.user.email = 'user_email%s' % i
-        booking.stock.resolvedOffer.venue.bookingEmail = venue_email
-        bookings.append(booking)
-    return bookings
-
