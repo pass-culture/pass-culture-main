@@ -2,6 +2,7 @@
 from datetime import datetime, timedelta
 from sqlalchemy import func
 
+from domain.types import get_type_labels_from_sublabels
 from models import Recommendation, Offer, Mediation, PcObject
 from recommendations_engine import get_offers_for_recommendations_discovery
 from repository.offer_queries import get_offers_for_recommendations_search
@@ -166,3 +167,42 @@ def create_recommendations_for_search(
         PcObject.check_and_save(*recommendations_to_save)
 
     return recommendations
+
+def get_recommendation_search_params(args):
+
+    search_params = {}
+
+    page = 1
+    if 'page' in args and args['page']:
+        search_params['page'] = int(args['page'])
+
+    keywords = None
+    if 'keywords' in args and args['keywords']:
+        search_params['keywords'] = args['keywords']
+
+    types = None
+    if 'types' in args and args['types']:
+        type_sublabels = args['types'].split(',')
+        search_params['types'] = get_type_labels_from_sublabels(type_sublabels)
+
+    date = None
+    if 'date' in args and args['date']:
+        search_params['date'] = args['date']
+
+    days = None
+    if 'days' in args and args['days']:
+        search_params['days'] = [
+            [int(ds) for ds in day.split('-')] for day in args['days'].split(',')
+        ]
+
+    latitude = None
+    if 'latitude' in args and args['latitude']:
+        search_params['latitude'] = float(args['latitude'])
+
+    longitude = None
+    if 'longitude' in args and args['longitude']:
+        search_params['longitude'] = float(args['longitude'])
+
+    max_distance = None
+    if 'distance' in args and args['distance']:
+        search_params['max_distance'] = float(args['distance'])

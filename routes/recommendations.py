@@ -7,16 +7,17 @@ from flask_login import current_user, login_required
 from domain.build_recommendations import build_mixed_recommendations, \
     move_requested_recommendation_first, \
     move_tutorial_recommendations_first
-from domain.types import get_type_labels_from_sublabels
 from models import PcObject, Recommendation
 from recommendations_engine import create_recommendations_for_discovery, \
-                                   create_recommendations_for_search
-from recommendations_engine import give_requested_recommendation_to_user, \
+                                   create_recommendations_for_search, \
+                                   get_recommendation_search_params, \
+                                   give_requested_recommendation_to_user, \
                                    RecommendationNotFoundException
 from repository.booking_queries import find_bookings_from_recommendation
 from repository.recommendation_queries import count_read_recommendations_for_user, \
-    find_all_unread_recommendations, \
-    find_all_read_recommendations, find_favored_recommendations_for_user
+                                              find_all_unread_recommendations, \
+                                              find_all_read_recommendations, \
+                                              find_favored_recommendations_for_user
 from utils.config import BLOB_SIZE, BLOB_READ_NUMBER, BLOB_UNREAD_NUMBER
 from utils.human_ids import dehumanize
 from utils.includes import BOOKING_INCLUDES, RECOMMENDATION_INCLUDES
@@ -28,51 +29,11 @@ from utils.rest import expect_json_data
 @login_required
 def list_recommendations():
 
-    page = 1
-    if 'page' in request.args and request.args['page']:
-        page = int(request.args['page'])
-
-    keywords = None
-    if 'keywords' in request.args and request.args['keywords']:
-        keywords = request.args['keywords']
-
-    types = None
-    if 'types' in request.args and request.args['types']:
-        type_sublabels = request.args['types'].split(',')
-        types = get_type_labels_from_sublabels(type_sublabels)
-
-    date = None
-    if 'date' in request.args and request.args['date']:
-        date = request.args['date']
-
-    days = None
-    if 'days' in request.args and request.args['days']:
-        days = [
-            [int(ds) for ds in day.split('-')] for day in request.args['days'].split(',')
-        ]
-
-    latitude = None
-    if 'latitude' in request.args and request.args['latitude']:
-        latitude = float(request.args['latitude'])
-
-    longitude = None
-    if 'longitude' in request.args and request.args['longitude']:
-        longitude = float(request.args['longitude'])
-
-    max_distance = None
-    if 'distance' in request.args and request.args['distance']:
-        max_distance = float(request.args['distance'])
+    search_params = get_recommendation_search_params(request.args)
 
     recommendations = create_recommendations_for_search(
         current_user,
-        page=page,
-        keywords=keywords,
-        types=types,
-        latitude=latitude,
-        longitude=longitude,
-        max_distance=max_distance,
-        date=date,
-        days=days
+        **search_params
     )
 
     return jsonify(_serialize_recommendations(recommendations)), 200
