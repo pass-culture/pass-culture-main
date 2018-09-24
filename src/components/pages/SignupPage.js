@@ -66,7 +66,6 @@ const SignupPage = ({ errors, sirenName }) => {
                       name="lastName"
                       placeholder="Mon nom"
                       required
-                      sublabel="de famille"
                     />
                     <Field
                       autoComplete="first-name"
@@ -81,7 +80,7 @@ const SignupPage = ({ errors, sirenName }) => {
                       name="publicName"
                       placeholder="Mon nom ou pseudo"
                       required
-                      sublabel="vu par les autres utilisateurs"
+                      sublabel="affichée dans l'application publique"
                     />
                     <Field
                       disabling={() => !sirenName}
@@ -89,7 +88,7 @@ const SignupPage = ({ errors, sirenName }) => {
                       name="siren"
                       placeholder="123 456 789"
                       required
-                      sublabel="de la structure à rattacher"
+                      sublabel="de la structure que vous représentez"
                       type="siren"
                       withFetchedName
                     />
