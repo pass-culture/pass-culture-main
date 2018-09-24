@@ -200,7 +200,7 @@ class SearchPage extends PureComponent {
             render={() => (
               <NavByOfferType
                 handleQueryParamsChange={handleQueryParamsChange}
-                title="PAR CATEGORIES"
+                title="PAR CATÉGORIES"
               />
             )}
           />

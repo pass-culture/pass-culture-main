@@ -132,42 +132,38 @@ class SearchFilter extends Component {
     )
 
     return (
-      <div
-        id="search-filter-menu"
-        className="is-overlay is-clipped flex-columns items-end p12">
-        <div className="search-filter">
-          <FilterByDates
-            handleFilterParamsChange={this.handleFilterParamsChange}
-            handleFilterParamAdd={this.handleFilterParamAdd}
-            handleFilterParamRemove={this.handleFilterParamRemove}
-            filterParams={filterParams}
-          />
-          <h2>OU</h2>
-          <FilterByDistance
-            handleFilterParamsChange={this.handleFilterParamsChange}
-            filterParams={filterParams}
-          />
-          <FilterByOfferTypes
-            handleFilterParamAdd={this.handleFilterParamAdd}
-            handleFilterParamRemove={this.handleFilterParamRemove}
-            filterParams={filterParams}
-            title="QUOI"
-          />
-          <button
-            className="button"
-            disabled={isNullFilter}
-            onClick={this.onResetClick}
-            type="button">
-            Réinitialiser
-          </button>
-          <button
-            className="button"
-            disabled={!isNewFilter}
-            onClick={this.onFilterClick}
-            type="button">
-            Filtrer
-          </button>
-        </div>
+      <div className="search-filter" id="search-filter-menu">
+        <FilterByDates
+          handleFilterParamsChange={this.handleFilterParamsChange}
+          handleFilterParamAdd={this.handleFilterParamAdd}
+          handleFilterParamRemove={this.handleFilterParamRemove}
+          filterParams={filterParams}
+        />
+        <FilterByDistance
+          handleFilterParamsChange={this.handleFilterParamsChange}
+          filterParams={filterParams}
+          title="OÙ"
+        />
+        <FilterByOfferTypes
+          handleFilterParamAdd={this.handleFilterParamAdd}
+          handleFilterParamRemove={this.handleFilterParamRemove}
+          filterParams={filterParams}
+          title="QUOI"
+        />
+        <button
+          className="button"
+          disabled={isNullFilter}
+          onClick={this.onResetClick}
+          type="button">
+          Réinitialiser
+        </button>
+        <button
+          className="button"
+          disabled={!isNewFilter}
+          onClick={this.onFilterClick}
+          type="button">
+          Filtrer
+        </button>
       </div>
     )
   }

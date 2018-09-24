@@ -3,6 +3,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
 import selectTypeSublabels from '../../../selectors/selectTypeSublabels'
+import SearchPicture from './SearchPicture'
 
 class FilterByOfferTypes extends Component {
   onFilterChange = typeSublabel => {
@@ -31,15 +32,16 @@ class FilterByOfferTypes extends Component {
 
     return (
       <div>
-        <h2>
+        <h2 className="fs18">
           {title}
         </h2>
         {typeSublabels.map(typeSublabel => (
           <div className="field field-checkbox" key={typeSublabel}>
-            <label id="type" className="label">
+            <label id="type"> 
               {' '}
               {typeSublabel}
             </label>
+            <SearchPicture searchType={typeSublabel} />
             <input
               checked={typesValue.includes(typeSublabel)}
               className="input is-normal"

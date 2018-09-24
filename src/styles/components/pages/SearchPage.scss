@@ -1,4 +1,3 @@
-.search-page {
   header h1 {
     font-size: 1.5em;
     font-weight: normal;
@@ -24,8 +23,28 @@
   .input {
     border-color: $grey;
   }
-}
+
 
 #refresh-keywords-button {
   pointer-events: all;
+}
+
+// #search-type-card label {
+//
+// }
+
+#search-filter-menu label{
+  position: absolute;
+  margin-left: 2rem;
+}
+
+#date-checkbox {
+  border-radius: $control-radius;
+  border: solid $primary 0.1em;
+  margin: 1rem;
+  padding: 1rem;
+}
+
+#distance-select select{
+  border-color: $primary;
 }

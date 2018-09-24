@@ -40,7 +40,7 @@ class FilterByDistance extends Component {
   }
 
   render() {
-    const { filterParams } = this.props
+    const { filterParams, title } = this.props
     // https://stackoverflow.com/questions/37946229/how-do-i-reset-the-defaultvalue-for-a-react-input
     // WE NEED TO MAKE THE PARENT OF THE KEYWORD INPUT
     // DEPENDING ON THE KEYWORDS VALUE IN ORDER TO RERENDER
@@ -50,9 +50,16 @@ class FilterByDistance extends Component {
     const distanceValue = filterParams.distance || 20000
 
     return (
-      <div key={distanceKey}>
+      <div
+        key={distanceKey}
+        className="dotted-bottom-primary"
+        id="distance-select"
+      >
+        <h2 className="fs18">
+          {title}
+        </h2>
         <select
-          className="select"
+          className="select fs22"
           defaultValue={distanceValue}
           onChange={this.onFilterChange}
           name="distance"
@@ -72,6 +79,7 @@ FilterByDistance.propTypes = {
   filterParams: PropTypes.object.isRequired,
   geolocation: PropTypes.object.isRequired,
   handleFilterParamsChange: PropTypes.func.isRequired,
+  title: PropTypes.string.isRequired,
 }
 
 export default connect(state => ({ geolocation: state.geolocation }))(

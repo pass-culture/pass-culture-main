@@ -56,26 +56,28 @@ class FilterByDates extends Component {
     const days = decodeURI(filterParams.jours || '')
 
     return (
-      <div>
-        <h2>
-DATE (Scrollable horizontally)
+      <div className="dotted-bottom-primary">
+        <h2 className="fs18">
+QUAND
         </h2>
         {checkboxes.map(({ label, value }) => (
-          <div className="field field-checkbox" key={value}>
-            <label className="label"> 
-              {' '}
-              {label}
-            </label>
-            <input
-              checked={days.includes(value)}
-              className="input is-normal"
-              onChange={() => this.onFilterChange(value)}
-              type="checkbox"
-            />
+          <div id="date-checkbox">
+            <div className="field field-checkbox" key={value}>
+              <label className="label fs22"> 
+                {' '}
+                {label}
+              </label>
+              <input
+                checked={days.includes(value)}
+                className="input is-normal"
+                onChange={() => this.onFilterChange(value)}
+                type="checkbox"
+              />
+            </div>
           </div>
         ))}
         <div>
-Par date
+Par date TO DO
         </div>
       </div>
     )
