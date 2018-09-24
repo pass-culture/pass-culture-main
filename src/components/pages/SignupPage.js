@@ -46,35 +46,50 @@ const SignupPage = ({ errors, sirenName }) => {
                     <Field
                       label="Adresse e-mail"
                       name="email"
-                      sublabel="pour se connecter et récupérer son mot de passe en cas d'oubli"
                       placeholder="nom@exemple.fr"
                       required
+                      sublabel="pour se connecter et récupérer son mot de passe en cas d'oubli"
                       type="email"
                     />
                     <Field
-                      autoComplete="name"
-                      label="Identifiant"
-                      name="publicName"
-                      sublabel="vu par les autres utilisateurs"
-                      placeholder="Mon nom ou pseudo"
+                      autoComplete="new-password"
+                      name="password"
+                      label="Mot de passe"
+                      placeholder="Mon mot de passe"
+                      required
+                      sublabel="pour se connecter"
+                      type="password"
+                    />
+                    <Field
+                      autoComplete="last-name"
+                      label="Nom"
+                      name="lastName"
+                      placeholder="Mon nom"
+                      required
+                      sublabel="de famille"
+                    />
+                    <Field
+                      autoComplete="first-name"
+                      label="Nom"
+                      name="firstName"
+                      placeholder="Mon prénom"
                       required
                     />
                     <Field
-                      name="password"
-                      label="Mot de passe"
-                      sublabel="pour se connecter"
-                      placeholder="Mon mot de passe"
-                      autoComplete="new-password"
+                      autoComplete="name"
+                      label="Pseudo"
+                      name="publicName"
+                      placeholder="Mon nom ou pseudo"
                       required
-                      type="password"
+                      sublabel="vu par les autres utilisateurs"
                     />
                     <Field
                       disabling={() => !sirenName}
                       label="SIREN"
                       name="siren"
-                      sublabel="de la structure à rattacher"
                       placeholder="123 456 789"
                       required
+                      sublabel="de la structure à rattacher"
                       type="siren"
                       withFetchedName
                     />
