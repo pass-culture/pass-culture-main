@@ -8,6 +8,29 @@ import FilterByDates from './FilterByDates'
 import FilterByDistance from './FilterByDistance'
 import FilterByOfferTypes from './FilterByOfferTypes'
 
+const initialFilterParams = {
+  categories: null,
+  date: null,
+  distance: null,
+  jours: null,
+  latitude: null,
+  longitude: null,
+}
+
+function getFirstChangingKey(previousObject, nextObject) {
+  return Object.keys(nextObject).find(key => {
+    const isNewFalsy = nextObject[key] === null || nextObject[key] === ''
+    const isPreviousFalsy =
+      typeof previousObject[key] === 'undefined' ||
+      previousObject[key] === null ||
+      previousObject === ''
+    if (isNewFalsy && isPreviousFalsy) {
+      return false
+    }
+    return previousObject[key] !== nextObject[key]
+  })
+}
+
 class SearchFilter extends Component {
   constructor(props) {
     super(props)
@@ -40,8 +63,11 @@ class SearchFilter extends Component {
 
   onResetClick = () => {
     this.setState({
-      filterParams: this.props.queryParams,
-      isNewFilter: false,
+      filterParams: initialFilterParams,
+      isNewFilter: getFirstChangingKey(
+        this.props.queryParams,
+        initialFilterParams
+      ),
     })
   }
 
@@ -49,18 +75,14 @@ class SearchFilter extends Component {
     const { queryParams } = this.props
     const { filterParams } = this.state
 
-    const atLeastOneChangingKey = Object.keys(newValue).find(
-      key =>
-        typeof queryParams[key] === 'undefined' ||
-        queryParams[key] !== newValue[key]
-    )
-
     const nextFilterParams = Object.assign({}, filterParams, newValue)
+
+    const isNewFilter = getFirstChangingKey(queryParams, newValue)
 
     this.setState(
       {
         filterParams: nextFilterParams,
-        isNewFilter: typeof atLeastOneChangingKey !== 'undefined',
+        isNewFilter,
       },
       callback
     )
@@ -73,7 +95,9 @@ class SearchFilter extends Component {
     let nextValue = encodedValue
     const previousValue = filterParams[key]
     if (get(previousValue, 'length')) {
-      nextValue = `${previousValue},${encodedValue}`
+      const args = previousValue.split(',').concat([encodedValue])
+      args.sort()
+      nextValue = args.join(',')
     }
 
     this.handleFilterParamsChange({ [key]: nextValue }, callback)
@@ -100,6 +124,13 @@ class SearchFilter extends Component {
     const { handleClearQueryParams } = this.props
     const { filterParams, isNewFilter } = this.state
 
+    const isNullFilter = Object.keys(initialFilterParams).every(
+      key =>
+        typeof filterParams[key] === 'undefined' ||
+        filterParams[key] === null ||
+        filterParams[key] === ''
+    )
+
     return (
       <div
         id="search-filter-menu"
@@ -124,7 +155,7 @@ class SearchFilter extends Component {
           />
           <button
             className="button"
-            disabled={!isNewFilter}
+            disabled={isNullFilter}
             onClick={this.onResetClick}
             type="button">
             Réinitialiser
