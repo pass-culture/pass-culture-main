@@ -28,6 +28,7 @@ const siretInputError = Selector('#venue-siret-error')
 const submitButton = Selector('button.button.is-primary') //créer un lieu
 const updateAnchor = Selector('a.button.is-secondary') //modifier un lieu
 const venueAnchor = Selector('#a-theatre-national-de-chaillot')
+const venueMarker = Selector('img.leaflet-marker-icon')
 
 fixture`05_01 VenuePage | Créer un nouveau lieu avec succès`
 test('Je rentre une nouveau lieu via son siret avec succès', async t => {
@@ -54,6 +55,7 @@ test('Je rentre une nouveau lieu via son siret avec succès', async t => {
   await t.expect(cityInput.value).eql('CHEVILLY LARUE')
   await t.expect(latitudeInput.value).eql('48.765134')
   await t.expect(longitudeInput.value).eql('2.338438')
+  await t.expect(venueMarker.getAttribute('alt')).eql('48.765134-2.338438')
 
   // create venue
   await t.click(submitButton).wait(5000)
