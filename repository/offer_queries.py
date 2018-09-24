@@ -1,6 +1,5 @@
-""" offer queries """
-from datetime import datetime, timedelta
-import dateutil.parser
+from datetime import datetime
+
 from sqlalchemy import func
 from sqlalchemy.orm import aliased
 
@@ -14,12 +13,8 @@ from models import Booking, \
     Venue
 from models import Thing
 from models.db import db
-<<<<<<< HEAD
 from repository.user_offerer_queries import filter_query_where_user_is_user_offerer_and_is_validated
-from utils.distance import get_geo_distance_in_kilometers
-=======
 from utils.distance import get_sql_geo_distance_in_kilometers
->>>>>>> try to compute distance
 from utils.logger import logger
 from utils.search import get_keywords_filter
 
@@ -121,16 +116,13 @@ def find_offers_in_date_range_for_given_venue_departement(date_max, date_min, de
 
 
 def get_offers_for_recommendations_search(
-        page=None,
-        keywords=None,
-        type_labels=None,
-        latitude=None,
-        longitude=None,
-        max_distance=None,
-        date=None,
-        # can have a shape like [[0,1],[1,5],[1,20000]]
-        # ie it is an array of days intervals from the date value
-        days=None):
+    page=1,
+    keywords=None,
+    types=None,
+    latitude=None,
+    longitude=None,
+    max_distance=None,
+    between_dates=None):
 
     offer_query =  _filter_out_offers_on_soft_deleted_stocks_and_inactive_offers()
 
@@ -139,32 +131,27 @@ def get_offers_for_recommendations_search(
 
     if max_distance is not None and latitude is not None and longitude is not None:
         distance_instrument = get_sql_geo_distance_in_kilometers(
-            latitude,
-            longitude,
             Venue.latitude,
-            Venue.longitude
+            Venue.longitude,
+            latitude,
+            longitude
         )
+        print('max_distance', max_distance, 'latitude', latitude, 'longitude', longitude)
         offer_query = offer_query.join(Venue)\
-                                 .filter(distance_instrument <= max_distance)
+                                 .filter(distance_instrument < max_distance)
 
-
-    if date is not None and days is not None:
-        date = dateutil.parser.parse(date)
-
-        for days in days:
-
-            start_date = date + timedelta(days=days[0])
-            end_date = date + timedelta(days=days[1])
-
+    if between_dates is not None:
+        for between_dates in between_dates:
             date_offer_query = offer_query.join(Stock) \
                                           .outerjoin(EventOccurrence) \
                                           .filter(
                                             (
-                                                (Stock.bookingLimitDatetime >= start_date) &\
-                                                (Stock.bookingLimitDatetime <= end_date)
+                                                (Stock.bookingLimitDatetime >= between_dates[0]) &\
+                                                (Stock.bookingLimitDatetime <= between_dates[1])
                                             )
                                            )
             offer_query = offer_query.union_all(date_offer_query)
+
 
     if keywords is not None:
         offer_query = offer_query.outerjoin(Event)\
@@ -172,18 +159,17 @@ def get_offers_for_recommendations_search(
                                  .outerjoin(Venue)\
                                  .filter(get_keywords_filter([Event, Thing, Venue], keywords))
 
-    if type_labels is not None:
+    if types is not None:
         event_offer_query = offer_query.outerjoin(Event)\
-                                       .filter(Event.type.in_(type_labels))
+                                       .filter(Event.type.in_(types))
 
         thing_offer_query = offer_query.outerjoin(Thing)\
-                                       .filter(Thing.type.in_(type_labels))
+                                       .filter(Thing.type.in_(types))
 
         offer_query = event_offer_query.union_all(thing_offer_query)
 
-    if page is not None:
-        offers = offer_query.paginate(page, per_page=10, error_out=False)\
-                            .items
+    offers = offer_query.paginate(int(page), per_page=10, error_out=False)\
+                        .items
 
     return offers
 

@@ -15,7 +15,7 @@ from models import ApiErrors, \
     Venue
 from models.db import db
 from utils.rest import query_with_order_by
-from utils.search import get_search_filter
+from utils.search import get_keywords_filter
 from validation.errors import ResourceNotFound
 
 
