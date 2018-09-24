@@ -121,7 +121,7 @@ def find_offers_in_date_range_for_given_venue_departement(date_max, date_min, de
 
 
 def get_offers_for_recommendations_search(
-        page=1,
+        page=None,
         keywords=None,
         type_labels=None,
         latitude=None,
@@ -181,8 +181,9 @@ def get_offers_for_recommendations_search(
 
         offer_query = event_offer_query.union_all(thing_offer_query)
 
-    offers = offer_query.paginate(int(page), per_page=10, error_out=False)\
-                        .items
+    if page is not None:
+        offers = offer_query.paginate(page, per_page=10, error_out=False)\
+                            .items
 
     return offers
 

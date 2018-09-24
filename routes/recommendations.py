@@ -28,7 +28,7 @@ from utils.rest import expect_json_data
 @login_required
 def list_recommendations():
 
-    page = None
+    page = 1
     if 'page' in request.args and request.args['page']:
         page = int(request.args['page'])
 
