@@ -76,6 +76,7 @@ ProfilePasswordForm.displayName = 'ProfilePasswordForm'
 export default withProfileForm(
   ProfilePasswordForm,
   validatePasswordForm,
+  // TODO -> plutot les options de route par un objet
   'users/current/change-password',
   'POST',
   false,

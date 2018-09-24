@@ -7,7 +7,6 @@ import isEqual from 'lodash.isequal'
 
 import { isPassword } from '../../../../utils/strings'
 
-const FORM_KEYS = ['oldPassword', 'newPassword', 'newPasswordConfirm']
 const DEFAULT_REQUIRED_ERROR = 'Ce champs est requis'
 const ERROR_IS_NOT_MATCHING_CONFIRM = 'Les mots de passe ne correspondent pas'
 const ERROR_IS_EQUAL_ORIGINAL =
@@ -33,14 +32,14 @@ const validateEqualities = values => {
   return {}
 }
 
+// On verifie pas que le champs oldPassword est du type password
+// On verifie juste qu'il n'est pas vide
+const FORM_KEYS = ['newPassword', 'newPasswordConfirm']
+// const FORM_KEYS = ['oldPassword', 'newPassword', 'newPasswordConfirm']
 const validatePasswordForm = formValues => {
   let errors = FORM_KEYS.reduce((acc, key) => {
     const value = formValues[key]
-    // NOTE: Les anciens MDP durant la phase beta
-    // n'avait pas de règle de validation
-    const isBetaPhasePassword = key === 'oldPassword'
-    if (!isBetaPhasePassword && !isPassword(value))
-      return { ...acc, [key]: DEFAULT_REQUIRED_ERROR }
+    if (!isPassword(value)) return { ...acc, [key]: DEFAULT_REQUIRED_ERROR }
     return acc
   }, {})
   const hasErrors = Object.keys(errors).length > 0

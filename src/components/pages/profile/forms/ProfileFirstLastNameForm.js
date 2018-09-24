@@ -6,7 +6,7 @@ import PropTypes from 'prop-types'
 import { InputField } from '../../../forms/inputs'
 import withProfileForm from './withProfileForm'
 
-class ProfileNameForm extends React.PureComponent {
+class ProfileFirstLastNameForm extends React.PureComponent {
   render() {
     const { isLoading } = this.props
     return (
@@ -33,8 +33,8 @@ class ProfileNameForm extends React.PureComponent {
   }
 }
 
-ProfileNameForm.propTypes = {
+ProfileFirstLastNameForm.propTypes = {
   isLoading: PropTypes.bool.isRequired,
 }
 
-export default withProfileForm(ProfileNameForm)
+export default withProfileForm(ProfileFirstLastNameForm)
