@@ -1,7 +1,7 @@
 """ storage """
 import os.path
 from flask import current_app as app, jsonify, request, send_file
-from flask_login import current_user
+from flask_login import current_user, login_required
 
 import models
 from models import RightsType
@@ -29,6 +29,7 @@ def send_storage_file(bucketId, objectId):
 
 
 @app.route('/storage/thumb/<collectionName>/<id>/<index>', methods=['POST'])
+@login_required
 def post_storage_file(collectionName, id, index):
     model_name = inflect_engine.singular_noun(collectionName.title(), 1)
 
