@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from models import ApiErrors
 from models.api_errors import ResourceGoneError
@@ -70,19 +70,27 @@ def check_user_is_logged_in_or_email_is_provided(user, email):
         raise api_errors
 
 
-def check_booking_not_cancelled(booking):
+def check_booking_is_usable(booking):
+    resource_gone_error = ResourceGoneError()
+    if booking.isUsed:
+        resource_gone_error.addError('booking', 'Cette réservation a déjà été validée')
+        raise resource_gone_error
     if booking.isCancelled:
-        resource_gone_error = ResourceGoneError()
         resource_gone_error.addError('booking', 'Cette réservation a été annulée')
         raise resource_gone_error
 
 
-def check_booking_not_already_used(booking):
+def check_booking_is_cancellable(booking, is_user_cancellation):
+    api_errors = ApiErrors()
     if booking.isUsed:
-        resource_gone_error = ResourceGoneError()
-        resource_gone_error.addError('booking', 'Cette réservation a déjà été validée')
-        raise resource_gone_error
-
+        api_errors.addError('booking', "Impossible d\'annuler une réservation consommée")
+        raise api_errors
+    if booking.stock.eventOccurrence:
+        two_days_before_event = booking.stock.eventOccurrence.beginningDatetime - timedelta(hours=48)
+        if (datetime.utcnow() > two_days_before_event) and is_user_cancellation:
+            api_errors.addError('booking',
+                                "Impossible d\'annuler une réservation moins de 48h avant le début de l'évènement")
+            raise api_errors
 
 def check_email_and_offer_id_for_anonymous_user(email, offer_id):
     api_errors = ApiErrors()
