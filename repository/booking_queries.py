@@ -16,10 +16,7 @@ from models import ApiErrors, \
 from models.db import db
 from utils.rest import query_with_order_by
 from utils.search import get_search_filter
-
-
-class BookingNotFound(ApiErrors):
-    pass
+from validation.errors import ResourceNotFound
 
 
 def find_all_by_user_id(user_id):
@@ -87,7 +84,7 @@ def find_by(token, email=None, offer_id=None):
     booking = query.first()
 
     if booking is None:
-        errors = BookingNotFound()
+        errors = ResourceNotFound()
         errors.addError(
             'global',
             "Cette contremarque n'a pas été trouvée"

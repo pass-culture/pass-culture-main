@@ -4,17 +4,19 @@ from flask_login import current_user, login_required
 
 from domain.admin_emails import maybe_send_offerer_validation_email
 from domain.reimbursement import find_all_booking_reimbursement
-from models import Offerer, PcObject, RightsType, UserOfferer
+from models import Offerer, PcObject, RightsType
 from models.venue import create_digital_venue
 from repository.booking_queries import find_offerer_bookings
+from repository.user_offerer_queries import filter_query_where_user_is_user_offerer_and_is_validated
 from utils.human_ids import dehumanize
 from utils.includes import PRO_BOOKING_INCLUDES, OFFERER_INCLUDES
 from utils.rest import ensure_current_user_has_rights, \
-                       expect_json_data, \
-                       handle_rest_get_list, \
-                       load_or_404, \
-                       login_or_api_key_required
+    expect_json_data, \
+    handle_rest_get_list, \
+    load_or_404, \
+    login_or_api_key_required
 from utils.search import get_search_filter
+
 
 @app.route('/offerers', methods=['GET'])
 @login_required
@@ -22,8 +24,7 @@ def list_offerers():
     query = Offerer.query
 
     if not current_user.isAdmin:
-        query = query.join(UserOfferer) \
-            .filter_by(user=current_user)
+        query = filter_query_where_user_is_user_offerer_and_is_validated(query, current_user)
 
     search = request.args.get('search')
     if search is not None:

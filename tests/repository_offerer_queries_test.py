@@ -1,3 +1,5 @@
+import secrets
+
 import pytest
 
 from models import PcObject
@@ -14,11 +16,15 @@ def test_find_all_admin_offerer_emails(app):
     user_admin1 = create_user(email='admin1@offerer.com')
     user_admin2 = create_user(email='admin2@offerer.com')
     user_editor = create_user(email='editor@offerer.com')
+    user_admin_not_validated = create_user(email='admin_not_validated@offerer.com')
     user_random = create_user(email='random@user.com')
     user_offerer_admin1 = create_user_offerer(user_admin1, offerer, is_admin=True)
     user_offerer_admin2 = create_user_offerer(user_admin2, offerer, is_admin=True)
+    user_offerer_admin_not_validated = create_user_offerer(user_admin_not_validated, offerer,
+                                                           validation_token=secrets.token_urlsafe(20), is_admin=True)
     user_offerer_editor = create_user_offerer(user_editor, offerer, is_admin=False)
-    PcObject.check_and_save(user_random, user_offerer_admin1, user_offerer_admin2, user_offerer_editor)
+    PcObject.check_and_save(user_random, user_offerer_admin1, user_offerer_admin2, user_offerer_admin_not_validated,
+                            user_offerer_editor)
 
     # When
     emails = find_all_admin_offerer_emails(offerer.id)
