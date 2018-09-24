@@ -107,7 +107,6 @@ class VenuePage extends Component {
       },
       offerer,
       venuePatch,
-      form,
     } = this.props
     const { isNew, isReadOnly } = this.state
 
@@ -179,8 +178,8 @@ class VenuePage extends Component {
                   required
                   type="geo"
                   withMap
-                  latitude={get(form.venue, 'latitude')}
-                  longitude={get(form.venue, 'longitude')}
+                  latitude={get(venuePatch, 'latitude')}
+                  longitude={get(venuePatch, 'longitude')}
                 />
                 <Field
                   autocomplete="postal-code"
@@ -261,7 +260,6 @@ export default compose(
           venueId,
           offererId
         ),
-        form: state.form,
         offerer: offererSelector(state, offererId),
       }
     },
