@@ -4,7 +4,7 @@ Ceci décrit l'API utilisable par les partenaires techniques de Pass Culture qui
 
 **Statut actuel : ébauche, pour discussions**
 
-##### Vérifier une contremarque [GET /bookings/token/\<token\>]
+##### Vérifier une contremarque [GET /bookings/token/\<token\>?email=\<email\>&offer_id=\<offer_id\>]
 
 + Parameters
 
@@ -14,15 +14,7 @@ Ceci décrit l'API utilisable par les partenaires techniques de Pass Culture qui
 
 + Request (application/json)
 
-    + Body
-    
-            [
-              {
-                 "token": "AXB32J", 
-                 "email": "test@test.com",
-                 "offerId": "ABDE"
-              }
-            ]
+    + Body {}
 
 + Response 204 (application/json) dans le cas où le partenaire n'est pas enregistré
             
@@ -46,69 +38,68 @@ Ceci décrit l'API utilisable par les partenaires techniques de Pass Culture qui
               }
             ]
 
-##### Valider une contremarque [POST /bookings/validate]
- Valide une contremarque (et la transaction associée).
- 
- Un code contremarque est valide 1 semaine pour les offres physiques, 30 minutes pour les offres numériques.
- 
- + Parameters
- 
-   + token (string) - le code de réservation
-   + email (string) - correspond à l'email de la personne qui tente d'utiliser la contremarque pour obtenir une offre
-   + offerId (optional, string) - identifiant de l'offre supposée correspondre à la réservation
- 
- + Request (application/json)
+##### Valider une contremarque [PATCH /bookings/token/<token>?email=\<email\>&offer_id=\<offer_id\>]
+
+Valide une contremarque (et la transaction associée). Le partenaire doit renseigner les paramètres <email> et <offer_id>.
+
++ Parameters
+  + token (string) - le code de réservation
+  + email (string) - correspond à l'email de la personne qui tente d'utiliser la contremarque pour obtenir une offre
+  + offer_id (string) - identifiant de l'offre supposée correspondre à la réservation
+
++ Request (application/json)
+
+    + Body {}
+
++ Response 204 (application/json)
+
++ Response 400 (application/json)
 
     + Body
-    
+
             [
               {
-                 "token": "AXB32J", 
-                 "email": "test@test.com",
-                 "offerId": "ABDE"
+                 "global": "L'adresse email qui a servie à la réservation est obligatoire dans l'URL [?email=<email>]"
               }
             ]
- 
- + Response 200 (application/json)
- 
- + Response 400 (application/json)
- 
-     + Body
- 
-             [
-               {
-                  "token": "Code contremarque invalide"
-               }
-             ]
- 
- + Response 400 (application/json)
- 
-     + Body
- 
-             [
-               {
-                  "global": "Contremarque déjà validée"
-               }
-             ]
- 
- 
- + Response 400 (application/json)
- 
-     + Body
- 
-             [
-               {
-                  "global": "Contremarque expirée"
-               }
-             ]
- 
- 
- + Response 400 (application/json)
- 
-     + Body
- 
-             [
-               {
-                  "global": "token et offerId ne correspondent pas"
-               }
-             ]
+
++ Response 400 (application/json)
+
+    + Body
+
+            [
+              {
+                 "global": "L'id de l'offre réservée est obligatoire dans l'URL [?offer_id=<id>]"
+              }
+            ]
+
++ Response 404 (application/json)
+
+    + Body
+
+            [
+              {
+                 "global": "Cette contremarque n'a pas été trouvée"
+              }
+            ]
+
++ Response 410 (application/json)
+
+    + Body
+
+            [
+              {
+                 "booking": "Cette réservation a été annulée"
+              }
+            ]
+
+
++ Response 410 (application/json)
+
+    + Body
+
+            [
+              {
+                 "booking": "Cette réservation a déjà été validée"
+              }
+            ]
