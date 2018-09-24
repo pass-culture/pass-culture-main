@@ -849,7 +849,7 @@ class PatchBookingAsLoggedInUserTest:
             API_URL + '/bookings/token/{}?email={}'.format(booking.token, user.email))
 
         # Then
-        assert response.status_code == 400
+        assert response.status_code == 403
         assert response.json()['global'] == ["Cette structure n'est pas enregistr\u00e9e chez cet utilisateur."]
         db.session.refresh(booking)
         assert booking.isUsed == False

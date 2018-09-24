@@ -171,7 +171,7 @@ def test_get_offerer_bookings_returns_bad_request_if_user_has_no_rights_on_offer
     response = auth_request.get(API_URL + '/offerers/%s/bookings' % humanize(offerer.id))
 
     # then
-    assert response.status_code == 400
+    assert response.status_code == 403
 
 
 @clean_database

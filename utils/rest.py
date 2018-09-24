@@ -123,6 +123,7 @@ def ensure_current_user_has_rights(rights, offerer_id):
             'global',
             "Cette structure n'est pas enregistrée chez cet utilisateur."
         )
+        errors.status_code = 403
         raise errors
 
 

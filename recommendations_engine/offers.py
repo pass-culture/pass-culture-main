@@ -6,7 +6,7 @@ from random import randint
 from sqlalchemy.orm import aliased
 
 from models import Event, EventOccurrence, Offer, Thing
-from repository.offer_queries import get_offers_by_type
+from repository.offer_queries import get_active_offers_by_type
 from utils.config import ILE_DE_FRANCE_DEPT_CODES
 from utils.logger import logger
 
@@ -112,8 +112,8 @@ def get_offers_for_recommendations_discovery(limit=3, user=None, coords=None):
         if user.departementCode == '93' \
         else [user.departementCode]
 
-    event_offers = get_offers_by_type(Event, user=user, departement_codes=departement_codes)
-    thing_offers = get_offers_by_type(Thing, user=user, departement_codes=departement_codes)
+    event_offers = get_active_offers_by_type(Event, user=user, departement_codes=departement_codes)
+    thing_offers = get_active_offers_by_type(Thing, user=user, departement_codes=departement_codes)
     offers = sort_by_score(event_offers + thing_offers, departement_codes)
     offers = remove_duplicate_things_or_events(offers)
 

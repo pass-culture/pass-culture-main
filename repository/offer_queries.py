@@ -68,7 +68,7 @@ def not_currently_recommended_offers(query, user):
     return query
 
 
-def get_offers_by_type(offer_type, user=None, departement_codes=None, offer_id=None):
+def get_active_offers_by_type(offer_type, user=None, departement_codes=None, offer_id=None):
     query = Offer.query.filter_by(isActive=True)
     if offer_type == Event:
         query = query.join(aliased(EventOccurrence))
@@ -112,7 +112,7 @@ def find_offers_in_date_range_for_given_venue_departement(date_max, date_min, de
 
 
 def get_offers_for_recommendations_search(page=1, search=None):
-    offer_query = _filter_out_offers_on_soft_deleted_stocks()
+    offer_query = _filter_out_offers_on_soft_deleted_stocks_and_inactive_offers()
     if search is not None:
         offer_query = offer_query.outerjoin(Event)\
                                  .outerjoin(Thing)\
@@ -146,7 +146,7 @@ def find_by_venue_id_or_offerer_id_and_search_terms_offers_where_user_has_rights
     return query
 
 
-def _filter_out_offers_on_soft_deleted_stocks():
+def _filter_out_offers_on_soft_deleted_stocks_and_inactive_offers():
     join_on_stocks = Offer.query.filter_by(isActive=True) \
         .join(Stock) \
         .filter_by(isSoftDeleted=False)

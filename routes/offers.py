@@ -7,6 +7,7 @@ from flask_login import current_user, login_required
 from domain.offers import check_digital_offer_consistency, InconsistentOffer
 from models import ApiErrors, Offer, PcObject, Recommendation,\
                    RightsType, Venue
+from models.db import db
 from repository import venue_queries
 from repository.offer_queries import find_by_venue_id_or_offerer_id_and_search_terms_offers_where_user_has_rights
 from utils.human_ids import dehumanize
@@ -16,6 +17,7 @@ from utils.rest import ensure_current_user_has_rights, \
                        handle_rest_get_list, \
                        load_or_404
 from validation.offers import check_venue_exists_when_requested, check_user_has_rights_for_query
+from utils.search import get_search_filter
 
 
 @app.route('/offers', methods=['GET'])
@@ -73,7 +75,6 @@ def post_offer():
 def update_offer(offer_id):
     offer = load_or_404(Offer, offer_id)
     ensure_current_user_has_rights(RightsType.editor, offer.venue.managingOffererId)
-    offer = Offer.query.filter_by(id=dehumanize(offer_id)).first()
     # ensure only some properties can be modified
     newProps = dict()
     if 'isActive' in request.json:
@@ -81,9 +82,9 @@ def update_offer(offer_id):
     offer.populateFromDict(newProps)
     PcObject.check_and_save(offer)
     if 'isActive' in request.json\
-       and not newProps['isActive']\
-       and offer.isActive:
+       and not newProps['isActive']:
         Recommendation.query.filter((Recommendation.offerId == offer.id)
                                     & (Recommendation.validUntilDate > datetime.now()))\
                             .update({'validUntilDate': datetime.now()})
+        db.session.commit()
     return jsonify(offer._asdict()), 200

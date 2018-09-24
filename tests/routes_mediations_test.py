@@ -133,7 +133,7 @@ def test_patch_mediation_returns_200(app):
 
 @clean_database
 @pytest.mark.standalone
-def test_patch_mediation_returns_400_if_user_is_not_attached_to_offerer_of_mediation(app):
+def test_patch_mediation_returns_403_if_user_is_not_attached_to_offerer_of_mediation(app):
     # given
     current_user = create_user(email='bobby@test.com', password='p@55sw0rd')
     other_user = create_user(email='jimmy@test.com', password='p@55sw0rd')
@@ -151,7 +151,7 @@ def test_patch_mediation_returns_400_if_user_is_not_attached_to_offerer_of_media
     response = auth_request.patch(API_URL + '/mediations/%s' % humanize(mediation.id), json={})
 
     # then
-    assert response.status_code == 400
+    assert response.status_code == 403
 
 
 @clean_database

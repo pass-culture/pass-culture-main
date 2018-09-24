@@ -144,7 +144,7 @@ def test_user_with_no_rights_cannot_create_stock_from_offer(app):
     response = req_with_auth('test@email.fr', 'P@55w0rd').post(API_URL + '/stocks/', json=stock_data)
 
     # Then
-    assert response.status_code == 400
+    assert response.status_code == 403
     assert response.json()["global"] == ["Cette structure n'est pas enregistrée chez cet utilisateur."]
 
 
@@ -166,7 +166,7 @@ def test_user_with_no_rights_cannot_create_stock_from_event_occurrence(app):
     response = req_with_auth('test@email.fr', 'P@55w0rd').post(API_URL + '/stocks/', json=stock_data)
 
     # Then
-    assert response.status_code == 400
+    assert response.status_code == 403
     assert response.json()["global"] == ["Cette structure n'est pas enregistrée chez cet utilisateur."]
 
 
@@ -284,7 +284,7 @@ def test_user_with_no_rights_should_not_be_able_to_patch_stocks(app):
                                                                  json={'available': 5})
 
     # Then
-    assert response.status_code == 400
+    assert response.status_code == 403
     assert 'Cette structure n\'est pas enregistrée chez cet utilisateur.' in response.json()['global']
 
 
@@ -324,7 +324,7 @@ def test_user_should_not_be_able_to_delete_stock_if_does_not_have_rights(app):
     response = req_with_auth('email@test.fr', 'P@55w0rd').delete(API_URL + '/stocks/' + humanize(stock.id))
 
     # Then
-    assert response.status_code == 400
+    assert response.status_code == 403
     assert 'Cette structure n\'est pas enregistrée chez cet utilisateur.' in response.json()['global']
 
 

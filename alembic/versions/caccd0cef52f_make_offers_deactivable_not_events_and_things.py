@@ -21,11 +21,9 @@ def upgrade():
     op.add_column('offer', sa.Column('isActive', sa.Boolean(), nullable=False, server_default=expression.true()))
     op.drop_column('event', 'isActive')
     op.drop_column('thing', 'isActive')
-    pass
 
 
 def downgrade():
     op.add_column('event', sa.Column('isActive', sa.Boolean(), nullable=False, server_default=expression.true()))
     op.add_column('thing', sa.Column('isActive', sa.Boolean(), nullable=False, server_default=expression.true()))
     op.drop_column('offer', 'isActive')
-    pass

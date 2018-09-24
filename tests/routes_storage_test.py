@@ -73,7 +73,7 @@ def test_post_storage_file_on_a_mediation_returns_bad_request_if_user_is_not_att
     )
 
     # then
-    assert response.status_code == 400
+    assert response.status_code == 403
     assert response.json()['global'] == ["Cette structure n'est pas enregistrée chez cet utilisateur."]
 
 
