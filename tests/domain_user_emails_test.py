@@ -11,7 +11,7 @@ from domain.user_emails import send_user_driven_cancellation_email_to_user, \
 from models import Offerer, UserOfferer, User, RightsType, Booking
 from tests.utils_mailing_test import HTML_USER_BOOKING_EVENT_CONFIRMATION_EMAIL, \
     SUBJECT_USER_EVENT_BOOKING_CONFIRMATION_EMAIL
-from utils.config import IS_DEV, IS_STAGING, ENV
+from utils.config import IS_PROD, ENV
 from utils.mailing import MailServiceException
 from utils.test_utils import create_user, create_booking, create_stock_with_event_offer, create_offerer, create_venue, \
     create_thing_offer, create_stock_with_thing_offer, create_mocked_bookings
@@ -291,13 +291,13 @@ def test_send_booking_confirmation_email_to_user_should_call_mailjet_send_create
     booking.token = '56789'
     mail_html = HTML_USER_BOOKING_EVENT_CONFIRMATION_EMAIL
 
-    if IS_DEV or IS_STAGING:
+    if IS_PROD:
+        recipients = 'test@email.com'
+    else:
         beginning_email = \
             '<p>This is a test (ENV={}). In production, email would have been sent to : test@email.com</p>'.format(ENV)
         recipients = 'passculture-dev@beta.gouv.fr'
         mail_html = beginning_email + mail_html
-    else:
-        recipients = 'test@email.com'
 
     expected_email = {
         "FromName": 'Pass Culture',

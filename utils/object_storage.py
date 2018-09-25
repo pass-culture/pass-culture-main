@@ -1,7 +1,7 @@
 import os
 from datetime import datetime
 from pathlib import Path, PurePath
-from utils.config import IS_DEV, IS_STAGING
+from utils.config import IS_DEV
 
 from utils.human_ids import humanize
 
