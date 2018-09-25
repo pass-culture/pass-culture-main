@@ -99,7 +99,7 @@ elif [[ "$CMD" == "deploy-backend" ]]; then
   fi
   if [[ "$ENV" == "production" ]]; then
     staging_commit=`git log -n 1 --pretty=format:%H staging`
-    if [[ "$staging_commit" -ne "$commit_to_deploy" ]]; then
+    if [[ "$staging_commit" != "$commit_to_deploy" ]]; then
       echo "ERROR: Can only deploy in production commits that are also deployed in staging"
       exit_restoring_branch
     fi
