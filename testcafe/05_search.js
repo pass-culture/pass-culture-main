@@ -39,7 +39,7 @@ test('Je peux accéder à la page /recherche', async t => {
 // ------------------------ RECHERCHE PAR MOTS-CLES
 
 // ------------------------ NO RESULTS
-fixture.only('O5_02 Recherche | Recherche textuelle').beforeEach(async t => {
+fixture('O5_02 Recherche | Recherche textuelle').beforeEach(async t => {
   await t.useRole(regularUser).navigateTo(`${ROOT_PATH}recherche/categories`)
 })
 
