@@ -8,9 +8,7 @@ const beginningDateInput = Selector('#occurrence-beginningDate')
 const bookingLimitDatetimeInput = Selector('#stock-bookingLimitDatetime')
 const cancelAnchor = Selector('button.button').withText('Annuler')
 const createOfferAnchor = Selector("a[href^='/offres/nouveau']")
-const createOfferFromVenueAnchor = Selector(
-  "a.button[href^='/offres/nouveau?lieu=']"
-)
+const createOfferFromVenueAnchor = Selector("a[href^='/offres/nouveau?lieu=']")
 const descriptionInput = Selector('#offer-description')
 const durationMinutesInput = Selector('#offer-durationMinutes')
 const editScheduleAnchor = Selector(

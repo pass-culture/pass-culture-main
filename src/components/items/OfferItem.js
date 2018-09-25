@@ -15,10 +15,13 @@ import aggregatedStockSelector from '../../selectors/aggregatedStock'
 import eventSelector from '../../selectors/event'
 import maxDateSelector from '../../selectors/maxDate'
 import mediationsSelector from '../../selectors/mediations'
-import occurrencesSelector from '../../selectors/occurrences'
+import eventOccurrencesSelector from '../../selectors/eventOccurrences'
+import stocksSelector from '../../selectors/stocks'
 import thingSelector from '../../selectors/thing'
 import thumbUrlSelector from '../../selectors/thumbUrl'
 import typeSelector from '../../selectors/type'
+import venueSelector from '../../selectors/venue'
+import offerrerSelector from '../../selectors/offerer'
 import { offerNormalizer } from '../../utils/normalizers'
 import { pluralize } from '../../utils/string'
 
@@ -44,14 +47,17 @@ class OccasionItem extends Component {
     const {
       aggregatedStock,
       event,
+      eventOccurrences,
       location: { search },
       maxDate,
       mediations,
       offer,
-      occurrences,
+      stocks,
       thing,
       thumbUrl,
       type,
+      offerrer,
+      venue,
     } = this.props
     const { isNew } = offer || {}
     const { available, groupSizeMin, groupSizeMax, priceMin, priceMax } =
@@ -71,6 +77,18 @@ class OccasionItem extends Component {
             <Dotdotdot clamp={1}>{name}</Dotdotdot>
           </NavLink>
           <ul className="infos">
+            <li className="is-uppercase">
+              {get(type, 'label') || (event ? 'Evénement' : 'Objet')}
+            </li>
+            <li>
+              <span className="label">Structure :</span>
+              {offerrer && offerrer.name}
+            </li>
+            <li>
+              <span className="label">Lieu :</span> {venue && venue.name}
+            </li>
+          </ul>
+          <ul className="infos">
             {isNew && (
               <li>
                 <div className="recently-added" />
@@ -82,19 +100,6 @@ class OccasionItem extends Component {
                   <div className="recently-added" />
                 </li>
               )}
-            <li className="is-uppercase">
-              {get(type, 'label') || (event ? 'Evénement' : 'Objet')}
-            </li>
-            {event && (
-              <li>
-                <NavLink
-                  className="has-text-primary"
-                  to={`/offres/${offer.id}?gestion`}>
-                  {pluralize(get(occurrences, 'length'), 'dates')}
-                </NavLink>
-              </li>
-            )}
-            <li>{maxDate && `jusqu'au ${maxDate.format('DD/MM/YYYY')}`}</li>
             <li
               title={
                 groupSizeMin > 0
@@ -103,11 +108,14 @@ class OccasionItem extends Component {
                     : `entre ${groupSizeMin} et ${groupSizeMax} personnes`
                   : undefined
               }>
-              {groupSizeMin === 0 && (
+              {
+                // DISABLE GROUP SIZE AMBIGUITY FOR THE MOMENT
+                /*groupSizeMin === 0 && (
                 <div>
                   <Icon svg="picto-user" /> {'ou '} <Icon svg="picto-group" />
                 </div>
-              )}
+                )*/
+              }
               {groupSizeMin === 1 && <Icon svg="picto-user" />}
               {groupSizeMin > 1 && (
                 <div>
@@ -120,6 +128,16 @@ class OccasionItem extends Component {
                 </div>
               )}
             </li>
+            <li>
+              <NavLink
+                className="has-text-primary"
+                to={`/offres/${offer.id}?gestion`}>
+                {event
+                  ? pluralize(get(eventOccurrences, 'length'), 'dates')
+                  : get(stocks, 'length') + ' prix'}
+              </NavLink>
+            </li>
+            <li>{maxDate && `jusqu'au ${maxDate.format('DD/MM/YYYY')}`}</li>
             <li>{available ? `encore ${available} places` : '0 place'} </li>
             <li>
               {priceMin === priceMax ? (
@@ -137,7 +155,7 @@ class OccasionItem extends Component {
                 to={`/offres/${offer.id}${
                   mediationsLength ? '' : `/accroches/nouveau${search}`
                 }`}
-                className={`button is-small ${
+                className={`button addMediations is-small ${
                   mediationsLength ? 'is-secondary' : 'is-primary is-outlined'
                 }`}>
                 <span className="icon">
@@ -151,6 +169,13 @@ class OccasionItem extends Component {
               </NavLink>
             </li>
             <li>
+              <NavLink
+                to={`/offres/${offer.id}`}
+                className="button is-secondary is-small editLink">
+                <Icon svg="ico-pen-r" />
+                Modifier
+              </NavLink>
+
               <button
                 className="button is-secondary is-small"
                 onClick={this.onDeactivateClick}>
@@ -163,11 +188,6 @@ class OccasionItem extends Component {
                   'Activer'
                 )}
               </button>
-              <NavLink
-                to={`/offres/${offer.id}`}
-                className="button is-secondary is-small">
-                <Icon svg="ico-pen-r" />
-              </NavLink>
             </li>
           </ul>
         </div>
@@ -185,19 +205,29 @@ export default compose(
   connect(
     () => {
       return (state, ownProps) => {
-        const { id, eventId, thingId, venueId } = ownProps.offer
+        const { id, eventId, thingId } = ownProps.offer
         const event = eventSelector(state, eventId)
         const thing = thingSelector(state, thingId)
         const typeValue = get(event, 'type') || get(thing, 'type')
+        const eventOccurrences = eventOccurrencesSelector(state, id)
+        const venue = venueSelector(state, ownProps.offer.venueId)
+        const offerrer = offerrerSelector(state, venue.managingOffererId)
         return {
-          aggregatedStock: aggregatedStockSelector(state, venueId),
+          aggregatedStock: aggregatedStockSelector(
+            state,
+            id,
+            event && eventOccurrences
+          ),
           event: event,
+          eventOccurrences,
           maxDate: maxDateSelector(state, id),
           mediations: mediationsSelector(state, id),
-          occurrences: occurrencesSelector(state, id),
+          stocks: stocksSelector(state, id, eventOccurrences),
           thing: thing,
           thumbUrl: thumbUrlSelector(state, id, eventId, thingId),
           type: typeSelector(state, typeValue),
+          venue,
+          offerrer,
         }
       }
     },

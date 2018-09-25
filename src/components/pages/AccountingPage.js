@@ -13,6 +13,7 @@ import { compose } from 'redux'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import bookingsSelector from '../../selectors/bookings'
+import HeroSection from '../layout/HeroSection'
 import offererSelector from '../../selectors/offerer'
 import offerersSelector from '../../selectors/offerers'
 import searchSelector from '../../selectors/search'
@@ -146,12 +147,12 @@ class AccoutingPage extends Component {
         name="accounting"
         handleDataRequest={this.handleDataRequest}
         backTo={{ path: '/accueil', label: 'Accueil' }}>
-        <div className="section">
-          <h1 className="main-title">Comptabilité</h1>
-          <p className="subtitle">
-            Suivez vos réservations et vos remboursements.
-          </p>
-        </div>
+
+      
+      
+       <HeroSection
+         subtitle="Suivez vos réservations et vos remboursements."
+         title="Comptabilité">
         <form className="section" onSubmit={handleSearchChange} />
         <div className="section">
           <div className="list-header">
@@ -242,7 +243,8 @@ class AccoutingPage extends Component {
               ))}
             </InfiniteScroller>
           </table>
-        </div>
+          </div>
+        </HeroSection>
       </Main>
     )
   }

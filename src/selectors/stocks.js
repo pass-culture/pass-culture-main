@@ -1,12 +1,19 @@
 import createCachedSelector from 're-reselect'
 
-import occurrencesSelector from './occurrences'
-
 export default createCachedSelector(
   state => state.data.stocks,
-  (state, offerId) => occurrencesSelector(state, offerId),
-  (stocks, occurrences) =>
-    stocks.filter(offer =>
-      occurrences.some(occurrence => offer.eventOccurrenceId === occurrence.id)
+  (state, offerId) => offerId,
+  (state, offerId, eventOccurrences) => eventOccurrences,
+  (stocks, offerId, eventOccurrences) =>
+    stocks.filter(
+      stock =>
+        eventOccurrences
+          ? eventOccurrences.find(eo => eo.id === stock.eventOccurrenceId)
+          : stock.offerId === offerId
     )
-)((state, offerId) => offerId || '')
+)(
+  (state, offerId, eventOccurrences) =>
+    `${offerId || ''}/${
+      eventOccurrences ? eventOccurrences.map(eo => eo.id).join('_') : ''
+    }`
+)

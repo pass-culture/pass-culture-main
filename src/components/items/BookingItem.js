@@ -34,6 +34,7 @@ const getBookingState = booking => {
     picto: map.pending,
     message: 'En attente',
   }
+
 }
 
 const BookingItem = ({
@@ -54,7 +55,6 @@ const BookingItem = ({
   const type = get(offer, 'type')
   const offererName = get(offerer, 'name')
   const venueName = get(venue, 'name')
-
   const bookingState = getBookingState(booking)
 
   return (

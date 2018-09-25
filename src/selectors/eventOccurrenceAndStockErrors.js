@@ -17,10 +17,12 @@ export function errorKeyToFrenchKey(errorKey) {
 }
 
 export default createSelector(
-  state => get(state, 'errors.occurrence'),
-  state => get(state, 'errors.offer'),
-  (occurrenceErrors, offerErrors) => {
-    const errors = Object.assign({}, occurrenceErrors, offerErrors)
+  (state, eventOccurrenceIdOrNew) =>
+    get(state, `errors.eventOccurrence${eventOccurrenceIdOrNew}`),
+  (state, eventOccurrenceIdOrNew, stockIdOrNew) =>
+    get(state, `errors.stock${stockIdOrNew}`),
+  (eventOccurrenceErrors, stockErrors) => {
+    const errors = Object.assign({}, eventOccurrenceErrors, stockErrors)
     const e = Object.keys(errors)
       .filter(errorKeyToFrenchKey)
       .reduce(

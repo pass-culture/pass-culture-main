@@ -1,0 +1,23 @@
+.notification {
+  margin: 2px;
+  overflow-y: hidden;
+  position: relative;
+  span {
+    margin-right: 0.25rem;
+  }
+  button.close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    float: right;
+    font-size: $font-size;
+    font-weight: $weight-normal;
+    height: auto;
+    padding: 0;
+    text-decoration: underline;
+    &:hover {
+      text-decoration: none;
+      opacity: 0.75;
+    }
+  }
+}

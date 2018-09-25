@@ -1,32 +1,35 @@
 import createCachedSelector from 're-reselect'
 
-import offersSelector from './offers'
+import stocksSelector from './stocks'
 
-export default createCachedSelector(
-  (state, venueId) => offersSelector(state, null, venueId),
-  offers =>
-    offers.reduce(
-      (aggreged, offer) => ({
-        available: aggreged.available + offer.available,
-        groupSizeMin: aggreged.groupSizeMin
-          ? Math.min(aggreged.groupSizeMin, offer.groupSize)
-          : offer.groupSize,
-        groupSizeMax: aggreged.groupSizeMax
-          ? Math.max(aggreged.groupSizeMax, offer.groupSize)
-          : offer.groupSize,
-        priceMin: aggreged.priceMin
-          ? Math.min(aggreged.priceMin, offer.price)
-          : offer.price,
-        priceMax: aggreged.priceMax
-          ? Math.max(aggreged.priceMax, offer.price)
-          : offer.price,
-      }),
-      {
-        available: 0,
-        groupSizeMin: 0,
-        groupSizeMax: 0,
-        priceMin: 0,
-        priceMax: 0,
-      }
-    )
-)((state, venueId, eventId) => `${venueId || ''}/${eventId || ''}`)
+export default createCachedSelector(stocksSelector, stocks =>
+  stocks.reduce(
+    (aggreged, stock) => ({
+      available: aggreged.available + stock.available,
+      groupSizeMin: aggreged.groupSizeMin
+        ? Math.min(aggreged.groupSizeMin, stock.groupSize)
+        : stock.groupSize,
+      groupSizeMax: aggreged.groupSizeMax
+        ? Math.max(aggreged.groupSizeMax, stock.groupSize)
+        : stock.groupSize,
+      priceMin: aggreged.priceMin
+        ? Math.min(aggreged.priceMin, stock.price)
+        : stock.price,
+      priceMax: aggreged.priceMax
+        ? Math.max(aggreged.priceMax, stock.price)
+        : stock.price,
+    }),
+    {
+      available: 0,
+      groupSizeMin: 0,
+      groupSizeMax: 0,
+      priceMin: 0,
+      priceMax: 0,
+    }
+  )
+)(
+  (state, offerId, eventOccurrences) =>
+    `${offerId || ''}/${
+      eventOccurrences ? eventOccurrences.map(eo => eo.id).join('_') : ''
+    }`
+)

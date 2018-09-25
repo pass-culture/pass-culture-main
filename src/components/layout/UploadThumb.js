@@ -172,7 +172,7 @@ class UploadThumb extends Component {
               <p className="has-text-danger">
                 {`Votre image trop volumineuse : ${size.toFixed(
                   2
-                )} < ${maxSize}Mo`}
+                )} > ${maxSize}Mo`}
               </p>
             )}
             <div className="field is-grouped is-grouped-centered">

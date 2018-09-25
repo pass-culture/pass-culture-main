@@ -20,7 +20,7 @@ const OffererItem = ({ offerer, venues }) => {
         <ul className="actions">
           {isValidated === false ? (
             <li className="is-italic">
-              En cours de validation : vous allez recevoir un e-mail.
+              Structure en cours de validation par l&apos;équipe Pass Culture.
             </li>
           ) : (
             [
@@ -36,13 +36,13 @@ const OffererItem = ({ offerer, venues }) => {
                     </NavLink>
                   </li>,
                   // J'ai au moins 1 offre
-                  offerer.nOccasions > 0 ? (
+                  offerer.nOffers > 0 ? (
                     <li key={1}>
                       <NavLink
                         to={`/offres?structure=${id}`}
                         className="has-text-primary">
                         <Icon svg="ico-offres-r" />
-                        {pluralize(offerer.nOccasions, 'offres')}
+                        {pluralize(offerer.nOffers, 'offres')}
                       </NavLink>
                     </li>
                   ) : (

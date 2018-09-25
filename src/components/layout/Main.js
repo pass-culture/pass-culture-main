@@ -142,11 +142,14 @@ class Main extends Component {
                   </button>
                 </div>
               )}
-              <div className="after-notification-content">
+              <div
+                className={classnames('after-notification-content', {
+                  'with-padding': backTo,
+                })}>
                 {backTo && (
                   <NavLink
                     to={backTo.path}
-                    className="back-button has-text-primary">
+                    className="back-button has-text-primary has-text-weight-semibold">
                     <Icon svg="ico-back" />
                     {` ${backTo.label}`}
                   </NavLink>

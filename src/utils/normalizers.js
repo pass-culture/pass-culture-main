@@ -1,3 +1,19 @@
+export const bookingNormalizer = {
+  stock: {
+    key: 'stocks',
+    normalizer: {
+      eventOccurrence: 'eventOccurrences',
+      resolvedOffer: {
+        key: 'offers',
+        normalizer: {
+          event: 'events',
+          thing: 'things',
+        },
+      },
+    },
+  },
+}
+
 export const eventNormalizer = {
   offers: 'offers',
 }
@@ -29,6 +45,7 @@ export const offerNormalizer = {
   },
   eventOccurrences: 'eventOccurrences',
   mediations: 'mediations',
+  stocks: 'stocks',
   thing: {
     key: 'things',
     normalizer: thingNormalizer,

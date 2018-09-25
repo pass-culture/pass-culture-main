@@ -210,7 +210,7 @@ class GeoInput extends Component {
     const { latitude, longitude, zoom } = position
 
     return (
-      <div className="form-geo">
+      <div className="geo-input">
         {$input}
         <Map center={[latitude, longitude]} zoom={zoom} className="map">
           <TileLayer
@@ -224,6 +224,7 @@ class GeoInput extends Component {
               position={[marker.latitude, marker.longitude]}
               icon={customIcon}
               ref={this.refmarker}
+              alt={[marker.latitude, marker.longitude].join('-')}
             />
           )}
         </Map>

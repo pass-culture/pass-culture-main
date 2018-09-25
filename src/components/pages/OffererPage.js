@@ -14,6 +14,7 @@ import { connect } from 'react-redux'
 import { NavLink, withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 
+import HeroSection from '../layout/HeroSection'
 import VenueItem from '../items/VenueItem'
 import Main from '../layout/Main'
 import offererSelector from '../../selectors/offerer'
@@ -56,25 +57,21 @@ class OffererPage extends Component {
   }
 
   render() {
-    const { offerer, venues, fetchedName } = this.props
+    const { offerer, sirenName, venues } = this.props
 
-    const hasOffererName = get(offerer, 'name') || fetchedName
+    const hasOffererName = get(offerer, 'name') || sirenName
 
     return (
       <Main
         backTo={{ label: 'Vos structures', path: '/structures' }}
         name="offerer"
         handleDataRequest={this.handleDataRequest}>
-        <div className="section hero">
-          <h2 className="subtitle has-text-weight-bold">
-            {get(offerer, 'name')}
-          </h2>
-          <h1 className="main-title">Structure</h1>
+        <HeroSection subtitle={get(offerer, 'name')} title="Structure">
           <p className="subtitle">
             Détails de la structure rattachée, des lieux et des fournisseurs de
             ses offres.
           </p>
-        </div>
+        </HeroSection>
 
         <Form
           name="offerer"
@@ -84,6 +81,7 @@ class OffererPage extends Component {
           patch={offerer}>
           <div className="field-group">
             <Field
+              disabling={() => !sirenName}
               label="SIREN"
               name="siren"
               readOnly={get(offerer, 'id')}
@@ -159,7 +157,7 @@ export default compose(
         offerer: offererSelector(state, offererId),
         venues: venuesSelector(state, offererId),
         user: state.user,
-        fetchedName: get(state, 'form.offerer.name'),
+        sirenName: get(state, 'form.offerer.name'),
       }
     },
     {

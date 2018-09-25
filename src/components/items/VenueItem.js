@@ -30,11 +30,11 @@ const VenueItem = ({ venue }) => {
               <Icon svg="ico-offres-r" /> Créer une offre
             </NavLink>
           </li>
-          {venue.nOccasions > 0 ? (
+          {venue.nOffers > 0 ? (
             <li>
               <NavLink to={`/offres?lieu=${id}`} className="has-text-primary">
                 <Icon svg="ico-offres-r" />
-                {pluralize(venue.nOccasions, 'offres')}
+                {pluralize(venue.nOffers, 'offres')}
               </NavLink>
             </li>
           ) : (

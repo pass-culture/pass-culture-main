@@ -16,7 +16,7 @@ const SignupPage = ({ errors, sirenName }) => {
       <div className="container">
         <div className="columns">
           <div className="column is-offset-6 is-two-fifths">
-            <section className="hero">
+            <section>
               <div className="hero-body">
                 <h1 className="title is-spaced is-1">Créez votre compte</h1>
                 <h2 className="subtitle is-2">
@@ -35,61 +35,77 @@ const SignupPage = ({ errors, sirenName }) => {
                   obligatoires
                 </span>
                 <Form
-                  name="user"
                   action="/users/signup"
-                  layout="vertical"
                   handleSuccessNotification={() =>
-                    "Le rattachement de la structure a été demandé. Vous allez recevoir la dernière étape d'inscription par e-mail."
+                    'Votre compte a été créé avec succès.'
                   }
-                  handleSuccessRedirect={() => '/structures'}>
-                  <Field
-                    name="email"
-                    label="Adresse e-mail"
-                    sublabel="pour se connecter et récupérer son mot de passe en cas d'oubli"
-                    placeholder="nom@exemple.fr"
-                    required
-                    type="email"
-                  />
-                  <Field
-                    name="publicName"
-                    label="Identifiant"
-                    sublabel="vu par les autres utilisateurs"
-                    placeholder="Mon nom ou pseudo"
-                    autoComplete="name"
-                    required
-                  />
-                  <Field
-                    name="password"
-                    label="Mot de passe"
-                    sublabel="pour se connecter"
-                    placeholder="Mon mot de passe"
-                    autoComplete="new-password"
-                    required
-                    type="password"
-                  />
-                  <Field
-                    disabling={() => !sirenName}
-                    name="siren"
-                    label="SIREN"
-                    sublabel="de la structure à rattacher"
-                    placeholder="123 456 789"
-                    fetchedName={sirenName || ''}
-                    required
-                    type="siren"
-                  />
-                  <Field
-                    label="Je souhaite recevoir les actualités du Pass Culture."
-                    name="newsletter_ok"
-                    type="checkbox"
-                  />
-                  <Field
-                    label="J'accepte d'être contacté par mail pour donner mon avis sur le Pass Culture."
-                    name="contact_ok"
-                    type="checkbox"
-                    required
-                  />
-                  <div className="errors">{errors}</div>
-                  <div className="field buttons-field">
+                  handleSuccessRedirect={() => '/structures'}
+                  layout="vertical"
+                  name="user">
+                  <div className="field-group">
+                    <Field
+                      label="Adresse e-mail"
+                      name="email"
+                      placeholder="nom@exemple.fr"
+                      required
+                      sublabel="pour se connecter et récupérer son mot de passe en cas d'oubli"
+                      type="email"
+                    />
+                    <Field
+                      autoComplete="new-password"
+                      name="password"
+                      label="Mot de passe"
+                      placeholder="Mon mot de passe"
+                      required
+                      sublabel="pour se connecter"
+                      type="password"
+                    />
+                    <Field
+                      autoComplete="last-name"
+                      label="Nom"
+                      name="lastName"
+                      placeholder="Mon nom"
+                      required
+                    />
+                    <Field
+                      autoComplete="first-name"
+                      label="Nom"
+                      name="firstName"
+                      placeholder="Mon prénom"
+                      required
+                    />
+                    <Field
+                      autoComplete="name"
+                      label="Pseudo"
+                      name="publicName"
+                      placeholder="Mon nom ou pseudo"
+                      required
+                      sublabel="affichée dans l'application publique"
+                    />
+                    <Field
+                      disabling={() => !sirenName}
+                      label="SIREN"
+                      name="siren"
+                      placeholder="123 456 789"
+                      required
+                      sublabel="de la structure que vous représentez"
+                      type="siren"
+                      withFetchedName
+                    />
+                    <Field
+                      label="Je souhaite recevoir les actualités du Pass Culture."
+                      name="newsletter_ok"
+                      type="checkbox"
+                    />
+                    <Field
+                      label="J'accepte d'être contacté par mail pour donner mon avis sur le Pass Culture."
+                      name="contact_ok"
+                      type="checkbox"
+                      required
+                    />
+                    <div className="errors">{errors}</div>
+                  </div>
+                  <div className="buttons-field">
                     <NavLink to="/connexion" className="button is-secondary">
                       J'ai déjà un compte
                     </NavLink>

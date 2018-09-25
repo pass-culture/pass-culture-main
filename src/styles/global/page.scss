@@ -5,13 +5,18 @@
   }
 
   .section {
-    &.hero {
-      margin-top: 1.5rem;
-      position: relative;
-      .cta {
-        bottom: 3rem;
-        position: absolute;
-        right: 0;
+    margin-bottom: 2rem;
+    padding-bottom: 0;
+    padding-top: 0;
+
+    .main-list-title {
+      border-bottom: thin solid;
+      display: block;
+      font-weight: $weight-bold;
+      margin: 0.75rem 0;
+      overflow-y: hidden;
+      span {
+        margin-top: 3.5px;
       }
     }
   }
@@ -60,8 +65,13 @@
       box-shadow: 0 0 3.75rem rgba(0, 0, 0, 0.2);
 
       .after-notification-content {
-        padding: (3 * $page-padding / 4) $page-padding;
+        padding: 4.125rem 4rem;
         position: relative;
+
+        &.with-padding {
+          padding-top: 4.625rem;
+        }
+
         .back-button {
           position: absolute;
           top: 1rem;
