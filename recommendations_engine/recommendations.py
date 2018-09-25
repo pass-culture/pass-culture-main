@@ -206,3 +206,5 @@ def get_recommendation_search_params(args):
     max_distance = None
     if 'distance' in args and args['distance']:
         search_params['max_distance'] = float(args['distance'])
+
+    return search_params

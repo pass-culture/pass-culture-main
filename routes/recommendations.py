@@ -31,6 +31,8 @@ def list_recommendations():
 
     search_params = get_recommendation_search_params(request.args)
 
+    print('search_params', search_params)
+
     recommendations = create_recommendations_for_search(
         current_user,
         **search_params
