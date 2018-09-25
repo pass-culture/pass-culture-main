@@ -10,6 +10,10 @@ import { Icon, requestData, withLogin, withSearch } from 'pass-culture-shared'
 import NavByOfferType from './search/NavByOfferType'
 import SearchFilter from './search/SearchFilter'
 import SearchResults from './search/SearchResults'
+import filterIconByState, {
+  INITIAL_FILTER_PARAMS,
+  searchFiltersAdded,
+} from './search/utils'
 import Main from '../layout/Main'
 import NavigationFooter from '../layout/NavigationFooter'
 import { selectRecommendations } from '../../selectors'
@@ -101,6 +105,9 @@ class SearchPage extends PureComponent {
 
     const keywords = queryParams[FRENCH_KEYWORDS_KEY]
 
+    const filters = searchFiltersAdded(INITIAL_FILTER_PARAMS, queryParams)
+    const filterIcon = filterIconByState(filters)
+
     return (
       <Main
         backButton={
@@ -173,7 +180,7 @@ class SearchPage extends PureComponent {
             >
               &nbsp;
               <Icon
-                svg={`ico-${match.params.filtres ? 'chevron-up' : 'filter'}`}
+                svg={`ico-${match.params.filtres ? 'chevron-up' : filterIcon}`}
               />
               &nbsp;
             </button>

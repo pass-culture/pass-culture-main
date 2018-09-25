@@ -8,14 +8,7 @@ import FilterByDates from './FilterByDates'
 import FilterByDistance from './FilterByDistance'
 import FilterByOfferTypes from './FilterByOfferTypes'
 
-const initialFilterParams = {
-  categories: null,
-  date: null,
-  distance: null,
-  jours: null,
-  latitude: null,
-  longitude: null,
-}
+import { INITIAL_FILTER_PARAMS, searchFiltersAdded } from '../search/utils'
 
 function getFirstChangingKey(previousObject, nextObject) {
   return Object.keys(nextObject).find(key => {
@@ -63,10 +56,10 @@ class SearchFilter extends Component {
 
   onResetClick = () => {
     this.setState({
-      filterParams: initialFilterParams,
+      filterParams: INITIAL_FILTER_PARAMS,
       isNewFilter: getFirstChangingKey(
         this.props.queryParams,
-        initialFilterParams
+        INITIAL_FILTER_PARAMS
       ),
     })
   }
@@ -124,12 +117,7 @@ class SearchFilter extends Component {
     const { handleClearQueryParams } = this.props
     const { filterParams, isNewFilter } = this.state
 
-    const isNullFilter = Object.keys(initialFilterParams).every(
-      key =>
-        typeof filterParams[key] === 'undefined' ||
-        filterParams[key] === null ||
-        filterParams[key] === ''
-    )
+    const isNullFilter = searchFiltersAdded(INITIAL_FILTER_PARAMS, filterParams)
 
     return (
       <div className="search-filter" id="search-filter-menu">
@@ -138,6 +126,7 @@ class SearchFilter extends Component {
           handleFilterParamAdd={this.handleFilterParamAdd}
           handleFilterParamRemove={this.handleFilterParamRemove}
           filterParams={filterParams}
+          title="QUAND"
         />
         <FilterByDistance
           handleFilterParamsChange={this.handleFilterParamsChange}

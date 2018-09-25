@@ -13,7 +13,6 @@ const SearchResults = ({ items, keywords, loadMoreHandler, queryParams }) => {
     const typesString = decodeURI(queryParams.types || '')
     resultTitle = `${keywordsString} ${typesString}: ${resultString}`
   }
-  console.log('items', items)
   return (
     <div className="search-results">
       <h2
