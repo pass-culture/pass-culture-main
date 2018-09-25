@@ -46,6 +46,8 @@ jobs: # a collection of steps
             . venv/bin/activate
             pytest tests
 
+<<<<<<< f8cf91c34960294b77139b9406549160608b3fc0
+<<<<<<< 99f56d88c249029c868f5e85106a136cc45ab360
   check-dependencies:
     working_directory: ~/pass-culture-api-ci # directory where steps will run
     docker: # run the steps with Docker
@@ -65,12 +67,112 @@ jobs: # a collection of steps
           name: Check outdated dependencies
           command:
             ./scripts/check-pip-dependencies.sh
+            
+  integration-tests:
+    machine:
+      image: circleci/classic:latest
+    working_directory: ~/
+    steps: # a collection of executable commands
+      - run:
+          name: Init env
+          command: |
+            git clone https://github.com/betagouv/pass-culture-main.git
+            cd pass-culture-main
+            rm -rf shared
+            git clone https://github.com/betagouv/pass-culture-browser.git webapp
+            git clone https://github.com/betagouv/pass-culture-pro.git pro
+            curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
+            curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
+            echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+            sudo apt-get update
+            sudo apt-get install -y nodejs yarn google-chrome-stable realpath
+      - checkout:
+          path: ~/pass-culture-main/api
+      - run:
+          name: Install dockerize
+          command: |
+            wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
+            sudo tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
+            rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
+          environment:
+            DOCKERIZE_VERSION: v0.6.1
+            # TODO: replace gpg with ./pc install-private (after merge PR)
+      - run:
+          name: Running API server
+          command: |
+            export PC_GPG_PRIVATE=$PASS_PRIVATE
+            cd ~/pass-culture-main/api
+            rm -rf private
+            gpg --passphrase $PC_GPG_PRIVATE --batch --output private.tar.gz -d private.tar.gz.gpg
+            tar xf private.tar.gz
+            rm private.tar.gz
+            cd ~/pass-culture-main
+            ./pc start-backend
+          background: true
+      # TODO: replace export WEBAPP_PROD_VERSION=$(curl -s https://app.passculture.beta.gouv.fr/git_version.txt)
+      - run:
+          name: Run Frontend Webapp (Prod version)
+          command: |
+            export PATH=${PATH:44}
+            export NVM_BIN=/usr/bin/nodejs
+            export PATH=$NVM_BIN:$PATH
+            cd ~/pass-culture-main/webapp
+            export WEBAPP_PROD_VERSION=5f57f1c
+            git checkout $WEBAPP_PROD_VERSION
+            yarn install
+            yarn start
+          background: true
+      # TODO: replace export PRO_PROD_VERSION=$(curl -s https://pro.passculture.beta.gouv.fr/git_version.txt)
+      - run:
+          name: Run Frontend Pro (Prod version)
+          command: |
+            export PATH=${PATH:44}
+            export NVM_BIN=/usr/bin/nodejs
+            export PATH=$NVM_BIN:$PATH
+            cd ~/pass-culture-main/pro
+            export PRO_PROD_VERSION=c2bd039
+            git checkout $PRO_PROD_VERSION
+            dockerize -wait http://localhost:3000 -timeout 5m -wait-retry-interval 5s
+            yarn install
+            yarn start
+          background: true
+      - run:
+          name: Running Test Backend (Local Providers)
+          command: |
+            cd pass-culture-main
+            dockerize -wait http://localhost/health -timeout 5m -wait-retry-interval 5s
+            ./pc test-backend tests/10_local_providers_test.py
+      - run:
+          name: Running tests Pro
+          command: |
+            export PATH=${PATH:44}
+            export NVM_BIN=/usr/bin/nodejs
+            export PATH=$NVM_BIN:$PATH
+            cd ~/pass-culture-main/pro
+            yarn testcafe
+      - run:
+          name: Running tests Webapp
+          command: |
+            export PATH=${PATH:44}
+            export NVM_BIN=/usr/bin/nodejs
+            export PATH=$NVM_BIN:$PATH
+            cd ~/pass-culture-main/webapp
+            yarn testcafe
 
 workflows:
   version: 2
   commit:
     jobs:
-      - build
+      - build:
+          filters:
+            branches:
+              ignore:
+                - testcafe-staging
+      - integration-tests:
+          filters:
+            branches:
+              only:
+                - testcafe-staging
   schedule:
     triggers: #use the triggers key to indicate a scheduled build
       - schedule:
