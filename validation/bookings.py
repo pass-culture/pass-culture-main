@@ -25,6 +25,13 @@ def check_existing_stock(stock):
         raise api_errors
 
 
+def check_not_soft_deleted_stock(stock):
+    if stock.isSoftDeleted:
+        api_errors = ApiErrors()
+        api_errors.addError('stockId', "Cette date a été retirée. Elle n'est plus disponible.")
+        raise api_errors
+
+
 def check_can_book_free_offer(stock, user):
     if not user.canBookFreeOffers and stock.price == 0:
         api_errors = ApiErrors()
@@ -35,9 +42,10 @@ def check_can_book_free_offer(stock, user):
 def check_offer_is_active(stock, offerer):
     soft_deleted_stock = stock.isSoftDeleted
     inactive_offerer = not offerer.isActive
+    inactive_offer = not stock.resolvedOffer.isActive
     soft_deleted_event_occurrence = stock.eventOccurrence and stock.eventOccurrence.isSoftDeleted
 
-    if soft_deleted_stock or inactive_offerer or soft_deleted_event_occurrence:
+    if soft_deleted_stock or inactive_offerer or inactive_offer or soft_deleted_event_occurrence:
         api_errors = ApiErrors()
         api_errors.addError('stockId', "Cette offre a été retirée. Elle n'est plus valable.")
         raise api_errors

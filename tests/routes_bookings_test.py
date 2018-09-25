@@ -412,6 +412,86 @@ def test_create_booking_returns_bad_request_if_negative_quantity_is_given(app):
 
 @clean_database
 @pytest.mark.standalone
+def test_create_booking_returns_bad_request_if_offer_is_inactive(app):
+    # Given
+    user = create_user(email='test@email.com', password='testpsswd')
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    thing_offer = create_thing_offer(venue)
+    thing_offer.isActive = False
+    stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=90)
+    PcObject.check_and_save(stock, user)
+
+    booking_json = {
+        'stockId': humanize(stock.id),
+        'recommendationId': None,
+        'quantity': 1,
+    }
+
+    # When
+    response = req_with_auth('test@email.com', 'testpsswd').post(API_URL + '/bookings',
+                                                                 json=booking_json)
+    # Then
+    error_message = response.json()
+    assert response.status_code == 400
+    assert error_message['stockId'] == ["Cette offre a été retirée. Elle n'est plus valable."]
+
+
+@clean_database
+@pytest.mark.standalone
+def test_create_booking_returns_bad_request_if_offerer_is_inactive(app):
+    # Given
+    user = create_user(email='test@email.com', password='testpsswd')
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    thing_offer = create_thing_offer(venue)
+    offerer.isActive = False
+    stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=90)
+    PcObject.check_and_save(stock, user)
+
+    booking_json = {
+        'stockId': humanize(stock.id),
+        'recommendationId': None,
+        'quantity': 1,
+    }
+
+    # When
+    response = req_with_auth('test@email.com', 'testpsswd').post(API_URL + '/bookings',
+                                                                 json=booking_json)
+    # Then
+    error_message = response.json()
+    assert response.status_code == 400
+    assert error_message['stockId'] == ["Cette offre a été retirée. Elle n'est plus valable."]
+
+@clean_database
+@pytest.mark.standalone
+def test_create_booking_returns_bad_request_if_stock_is_soft_deleted(app):
+    # Given
+    user = create_user(email='test@email.com', password='testpsswd')
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    thing_offer = create_thing_offer(venue)
+    stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=90)
+    stock.isSoftDeleted = True
+    PcObject.check_and_save(stock, user)
+
+    booking_json = {
+        'stockId': humanize(stock.id),
+        'recommendationId': None,
+        'quantity': 1,
+    }
+
+    # When
+    response = req_with_auth('test@email.com', 'testpsswd').post(API_URL + '/bookings',
+                                                                 json=booking_json)
+    # Then
+    error_message = response.json()
+    assert response.status_code == 400
+    assert error_message['stockId'] == ["Cette date a été retirée. Elle n'est plus disponible."]
+
+
+@clean_database
+@pytest.mark.standalone
 def test_create_booking_returns_bad_request_if_null_quantity_is_given(app):
     # Given
     user = create_user(email='test@email.com', password='testpsswd')
