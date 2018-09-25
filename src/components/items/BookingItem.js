@@ -1,5 +1,5 @@
 import get from 'lodash.get'
-import { Icon } from 'pass-culture-shared'
+import { Icon, requestData } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
@@ -13,11 +13,27 @@ import selectEventOccurrenceById from '../../selectors/selectEventOccurenceById'
 import selectStockById from '../../selectors/selectStockById'
 import venueSelector from '../../selectors/venue'
 
-const statePictoMap = {
-  payement: 'picto-validation',
-  validation: 'picto-encours-S',
-  pending: 'picto-temps-S',
-  error: 'picto-echec',
+const getBookingState = booking => {
+  const map = {
+    payement: 'picto-validation',
+    validation: 'picto-encours-S',
+    pending: 'picto-temps-S',
+    error: 'picto-warning',
+    cancel: 'picto-warning',
+  }
+
+  console.log(booking)
+  if (booking.isCancelled === true) {
+    return {
+      picto: map.cancel,
+      message: 'Annulé',
+    }
+  }
+
+  return {
+    picto: map.pending,
+    message: 'En attente',
+  }
 }
 
 const BookingItem = ({
@@ -29,6 +45,7 @@ const BookingItem = ({
   stock,
   thing,
   venue,
+  cancelAction,
 }) => {
   // TODO: we need to continue to extract the
   // view attributes from the data
@@ -38,37 +55,38 @@ const BookingItem = ({
   const offererName = get(offerer, 'name')
   const venueName = get(venue, 'name')
 
+  const bookingState = getBookingState(booking)
+
   return (
     <React.Fragment>
       <tr className="offer-item">
         <td colSpan="5" className="title">
           {eventOrThingName}
         </td>
-        <td rowSpan="2">
-          {moment(stock.bookingLimitDatetime).format('D/MM/YYYY')}
-        </td>
-        <td rowSpan="2">5/10</td>
-        <td rowSpan="2">{booking.amount}</td>
-        <td rowSpan="2">{booking.reimbursed_amount}</td>
-        <td rowSpan="2">
-          <Icon svg={statePictoMap['payement']} className="picto tiny" /> Réglé
+        <td colspan="5" className="title userName">
+          UserId: {booking.userId} - BookingId: {booking.id} - Token:{' '}
+          {booking.token}
         </td>
         <td rowSpan="2">
-          <button
-            className="actionButton"
-            type="button"
-            onClick={() => {
-              if (window.confirm('Annuler cette réservation ?')) {
-                console.log('ok')
-              } else {
-                console.log('ko')
-              }
-            }}
-          />
+          <div className="navbar-item has-dropdown is-hoverable AccountingPage-actions">
+            <div className="actionButton" />
+
+            <div className="navbar-dropdown is-right">
+              <a
+                className="navbar-item cancel"
+                onClick={() => {
+                  if (window.confirm('Annuler cette réservation ?')) {
+                    cancelAction(booking.id)
+                  }
+                }}>
+                <Icon svg="ico-close-r" /> Annuler la réservation
+              </a>
+            </div>
+          </div>
         </td>
       </tr>
       <tr className="offer-item first-col">
-        <td>{moment(booking.dateModified).format('D/MM/YYYY')}</td>
+        <td>{moment(booking.dateModified).format('D/MM/YY')}</td>
         <td>{eventOrThing.type}</td>
         <td>{offererName}</td>
         <td>{venueName}</td>
@@ -79,6 +97,14 @@ const BookingItem = ({
               <Icon svg="picto-group" /> {stock.groupSize}
             </React.Fragment>
           )}
+        </td>
+        <td>{moment(stock.bookingLimitDatetime).format('D/MM/YY')}</td>
+        <td>5/10</td>
+        <td>{booking.amount}</td>
+        <td>{booking.reimbursed_amount}</td>
+        <td>
+          <Icon svg={bookingState.picto} className="picto tiny" />{' '}
+          {bookingState.message}
         </td>
       </tr>
     </React.Fragment>

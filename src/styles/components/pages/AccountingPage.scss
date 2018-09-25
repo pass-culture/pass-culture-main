@@ -78,6 +78,10 @@ table.accounting {
     border-bottom: none;
   }
 
+  .userName {
+    padding-left: 0.5rem;
+  }
+
   .first-col td {
     border-top: none;
   }
@@ -94,6 +98,12 @@ table.accounting {
     background-color: transparent;
     background-repeat: no-repeat;
     border: none;
+    margin-left: 0.7rem;
+
+  }
+
+  .cancel img {
+    margin-right: 1rem;
   }
 }
 

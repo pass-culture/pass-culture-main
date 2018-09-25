@@ -101,6 +101,20 @@ class AccoutingPage extends Component {
     }
   }
 
+  cancelBooking(id) {
+    console.log('cancel booking for id:', id)
+    this.props.dispatch(
+      requestData('DELETE', `/bookings/${id}`, {
+        handleSuccess: (state, request) => {
+          console.log(request)
+        },
+        handleFail: (state, request) => {
+          console.log(request)
+        },
+      })
+    )
+  }
+
   render() {
     const {
       handleOrderByChange,
@@ -220,7 +234,11 @@ class AccoutingPage extends Component {
                 </tr>
               )}>
               {bookings.map(booking => (
-                <BookingItem key={booking.id} booking={booking} />
+                <BookingItem
+                  key={booking.id}
+                  booking={booking}
+                  cancelAction={this.cancelBooking.bind(this)}
+                />
               ))}
             </InfiniteScroller>
           </table>
