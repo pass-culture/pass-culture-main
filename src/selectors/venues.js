@@ -11,12 +11,17 @@ export default createCachedSelector(
       filteredVenues = filteredVenues.filter(
         v => v.managingOffererId === optionalOffererId
       )
+
     if (optionalOfferType) {
       if (optionalOfferType.offlineOnly)
         filteredVenues = filteredVenues.filter(v => !v.isVirtual)
       else if (optionalOfferType.onlineOnly)
         filteredVenues = filteredVenues.filter(v => v.isVirtual)
     }
+
     return filteredVenues
   }
-)((state, optionalOffererId) => optionalOffererId || '')
+)(
+  (state, optionalOffererId, optionalOfferType) =>
+    `${optionalOffererId || ''}${optionalOfferType || ''}`
+)

@@ -5,6 +5,7 @@ import {
   Field,
   Form,
   Icon,
+  mergeErrors,
   mergeForm,
   requestData,
   showModal,
@@ -100,22 +101,32 @@ class OfferPage extends Component {
       match: {
         params: { offerId },
       },
-      offer,
-      offerers,
       providers,
+      search,
       types,
     } = this.props
-    !offer &&
-      offerId !== 'nouveau' &&
+
+    if (offerId !== 'nouveau') {
       dispatch(
         requestData('GET', `offers/${offerId}`, {
           key: 'offers',
           normalizer: offerNormalizer,
         })
       )
-    offerers.length === 0 &&
+    } else if (search.venueId) {
+      requestData('GET', `venues/${search.venueId}`, {
+        normalizer: {
+          managingOffererId: 'offerers',
+        },
+      })
+    } else {
+      let offerersPath = 'offerers'
+      if (search.offererId) {
+        offerersPath = `${offerersPath}/${search.offererId}`
+      }
+
       dispatch(
-        requestData('GET', 'offerers', {
+        requestData('GET', offerersPath, {
           handleSuccess: (state, action) => {
             if (!get(state, 'data.venues.length')) {
               dispatch(
@@ -135,9 +146,10 @@ class OfferPage extends Component {
           normalizer: { managedVenues: 'venues' },
         })
       )
+    }
+
     providers.length === 0 && dispatch(requestData('GET', 'providers'))
     types.length === 0 && dispatch(requestData('GET', 'types'))
-
     handleSuccess()
   }
 
@@ -205,14 +217,15 @@ class OfferPage extends Component {
   componentDidUpdate(prevProps) {
     const {
       eventOccurrences,
+      eventOrThingPatch,
       dispatch,
       hasEventOrThing,
       location: { pathname, search },
       offer,
       offerer,
+      offerTypeError,
       type,
       venue,
-      venues,
     } = this.props
 
     if (search.indexOf('gestion') > -1) {
@@ -236,13 +249,20 @@ class OfferPage extends Component {
       )
     }
 
-    if (
-      (offerer && get(venues, 'length') === 0 && venue) ||
-      (!venue && prevProps.venue)
-    ) {
+    if (!venue && prevProps.venue) {
       dispatch(
         mergeForm('offer', {
           venueId: null,
+        })
+      )
+    }
+
+    if (get(eventOrThingPatch, 'type') && !type && !offerTypeError) {
+      dispatch(
+        mergeErrors('offer', {
+          type: [
+            'Il y a eu un problème avec la création de cette offre: son type est incompatible avec le lieu enregistré.',
+          ],
         })
       )
     }
@@ -333,7 +353,11 @@ class OfferPage extends Component {
                 optionLabel="label"
                 optionValue="value"
                 options={types}
-                placeholder="Sélectionnez un type d'offre"
+                placeholder={
+                  get(eventOrThingPatch, 'type') && !type
+                    ? get(eventOrThingPatch, 'type')
+                    : "Sélectionnez un type d'offre"
+                }
                 required
                 type="select"
               />
@@ -399,7 +423,9 @@ class OfferPage extends Component {
                       <div className="field-label" />
                       <div className="field-body">
                         <p className="help is-danger">
-                          Il faut obligatoirement une structure avec un lieu.
+                          {venue
+                            ? "Erreur dans les données: La venue rattachée à cette offre n'est pas compatible avec le type de l'offre"
+                            : 'Il faut obligatoirement une structure avec un lieu.'}
                           <Field type="hidden" name="__BLOCK_FORM__" required />
                         </p>
                       </div>
@@ -424,7 +450,10 @@ class OfferPage extends Component {
                       label="URL"
                       name="url"
                       required
-                      sublabel="Vous pouvez include {token} {email} et {offerId} dans l'URL, qui seront remplacés respectivement par le code de la contremarque, l'email de la personne ayant reservé et l'identifiant de l'offre"
+                      sublabel={
+                        !isReadOnly &&
+                        "Vous pouvez include {token} {email} et {offerId} dans l'URL, qui seront remplacés respectivement par le code de la contremarque, l'email de la personne ayant reservé et l'identifiant de l'offre"
+                      }
                       type="text"
                     />
                   )}
@@ -626,12 +655,13 @@ export default compose(
 
     const venue = venueSelector(state, venueId)
 
-    const types = typesSelector(state, get(venue, 'isVirtual'))
+    const isVirtual = get(venue, 'isVirtual')
+    const types = typesSelector(state, isVirtual)
 
     const typeValue =
       get(state, 'form.offer.type') || get(event, 'type') || get(thing, 'type')
 
-    const type = typeSelector(state, typeValue)
+    const type = typeSelector(state, isVirtual, typeValue)
 
     let offererId = get(state, 'form.offer.offererId') || search.offererId
 
@@ -681,17 +711,24 @@ export default compose(
       )
     }
 
+    const offerTypeError = get(state, 'errors.offer.type')
+
     return {
       event,
       eventOccurrences,
       eventOrThingPatch,
       hasEventOrThing,
+      musicTypes,
+      musicSubTypes,
       providers,
       search,
       thing,
       offer,
       offerer,
       offerers,
+      offerTypeError,
+      showTypes,
+      showSubTypes,
       stocks,
       types,
       type,
@@ -699,10 +736,6 @@ export default compose(
       user,
       venue,
       venues,
-      musicTypes,
-      musicSubTypes,
-      showTypes,
-      showSubTypes,
     }
   })
 )(OfferPage)
