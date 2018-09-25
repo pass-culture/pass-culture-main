@@ -51,14 +51,14 @@ class FilterByDates extends Component {
   }
 
   render() {
-    const { filterParams } = this.props
+    const { filterParams, title } = this.props
 
     const days = decodeURI(filterParams.jours || '')
 
     return (
-      <div className="dotted-bottom-primary">
+      <div className="dotted-bottom-primary" id="filter-by-dates">
         <h2 className="fs18">
-QUAND
+          {title}
         </h2>
         {checkboxes.map(({ label, value }) => (
           <div id="date-checkbox">
@@ -77,7 +77,7 @@ QUAND
           </div>
         ))}
         <div>
-Par date TO DO
+DATE PICKER
         </div>
       </div>
     )
@@ -89,6 +89,7 @@ FilterByDates.propTypes = {
   handleFilterParamAdd: PropTypes.func.isRequired,
   handleFilterParamRemove: PropTypes.func.isRequired,
   handleFilterParamsChange: PropTypes.func.isRequired,
+  title: PropTypes.string.isRequired,
 }
 
 export default FilterByDates

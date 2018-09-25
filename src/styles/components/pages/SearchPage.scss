@@ -1,42 +1,32 @@
-  header h1 {
-    font-size: 1.5em;
-    font-weight: normal;
-  }
-
-  .button.is-rounded.is-medium {
-    border-radius: $control-radius !important;
-    border-bottom-left-radius: 0 !important;
-    border-top-left-radius: 0 !important;
-    background-color: $primary;
-    color: white;
-  }
-
-  .button:hover,
-  .button.is-hovered {
-    border-color: $primary;
-  }
-
-  .button.is-secondary {
-    padding-left: 0.5em;
-  }
-
-  .input {
-    border-color: $grey;
-  }
-
-
-#refresh-keywords-button {
-  pointer-events: all;
+// .search-page {
+header h1 {
+  font-size: 1.5em;
+  font-weight: normal;
 }
 
-// #search-type-card label {
-//
+.button.is-rounded.is-medium {
+  border-radius: $control-radius !important;
+  border-bottom-left-radius: 0 !important;
+  border-top-left-radius: 0 !important;
+  background-color: $primary;
+  color: white;
+}
+
+.button:hover,
+.button.is-hovered {
+  border-color: $primary;
+}
+
+.button.is-secondary {
+  padding-left: 0.5em;
+}
+
+.input {
+  border-color: $grey;
+}
 // }
 
-#search-filter-menu label{
-  position: absolute;
-  margin-left: 2rem;
-}
+// TODO CLEAN FILE
 
 #date-checkbox {
   border-radius: $control-radius;
@@ -47,4 +37,14 @@
 
 #distance-select select{
   border-color: $primary;
+  border-radius: $control-radius;
+}
+
+#refresh-keywords-button {
+  pointer-events: all;
+}
+
+#search-filter-menu label{
+  position: absolute;
+  margin-left: 2rem;
 }

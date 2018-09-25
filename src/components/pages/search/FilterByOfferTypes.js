@@ -1,3 +1,4 @@
+// eslint disable
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
@@ -26,31 +27,33 @@ class FilterByOfferTypes extends Component {
   }
 
   render() {
-    const { filterParams, title, typeSublabels } = this.props
+    const { filterParams, typeSublabels, title } = this.props
 
     const typesValue = decodeURI(filterParams.categories || '')
 
     return (
-      <div>
+      <div id="filter-by-offer-types">
         <h2 className="fs18">
           {title}
         </h2>
-        {typeSublabels.map(typeSublabel => (
-          <div className="field field-checkbox" key={typeSublabel}>
-            <label id="type"> 
-              {' '}
-              {typeSublabel}
-            </label>
-            <SearchPicture searchType={typeSublabel} />
-            <input
-              checked={typesValue.includes(typeSublabel)}
-              className="input is-normal"
-              onChange={() => this.onFilterChange(typeSublabel)}
-              value={typeSublabel}
-              type="checkbox"
-            />
-          </div>
-        ))}
+        <div>
+          {typeSublabels.map(typeSublabel => (
+            <div className="field field-checkbox" key={typeSublabel}>
+              <label id="type"> 
+                {' '}
+                {typeSublabel}
+              </label>
+              <SearchPicture searchType={typeSublabel} />
+              <input
+                checked={typesValue.includes(typeSublabel)}
+                className="input is-normal"
+                onChange={() => this.onFilterChange(typeSublabel)}
+                value={typeSublabel}
+                type="checkbox"
+              />
+            </div>
+          ))}
+        </div>
       </div>
     )
   }

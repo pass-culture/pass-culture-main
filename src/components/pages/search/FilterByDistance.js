@@ -52,8 +52,8 @@ class FilterByDistance extends Component {
     return (
       <div
         key={distanceKey}
-        className="dotted-bottom-primary"
-        id="distance-select"
+        className="dotted-bottom-primary flex-rows"
+        id="filter-by-distance"
       >
         <h2 className="fs18">
           {title}

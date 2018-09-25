@@ -134,6 +134,7 @@ class SearchPage extends PureComponent {
                 type="text"
                 onChange={e => this.setState({ keywordsValue: e.target.value })}
               />
+
               {get(keywordsValue, 'length') > 0 && (
                 <span className="icon is-small is-right">
                   <button
