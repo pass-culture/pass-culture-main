@@ -1,6 +1,5 @@
 import { getDepartementByCode } from '../../../helpers'
 // withProfileForm Component
-import ProfileFirstLastNameForm from './forms/ProfileFirstLastNameForm'
 import ProfileIdentifiantForm from './forms/ProfileIdentifiantForm'
 import ProfilePasswordForm from './forms/ProfilePasswordForm'
 
@@ -20,7 +19,7 @@ export const config = [
   {
     // si la propriété `component` n'est pas définie
     // on considère la route comme disabled
-    component: ProfileFirstLastNameForm,
+    // component: ProfileFirstLastNameForm,
     // utiliser par le resolver
     // et la creation des items de type liste dans la vue main
     key: ['firstName', 'lastName'],
