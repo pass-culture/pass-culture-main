@@ -1,3 +1,4 @@
+import get from 'lodash.get'
 import {
   assignData,
   Icon,
@@ -54,6 +55,7 @@ class OffersPage extends Component {
       offerer,
       queryParams,
       venue,
+      user,
     } = this.props
 
     const { search, order_by } = queryParams || {}
@@ -62,12 +64,14 @@ class OffersPage extends Component {
     return (
       <Main name="offers" handleDataRequest={this.handleDataRequest}>
         <HeroSection title="Vos offres">
-          <NavLink to={`/offres/nouveau`} className="cta button is-primary">
-            <span className="icon">
-              <Icon svg="ico-offres-w" />
-            </span>
-            <span>Créer une offre</span>
-          </NavLink>
+          {!get(user, 'isAdmin') && (
+            <NavLink to={`/offres/nouveau`} className="cta button is-primary">
+              <span className="icon">
+                <Icon svg="ico-offres-w" />
+              </span>
+              <span>Créer une offre</span>
+            </NavLink>
+          )}
         </HeroSection>
         <form className="section" onSubmit={handleSearchChange}>
           <label className="label">Rechercher une offre :</label>
@@ -86,7 +90,9 @@ class OffersPage extends Component {
                 OK
               </button>{' '}
               <button className="button is-secondary" disabled>
-                &nbsp;<Icon svg="ico-filter" />&nbsp;
+                &nbsp;
+                <Icon svg="ico-filter" />
+                &nbsp;
               </button>
             </p>
           </div>
@@ -153,7 +159,9 @@ class OffersPage extends Component {
               <InfiniteScroller
                 className="offers-list main-list"
                 handleLoadMore={this.handleDataRequest}>
-                {offers.map(o => <OfferItem key={o.id} offer={o} />)}
+                {offers.map(o => (
+                  <OfferItem key={o.id} offer={o} />
+                ))}
               </InfiniteScroller>
             }
           </div>
