@@ -471,7 +471,8 @@ def test_user_with_isAdmin_true_and_canBookFreeOffers_raises_error():
 @pytest.mark.standalone
 def test_user_wallet_should_be_30_if_sum_deposit_50_and_one_booking_quantity_2_amount_10(app):
     # Given
-    user = create_user(public_name='Test', departement_code='93', email='wallet_2_bookings_test@email.com', password='testpsswd')
+    user = create_user(public_name='Test', departement_code='93', email='wallet_2_bookings_test@email.com',
+                       password='testpsswd')
     offerer = create_offerer('999199987', '2 Test adress', 'Test city', '93000', 'Test offerer')
     venue = create_venue(offerer)
     thing_offer = create_thing_offer(venue=None)
@@ -496,7 +497,8 @@ def test_user_wallet_should_be_30_if_sum_deposit_50_and_one_booking_quantity_2_a
 @pytest.mark.standalone
 def test_get_current_user_returns_expenses(app):
     # Given
-    user = create_user(public_name='Test', departement_code='93', email='wallet_2_bookings_test@email.com', password='testpsswd')
+    user = create_user(public_name='Test', departement_code='93', email='wallet_2_bookings_test@email.com',
+                       password='testpsswd')
     offerer = create_offerer('999199987', '2 Test adress', 'Test city', '93000', 'Test offerer')
     venue = create_venue(offerer)
     thing_offer = create_thing_offer(venue=None)
@@ -800,13 +802,13 @@ def test_post_new_password_returns_bad_request_if_the_new_password_is_not_strong
 
 @pytest.mark.standalone
 @clean_database
-def test_patch_user_returns_200(app):
+def test_patch_user_returns_200_for_allowed_changes(app):
     # given
     user = create_user(password='p@55sw0rd')
     PcObject.check_and_save(user)
 
     auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
-    data = {'publicName': 'plop'}
+    data = {'publicName': 'plop', 'email': 'new@email.com', 'postalCode': '93020', 'phoneNumber': '0612345678', 'departementCode': '97'}
 
     # when
     response = auth_request.patch(API_URL + '/users/current', json=data)
@@ -817,4 +819,34 @@ def test_patch_user_returns_200(app):
     assert response.json()['id'] == humanize(user.id)
     assert response.json()['publicName'] == user.publicName
     assert user.publicName == data['publicName']
+    assert response.json()['email'] == user.email
+    assert user.email == data['email']
+    assert response.json()['postalCode'] == user.postalCode
+    assert user.postalCode == data['postalCode']
+    assert response.json()['phoneNumber'] == user.phoneNumber
+    assert user.phoneNumber == data['phoneNumber']
+    assert response.json()['departementCode'] == user.departementCode
+    assert user.departementCode == data['departementCode']
     assert 'expenses' in response.json()
+
+
+@pytest.mark.standalone
+@clean_database
+def test_patch_user_returns_400_when_not_allowed_changes(app):
+    # given
+    user = create_user(password='p@55sw0rd', is_admin=False, can_book_free_offers=True)
+    PcObject.check_and_save(user)
+
+    auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
+    data = {'isAdmin': True, 'canBookFreeOffers': False, 'firstName': 'Jean', 'lastName': 'Martin',
+            'dateCreated': '2018-08-01 12:00:00', 'resetPasswordToken': 'abc',
+            'resetPasswordTokenValidityLimit': '2020-07-01 12:00:00'}
+
+    # when
+    response = auth_request.patch(API_URL + '/users/current', json=data)
+
+    # then
+    db.session.refresh(user)
+    assert response.status_code == 400
+    for key in data:
+        assert response.json()[key] == ['Vous ne pouvez pas changer cette information']
