@@ -936,7 +936,7 @@ def test_make_validation_confirmation_email_offerer_user_offerer_admin(app):
     assert 'L\'utilisateur admin@letheatresas.com' in html_validation_details
     assert 'en tant qu\'administrateur' in html_validation_details
     assert email['FromName'] == 'pass Culture pro'
-    assert email['Subject'] == 'Validation de votre stucture et de compte administrateur rattaché'
+    assert email['Subject'] == 'Validation de votre structure et de compte administrateur rattaché'
 
 
 @clean_database
@@ -957,7 +957,7 @@ def test_make_validation_confirmation_email_offerer_user_offerer_editor(app):
     assert 'L\'utilisateur editor@letheatresas.com' in html_validation_details
     assert 'en tant qu\'éditeur' in html_validation_details
     assert email['FromName'] == 'pass Culture pro'
-    assert email['Subject'] == 'Validation de votre stucture et de compte éditeur rattaché'
+    assert email['Subject'] == 'Validation de votre structure et de compte éditeur rattaché'
 
 
 @clean_database
@@ -996,4 +996,4 @@ def test_make_validation_confirmation_email_offerer(app):
     assert 'Votre structure "Le Théâtre SAS"' in html_validation_details
     assert 'L\'utilisateur' not in html_validation_details
     assert email['FromName'] == 'pass Culture pro'
-    assert email['Subject'] == 'Validation de votre stucture'
+    assert email['Subject'] == 'Validation de votre structure'

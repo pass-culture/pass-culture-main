@@ -251,11 +251,11 @@ def make_validation_confirmation_email(user_offerer, offerer):
         user_offerer_rights=user_offerer_rights
     )
     if user_offerer and offerer:
-        subject = 'Validation de votre stucture et de compte {} rattaché'.format(user_offerer_rights)
+        subject = 'Validation de votre structure et de compte {} rattaché'.format(user_offerer_rights)
     elif user_offerer:
         subject = 'Validation de compte {} rattaché à votre structure'.format(user_offerer_rights)
     else:
-        subject = 'Validation de votre stucture'
+        subject = 'Validation de votre structure'
     return {
         'FromName': 'pass Culture pro',
         'FromEmail': 'passculture@beta.gouv.fr' if feature_send_mail_to_users_enabled() else 'passculture-dev@beta.gouv.fr',
