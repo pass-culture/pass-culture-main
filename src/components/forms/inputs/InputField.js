@@ -64,7 +64,7 @@ InputField.defaultProps = {
   autoComplete: false,
   className: '',
   disabled: false,
-  label: PropTypes.string,
+  label: '',
   placeholder: 'Veuillez saisir une valeur',
   required: false,
 }

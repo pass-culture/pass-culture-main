@@ -11,7 +11,7 @@ import PropTypes from 'prop-types'
 const setDangerousArrayKeyIndex = index => `field_error_${index}`
 
 /* azertyazertyP0 */
-export const FormError = ({ className, customMessage, meta }) => {
+export const FormError = ({ className, customMessage, meta, theme }) => {
   // TODO -> faudra scinder le composant en deux
   // un composant pour les erreurs de form
   // un composant pour les erreurs de fields
@@ -31,9 +31,11 @@ export const FormError = ({ className, customMessage, meta }) => {
     ? null
     : (Array.isArray(errorMessage) && errorMessage) || [].concat(errorMessage)
   return (
-    <span className={`pc-final-form-errors is-block mt7 ${className}`}>
+    <span
+      className={`pc-final-form-errors is-block mt7 pc-theme-${theme} no-no-background ${className}`}
+    >
       {(errorMessage && (
-        <span className="flex-columns is-primary-text">
+        <span className="flex-columns">
           <span className="flex-0 mr3">
             <span aria-hidden className="icon-warning-circled fs18" title="" />
           </span>
@@ -58,6 +60,7 @@ FormError.defaultProps = {
   className: '',
   customMessage: '',
   meta: null,
+  theme: 'white',
 }
 
 FormError.propTypes = {
@@ -71,6 +74,7 @@ FormError.propTypes = {
   // Exemple: https://codesandbox.io/s/9y9om95lyp
   // Documentation: https://github.com/final-form/react-final-form
   meta: PropTypes.object,
+  theme: PropTypes.string,
 }
 
 export default FormError

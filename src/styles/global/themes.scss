@@ -11,6 +11,10 @@
   color: $white;
   background-color: transparent;
 
+  a {
+    color: $white;
+  }
+
   [class*='border-'] {
     border-color: $white;
   }
@@ -51,5 +55,15 @@
 
   [class*='border-'] {
     border-color: $white;
+  }
+}
+
+.pc-gradient {
+  .pc-final-form-errors {
+    color: $white;
+  }
+
+  .pc-final-form-asterisk {
+    color: $white;
   }
 }

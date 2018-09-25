@@ -73,7 +73,10 @@ $dotted-directions: (top, right, bottom, left);
       @include dotted($colorvalue, $direction);
     }
 
-    .dotted-#{$direction}-#{$colorname}-2x {
+    // l'argument 2x est placé arpès la position et avant la couleur
+    // la couleur étant l'élément le plus variable dans le nom de classe
+    // alors que la position reste verrouillée sur 4 valeurs
+    .dotted-#{$direction}-2x-#{$colorname} {
       @include dotted($colorvalue, $direction, 'large');
     }
   }

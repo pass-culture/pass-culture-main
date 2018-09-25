@@ -45,7 +45,7 @@ const parseSubmitErrors = errors =>
 const withProfileForm = (
   WrappedComponent,
   validator = noop,
-  // TODO: relace avec un object type options
+  // TODO: replace avec un object type options
   // si possible faire un typage pour vérifier que les clés existent
   // FIXME -> l'object options, peut être passé depuis la config
   // en tant que props du composant, comme pour la propriete `title` du header
@@ -116,7 +116,7 @@ const withProfileForm = (
       const { isloading } = this.state
       return (
         <div
-          id="profile-page-password-view"
+          id="profile-page-form-view"
           className="pc-page-view pc-theme-default flex-rows"
         >
           <FinalForm

@@ -5,7 +5,7 @@ import BetaPage from '../components/pages/BetaPage'
 import BookingsPage from '../components/pages/BookingsPage'
 import DiscoveryPage from '../components/pages/DiscoveryPage'
 import FavoritesPage from '../components/pages/FavoritesPage'
-import ForgottenPage from '../components/pages/ForgottenPage'
+import ForgotPasswordPage from '../components/pages/ForgotPasswordPage'
 import ProfilePage from '../components/pages/ProfilePage'
 import SearchPage from '../components/pages/SearchPage'
 import SigninPage from '../components/pages/SigninPage'
@@ -35,7 +35,7 @@ const routes = [
     title: 'Inscription',
   },
   {
-    component: ForgottenPage,
+    component: ForgotPasswordPage,
     path: '/mot-de-passe-perdu/:view?',
     title: 'Mot de passe perdu',
   },

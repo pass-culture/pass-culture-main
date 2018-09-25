@@ -7,7 +7,6 @@ import { FormError } from '../../../forms'
 import { isEmpty } from '../../../../utils/strings'
 import { PasswordField } from '../../../forms/inputs'
 import withProfileForm from './withProfileForm'
-import validatePasswordForm from '../validators/validatePasswordForm'
 
 // NOTE: les anciens mot de passe lors de la phase beta
 // n'avaient de règle de validation
@@ -75,7 +74,7 @@ ProfilePasswordForm.displayName = 'ProfilePasswordForm'
 
 export default withProfileForm(
   ProfilePasswordForm,
-  validatePasswordForm,
+  null,
   // TODO -> plutot les options de route par un objet
   'users/current/change-password',
   'POST',

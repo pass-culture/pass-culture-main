@@ -1,23 +1,21 @@
-/* <!------ UPDATE UI AVEC ION ------ */
-
-/*
-.pc-final-form input[type='text'],
-.pc-final-form input[type='email'],
-.pc-final-form input[type='password'] {
-  border: 2px solid $grey-light;
-}
-
-.pc-final-form .field.field-password .button {
-  border-color: $grey-light;
-}
-*/
-
 [class^='pc-final-form-'] {
   // reset des styles de tous les éléments
   // dont la classe commence par `pc-final-form-`
   border: 0;
   border-radius: 0;
   background: tansparent;
+}
+
+.pc-final-form-footer {
+  height: $footer-height;
+  min-height: $footer-height;
+  max-height: $footer-height;
+}
+
+.pc-final-form-footer button {
+  @extend .no-border;
+  @extend .no-outline;
+  @extend .no-background;
 }
 
 .pc-final-form-text,
@@ -54,6 +52,8 @@
     @extend .no-border;
     @extend .is-medium;
     @extend .no-outline;
+
+    color: $black !important;
   }
 }
 
@@ -65,53 +65,3 @@
   // si on a plusieurs erreurs pour un seul champ
   @extend .pt5;
 }
-
-/*
-.pc-border-dotted {
-  background-size: 5px 2px !important;
-  background-image: linear-gradient(
-    270deg,
-    #FFFFFF 35%,
-    hsla(0, 0%, 100%, 0) 0
-  ) !important;
-}
-
-// input[type='text'],
-.pc-form-password .inner,
-.pc-form-label:not(.pc-form-password) input[type='text'],
-.pc-form-label:not(.pc-form-password) input[type='password'] {
-  @extend .mt7;
-  @extend .py7;
-  @extend .px18;
-  @extend .fs16;
-
-  width: 100%;
-  border-radius: rem(20px);
-  border: 2px solid $grey-light;
-}
-
-.pc-form button[type='reset'],
-.pc-form button[type='submit'] {
-  transition: opacity 500ms;
-}
-
-.pc-form-controls {
-  // alias pour etre plus lisible
-  // quand on cherche dans la feuille de style forms.scss
-  // NOTE: voir le fichier global/layout.scss
-  @extend .pc-footer;
-}
-
-.pc-form-label {
-  @extend .fs16;
-  @extend .is-black-text;
-
-  small {
-    @extend .fs13;
-  }
-}
-
-.pc-form-password .inner {
-  background-color: $white;
-}
-*/

@@ -115,6 +115,12 @@ a.is-primary-text:hover {
   text-transform: uppercase;
 }
 
+.is-underline,
+a.is-underline,
+a:link.is-underline {
+  text-decoration: underline;
+}
+
 .is-lowercase {
   text-transform: lowercase;
 }

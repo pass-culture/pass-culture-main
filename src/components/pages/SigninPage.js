@@ -3,7 +3,7 @@
 import { Field, Form, SubmitButton } from 'pass-culture-shared'
 import React from 'react'
 import { Portal } from 'react-portal'
-import { NavLink } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
 import Main from '../layout/Main'
 
@@ -68,18 +68,21 @@ class SigninPage extends React.PureComponent {
               required
             />
             <p>
-              <NavLink to="/mot-de-passe-perdu">
+              <Link
+                to="/mot-de-passe-perdu"
+                className="is-white-text is-underline fs16"
+              >
                 <span>Mot de passe oublié&nbsp;?</span>
-              </NavLink>
+              </Link>
             </p>
 
             <Portal node={$footer}>
               <SubmitButton className="button is-primary is-inverted">
                 Connexion
               </SubmitButton>
-              <NavLink to="/inscription" className="button is-secondary">
+              <Link to="/inscription" className="button is-secondary">
                 Inscription
-              </NavLink>
+              </Link>
             </Portal>
           </Form>
         </div>
