@@ -6,7 +6,7 @@ from domain.user_emails import send_user_driven_cancellation_email_to_user, \
     send_user_driven_cancellation_email_to_offerer, send_offerer_driven_cancellation_email_to_user, \
     send_offerer_driven_cancellation_email_to_offerer, \
     send_booking_confirmation_email_to_user, send_booking_recap_emails, send_final_booking_recap_email, \
-    send_validation_confirmation_email, send_cancellation_emails_to_users, \
+    send_validation_confirmation_email, send_batch_cancellation_emails_to_users, \
     send_batch_cancellation_email_to_offerer
 from models import Offerer, UserOfferer, User, RightsType, Booking
 from tests.utils_mailing_test import HTML_USER_BOOKING_EVENT_CONFIRMATION_EMAIL, \
@@ -535,7 +535,7 @@ def test_send_cancellation_emails_to_users_calls_send_offerer_driven_cancellatio
             'domain.user_emails.make_offerer_driven_cancellation_email_for_user',
             return_value={'Html-part': ''}), patch('domain.user_emails.feature_send_mail_to_users_enabled',
                                                    return_value=True):
-        send_cancellation_emails_to_users(bookings, mocked_send_create_email)
+        send_batch_cancellation_emails_to_users(bookings, mocked_send_create_email)
 
     # Then
     send_cancellation_email_one_user.assert_has_calls(calls)

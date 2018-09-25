@@ -102,7 +102,7 @@ def send_validation_confirmation_email(user_offerer, offerer, send_create_email)
     check_if_email_sent(mail_result)
 
 
-def send_cancellation_emails_to_users(bookings, send_create_email):
+def send_batch_cancellation_emails_to_users(bookings, send_create_email):
     for booking in bookings:
         send_offerer_driven_cancellation_email_to_user(booking, send_create_email)
 

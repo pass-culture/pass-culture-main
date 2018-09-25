@@ -2,7 +2,7 @@
 from flask import current_app as app, jsonify, request
 
 from domain.cancel_and_soft_delete import soft_delete_objects, cancel_bookings
-from domain.user_emails import send_cancellation_emails_to_users, send_batch_cancellation_email_to_offerer
+from domain.user_emails import send_batch_cancellation_emails_to_users, send_batch_cancellation_email_to_offerer
 from models import Event, EventOccurrence, Offer, PcObject, RightsType, Venue
 from repository import booking_queries
 from utils.human_ids import dehumanize
@@ -73,8 +73,8 @@ def delete_event_occurrence(id):
     bookings = cancel_bookings(*bookings)
     soft_deleted_objects = soft_delete_objects(event_occurrence,*event_occurrence.stocks)
     if bookings:
-        send_cancellation_emails_to_users(bookings, app.mailjet_client.send.create)
-        send_batch_cancellation_email_to_offerer(bookings, 'stock', app.mailjet_client.send.create)
+        send_batch_cancellation_emails_to_users(bookings, app.mailjet_client.send.create)
+        send_batch_cancellation_email_to_offerer(bookings, 'event_occurrence', app.mailjet_client.send.create)
 
     PcObject.check_and_save(*(bookings + soft_deleted_objects))
 
