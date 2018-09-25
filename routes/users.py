@@ -20,6 +20,7 @@ from utils.mailing import \
     subscribe_newsletter, MailServiceException
 from utils.rest import expect_json_data, \
     login_or_api_key_required
+from validation.users import check_allowed_changes_for_user
 
 
 def is_pro_signup(json_user):
@@ -38,6 +39,8 @@ def get_profile():
 @login_or_api_key_required
 @expect_json_data
 def patch_profile():
+    data = request.json.keys()
+    check_allowed_changes_for_user(data)
     current_user.populateFromDict(request.json)
     PcObject.check_and_save(current_user)
     user = current_user._asdict(include=USER_INCLUDES)
