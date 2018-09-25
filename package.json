@@ -60,7 +60,7 @@
     "redux-persist": "^5.10.0",
     "redux-saga": "^0.15.3",
     "reselect": "^3.0.1",
-    "testcafe": "^0.22.0",
+    "testcafe": "^0.20.4",
     "typeface-barlow": "^0.0.54",
     "util.promisify": "^1.0.0"
   },
