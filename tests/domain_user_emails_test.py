@@ -7,7 +7,7 @@ from domain.user_emails import send_user_driven_cancellation_email_to_user, \
     send_offerer_driven_cancellation_email_to_offerer, \
     send_booking_confirmation_email_to_user, send_booking_recap_emails, send_final_booking_recap_email, \
     send_validation_confirmation_email, send_cancellation_emails_to_users, \
-    send_cancellation_email_to_offerer_after_soft_delete
+    send_batch_cancellation_email_to_offerer
 from models import Offerer, UserOfferer, User, RightsType, Booking
 from tests.utils_mailing_test import HTML_USER_BOOKING_EVENT_CONFIRMATION_EMAIL, \
     SUBJECT_USER_EVENT_BOOKING_CONFIRMATION_EMAIL
@@ -542,7 +542,7 @@ def test_send_cancellation_emails_to_users_calls_send_offerer_driven_cancellatio
 
 
 @pytest.mark.standalone
-def test_send_cancellation_email_to_offerer_when_soft_deleting_stock():
+def test_send_batch_cancellation_email_to_offerer():
     # Given
     num_bookings = 5
     bookings = create_mocked_bookings(num_bookings, 'offerer@email.com')
@@ -556,10 +556,10 @@ def test_send_cancellation_email_to_offerer_when_soft_deleting_stock():
             'domain.user_emails.make_batch_cancellation_email',
             return_value={'Html-part': ''}) as make_cancellation_email:
         # When
-        send_cancellation_email_to_offerer_after_soft_delete(bookings, mocked_send_create_email)
+        send_batch_cancellation_email_to_offerer(bookings, 'stock', mocked_send_create_email)
 
     # Then
-    make_cancellation_email.assert_called_once_with(bookings)
+    make_cancellation_email.assert_called_once_with(bookings, 'stock')
 
     mocked_send_create_email.assert_called_once()
     args = mocked_send_create_email.call_args
@@ -569,7 +569,34 @@ def test_send_cancellation_email_to_offerer_when_soft_deleting_stock():
 
 
 @pytest.mark.standalone
-def test_send_cancellation_email_to_offerer_when_soft_deleting_stock_email_status_code_500():
+def test_send_batch_cancellation_email_to_offerer_event_occurrence_case():
+    # Given
+    num_bookings = 5
+    bookings = create_mocked_bookings(num_bookings, 'offerer@email.com')
+    mocked_send_create_email = Mock()
+    return_value = Mock()
+    return_value.status_code = 200
+    mocked_send_create_email.return_value = return_value
+
+    # When
+    with patch('domain.user_emails.feature_send_mail_to_users_enabled', return_value=True), patch(
+            'domain.user_emails.make_batch_cancellation_email',
+            return_value={'Html-part': ''}) as make_cancellation_email:
+        # When
+        send_batch_cancellation_email_to_offerer(bookings, 'event_occurrence', mocked_send_create_email)
+
+    # Then
+    make_cancellation_email.assert_called_once_with(bookings, 'event_occurrence')
+
+    mocked_send_create_email.assert_called_once()
+    args = mocked_send_create_email.call_args
+    assert args[1]['data']['To'] == 'offerer@email.com'
+    mocked_send_create_email.reset_mock()
+    make_cancellation_email.reset_mock()
+
+
+@pytest.mark.standalone
+def test_send_batch_cancellation_email_to_offerer_email_status_code_500():
     # Given
     num_bookings = 5
     bookings = create_mocked_bookings(num_bookings, 'offerer@email.com')
@@ -583,11 +610,11 @@ def test_send_cancellation_email_to_offerer_when_soft_deleting_stock_email_statu
             'domain.user_emails.make_batch_cancellation_email',
             return_value={'Html-part': ''}):
         # When
-        send_cancellation_email_to_offerer_after_soft_delete(bookings, mocked_send_create_email)
+        send_batch_cancellation_email_to_offerer(bookings, 'stock', mocked_send_create_email)
 
 
 @pytest.mark.standalone
-def test_send_cancellation_email_to_offerer_when_soft_deleting_stock_feature_send_mail_to_users_enabled_False():
+def test_send_batch_cancellation_email_to_offerer_feature_send_mail_to_users_enabled_False():
     # Given
     num_bookings = 5
     bookings = create_mocked_bookings(num_bookings, 'offerer@email.com')
@@ -601,7 +628,7 @@ def test_send_cancellation_email_to_offerer_when_soft_deleting_stock_feature_sen
             'domain.user_emails.make_batch_cancellation_email',
             return_value={'Html-part': ''}) as make_cancellation_email:
         # When
-        send_cancellation_email_to_offerer_after_soft_delete(bookings, mocked_send_create_email)
+        send_batch_cancellation_email_to_offerer(bookings, 'stock', mocked_send_create_email)
 
     # Then
     mocked_send_create_email.assert_called_once()
@@ -613,7 +640,7 @@ def test_send_cancellation_email_to_offerer_when_soft_deleting_stock_feature_sen
 
 
 @pytest.mark.standalone
-def test_send_cancellation_email_to_offerer_when_soft_deleting_stock_no_venue_email():
+def test_send_batch_cancellation_email_to_offerer_no_venue_email():
     # Given
     num_bookings = 5
     bookings = create_mocked_bookings(num_bookings, None)
@@ -627,7 +654,7 @@ def test_send_cancellation_email_to_offerer_when_soft_deleting_stock_no_venue_em
             'domain.user_emails.make_batch_cancellation_email',
             return_value={'Html-part': ''}):
         # When
-        send_cancellation_email_to_offerer_after_soft_delete(bookings, mocked_send_create_email)
+        send_batch_cancellation_email_to_offerer(bookings, 'stock', mocked_send_create_email)
 
     # Then
     mocked_send_create_email.assert_not_called()

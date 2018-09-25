@@ -5,15 +5,15 @@ import pytest
 
 from models import PcObject
 from repository.booking_queries import find_all_ongoing_bookings_by_stock, \
-                                       find_offerer_bookings
+    find_offerer_bookings, find_all_bookings_for_stock, find_all_bookings_for_event_occurrence
 from tests.conftest import clean_database
 from utils.test_utils import create_booking, \
-                             create_deposit, \
-                             create_offerer, \
-                             create_stock_with_event_offer, \
-                             create_stock_with_thing_offer, \
-                             create_user, \
-                             create_venue
+    create_deposit, \
+    create_offerer, \
+    create_stock_with_event_offer, \
+    create_stock_with_thing_offer, \
+    create_user, \
+    create_venue, create_stock_from_event_occurrence, create_event_occurrence, create_thing_offer
 
 
 @clean_database
@@ -66,3 +66,57 @@ def test_find_all_ongoing_bookings(app):
 
     # Then
     assert all_ongoing_bookings == [ongoing_booking]
+
+
+@pytest.mark.standalone
+@clean_database
+def test_find_all_bookings_for_stock(app):
+    # Given
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    stock_to_search = create_stock_with_thing_offer(offerer, venue, thing_offer=None, price=0)
+    stock_not_to_search = create_stock_with_thing_offer(offerer, venue, thing_offer=None, price=0)
+    user_1 = create_user(email='email1@test.com')
+    user_2 = create_user(email='email2@test.com')
+    booking_to_find_1 = create_booking(user_1, stock_to_search)
+    booking_to_find_2 = create_booking(user_2, stock_to_search, quantity=2)
+    booking_not_to_find = create_booking(user_1, stock_not_to_search)
+
+    PcObject.check_and_save(booking_to_find_1, booking_to_find_2, booking_not_to_find)
+
+    # When
+    all_bookings_for_stock = find_all_bookings_for_stock(stock_to_search.id)
+    # Then
+    assert booking_to_find_1 in all_bookings_for_stock
+    assert booking_to_find_2 in all_bookings_for_stock
+    assert booking_not_to_find not in all_bookings_for_stock
+
+
+@pytest.mark.standalone
+@clean_database
+def test_find_all_bookings_for_event_occurrence(app):
+    # Given
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    offer = create_thing_offer(venue)
+    event_occurrence_to_search = create_event_occurrence(offer)
+    event_occurrence_not_to_search = create_event_occurrence(offer)
+    stock_to_search1 = create_stock_from_event_occurrence(event_occurrence_to_search, price=0, available=2)
+    stock_to_search2 = create_stock_from_event_occurrence(event_occurrence_to_search, price=0, available=10)
+    stock_not_to_search = create_stock_from_event_occurrence(event_occurrence_not_to_search, price=0)
+    user_1 = create_user(email='email1@test.com')
+    user_2 = create_user(email='email2@test.com')
+    booking_to_find_1 = create_booking(user_1, stock_to_search1, venue)
+    booking_to_find_2 = create_booking(user_2, stock_to_search2, venue, quantity=2)
+    booking_to_find_3 = create_booking(user_2, stock_to_search2, venue)
+    booking_not_to_find = create_booking(user_1, stock_not_to_search, venue)
+
+    PcObject.check_and_save(booking_to_find_1, booking_to_find_2, booking_not_to_find, booking_to_find_3)
+
+    # When
+    all_bookings_for_event_occurrence = find_all_bookings_for_event_occurrence(event_occurrence_to_search.id)
+    # Then
+    assert booking_to_find_1 in all_bookings_for_event_occurrence
+    assert booking_to_find_2 in all_bookings_for_event_occurrence
+    assert booking_to_find_3 in all_bookings_for_event_occurrence
+    assert booking_not_to_find not in all_bookings_for_event_occurrence

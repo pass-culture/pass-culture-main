@@ -31,11 +31,11 @@ def check_if_email_sent(mail_result):
         raise MailServiceException("Email send failed: " + pformat(vars(mail_result)))
 
 
-def make_batch_cancellation_email(bookings):
+def make_batch_cancellation_email(bookings, cancellation_case):
     booking = next(iter(bookings))
     offer_name = booking.stock.resolvedOffer.eventOrThing.name
     email_html = render_template('mails/offerer_batch_cancellation_email.html',
-                                 offer_name=offer_name, bookings=bookings)
+                                 offer_name=offer_name, bookings=bookings, cancellation_case=cancellation_case)
     email_subject = 'Annulation de réservations pour %s' % offer_name
     return {
         'FromName': 'pass Culture pro',

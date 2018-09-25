@@ -1001,11 +1001,34 @@ def test_make_validation_confirmation_email_offerer(app):
 
 @clean_database
 @pytest.mark.standalone
-def test_make_make_batch_cancellation_email(app):
+def test_make_make_batch_cancellation_email_for_case_event_occurrence(app):
     # Given
     bookings = create_mocked_bookings(num_bookings=4, venue_email='venue@email.com', name='Le récit de voyage')
     # When
-    email = make_batch_cancellation_email(bookings)
+    email = make_batch_cancellation_email(bookings, cancellation_case='event_occurrence')
+    # Then
+    email_html = BeautifulSoup(email['Html-part'], 'html.parser')
+    html_action = str(email_html.find('p', {'id': 'action'}))
+    html_recap = str(email_html.find('table', {'id': 'recap-table'}))
+    assert 'Suite à votre suppression de date' in html_action
+    assert 'Le récit de voyage' in html_action
+    assert 'automatiquement annulées' in html_action
+    for booking in bookings:
+        assert '<td>%s</td>' % booking.user.email in html_recap
+        assert '<td>%s</td>' % booking.user.firstName in html_recap
+        assert '<td>%s</td>' % booking.user.lastName in html_recap
+    assert email['FromEmail'] == 'passculture@beta.gouv.fr'
+    assert email['FromName'] == 'pass Culture pro'
+    assert email['Subject'] == 'Annulation de réservations pour Le récit de voyage'
+
+
+@clean_database
+@pytest.mark.standalone
+def test_make_make_batch_cancellation_email_for_case_stock(app):
+    # Given
+    bookings = create_mocked_bookings(num_bookings=4, venue_email='venue@email.com', name='Le récit de voyage')
+    # When
+    email = make_batch_cancellation_email(bookings, cancellation_case='stock')
     # Then
     email_html = BeautifulSoup(email['Html-part'], 'html.parser')
     html_action = str(email_html.find('p', {'id': 'action'}))

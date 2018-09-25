@@ -60,8 +60,8 @@ def find_bookings_from_recommendation(reco, user):
     return booking_query.all()
 
 
-def find_all_with_soft_deleted_stocks():
-    return Booking.query.join(Stock).filter_by(isSoftDeleted=True).all()
+def find_all_bookings_for_stock(stock_id):
+    return Booking.query.join(Stock).filter_by(id=stock_id).all()
 
 
 def find_by(token, email=None, offer_id=None):
@@ -128,3 +128,7 @@ def find_by_id(booking_id):
 
 def find_all_ongoing_bookings_by_stock(stock):
     return Booking.query.filter_by(stockId=stock.id, isCancelled=False, isUsed=False).all()
+
+
+def find_all_bookings_for_event_occurrence(event_occurrence_id):
+    return Booking.query.join(Stock).join(EventOccurrence).filter_by(id=event_occurrence_id).all()

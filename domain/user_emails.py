@@ -107,12 +107,12 @@ def send_cancellation_emails_to_users(bookings, send_create_email):
         send_offerer_driven_cancellation_email_to_user(booking, send_create_email)
 
 
-def send_cancellation_email_to_offerer_after_soft_delete(bookings, send_create_email):
+def send_batch_cancellation_email_to_offerer(bookings, cancellation_case, send_create_email):
     booking = next(iter(bookings), None)
     offerer_email = booking.stock.resolvedOffer.venue.bookingEmail
     if offerer_email:
         recipients = [offerer_email]
-        email = make_batch_cancellation_email(bookings)
+        email = make_batch_cancellation_email(bookings, cancellation_case)
         email['Html-part'], email['To'] = _edit_email_html_part_and_recipients(email['Html-part'], recipients)
         mail_result = send_create_email(data=email)
         check_if_email_sent(mail_result)
