@@ -16,13 +16,14 @@ import Main from '../layout/Main'
 import OffererItem from '../items/OffererItem'
 import offerersSelector from '../../selectors/offerers'
 import { offererNormalizer } from '../../utils/normalizers'
+import { mapApiToQuery, queryToApiParams } from '../../utils/search'
 
 class OfferersPage extends Component {
   handleDataRequest = (handleSuccess, handleFail) => {
-    const { dispatch, goToNextSearchPage, querySearch } = this.props
+    const { apiSearch, dispatch, goToNextSearchPage } = this.props
 
     dispatch(
-      requestData('GET', `offerers?${querySearch}`, {
+      requestData('GET', `offerers?${apiSearch}`, {
         handleSuccess: (state, action) => {
           handleSuccess(state, action)
           goToNextSearchPage()
@@ -33,10 +34,22 @@ class OfferersPage extends Component {
     )
   }
 
-  render() {
-    const { handleSearchChange, queryParams, offerers } = this.props
+  onSubmit = event => {
+    const { apiParams, handleQueryParamsChange } = this.props
 
-    const { search, order_by } = queryParams || {}
+    event.preventDefault()
+
+    const value = event.target.elements.keywords.value
+
+    if (!value || apiParams.keywords === value) return
+
+    handleQueryParamsChange({ [mapApiToQuery.keywords]: value })
+  }
+
+  render() {
+    const { apiParams, offerers } = this.props
+
+    const { keywords } = apiParams || {}
 
     return (
       <Main name="offerers" handleDataRequest={this.handleDataRequest}>
@@ -52,16 +65,16 @@ class OfferersPage extends Component {
           </NavLink>
         </HeroSection>
 
-        <form className="section" onSubmit={handleSearchChange}>
+        <form className="section" onSubmit={this.onSubmit}>
           <label className="label">Rechercher une structure :</label>
           <div className="field is-grouped">
             <p className="control is-expanded">
               <input
-                id="search"
+                id="keywords"
                 className="input search-input"
                 placeholder="Saisissez une recherche"
                 type="text"
-                defaultValue={search}
+                defaultValue={keywords}
               />
             </p>
             <p className="control">
@@ -69,7 +82,9 @@ class OfferersPage extends Component {
                 OK
               </button>{' '}
               <button className="button is-secondary" disabled>
-                &nbsp;<Icon svg="ico-filter" />&nbsp;
+                &nbsp;
+                <Icon svg="ico-filter" />
+                &nbsp;
               </button>
             </p>
           </div>
@@ -78,7 +93,9 @@ class OfferersPage extends Component {
         <InfiniteScroller
           className="main-list offerers-list"
           handleLoadMore={this.handleDataRequest}>
-          {offerers.map(o => <OffererItem key={o.id} offerer={o} />)}
+          {offerers.map(o => (
+            <OffererItem key={o.id} offerer={o} />
+          ))}
         </InfiniteScroller>
       </Main>
     )
@@ -89,10 +106,7 @@ export default compose(
   withLogin({ failRedirect: '/connexion' }),
   withSearch({
     dataKey: 'offerers',
-    defaultQueryParams: {
-      search: undefined,
-      order_by: `createdAt+desc`,
-    },
+    queryToApiParams,
   }),
   connect((state, ownProps) => ({
     offerers: offerersSelector(state),
