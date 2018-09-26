@@ -123,7 +123,7 @@ elif [[ "$CMD" == "deploy-frontend-webapp" ]] || [[ "$CMD" == "deploy-frontend-p
 	fi
   cd $APP_PATH
 
-  (set -a; source "$ROOT_PATH/shared/config/run_envs/$ENV" && yarn build) || exit
+  (set -a; source "$APP_PATH/node_modules/pass-culture-shared/config/run_envs/$ENV" && yarn build) || exit
 
   # Add generic redirects for netlify which work with everything routed to
   # index.htm and relative paths to main.js and main.css for phonegap
