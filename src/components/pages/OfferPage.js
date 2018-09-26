@@ -217,9 +217,11 @@ class OfferPage extends Component {
 
   componentDidUpdate(prevProps) {
     const {
+      dispatch,
       eventOccurrences,
       eventOrThingPatch,
-      dispatch,
+      formOffererId,
+      formVenueId,
       hasEventOrThing,
       location: { pathname, search },
       offer,
@@ -241,7 +243,10 @@ class OfferPage extends Component {
       }
     }
 
-    if ((!offerer && prevProps.offerer) || (!type && prevProps.type)) {
+    if (
+      !formOffererId &&
+      ((!offerer && prevProps.offerer) || (!type && prevProps.type))
+    ) {
       dispatch(
         mergeForm('offer', {
           offererId: null,
@@ -250,7 +255,7 @@ class OfferPage extends Component {
       )
     }
 
-    if (!venue && prevProps.venue) {
+    if (!formVenueId && (!venue && prevProps.venue)) {
       dispatch(
         mergeForm('offer', {
           venueId: null,
@@ -651,7 +656,8 @@ function mapStateToProps(state, ownProps) {
   const thingId = get(offer, 'thingId')
   const thing = thingSelector(state, thingId)
 
-  const venueId = get(state, 'form.offer.venueId') || search.venueId
+  const formVenueId = get(state, 'form.offer.venueId')
+  const venueId = formVenueId || search.venueId
 
   const venue = venueSelector(state, venueId)
 
@@ -663,7 +669,8 @@ function mapStateToProps(state, ownProps) {
 
   const type = typeSelector(state, isVirtual, typeValue)
 
-  let offererId = get(state, 'form.offer.offererId') || search.offererId
+  const formOffererId = get(state, 'form.offer.offererId')
+  let offererId = formOffererId || search.offererId
 
   const venues = venuesSelector(state, offererId, type)
 
@@ -717,19 +724,21 @@ function mapStateToProps(state, ownProps) {
     event,
     eventOccurrences,
     eventOrThingPatch,
+    formOffererId,
+    formVenueId,
     hasEventOrThing,
     musicTypes,
     musicSubTypes,
-    providers,
-    search,
-    thing,
     offer,
     offerer,
     offerers,
     offerTypeError,
+    providers,
+    search,
     showTypes,
     showSubTypes,
     stocks,
+    thing,
     types,
     type,
     url,
