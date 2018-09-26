@@ -4,7 +4,7 @@ exports[`src | components | pages | TermsPage snapshot should match snapshot 1`]
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <TermsPage
-    appversion="0.4.3"
+    appversion="0.4.4"
     errors={Object {}}
   />,
   Symbol(enzyme.__renderer__): Object {
@@ -62,7 +62,7 @@ ShallowWrapper {
               >
                 <p>
                   Pass Culture version v
-                  0.4.3
+                  0.4.4
                 </p>
               </div>
             </div>
@@ -128,7 +128,7 @@ ShallowWrapper {
               >
                 <p>
                   Pass Culture version v
-                  0.4.3
+                  0.4.4
                 </p>
               </div>
             </div>
@@ -166,7 +166,7 @@ ShallowWrapper {
               >
                 <p>
                   Pass Culture version v
-                  0.4.3
+                  0.4.4
                 </p>
               </div>
             </div>,
@@ -195,7 +195,7 @@ ShallowWrapper {
                 >
                   <p>
                     Pass Culture version v
-                    0.4.3
+                    0.4.4
                   </p>
                 </div>,
               ],
@@ -232,7 +232,7 @@ ShallowWrapper {
                 "props": Object {
                   "children": <p>
                     Pass Culture version v
-                    0.4.3
+                    0.4.4
                   </p>,
                   "className": "mt16",
                 },
@@ -244,13 +244,13 @@ ShallowWrapper {
                   "props": Object {
                     "children": Array [
                       "Pass Culture version v",
-                      "0.4.3",
+                      "0.4.4",
                     ],
                   },
                   "ref": null,
                   "rendered": Array [
                     "Pass Culture version v",
-                    "0.4.3",
+                    "0.4.4",
                   ],
                   "type": "p",
                 },
@@ -326,7 +326,7 @@ ShallowWrapper {
                 >
                   <p>
                     Pass Culture version v
-                    0.4.3
+                    0.4.4
                   </p>
                 </div>
               </div>
@@ -392,7 +392,7 @@ ShallowWrapper {
                 >
                   <p>
                     Pass Culture version v
-                    0.4.3
+                    0.4.4
                   </p>
                 </div>
               </div>
@@ -430,7 +430,7 @@ ShallowWrapper {
                 >
                   <p>
                     Pass Culture version v
-                    0.4.3
+                    0.4.4
                   </p>
                 </div>
               </div>,
@@ -459,7 +459,7 @@ ShallowWrapper {
                   >
                     <p>
                       Pass Culture version v
-                      0.4.3
+                      0.4.4
                     </p>
                   </div>,
                 ],
@@ -496,7 +496,7 @@ ShallowWrapper {
                   "props": Object {
                     "children": <p>
                       Pass Culture version v
-                      0.4.3
+                      0.4.4
                     </p>,
                     "className": "mt16",
                   },
@@ -508,13 +508,13 @@ ShallowWrapper {
                     "props": Object {
                       "children": Array [
                         "Pass Culture version v",
-                        "0.4.3",
+                        "0.4.4",
                       ],
                     },
                     "ref": null,
                     "rendered": Array [
                       "Pass Culture version v",
-                      "0.4.3",
+                      "0.4.4",
                     ],
                     "type": "p",
                   },
