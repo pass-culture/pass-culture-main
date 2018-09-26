@@ -198,7 +198,7 @@ def find_by_venue_id_or_offerer_id_and_search_terms_offers_where_user_has_rights
     if search is not None:
         query = query.outerjoin(Event) \
             .outerjoin(Thing) \
-            .filter(get_search_filter([Event, Thing], search))
+            .filter(get_keywords_filter([Event, Thing], search))
     return query
 
 

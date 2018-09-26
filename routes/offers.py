@@ -35,7 +35,7 @@ def list_offers():
         venue,
         venue_id,
         current_user,
-        request.get('search')
+        request.args.get('keywords')
     )
 
     return handle_rest_get_list(Offer,

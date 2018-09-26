@@ -27,17 +27,16 @@ def list_offerers():
     if not current_user.isAdmin:
         query = filter_query_where_user_is_user_offerer_and_is_validated(query, current_user)
 
-    search = request.args.get('search')
-    if search is not None:
-        query = query.filter(get_keywords_filter([Offerer], search))
+    keywords = request.args.get('keywords')
+    if keywords is not None:
+        query = query.filter(get_keywords_filter([Offerer], keywords))
 
     return handle_rest_get_list(Offerer,
                                 include=OFFERER_INCLUDES,
                                 order_by=Offerer.name,
                                 page=request.args.get('page'),
                                 paginate=10,
-                                query=query
-                                )
+                                query=query)
 
 
 @app.route('/offerers/<id>', methods=['GET'])
