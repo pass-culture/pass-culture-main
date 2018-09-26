@@ -124,27 +124,8 @@ def _create_recommendation(user, offer, mediation=None):
     return recommendation
 
 
-def create_recommendations_for_search(
-    user,
-    page=1,
-    keywords=None,
-    types=None,
-    latitude=None,
-    longitude=None,
-    max_distance=None,
-    date=None,
-    days=None
-):
-    offers = get_offers_for_recommendations_search(
-        page,
-        keywords,
-        types,
-        latitude,
-        longitude,
-        max_distance,
-        date,
-        days
-    )
+def create_recommendations_for_search(user, **kwargs):
+    offers = get_offers_for_recommendations_search(**kwargs)
     offer_ids = [offer.id for offer in offers]
     existing_recommendations = find_recommendations_for_user_matching_offers_and_search_term(user.id, offer_ids, keywords)
     offer_ids_with_already_created_recommendations = [reco.offerId for reco in existing_recommendations]
@@ -168,43 +149,36 @@ def create_recommendations_for_search(
 
     return recommendations
 
-def get_recommendation_search_params(args):
+def get_recommendation_search_params(**kwargs):
 
     search_params = {}
 
-    page = 1
-    if 'page' in args and args['page']:
-        search_params['page'] = int(args['page'])
+    if 'page' in kwargs and kwargs['page']:
+        search_params['page'] = int(kwargs['page'])
 
-    keywords = None
-    if 'keywords' in args and args['keywords']:
-        search_params['keywords'] = args['keywords']
+    if 'keywords' in kwargs and kwargs['keywords']:
+        search_params['keywords'] = kwargs['keywords']
 
-    types = None
-    if 'types' in args and args['types']:
-        type_sublabels = args['types'].split(',')
+    if 'types' in kwargs and kwargs['types']:
+        print('QUOI', kwargs['types'])
+        type_sublabels = kwargs['types']
         search_params['types'] = get_type_labels_from_sublabels(type_sublabels)
 
-    date = None
-    if 'date' in args and args['date']:
-        search_params['date'] = args['date']
+    if 'date' in kwargs and kwargs['date']:
+        search_params['date'] = kwargs['date']
 
-    days = None
-    if 'days' in args and args['days']:
+    if 'days' in kwargs and kwargs['days']:
         search_params['days'] = [
-            [int(ds) for ds in day.split('-')] for day in args['days'].split(',')
+            [int(ds) for ds in day.split('-')] for day in kwargs['days'].split(',')
         ]
 
-    latitude = None
-    if 'latitude' in args and args['latitude']:
-        search_params['latitude'] = float(args['latitude'])
+    if 'latitude' in kwargs and kwargs['latitude']:
+        search_params['latitude'] = float(kwargs['latitude'])
 
-    longitude = None
-    if 'longitude' in args and args['longitude']:
-        search_params['longitude'] = float(args['longitude'])
+    if 'longitude' in kwargs and kwargs['longitude']:
+        search_params['longitude'] = float(kwargs['longitude'])
 
-    max_distance = None
-    if 'distance' in args and args['distance']:
-        search_params['max_distance'] = float(args['distance'])
+    if 'distance' in kwargs and kwargs['distance']:
+        search_params['max_distance'] = float(kwargs['distance'])
 
     return search_params

@@ -26,15 +26,17 @@ from utils.rest import expect_json_data
 
 
 @app.route('/recommendations', methods=['GET'])
-@login_required
+#@login_required
 def list_recommendations():
 
-    search_params = get_recommendation_search_params(request.args)
+    search_params = get_recommendation_search_params(**request.args)
 
     print('search_params', search_params)
 
+    from models import User
     recommendations = create_recommendations_for_search(
-        current_user,
+        #current_user,
+        User.query.first(),
         **search_params
     )
 
