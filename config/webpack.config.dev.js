@@ -1,26 +1,26 @@
-'use strict';
+'use strict'
 
-const autoprefixer = require('autoprefixer');
-const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
-const eslintFormatter = require('react-dev-utils/eslintFormatter');
-const getClientEnvironment = require('./env');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const InterpolateHtmlPlugin = require('react-dev-utils/InterpolateHtmlPlugin');
-const ModuleScopePlugin = require('react-dev-utils/ModuleScopePlugin');
-const path = require('path');
-const paths = require('./paths');
-const WatchMissingNodeModulesPlugin = require('react-dev-utils/WatchMissingNodeModulesPlugin');
-const webpack = require('webpack');
+const autoprefixer = require('autoprefixer')
+const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin')
+const eslintFormatter = require('react-dev-utils/eslintFormatter')
+const getClientEnvironment = require('./env')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+const InterpolateHtmlPlugin = require('react-dev-utils/InterpolateHtmlPlugin')
+const ModuleScopePlugin = require('react-dev-utils/ModuleScopePlugin')
+const path = require('path')
+const paths = require('./paths')
+const WatchMissingNodeModulesPlugin = require('react-dev-utils/WatchMissingNodeModulesPlugin')
+const webpack = require('webpack')
 
 // Webpack uses `publicPath` to determine where the app is being served from.
 // In development, we always serve from the root. This makes config easier.
-const publicPath = '/';
+const publicPath = '/'
 // `publicUrl` is just like `publicPath`, but we will provide it to our app
 // as %PUBLIC_URL% in `index.html` and `process.env.PUBLIC_URL` in JavaScript.
 // Omit trailing slash as %PUBLIC_PATH%/xyz looks better than %PUBLIC_PATH%xyz.
-const publicUrl = '';
+const publicUrl = ''
 // Get environment variables to inject into our app.
-const env = getClientEnvironment(publicUrl);
+const env = getClientEnvironment(publicUrl)
 
 // This is the development configuration.
 // It is focused on developer experience and fast rebuilds.
@@ -95,7 +95,7 @@ module.exports = {
       // To fix this, we prevent you from importing files out of src/ -- if you'd like to,
       // please link the files into your node_modules/ and let module-resolution kick in.
       // Make sure your source files are compiled, as they will not be processed in any way.
-      // new ModuleScopePlugin(paths.appSrc, [paths.appPackageJson]),
+      new ModuleScopePlugin(paths.appSrc, [paths.appPackageJson]),
     ],
   },
   module: {
@@ -115,7 +115,6 @@ module.exports = {
             options: {
               formatter: eslintFormatter,
               eslintPath: require.resolve('eslint'),
-
             },
             loader: require.resolve('eslint-loader'),
           },
@@ -144,7 +143,6 @@ module.exports = {
             include: paths.appSrc,
             loader: require.resolve('babel-loader'),
             options: {
-
               // This is a feature of `babel-loader` for webpack (not Babel itself).
               // It enables caching results in ./node_modules/.cache/babel-loader/
               // directory for faster rebuilds.
@@ -166,17 +164,32 @@ module.exports = {
                 options: {
                   importLoaders: 1,
                   alias: {
-                    './images/layers.png$': path.resolve(__dirname, '../node_modules/leaflet/dist/images/layers.png'),
-                    './images/layers-2x.png$': path.resolve(__dirname, '../node_modules/leaflet/dist/images/layers-2x.png'),
-                    './images/marker-icon.png$': path.resolve(__dirname, '../node_modules/leaflet/dist/images/marker-icon.png'),
-                    './images/marker-icon-2x.png$': path.resolve(__dirname, '../node_modules/leaflet/dist/images/marker-icon-2x.png'),
-                    './images/marker-shadow.png$': path.resolve(__dirname, '../node_modules/leaflet/dist/images/marker-shadow.png')
-                  }
+                    './images/layers.png$': path.resolve(
+                      __dirname,
+                      '../node_modules/leaflet/dist/images/layers.png'
+                    ),
+                    './images/layers-2x.png$': path.resolve(
+                      __dirname,
+                      '../node_modules/leaflet/dist/images/layers-2x.png'
+                    ),
+                    './images/marker-icon.png$': path.resolve(
+                      __dirname,
+                      '../node_modules/leaflet/dist/images/marker-icon.png'
+                    ),
+                    './images/marker-icon-2x.png$': path.resolve(
+                      __dirname,
+                      '../node_modules/leaflet/dist/images/marker-icon-2x.png'
+                    ),
+                    './images/marker-shadow.png$': path.resolve(
+                      __dirname,
+                      '../node_modules/leaflet/dist/images/marker-shadow.png'
+                    ),
+                  },
                 },
               },
-              require.resolve('sass-loader')
-            ]
-          }
+              require.resolve('sass-loader'),
+            ],
+          },
         ].concat([
           // "file" loader makes sure those assets get served by WebpackDevServer.
           // When you `import` an asset, you get its (virtual) filename.
@@ -193,12 +206,12 @@ module.exports = {
             options: {
               name: 'static/media/[name].[hash:8].[ext]',
             },
-          }
+          },
           // ** STOP ** Are you adding a new loader?
           // Make sure to add the new loader(s) before the "file" loader.
-        ])
-      }
-    ]
+        ]),
+      },
+    ],
   },
   plugins: [
     // Makes some environment variables available in index.html.
@@ -249,4 +262,4 @@ module.exports = {
   performance: {
     hints: false,
   },
-};
+}
