@@ -70,7 +70,7 @@ class OffersPage extends Component {
       user,
     } = this.props
 
-    const { venueId, keywords, order_by, offererId } = queryParams || {}
+    const { venueId, keywords, order_by, offererId } = apiParams || {}
 
     let createOfferTo = `/offres/nouveau`
     if (venueId) {
