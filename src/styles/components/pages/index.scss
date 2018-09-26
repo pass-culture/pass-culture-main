@@ -31,10 +31,6 @@
 }
 
 #profile-page {
-  #mes-informations {
-    background-color: $white;
-  }
-
   #mes-informations .icon-next {
     color: $primary;
     font-size: 1.4rem;
@@ -43,6 +39,10 @@
   #mes-informations a[disabled] {
     // reset default disabled rule
     opacity: 1;
+  }
+
+  #mes-informations .list {
+    background-color: $white;
   }
 
   #mes-informations .list .item:last-child {

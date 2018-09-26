@@ -8,7 +8,7 @@ import { ROOT_PATH } from '../../../utils/config'
 import PageHeader from '../../layout/PageHeader'
 import NavigationFooter from '../../layout/NavigationFooter'
 
-const BACKGROUND_IMAGE = `url('${ROOT_PATH}/mosaic-k@2x.png')`
+const BACKGROUND_IMAGE = `url('${ROOT_PATH}/mosaic-k.png')`
 
 const ProfileUpdateSuccess = ({ config, match }) => {
   const item = config[match.params.view]

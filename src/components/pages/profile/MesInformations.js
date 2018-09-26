@@ -23,10 +23,14 @@ class MesInformations extends React.PureComponent {
           className="pc-text-button text-left no-decoration flex-columns items-center pt20 pb22"
         >
           <span className="is-block flex-1">
-            <span className="pc-label pb3 is-block is-grey-text is-uppercase fs13">
+            <span className="pc-label pb3 is-block is-grey-text is-uppercase fs13 is-medium">
               {label}
             </span>
-            {value && <b className="is-block is-black-text fs18">{value}</b>}
+            {value && (
+              <span className="is-block is-black-text fs18 is-bold">
+                {value}
+              </span>
+            )}
             {!value && (
               <span className="is-block is-grey-text fs18">
                 {mainPlaceholder || EMPTY_FIELD_PLACEHOLDER}
@@ -54,8 +58,8 @@ class MesInformations extends React.PureComponent {
       // const departementName = getDepartementByCode(dptCode)
       // const departement = `${dptCode} - ${departementName}`
       <div id="mes-informations" className="pb40 pt20">
-        <h3 className="dotted-bottom-primary is-primary-text is-uppercase pb12 px12">
-          <i>Mes Informations</i>
+        <h3 className="dotted-bottom-primary is-primary-text is-uppercase pb6 px12 fs15">
+          <span className="is-italic">Mes Informations</span>
         </h3>
         <div className="px12 list">{fields.map(this.renderInformation)}</div>
       </div>

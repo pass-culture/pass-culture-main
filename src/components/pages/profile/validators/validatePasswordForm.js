@@ -7,10 +7,11 @@ import isEqual from 'lodash.isequal'
 
 import { isPassword } from '../../../../utils/strings'
 
-const DEFAULT_REQUIRED_ERROR = 'Ce champs est requis'
-const ERROR_IS_NOT_MATCHING_CONFIRM = 'Les mots de passe ne correspondent pas'
+const DEFAULT_REQUIRED_ERROR = 'Ce champs est requis.'
+const ERROR_IS_NOT_MATCHING_CONFIRM =
+  'Les deux mots de passe ne sont pas identiques.'
 const ERROR_IS_EQUAL_ORIGINAL =
-  'Votre nouveau mot de passe ne doit pas correspondre à votre ancien mot de passe'
+  'Votre nouveau mot de passe doit être différent de votre ancien mot de passe.'
 
 const validateEqualities = values => {
   const isMatchingOriginal =

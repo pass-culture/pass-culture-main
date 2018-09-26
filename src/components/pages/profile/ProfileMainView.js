@@ -10,7 +10,7 @@ import PageHeader from '../../layout/PageHeader'
 import MesInformations from './MesInformations'
 import NavigationFooter from '../../layout/NavigationFooter'
 
-const BACKGROUND_IMAGE = `url('${ROOT_PATH}/mosaic-k@2x.png')`
+const BACKGROUND_IMAGE = `url('${ROOT_PATH}/mosaic-k.png')`
 
 const ProfileMainView = ({ config, user }) => (
   <div

@@ -79,7 +79,7 @@ class BookingsPage extends Component {
     const soonBookingsLength = soonBookings.length
     const otherBookingsLength = otherBookings.length
     const hasNoBooking = soonBookingsLength === 0 && otherBookingsLength === 0
-    const backgroundImage = `url('${ROOT_PATH}/mosaic-k@2x.png')`
+    const backgroundImage = `url('${ROOT_PATH}/mosaic-k.png')`
     return (
       <div id="bookings-page" className="page is-relative flex-rows">
         {!isloading && (

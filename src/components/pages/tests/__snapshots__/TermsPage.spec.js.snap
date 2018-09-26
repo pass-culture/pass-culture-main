@@ -42,7 +42,7 @@ ShallowWrapper {
               className="padded content"
               style={
                 Object {
-                  "backgroundImage": "url('http://localhost/mosaic-k@2x.png')",
+                  "backgroundImage": "url('http://localhost/mosaic-k.png')",
                 }
               }
             >
@@ -108,7 +108,7 @@ ShallowWrapper {
               className="padded content"
               style={
                 Object {
-                  "backgroundImage": "url('http://localhost/mosaic-k@2x.png')",
+                  "backgroundImage": "url('http://localhost/mosaic-k.png')",
                 }
               }
             >
@@ -146,7 +146,7 @@ ShallowWrapper {
               className="padded content"
               style={
                 Object {
-                  "backgroundImage": "url('http://localhost/mosaic-k@2x.png')",
+                  "backgroundImage": "url('http://localhost/mosaic-k.png')",
                 }
               }
             >
@@ -201,7 +201,7 @@ ShallowWrapper {
               ],
               "className": "padded content",
               "style": Object {
-                "backgroundImage": "url('http://localhost/mosaic-k@2x.png')",
+                "backgroundImage": "url('http://localhost/mosaic-k.png')",
               },
             },
             "ref": null,
@@ -306,7 +306,7 @@ ShallowWrapper {
                 className="padded content"
                 style={
                   Object {
-                    "backgroundImage": "url('http://localhost/mosaic-k@2x.png')",
+                    "backgroundImage": "url('http://localhost/mosaic-k.png')",
                   }
                 }
               >
@@ -372,7 +372,7 @@ ShallowWrapper {
                 className="padded content"
                 style={
                   Object {
-                    "backgroundImage": "url('http://localhost/mosaic-k@2x.png')",
+                    "backgroundImage": "url('http://localhost/mosaic-k.png')",
                   }
                 }
               >
@@ -410,7 +410,7 @@ ShallowWrapper {
                 className="padded content"
                 style={
                   Object {
-                    "backgroundImage": "url('http://localhost/mosaic-k@2x.png')",
+                    "backgroundImage": "url('http://localhost/mosaic-k.png')",
                   }
                 }
               >
@@ -465,7 +465,7 @@ ShallowWrapper {
                 ],
                 "className": "padded content",
                 "style": Object {
-                  "backgroundImage": "url('http://localhost/mosaic-k@2x.png')",
+                  "backgroundImage": "url('http://localhost/mosaic-k.png')",
                 },
               },
               "ref": null,

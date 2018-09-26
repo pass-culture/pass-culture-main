@@ -63,7 +63,7 @@ class VersoWrapper extends Component {
     const { tutoIndex } = mediation || {}
 
     const contentStyle = {}
-    contentStyle.backgroundImage = `url('${ROOT_PATH}/mosaic-k@2x.png')`
+    contentStyle.backgroundImage = `url('${ROOT_PATH}/mosaic-k.png')`
     if (typeof tutoIndex === 'number') {
       contentStyle.backgroundColor = headerColor
     }

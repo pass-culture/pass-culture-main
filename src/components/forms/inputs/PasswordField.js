@@ -70,7 +70,7 @@ export class PasswordField extends React.PureComponent {
                 >
                   <span
                     aria-hidden
-                    className={`icon-eye${status} fs18`}
+                    className={`icon-eye${status} fs22`}
                     title=""
                   />
                 </button>

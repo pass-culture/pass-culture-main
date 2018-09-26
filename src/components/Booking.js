@@ -153,7 +153,7 @@ class Booking extends React.PureComponent {
       recommendationId: recommendation.id,
       stockId: null,
     }
-    const backgroundImage = `url('${ROOT_PATH}/mosaic-k@2x.png')`
+    const backgroundImage = `url('${ROOT_PATH}/mosaic-k.png')`
     return (
       <Transition in={mounted} timeout={0}>
         {state => (

@@ -23,7 +23,7 @@ class TermsPage extends React.PureComponent {
   render() {
     const { source } = this.state
     const { appversion } = this.props
-    const backgroundImage = `url('${ROOT_PATH}/mosaic-k@2x.png')`
+    const backgroundImage = `url('${ROOT_PATH}/mosaic-k.png')`
     return (
       <div id="terms-page" className="page is-relative flex-rows">
         <PageHeader useClose theme="red" title="Mentions légales" />

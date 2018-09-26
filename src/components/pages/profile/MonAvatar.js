@@ -8,9 +8,9 @@ const MonAvatar = ({ user }) => (
     <span className="flex-1 my22">
       <ProfilePicture colored="colored" style={{ height: 80, width: 80 }} />
       {user && user.thumb && <img alt="Mon Avatar" src={user.thumb} />}
-      <b className="ml12" style={{ fontSize: '1.2rem' }}>
+      <span className="ml12 is-medium fs18">
         {user.publicName}
-      </b>
+      </span>
     </span>
     {/* <button
       disabled

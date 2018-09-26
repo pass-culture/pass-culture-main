@@ -12,7 +12,7 @@ import PageHeader from '../../../layout/PageHeader'
 import NavigationFooter from '../../../layout/NavigationFooter'
 
 const noop = () => {}
-const BACKGROUND_IMAGE = `url('${ROOT_PATH}/mosaic-k@2x.png')`
+const BACKGROUND_IMAGE = `url('${ROOT_PATH}/mosaic-k.png')`
 
 const getInitialValuesFromUser = (obj, user) =>
   Object.keys(obj).reduce((acc, key) => {

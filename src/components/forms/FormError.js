@@ -41,7 +41,7 @@ export const FormError = ({ className, customMessage, meta }) => {
             {errorMessage.map((err, index) => (
               <span
                 key={setDangerousArrayKeyIndex(index)}
-                className="pc-error-message is-block"
+                className="pc-error-message is-block mt2"
               >
                 {err}
               </span>
