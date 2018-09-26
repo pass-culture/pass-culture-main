@@ -31,8 +31,6 @@ class OffersPage extends Component {
       types,
     } = this.props
 
-    console.log('apiSearch', apiSearch)
-
     dispatch(
       requestData('GET', `offers?${apiSearch}`, {
         handleSuccess: (state, action) => {
