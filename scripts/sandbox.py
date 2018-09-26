@@ -6,9 +6,11 @@ from flask import current_app as app
 
 from utils.sandbox import do_sandbox
 
+
 @app.manager.option('-n',
                     '--name',
-                    help='Sandbox name')
+                    help='Sandbox name',
+                    default="classic")
 def sandbox(name):
     try:
         do_sandbox(name)

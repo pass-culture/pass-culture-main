@@ -1,51 +1,3 @@
-# """ offerers """
-offerer_mocks = [
-    {
-        "name": "Théâtre Chaillot",
-        "siren": "692039514",
-        "address": "1 pl trocadero et 11 novembre",
-        "postalCode": "75116",
-        "city": "Paris"
-    }
-]
-
-""" users """
-user_mocks = [
-    {
-        "publicName": "Utilisateur test jeune",
-        "email": "pctest.jeune.93@btmx.fr",
-        "departementCode": "93",
-        "password": "pctestjeune"
-    },
-    {
-        "publicName": "Utilisateur test jeune",
-        "email": "pctest.jeune.34@btmx.fr",
-        "departementCode": "34",
-        "password": "pctestjeune"
-    },
-    {
-        "publicName": "Utilisateur test admin",
-        "email": "pctest.admin@btmx.fr",
-        "departementCode": "93",
-        "isAdmin": True,
-        "canBookFreeOffers": False,
-        "password": "pctestadmin"
-    }
-]
-
-""" venue """
-venue_mocks = [
-    {
-        "name": "Théâtre Chaillot",
-        "departementCode": "75",
-        "bookingEmail": "fake@email.com",
-        "offererIndex": 0,
-        "address": "1 pl trocadero et 11 novembre",
-        "postalCode": "75116",
-        "city": "Paris"
-    }
-]
-
 """ bookings """
 booking_mocks = [
     {
@@ -54,8 +6,55 @@ booking_mocks = [
         "userEmail": "pctest.jeune.93@btmx.fr"
     },
     {
+        "stockIndex": 0,
+        "token": "2AEVY3",
+        "userEmail": "pctest.jeune.93@btmx.fr"
+    },
+
+
+    {
         "stockIndex": 1,
         "token": "1BLZZ5",
+        "userEmail": "pctest.jeune.93@btmx.fr"
+    },
+
+    {
+        "stockIndex": 2,
+        "token": "2AMYY9",
+        "userEmail": "pctest.jeune.93@btmx.fr"
+    },
+
+    {
+        "stockIndex": 3,
+        "token": "QAQYY3",
+        "userEmail": "pctest.jeune.93@btmx.fr"
+    },
+    {
+        "stockIndex": 3,
+        "token": "CAQCC3",
+        "userEmail": "pctest.jeune.93@btmx.fr"
+    },
+
+    {
+        "stockIndex": 4,
+        "token": "AAQY53",
+        "userEmail": "pctest.jeune.93@btmx.fr"
+    },
+
+    {
+        "stockIndex": 5,
+        "token": "AAQY33",
+        "userEmail": "pctest.jeune.93@btmx.fr"
+    },
+    {
+        "stockIndex": 5,
+        "token": "ARQYRR",
+        "userEmail": "pctest.jeune.93@btmx.fr"
+    },
+
+    {
+        "stockIndex": 6,
+        "token": "BABY53",
         "userEmail": "pctest.jeune.93@btmx.fr"
     }
 ]
@@ -75,31 +74,85 @@ event_occurrence_mocks = [
         "offerIndex": 0
     },
     {
+        "offerIndex": 0
+    },
+
+    {
         "offerIndex": 1
+    },
+    {
+        "offerIndex": 1
+    },
+    {
+        "offerIndex": 1
+    },
+
+
+    {
+        "offerIndex": 2
+    },
+
+    {
+        "offerIndex": 2
     }
+
 ]
 
 """ events """
 event_mocks = [
     {
-        "name": "Event1",
+        "name": "Rencontre avec Franck Lepage",
         "durationMinutes": 60
     },
     {
-        "name": "Event2",
-        "durationMinutes": 90
+        "name": "Concert de Gael Faye",
+        "durationMinutes": 120
+    },
+    {
+        "name": "PNL chante Marx",
+        "durationMinutes": 10
+    }
+]
+
+""" offerers """
+offerer_mocks = [
+    {
+        "address": "1 BD POISSONNIERE",
+        "city": "Paris",
+        "name": "LE GRAND REX PARIS",
+        "postalCode": "75002",
+        "siren": "507633576"
+    },
+    {
+        "address": "6 RUE GROLEE",
+        "city": "Lyon",
+        "name": "THEATRE DE L ODEON",
+        "postalCode": "69002",
+        "siren": "750505703"
     }
 ]
 
 """ offer """
 offer_mocks = [
     {
-        "eventIndex": 0,
-        "venueIndex": 0
+        "eventName": "Rencontre avec Franck Lepage",
+        "venueName": "LE GRAND REX PARIS"
     },
     {
-        "eventIndex": 1,
-        "venueIndex": 0
+        "eventName": "Rencontre avec Franck Lepage",
+        "venueName": "LE GRAND REX PARIS"
+    },
+    {
+        "eventName": "Concert de Gael Faye",
+        "venueName": "THEATRE DE L ODEON"
+    },
+    {
+        "eventName": "PNL chante Marx",
+        "venueName": "THEATRE DE L ODEON"
+    },
+    {
+        "thingName": "Ravage",
+        "venueName": "THEATRE DE L ODEON"
     }
 ]
 
@@ -2873,15 +2926,139 @@ recommendation_mocks = {
 """ stocks """
 stock_mocks = [
     {
-        "available": 5,
+        "available": 10,
         "eventOccurrenceIndex": 0,
         "price": 10
     },
     {
-        "available": 4,
+        "available": 15,
         "eventOccurrenceIndex": 1,
         "price": 15
+    },
+
+    {
+        "available": 100,
+        "eventOccurrenceIndex": 2,
+        "price": 10
+    },
+    {
+        "available": 100,
+        "eventOccurrenceIndex": 3,
+        "price": 10
+    },
+    {
+        "available": 90,
+        "eventOccurrenceIndex": 4,
+        "price": 15
+    },
+
+    {
+        "available": 50,
+        "eventOccurrenceIndex": 5,
+        "price": 50
+    },
+
+    {
+        "available": 50,
+        "offerIndex": 3,
+        "price": 50
     }
 ]
 
+""" events """
+thing_mocks = [
+    {
+        "name": "Ravage",
+        "type": "Livre"
+    }
+]
+
+""" user offerers """
+user_offerer_mocks = [
+    {
+        "userEmail": "pctest.pro.1@btmx.fr",
+        "offererName": "LE GRAND REX PARIS",
+        "rights": "editor"
+    },
+    {
+        "userEmail": "pctest.pro.1@btmx.fr",
+        "offererName": "THEATRE DE L ODEON",
+        "rights": "editor"
+    }
+]
+
+""" users """
+user_mocks = [
+    {
+        "email": 'pctest.cafe@btmx.fr',
+        "password": 'pctestcafe',
+        "publicName": 'Public Name',
+        "departementCode": "93",
+        "firstName": "test",
+        "lastName": "cafe",
+        "postalCode": "75116",
+    },
+    {
+        "publicName": "Utilisateur test jeune",
+        "firstName": "Utilisateur",
+        "lastName": "Test Jeune",
+        "email": "pctest.jeune.93@btmx.fr",
+        "postalCode": "93100",
+        "departementCode": "93",
+        "password": "pctestjeune"
+    },
+    {
+        "publicName": "Utilisateur test jeune",
+        "firstName": "Utilisateur",
+        "lastName": "Test Jeune",
+        "email": "pctest.jeune.34@btmx.fr",
+        "postalCode": "34080",
+        "departementCode": "34",
+        "password": "pctestjeune"
+    },
+    {
+        "departementCode": "93",
+        "publicName": "Utilisateur test pro",
+        "firstName": "Utilisateur",
+        "lastName": "Test Pro",
+        "email": "pctest.pro.1@btmx.fr",
+        "postalCode": "93100",
+        "password": "pctestpro1"
+    },
+    {
+        "publicName": "Utilisateur test admin",
+        "firstName": "Utilisateur",
+        "lastName": "Test Admin",
+        "email": "pctest.admin@btmx.fr",
+        "postalCode": "93100",
+        "departementCode": "93",
+        "isAdmin": True,
+        "canBookFreeOffers": False,
+        "password": "pctestadmin"
+    }
+]
+
+""" venue """
+venue_mocks = [
+    {
+        "address": "1 BD POISSONNIERE",
+        "bookingEmail": "fake@email.com",
+        "city": "Paris",
+        "departementCode": "75",
+        "name": "LE GRAND REX PARIS",
+        "offererName": "LE GRAND REX PARIS",
+        "postalCode": "75002",
+        "siret": "50763357600016"
+    },
+    {
+        "address": "6 rue Grolee",
+        "bookingEmail": "fake2@email.com",
+        "city": "Lyon",
+        "departementCode": "69",
+        "name": "THEATRE DE L ODEON",
+        "offererName": "THEATRE DE L ODEON",
+        "postalCode": "69002",
+        "siret": "75050570300025"
+    }
+]
 

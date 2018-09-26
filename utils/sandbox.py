@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 import json
 from pprint import pprint
 import sys
-from mock.scripts import sandbox_webapp
+from mock.scripts import sandbox_webapp, sandbox_classic
 
 from models.pc_object import PcObject
 from models import Booking,\
@@ -63,7 +63,7 @@ def do_sandbox(name):
             user = query.first()
         users_by_email[user_mock['email']] = user
 
-    for user_offerer_mock in user_offerer_mocks:
+    for user_offerer_mock in sandbox_module.user_offerer_mocks:
         user = users_by_email[user_offerer_mock['userEmail']]
         offerer = offerers_by_name[user_offerer_mock['offererName']]
 
@@ -105,7 +105,7 @@ def do_sandbox(name):
         events_by_name[event_mock['name']] = event
 
     things_by_name = {}
-    for thing_mock in thing_mocks:
+    for thing_mock in sandbox_module.thing_mocks:
         query = Thing.query.filter_by(name=thing_mock['name'])
         if query.count() == 0:
             thing = Thing(from_dict=thing_mock)
