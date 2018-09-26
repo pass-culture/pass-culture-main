@@ -424,7 +424,7 @@ class OfferPage extends Component {
                       <div className="field-body">
                         <p className="help is-danger">
                           {venue
-                            ? "Erreur dans les données: La venue rattachée à cette offre n'est pas compatible avec le type de l'offre"
+                            ? "Erreur dans les données: Le lieu rattaché à cette offre n'est pas compatible avec le type de l'offre"
                             : 'Il faut obligatoirement une structure avec un lieu.'}
                           <Field type="hidden" name="__BLOCK_FORM__" required />
                         </p>
