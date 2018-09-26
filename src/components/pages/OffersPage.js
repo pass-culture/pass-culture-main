@@ -192,14 +192,14 @@ class OffersPage extends Component {
 }
 
 function mapStateToProps(state, ownProps) {
-  const { lieu, structure } = ownProps.queryParams
+  const { offererId, venueId } = ownProps.apiParams
   return {
     lastTrackerMoment: lastTrackerMoment(state, 'offers'),
-    offers: offersSelector(state, structure, lieu),
-    offerer: offererSelector(state, structure),
+    offers: offersSelector(state, offererId, venueId),
+    offerer: offererSelector(state, offererId),
     user: state.user,
     types: state.data.types,
-    venue: venueSelector(state, lieu),
+    venue: venueSelector(state, venueId),
   }
 }
 
