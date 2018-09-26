@@ -26,9 +26,7 @@ ShallowWrapper {
         <h2
           className="fs15 is-uppercase is-italic is-semi-bold mb12"
           id="results-title"
-        >
-           : 0 résultat
-        </h2>,
+        />,
         <InfiniteScroller
           Tag="ul"
           handleLoadMore={[MockFunction]}
@@ -39,7 +37,9 @@ ShallowWrapper {
           scrollingElement={
             <html>
               <head />
-              <body />
+              <body
+                class=" web"
+              />
             </html>
           }
         />,
@@ -53,12 +53,12 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "host",
         "props": Object {
-          "children": " : 0 résultat",
+          "children": undefined,
           "className": "fs15 is-uppercase is-italic is-semi-bold mb12",
           "id": "results-title",
         },
         "ref": null,
-        "rendered": " : 0 résultat",
+        "rendered": null,
         "type": "h2",
       },
       Object {
@@ -75,7 +75,9 @@ ShallowWrapper {
           "renderLoading": [Function],
           "scrollingElement": <html>
             <head />
-            <body />
+            <body
+              class=" web"
+            />
           </html>,
         },
         "ref": null,
@@ -95,9 +97,7 @@ ShallowWrapper {
           <h2
             className="fs15 is-uppercase is-italic is-semi-bold mb12"
             id="results-title"
-          >
-             : 0 résultat
-          </h2>,
+          />,
           <InfiniteScroller
             Tag="ul"
             handleLoadMore={[MockFunction]}
@@ -108,7 +108,9 @@ ShallowWrapper {
             scrollingElement={
               <html>
                 <head />
-                <body />
+                <body
+                  class=" web"
+                />
               </html>
             }
           />,
@@ -122,12 +124,12 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "host",
           "props": Object {
-            "children": " : 0 résultat",
+            "children": undefined,
             "className": "fs15 is-uppercase is-italic is-semi-bold mb12",
             "id": "results-title",
           },
           "ref": null,
-          "rendered": " : 0 résultat",
+          "rendered": null,
           "type": "h2",
         },
         Object {
@@ -144,7 +146,9 @@ ShallowWrapper {
             "renderLoading": [Function],
             "scrollingElement": <html>
               <head />
-              <body />
+              <body
+                class=" web"
+              />
             </html>,
           },
           "ref": null,

@@ -33,7 +33,7 @@ ShallowWrapper {
               Bienvenue
             </span>
             <span
-              className="is-italic is-block"
+              className="is-italic is-block is-semi-bold"
             >
               dans la version beta
             </span>
@@ -44,17 +44,12 @@ ShallowWrapper {
             </span>
           </h1>
           <p
-            className="text-left mt36 fs22"
+            className="text-left is-italic is-medium mt36 fs22"
           >
             <span
               className="is-block"
             >
-              Et merci de votre participation
-            </span>
-            <span
-              className="is-block"
-            >
-              pour nous aider à l'améliorer !
+              Et merci de votre participation pour nous aider à l'améliorer !
             </span>
           </p>
         </main>,
@@ -68,7 +63,7 @@ ShallowWrapper {
             to="/inscription"
           >
             <span
-              className="fs32 is-italic is-bold"
+              className="fs32 is-italic is-semi-bold"
             >
               C'est par là
             </span>
@@ -100,7 +95,7 @@ ShallowWrapper {
                 Bienvenue
               </span>
               <span
-                className="is-italic is-block"
+                className="is-italic is-block is-semi-bold"
               >
                 dans la version beta
               </span>
@@ -111,17 +106,12 @@ ShallowWrapper {
               </span>
             </h1>,
             <p
-              className="text-left mt36 fs22"
+              className="text-left is-italic is-medium mt36 fs22"
             >
               <span
                 className="is-block"
               >
-                Et merci de votre participation
-              </span>
-              <span
-                className="is-block"
-              >
-                pour nous aider à l'améliorer !
+                Et merci de votre participation pour nous aider à l'améliorer !
               </span>
             </p>,
           ],
@@ -142,7 +132,7 @@ ShallowWrapper {
                   Bienvenue
                 </span>,
                 <span
-                  className="is-italic is-block"
+                  className="is-italic is-block is-semi-bold"
                 >
                   dans la version beta
                 </span>,
@@ -174,7 +164,7 @@ ShallowWrapper {
                 "nodeType": "host",
                 "props": Object {
                   "children": "dans la version beta",
-                  "className": "is-italic is-block",
+                  "className": "is-italic is-block is-semi-bold",
                 },
                 "ref": null,
                 "rendered": "dans la version beta",
@@ -200,47 +190,26 @@ ShallowWrapper {
             "key": undefined,
             "nodeType": "host",
             "props": Object {
-              "children": Array [
-                <span
-                  className="is-block"
-                >
-                  Et merci de votre participation
-                </span>,
-                <span
-                  className="is-block"
-                >
-                  pour nous aider à l'améliorer !
-                </span>,
-              ],
-              "className": "text-left mt36 fs22",
+              "children": <span
+                className="is-block"
+              >
+                Et merci de votre participation pour nous aider à l'améliorer !
+              </span>,
+              "className": "text-left is-italic is-medium mt36 fs22",
             },
             "ref": null,
-            "rendered": Array [
-              Object {
-                "instance": null,
-                "key": undefined,
-                "nodeType": "host",
-                "props": Object {
-                  "children": "Et merci de votre participation",
-                  "className": "is-block",
-                },
-                "ref": null,
-                "rendered": "Et merci de votre participation",
-                "type": "span",
+            "rendered": Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": "Et merci de votre participation pour nous aider à l'améliorer !",
+                "className": "is-block",
               },
-              Object {
-                "instance": null,
-                "key": undefined,
-                "nodeType": "host",
-                "props": Object {
-                  "children": "pour nous aider à l'améliorer !",
-                  "className": "is-block",
-                },
-                "ref": null,
-                "rendered": "pour nous aider à l'améliorer !",
-                "type": "span",
-              },
-            ],
+              "ref": null,
+              "rendered": "Et merci de votre participation pour nous aider à l'améliorer !",
+              "type": "span",
+            },
             "type": "p",
           },
         ],
@@ -257,7 +226,7 @@ ShallowWrapper {
             to="/inscription"
           >
             <span
-              className="fs32 is-italic is-bold"
+              className="fs32 is-italic is-semi-bold"
             >
               C'est par là
             </span>
@@ -278,7 +247,7 @@ ShallowWrapper {
           "props": Object {
             "children": Array [
               <span
-                className="fs32 is-italic is-bold"
+                className="fs32 is-italic is-semi-bold"
               >
                 C'est par là
               </span>,
@@ -300,7 +269,7 @@ ShallowWrapper {
               "nodeType": "host",
               "props": Object {
                 "children": "C'est par là",
-                "className": "fs32 is-italic is-bold",
+                "className": "fs32 is-italic is-semi-bold",
               },
               "ref": null,
               "rendered": "C'est par là",
@@ -347,7 +316,7 @@ ShallowWrapper {
                 Bienvenue
               </span>
               <span
-                className="is-italic is-block"
+                className="is-italic is-block is-semi-bold"
               >
                 dans la version beta
               </span>
@@ -358,17 +327,12 @@ ShallowWrapper {
               </span>
             </h1>
             <p
-              className="text-left mt36 fs22"
+              className="text-left is-italic is-medium mt36 fs22"
             >
               <span
                 className="is-block"
               >
-                Et merci de votre participation
-              </span>
-              <span
-                className="is-block"
-              >
-                pour nous aider à l'améliorer !
+                Et merci de votre participation pour nous aider à l'améliorer !
               </span>
             </p>
           </main>,
@@ -382,7 +346,7 @@ ShallowWrapper {
               to="/inscription"
             >
               <span
-                className="fs32 is-italic is-bold"
+                className="fs32 is-italic is-semi-bold"
               >
                 C'est par là
               </span>
@@ -414,7 +378,7 @@ ShallowWrapper {
                   Bienvenue
                 </span>
                 <span
-                  className="is-italic is-block"
+                  className="is-italic is-block is-semi-bold"
                 >
                   dans la version beta
                 </span>
@@ -425,17 +389,12 @@ ShallowWrapper {
                 </span>
               </h1>,
               <p
-                className="text-left mt36 fs22"
+                className="text-left is-italic is-medium mt36 fs22"
               >
                 <span
                   className="is-block"
                 >
-                  Et merci de votre participation
-                </span>
-                <span
-                  className="is-block"
-                >
-                  pour nous aider à l'améliorer !
+                  Et merci de votre participation pour nous aider à l'améliorer !
                 </span>
               </p>,
             ],
@@ -456,7 +415,7 @@ ShallowWrapper {
                     Bienvenue
                   </span>,
                   <span
-                    className="is-italic is-block"
+                    className="is-italic is-block is-semi-bold"
                   >
                     dans la version beta
                   </span>,
@@ -488,7 +447,7 @@ ShallowWrapper {
                   "nodeType": "host",
                   "props": Object {
                     "children": "dans la version beta",
-                    "className": "is-italic is-block",
+                    "className": "is-italic is-block is-semi-bold",
                   },
                   "ref": null,
                   "rendered": "dans la version beta",
@@ -514,47 +473,26 @@ ShallowWrapper {
               "key": undefined,
               "nodeType": "host",
               "props": Object {
-                "children": Array [
-                  <span
-                    className="is-block"
-                  >
-                    Et merci de votre participation
-                  </span>,
-                  <span
-                    className="is-block"
-                  >
-                    pour nous aider à l'améliorer !
-                  </span>,
-                ],
-                "className": "text-left mt36 fs22",
+                "children": <span
+                  className="is-block"
+                >
+                  Et merci de votre participation pour nous aider à l'améliorer !
+                </span>,
+                "className": "text-left is-italic is-medium mt36 fs22",
               },
               "ref": null,
-              "rendered": Array [
-                Object {
-                  "instance": null,
-                  "key": undefined,
-                  "nodeType": "host",
-                  "props": Object {
-                    "children": "Et merci de votre participation",
-                    "className": "is-block",
-                  },
-                  "ref": null,
-                  "rendered": "Et merci de votre participation",
-                  "type": "span",
+              "rendered": Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": "Et merci de votre participation pour nous aider à l'améliorer !",
+                  "className": "is-block",
                 },
-                Object {
-                  "instance": null,
-                  "key": undefined,
-                  "nodeType": "host",
-                  "props": Object {
-                    "children": "pour nous aider à l'améliorer !",
-                    "className": "is-block",
-                  },
-                  "ref": null,
-                  "rendered": "pour nous aider à l'améliorer !",
-                  "type": "span",
-                },
-              ],
+                "ref": null,
+                "rendered": "Et merci de votre participation pour nous aider à l'améliorer !",
+                "type": "span",
+              },
               "type": "p",
             },
           ],
@@ -571,7 +509,7 @@ ShallowWrapper {
               to="/inscription"
             >
               <span
-                className="fs32 is-italic is-bold"
+                className="fs32 is-italic is-semi-bold"
               >
                 C'est par là
               </span>
@@ -592,7 +530,7 @@ ShallowWrapper {
             "props": Object {
               "children": Array [
                 <span
-                  className="fs32 is-italic is-bold"
+                  className="fs32 is-italic is-semi-bold"
                 >
                   C'est par là
                 </span>,
@@ -614,7 +552,7 @@ ShallowWrapper {
                 "nodeType": "host",
                 "props": Object {
                   "children": "C'est par là",
-                  "className": "fs32 is-italic is-bold",
+                  "className": "fs32 is-italic is-semi-bold",
                 },
                 "ref": null,
                 "rendered": "C'est par là",

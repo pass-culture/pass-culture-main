@@ -4,7 +4,7 @@ exports[`src | components | pages | TermsPage snapshot should match snapshot 1`]
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <TermsPage
-    appversion="0.4.2"
+    appversion="0.4.4"
     errors={Object {}}
   />,
   Symbol(enzyme.__renderer__): Object {
@@ -22,31 +22,21 @@ ShallowWrapper {
     "props": Object {
       "children": Array [
         <PageHeader
-          canback={true}
+          canSubmit={true}
           className=""
+          isloading={false}
           theme="red"
           title="Mentions légales"
+          useBack={true}
+          useClose={true}
+          useSubmit={false}
         />,
         <main
-          className="pc-main my12"
+          className="pc-main is-clipped my12"
           role="main"
         >
-          <Scrollbars
-            autoHeight={false}
-            autoHeightMax={200}
-            autoHeightMin={0}
-            autoHide={false}
-            autoHideDuration={200}
-            autoHideTimeout={1000}
-            hideTracksWhenNotNeeded={false}
-            renderThumbHorizontal={[Function]}
-            renderThumbVertical={[Function]}
-            renderTrackHorizontal={[Function]}
-            renderTrackVertical={[Function]}
-            renderView={[Function]}
-            tagName="div"
-            thumbMinSize={30}
-            universal={false}
+          <div
+            className="pc-scroll-container"
           >
             <div
               className="padded content"
@@ -72,11 +62,11 @@ ShallowWrapper {
               >
                 <p>
                   Pass Culture version v
-                  0.4.2
+                  0.4.4
                 </p>
               </div>
             </div>
-          </Scrollbars>
+          </div>
         </main>,
         <Connect(NavigationFooter)
           className="dotted-top-red"
@@ -93,10 +83,14 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "function",
         "props": Object {
-          "canback": true,
+          "canSubmit": true,
           "className": "",
+          "isloading": false,
           "theme": "red",
           "title": "Mentions légales",
+          "useBack": true,
+          "useClose": true,
+          "useSubmit": false,
         },
         "ref": null,
         "rendered": null,
@@ -107,22 +101,8 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "host",
         "props": Object {
-          "children": <Scrollbars
-            autoHeight={false}
-            autoHeightMax={200}
-            autoHeightMin={0}
-            autoHide={false}
-            autoHideDuration={200}
-            autoHideTimeout={1000}
-            hideTracksWhenNotNeeded={false}
-            renderThumbHorizontal={[Function]}
-            renderThumbVertical={[Function]}
-            renderTrackHorizontal={[Function]}
-            renderTrackVertical={[Function]}
-            renderView={[Function]}
-            tagName="div"
-            thumbMinSize={30}
-            universal={false}
+          "children": <div
+            className="pc-scroll-container"
           >
             <div
               className="padded content"
@@ -148,26 +128,20 @@ ShallowWrapper {
               >
                 <p>
                   Pass Culture version v
-                  0.4.2
+                  0.4.4
                 </p>
               </div>
             </div>
-          </Scrollbars>,
-          "className": "pc-main my12",
+          </div>,
+          "className": "pc-main is-clipped my12",
           "role": "main",
         },
         "ref": null,
         "rendered": Object {
           "instance": null,
           "key": undefined,
-          "nodeType": "class",
+          "nodeType": "host",
           "props": Object {
-            "autoHeight": false,
-            "autoHeightMax": 200,
-            "autoHeightMin": 0,
-            "autoHide": false,
-            "autoHideDuration": 200,
-            "autoHideTimeout": 1000,
             "children": <div
               className="padded content"
               style={
@@ -192,19 +166,11 @@ ShallowWrapper {
               >
                 <p>
                   Pass Culture version v
-                  0.4.2
+                  0.4.4
                 </p>
               </div>
             </div>,
-            "hideTracksWhenNotNeeded": false,
-            "renderThumbHorizontal": [Function],
-            "renderThumbVertical": [Function],
-            "renderTrackHorizontal": [Function],
-            "renderTrackVertical": [Function],
-            "renderView": [Function],
-            "tagName": "div",
-            "thumbMinSize": 30,
-            "universal": false,
+            "className": "pc-scroll-container",
           },
           "ref": null,
           "rendered": Object {
@@ -229,7 +195,7 @@ ShallowWrapper {
                 >
                   <p>
                     Pass Culture version v
-                    0.4.2
+                    0.4.4
                   </p>
                 </div>,
               ],
@@ -266,7 +232,7 @@ ShallowWrapper {
                 "props": Object {
                   "children": <p>
                     Pass Culture version v
-                    0.4.2
+                    0.4.4
                   </p>,
                   "className": "mt16",
                 },
@@ -278,13 +244,13 @@ ShallowWrapper {
                   "props": Object {
                     "children": Array [
                       "Pass Culture version v",
-                      "0.4.2",
+                      "0.4.4",
                     ],
                   },
                   "ref": null,
                   "rendered": Array [
                     "Pass Culture version v",
-                    "0.4.2",
+                    "0.4.4",
                   ],
                   "type": "p",
                 },
@@ -293,7 +259,7 @@ ShallowWrapper {
             ],
             "type": "div",
           },
-          "type": [Function],
+          "type": "div",
         },
         "type": "main",
       },
@@ -320,31 +286,21 @@ ShallowWrapper {
       "props": Object {
         "children": Array [
           <PageHeader
-            canback={true}
+            canSubmit={true}
             className=""
+            isloading={false}
             theme="red"
             title="Mentions légales"
+            useBack={true}
+            useClose={true}
+            useSubmit={false}
           />,
           <main
-            className="pc-main my12"
+            className="pc-main is-clipped my12"
             role="main"
           >
-            <Scrollbars
-              autoHeight={false}
-              autoHeightMax={200}
-              autoHeightMin={0}
-              autoHide={false}
-              autoHideDuration={200}
-              autoHideTimeout={1000}
-              hideTracksWhenNotNeeded={false}
-              renderThumbHorizontal={[Function]}
-              renderThumbVertical={[Function]}
-              renderTrackHorizontal={[Function]}
-              renderTrackVertical={[Function]}
-              renderView={[Function]}
-              tagName="div"
-              thumbMinSize={30}
-              universal={false}
+            <div
+              className="pc-scroll-container"
             >
               <div
                 className="padded content"
@@ -370,11 +326,11 @@ ShallowWrapper {
                 >
                   <p>
                     Pass Culture version v
-                    0.4.2
+                    0.4.4
                   </p>
                 </div>
               </div>
-            </Scrollbars>
+            </div>
           </main>,
           <Connect(NavigationFooter)
             className="dotted-top-red"
@@ -391,10 +347,14 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "function",
           "props": Object {
-            "canback": true,
+            "canSubmit": true,
             "className": "",
+            "isloading": false,
             "theme": "red",
             "title": "Mentions légales",
+            "useBack": true,
+            "useClose": true,
+            "useSubmit": false,
           },
           "ref": null,
           "rendered": null,
@@ -405,22 +365,8 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "host",
           "props": Object {
-            "children": <Scrollbars
-              autoHeight={false}
-              autoHeightMax={200}
-              autoHeightMin={0}
-              autoHide={false}
-              autoHideDuration={200}
-              autoHideTimeout={1000}
-              hideTracksWhenNotNeeded={false}
-              renderThumbHorizontal={[Function]}
-              renderThumbVertical={[Function]}
-              renderTrackHorizontal={[Function]}
-              renderTrackVertical={[Function]}
-              renderView={[Function]}
-              tagName="div"
-              thumbMinSize={30}
-              universal={false}
+            "children": <div
+              className="pc-scroll-container"
             >
               <div
                 className="padded content"
@@ -446,26 +392,20 @@ ShallowWrapper {
                 >
                   <p>
                     Pass Culture version v
-                    0.4.2
+                    0.4.4
                   </p>
                 </div>
               </div>
-            </Scrollbars>,
-            "className": "pc-main my12",
+            </div>,
+            "className": "pc-main is-clipped my12",
             "role": "main",
           },
           "ref": null,
           "rendered": Object {
             "instance": null,
             "key": undefined,
-            "nodeType": "class",
+            "nodeType": "host",
             "props": Object {
-              "autoHeight": false,
-              "autoHeightMax": 200,
-              "autoHeightMin": 0,
-              "autoHide": false,
-              "autoHideDuration": 200,
-              "autoHideTimeout": 1000,
               "children": <div
                 className="padded content"
                 style={
@@ -490,19 +430,11 @@ ShallowWrapper {
                 >
                   <p>
                     Pass Culture version v
-                    0.4.2
+                    0.4.4
                   </p>
                 </div>
               </div>,
-              "hideTracksWhenNotNeeded": false,
-              "renderThumbHorizontal": [Function],
-              "renderThumbVertical": [Function],
-              "renderTrackHorizontal": [Function],
-              "renderTrackVertical": [Function],
-              "renderView": [Function],
-              "tagName": "div",
-              "thumbMinSize": 30,
-              "universal": false,
+              "className": "pc-scroll-container",
             },
             "ref": null,
             "rendered": Object {
@@ -527,7 +459,7 @@ ShallowWrapper {
                   >
                     <p>
                       Pass Culture version v
-                      0.4.2
+                      0.4.4
                     </p>
                   </div>,
                 ],
@@ -564,7 +496,7 @@ ShallowWrapper {
                   "props": Object {
                     "children": <p>
                       Pass Culture version v
-                      0.4.2
+                      0.4.4
                     </p>,
                     "className": "mt16",
                   },
@@ -576,13 +508,13 @@ ShallowWrapper {
                     "props": Object {
                       "children": Array [
                         "Pass Culture version v",
-                        "0.4.2",
+                        "0.4.4",
                       ],
                     },
                     "ref": null,
                     "rendered": Array [
                       "Pass Culture version v",
-                      "0.4.2",
+                      "0.4.4",
                     ],
                     "type": "p",
                   },
@@ -591,7 +523,7 @@ ShallowWrapper {
               ],
               "type": "div",
             },
-            "type": [Function],
+            "type": "div",
           },
           "type": "main",
         },

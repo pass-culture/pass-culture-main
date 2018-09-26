@@ -3,6 +3,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
 import selectTypeSublabels from '../../../selectors/selectTypeSublabels'
+import SearchPicture from './SearchPicture'
 
 class FilterByOfferTypes extends Component {
   onFilterChange = typeSublabel => {
@@ -25,30 +26,32 @@ class FilterByOfferTypes extends Component {
   }
 
   render() {
-    const { filterParams, title, typeSublabels } = this.props
+    const { filterParams, typeSublabels, title } = this.props
 
     const typesValue = decodeURI(filterParams.categories || '')
 
     return (
-      <div>
-        <h2>
+      <div id="filter-by-offer-types">
+        <h2 className="fs18">
           {title}
         </h2>
-        {typeSublabels.map(typeSublabel => (
-          <div className="field field-checkbox" key={typeSublabel}>
-            <label id="type" className="label">
-              {' '}
-              {typeSublabel}
-            </label>
-            <input
-              checked={typesValue.includes(typeSublabel)}
-              className="input is-normal"
-              onChange={() => this.onFilterChange(typeSublabel)}
-              value={typeSublabel}
-              type="checkbox"
-            />
-          </div>
-        ))}
+        <div className="filter-menu-outer">
+          {typeSublabels.map(typeSublabel => (
+            <div className="filter-menu-inner" key={typeSublabel}>
+              <SearchPicture searchType={typeSublabel} />
+              <label id="type" className="fs20">
+                {' '}
+                {typeSublabel}
+              </label>
+              <input
+                checked={typesValue.includes(typeSublabel)}
+                onChange={() => this.onFilterChange(typeSublabel)}
+                value={typeSublabel}
+                type="checkbox"
+              />
+            </div>
+          ))}
+        </div>
       </div>
     )
   }

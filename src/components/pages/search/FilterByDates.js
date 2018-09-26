@@ -51,31 +51,35 @@ class FilterByDates extends Component {
   }
 
   render() {
-    const { filterParams } = this.props
+    const { filterParams, title } = this.props
 
     const days = decodeURI(filterParams.jours || '')
 
     return (
-      <div>
-        <h2>
-DATE (Scrollable horizontally)
+      <div className="dotted-bottom-primary" id="filter-by-dates">
+        <h2 className="fs18">
+          {title}
         </h2>
-        {checkboxes.map(({ label, value }) => (
-          <div className="field field-checkbox" key={value}>
-            <label className="label"> 
-              {' '}
-              {label}
-            </label>
-            <input
-              checked={days.includes(value)}
-              className="input is-normal"
-              onChange={() => this.onFilterChange(value)}
-              type="checkbox"
-            />
+        <div className="filter-menu-outer">
+          {checkboxes.map(({ label, value }) => (
+            <div id="date-checkbox" className="filter-menu-inner">
+              <div className="field field-checkbox" key={value}>
+                <label className="fs22"> 
+                  {' '}
+                  {label}
+                </label>
+                <input
+                  checked={days.includes(value)}
+                  className="input is-normal"
+                  onChange={() => this.onFilterChange(value)}
+                  type="checkbox"
+                />
+              </div>
+            </div>
+          ))}
+          <div className="filter-menu-inner">
+DATE PICKER TO DO
           </div>
-        ))}
-        <div>
-Par date
         </div>
       </div>
     )
@@ -87,6 +91,7 @@ FilterByDates.propTypes = {
   handleFilterParamAdd: PropTypes.func.isRequired,
   handleFilterParamRemove: PropTypes.func.isRequired,
   handleFilterParamsChange: PropTypes.func.isRequired,
+  title: PropTypes.string.isRequired,
 }
 
 export default FilterByDates

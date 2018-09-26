@@ -42,8 +42,12 @@ describe.skip('src | components | pages | SearchResultItem', () => {
         const dotdotdot = wrapper.find(Dotdotdot).props()
         const span = wrapper.find('span').props()
         expect(linkUrl.to).toEqual('/decouverte/X9')
-        expect(thumbUrl.src).toEqual('http://localhost/storage/thumbs/things/QE')
-        expect(dotdotdot.children).toEqual('sur la route des migrants ; rencontres à Calais')
+        expect(thumbUrl.src).toEqual(
+          'http://localhost/storage/thumbs/things/QE'
+        )
+        expect(dotdotdot.children).toEqual(
+          'sur la route des migrants ; rencontres à Calais'
+        )
         expect(span.children).toEqual('permanent')
       })
     })
