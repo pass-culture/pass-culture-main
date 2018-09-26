@@ -1,6 +1,3 @@
-'use strict'
-
-const autoprefixer = require('autoprefixer')
 const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin')
 const eslintFormatter = require('react-dev-utils/eslintFormatter')
 const getClientEnvironment = require('./env')
