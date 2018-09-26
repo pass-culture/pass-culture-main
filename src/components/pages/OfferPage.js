@@ -452,7 +452,7 @@ class OfferPage extends Component {
                       required
                       sublabel={
                         !isReadOnly &&
-                        "Vous pouvez include {token} {email} et {offerId} dans l'URL, qui seront remplacés respectivement par le code de la contremarque, l'email de la personne ayant reservé et l'identifiant de l'offre"
+                        "Vous pouvez inclure {token} {email} et {offerId} dans l'URL, qui seront remplacés respectivement par le code de la contremarque, l'email de la personne ayant reservé et l'identifiant de l'offre"
                       }
                       type="text"
                     />
