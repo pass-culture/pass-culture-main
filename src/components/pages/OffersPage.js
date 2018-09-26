@@ -19,19 +19,22 @@ import offersSelector from '../../selectors/offers'
 import offererSelector from '../../selectors/offerer'
 import venueSelector from '../../selectors/venue'
 import { offerNormalizer } from '../../utils/normalizers'
-import { queryToApiParams } from '../../utils/search'
+import { mapApiToQuery, queryToApiParams } from '../../utils/search'
 
 class OffersPage extends Component {
   handleDataRequest = (handleSuccess = () => {}, handleFail = () => {}) => {
     const {
+      apiSearch,
       comparedTo,
       dispatch,
       goToNextSearchPage,
-      querySearch,
       types,
     } = this.props
+
+    console.log('apiSearch', apiSearch)
+
     dispatch(
-      requestData('GET', `offers?${querySearch}`, {
+      requestData('GET', `offers?${apiSearch}`, {
         handleSuccess: (state, action) => {
           handleSuccess(state, action)
           goToNextSearchPage()
@@ -44,12 +47,23 @@ class OffersPage extends Component {
     types.length === 0 && dispatch(requestData('GET', 'types'))
   }
 
+  onSubmit = event => {
+    const { handleQueryParamsChange, queryParams } = this.props
+
+    event.preventDefault()
+
+    const value = event.target.elements.keywords.value
+
+    if (!value || queryParams.keywords === value) return
+
+    handleQueryParamsChange({ [mapApiToQuery.keywords]: value })
+  }
+
   render() {
     const {
       handleOrderByChange,
       handleOrderDirectionChange,
       handleRemoveFilter,
-      handleSearchChange,
       offers,
       offerer,
       queryParams,
@@ -69,13 +83,13 @@ class OffersPage extends Component {
             <span>Créer une offre</span>
           </NavLink>
         </HeroSection>
-        <form className="section" onSubmit={handleSearchChange}>
+        <form className="section" onSubmit={this.onSubmit}>
           <label className="label">Rechercher une offre :</label>
           <div className="field is-grouped">
             <p className="control is-expanded">
               <input
-                id="search"
-                className="input search-input"
+                id="keywords"
+                className="input"
                 placeholder="Saisissez une recherche"
                 type="text"
                 defaultValue={search}
@@ -185,12 +199,6 @@ export default compose(
   withSearch({
     queryToApiParams,
     dataKey: 'offers',
-    defaultQueryParams: {
-      lieu: null,
-      search: undefined,
-      structure: null,
-      order_by: `createdAt+desc`,
-    },
   }),
   connect(mapStateToProps)
 )(OffersPage)
