@@ -1,5 +1,9 @@
 import createCachedSelector from 're-reselect'
 
+function mapArgsToKey(state, optionalOffererId, optionalOfferType) {
+  return `${optionalOffererId || ''}/${optionalOfferType || ''}`
+}
+
 export default createCachedSelector(
   state => state.data.venues,
   (state, optionalOffererId) => optionalOffererId,
@@ -21,7 +25,4 @@ export default createCachedSelector(
 
     return filteredVenues
   }
-)(
-  (state, optionalOffererId, optionalOfferType) =>
-    `${optionalOffererId || ''}${optionalOfferType || ''}`
-)
+)(mapArgsToKey)
