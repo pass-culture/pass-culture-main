@@ -46,13 +46,13 @@ class OffersPage extends Component {
   }
 
   onSubmit = event => {
-    const { handleQueryParamsChange, queryParams } = this.props
+    const { apiParams, handleQueryParamsChange } = this.props
 
     event.preventDefault()
 
     const value = event.target.elements.keywords.value
 
-    if (!value || queryParams.keywords === value) return
+    if (!value || apiParams.keywords === value) return
 
     handleQueryParamsChange({ [mapApiToQuery.keywords]: value })
   }
@@ -69,8 +69,8 @@ class OffersPage extends Component {
     } = this.props
 
     const { keywords, order_by } = apiParams || {}
-
     const [orderBy, orderDirection] = (order_by || '').split('+')
+
     return (
       <Main name="offers" handleDataRequest={this.handleDataRequest}>
         <HeroSection title="Vos offres">
