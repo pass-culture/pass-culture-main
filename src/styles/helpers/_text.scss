@@ -1,6 +1,6 @@
 // creation des classes permettant de gerer la taille des polices
 // Exemple: .fs18, .fs32...
-$intSizes: (13, 14, 15, 16, 17, 18, 19, 20, 22, 30, 32, 48, 52, 60, 80);
+$intSizes: (13, 14, 15, 16, 17, 18, 19, 20, 22, 30, 32, 36, 48, 52, 60, 80);
 
 @each $intSize in $intSizes {
   $pixelValue: number-to-pixel($intSize);
@@ -79,7 +79,8 @@ a.is-primary-text:hover {
   color: $green;
 }
 
-/* ------ STYLE / WEIGHT */
+/* ------ WEIGHT */
+// https://fonts.google.com/specimen/Barlow?selection.family=Barlow:300
 .is-light {
   font-weight: 300;
 }
@@ -105,6 +106,7 @@ a.is-primary-text:hover {
   font-weight: 800;
 }
 
+/* ------ STYLE */
 .is-italic {
   font-style: italic;
 }

@@ -27,12 +27,12 @@ class TermsPage extends React.PureComponent {
     return (
       <div id="terms-page" className="page is-relative flex-rows">
         <PageHeader useClose theme="red" title="Mentions légales" />
-        <main role="main" className="pc-main is-clipped my12">
+        <main role="main" className="pc-main is-clipped">
           <div className="pc-scroll-container">
             <div className="padded content" style={{ backgroundImage }}>
               <ReactMarkdown source={source} />
               <div className="mt16">
-                <p>Pass Culture version v{appversion}</p>
+                <p className="text-right">{`Pass Culture v.${appversion}`}</p>
               </div>
             </div>
           </div>

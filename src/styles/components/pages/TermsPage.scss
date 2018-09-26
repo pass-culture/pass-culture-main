@@ -1,0 +1,30 @@
+#terms-page .content {
+  h3 {
+    @extend .fs36;
+    @extend .is-medium;
+  }
+
+  h4 {
+    @extend .mb18;
+    @extend .fs18;
+    @extend .is-semi-bold;
+  }
+
+  h5 {
+    @extend .mb12;
+    @extend .fs15;
+    @extend .is-semi-bold;
+  }
+
+  p {
+    @extend .mb12;
+  }
+
+  p + h4 {
+    @extend .pt18;
+  }
+
+  a {
+    color: $primary;
+  }
+}
