@@ -8,8 +8,6 @@ export const mapQueryToApi = {
   structure: 'offererId',
 }
 
-//export const mapApiToQuery = invert(Object.assign({}, mapQueryToApi))
-
 export const mapApiToQuery = invert(mapQueryToApi)
 
 export const queryToApiParams = queryParams =>

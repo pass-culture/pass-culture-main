@@ -61,16 +61,16 @@ class OffersPage extends Component {
 
   render() {
     const {
+      apiParams,
       handleOrderByChange,
       handleOrderDirectionChange,
       handleRemoveFilter,
       offers,
       offerer,
-      queryParams,
       venue,
     } = this.props
 
-    const { search, order_by } = queryParams || {}
+    const { keywords, order_by } = apiParams || {}
 
     const [orderBy, orderDirection] = (order_by || '').split('+')
     return (
@@ -92,7 +92,7 @@ class OffersPage extends Component {
                 className="input"
                 placeholder="Saisissez une recherche"
                 type="text"
-                defaultValue={search}
+                defaultValue={keywords}
               />
             </p>
             <p className="control">
