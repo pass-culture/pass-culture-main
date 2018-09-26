@@ -60,24 +60,26 @@ class FilterByDates extends Component {
         <h2 className="fs18">
           {title}
         </h2>
-        {checkboxes.map(({ label, value }) => (
-          <div id="date-checkbox">
-            <div className="field field-checkbox" key={value}>
-              <label className="label fs22"> 
-                {' '}
-                {label}
-              </label>
-              <input
-                checked={days.includes(value)}
-                className="input is-normal"
-                onChange={() => this.onFilterChange(value)}
-                type="checkbox"
-              />
+        <div className="filter-menu-outer">
+          {checkboxes.map(({ label, value }) => (
+            <div id="date-checkbox" className="filter-menu-inner">
+              <div className="field field-checkbox" key={value}>
+                <label className="fs22"> 
+                  {' '}
+                  {label}
+                </label>
+                <input
+                  checked={days.includes(value)}
+                  className="input is-normal"
+                  onChange={() => this.onFilterChange(value)}
+                  type="checkbox"
+                />
+              </div>
             </div>
+          ))}
+          <div className="filter-menu-inner">
+DATE PICKER TO DO
           </div>
-        ))}
-        <div>
-DATE PICKER
         </div>
       </div>
     )

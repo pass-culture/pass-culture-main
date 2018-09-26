@@ -52,14 +52,14 @@ class FilterByDistance extends Component {
     return (
       <div
         key={distanceKey}
-        className="dotted-bottom-primary flex-rows"
+        className="dotted-bottom-primary"
         id="filter-by-distance"
       >
         <h2 className="fs18">
           {title}
         </h2>
         <select
-          className="select fs22"
+          className="fs22"
           defaultValue={distanceValue}
           onChange={this.onFilterChange}
           name="distance"

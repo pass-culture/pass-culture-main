@@ -120,7 +120,7 @@ class SearchFilter extends Component {
     const isNullFilter = searchFiltersAdded(INITIAL_FILTER_PARAMS, filterParams)
 
     return (
-      <div className="search-filter" id="search-filter-menu">
+      <div id="search-filter-menu">
         <FilterByDates
           handleFilterParamsChange={this.handleFilterParamsChange}
           handleFilterParamAdd={this.handleFilterParamAdd}
@@ -140,14 +140,14 @@ class SearchFilter extends Component {
           title="QUOI"
         />
         <button
-          className="button"
+          className="button fs24"
           disabled={isNullFilter}
           onClick={this.onResetClick}
           type="button">
           Réinitialiser
         </button>
         <button
-          className="button"
+          className="button fs24"
           disabled={!isNewFilter}
           onClick={this.onFilterClick}
           type="button">

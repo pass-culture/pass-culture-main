@@ -1,4 +1,8 @@
-.search-filter {
+#search-filter-menu {
+  background-color: #EDF1F2;
+  border-radius: 0.25em;
+  position: relative;
+
   h2 {
     font-style: italic;
     margin-bottom: 1em;
@@ -6,20 +10,64 @@
     text-transform: uppercase;
     text-align: center;
   }
+
   button {
     background-color: #EDF1F2;
     border-color: white;
     border-radius: 0em;
     color: $primary;
+    font-size: 1.375rem;
   }
 }
 
-#search-filter-menu {
-  background-color: #EDF1F2;
-  border-radius: 0.25em;
-  position: relative;
 
-  // div.is-overlay {
-  //   position: relative !important;
-  // }
+#filter-by-dates {
+  #date-checkbox {
+    border-radius: 0.5em;
+    border: solid $primary 0.1em;
+    margin: 1rem;
+    padding: 1rem;
+  }
+}
+
+#filter-by-distance {
+  padding-bottom: 0.25rem;
+  select {
+    border-color: $primary;
+    border-radius: $control-radius;
+    min-width: 250px;
+    margin: 3rem;
+    padding: 1rem;
+    -webkit-appearance: none;  /*Removes default chrome and safari style*/
+    -moz-appearance: none;  /*Removes default style Firefox*/
+    background: url('/icons/dropdown-disclosure-down.svg') no-repeat;
+    background-position: right;
+  }
+}
+
+#filter-by-offer-types {
+  label {
+    color: $white;
+    height: 23px;
+    width: 86px;
+    opacity: 0.8;
+    background-color: #000000;
+  }
+  margin-bottom: 1rem;
+}
+
+.filter-menu-outer {
+  display: flex; /* displays flex-items (children) inline */
+  overflow-x: auto;
+}
+
+.filter-menu-inner {
+  flex: 0 0 25%; /* doesn't grow nor shrink, initial width set to 25% of the parent's */
+  padding: 0.5em;
+  border-radius: 1.125em;
+
+  img {
+   height: 86px;
+  }
+
 }
