@@ -1,3 +1,4 @@
+import classnames from 'classnames'
 import get from 'lodash.get'
 import {
   CancelButton,
@@ -418,32 +419,34 @@ class OfferPage extends Component {
                     required
                     type="select"
                   />
-                  {offerer && get(venues, 'length') === 0 ? (
-                    <div className="field is-horizontal">
-                      <div className="field-label" />
-                      <div className="field-body">
-                        <p className="help is-danger">
-                          {venue
-                            ? "Erreur dans les données: Le lieu rattaché à cette offre n'est pas compatible avec le type de l'offre"
-                            : 'Il faut obligatoirement une structure avec un lieu.'}
-                          <Field type="hidden" name="__BLOCK_FORM__" required />
-                        </p>
+                  {offerer &&
+                    get(venues, 'length') === 0 && (
+                      <div className="field is-horizontal">
+                        <div className="field-label" />
+                        <div className="field-body">
+                          <p className="help is-danger">
+                            {venue
+                              ? "Erreur dans les données: Le lieu rattaché à cette offre n'est pas compatible avec le type de l'offre"
+                              : 'Il faut obligatoirement une structure avec un lieu.'}
+                            <Field
+                              type="hidden"
+                              name="__BLOCK_FORM__"
+                              required
+                            />
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                  ) : (
-                    offerer &&
-                    get(venues, 'length') > 0 && (
-                      <Field
-                        label="Lieu"
-                        name="venueId"
-                        options={venues}
-                        placeholder="Sélectionnez un lieu"
-                        readOnly={isVenueSelectReadOnly}
-                        required
-                        type="select"
-                      />
-                    )
-                  )}
+                    )}
+                  <Field
+                    className={classnames({ 'is-invisible': !offerer })}
+                    label="Lieu"
+                    name="venueId"
+                    options={venues}
+                    placeholder="Sélectionnez un lieu"
+                    readOnly={isVenueSelectReadOnly}
+                    required
+                    type="select"
+                  />
                   {(get(venue, 'isVirtual') || url) && (
                     <Field
                       isExpanded
@@ -634,108 +637,110 @@ class OfferPage extends Component {
   }
 }
 
+function mapStateToProps(state, ownProps) {
+  const search = searchSelector(state, ownProps.location.search)
+
+  const providers = providersSelector(state)
+
+  const offerId = ownProps.match.params.offerId
+  const offer = offerSelector(state, offerId)
+
+  const eventId = get(offer, 'eventId')
+  const event = eventSelector(state, eventId)
+
+  const thingId = get(offer, 'thingId')
+  const thing = thingSelector(state, thingId)
+
+  const venueId = get(state, 'form.offer.venueId') || search.venueId
+
+  const venue = venueSelector(state, venueId)
+
+  const isVirtual = get(venue, 'isVirtual')
+  const types = typesSelector(state, isVirtual)
+
+  const typeValue =
+    get(state, 'form.offer.type') || get(event, 'type') || get(thing, 'type')
+
+  const type = typeSelector(state, isVirtual, typeValue)
+
+  let offererId = get(state, 'form.offer.offererId') || search.offererId
+
+  const venues = venuesSelector(state, offererId, type)
+
+  offererId = offererId || get(venue, 'managingOffererId')
+
+  const offerers = offerersSelector(state)
+  const offerer = offererSelector(state, offererId)
+
+  const eventOccurrences = eventOccurrencesSelector(state, offerId)
+
+  const stocks = stocksSelector(state, offerId, event && eventOccurrences)
+
+  const url =
+    get(state, 'form.offer.url') || get(event, 'url') || get(thing, 'url')
+
+  const user = state.user
+
+  const hasEventOrThing = event || thing
+
+  const eventOrThingPatch = eventOrThingPatchSelector(
+    state,
+    event,
+    thing,
+    offerer,
+    venue
+  )
+
+  const extraData = get(state, 'form.offer.extraData') || {}
+
+  const musicTypes = eddSelectors.musicTypeParentsSelector()
+
+  let musicSubTypes = []
+  if (extraData.musicType) {
+    musicSubTypes = eddSelectors.musicTypeChildrenSelector(
+      Number(extraData.musicType)
+    )
+  }
+
+  const showTypes = eddSelectors.showTypeParentsSelector()
+
+  let showSubTypes = []
+  if (extraData.showType) {
+    showSubTypes = eddSelectors.showTypeChildrenSelector(
+      Number(extraData.showType)
+    )
+  }
+
+  const offerTypeError = get(state, 'errors.offer.type')
+
+  return {
+    event,
+    eventOccurrences,
+    eventOrThingPatch,
+    hasEventOrThing,
+    musicTypes,
+    musicSubTypes,
+    providers,
+    search,
+    thing,
+    offer,
+    offerer,
+    offerers,
+    offerTypeError,
+    showTypes,
+    showSubTypes,
+    stocks,
+    types,
+    type,
+    url,
+    user,
+    venue,
+    venues,
+  }
+}
+
 export default compose(
   withLogin({ failRedirect: '/connexion' }),
   withRouter,
-  connect((state, ownProps) => {
-    const search = searchSelector(state, ownProps.location.search)
-
-    const providers = providersSelector(state)
-
-    const offerId = ownProps.match.params.offerId
-    const offer = offerSelector(state, offerId)
-
-    const eventId = get(offer, 'eventId')
-    const event = eventSelector(state, eventId)
-
-    const thingId = get(offer, 'thingId')
-    const thing = thingSelector(state, thingId)
-
-    const venueId = get(state, 'form.offer.venueId') || search.venueId
-
-    const venue = venueSelector(state, venueId)
-
-    const isVirtual = get(venue, 'isVirtual')
-    const types = typesSelector(state, isVirtual)
-
-    const typeValue =
-      get(state, 'form.offer.type') || get(event, 'type') || get(thing, 'type')
-
-    const type = typeSelector(state, isVirtual, typeValue)
-
-    let offererId = get(state, 'form.offer.offererId') || search.offererId
-
-    const venues = venuesSelector(state, offererId, type)
-
-    offererId = offererId || get(venue, 'managingOffererId')
-
-    const offerers = offerersSelector(state)
-    const offerer = offererSelector(state, offererId)
-
-    const eventOccurrences = eventOccurrencesSelector(state, offerId)
-
-    const stocks = stocksSelector(state, offerId, event && eventOccurrences)
-
-    const url =
-      get(state, 'form.offer.url') || get(event, 'url') || get(thing, 'url')
-
-    const user = state.user
-
-    const hasEventOrThing = event || thing
-
-    const eventOrThingPatch = eventOrThingPatchSelector(
-      state,
-      event,
-      thing,
-      offerer,
-      venue
-    )
-
-    const extraData = get(state, 'form.offer.extraData') || {}
-
-    const musicTypes = eddSelectors.musicTypeParentsSelector()
-
-    let musicSubTypes = []
-    if (extraData.musicType) {
-      musicSubTypes = eddSelectors.musicTypeChildrenSelector(
-        Number(extraData.musicType)
-      )
-    }
-
-    const showTypes = eddSelectors.showTypeParentsSelector()
-
-    let showSubTypes = []
-    if (extraData.showType) {
-      showSubTypes = eddSelectors.showTypeChildrenSelector(
-        Number(extraData.showType)
-      )
-    }
-
-    const offerTypeError = get(state, 'errors.offer.type')
-
-    return {
-      event,
-      eventOccurrences,
-      eventOrThingPatch,
-      hasEventOrThing,
-      musicTypes,
-      musicSubTypes,
-      providers,
-      search,
-      thing,
-      offer,
-      offerer,
-      offerers,
-      offerTypeError,
-      showTypes,
-      showSubTypes,
-      stocks,
-      types,
-      type,
-      url,
-      user,
-      venue,
-      venues,
-    }
-  })
+  connect(mapStateToProps)
 )(OfferPage)
