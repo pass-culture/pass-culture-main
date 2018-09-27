@@ -154,6 +154,7 @@ def get_offers_for_recommendations_search(
 
 
     if keywords is not None:
+        print('keywords', keywords)
         offer_query = offer_query.outerjoin(Event)\
                                  .outerjoin(Thing)\
                                  .outerjoin(Venue)\

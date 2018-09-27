@@ -53,12 +53,20 @@ def find_all_read_recommendations(user, seen_recommendation_ids, limit=BLOB_SIZE
     return query.all()
 
 
-def find_recommendations_for_user_matching_offers_and_search_term(user_id, offer_ids, search):
-    return Recommendation.query \
-        .filter(Recommendation.userId == user_id) \
-        .filter(Recommendation.offerId.in_(offer_ids)) \
-        .filter(Recommendation.search == search) \
-        .all()
+def find_recommendations_for_user_matching_offers_and_search(user_id=None, offer_ids=None, search=None):
+
+    query = Recommendation.query
+
+    if user_id is not None:
+        query = query.filter(Recommendation.userId == user_id)
+
+    if offer_ids is not None:
+        query = query.filter(Recommendation.offerId.in_(offer_ids))
+
+    if search is not None:
+        query = query.filter(Recommendation.search == search)
+
+    return query.all()
 
 
 def find_recommendations_in_date_range_for_given_departement(date_max, date_min, department):
@@ -74,8 +82,14 @@ def find_recommendations_in_date_range_for_given_departement(date_max, date_min,
         query = query.filter(Recommendation.dateCreated >= date_min)
     if date_max:
         query = query.filter(Recommendation.dateCreated <= date_max)
-    result = query.group_by(Offer.id, Event.name, Thing.name, Venue.departementCode, Recommendation.isClicked,
-                            Recommendation.isFavorite).order_by(Offer.id).all()
+    result = query.group_by(
+        Offer.id,
+        Event.name,
+        Thing.name,
+        Venue.departementCode,
+        Recommendation.isClicked,
+        Recommendation.isFavorite
+    ).order_by(Offer.id).all()
     return result
 
 
@@ -105,4 +119,3 @@ def filter_unseen_recommendations_for_user(query, user, seen_recommendation_ids)
 
 def find_favored_recommendations_for_user(user):
     return Recommendation.query.filter_by(user=user, isFavorite=True).all()
-    

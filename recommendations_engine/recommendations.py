@@ -6,7 +6,7 @@ from domain.types import get_type_labels_from_sublabels
 from models import Recommendation, Offer, Mediation, PcObject
 from recommendations_engine import get_offers_for_recommendations_discovery
 from repository.offer_queries import get_offers_for_recommendations_search
-from repository.recommendation_queries import find_recommendations_for_user_matching_offers_and_search_term
+from repository.recommendation_queries import find_recommendations_for_user_matching_offers_and_search
 from utils.logger import logger
 
 
@@ -123,11 +123,14 @@ def _create_recommendation(user, offer, mediation=None):
     PcObject.check_and_save(recommendation)
     return recommendation
 
+def get_search(**kwargs):
+    return '&'.join([ key + '=' + value for (key, value) in kwargs.items() ])
 
 def create_recommendations_for_search(user, **kwargs):
     offers = get_offers_for_recommendations_search(**kwargs)
     offer_ids = [offer.id for offer in offers]
-    existing_recommendations = find_recommendations_for_user_matching_offers_and_search_term(user.id, offer_ids, keywords)
+    search = get_search(**kwargs)
+    existing_recommendations = find_recommendations_for_user_matching_offers_and_search(user.id, offer_ids, search)
     offer_ids_with_already_created_recommendations = [reco.offerId for reco in existing_recommendations]
     recommendations = []
     recommendations_to_save = []
@@ -138,8 +141,7 @@ def create_recommendations_for_search(user, **kwargs):
             recommendation = existing_recommendations[recommendation_index]
         else:
             recommendation = _create_recommendation(user, offer)
-            # TODO build search from keywords and filters
-            recommendation.search = keywords
+            recommendation.search = search
             recommendations_to_save.append(recommendation)
 
         recommendations.append(recommendation)
@@ -156,11 +158,11 @@ def get_recommendation_search_params(**kwargs):
     if 'page' in kwargs and kwargs['page']:
         search_params['page'] = int(kwargs['page'])
 
+    print("kwargs['keywords']", kwargs['keywords'])
     if 'keywords' in kwargs and kwargs['keywords']:
         search_params['keywords'] = kwargs['keywords']
 
     if 'types' in kwargs and kwargs['types']:
-        print('QUOI', kwargs['types'])
         type_sublabels = kwargs['types']
         search_params['types'] = get_type_labels_from_sublabels(type_sublabels)
 
