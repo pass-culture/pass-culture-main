@@ -1,0 +1,131 @@
+@font-face {
+  font-family: 'pass_culture-icon_font';
+  src: url('../font/pass_culture-icon_font.eot?70748303');
+  src: url('../font/pass_culture-icon_font.eot?70748303#iefix') format('embedded-opentype'),
+       url('../font/pass_culture-icon_font.woff2?70748303') format('woff2'),
+       url('../font/pass_culture-icon_font.woff?70748303') format('woff'),
+       url('../font/pass_culture-icon_font.ttf?70748303') format('truetype'),
+       url('../font/pass_culture-icon_font.svg?70748303#pass_culture-icon_font') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+/* Chrome hack: SVG is rendered more smooth in Windozze. 100% magic, uncomment if you need it. */
+/* Note, that will break hinting! In other OS-es font will be not as sharp as it could be */
+/*
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+  @font-face {
+    font-family: 'pass_culture-icon_font';
+    src: url('../font/pass_culture-icon_font.svg?70748303#pass_culture-icon_font') format('svg');
+  }
+}
+*/
+ 
+ [class^="icon-"]:before, [class*=" icon-"]:before {
+  font-family: "pass_culture-icon_font";
+  font-style: normal;
+  font-weight: normal;
+  speak: none;
+ 
+  display: inline-block;
+  text-decoration: inherit;
+  width: 1em;
+  margin-right: .2em;
+  text-align: center;
+  /* opacity: .8; */
+ 
+  /* For safety - reset parent styles, that can break glyph codes*/
+  font-variant: normal;
+  text-transform: none;
+ 
+  /* fix buttons height, for twitter bootstrap */
+  line-height: 1em;
+ 
+  /* Animation center compensation - margins should be symmetric */
+  /* remove if not needed */
+  margin-left: .2em;
+ 
+  /* you can be more comfortable with increased icons size */
+  /* font-size: 120%; */
+ 
+  /* Font smoothing. That was taken from TWBS */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+ 
+  /* Uncomment for 3D effect */
+  /* text-shadow: 1px 1px 1px rgba(127, 127, 127, 0.3); */
+}
+ 
+.icon-picto-accessibilite-auditif:before { content: '\21'; } /* '!' */
+.icon-picto-accessibilite-visuel:before { content: '\24'; } /* '$' */
+.icon-ico-structure:before { content: '\26'; } /* '&amp;' */
+.icon-ico-upright:before { content: '\28'; } /* '(' */
+.icon-picto-accessibilite-moteur:before { content: '\29'; } /* ')' */
+.icon-picto-accessibilite-senior:before { content: '\2d'; } /* '-' */
+.icon-ico-plus:before { content: '\30'; } /* '0' */
+.icon-ico-prev-alt:before { content: '\31'; } /* '1' */
+.icon-ico-prev-l-circled:before { content: '\32'; } /* '2' */
+.icon-ico-prev-s:before { content: '\33'; } /* '3' */
+.icon-ico-prev-tail:before { content: '\34'; } /* '4' */
+.icon-ico-prev:before { content: '\35'; } /* '5' */
+.icon-ico-qr:before { content: '\36'; } /* '6' */
+.icon-ico-search:before { content: '\37'; } /* '7' */
+.icon-ico-settings:before { content: '\38'; } /* '8' */
+.icon-ico-share:before { content: '\39'; } /* '9' */
+.icon-ico-stars:before { content: '\40'; } /* '@' */
+.icon-ico-eye:before { content: '\41'; } /* 'A' */
+.icon-ico-filter:before { content: '\42'; } /* 'B' */
+.icon-ico-geoloc-circled-solid:before { content: '\43'; } /* 'C' */
+.icon-ico-geoloc-circled:before { content: '\44'; } /* 'D' */
+.icon-ico-geoloc-solid:before { content: '\45'; } /* 'E' */
+.icon-ico-geoloc:before { content: '\46'; } /* 'F' */
+.icon-ico-guichet:before { content: '\47'; } /* 'G' */
+.icon-ico-hamburger:before { content: '\48'; } /* 'H' */
+.icon-ico-hour-list:before { content: '\49'; } /* 'I' */
+.icon-ico-info:before { content: '\4a'; } /* 'J' */
+.icon-ico-info2:before { content: '\4b'; } /* 'K' */
+.icon-ico-invite:before { content: '\4c'; } /* 'L' */
+.icon-ico-itineraire:before { content: '\4d'; } /* 'M' */
+.icon-ico-lieu:before { content: '\4e'; } /* 'N' */
+.icon-ico-like-on:before { content: '\4f'; } /* 'O' */
+.icon-ico-like:before { content: '\50'; } /* 'P' */
+.icon-ico-linkexternal:before { content: '\51'; } /* 'Q' */
+.icon-ico-minus-circled:before { content: '\52'; } /* 'R' */
+.icon-ico-next-l-circled:before { content: '\53'; } /* 'S' */
+.icon-ico-next-s:before { content: '\54'; } /* 'T' */
+.icon-ico-next-tail:before { content: '\55'; } /* 'U' */
+.icon-ico-next:before { content: '\56'; } /* 'V' */
+.icon-ico-notificationmark:before { content: '\57'; } /* 'W' */
+.icon-ico-offres:before { content: '\58'; } /* 'X' */
+.icon-ico-plus-circled:before { content: '\59'; } /* 'Y' */
+.icon-ico-plus-s:before { content: '\5a'; } /* 'Z' */
+.icon-dropdown-disclosure-down-s:before { content: '\61'; } /* 'a' */
+.icon-dropdown-disclosure-down:before { content: '\62'; } /* 'b' */
+.icon-dropdown-disclosure-up-s:before { content: '\63'; } /* 'c' */
+.icon-dropdown-disclosure-up:before { content: '\64'; } /* 'd' */
+.icon-ico-back-w-circled:before { content: '\65'; } /* 'e' */
+.icon-ico-back:before { content: '\66'; } /* 'f' */
+.icon-ico-barcode:before { content: '\67'; } /* 'g' */
+.icon-ico-bin:before { content: '\68'; } /* 'h' */
+.icon-ico-boum-s:before { content: '\69'; } /* 'i' */
+.icon-ico-calendar-circled:before { content: '\6a'; } /* 'j' */
+.icon-ico-calendar:before { content: '\6b'; } /* 'k' */
+.icon-ico-carpool:before { content: '\6c'; } /* 'l' */
+.icon-ico-check-circled-s:before { content: '\6d'; } /* 'm' */
+.icon-ico-check-circled:before { content: '\6e'; } /* 'n' */
+.icon-ico-check:before { content: '\6f'; } /* 'o' */
+.icon-ico-chevron-up:before { content: '\70'; } /* 'p' */
+.icon-ico-close-circled:before { content: '\71'; } /* 'q' */
+.icon-ico-close-s:before { content: '\72'; } /* 'r' */
+.icon-ico-close-w-circled:before { content: '\73'; } /* 's' */
+.icon-ico-close:before { content: '\74'; } /* 't' */
+.icon-ico-compta:before { content: '\75'; } /* 'u' */
+.icon-ico-deconnect:before { content: '\76'; } /* 'v' */
+.icon-ico-delegation:before { content: '\77'; } /* 'w' */
+.icon-ico-dupliquer:before { content: '\78'; } /* 'x' */
+.icon-ico-edit:before { content: '\79'; } /* 'y' */
+.icon-ico-eye-close:before { content: '\7a'; } /* 'z' */
+.icon-ico-user-circled:before { content: '\a7'; } /* '§' */
+.icon-picto-accessibilite-mental:before { content: '\e0'; } /* 'à' */
+.icon-picto-accessibilite-famille:before { content: '\e7'; } /* 'ç' */
+.icon-ico-user:before { content: '\e8'; } /* 'è' */
+.icon-ico-txt:before { content: '\e9'; } /* 'é' */
