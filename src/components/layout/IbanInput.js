@@ -1,31 +1,37 @@
 import get from 'lodash.get'
-import { BasicInput } from 'pass-culture-shared'
+import { BasicInput, mergeErrors, removeWhitespaces } from 'pass-culture-shared'
 import React, { PureComponent, Fragment } from 'react'
 import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
+import { isValidIBAN, friendlyFormatIBAN } from 'ibantools'
 
 class IbanInput extends PureComponent {
+  constructor(props) {
+    super(props)
+    this.mergeErrors = bindActionCreators(mergeErrors, props.dispatch)
+  }
+
   onChange = event => {
     event.persist()
-    this.props.onChange(event.target.value, {
-      event,
-      isSagaCalling: false,
-    })
+    const value = removeWhitespaces(event.target.value)
+    this.props.onChange(value, { event })
+
+    if (!isValidIBAN(value)) {
+      this.mergeErrors('offerer', { iban: ['IBAN invalide'] })
+    }
   }
 
   render() {
-    const { errors, value } = this.props
-
+    const { value } = this.props
     return (
       <BasicInput
         {...this.props}
         onChange={this.onChange}
         type="text"
-        value={value}
+        value={friendlyFormatIBAN(value)}
       />
     )
   }
 }
 
-export default connect((state, ownProps) => ({
-  fetchedName: get(state, `form.${ownProps.formName}.name`),
-}))(IbanInput)
+export default connect()(IbanInput)

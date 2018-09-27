@@ -4202,6 +4202,10 @@ husky@^0.14.3:
     normalize-path "^1.0.0"
     strip-indent "^2.0.0"
 
+ibantools@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/ibantools/-/ibantools-2.0.0.tgz#d433f0d638990f55c0281e18bc58eafa06c8959d"
+
 iconv-lite@0.4.11:
   version "0.4.11"
   resolved "http://registry.npmjs.org/iconv-lite/-/iconv-lite-0.4.11.tgz#2ecb42fd294744922209a2e7c404dac8793d8ade"
