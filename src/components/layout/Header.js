@@ -1,4 +1,4 @@
-import { Icon } from 'pass-culture-shared'
+import { Icon, SignoutButton } from 'pass-culture-shared'
 import classnames from 'classnames'
 import get from 'lodash.get'
 import React, { Component } from 'react'
@@ -7,7 +7,6 @@ import { withRouter } from 'react-router'
 import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
 
-import SignoutButton from './SignoutButton'
 import Logo from './Logo'
 
 class Header extends Component {
