@@ -6,6 +6,7 @@ import simplejson as json
 from flask import current_app as app, jsonify, request
 
 from models.api_errors import ApiErrors, ResourceGoneError
+from utils.human_ids import NonDehumanizableId
 from validation.errors import ResourceNotFound
 
 
@@ -39,9 +40,9 @@ def internal_error(error):
                + " On répare ça au plus vite.")
     return jsonify(e.errors), 500
 
-@app.errorhandler(binascii.Error)
+@app.errorhandler(NonDehumanizableId)
 def invalid_id_for_dehumanize_error(error):
     api_errors = ApiErrors()
     api_errors.addError('global', 'La page que vous recherchez n\'existe pas')
-    app.logger.error('404 id non dehumanizable')
+    app.logger.error('404 %s' % str(error))
     return jsonify(api_errors.errors), 404
