@@ -102,7 +102,7 @@ const fromWatchSirenInput = sireType =>
 export function* watchFormActions() {
   yield takeEvery(
     ({ type, config, patch }) =>
-      type === 'MERGE_FORM' &&
+      /MERGE_FORM_(.*)/.test(type) &&
       get(config, 'isSagaCalling') &&
       !get(config, 'calledFromSaga') &&
       get(config, 'type') === 'siren' &&
@@ -111,7 +111,7 @@ export function* watchFormActions() {
   )
   yield takeEvery(
     ({ type, config, patch }) =>
-      type === 'MERGE_FORM' &&
+      /MERGE_FORM_(.*)/.test(type) &&
       get(config, 'isSagaCalling') &&
       !get(config, 'calledFromSaga') &&
       get(config, 'type') === 'siret' &&
@@ -120,7 +120,7 @@ export function* watchFormActions() {
   )
   yield takeEvery(
     ({ type, config, patch }) =>
-      type === 'MERGE_FORM' &&
+      /MERGE_FORM_(.*)/.test(type) &&
       get(config, 'isSagaCalling') &&
       !get(config, 'calledFromSaga') &&
       ((get(config, 'type') === 'siren' &&
