@@ -45,3 +45,27 @@ def test_validate_offerer(app):
         .filter_by(id=offerer_id) \
         .first()
     assert offerer.isValidated
+
+
+@clean_database
+@pytest.mark.standalone
+def test_validate_offerer_when_offerer_has_no_admin(app):
+    # Given
+    offerer_token = secrets.token_urlsafe(20)
+    offerer = create_offerer('349974931', '12 boulevard de Pesaro', 'Nanterre', '92000', 'Crédit Coopératif',
+                             validation_token=offerer_token)
+    user = create_user()
+    user_offerer = create_user_offerer(user, offerer, is_admin=False)
+    PcObject.check_and_save(offerer, user_offerer)
+    offerer_id = offerer.id
+    del (offerer)
+
+    token = Offerer.query \
+        .filter_by(id=offerer_id) \
+        .first().validationToken
+
+    # When
+    r = req.get(API_URL + '/validate?modelNames=Offerer&token=' + token)
+
+    # Then
+    assert r.status_code == 400
