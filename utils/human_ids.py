@@ -1,10 +1,14 @@
 """ human_ids """
+import binascii
 from base64 import b32encode, b32decode
 # This library creates IDs for use in our URLs,
 # trying to achieve a balance between having a short
 # length and being usable by humans
 # We use base32, but replace O and I, which can be mistaken for 0 and 1
 # by 8 and 9
+
+class NonDehumanizableId(Exception):
+    pass
 
 
 def dehumanize(publicId):
@@ -14,7 +18,10 @@ def dehumanize(publicId):
     missing_padding = len(publicId) % 8
     if missing_padding != 0:
         publicId += '=' * (8 - missing_padding)
-    xbytes = b32decode(publicId.replace('8', 'O').replace('9', 'I'))
+    try:
+        xbytes = b32decode(publicId.replace('8', 'O').replace('9', 'I'))
+    except binascii.Error:
+        raise NonDehumanizableId('id non dehumanizable')
     return int_from_bytes(xbytes)
 
 

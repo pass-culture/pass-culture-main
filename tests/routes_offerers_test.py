@@ -319,3 +319,20 @@ def test_get_offerers_should_not_send_offerer_to_user_offerer_not_validated(app)
 
     # then
     assert response.json() == []
+
+
+@clean_database
+@pytest.mark.standalone
+def test_get_offerers_should_not_send_offerer_to_user_offerer_not_validated(app):
+    # Given
+    user = create_user(password='p@55sw0rd!')
+    auth_request = req_with_auth(email=user.email, password='p@55sw0rd!')
+    PcObject.check_and_save(user)
+    invalid_id = 12
+
+    # When
+    response = auth_request.get(API_URL + '/offerers/%s' % invalid_id)
+
+    # then
+    assert response.status_code == 404
+    assert response.json()['global'] == ['La page que vous recherchez n\'existe pas']
