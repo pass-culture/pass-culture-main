@@ -31,8 +31,8 @@ import offererSelector from '../../selectors/offerer'
 import offerersSelector from '../../selectors/offerers'
 import providersSelector from '../../selectors/providers'
 import searchSelector from '../../selectors/search'
-import selectMusicSubOptions from '../../selectors/selectMusicSubOptions'
-import selectShowSubOptions from '../../selectors/selectShowSubOptions'
+import selectMusicSubOptionsByMusicType from '../../selectors/selectMusicSubOptionsByMusicType'
+import selectShowSubOptionsByShowType from '../../selectors/selectShowSubOptionsByShowType'
 import stocksSelector from '../../selectors/stocks'
 import thingSelector from '../../selectors/thing'
 import typesSelector from '../../selectors/types'
@@ -701,9 +701,9 @@ function mapStateToProps(state, ownProps) {
   const extraData = get(state, 'form.offer.extraData') || {}
 
   const musicSubOptions =
-    extraData.musicType && selectMusicSubOptions(Number(extraData.musicType))
+    extraData.musicType && selectMusicSubOptionsByMusicType(extraData.musicType)
   const showSubOptions =
-    extraData.showType && selectShowSubOptions(Number(extraData.showType))
+    extraData.showType && selectShowSubOptionsByShowType(extraData.showType)
 
   const offerTypeError = get(state, 'errors.offer.type')
 
