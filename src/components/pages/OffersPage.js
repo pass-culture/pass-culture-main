@@ -5,8 +5,8 @@ import {
   lastTrackerMoment,
   requestData,
   resolveIsNew,
-  withSearch,
   withLogin,
+  withPagination,
 } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
@@ -20,23 +20,25 @@ import offersSelector from '../../selectors/offers'
 import offererSelector from '../../selectors/offerer'
 import venueSelector from '../../selectors/venue'
 import { offerNormalizer } from '../../utils/normalizers'
-import { mapApiToQuery, queryToApiParams } from '../../utils/search'
+import { mapApiToWindow, windowToApiQuery } from '../../utils/pagination'
 
 class OffersPage extends Component {
   handleDataRequest = (handleSuccess = () => {}, handleFail = () => {}) => {
-    const {
-      apiSearch,
-      comparedTo,
-      dispatch,
-      goToNextSearchPage,
-      types,
-    } = this.props
+    const { comparedTo, dispatch, pagination, search, types } = this.props
+
+    const { apiQueryString, goToNextPage, page } = pagination
+
+    if (page !== 1 && search.page && page === Number(search.page)) {
+      return
+    }
+
+    const path = `offers?page=${page}&${apiQueryString}`
 
     dispatch(
-      requestData('GET', `offers?${apiSearch}`, {
+      requestData('GET', path, {
         handleSuccess: (state, action) => {
           handleSuccess(state, action)
-          goToNextSearchPage()
+          goToNextPage()
         },
         handleFail,
         normalizer: offerNormalizer,
@@ -47,30 +49,21 @@ class OffersPage extends Component {
   }
 
   onSubmit = event => {
-    const { apiParams, handleQueryParamsChange } = this.props
+    const { pagination } = this.props
 
     event.preventDefault()
 
     const value = event.target.elements.search.value
 
-    if (!value || apiParams.search === value) return
+    if (!value || pagination.apiQuery.search === value) return
 
-    handleQueryParamsChange({ [mapApiToQuery.search]: value })
+    pagination.change({ [mapApiToWindow.search]: value })
   }
 
   render() {
-    const {
-      apiParams,
-      handleOrderByChange,
-      handleOrderDirectionChange,
-      handleRemoveFilter,
-      offers,
-      offerer,
-      venue,
-      user,
-    } = this.props
+    const { offers, offerer, pagination, venue, user } = this.props
 
-    const { venueId, search, order_by, offererId } = apiParams || {}
+    const { venueId, search, order_by, offererId } = pagination.apiQuery || {}
 
     let createOfferTo = `/offres/nouveau`
     if (venueId) {
@@ -125,7 +118,7 @@ class OffersPage extends Component {
               <span className="has-text-weight-semibold"> {offerer.name} </span>
               <button
                 className="delete is-small"
-                onClick={handleRemoveFilter('offererId')}
+                onClick={() => pagination.change({ offererId: null })}
               />
             </li>
           ) : (
@@ -135,7 +128,7 @@ class OffersPage extends Component {
                 <span className="has-text-weight-semibold">{venue.name}</span>
                 <button
                   className="delete is-small"
-                  onClick={handleRemoveFilter('venueId')}
+                  onClick={() => pagination.change({ venueId: null })}
                 />
               </li>
             )
@@ -153,7 +146,7 @@ class OffersPage extends Component {
                 Trier par:
                 <span className="select is-rounded is-small">
                   <select
-                    onChange={handleOrderByChange}
+                    onChange={pagination.orderBy}
                     className=""
                     value={orderBy}>
                     <option value="sold">Offres écoulées</option>
@@ -163,7 +156,7 @@ class OffersPage extends Component {
               </div>
               <div>
                 <button
-                  onClick={handleOrderDirectionChange}
+                  onClick={pagination.reverseOrder}
                   className="button is-secondary">
                   <Icon
                     svg={
@@ -178,7 +171,14 @@ class OffersPage extends Component {
             {
               <InfiniteScroller
                 className="offers-list main-list"
-                handleLoadMore={this.handleDataRequest}>
+                handleLoadMore={(handleSuccess, handleFail) => {
+                  this.handleDataRequest(handleSuccess, handleFail)
+                  const { history, location, pagination } = this.props
+                  const { windowQueryString, page } = pagination
+                  history.push(
+                    `${location.pathname}?page=${page}&${windowQueryString}`
+                  )
+                }}>
                 {offers.map(o => (
                   <OfferItem key={o.id} offer={o} />
                 ))}
@@ -192,7 +192,7 @@ class OffersPage extends Component {
 }
 
 function mapStateToProps(state, ownProps) {
-  const { offererId, venueId } = ownProps.apiParams
+  const { offererId, venueId } = ownProps.pagination.apiQuery
   return {
     lastTrackerMoment: lastTrackerMoment(state, 'offers'),
     offers: offersSelector(state, offererId, venueId),
@@ -206,9 +206,9 @@ function mapStateToProps(state, ownProps) {
 export default compose(
   withLogin({ failRedirect: '/connexion' }),
   withRouter,
-  withSearch({
-    queryToApiParams,
+  withPagination({
     dataKey: 'offers',
+    windowToApiQuery,
   }),
   connect(mapStateToProps)
 )(OffersPage)

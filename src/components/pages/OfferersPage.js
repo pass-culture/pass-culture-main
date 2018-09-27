@@ -2,9 +2,8 @@ import {
   Icon,
   InfiniteScroller,
   requestData,
-  searchSelector,
   withLogin,
-  withSearch,
+  withPagination,
 } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
@@ -16,17 +15,18 @@ import Main from '../layout/Main'
 import OffererItem from '../items/OffererItem'
 import offerersSelector from '../../selectors/offerers'
 import { offererNormalizer } from '../../utils/normalizers'
-import { mapApiToQuery, queryToApiParams } from '../../utils/search'
+import { mapApiToWindow, windowToApiQuery } from '../../utils/pagination'
 
 class OfferersPage extends Component {
   handleDataRequest = (handleSuccess, handleFail) => {
-    const { apiSearch, dispatch, goToNextSearchPage } = this.props
+    const { dispatch, pagination } = this.props
+    const { apiQueryString, page, goToNextPage } = pagination
 
     dispatch(
-      requestData('GET', `offerers?${apiSearch}`, {
+      requestData('GET', `offerers?page=${page}&${apiQueryString}`, {
         handleSuccess: (state, action) => {
           handleSuccess(state, action)
-          goToNextSearchPage()
+          goToNextPage()
         },
         handleFail,
         normalizer: offererNormalizer,
@@ -35,21 +35,21 @@ class OfferersPage extends Component {
   }
 
   onSubmit = event => {
-    const { apiParams, handleQueryParamsChange } = this.props
+    const { apiQuery, handleQueryQueryChange } = this.props
 
     event.preventDefault()
 
     const value = event.target.elements.search.value
 
-    if (!value || apiParams.search === value) return
+    if (!value || apiQuery.search === value) return
 
-    handleQueryParamsChange({ [mapApiToQuery.search]: value })
+    handleQueryQueryChange({ [mapApiToWindow.search]: value })
   }
 
   render() {
-    const { apiParams, offerers } = this.props
+    const { apiQuery, offerers } = this.props
 
-    const { search } = apiParams || {}
+    const { search } = apiQuery || {}
 
     return (
       <Main name="offerers" handleDataRequest={this.handleDataRequest}>
@@ -102,14 +102,17 @@ class OfferersPage extends Component {
   }
 }
 
+function mapStateToProps(state, ownProps) {
+  return {
+    offerers: offerersSelector(state),
+  }
+}
+
 export default compose(
   withLogin({ failRedirect: '/connexion' }),
-  withSearch({
+  withPagination({
     dataKey: 'offerers',
-    queryToApiParams,
+    windowToApiQuery,
   }),
-  connect((state, ownProps) => ({
-    offerers: offerersSelector(state),
-    queryParams: searchSelector(state, ownProps.location.search),
-  }))
+  connect(mapStateToProps)
 )(OfferersPage)
