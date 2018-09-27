@@ -63,7 +63,10 @@ def test_maybe_send_offerer_validation_email_does_not_send_email_if_all_validate
     mocked_send_create_email.return_value = return_value
 
     # When
-    maybe_send_offerer_validation_email(offerer, user_offerer, mocked_send_create_email)
+    try:
+        maybe_send_offerer_validation_email(offerer, user_offerer, mocked_send_create_email)
+    except MailServiceException as e:
+        app.logger.error('Mail service failure', e) 
 
     # Then
     assert not mocked_send_create_email.called
