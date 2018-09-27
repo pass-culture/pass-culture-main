@@ -118,7 +118,7 @@ def find_offers_in_date_range_for_given_venue_departement(date_max, date_min, de
 def get_offers_for_recommendations_search(
     page=1,
     keywords=None,
-    types=None,
+    type_labels=None,
     latitude=None,
     longitude=None,
     max_distance=None,
@@ -136,13 +136,13 @@ def get_offers_for_recommendations_search(
             latitude,
             longitude
         )
-        print('max_distance', max_distance, 'latitude', latitude, 'longitude', longitude)
         offer_query = offer_query.join(Venue)\
                                  .filter(distance_instrument < max_distance)
 
     if between_dates is not None:
         for between_dates in between_dates:
-            date_offer_query = offer_query.join(Stock) \
+            date_offer_query = offer_query.from_self()\
+                                          .join(Stock) \
                                           .outerjoin(EventOccurrence) \
                                           .filter(
                                             (
@@ -154,18 +154,20 @@ def get_offers_for_recommendations_search(
 
 
     if keywords is not None:
-        print('keywords', keywords)
-        offer_query = offer_query.outerjoin(Event)\
+        offer_query = offer_query.from_self()\
+                                 .outerjoin(Event)\
                                  .outerjoin(Thing)\
                                  .outerjoin(Venue)\
                                  .filter(get_keywords_filter([Event, Thing, Venue], keywords))
 
-    if types is not None:
-        event_offer_query = offer_query.outerjoin(Event)\
-                                       .filter(Event.type.in_(types))
+    if type_labels is not None:
+        event_offer_query = offer_query.from_self()\
+                                       .outerjoin(Event)\
+                                       .filter(Event.type.in_(type_labels))
 
-        thing_offer_query = offer_query.outerjoin(Thing)\
-                                       .filter(Thing.type.in_(types))
+        thing_offer_query = offer_query.from_self()\
+                                       .outerjoin(Thing)\
+                                       .filter(Thing.type.in_(type_labels))
 
         offer_query = event_offer_query.union_all(thing_offer_query)
 

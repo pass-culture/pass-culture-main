@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from sqlalchemy import func
 
 from domain.types import get_type_labels_from_sublabels
-from models import Recommendation, Offer, Mediation, PcObject
+from models import ApiErrors, Recommendation, Offer, Mediation, PcObject
 from recommendations_engine import get_offers_for_recommendations_discovery
 from repository.offer_queries import get_offers_for_recommendations_search
 from repository.recommendation_queries import find_recommendations_for_user_matching_offers_and_search
@@ -123,13 +123,13 @@ def _create_recommendation(user, offer, mediation=None):
     PcObject.check_and_save(recommendation)
     return recommendation
 
-def get_search(**kwargs):
-    return '&'.join([ key + '=' + value for (key, value) in kwargs.items() ])
+def get_search(kwargs):
+    return '&'.join([ key + '=' + str(value) for (key, value) in kwargs.items() ])
 
 def create_recommendations_for_search(user, **kwargs):
     offers = get_offers_for_recommendations_search(**kwargs)
     offer_ids = [offer.id for offer in offers]
-    search = get_search(**kwargs)
+    search = get_search(kwargs)
     existing_recommendations = find_recommendations_for_user_matching_offers_and_search(user.id, offer_ids, search)
     offer_ids_with_already_created_recommendations = [reco.offerId for reco in existing_recommendations]
     recommendations = []
@@ -155,15 +155,17 @@ def get_recommendation_search_params(kwargs):
 
     search_params = {}
 
+    api_errors = ApiErrors()
+
     if 'page' in kwargs and kwargs['page']:
         search_params['page'] = int(kwargs['page'])
 
     if 'keywords' in kwargs and kwargs['keywords']:
         search_params['keywords'] = kwargs['keywords']
 
-    if 'types' in kwargs and kwargs['types']:
-        type_sublabels = kwargs['types']
-        search_params['types'] = get_type_labels_from_sublabels(type_sublabels)
+    if 'categories' in kwargs and kwargs['categories']:
+        type_sublabels = kwargs['categories']
+        search_params['type_labels'] = get_type_labels_from_sublabels(type_sublabels)
 
     if 'date' in kwargs and kwargs['date']:
         search_params['date'] = kwargs['date']
@@ -180,6 +182,9 @@ def get_recommendation_search_params(kwargs):
         search_params['longitude'] = float(kwargs['longitude'])
 
     if 'distance' in kwargs and kwargs['distance']:
+        if not kwargs['distance'].isdigit():
+            api_errors.addError('distance', 'cela doit etre un nombre')
+            raise api_errors
         search_params['max_distance'] = float(kwargs['distance'])
 
     return search_params
