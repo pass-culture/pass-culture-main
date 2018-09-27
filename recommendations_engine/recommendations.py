@@ -151,14 +151,13 @@ def create_recommendations_for_search(user, **kwargs):
 
     return recommendations
 
-def get_recommendation_search_params(**kwargs):
+def get_recommendation_search_params(kwargs):
 
     search_params = {}
 
     if 'page' in kwargs and kwargs['page']:
         search_params['page'] = int(kwargs['page'])
 
-    print("kwargs['keywords']", kwargs['keywords'])
     if 'keywords' in kwargs and kwargs['keywords']:
         search_params['keywords'] = kwargs['keywords']
 
