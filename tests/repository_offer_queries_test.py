@@ -83,7 +83,7 @@ def test_type_search(app):
     PcObject.check_and_save(conference_offer, concert_offer)
 
     offers = get_offers_for_recommendations_search(
-        types=["Conférence — Débat — Dédicace"],
+        type_labels=["Conférence — Débat — Dédicace"],
     )
 
     assert conference_offer in offers
