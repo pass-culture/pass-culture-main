@@ -1,5 +1,3 @@
-'use strict'
-
 const fs = require('fs')
 const path = require('path')
 const paths = require('./paths')
@@ -68,8 +66,6 @@ function getClientEnvironment(publicUrl) {
       },
       {
         API_URL: process.env.API_URL,
-        // Determine which application it is
-        IS_PRO: process.env.IS_PRO || false,
         // package name for api
         NAME: name,
         // Useful for determining whether we’re running in production mode.
@@ -82,7 +78,7 @@ function getClientEnvironment(publicUrl) {
         PUBLIC_URL: publicUrl,
         THUMBS_URL: process.env.THUMBS_URL,
         // VERSION FOR API
-        VERSION: version
+        VERSION: version,
       }
     )
   // Stringify all values so we can feed into Webpack DefinePlugin
