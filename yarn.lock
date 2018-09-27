@@ -17,8 +17,8 @@
   resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.116.tgz#5ccf215653e3e8c786a58390751033a9adca0eb9"
 
 "@types/node@*":
-  version "10.11.0"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-10.11.0.tgz#ddd0d67a3b6c3810dd1a59e36675fa82de5e19ae"
+  version "10.11.1"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-10.11.1.tgz#adc48781dd50b2635a8a7854d99c759a26ede840"
 
 abab@^1.0.3:
   version "1.0.4"
@@ -6458,9 +6458,9 @@ pascalcase@^0.1.1:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/pascalcase/-/pascalcase-0.1.1.tgz#b363e55e8006ca6fe21784d2db22bd15d7917f14"
 
-pass-culture-shared@^0.0.52:
-  version "0.0.52"
-  resolved "https://registry.yarnpkg.com/pass-culture-shared/-/pass-culture-shared-0.0.52.tgz#895c01a15f4a892ae27cbb1e6646780af254e5df"
+pass-culture-shared@^0.0.54:
+  version "0.0.54"
+  resolved "https://registry.yarnpkg.com/pass-culture-shared/-/pass-culture-shared-0.0.54.tgz#4bddbd4d748d991a507ffdc5cfde521c8db59c47"
   dependencies:
     lodash.get "^4.4.2"
     lodash.merge "^4.6.1"
@@ -6478,6 +6478,7 @@ pass-culture-shared@^0.0.52:
     react-dotdotdot "^1.2.3"
     react-redux "^5.0.7"
     react-router-dom "^4.3.1"
+    react-time-input "^0.0.19"
     redux "^4.0.0"
     redux-saga "^0.15.3"
     reselect "^3.0.1"
@@ -7392,6 +7393,12 @@ react-test-renderer@^16.0.0-0, react-test-renderer@^16.4.1:
     prop-types "^15.6.2"
     react-is "^16.5.2"
     schedule "^0.5.0"
+
+react-time-input@^0.0.19:
+  version "0.0.19"
+  resolved "https://registry.yarnpkg.com/react-time-input/-/react-time-input-0.0.19.tgz#7f4d72bb278505c7e31f28bcc2ad3be4a0031aa0"
+  dependencies:
+    user "0.0.0"
 
 react-timeago@^3.4.3:
   version "3.4.3"
@@ -9207,6 +9214,10 @@ url@^0.11.0:
 use@^3.1.0:
   version "3.1.1"
   resolved "https://registry.yarnpkg.com/use/-/use-3.1.1.tgz#d50c8cac79a19fbc20f2911f56eb973f4e10070f"
+
+user@0.0.0:
+  version "0.0.0"
+  resolved "https://registry.yarnpkg.com/user/-/user-0.0.0.tgz#f27f1b23fc511f2a8efa40db55cfba123824e02a"
 
 useragent@^2.1.7:
   version "2.3.0"
