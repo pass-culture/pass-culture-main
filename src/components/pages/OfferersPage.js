@@ -19,11 +19,21 @@ import { mapApiToWindow, windowToApiQuery } from '../../utils/pagination'
 
 class OfferersPage extends Component {
   handleDataRequest = (handleSuccess, handleFail) => {
-    const { dispatch, pagination } = this.props
+    const { dispatch, pagination, search } = this.props
     const { apiQueryString, page, goToNextPage } = pagination
 
+    // BECAUSE THE INFINITE SCROLLER CALLS ONCE THIS FUNCTION
+    // BUT THEN PUSH THE SEARCH TO PAGE + 1
+    // WE PASS AGAIN HERE FOR THE SAME PAGE
+    // SO WE NEED TO PREVENT A SECOND CALL
+    if (page !== 1 && search.page && page === Number(search.page)) {
+      return
+    }
+
+    const path = `offerers?page=${page}&${apiQueryString}`
+
     dispatch(
-      requestData('GET', `offerers?page=${page}&${apiQueryString}`, {
+      requestData('GET', path, {
         handleSuccess: (state, action) => {
           handleSuccess(state, action)
           goToNextPage()
@@ -35,21 +45,21 @@ class OfferersPage extends Component {
   }
 
   onSubmit = event => {
-    const { apiQuery, handleQueryQueryChange } = this.props
+    const { pagination } = this.props
 
     event.preventDefault()
 
     const value = event.target.elements.search.value
 
-    if (!value || apiQuery.search === value) return
-
-    handleQueryQueryChange({ [mapApiToWindow.search]: value })
+    pagination.change({
+      [mapApiToWindow.search]: value === '' ? null : value,
+    })
   }
 
   render() {
-    const { apiQuery, offerers } = this.props
+    const { offerers, pagination } = this.props
 
-    const { search } = apiQuery || {}
+    const { search } = pagination.apiQuery || {}
 
     return (
       <Main name="offerers" handleDataRequest={this.handleDataRequest}>
@@ -92,7 +102,14 @@ class OfferersPage extends Component {
 
         <InfiniteScroller
           className="main-list offerers-list"
-          handleLoadMore={this.handleDataRequest}>
+          handleLoadMore={(handleSuccess, handleFail) => {
+            this.handleDataRequest(handleSuccess, handleFail)
+            const { history, location, pagination } = this.props
+            const { windowQueryString, page } = pagination
+            history.push(
+              `${location.pathname}?page=${page}&${windowQueryString}`
+            )
+          }}>
           {offerers.map(o => (
             <OffererItem key={o.id} offerer={o} />
           ))}
@@ -112,6 +129,9 @@ export default compose(
   withLogin({ failRedirect: '/connexion' }),
   withPagination({
     dataKey: 'offerers',
+    defaultWindowQuery: {
+      [mapApiToWindow.search]: null,
+    },
     windowToApiQuery,
   }),
   connect(mapStateToProps)
