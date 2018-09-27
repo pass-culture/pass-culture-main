@@ -39,17 +39,17 @@ class OfferersPage extends Component {
 
     event.preventDefault()
 
-    const value = event.target.elements.keywords.value
+    const value = event.target.elements.search.value
 
-    if (!value || apiParams.keywords === value) return
+    if (!value || apiParams.search === value) return
 
-    handleQueryParamsChange({ [mapApiToQuery.keywords]: value })
+    handleQueryParamsChange({ [mapApiToQuery.search]: value })
   }
 
   render() {
     const { apiParams, offerers } = this.props
 
-    const { keywords } = apiParams || {}
+    const { search } = apiParams || {}
 
     return (
       <Main name="offerers" handleDataRequest={this.handleDataRequest}>
@@ -70,11 +70,11 @@ class OfferersPage extends Component {
           <div className="field is-grouped">
             <p className="control is-expanded">
               <input
-                id="keywords"
+                id="search"
                 className="input search-input"
                 placeholder="Saisissez une recherche"
                 type="text"
-                defaultValue={keywords}
+                defaultValue={search}
               />
             </p>
             <p className="control">

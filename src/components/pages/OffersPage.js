@@ -51,11 +51,11 @@ class OffersPage extends Component {
 
     event.preventDefault()
 
-    const value = event.target.elements.keywords.value
+    const value = event.target.elements.search.value
 
-    if (!value || apiParams.keywords === value) return
+    if (!value || apiParams.search === value) return
 
-    handleQueryParamsChange({ [mapApiToQuery.keywords]: value })
+    handleQueryParamsChange({ [mapApiToQuery.search]: value })
   }
 
   render() {
@@ -70,7 +70,7 @@ class OffersPage extends Component {
       user,
     } = this.props
 
-    const { venueId, keywords, order_by, offererId } = apiParams || {}
+    const { venueId, search, order_by, offererId } = apiParams || {}
 
     let createOfferTo = `/offres/nouveau`
     if (venueId) {
@@ -98,11 +98,11 @@ class OffersPage extends Component {
           <div className="field is-grouped">
             <p className="control is-expanded">
               <input
-                id="keywords"
+                id="search"
                 className="input"
                 placeholder="Saisissez une recherche"
                 type="text"
-                defaultValue={keywords}
+                defaultValue={search}
               />
             </p>
             <p className="control">
