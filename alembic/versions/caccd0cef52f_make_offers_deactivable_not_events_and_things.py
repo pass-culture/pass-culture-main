@@ -1,7 +1,7 @@
 """make offers deactivable, not events and things
 
 Revision ID: caccd0cef52f
-Revises: 271d090148dc
+Revises: a7353203fb57
 Create Date: 2018-09-20 11:20:37.272195
 
 """
@@ -12,7 +12,7 @@ from sqlalchemy.sql import expression
 
 # revision identifiers, used by Alembic.
 revision = 'caccd0cef52f'
-down_revision = '271d090148dc'
+down_revision = 'a7353203fb57'
 branch_labels = None
 depends_on = None
 
