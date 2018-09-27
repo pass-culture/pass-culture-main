@@ -78,7 +78,10 @@ class PcObject():
                         value = value[:options['cut']] + '...'
             if key == 'id' or key.endswith('Id'):
                 result[key] = humanize(value)
-                result['dehumanized' + key[0].capitalize() + key[1:]] = value
+                if options \
+                    and 'dehumanize' in options \
+                    and options['dehumanize']:
+                    result['dehumanized' + key[0].capitalize() + key[1:]] = value
             elif key == 'validationToken':
                 continue
             elif key == 'firstThumbDominantColor' and value:
