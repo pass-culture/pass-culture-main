@@ -85,7 +85,7 @@ def test_find_all_bookings_for_stock(app):
     PcObject.check_and_save(booking_to_find_1, booking_to_find_2, booking_not_to_find)
 
     # When
-    all_bookings_for_stock = find_all_bookings_for_stock(stock_to_search.id)
+    all_bookings_for_stock = find_all_bookings_for_stock(stock_to_search)
     # Then
     assert booking_to_find_1 in all_bookings_for_stock
     assert booking_to_find_2 in all_bookings_for_stock
@@ -114,7 +114,7 @@ def test_find_all_bookings_for_event_occurrence(app):
     PcObject.check_and_save(booking_to_find_1, booking_to_find_2, booking_not_to_find, booking_to_find_3)
 
     # When
-    all_bookings_for_event_occurrence = find_all_bookings_for_event_occurrence(event_occurrence_to_search.id)
+    all_bookings_for_event_occurrence = find_all_bookings_for_event_occurrence(event_occurrence_to_search)
     # Then
     assert booking_to_find_1 in all_bookings_for_event_occurrence
     assert booking_to_find_2 in all_bookings_for_event_occurrence

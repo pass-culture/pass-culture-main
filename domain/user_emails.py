@@ -108,7 +108,7 @@ def send_batch_cancellation_emails_to_users(bookings, send_create_email):
 
 
 def send_batch_cancellation_email_to_offerer(bookings, cancellation_case, send_create_email):
-    booking = next(iter(bookings), None)
+    booking = bookings[0] if bookings else None
     offerer_email = booking.stock.resolvedOffer.venue.bookingEmail
     if offerer_email:
         recipients = [offerer_email]

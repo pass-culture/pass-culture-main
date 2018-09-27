@@ -3,7 +3,6 @@ from models.soft_deletable_mixin import SoftDeletableMixin
 
 
 def cancel_bookings(*bookings):
-    print('/////', bookings, type(bookings))
     return list(map(_cancel, bookings))
 
 

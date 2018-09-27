@@ -69,7 +69,7 @@ def delete_event_occurrence(id):
     event_occurrence = load_or_404(EventOccurrence, id)
     ensure_current_user_has_rights(RightsType.editor,
                                    event_occurrence.offer.venue.managingOffererId)
-    bookings = booking_queries.find_all_bookings_for_event_occurrence(event_occurrence.id)
+    bookings = booking_queries.find_all_bookings_for_event_occurrence(event_occurrence)
     bookings = cancel_bookings(*bookings)
     soft_deleted_objects = soft_delete_objects(event_occurrence,*event_occurrence.stocks)
     if bookings:

@@ -120,7 +120,7 @@ def delete_stock(id):
     ensure_current_user_has_rights(RightsType.editor,
                                    offerer_id)
     stock.isSoftDeleted = True
-    bookings = booking_queries.find_all_bookings_for_stock(stock.id)
+    bookings = booking_queries.find_all_bookings_for_stock(stock)
     bookings = cancel_bookings(*bookings)
     if bookings:
         send_batch_cancellation_emails_to_users(bookings, app.mailjet_client.send.create)
