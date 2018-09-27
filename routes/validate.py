@@ -5,6 +5,7 @@ import models
 from domain.user_emails import send_validation_confirmation_email
 from models import ApiErrors, \
     PcObject, UserOfferer, Offerer
+from utils.mailing import MailServiceException
 
 
 @app.route("/validate", methods=["GET"])
@@ -47,5 +48,8 @@ def validate():
 
     offerers = iter([obj for obj in objects_to_validate if isinstance(obj, Offerer)])
     offerer = next(offerers, None)
-    send_validation_confirmation_email(user_offerer, offerer, app.mailjet_client.send.create)
+    try:
+        send_validation_confirmation_email(user_offerer, offerer, app.mailjet_client.send.create)
+    except MailServiceException as e:
+        app.logger.error('Mail service failure', e)
     return "Validation effectuée", 202

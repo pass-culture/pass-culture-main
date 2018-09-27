@@ -191,7 +191,10 @@ def signup():
     PcObject.check_and_save(*objects_to_save)
 
     if do_pro_signup:
-        maybe_send_offerer_validation_email(offerer, user_offerer, app.mailjet_client.send.create)
+        try:
+            maybe_send_offerer_validation_email(offerer, user_offerer, app.mailjet_client.send.create)
+        except MailServiceException as e:
+            app.logger.error('Mail service failure', e)
 
     if request.json.get('contact_ok'):
         subscribe_newsletter(new_user)

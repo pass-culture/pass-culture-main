@@ -10,6 +10,7 @@ from repository.booking_queries import find_offerer_bookings
 from repository.user_offerer_queries import filter_query_where_user_is_user_offerer_and_is_validated
 from utils.human_ids import dehumanize
 from utils.includes import PRO_BOOKING_INCLUDES, OFFERER_INCLUDES
+from utils.mailing import MailServiceException
 from utils.rest import ensure_current_user_has_rights, \
     expect_json_data, \
     handle_rest_get_list, \
@@ -79,7 +80,10 @@ def create_offerer():
         user_offerer = offerer.give_rights(current_user,
                                            RightsType.admin)
         PcObject.check_and_save(offerer, user_offerer)
-    maybe_send_offerer_validation_email(offerer, user_offerer, app.mailjet_client.send.create)
+    try:
+        maybe_send_offerer_validation_email(offerer, user_offerer, app.mailjet_client.send.create)
+    except MailServiceException as e:
+        app.logger.error('Mail service failure', e)
     return jsonify(offerer._asdict(include=OFFERER_INCLUDES)), 201
 
 

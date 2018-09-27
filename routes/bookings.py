@@ -10,6 +10,7 @@ from models.pc_object import serialize
 from repository import booking_queries
 from utils.human_ids import dehumanize, humanize
 from utils.includes import BOOKING_INCLUDES
+from utils.mailing import MailServiceException
 from utils.rest import ensure_current_user_has_rights, \
     expect_json_data
 from utils.token import random_token
@@ -80,8 +81,14 @@ def create_booking():
     booking_queries.save_booking(new_booking)
 
     new_booking_stock = Stock.query.get(new_booking.stockId)
-    send_booking_recap_emails(new_booking, app.mailjet_client.send.create)
-    send_booking_confirmation_email_to_user(new_booking, app.mailjet_client.send.create)
+    try:
+        send_booking_recap_emails(new_booking, app.mailjet_client.send.create)
+    except MailServiceException as e:
+        app.logger.error('Mail service failure', e)
+    try:
+        send_booking_confirmation_email_to_user(new_booking, app.mailjet_client.send.create)
+    except MailServiceException as e:
+        app.logger.error('Mail service failure', e)
 
     return jsonify(new_booking._asdict(include=BOOKING_INCLUDES)), 201
 
@@ -102,8 +109,11 @@ def cancel_booking(booking_id):
     booking.isCancelled = True
     PcObject.check_and_save(booking)
 
-    send_cancellation_emails_to_user_and_offerer(booking, is_offerer_cancellation, is_user_cancellation,
-                                                 app.mailjet_client.send.create)
+    try:
+        send_cancellation_emails_to_user_and_offerer(booking, is_offerer_cancellation, is_user_cancellation,
+                                                    app.mailjet_client.send.create)
+    except MailServiceException as e:
+        app.logger.error('Mail service failure', e)
 
     return jsonify(booking._asdict(include=BOOKING_INCLUDES)), 200
 
