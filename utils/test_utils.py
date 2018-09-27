@@ -4,6 +4,7 @@ import string
 from datetime import datetime, timedelta, timezone
 from os import path
 from pathlib import Path
+from unittest.mock import Mock
 
 import requests as req
 import simplejson
@@ -497,3 +498,16 @@ def create_user_activity(user, table_name, verb, issued_at=datetime.utcnow):
                  'isAdmin': user.isAdmin}
     activity.changed_data = variables
     return activity
+
+
+def create_mocked_bookings(num_bookings, venue_email, name='Offer name'):
+    bookings = []
+    for i in range(num_bookings):
+        booking = Mock(spec=Booking)
+        booking.user.email = 'user_email%s' % i
+        booking.user.firstName = 'First %s' % i
+        booking.user.lastName = 'Last %s' % i
+        booking.stock.resolvedOffer.venue.bookingEmail = venue_email
+        booking.stock.resolvedOffer.eventOrThing.name = name
+        bookings.append(booking)
+    return bookings

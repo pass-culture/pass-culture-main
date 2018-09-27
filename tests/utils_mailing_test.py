@@ -11,11 +11,12 @@ from utils.mailing import make_user_booking_recap_email, \
     make_offerer_booking_recap_email_after_user_action, make_final_recap_email_for_stock_with_event, \
     write_object_validation_email, make_offerer_driven_cancellation_email_for_user, \
     make_reset_password_email, \
-    make_offerer_driven_cancellation_email_for_offerer, make_validation_confirmation_email
+    make_offerer_driven_cancellation_email_for_offerer, make_validation_confirmation_email, \
+    make_batch_cancellation_email
 from utils.test_utils import create_stock_with_event_offer, create_stock_with_thing_offer, \
     create_user, create_booking, MOCKED_SIREN_ENTREPRISES_API_RETURN, create_user_offerer, \
     create_offerer, create_venue, create_thing_offer, create_event_offer, create_stock_from_offer, \
-    create_stock_from_event_occurrence, create_event_occurrence, create_thing
+    create_stock_from_event_occurrence, create_event_occurrence, create_thing, create_mocked_bookings
 
 
 def get_mocked_response_status_200(entity):
@@ -992,8 +993,53 @@ def test_make_validation_confirmation_email_offerer(app):
     # Then
     email_html = BeautifulSoup(email['Html-part'], 'html.parser')
     html_validation_details = str(email_html.find('p', {'id': 'validation-details'}))
-    print(email)
     assert 'Votre structure "Le Théâtre SAS"' in html_validation_details
     assert 'L\'utilisateur' not in html_validation_details
     assert email['FromName'] == 'pass Culture pro'
     assert email['Subject'] == 'Validation de votre structure'
+
+
+@clean_database
+@pytest.mark.standalone
+def test_make_make_batch_cancellation_email_for_case_event_occurrence(app):
+    # Given
+    bookings = create_mocked_bookings(num_bookings=4, venue_email='venue@email.com', name='Le récit de voyage')
+    # When
+    email = make_batch_cancellation_email(bookings, cancellation_case='event_occurrence')
+    # Then
+    email_html = BeautifulSoup(email['Html-part'], 'html.parser')
+    html_action = str(email_html.find('p', {'id': 'action'}))
+    html_recap = str(email_html.find('table', {'id': 'recap-table'}))
+    assert 'Suite à votre suppression de date' in html_action
+    assert 'Le récit de voyage' in html_action
+    assert 'automatiquement annulées' in html_action
+    for booking in bookings:
+        assert '<td>%s</td>' % booking.user.email in html_recap
+        assert '<td>%s</td>' % booking.user.firstName in html_recap
+        assert '<td>%s</td>' % booking.user.lastName in html_recap
+    assert email['FromEmail'] == 'passculture@beta.gouv.fr'
+    assert email['FromName'] == 'pass Culture pro'
+    assert email['Subject'] == 'Annulation de réservations pour Le récit de voyage'
+
+
+@clean_database
+@pytest.mark.standalone
+def test_make_make_batch_cancellation_email_for_case_stock(app):
+    # Given
+    bookings = create_mocked_bookings(num_bookings=4, venue_email='venue@email.com', name='Le récit de voyage')
+    # When
+    email = make_batch_cancellation_email(bookings, cancellation_case='stock')
+    # Then
+    email_html = BeautifulSoup(email['Html-part'], 'html.parser')
+    html_action = str(email_html.find('p', {'id': 'action'}))
+    html_recap = str(email_html.find('table', {'id': 'recap-table'}))
+    assert 'Suite à votre suppression de stock' in html_action
+    assert 'Le récit de voyage' in html_action
+    assert 'automatiquement annulées' in html_action
+    for booking in bookings:
+        assert '<td>%s</td>' % booking.user.email in html_recap
+        assert '<td>%s</td>' % booking.user.firstName in html_recap
+        assert '<td>%s</td>' % booking.user.lastName in html_recap
+    assert email['FromEmail'] == 'passculture@beta.gouv.fr'
+    assert email['FromName'] == 'pass Culture pro'
+    assert email['Subject'] == 'Annulation de réservations pour Le récit de voyage'

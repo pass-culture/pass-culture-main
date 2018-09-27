@@ -2,7 +2,9 @@
 from flask import current_app as app, jsonify, request
 from flask_login import current_user
 
-from domain.stocks import find_offerer_for_new_stock, soft_delete_stock
+from domain.cancel_and_soft_delete import cancel_bookings
+from domain.stocks import find_offerer_for_new_stock
+from domain.user_emails import send_batch_cancellation_emails_to_users, send_batch_cancellation_email_to_offerer
 from models.event import Event
 from models.event_occurrence import EventOccurrence
 from models.offer import Offer
@@ -11,7 +13,7 @@ from models.stock import Stock
 from models.thing import Thing
 from models.user_offerer import RightsType
 from models.venue import Venue
-from repository import stock_queries
+from repository import stock_queries, booking_queries
 from utils.human_ids import dehumanize
 from utils.rest import ensure_current_user_has_rights, \
     expect_json_data, \
@@ -117,9 +119,13 @@ def delete_stock(id):
     offerer_id = stock.resolvedOffer.venue.managingOffererId
     ensure_current_user_has_rights(RightsType.editor,
                                    offerer_id)
+    stock.isSoftDeleted = True
+    bookings = booking_queries.find_all_bookings_for_stock(stock)
+    bookings = cancel_bookings(*bookings)
+    if bookings:
+        send_batch_cancellation_emails_to_users(bookings, app.mailjet_client.send.create)
+        send_batch_cancellation_email_to_offerer(bookings, 'stock', app.mailjet_client.send.create)
 
-    stock_and_bookings_to_save = soft_delete_stock(stock)
-
-    PcObject.check_and_save(*stock_and_bookings_to_save)
+    PcObject.check_and_save(*(bookings + [stock]))
 
     return jsonify(stock._asdict()), 200

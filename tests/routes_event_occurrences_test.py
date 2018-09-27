@@ -21,7 +21,7 @@ from utils.test_utils import API_URL,\
 
 @clean_database
 @pytest.mark.standalone
-def test_10_get_event_occurences_should_return_a_list_of_event_occurences(app):
+def test_get_event_occurences_should_return_a_list_of_event_occurences(app):
     # Given
     user = create_user(email='test@email.com', can_book_free_offers=False, password='P@55w0rd', is_admin=True)
     offerer = create_offerer()
@@ -41,9 +41,10 @@ def test_10_get_event_occurences_should_return_a_list_of_event_occurences(app):
     eos = request.json()
     assert len(eos) == 3
 
+
 @clean_database
 @pytest.mark.standalone
-def test_when_deleted_event_occurrence_only_all_bookings_related_to_soft_deleted_event_occurence_are_cancelled(app):
+def test_route_delete_event_occurrence_deletes_event_occurrence_stocks_and_cancels_bookings(app):
     # Given
     user1 = create_user(email='user1@test.fr')
     user2 = create_user(email='user2@test.fr')
@@ -65,12 +66,22 @@ def test_when_deleted_event_occurrence_only_all_bookings_related_to_soft_deleted
     PcObject.check_and_save(event_occurrence1, event_occurrence2, booking1, booking2, booking3, user_offerer)
 
     # When
-    req_with_auth('email@test.fr', 'P@55w0rd').delete(API_URL + '/eventOccurrences/' + humanize(event_occurrence1.id))
+    response = req_with_auth('email@test.fr', 'P@55w0rd').delete(
+        API_URL + '/eventOccurrences/' + humanize(event_occurrence1.id))
 
     # Then
     db.session.refresh(booking1)
     db.session.refresh(booking2)
     db.session.refresh(booking3)
+    db.session.refresh(stock1)
+    db.session.refresh(stock2)
+    db.session.refresh(event_occurrence1)
+    db.session.refresh(event_occurrence2)
+    assert response.status_code == 200
     assert booking1.isCancelled == True
     assert booking2.isCancelled == False
     assert booking3.isCancelled == True
+    assert stock1.isSoftDeleted == True
+    assert stock2.isSoftDeleted == False
+    assert event_occurrence1.isSoftDeleted == True
+    assert event_occurrence2.isSoftDeleted == False
