@@ -12,7 +12,7 @@ import SearchFilter from './search/SearchFilter'
 import SearchResults from './search/SearchResults'
 import filterIconByState, {
   INITIAL_FILTER_PARAMS,
-  searchFiltersAdded,
+  isSearchFiltersAdded,
 } from './search/utils'
 import Main from '../layout/Main'
 import NavigationFooter from '../layout/NavigationFooter'
@@ -105,8 +105,11 @@ class SearchPage extends PureComponent {
 
     const keywords = queryParams[FRENCH_KEYWORDS_KEY]
 
-    const filters = searchFiltersAdded(INITIAL_FILTER_PARAMS, queryParams)
-    const filterIcon = filterIconByState(filters)
+    const filtersActive = isSearchFiltersAdded(
+      INITIAL_FILTER_PARAMS,
+      queryParams
+    )
+    const isfilterIconActive = filterIconByState(filtersActive)
 
     return (
       <Main
@@ -181,7 +184,9 @@ class SearchPage extends PureComponent {
             >
               &nbsp;
               <Icon
-                svg={`ico-${match.params.filtres ? 'chevron-up' : filterIcon}`}
+                svg={`ico-${
+                  match.params.filtres ? 'chevron-up' : isfilterIconActive
+                }`}
               />
               &nbsp;
             </button>

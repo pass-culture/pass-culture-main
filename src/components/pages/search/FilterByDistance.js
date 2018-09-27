@@ -55,7 +55,7 @@ class FilterByDistance extends Component {
         className="dotted-bottom-primary"
         id="filter-by-distance"
       >
-        <h2 className="fs18">
+        <h2 className="fs18 is-italic is-uppercase text-center">
           {title}
         </h2>
         <select

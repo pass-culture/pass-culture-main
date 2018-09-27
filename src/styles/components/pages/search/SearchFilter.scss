@@ -4,11 +4,8 @@
   position: relative;
 
   h2 {
-    font-style: italic;
     margin-bottom: 1em;
     margin-top: 1em;
-    text-transform: uppercase;
-    text-align: center;
   }
 
   button {
@@ -19,7 +16,6 @@
     font-size: 1.375rem;
   }
 }
-
 
 #filter-by-dates {
   #date-checkbox {

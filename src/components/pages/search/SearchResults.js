@@ -1,18 +1,12 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { InfiniteScroller, pluralize } from 'pass-culture-shared'
+import { InfiniteScroller } from 'pass-culture-shared'
 
 import SearchResultItem from './SearchResultItem'
+import { searchResultsTitle } from './utils'
 
 const SearchResults = ({ items, keywords, loadMoreHandler, queryParams }) => {
-  let resultTitle
-  if (keywords) {
-    const count = items.length
-    const resultString = pluralize(count, 'résultats')
-    const keywordsString = decodeURI(keywords || '')
-    const typesString = decodeURI(queryParams.types || '')
-    resultTitle = `${keywordsString} ${typesString}: ${resultString}`
-  }
+  const resultTitle = searchResultsTitle(keywords, items, queryParams)
   return (
     <div className="search-results">
       <h2

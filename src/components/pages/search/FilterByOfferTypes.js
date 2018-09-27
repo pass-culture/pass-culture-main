@@ -32,7 +32,7 @@ class FilterByOfferTypes extends Component {
 
     return (
       <div id="filter-by-offer-types">
-        <h2 className="fs18">
+        <h2 className="fs18 is-italic is-uppercase text-center">
           {title}
         </h2>
         <div className="filter-menu-outer">

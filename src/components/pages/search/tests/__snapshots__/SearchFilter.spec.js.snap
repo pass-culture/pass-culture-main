@@ -1,0 +1,272 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`src | components | pages | search | SearchFilter snapshot should match snapshot 1`] = `
+ShallowWrapper {
+  Symbol(enzyme.__root__): [Circular],
+  Symbol(enzyme.__unrendered__): <SearchFilter
+    handleQueryParamsChange={[MockFunction]}
+    queryParams={Object {}}
+  />,
+  Symbol(enzyme.__renderer__): Object {
+    "batchedUpdates": [Function],
+    "getNode": [Function],
+    "render": [Function],
+    "simulateError": [Function],
+    "simulateEvent": [Function],
+    "unmount": [Function],
+  },
+  Symbol(enzyme.__node__): Object {
+    "instance": null,
+    "key": undefined,
+    "nodeType": "host",
+    "props": Object {
+      "children": Array [
+        <FilterByDates
+          filterParams={Object {}}
+          handleFilterParamAdd={[Function]}
+          handleFilterParamRemove={[Function]}
+          handleFilterParamsChange={[Function]}
+          title="QUAND"
+        />,
+        <Connect(FilterByDistance)
+          filterParams={Object {}}
+          handleFilterParamsChange={[Function]}
+          title="OÙ"
+        />,
+        <Connect(FilterByOfferTypes)
+          filterParams={Object {}}
+          handleFilterParamAdd={[Function]}
+          handleFilterParamRemove={[Function]}
+          title="QUOI"
+        />,
+        <button
+          className="button fs24"
+          onClick={[Function]}
+          type="button"
+        >
+          Réinitialiser
+        </button>,
+        <button
+          className="button fs24"
+          onClick={[Function]}
+          type="button"
+        >
+          Filtrer
+        </button>,
+      ],
+      "id": "search-filter-menu",
+    },
+    "ref": null,
+    "rendered": Array [
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "class",
+        "props": Object {
+          "filterParams": Object {},
+          "handleFilterParamAdd": [Function],
+          "handleFilterParamRemove": [Function],
+          "handleFilterParamsChange": [Function],
+          "title": "QUAND",
+        },
+        "ref": null,
+        "rendered": null,
+        "type": [Function],
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "class",
+        "props": Object {
+          "filterParams": Object {},
+          "handleFilterParamsChange": [Function],
+          "title": "OÙ",
+        },
+        "ref": null,
+        "rendered": null,
+        "type": [Function],
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "class",
+        "props": Object {
+          "filterParams": Object {},
+          "handleFilterParamAdd": [Function],
+          "handleFilterParamRemove": [Function],
+          "title": "QUOI",
+        },
+        "ref": null,
+        "rendered": null,
+        "type": [Function],
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": "Réinitialiser",
+          "className": "button fs24",
+          "onClick": [Function],
+          "type": "button",
+        },
+        "ref": null,
+        "rendered": "Réinitialiser",
+        "type": "button",
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": "Filtrer",
+          "className": "button fs24",
+          "onClick": [Function],
+          "type": "button",
+        },
+        "ref": null,
+        "rendered": "Filtrer",
+        "type": "button",
+      },
+    ],
+    "type": "div",
+  },
+  Symbol(enzyme.__nodes__): Array [
+    Object {
+      "instance": null,
+      "key": undefined,
+      "nodeType": "host",
+      "props": Object {
+        "children": Array [
+          <FilterByDates
+            filterParams={Object {}}
+            handleFilterParamAdd={[Function]}
+            handleFilterParamRemove={[Function]}
+            handleFilterParamsChange={[Function]}
+            title="QUAND"
+          />,
+          <Connect(FilterByDistance)
+            filterParams={Object {}}
+            handleFilterParamsChange={[Function]}
+            title="OÙ"
+          />,
+          <Connect(FilterByOfferTypes)
+            filterParams={Object {}}
+            handleFilterParamAdd={[Function]}
+            handleFilterParamRemove={[Function]}
+            title="QUOI"
+          />,
+          <button
+            className="button fs24"
+            onClick={[Function]}
+            type="button"
+          >
+            Réinitialiser
+          </button>,
+          <button
+            className="button fs24"
+            onClick={[Function]}
+            type="button"
+          >
+            Filtrer
+          </button>,
+        ],
+        "id": "search-filter-menu",
+      },
+      "ref": null,
+      "rendered": Array [
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "class",
+          "props": Object {
+            "filterParams": Object {},
+            "handleFilterParamAdd": [Function],
+            "handleFilterParamRemove": [Function],
+            "handleFilterParamsChange": [Function],
+            "title": "QUAND",
+          },
+          "ref": null,
+          "rendered": null,
+          "type": [Function],
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "class",
+          "props": Object {
+            "filterParams": Object {},
+            "handleFilterParamsChange": [Function],
+            "title": "OÙ",
+          },
+          "ref": null,
+          "rendered": null,
+          "type": [Function],
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "class",
+          "props": Object {
+            "filterParams": Object {},
+            "handleFilterParamAdd": [Function],
+            "handleFilterParamRemove": [Function],
+            "title": "QUOI",
+          },
+          "ref": null,
+          "rendered": null,
+          "type": [Function],
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": "Réinitialiser",
+            "className": "button fs24",
+            "onClick": [Function],
+            "type": "button",
+          },
+          "ref": null,
+          "rendered": "Réinitialiser",
+          "type": "button",
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": "Filtrer",
+            "className": "button fs24",
+            "onClick": [Function],
+            "type": "button",
+          },
+          "ref": null,
+          "rendered": "Filtrer",
+          "type": "button",
+        },
+      ],
+      "type": "div",
+    },
+  ],
+  Symbol(enzyme.__options__): Object {
+    "adapter": ReactSixteenAdapter {
+      "options": Object {
+        "enableComponentDidUpdateOnSetState": true,
+        "lifecycles": Object {
+          "componentDidUpdate": Object {
+            "onSetState": true,
+          },
+          "getDerivedStateFromProps": true,
+          "getSnapshotBeforeUpdate": true,
+          "setState": Object {
+            "skipsComponentDidUpdateOnNullish": true,
+          },
+        },
+      },
+    },
+    "attachTo": undefined,
+    "hydrateIn": undefined,
+  },
+}
+`;

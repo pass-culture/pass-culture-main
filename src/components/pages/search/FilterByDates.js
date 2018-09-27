@@ -57,13 +57,13 @@ class FilterByDates extends Component {
 
     return (
       <div className="dotted-bottom-primary" id="filter-by-dates">
-        <h2 className="fs18">
+        <h2 className="fs18 is-italic is-uppercase text-center">
           {title}
         </h2>
         <div className="filter-menu-outer">
           {checkboxes.map(({ label, value }) => (
-            <div id="date-checkbox" className="filter-menu-inner">
-              <div className="field field-checkbox" key={value}>
+            <div id="date-checkbox" className="filter-menu-inner" key={value}>
+              <div className="field field-checkbox">
                 <label className="fs22"> 
                   {' '}
                   {label}

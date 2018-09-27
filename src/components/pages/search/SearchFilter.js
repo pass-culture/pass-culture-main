@@ -8,21 +8,7 @@ import FilterByDates from './FilterByDates'
 import FilterByDistance from './FilterByDistance'
 import FilterByOfferTypes from './FilterByOfferTypes'
 
-import { INITIAL_FILTER_PARAMS, searchFiltersAdded } from '../search/utils'
-
-function getFirstChangingKey(previousObject, nextObject) {
-  return Object.keys(nextObject).find(key => {
-    const isNewFalsy = nextObject[key] === null || nextObject[key] === ''
-    const isPreviousFalsy =
-      typeof previousObject[key] === 'undefined' ||
-      previousObject[key] === null ||
-      previousObject === ''
-    if (isNewFalsy && isPreviousFalsy) {
-      return false
-    }
-    return previousObject[key] !== nextObject[key]
-  })
-}
+import { getFirstChangingKey, INITIAL_FILTER_PARAMS } from '../search/utils'
 
 class SearchFilter extends Component {
   constructor(props) {
@@ -69,7 +55,6 @@ class SearchFilter extends Component {
     const { filterParams } = this.state
 
     const nextFilterParams = Object.assign({}, filterParams, newValue)
-
     const isNewFilter = getFirstChangingKey(queryParams, newValue)
 
     this.setState(
@@ -83,7 +68,6 @@ class SearchFilter extends Component {
 
   handleFilterParamAdd = (key, value, callback) => {
     const { filterParams } = this.state
-
     const encodedValue = encodeURI(value)
     let nextValue = encodedValue
     const previousValue = filterParams[key]
@@ -117,8 +101,6 @@ class SearchFilter extends Component {
     const { handleClearQueryParams } = this.props
     const { filterParams, isNewFilter } = this.state
 
-    const isNullFilter = searchFiltersAdded(INITIAL_FILTER_PARAMS, filterParams)
-
     return (
       <div id="search-filter-menu">
         <FilterByDates
@@ -141,14 +123,12 @@ class SearchFilter extends Component {
         />
         <button
           className="button fs24"
-          disabled={isNullFilter}
           onClick={this.onResetClick}
           type="button">
           Réinitialiser
         </button>
         <button
           className="button fs24"
-          disabled={!isNewFilter}
           onClick={this.onFilterClick}
           type="button">
           Filtrer
