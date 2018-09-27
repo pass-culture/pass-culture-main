@@ -2,9 +2,8 @@ import {
   Icon,
   InfiniteScroller,
   requestData,
-  searchSelector,
   withLogin,
-  withSearch,
+  withPagination,
 } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
@@ -16,17 +15,28 @@ import Main from '../layout/Main'
 import OffererItem from '../items/OffererItem'
 import offerersSelector from '../../selectors/offerers'
 import { offererNormalizer } from '../../utils/normalizers'
-import { mapApiToQuery, queryToApiParams } from '../../utils/search'
+import { mapApiToWindow, windowToApiQuery } from '../../utils/pagination'
 
 class OfferersPage extends Component {
   handleDataRequest = (handleSuccess, handleFail) => {
-    const { apiSearch, dispatch, goToNextSearchPage } = this.props
+    const { dispatch, pagination, search } = this.props
+    const { apiQueryString, page, goToNextPage } = pagination
+
+    // BECAUSE THE INFINITE SCROLLER CALLS ONCE THIS FUNCTION
+    // BUT THEN PUSH THE SEARCH TO PAGE + 1
+    // WE PASS AGAIN HERE FOR THE SAME PAGE
+    // SO WE NEED TO PREVENT A SECOND CALL
+    if (page !== 1 && search.page && page === Number(search.page)) {
+      return
+    }
+
+    const path = `offerers?page=${page}&${apiQueryString}`
 
     dispatch(
-      requestData('GET', `offerers?${apiSearch}`, {
+      requestData('GET', path, {
         handleSuccess: (state, action) => {
           handleSuccess(state, action)
-          goToNextSearchPage()
+          goToNextPage()
         },
         handleFail,
         normalizer: offererNormalizer,
@@ -35,21 +45,21 @@ class OfferersPage extends Component {
   }
 
   onSubmit = event => {
-    const { apiParams, handleQueryParamsChange } = this.props
+    const { pagination } = this.props
 
     event.preventDefault()
 
-    const value = event.target.elements.keywords.value
+    const value = event.target.elements.search.value
 
-    if (!value || apiParams.keywords === value) return
-
-    handleQueryParamsChange({ [mapApiToQuery.keywords]: value })
+    pagination.change({
+      [mapApiToWindow.search]: value === '' ? null : value,
+    })
   }
 
   render() {
-    const { apiParams, offerers } = this.props
+    const { offerers, pagination } = this.props
 
-    const { keywords } = apiParams || {}
+    const { search } = pagination.apiQuery || {}
 
     return (
       <Main name="offerers" handleDataRequest={this.handleDataRequest}>
@@ -70,11 +80,11 @@ class OfferersPage extends Component {
           <div className="field is-grouped">
             <p className="control is-expanded">
               <input
-                id="keywords"
+                id="search"
                 className="input search-input"
                 placeholder="Saisissez une recherche"
                 type="text"
-                defaultValue={keywords}
+                defaultValue={search}
               />
             </p>
             <p className="control">
@@ -92,7 +102,14 @@ class OfferersPage extends Component {
 
         <InfiniteScroller
           className="main-list offerers-list"
-          handleLoadMore={this.handleDataRequest}>
+          handleLoadMore={(handleSuccess, handleFail) => {
+            this.handleDataRequest(handleSuccess, handleFail)
+            const { history, location, pagination } = this.props
+            const { windowQueryString, page } = pagination
+            history.push(
+              `${location.pathname}?page=${page}&${windowQueryString}`
+            )
+          }}>
           {offerers.map(o => (
             <OffererItem key={o.id} offerer={o} />
           ))}
@@ -102,14 +119,20 @@ class OfferersPage extends Component {
   }
 }
 
+function mapStateToProps(state, ownProps) {
+  return {
+    offerers: offerersSelector(state),
+  }
+}
+
 export default compose(
   withLogin({ failRedirect: '/connexion' }),
-  withSearch({
+  withPagination({
     dataKey: 'offerers',
-    queryToApiParams,
+    defaultWindowQuery: {
+      [mapApiToWindow.search]: null,
+    },
+    windowToApiQuery,
   }),
-  connect((state, ownProps) => ({
-    offerers: offerersSelector(state),
-    queryParams: searchSelector(state, ownProps.location.search),
-  }))
+  connect(mapStateToProps)
 )(OfferersPage)

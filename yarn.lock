@@ -6458,9 +6458,9 @@ pascalcase@^0.1.1:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/pascalcase/-/pascalcase-0.1.1.tgz#b363e55e8006ca6fe21784d2db22bd15d7917f14"
 
-pass-culture-shared@^0.0.55:
-  version "0.0.55"
-  resolved "https://registry.yarnpkg.com/pass-culture-shared/-/pass-culture-shared-0.0.55.tgz#e875a23b0e577737cdb218fef8f7b367ec455abb"
+pass-culture-shared@^0.0.56:
+  version "0.0.56"
+  resolved "https://registry.yarnpkg.com/pass-culture-shared/-/pass-culture-shared-0.0.56.tgz#2a531e0b16e92979f5a0ee49bfafd5b3b950feb9"
   dependencies:
     lodash.get "^4.4.2"
     lodash.merge "^4.6.1"
