@@ -13,7 +13,6 @@ import {
   showNotification,
   SubmitButton,
   withLogin,
-  eddSelectors,
 } from 'pass-culture-shared'
 import React, { Component, Fragment } from 'react'
 import { connect } from 'react-redux'
@@ -32,12 +31,15 @@ import offererSelector from '../../selectors/offerer'
 import offerersSelector from '../../selectors/offerers'
 import providersSelector from '../../selectors/providers'
 import searchSelector from '../../selectors/search'
+import selectMusicSubOptions from '../../selectors/selectMusicSubOptions'
+import selectShowSubOptions from '../../selectors/selectShowSubOptions'
 import stocksSelector from '../../selectors/stocks'
 import thingSelector from '../../selectors/thing'
 import typesSelector from '../../selectors/types'
 import typeSelector from '../../selectors/type'
 import venueSelector from '../../selectors/venue'
 import venuesSelector from '../../selectors/venues'
+import { musicOptions, showOptions } from '../../utils/edd'
 import { offerNormalizer } from '../../utils/normalizers'
 import { pluralize } from '../../utils/string'
 
@@ -300,10 +302,8 @@ class OfferPage extends Component {
       venues,
       url,
       user,
-      musicTypes,
-      musicSubTypes,
-      showTypes,
-      showSubTypes,
+      musicSubOptions,
+      showSubOptions,
     } = this.props
     const { apiPath, isNew, isReadOnly, isEventType } = this.state
     const eventOrThingName = get(event, 'name') || get(thing, 'name')
@@ -538,18 +538,18 @@ class OfferPage extends Component {
                         label="Genre musical"
                         name="musicType"
                         setKey="extraData"
-                        options={musicTypes}
+                        options={musicOptions}
                         optionValue="code"
                         optionLabel="label"
                       />
 
-                      {musicSubTypes.length > 0 && (
+                      {get(musicSubOptions, 'length') > 0 && (
                         <Field
                           type="select"
                           label="Sous genre"
                           name="musicSubType"
                           setKey="extraData"
-                          options={musicSubTypes}
+                          options={musicSubOptions}
                           optionValue="code"
                           optionLabel="label"
                         />
@@ -564,18 +564,18 @@ class OfferPage extends Component {
                         label="Type de spectacle"
                         name="showType"
                         setKey="extraData"
-                        options={showTypes}
+                        options={showOptions}
                         optionValue="code"
                         optionLabel="label"
                       />
 
-                      {showSubTypes.length > 0 && (
+                      {get(showSubOptions, 'length') > 0 && (
                         <Field
                           type="select"
                           label="Sous type"
                           name="showSubType"
                           setKey="extraData"
-                          options={showSubTypes}
+                          options={showSubOptions}
                           optionValue="code"
                           optionLabel="label"
                         />
@@ -700,23 +700,10 @@ function mapStateToProps(state, ownProps) {
 
   const extraData = get(state, 'form.offer.extraData') || {}
 
-  const musicTypes = eddSelectors.musicTypeParentsSelector()
-
-  let musicSubTypes = []
-  if (extraData.musicType) {
-    musicSubTypes = eddSelectors.musicTypeChildrenSelector(
-      Number(extraData.musicType)
-    )
-  }
-
-  const showTypes = eddSelectors.showTypeParentsSelector()
-
-  let showSubTypes = []
-  if (extraData.showType) {
-    showSubTypes = eddSelectors.showTypeChildrenSelector(
-      Number(extraData.showType)
-    )
-  }
+  const musicSubOptions =
+    extraData.musicType && selectMusicSubOptions(Number(extraData.musicType))
+  const showSubOptions =
+    extraData.showType && selectShowSubOptions(Number(extraData.showType))
 
   const offerTypeError = get(state, 'errors.offer.type')
 
@@ -727,16 +714,14 @@ function mapStateToProps(state, ownProps) {
     formOffererId,
     formVenueId,
     hasEventOrThing,
-    musicTypes,
-    musicSubTypes,
+    musicSubOptions,
     offer,
     offerer,
     offerers,
     offerTypeError,
     providers,
     search,
-    showTypes,
-    showSubTypes,
+    showSubOptions,
     stocks,
     thing,
     types,
