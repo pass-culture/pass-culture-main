@@ -33,4 +33,5 @@ def install_scripts():
     import scripts.send_final_booking_recaps
     import scripts.testcafe
     import scripts.update_providables
+    import scripts.storage
 
