@@ -1,5 +1,9 @@
 import createCachedSelector from 're-reselect'
 
+function mapArgsToKey(state, optionalOffererId, optionalOfferType) {
+  return `${optionalOffererId || ''}/${optionalOfferType || ''}`
+}
+
 export default createCachedSelector(
   state => state.data.venues,
   (state, optionalOffererId) => optionalOffererId,
@@ -11,12 +15,14 @@ export default createCachedSelector(
       filteredVenues = filteredVenues.filter(
         v => v.managingOffererId === optionalOffererId
       )
+
     if (optionalOfferType) {
       if (optionalOfferType.offlineOnly)
         filteredVenues = filteredVenues.filter(v => !v.isVirtual)
       else if (optionalOfferType.onlineOnly)
         filteredVenues = filteredVenues.filter(v => v.isVirtual)
     }
+
     return filteredVenues
   }
-)((state, optionalOffererId) => optionalOffererId || '')
+)(mapArgsToKey)

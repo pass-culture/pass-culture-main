@@ -88,6 +88,7 @@ class Main extends Component {
       redBg,
       Tag,
       whiteHeader,
+      withLoading,
     } = this.props
     const { loading } = this.state
     const footer = [].concat(children).find(e => e && e.type === 'footer')
@@ -155,7 +156,7 @@ class Main extends Component {
                   </NavLink>
                 )}
                 <div className="main-content">{content}</div>
-                {loading && <Spinner />}
+                {withLoading && loading && <Spinner />}
               </div>
             </div>
           </div>

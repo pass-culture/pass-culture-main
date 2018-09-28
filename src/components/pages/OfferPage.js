@@ -1,3 +1,4 @@
+import classnames from 'classnames'
 import get from 'lodash.get'
 import {
   CancelButton,
@@ -5,13 +6,13 @@ import {
   Field,
   Form,
   Icon,
+  mergeErrors,
   mergeForm,
   requestData,
   showModal,
   showNotification,
   SubmitButton,
   withLogin,
-  eddSelectors,
 } from 'pass-culture-shared'
 import React, { Component, Fragment } from 'react'
 import { connect } from 'react-redux'
@@ -30,12 +31,15 @@ import offererSelector from '../../selectors/offerer'
 import offerersSelector from '../../selectors/offerers'
 import providersSelector from '../../selectors/providers'
 import searchSelector from '../../selectors/search'
+import selectMusicSubOptionsByMusicType from '../../selectors/selectMusicSubOptionsByMusicType'
+import selectShowSubOptionsByShowType from '../../selectors/selectShowSubOptionsByShowType'
 import stocksSelector from '../../selectors/stocks'
 import thingSelector from '../../selectors/thing'
 import typesSelector from '../../selectors/types'
 import typeSelector from '../../selectors/type'
 import venueSelector from '../../selectors/venue'
 import venuesSelector from '../../selectors/venues'
+import { musicOptions, showOptions } from '../../utils/edd'
 import { offerNormalizer } from '../../utils/normalizers'
 import { pluralize } from '../../utils/string'
 
@@ -100,22 +104,32 @@ class OfferPage extends Component {
       match: {
         params: { offerId },
       },
-      offer,
-      offerers,
       providers,
+      search,
       types,
     } = this.props
-    !offer &&
-      offerId !== 'nouveau' &&
+
+    if (offerId !== 'nouveau') {
       dispatch(
         requestData('GET', `offers/${offerId}`, {
           key: 'offers',
           normalizer: offerNormalizer,
         })
       )
-    offerers.length === 0 &&
+    } else if (search.venueId) {
+      requestData('GET', `venues/${search.venueId}`, {
+        normalizer: {
+          managingOffererId: 'offerers',
+        },
+      })
+    } else {
+      let offerersPath = 'offerers'
+      if (search.offererId) {
+        offerersPath = `${offerersPath}/${search.offererId}`
+      }
+
       dispatch(
-        requestData('GET', 'offerers', {
+        requestData('GET', offerersPath, {
           handleSuccess: (state, action) => {
             if (!get(state, 'data.venues.length')) {
               dispatch(
@@ -135,9 +149,10 @@ class OfferPage extends Component {
           normalizer: { managedVenues: 'venues' },
         })
       )
+    }
+
     providers.length === 0 && dispatch(requestData('GET', 'providers'))
     types.length === 0 && dispatch(requestData('GET', 'types'))
-
     handleSuccess()
   }
 
@@ -204,15 +219,18 @@ class OfferPage extends Component {
 
   componentDidUpdate(prevProps) {
     const {
-      eventOccurrences,
       dispatch,
+      eventOccurrences,
+      eventOrThingPatch,
+      formOffererId,
+      formVenueId,
       hasEventOrThing,
       location: { pathname, search },
       offer,
       offerer,
+      offerTypeError,
       type,
       venue,
-      venues,
     } = this.props
 
     if (search.indexOf('gestion') > -1) {
@@ -227,7 +245,10 @@ class OfferPage extends Component {
       }
     }
 
-    if ((!offerer && prevProps.offerer) || (!type && prevProps.type)) {
+    if (
+      !formOffererId &&
+      ((!offerer && prevProps.offerer) || (!type && prevProps.type))
+    ) {
       dispatch(
         mergeForm('offer', {
           offererId: null,
@@ -236,13 +257,20 @@ class OfferPage extends Component {
       )
     }
 
-    if (
-      (offerer && get(venues, 'length') === 0 && venue) ||
-      (!venue && prevProps.venue)
-    ) {
+    if (!formVenueId && (!venue && prevProps.venue)) {
       dispatch(
         mergeForm('offer', {
           venueId: null,
+        })
+      )
+    }
+
+    if (get(eventOrThingPatch, 'type') && !type && !offerTypeError) {
+      dispatch(
+        mergeErrors('offer', {
+          type: [
+            'Il y a eu un problème avec la création de cette offre: son type est incompatible avec le lieu enregistré.',
+          ],
         })
       )
     }
@@ -274,10 +302,8 @@ class OfferPage extends Component {
       venues,
       url,
       user,
-      musicTypes,
-      musicSubTypes,
-      showTypes,
-      showSubTypes,
+      musicSubOptions,
+      showSubOptions,
     } = this.props
     const { apiPath, isNew, isReadOnly, isEventType } = this.state
     const eventOrThingName = get(event, 'name') || get(thing, 'name')
@@ -333,7 +359,11 @@ class OfferPage extends Component {
                 optionLabel="label"
                 optionValue="value"
                 options={types}
-                placeholder="Sélectionnez un type d'offre"
+                placeholder={
+                  get(eventOrThingPatch, 'type') && !type
+                    ? get(eventOrThingPatch, 'type')
+                    : "Sélectionnez un type d'offre"
+                }
                 required
                 type="select"
               />
@@ -394,37 +424,44 @@ class OfferPage extends Component {
                     required
                     type="select"
                   />
-                  {offerer && get(venues, 'length') === 0 ? (
-                    <div className="field is-horizontal">
-                      <div className="field-label" />
-                      <div className="field-body">
-                        <p className="help is-danger">
-                          Il faut obligatoirement une structure avec un lieu.
-                          <Field type="hidden" name="__BLOCK_FORM__" required />
-                        </p>
+                  {offerer &&
+                    get(venues, 'length') === 0 && (
+                      <div className="field is-horizontal">
+                        <div className="field-label" />
+                        <div className="field-body">
+                          <p className="help is-danger">
+                            {venue
+                              ? "Erreur dans les données: Le lieu rattaché à cette offre n'est pas compatible avec le type de l'offre"
+                              : 'Il faut obligatoirement une structure avec un lieu.'}
+                            <Field
+                              type="hidden"
+                              name="__BLOCK_FORM__"
+                              required
+                            />
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                  ) : (
-                    offerer &&
-                    get(venues, 'length') > 0 && (
-                      <Field
-                        label="Lieu"
-                        name="venueId"
-                        options={venues}
-                        placeholder="Sélectionnez un lieu"
-                        readOnly={isVenueSelectReadOnly}
-                        required
-                        type="select"
-                      />
-                    )
-                  )}
+                    )}
+                  <Field
+                    className={classnames({ 'is-invisible': !offerer })}
+                    label="Lieu"
+                    name="venueId"
+                    options={venues}
+                    placeholder="Sélectionnez un lieu"
+                    readOnly={isVenueSelectReadOnly}
+                    required
+                    type="select"
+                  />
                   {(get(venue, 'isVirtual') || url) && (
                     <Field
                       isExpanded
                       label="URL"
                       name="url"
                       required
-                      sublabel="Vous pouvez include {token} {email} et {offerId} dans l'URL, qui seront remplacés respectivement par le code de la contremarque, l'email de la personne ayant reservé et l'identifiant de l'offre"
+                      sublabel={
+                        !isReadOnly &&
+                        "Vous pouvez inclure {token} {email} et {offerId} dans l'URL, qui seront remplacés respectivement par le code de la contremarque, l'email de la personne ayant reservé et l'identifiant de l'offre"
+                      }
                       type="text"
                     />
                   )}
@@ -501,18 +538,18 @@ class OfferPage extends Component {
                         label="Genre musical"
                         name="musicType"
                         setKey="extraData"
-                        options={musicTypes}
+                        options={musicOptions}
                         optionValue="code"
                         optionLabel="label"
                       />
 
-                      {musicSubTypes.length > 0 && (
+                      {get(musicSubOptions, 'length') > 0 && (
                         <Field
                           type="select"
                           label="Sous genre"
                           name="musicSubType"
                           setKey="extraData"
-                          options={musicSubTypes}
+                          options={musicSubOptions}
                           optionValue="code"
                           optionLabel="label"
                         />
@@ -527,18 +564,18 @@ class OfferPage extends Component {
                         label="Type de spectacle"
                         name="showType"
                         setKey="extraData"
-                        options={showTypes}
+                        options={showOptions}
                         optionValue="code"
                         optionLabel="label"
                       />
 
-                      {showSubTypes.length > 0 && (
+                      {get(showSubOptions, 'length') > 0 && (
                         <Field
                           type="select"
                           label="Sous type"
                           name="showSubType"
                           setKey="extraData"
-                          options={showSubTypes}
+                          options={showSubOptions}
                           optionValue="code"
                           optionLabel="label"
                         />
@@ -605,104 +642,99 @@ class OfferPage extends Component {
   }
 }
 
+function mapStateToProps(state, ownProps) {
+  const search = searchSelector(state, ownProps.location.search)
+
+  const providers = providersSelector(state)
+
+  const offerId = ownProps.match.params.offerId
+  const offer = offerSelector(state, offerId)
+
+  const eventId = get(offer, 'eventId')
+  const event = eventSelector(state, eventId)
+
+  const thingId = get(offer, 'thingId')
+  const thing = thingSelector(state, thingId)
+
+  const formVenueId = get(state, 'form.offer.venueId')
+  const venueId = formVenueId || search.venueId
+
+  const venue = venueSelector(state, venueId)
+
+  const isVirtual = get(venue, 'isVirtual')
+  const types = typesSelector(state, isVirtual)
+
+  const typeValue =
+    get(state, 'form.offer.type') || get(event, 'type') || get(thing, 'type')
+
+  const type = typeSelector(state, isVirtual, typeValue)
+
+  const formOffererId = get(state, 'form.offer.offererId')
+  let offererId = formOffererId || search.offererId
+
+  const venues = venuesSelector(state, offererId, type)
+
+  offererId = offererId || get(venue, 'managingOffererId')
+
+  const offerers = offerersSelector(state)
+  const offerer = offererSelector(state, offererId)
+
+  const eventOccurrences = eventOccurrencesSelector(state, offerId)
+
+  const stocks = stocksSelector(state, offerId, event && eventOccurrences)
+
+  const url =
+    get(state, 'form.offer.url') || get(event, 'url') || get(thing, 'url')
+
+  const user = state.user
+
+  const hasEventOrThing = event || thing
+
+  const eventOrThingPatch = eventOrThingPatchSelector(
+    state,
+    event,
+    thing,
+    offerer,
+    venue
+  )
+
+  const extraData = get(state, 'form.offer.extraData') || {}
+
+  const musicSubOptions =
+    extraData.musicType && selectMusicSubOptionsByMusicType(extraData.musicType)
+  const showSubOptions =
+    extraData.showType && selectShowSubOptionsByShowType(extraData.showType)
+
+  const offerTypeError = get(state, 'errors.offer.type')
+
+  return {
+    event,
+    eventOccurrences,
+    eventOrThingPatch,
+    formOffererId,
+    formVenueId,
+    hasEventOrThing,
+    musicSubOptions,
+    offer,
+    offerer,
+    offerers,
+    offerTypeError,
+    providers,
+    search,
+    showSubOptions,
+    stocks,
+    thing,
+    types,
+    type,
+    url,
+    user,
+    venue,
+    venues,
+  }
+}
+
 export default compose(
   withLogin({ failRedirect: '/connexion' }),
   withRouter,
-  connect((state, ownProps) => {
-    const search = searchSelector(state, ownProps.location.search)
-
-    const providers = providersSelector(state)
-
-    const offerId = ownProps.match.params.offerId
-    const offer = offerSelector(state, offerId)
-
-    const eventId = get(offer, 'eventId')
-    const event = eventSelector(state, eventId)
-
-    const thingId = get(offer, 'thingId')
-    const thing = thingSelector(state, thingId)
-
-    const venueId = get(state, 'form.offer.venueId') || search.venueId
-
-    const venue = venueSelector(state, venueId)
-
-    const types = typesSelector(state, get(venue, 'isVirtual'))
-
-    const typeValue =
-      get(state, 'form.offer.type') || get(event, 'type') || get(thing, 'type')
-
-    const type = typeSelector(state, typeValue)
-
-    let offererId = get(state, 'form.offer.offererId') || search.offererId
-
-    const venues = venuesSelector(state, offererId, type)
-
-    offererId = offererId || get(venue, 'managingOffererId')
-
-    const offerers = offerersSelector(state)
-    const offerer = offererSelector(state, offererId)
-
-    const eventOccurrences = eventOccurrencesSelector(state, offerId)
-
-    const stocks = stocksSelector(state, offerId, event && eventOccurrences)
-
-    const url =
-      get(state, 'form.offer.url') || get(event, 'url') || get(thing, 'url')
-
-    const user = state.user
-
-    const hasEventOrThing = event || thing
-
-    const eventOrThingPatch = eventOrThingPatchSelector(
-      state,
-      event,
-      thing,
-      offerer,
-      venue
-    )
-
-    const extraData = get(state, 'form.offer.extraData') || {}
-
-    const musicTypes = eddSelectors.musicTypeParentsSelector()
-
-    let musicSubTypes = []
-    if (extraData.musicType) {
-      musicSubTypes = eddSelectors.musicTypeChildrenSelector(
-        Number(extraData.musicType)
-      )
-    }
-
-    const showTypes = eddSelectors.showTypeParentsSelector()
-
-    let showSubTypes = []
-    if (extraData.showType) {
-      showSubTypes = eddSelectors.showTypeChildrenSelector(
-        Number(extraData.showType)
-      )
-    }
-
-    return {
-      event,
-      eventOccurrences,
-      eventOrThingPatch,
-      hasEventOrThing,
-      providers,
-      search,
-      thing,
-      offer,
-      offerer,
-      offerers,
-      stocks,
-      types,
-      type,
-      url,
-      user,
-      venue,
-      venues,
-      musicTypes,
-      musicSubTypes,
-      showTypes,
-      showSubTypes,
-    }
-  })
+  connect(mapStateToProps)
 )(OfferPage)

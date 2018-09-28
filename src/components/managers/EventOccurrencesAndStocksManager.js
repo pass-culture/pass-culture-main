@@ -72,10 +72,14 @@ class EventOccurrencesAndStocksManager extends Component {
                   <Fragment>
                     <td>Date</td>
                     <td>
-                      Heure de<br />début
+                      Heure de
+                      <br />
+                      début
                     </td>
                     <td>
-                      Heure de<br />fin
+                      Heure de
+                      <br />
+                      fin
                     </td>
                   </Fragment>
                 )}
@@ -192,11 +196,6 @@ export default compose(
 
     const stocks = stocksSelector(state, offerId, event && eventOccurrences)
 
-    console.log(
-      'eventOccurrenceIdOrNew, stockIdOrNew',
-      eventOccurrenceIdOrNew,
-      stockIdOrNew
-    )
     const errors = eventOccurrenceAndStocksErrorsSelector(
       state,
       eventOccurrenceIdOrNew,

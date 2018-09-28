@@ -69,7 +69,7 @@ const SignupPage = ({ errors, sirenName }) => {
                     />
                     <Field
                       autoComplete="first-name"
-                      label="Nom"
+                      label="Prénom"
                       name="firstName"
                       placeholder="Mon prénom"
                       required
