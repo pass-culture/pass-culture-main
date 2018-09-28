@@ -116,7 +116,9 @@ class EventOccurrencesAndStocksManager extends Component {
                               )}?gestion&date=nouvelle`
                       }>
                       {isStockOnly
-                        ? '+ Ajouter un prix'
+                        ? stocks.length
+                          ? ''
+                          : '+ Ajouter un prix'
                         : '+ Ajouter un horaire'}
                     </NavLink>
                   )}
