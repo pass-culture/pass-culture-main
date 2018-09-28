@@ -41,7 +41,10 @@ class SearchPage extends PureComponent {
     super(props)
     this.state = {
       keywordsKey: 0,
-      keywordsValue: get(props, `queryParams.${mapApiToWindow.search}`),
+      keywordsValue: get(
+        props,
+        `pagination.windowQuery.${mapApiToWindow.search}`
+      ),
     }
   }
 
