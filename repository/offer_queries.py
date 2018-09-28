@@ -122,7 +122,7 @@ def get_offers_for_recommendations_search(
     latitude=None,
     longitude=None,
     max_distance=None,
-    between_dates=None):
+    days_intervals=None):
 
     offer_query =  _filter_out_offers_on_soft_deleted_stocks_and_inactive_offers()
 
@@ -139,15 +139,15 @@ def get_offers_for_recommendations_search(
         offer_query = offer_query.join(Venue)\
                                  .filter(distance_instrument < max_distance)
 
-    if between_dates is not None:
-        for between_dates in between_dates:
+    if days_intervals is not None:
+        for days in days_intervals:
             date_offer_query = offer_query.from_self()\
                                           .join(Stock) \
                                           .outerjoin(EventOccurrence) \
                                           .filter(
                                             (
-                                                (Stock.bookingLimitDatetime >= between_dates[0]) &\
-                                                (Stock.bookingLimitDatetime <= between_dates[1])
+                                                (Stock.bookingLimitDatetime >= days[0]) &\
+                                                (Stock.bookingLimitDatetime <= days[1])
                                             )
                                            )
             offer_query = offer_query.union_all(date_offer_query)

@@ -1,5 +1,6 @@
 """ recommendations """
 from datetime import datetime, timedelta
+import dateutil.parser
 from sqlalchemy import func
 
 from domain.types import get_type_labels_from_sublabels
@@ -160,19 +161,21 @@ def get_recommendation_search_params(kwargs):
     if 'page' in kwargs and kwargs['page']:
         search_params['page'] = int(kwargs['page'])
 
-    if 'keywords' in kwargs and kwargs['keywords']:
-        search_params['keywords'] = kwargs['keywords']
+    #if 'keywords' in kwargs and kwargs['keywords']:
+    if 'search' in kwargs and kwargs['search']:
+        search_params['keywords'] = kwargs['search']
 
     if 'categories' in kwargs and kwargs['categories']:
         type_sublabels = kwargs['categories']
         search_params['type_labels'] = get_type_labels_from_sublabels(type_sublabels)
 
-    if 'date' in kwargs and kwargs['date']:
-        search_params['date'] = kwargs['date']
-
-    if 'days' in kwargs and kwargs['days']:
-        search_params['days'] = [
-            [int(ds) for ds in day.split('-')] for day in kwargs['days'].split(',')
+    if 'date' in kwargs and kwargs['date'] and \
+       'days' in kwargs and kwargs['days']:
+        date = dateutil.parser.parse(kwargs['date'])
+        days_intervals = kwargs['days'].split(',')
+        search_params['days_intervals'] = [
+            [date + timedelta(days=int(day)) for day in days.split('-')]
+            for days in days_intervals
         ]
 
     if 'latitude' in kwargs and kwargs['latitude']:
