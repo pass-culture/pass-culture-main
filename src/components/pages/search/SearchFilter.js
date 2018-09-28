@@ -1,4 +1,5 @@
 /* eslint-disable */
+import classnames from 'classnames'
 import get from 'lodash.get'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
@@ -106,7 +107,9 @@ class SearchFilter extends Component {
 
   render() {
     return (
-      <div id="search-filter-menu">
+      <div
+        className={classnames({ 'is-invisible': !this.props.isVisible })}
+        id="search-filter-menu">
         <FilterByDates filter={this.state} title="QUAND" />
         <FilterByDistance filter={this.state} title="OÙ" />
         <FilterByOfferTypes filter={this.state} title="QUOI" />
@@ -128,6 +131,7 @@ class SearchFilter extends Component {
 }
 
 SearchFilter.propTypes = {
+  isVisible: PropTypes.bool.isRequired,
   pagination: PropTypes.object.isRequired,
 }
 

@@ -1,7 +1,9 @@
 #search-filter-menu {
   background-color: #EDF1F2;
   border-radius: 0.25em;
-  position: relative;
+  position: absolute;
+  left: 0.5rem;
+  right: 0.5rem;
 
   h2 {
     margin-bottom: 1em;
@@ -11,7 +13,7 @@
   button {
     background-color: #EDF1F2;
     border-color: white;
-    border-radius: 0em;
+    border-radius: 0;
     color: $primary;
     font-size: 1.375rem;
   }
@@ -49,6 +51,7 @@
     opacity: 0.8;
     background-color: #000000;
   }
+
   margin-bottom: 1rem;
 }
 
@@ -63,7 +66,6 @@
   border-radius: 1.125em;
 
   img {
-   height: 86px;
+    height: 86px;
   }
-
 }

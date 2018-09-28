@@ -45,6 +45,7 @@ class SearchPage extends PureComponent {
         props,
         `pagination.windowQuery.${mapApiToWindow.search}`
       ),
+      withFilter: false,
     }
   }
 
@@ -65,6 +66,7 @@ class SearchPage extends PureComponent {
   handleDataRequest = (handleSuccess = () => {}, handleFail = () => {}) => {
     const { dispatch, location, match, pagination, search } = this.props
     const { apiQueryString, goToNextPage, page } = pagination
+    const { withFilter } = this.state
 
     // BECAUSE THE INFINITE SCROLLER CALLS ONCE THIS FUNCTION
     // BUT THEN PUSH THE SEARCH TO PAGE + 1
@@ -86,7 +88,7 @@ class SearchPage extends PureComponent {
         handleFail,
         handleSuccess: (state, action) => {
           handleSuccess(state, action)
-          if (match.params.view === 'resultats' && !match.params.filtres) {
+          if (match.params.view === 'resultats' && !withFilter) {
             goToNextPage()
           }
         },
@@ -103,8 +105,8 @@ class SearchPage extends PureComponent {
 
   render() {
     const { history, location, match, pagination, recommendations } = this.props
-    const { page, windowQuery, windowQueryString } = pagination
-    const { keywordsKey, keywordsValue } = this.state
+    const { windowQuery } = pagination
+    const { keywordsKey, keywordsValue, withFilter } = this.state
 
     const keywords = windowQuery[mapApiToWindow.search]
 
@@ -176,24 +178,18 @@ class SearchPage extends PureComponent {
               type="button"
               className="button is-secondary"
               id="open-close-filter-menu-button"
-              onClick={() => {
-                let pathname = `/recherche/${match.params.view}`
-                if (!match.params.filtres) {
-                  pathname = `${pathname}/filtres`
-                }
-                history.push(`${pathname}?page=${page}&${windowQueryString}`)
-              }}
+              onClick={() => this.setState({ withFilter: !withFilter })}
             >
               &nbsp;
               <Icon
-                svg={`ico-${
-                  match.params.filtres ? 'chevron-up' : isfilterIconActive
-                }`}
+                svg={`ico-${withFilter ? 'chevron-up' : isfilterIconActive}`}
               />
               &nbsp;
             </button>
           </div>
         </form>
+
+        <SearchFilter isVisible={withFilter} pagination={pagination} />
 
         <Switch location={location}>
           <Route
@@ -204,23 +200,13 @@ class SearchPage extends PureComponent {
             )}
           />
           <Route
-            path="/recherche/:view/filtres"
-            render={() => <SearchFilter pagination={pagination} />}
-          />
-
-          <Route
             path="/recherche/resultats"
             render={() => (
-              <Route
-                path="/recherche/resultats"
-                render={() => (
-                  <SearchResults
-                    keywords={keywords}
-                    items={recommendations}
-                    pagination={pagination}
-                    loadMoreHandler={this.loadMoreHandler}
-                  />
-                )}
+              <SearchResults
+                keywords={keywords}
+                items={recommendations}
+                loadMoreHandler={this.loadMoreHandler}
+                pagination={pagination}
               />
             )}
           />
