@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 import json
 from pprint import pprint
 import sys
-from mock.scripts import sandbox_webapp, sandbox_classic
+from mock.scripts import sandbox_webapp, sandbox_light
 
 from models.pc_object import PcObject
 from models import Booking,\
