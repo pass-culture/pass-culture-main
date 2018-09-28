@@ -1,7 +1,7 @@
 from utils.config import IS_DEV, IS_STAGING
 
 
-def check_header_validity(header, wh):
+def check_header_validity(header):
     white_list = get_header_whitelist()
     return header in white_list
 
