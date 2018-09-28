@@ -263,7 +263,7 @@ const mapStateToProps = (state, ownProps) => {
     bookings: bookingsSelector(state),
     offerer: offererSelector(state, get(ownProps.queryParams, 'structure')),
     offerers,
-    queryParams,
+    queryParams: ownProps.queryParams,
     user: state.user,
   }
 }

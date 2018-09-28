@@ -22,22 +22,6 @@ export const thingNormalizer = {
   offers: 'offers',
 }
 
-export const bookingNormalizer = {
-  stock: {
-    key: 'stocks',
-    normalizer: {
-      eventOccurrence: 'eventOccurrences',
-      resolvedOffer: {
-        key: 'offers',
-        normalizer: {
-          event: 'events',
-          thing: 'things',
-        },
-      },
-    },
-  },
-}
-
 export const offerNormalizer = {
   event: {
     key: 'events',
