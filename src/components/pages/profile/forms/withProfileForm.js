@@ -14,6 +14,21 @@ import NavigationFooter from '../../../layout/NavigationFooter'
 const noop = () => {}
 const BACKGROUND_IMAGE = `url('${ROOT_PATH}/mosaic-k@2x.png')`
 
+const getInitialValuesFromUser = (obj, user) =>
+  Object.keys(obj).reduce((acc, key) => {
+    const propobj = (user[key] && { [key]: user[key] }) || { [key]: null }
+    return { ...acc, ...propobj }
+  }, {})
+
+const parseSubmitErrors = errors =>
+  Object.keys(errors).reduce((acc, key) => {
+    // FIXME -> test avec un array d'erreurs
+    // a deplacer dans un tests unitaires
+    // const err = errors[key].concat('toto')
+    const err = errors[key]
+    return { ...acc, [key]: err }
+  }, {})
+
 /**
  * Permet la gestion des formulaires sur la page profil
  * @param  {Component}  WrappedComponent         React Node Children
@@ -42,15 +57,6 @@ const withProfileForm = (
   const name = WrappedComponent.displayName || 'Component'
   withProfileForm.displayName = `withProfileForm(${name})`
 
-  const parseSubmitErrors = errors =>
-    Object.keys(errors).reduce((acc, key) => {
-      // FIXME -> test avec un array d'erreurs
-      // a deplacer dans un tests unitaires
-      // const err = errors[key].concat('toto')
-      const err = errors[key]
-      return { ...acc, [key]: err }
-    }, {})
-
   // azertyazertyP1$
   class ProfilePasswordForm extends React.PureComponent {
     constructor(props) {
@@ -59,9 +65,7 @@ const withProfileForm = (
       this.state = { isloading: false }
       // NOTE: initialValues sont detruites a chaque mount/unmount
       // mais la reference ne change pas au changement du state
-      // NOTE: par défaut
-      // si elles ne sont pas renseignées on utilise l'objet user
-      this.initialValues = Object.assign({}, initialValues || user)
+      this.initialValues = getInitialValuesFromUser(initialValues, user)
       this.actions = bindActionCreators({ requestData }, dispatch)
     }
 
