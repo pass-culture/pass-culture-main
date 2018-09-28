@@ -110,6 +110,7 @@ class OffererPage extends Component {
               label="BIC"
               name="bic"
               type="bic"
+              required
             />
             <Field
               className={classnames({ 'is-invisible': hasOffererName })}
@@ -117,6 +118,7 @@ class OffererPage extends Component {
               label="IBAN"
               name="iban"
               type="iban"
+              required
             />
           </div>
 
