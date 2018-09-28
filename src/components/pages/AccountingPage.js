@@ -46,19 +46,23 @@ TableSortableTh.propTypes = {
 
 class AccoutingPage extends Component {
   fetchBookings(handleSuccess = () => {}, handleFail = () => {}) {
-    const { dispatch, goToNextSearchPage, offerer } = this.props
+    const { dispatch, goToNextSearchPage, offerer, querySearch } = this.props
     offerer &&
       dispatch(
-        requestData('GET', `offerers/${get(offerer, 'id')}/bookings`, {
-          handleSuccess: (state, action) => {
-            handleSuccess(state, action)
-            goToNextSearchPage()
-          },
-          key: 'bookings',
-          handleFail,
-          normalizer: bookingNormalizer,
-          isMergingArray: false,
-        })
+        requestData(
+          'GET',
+          `offerers/${get(offerer, 'id')}/bookings?${querySearch}`,
+          {
+            handleSuccess: (state, action) => {
+              handleSuccess(state, action)
+              goToNextSearchPage()
+            },
+            key: 'bookings',
+            handleFail,
+            normalizer: bookingNormalizer,
+            isMergingArray: false,
+          }
+        )
       )
   }
 
@@ -92,13 +96,13 @@ class AccoutingPage extends Component {
 
   componentDidUpdate(prevProps) {
     const { handleQueryParamsChange, queryParams, offerers } = this.props
-    const offererId = get(queryParams, 'offererId')
+    const structure = get(queryParams, 'structure')
     if (
-      !offererId &&
+      !structure &&
       offerers !== prevProps.offerers &&
       get(offerers, 'length')
     ) {
-      handleQueryParamsChange({ offererId: offerers[0].id })
+      handleQueryParamsChange({ structure: offerers[0].id })
     }
   }
 
@@ -147,102 +151,105 @@ class AccoutingPage extends Component {
         name="accounting"
         handleDataRequest={this.handleDataRequest}
         backTo={{ path: '/accueil', label: 'Accueil' }}>
+        <HeroSection
+          subtitle="Suivez vos réservations et vos remboursements."
+          title="Comptabilité">
+          <form className="section" onSubmit={handleSearchChange} />
+          <div className="section">
+            <div className="list-header">
+              {offerer && (
+                <div>
+                  Structure:
+                  <span className="select is-rounded is-small">
+                    <select
+                      onChange={event =>
+                        handleQueryParamsChange({
+                          structure: event.target.value,
+                        })
+                      }
+                      className=""
+                      value={offerer.id}>
+                      {offerers.map(item => (
+                        <option key={item.id} value={item.id}>
+                          {item.name}
+                        </option>
+                      ))}
+                    </select>
+                  </span>
+                </div>
+              )}
+            </div>
 
-      
-      
-       <HeroSection
-         subtitle="Suivez vos réservations et vos remboursements."
-         title="Comptabilité">
-        <form className="section" onSubmit={handleSearchChange} />
-        <div className="section">
-          <div className="list-header">
-            {offerer && (
-              <div>
-                Structure:
-                <span className="select is-rounded is-small">
-                  <select
-                    onChange={event =>
-                      handleQueryParamsChange({ offererId: event.target.value })
-                    }
-                    className=""
-                    value={offerer.id}>
-                    {offerers.map(item => (
-                      <option key={item.id} value={item.id}>
-                        {item.name}
-                      </option>
-                    ))}
-                  </select>
-                </span>
-              </div>
-            )}
-          </div>
-
-          <table className="accounting" style={{ width: '100%' }}>
-            <thead>
-              <tr>
-                <th className="first-row" colSpan="5">
-                  OFFRE
-                </th>
-                <th className="first-row" colSpan="2">
-                  RESERVATION
-                </th>
-                <th className="first-row" colSpan="4">
-                  REMBOURSEMENT
-                </th>
-              </tr>
-              <tr>
-                {/* @TODO: Fix fake key attributes !*/}
-                <Th label="Date" field="date" />
-                <Th label="Catégorie" field="category" />
-                <Th label="Structure" field="structure" />
-                <Th label="Lieu" field="place" />
-                <Th style={{ width: '60px' }} label="Type" field="type" />
-                <Th
-                  style={{ width: '100px' }}
-                  label="Date limite d'annulation"
-                  field="cancelDate"
-                />
-                <Th
-                  style={{ width: '85px' }}
-                  label="Taux écoulé"
-                  field="rate"
-                />
-                <Th
-                  style={{ width: '60px' }}
-                  label="Prix pass"
-                  field="passPrice"
-                />
-                <Th
-                  style={{ width: '80px' }}
-                  label="Montant rbt."
-                  field="ammount"
-                />
-                <Th
-                  style={{ width: '120px' }}
-                  label="État du paiement"
-                  field="state"
-                />
-                <th style={{ width: '25px' }} />
-              </tr>
-            </thead>
-            <InfiniteScroller
-              Tag="tbody"
-              className="offers-list main-list"
-              handleLoadMore={this.handleDataRequest}
-              renderLoading={() => (
+            <table className="accounting" style={{ width: '100%' }}>
+              <thead>
                 <tr>
-                  <Spinner Tag="td" style={{ justifyContent: 'center' }} />
+                  <th className="first-row" colSpan="5">
+                    OFFRE
+                  </th>
+                  <th className="first-row" colSpan="2">
+                    RESERVATION
+                  </th>
+                  <th className="first-row" colSpan="4">
+                    REMBOURSEMENT
+                  </th>
                 </tr>
-              )}>
-              {bookings.map(booking => (
-                <BookingItem
-                  key={booking.id}
-                  booking={booking}
-                  cancelAction={this.cancelBooking.bind(this)}
-                />
-              ))}
-            </InfiniteScroller>
-          </table>
+                <tr>
+                  {/* @TODO: Fix fake key attributes !*/}
+                  <Th label="Date" field="booking.%22dataModified%22" />
+                  <Th label="Catégorie" field="category" />
+                  <Th label="Structure" field="structure" />
+                  <Th label="Lieu" field="place" />
+                  <Th style={{ width: '60px' }} label="Type" field="type" />
+                  <Th
+                    style={{ width: '100px' }}
+                    label="Date limite d'annulation"
+                    field="cancelDate"
+                  />
+                  <Th
+                    style={{ width: '85px' }}
+                    label="Taux écoulé"
+                    field="rate"
+                  />
+                  <Th
+                    style={{ width: '60px' }}
+                    label="Prix pass"
+                    field="passPrice"
+                  />
+                  <Th
+                    style={{ width: '80px' }}
+                    label="Montant rbt."
+                    field="ammount"
+                  />
+                  <Th
+                    style={{ width: '120px' }}
+                    label="État du paiement"
+                    field="state"
+                  />
+                  <th style={{ width: '25px' }} />
+                </tr>
+              </thead>
+              <InfiniteScroller
+                Tag="tbody"
+                className="offers-list main-list"
+                handleLoadMore={this.handleDataRequest}
+                renderLoading={() => (
+                  <tr>
+                    <Spinner
+                      Tag="td"
+                      colSpan="6"
+                      style={{ justifyContent: 'center' }}
+                    />
+                  </tr>
+                )}>
+                {bookings.map(booking => (
+                  <BookingItem
+                    key={booking.id}
+                    booking={booking}
+                    cancelAction={this.cancelBooking.bind(this)}
+                  />
+                ))}
+              </InfiniteScroller>
+            </table>
           </div>
         </HeroSection>
       </Main>
@@ -251,11 +258,10 @@ class AccoutingPage extends Component {
 }
 
 const mapStateToProps = (state, ownProps) => {
-  const queryParams = searchSelector(state, ownProps.location.search)
   const offerers = offerersSelector(state)
   return {
     bookings: bookingsSelector(state),
-    offerer: offererSelector(state, get(queryParams, 'offererId')),
+    offerer: offererSelector(state, get(ownProps.queryParams, 'structure')),
     offerers,
     queryParams,
     user: state.user,
@@ -266,11 +272,11 @@ export default compose(
   withLogin({ failRedirect: '/connexion' }),
   withRouter,
   withSearch({
-    dataKey: 'booking',
+    dataKey: 'bookings',
     defaultQueryParams: {
       search: undefined,
-      order_by: `createdAt+desc`,
-      offererId: null,
+      order_by: `booking.%22dataModified%22+desc`,
+      structure: null,
     },
   }),
   connect(mapStateToProps)

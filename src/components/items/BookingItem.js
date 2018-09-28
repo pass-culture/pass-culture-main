@@ -22,7 +22,6 @@ const getBookingState = booking => {
     cancel: 'picto-warning',
   }
 
-  console.log(booking)
   if (booking.isCancelled === true) {
     return {
       picto: map.cancel,
@@ -34,7 +33,6 @@ const getBookingState = booking => {
     picto: map.pending,
     message: 'En attente',
   }
-
 }
 
 const BookingItem = ({
@@ -63,7 +61,7 @@ const BookingItem = ({
         <td colSpan="5" className="title">
           {eventOrThingName}
         </td>
-        <td colspan="5" className="title userName">
+        <td colSpan="5" className="title userName">
           UserId: {booking.userId} - BookingId: {booking.id} - Token:{' '}
           {booking.token}
         </td>
