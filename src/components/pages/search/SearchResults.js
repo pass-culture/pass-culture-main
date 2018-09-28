@@ -1,18 +1,16 @@
 import React from 'react'
+import { InfiniteScroller } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
-import { InfiniteScroller, pluralize } from 'pass-culture-shared'
 
 import SearchResultItem from './SearchResultItem'
+import { searchResultsTitle } from './utils'
 
-const SearchResults = ({ items, keywords, loadMoreHandler, queryParams }) => {
-  let resultTitle
-  if (keywords) {
-    const count = items.length
-    const resultString = pluralize(count, 'résultats')
-    const keywordsString = decodeURI(keywords || '')
-    const typesString = decodeURI(queryParams.types || '')
-    resultTitle = `${keywordsString} ${typesString}: ${resultString}`
-  }
+const SearchResults = ({ items, keywords, loadMoreHandler, pagination }) => {
+  const resultTitle = searchResultsTitle(
+    keywords,
+    items,
+    pagination.windowQuery
+  )
   return (
     <div className="search-results">
       <h2
@@ -32,14 +30,13 @@ const SearchResults = ({ items, keywords, loadMoreHandler, queryParams }) => {
 SearchResults.defaultProps = {
   items: [],
   keywords: '',
-  queryParams: {},
 }
 
 SearchResults.propTypes = {
   items: PropTypes.array,
   keywords: PropTypes.string,
   loadMoreHandler: PropTypes.func.isRequired,
-  queryParams: PropTypes.object,
+  pagination: PropTypes.object.isRequired,
 }
 
 export default SearchResults

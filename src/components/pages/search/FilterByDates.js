@@ -3,6 +3,8 @@ import moment from 'moment'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 
+import { mapApiToWindow } from '../../../utils/pagination'
+
 const checkboxes = [
   {
     label: 'Tout de suite !',
@@ -21,15 +23,10 @@ const checkboxes = [
 ]
 
 class FilterByDates extends Component {
-  onFilterChange = day => {
-    const {
-      handleFilterParamsChange,
-      handleFilterParamAdd,
-      handleFilterParamRemove,
-      filterParams,
-    } = this.props
+  onChange = day => {
+    const { filter } = this.props
 
-    const days = decodeURI(filterParams.jours || '')
+    const days = decodeURI(filter.query[mapApiToWindow.days] || '')
     const isAlreadyIncluded = days.includes(day)
 
     // WE ADD THE DATE AT THE FIRST DAYS SEGMENTS CLICKED
@@ -37,33 +34,33 @@ class FilterByDates extends Component {
     let callback
     if (!get(days, 'length')) {
       const date = moment(moment.now()).toISOString()
-      callback = () => handleFilterParamsChange({ date })
+      callback = () => filter.change({ date })
     } else if (isAlreadyIncluded && days.split(',').length === 1) {
-      callback = () => handleFilterParamsChange({ date: null })
+      callback = () => filter.change({ date: null })
     }
 
     if (isAlreadyIncluded) {
-      handleFilterParamRemove('jours', day, callback)
+      filter.remove(mapApiToWindow.days, day, callback)
       return
     }
 
-    handleFilterParamAdd('jours', day, callback)
+    filter.add(mapApiToWindow.days, day, callback)
   }
 
   render() {
-    const { filterParams, title } = this.props
+    const { filter, title } = this.props
 
-    const days = decodeURI(filterParams.jours || '')
+    const days = decodeURI(filter.query[mapApiToWindow.days] || '')
 
     return (
       <div className="dotted-bottom-primary" id="filter-by-dates">
-        <h2 className="fs18">
+        <h2 className="fs18 is-italic is-uppercase text-center">
           {title}
         </h2>
         <div className="filter-menu-outer">
           {checkboxes.map(({ label, value }) => (
-            <div id="date-checkbox" className="filter-menu-inner">
-              <div className="field field-checkbox" key={value}>
+            <div id="date-checkbox" className="filter-menu-inner" key={value}>
+              <div className="field field-checkbox">
                 <label className="fs22"> 
                   {' '}
                   {label}
@@ -71,7 +68,7 @@ class FilterByDates extends Component {
                 <input
                   checked={days.includes(value)}
                   className="input is-normal"
-                  onChange={() => this.onFilterChange(value)}
+                  onChange={() => this.onChange(value)}
                   type="checkbox"
                 />
               </div>
@@ -87,10 +84,7 @@ DATE PICKER TO DO
 }
 
 FilterByDates.propTypes = {
-  filterParams: PropTypes.object.isRequired,
-  handleFilterParamAdd: PropTypes.func.isRequired,
-  handleFilterParamRemove: PropTypes.func.isRequired,
-  handleFilterParamsChange: PropTypes.func.isRequired,
+  filter: PropTypes.object.isRequired,
   title: PropTypes.string.isRequired,
 }
 

@@ -1,11 +1,13 @@
 import filterIconByState, {
+  getFirstChangingKey,
   INITIAL_FILTER_PARAMS,
-  searchFiltersAdded,
+  isSearchFiltersAdded,
+  searchResultsTitle,
 } from '../utils'
 
 describe('src | components | pages | search | utils', () => {
   describe('filterIconByState', () => {
-    it('should render filter icon when there is no filter added to searchFiltersAdded', () => {
+    it('should render filter icon when there is no filter added to isSearchFiltersAdded', () => {
       expect(filterIconByState(true)).toEqual('filter')
     })
     it('should render filter-active icon when there is filters added to search', () => {
@@ -13,7 +15,7 @@ describe('src | components | pages | search | utils', () => {
     })
   })
 
-  describe('searchFiltersAdded', () => {
+  describe('isSearchFiltersAdded', () => {
     it('should return false if there is params changed with filter', () => {
       const queryParams = {
         categories: '%C3%89couter,Pratiquer',
@@ -27,7 +29,7 @@ describe('src | components | pages | search | utils', () => {
         page: '2',
         types: null,
       }
-      expect(searchFiltersAdded(INITIAL_FILTER_PARAMS, queryParams)).toEqual(
+      expect(isSearchFiltersAdded(INITIAL_FILTER_PARAMS, queryParams)).toEqual(
         false
       )
     })
@@ -45,8 +47,40 @@ describe('src | components | pages | search | utils', () => {
         page: '2',
         types: null,
       }
-      expect(searchFiltersAdded(INITIAL_FILTER_PARAMS, queryParams)).toEqual(
+      expect(isSearchFiltersAdded(INITIAL_FILTER_PARAMS, queryParams)).toEqual(
         true
+      )
+    })
+  })
+
+  describe('getFirstChangingKey', () => {
+    it('should return the name of the key wich value has changed', () => {
+      const nextObject = { jours: '0-1,1-5' }
+      expect(getFirstChangingKey(INITIAL_FILTER_PARAMS, nextObject)).toEqual(
+        'jours'
+      )
+    })
+  })
+
+  describe('searchResultsTitle', () => {
+    const keywords = 'fake word'
+    const items = []
+    const queryParams = {
+      categories: null,
+      date: null,
+      days: null,
+      distance: null,
+      jours: null,
+      latitude: null,
+      longitude: null,
+      [`mots-cles`]: null,
+      page: '2',
+      types: null,
+    }
+
+    it('should return the title corresponding to search result', () => {
+      expect(searchResultsTitle(keywords, items, queryParams)).toEqual(
+        '"fake word" : 0 résultat'
       )
     })
   })

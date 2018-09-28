@@ -1194,10 +1194,6 @@ babel-plugin-transform-flow-strip-types@^6.22.0:
     babel-plugin-syntax-flow "^6.18.0"
     babel-runtime "^6.22.0"
 
-babel-plugin-transform-for-of-as-array@^1.1.1:
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/babel-plugin-transform-for-of-as-array/-/babel-plugin-transform-for-of-as-array-1.1.1.tgz#f18fcbcbfa2b8caed1445c3153893d37439a6537"
-
 babel-plugin-transform-object-rest-spread@6.26.0, babel-plugin-transform-object-rest-spread@^6.22.0:
   version "6.26.0"
   resolved "https://registry.yarnpkg.com/babel-plugin-transform-object-rest-spread/-/babel-plugin-transform-object-rest-spread-6.26.0.tgz#0f36692d50fef6b7e2d4b3ac1478137a963b7b06"
@@ -2180,10 +2176,6 @@ coa@~1.0.1:
 code-point-at@^1.0.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/code-point-at/-/code-point-at-1.1.0.tgz#0d070b4d043a5bea33a2f1a40e2edb3d9a4ccf77"
-
-coffeescript@^2.3.1:
-  version "2.3.1"
-  resolved "https://registry.yarnpkg.com/coffeescript/-/coffeescript-2.3.1.tgz#a25f69c251d25805c9842e57fc94bfc453ef6aed"
 
 collapse-white-space@^1.0.2:
   version "1.0.4"
@@ -5926,6 +5918,10 @@ lodash.has@^4.5.2:
   version "4.5.2"
   resolved "https://registry.yarnpkg.com/lodash.has/-/lodash.has-4.5.2.tgz#d19f4dc1095058cccbe2b0cdf4ee0fe4aa37c862"
 
+lodash.invert@^4.3.0:
+  version "4.3.0"
+  resolved "https://registry.yarnpkg.com/lodash.invert/-/lodash.invert-4.3.0.tgz#8ffe20d4b616f56bea8f1aa0c6ebd80dcf742aee"
+
 lodash.isarguments@^3.0.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/lodash.isarguments/-/lodash.isarguments-3.1.0.tgz#2f573d85c6a24289ff00663b491c1d338ff3458a"
@@ -5954,7 +5950,7 @@ lodash.memoize@^4.1.2:
   version "4.1.2"
   resolved "https://registry.yarnpkg.com/lodash.memoize/-/lodash.memoize-4.1.2.tgz#bcc6c49a42a2840ed997f323eada5ecd182e0bfe"
 
-lodash.merge@^4.6.0:
+lodash.merge@^4.6.0, lodash.merge@^4.6.1:
   version "4.6.1"
   resolved "https://registry.yarnpkg.com/lodash.merge/-/lodash.merge-4.6.1.tgz#adc25d9cb99b9391c59624f379fbba60d7111d54"
 
@@ -7113,22 +7109,30 @@ pascalcase@^0.1.1:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/pascalcase/-/pascalcase-0.1.1.tgz#b363e55e8006ca6fe21784d2db22bd15d7917f14"
 
-pass-culture-shared@^0.0.37:
-  version "0.0.37"
-  resolved "https://registry.yarnpkg.com/pass-culture-shared/-/pass-culture-shared-0.0.37.tgz#915eda76e092bb4e3258c2f20743fa600b51758a"
+pass-culture-shared@^0.0.57:
+  version "0.0.57"
+  resolved "https://registry.yarnpkg.com/pass-culture-shared/-/pass-culture-shared-0.0.57.tgz#c4bd5e9a27c071d2b7ce55530ee08a6eb8477c4a"
   dependencies:
+    lodash.get "^4.4.2"
+    lodash.merge "^4.6.1"
     lodash.set "^4.3.2"
     lodash.uniqby "^4.7.0"
     moment "^2.18.1"
     moment-locale-fr "^1.0.0"
     moment-timezone "^0.5.21"
+    re-reselect "^2.1.0"
     react "^0.14||^15.5.4||^16.1.1"
     react-autocomplete "^1.8.1"
     react-autosize-textarea "^4.0.0"
-    react-datepicker "^1.5.0"
+    react-datepicker "^1.6.0"
     react-dom "^0.14||^15.5.4||^16.1.1"
     react-dotdotdot "^1.2.3"
+    react-redux "^5.0.7"
+    react-router-dom "^4.3.1"
+    react-time-input "^0.0.19"
+    redux "^4.0.0"
     redux-saga "^0.15.3"
+    reselect "^3.0.1"
     uuid "^3.3.2"
 
 path-browserify@0.0.0:
@@ -8430,7 +8434,7 @@ react-custom-scrollbars@^4.2.1:
     prop-types "^15.5.10"
     raf "^3.1.0"
 
-react-datepicker@^1.5.0:
+react-datepicker@^1.6.0:
   version "1.6.0"
   resolved "https://registry.yarnpkg.com/react-datepicker/-/react-datepicker-1.6.0.tgz#6b7a87e949f3bbd94872554be6a0119bd908a987"
   dependencies:
@@ -8562,9 +8566,9 @@ react-portal@^4.1.5:
   dependencies:
     prop-types "^15.5.8"
 
-react-redux@^5.0.3:
+react-redux@^5.0.3, react-redux@^5.0.7:
   version "5.0.7"
-  resolved "https://registry.yarnpkg.com/react-redux/-/react-redux-5.0.7.tgz#0dc1076d9afb4670f993ffaef44b8f8c1155a4c8"
+  resolved "http://registry.npmjs.org/react-redux/-/react-redux-5.0.7.tgz#0dc1076d9afb4670f993ffaef44b8f8c1155a4c8"
   dependencies:
     hoist-non-react-statics "^2.5.0"
     invariant "^2.0.0"
@@ -8573,7 +8577,7 @@ react-redux@^5.0.3:
     loose-envify "^1.1.0"
     prop-types "^15.6.0"
 
-react-router-dom@^4.0.0:
+react-router-dom@^4.0.0, react-router-dom@^4.3.1:
   version "4.3.1"
   resolved "https://registry.yarnpkg.com/react-router-dom/-/react-router-dom-4.3.1.tgz#4c2619fc24c4fa87c9fd18f4fb4a43fe63fbd5c6"
   dependencies:
@@ -8634,6 +8638,12 @@ react-test-renderer@^16.0.0-0:
     prop-types "^15.6.2"
     react-is "^16.5.0"
     schedule "^0.3.0"
+
+react-time-input@^0.0.19:
+  version "0.0.19"
+  resolved "https://registry.yarnpkg.com/react-time-input/-/react-time-input-0.0.19.tgz#7f4d72bb278505c7e31f28bcc2ad3be4a0031aa0"
+  dependencies:
+    user "0.0.0"
 
 react-timeago@^3.4.3:
   version "3.4.3"
@@ -8800,6 +8810,13 @@ redux@^3.6.0:
     lodash-es "^4.2.1"
     loose-envify "^1.1.0"
     symbol-observable "^1.0.3"
+
+redux@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/redux/-/redux-4.0.0.tgz#aa698a92b729315d22b34a0553d7e6533555cc03"
+  dependencies:
+    loose-envify "^1.1.0"
+    symbol-observable "^1.2.0"
 
 regenerate@^1.2.1:
   version "1.4.0"
@@ -10119,7 +10136,7 @@ symbol-observable@1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/symbol-observable/-/symbol-observable-1.0.1.tgz#8340fc4702c3122df5d22288f88283f513d3fdd4"
 
-symbol-observable@^1.0.3:
+symbol-observable@^1.0.3, symbol-observable@^1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/symbol-observable/-/symbol-observable-1.2.0.tgz#c22688aed4eab3cdc2dfeacbb561660560a00804"
 
@@ -10240,9 +10257,9 @@ test-exclude@^4.2.1:
     read-pkg-up "^1.0.1"
     require-main-filename "^1.0.1"
 
-testcafe-browser-tools@1.6.5:
-  version "1.6.5"
-  resolved "https://registry.yarnpkg.com/testcafe-browser-tools/-/testcafe-browser-tools-1.6.5.tgz#8b41ebf844dccc810e82e7f19cc9d257f8c6ad86"
+testcafe-browser-tools@1.6.4:
+  version "1.6.4"
+  resolved "https://registry.yarnpkg.com/testcafe-browser-tools/-/testcafe-browser-tools-1.6.4.tgz#e7113e43358948ddd0e7b73f4ed6963a4eed2816"
   dependencies:
     array-find "^1.0.0"
     babel-runtime "^5.6.15"
@@ -10256,9 +10273,9 @@ testcafe-browser-tools@1.6.5:
     read-file-relative "^1.2.0"
     which-promise "^1.0.0"
 
-testcafe-hammerhead@14.2.6:
-  version "14.2.6"
-  resolved "https://registry.yarnpkg.com/testcafe-hammerhead/-/testcafe-hammerhead-14.2.6.tgz#1cc4fecb8fcc0972a568e53f4d9ac8da8c4e931e"
+testcafe-hammerhead@14.2.2:
+  version "14.2.2"
+  resolved "https://registry.yarnpkg.com/testcafe-hammerhead/-/testcafe-hammerhead-14.2.2.tgz#be0261465f9e2aba234db99097f7e90a82e66d30"
   dependencies:
     bowser "1.6.0"
     brotli "^1.3.1"
@@ -10285,9 +10302,9 @@ testcafe-hammerhead@14.2.6:
     webauth "^1.1.0"
     yakaa "1.0.1"
 
-testcafe-legacy-api@3.1.8:
-  version "3.1.8"
-  resolved "https://registry.yarnpkg.com/testcafe-legacy-api/-/testcafe-legacy-api-3.1.8.tgz#1ddf66ba1a4cf4cf36d2dd49b9c3af63bcda698f"
+testcafe-legacy-api@3.1.7:
+  version "3.1.7"
+  resolved "https://registry.yarnpkg.com/testcafe-legacy-api/-/testcafe-legacy-api-3.1.7.tgz#7aec8b9fcef64bf73fbd6b076e7dab5ebe1c635f"
   dependencies:
     async "0.2.6"
     babel-runtime "^5.8.34"
@@ -10322,14 +10339,13 @@ testcafe-reporter-xunit@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/testcafe-reporter-xunit/-/testcafe-reporter-xunit-2.1.0.tgz#e6d66c572ce15af266706af0fd610b2a841dd443"
 
-testcafe@^0.22.0:
-  version "0.22.0"
-  resolved "https://registry.yarnpkg.com/testcafe/-/testcafe-0.22.0.tgz#27ba68c1cb13ed3da97e17f6b4c5fff72e5a4d6f"
+testcafe@^0.20.4:
+  version "0.20.5"
+  resolved "https://registry.yarnpkg.com/testcafe/-/testcafe-0.20.5.tgz#3230d2731d1ec2d84856115c218228dafb16883c"
   dependencies:
     async-exit-hook "^1.1.2"
     babel-core "^6.22.1"
     babel-plugin-transform-class-properties "^6.24.1"
-    babel-plugin-transform-for-of-as-array "^1.1.1"
     babel-plugin-transform-runtime "^6.22.0"
     babel-preset-env "^1.1.8"
     babel-preset-flow "^6.23.0"
@@ -10342,11 +10358,9 @@ testcafe@^0.22.0:
     chalk "^1.1.0"
     chrome-emulated-devices-list "^0.1.0"
     chrome-remote-interface "^0.25.3"
-    coffeescript "^2.3.1"
     commander "^2.8.1"
     debug "^2.2.0"
     dedent "^0.4.0"
-    del "^3.0.0"
     elegant-spinner "^1.0.1"
     endpoint-utils "^1.0.2"
     error-stack-parser "^1.3.6"
@@ -10380,9 +10394,9 @@ testcafe@^0.22.0:
     sanitize-filename "^1.6.0"
     source-map-support "^0.5.5"
     strip-bom "^2.0.0"
-    testcafe-browser-tools "1.6.5"
-    testcafe-hammerhead "14.2.6"
-    testcafe-legacy-api "3.1.8"
+    testcafe-browser-tools "1.6.4"
+    testcafe-hammerhead "14.2.2"
+    testcafe-legacy-api "3.1.7"
     testcafe-reporter-json "^2.1.0"
     testcafe-reporter-list "^2.1.0"
     testcafe-reporter-minimal "^2.1.0"
@@ -10869,6 +10883,10 @@ url@^0.11.0:
 use@^3.1.0:
   version "3.1.1"
   resolved "https://registry.yarnpkg.com/use/-/use-3.1.1.tgz#d50c8cac79a19fbc20f2911f56eb973f4e10070f"
+
+user@0.0.0:
+  version "0.0.0"
+  resolved "https://registry.yarnpkg.com/user/-/user-0.0.0.tgz#f27f1b23fc511f2a8efa40db55cfba123824e02a"
 
 useragent@^2.1.7:
   version "2.3.0"

@@ -2,21 +2,27 @@ import get from 'lodash.get'
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { connect } from 'react-redux'
-import { Redirect, Route, Switch } from 'react-router-dom'
+import { Route, Switch } from 'react-router-dom'
 import { compose } from 'redux'
 
-import { Icon, requestData, withLogin, withSearch } from 'pass-culture-shared'
+import {
+  Icon,
+  requestData,
+  withLogin,
+  withPagination,
+} from 'pass-culture-shared'
 
 import NavByOfferType from './search/NavByOfferType'
 import SearchFilter from './search/SearchFilter'
 import SearchResults from './search/SearchResults'
 import filterIconByState, {
   INITIAL_FILTER_PARAMS,
-  searchFiltersAdded,
+  isSearchFiltersAdded,
 } from './search/utils'
 import Main from '../layout/Main'
 import NavigationFooter from '../layout/NavigationFooter'
 import { selectRecommendations } from '../../selectors'
+import { mapApiToWindow, windowToApiQuery } from '../../utils/pagination'
 
 const renderPageHeader = () => (
   <header>
@@ -30,89 +36,89 @@ const renderPageFooter = () => (
   <NavigationFooter theme="white" className="dotted-top-red" />
 )
 
-const FRENCH_KEYWORDS_KEY = 'mots-cles'
-
 class SearchPage extends PureComponent {
   constructor(props) {
     super(props)
     this.state = {
       keywordsKey: 0,
-      keywordsValue: get(props, `queryParams.${FRENCH_KEYWORDS_KEY}`),
+      keywordsValue: get(
+        props,
+        `pagination.windowQuery.${mapApiToWindow.search}`
+      ),
     }
   }
 
-  onSubmit = e => {
-    const { handleQueryParamsChange, queryParams } = this.props
+  onSubmit = event => {
+    const { pagination } = this.props
+    const { value } = event.target.elements.search
 
-    e.preventDefault()
+    event.preventDefault()
 
-    if (
-      !e.target.elements.keywords.value ||
-      queryParams.keywords === e.target.elements.keywords.value
-    ) {
-      return
-    }
-
-    handleQueryParamsChange(
-      { [FRENCH_KEYWORDS_KEY]: e.target.elements.keywords.value },
+    pagination.change(
+      {
+        [mapApiToWindow.search]: value === '' ? null : value,
+      },
       { pathname: '/recherche/resultats' }
     )
   }
 
   handleDataRequest = (handleSuccess = () => {}, handleFail = () => {}) => {
-    const {
-      dispatch,
-      goToNextSearchPage,
-      location,
-      match,
-      querySearch,
-    } = this.props
+    const { dispatch, location, match, pagination, search } = this.props
+    const { apiQueryString, goToNextPage, page } = pagination
+
+    // BECAUSE THE INFINITE SCROLLER CALLS ONCE THIS FUNCTION
+    // BUT THEN PUSH THE SEARCH TO PAGE + 1
+    // WE PASS AGAIN HERE FOR THE SAME PAGE
+    // SO WE NEED TO PREVENT A SECOND CALL
+    if (page !== 1 && search.page && page === Number(search.page)) {
+      return
+    }
 
     dispatch(requestData('GET', 'types'))
 
     const len = get(location, 'search.length')
     if (!len) return
 
-    const englishQuerySearch = querySearch
-      .replace(`${FRENCH_KEYWORDS_KEY}=`, 'keywords=')
-      .replace('categories=', 'types=')
-      .replace('jours=', 'days=')
+    const path = `recommendations?page=${page}&${apiQueryString}`
 
     dispatch(
-      requestData('GET', `recommendations?${englishQuerySearch}`, {
+      requestData('GET', path, {
         handleFail,
         handleSuccess: (state, action) => {
           handleSuccess(state, action)
           if (match.params.view === 'resultats' && !match.params.filtres) {
-            goToNextSearchPage()
+            goToNextPage()
           }
         },
       })
     )
   }
 
+  loadMoreHandler = (handleSuccess, handleFail) => {
+    this.handleDataRequest(handleSuccess, handleFail)
+    const { history, location, pagination } = this.props
+    const { windowQueryString, page } = pagination
+    history.push(`${location.pathname}?page=${page}&${windowQueryString}`)
+  }
+
   render() {
-    const {
-      handleQueryParamsChange,
-      history,
-      location,
-      match,
-      queryParams,
-      querySearch,
-      recommendations,
-    } = this.props
+    const { history, location, match, pagination, recommendations } = this.props
+    const { page, windowQuery, windowQueryString } = pagination
     const { keywordsKey, keywordsValue } = this.state
 
-    const keywords = queryParams[FRENCH_KEYWORDS_KEY]
+    const keywords = windowQuery[mapApiToWindow.search]
 
-    const filters = searchFiltersAdded(INITIAL_FILTER_PARAMS, queryParams)
-    const filterIcon = filterIconByState(filters)
+    const filtersActive = isSearchFiltersAdded(
+      INITIAL_FILTER_PARAMS,
+      windowQuery
+    )
+    const isfilterIconActive = filterIconByState(filtersActive)
 
     return (
       <Main
         backButton={
           match.params.view === 'resultats' && {
-            onClick: () => history.push(`/recherche/categories?${querySearch}`),
+            onClick: () => history.push('/recherche'),
           }
         }
         handleDataRequest={this.handleDataRequest}
@@ -127,7 +133,7 @@ class SearchPage extends PureComponent {
               key={keywordsKey}
             >
               <input
-                id="keywords"
+                id="search"
                 defaultValue={keywordsValue}
                 className="input search-input"
                 placeholder="Saisissez une recherche"
@@ -146,7 +152,7 @@ class SearchPage extends PureComponent {
                         // https://stackoverflow.com/questions/37946229/how-do-i-reset-the-defaultvalue-for-a-react-input
                         // WE NEED TO MAKE THE PARENT OF THE KEYWORD INPUT
                         // DEPENDING ON THE KEYWORDS VALUE IN ORDER TO RERENDER
-                        // THE IN PUT WITH A SYNCED DEFAULT VALUE
+                        // THE INPUT WITH A SYNCED DEFAULT VALUE
                         keywordsKey: keywordsKey + 1,
                         keywordsValue: '',
                       })
@@ -160,7 +166,6 @@ class SearchPage extends PureComponent {
             <div className="control">
               <button
                 className="button is-rounded is-medium"
-                disabled={!keywordsValue || keywordsValue === keywords}
                 id="keywords-search-button"
                 type="submit"
               >
@@ -176,12 +181,14 @@ class SearchPage extends PureComponent {
                 if (!match.params.filtres) {
                   pathname = `${pathname}/filtres`
                 }
-                history.push(`${pathname}?${querySearch}`)
+                history.push(`${pathname}?page=${page}&${windowQueryString}`)
               }}
             >
               &nbsp;
               <Icon
-                svg={`ico-${match.params.filtres ? 'chevron-up' : filterIcon}`}
+                svg={`ico-${
+                  match.params.filtres ? 'chevron-up' : isfilterIconActive
+                }`}
               />
               &nbsp;
             </button>
@@ -192,26 +199,15 @@ class SearchPage extends PureComponent {
           <Route
             exact
             path="/recherche"
-            render={() => <Redirect to="/recherche/categories" />}
+            render={() => (
+              <NavByOfferType pagination={pagination} title="PAR CATÉGORIES" />
+            )}
           />
           <Route
             path="/recherche/:view/filtres"
-            render={() => (
-              <SearchFilter
-                handleQueryParamsChange={handleQueryParamsChange}
-                queryParams={queryParams}
-              />
-            )}
+            render={() => <SearchFilter pagination={pagination} />}
           />
-          <Route
-            path="/recherche/categories"
-            render={() => (
-              <NavByOfferType
-                handleQueryParamsChange={handleQueryParamsChange}
-                title="PAR CATÉGORIES"
-              />
-            )}
-          />
+
           <Route
             path="/recherche/resultats"
             render={() => (
@@ -221,8 +217,8 @@ class SearchPage extends PureComponent {
                   <SearchResults
                     keywords={keywords}
                     items={recommendations}
-                    queryParams={queryParams}
-                    loadMoreHandler={this.handleDataRequest}
+                    pagination={pagination}
+                    loadMoreHandler={this.loadMoreHandler}
                   />
                 )}
               />
@@ -240,29 +236,29 @@ SearchPage.defaultProps = {
 
 SearchPage.propTypes = {
   dispatch: PropTypes.func.isRequired,
-  goToNextSearchPage: PropTypes.func.isRequired,
-  handleQueryParamsChange: PropTypes.func.isRequired,
   history: PropTypes.object.isRequired,
   location: PropTypes.object.isRequired,
   match: PropTypes.object.isRequired,
-  queryParams: PropTypes.object.isRequired,
-  querySearch: PropTypes.string,
+  pagination: PropTypes.object.isRequired,
   recommendations: PropTypes.array.isRequired,
+  search: PropTypes.object.isRequired,
 }
 
 export default compose(
   withLogin({ failRedirect: '/connexion' }),
-  withSearch({
+  withPagination({
     dataKey: 'recommendations',
-    defaultQueryParams: {
-      [FRENCH_KEYWORDS_KEY]: null,
+    defaultWindowQuery: {
+      categories: null,
       date: null,
-      days: null,
+      [mapApiToWindow.days]: null,
+      [mapApiToWindow.search]: null,
       distance: null,
       latitude: null,
       longitude: null,
-      types: null,
+      orderBy: 'offer.id+desc',
     },
+    windowToApiQuery,
   }),
   connect(state => ({
     recommendations: selectRecommendations(state),

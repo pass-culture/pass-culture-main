@@ -173,7 +173,7 @@ describe('src | components | pages | SearchResults', () => {
         }
 
         // then
-        expect(resultsTitle.children).toEqual('fakeKeywords : 1 résultat')
+        expect(resultsTitle.children).toEqual('"fakeKeywords" : 1 résultat')
         expect(SearchResultItemWrapper.props()).toEqual(item)
       })
     })
@@ -193,7 +193,7 @@ describe('src | components | pages | SearchResults', () => {
         const SearchResultItemWrapper = wrapper.find(SearchResultItem)
 
         // then
-        expect(resultsTitle.children).toEqual('fakeKeywords : 0 résultat')
+        expect(resultsTitle.children).toEqual('"fakeKeywords" : 0 résultat')
         expect(SearchResultItemWrapper.length).toEqual(0)
       })
     })

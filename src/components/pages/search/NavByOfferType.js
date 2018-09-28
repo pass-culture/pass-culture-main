@@ -2,27 +2,27 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
 
-import selectTypeSublabels from '../../../selectors/selectTypeSublabels'
 import SearchPicture from './SearchPicture'
+import selectTypeSublabels from '../../../selectors/selectTypeSublabels'
 
-const NavByOfferType = ({ handleQueryParamsChange, title, typeSublabels }) => (
+const NavByOfferType = ({ pagination, title, typeSublabels }) => (
   <div>
     <h2 className="is-italic fs18">
       {title}
     </h2>
     {typeSublabels.map(typeSublabel => (
-      <div className="field checkbox" key={typeSublabel} id="search-type-card">
-        <input
-          id="search-type-checkbox"
-          className="input is-normal"
-          onChange={() =>
-            handleQueryParamsChange(
-              { categories: typeSublabel },
-              { pathname: '/recherche/resultats' }
-            )
-          }
-          type="checkbox"
-        />
+      <button
+        key={typeSublabel}
+        id="search-type-button"
+        onClick={() =>
+          pagination.change(
+            { categories: typeSublabel },
+            { pathname: '/recherche/resultats' }
+          )
+        }
+        type="button"
+      >
+        <SearchPicture searchType={typeSublabel} />
         <label
           className="label fs22 is-medium is-white-text"
           id="search-type-label"
@@ -31,14 +31,13 @@ const NavByOfferType = ({ handleQueryParamsChange, title, typeSublabels }) => (
           {' '}
           {typeSublabel}
         </label>
-        <SearchPicture searchType={typeSublabel} />
-      </div>
+      </button>
     ))}
   </div>
 )
 
 NavByOfferType.propTypes = {
-  handleQueryParamsChange: PropTypes.func.isRequired,
+  pagination: PropTypes.object.isRequired,
   title: PropTypes.string.isRequired,
   typeSublabels: PropTypes.array.isRequired,
 }

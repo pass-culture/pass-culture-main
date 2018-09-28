@@ -6,33 +6,29 @@ import selectTypeSublabels from '../../../selectors/selectTypeSublabels'
 import SearchPicture from './SearchPicture'
 
 class FilterByOfferTypes extends Component {
-  onFilterChange = typeSublabel => {
-    const {
-      handleFilterParamAdd,
-      handleFilterParamRemove,
-      filterParams,
-    } = this.props
+  onChange = typeSublabel => {
+    const { filter } = this.props
 
-    const typesValue = decodeURI(filterParams.categories || '')
+    const typesValue = decodeURI(filter.query.categories || '')
 
     const isAlreadyIncluded = typesValue.includes(typeSublabel)
 
     if (isAlreadyIncluded) {
-      handleFilterParamRemove('categories', typeSublabel)
+      filter.remove('categories', typeSublabel)
       return
     }
 
-    handleFilterParamAdd('categories', typeSublabel)
+    filter.add('categories', typeSublabel)
   }
 
   render() {
-    const { filterParams, typeSublabels, title } = this.props
+    const { filter, typeSublabels, title } = this.props
 
-    const typesValue = decodeURI(filterParams.categories || '')
+    const typesValue = decodeURI(filter.query.categories || '')
 
     return (
       <div id="filter-by-offer-types">
-        <h2 className="fs18">
+        <h2 className="fs18 is-italic is-uppercase text-center">
           {title}
         </h2>
         <div className="filter-menu-outer">
@@ -45,7 +41,7 @@ class FilterByOfferTypes extends Component {
               </label>
               <input
                 checked={typesValue.includes(typeSublabel)}
-                onChange={() => this.onFilterChange(typeSublabel)}
+                onChange={() => this.onChange(typeSublabel)}
                 value={typeSublabel}
                 type="checkbox"
               />
@@ -58,9 +54,7 @@ class FilterByOfferTypes extends Component {
 }
 
 FilterByOfferTypes.propTypes = {
-  filterParams: PropTypes.object.isRequired,
-  handleFilterParamAdd: PropTypes.func.isRequired,
-  handleFilterParamRemove: PropTypes.func.isRequired,
+  filter: PropTypes.object.isRequired,
   title: PropTypes.string.isRequired,
   typeSublabels: PropTypes.array.isRequired,
 }

@@ -8,98 +8,89 @@ import FilterByDates from './FilterByDates'
 import FilterByDistance from './FilterByDistance'
 import FilterByOfferTypes from './FilterByOfferTypes'
 
-import { INITIAL_FILTER_PARAMS, searchFiltersAdded } from '../search/utils'
-
-function getFirstChangingKey(previousObject, nextObject) {
-  return Object.keys(nextObject).find(key => {
-    const isNewFalsy = nextObject[key] === null || nextObject[key] === ''
-    const isPreviousFalsy =
-      typeof previousObject[key] === 'undefined' ||
-      previousObject[key] === null ||
-      previousObject === ''
-    if (isNewFalsy && isPreviousFalsy) {
-      return false
-    }
-    return previousObject[key] !== nextObject[key]
-  })
-}
+import { getFirstChangingKey, INITIAL_FILTER_PARAMS } from '../search/utils'
 
 class SearchFilter extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      filterParams: Object.assign({}, props.queryParams),
-      isNewFilter: false,
+      add: this.handleQueryAdd,
+      change: this.handleQueryChange,
+      remove: this.handleQueryRemove,
+
+      query: Object.assign({}, props.pagination.windowQuery),
+      isNew: false,
     }
   }
 
   componentDidUpdate(prevProps) {
-    const { queryParams } = this.props
+    const { pagination } = this.props
+    const { windowQuery } = pagination
     // TODO: eslint does not support setState inside componentDidUpdate
-    if (queryParams !== prevProps.queryParams) {
+    if (windowQuery !== prevProps.pagination.windowQuery) {
       this.setState({
-        filterParams: queryParams,
-        isNewFilter: false,
+        query: windowQuery,
+        isNew: false,
       })
     }
   }
 
   onFilterClick = () => {
-    const { handleQueryParamsChange } = this.props
-    const { filterParams, isNewFilter } = this.state
+    const { pagination } = this.props
+    const { isNew, query } = this.state
 
-    handleQueryParamsChange(filterParams, {
-      isRefreshing: isNewFilter,
+    pagination.change(query, {
+      isClearingData: isNew,
       pathname: '/recherche/resultats',
     })
   }
 
   onResetClick = () => {
+    const isNew = getFirstChangingKey(
+      this.props.pagination.windowQuery,
+      INITIAL_FILTER_PARAMS
+    )
+
     this.setState({
-      filterParams: INITIAL_FILTER_PARAMS,
-      isNewFilter: getFirstChangingKey(
-        this.props.queryParams,
-        INITIAL_FILTER_PARAMS
-      ),
+      isNew,
+      query: INITIAL_FILTER_PARAMS,
     })
   }
 
-  handleFilterParamsChange = (newValue, callback) => {
-    const { queryParams } = this.props
-    const { filterParams } = this.state
+  handleQueryChange = (newValue, callback) => {
+    const { pagination } = this.props
+    const { query } = this.state
 
-    const nextFilterParams = Object.assign({}, filterParams, newValue)
-
-    const isNewFilter = getFirstChangingKey(queryParams, newValue)
+    const nextFilterParams = Object.assign({}, query, newValue)
+    const isNew = getFirstChangingKey(pagination.windowQuery, newValue)
 
     this.setState(
       {
-        filterParams: nextFilterParams,
-        isNewFilter,
+        query: nextFilterParams,
+        isNew,
       },
       callback
     )
   }
 
-  handleFilterParamAdd = (key, value, callback) => {
-    const { filterParams } = this.state
-
+  handleQueryAdd = (key, value, callback) => {
+    const { query } = this.state
     const encodedValue = encodeURI(value)
     let nextValue = encodedValue
-    const previousValue = filterParams[key]
+    const previousValue = query[key]
     if (get(previousValue, 'length')) {
       const args = previousValue.split(',').concat([encodedValue])
       args.sort()
       nextValue = args.join(',')
     }
 
-    this.handleFilterParamsChange({ [key]: nextValue }, callback)
+    this.handleQueryChange({ [key]: nextValue }, callback)
   }
 
-  handleFilterParamRemove = (key, value, callback) => {
-    const { filterParams } = this.state
+  handleQueryRemove = (key, value, callback) => {
+    const { query } = this.state
 
-    const previousValue = filterParams[key]
+    const previousValue = query[key]
 
     if (get(previousValue, 'length')) {
       const encodedValue = encodeURI(value)
@@ -109,46 +100,24 @@ class SearchFilter extends Component {
       if (nextValue[0] === ',') {
         nextValue = nextValue.slice(1)
       }
-      this.handleFilterParamsChange({ [key]: nextValue }, callback)
+      this.handleQueryChange({ [key]: nextValue }, callback)
     }
   }
 
   render() {
-    const { handleClearQueryParams } = this.props
-    const { filterParams, isNewFilter } = this.state
-
-    const isNullFilter = searchFiltersAdded(INITIAL_FILTER_PARAMS, filterParams)
-
     return (
       <div id="search-filter-menu">
-        <FilterByDates
-          handleFilterParamsChange={this.handleFilterParamsChange}
-          handleFilterParamAdd={this.handleFilterParamAdd}
-          handleFilterParamRemove={this.handleFilterParamRemove}
-          filterParams={filterParams}
-          title="QUAND"
-        />
-        <FilterByDistance
-          handleFilterParamsChange={this.handleFilterParamsChange}
-          filterParams={filterParams}
-          title="OÙ"
-        />
-        <FilterByOfferTypes
-          handleFilterParamAdd={this.handleFilterParamAdd}
-          handleFilterParamRemove={this.handleFilterParamRemove}
-          filterParams={filterParams}
-          title="QUOI"
-        />
+        <FilterByDates filter={this.state} title="QUAND" />
+        <FilterByDistance filter={this.state} title="OÙ" />
+        <FilterByOfferTypes filter={this.state} title="QUOI" />
         <button
           className="button fs24"
-          disabled={isNullFilter}
           onClick={this.onResetClick}
           type="button">
           Réinitialiser
         </button>
         <button
           className="button fs24"
-          disabled={!isNewFilter}
           onClick={this.onFilterClick}
           type="button">
           Filtrer
@@ -159,8 +128,7 @@ class SearchFilter extends Component {
 }
 
 SearchFilter.propTypes = {
-  handleQueryParamsChange: PropTypes.func.isRequired,
-  queryParams: PropTypes.object.isRequired,
+  pagination: PropTypes.object.isRequired,
 }
 
 export default SearchFilter

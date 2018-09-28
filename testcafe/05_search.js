@@ -53,7 +53,7 @@ test("Je fais une recherche par mots-clés et je n'ai pas de résultats", async 
 
   const location = await t.eval(() => window.location)
   await t.expect(location.pathname).eql('/recherche/resultats')
-  await t.expect(resultsTitle.innerText).eql('FAKE : 0 RÉSULTAT')
+  await t.expect(resultsTitle.innerText).eql('"FAKE" : 0 RÉSULTAT')
 })
 
 // TODO
@@ -65,6 +65,7 @@ test("Je fais une recherche par mots-clés et j'ai des résultats", async t => {
     .typeText(searchInput, 'vhils')
     .click(keywordsSearchButton)
     .wait(500)
+  await t.expect(resultsTitle.innerText).eql('"VHILS" : 1 RÉSULTAT')
 })
 
 // Si j'ai des résultats, je vois les vignettes
