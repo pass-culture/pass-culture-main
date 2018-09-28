@@ -1,9 +1,9 @@
 import get from 'lodash.get'
-import { Icon, requestData } from 'pass-culture-shared'
+import moment from 'moment'
+import { Icon } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
-import moment from 'moment'
 
 import eventSelector from '../../selectors/event'
 import thingSelector from '../../selectors/thing'

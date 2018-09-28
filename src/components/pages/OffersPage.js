@@ -51,6 +51,16 @@ class OffersPage extends Component {
     types.length === 0 && dispatch(requestData('GET', 'types'))
   }
 
+  handleLoadMore = (handleSuccess, handleFail) => {
+    this.handleDataRequest(handleSuccess, handleFail)
+    const { history, location, pagination } = this.props
+    const { windowQueryString, page } = pagination
+
+    const to = `${location.pathname}?page=${page}&${windowQueryString}`
+
+    history.push(to)
+  }
+
   onSubmit = event => {
     const { pagination } = this.props
 
@@ -178,14 +188,7 @@ class OffersPage extends Component {
           {
             <InfiniteScroller
               className="offers-list main-list"
-              handleLoadMore={(handleSuccess, handleFail) => {
-                this.handleDataRequest(handleSuccess, handleFail)
-                const { history, location, pagination } = this.props
-                const { windowQueryString, page } = pagination
-                history.push(
-                  `${location.pathname}?page=${page}&${windowQueryString}`
-                )
-              }}>
+              handleLoadMore={this.handleLoadMore}>
               {offers.map(o => (
                 <OfferItem key={o.id} offer={o} />
               ))}
