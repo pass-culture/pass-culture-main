@@ -12,6 +12,8 @@ const newOffererAnchor = Selector(
 )
 const offerersNavbarLink = Selector("a.navbar-item[href='/structures']")
 const sirenInput = Selector('#offerer-siren')
+const ibanInput = Selector('#offerer-iban')
+const bicInput = Selector('#offerer-bic')
 const sirenErrorInput = Selector('#offerer-siren-error')
 const submitButton = Selector('button.button.is-primary') //connexion
 
@@ -53,6 +55,8 @@ test('Je ne peux pas ajouter de nouvelle structure ayant un siren déjà existan
 
     // input
     .typeText(sirenInput, '692 039 514')
+    .typeText(ibanInput, 'FR7630004000031234567890143')
+    .typeText(bicInput, 'BNPAFRPP')
     .wait(1000)
 
   // submit
@@ -75,6 +79,8 @@ test('Je rentre une nouvelle structure via son siren', async t => {
 
     // input
     .typeText(sirenInput, '492 475 033')
+    .typeText(ibanInput, 'FR7630004000031234567890143')
+    .typeText(bicInput, 'BNPAFRPP')
     .wait(1000)
 
   // check other completed fields
