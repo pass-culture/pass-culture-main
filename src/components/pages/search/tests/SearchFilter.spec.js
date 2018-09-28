@@ -8,8 +8,19 @@ describe('src | components | pages | search | SearchFilter', () => {
     it('should match snapshot', () => {
       // given
       const props = {
-        handleQueryParamsChange: jest.fn(),
-        queryParams: {},
+        isVisible: true,
+        pagination: {
+          windowQuery: {
+            categories: null,
+            date: '2018-09-28T12:52:52.341Z',
+            distance: '50',
+            jours: '0-1',
+            latitude: '48.8637546',
+            longitude: '2.337428',
+            [`mots-cles`]: 'fake',
+            orderBy: 'offer.id+desc',
+          },
+        },
       }
 
       // when

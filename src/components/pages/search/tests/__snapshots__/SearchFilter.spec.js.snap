@@ -4,8 +4,21 @@ exports[`src | components | pages | search | SearchFilter snapshot should match 
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <SearchFilter
-    handleQueryParamsChange={[MockFunction]}
-    queryParams={Object {}}
+    isVisible={true}
+    pagination={
+      Object {
+        "windowQuery": Object {
+          "categories": null,
+          "date": "2018-09-28T12:52:52.341Z",
+          "distance": "50",
+          "jours": "0-1",
+          "latitude": "48.8637546",
+          "longitude": "2.337428",
+          "mots-cles": "fake",
+          "orderBy": "offer.id+desc",
+        },
+      }
+    }
   />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
@@ -22,21 +35,66 @@ ShallowWrapper {
     "props": Object {
       "children": Array [
         <FilterByDates
-          filterParams={Object {}}
-          handleFilterParamAdd={[Function]}
-          handleFilterParamRemove={[Function]}
-          handleFilterParamsChange={[Function]}
+          filter={
+            Object {
+              "add": [Function],
+              "change": [Function],
+              "isNew": false,
+              "query": Object {
+                "categories": null,
+                "date": "2018-09-28T12:52:52.341Z",
+                "distance": "50",
+                "jours": "0-1",
+                "latitude": "48.8637546",
+                "longitude": "2.337428",
+                "mots-cles": "fake",
+                "orderBy": "offer.id+desc",
+              },
+              "remove": [Function],
+            }
+          }
           title="QUAND"
         />,
         <Connect(FilterByDistance)
-          filterParams={Object {}}
-          handleFilterParamsChange={[Function]}
+          filter={
+            Object {
+              "add": [Function],
+              "change": [Function],
+              "isNew": false,
+              "query": Object {
+                "categories": null,
+                "date": "2018-09-28T12:52:52.341Z",
+                "distance": "50",
+                "jours": "0-1",
+                "latitude": "48.8637546",
+                "longitude": "2.337428",
+                "mots-cles": "fake",
+                "orderBy": "offer.id+desc",
+              },
+              "remove": [Function],
+            }
+          }
           title="OÙ"
         />,
         <Connect(FilterByOfferTypes)
-          filterParams={Object {}}
-          handleFilterParamAdd={[Function]}
-          handleFilterParamRemove={[Function]}
+          filter={
+            Object {
+              "add": [Function],
+              "change": [Function],
+              "isNew": false,
+              "query": Object {
+                "categories": null,
+                "date": "2018-09-28T12:52:52.341Z",
+                "distance": "50",
+                "jours": "0-1",
+                "latitude": "48.8637546",
+                "longitude": "2.337428",
+                "mots-cles": "fake",
+                "orderBy": "offer.id+desc",
+              },
+              "remove": [Function],
+            }
+          }
           title="QUOI"
         />,
         <button
@@ -54,6 +112,7 @@ ShallowWrapper {
           Filtrer
         </button>,
       ],
+      "className": "",
       "id": "search-filter-menu",
     },
     "ref": null,
@@ -63,10 +122,22 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "class",
         "props": Object {
-          "filterParams": Object {},
-          "handleFilterParamAdd": [Function],
-          "handleFilterParamRemove": [Function],
-          "handleFilterParamsChange": [Function],
+          "filter": Object {
+            "add": [Function],
+            "change": [Function],
+            "isNew": false,
+            "query": Object {
+              "categories": null,
+              "date": "2018-09-28T12:52:52.341Z",
+              "distance": "50",
+              "jours": "0-1",
+              "latitude": "48.8637546",
+              "longitude": "2.337428",
+              "mots-cles": "fake",
+              "orderBy": "offer.id+desc",
+            },
+            "remove": [Function],
+          },
           "title": "QUAND",
         },
         "ref": null,
@@ -78,8 +149,22 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "class",
         "props": Object {
-          "filterParams": Object {},
-          "handleFilterParamsChange": [Function],
+          "filter": Object {
+            "add": [Function],
+            "change": [Function],
+            "isNew": false,
+            "query": Object {
+              "categories": null,
+              "date": "2018-09-28T12:52:52.341Z",
+              "distance": "50",
+              "jours": "0-1",
+              "latitude": "48.8637546",
+              "longitude": "2.337428",
+              "mots-cles": "fake",
+              "orderBy": "offer.id+desc",
+            },
+            "remove": [Function],
+          },
           "title": "OÙ",
         },
         "ref": null,
@@ -91,9 +176,22 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "class",
         "props": Object {
-          "filterParams": Object {},
-          "handleFilterParamAdd": [Function],
-          "handleFilterParamRemove": [Function],
+          "filter": Object {
+            "add": [Function],
+            "change": [Function],
+            "isNew": false,
+            "query": Object {
+              "categories": null,
+              "date": "2018-09-28T12:52:52.341Z",
+              "distance": "50",
+              "jours": "0-1",
+              "latitude": "48.8637546",
+              "longitude": "2.337428",
+              "mots-cles": "fake",
+              "orderBy": "offer.id+desc",
+            },
+            "remove": [Function],
+          },
           "title": "QUOI",
         },
         "ref": null,
@@ -139,21 +237,66 @@ ShallowWrapper {
       "props": Object {
         "children": Array [
           <FilterByDates
-            filterParams={Object {}}
-            handleFilterParamAdd={[Function]}
-            handleFilterParamRemove={[Function]}
-            handleFilterParamsChange={[Function]}
+            filter={
+              Object {
+                "add": [Function],
+                "change": [Function],
+                "isNew": false,
+                "query": Object {
+                  "categories": null,
+                  "date": "2018-09-28T12:52:52.341Z",
+                  "distance": "50",
+                  "jours": "0-1",
+                  "latitude": "48.8637546",
+                  "longitude": "2.337428",
+                  "mots-cles": "fake",
+                  "orderBy": "offer.id+desc",
+                },
+                "remove": [Function],
+              }
+            }
             title="QUAND"
           />,
           <Connect(FilterByDistance)
-            filterParams={Object {}}
-            handleFilterParamsChange={[Function]}
+            filter={
+              Object {
+                "add": [Function],
+                "change": [Function],
+                "isNew": false,
+                "query": Object {
+                  "categories": null,
+                  "date": "2018-09-28T12:52:52.341Z",
+                  "distance": "50",
+                  "jours": "0-1",
+                  "latitude": "48.8637546",
+                  "longitude": "2.337428",
+                  "mots-cles": "fake",
+                  "orderBy": "offer.id+desc",
+                },
+                "remove": [Function],
+              }
+            }
             title="OÙ"
           />,
           <Connect(FilterByOfferTypes)
-            filterParams={Object {}}
-            handleFilterParamAdd={[Function]}
-            handleFilterParamRemove={[Function]}
+            filter={
+              Object {
+                "add": [Function],
+                "change": [Function],
+                "isNew": false,
+                "query": Object {
+                  "categories": null,
+                  "date": "2018-09-28T12:52:52.341Z",
+                  "distance": "50",
+                  "jours": "0-1",
+                  "latitude": "48.8637546",
+                  "longitude": "2.337428",
+                  "mots-cles": "fake",
+                  "orderBy": "offer.id+desc",
+                },
+                "remove": [Function],
+              }
+            }
             title="QUOI"
           />,
           <button
@@ -171,6 +314,7 @@ ShallowWrapper {
             Filtrer
           </button>,
         ],
+        "className": "",
         "id": "search-filter-menu",
       },
       "ref": null,
@@ -180,10 +324,22 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "class",
           "props": Object {
-            "filterParams": Object {},
-            "handleFilterParamAdd": [Function],
-            "handleFilterParamRemove": [Function],
-            "handleFilterParamsChange": [Function],
+            "filter": Object {
+              "add": [Function],
+              "change": [Function],
+              "isNew": false,
+              "query": Object {
+                "categories": null,
+                "date": "2018-09-28T12:52:52.341Z",
+                "distance": "50",
+                "jours": "0-1",
+                "latitude": "48.8637546",
+                "longitude": "2.337428",
+                "mots-cles": "fake",
+                "orderBy": "offer.id+desc",
+              },
+              "remove": [Function],
+            },
             "title": "QUAND",
           },
           "ref": null,
@@ -195,8 +351,22 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "class",
           "props": Object {
-            "filterParams": Object {},
-            "handleFilterParamsChange": [Function],
+            "filter": Object {
+              "add": [Function],
+              "change": [Function],
+              "isNew": false,
+              "query": Object {
+                "categories": null,
+                "date": "2018-09-28T12:52:52.341Z",
+                "distance": "50",
+                "jours": "0-1",
+                "latitude": "48.8637546",
+                "longitude": "2.337428",
+                "mots-cles": "fake",
+                "orderBy": "offer.id+desc",
+              },
+              "remove": [Function],
+            },
             "title": "OÙ",
           },
           "ref": null,
@@ -208,9 +378,22 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "class",
           "props": Object {
-            "filterParams": Object {},
-            "handleFilterParamAdd": [Function],
-            "handleFilterParamRemove": [Function],
+            "filter": Object {
+              "add": [Function],
+              "change": [Function],
+              "isNew": false,
+              "query": Object {
+                "categories": null,
+                "date": "2018-09-28T12:52:52.341Z",
+                "distance": "50",
+                "jours": "0-1",
+                "latitude": "48.8637546",
+                "longitude": "2.337428",
+                "mots-cles": "fake",
+                "orderBy": "offer.id+desc",
+              },
+              "remove": [Function],
+            },
             "title": "QUOI",
           },
           "ref": null,
