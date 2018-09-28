@@ -265,8 +265,8 @@ module.exports = {
     // in order to make the sw cache aware of them
     new CopyWebpackPlugin(
       ['bmp', 'pdf', 'jpg', 'jpeg', 'png'].map(extension => ({
-        from: path.resolve(paths.appPublic + `/**/*.${extension}`),
-        to: path.resolve(paths.appBuild + `/**/*.${extension}`),
+        from: path.resolve(`${paths.appPublic}/**/*.${extension}`),
+        to: path.resolve(`${paths.appBuild}/**/*.${extension}`),
       }))
     ),
     // Makes some environment variables available in index.html.
