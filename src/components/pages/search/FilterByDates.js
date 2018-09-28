@@ -3,6 +3,8 @@ import moment from 'moment'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 
+import { mapApiToWindow } from '../../../utils/pagination'
+
 const checkboxes = [
   {
     label: 'Tout de suite !',
@@ -24,7 +26,7 @@ class FilterByDates extends Component {
   onChange = day => {
     const { filter } = this.props
 
-    const days = decodeURI(filter.query.jours || '')
+    const days = decodeURI(filter.query[mapApiToWindow.days] || '')
     const isAlreadyIncluded = days.includes(day)
 
     // WE ADD THE DATE AT THE FIRST DAYS SEGMENTS CLICKED
@@ -38,17 +40,17 @@ class FilterByDates extends Component {
     }
 
     if (isAlreadyIncluded) {
-      filter.remove('jours', day, callback)
+      filter.remove(mapApiToWindow.days, day, callback)
       return
     }
 
-    filter.add('jours', day, callback)
+    filter.add(mapApiToWindow.days, day, callback)
   }
 
   render() {
     const { filter, title } = this.props
 
-    const days = decodeURI(filter.query.jours || '')
+    const days = decodeURI(filter.query[mapApiToWindow.days] || '')
 
     return (
       <div className="dotted-bottom-primary" id="filter-by-dates">

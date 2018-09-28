@@ -2,7 +2,7 @@ import get from 'lodash.get'
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { connect } from 'react-redux'
-import { Redirect, Route, Switch } from 'react-router-dom'
+import { Route, Switch } from 'react-router-dom'
 import { compose } from 'redux'
 
 import {
@@ -115,7 +115,7 @@ class SearchPage extends PureComponent {
       <Main
         backButton={
           match.params.view === 'resultats' && {
-            onClick: () => history.push('/recherche/categories'),
+            onClick: () => history.push('/recherche'),
           }
         }
         handleDataRequest={this.handleDataRequest}
@@ -163,7 +163,6 @@ class SearchPage extends PureComponent {
             <div className="control">
               <button
                 className="button is-rounded is-medium"
-                disabled={!keywordsValue || keywordsValue === keywords}
                 id="keywords-search-button"
                 type="submit"
               >
@@ -197,18 +196,15 @@ class SearchPage extends PureComponent {
           <Route
             exact
             path="/recherche"
-            render={() => <Redirect to="/recherche/categories" />}
+            render={() => (
+              <NavByOfferType pagination={pagination} title="PAR CATÉGORIES" />
+            )}
           />
           <Route
             path="/recherche/:view/filtres"
             render={() => <SearchFilter pagination={pagination} />}
           />
-          <Route
-            path="/recherche/categories"
-            render={() => (
-              <NavByOfferType pagination={pagination} title="PAR CATÉGORIES" />
-            )}
-          />
+
           <Route
             path="/recherche/resultats"
             render={() => (
