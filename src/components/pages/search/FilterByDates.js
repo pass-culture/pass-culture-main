@@ -21,15 +21,10 @@ const checkboxes = [
 ]
 
 class FilterByDates extends Component {
-  onFilterChange = day => {
-    const {
-      handleFilterParamsChange,
-      handleFilterParamAdd,
-      handleFilterParamRemove,
-      filterParams,
-    } = this.props
+  onChange = day => {
+    const { filter } = this.props
 
-    const days = decodeURI(filterParams.jours || '')
+    const days = decodeURI(filter.query.jours || '')
     const isAlreadyIncluded = days.includes(day)
 
     // WE ADD THE DATE AT THE FIRST DAYS SEGMENTS CLICKED
@@ -37,23 +32,23 @@ class FilterByDates extends Component {
     let callback
     if (!get(days, 'length')) {
       const date = moment(moment.now()).toISOString()
-      callback = () => handleFilterParamsChange({ date })
+      callback = () => filter.change({ date })
     } else if (isAlreadyIncluded && days.split(',').length === 1) {
-      callback = () => handleFilterParamsChange({ date: null })
+      callback = () => filter.change({ date: null })
     }
 
     if (isAlreadyIncluded) {
-      handleFilterParamRemove('jours', day, callback)
+      filter.remove('jours', day, callback)
       return
     }
 
-    handleFilterParamAdd('jours', day, callback)
+    filter.add('jours', day, callback)
   }
 
   render() {
-    const { filterParams, title } = this.props
+    const { filter, title } = this.props
 
-    const days = decodeURI(filterParams.jours || '')
+    const days = decodeURI(filter.query.jours || '')
 
     return (
       <div className="dotted-bottom-primary" id="filter-by-dates">
@@ -71,7 +66,7 @@ class FilterByDates extends Component {
                 <input
                   checked={days.includes(value)}
                   className="input is-normal"
-                  onChange={() => this.onFilterChange(value)}
+                  onChange={() => this.onChange(value)}
                   type="checkbox"
                 />
               </div>
@@ -87,10 +82,7 @@ DATE PICKER TO DO
 }
 
 FilterByDates.propTypes = {
-  filterParams: PropTypes.object.isRequired,
-  handleFilterParamAdd: PropTypes.func.isRequired,
-  handleFilterParamRemove: PropTypes.func.isRequired,
-  handleFilterParamsChange: PropTypes.func.isRequired,
+  filter: PropTypes.object.isRequired,
   title: PropTypes.string.isRequired,
 }
 
