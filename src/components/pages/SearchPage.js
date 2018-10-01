@@ -216,10 +216,6 @@ class SearchPage extends PureComponent {
   }
 }
 
-SearchPage.defaultProps = {
-  querySearch: null,
-}
-
 SearchPage.propTypes = {
   dispatch: PropTypes.func.isRequired,
   history: PropTypes.object.isRequired,
