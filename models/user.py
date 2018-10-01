@@ -53,9 +53,9 @@ class User(PcObject,
 
     resetPasswordTokenValidityLimit = Column(DateTime)
 
-    firstName = Column(String(35), nullable=False)
+    firstName = Column(String(35), nullable=True)
 
-    lastName = Column(String(35), nullable=False)
+    lastName = Column(String(35), nullable=True)
 
     postalCode = Column(String(5), nullable=False)
 
