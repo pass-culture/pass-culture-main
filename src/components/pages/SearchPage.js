@@ -1,3 +1,4 @@
+import classnames from 'classnames'
 import get from 'lodash.get'
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
@@ -107,7 +108,6 @@ class SearchPage extends PureComponent {
     const { history, location, match, pagination, recommendations } = this.props
     const { windowQuery } = pagination
     const { keywordsKey, keywordsValue, withFilter } = this.state
-
     const keywords = windowQuery[mapApiToWindow.search]
 
     const filtersActive = isSearchFiltersAdded(
@@ -174,6 +174,12 @@ class SearchPage extends PureComponent {
                 Chercher
               </button>
             </div>
+          </div>
+          <div
+            className={classnames('show-filter', {
+              'is-visible': withFilter,
+            })}
+          >
             <button
               type="button"
               className="button is-secondary"
@@ -189,7 +195,7 @@ class SearchPage extends PureComponent {
           </div>
         </form>
 
-        <SearchFilter isVisible={withFilter} pagination={pagination} />
+        <SearchFilter filterIsVisible={withFilter} pagination={pagination} />
 
         <Switch location={location}>
           <Route

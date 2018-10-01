@@ -8,7 +8,7 @@ describe('src | components | pages | search | SearchFilter', () => {
     it('should match snapshot', () => {
       // given
       const props = {
-        isVisible: true,
+        filterIsVisible: true,
         pagination: {
           windowQuery: {
             categories: null,

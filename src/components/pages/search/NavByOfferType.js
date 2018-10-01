@@ -6,7 +6,7 @@ import SearchPicture from './SearchPicture'
 import selectTypeSublabels from '../../../selectors/selectTypeSublabels'
 
 const NavByOfferType = ({ pagination, title, typeSublabels }) => (
-  <div>
+  <div id="nav-by-offer-type">
     <h2 className="is-italic fs18">
       {title}
     </h2>

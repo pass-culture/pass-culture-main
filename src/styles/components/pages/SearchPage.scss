@@ -22,3 +22,15 @@
 #refresh-keywords-button {
   pointer-events: all;
 }
+
+.show-filter {
+  display: flex;
+
+  &.is-visible {
+    background: #EDF1F2;
+    margin-left: 1em;
+    padding-right: 2em;
+    padding-bottom: 2em;
+    border-radius: 0.25em;
+  }
+}
