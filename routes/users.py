@@ -13,7 +13,7 @@ from models import ApiErrors, Offerer, PcObject, User
 from models.user_offerer import RightsType
 from models.venue import create_digital_venue
 from repository.user_queries import find_user_by_email, find_user_by_reset_password_token
-from utils.config import ILE_DE_FRANCE_DEPT_CODES
+from utils.config import ILE_DE_FRANCE_DEPT_CODES, IS_INTEGRATION
 from utils.credentials import get_user_with_credentials
 from utils.includes import USER_INCLUDES
 from utils.mailing import \
@@ -129,8 +129,10 @@ def signup():
         e.addError('contact_ok', 'Vous devez obligatoirement cocher cette case')
         raise e
 
-    departement_code = None
-    if 'email' in request.json and not is_pro_signup(request.json):
+    departement_code = '93'
+    if 'email' in request.json \
+       and not is_pro_signup(request.json) \
+       and not IS_INTEGRATION:
 
         authorized_emails, departement_codes = get_authorized_emails_and_dept_codes()
         try:
