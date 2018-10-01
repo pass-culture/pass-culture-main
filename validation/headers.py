@@ -1,4 +1,4 @@
-from utils.config import IS_DEV, API_URL
+from utils.config import API_URL, ENV
 
 
 def check_origin_header_validity(header, endpoint):
@@ -10,7 +10,7 @@ def check_origin_header_validity(header, endpoint):
 
 
 def _get_origin_header_whitelist():
-    if IS_DEV:
+    if ENV == 'development':
         return ['http://localhost:3000', 'https://localhost:3000', 'localhost:3000']
     return _get_origin_header_whitelist_for_non_dev_environments(API_URL)
 
@@ -20,7 +20,7 @@ def _get_endpoint_exceptions():
 
 
 def _get_origin_header_whitelist_for_non_dev_environments(api_url):
-    url_variations = [api_url, api_url.replace('http', 'https'), api_url.replace('http://', '')]
+    url_variations = [api_url, api_url.replace('https', 'http'), api_url.replace('https://', '')]
     valid_urls = []
     for url in url_variations:
         valid_urls.append(url.replace('backend', 'pro'))
