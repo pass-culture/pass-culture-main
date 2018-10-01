@@ -5,7 +5,10 @@ from pprint import pprint
 import traceback
 from flask import current_app as app
 
-from utils.storage_utils import do_list_content
+from utils.storage_utils import do_list_content,\
+    do_does_file_exist, \
+    do_delete_file,\
+    do_copy_prod_container_content_to_dest_container
 
 
 @app.manager.option('-c',
@@ -18,18 +21,46 @@ def list_content(container):
         print('ERROR: ' + str(e))
         traceback.print_tb(e.__traceback__)
         pprint(vars(e))
-#
-#
-# @app.manager.option('-n',
-#                     '--name',
-#                     help='Container name')
-# @app.manager.option('-f',
-#                     '--file',
-#                     help='File name')
-# def delete_file(container_name, file_name):
-#     try:
-#         delete_file(container_name, file_name)
-#     except Exception as e:
-#         print('ERROR: ' + str(e))
-#         traceback.print_tb(e.__traceback__)
-#         pprint(vars(e))
+
+
+@app.manager.option('-c',
+                    '--container',
+                    help='Container name')
+@app.manager.option('-f',
+                    '--file',
+                    help='File name')
+def does_file_exist(container, file):
+    try:
+        do_does_file_exist(container, file)
+    except Exception as e:
+        print('ERROR: ' + str(e))
+        traceback.print_tb(e.__traceback__)
+        pprint(vars(e))
+
+
+@app.manager.option('-c',
+                    '--container',
+                    help='Container name')
+@app.manager.option('-f',
+                    '--file',
+                    help='File name')
+def delete_file(container, file):
+    try:
+        do_delete_file(container, file)
+    except Exception as e:
+        print('ERROR: ' + str(e))
+        traceback.print_tb(e.__traceback__)
+        pprint(vars(e))
+
+
+@app.manager.option('-c',
+                    '--container',
+                    help='Container name')
+def copy_prod_container_content_to_dest_container(container):
+    try:
+        do_copy_prod_container_content_to_dest_container(container)
+    except Exception as e:
+        print('ERROR: ' + str(e))
+        traceback.print_tb(e.__traceback__)
+        pprint(vars(e))
+

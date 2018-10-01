@@ -1,12 +1,19 @@
 import os
-from pathlib import Path, PurePath
 import swiftclient
 
 
-def swift_con_ante_prod():
-    user = os.environ.get('OVH_USER')
-    key = os.environ.get('OVH_PASSWORD')
-    tenant_name = os.environ.get('OVH_TENANT_NAME')
+def swift_con(dest_container_name):
+    if dest_container_name == 'storage-pc-dev':
+        user = os.environ.get('OVH_USER_TESTING')
+        key = os.environ.get('OVH_PASSWORD_TESTING')
+        tenant_name = os.environ.get('OVH_TENANT_NAME_TESTING')
+    elif dest_container_name == 'storage-pc-staging':
+        user = os.environ.get('OVH_USER_STAGING')
+        key = os.environ.get('OVH_PASSWORD_STAGING')
+        tenant_name = os.environ.get('OVH_TENANT_NAME_STAGING')
+    else:
+        print('Ce conteneur ne semble pas exister')
+        return 1
 
     auth_url = 'https://auth.cloud.ovh.net/v2.0/'
     options = {
@@ -39,40 +46,40 @@ def swift_con_prod():
                                   auth_version=auth_version)
 
 
-def do_copy_src_container_content_to_dest_container(src_container_name, dest_container_name):
-    conn = swift_con_ante_prod()
+def do_copy_prod_container_content_to_dest_container(dest_container_name):
+    if dest_container_name == 'storage-pc-staging' or dest_container_name == 'storage-pc-dev':
+        conn = swift_con(dest_container_name)
+    else:
+        print('Ce conteneur ne semble pas exister')
+        return 1
 
-    for data in conn.get_container(src_container_name)[1]:
-        # IF DESTINATION CONTAINER DOES NOT CONTAIN OBJECT NAME, WE COPY IT
-        try:
-            print(data['name'])
-            conn.get_object(dest_container_name, data['name'])
-        except swiftclient.exceptions.ClientException:
-            obj_tuple = conn.get_object(src_container_name, data['name'])
-            conn.put_object(dest_container_name,
-                            data['name'],
-                            contents=obj_tuple[1],
-                            content_type=data['content_type'])
-            print("Object [" + data['name'] + "] copied")
+    src_container_name = os.environ.get('OVH_CONTAINER_NAME_PROD')
+    prod_conn = swift_con_prod()
+
+    for data in prod_conn.get_container(src_container_name)[1]:
+        obj_tuple = conn.get_object(src_container_name, data['name'])
+        conn.put_object(dest_container_name,
+                        data['name'],
+                        contents=obj_tuple[1],
+                        content_type=data['content_type'])
+        print("Object [" + data['name'] + "] copied")
 
     return 0
 
 
 # file_name format : "thumbs/venues/SM"
 def do_does_file_exist(container_name, file_name):
-    # container_name = os.environ.get('OVH_BUCKET_NAME')
-    conn = swift_con_ante_prod()
+    if container_name == 'storage-pc-staging' or container_name == 'storage-pc-dev':
+        conn = swift_con(container_name)
+    elif container_name == 'storage-pc':
+        conn = swift_con_prod()
+    else:
+        print('Ce conteneur ne semble pas exister')
+        return 1
 
     for data in conn.get_container(container_name)[1]:
         if data['name'] == file_name:
             print("File exist !")
-            obj_tuple = conn.get_object(container_name, file_name)
-            destination_file_name = file_name + "_copy"
-            conn.put_object(container_name,
-                            destination_file_name,
-                            contents=obj_tuple[1],
-                            content_type=data['content_type'])
-            print("File copied.")
             return 0
 
     print('File does not exist.')
@@ -80,15 +87,36 @@ def do_does_file_exist(container_name, file_name):
 
 
 def do_delete_file(container_name, file_name):
-    conn = swift_con_ante_prod()
-    conn.delete_object(container_name, file_name)
+    if container_name == 'storage-pc-staging' or container_name == 'storage-pc-dev':
+        conn = swift_con(container_name)
+    elif container_name == 'storage-pc':
+        conn = swift_con_prod()
+    else:
+        print('Ce conteneur ne semble pas exister')
+        return 1
+    try:
+        conn.delete_object(container_name, file_name)
+        print('File deleted with success !')
+    except swiftclient.ClientException as err:
+        print('File deletion failed.')
+        print(err)
 
 
 def do_list_content(container_name):
-    # container_name = os.environ.get('OVH_BUCKET_NAME')
-    conn = swift_con_ante_prod()
+    if container_name == 'storage-pc-dev':
+        conn = swift_con(container_name)
+        container_url_path = os.environ.get('OVH_URL_PATH_TESTING')
+    elif container_name == 'storage-pc-staging':
+        conn = swift_con(container_name)
+        container_url_path = os.environ.get('OVH_URL_PATH_STAGING')
+    elif container_name == 'storage-pc':
+        conn = swift_con_prod()
+        container_url_path = os.environ.get('OVH_URL_PATH_PROD')
+    else:
+        print('Ce conteneur ne semble pas exister')
+        return 1
 
     for data in conn.get_container(container_name)[1]:
-        print('{0}\t{1}\t{2}'.format(data['name'], data['bytes'], data['last_modified']))
+        print('{0}\t{1}\t{2}'.format(container_url_path + data['name'], data['bytes'], data['last_modified']))
 
     return 0
