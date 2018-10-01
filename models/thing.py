@@ -46,7 +46,7 @@ class ThingType(enum.Enum):
     'label': "Livre — Édition", 'offlineOnly': False, 'onlineOnly': False, 'sublabel': "Lire"
     }
     MUSEES_PATRIMOINE_ABO = {
-    'label': "Musées — Patrimoine (Abonnements)", 'offlineOnly': True, 'onlineOnly': False, 'sublabel': "Regarder"
+    'label': "Musées — Patrimoine (Abonnements, Visites libres)", 'offlineOnly': True, 'onlineOnly': False, 'sublabel': "Regarder"
     }
     MUSIQUE_ABO = {
     'label': "Musique (Abonnements concerts)", 'offlineOnly': True, 'onlineOnly': False, 'sublabel': "Écouter"

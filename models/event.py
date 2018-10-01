@@ -44,7 +44,7 @@ class EventType(Enum):
     'label': "Musique (Concerts, Festivals)", 'offlineOnly': True, 'onlineOnly': False, 'sublabel': "Écouter"
     }
     MUSEES_PATRIMOINE = {
-    'label': "Musées — Patrimoine (Expositions, Visites, Activités spécifiques)", 'offlineOnly': True, 'onlineOnly': False, 'sublabel': "Regarder"
+    'label': "Musées — Patrimoine (Expositions, Visites guidées, Activités spécifiques)", 'offlineOnly': True, 'onlineOnly': False, 'sublabel': "Regarder"
     }
     PRATIQUE_ARTISTIQUE = {
     'label': "Pratique Artistique (Stages ponctuels)", 'offlineOnly': True, 'onlineOnly': False, 'sublabel': "Pratiquer"
