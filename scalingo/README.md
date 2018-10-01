@@ -17,7 +17,7 @@ Si vous souhaitez créer une nouvelle clé :
 ## Création d'un nouvel environnement sur Scalingo :
 
 Utiliser le script `init_new_project.sh`
-Example d'appel : pour créer un projet à l'URL api.passculture-dev.beta.gouv.fr avec une base de donnée postgresql de type 1g 
+Example d'appel : pour créer un projet à l'URL api.passculture-dev.beta.gouv.fr avec une base de donnée postgresql de type 1g
 (https://scalingo.com/databases/postgresql) et 2 instances de backend.
 La commande déploiera ensuite la branche locale de votre dépôt Github.
 
@@ -52,3 +52,13 @@ Exemple d'appel du script (avec récupération de la production actuelle):
 
 `./restore_backup.sh -a pass-culture-api-dev -d $SCALINGO_POSTGRESQL_URL_STAGING -p $SCALINGO_PG_PASSWORD_STAGING -u $SCALINGO_PG_USER_STAGING -o`
 
+## Problème avec le deploy-backend
+
+Il est toujouts possible de TOUT rebooter, voici les étapes à faire.
+Aller sur scalingo sur l'application en question (pass-culture-api-staging par exemple) et:
+
+- aller dans Containers: scale le container à 0, cliquer sur SCALE
+- aller dans Addons: cliquer sur CHANGE de l'addon Postgres, et DELETE
+- re ajouter l'addon postgres
+- aller dans Deployments: descendre dans Github / Manual Deploy et choisir la branche correspondante (staging dans cet exemple), cliquer sur DEPLOY.
+- aller dand Containers: scale le container à 1, cliquer sur SCALE
