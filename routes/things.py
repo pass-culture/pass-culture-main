@@ -39,6 +39,8 @@ def post_thing():
     offer = Offer()
     offer.venueId = dehumanize(request.json['venueId'])
     offer.thing = thing
+    if thing.url:
+        thing.isNational = True
     PcObject.check_and_save(thing, offer)
     return jsonify(thing._asdict(
         include=THING_INCLUDES,
