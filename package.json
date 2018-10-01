@@ -36,6 +36,7 @@
     "postcss-flexbugs-fixes": "3.2.0",
     "postcss-loader": "2.0.8",
     "prop-types": "^15.6.2",
+    "query-string": "4.3.4",
     "raven-js": "^3.26.3",
     "re-reselect": "^2.1.0",
     "react": "^0.14||^15.5.4||^16.1.1",

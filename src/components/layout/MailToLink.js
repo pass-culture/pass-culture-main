@@ -1,14 +1,13 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-
-const toSearchString = (searchParams = {}) =>
-  Object.keys(searchParams)
-    .map(key => `${key}=${encodeURIComponent(searchParams[key])}`)
-    .join('&')
+import queryString from 'query-string'
 
 const createMailToLink = (email, headers) => {
   let link = `mailto:${email}`
-  if (headers) link = `${link}?${toSearchString(headers)}`
+  if (headers) {
+    const params = queryString.stringify(headers)
+    link = `${link}?${params}`
+  }
   return link
 }
 
@@ -16,6 +15,7 @@ class MailToLink extends React.PureComponent {
   handleClick = event => {
     event.preventDefault()
     const { email, headers } = this.props
+    // NOTE -> il doit y avoir un peu mieux, par exemple passer par l'API HTML5
     window.location.href = createMailToLink(email, headers)
   }
 
@@ -45,6 +45,7 @@ class MailToLink extends React.PureComponent {
 
 MailToLink.defaultProps = {
   className: '',
+  email: null,
   headers: {},
   obfuscate: false,
 }
@@ -52,7 +53,7 @@ MailToLink.defaultProps = {
 MailToLink.propTypes = {
   children: PropTypes.node.isRequired,
   className: PropTypes.string,
-  email: PropTypes.string.isRequired,
+  email: PropTypes.string,
   headers: PropTypes.object,
   obfuscate: PropTypes.bool,
 }

@@ -10,7 +10,7 @@ import { compose, bindActionCreators } from 'redux'
 
 import ShareButton from './share/ShareButton'
 import VersoBookingButton from './VersoBookingButton'
-import { isRecommendationFinished } from '../helpers'
+import { getShareURL, isRecommendationFinished } from '../helpers'
 import { selectBookings } from '../selectors/selectBookings'
 import currentRecommendationSelector from '../selectors/currentRecommendation'
 
@@ -53,6 +53,9 @@ class VersoControl extends React.PureComponent {
       user,
       // wallet,
     } = this.props
+
+    const shareURL = getShareURL(location, user)
+    const shareTitle = recommendation.offer.eventOrThing.name
     return (
       <ul className="verso-control">
         <li>
@@ -73,11 +76,7 @@ class VersoControl extends React.PureComponent {
           </button>
         </li>
         <li>
-          <ShareButton
-            user={user}
-            location={location}
-            recommendation={recommendation}
-          />
+          <ShareButton shareURL={shareURL} shareTitle={shareTitle} />
         </li>
         <li>
           <VersoBookingButton
