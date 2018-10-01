@@ -5,21 +5,22 @@ import {
   requestData,
   Spinner,
   withLogin,
-  withSearch,
+  withPagination,
 } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { compose } from 'redux'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
-import bookingsSelector from '../../selectors/bookings'
+
+import BookingItem from '../items/BookingItem'
 import HeroSection from '../layout/HeroSection'
+import Main from '../layout/Main'
+import bookingsSelector from '../../selectors/bookings'
 import offererSelector from '../../selectors/offerer'
 import offerersSelector from '../../selectors/offerers'
-import searchSelector from '../../selectors/search'
 import { bookingNormalizer, offererNormalizer } from '../../utils/normalizers'
-import BookingItem from '../items/BookingItem'
-import Main from '../layout/Main'
+import { mapApiToWindow, windowToApiQuery } from '../../utils/pagination'
 
 const TableSortableTh = ({ field, label, sort, action, style }) => (
   <th style={style}>
@@ -45,25 +46,48 @@ TableSortableTh.propTypes = {
 }
 
 class AccoutingPage extends Component {
+  onSubmit = event => {
+    const { pagination } = this.props
+
+    event.preventDefault()
+
+    const value = event.target.elements.search.value
+
+    pagination.change({
+      [mapApiToWindow.search]: value === '' ? null : value,
+    })
+  }
+
   fetchBookings(handleSuccess = () => {}, handleFail = () => {}) {
-    const { dispatch, goToNextSearchPage, offerer, querySearch } = this.props
-    offerer &&
-      dispatch(
-        requestData(
-          'GET',
-          `offerers/${get(offerer, 'id')}/bookings?${querySearch}`,
-          {
-            handleSuccess: (state, action) => {
-              handleSuccess(state, action)
-              goToNextSearchPage()
-            },
-            key: 'bookings',
-            handleFail,
-            normalizer: bookingNormalizer,
-            isMergingArray: false,
-          }
-        )
-      )
+    const { dispatch, pagination, offerer, search } = this.props
+    const { apiQueryString, goToNextPage, page } = pagination
+
+    if (!offerer) {
+      return
+    }
+
+    // BECAUSE THE INFINITE SCROLLER CALLS ONCE THIS FUNCTION
+    // BUT THEN PUSH THE SEARCH TO PAGE + 1
+    // WE PASS AGAIN HERE FOR THE SAME PAGE
+    // SO WE NEED TO PREVENT A SECOND CALL
+    // (can be ameliorated late)
+    if (page !== 1 && search.page && page === Number(search.page)) {
+      return
+    }
+
+    const path = `offerers/${get(offerer, 'id')}/bookings?${apiQueryString}`
+
+    dispatch(
+      requestData('GET', path, {
+        handleSuccess: (state, action) => {
+          handleSuccess(state, action)
+          goToNextPage()
+        },
+        key: 'bookings',
+        handleFail,
+        normalizer: bookingNormalizer,
+      })
+    )
   }
 
   fetchOfferers(handleSuccess = () => {}, handleFail = () => {}) {
@@ -79,30 +103,38 @@ class AccoutingPage extends Component {
     )
   }
 
-  handleOffererFilter() {}
-
   handleDataRequest = (handleSuccess, handleFail) => {
     this.fetchOfferers(handleSuccess, handleFail)
   }
 
-  handleSortChange(field, currentSort) {
+  handleLoadMore = (handleSuccess, handleFail) => {
+    this.handleDataRequest(handleSuccess, handleFail)
+    const { history, location, pagination } = this.props
+    const { windowQueryString, page } = pagination
+
+    const to = `${location.pathname}?page=${page}&${windowQueryString}`
+
+    history.push(to)
+  }
+
+  handleSortChange = (field, currentSort) => {
     let dir = currentSort.dir || 'asc'
     if (currentSort.field === field) {
       dir = dir === 'asc' ? 'desc' : 'asc'
     }
 
-    this.props.handleQueryParamsChange({ order_by: [field, dir].join('+') })
+    this.props.pagination.change({ orderBy: [field, dir].join('+') })
   }
 
   componentDidUpdate(prevProps) {
-    const { handleQueryParamsChange, queryParams, offerers } = this.props
-    const structure = get(queryParams, 'structure')
+    const { offerers, pagination } = this.props
+    const offererId = get(pagination.windowQuery, mapApiToWindow.offererId)
     if (
-      !structure &&
+      !offererId &&
       offerers !== prevProps.offerers &&
       get(offerers, 'length')
     ) {
-      handleQueryParamsChange({ structure: offerers[0].id })
+      pagination.change({ [mapApiToWindow.offererId]: offerers[0].id })
     }
   }
 
@@ -121,27 +153,19 @@ class AccoutingPage extends Component {
   }
 
   render() {
-    const {
-      handleOrderByChange,
-      handleOrderDirectionChange,
-      handleSearchChange,
-      handleQueryParamsChange,
-      bookings,
-      offerer,
-      offerers,
-      queryParams,
-    } = this.props
+    const { bookings, offerer, offerers, pagination } = this.props
+    const { windowQuery } = pagination
 
-    const { order_by } = queryParams || {}
-    const [orderBy, orderDirection] = (order_by || '').split('+')
+    const { orderBy } = windowQuery || {}
+    const [orderName, orderDirection] = (orderBy || '').split('+')
 
     // Inject sort and action once for all
     const Th = ({ field, label, style }) => (
       <TableSortableTh
         field={field}
         label={label}
-        sort={{ field: orderBy, dir: orderDirection }}
-        action={this.handleSortChange.bind(this)}
+        sort={{ field: orderName, dir: orderDirection }}
+        action={this.handleSortChange}
         style={style}
       />
     )
@@ -154,7 +178,7 @@ class AccoutingPage extends Component {
         <HeroSection
           subtitle="Suivez vos réservations et vos remboursements."
           title="Comptabilité">
-          <form className="section" onSubmit={handleSearchChange} />
+          <form className="section" onSubmit={this.onSubmit} />
           <div className="section">
             <div className="list-header">
               {offerer && (
@@ -163,8 +187,8 @@ class AccoutingPage extends Component {
                   <span className="select is-rounded is-small">
                     <select
                       onChange={event =>
-                        handleQueryParamsChange({
-                          structure: event.target.value,
+                        pagination.change({
+                          [mapApiToWindow.offererId]: event.target.value,
                         })
                       }
                       className=""
@@ -231,7 +255,7 @@ class AccoutingPage extends Component {
               <InfiniteScroller
                 Tag="tbody"
                 className="offers-list main-list"
-                handleLoadMore={this.handleDataRequest}
+                handleLoadMore={this.handleLoadMore}
                 renderLoading={() => (
                   <tr>
                     <Spinner
@@ -258,12 +282,15 @@ class AccoutingPage extends Component {
 }
 
 const mapStateToProps = (state, ownProps) => {
-  const offerers = offerersSelector(state)
+  const offererId = get(
+    ownProps,
+    `pagination.windowQuery.${mapApiToWindow.offererId}`
+  )
+
   return {
     bookings: bookingsSelector(state),
-    offerer: offererSelector(state, get(ownProps.queryParams, 'structure')),
-    offerers,
-    queryParams: ownProps.queryParams,
+    offerer: offererSelector(state, offererId),
+    offerers: offerersSelector(state),
     user: state.user,
   }
 }
@@ -271,13 +298,15 @@ const mapStateToProps = (state, ownProps) => {
 export default compose(
   withLogin({ failRedirect: '/connexion' }),
   withRouter,
-  withSearch({
+  withPagination({
     dataKey: 'bookings',
-    defaultQueryParams: {
-      search: undefined,
-      order_by: `booking.%22dataModified%22+desc`,
-      structure: null,
+    defaultWindowQuery: {
+      [mapApiToWindow.offererId]: null,
+      [mapApiToWindow.search]: null,
+      [mapApiToWindow.venueId]: null,
+      orderBy: 'booking.id+desc',
     },
+    windowToApiQuery,
   }),
   connect(mapStateToProps)
 )(AccoutingPage)
