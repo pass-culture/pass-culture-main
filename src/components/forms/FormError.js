@@ -10,11 +10,7 @@ import PropTypes from 'prop-types'
 // Documentation: https://reactjs.org/docs/lists-and-keys.html#keys
 const setDangerousArrayKeyIndex = index => `field_error_${index}`
 
-/* azertyazertyP0 */
 export const FormError = ({ className, customMessage, meta, theme }) => {
-  // TODO -> faudra scinder le composant en deux
-  // un composant pour les erreurs de form
-  // un composant pour les erreurs de fields
   const showError =
     customMessage ||
     (meta &&
