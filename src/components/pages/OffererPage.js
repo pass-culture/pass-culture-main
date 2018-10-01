@@ -104,6 +104,22 @@ class OffererPage extends Component {
               readOnly
               required
             />
+            <Field
+              className={classnames({ 'is-invisible': hasOffererName })}
+              isExpanded
+              label="BIC"
+              name="bic"
+              type="bic"
+              required
+            />
+            <Field
+              className={classnames({ 'is-invisible': hasOffererName })}
+              isExpanded
+              label="IBAN"
+              name="iban"
+              type="iban"
+              required
+            />
           </div>
 
           {!get(offerer, 'id') ? (
@@ -130,7 +146,9 @@ class OffererPage extends Component {
             <div className="section">
               <h2 className="main-list-title">LIEUX</h2>
               <ul className="main-list venues-list">
-                {venues.map(v => <VenueItem key={v.id} venue={v} />)}
+                {venues.map(v => (
+                  <VenueItem key={v.id} venue={v} />
+                ))}
               </ul>
               <div className="has-text-centered">
                 <NavLink
