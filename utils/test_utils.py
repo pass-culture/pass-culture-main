@@ -165,8 +165,9 @@ MOCKED_SIREN_ENTREPRISES_API_RETURN = {
 ONE_PIXEL_PNG = b'\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01\x01\x03\x00\x00\x00%\xdbV\xca\x00\x00\x00\x03PLTE`\x00\x86\xebv\xd0\xef\x00\x00\x00\x01tRNS\xcc\xd24V\xfd\x00\x00\x00\nIDATx\x9ccb\x00\x00\x00\x06\x00\x0367|\xa8\x00\x00\x00\x00IEND\xaeB`\x82'
 
 
-def req_with_auth(email=None, password=None):
+def req_with_auth(email=None, password=None, headers={'origin': 'http://localhost:3000'}):
     request = req.Session()
+    request.headers = headers
     if email is None:
         request.auth = ('pctest.admin@btmx.fr', 'pctestadmin')
     elif password is not None:

@@ -3,86 +3,132 @@ from unittest.mock import patch
 from validation.headers import check_header_validity
 
 
-def test_is_valid_header_when_is_dev_and_header_is_local_host():
+def test_is_valid_header_when_is_dev_and_header_is_local_host_for_normal_endpoint():
     # Given
-    header = 'localhost'
+    header_origin = 'http://localhost:3000'
+    endpoint = 'list_offers'
 
 
     # When
     with patch('validation.headers.IS_DEV', True):
-        is_valid_header = check_header_validity(header)
+        is_valid_header = check_header_validity(header_origin, endpoint)
 
     # Then
     assert is_valid_header
 
 
-def test_is_not_valid_header_when_is_staging_and_header_is_local_host():
+def test_is_not_valid_header_when_is_staging_and_header_is_local_host_for_normal_endpoint():
     # Given
-    header = 'localhost'
+    header_origin = 'http://localhost:3000'
+    endpoint = 'list_offers'
 
     # When
     with patch('validation.headers.IS_STAGING', True), patch('validation.headers.IS_DEV', False):
-        is_valid_header = check_header_validity(header)
+        is_valid_header = check_header_validity(header_origin, endpoint)
 
     # Then
     assert not is_valid_header
 
 
-def test_is_valid_header_when_is_staging_and_header_is_pro_passculture_staging():
+def test_is_valid_header_when_header_not_in_whitelist_for_exception_endpoint():
     # Given
-    header = 'pro.passculture-staging.beta.gouv.fr'
+    header_origin = 'http://random.url.com'
+    endpoint = 'patch_booking_by_token'
 
     # When
     with patch('validation.headers.IS_STAGING', True), patch('validation.headers.IS_DEV', False):
-        is_valid_header = check_header_validity(header)
+        is_valid_header = check_header_validity(header_origin, endpoint)
 
     # Then
     assert is_valid_header
 
 
-def test_is_valid_header_when_is_staging_and_header_is_app_passculture_staging():
+def test_is_valid_header_when_is_staging_and_header_is_pro_passculture_staging_for_normal_endpoint():
     # Given
-    header = 'app.passculture-staging.beta.gouv.fr'
+    header_origin = 'http://pro.passculture-staging.beta.gouv.fr'
+    endpoint = 'list_offers'
 
     # When
     with patch('validation.headers.IS_STAGING', True), patch('validation.headers.IS_DEV', False):
-        is_valid_header = check_header_validity(header)
+        is_valid_header = check_header_validity(header_origin, endpoint)
 
     # Then
     assert is_valid_header
 
 
-def test_is_not_valid_header_when_not_staging_not_dev_and_header_is_app_passculture_staging():
+def test_is_valid_header_when_is_staging_and_header_is_app_passculture_staging_for_normal_endpoint():
     # Given
-    header = 'app.passculture-staging.beta.gouv.fr'
+    header_origin = 'http://app.passculture-staging.beta.gouv.fr'
+    endpoint = 'list_offers'
+
+    # When
+    with patch('validation.headers.IS_STAGING', True), patch('validation.headers.IS_DEV', False):
+        is_valid_header = check_header_validity(header_origin, endpoint)
+
+    # Then
+    assert is_valid_header
+
+
+def test_is_not_valid_header_when_not_staging_not_dev_and_header_is_app_passculture_staging_for_normal_endpoint():
+    # Given
+    header_origin = 'http://app.passculture-staging.beta.gouv.fr'
+    endpoint = 'list_offers'
 
     # When
     with patch('validation.headers.IS_STAGING', False), patch('validation.headers.IS_DEV', False):
-        is_valid_header = check_header_validity(header)
+        is_valid_header = check_header_validity(header_origin, endpoint)
 
     # Then
     assert not is_valid_header
 
 
-def test_not_valid_header_when_not_staging_not_dev_and_header_is_app_passculture():
+def test_is_valid_header_when_not_staging_not_dev_for_exception_endpoint_and_exception_endpoint():
     # Given
-    header = 'app.passculture.beta.gouv.fr'
+    header_origin = 'http://random.url.fr'
+    endpoint = 'patch_booking_by_token'
 
     # When
     with patch('validation.headers.IS_STAGING', False), patch('validation.headers.IS_DEV', False):
-        is_valid_header = check_header_validity(header)
+        is_valid_header = check_header_validity(header_origin, endpoint)
 
     # Then
     assert is_valid_header
 
 
-def test_not_valid_header_when_not_staging_not_dev_and_header_is_pro_passculture():
+def test_is_valid_header_when_not_staging_not_dev_and_header_is_app_passculture_for_normal_endpoint():
     # Given
-    header = 'pro.passculture.beta.gouv.fr'
+    header_origin = 'http://app.passculture.beta.gouv.fr'
+    endpoint = 'list_offers'
 
     # When
     with patch('validation.headers.IS_STAGING', False), patch('validation.headers.IS_DEV', False):
-        is_valid_header = check_header_validity(header)
+        is_valid_header = check_header_validity(header_origin, endpoint)
+
+    # Then
+    assert is_valid_header
+
+
+def test_not_valid_header_when_not_staging_not_dev_and_header_is_pro_passculture_for_normal_endpoint():
+    # Given
+    header_origin = 'http://pro.passculture.beta.gouv.fr'
+    endpoint = 'list_offers'
+
+    # When
+    with patch('validation.headers.IS_STAGING', False), patch('validation.headers.IS_DEV', False):
+        is_valid_header = check_header_validity(header_origin, endpoint)
+
+    # Then
+    assert is_valid_header
+
+
+def test_is_valid_header_when_not_staging_not_dev_and_header_is_pro_passculture_for_exception_endpoint():
+    # Given
+    header_origin = 'http://random.url.frv'
+    endpoint = 'patch_booking_by_token'
+
+    # When
+    with patch('validation.headers.IS_STAGING', False), patch('validation.headers.IS_DEV', False):
+        is_valid_header = check_header_validity(header_origin, endpoint)
 
     # Then
     assert is_valid_header

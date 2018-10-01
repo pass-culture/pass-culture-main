@@ -675,8 +675,9 @@ def test_get_booking_by_token_when_not_logged_in_and_doesnt_give_email(app):
 
     PcObject.check_and_save(admin_user, booking, event_occurrence)
 
+    url = API_URL + '/bookings/token/{}'.format(booking.token)
     # When
-    response = req.get(API_URL + '/bookings/token/{}'.format(booking.token))
+    response = req.get(url, headers={'origin': 'http://localhost:3000'})
     # Then
     assert response.status_code == 400
     error_message = response.json()
@@ -699,8 +700,9 @@ def test_get_booking_by_token_when_user_does_not_have_rights_in_and_give_right_e
 
     PcObject.check_and_save(admin_user, booking, event_occurrence)
 
+    url = API_URL + '/bookings/token/{}?email={}'.format(booking.token, 'user@email.fr')
     # When
-    response = req.get(API_URL + '/bookings/token/{}?email={}'.format(booking.token, 'user@email.fr'))
+    response = req.get(url, headers={'origin': 'http://localhost:3000'})
     # Then
     assert response.status_code == 204
 
@@ -719,10 +721,10 @@ def test_get_booking_by_token_when_not_logged_in_and_give_right_email_and_offer_
     booking = create_booking(user, stock)
 
     PcObject.check_and_save(admin_user, booking, event_occurrence)
+    url = API_URL + '/bookings/token/{}?email={}&offer_id={}'.format(booking.token, 'user@email.fr', humanize(offer.id))
 
     # When
-    response = req.get(
-        API_URL + '/bookings/token/{}?email={}&offer_id={}'.format(booking.token, 'user@email.fr', humanize(offer.id)))
+    response = req.get(url, headers={'origin': 'http://localhost:3000'})
     # Then
     assert response.status_code == 204
 
@@ -739,10 +741,11 @@ def test_get_booking_by_token_when_not_logged_in_and_give_right_email_and_offer_
     booking = create_booking(user, stock)
 
     PcObject.check_and_save(admin_user, booking)
+    url = API_URL + '/bookings/token/{}?email={}&offer_id={}'.format(booking.token, 'user@email.fr',
+                                                                     humanize(stock.offerId))
 
     # When
-    response = req.get(API_URL + '/bookings/token/{}?email={}&offer_id={}'.format(booking.token, 'user@email.fr',
-                                                                                  humanize(stock.offerId)))
+    response = req.get(url, headers={'origin': 'http://localhost:3000'})
     # Then
     assert response.status_code == 204
 
@@ -759,10 +762,10 @@ def test_validate_get_booking_by_token_when_not_logged_in_and_give_right_email_a
     booking = create_booking(user, stock)
 
     PcObject.check_and_save(admin_user, booking)
+    url = API_URL + '/bookings/token/{}?email={}&offer_id={}'.format(booking.token, 'user@email.fr', humanize(123))
 
     # When
-    response = req.get(
-        API_URL + '/bookings/token/{}?email={}&offer_id={}'.format(booking.token, 'user@email.fr', humanize(123)))
+    response = req.get(url, headers={'origin': 'http://localhost:3000'})
     # Then
     assert response.status_code == 404
     assert response.json()['global'] == ["Cette contremarque n'a pas été trouvée"]
@@ -784,8 +787,8 @@ def test_get_booking_by_token_when_not_logged_in_but_wrong_email(app):
     PcObject.check_and_save(admin_user, booking, event_occurrence)
 
     # When
-    response = req_with_auth('admin@email.fr', 'P@55w0rd').get(
-        API_URL + '/bookings/token/{}?email={}'.format(booking.token, 'toto@email.fr'))
+    url = API_URL + '/bookings/token/{}?email={}'.format(booking.token, 'toto@email.fr')
+    response = req_with_auth('admin@email.fr', 'P@55w0rd').get(url)
     # Then
     assert response.status_code == 404
     assert response.json()['global'] == ["Cette contremarque n'a pas été trouvée"]
@@ -802,11 +805,11 @@ class PatchBookingAsAnonymousUserTest:
         stock = create_stock_with_event_offer(offerer, venue, price=0)
         booking = create_booking(user, stock)
         PcObject.check_and_save(booking)
+        url = API_URL + '/bookings/token/{}?email={}&offer_id={}'.format(booking.token, user.email,
+                                                                         humanize(stock.resolvedOffer.id))
 
         # When
-        response = req.patch(
-            API_URL + '/bookings/token/{}?email={}&offer_id={}'.format(booking.token, user.email,
-                                                                       humanize(stock.resolvedOffer.id)))
+        response = req.patch(url, headers={'origin': 'http://localhost:3000'})
 
         # Then
         assert response.status_code == 204
@@ -822,10 +825,10 @@ class PatchBookingAsAnonymousUserTest:
         stock = create_stock_with_event_offer(offerer, venue, price=0)
         booking = create_booking(user, stock)
         PcObject.check_and_save(booking)
+        url = API_URL + '/bookings/token/{}?&offer_id={}'.format(booking.token, humanize(stock.resolvedOffer.id))
 
         # When
-        response = req.patch(
-            API_URL + '/bookings/token/{}?&offer_id={}'.format(booking.token, humanize(stock.resolvedOffer.id)))
+        response = req.patch(url, headers={'origin': 'http://localhost:3000'})
 
         # Then
         assert response.status_code == 400
@@ -841,10 +844,10 @@ class PatchBookingAsAnonymousUserTest:
         stock = create_stock_with_event_offer(offerer, venue, price=0)
         booking = create_booking(user, stock)
         PcObject.check_and_save(booking)
+        url = API_URL + '/bookings/token/{}?email={}'.format(booking.token, user.email)
 
         # When
-        response = req.patch(
-            API_URL + '/bookings/token/{}?email={}'.format(booking.token, user.email))
+        response = req.patch(url, headers={'origin': 'http://localhost:3000'})
 
         # Then
         assert response.status_code == 400
@@ -859,10 +862,10 @@ class PatchBookingAsAnonymousUserTest:
         stock = create_stock_with_event_offer(offerer, venue, price=0)
         booking = create_booking(user, stock)
         PcObject.check_and_save(booking)
+        url = API_URL + '/bookings/token/{}'.format(booking.token, user.email)
 
         # When
-        response = req.patch(
-            API_URL + '/bookings/token/{}'.format(booking.token, user.email))
+        response = req.patch(url, headers={'origin': 'http://localhost:3000'})
 
         # Then
         assert response.status_code == 400
@@ -879,11 +882,11 @@ class PatchBookingAsAnonymousUserTest:
         stock = create_stock_with_event_offer(offerer, venue, price=0)
         booking = create_booking(user, stock)
         PcObject.check_and_save(booking)
+        url = API_URL + '/bookings/token/{}?email={}&offer_id={}'.format(booking.token, 'wrong.email@test.com',
+                                                                         humanize(stock.resolvedOffer.id))
 
         # When
-        response = req.patch(
-            API_URL + '/bookings/token/{}?email={}&offer_id={}'.format(booking.token, 'wrong.email@test.com',
-                                                                       humanize(stock.resolvedOffer.id)))
+        response = req.patch(url, headers={'origin': 'http://localhost:3000'})
 
         # Then
         assert response.status_code == 404
@@ -903,10 +906,34 @@ class PatchBookingAsLoggedInUserTest:
         stock = create_stock_with_event_offer(offerer, venue, price=0)
         booking = create_booking(user, stock)
         PcObject.check_and_save(booking, user_offerer)
+        url = API_URL + '/bookings/token/{}'.format(booking.token)
 
         # When
-        response = req_with_auth('admin@email.fr', 'P@55w0rd').patch(
-            API_URL + '/bookings/token/{}'.format(booking.token))
+        response = req_with_auth('admin@email.fr', 'P@55w0rd').patch(url)
+
+        # Then
+        assert response.status_code == 204
+        db.session.refresh(booking)
+        assert booking.isUsed == True
+
+
+@pytest.mark.standalone
+class PatchBookingAsLoggedInUserTest:
+    @clean_database
+    def test_patch_booking_by_token_with_random_header_should_work(self, app):
+        # Given
+        user = create_user()
+        admin_user = create_user(email='admin@email.fr', password='P@55w0rd')
+        offerer = create_offerer()
+        user_offerer = create_user_offerer(admin_user, offerer)
+        venue = create_venue(offerer)
+        stock = create_stock_with_event_offer(offerer, venue, price=0)
+        booking = create_booking(user, stock)
+        PcObject.check_and_save(booking, user_offerer)
+        url = API_URL + '/bookings/token/{}'.format(booking.token)
+
+        # When
+        response = req_with_auth('admin@email.fr', 'P@55w0rd', headers={'origin': 'http://random_header.fr'}).patch(url)
 
         # Then
         assert response.status_code == 204
@@ -923,10 +950,10 @@ class PatchBookingAsLoggedInUserTest:
         stock = create_stock_with_event_offer(offerer, venue, price=0)
         booking = create_booking(user, stock)
         PcObject.check_and_save(booking, admin_user)
+        url = API_URL + '/bookings/token/{}?email={}'.format(booking.token, user.email)
 
         # When
-        response = req_with_auth('admin@email.fr', 'P@55w0rd').patch(
-            API_URL + '/bookings/token/{}?email={}'.format(booking.token, user.email))
+        response = req_with_auth('admin@email.fr', 'P@55w0rd').patch(url)
 
         # Then
         assert response.status_code == 403
@@ -944,10 +971,10 @@ class PatchBookingAsLoggedInUserTest:
         stock = create_stock_with_event_offer(offerer, venue, price=0)
         booking = create_booking(user, stock)
         PcObject.check_and_save(booking, admin_user)
+        url = API_URL + '/bookings/token/{}?email={}'.format(booking.token, 'wrong@email.fr')
 
         # When
-        response = req_with_auth('admin@email.fr', 'P@55w0rd').patch(
-            API_URL + '/bookings/token/{}?email={}'.format(booking.token, 'wrong@email.fr'))
+        response = req_with_auth('admin@email.fr', 'P@55w0rd').patch(url)
 
         # Then
         assert response.status_code == 404
@@ -964,10 +991,10 @@ class PatchBookingAsLoggedInUserTest:
         stock = create_stock_with_event_offer(offerer, venue, price=0)
         booking = create_booking(user, stock)
         PcObject.check_and_save(booking, admin_user)
+        url = API_URL + '/bookings/token/{}?email={}&offer_id={}'.format(booking.token, user.email, humanize(123))
 
         # When
-        response = req_with_auth('admin@email.fr', 'P@55w0rd').patch(
-            API_URL + '/bookings/token/{}?email={}&offer_id={}'.format(booking.token, user.email, humanize(123)))
+        response = req_with_auth('admin@email.fr', 'P@55w0rd').patch(url)
 
         # Then
         assert response.status_code == 404
@@ -986,10 +1013,10 @@ class PatchBookingAsLoggedInUserTest:
         booking = create_booking(user, stock)
         booking.isCancelled = True
         PcObject.check_and_save(booking, user_offerer)
+        url = API_URL + '/bookings/token/{}'.format(booking.token)
 
         # When
-        response = req_with_auth('admin@email.fr', 'P@55w0rd').patch(
-            API_URL + '/bookings/token/{}'.format(booking.token))
+        response = req_with_auth('admin@email.fr', 'P@55w0rd').patch(url)
 
         # Then
         assert response.status_code == 410
@@ -1009,10 +1036,10 @@ class PatchBookingAsLoggedInUserTest:
         booking = create_booking(user, stock)
         booking.isUsed = True
         PcObject.check_and_save(booking, user_offerer)
+        url = API_URL + '/bookings/token/{}'.format(booking.token)
 
         # When
-        response = req_with_auth('admin@email.fr', 'P@55w0rd').patch(
-            API_URL + '/bookings/token/{}'.format(booking.token))
+        response = req_with_auth('admin@email.fr', 'P@55w0rd').patch(url)
 
         # Then
         assert response.status_code == 410
@@ -1030,10 +1057,11 @@ def test_cannot_cancel_used_booking(app):
     deposit = create_deposit(user, deposit_date, amount=500)
     booking = create_booking(user, is_used=True)
     PcObject.check_and_save(user, deposit, booking)
+    url = API_URL + '/bookings/' + humanize(booking.id)
 
     # When
     response = req_with_auth(user.email, user.clearTextPassword) \
-        .delete(API_URL + '/bookings/' + humanize(booking.id))
+        .delete(url)
 
     # Then
     assert response.status_code == 400

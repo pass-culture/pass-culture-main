@@ -8,7 +8,6 @@ from domain.user_emails import send_booking_recap_emails, \
 from models import ApiErrors, Booking, PcObject, Stock, RightsType
 from models.pc_object import serialize
 from repository import booking_queries
-from routes.before_request import validate_any_header
 from utils.human_ids import dehumanize, humanize
 from utils.includes import BOOKING_INCLUDES
 from utils.mailing import MailServiceException
@@ -118,7 +117,6 @@ def cancel_booking(booking_id):
     return jsonify(booking._asdict(include=BOOKING_INCLUDES)), 200
 
 
-@validate_any_header
 @app.route('/bookings/token/<token>', methods=["GET"])
 def get_booking_by_token(token):
     email = request.args.get('email', None)
@@ -145,7 +143,6 @@ def get_booking_by_token(token):
     return '', 204
 
 
-@validate_any_header
 @app.route('/bookings/token/<token>', methods=["PATCH"])
 def patch_booking_by_token(token):
     email = request.args.get('email', None)

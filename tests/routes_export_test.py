@@ -53,9 +53,10 @@ def test_get_users_per_department_returns_the_user_count_by_department_code_as_c
     user6 = create_user(departement_code='93', email='user1@test.com', date_created=datetime(2018, 2, 1))
 
     PcObject.check_and_save(user1, user2, user3, user4, user5, user6)
+    url = API_URL + '/exports/users_stats?token=%s&date_intervall=%s' % (TOKEN, 'year')
 
     # when
-    response = requests.get(API_URL + '/exports/users_stats?token=%s&date_intervall=%s' % (TOKEN, 'year'))
+    response = requests.get(url, headers={'origin': 'http://localhost:3000'})
 
     # then
     assert response.status_code == 200
@@ -68,7 +69,7 @@ def test_get_users_per_department_returns_the_user_count_by_department_code_as_c
 @clean_database
 def test_get_users_per_department_returns_bad_request_if_no_token_provided(app):
     # when
-    response = requests.get(API_URL + '/exports/users')
+    response = requests.get(API_URL + '/exports/users', headers={'origin': 'http://localhost:3000'})
 
     # then
     assert response.status_code == 400

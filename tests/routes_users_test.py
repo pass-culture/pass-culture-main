@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 from unittest.mock import patch
 
 import pytest
+import requests
 
 from domain.password import RESET_PASSWORD_TOKEN_LENGTH
 from models import PcObject
@@ -41,7 +42,7 @@ BASE_DATA_PRO = {
 
 def assert_signup_error(data, err_field):
     r_signup = req.post(API_URL + '/users/signup',
-                        json=data)
+                        json=data, headers={'origin': 'h:''http://localhost:3000'})
     assert r_signup.status_code == 400
     error = r_signup.json()
     assert err_field in error
@@ -56,7 +57,7 @@ def test_signup_should_not_work_without_email(app):
 
     # When
     r_signup = req.post(API_URL + '/users/signup',
-                        json=data)
+                        json=data, headers={'origin': 'http://localhost:3000'})
 
     # Then
     assert r_signup.status_code == 400
@@ -73,7 +74,7 @@ def test_signup_should_not_work_with_invalid_email(app):
 
     # When
     r_signup = req.post(API_URL + '/users/signup',
-                        json=data)
+                        json=data, headers={'origin': 'http://localhost:3000'})
 
     # Then
     assert r_signup.status_code == 400
@@ -89,7 +90,7 @@ def test_signup_should_not_work_without_publicName():
 
     # When
     r_signup = req.post(API_URL + '/users/signup',
-                        json=data)
+                        json=data, headers={'origin': 'http://localhost:3000'})
 
     # Then
     assert r_signup.status_code == 400
@@ -105,7 +106,7 @@ def test_signup_should_not_work_with_publicName_too_short():
 
     # When
     r_signup = req.post(API_URL + '/users/signup',
-                        json=data)
+                        json=data, headers={'origin': 'http://localhost:3000'})
 
     # Then
     assert r_signup.status_code == 400
@@ -121,7 +122,7 @@ def test_signup_should_not_work_with_publicName_too_long():
 
     # When
     r_signup = req.post(API_URL + '/users/signup',
-                        json=data)
+                        json=data, headers={'origin': 'http://localhost:3000'})
 
     # Then
     assert r_signup.status_code == 400
@@ -137,7 +138,7 @@ def test_signup_should_not_work_without_password():
 
     # When
     r_signup = req.post(API_URL + '/users/signup',
-                        json=data)
+                        json=data, headers={'origin': 'http://localhost:3000'})
 
     # Then
     assert r_signup.status_code == 400
@@ -153,7 +154,7 @@ def test_signup_should_not_work_with_invalid_password():
 
     # When
     r_signup = req.post(API_URL + '/users/signup',
-                        json=data)
+                        json=data, headers={'origin': 'http://localhost:3000'})
 
     # Then
     assert r_signup.status_code == 400
@@ -168,7 +169,7 @@ def test_signup_should_not_work_without_contact_ok():
 
     # When
     r_signup = req.post(API_URL + '/users/signup',
-                        json=data)
+                        json=data, headers={'origin': 'http://localhost:3000'})
 
     # Then
     assert r_signup.status_code == 400
@@ -183,7 +184,7 @@ def test_signup_should_not_work_with_invalid_contact_ok():
 
     # When
     r_signup = req.post(API_URL + '/users/signup',
-                        json=data)
+                        json=data, headers={'origin': 'http://localhost:3000'})
 
     # Then
     assert r_signup.status_code == 400
@@ -195,7 +196,7 @@ def test_signup_should_not_work_with_invalid_contact_ok():
 @clean_database
 def test_signup_is_successful(app):
     r_signup = req.post(API_URL + '/users/signup',
-                        json=BASE_DATA)
+                        json=BASE_DATA, headers={'origin': 'http://localhost:3000'})
     assert r_signup.status_code == 201
     assert 'Set-Cookie' in r_signup.headers
 
@@ -204,11 +205,11 @@ def test_signup_is_successful(app):
 @clean_database
 def test_signup_should_not_work_again_with_same_email(app):
     req.post(API_URL + '/users/signup',
-             json=BASE_DATA)
+             json=BASE_DATA, headers={'origin': 'http://localhost:3000'})
 
     # When
     r_signup = req.post(API_URL + '/users/signup',
-                        json=BASE_DATA)
+                        json=BASE_DATA, headers={'origin': 'http://localhost:3000'})
 
     # Then
     assert r_signup.status_code == 400
@@ -218,7 +219,7 @@ def test_signup_should_not_work_again_with_same_email(app):
 
 @pytest.mark.standalone
 def test_get_profile_should_work_only_when_logged_in():
-    r = req.get(API_URL + '/users/current')
+    r = req.get(API_URL + '/users/current', headers={'origin': 'http://localhost:3000'})
     assert r.status_code == 401
 
 
@@ -227,9 +228,8 @@ def test_get_profile_should_work_only_when_logged_in():
 def test_get_profile_should_return_the_users_profile_without_password_hash(app):
     user = create_user(public_name='Toto', departement_code='93', email='toto@btmx.fr', password='toto12345678')
     PcObject.check_and_save(user)
-    r = req_with_auth(email='toto@btmx.fr',
-                      password='toto12345678') \
-        .get(API_URL + '/users/current')
+    r = req_with_auth(email='toto@btmx.fr', password='toto12345678') \
+        .get(API_URL + '/users/current', headers={'origin': 'http://localhost:3000'})
     user_json = r.json()
     assert r.status_code == 200
     assert user_json['email'] == 'toto@btmx.fr'
@@ -247,7 +247,7 @@ def test_signup_should_not_work_for_user_not_in_exp_spreadsheet(get_authorized_e
 
     # When
     r_signup = req.post(API_URL + '/users/signup',
-                        json=data)
+                        json=data, headers={'origin': 'http://localhost:3000'})
 
     # Then
     assert r_signup.status_code == 400
@@ -271,7 +271,7 @@ def test_pro_signup_should_not_work_without_offerer_name(app):
 
     # When
     r_signup = req.post(API_URL + '/users/signup',
-                        json=data)
+                        json=data, headers={'origin': 'http://localhost:3000'})
 
     # Then
     assert r_signup.status_code == 400
@@ -286,7 +286,7 @@ def test_pro_signup_should_not_work_without_offerer_address():
 
     # When
     r_signup = req.post(API_URL + '/users/signup',
-                        json=data)
+                        json=data, headers={'origin': 'http://localhost:3000'})
 
     # Then
     assert r_signup.status_code == 400
@@ -301,7 +301,7 @@ def test_pro_signup_should_not_work_without_offerer_city():
 
     # When
     r_signup = req.post(API_URL + '/users/signup',
-                        json=data)
+                        json=data, headers={'origin': 'http://localhost:3000'})
 
     # Then
     assert r_signup.status_code == 400
@@ -316,7 +316,7 @@ def test_pro_signup_should_not_work_without_offerer_postal_code():
 
     # When
     r_signup = req.post(API_URL + '/users/signup',
-                        json=data)
+                        json=data, headers={'origin': 'http://localhost:3000'})
 
     # Then
     assert r_signup.status_code == 400
@@ -331,7 +331,7 @@ def test_pro_signup_should_not_work_with_invalid_offerer_postal_code():
 
     # When
     r_signup = req.post(API_URL + '/users/signup',
-                        json=data)
+                        json=data, headers={'origin': 'http://localhost:3000'})
 
     # Then
     assert r_signup.status_code == 400
@@ -343,7 +343,7 @@ def test_pro_signup_should_not_work_with_invalid_offerer_postal_code():
 @clean_database
 def test_pro_signup_should_create_user_offerer_digital_venue_and_userOfferer(app):
     r_signup = req.post(API_URL + '/users/signup',
-                        json=BASE_DATA_PRO)
+                        json=BASE_DATA_PRO, headers={'origin': 'http://localhost:3000'})
     assert r_signup.status_code == 201
     assert 'Set-Cookie' in r_signup.headers
     user = User.query \
@@ -382,7 +382,7 @@ def test_pro_signup_with_existing_offerer(app):
 
     data = BASE_DATA_PRO.copy()
     r_signup = req.post(API_URL + '/users/signup',
-                        json=data)
+                        json=data, headers={'origin': 'http://localhost:3000'})
     assert r_signup.status_code == 201
     assert 'Set-Cookie' in r_signup.headers
     user = User.query \
@@ -459,7 +459,7 @@ def test_user_with_isAdmin_true_and_canBookFreeOffers_raises_error():
 
     # When
     r_signup = req.post(API_URL + '/users/signup',
-                        json=user_json)
+                        json=user_json, headers={'origin': 'http://localhost:3000'})
 
     # Then
     assert r_signup.status_code == 400
@@ -604,7 +604,7 @@ def test_post_for_password_token_records_a_new_password_token_if_email_is_known(
     PcObject.check_and_save(user)
 
     # when
-    response = req.post(API_URL + '/users/reset-password', json=data)
+    response = req.post(API_URL + '/users/reset-password', json=data, headers={'origin' :'http://localhost:3000'})
 
     # then
     db.session.refresh(user)
@@ -621,7 +621,7 @@ def test_post_for_password_token_returns_no_content_if_email_is_unknown(app):
     data = {'email': 'unknown.user@test.com'}
 
     # when
-    response = req.post(API_URL + '/users/reset-password', json=data)
+    response = req.post(API_URL + '/users/reset-password', json=data, headers={'origin' :'http://localhost:3000'})
 
     # then
     assert response.status_code == 204
@@ -634,7 +634,7 @@ def test_post_for_password_token_returns_bad_request_if_email_is_empty(app):
     data = {'email': ''}
 
     # when
-    response = req.post(API_URL + '/users/reset-password', json=data)
+    response = req.post(API_URL + '/users/reset-password', json=data, headers={'origin' :'http://localhost:3000'})
 
     # then
     assert response.status_code == 400
@@ -648,7 +648,7 @@ def test_post_for_password_token_returns_bad_request_if_email_is_missing(app):
     data = {}
 
     # when
-    response = req.post(API_URL + '/users/reset-password', json=data)
+    response = req.post(API_URL + '/users/reset-password', json=data, headers={'origin' :'http://localhost:3000'})
 
     # then
     assert response.status_code == 400
@@ -668,7 +668,7 @@ def test_post_new_password_changes_the_user_password(app):
     }
 
     # when
-    response = req.post(API_URL + '/users/new-password', json=data)
+    response = req.post(API_URL + '/users/new-password', json=data, headers={'origin': 'http://localhost:3000'})
 
     # then
     db.session.refresh(user)
@@ -689,7 +689,7 @@ def test_post_new_password_remove_the_reset_token_and_the_validity_date(app):
     }
 
     # when
-    req.post(API_URL + '/users/new-password', json=data)
+    req.post(API_URL + '/users/new-password', json=data, headers={'origin': 'http://localhost:3000'})
 
     # then
     db.session.refresh(user)
@@ -711,7 +711,7 @@ def test_post_new_password_returns_bad_request_if_the_token_is_outdated(app):
     }
 
     # when
-    response = req.post(API_URL + '/users/new-password', json=data)
+    response = req.post(API_URL + '/users/new-password', json=data, headers={'origin': 'http://localhost:3000'})
 
     # then
     assert response.status_code == 400
@@ -733,7 +733,7 @@ def test_post_new_password_returns_bad_request_if_the_token_is_unknown(app):
     }
 
     # when
-    response = req.post(API_URL + '/users/new-password', json=data)
+    response = req.post(API_URL + '/users/new-password', json=data, headers={'origin': 'http://localhost:3000'})
 
     # then
     assert response.status_code == 400
@@ -752,7 +752,7 @@ def test_post_new_password_returns_bad_request_if_the_token_is_missing(app):
     data = {'newPassword': 'N3W_p4ssw0rd'}
 
     # when
-    response = req.post(API_URL + '/users/new-password', json=data)
+    response = req.post(API_URL + '/users/new-password', json=data, headers={'origin': 'http://localhost:3000'})
 
     # then
     assert response.status_code == 400
@@ -771,7 +771,7 @@ def test_post_new_password_returns_bad_request_if_the_new_password_is_missing(ap
     data = {'token': 'KL89PBNG51'}
 
     # when
-    response = req.post(API_URL + '/users/new-password', json=data)
+    response = req.post(API_URL + '/users/new-password', json=data, headers={'origin': 'http://localhost:3000'})
 
     # then
     assert response.status_code == 400
@@ -790,7 +790,7 @@ def test_post_new_password_returns_bad_request_if_the_new_password_is_not_strong
     data = {'token': 'KL89PBNG51', 'newPassword': 'weak_password'}
 
     # when
-    response = req.post(API_URL + '/users/new-password', json=data)
+    response = req.post(API_URL + '/users/new-password', json=data, headers={'origin': 'http://localhost:3000'})
 
     # then
     assert response.status_code == 400
@@ -811,7 +811,7 @@ def test_patch_user_returns_200_for_allowed_changes(app):
     data = {'publicName': 'plop', 'email': 'new@email.com', 'postalCode': '93020', 'phoneNumber': '0612345678', 'departementCode': '97'}
 
     # when
-    response = auth_request.patch(API_URL + '/users/current', json=data)
+    response = auth_request.patch(API_URL + '/users/current', json=data, headers={'origin' :'http://localhost:3000'})
 
     # then
     db.session.refresh(user)
@@ -850,3 +850,18 @@ def test_patch_user_returns_400_when_not_allowed_changes(app):
     assert response.status_code == 400
     for key in data:
         assert response.json()[key] == ['Vous ne pouvez pas changer cette information']
+
+
+@pytest.mark.standalone
+@clean_database
+def test_ger_current_user_returns_400_when_header_not_in_whitelist(app):
+    # given
+    user = create_user(email='e@mail.com', password='p@55sw0rd', is_admin=False, can_book_free_offers=True)
+    PcObject.check_and_save(user)
+
+    # when
+    response = requests.get(API_URL + '/users/current', auth=('e@mail.com', 'p@55sw0rd'), headers={'origin': 'random.header.fr'})
+
+    # then
+    assert response.status_code == 400
+    assert response.json()['global'] == ['Header non autorisé']

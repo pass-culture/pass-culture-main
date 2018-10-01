@@ -36,7 +36,7 @@ def test_validate_offerer(app):
         .first().validationToken
 
     # When
-    r = req.get(API_URL + '/validate?modelNames=Offerer&token=' + token)
+    r = req.get(API_URL + '/validate?modelNames=Offerer&token=' + token, headers={'origin': 'http://localhost:3000'})
 
     # Then
     assert r.status_code == 202
