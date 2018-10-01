@@ -1,6 +1,7 @@
 """ routes offerer """
 import secrets
 from datetime import timedelta, datetime
+from pprint import pprint
 
 import pytest
 
@@ -354,7 +355,7 @@ def test_post_offerers_when_admin(app):
         'postalCode': '93100',
         'city': 'Montreuil'
     }
-    response = auth_request.post(API_URL + '/offerers/', body)
+    response = auth_request.post(API_URL + '/offerers', json=body)
 
     # then
     assert response.status_code == 201
