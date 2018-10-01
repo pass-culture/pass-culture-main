@@ -1,26 +1,28 @@
-from utils.config import IS_DEV, IS_STAGING
+from utils.config import IS_DEV, API_URL
 
 
-def check_header_validity(header, endpoint):
+def check_origin_header_validity(header, endpoint):
     endpoint_exceptions = _get_endpoint_exceptions()
     if endpoint in endpoint_exceptions:
         return True
-    white_list = _get_header_whitelist()
+    white_list = _get_origin_header_whitelist()
     return header in white_list
 
 
-def _get_header_whitelist():
+def _get_origin_header_whitelist():
     if IS_DEV:
         return ['http://localhost:3000', 'https://localhost:3000', 'localhost:3000']
-    if IS_STAGING:
-        return ['pro.passculture-staging.beta.gouv.fr', 'app.passculture-staging.beta.gouv.fr',
-                'http://pro.passculture-staging.beta.gouv.fr', 'http://app.passculture-staging.beta.gouv.fr',
-                'https://pro.passculture-staging.beta.gouv.fr', 'https://app.passculture-staging.beta.gouv.fr']
-    else:
-        return ['app.passculture.beta.gouv.fr', 'pro.passculture.beta.gouv.fr', 'http://app.passculture.beta.gouv.fr',
-                'http://pro.passculture.beta.gouv.fr', 'https://app.passculture.beta.gouv.fr',
-                'https://pro.passculture.beta.gouv.fr']
+    return _get_origin_header_whitelist_for_non_dev_environments(API_URL)
 
 
 def _get_endpoint_exceptions():
     return ['patch_booking_by_token', 'get_booking_by_token']
+
+
+def _get_origin_header_whitelist_for_non_dev_environments(api_url):
+    url_variations = [api_url, api_url.replace('http', 'https'), api_url.replace('http://', '')]
+    valid_urls = []
+    for url in url_variations:
+        valid_urls.append(url.replace('backend', 'pro'))
+        valid_urls.append(url.replace('backend', 'app'))
+    return valid_urls

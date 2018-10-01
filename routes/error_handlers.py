@@ -5,7 +5,7 @@ import simplejson as json
 from flask import current_app as app, jsonify, request
 
 from models.api_errors import ApiErrors, ResourceGoneError
-from routes.before_request import InvalidHeader
+from routes.before_request import InvalidOriginHeader
 from utils.human_ids import NonDehumanizableId
 from validation.errors import ResourceNotFound
 
@@ -28,7 +28,7 @@ def restize_booking_not_found_error(e):
     return jsonify(e.errors), e.status_code or 404
 
 
-@app.errorhandler(InvalidHeader)
+@app.errorhandler(InvalidOriginHeader)
 def restize_invalid_header_exception(e):
     e = ApiErrors()
     e.addError('global',
