@@ -10,7 +10,7 @@ class BicInput extends PureComponent {
     this.props.onChange(value, { event })
 
     if (!isValidBIC(value)) {
-      this.props.mergeErrors('offerer', { bic: ['BIC invalide'] })
+      this.props.dispatch(mergeErrors('offerer', { bic: ['BIC invalide'] }))
     }
   }
 
@@ -26,9 +26,4 @@ class BicInput extends PureComponent {
   }
 }
 
-const mapDispatchToProps = { mergeErrors }
-
-export default connect(
-  null,
-  mapDispatchToProps
-)(BicInput)
+export default connect()(BicInput)

@@ -10,7 +10,7 @@ class IbanInput extends PureComponent {
     this.props.onChange(value, { event })
 
     if (!isValidIBAN(value)) {
-      this.props.mergeErrors('offerer', { iban: ['IBAN invalide'] })
+      this.props.dispatch(mergeErrors('offerer', { iban: ['IBAN invalide'] }))
     }
   }
 
@@ -26,9 +26,4 @@ class IbanInput extends PureComponent {
   }
 }
 
-const mapDispatchToProps = { mergeErrors }
-
-export default connect(
-  null,
-  mapDispatchToProps
-)(IbanInput)
+export default connect()(IbanInput)
