@@ -211,5 +211,5 @@ def test_get_venue_should_not_work_if_current_user_doesnt_have_rights(app):
     response = auth_request.get(API_URL + '/venues/%s' % humanize(venue.id))
 
     # then
-    assert response.status_code == 400
+    assert response.status_code == 403
     assert response.json()['global'] == ["Cette structure n'est pas enregistrée chez cet utilisateur."]
