@@ -18,7 +18,7 @@ if IS_DEV:
 elif IS_PROD:
     API_URL = 'https://backend.passculture.beta.gouv.fr'
 else:
-    API_URL = 'https://backend.passculture-'+ENV+'.beta.gouv.fr'
+    API_URL = 'https://backend.passculture-%s.beta.gouv.fr' % ENV
 
 BLOB_SIZE = 80
 BLOB_UNREAD_NUMBER = int(BLOB_SIZE/5)
