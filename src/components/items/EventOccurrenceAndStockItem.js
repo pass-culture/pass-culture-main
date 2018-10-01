@@ -75,7 +75,7 @@ class EventOccurrenceAndStockItem extends Component {
     if (formEndDatetime < formBeginningDatetime) {
       dispatch(
         mergeForm(`eventOccurrence${get(eventOccurrencePatch, 'id', '')}`, {
-          endDatetime: moment(formEndDatetime)
+          endDatetime: moment(formBeginningDatetime)
             .add(1, 'day')
             .toISOString(),
         })
@@ -401,8 +401,8 @@ class EventOccurrenceAndStockItem extends Component {
             <td className="is-size-7" colSpan={isStockOnly ? '3' : '6'}>
               En confirmant l'annulation de{' '}
               {isStockOnly ? 'ce stock' : 'cette date'}, vous supprimerez aussi
-              toutes les réservations associées. {!isStockOnly && <br />}Êtes-vous
-              sûrs de vouloir continuer&nbsp;?
+              toutes les réservations associées. {!isStockOnly && <br />}
+              Êtes-vous sûrs de vouloir continuer&nbsp;?
             </td>
             <td>
               <button
