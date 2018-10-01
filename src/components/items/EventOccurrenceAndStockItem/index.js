@@ -1,28 +1,21 @@
 import classnames from 'classnames'
 import get from 'lodash.get'
-import {
-  Field,
-  Form,
-  Icon,
-  mergeForm,
-  requestData,
-  resetForm,
-  SubmitButton,
-} from 'pass-culture-shared'
+import { mergeForm, requestData, resetForm } from 'pass-culture-shared'
 import moment from 'moment'
 import React, { Component, Fragment } from 'react'
 import { connect } from 'react-redux'
-import { Portal } from 'react-portal'
 import { withRouter } from 'react-router'
-import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
 
-import EventOccurenceDateTime from './EventOccurenceDateTime'
+import DateTimeForm from './DateTimeForm'
+import CommonForm from './CommonForm'
+import Actions from './Actions'
+import Delete from './Delete'
 import mapStateToProps from './mapStateToProps'
 
 class EventOccurrenceAndStockItem extends Component {
-  constructor() {
-    super()
+  constructor(props) {
+    super(props)
     this.state = {
       $submit: null,
       isDeleting: false,
@@ -158,11 +151,6 @@ class EventOccurrenceAndStockItem extends Component {
     }
   }
 
-  handleOfferSuccessData = (state, action) => {
-    const { history, offer } = this.props
-    history.push(`/offres/${get(offer, 'id')}?gestion`)
-  }
-
   handleResetForm = () => {
     const { dispatch, isEditing } = this.props
     if (!isEditing) {
@@ -181,7 +169,7 @@ class EventOccurrenceAndStockItem extends Component {
     this.handleInitPrice()
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps, prevState) {
     const { formBeginningDatetime, isEditing } = this.props
 
     if (prevProps.isEditing && !isEditing) {
@@ -224,7 +212,7 @@ class EventOccurrenceAndStockItem extends Component {
             'with-confirm': isDeleting,
           })}>
           {!isStockOnly && (
-            <EventOccurenceDateTime
+            <DateTimeForm
               eventOccurrencePatch={eventOccurrencePatch}
               isEventOccurrenceReadOnly={isEventOccurrenceReadOnly}
               beginningDatetime={beginningDatetime}
@@ -237,116 +225,34 @@ class EventOccurrenceAndStockItem extends Component {
             />
           )}
 
-          <Form
-            action={`/stocks/${get(stockPatch, 'id', '')}`}
-            BlockComponent={null}
-            handleSuccess={this.handleOfferSuccessData}
-            layout="input-only"
-            key={1}
-            name={`stock${get(stockPatch, 'id', '')}`}
-            patch={stockPatch}
-            size="small"
-            readOnly={isStockReadOnly}
-            Tag={null}>
-            <td title="Vide si gratuit">
-              <Field name="eventOccurrenceId" type="hidden" />
-              <Field name="offerId" type="hidden" />
-              <Field
-                displayValue={(value, { readOnly }) =>
-                  value === 0
-                    ? readOnly
-                      ? 'Gratuit'
-                      : 0
-                    : readOnly
-                      ? `${value}€`
-                      : value
-                }
-                name="price"
-                placeholder="Gratuit"
-                type="number"
-                title="Prix"
-              />
-            </td>
-            <td title="Laissez vide si pas de limite">
-              <Field
-                maxDate={isStockOnly ? undefined : beginningDatetime}
-                name="bookingLimitDatetime"
-                placeholder="Laissez vide si pas de limite"
-                type="date"
-              />
-            </td>
-            <td title="Laissez vide si pas de limite">
-              <Field
-                name="available"
-                title="Places disponibles"
-                type="number"
-              />
-            </td>
-            {!isStockReadOnly && (
-              <Portal node={this.state.$submit}>
-                <SubmitButton className="button is-primary is-small">
-                  Valider
-                </SubmitButton>
-              </Portal>
-            )}
-          </Form>
-          <td className="is-clipped">
-            {isEditing ? (
-              <NavLink
-                className="button is-secondary is-small"
-                to={`/offres/${get(offer, 'id')}?gestion`}>
-                Annuler
-              </NavLink>
-            ) : (
-              <button
-                className="button is-small is-secondary"
-                style={{ width: '100%' }}
-                onClick={this.onDeleteClick}>
-                <span className="icon">
-                  <Icon svg="ico-close-r" />
-                </span>
-              </button>
-            )}
-          </td>
-          <td ref={_e => (this.$submit = _e)}>
-            {!isEditing && (
-              <NavLink
-                to={`/offres/${get(offer, 'id')}?gestion&${
-                  isStockOnly
-                    ? `stock=${get(stockPatch, 'id')}`
-                    : `date=${get(eventOccurrencePatch, 'id')}`
-                }`}
-                className="button is-small is-secondary">
-                <span className="icon">
-                  <Icon svg="ico-pen-r" />
-                </span>
-              </NavLink>
-            )}
-          </td>
+          <CommonForm
+            stockPatch={stockPatch}
+            isStockReadOnly={isStockReadOnly}
+            beginningDatetime={beginningDatetime}
+            history={this.props.history}
+            submit={this.state.$submit}
+            offer={offer}
+          />
+
+          <Actions
+            isEditing={isEditing}
+            offer={offer}
+            isStockOnly={isStockOnly}
+            stockPatch={stockPatch}
+            eventOccurrencePatch={eventOccurrencePatch}
+            onRef={element => (this.$submit = element)}
+            onDeleteClick={this.onDeleteClick}
+          />
         </tr>
+
         {isDeleting && (
-          <tr>
-            <td className="is-size-7" colSpan={isStockOnly ? '3' : '6'}>
-              En confirmant l'annulation de{' '}
-              {isStockOnly ? 'ce stock' : 'cette date'}, vous supprimerez aussi
-              toutes les réservations associées. {!isStockOnly && <br />}
-              Êtes-vous sûr•e de vouloir continuer&nbsp;?
-            </td>
-            <td>
-              <button
-                className="button is-primary"
-                onClick={this.onConfirmDeleteClick}>
-                Oui
-              </button>
-            </td>
-            <td>
-              <button
-                className="button is-primary"
-                onClick={this.onCancelDeleteClick}>
-                Non
-              </button>
-            </td>
-          </tr>
+          <Delete
+            eventOccurrencePatch={eventOccurrencePatch}
+            isStockOnly={isStockOnly}
+            stockPatch={stockPatch}
+            onCancelDeleteClick={this.onCancelDeleteClick}
+            onConfirmDeleteClick={this.onConfirmDeleteClick}
+          />
         )}
       </Fragment>
     )

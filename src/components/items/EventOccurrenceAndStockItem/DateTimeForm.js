@@ -3,7 +3,7 @@ import { Portal } from 'react-portal'
 import get from 'lodash.get'
 import { Field, Form, SubmitButton } from 'pass-culture-shared'
 
-class EventOccurenceDateTime extends Component {
+class DateTimeForm extends Component {
   handleEventOccurrenceSuccessData = (state, action) => {
     const { history, offer, stockPatch } = this.props
     const stockIdOrNew = get(stockPatch, 'id', 'nouveau')
@@ -86,4 +86,4 @@ class EventOccurenceDateTime extends Component {
   }
 }
 
-export default EventOccurenceDateTime
+export default DateTimeForm
