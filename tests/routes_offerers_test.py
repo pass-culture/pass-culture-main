@@ -1,7 +1,6 @@
 """ routes offerer """
 import secrets
 from datetime import timedelta, datetime
-from pprint import pprint
 
 import pytest
 
