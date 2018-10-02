@@ -81,7 +81,7 @@ def get_active_offers_by_type(offer_type, user=None, departement_codes=None, off
         .join(offer_type)
 
     if offer_id is not None:
-        query = query.filter_by(id=offer_id)
+        query = query.filter(Offer.id == offer_id)
     logger.debug(lambda: '(reco) all ' + str(offer_type) + '.count ' + str(query.count()))
 
     query = departement_or_national_offers(query, offer_type, departement_codes)
