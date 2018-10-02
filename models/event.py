@@ -15,7 +15,6 @@ from sqlalchemy.sql.expression import cast, false
 from sqlalchemy.sql.functions import coalesce
 
 from models.db import Model
-from models.deactivable_mixin import DeactivableMixin
 from models.extra_data_mixin import ExtraDataMixin
 from models.has_thumb_mixin import HasThumbMixin
 from models.pc_object import PcObject
