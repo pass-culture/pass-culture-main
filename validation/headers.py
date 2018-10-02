@@ -11,7 +11,14 @@ def check_origin_header_validity(header, endpoint):
 
 def _get_origin_header_whitelist():
     if ENV == 'development':
-        return ['http://localhost:3000', 'https://localhost:3000', 'localhost:3000']
+        return [
+            'http://localhost:3000',
+            'https://localhost:3000',
+            'localhost:3000',
+            'http://localhost:3001',
+            'https://localhost:3001',
+            'localhost:3001'
+        ]
     return _get_origin_header_whitelist_for_non_dev_environments(API_URL)
 
 
