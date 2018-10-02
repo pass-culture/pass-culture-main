@@ -15,7 +15,7 @@ from models import ApiErrors, \
     Venue
 from models.db import db
 from utils.rest import query_with_order_by
-from utils.search import get_search_filter
+from utils.search import get_keywords_filter
 from validation.errors import ResourceNotFound
 
 
@@ -37,9 +37,9 @@ def find_offerer_bookings(offerer_id, search=None, order_by=None, page=1):
         .filter(Venue.managingOffererId == offerer_id)
 
     if search:
-        query = query.outerjoin(Event) \
-            .outerjoin(Thing) \
-            .filter(get_search_filter([Event, Thing, Venue], search))
+        query = query.outerjoin(Event)\
+                     .outerjoin(Thing)\
+                     .filter(get_keywords_filter([Event, Thing, Venue], search))
 
     if order_by:
         query = query_with_order_by(query, order_by)

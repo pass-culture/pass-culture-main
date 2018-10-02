@@ -185,8 +185,16 @@ def req_with_auth(email=None, password=None, headers={'origin': 'http://localhos
     return request
 
 
-def create_booking(user, stock=None, venue=None, recommendation=None, quantity=1, date_modified=datetime.utcnow(),
-                   is_cancelled=False, is_used=False):
+def create_booking(
+    user,
+    stock=None,
+    venue=None,
+    recommendation=None,
+    quantity=1,
+    date_modified=datetime.utcnow(),
+    is_cancelled=False,
+    is_used=False
+):
     booking = Booking()
     if venue is None:
         offerer = create_offerer('987654321', 'Test address', 'Test city', '93000', 'Test name')
@@ -226,7 +234,12 @@ def create_booking_for_thing(url=None, amount=50, quantity=1, user=None):
     return booking
 
 
-def create_booking_for_event(amount=50, quantity=1, user=None, isCancelled=False):
+def create_booking_for_event(
+    amount=50,
+    quantity=1,
+    user=None,
+    isCancelled=False
+):
     event = Event()
     offer = Offer()
     stock = Stock()
@@ -263,11 +276,19 @@ def create_user(public_name='John Doe', first_name='John', last_name='Doe', post
     return user
 
 
-def create_stock_with_event_offer(offerer, venue, beginning_datetime_future=True, price=10,
-                                  booking_email='offer.booking.email@test.com', available=10):
+def create_stock_with_event_offer(
+    offerer,
+    venue,
+    beginning_datetime_future=True,
+    price=10,
+    booking_email='offer.booking.email@test.com',
+    available=10
+):
     stock = Stock()
     stock.offerer = offerer
     stock.price = price
+    stock.available = available
+
     stock.eventOccurrence = EventOccurrence()
     if beginning_datetime_future:
         stock.eventOccurrence.beginningDatetime = datetime(2019, 7, 20, 12, 0, 0, tzinfo=timezone.utc)
@@ -283,7 +304,7 @@ def create_stock_with_event_offer(offerer, venue, beginning_datetime_future=True
         from_dict={'isNational': False, 'durationMinutes': 10, 'name': 'Mains, sorts et papiers'}
     )
     stock.eventOccurrence.offer.venue = venue
-    stock.available = available
+
     return stock
 
 
@@ -343,19 +364,35 @@ def create_thing(thing_type='Book', thing_name='Test Book', media_urls='test/url
     return thing
 
 
-def create_event(event_name='Test event', duration_minutes=60, thumb_count=0, dominant_color=None, is_national=False):
+def create_event(
+    event_name='Test event',
+    duration_minutes=60,
+    thumb_count=0,
+    dominant_color=None,
+    is_national=False,
+    type=None
+):
     event = Event()
     event.name = event_name
     event.durationMinutes = duration_minutes
     event.thumbCount = thumb_count
     event.firstThumbDominantColor = dominant_color
     event.isNational = is_national
+    event.type = type
     return event
 
 
-def create_thing_offer(venue, thing=None, date_created=datetime.utcnow(), booking_email='booking.email@test.com',
-                       thing_type='Book', thing_name='Test Book', media_urls='test/urls', author_name='Test Author',
-                       thumb_count=1):
+def create_thing_offer(
+    venue,
+    thing=None,
+    date_created=datetime.utcnow(),
+    booking_email='booking.email@test.com',
+    thing_type='Book',
+    thing_name='Test Book',
+    media_urls='test/urls',
+    author_name='Test Author',
+    thumb_count=1
+):
     offer = Offer()
     if thing:
         offer.thing = thing
@@ -390,8 +427,16 @@ def create_n_mixed_offers_with_same_venue(venue, n=10):
     return offers
 
 
-def create_offerer(siren='123456789', address='123 rue de Paris', city='Montreuil', postal_code='93100',
-                   name='Test Offerer', validation_token=None, iban=None, bic=None):
+def create_offerer(
+    siren='123456789',
+    address='123 rue de Paris',
+    city='Montreuil',
+    postal_code='93100',
+    name='Test Offerer',
+    validation_token=None,
+    iban=None,
+    bic=None
+):
     offerer = Offerer()
     offerer.siren = siren
     offerer.isActive = True
@@ -405,8 +450,19 @@ def create_offerer(siren='123456789', address='123 rue de Paris', city='Montreui
     return offerer
 
 
-def create_venue(offerer, name='La petite librairie', booking_email='john.doe@test.com', address='123 rue de Paris',
-                 postal_code='93100', city='Montreuil', departement_code='93', is_virtual=False):
+def create_venue(
+    offerer,
+    name='La petite librairie',
+    booking_email='john.doe@test.com',
+    address='123 rue de Paris',
+    postal_code='93100',
+    city='Montreuil',
+    departement_code='93',
+    is_virtual=False,
+    longitude="2.4002701",
+    latitude="48.8363788",
+    siret='12345678912345'
+):
     venue = Venue()
     venue.bookingEmail = booking_email
     if not is_virtual:
@@ -437,8 +493,12 @@ def create_user_offerer(user, offerer, validation_token=None, is_admin=False):
     return user_offerer
 
 
-def create_recommendation(offer=None, user=None, id=None, date_read=None,
-                          valid_until_date=datetime.utcnow() + timedelta(days=7), search=None,
+def create_recommendation(offer=None,
+                          user=None,
+                          id=None,
+                          date_read=None,
+                          valid_until_date=datetime.utcnow() + timedelta(days=7),
+                          search=None,
                           is_favorite=False):
     recommendation = Recommendation()
     recommendation.id = id
@@ -451,8 +511,11 @@ def create_recommendation(offer=None, user=None, id=None, date_read=None,
     return recommendation
 
 
-def create_event_occurrence(offer, beginning_datetime=datetime.utcnow() + timedelta(hours=2),
-                            end_datetime=datetime.utcnow() + timedelta(hours=5)):
+def create_event_occurrence(
+    offer,
+    beginning_datetime=datetime.utcnow() + timedelta(hours=2),
+    end_datetime=datetime.utcnow() + timedelta(hours=5)
+):
     event_occurrence = EventOccurrence()
     event_occurrence.offer = offer
     event_occurrence.beginningDatetime = beginning_datetime

@@ -9,12 +9,15 @@ from domain.build_recommendations import build_mixed_recommendations, \
     move_tutorial_recommendations_first
 from models import PcObject, Recommendation
 from recommendations_engine import create_recommendations_for_discovery, \
-    create_recommendations_for_search
-from recommendations_engine import give_requested_recommendation_to_user, RecommendationNotFoundException
+                                   create_recommendations_for_search, \
+                                   get_recommendation_search_params, \
+                                   give_requested_recommendation_to_user, \
+                                   RecommendationNotFoundException
 from repository.booking_queries import find_bookings_from_recommendation
 from repository.recommendation_queries import count_read_recommendations_for_user, \
-    find_all_unread_recommendations, \
-    find_all_read_recommendations, find_favored_recommendations_for_user
+                                              find_all_unread_recommendations, \
+                                              find_all_read_recommendations, \
+                                              find_favored_recommendations_for_user
 from utils.config import BLOB_SIZE, BLOB_READ_NUMBER, BLOB_UNREAD_NUMBER
 from utils.human_ids import dehumanize
 from utils.includes import BOOKING_INCLUDES, RECOMMENDATION_INCLUDES
@@ -25,10 +28,12 @@ from utils.rest import expect_json_data
 @app.route('/recommendations', methods=['GET'])
 @login_required
 def list_recommendations():
+    search_params = get_recommendation_search_params(request.args)
+
+    from models import User
     recommendations = create_recommendations_for_search(
         current_user,
-        page=request.args.get('page', 1),
-        search=request.args.get('search')
+        **search_params
     )
 
     return jsonify(_serialize_recommendations(recommendations)), 200

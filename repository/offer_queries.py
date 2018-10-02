@@ -14,8 +14,9 @@ from models import Booking, \
 from models import Thing
 from models.db import db
 from repository.user_offerer_queries import filter_query_where_user_is_user_offerer_and_is_validated
+from utils.distance import get_sql_geo_distance_in_kilometers
 from utils.logger import logger
-from utils.search import get_search_filter
+from utils.search import get_keywords_filter
 
 
 def departement_or_national_offers(query, offer_type, departement_codes):
@@ -93,40 +94,102 @@ def get_active_offers_by_type(offer_type, user=None, departement_codes=None, off
 
 
 def find_offers_in_date_range_for_given_venue_departement(date_max, date_min, department):
-
-    query = db.session.query(Offer.id, Event.id, Event.name, EventOccurrence.beginningDatetime, Venue.departementCode,
-                             Offerer.id, Offerer.name) \
-        .join(Event) \
-        .join(EventOccurrence) \
-        .join(Venue) \
-        .join(Offerer)
+    query = db.session.query(Offer.id,
+                             Event.id,
+                             Event.name,
+                             EventOccurrence.beginningDatetime,
+                             Venue.departementCode,
+                             Offerer.id,
+                             Offerer.name) \
+                       .join(Event) \
+                       .join(EventOccurrence) \
+                       .join(Venue) \
+                       .join(Offerer)
     if department:
         query = query.filter(Venue.departementCode == department)
     if date_min:
         query = query.filter(EventOccurrence.beginningDatetime >= date_min)
     if date_max:
         query = query.filter(EventOccurrence.beginningDatetime <= date_max)
-    result = query.order_by(EventOccurrence.beginningDatetime) \
-        .all()
+    result = query.order_by(EventOccurrence.beginningDatetime).all()
     return result
 
 
-def get_offers_for_recommendations_search(page=1, search=None):
-    offer_query = _filter_out_offers_on_soft_deleted_stocks_and_inactive_offers()
-    if search is not None:
-        offer_query = offer_query.outerjoin(Event)\
+def get_offers_for_recommendations_search(
+    page=1,
+    keywords=None,
+    type_labels=None,
+    latitude=None,
+    longitude=None,
+    max_distance=None,
+    days_intervals=None):
+
+    # NOTE: filter_out_offers_on_soft_deleted_stocks filter then
+    # the offer with event that has NO event occurrence
+    # Do we exactly want this ?
+    offer_query =  _filter_out_offers_on_soft_deleted_stocks_and_inactive_offers()
+
+    # NOTE: which order of the filters is the best for minimal time computation ?
+    # Question à 500 patates.
+
+    if max_distance is not None and latitude is not None and longitude is not None:
+        distance_instrument = get_sql_geo_distance_in_kilometers(
+            Venue.latitude,
+            Venue.longitude,
+            latitude,
+            longitude
+        )
+        offer_query = offer_query.join(Venue)\
+                                 .filter(distance_instrument < max_distance)
+
+    if days_intervals is not None:
+        for days in days_intervals:
+            date_offer_query = offer_query.from_self()\
+                                          .join(Stock) \
+                                          .outerjoin(EventOccurrence) \
+                                          .filter(
+                                            (
+                                                (Stock.bookingLimitDatetime >= days[0]) &\
+                                                (Stock.bookingLimitDatetime <= days[1])
+                                            )
+                                           )
+            offer_query = offer_query.union_all(date_offer_query)
+
+
+    if keywords is not None:
+        offer_query = offer_query.from_self()\
+                                 .outerjoin(Event)\
                                  .outerjoin(Thing)\
                                  .outerjoin(Venue)\
-                                 .filter(get_search_filter([Event, Thing, Venue], search))
+                                 .filter(get_keywords_filter([Event, Thing, Venue], keywords))
 
-    offers = offer_query.paginate(int(page), per_page=10, error_out=False)\
-                        .items
+    if type_labels is not None:
+        event_offer_query = offer_query.from_self()\
+                                       .outerjoin(Event)\
+                                       .filter(Event.type.in_(type_labels))
+
+        thing_offer_query = offer_query.from_self()\
+                                       .outerjoin(Thing)\
+                                       .filter(Thing.type.in_(type_labels))
+
+        offer_query = event_offer_query.union_all(thing_offer_query)
+
+    if page is not None:
+        offers = offer_query.paginate(page, per_page=10, error_out=False)\
+                            .items
+    else:
+        offers = query.all()
 
     return offers
 
 
-def find_by_venue_id_or_offerer_id_and_search_terms_offers_where_user_has_rights(offerer_id, venue, venue_id, user,
-                                                                                 request):
+def find_by_venue_id_or_offerer_id_and_search_terms_offers_where_user_has_rights(
+    offerer_id,
+    venue,
+    venue_id,
+    user,
+    search
+):
     query = Offer.query
     if venue_id is not None:
         query = query.filter_by(venue=venue)
@@ -138,11 +201,10 @@ def find_by_venue_id_or_offerer_id_and_search_terms_offers_where_user_has_rights
         query = query.join(Venue) \
             .join(Offerer)
         query = filter_query_where_user_is_user_offerer_and_is_validated(query, user)
-    search = request.args.get('search')
     if search is not None:
         query = query.outerjoin(Event) \
             .outerjoin(Thing) \
-            .filter(get_search_filter([Event, Thing], search))
+            .filter(get_keywords_filter([Event, Thing], search))
     return query
 
 

@@ -1,3 +1,4 @@
+""" routes offers tests """
 import secrets
 
 from datetime import datetime, timedelta
@@ -7,10 +8,18 @@ from models import PcObject, Venue
 from models.db import db
 from tests.conftest import clean_database
 from utils.human_ids import dehumanize, humanize
-from utils.test_utils import API_URL, req_with_auth, create_user, create_venue, \
-    create_offerer, create_user_offerer, create_n_mixed_offers_with_same_venue, create_thing, create_event, \
-    create_thing_offer, create_event_offer, create_recommendation
-
+from utils.test_utils import API_URL,\
+                             create_event, \
+                             create_event_offer, \
+                             create_n_mixed_offers_with_same_venue, \
+                             create_offerer, \
+                             create_recommendation, \
+                             create_thing, \
+                             create_thing_offer, \
+                             create_user, \
+                             create_user_offerer, \
+                             create_venue, \
+                             req_with_auth
 
 def insert_offers_for(user, n, siren='123456789'):
     offerer = create_offerer(siren=siren)
@@ -124,7 +133,7 @@ def test_get_offers_can_be_searched_and_filtered_and_paginated_at_the_same_time(
     venue_id = Venue.query.first().id
 
     # when
-    response = auth_request.get(API_URL + '/offers?venueId=' + humanize(venue_id) + '&page=1&search=Event')
+    response = auth_request.get(API_URL + '/offers?venueId=' + humanize(venue_id) + '&page=1&keywords=Event')
 
     # then
     offers = response.json()

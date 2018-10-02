@@ -11,7 +11,6 @@ from sqlalchemy.sql.expression import cast
 from sqlalchemy.sql.functions import coalesce
 
 from models.db import Model
-from models.deactivable_mixin import DeactivableMixin
 from models.extra_data_mixin import ExtraDataMixin
 from models.has_thumb_mixin import HasThumbMixin
 from models.pc_object import PcObject
@@ -24,43 +23,6 @@ class BookFormat(enum.Enum):
     EBook = "EBook"
     Hardcover = "Hardcover"
     Paperback = "Paperback"
-
-
-class ThingType(enum.Enum):
-    AUDIOVISUEL = {
-    'label': "Audiovisuel (Films sur supports physiques et VOD)", 'offlineOnly': False, 'onlineOnly': False, 'sublabel': "Regarder"
-    }
-    CINEMA_ABO = {
-    'label': "Cinéma (Abonnements)", 'offlineOnly': True, 'onlineOnly': False, 'sublabel': "Regarder"
-    }
-    JEUX_ABO = {
-    'label': "Jeux (Abonnements)", 'offlineOnly': True, 'onlineOnly': False, 'sublabel': "Jouer"
-    }
-    JEUX = {
-    'label': "Jeux (Biens physiques)", 'offlineOnly': True, 'onlineOnly': False, 'sublabel': "Jouer"
-    }
-    JEUX_VIDEO = {
-    'label': "Jeux Vidéo", 'offlineOnly': False, 'onlineOnly': True, 'sublabel': "Jouer"
-    }
-    LIVRE_EDITION = {
-    'label': "Livre — Édition", 'offlineOnly': False, 'onlineOnly': False, 'sublabel': "Lire"
-    }
-    MUSEES_PATRIMOINE_ABO = {
-    'label': "Musées — Patrimoine (Abonnements, Visites libres)", 'offlineOnly': True, 'onlineOnly': False, 'sublabel': "Regarder"
-    }
-    MUSIQUE_ABO = {
-    'label': "Musique (Abonnements concerts)", 'offlineOnly': True, 'onlineOnly': False, 'sublabel': "Écouter"
-    }
-    MUSIQUE = {
-    'label': "Musique (sur supports physiques ou en ligne)", 'offlineOnly': False, 'onlineOnly': False, 'sublabel': "Écouter"
-    }
-    PRATIQUE_ARTISTIQUE_ABO = {
-    'label': "Pratique Artistique (Abonnements)", 'offlineOnly': True, 'onlineOnly': False, 'sublabel': "Pratiquer"
-    }
-    PRESSE_ABO = {
-    'label': "Presse (Abonnements)", 'offlineOnly': False, 'onlineOnly': True, 'sublabel': "Lire"
-    }
-
 
 class Thing(PcObject,
             Model,

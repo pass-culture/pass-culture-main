@@ -17,7 +17,7 @@ from utils.rest import ensure_current_user_has_rights, \
                        handle_rest_get_list, \
                        load_or_404
 from validation.offers import check_venue_exists_when_requested, check_user_has_rights_for_query
-from utils.search import get_search_filter
+from utils.search import get_keywords_filter
 
 
 @app.route('/offers', methods=['GET'])
@@ -30,8 +30,13 @@ def list_offers():
     check_venue_exists_when_requested(venue, venue_id)
     check_user_has_rights_for_query(offerer_id, venue, venue_id)
 
-    query = find_by_venue_id_or_offerer_id_and_search_terms_offers_where_user_has_rights(offerer_id, venue, venue_id,
-                                                                                         current_user, request)
+    query = find_by_venue_id_or_offerer_id_and_search_terms_offers_where_user_has_rights(
+        offerer_id,
+        venue,
+        venue_id,
+        current_user,
+        request.args.get('keywords')
+    )
 
     return handle_rest_get_list(Offer,
                                 include=OFFER_INCLUDES,

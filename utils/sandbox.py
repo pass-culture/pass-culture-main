@@ -154,12 +154,15 @@ def do_sandbox():
     event_occurrences = []
     for event_occurrence_mock in event_occurrence_mocks:
         offer = offers[event_occurrence_mock['offerIndex']]
-        query = EventOccurrence.query.filter_by(offerId=offer.id)
+        query = EventOccurrence.query.filter_by(
+            beginningDatetime=event_occurrence_mock['beginningDatetime'],
+            offerId=offer.id
+        )
         if query.count() == 0:
             event_occurrence = EventOccurrence(from_dict=event_occurrence_mock)
             event_occurrence.offer = offer
-            event_occurrence.beginningDatetime = datetime.now() + timedelta(days=1)
-            event_occurrence.endDatetime = event_occurrence.beginningDatetime + timedelta(hours=1)
+            if event_occurrence.endDatetime is None:
+                event_occurrence.endDatetime = event_occurrence.beginningDatetime + timedelta(hours=1)
             PcObject.check_and_save(event_occurrence)
             print("CREATED event_occurrence")
             pprint(vars(event_occurrence))

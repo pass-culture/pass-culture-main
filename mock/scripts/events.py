@@ -1,15 +1,20 @@
 """ events """
 event_mocks = [
     {
+        "durationMinutes": 60,
         "name": "Rencontre avec Franck Lepage",
-        "durationMinutes": 60
+        "type": "EventType.CONFERENCE_DEBAT_DEDICACE"
+
     },
     {
+        "durationMinutes": 120,
         "name": "Concert de Gael Faye",
-        "durationMinutes": 120
+        "type": "EventType.MUSIQUE"
+
     },
     {
+        "durationMinutes": 10,
         "name": "PNL chante Marx",
-        "durationMinutes": 10
+        "type": "EventType.MUSIQUE"
     }
 ]
