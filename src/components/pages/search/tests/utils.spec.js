@@ -63,24 +63,69 @@ describe('src | components | pages | search | utils', () => {
   })
 
   describe('searchResultsTitle', () => {
-    const keywords = 'fake word'
-    const items = []
-    const queryParams = {
-      categories: null,
-      date: null,
-      days: null,
-      distance: null,
-      jours: null,
-      latitude: null,
-      longitude: null,
-      [`mots-cles`]: null,
-      page: '2',
-      types: null,
-    }
-
     it('should return the title corresponding to search result', () => {
+      // given
+      const keywords = 'fake word'
+      const items = []
+      const queryParams = {
+        categories: null,
+        date: null,
+        days: null,
+        distance: null,
+        jours: null,
+        latitude: null,
+        longitude: null,
+        [`mots-cles`]: null,
+        page: '2',
+        types: null,
+      }
+
       expect(searchResultsTitle(keywords, items, queryParams)).toEqual(
         '"fake word" : 0 résultat'
+      )
+    })
+
+    it('should return the title corresponding to search result', () => {
+      // given
+      const keywords = 'fake word'
+      const items = []
+      const queryParams = {
+        categories: 'Lire',
+        date: null,
+        days: null,
+        distance: null,
+        jours: null,
+        latitude: null,
+        longitude: null,
+        [`mots-cles`]: null,
+        page: '2',
+        types: null,
+      }
+
+      expect(searchResultsTitle(keywords, items, queryParams)).toEqual(
+        '"fake word" : 0 résultat'
+      )
+    })
+
+    it('should return the title corresponding to search result', () => {
+      // given
+      const keywords = 'fake word'
+      const items = [{}, {}]
+      const queryParams = {
+        categories: 'Lire',
+        date: null,
+        days: null,
+        distance: null,
+        jours: null,
+        latitude: null,
+        longitude: null,
+        [`mots-cles`]: null,
+        page: '2',
+        types: null,
+      }
+
+      expect(searchResultsTitle(keywords, items, queryParams)).toEqual(
+        '"fake word" : 2 résultats'
       )
     })
   })

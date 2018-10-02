@@ -83,7 +83,7 @@ test("Je fais une recherche par mots-clés et j'ai des résultats", async t => {
 // si je veux revenir à ma page de début de recherche je clique sur la flêche < back et cela réinitialise tous les filtres
 
 // ------------------------ NAVIGATION PAR TYPE (LIRE, ETC)
-fixture.skip('O5_ Recherche | Recherche par catégorie').beforeEach(async t => {
+fixture.skip('O5_ Recherche | Navigation par catégorie').beforeEach(async t => {
   await t.useRole(regularUser).navigateTo(`${ROOT_PATH}recherche/`)
 })
 

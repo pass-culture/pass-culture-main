@@ -28,8 +28,9 @@ describe('src | components | pages | NavByOfferType', () => {
       }
       const store = mockStore(initialState)
       const props = {
-        handleQueryParamsChange: jest.fn(),
+        pagination: {},
         title: 'fake Title',
+        typeSublabels: [],
       }
 
       // when

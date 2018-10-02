@@ -23,6 +23,7 @@ import filterIconByState, {
 import Main from '../layout/Main'
 import NavigationFooter from '../layout/NavigationFooter'
 import { selectRecommendations } from '../../selectors'
+import selectTypeSublabels from '../../selectors/selectTypeSublabels'
 import { mapApiToWindow, windowToApiQuery } from '../../utils/pagination'
 
 const renderPageHeader = () => (
@@ -105,7 +106,14 @@ class SearchPage extends PureComponent {
   }
 
   render() {
-    const { history, location, match, pagination, recommendations } = this.props
+    const {
+      history,
+      location,
+      match,
+      pagination,
+      recommendations,
+      typeSublabels,
+    } = this.props
     const { windowQuery } = pagination
     const { keywordsKey, keywordsValue, withFilter } = this.state
     const keywords = windowQuery[mapApiToWindow.search]
@@ -204,7 +212,11 @@ class SearchPage extends PureComponent {
             exact
             path="/recherche"
             render={() => (
-              <NavByOfferType pagination={pagination} title="PAR CATÉGORIES" />
+              <NavByOfferType
+                pagination={pagination}
+                title="PAR CATÉGORIES"
+                typeSublabels={typeSublabels}
+              />
             )}
           />
           <Route
@@ -215,6 +227,7 @@ class SearchPage extends PureComponent {
                 items={recommendations}
                 loadMoreHandler={this.loadMoreHandler}
                 pagination={pagination}
+                typeSublabels={typeSublabels}
               />
             )}
           />
@@ -232,6 +245,7 @@ SearchPage.propTypes = {
   pagination: PropTypes.object.isRequired,
   recommendations: PropTypes.array.isRequired,
   search: PropTypes.object.isRequired,
+  typeSublabels: PropTypes.array.isRequired,
 }
 
 export default compose(
@@ -252,6 +266,7 @@ export default compose(
   }),
   connect(state => ({
     recommendations: selectRecommendations(state),
+    typeSublabels: selectTypeSublabels(state),
     user: state.user,
   }))
 )(SearchPage)

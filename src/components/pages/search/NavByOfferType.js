@@ -1,9 +1,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import { connect } from 'react-redux'
 
 import SearchPicture from './SearchPicture'
-import selectTypeSublabels from '../../../selectors/selectTypeSublabels'
 
 const NavByOfferType = ({ pagination, title, typeSublabels }) => (
   <div id="nav-by-offer-type">
@@ -42,6 +40,4 @@ NavByOfferType.propTypes = {
   typeSublabels: PropTypes.array.isRequired,
 }
 
-export default connect(state => ({
-  typeSublabels: selectTypeSublabels(state),
-}))(NavByOfferType)
+export default NavByOfferType

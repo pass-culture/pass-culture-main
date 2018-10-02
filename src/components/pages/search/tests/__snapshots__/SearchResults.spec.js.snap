@@ -33,6 +33,15 @@ ShallowWrapper {
           className="fs15 is-uppercase is-italic is-semi-bold mb12"
           id="results-title"
         />,
+        <NavResultsHeader
+          searchType={null}
+          typeSublabels={
+            Object {
+              "description": "Voulez-vous suivre un géant de 12 mètres dans la ville ? Rire devant un seul-en-scène ? Rêver le temps d’un opéra ou d’un spectacle de danse, assister à une pièce de théâtre, ou vous laisser conter une histoire ?",
+              "sublabel": "Applaudir",
+            }
+          }
+        />,
         <InfiniteScroller
           Tag="ul"
           handleLoadMore={[MockFunction]}
@@ -66,6 +75,21 @@ ShallowWrapper {
         "ref": null,
         "rendered": null,
         "type": "h2",
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "function",
+        "props": Object {
+          "searchType": null,
+          "typeSublabels": Object {
+            "description": "Voulez-vous suivre un géant de 12 mètres dans la ville ? Rire devant un seul-en-scène ? Rêver le temps d’un opéra ou d’un spectacle de danse, assister à une pièce de théâtre, ou vous laisser conter une histoire ?",
+            "sublabel": "Applaudir",
+          },
+        },
+        "ref": null,
+        "rendered": null,
+        "type": [Function],
       },
       Object {
         "instance": null,
@@ -104,6 +128,15 @@ ShallowWrapper {
             className="fs15 is-uppercase is-italic is-semi-bold mb12"
             id="results-title"
           />,
+          <NavResultsHeader
+            searchType={null}
+            typeSublabels={
+              Object {
+                "description": "Voulez-vous suivre un géant de 12 mètres dans la ville ? Rire devant un seul-en-scène ? Rêver le temps d’un opéra ou d’un spectacle de danse, assister à une pièce de théâtre, ou vous laisser conter une histoire ?",
+                "sublabel": "Applaudir",
+              }
+            }
+          />,
           <InfiniteScroller
             Tag="ul"
             handleLoadMore={[MockFunction]}
@@ -137,6 +170,21 @@ ShallowWrapper {
           "ref": null,
           "rendered": null,
           "type": "h2",
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "function",
+          "props": Object {
+            "searchType": null,
+            "typeSublabels": Object {
+              "description": "Voulez-vous suivre un géant de 12 mètres dans la ville ? Rire devant un seul-en-scène ? Rêver le temps d’un opéra ou d’un spectacle de danse, assister à une pièce de théâtre, ou vous laisser conter une histoire ?",
+              "sublabel": "Applaudir",
+            },
+          },
+          "ref": null,
+          "rendered": null,
+          "type": [Function],
         },
         Object {
           "instance": null,

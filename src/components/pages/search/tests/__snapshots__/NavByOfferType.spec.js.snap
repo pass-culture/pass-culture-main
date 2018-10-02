@@ -15,9 +15,10 @@ ShallowWrapper {
       }
     }
   >
-    <Connect(NavByOfferType)
-      handleQueryParamsChange={[MockFunction]}
+    <NavByOfferType
+      pagination={Object {}}
       title="fake Title"
+      typeSublabels={Array []}
     />
   </Provider>,
   Symbol(enzyme.__renderer__): Object {
@@ -31,10 +32,11 @@ ShallowWrapper {
   Symbol(enzyme.__node__): Object {
     "instance": null,
     "key": undefined,
-    "nodeType": "class",
+    "nodeType": "function",
     "props": Object {
-      "handleQueryParamsChange": [MockFunction],
+      "pagination": Object {},
       "title": "fake Title",
+      "typeSublabels": Array [],
     },
     "ref": null,
     "rendered": null,
@@ -44,10 +46,11 @@ ShallowWrapper {
     Object {
       "instance": null,
       "key": undefined,
-      "nodeType": "class",
+      "nodeType": "function",
       "props": Object {
-        "handleQueryParamsChange": [MockFunction],
+        "pagination": Object {},
         "title": "fake Title",
+        "typeSublabels": Array [],
       },
       "ref": null,
       "rendered": null,
