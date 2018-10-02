@@ -92,9 +92,20 @@ def create_booking():
     return jsonify(new_booking._asdict(include=BOOKING_INCLUDES)), 201
 
 
-@app.route('/bookings/<booking_id>', methods=['DELETE'])
+@app.route('/bookings/<booking_id>', methods=['PATCH'])
 @login_required
-def cancel_booking(booking_id):
+def patch_booking(booking_id):
+
+    is_cancelled = request.json.get('isCancelled')
+
+    if is_cancelled is not True:
+        api_errors = ApiErrors()
+        api_errors.addError(
+            'isCancelled',
+            "Vous pouvez seulement changer l'état isCancelled à vrai"
+        )
+        raise(api_errors)
+
     booking = booking_queries.find_by_id(dehumanize(booking_id))
 
     is_user_cancellation = booking.user == current_user
