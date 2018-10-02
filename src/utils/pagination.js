@@ -3,8 +3,7 @@ import { getObjectWithMappedKeys } from 'pass-culture-shared'
 
 export const mapWindowToApi = {
   lieu: 'venueId',
-  // [`mots-cles`]: 'keywords',
-  [`mots-cles`]: 'search',
+  [`mots-cles`]: 'keywords',
   structure: 'offererId',
 }
 
