@@ -1,12 +1,6 @@
 import get from 'lodash.get'
 import moment from 'moment'
-import {
-  closeModal,
-  dispatch,
-  Icon,
-  requestData,
-  showModal,
-} from 'pass-culture-shared'
+import { closeModal, Icon, requestData, showModal } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import React, { Component, Fragment } from 'react'
 import { connect } from 'react-redux'
@@ -21,23 +15,41 @@ import venueSelector from '../../../selectors/venue'
 import { bookingNormalizer } from '../../../utils/normalizers'
 
 const getBookingState = booking => {
-  const mapStateToPicto = {
-    payement: 'picto-validation',
-    validation: 'picto-encours-S',
-    pending: 'picto-temps-S',
-    error: 'picto-warning',
-    cancel: 'picto-warning',
-  }
+  const { isCancelled, isUsed } = booking
 
-  if (booking.isCancelled === true) {
+  // TODO
+  // if (isError) {
+  //  return {
+  //    picto: 'picto-warning',
+  //    message: 'Erreur',
+  //    text: '?'
+  //  }
+  //}
+
+  if (isCancelled === true) {
     return {
-      picto: mapStateToPicto.cancel,
+      picto: 'picto-warning',
       message: 'Annulé',
     }
   }
 
+  if (isUsed) {
+    // TODO
+    // if (isPayed) {
+    //  return {
+    //    picto: 'picto-validation',
+    //    message: 'Réglé',
+    //  }
+    // }
+
+    return {
+      picto: 'picto-encours-S',
+      message: 'Validé',
+    }
+  }
+
   return {
-    picto: mapStateToPicto.pending,
+    picto: 'picto-temps-S',
     message: 'En attente',
   }
 }
@@ -92,6 +104,7 @@ class BookingItem extends Component {
       dateModified,
       id,
       isCancelled,
+      isUsed,
       reimbursed_amount,
       token,
       userId,
