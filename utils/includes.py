@@ -126,7 +126,8 @@ PRO_BOOKING_INCLUDES = [
                 },
                 "eventOccurrence"
             ]
-    }
+    },
+    "user"
 ]
 
 USER_INCLUDES = [
