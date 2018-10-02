@@ -1,12 +1,10 @@
 import traceback
-from datetime import datetime
 from pprint import pprint
 
 from flask import current_app as app
 
 from domain.user_emails import send_final_booking_recap_email
-from models.event_occurrence import EventOccurrence
-from models.stock import Stock
+from repository.stock_queries import find_stocks_of_finished_events_when_no_recap_sent
 
 
 def send_final_booking_recaps():
@@ -19,10 +17,6 @@ def send_final_booking_recaps():
 
 
 def do_send_final_booking_recaps():
-    for stock in Stock.queryNotSoftDeleted().outerjoin(EventOccurrence) \
-            .filter((datetime.utcnow() > Stock.bookingLimitDatetime) &
-                    ((Stock.eventOccurrenceId == None) |
-                     (EventOccurrence.beginningDatetime > datetime.utcnow())) &
-                    (Stock.bookingRecapSent == None)):
+    for stock in find_stocks_of_finished_events_when_no_recap_sent():
         print('Sending booking recap for ' + str(stock))
         send_final_booking_recap_email(stock, app.mailjet_client.send.create)

@@ -286,12 +286,14 @@ def create_stock_with_event_offer(offerer, venue, beginning_datetime_future=True
     return stock
 
 
-def create_stock_from_event_occurrence(event_occurrence, price=10, available=10, soft_deleted=False):
+def create_stock_from_event_occurrence(event_occurrence, price=10, available=10, soft_deleted=False, recap_sent=False):
     stock = Stock()
     stock.eventOccurrence = event_occurrence
     stock.price = price
     stock.available = available
     stock.isSoftDeleted = soft_deleted
+    if recap_sent:
+        stock.bookingRecapSent = datetime.utcnow()
     return stock
 
 
