@@ -48,14 +48,10 @@ def test_departement_or_national_offers_with_national_event_returns_national_eve
 @pytest.mark.standalone
 @clean_database
 def test_type_search(app):
-
-    #type_label = str(EventType['CONFERENCE_DEBAT_DEDICACE'])
-    type_label = "EventType.CONFERENCE_DEBAT_DEDICACE"
+    # Given
+    type_label = str(EventType['CONFERENCE_DEBAT_DEDICACE'])
     other_type_label = str(EventType['MUSIQUE'])
 
-    print('type_label', type_label)
-
-    # Given
     conference_event = create_event(
         'Rencontre avec Franck Lepage',
         type=type_label
