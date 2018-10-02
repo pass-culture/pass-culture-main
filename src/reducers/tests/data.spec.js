@@ -1,9 +1,8 @@
 import data from '../data'
 
 describe('src | reducers | data  ', () => {
-  let state
   beforeEach(() => {
-    state = {
+    const state = {
       bookings: [],
       recommendations: [],
     }
@@ -12,11 +11,16 @@ describe('src | reducers | data  ', () => {
   it('should return the initial state by default', () => {
     // given
     const action = {}
+    const expected = {
+      bookings: [],
+      recommendations: [],
+      types: []
+    }
 
     // when
     const updatedState = data(undefined, action)
 
     // then
-    expect(updatedState).toEqual(state)
+    expect(updatedState).toEqual(expected)
   })
 })

@@ -129,69 +129,74 @@ class SearchPage extends PureComponent {
         footer={renderPageFooter}
       >
         <form className="section" onSubmit={this.onSubmit}>
-          <div className="field has-addons">
-            <p
-              className="control has-icons-right is-expanded"
-              key={keywordsKey}
-            >
-              <input
-                id="search"
-                defaultValue={keywordsValue}
-                className="input search-input"
-                placeholder="Saisissez une recherche"
-                type="text"
-                onChange={e => this.setState({ keywordsValue: e.target.value })}
-              />
-
-              {get(keywordsValue, 'length') > 0 && (
-                <span className="icon is-small is-right">
-                  <button
-                    type="button"
-                    className="no-border no-background is-red-text"
-                    id="refresh-keywords-button"
-                    onClick={() =>
-                      this.setState({
-                        // https://stackoverflow.com/questions/37946229/how-do-i-reset-the-defaultvalue-for-a-react-input
-                        // WE NEED TO MAKE THE PARENT OF THE KEYWORD INPUT
-                        // DEPENDING ON THE KEYWORDS VALUE IN ORDER TO RERENDER
-                        // THE INPUT WITH A SYNCED DEFAULT VALUE
-                        keywordsKey: keywordsKey + 1,
-                        keywordsValue: '',
-                      })
-                    }
-                  >
-                    <span aria-hidden className="icon-close" title="" />
-                  </button>
-                </span>
-              )}
-            </p>
-            <div className="control">
-              <button
-                className="button is-rounded is-medium"
-                id="keywords-search-button"
-                type="submit"
+          <div className="flex-columns">
+            <div className="field has-addons flex-1">
+              <p
+                className="control has-icons-right is-expanded"
+                key={keywordsKey}
               >
-                Chercher
+                <input
+                  id="search"
+                  defaultValue={keywordsValue}
+                  className="input search-input"
+                  placeholder="Saisissez une recherche"
+                  type="text"
+                  onChange={e =>
+                    this.setState({ keywordsValue: e.target.value })
+                  }
+                />
+
+                {get(keywordsValue, 'length') > 0 && (
+                  <span className="icon is-small is-right">
+                    <button
+                      type="button"
+                      className="no-border no-background is-red-text"
+                      id="refresh-keywords-button"
+                      onClick={() =>
+                        this.setState({
+                          // https://stackoverflow.com/questions/37946229/how-do-i-reset-the-defaultvalue-for-a-react-input
+                          // WE NEED TO MAKE THE PARENT OF THE KEYWORD INPUT
+                          // DEPENDING ON THE KEYWORDS VALUE IN ORDER TO RERENDER
+                          // THE INPUT WITH A SYNCED DEFAULT VALUE
+                          keywordsKey: keywordsKey + 1,
+                          keywordsValue: '',
+                        })
+                      }
+                    >
+                      <span aria-hidden className="icon-close" title="" />
+                    </button>
+                  </span>
+                )}
+              </p>
+              <div className="control flex-0">
+                <button
+                  className="button is-rounded is-medium"
+                  id="keywords-search-button"
+                  type="submit"
+                >
+                  Chercher
+                </button>
+              </div>
+            </div>
+
+            <div
+              className={classnames('show-filter', {
+                'is-visible': withFilter,
+              })}
+            >
+              <button
+                type="button"
+                className="button is-secondary"
+                id="open-close-filter-menu-button"
+                onClick={() => this.setState({ withFilter: !withFilter })}
+              >
+                &nbsp;
+                <Icon
+                  svg={`ico-${withFilter ? 'chevron-up' : isfilterIconActive}`}
+                />
+                &nbsp;
               </button>
             </div>
-          </div>
-          <div
-            className={classnames('show-filter', {
-              'is-visible': withFilter,
-            })}
-          >
-            <button
-              type="button"
-              className="button is-secondary"
-              id="open-close-filter-menu-button"
-              onClick={() => this.setState({ withFilter: !withFilter })}
-            >
-              &nbsp;
-              <Icon
-                svg={`ico-${withFilter ? 'chevron-up' : isfilterIconActive}`}
-              />
-              &nbsp;
-            </button>
           </div>
         </form>
 
