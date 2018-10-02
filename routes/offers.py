@@ -17,7 +17,7 @@ from utils.rest import ensure_current_user_has_rights, \
                        handle_rest_get_list, \
                        load_or_404
 from validation.offers import check_venue_exists_when_requested, check_user_has_rights_for_query
-from utils.search import get_search_filter
+from utils.search import get_keywords_filter
 
 
 @app.route('/offers', methods=['GET'])
