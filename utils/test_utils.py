@@ -276,11 +276,24 @@ def create_user(public_name='John Doe', first_name='John', last_name='Doe', post
     return user
 
 
-def create_stock_with_event_offer(offerer, venue, beginning_datetime_future=True, price=10,
-                                  booking_email='offer.booking.email@test.com', available=10):
+def create_stock_with_event_offer(
+    offerer,
+    venue,
+    beginning_datetime_future=True,
+    price=10,
+    booking_email='offer.booking.email@test.com',
+    available=10,
+    event_occurrence=None
+):
     stock = Stock()
     stock.offerer = offerer
     stock.price = price
+    stock.available = available
+
+    if event_occurrence is not None:
+        stock.eventOccurrence = event_occurrence
+        return stock
+
     stock.eventOccurrence = EventOccurrence()
     if beginning_datetime_future:
         stock.eventOccurrence.beginningDatetime = datetime(2019, 7, 20, 12, 0, 0, tzinfo=timezone.utc)
@@ -296,7 +309,7 @@ def create_stock_with_event_offer(offerer, venue, beginning_datetime_future=True
         from_dict={'isNational': False, 'durationMinutes': 10, 'name': 'Mains, sorts et papiers'}
     )
     stock.eventOccurrence.offer.venue = venue
-    stock.available = available
+
     return stock
 
 
@@ -357,12 +370,12 @@ def create_thing(thing_type='Book', thing_name='Test Book', media_urls='test/url
 
 
 def create_event(
-        event_name='Test event',
-        duration_minutes=60,
-        thumb_count=0,
-        dominant_color=None,
-        is_national=False,
-        type=None
+    event_name='Test event',
+    duration_minutes=60,
+    thumb_count=0,
+    dominant_color=None,
+    is_national=False,
+    type=None
 ):
     event = Event()
     event.name = event_name
@@ -375,15 +388,15 @@ def create_event(
 
 
 def create_thing_offer(
-        venue,
-        thing=None,
-        date_created=datetime.utcnow(),
-        booking_email='booking.email@test.com',
-        thing_type='Book',
-        thing_name='Test Book',
-        media_urls='test/urls',
-        author_name='Test Author',
-        thumb_count=1
+    venue,
+    thing=None,
+    date_created=datetime.utcnow(),
+    booking_email='booking.email@test.com',
+    thing_type='Book',
+    thing_name='Test Book',
+    media_urls='test/urls',
+    author_name='Test Author',
+    thumb_count=1
 ):
     offer = Offer()
     if thing:
@@ -503,8 +516,11 @@ def create_recommendation(offer=None,
     return recommendation
 
 
-def create_event_occurrence(offer, beginning_datetime=datetime.utcnow() + timedelta(hours=2),
-                            end_datetime=datetime.utcnow() + timedelta(hours=5)):
+def create_event_occurrence(
+    offer,
+    beginning_datetime=datetime.utcnow() + timedelta(hours=2),
+    end_datetime=datetime.utcnow() + timedelta(hours=5)
+):
     event_occurrence = EventOccurrence()
     event_occurrence.offer = offer
     event_occurrence.beginningDatetime = beginning_datetime

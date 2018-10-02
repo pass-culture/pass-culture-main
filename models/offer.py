@@ -3,9 +3,9 @@ from datetime import datetime
 from itertools import chain
 
 from sqlalchemy import BigInteger, CheckConstraint, Column, DateTime, desc, ForeignKey, String
-from sqlalchemy.orm import aliased, relationship
+from sqlalchemy.orm import relationship
 
-from models import DeactivableMixin, Event, EventOccurrence
+from models import DeactivableMixin, EventOccurrence
 from models.db import Model
 from models.pc_object import PcObject
 from models.providable_mixin import ProvidableMixin

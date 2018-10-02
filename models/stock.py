@@ -36,25 +36,25 @@ class Stock(PcObject,
                           default=datetime.utcnow)
 
     eventOccurrenceId = Column(BigInteger,
-                              ForeignKey("event_occurrence.id"),
-                              CheckConstraint('("eventOccurrenceId" IS NOT NULL AND "offerId" IS NULL)' +
+                               ForeignKey("event_occurrence.id"),
+                               CheckConstraint('("eventOccurrenceId" IS NOT NULL AND "offerId" IS NULL)' +
                                               'OR ("eventOccurrenceId" IS NULL AND "offerId" IS NOT NULL)',
                                               name='check_stock_has_event_occurrence_xor_offer'),
                               index=True,
                               nullable=True)
 
     eventOccurrence = relationship('EventOccurrence',
-                                  foreign_keys=[eventOccurrenceId],
-                                  backref='stocks')
+                                   foreign_keys=[eventOccurrenceId],
+                                   backref='stocks')
 
     offerId = Column(BigInteger,
-                        ForeignKey('offer.id'),
-                        index=True,
-                        nullable=True)
+                     ForeignKey('offer.id'),
+                     index=True,
+                     nullable=True)
 
     offer = relationship('Offer',
                          foreign_keys=[offerId],
-                         backref = 'thingStocks')
+                         backref='thingStocks')
 
 
     price = Column(Numeric(10, 2),

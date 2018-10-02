@@ -1,11 +1,14 @@
 import pytest
 
 from models import Thing, PcObject, Event
+from models.offer_type import EventType
 from repository.offer_queries import departement_or_national_offers, \
                                      get_offers_for_recommendations_search
 from tests.conftest import clean_database
 from utils.test_utils import create_event, \
+                             create_event_occurrence, \
                              create_event_offer, \
+                             create_stock_with_event_offer, \
                              create_thing, \
                              create_thing_offer, \
                              create_offerer, \
@@ -45,14 +48,21 @@ def test_departement_or_national_offers_with_national_event_returns_national_eve
 @pytest.mark.standalone
 @clean_database
 def test_type_search(app):
+
+    #type_label = str(EventType['CONFERENCE_DEBAT_DEDICACE'])
+    type_label = "EventType.CONFERENCE_DEBAT_DEDICACE"
+    other_type_label = str(EventType['MUSIQUE'])
+
+    print('type_label', type_label)
+
     # Given
     conference_event = create_event(
         'Rencontre avec Franck Lepage',
-        type="Conférence — Débat — Dédicace"
+        type=type_label
     )
     concert_event = create_event(
         'Concert de Gael Faye',
-        type="Musique (Concerts, Festivals)"
+        type=other_type_label
     )
 
     offerer = create_offerer(
@@ -80,10 +90,32 @@ def test_type_search(app):
 
     conference_offer = create_event_offer(venue, conference_event)
     concert_offer = create_event_offer(venue, concert_event)
-    PcObject.check_and_save(conference_offer, concert_offer)
+
+    conference_event_occurrence = create_event_occurrence(
+        conference_offer
+    )
+    concert_event_occurrence = create_event_occurrence(
+        concert_offer
+    )
+
+    conference_stock = create_stock_with_event_offer(
+        offerer,
+        venue,
+        event_occurrence=conference_event_occurrence
+    )
+    concert_stock = create_stock_with_event_offer(
+        offerer,
+        venue,
+        event_occurrence=concert_event_occurrence
+    )
+
+
+    PcObject.check_and_save(conference_stock, concert_stock)
 
     offers = get_offers_for_recommendations_search(
-        type_labels=["Conférence — Débat — Dédicace"],
+        type_labels=[
+            type_label
+        ],
     )
 
     assert conference_offer in offers

@@ -124,10 +124,17 @@ def get_offers_for_recommendations_search(
     max_distance=None,
     days_intervals=None):
 
+    print('qsdqd offer_query', Offer.query.count(), [(o.isActive, o.eventOccurrences) for o in Offer.query.all()])
+
+    # NOTE: filter_out_offers_on_soft_deleted_stocks filter then
+    # the offer with event that has NO event occurrence
+    # Do we exactly want this ?
     offer_query =  _filter_out_offers_on_soft_deleted_stocks_and_inactive_offers()
 
     # NOTE: which order of the filters is the best for minimal time computation ?
     # Question à 500 patates.
+
+    print('offer_query', offer_query.count())
 
     if max_distance is not None and latitude is not None and longitude is not None:
         distance_instrument = get_sql_geo_distance_in_kilometers(
@@ -160,6 +167,8 @@ def get_offers_for_recommendations_search(
                                  .outerjoin(Venue)\
                                  .filter(get_keywords_filter([Event, Thing, Venue], keywords))
 
+    print('count', offer_query.count())
+    print('type_labels', type_labels)
     if type_labels is not None:
         event_offer_query = offer_query.from_self()\
                                        .outerjoin(Event)\
