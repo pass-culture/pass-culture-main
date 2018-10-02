@@ -56,6 +56,7 @@ export function queryStringToObject(string = '') {
           objectkey = 'offererId'
           break
         default:
+          objectkey = key
           break
       }
       return Object.assign({}, result, { [objectkey]: value })
