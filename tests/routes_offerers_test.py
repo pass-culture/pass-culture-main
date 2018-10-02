@@ -336,3 +336,25 @@ def test_get_offerers_should_not_send_offerer_to_user_offerer_not_validated(app)
     # then
     assert response.status_code == 404
     assert response.json()['global'] == ['La page que vous recherchez n\'existe pas']
+
+
+@clean_database
+@pytest.mark.standalone
+def test_post_offerers_when_admin(app):
+    # Given
+    user = create_user(password='p@55sw0rd!', is_admin=True, can_book_free_offers=False)
+    auth_request = req_with_auth(email=user.email, password='p@55sw0rd!')
+    PcObject.check_and_save(user)
+
+    # When
+    body = {
+        'name': 'Test Offerer',
+        'siren': '418166096',
+        'address': '123 rue de Paris',
+        'postalCode': '93100',
+        'city': 'Montreuil'
+    }
+    response = auth_request.post(API_URL + '/offerers', json=body)
+
+    # then
+    assert response.status_code == 201

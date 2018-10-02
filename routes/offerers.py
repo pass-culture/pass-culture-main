@@ -80,10 +80,10 @@ def create_offerer():
         user_offerer = offerer.give_rights(current_user,
                                            RightsType.admin)
         PcObject.check_and_save(offerer, user_offerer)
-    try:
-        maybe_send_offerer_validation_email(offerer, user_offerer, app.mailjet_client.send.create)
-    except MailServiceException as e:
-        app.logger.error('Mail service failure', e)
+        try:
+            maybe_send_offerer_validation_email(offerer, user_offerer, app.mailjet_client.send.create)
+        except MailServiceException as e:
+            app.logger.error('Mail service failure', e)
     return jsonify(offerer._asdict(include=OFFERER_INCLUDES)), 201
 
 
