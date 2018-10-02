@@ -11,6 +11,7 @@ import offerSelector from '../../../selectors/offer'
 import offererSelector from '../../../selectors/offerer'
 import selectEventOccurrenceById from '../../../selectors/selectEventOccurenceById'
 import selectStockById from '../../../selectors/selectStockById'
+import selectUserById from '../../../selectors/selectUserById'
 import venueSelector from '../../../selectors/venue'
 import { bookingNormalizer } from '../../../utils/normalizers'
 
@@ -98,21 +99,18 @@ class BookingItem extends Component {
   }
 
   render() {
-    const { booking, event, offerer, stock, thing, venue } = this.props
+    const { booking, event, offerer, stock, thing, venue, user } = this.props
     const {
       amount,
       dateModified,
-      id,
       isCancelled,
-      isUsed,
       reimbursed_amount,
       token,
-      userId,
     } = booking
     const { bookingLimitDatetime, groupSize } = stock || {}
-
-    // TODO: we need to continue to extract the
-    // view attributes from the data
+    const { email, firstName, lastName } = user || {}
+    const userIdentifier =
+      firstName && lastName ? `${firstName} ${lastName}` : email
     const eventOrThing = event || thing
     const { name, type } = eventOrThing || {}
     const offererName = get(offerer, 'name')
@@ -127,7 +125,7 @@ class BookingItem extends Component {
             {name}
           </td>
           <td colSpan="5" className="title userName">
-            UserId: {userId} - BookingId: {id} - Token: {token}
+            {token}: {userIdentifier}
           </td>
           <td rowSpan="2">
             {!isCancelled && (
@@ -188,6 +186,9 @@ export default connect((state, ownProps) => {
   const thing = thingSelector(state, get(offer, 'thingId'))
   const venue = venueSelector(state, get(offer, 'venueId'))
   const offerer = offererSelector(state, get(venue, 'managingOffererId'))
+  const user = selectUserById(state, ownProps.booking.userId)
+
+  console.log('user', user)
   return {
     event,
     eventOccurrence,
@@ -196,5 +197,6 @@ export default connect((state, ownProps) => {
     stock,
     thing,
     venue,
+    user,
   }
 })(BookingItem)
