@@ -31,8 +31,11 @@ class SearchFilter extends Component {
   constructor(props) {
     super(props)
     this.state = {
+      add: this.handleQueryAdd,
+      change: this.handleQueryChange,
       isNew: false,
       query: Object.assign({}, props.pagination.windowQuery),
+      remove: this.handleQueryRemove,
     }
   }
 
@@ -118,13 +121,14 @@ class SearchFilter extends Component {
   }
 
   render() {
-    const visible = this.props.filterIsVisible
+    const { filterIsVisible } = this.props
+
     return (
-      <Transition in={visible} timeout={transitionDelay}>
+      <Transition in={filterIsVisible} timeout={transitionDelay}>
         {status => (
           <div
             // is-invisible is bulma style ?
-            className={classnames({ 'is-invisible': !visible })}
+            className={classnames({ 'is-invisible': !filterIsVisible })}
             id="search-filter-menu"
             style={{ ...defaultStyle, ...transitionStyles[status] }}>
             <FilterByDates filter={this.state} title="QUAND" />
