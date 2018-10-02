@@ -528,7 +528,7 @@ def test_cancel_booking_returns_200_and_effectively_marks_the_booking_as_cancell
 
     # When
     response = req_with_auth(user.email, user.clearTextPassword) \
-        .delete(API_URL + '/bookings/' + humanize(booking.id))
+        .patch(API_URL + '/bookings/' + humanize(booking.id), json={ "isCancelled": True })
 
     # Then
     assert response.status_code == 200
@@ -545,7 +545,7 @@ def test_cancel_booking_returns_404_if_booking_does_not_exist(app):
 
     # When
     response = req_with_auth(user.email, user.clearTextPassword) \
-        .delete(API_URL + '/bookings/AX')
+        .patch(API_URL + '/bookings/AX', json={ "isCancelled": True })
 
     # Then
     assert response.status_code == 404
@@ -564,7 +564,7 @@ def test_cancel_booking_for_other_users_returns_403_and_does_not_mark_the_bookin
 
     # When
     response = req_with_auth(user.email, user.clearTextPassword) \
-        .delete(API_URL + '/bookings/' + humanize(booking.id))
+        .patch(API_URL + '/bookings/' + humanize(booking.id), json={"isCancelled": True})
 
     # Then
     assert response.status_code == 403
@@ -585,7 +585,7 @@ def test_an_admin_cancelling_a_users_booking_returns_200_and_effectively_marks_t
 
     # When
     response = req_with_auth(admin_user.email, admin_user.clearTextPassword) \
-        .delete(API_URL + '/bookings/' + humanize(booking.id))
+        .patch(API_URL + '/bookings/' + humanize(booking.id), json={"isCancelled": True})
 
     # Then
     assert response.status_code == 200
@@ -1061,7 +1061,7 @@ def test_cannot_cancel_used_booking(app):
 
     # When
     response = req_with_auth(user.email, user.clearTextPassword) \
-        .delete(url)
+        .patch(API_URL + '/bookings/' + humanize(booking.id), json={"isCancelled": True})
 
     # Then
     assert response.status_code == 400
