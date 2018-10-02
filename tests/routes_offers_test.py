@@ -133,7 +133,7 @@ def test_get_offers_can_be_searched_and_filtered_and_paginated_at_the_same_time(
     venue_id = Venue.query.first().id
 
     # when
-    response = auth_request.get(API_URL + '/offers?venueId=' + humanize(venue_id) + '&page=1&search=Event')
+    response = auth_request.get(API_URL + '/offers?venueId=' + humanize(venue_id) + '&page=1&keywords=Event')
 
     # then
     offers = response.json()
