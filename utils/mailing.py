@@ -259,7 +259,7 @@ def make_validation_confirmation_email(user_offerer, offerer):
         else:
             user_offerer_rights = 'éditeur'
     email_html = render_template(
-        'validation_confirmation_email.html',
+        'mails/validation_confirmation_email.html',
         user_offerer_email=user_offerer_email,
         offerer=offerer,
         user_offerer_rights=user_offerer_rights

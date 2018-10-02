@@ -15,7 +15,7 @@ RECOMMENDATION_URL = API_URL + '/recommendations'
 @pytest.mark.standalone
 def test_put_recommendations_works_only_when_logged_in():
     # when
-    response = req.put(RECOMMENDATION_URL)
+    response = req.put(RECOMMENDATION_URL, headers={'origin': 'http://localhost:3000'})
 
     # then
     assert response.status_code == 401
@@ -24,7 +24,7 @@ def test_put_recommendations_works_only_when_logged_in():
 @pytest.mark.standalone
 def test_get_recommendations_works_only_when_logged_in():
     # when
-    response = req.get(RECOMMENDATION_URL + '?search=Training')
+    response = req.get(RECOMMENDATION_URL + '?search=Training', headers={'origin': 'http://localhost:3000'})
 
     # then
     assert response.status_code == 401
@@ -307,7 +307,7 @@ def test_put_recommendations_returns_one_recommendation_for_offer_on_event_with_
 @pytest.mark.standalone
 def test_get_favorite_recommendations_works_only_when_logged_in(app):
     # when
-    response = req.get(RECOMMENDATION_URL + '/favorites')
+    response = req.get(RECOMMENDATION_URL + '/favorites', headers={'origin': 'http://localhost:3000'})
 
     # then
     assert response.status_code == 401

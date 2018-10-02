@@ -24,7 +24,7 @@ from utils.test_utils import API_URL, \
 @pytest.mark.standalone
 def test_get_offerers_should_work_only_when_logged_in():
     # when
-    response = req.get(API_URL + '/offerers')
+    response = req.get(API_URL + '/offerers', headers={'origin': 'http://localhost:3000'})
 
     # then
     assert response.status_code == 401
@@ -180,7 +180,7 @@ def test_get_offerer_bookings_should_work_only_when_logged_in(app):
     # when
     offerer = create_offerer()
     PcObject.check_and_save(offerer)
-    response = req.get(API_URL + '/offerers/%s/bookings' % humanize(offerer.id))
+    response = req.get(API_URL + '/offerers/%s/bookings' % humanize(offerer.id), headers={'origin': 'http://localhost:3000'})
 
     # then
     assert response.status_code == 401
