@@ -28,7 +28,6 @@ from utils.rest import expect_json_data
 @app.route('/recommendations', methods=['GET'])
 @login_required
 def list_recommendations():
-
     search_params = get_recommendation_search_params(request.args)
 
     from models import User

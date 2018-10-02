@@ -48,17 +48,18 @@ def test_get_recommendations_works_only_when_logged_in():
 @pytest.mark.standalone
 def test_get_recommendations_returns_one_recommendation_found_from_search_with_matching_case(app):
     # given
+    search = "keywords=Training"
     user = create_user(email='test@email.com', password='P@55w0rd')
     offerer = create_offerer()
     venue = create_venue(offerer)
     offer = create_event_offer(venue, event_name='Training in Modern Jazz')
-    recommendation = create_recommendation(offer, user)
+    recommendation = create_recommendation(offer, user, search=search)
     stock = create_stock_from_offer(offer)
     PcObject.check_and_save(stock, recommendation)
     auth_request = req_with_auth(user.email, user.clearTextPassword)
 
     # when
-    response = auth_request.get(RECOMMENDATION_URL + '?keywords=Training')
+    response = auth_request.get(RECOMMENDATION_URL + '?%s' % search)
 
     # then
     recommendations = response.json()
@@ -70,17 +71,22 @@ def test_get_recommendations_returns_one_recommendation_found_from_search_with_m
 @pytest.mark.standalone
 def test_get_recommendations_returns_one_recommendation_found_from_search_ignoring_case(app):
     # given
+    search = "keywords=rencontres"
     user = create_user(email='test@email.com', password='P@55w0rd')
     offerer = create_offerer()
     venue = create_venue(offerer)
     offer = create_event_offer(venue, event_name='Rencontres avec des auteurs')
-    recommendation = create_recommendation(offer, user)
+    # NOTE: we need to create event occurrence and stock because
+    # GET recommendations filter offer without stock
+    event_occurrence = create_event_occurrence(offer)
+    stock = create_stock_from_event_occurrence(event_occurrence)
+    recommendation = create_recommendation(offer, user, search=search)
     stock = create_stock_from_offer(offer)
     PcObject.check_and_save(stock, recommendation)
     auth_request = req_with_auth(user.email, user.clearTextPassword)
 
     # when
-    response = auth_request.get(RECOMMENDATION_URL + '?keywords=rencontres')
+    response = auth_request.get(RECOMMENDATION_URL + '?%s' % search)
 
     # then
     recommendations = response.json()
@@ -100,9 +106,28 @@ def test_get_recommendations_does_not_return_recommendations_of_offers_with_soft
     offer2 = create_event_offer(venue, event_name='Rencontres avec des auteurs')
     recommendation1 = create_recommendation(offer1, user, search=search)
     recommendation2 = create_recommendation(offer2, user, search=search)
-    stock1 = create_stock_from_offer(offer1, price=10, soft_deleted=False)
-    stock2 = create_stock_from_offer(offer1, price=20, soft_deleted=True)
-    stock3 = create_stock_from_offer(offer2, price=30, soft_deleted=True)
+
+    # NOTE: we need to create event occurrence and stock because
+    # GET recommendations filter offer without stock
+    event_occurrence1 = create_event_occurrence(offer1)
+    event_occurrence2 = create_event_occurrence(offer1)
+    event_occurrence3 = create_event_occurrence(offer2)
+
+    stock1 = create_stock_from_event_occurrence(
+        event_occurrence1,
+        price=10,
+        soft_deleted=False
+    )
+    stock2 = create_stock_from_event_occurrence(
+        event_occurrence2,
+        price=20,
+        soft_deleted=True
+    )
+    stock3 = create_stock_from_event_occurrence(
+        event_occurrence3,
+        price=30,
+        soft_deleted=True
+    )
 
     PcObject.check_and_save(stock1, stock2, stock3, recommendation1, recommendation2)
     auth_request = req_with_auth(user.email, user.clearTextPassword)

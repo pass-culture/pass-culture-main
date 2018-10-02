@@ -282,17 +282,12 @@ def create_stock_with_event_offer(
     beginning_datetime_future=True,
     price=10,
     booking_email='offer.booking.email@test.com',
-    available=10,
-    event_occurrence=None
+    available=10
 ):
     stock = Stock()
     stock.offerer = offerer
     stock.price = price
     stock.available = available
-
-    if event_occurrence is not None:
-        stock.eventOccurrence = event_occurrence
-        return stock
 
     stock.eventOccurrence = EventOccurrence()
     if beginning_datetime_future:

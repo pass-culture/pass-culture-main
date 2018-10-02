@@ -1,3 +1,4 @@
+""" repository offer queries """
 import pytest
 
 from models import Thing, PcObject, Event
@@ -8,7 +9,7 @@ from tests.conftest import clean_database
 from utils.test_utils import create_event, \
                              create_event_occurrence, \
                              create_event_offer, \
-                             create_stock_with_event_offer, \
+                             create_stock_from_event_occurrence, \
                              create_thing, \
                              create_thing_offer, \
                              create_offerer, \
@@ -94,15 +95,11 @@ def test_type_search(app):
         concert_offer
     )
 
-    conference_stock = create_stock_with_event_offer(
-        offerer,
-        venue,
-        event_occurrence=conference_event_occurrence
+    conference_stock = create_stock_from_event_occurrence(
+        conference_event_occurrence
     )
-    concert_stock = create_stock_with_event_offer(
-        offerer,
-        venue,
-        event_occurrence=concert_event_occurrence
+    concert_stock = create_stock_from_event_occurrence(
+        concert_event_occurrence 
     )
 
 
