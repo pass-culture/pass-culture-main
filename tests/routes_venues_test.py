@@ -213,3 +213,23 @@ def test_get_venue_should_not_work_if_current_user_doesnt_have_rights(app):
     # then
     assert response.status_code == 403
     assert response.json()['global'] == ["Cette structure n'est pas enregistrée chez cet utilisateur."]
+
+
+@clean_database
+@pytest.mark.standalone
+def test_patch_cannot_change_managing_offerer_id(app):
+    # Given
+    offerer = create_offerer(siren='123456789')
+    other_offerer = create_offerer(siren='987654321')
+    user = create_user(email='user.pro@test.com')
+    venue = create_venue(offerer, name='Les petits papiers', is_virtual=False)
+    user_offerer = create_user_offerer(user, offerer)
+    PcObject.check_and_save(user_offerer, venue, other_offerer)
+    auth_request = req_with_auth(email=user.email, password=user.clearTextPassword)
+
+    # When
+    response = auth_request.patch(API_URL + '/venues/%s' % humanize(venue.id), json={'managingOffererId': humanize(other_offerer.id)})
+
+    # Then
+    assert response.status_code == 400
+    assert response.json()['venue'] == ['Vous ne pouvez pas changer la structure d\'un lieu']

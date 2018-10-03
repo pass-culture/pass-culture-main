@@ -2,6 +2,7 @@
 from flask import current_app as app, jsonify, request
 from flask_login import login_required
 
+from models import ApiErrors
 from models.user_offerer import RightsType
 from models.venue import Venue
 from repository.venue_queries import save_venue
@@ -10,7 +11,7 @@ from utils.rest import ensure_current_user_has_rights, \
     expect_json_data, \
     load_or_404, \
     handle_rest_get_list
-from validation.venues import validate_coordinates
+from validation.venues import validate_coordinates, check_valid_edition
 
 
 @app.route('/venues/<venueId>', methods=['GET'])
@@ -36,6 +37,8 @@ def create_venue():
 @login_required
 @expect_json_data
 def edit_venue(venueId):
+    managing_offerer_id = request.json['managingOffererId']
+    check_valid_edition(managing_offerer_id)
     venue = load_or_404(Venue, venueId)
     validate_coordinates(request.json.get('latitude', None), request.json.get('longitude', None))
     ensure_current_user_has_rights(RightsType.editor, venue.managingOffererId)

@@ -19,6 +19,13 @@ def validate_coordinates(raw_latitude, raw_longitude):
         raise api_errors
 
 
+def check_valid_edition(managing_offerer_id):
+    if managing_offerer_id:
+        errors = ApiErrors()
+        errors.addError('venue', 'Vous ne pouvez pas changer la structure d\'un lieu')
+        raise errors
+
+
 def _validate_longitude(api_errors, raw_longitude):
     try:
         longitude = Decimal(raw_longitude)
