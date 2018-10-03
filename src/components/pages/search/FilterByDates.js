@@ -57,12 +57,12 @@ class FilterByDates extends Component {
     const days = decodeURI(filter.query[mapApiToWindow.days] || '')
 
     return (
-      <div id="filter-by-dates" className="p12">
+      <div id="filter-by-dates" className="p12 mb12">
         <h2 className="fs15 is-italic is-uppercase text-center mb12">
           {title}
         </h2>
         <div
-          style={{ height: '70px' }}
+          style={{ height: '62px' }}
           className="is-relative is-full-width is-clipped"
         >
           <div className="pc-scroll-horizontal">

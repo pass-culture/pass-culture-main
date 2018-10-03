@@ -51,12 +51,8 @@ class FilterByDistance extends Component {
     const distanceValue = filter.query.distance || 20000
 
     return (
-      <div
-        key={distanceKey}
-        className="dotted-bottom-primary"
-        id="filter-by-distance"
-      >
-        <h2 className="fs18 is-italic is-uppercase text-center">
+      <div key={distanceKey} className="p12 mb12" id="filter-by-distance">
+        <h2 className="fs15 is-italic is-uppercase text-center mb12">
           {title}
         </h2>
         <select
@@ -71,6 +67,7 @@ class FilterByDistance extends Component {
             </option>
           ))}
         </select>
+        <hr className="dotted-bottom-primary" />
       </div>
     )
   }
