@@ -1,4 +1,4 @@
-import classnames from 'classnames'
+// import classnames from 'classnames'
 import get from 'lodash.get'
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
@@ -27,7 +27,7 @@ import { mapApiToWindow, windowToApiQuery } from '../../utils/pagination'
 
 const renderPageHeader = () => (
   <header className="no-dotted-border">
-    <h1>
+    <h1 className="is-normal fs19">
 Recherche
     </h1>
   </header>
@@ -115,9 +115,10 @@ class SearchPage extends PureComponent {
       windowQuery
     )
     const isfilterIconActive = filterIconByState(filtersActive)
-
+    const keywordsInputClass = (withFilter && 'is-visible') || ''
     return (
       <Main
+        id="search-page"
         backButton={
           match.params.view === 'resultats' && {
             onClick: () => history.push('/recherche'),
@@ -128,13 +129,13 @@ class SearchPage extends PureComponent {
         name="search"
         footer={renderPageFooter}
       >
-        <form className="section" onSubmit={this.onSubmit}>
-          <div className="flex-columns">
-            <div className="field has-addons flex-1">
-              <p
-                className="control has-icons-right is-expanded"
-                key={keywordsKey}
-              >
+        <form onSubmit={this.onSubmit}>
+          <div className="flex-columns items-start">
+            <div
+              id="search-page-keywords-field"
+              className="field has-addons flex-columns flex-1"
+            >
+              <p className="control has-icons-right flex-1" key={keywordsKey}>
                 <input
                   id="search"
                   defaultValue={keywordsValue}
@@ -180,21 +181,17 @@ class SearchPage extends PureComponent {
             </div>
 
             <div
-              className={classnames('show-filter', {
-                'is-visible': withFilter,
-              })}
+              id="search-page-toggle-filters-button"
+              className={`flex-0 text-center ml12 ${keywordsInputClass}`}
             >
               <button
                 type="button"
-                className="button is-secondary"
-                id="open-close-filter-menu-button"
+                className="no-border no-background no-outline"
                 onClick={() => this.setState({ withFilter: !withFilter })}
               >
-                &nbsp;
                 <Icon
                   svg={`ico-${withFilter ? 'chevron-up' : isfilterIconActive}`}
                 />
-                &nbsp;
               </button>
             </div>
           </div>

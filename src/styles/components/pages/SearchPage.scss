@@ -23,14 +23,29 @@
   pointer-events: all;
 }
 
+#search-page-keywords-field {
+  margin-bottom: 0;
+}
+
+#search-page-toggle-filters-button {
+  width: 44px;
+  min-width: 44px;
+  max-width: 44px;
+}
+
+#search-page-toggle-filters-button.is-visible {
+  background: #EDF1F2;
+}
+
+/*
 .show-filter {
   display: flex;
 
   &.is-visible {
-    background: #EDF1F2;
     margin-left: 1em;
     padding-right: 2em;
     padding-bottom: 2em;
     border-radius: 0.25em;
   }
 }
+*/

@@ -124,31 +124,31 @@ class SearchFilter extends Component {
     const { filterIsVisible } = this.props
 
     return (
-      <Transition in={filterIsVisible} timeout={transitionDelay}>
-        {status => (
-          <div
-            // is-invisible is bulma style ?
-            className={classnames({ 'is-invisible': !filterIsVisible })}
-            id="search-filter-menu"
-            style={{ ...defaultStyle, ...transitionStyles[status] }}>
-            <FilterByDates filter={this.state} title="QUAND" />
-            <FilterByDistance filter={this.state} title="OÙ" />
-            <FilterByOfferTypes filter={this.state} title="QUOI" />
-            <button
-              className="button fs24"
-              onClick={this.onResetClick}
-              type="button">
-              Réinitialiser
-            </button>
-            <button
-              className="button fs24"
-              onClick={this.onFilterClick}
-              type="button">
-              Filtrer
-            </button>
-          </div>
-        )}
-      </Transition>
+      // <Transition in={filterIsVisible} timeout={transitionDelay}>
+      //   {status => (
+      <div
+        // is-invisible is bulma style ?
+        className={classnames({ 'is-invisible': !filterIsVisible })}
+        id="search-filter-menu"
+        style={{ ...defaultStyle, ...transitionStyles[status] }}>
+        <FilterByDates filter={this.state} title="QUAND" />
+        <FilterByDistance filter={this.state} title="OÙ" />
+        <FilterByOfferTypes filter={this.state} title="QUOI" />
+        <button
+          className="button fs24"
+          onClick={this.onResetClick}
+          type="button">
+          Réinitialiser
+        </button>
+        <button
+          className="button fs24"
+          onClick={this.onFilterClick}
+          type="button">
+          Filtrer
+        </button>
+      </div>
+      //   )}
+      // </Transition>
     )
   }
 }
