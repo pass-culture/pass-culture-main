@@ -1,6 +1,6 @@
 """ transfer model """
 from datetime import datetime
-from enum import Enum
+import enum
 from sqlalchemy import BigInteger, \
     Boolean, \
     Column, \
@@ -9,26 +9,29 @@ from sqlalchemy import BigInteger, \
     event, \
     ForeignKey, \
     Integer, \
-    String, Numeric
+    String,\
+    Numeric,\
+    Text, \
+    Enum
 from sqlalchemy.orm import relationship
 
 from models.db import Model
 from models.pc_object import PcObject
 
 
-class TransferStatus(Enum):
+class PaymentStatus(enum.Enum):
     PENDING = 'PENDING'
     ERROR = 'ERROR'
     DONE = 'DONE'
 
 
-class TransferType(Enum):
+class PaymentType(enum.Enum):
     INITIAL = 'INITIAL'
     CORRECTION = 'CORRECTION'
 
 
-class Transfer(PcObject,
-               Model):
+class Payment(PcObject,
+              Model):
 
     id = Column(BigInteger,
                 primary_key=True,
@@ -45,7 +48,7 @@ class Transfer(PcObject,
 
     booking = relationship('Booking',
                            foreign_keys=[bookingId],
-                           backref='transfers')
+                           backref='payments')
 
     offererId = Column(BigInteger,
                        ForeignKey("offerer.id"),
@@ -54,16 +57,26 @@ class Transfer(PcObject,
 
     offerer = relationship('Offerer',
                            foreign_keys=[offererId],
-                           backref='transfers')
+                           backref='payments')
 
     amount = Column(Numeric(10, 2),
                     nullable=False)
 
-    type = Column(Enum(TransferType),
+    type = Column(Enum(PaymentType),
                   nullable=False)
 
     iban = Column(String(27),
                   nullable=True)
 
-    status = Column(Enum(TransferStatus),
+    status = Column(Enum(PaymentStatus),
                     nullable=False)
+
+    dateStatus = Column(DateTime,
+                        nullable=False)
+
+    comment = Column(Text,
+                     nullable=True)
+
+    author = Column(String(27),
+                    nullable=False)
+
