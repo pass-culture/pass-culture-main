@@ -12,12 +12,12 @@ $red: #EB0055;
 $violet: #bd10e0;
 $green: #b8e986;
 $blue: #0076ff;
-
-$primary: $red;
-
 $grey-light: #dae1e3;
 $grey: #757575;
 
+$primary: $red;
+
+// Texts
 $text: $black;
 $link: $text;
 $title-color: inherit;
@@ -34,14 +34,13 @@ $weight-normal: 400;
 $weight-semibold: 500;
 $weight-bold: 700;
 
-$font-size: 16px; // Single px-value. Use `rem` or `em` every elsewhere.
-// $button-font-size: 18px;
+$font-size: 16px;
 
 $body-line-height: 1.1875em;
 $title-line-height: $body-line-height;
 $subtitle-line-height: 1.2em;
-// $button-line-height: 22px;
 
+// Sizes
 $size-xlarge: 2.5rem; // 40px
 $size-large: 2rem; // 32px
 $size-medium: 1.25rem; // 20px
@@ -82,6 +81,7 @@ $button-disabled-opacity: 0.3;
 
 // Spacing
 $section-padding: 1rem 0;
+$page-padding: 4rem;
 $footer-height-padding: 1rem;
 
 $header-height: 3.375rem; // 54px
@@ -98,3 +98,11 @@ $box-shadow-hover: 0 0 10px rgba(0, 0, 0, 0.4);
 
 // Notifications
 $notification-padding: 0.75rem;
+
+// Mixins
+$rem-baseline: 16px !default;
+$rem-fallback: true !default; // always force callback
+$rem-px-only: false !default;
+
+// Helpers
+$intSizes: (0, 3, 5, 7, 8, 12, 16, 18, 20, 22, 24, 28, 30, 32, 36, 40, 48, 60);

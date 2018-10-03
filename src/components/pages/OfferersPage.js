@@ -70,7 +70,7 @@ class OfferersPage extends Component {
           </p>
           <NavLink
             to={`/structures/nouveau`}
-            className="button is-primary is-outlined">
+            className="cta button is-primary is-outlined">
             + Rattacher une structure supplémentaire
           </NavLink>
         </HeroSection>
