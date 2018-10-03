@@ -1,4 +1,3 @@
-import classnames from 'classnames'
 import get from 'lodash.get'
 import {
   CancelButton,
@@ -517,45 +516,47 @@ class OfferPage extends Component {
 
                   {this.hasConditionalField('visa') && (
                     <Field
-                      type="text"
-                      label="Visa d'exploitation (obligatoire si applicable)"
+                      isExpanded
+                      label="Visa d'exploitation"
                       name="visa"
                       setKey="extraData"
-                      isExpanded
+                      sublabel="(obligatoire si applicable)"
+                      type="text"
                     />
                   )}
 
                   {this.hasConditionalField('isbn') && (
                     <Field
-                      type="text"
-                      label="ISBN (obligatoire si applicable)"
+                      isExpanded
+                      label="ISBN"
                       name="isbn"
                       setKey="extraData"
-                      isExpanded
+                      sublabel="(obligatoire si applicable)"
+                      type="text"
                     />
                   )}
 
                   {this.hasConditionalField('musicType') && (
                     <Fragment>
                       <Field
-                        type="select"
                         label="Genre musical"
                         name="musicType"
-                        setKey="extraData"
                         options={musicOptions}
                         optionValue="code"
                         optionLabel="label"
+                        setKey="extraData"
+                        type="select"
                       />
 
                       {get(musicSubOptions, 'length') > 0 && (
                         <Field
-                          type="select"
                           label="Sous genre"
                           name="musicSubType"
-                          setKey="extraData"
                           options={musicSubOptions}
                           optionValue="code"
                           optionLabel="label"
+                          setKey="extraData"
+                          type="select"
                         />
                       )}
                     </Fragment>
@@ -564,13 +565,13 @@ class OfferPage extends Component {
                   {this.hasConditionalField('showType') && (
                     <Fragment>
                       <Field
-                        type="select"
                         label="Type de spectacle"
                         name="showType"
-                        setKey="extraData"
                         options={showOptions}
                         optionValue="code"
                         optionLabel="label"
+                        setKey="extraData"
+                        type="select"
                       />
 
                       {get(showSubOptions, 'length') > 0 && (
