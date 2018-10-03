@@ -341,7 +341,7 @@ class EventOccurrenceAndStockItem extends Component {
             </td>
             <td title="Laissez vide si pas de limite">
               <Field
-                maxDate={beginningDatetime}
+                maxDate={isStockOnly ? undefined : beginningDatetime}
                 name="bookingLimitDatetime"
                 placeholder="Laissez vide si pas de limite"
                 type="date"
