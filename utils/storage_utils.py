@@ -1,5 +1,6 @@
 import os
 import swiftclient
+from pathlib import Path
 
 
 def swift_con(dest_container_name):
@@ -46,18 +47,40 @@ def swift_con_prod():
                                   auth_version=auth_version)
 
 
-def do_copy_prod_container_content_to_dest_container(dest_container_name):
+def do_local_backup_prod_container(prod_container_name, dest_folder_name):
+    if prod_container_name == 'storage-pc':
+        prod_conn = swift_con_prod()
+    else:
+        print('Ce conteneur ne semble pas exister')
+        return 1
+
+    for data in prod_conn.get_container(prod_container_name)[1]:
+        if 'mediations' in data['name']:
+            pass
+        elif 'events' in data['name']:
+            pass
+        else:
+            obj_tuple = prod_conn.get_object(prod_container_name, data['name'])
+            destination_file = Path(os.path.dirname(os.path.realpath(__file__))) \
+                               / '..' / 'static' / dest_folder_name / data['name']
+            with open(destination_file, 'wb') as file:
+                file.write(obj_tuple[1])
+            print("Object [" + data['name'] + "] retrieved")
+
+    return 0
+
+
+def do_copy_prod_container_content_to_dest_container(prod_container_name, dest_container_name):
     if dest_container_name == 'storage-pc-staging' or dest_container_name == 'storage-pc-dev':
         conn = swift_con(dest_container_name)
     else:
         print('Ce conteneur ne semble pas exister')
         return 1
 
-    src_container_name = os.environ.get('OVH_CONTAINER_NAME_PROD')
     prod_conn = swift_con_prod()
 
-    for data in prod_conn.get_container(src_container_name)[1]:
-        obj_tuple = conn.get_object(src_container_name, data['name'])
+    for data in prod_conn.get_container(prod_container_name)[1]:
+        obj_tuple = prod_conn.get_object(prod_container_name, data['name'])
         conn.put_object(dest_container_name,
                         data['name'],
                         contents=obj_tuple[1],
