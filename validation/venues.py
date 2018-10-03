@@ -22,7 +22,7 @@ def validate_coordinates(raw_latitude, raw_longitude):
 def check_valid_edition(managing_offerer_id):
     if managing_offerer_id:
         errors = ApiErrors()
-        errors.addError('venue', 'Vous ne pouvez pas changer la structure d\'un lieu')
+        errors.addError('managingOffererId', 'Vous ne pouvez pas changer la structure d\'un lieu')
         raise errors
 
 

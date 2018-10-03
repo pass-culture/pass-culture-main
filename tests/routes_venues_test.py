@@ -199,7 +199,7 @@ def test_create_venue_returns_400_if_given_latitude_and_longitudes_are_invalid(a
 
 @clean_database
 @pytest.mark.standalone
-def test_get_venue_should_not_work_if_current_user_doesnt_have_rights(app):
+def test_get_venue_should_when_current_user_doesnt_have_rights_status_code_403(app):
     # given
     offerer = create_offerer()
     user = create_user(email='user.pro@test.com')
@@ -217,7 +217,7 @@ def test_get_venue_should_not_work_if_current_user_doesnt_have_rights(app):
 
 @clean_database
 @pytest.mark.standalone
-def test_patch_cannot_change_managing_offerer_id(app):
+def test_patch_change_managing_offerer_id_status_400(app):
     # Given
     offerer = create_offerer(siren='123456789')
     other_offerer = create_offerer(siren='987654321')
@@ -232,4 +232,4 @@ def test_patch_cannot_change_managing_offerer_id(app):
 
     # Then
     assert response.status_code == 400
-    assert response.json()['venue'] == ['Vous ne pouvez pas changer la structure d\'un lieu']
+    assert response.json()['managingOffererId'] == ['Vous ne pouvez pas changer la structure d\'un lieu']
