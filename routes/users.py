@@ -188,7 +188,14 @@ def signup():
             user_offerer.generate_validation_token()
             objects_to_save = [new_user, user_offerer]
     else:
-        objects_to_save = [new_user]
+        if IS_INTEGRATION:
+            deposit = Deposit()
+            deposit.amount = 499.99
+            deposit.user = new_user
+            deposit.source = 'test'
+            objects_to_save = [new_user, deposit]
+        else:
+            objects_to_save = [new_user]
 
     PcObject.check_and_save(*objects_to_save)
 
