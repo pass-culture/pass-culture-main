@@ -26,23 +26,31 @@ const Loader = ({ haserror, isempty, isloading }) => {
   const shouldhide = !isloading && !isempty && !haserror
   return (
     <Transition in={!shouldhide} timeout={duration}>
-      {state => (
+      {status => (
         <div
           id="application-loader"
-          style={{ ...defaultStyle, ...transitionStyles[state] }}
+          className="flex-rows"
+          style={{ ...defaultStyle, ...transitionStyles[status] }}
         >
-          <Icon
-            draggable={false}
-            svg="ico-loading-card"
-            alt="Chargement en cours. Merci de patienter…"
-          />
-          <h2 className="fs20">
-            {(isempty && 'Aucune offre pour le moment') || ''}
-            {/* // FIXME -> mettre un label plus sexy avec redirection */}
-            {(haserror && 'Erreur de chargement') || ''}
-            {(!isempty && !haserror && 'Chargement des offres') || ''}
-          </h2>
-          {showfooter && <NavigationFooter />}
+          <div className="flex-1 flex-rows flex-center">
+            <Icon
+              draggable={false}
+              svg="ico-loading-card"
+              alt="Chargement en cours. Merci de patienter…"
+            />
+            <h2 className="fs20">
+              {(isempty && 'Aucune offre pour le moment') || ''}
+              {/* // FIXME -> mettre un label plus sexy avec redirection */}
+              {(haserror && 'Erreur de chargement') || ''}
+              {(!isempty && !haserror && 'Chargement des offres') || ''}
+            </h2>
+          </div>
+          {showfooter && (
+            <NavigationFooter
+              theme="transparent"
+              className="dotted-top-white"
+            />
+          )}
         </div>
       )}
     </Transition>
