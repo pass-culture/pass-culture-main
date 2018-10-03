@@ -23,7 +23,7 @@ def _get_origin_header_whitelist():
 
 
 def _get_endpoint_exceptions():
-    return ['patch_booking_by_token', 'get_booking_by_token']
+    return ['patch_booking_by_token', 'get_booking_by_token', 'send_storage_file']
 
 
 def _get_origin_header_whitelist_for_non_dev_environments(api_url):
