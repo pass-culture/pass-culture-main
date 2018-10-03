@@ -4,7 +4,7 @@ from flask_login import current_user, login_required
 
 from domain.admin_emails import maybe_send_offerer_validation_email
 from domain.reimbursement import find_all_booking_reimbursement
-from models import Offerer, PcObject, RightsType, ApiErrors
+from models import Offerer, PcObject, RightsType
 from models.venue import create_digital_venue
 from repository.booking_queries import find_offerer_bookings
 from repository.user_offerer_queries import filter_query_where_user_is_user_offerer_and_is_validated
@@ -17,7 +17,6 @@ from utils.rest import ensure_current_user_has_rights, \
                        load_or_404, \
                        login_or_api_key_required
 from utils.search import get_keywords_filter
-from validation.offerers import check_valid_edition
 
 
 @app.route('/offerers', methods=['GET'])
@@ -91,10 +90,7 @@ def create_offerer():
 @login_or_api_key_required
 @expect_json_data
 def patch_offerer(offererId):
-    ensure_current_user_has_rights(RightsType.admin, dehumanize(offererId))
-    data = request.json
-    check_valid_edition(data)
     offerer = Offerer.query.filter_by(id=dehumanize(offererId)).first()
-    offerer.populateFromDict(data, skipped_keys=['validationToken'])
+    offerer.populateFromDict(request.json, skipped_keys=['validationToken'])
     PcObject.check_and_save(offerer)
     return jsonify(offerer._asdict(include=OFFERER_INCLUDES)), 200
