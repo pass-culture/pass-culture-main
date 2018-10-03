@@ -4,10 +4,7 @@ export default createSelector(
   state => state.data.types,
   (state, isVenueVirtual) => isVenueVirtual,
   (types, isVenueVirtual) => {
-    let filteredTypes = types.map(t => {
-      const [, value] = t.value.split('.')
-      return Object.assign({}, t, { value })
-    })
+    let filteredTypes = [...types]
     if (typeof isVenueVirtual !== 'undefined') {
       if (isVenueVirtual) {
         filteredTypes = filteredTypes.filter(t => !t.offlineOnly)
