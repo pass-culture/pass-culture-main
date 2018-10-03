@@ -9,7 +9,7 @@ from domain.expenses import get_expenses
 from domain.admin_emails import maybe_send_offerer_validation_email
 from domain.password import validate_reset_request, check_reset_token_validity, validate_new_password_request, \
     check_password_strength, check_new_password_validity, generate_reset_token, validate_change_password_request
-from models import ApiErrors, Offerer, PcObject, User
+from models import ApiErrors, Deposit, Offerer, PcObject, User
 from models.user_offerer import RightsType
 from models.venue import create_digital_venue
 from repository.user_queries import find_user_by_email, find_user_by_reset_password_token
