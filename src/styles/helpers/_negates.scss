@@ -15,6 +15,16 @@
   border: 0;
 }
 
+.no-scroll-y,
+.no-overflow-y {
+  overflow-y: hidden;
+}
+
+.no-scroll-x,
+.no-overflow-x {
+  overflow-x: hidden;
+}
+
 .no-background {
   background-color: transparent;
 }

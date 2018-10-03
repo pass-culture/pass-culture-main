@@ -20,6 +20,10 @@ const checkboxes = [
     // guess that 273 years are enough
     value: '5-100000',
   },
+  {
+    label: 'DATE PICKER TO DO',
+    value: 'date-picker',
+  },
 ]
 
 class FilterByDates extends Component {
@@ -53,31 +57,38 @@ class FilterByDates extends Component {
     const days = decodeURI(filter.query[mapApiToWindow.days] || '')
 
     return (
-      <div className="dotted-bottom-primary" id="filter-by-dates">
-        <h2 className="fs18 is-italic is-uppercase text-center">
+      <div id="filter-by-dates" className="p12">
+        <h2 className="fs15 is-italic is-uppercase text-center mb12">
           {title}
         </h2>
-        <div className="filter-menu-outer">
-          {checkboxes.map(({ label, value }) => (
-            <div id="date-checkbox" className="filter-menu-inner" key={value}>
-              <div className="field field-checkbox">
-                <label className="fs22"> 
-                  {' '}
-                  {label}
+        <div
+          style={{ height: '70px' }}
+          className="is-relative is-full-width is-clipped"
+        >
+          <div className="pc-scroll-horizontal">
+            <div className="list flex-columns pb12">
+              {checkboxes.map(({ label, value }) => (
+                <label
+                  key={value}
+                  className="item fs19 flex-columns items-center py5 pl7 pr22"
+                >
+                  <span className="flex-0 field field-checkbox">
+                    <input
+                      type="checkbox"
+                      className="input no-background"
+                      checked={days.includes(value)}
+                      onChange={() => this.onChange(value)}
+                    />
+                  </span>
+                  <span className="flex-1" style={{ whiteSpace: 'pre' }}>
+                    {label}
+                  </span>
                 </label>
-                <input
-                  checked={days.includes(value)}
-                  className="input is-normal"
-                  onChange={() => this.onChange(value)}
-                  type="checkbox"
-                />
-              </div>
+              ))}
             </div>
-          ))}
-          <div className="filter-menu-inner">
-DATE PICKER TO DO
           </div>
         </div>
+        <hr className="dotted-bottom-primary" />
       </div>
     )
   }

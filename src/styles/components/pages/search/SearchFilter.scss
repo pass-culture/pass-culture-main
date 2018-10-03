@@ -4,10 +4,10 @@
   left: 0.5rem;
   right: 0.5rem;
 
-  h2 {
-    margin-bottom: 1em;
-    margin-top: 1em;
-  }
+  // h2 {
+  //   margin-bottom: 1em;
+  //   margin-top: 1em;
+  // }
 
   button {
     background-color: #EDF1F2;
@@ -19,24 +19,35 @@
 }
 
 #filter-by-dates {
-  #date-checkbox {
-    border-radius: 0.5em;
-    border: solid $primary 0.1em;
-    margin: 1rem;
-    padding: 1rem;
+  .list .item {
+    border-radius: 4px;
+    border: solid $primary 1px;
+  }
+
+  .list .item + .item {
+    @extend .ml22;
+  }
+
+  .list .item .field {
+    margin-bottom: 0;
+  }
+
+  .list .item .field .input {
+    margin-right: 7px;
   }
 }
 
 #filter-by-distance {
   padding-bottom: 0.25rem;
+
   select {
     border-color: $primary;
     border-radius: $control-radius;
     min-width: 250px;
     margin: 3rem;
     padding: 1rem;
-    -webkit-appearance: none;  /*Removes default chrome and safari style*/
-    -moz-appearance: none;  /*Removes default style Firefox*/
+    -webkit-appearance: none; /*Removes default chrome and safari style*/
+    -moz-appearance: none; /*Removes default style Firefox*/
     background: url('/icons/dropdown-disclosure-down.svg') no-repeat;
     background-position: right;
   }
@@ -60,7 +71,9 @@
 }
 
 .filter-menu-inner {
-  flex: 0 0 25%; /* doesn't grow nor shrink, initial width set to 25% of the parent's */
+  // flex: 0 0 25%;
+
+  /* doesn't grow nor shrink, initial width set to 25% of the parent's */
   padding: 0.5em;
   border-radius: 1.125em;
 

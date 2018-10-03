@@ -26,7 +26,7 @@ import { selectRecommendations } from '../../selectors'
 import { mapApiToWindow, windowToApiQuery } from '../../utils/pagination'
 
 const renderPageHeader = () => (
-  <header>
+  <header className="no-dotted-border">
     <h1>
 Recherche
     </h1>

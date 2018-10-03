@@ -9,3 +9,6 @@
 // tous les fichiers contenant des no-*
 // exemple: .no-background, .no-padding...
 @import '_negates.scss';
+@import '_floats.scss';
+// pc-horizontal-scroll, scroll-x, no-scroll-x...
+@import '_scrolls.scss';
