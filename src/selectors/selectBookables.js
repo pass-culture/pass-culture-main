@@ -6,7 +6,7 @@ import cloneDeep from 'lodash.clonedeep'
 import createCachedSelector from 're-reselect'
 
 import { pipe } from '../utils/functionnals'
-import { filterAvailableDates } from '../helpers/filterAvailableDates'
+import { filterAvailableStocks } from '../helpers/filterAvailableStocks'
 
 // eslint-disable-next-line
 const { assert } = require('chai')
@@ -21,12 +21,17 @@ export const addModifierString = () => items =>
     __modifiers__: (obj.__modifiers__ || []).concat([MODIFIER_STRING_ID]),
   }))
 
-export const mapEventOccurenceToBookable = timezone => items =>
+export const mapStockToBookable = timezone => items =>
   items.map(obj => {
-    const extend = pick(obj.eventOccurrence, ['endDatetime', 'offerId'])
-    extend.beginningDatetime = moment(obj.eventOccurrence.beginningDatetime).tz(
-      timezone
-    )
+    let extend
+    if (obj.eventOccurence) {
+      extend = pick(obj.eventOccurrence, ['endDatetime', 'offerId'])
+      extend.beginningDatetime = moment(
+        obj.eventOccurrence.beginningDatetime
+      ).tz(timezone)
+    } else {
+      extend = pick(obj, ['offerId'])
+    }
     const base = omit(obj, ['eventOccurrence'])
     return Object.assign({}, base, extend)
   })
@@ -34,11 +39,15 @@ export const mapEventOccurenceToBookable = timezone => items =>
 export const humanizeBeginningDate = () => items =>
   // ajoute une date pré-formatée lisible par l'user
   items.map(obj =>
-    Object.assign({}, obj, {
-      humanBeginningDate: obj.beginningDatetime.format(
-        'dddd DD/MM/YYYY à HH:mm'
-      ),
-    })
+    Object.assign(
+      {},
+      obj,
+      obj.beginningDatetime && {
+        humanBeginningDate: obj.beginningDatetime.format(
+          'dddd DD/MM/YYYY à HH:mm'
+        ),
+      }
+    )
   )
 
 export const markAsReserved = bookings => {
@@ -73,8 +82,8 @@ export const selectBookables = createCachedSelector(
     if (!stocks || !stocks.length) return []
     const tz = get(recommendation, 'tz')
     return pipe(
-      filterAvailableDates,
-      mapEventOccurenceToBookable(tz),
+      filterAvailableStocks,
+      mapStockToBookable(tz),
       humanizeBeginningDate(),
       markAsReserved(bookings),
       addModifierString(),
