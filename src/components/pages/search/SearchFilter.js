@@ -132,18 +132,20 @@ class SearchFilter extends Component {
               <FilterByDates filter={this.state} title="QUAND" />
               <FilterByDistance filter={this.state} title="OÙ" />
               <FilterByOfferTypes filter={this.state} title="QUOI" />
-              <button
-                className="button fs24"
-                onClick={this.onResetClick}
-                type="button">
-                Réinitialiser
-              </button>
-              <button
-                className="button fs24"
-                onClick={this.onFilterClick}
-                type="button">
-                Filtrer
-              </button>
+              <div id="search-filter-menu-controls" className="flex-columns">
+                <button
+                  className="no-background no-outline col-1of2 fs20 py12"
+                  onClick={this.onResetClick}
+                  type="button">
+                  Réinitialiser
+                </button>
+                <button
+                  className="no-background no-outline col-1of2 fs20 py12"
+                  onClick={this.onFilterClick}
+                  type="button">
+                  <span className="is-bold">Filtrer</span>
+                </button>
+              </div>
             </div>
           )}
         </Transition>

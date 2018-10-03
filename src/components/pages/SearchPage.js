@@ -181,12 +181,12 @@ class SearchPage extends PureComponent {
             </div>
 
             <div
-              id="search-page-toggle-filters-button"
+              id="search-filter-menu-toggle-button"
               className={`flex-0 text-center flex-rows flex-center pb12 ml12 ${filtersToggleButtonClass}`}
             >
               <button
                 type="button"
-                className="no-border no-background no-outline"
+                className="no-border no-background no-outline "
                 onClick={() => this.setState({ withFilter: !withFilter })}
               >
                 <Icon

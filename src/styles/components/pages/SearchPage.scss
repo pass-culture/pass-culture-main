@@ -27,7 +27,7 @@
   margin-bottom: 0;
 }
 
-#search-page-toggle-filters-button {
+#search-filter-menu-toggle-button {
   // on fixe la taille et la hauteur
   // pour que le bouton est la même hauteur que le search input
   // et que quand on ouvre le menu des filtres
@@ -39,6 +39,24 @@
   min-height: 50px;
 }
 
-#search-page-toggle-filters-button.filters-are-opened {
+#search-filter-menu-toggle-button.filters-are-opened {
   background: #EDF1F2;
+}
+
+/* ------------------------------------------------
+
+ Boutons permettant de réinitialiser
+ les filtres de recherche ou de les appliquer
+
+------------------------------------------------ */
+#search-filter-menu-controls {
+  border-top: 2px solid $white;
+}
+
+#search-filter-menu-controls button {
+  border: 0;
+}
+
+#search-filter-menu-controls button + button {
+  border-left: 2px solid $white;
 }
