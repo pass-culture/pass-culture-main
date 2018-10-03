@@ -88,16 +88,18 @@ class VersoInfo extends React.PureComponent {
             {postalCode && <span className="is-block">{postalCode}</span>}
             {city && <span className="is-block">{city}</span>}
           </p>
-          <a
-            className="distance"
-            href={navigationLink(venue.latitude, venue.longitude)}
-          >
-            {distance}
-            <Icon
-              svg="ico-geoloc-solid2"
-              alt="Géolocalisation dans Open Street Map"
-            />
-          </a>
+          {venue.isVirtual || (
+            <a
+              className="distance"
+              href={navigationLink(venue.latitude, venue.longitude)}
+            >
+              {distance}
+              <Icon
+                svg="ico-geoloc-solid2"
+                alt="Géolocalisation dans Open Street Map"
+              />
+            </a>
+          )}
         </div>
       </div>
     )
