@@ -3,8 +3,7 @@ import { getObjectWithMappedKeys } from 'pass-culture-shared'
 
 export const mapWindowToApi = {
   jours: 'days',
-  // [`mots-cles`]: 'keywords',
-  [`mots-cles`]: 'search',
+  [`mots-cles`]: 'keywords',
 }
 
 export const mapApiToWindow = invert(mapWindowToApi)
