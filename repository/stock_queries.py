@@ -52,6 +52,6 @@ def save_stock(stock):
 
 def find_stocks_of_finished_events_when_no_recap_sent():
     return Stock.queryNotSoftDeleted().join(EventOccurrence) \
-        .filter((datetime.utcnow() > Stock.bookingLimitDatetime) &
+        .filter((Stock.bookingLimitDatetime < datetime.utcnow()) &
                  (EventOccurrence.beginningDatetime < datetime.utcnow()) &
                 (Stock.bookingRecapSent == None))
