@@ -65,8 +65,10 @@ class OfferersPage extends Component {
       <Main name="offerers" handleDataRequest={this.handleDataRequest}>
         <HeroSection title="Vos structures">
           <p className="subtitle">
-            Retrouvez ici la ou les structures dont vous gérez les offres Pass
-            Culture.
+            Pour présenter vos offres, vous devez d'abord créer un{' '}
+            <b> nouveau lieu </b> lié à une structure.
+            <br />
+            Sans lieu, vous ne pouvez ajouter que des offres numériques.
           </p>
           <NavLink
             to={`/structures/nouveau`}

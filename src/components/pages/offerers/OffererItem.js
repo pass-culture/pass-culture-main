@@ -3,10 +3,11 @@ import React, { Fragment } from 'react'
 import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
 
+import selectPhysicalVenuesByOffererId from '../../../selectors/selectPhysicalVenuesByOffererId'
 import venuesSelector from '../../../selectors/venues'
 import { pluralize } from '../../../utils/string'
 
-const OffererItem = ({ offerer, venues }) => {
+const OffererItem = ({ offerer, physicalVenues, venues }) => {
   const { id, name, nOffers, isValidated } = offerer || {}
 
   const showPath = `/structures/${id}`
@@ -23,6 +24,8 @@ const OffererItem = ({ offerer, venues }) => {
       <li>0 offre</li>
     )
 
+  const canCreateOnlyVirtualOffer = venues.length === 1 && venues[0].isVirtual
+
   const $offerActions = venues.length ? (
     // J'ai déja ajouté Un lieu mais pas d'offres
     <Fragment>
@@ -31,7 +34,7 @@ const OffererItem = ({ offerer, venues }) => {
           to={`/offres/nouveau?structure=${id}`}
           className="has-text-primary">
           <Icon svg="ico-offres-r" />
-          Nouvelle offre
+          Nouvelle offre {canCreateOnlyVirtualOffer && 'numérique'}
         </NavLink>
       </li>
       {$offersCount}
@@ -47,7 +50,7 @@ const OffererItem = ({ offerer, venues }) => {
     <Fragment>
       <li>
         <Icon svg="ico-venue" />
-        {pluralize(venues.length, 'lieux')}
+        {pluralize(physicalVenues.length, 'lieux')}
       </li>
       <li>
         <NavLink
@@ -84,8 +87,12 @@ const OffererItem = ({ offerer, venues }) => {
   )
 }
 
-export default connect(() => {
-  return (state, ownProps) => ({
-    venues: venuesSelector(state, ownProps.offerer.id),
-  })
-})(OffererItem)
+function mapStateToProps(state, ownProps) {
+  const offererId = ownProps.offerer.id
+  return {
+    physicalVenues: selectPhysicalVenuesByOffererId(state, offererId),
+    venues: venuesSelector(state, offererId),
+  }
+}
+
+export default connect(mapStateToProps)(OffererItem)
