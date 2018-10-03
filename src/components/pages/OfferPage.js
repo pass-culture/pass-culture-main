@@ -663,6 +663,7 @@ function mapStateToProps(state, ownProps) {
 
   const formVenueId = get(state, 'form.offer.venueId')
   const venueId = formVenueId || search.venueId
+  console.log('venueId', venueId, 'formVenueId', formVenueId)
 
   const venue = venueSelector(state, venueId)
 
