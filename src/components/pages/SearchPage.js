@@ -115,7 +115,7 @@ class SearchPage extends PureComponent {
       windowQuery
     )
     const isfilterIconActive = filterIconByState(filtersActive)
-    const keywordsInputClass = (withFilter && 'is-visible') || ''
+    const filtersToggleButtonClass = (withFilter && 'filters-are-opened') || ''
     return (
       <Main
         id="search-page"
@@ -182,7 +182,7 @@ class SearchPage extends PureComponent {
 
             <div
               id="search-page-toggle-filters-button"
-              className={`flex-0 text-center ml12 ${keywordsInputClass}`}
+              className={`flex-0 text-center flex-rows flex-center pb12 ml12 ${filtersToggleButtonClass}`}
             >
               <button
                 type="button"
@@ -197,7 +197,7 @@ class SearchPage extends PureComponent {
           </div>
         </form>
 
-        <SearchFilter filterIsVisible={withFilter} pagination={pagination} />
+        <SearchFilter isVisible={withFilter} pagination={pagination} />
 
         <Switch location={location}>
           <Route

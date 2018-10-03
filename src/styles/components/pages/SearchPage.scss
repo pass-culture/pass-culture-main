@@ -28,24 +28,17 @@
 }
 
 #search-page-toggle-filters-button {
+  // on fixe la taille et la hauteur
+  // pour que le bouton est la même hauteur que le search input
+  // et que quand on ouvre le menu des filtres
+  // on ait un background gris pour le bouton
   width: 44px;
   min-width: 44px;
   max-width: 44px;
+  height: 50px;
+  min-height: 50px;
 }
 
-#search-page-toggle-filters-button.is-visible {
+#search-page-toggle-filters-button.filters-are-opened {
   background: #EDF1F2;
 }
-
-/*
-.show-filter {
-  display: flex;
-
-  &.is-visible {
-    margin-left: 1em;
-    padding-right: 2em;
-    padding-bottom: 2em;
-    border-radius: 0.25em;
-  }
-}
-*/

@@ -11,20 +11,20 @@ import FilterByOfferTypes from './FilterByOfferTypes'
 
 import { getFirstChangingKey, INITIAL_FILTER_PARAMS } from './utils'
 
-const transitionDelay = 500
-const transitionDuration = 250
+const filtersPanelHeight = 450
+const transitionDelay = 0
+const transitionDuration = 500
+
 const defaultStyle = {
-  transitionDuration: `${transitionDuration}ms`,
-  transitionProperty: 'top',
-  transitionTimingFunction: 'ease',
+  marginTop: `-${filtersPanelHeight}px`,
+  transition: `margin-top ${transitionDuration}ms ease`,
 }
 
 const transitionStyles = {
-  entered: { opacity: 1, top: 150 },
-  // top:65
-  entering: { opacity: 1, top: '-100%' },
-  exited: { opacity: 0, top: '-100%' },
-  exiting: { opacity: 0, top: '-100%' },
+  exiting: { marginTop: `-${filtersPanelHeight}px` },
+  exited: { marginTop: `-${filtersPanelHeight}px` },
+  entering: { marginTop: 0 },
+  entered: { marginTop: 0 },
 }
 
 class SearchFilter extends Component {
@@ -121,40 +121,40 @@ class SearchFilter extends Component {
   }
 
   render() {
-    const { filterIsVisible } = this.props
-
+    const { isVisible } = this.props
     return (
-      // <Transition in={filterIsVisible} timeout={transitionDelay}>
-      //   {status => (
-      <div
-        // is-invisible is bulma style ?
-        className={classnames({ 'is-invisible': !filterIsVisible })}
-        id="search-filter-menu"
-        style={{ ...defaultStyle, ...transitionStyles[status] }}>
-        <FilterByDates filter={this.state} title="QUAND" />
-        <FilterByDistance filter={this.state} title="OÙ" />
-        <FilterByOfferTypes filter={this.state} title="QUOI" />
-        <button
-          className="button fs24"
-          onClick={this.onResetClick}
-          type="button">
-          Réinitialiser
-        </button>
-        <button
-          className="button fs24"
-          onClick={this.onFilterClick}
-          type="button">
-          Filtrer
-        </button>
+      <div className="is-relative is-clipped">
+        <Transition in={isVisible} timeout={transitionDelay}>
+          {status => (
+            <div
+              id="search-filter-menu"
+              className={`is-full-width transition-status-${status}`}
+              style={{ ...defaultStyle, ...transitionStyles[status] }}>
+              <FilterByDates filter={this.state} title="QUAND" />
+              <FilterByDistance filter={this.state} title="OÙ" />
+              <FilterByOfferTypes filter={this.state} title="QUOI" />
+              <button
+                className="button fs24"
+                onClick={this.onResetClick}
+                type="button">
+                Réinitialiser
+              </button>
+              <button
+                className="button fs24"
+                onClick={this.onFilterClick}
+                type="button">
+                Filtrer
+              </button>
+            </div>
+          )}
+        </Transition>
       </div>
-      //   )}
-      // </Transition>
     )
   }
 }
 
 SearchFilter.propTypes = {
-  filterIsVisible: PropTypes.bool.isRequired,
+  isVisible: PropTypes.bool.isRequired,
   pagination: PropTypes.object.isRequired,
 }
 
