@@ -448,7 +448,6 @@ class OfferPage extends Component {
                       </div>
                     )}
                   <Field
-                    className={classnames({ 'is-invisible': !offerer })}
                     label="Lieu"
                     name="venueId"
                     options={venues}

@@ -6465,7 +6465,7 @@ pascalcase@^0.1.1:
 pass-culture-shared@^0.0.63:
   version "0.0.63"
   resolved "https://registry.yarnpkg.com/pass-culture-shared/-/pass-culture-shared-0.0.63.tgz#474a2064c2eb61b1809ea333e5a2f151a5063b4d"
-  dependencies:
+dependencies:
     lodash.get "^4.4.2"
     lodash.merge "^4.6.1"
     lodash.set "^4.3.2"
