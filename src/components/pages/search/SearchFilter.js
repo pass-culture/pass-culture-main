@@ -1,5 +1,4 @@
 /* eslint-disable */
-import classnames from 'classnames'
 import get from 'lodash.get'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
