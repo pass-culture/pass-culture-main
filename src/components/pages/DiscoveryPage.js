@@ -20,6 +20,8 @@ import Footer from '../layout/Footer'
 import { getQueryParams } from '../../helpers'
 import { recommendationNormalizer } from '../../utils/normalizers'
 
+const noop = () => {}
+
 const renderPageFooter = () => {
   const footerProps = { borderTop: true }
   return <Footer {...footerProps} />
@@ -93,8 +95,12 @@ class DiscoveryPage extends React.PureComponent {
       <Main
         noPadding
         name="discovery"
-        footer={renderPageFooter}
         handleDataRequest={this.handleDataRequest}
+        // FIXME: fix d'une issue d'affichage du footer
+        // le Main déplace le footer en pied de page
+        // sous iPhone le footer ne tient pas compte du z-index
+        // et s'affiche au dessus du loader :(
+        footer={(!isloading && renderPageFooter) || noop}
         backButton={backButton ? { className: 'discovery' } : null}
       >
         {!isloading && (
