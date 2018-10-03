@@ -120,3 +120,13 @@ def test_find_all_bookings_for_event_occurrence(app):
     assert booking_to_find_2 in all_bookings_for_event_occurrence
     assert booking_to_find_3 in all_bookings_for_event_occurrence
     assert booking_not_to_find not in all_bookings_for_event_occurrence
+
+
+@pytest.mark.standalone
+@clean_database
+def test_find_bookings_to_pay(app):
+    # Given
+
+    # When
+
+    # Then

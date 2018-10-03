@@ -21,8 +21,9 @@ from models.pc_object import PcObject
 
 class PaymentStatus(enum.Enum):
     PENDING = 'PENDING'
+    SENT = 'SENT'
     ERROR = 'ERROR'
-    DONE = 'DONE'
+    SUCCESS = 'SUCCESS'
 
 
 class PaymentType(enum.Enum):
@@ -69,10 +70,12 @@ class Payment(PcObject,
                   nullable=True)
 
     status = Column(Enum(PaymentStatus),
-                    nullable=False)
+                    nullable=False,
+                    default=PaymentStatus.PENDING)
 
     dateStatus = Column(DateTime,
-                        nullable=False)
+                        nullable=False,
+                        default=datetime.utcnow)
 
     comment = Column(Text,
                      nullable=True)

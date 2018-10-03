@@ -135,3 +135,7 @@ def find_all_ongoing_bookings_by_stock(stock):
 
 def find_all_bookings_for_event_occurrence(event_occurrence):
     return Booking.query.join(Stock).join(EventOccurrence).filter_by(id=event_occurrence.id).all()
+
+
+def find_bookings_to_pay():
+    pass
