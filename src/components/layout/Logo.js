@@ -11,7 +11,6 @@ const Logo = ({ className, noLink, whiteHeader, signPage }) => {
   } else src = `${ROOT_PATH}/icons/logo-inline-negative.png`
 
   if (!whiteHeader && signPage) {
-    console.log(' home page normalement !!!!! ')
     src = `${ROOT_PATH}/icons/logo-group-splash@2x.png`
   }
 

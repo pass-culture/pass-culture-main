@@ -12,6 +12,7 @@ export const bookingNormalizer = {
       },
     },
   },
+  user: 'users',
 }
 
 export const eventNormalizer = {

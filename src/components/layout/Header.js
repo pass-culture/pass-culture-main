@@ -88,14 +88,12 @@ class Header extends Component {
                       <span>Délégations</span>
                     </NavLink>
                   )}
-                  {false && (
-                    <NavLink to={'/comptabilite'} className="navbar-item">
-                      <span className="icon">
-                        <Icon svg={'ico-compta'} />
-                      </span>
-                      <span>Comptabilité</span>
-                    </NavLink>
-                  )}
+                  <NavLink to={'/comptabilite'} className="navbar-item">
+                    <span className="icon">
+                      <Icon svg={'ico-compta'} />
+                    </span>
+                    <span>Comptabilité</span>
+                  </NavLink>
                   <SignoutButton
                     className="navbar-item"
                     handleSuccessRedirect={() => '/connexion'}

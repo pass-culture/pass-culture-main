@@ -13,7 +13,7 @@ import { compose } from 'redux'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 
-import BookingItem from '../items/BookingItem'
+import BookingItem from './accounting/BookingItem'
 import HeroSection from '../layout/HeroSection'
 import Main from '../layout/Main'
 import bookingsSelector from '../../selectors/bookings'
@@ -58,7 +58,7 @@ class AccoutingPage extends Component {
     })
   }
 
-  fetchBookings(handleSuccess = () => {}, handleFail = () => {}) {
+  fetchBookings = (handleSuccess = () => {}, handleFail = () => {}) => {
     const { dispatch, pagination, offerer, search } = this.props
     const { apiQueryString, goToNextPage, page } = pagination
 
@@ -90,7 +90,7 @@ class AccoutingPage extends Component {
     )
   }
 
-  fetchOfferers(handleSuccess = () => {}, handleFail = () => {}) {
+  fetchOfferers = (handleSuccess = () => {}, handleFail = () => {}) => {
     this.props.dispatch(
       requestData('GET', 'offerers', {
         handleSuccess: (state, action) => {
@@ -136,20 +136,6 @@ class AccoutingPage extends Component {
     ) {
       pagination.change({ [mapApiToWindow.offererId]: offerers[0].id })
     }
-  }
-
-  cancelBooking(id) {
-    console.log('cancel booking for id:', id)
-    this.props.dispatch(
-      requestData('DELETE', `/bookings/${id}`, {
-        handleSuccess: (state, request) => {
-          console.log(request)
-        },
-        handleFail: (state, request) => {
-          console.log(request)
-        },
-      })
-    )
   }
 
   render() {
@@ -266,11 +252,7 @@ class AccoutingPage extends Component {
                   </tr>
                 )}>
                 {bookings.map(booking => (
-                  <BookingItem
-                    key={booking.id}
-                    booking={booking}
-                    cancelAction={this.cancelBooking.bind(this)}
-                  />
+                  <BookingItem key={booking.id} booking={booking} />
                 ))}
               </InfiniteScroller>
             </table>
