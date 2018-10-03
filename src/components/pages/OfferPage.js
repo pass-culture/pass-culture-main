@@ -311,6 +311,7 @@ class OfferPage extends Component {
     const offererId = get(offerer, 'id')
     const showAllForm = type || !isNew
     const venueId = get(venue, 'id')
+    const isVenueVirtual = get(venue, 'isVirtual')
 
     const isOffererSelectReadOnly = typeof offererId !== 'undefined'
     const isVenueSelectReadOnly = typeof venueId !== 'undefined'
@@ -319,7 +320,11 @@ class OfferPage extends Component {
     if (isNew) {
       title = 'Ajouter une offre'
       if (venueId) {
-        title = title + ` pour ${get(venue, 'name')}`
+        if (isVenueVirtual) {
+          title = title + ' en ligne'
+        } else {
+          title = title + ` pour ${get(venue, 'name')}`
+        }
       } else if (offererId) {
         title = title + ` pour ${get(offerer, 'name')}`
       }
