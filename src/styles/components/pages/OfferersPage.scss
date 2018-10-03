@@ -1,0 +1,12 @@
+.offerers-page {
+  a.button {
+    &.cta {
+      &:hover {
+        background-color: transparent;
+        color: $primary;
+      }
+      border: 0;
+      top: 5%;
+    }
+  }
+}

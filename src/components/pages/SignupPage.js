@@ -36,6 +36,7 @@ const SignupPage = ({ errors, sirenName }) => {
                 </span>
                 <Form
                   action="/users/signup"
+                  BlockComponent={null}
                   handleSuccessNotification={() =>
                     'Votre compte a été créé avec succès.'
                   }

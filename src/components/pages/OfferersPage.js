@@ -10,9 +10,9 @@ import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { NavLink } from 'react-router-dom'
 
+import OffererItem from './offerers/OffererItem'
 import HeroSection from '../layout/HeroSection'
 import Main from '../layout/Main'
-import OffererItem from '../items/OffererItem'
 import offerersSelector from '../../selectors/offerers'
 import { offererNormalizer } from '../../utils/normalizers'
 import { mapApiToWindow, windowToApiQuery } from '../../utils/pagination'
@@ -65,12 +65,14 @@ class OfferersPage extends Component {
       <Main name="offerers" handleDataRequest={this.handleDataRequest}>
         <HeroSection title="Vos structures">
           <p className="subtitle">
-            Retrouvez ici la ou les structures dont vous gérez les offres Pass
-            Culture.
+            Pour présenter vos offres, vous devez d'abord créer un{' '}
+            <b> nouveau lieu </b> lié à une structure.
+            <br />
+            Sans lieu, vous ne pouvez ajouter que des offres numériques.
           </p>
           <NavLink
             to={`/structures/nouveau`}
-            className="button is-primary is-outlined">
+            className="cta button is-primary is-outlined">
             + Rattacher une structure supplémentaire
           </NavLink>
         </HeroSection>
