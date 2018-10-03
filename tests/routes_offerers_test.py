@@ -1,11 +1,13 @@
 """ routes offerer """
 import secrets
 from datetime import timedelta, datetime
+import simplejson as json
 
 import pytest
 
 from domain.reimbursement import ReimbursementRules
 from models import PcObject
+from models.pc_object import serialize
 from tests.conftest import clean_database
 from utils.human_ids import dehumanize, humanize
 from utils.test_utils import API_URL, \
@@ -180,7 +182,8 @@ def test_get_offerer_bookings_should_work_only_when_logged_in(app):
     # when
     offerer = create_offerer()
     PcObject.check_and_save(offerer)
-    response = req.get(API_URL + '/offerers/%s/bookings' % humanize(offerer.id), headers={'origin': 'http://localhost:3000'})
+    response = req.get(API_URL + '/offerers/%s/bookings' % humanize(offerer.id),
+                       headers={'origin': 'http://localhost:3000'})
 
     # then
     assert response.status_code == 401
@@ -268,7 +271,7 @@ def test_patch_offerer_with_bic_and_iban_returns_status_code_200(app):
     # given
     user = create_user()
     offerer = create_offerer(iban=None, bic=None)
-    user_offerer = create_user_offerer(user, offerer)
+    user_offerer = create_user_offerer(user, offerer, is_admin=True)
     PcObject.check_and_save(user_offerer)
     auth_request = req_with_auth(email=user.email, password=user.clearTextPassword)
     body = {'bic': 'BDFEFR2LCCB', 'iban': 'FR7630006000011234567890189'}
@@ -289,7 +292,7 @@ def test_patch_offerer_with_none_bic_and_none_iban_returns_status_code_200(app):
     # given
     user = create_user()
     offerer = create_offerer(iban='FR7630006000011234567890189', bic='BDFEFR2LCCB')
-    user_offerer = create_user_offerer(user, offerer)
+    user_offerer = create_user_offerer(user, offerer, is_admin=True)
     PcObject.check_and_save(user_offerer)
     auth_request = req_with_auth(email=user.email, password=user.clearTextPassword)
     body = {'bic': None, 'iban': None}
@@ -358,3 +361,44 @@ def test_post_offerers_when_admin(app):
 
     # then
     assert response.status_code == 201
+
+
+@clean_database
+@pytest.mark.standalone
+def test_patch_offerer_when_not_admin_status_code_403(app):
+    # given
+    user = create_user()
+    offerer = create_offerer(iban='FR7630006000011234567890189', bic='BDFEFR2LCCB')
+    user_offerer = create_user_offerer(user, offerer, is_admin=False)
+    PcObject.check_and_save(user_offerer)
+    auth_request = req_with_auth(email=user.email, password=user.clearTextPassword)
+    body = {'bic': "ATELFRPP", 'iban': 'FR7630001007941234567890185'}
+
+    # when
+    response = auth_request.patch(API_URL + '/offerers/%s' % humanize(offerer.id), json=body)
+
+    # then
+    assert response.status_code == 403
+
+
+@clean_database
+@pytest.mark.standalone
+def test_patch_offerer_for_non_authorised_fields_status_code_400(app):
+    # given
+    user = create_user()
+    offerer = create_offerer(iban='FR7630006000011234567890189', bic='BDFEFR2LCCB')
+    user_offerer = create_user_offerer(user, offerer, is_admin=True)
+    PcObject.check_and_save(user_offerer)
+    auth_request = req_with_auth(email=user.email, password=user.clearTextPassword)
+    body = {'isActive': False, 'thumbCount': 0, 'idAtProviders': 'zfeej',
+            'dateModifiedAtLastProvider': serialize(datetime(2016,2,1)), 'address': '123 nouvelle adresse', 'postalCode': '75001',
+            'city': 'Paris', 'validationToken': 'ozieghieof', 'id': humanize(10), 'dateCreated': serialize(datetime(2015,2,1)),
+            'name': 'Nouveau Nom', 'siren': '989807829', 'lastProviderId': humanize(1)}
+
+    # when
+    response = auth_request.patch(API_URL + '/offerers/%s' % humanize(offerer.id), json=body)
+
+    # then
+    assert response.status_code == 400
+    for key in body:
+        assert response.json()[key] == ['Vous ne pouvez pas modifier ce champ']
