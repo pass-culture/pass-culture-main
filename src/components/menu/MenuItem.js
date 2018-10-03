@@ -7,10 +7,13 @@ const noop = () => {}
 
 const renderLinkContent = (icon, title, styles) => (
   <React.Fragment>
-    <span style={styles} className="text-center menu-icon mr16 text-center">
+    <span
+      style={styles}
+      className="flex-0 text-center menu-icon mr16 text-center"
+    >
       <Icon svg={`ico-${icon}`} alt="" />
     </span>
-    <span className="is-medium">
+    <span className="flex-1 is-medium">
       {title}
     </span>
   </React.Fragment>
@@ -30,7 +33,7 @@ class MenuItem extends React.PureComponent {
         disabled={disabled}
         onClick={clickHandler}
         activeClassName={opts.activeClass}
-        className={`navlink mx12 ${opts.cssclass}`}
+        className={`navlink mx12 flex-columns ${opts.cssclass}`}
       >
         {renderLinkContent(icon, title)}
       </NavLink>
@@ -46,7 +49,7 @@ class MenuItem extends React.PureComponent {
         href={href}
         disabled={disabled}
         onClick={clickHandler}
-        className={`navlink mx12 ${opts.cssclass}`}
+        className={`navlink mx12 flex-columns ${opts.cssclass}`}
       >
         {renderLinkContent(icon, title)}
       </a>
