@@ -57,7 +57,7 @@ class User(PcObject,
 
     lastName = Column(String(35), nullable=True)
 
-    postalCode = Column(String(5), nullable=False)
+    postalCode = Column(String(5), nullable=True)
 
     phoneNumber = Column(String(20), nullable=True)
 
