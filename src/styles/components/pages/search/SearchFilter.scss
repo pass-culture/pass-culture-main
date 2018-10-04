@@ -13,8 +13,8 @@
 
 /* ------------------------------------------------
 
- Boutons permettant de réinitialiser/appliquer
- les filtres de recherche
+ Boutons du footer du panneau des filtres
+ permettant de réinitialiser/appliquer les filtres de recherche
 
 ------------------------------------------------ */
 #search-filter-menu-footer-controls {
@@ -52,73 +52,77 @@
   }
 }
 
-#filter-by-dates {
-  .pc-scroll-horizontal {
-    height: 65px;
-    overflow-x: auto;
-  }
+/* ------------------------------------------------
 
-  .list .item {
-    border-radius: 4px;
-    border: solid $primary 1px;
-  }
+ Section des filtres par dates
 
-  .list .item + .item {
+------------------------------------------------ */
+
+#filter-by-dates .pc-scroll-horizontal {
+  height: 65px;
+  overflow-x: scroll;
+}
+
+#filter-by-dates .list .item {
+  border-radius: 4px;
+  border: 1px solid $primary;
+
+  & + .item {
     @extend .ml22;
   }
 
-  .list .item .field {
+  .field {
     margin-bottom: 0;
   }
 
-  .list .item .field .input {
+  .field .input {
     margin-right: 7px;
   }
 }
 
-/*
+/* ------------------------------------------------
+
+ Section des filtres par distances
+
+------------------------------------------------ */
+
 #filter-by-distance {
-  padding-bottom: 0.25rem;
-
-  select {
-    border-color: $primary;
-    border-radius: $control-radius;
-    min-width: 250px;
-    margin: 3rem;
-    padding: 1rem;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    background: url('/icons/dropdown-disclosure-down.svg') no-repeat;
-    background-position: right;
-  }
+  // .pc-selectbox
+  // Voir le fichier global/forms.scss pour le style de la selectbox
 }
-*/
 
-#filter-by-offer-types {
-  label {
-    color: $white;
-    height: 23px;
+/* ------------------------------------------------
+
+ Section des filtres par types d'offres
+
+------------------------------------------------ */
+
+#filter-by-offer-types .list .item {
+  cursor: pointer;
+  border-radius: 4px;
+  border: 1px solid transparent;
+  transition: border-color 450ms;
+
+  &.checked {
+    border: 1px solid $primary;
+  }
+
+  & + .item {
+    @extend .ml18;
+  }
+
+  .search-picture img {
     width: 86px;
-    opacity: 0.8;
-    background-color: #000000;
+    min-width: 86px;
+    height: 86px;
+    min-height: 86px;
   }
 
-  margin-bottom: 1rem;
-}
+  .search-picture span {
+    @extend .px5;
+    @extend .py3;
+    @extend .fs16;
 
-.filter-menu-outer {
-  display: flex; /* displays flex-items (children) inline */
-  overflow-x: auto;
-}
-
-.filter-menu-inner {
-  // flex: 0 0 25%;
-
-  /* doesn't grow nor shrink, initial width set to 25% of the parent's */
-  padding: 0.5em;
-  border-radius: 1.125em;
-
-  img {
-    height: 86px;
+    background: rgba($black, 0.75);
   }
 }

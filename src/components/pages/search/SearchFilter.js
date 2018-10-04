@@ -10,7 +10,7 @@ import FilterByOfferTypes from './FilterByOfferTypes'
 
 import { getFirstChangingKey, INITIAL_FILTER_PARAMS } from './utils'
 
-const filtersPanelHeight = 450
+const filtersPanelHeight = 455
 const transitionDelay = 0
 const transitionDuration = 500
 
@@ -135,7 +135,7 @@ class SearchFilter extends Component {
               <FilterByOfferTypes filter={this.state} title="QUOI" />
               <div
                 id="search-filter-menu-footer-controls"
-                className="flex-columns">
+                className="flex-columns mt20">
                 <button
                   className="no-background no-outline col-1of2 fs20 py12"
                   onClick={this.onResetClick}

@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 import { connect } from 'react-redux'
 
 // hope that pass culture is just still playing on earth
@@ -24,7 +24,7 @@ const options = [
   },
 ]
 
-class FilterByDistance extends Component {
+class FilterByDistance extends PureComponent {
   onChange = e => {
     const { filter, geolocation } = this.props
 

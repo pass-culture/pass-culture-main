@@ -1,3 +1,4 @@
+/*
 .button.is-rounded.is-medium {
   border-radius: $control-radius !important;
   border-bottom-left-radius: 0 !important;
@@ -17,6 +18,29 @@
 
 .input {
   border-color: $grey;
+}
+*/
+
+.search-picture {
+  @extend .is-relative;
+
+  overflow: hidden;
+  border-radius: 4px;
+
+  img {
+    width: 100%;
+    height: auto;
+    max-width: 100%;
+  }
+
+  span {
+    @extend .is-absolute;
+    @extend .is-white-text;
+
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
 }
 
 #refresh-keywords-button {

@@ -8,29 +8,23 @@ const NavByOfferType = ({ pagination, title, typeSublabels }) => (
     <h2 className="is-italic fs18">
       {title}
     </h2>
-    {typeSublabels.map(typeSublabel => (
-      <button
-        key={typeSublabel}
-        id="search-type-button"
-        onClick={() =>
-          pagination.change(
-            { categories: typeSublabel },
-            { pathname: '/recherche/resultats' }
-          )
-        }
-        type="button"
-      >
-        <SearchPicture searchType={typeSublabel} />
-        <label
-          className="label fs22 is-medium is-white-text"
-          id="search-type-label"
-          htmlFor="search-type-checkbox"
+    <div className="list flex-columns wrap-2">
+      {typeSublabels.map(typeSublabel => (
+        <button
+          key={typeSublabel}
+          onClick={() =>
+            pagination.change(
+              { categories: typeSublabel },
+              { pathname: '/recherche/resultats' }
+            )
+          }
+          type="button"
+          className="item no-border no-background no-outline mt22 col-1of2"
         >
-          {' '}
-          {typeSublabel}
-        </label>
-      </button>
-    ))}
+          <SearchPicture searchType={typeSublabel} />
+        </button>
+      ))}
+    </div>
   </div>
 )
 

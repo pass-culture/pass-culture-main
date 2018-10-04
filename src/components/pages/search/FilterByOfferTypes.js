@@ -1,11 +1,11 @@
 import PropTypes from 'prop-types'
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 import { connect } from 'react-redux'
 
 import selectTypeSublabels from '../../../selectors/selectTypeSublabels'
 import SearchPicture from './SearchPicture'
 
-class FilterByOfferTypes extends Component {
+class FilterByOfferTypes extends PureComponent {
   onChange = typeSublabel => {
     const { filter } = this.props
 
@@ -31,22 +31,27 @@ class FilterByOfferTypes extends Component {
         <h2 className="fs15 is-italic is-uppercase text-center mb12">
           {title}
         </h2>
-        <div className="filter-menu-outer">
-          {typeSublabels.map(typeSublabel => (
-            <div className="filter-menu-inner" key={typeSublabel}>
-              <SearchPicture searchType={typeSublabel} />
-              <label id="type" className="fs20">
-                {' '}
-                {typeSublabel}
-              </label>
-              <input
-                checked={typesValue.includes(typeSublabel)}
-                onChange={() => this.onChange(typeSublabel)}
-                value={typeSublabel}
-                type="checkbox"
-              />
-            </div>
-          ))}
+        <div className="pc-scroll-horizontal is-relative is-full-width">
+          <div className="list flex-columns">
+            {typeSublabels.map(typeSublabel => {
+              const ischecked = typesValue.includes(typeSublabel)
+              return (
+                <label
+                  key={typeSublabel}
+                  className={`item p3 ${ischecked ? 'checked' : ''}`}
+                >
+                  <SearchPicture searchType={typeSublabel} />
+                  <input
+                    checked={ischecked}
+                    className="is-hidden"
+                    onChange={() => this.onChange(typeSublabel)}
+                    value={typeSublabel}
+                    type="checkbox"
+                  />
+                </label>
+              )
+            })}
+          </div>
         </div>
       </div>
     )
