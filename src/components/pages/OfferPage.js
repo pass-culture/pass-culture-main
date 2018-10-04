@@ -10,7 +10,6 @@ import {
   pluralize,
   requestData,
   showModal,
-  showNotification,
   SubmitButton,
   withLogin,
 } from 'pass-culture-shared'
@@ -171,14 +170,7 @@ class OfferPage extends Component {
 
   handleSuccess = (state, action) => {
     const { data, method } = action
-    const { dispatch, history, offer, venue } = this.props
-
-    dispatch(
-      showNotification({
-        text: 'Votre offre a bien été enregistrée',
-        type: 'success',
-      })
-    )
+    const { history, offer, venue } = this.props
 
     // PATCH
     if (method === 'PATCH') {
