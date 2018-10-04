@@ -59,7 +59,7 @@ class EventOccurrencesAndStocksManager extends Component {
                 ? 'Dates, horaires et prix'
                 : get(thing, 'id') && 'Prix'
             }
-            subtitle={get(event, 'name')}
+            subtitle={get(event, 'name') || get(thing, 'name')}
           />
           <table
             className={classnames(
