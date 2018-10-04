@@ -7,6 +7,7 @@ import {
   Icon,
   mergeErrors,
   mergeForm,
+  pluralize,
   requestData,
   showModal,
   showNotification,
@@ -29,7 +30,7 @@ import offerSelector from '../../selectors/offer'
 import offererSelector from '../../selectors/offerer'
 import offerersSelector from '../../selectors/offerers'
 import providersSelector from '../../selectors/providers'
-import searchSelector from '../../selectors/search'
+import selectApiSearch from '../../selectors/selectApiSearch'
 import selectMusicSubOptionsByMusicType from '../../selectors/selectMusicSubOptionsByMusicType'
 import selectShowSubOptionsByShowType from '../../selectors/selectShowSubOptionsByShowType'
 import stocksSelector from '../../selectors/stocks'
@@ -40,7 +41,6 @@ import venueSelector from '../../selectors/venue'
 import venuesSelector from '../../selectors/venues'
 import { musicOptions, showOptions } from '../../utils/edd'
 import { offerNormalizer } from '../../utils/normalizers'
-import { pluralize } from '../../utils/string'
 
 const CONDITIONAL_FIELDS = {
   speaker: [
@@ -648,7 +648,7 @@ class OfferPage extends Component {
 }
 
 function mapStateToProps(state, ownProps) {
-  const search = searchSelector(state, ownProps.location.search)
+  const search = selectApiSearch(state, ownProps.location.search)
 
   const providers = providersSelector(state)
 

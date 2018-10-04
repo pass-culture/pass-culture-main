@@ -1,4 +1,4 @@
-import { Icon, requestData } from 'pass-culture-shared'
+import { Icon, pluralize, requestData } from 'pass-culture-shared'
 import classnames from 'classnames'
 import get from 'lodash.get'
 import moment from 'moment'
@@ -23,7 +23,6 @@ import typeSelector from '../../selectors/type'
 import venueSelector from '../../selectors/venue'
 import offerrerSelector from '../../selectors/offerer'
 import { offerNormalizer } from '../../utils/normalizers'
-import { pluralize } from '../../utils/string'
 
 class OccasionItem extends Component {
   onDeactivateClick = event => {
