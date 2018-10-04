@@ -18,38 +18,43 @@ import HeroSection from '../layout/HeroSection'
 import VenueItem from '../items/VenueItem'
 import Main from '../layout/Main'
 import offererSelector from '../../selectors/offerer'
-import venuesSelector from '../../selectors/venues'
+import selectPhysicalVenuesByOffererId from '../../selectors/selectPhysicalVenuesByOffererId'
 import { offererNormalizer } from '../../utils/normalizers'
 
 class OffererPage extends Component {
   handleDataRequest = (handleSuccess, handleFail) => {
     const {
+      dispatch,
       match: {
         params: { offererId },
       },
-      requestData,
     } = this.props
     if (offererId !== 'nouveau') {
-      requestData('GET', `offerers/${offererId}`, {
-        handleSuccess,
-        handleFail,
-        normalizer: offererNormalizer,
-      })
+      dispatch(
+        requestData('GET', `offerers/${offererId}`, {
+          handleSuccess,
+          handleFail,
+          normalizer: offererNormalizer,
+        })
+      )
       return
     }
 
-    // prevent loading
     handleSuccess()
   }
 
   handleSuccess = () => {
-    const { history, showNotification } = this.props
+    const { dispatch, history, showNotification } = this.props
+
     history.push('/structures')
-    showNotification({
-      text:
-        'Votre structure a bien été enregistrée, elle est en cours de validation.',
-      type: 'success',
-    })
+
+    dispatch(
+      showNotification({
+        text:
+          'Votre structure a bien été enregistrée, elle est en cours de validation.',
+        type: 'success',
+      })
+    )
   }
 
   onAddProviderClick = () => {
@@ -165,23 +170,18 @@ class OffererPage extends Component {
   }
 }
 
+function mapStateToProps(state, ownProps) {
+  const offererId = ownProps.match.params.offererId
+  return {
+    offerer: offererSelector(state, offererId),
+    venues: selectPhysicalVenuesByOffererId(state, offererId),
+    user: state.user,
+    sirenName: get(state, 'form.offerer.name'),
+  }
+}
+
 export default compose(
   withLogin({ failRedirect: '/connexion' }),
   withRouter,
-  connect(
-    (state, ownProps) => {
-      const offererId = ownProps.match.params.offererId
-      return {
-        offerer: offererSelector(state, offererId),
-        venues: venuesSelector(state, offererId),
-        user: state.user,
-        sirenName: get(state, 'form.offerer.name'),
-      }
-    },
-    {
-      closeNotification,
-      requestData,
-      showNotification,
-    }
-  )
+  connect(mapStateToProps)
 )(OffererPage)
