@@ -81,7 +81,11 @@ def do_sandbox(name):
 
     venues_by_name = {}
     for venue_mock in sandbox_module.venue_mocks:
-        query = Venue.query.filter_by(name=venue_mock['name'])
+        offerer = offerers_by_name[venue_mock['offererName']]
+        query = Venue.query.filter_by(
+            managingOffererId=offerer.id,
+            name=venue_mock['name']
+        )
         if query.count() == 0:
             venue = Venue(from_dict=venue_mock)
             venue.managingOfferer = offerers_by_name[venue_mock['offererName']]
