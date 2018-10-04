@@ -1,6 +1,5 @@
-import classnames from 'classnames'
 import get from 'lodash.get'
-import { mergeForm, requestData, resetForm } from 'pass-culture-shared'
+import { mergeForm, resetForm } from 'pass-culture-shared'
 import moment from 'moment'
 import React, { Component, Fragment } from 'react'
 import { connect } from 'react-redux'
@@ -10,7 +9,6 @@ import { compose } from 'redux'
 import DateTimeForm from './DateTimeForm'
 import CommonForm from './CommonForm'
 import Actions from './Actions'
-import Delete from './Delete'
 import mapStateToProps from './mapStateToProps'
 
 class EventOccurrenceAndStockItem extends Component {
@@ -18,33 +16,7 @@ class EventOccurrenceAndStockItem extends Component {
     super(props)
     this.state = {
       $submit: null,
-      isDeleting: false,
     }
-  }
-
-  onDeleteClick = () => {
-    this.setState({ isDeleting: true })
-  }
-
-  onCancelDeleteClick = () => {
-    this.setState({ isDeleting: false })
-  }
-
-  onConfirmDeleteClick = () => {
-    const {
-      dispatch,
-      eventOccurrencePatch,
-      isStockOnly,
-      stockPatch,
-    } = this.props
-    dispatch(
-      requestData(
-        'DELETE',
-        isStockOnly
-          ? `stocks/${stockPatch.id}`
-          : `eventOccurrences/${eventOccurrencePatch.id}`
-      )
-    )
   }
 
   handleCrossingEndDatetime = () => {
@@ -200,17 +172,13 @@ class EventOccurrenceAndStockItem extends Component {
       stockPatch,
       tz,
     } = this.props
-    const { isDeleting } = this.state
 
     const beginningDatetime =
       formBeginningDatetime || get(eventOccurrencePatch, 'beginningDatetime')
 
     return (
       <Fragment>
-        <tr
-          className={classnames('event-occurrence-and-stock-item', {
-            'with-confirm': isDeleting,
-          })}>
+        <tr className="event-occurrence-and-stock-item">
           {!isStockOnly && (
             <DateTimeForm
               eventOccurrencePatch={eventOccurrencePatch}
@@ -242,19 +210,8 @@ class EventOccurrenceAndStockItem extends Component {
             stockPatch={stockPatch}
             eventOccurrencePatch={eventOccurrencePatch}
             onRef={element => (this.$submit = element)}
-            onDeleteClick={this.onDeleteClick}
           />
         </tr>
-
-        {isDeleting && (
-          <Delete
-            eventOccurrencePatch={eventOccurrencePatch}
-            isStockOnly={isStockOnly}
-            stockPatch={stockPatch}
-            onCancelDeleteClick={this.onCancelDeleteClick}
-            onConfirmDeleteClick={this.onConfirmDeleteClick}
-          />
-        )}
       </Fragment>
     )
   }
