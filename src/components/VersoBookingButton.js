@@ -19,33 +19,49 @@ const renderBookingLink = (url, offer) => {
   )
 }
 
-const VersoBookingButton = ({ isReserved, isFinished, url, offer }) => (
-  <React.Fragment>
-    {isReserved && (
-      <Link to="/reservations" className="button is-primary is-medium">
-        <Icon name="Check" />
-        {'Réservé'}
-      </Link>
-    )}
-    {!isReserved && (
-      <React.Fragment>
-        {/* FIXME -> décorer avec isFinished/Finishable */}
-        {!isFinished && renderBookingLink(url, offer)}
-        {isFinished && (
-          <Finishable finished>{renderBookingLink(url, offer)}</Finishable>
-        )}
-      </React.Fragment>
-    )}
-  </React.Fragment>
-)
+const VersoBookingButton = ({ booking, isFinished, offer, url }) => {
+  const onlineOfferUrl = get(booking, 'completedUrl')
+  return (
+    <React.Fragment>
+      {booking && (
+        <React.Fragment>
+          {onlineOfferUrl ? (
+            <a
+              href={`${onlineOfferUrl}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="button is-primary is-medium"
+            >
+              Accéder
+            </a>
+          ) : (
+            <Link to="/reservations" className="button is-primary is-medium">
+              <Icon name="Check" />
+              Réservé
+            </Link>
+          )}
+        </React.Fragment>
+      )}
+      {!booking && (
+        <React.Fragment>
+          {/* FIXME -> décorer avec isFinished/Finishable */}
+          {!isFinished && renderBookingLink(url, offer)}
+          {isFinished && (
+            <Finishable finished>{renderBookingLink(url, offer)}</Finishable>
+          )}
+        </React.Fragment>
+      )}
+    </React.Fragment>
+  )
+}
 
 VersoBookingButton.defaultProps = {
   offer: null,
 }
 
 VersoBookingButton.propTypes = {
+  booking: PropTypes.object.isRequired,
   isFinished: PropTypes.bool.isRequired,
-  isReserved: PropTypes.bool.isRequired,
   offer: PropTypes.object,
   url: PropTypes.string.isRequired,
 }

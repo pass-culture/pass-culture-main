@@ -54,12 +54,12 @@ class Booking extends React.PureComponent {
     this.setState({ mounted: false })
   }
 
-  onFormMutation = ({ invalid, pristine, values }) => {
+  onFormMutation = ({ invalid, _pristine, values }) => {
     // intervient aux changement sur le form
-    // pour les changements sur 'invalid | pristine | values'
-    const nextCanSubmitForm =
-      !pristine && !invalid && values.stockId && values.price >= 0
-    const canSubmitForm = this.state
+    // pour les changements sur 'invalid | values'
+    console.log(_pristine)
+    const nextCanSubmitForm = !invalid && values.stockId && values.price >= 0
+    const { canSubmitForm } = this.state
     const hasFormValid = canSubmitForm !== nextCanSubmitForm
     if (!hasFormValid) return
     this.setState({ canSubmitForm: nextCanSubmitForm })
@@ -146,12 +146,14 @@ class Booking extends React.PureComponent {
     const { recommendation, bookables, isEvent } = this.props
     const { bookedPayload, isErrored, isSubmitting, mounted } = this.state
     const showForm = !isSubmitting && !bookedPayload && !isErrored
+    const defaultBookable = !isEvent && get(bookables, '[0]')
     const formInitialValues = {
       bookables,
       date: null,
+      price: get(defaultBookable, 'price'),
       quantity: 1,
       recommendationId: recommendation.id,
-      stockId: null,
+      stockId: get(defaultBookable, 'id'),
     }
     const backgroundImage = `url('${ROOT_PATH}/mosaic-k.png')`
     return (
@@ -186,6 +188,7 @@ class Booking extends React.PureComponent {
                     <BookingForm
                       formId={this.formId}
                       disabled={userConnected}
+                      isEvent={isEvent}
                       onSubmit={this.onFormSubmit}
                       recommendation={recommendation}
                       onMutation={this.onFormMutation}

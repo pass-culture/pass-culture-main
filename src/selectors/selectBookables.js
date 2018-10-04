@@ -24,7 +24,7 @@ export const addModifierString = () => items =>
 export const mapStockToBookable = timezone => items =>
   items.map(obj => {
     let extend
-    if (obj.eventOccurence) {
+    if (obj.eventOccurrence) {
       extend = pick(obj.eventOccurrence, ['endDatetime', 'offerId'])
       extend.beginningDatetime = moment(
         obj.eventOccurrence.beginningDatetime

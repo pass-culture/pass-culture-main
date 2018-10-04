@@ -45,28 +45,52 @@ class VersoInfo extends React.PureComponent {
     )
   }
 
-  renderOfferWhen() {
-    const { bookables, isFinished, maxDatesShowned } = this.props
+  renderEventOfferDateInfos() {
+    const { bookables, maxDatesShowned } = this.props
     const sliced = bookables.slice(0, maxDatesShowned)
     const hasMoreBookables = bookables.length > maxDatesShowned
+    return (
+      <React.Fragment>
+        {sliced.map(obj => (
+          <li key={obj.id}>
+            {capitalize(obj.humanBeginningDate)}
+            {obj.userAsAlreadyReservedThisDate && ' (réservé)'}
+          </li>
+        ))}
+        {hasMoreBookables && (
+          <li>{'Cliquez sur "j\'y vais" pour voir plus de dates.'}</li>
+        )}
+      </React.Fragment>
+    )
+  }
+
+  renderThingOfferDateInfos() {
+    const { bookables } = this.props
+    const limitDatetime = get(bookables, '[0].bookinglimitDatetime')
+    return (
+      <React.Fragment>
+        <li>
+          Dès maintenant {limitDatetime && `et jusqu&apos;au ${limitDatetime}`}{' '}
+        </li>
+      </React.Fragment>
+    )
+  }
+
+  renderOfferWhen() {
+    const { isFinished } = this.props
+    const { recommendation } = this.props
+    const dateInfosRenderer = (get(recommendation, 'offer.thingId')
+      ? this.renderThingOfferDateInfos
+      : this.renderEventOfferDateInfos
+    ).bind(this)
     return (
       <div>
         <h3>Quand ?</h3>
         <ul className="dates-info">
           {isFinished ? (
-            <li>Plus de dates disponibles :(</li>
+            <li>L&apos;offre n&apos;est plus disponible :(</li>
           ) : (
-            <React.Fragment>
-              {sliced.map(obj => (
-                <li key={obj.id}>
-                  {capitalize(obj.humanBeginningDate)}
-                  {obj.userAsAlreadyReservedThisDate && ' (réservé)'}
-                </li>
-              ))}
-              {hasMoreBookables && (
-                <li>{'Cliquez sur "j\'y vais" pour voir plus de dates.'}</li>
-              )}
-            </React.Fragment>
+            dateInfosRenderer()
           )}
         </ul>
       </div>

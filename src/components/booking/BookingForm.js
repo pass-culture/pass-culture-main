@@ -16,8 +16,9 @@ import { CalendarField, HiddenField, SelectField } from '../forms/inputs'
  * FIXME -> hot-reload cause console.error
  */
 const onCalendarUpdates = (selection, name, allvalues) => {
+  if (!selection) return allvalues
   const resetObj = { price: null, stockId: null, time: null }
-  if (!selection || !selection.date) return resetObj
+  if (!selection.date) return resetObj
   // iteration sur l'array bookables
   // recupere tous les events pour la selection par l'user
   const { bookables } = allvalues
@@ -74,32 +75,35 @@ class BookingFormComponent extends React.PureComponent {
   }
 
   render() {
+    const { isEvent, formValues } = this.props
+    const { stockId, price } = formValues
     const calendarDates = this.getCalendarProvider()
     const hoursAndPrices = this.parseHoursByStockId()
-    const { formValues } = this.props
-    const { stockId, price } = formValues
     return (
       <React.Fragment>
         <HiddenField name="price" />
         <HiddenField name="stockId" />
         <HiddenField name="quantity" />
-        <CalendarField
-          name="date"
-          help="This is help"
-          provider={calendarDates}
-          label="Choisissez une date"
-          className="has-text-centered"
-          placeholder={moment().format('DD MMMM YYYY')}
-        />
-        {hoursAndPrices && (
-          <SelectField
-            name="time"
-            provider={hoursAndPrices}
-            placeholder="Heure et prix"
-            label="Choisissez une heure"
+        {isEvent && (
+          <CalendarField
+            name="date"
+            help="This is help"
+            provider={calendarDates}
+            label="Choisissez une date"
             className="has-text-centered"
+            placeholder={moment().format('DD MMMM YYYY')}
           />
         )}
+        {isEvent &&
+          hoursAndPrices && (
+            <SelectField
+              name="time"
+              provider={hoursAndPrices}
+              placeholder="Heure et prix"
+              label="Choisissez une heure"
+              className="has-text-centered"
+            />
+          )}
         {stockId && (
           <p className="has-text-centered">
             <span className="is-block">Vous êtes sur le point de réserver</span>
@@ -113,10 +117,12 @@ class BookingFormComponent extends React.PureComponent {
 
 BookingFormComponent.defaultProps = {
   formValues: null,
+  isEvent: false,
 }
 
 BookingFormComponent.propTypes = {
   formValues: PropTypes.object,
+  isEvent: PropTypes.bool,
 }
 
 /* -------- form validators --------  */
