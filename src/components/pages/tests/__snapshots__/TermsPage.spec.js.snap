@@ -4,7 +4,7 @@ exports[`src | components | pages | TermsPage snapshot should match snapshot 1`]
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <TermsPage
-    appversion="0.4.4"
+    appversion="0.5.1"
     errors={Object {}}
   />,
   Symbol(enzyme.__renderer__): Object {
@@ -32,7 +32,7 @@ ShallowWrapper {
           useSubmit={false}
         />,
         <main
-          className="pc-main is-clipped my12"
+          className="pc-main is-clipped"
           role="main"
         >
           <div
@@ -60,9 +60,10 @@ ShallowWrapper {
               <div
                 className="mt16"
               >
-                <p>
-                  Pass Culture version v
-                  0.4.4
+                <p
+                  className="text-right"
+                >
+                  Pass Culture v.0.5.1
                 </p>
               </div>
             </div>
@@ -126,14 +127,15 @@ ShallowWrapper {
               <div
                 className="mt16"
               >
-                <p>
-                  Pass Culture version v
-                  0.4.4
+                <p
+                  className="text-right"
+                >
+                  Pass Culture v.0.5.1
                 </p>
               </div>
             </div>
           </div>,
-          "className": "pc-main is-clipped my12",
+          "className": "pc-main is-clipped",
           "role": "main",
         },
         "ref": null,
@@ -164,9 +166,10 @@ ShallowWrapper {
               <div
                 className="mt16"
               >
-                <p>
-                  Pass Culture version v
-                  0.4.4
+                <p
+                  className="text-right"
+                >
+                  Pass Culture v.0.5.1
                 </p>
               </div>
             </div>,
@@ -193,9 +196,10 @@ ShallowWrapper {
                 <div
                   className="mt16"
                 >
-                  <p>
-                    Pass Culture version v
-                    0.4.4
+                  <p
+                    className="text-right"
+                  >
+                    Pass Culture v.0.5.1
                   </p>
                 </div>,
               ],
@@ -230,9 +234,10 @@ ShallowWrapper {
                 "key": undefined,
                 "nodeType": "host",
                 "props": Object {
-                  "children": <p>
-                    Pass Culture version v
-                    0.4.4
+                  "children": <p
+                    className="text-right"
+                  >
+                    Pass Culture v.0.5.1
                   </p>,
                   "className": "mt16",
                 },
@@ -242,16 +247,11 @@ ShallowWrapper {
                   "key": undefined,
                   "nodeType": "host",
                   "props": Object {
-                    "children": Array [
-                      "Pass Culture version v",
-                      "0.4.4",
-                    ],
+                    "children": "Pass Culture v.0.5.1",
+                    "className": "text-right",
                   },
                   "ref": null,
-                  "rendered": Array [
-                    "Pass Culture version v",
-                    "0.4.4",
-                  ],
+                  "rendered": "Pass Culture v.0.5.1",
                   "type": "p",
                 },
                 "type": "div",
@@ -296,7 +296,7 @@ ShallowWrapper {
             useSubmit={false}
           />,
           <main
-            className="pc-main is-clipped my12"
+            className="pc-main is-clipped"
             role="main"
           >
             <div
@@ -324,9 +324,10 @@ ShallowWrapper {
                 <div
                   className="mt16"
                 >
-                  <p>
-                    Pass Culture version v
-                    0.4.4
+                  <p
+                    className="text-right"
+                  >
+                    Pass Culture v.0.5.1
                   </p>
                 </div>
               </div>
@@ -390,14 +391,15 @@ ShallowWrapper {
                 <div
                   className="mt16"
                 >
-                  <p>
-                    Pass Culture version v
-                    0.4.4
+                  <p
+                    className="text-right"
+                  >
+                    Pass Culture v.0.5.1
                   </p>
                 </div>
               </div>
             </div>,
-            "className": "pc-main is-clipped my12",
+            "className": "pc-main is-clipped",
             "role": "main",
           },
           "ref": null,
@@ -428,9 +430,10 @@ ShallowWrapper {
                 <div
                   className="mt16"
                 >
-                  <p>
-                    Pass Culture version v
-                    0.4.4
+                  <p
+                    className="text-right"
+                  >
+                    Pass Culture v.0.5.1
                   </p>
                 </div>
               </div>,
@@ -457,9 +460,10 @@ ShallowWrapper {
                   <div
                     className="mt16"
                   >
-                    <p>
-                      Pass Culture version v
-                      0.4.4
+                    <p
+                      className="text-right"
+                    >
+                      Pass Culture v.0.5.1
                     </p>
                   </div>,
                 ],
@@ -494,9 +498,10 @@ ShallowWrapper {
                   "key": undefined,
                   "nodeType": "host",
                   "props": Object {
-                    "children": <p>
-                      Pass Culture version v
-                      0.4.4
+                    "children": <p
+                      className="text-right"
+                    >
+                      Pass Culture v.0.5.1
                     </p>,
                     "className": "mt16",
                   },
@@ -506,16 +511,11 @@ ShallowWrapper {
                     "key": undefined,
                     "nodeType": "host",
                     "props": Object {
-                      "children": Array [
-                        "Pass Culture version v",
-                        "0.4.4",
-                      ],
+                      "children": "Pass Culture v.0.5.1",
+                      "className": "text-right",
                     },
                     "ref": null,
-                    "rendered": Array [
-                      "Pass Culture version v",
-                      "0.4.4",
-                    ],
+                    "rendered": "Pass Culture v.0.5.1",
                     "type": "p",
                   },
                   "type": "div",
