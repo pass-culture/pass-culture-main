@@ -649,9 +649,12 @@ class OfferPage extends Component {
                     Terminer
                   </NavLink>
                 ) : (
-                  <SubmitButton className="button is-primary is-medium">
-                    Enregistrer
-                  </SubmitButton>
+                  showAllForm && (
+                    <SubmitButton className="button is-primary is-medium">
+                      Enregistrer et passer{' '}
+                      {isEventType ? 'aux dates' : 'aux stocks'}
+                    </SubmitButton>
+                  )
                 )}
               </div>
             </div>
