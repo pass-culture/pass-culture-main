@@ -13,9 +13,9 @@ import eventSelector from '../../selectors/event'
 import eventOccurrencesSelector from '../../selectors/eventOccurrences'
 import eventOccurrenceAndStocksErrorsSelector from '../../selectors/eventOccurrenceAndStockErrors'
 import offerSelector from '../../selectors/offer'
-import searchSelector from '../../selectors/search'
 import thingSelector from '../../selectors/thing'
 import providerSelector from '../../selectors/provider'
+import selectApiSearch from '../../selectors/selectApiSearch'
 import stocksSelector from '../../selectors/stocks'
 
 class EventOccurrencesAndStocksManager extends Component {
@@ -175,7 +175,7 @@ class EventOccurrencesAndStocksManager extends Component {
 export default compose(
   withRouter,
   connect((state, ownProps) => {
-    const search = searchSelector(state, ownProps.location.search)
+    const search = selectApiSearch(state, ownProps.location.search)
     const { eventOccurrenceIdOrNew, stockIdOrNew } = search || {}
 
     const isEditing = eventOccurrenceIdOrNew || stockIdOrNew

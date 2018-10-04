@@ -1,11 +1,10 @@
-import { Icon } from 'pass-culture-shared'
+import { Icon, pluralize } from 'pass-culture-shared'
 import React, { Fragment } from 'react'
 import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
 
 import selectPhysicalVenuesByOffererId from '../../../selectors/selectPhysicalVenuesByOffererId'
 import venuesSelector from '../../../selectors/venues'
-import { pluralize } from '../../../utils/string'
 
 const OffererItem = ({ offerer, physicalVenues, venues }) => {
   const { id, name, nOffers, isValidated } = offerer || {}

@@ -21,7 +21,7 @@ import eventSelector from '../../selectors/event'
 import eventOccurrencePatchSelector from '../../selectors/eventOccurrencePatch'
 import eventOccurrencesSelector from '../../selectors/eventOccurrences'
 import offerSelector from '../../selectors/offer'
-import searchSelector from '../../selectors/search'
+import selectApiSearch from '../../selectors/selectApiSearch'
 import stockSelector from '../../selectors/stock'
 import stockPatchSelector from '../../selectors/stockPatch'
 import timezoneSelector from '../../selectors/timezone'
@@ -428,7 +428,7 @@ class EventOccurrenceAndStockItem extends Component {
 export default compose(
   withRouter,
   connect((state, ownProps) => {
-    const search = searchSelector(state, ownProps.location.search)
+    const search = selectApiSearch(state, ownProps.location.search)
     const { eventOccurrenceIdOrNew, stockIdOrNew } = search || {}
 
     const offerId = ownProps.match.params.offerId

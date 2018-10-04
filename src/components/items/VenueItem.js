@@ -1,9 +1,7 @@
-import { Icon } from 'pass-culture-shared'
+import { Icon, pluralize } from 'pass-culture-shared'
 import React from 'react'
 import Dotdotdot from 'react-dotdotdot'
 import { NavLink } from 'react-router-dom'
-
-import { pluralize } from '../../utils/string'
 
 const VenueItem = ({ venue }) => {
   const { address, city, id, managingOffererId, name, postalCode } = venue || {}
