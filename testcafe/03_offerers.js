@@ -37,7 +37,7 @@ fixture`03_02 OfferersPage | Voir la liste de mes structures`.beforeEach(
 test("La structure qui vient d'être créée est en attente de validation", async t => {
   await t
     .expect(activationMessage.innerText)
-    .eql('Structure en cours de validation par l&apos;équipe Pass Culture.')
+    .eql("Structure en cours de validation par l'équipe Pass Culture.")
 })
 
 test("Je peux voir les détails d'une structure (THEATRE NATIONAL DE CHAILLOT)", async t => {
