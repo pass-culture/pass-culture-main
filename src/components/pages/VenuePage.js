@@ -32,24 +32,6 @@ class VenuePage extends Component {
     }
   }
 
-  /*
-  componentDidMount () {
-    const createOfferPathname = `/offres/nouveau?lieu=AE`
-    const text = (
-        <p>
-          Lieu crée. Vous pouvez maintenant y <NavLink
-            to={createOfferPathname}
-            onClick={() => this.props.dispatch(closeNotification())}
-          >créer une offre</NavLink>, ou en importer automatiquement.
-        </p>
-      )
-    this.props.dispatch(showNotification({
-      text,
-      type: 'success',
-    }))
-  }
-  */
-
   static getDerivedStateFromProps(nextProps) {
     const {
       location: { search },
@@ -113,7 +95,7 @@ class VenuePage extends Component {
     const text =
       get(action, 'method') === 'POST' ? (
         <p>
-          Lieu crée. Vous pouvez maintenant y{' '}
+          Lieu créé. Vous pouvez maintenant y{' '}
           <NavLink
             to={createOfferPathname}
             onClick={() => this.props.dispatch(closeNotification())}>
