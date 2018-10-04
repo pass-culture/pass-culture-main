@@ -69,7 +69,7 @@ class OffersPage extends Component {
     const value = event.target.elements.search.value
 
     pagination.change({
-      [mapApiToWindow.search]: value === '' ? null : value,
+      [mapApiToWindow.keywords]: value === '' ? null : value,
     })
   }
 
@@ -219,7 +219,7 @@ export default compose(
     dataKey: 'offers',
     defaultWindowQuery: {
       [mapApiToWindow.offererId]: null,
-      [mapApiToWindow.search]: null,
+      [mapApiToWindow.keywords]: null,
       [mapApiToWindow.venueId]: null,
       orderBy: 'offer.id+desc',
     },
