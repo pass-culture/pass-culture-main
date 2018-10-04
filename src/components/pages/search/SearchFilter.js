@@ -27,6 +27,8 @@ const transitionStyles = {
 }
 
 class SearchFilter extends Component {
+  // add, remove and change passed as props via this.state to filter components
+  // ex <FilterByDates filter={this.state} title="QUAND" />
   constructor(props) {
     super(props)
     this.state = {
@@ -53,7 +55,6 @@ class SearchFilter extends Component {
   onFilterClick = () => {
     const { pagination } = this.props
     const { isNew, query } = this.state
-
     pagination.change(query, {
       isClearingData: isNew,
       pathname: '/recherche/resultats',
@@ -65,17 +66,18 @@ class SearchFilter extends Component {
       this.props.pagination.windowQuery,
       INITIAL_FILTER_PARAMS
     )
-
     this.setState({
       isNew,
-      query: INITIAL_FILTER_PARAMS,
+    })
+
+    this.props.pagination.change(INITIAL_FILTER_PARAMS, {
+      pathname: '/recherche/resultats',
     })
   }
 
   handleQueryChange = (newValue, callback) => {
     const { pagination } = this.props
     const { query } = this.state
-
     const nextFilterParams = Object.assign({}, query, newValue)
     const isNew = getFirstChangingKey(pagination.windowQuery, newValue)
 
@@ -104,7 +106,6 @@ class SearchFilter extends Component {
 
   handleQueryRemove = (key, value, callback) => {
     const { query } = this.state
-
     const previousValue = query[key]
 
     if (get(previousValue, 'length')) {

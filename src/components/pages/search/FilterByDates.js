@@ -42,7 +42,6 @@ class FilterByDates extends Component {
     } else if (isAlreadyIncluded && days.split(',').length === 1) {
       callback = () => filter.change({ date: null })
     }
-
     if (isAlreadyIncluded) {
       filter.remove(mapApiToWindow.days, day, callback)
       return
