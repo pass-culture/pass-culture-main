@@ -13,13 +13,13 @@ class SirenInput extends Component {
 
     let value = removeWhitespaces(event.target.value)
 
-    if (type === 'siret') {
-      value = value.slice(0, Math.max(14, value.length))
-    } else if (type === 'siren') {
-      value = value.slice(0, Math.max(9, value.length))
-    }
+    console.log('type', type)
 
-    console.log('value', value)
+    if (type === 'siret') {
+      value = value.slice(0, Math.min(14, value.length))
+    } else if (type === 'siren') {
+      value = value.slice(0, Math.min(9, value.length))
+    }
 
     this.props.onChange(value, {
       event,
