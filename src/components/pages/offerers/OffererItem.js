@@ -69,7 +69,7 @@ const OffererItem = ({ offerer, physicalVenues, venues }) => {
           <NavLink to={showPath}>{name}</NavLink>
         </p>
         {!isValidated && (
-          <p className="is-italic mb12">
+          <p className="is-italic mb12" id="offerer-item-validation">
             Structure en cours de validation par l&apos;équipe Pass Culture.
           </p>
         )}

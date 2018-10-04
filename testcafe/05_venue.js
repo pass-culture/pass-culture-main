@@ -64,7 +64,9 @@ test('Je rentre une nouveau lieu via son siret avec succès', async t => {
     .expect(location.pathname)
     .match(/\/structures\/([A-Z0-9]*)\/lieux\/([A-Z0-9]*)$/)
     .expect(notificationSuccess.innerText)
-    .eql('Lieu ajouté avec succès !\nOK\n')
+    .eql(
+      'Lieu créé. Vous pouvez maintenant y créer une offre, ou en importer automatiquement.\n\nOK\n'
+    )
 
   // close notification div
   await t

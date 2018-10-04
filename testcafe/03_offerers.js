@@ -2,7 +2,7 @@ import { Selector } from 'testcafe'
 
 import { regularOfferer } from './helpers/roles'
 
-const activationMessage = Selector('ul.actions li.is-italic')
+const activationMessage = Selector('#offerer-item-validation')
 const arrow = Selector('.caret a')
 const backAnchor = Selector('a.button.is-secondary')
 const createOffererAnchor = Selector(
