@@ -12,9 +12,9 @@ const userPublicName = Selector('#user-publicName')
 const signInButton = Selector('.is-secondary')
 const signUpButton = Selector('button.button.is-primary')
 
-fixture
-  .skip('01_01 SignupPage Component | Je crée un compte utilisatrice')
-  .page(`${ROOT_PATH}inscription`)
+fixture('01_01 SignupPage Component | Je crée un compte utilisatrice').page(
+  `${ROOT_PATH}inscription`
+)
 
 test("Je peux cliquer sur lien pour me connecter si j'ai déja un compte", async t => {
   await t.click(signInButton)
@@ -45,11 +45,9 @@ test('Je crée un compte et je suis redirigé·e vers la page /découverte', asy
   const location = await t.eval(() => window.location)
   await t.expect(location.pathname).eql('/decouverte')
 })
-fixture
-  .skip(
-    "01_02 SignupPage | Création d'un compte utilisateur | Messages d'erreur lorsque les champs ne sont pas correctement remplis"
-  )
-  .page(`${ROOT_PATH}inscription`)
+fixture(
+  "01_02 SignupPage | Création d'un compte utilisateur | Messages d'erreur lorsque les champs ne sont pas correctement remplis"
+).page(`${ROOT_PATH}inscription`)
 
 test('E-mail déjà présent dans la base et mot de passe invalide', async t => {
   await t

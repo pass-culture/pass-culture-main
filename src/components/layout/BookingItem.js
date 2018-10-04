@@ -25,11 +25,13 @@ const BookingItem = ({ booking, recommendation }) => {
     'stock.resolvedOffer.venue.departementCode'
   )
   const tz = getTimezone(departementCode)
-  const dateString = capitalize(
-    moment(date)
-      .tz(tz)
-      .format('dddd DD/MM/YYYY à H:mm')
-  )
+  const dateString =
+    date &&
+    capitalize(
+      moment(date)
+        .tz(tz)
+        .format('dddd DD/MM/YYYY à H:mm')
+    )
 
   const name = get(booking, 'stock.resolvedOffer.eventOrThing.name')
   const queryURL = getQueryURL({ mediationId, offerId })
@@ -47,7 +49,7 @@ const BookingItem = ({ booking, recommendation }) => {
             <h5 title={name} className="fs18 is-semi-bold">
               <Dotdotdot clamp={date ? 2 : 3}>{name}</Dotdotdot>
             </h5>
-            <span className="fs13">{dateString}</span>
+            <span className="fs13">{dateString || 'permanent'}</span>
           </div>
           {!completedUrl && <div className="token">{token}</div>}
         </div>

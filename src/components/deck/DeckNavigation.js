@@ -50,6 +50,10 @@ class DeckNavigation extends React.PureComponent {
       transitionTimeout,
     } = this.props
     const { distance, offer } = recommendation || {}
+    let distanceClue = ' '
+    if (offer && offer.venue) {
+      distanceClue = offer.venue.isVirtual ? 'offre en ligne' : distance
+    }
     const priceRange = getPriceRangeFromStocks(offer && offer.stocks)
     const color = headerColor || '#000'
     const backgroundGradient = `linear-gradient(to bottom, rgba(0,0,0,0) 0%,${color} 30%,${color} 100%)`
@@ -82,7 +86,7 @@ class DeckNavigation extends React.PureComponent {
                     {offer ? '\u00B7' : ' '}
                   </div>
                   <div>
-                    {offer ? distance : ' '}
+                    {distanceClue}
                   </div>
                 </Finishable>
               </div>

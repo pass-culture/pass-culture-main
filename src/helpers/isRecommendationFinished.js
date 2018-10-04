@@ -1,14 +1,14 @@
-import { filterAvailableDates } from './filterAvailableDates'
+import { filterAvailableStocks } from './filterAvailableStocks'
 
 export const isRecommendationFinished = (recommendation, offerId) => {
   // if (!recommendation) return false
   const { offer } = recommendation
   const stocks = (offer && offer.stocks) || []
-  const availableDates = filterAvailableDates(stocks)
+  const availableStocks = filterAvailableStocks(stocks)
   const isFinished =
     offerId &&
     offerId !== 'tuto' &&
-    !(availableDates && availableDates.length > 0)
+    !(availableStocks && availableStocks.length > 0)
   return isFinished
 }
 

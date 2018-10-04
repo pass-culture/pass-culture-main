@@ -43,15 +43,15 @@ class VersoControl extends React.PureComponent {
 
   render() {
     const {
+      booking,
       isFavorite,
       isFinished,
-      isReserved,
       location,
       offer,
       recommendation,
       url,
       user,
-      // wallet,
+      wallet,
     } = this.props
 
     const shareURL = getShareURL(location, user)
@@ -60,8 +60,7 @@ class VersoControl extends React.PureComponent {
       <ul className="verso-control">
         <li>
           <small className="pass-label">Mon Pass</small>
-          <span className="pass-value">--€</span>
-          {/* <span className="pass-value">{wallet}€</span> */}
+          <span className="pass-value">{wallet}€</span>
         </li>
         <li>
           <button
@@ -80,10 +79,10 @@ class VersoControl extends React.PureComponent {
         </li>
         <li>
           <VersoBookingButton
-            url={url}
-            offer={offer}
             isFinished={isFinished}
-            isReserved={isReserved}
+            booking={booking}
+            offer={offer}
+            url={url}
           />
         </li>
       </ul>
@@ -92,27 +91,27 @@ class VersoControl extends React.PureComponent {
 }
 
 VersoControl.defaultProps = {
+  booking: null,
   isFavorite: false,
   isFinished: false,
-  isReserved: false,
   offer: null,
   recommendation: null,
   recommendationId: null,
-  // wallet: null,
+  wallet: null,
 }
 
 VersoControl.propTypes = {
+  booking: PropTypes.object,
   dispatch: PropTypes.func.isRequired,
   isFavorite: PropTypes.bool,
   isFinished: PropTypes.bool,
-  isReserved: PropTypes.bool,
   location: PropTypes.object.isRequired,
   offer: PropTypes.object,
   recommendation: PropTypes.object,
   recommendationId: PropTypes.string,
   url: PropTypes.string.isRequired,
   user: PropTypes.object.isRequired,
-  // wallet: PropTypes.number,
+  wallet: PropTypes.number,
 }
 
 const mapStateToProps = (state, ownProps) => {
@@ -129,13 +128,13 @@ const mapStateToProps = (state, ownProps) => {
   const stocks = get(recommendation, 'offer.stocks')
   const stockIds = (stocks || []).map(o => o.id)
   const bookings = selectBookings(state)
-  const bookingsIds = bookings.map(o => o.stockId)
-  const booked = bookingsIds.filter(id => stockIds.includes(id))
+  const booking = bookings.find(b => stockIds.includes(b.stockId))
   const isFinished = isRecommendationFinished(recommendation, offerId)
   return {
+    booking,
     isFavorite: recommendation && recommendation.isFavorite,
     isFinished,
-    isReserved: booked.length > 0,
+    offer: recommendation.offer,
     recommendation,
     recommendationId: recommendation.id,
     url: ownProps.match.url,

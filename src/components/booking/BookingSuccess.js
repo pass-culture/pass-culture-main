@@ -50,6 +50,8 @@ const BookingSuccess = ({ isEvent, data }) => {
           <a
             className="is-primary-text is-primary-border px12 py8"
             href={completedUrl}
+            rel="noopener noreferrer"
+            target="_blank"
           >
             <b>Accéder à l&apos;offre en ligne</b>
           </a>
