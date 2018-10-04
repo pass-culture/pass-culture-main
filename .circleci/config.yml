@@ -48,8 +48,8 @@ jobs:
           name: Running sandbox data import
           command: |
             cd pass-culture-main
-            dockerize -wait http://localhost/health -timeout 3m -wait-retry-interval 5s
-            ./pc sandbox
+            dockerize -wait http://localhost/health -timeout 5m -wait-retry-interval 5s
+            ./pc sandbox --name=light
 
       - run:
           name: Run Functional Tests
@@ -58,7 +58,7 @@ jobs:
             export NVM_BIN=/usr/bin/nodejs
             export PATH=$NVM_BIN:$PATH
             cd ~/pass-culture-main/pro
-            dockerize -wait http://localhost/health -timeout 3m -wait-retry-interval 5s
+            dockerize -wait http://localhost/health -timeout 5m -wait-retry-interval 5s
             yarn testcafe
 
   deploy:
