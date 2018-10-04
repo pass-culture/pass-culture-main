@@ -226,6 +226,7 @@ class EventOccurrenceAndStockItem extends Component {
           )}
 
           <CommonForm
+            isStockOnly={isStockOnly}
             stockPatch={stockPatch}
             isStockReadOnly={isStockReadOnly}
             beginningDatetime={beginningDatetime}

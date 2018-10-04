@@ -11,6 +11,7 @@ class CommonForm extends Component {
 
   render() {
     const {
+      isStockOnly,
       stockPatch,
       isStockReadOnly,
       beginningDatetime,
@@ -50,7 +51,7 @@ class CommonForm extends Component {
         </td>
         <td title="Laissez vide si pas de limite">
           <Field
-            maxDate={beginningDatetime}
+            maxDate={isStockOnly ? undefined : beginningDatetime}
             name="bookingLimitDatetime"
             placeholder="Laissez vide si pas de limite"
             type="date"
