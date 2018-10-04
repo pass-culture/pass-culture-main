@@ -22,6 +22,7 @@ with app.app_context():
 from recommendations_engine import *
 from local_providers import *
 from models import *
+from repository.offer_queries import *
 from sqlalchemy import *
 from utils.content import *
 from utils.credentials import *

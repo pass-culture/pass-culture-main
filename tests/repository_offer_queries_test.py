@@ -106,7 +106,7 @@ def test_type_search(app):
     PcObject.check_and_save(conference_stock, concert_stock)
 
     offers = get_offers_for_recommendations_search(
-        type_labels=[
+        type_values=[
             type_label
         ],
     )

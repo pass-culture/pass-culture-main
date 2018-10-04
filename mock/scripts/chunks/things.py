@@ -2,6 +2,6 @@
 thing_mocks = [
     {
         "name": "Ravage",
-        "type": "Livre — Édition"
+        "type": "ThingType.LIVRE_EDITION"
     }
 ]

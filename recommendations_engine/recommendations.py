@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 import dateutil.parser
 from sqlalchemy import func
 
-from domain.types import get_type_labels_from_sublabels
+from domain.types import get_type_values_from_sublabels
 from models import ApiErrors, Recommendation, Offer, Mediation, PcObject
 from recommendations_engine import get_offers_for_recommendations_discovery
 from repository.offer_queries import get_offers_for_recommendations_search
@@ -128,6 +128,7 @@ def get_search(kwargs):
     return '&'.join([ key + '=' + str(value) for (key, value) in kwargs.items() ])
 
 def create_recommendations_for_search(user, **kwargs):
+
     offers = get_offers_for_recommendations_search(**kwargs)
     offer_ids = [offer.id for offer in offers]
     search = get_search(kwargs)
@@ -166,7 +167,7 @@ def get_recommendation_search_params(kwargs):
 
     if 'categories' in kwargs and kwargs['categories']:
         type_sublabels = kwargs['categories']
-        search_params['type_labels'] = get_type_labels_from_sublabels(type_sublabels)
+        search_params['type_values'] = get_type_values_from_sublabels(type_sublabels)
 
     if 'date' in kwargs and kwargs['date'] and \
        'days' in kwargs and kwargs['days']:
