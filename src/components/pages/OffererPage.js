@@ -109,22 +109,26 @@ class OffererPage extends Component {
               readOnly
               required
             />
-            <Field
-              className={classnames({ 'is-invisible': hasOffererName })}
-              isExpanded
-              label="BIC"
-              name="bic"
-              type="bic"
-              required
-            />
-            <Field
-              className={classnames({ 'is-invisible': hasOffererName })}
-              isExpanded
-              label="IBAN"
-              name="iban"
-              type="iban"
-              required
-            />
+            {false && (
+              <Field
+                className={classnames({ 'is-invisible': hasOffererName })}
+                isExpanded
+                label="BIC"
+                name="bic"
+                type="bic"
+                required
+              />
+            )}
+            {false && (
+              <Field
+                className={classnames({ 'is-invisible': hasOffererName })}
+                isExpanded
+                label="IBAN"
+                name="iban"
+                type="iban"
+                required
+              />
+            )}
           </div>
 
           {!get(offerer, 'id') ? (
