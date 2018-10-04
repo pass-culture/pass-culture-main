@@ -3,7 +3,7 @@ from pprint import pformat
 
 from sqlalchemy.exc import InternalError
 
-from models import Stock, Offerer, User, ApiErrors, PcObject
+from models import Stock, Offerer, User, ApiErrors, PcObject, EventOccurrence
 from utils.human_ids import dehumanize
 
 
@@ -48,3 +48,10 @@ def save_stock(stock):
             raise api_errors
         else:
             raise ie
+
+
+def find_stocks_of_finished_events_when_no_recap_sent():
+    return Stock.queryNotSoftDeleted().join(EventOccurrence) \
+        .filter((Stock.bookingLimitDatetime < datetime.utcnow()) &
+                 (EventOccurrence.beginningDatetime < datetime.utcnow()) &
+                (Stock.bookingRecapSent == None))
