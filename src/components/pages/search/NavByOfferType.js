@@ -15,7 +15,7 @@ const NavByOfferType = ({ pagination, title, typeSublabels }) => (
           onClick={() =>
             pagination.change(
               { categories: typeSublabel },
-              { pathname: '/recherche/resultats' }
+              { pathname: `/recherche/resultats/${typeSublabel}` }
             )
           }
           type="button"

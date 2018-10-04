@@ -10,7 +10,14 @@ ShallowWrapper {
     pagination={
       Object {
         "windowQuery": Object {
-          "orderBy": "fake",
+          "categories": null,
+          "date": "2018-09-28T12:52:52.341Z",
+          "distance": "50",
+          "jours": "0-1",
+          "latitude": "48.8637546",
+          "longitude": "2.337428",
+          "mots-cles": "fake query",
+          "orderBy": "offer.id+desc",
         },
       }
     }
@@ -32,15 +39,6 @@ ShallowWrapper {
         <h2
           className="fs15 is-uppercase is-italic is-semi-bold mb12"
           id="results-title"
-        />,
-        <NavResultsHeader
-          searchType={null}
-          typeSublabels={
-            Object {
-              "description": "Voulez-vous suivre un géant de 12 mètres dans la ville ? Rire devant un seul-en-scène ? Rêver le temps d’un opéra ou d’un spectacle de danse, assister à une pièce de théâtre, ou vous laisser conter une histoire ?",
-              "sublabel": "Applaudir",
-            }
-          }
         />,
         <InfiniteScroller
           Tag="ul"
@@ -79,21 +77,6 @@ ShallowWrapper {
       Object {
         "instance": null,
         "key": undefined,
-        "nodeType": "function",
-        "props": Object {
-          "searchType": null,
-          "typeSublabels": Object {
-            "description": "Voulez-vous suivre un géant de 12 mètres dans la ville ? Rire devant un seul-en-scène ? Rêver le temps d’un opéra ou d’un spectacle de danse, assister à une pièce de théâtre, ou vous laisser conter une histoire ?",
-            "sublabel": "Applaudir",
-          },
-        },
-        "ref": null,
-        "rendered": null,
-        "type": [Function],
-      },
-      Object {
-        "instance": null,
-        "key": undefined,
         "nodeType": "class",
         "props": Object {
           "Tag": "ul",
@@ -128,15 +111,6 @@ ShallowWrapper {
             className="fs15 is-uppercase is-italic is-semi-bold mb12"
             id="results-title"
           />,
-          <NavResultsHeader
-            searchType={null}
-            typeSublabels={
-              Object {
-                "description": "Voulez-vous suivre un géant de 12 mètres dans la ville ? Rire devant un seul-en-scène ? Rêver le temps d’un opéra ou d’un spectacle de danse, assister à une pièce de théâtre, ou vous laisser conter une histoire ?",
-                "sublabel": "Applaudir",
-              }
-            }
-          />,
           <InfiniteScroller
             Tag="ul"
             handleLoadMore={[MockFunction]}
@@ -170,21 +144,6 @@ ShallowWrapper {
           "ref": null,
           "rendered": null,
           "type": "h2",
-        },
-        Object {
-          "instance": null,
-          "key": undefined,
-          "nodeType": "function",
-          "props": Object {
-            "searchType": null,
-            "typeSublabels": Object {
-              "description": "Voulez-vous suivre un géant de 12 mètres dans la ville ? Rire devant un seul-en-scène ? Rêver le temps d’un opéra ou d’un spectacle de danse, assister à une pièce de théâtre, ou vous laisser conter une histoire ?",
-              "sublabel": "Applaudir",
-            },
-          },
-          "ref": null,
-          "rendered": null,
-          "type": [Function],
         },
         Object {
           "instance": null,

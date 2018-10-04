@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { connect } from 'react-redux'
 
-import selectTypeSublabels from '../../../selectors/selectTypeSublabels'
+import selectTypeSublabels from '../../../selectors/selectTypes'
 import SearchPicture from './SearchPicture'
 
 class FilterByOfferTypes extends PureComponent {

@@ -12,7 +12,14 @@ describe('src | components | pages | SearchResults', () => {
         loadMoreHandler: jest.fn(),
         pagination: {
           windowQuery: {
-            orderBy: 'fake',
+            categories: null,
+            date: '2018-09-28T12:52:52.341Z',
+            distance: '50',
+            jours: '0-1',
+            latitude: '48.8637546',
+            longitude: '2.337428',
+            [`mots-cles`]: 'fake query',
+            orderBy: 'offer.id+desc',
           },
         },
       }
@@ -27,7 +34,7 @@ describe('src | components | pages | SearchResults', () => {
   })
   describe('render', () => {
     let items
-    describe('when there is a result', () => {
+    describe('when there is a result with only key words', () => {
       items = [
         {
           bookings: [],
@@ -167,7 +174,16 @@ describe('src | components | pages | SearchResults', () => {
           keywords: 'fakeKeywords',
           loadMoreHandler: jest.fn(),
           pagination: {
-            windowQuery: 'fake query',
+            windowQuery: {
+              categories: null,
+              date: '2018-09-28T12:52:52.341Z',
+              distance: '50',
+              jours: '0-1',
+              latitude: '48.8637546',
+              longitude: '2.337428',
+              [`mots-cles`]: 'fake query',
+              orderBy: 'offer.id+desc',
+            },
           },
         }
 

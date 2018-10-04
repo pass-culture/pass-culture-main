@@ -1,4 +1,3 @@
-// import classnames from 'classnames'
 import get from 'lodash.get'
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
@@ -14,17 +13,25 @@ import {
 } from 'pass-culture-shared'
 
 import NavByOfferType from './search/NavByOfferType'
+import NavResultsHeader from './search/NavResultsHeader'
 import SearchFilter from './search/SearchFilter'
 import SearchResults from './search/SearchResults'
 import filterIconByState, {
+  descriptionForSublabel,
   INITIAL_FILTER_PARAMS,
   isSearchFiltersAdded,
 } from './search/utils'
 import Main from '../layout/Main'
 import NavigationFooter from '../layout/NavigationFooter'
 import { selectRecommendations } from '../../selectors'
-import selectTypeSublabels from '../../selectors/selectTypeSublabels'
+import selectTypeSublabels from '../../selectors/selectTypes'
+
 import { mapApiToWindow, windowToApiQuery } from '../../utils/pagination'
+
+// TODO
+// import stateWithTypes from '../../../mocks/stateWithTypes'
+// import selectTypes from '../../../selectors/selectTypes'
+// when api will ready change selectTypeSublabels to typeSublabelsAndDescription
 
 const renderPageHeader = () => (
   <header className="no-dotted-border">
@@ -78,6 +85,7 @@ class SearchPage extends PureComponent {
       return
     }
 
+    // this request Data get typeSublabels to state
     dispatch(requestData('GET', 'types'))
 
     const len = get(location, 'search.length')
@@ -124,6 +132,51 @@ class SearchPage extends PureComponent {
     )
     const isfilterIconActive = filterIconByState(filtersActive)
     const filtersToggleButtonClass = (withFilter && 'filters-are-opened') || ''
+
+    const typeSublabelsAndDescription = [
+      {
+        description:
+          'Voulez-vous suivre un géant de 12 mètres dans la ville ? Rire devant un seul-en-scène ? Rêver le temps d’un opéra ou d’un spectacle de danse, assister à une pièce de théâtre, ou vous laisser conter une histoire ?',
+        sublabel: 'Applaudir',
+      },
+      {
+        description: 'Lorem Ipsum Jouer',
+        sublabel: 'Jouer',
+      },
+      {
+        description: 'Lorem Ipsum Lire',
+        sublabel: 'Lire',
+      },
+      {
+        description: 'Lorem Ipsum Pratiquer',
+        sublabel: 'Pratiquer',
+      },
+      {
+        description: 'Lorem Ipsum Regarder',
+        sublabel: 'Regarder',
+      },
+      {
+        description: 'Lorem Ipsum Rencontrer',
+        sublabel: 'Rencontrer',
+      },
+      {
+        description: 'Lorem Ipsum Écouter',
+        sublabel: 'Écouter',
+      },
+    ]
+
+    let category
+    let description
+
+    // if location.pathname contient /resultats/
+    if (location.pathname.indexOf('/resultats/') !== -1) {
+      category = pagination.windowQuery.categories
+      description = descriptionForSublabel(
+        category,
+        typeSublabelsAndDescription
+      )
+    }
+
     return (
       <Main
         id="search-page"
@@ -217,6 +270,12 @@ class SearchPage extends PureComponent {
                 title="PAR CATÉGORIES"
                 typeSublabels={typeSublabels}
               />
+            )}
+          />
+          <Route
+            path="/recherche/resultats/:categorie"
+            render={() => (
+              <NavResultsHeader category={category} description={description} />
             )}
           />
           <Route

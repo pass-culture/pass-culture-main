@@ -1,5 +1,7 @@
 import filterIconByState, {
+  descriptionForSublabel,
   getFirstChangingKey,
+  handleQueryAdd,
   INITIAL_FILTER_PARAMS,
   isSearchFiltersAdded,
   searchResultsTitle,
@@ -126,6 +128,77 @@ describe('src | components | pages | search | utils', () => {
 
       expect(searchResultsTitle(keywords, items, queryParams)).toEqual(
         '"fake word" : 2 résultats'
+      )
+    })
+  })
+
+  describe('descriptionForSublabel', () => {
+    it('should return the description corresponding to the label', () => {
+      const typeSublabels = [
+        {
+          description:
+            'Voulez-vous suivre un géant de 12 mètres dans la ville ? Rire devant un seul-en-scène ? Rêver le temps d’un opéra ou d’un spectacle de danse, assister à une pièce de théâtre, ou vous laisser conter une histoire ?',
+          sublabel: 'Applaudir',
+        },
+        {
+          description: 'Lorem Ipsum',
+          sublabel: 'Jouer',
+        },
+        {
+          description: 'Lorem Ipsum',
+          sublabel: 'Lire',
+        },
+        {
+          description: 'Lorem Ipsum',
+          sublabel: 'Pratiquer',
+        },
+        {
+          description: 'Lorem Ipsum',
+          sublabel: 'Regarder',
+        },
+        {
+          description: 'Lorem Ipsum',
+          sublabel: 'Rencontrer',
+        },
+        {
+          description: 'Lorem Ipsum',
+          sublabel: 'Écouter',
+        },
+      ]
+      const category = 'Applaudir'
+      const result = descriptionForSublabel(category, typeSublabels)
+
+      expect(result).toEqual(typeSublabels[0].description)
+    })
+  })
+  describe.skip('handleQueryAdd', () => {
+    // used in FilterByDates
+
+    const currentState = {
+      isNew: false,
+      query: {
+        categories: null,
+        date: null,
+        distance: null,
+        jours: null,
+        latitude: null,
+        longitude: null,
+        [`mots-cles`]: null,
+        orderBy: 'offer.id+desc',
+      },
+    }
+    const toto = 'jours'
+    const tata = '1-5'
+    const callback = jest.fn()
+
+    // const props = {
+    //   pagination: {
+    //
+    //   }
+    // }
+    it('should XXXXXXXXXXXX ', () => {
+      expect(handleQueryAdd(toto, tata, currentState, callback)).toEqual(
+        'jours'
       )
     })
   })

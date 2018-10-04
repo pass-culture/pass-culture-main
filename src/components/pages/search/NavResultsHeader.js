@@ -1,35 +1,39 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
+// import get from 'lodash.get'
+
 import { ROOT_PATH } from '../../../utils/config'
 
-const NavResultsHeader = ({ searchType, typeSublabels }) => {
-  const searchTypeWithoutSpecialChar = searchType.replace(/É/g, 'E')
+const NavResultsHeader = ({ category, description }) => {
+  const searchTypeWithoutSpecialChar = category.replace(/É/g, 'E')
   const src = `${ROOT_PATH}/icons/img-${searchTypeWithoutSpecialChar}.png`
-  const description = `Liste des offres de type ${searchType}`
+  const imgDescription = `Liste des offres de type ${category}`
   return (
     <div id="nav-results-header">
-      <div>
-        <h2>
-          {searchType}
-        </h2>
+      <div className="flex-rows text-right is-white-text">
+        <div className="flex-1 fs22 is-bold">
+          <h2>
+            {category}
+          </h2>
+        </div>
+        <div className="flex-1">
+          {description}
+        </div>
       </div>
-      <div>
-        {typeSublabels.description}
-      </div>
-
-      <img src={src} alt={description} />
+      <img src={src} alt={imgDescription} />
     </div>
   )
 }
 
 NavResultsHeader.defaultProps = {
-  searchType: null,
+  category: null,
+  description: null,
 }
 
 NavResultsHeader.propTypes = {
-  searchType: PropTypes.string,
-  typeSublabels: PropTypes.object.isRequired,
+  category: PropTypes.string,
+  description: PropTypes.string,
 }
 
 export default NavResultsHeader
