@@ -1,21 +1,13 @@
 """ sandbox """
 #https://docs.python.org/3/library/datetime.html#strftime-strptime-behavior
 # -*- coding: utf-8 -*-
+
 from datetime import datetime, timedelta
 import json
 from pprint import pprint
+import sys
+from mock.scripts import sandbox_webapp, sandbox_light
 
-from mock.scripts import booking_mocks,\
-                         deposit_mocks,\
-                         event_mocks,\
-                         event_occurrence_mocks,\
-                         offer_mocks,\
-                         offerer_mocks,\
-                         stock_mocks,\
-                         thing_mocks,\
-                         user_mocks,\
-                         user_offerer_mocks,\
-                         venue_mocks
 from models.pc_object import PcObject
 from models import Booking,\
                    Deposit,\
@@ -31,10 +23,12 @@ from models import Booking,\
 from utils.mock import set_from_mock
 
 
-def do_sandbox():
+def do_sandbox(name):
+    function_name = "mock.scripts.sandbox_" + name
+    sandbox_module = sys.modules[function_name]
 
     offerers_by_name = {}
-    for offerer_mock in offerer_mocks:
+    for offerer_mock in sandbox_module.offerer_mocks:
         query = Offerer.query.filter_by(name=offerer_mock['name'])
         if query.count() == 0:
             offerer = Offerer(from_dict=offerer_mock)
@@ -46,7 +40,7 @@ def do_sandbox():
         offerers_by_name[offerer_mock['name']] = offerer
 
     users_by_email = {}
-    for (user_index, user_mock) in enumerate(user_mocks):
+    for (user_index, user_mock) in enumerate(sandbox_module.user_mocks):
         query = User.query.filter_by(email=user_mock['email'])
         if query.count() == 0:
             user = User(from_dict=user_mock)
@@ -69,7 +63,7 @@ def do_sandbox():
             user = query.first()
         users_by_email[user_mock['email']] = user
 
-    for user_offerer_mock in user_offerer_mocks:
+    for user_offerer_mock in sandbox_module.user_offerer_mocks:
         user = users_by_email[user_offerer_mock['userEmail']]
         offerer = offerers_by_name[user_offerer_mock['offererName']]
 
@@ -86,7 +80,7 @@ def do_sandbox():
             pprint(vars(user_offerer))
 
     venues_by_name = {}
-    for venue_mock in venue_mocks:
+    for venue_mock in sandbox_module.venue_mocks:
         query = Venue.query.filter_by(name=venue_mock['name'])
         if query.count() == 0:
             venue = Venue(from_dict=venue_mock)
@@ -99,7 +93,7 @@ def do_sandbox():
         venues_by_name[venue_mock['name']] = venue
 
     events_by_name = {}
-    for event_mock in event_mocks:
+    for event_mock in sandbox_module.event_mocks:
         query = Event.query.filter_by(name=event_mock['name'])
         if query.count() == 0:
             event = Event(from_dict=event_mock)
@@ -111,7 +105,7 @@ def do_sandbox():
         events_by_name[event_mock['name']] = event
 
     things_by_name = {}
-    for thing_mock in thing_mocks:
+    for thing_mock in sandbox_module.thing_mocks:
         query = Thing.query.filter_by(name=thing_mock['name'])
         if query.count() == 0:
             thing = Thing(from_dict=thing_mock)
@@ -123,7 +117,7 @@ def do_sandbox():
         things_by_name[thing_mock['name']] = thing
 
     offers = []
-    for offer_mock in offer_mocks:
+    for offer_mock in sandbox_module.offer_mocks:
         if 'eventName' in offer_mock:
             event_or_thing = events_by_name[offer_mock['eventName']]
             is_event = True
@@ -152,7 +146,7 @@ def do_sandbox():
 
 
     event_occurrences = []
-    for event_occurrence_mock in event_occurrence_mocks:
+    for event_occurrence_mock in sandbox_module.event_occurrence_mocks:
         offer = offers[event_occurrence_mock['offerIndex']]
         query = EventOccurrence.query.filter_by(
             beginningDatetime=event_occurrence_mock['beginningDatetime'],
@@ -171,7 +165,7 @@ def do_sandbox():
         event_occurrences.append(event_occurrence)
 
     stocks = []
-    for stock_mock in stock_mocks:
+    for stock_mock in sandbox_module.stock_mocks:
 
         if 'eventOccurrenceIndex' in stock_mock:
             event_occurrence = event_occurrences[stock_mock['eventOccurrenceIndex']]
@@ -194,7 +188,7 @@ def do_sandbox():
         stocks.append(stock)
 
     deposits = []
-    for deposit_mock in deposit_mocks:
+    for deposit_mock in sandbox_module.deposit_mocks:
         user = User.query.filter_by(email=deposit_mock['userEmail']).one()
         query = Deposit.query.filter_by(userId=user.id)
         if query.count() == 0:
@@ -208,7 +202,7 @@ def do_sandbox():
         deposits.append(deposit)
 
     bookings = []
-    for booking_mock in booking_mocks:
+    for booking_mock in sandbox_module.booking_mocks:
         stock = stocks[booking_mock['stockIndex']]
         user = User.query.filter_by(email=booking_mock['userEmail']).one()
         query = Booking.query.filter_by(stockId=stock.id, userId=user.id, token=booking_mock['token'])

@@ -257,7 +257,7 @@ def test_17_openagenda_events_provider(app):
 
 def test_99_init(app):
     saveCounts(app)
-    result = subprocess.run('PYTHONPATH="." python scripts/pc.py sandbox',
+    result = subprocess.run('PYTHONPATH="." python scripts/pc.py sandbox --name=light',
                             stdout=subprocess.PIPE,
                             stderr=subprocess.PIPE,
                             shell=True,
