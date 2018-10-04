@@ -13,17 +13,24 @@ def _get_origin_header_whitelist():
     if ENV == 'development':
         return [
             'http://localhost:3000',
+            'http://localhost',
+            'https://localhost',
+            'localhost',
             'https://localhost:3000',
             'localhost:3000',
             'http://localhost:3001',
             'https://localhost:3001',
             'localhost:3001'
         ]
+    elif ENV == 'testing':
+        return [
+            'https://app-passculture-testing.scalingo.io'
+        ]
     return _get_origin_header_whitelist_for_non_dev_environments(API_URL)
 
 
 def _get_endpoint_exceptions():
-    return ['patch_booking_by_token', 'get_booking_by_token', 'send_storage_file']
+    return ['patch_booking_by_token', 'get_booking_by_token', 'send_storage_file', 'health']
 
 
 def _get_origin_header_whitelist_for_non_dev_environments(api_url):
