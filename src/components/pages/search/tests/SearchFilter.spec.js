@@ -11,7 +11,7 @@ describe('src | components | pages | search | SearchFilter', () => {
     it('should match snapshot', () => {
       // given
       const props = {
-        filterIsVisible: true,
+        isVisible: true,
         pagination: {
           windowQuery: {
             categories: null,
@@ -40,7 +40,7 @@ describe('src | components | pages | search | SearchFilter', () => {
       it('should initilize state with functions', () => {
         // given
         const props = {
-          filterIsVisible: false,
+          isVisible: false,
           pagination: {
             windowQuery: {},
           },
@@ -61,7 +61,7 @@ describe('src | components | pages | search | SearchFilter', () => {
       it('should update state if query has changed', () => {
         // given
         const props = {
-          filterIsVisible: false,
+          isVisible: false,
           pagination: {
             windowQuery: {
               categories: 'Jouer',
@@ -77,7 +77,7 @@ describe('src | components | pages | search | SearchFilter', () => {
         }
 
         const prevProps = {
-          filterIsVisible: false,
+          isVisible: false,
           pagination: {
             windowQuery: {
               categories: 'Jouer',
@@ -118,7 +118,7 @@ describe('src | components | pages | search | SearchFilter', () => {
       it('should call hoc pagination change method with the good parameters', () => {
         // given
         const props = {
-          filterIsVisible: true,
+          isVisible: true,
           pagination: {
             change: paginationChangeMock,
             windowQuery: {
@@ -152,7 +152,7 @@ describe('src | components | pages | search | SearchFilter', () => {
       it('should call hoc pagination change method with the good parameters', () => {
         // given
         const props = {
-          filterIsVisible: true,
+          isVisible: true,
           pagination: {
             change: paginationChangeMock,
             windowQuery: {
