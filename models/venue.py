@@ -1,5 +1,4 @@
 """ venue """
-from sqlalchemy.event import listens_for
 from sqlalchemy import BigInteger, \
     Column, \
     ForeignKey, \
@@ -7,6 +6,7 @@ from sqlalchemy import BigInteger, \
     Numeric, \
     String, \
     TEXT, Boolean, CheckConstraint
+from sqlalchemy.event import listens_for
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.expression import cast
@@ -15,7 +15,6 @@ from sqlalchemy.sql.functions import coalesce
 from models.db import Model
 from models.has_address_mixin import HasAddressMixin
 from models.has_thumb_mixin import HasThumbMixin
-from models.offer import Offer
 from models.offerer import Offerer
 from models.pc_object import PcObject
 from models.providable_mixin import ProvidableMixin
@@ -113,7 +112,7 @@ class Venue(PcObject,
 
     @property
     def nOffers(self):
-        return Offer.query.filter_by(venue=self).count()
+        return len(self.offers)
 
 
 @listens_for(Venue, 'before_insert')

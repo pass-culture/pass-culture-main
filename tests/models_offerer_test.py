@@ -1,6 +1,8 @@
 import pytest
 
-from utils.test_utils import create_offerer
+from models import PcObject
+from tests.conftest import clean_database
+from utils.test_utils import create_offerer, create_venue, create_thing_offer, create_event_offer
 
 
 @pytest.mark.standalone
@@ -122,3 +124,25 @@ def test_validate_bank_information_raises_an_error_if_bic_has_correct_length_of_
 
     # then
     assert errors.errors['iban'] == ["L'IBAN es manquant"]
+
+
+@pytest.mark.standalone
+@clean_database
+def test_nOffers(app):
+    # given
+    offerer = create_offerer()
+    venue_1 = create_venue(offerer)
+    venue_2 = create_venue(offerer)
+    venue_3 = create_venue(offerer)
+    offer_v1_1 = create_thing_offer(venue_1)
+    offer_v1_2 = create_event_offer(venue_1)
+    offer_v2_1 = create_event_offer(venue_2)
+    offer_v2_2 = create_event_offer(venue_2)
+    offer_v3_1 = create_thing_offer(venue_3)
+    PcObject.check_and_save(offer_v1_1, offer_v1_2, offer_v2_1, offer_v2_2, offer_v3_1)
+
+    # when
+    n_offers = offerer.nOffers
+
+    # then
+    assert n_offers == 5

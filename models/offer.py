@@ -6,6 +6,8 @@ from sqlalchemy import BigInteger, CheckConstraint, Column, DateTime, desc, Fore
 from sqlalchemy.orm import relationship
 
 from models import DeactivableMixin, EventOccurrence
+from models.venue import Venue
+from models import DeactivableMixin, EventOccurrence
 from models.db import Model
 from models.pc_object import PcObject
 from models.providable_mixin import ProvidableMixin
@@ -16,7 +18,6 @@ class Offer(PcObject,
             Model,
             DeactivableMixin,
             ProvidableMixin):
-
     id = Column(BigInteger,
                 primary_key=True,
                 autoincrement=True)
@@ -55,6 +56,18 @@ class Offer(PcObject,
                          backref='offers')
 
     bookingEmail = Column(String(120), nullable=True)
+
+    def errors(self):
+        api_errors = super(Offer, self).errors()
+        thing = self.thing
+        if self.venue:
+            venue = self.venue
+        else:
+            venue = Venue.query.get(self.venueId)
+        if thing and thing.url and not venue.isVirtual:
+            api_errors.addError('venue',
+                                'Une offre numérique doit obligatoirement être associée au lieu "Offre en ligne"')
+        return api_errors
 
     @property
     def dateRange(self):
