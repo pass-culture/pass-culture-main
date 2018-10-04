@@ -49,7 +49,7 @@ jobs:
           command: |
             cd pass-culture-main
             dockerize -wait http://localhost/health -timeout 5m -wait-retry-interval 5s
-            ./pc sandbox
+            ./pc sandbox --name=light
 
       - run:
           name: Run Functional Tests
