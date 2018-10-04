@@ -12,6 +12,7 @@ from models.db import Model
 from models.pc_object import PcObject
 from models.providable_mixin import ProvidableMixin
 from models.stock import Stock
+from models.venue import Venue
 
 
 class Offer(PcObject,
