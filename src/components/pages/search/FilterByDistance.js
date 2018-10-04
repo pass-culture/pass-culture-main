@@ -51,12 +51,16 @@ class FilterByDistance extends Component {
     const distanceValue = filter.query.distance || 20000
 
     return (
-      <div key={distanceKey} className="p12 mb12" id="filter-by-distance">
+      <div
+        key={distanceKey}
+        id="filter-by-distance"
+        className="p12 mb12 text-center"
+      >
         <h2 className="fs15 is-italic is-uppercase text-center mb12">
           {title}
         </h2>
         <select
-          className="fs22"
+          className="pc-selectbox pl24 py5 fs19 mb18"
           defaultValue={distanceValue}
           onChange={this.onChange}
           name="distance"
