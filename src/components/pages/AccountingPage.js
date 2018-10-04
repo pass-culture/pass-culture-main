@@ -54,7 +54,7 @@ class AccoutingPage extends Component {
     const value = event.target.elements.search.value
 
     pagination.change({
-      [mapApiToWindow.search]: value === '' ? null : value,
+      [mapApiToWindow.keywords]: value === '' ? null : value,
     })
   }
 
@@ -283,8 +283,8 @@ export default compose(
   withPagination({
     dataKey: 'bookings',
     defaultWindowQuery: {
+      [mapApiToWindow.keywords]: null,
       [mapApiToWindow.offererId]: null,
-      [mapApiToWindow.search]: null,
       [mapApiToWindow.venueId]: null,
       orderBy: 'booking.id+desc',
     },
