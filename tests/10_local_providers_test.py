@@ -264,4 +264,4 @@ def test_99_init(app):
                             cwd=API_ROOT_PATH)
     print(result.stdout)
     print(result.stderr)
-    assertCreatedCounts(app, User=4)
+    assertCreatedCounts(app, User=5)
