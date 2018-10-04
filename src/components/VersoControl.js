@@ -51,7 +51,7 @@ class VersoControl extends React.PureComponent {
       recommendation,
       url,
       user,
-      // wallet,
+      wallet,
     } = this.props
 
     const shareURL = getShareURL(location, user)
@@ -60,8 +60,7 @@ class VersoControl extends React.PureComponent {
       <ul className="verso-control">
         <li>
           <small className="pass-label">Mon Pass</small>
-          <span className="pass-value">--€</span>
-          {/* <span className="pass-value">{wallet}€</span> */}
+          <span className="pass-value">{wallet}€</span>
         </li>
         <li>
           <button
@@ -98,7 +97,7 @@ VersoControl.defaultProps = {
   offer: null,
   recommendation: null,
   recommendationId: null,
-  // wallet: null,
+  wallet: null,
 }
 
 VersoControl.propTypes = {
@@ -112,7 +111,7 @@ VersoControl.propTypes = {
   recommendationId: PropTypes.string,
   url: PropTypes.string.isRequired,
   user: PropTypes.object.isRequired,
-  // wallet: PropTypes.number,
+  wallet: PropTypes.number,
 }
 
 const mapStateToProps = (state, ownProps) => {
