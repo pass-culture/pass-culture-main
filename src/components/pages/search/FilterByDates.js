@@ -56,35 +56,30 @@ class FilterByDates extends Component {
     const days = decodeURI(filter.query[mapApiToWindow.days] || '')
 
     return (
-      <div id="filter-by-dates" className="p12 mb12">
+      <div id="filter-by-dates" className="px12 pt20">
         <h2 className="fs15 is-italic is-uppercase text-center mb12">
           {title}
         </h2>
-        <div
-          style={{ height: '62px' }}
-          className="is-relative is-full-width is-clipped"
-        >
-          <div className="pc-scroll-horizontal">
-            <div className="list flex-columns pb12">
-              {checkboxes.map(({ label, value }) => (
-                <label
-                  key={value}
-                  className="item fs19 flex-columns items-center py5 pl7 pr22"
-                >
-                  <span className="flex-0 field field-checkbox">
-                    <input
-                      type="checkbox"
-                      className="input no-background"
-                      checked={days.includes(value)}
-                      onChange={() => this.onChange(value)}
-                    />
-                  </span>
-                  <span className="flex-1" style={{ whiteSpace: 'pre' }}>
-                    {label}
-                  </span>
-                </label>
-              ))}
-            </div>
+        <div className="pc-scroll-horizontal is-relative is-full-width">
+          <div className="list flex-columns pb12">
+            {checkboxes.map(({ label, value }) => (
+              <label
+                key={value}
+                className="item fs19 flex-columns items-center py5 pl7 pr22"
+              >
+                <span className="flex-0 field field-checkbox">
+                  <input
+                    type="checkbox"
+                    className="input no-background"
+                    checked={days.includes(value)}
+                    onChange={() => this.onChange(value)}
+                  />
+                </span>
+                <span className="flex-1" style={{ whiteSpace: 'pre' }}>
+                  {label}
+                </span>
+              </label>
+            ))}
           </div>
         </div>
         <hr className="dotted-bottom-primary" />

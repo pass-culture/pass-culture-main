@@ -27,8 +27,8 @@ class FilterByOfferTypes extends Component {
     const typesValue = decodeURI(filter.query.categories || '')
 
     return (
-      <div id="filter-by-offer-types">
-        <h2 className="fs18 is-italic is-uppercase text-center">
+      <div id="filter-by-offer-types" className="px12 pt20">
+        <h2 className="fs15 is-italic is-uppercase text-center mb12">
           {title}
         </h2>
         <div className="filter-menu-outer">

@@ -11,7 +11,53 @@
   }
 }
 
+/* ------------------------------------------------
+
+ Boutons permettant de réinitialiser/appliquer
+ les filtres de recherche
+
+------------------------------------------------ */
+#search-filter-menu-footer-controls {
+  border-top: 2px solid $white;
+
+  button {
+    border: 0;
+  }
+
+  button + button {
+    border-left: 2px solid $white;
+  }
+}
+
+/* ------------------------------------------------
+
+ Boutons permettant de masquer/afficher
+ le menu des filtres
+
+------------------------------------------------ */
+#search-filter-menu-toggle-button {
+  // on fixe la taille et la hauteur
+  // pour que le bouton est la même hauteur que le search input
+  // et que quand on ouvre le menu des filtres
+  // on ait un background gris pour le bouton
+  width: 44px;
+  min-width: 44px;
+  max-width: 44px;
+  height: 50px;
+  min-height: 50px;
+
+  &.filters-are-opened {
+    background: $grey-lighter;
+    border-radius: 4px 4px 0 0;
+  }
+}
+
 #filter-by-dates {
+  .pc-scroll-horizontal {
+    height: 65px;
+    overflow-x: auto;
+  }
+
   .list .item {
     border-radius: 4px;
     border: solid $primary 1px;

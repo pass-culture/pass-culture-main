@@ -26,37 +26,3 @@
 #search-page-keywords-field {
   margin-bottom: 0;
 }
-
-#search-filter-menu-toggle-button {
-  // on fixe la taille et la hauteur
-  // pour que le bouton est la même hauteur que le search input
-  // et que quand on ouvre le menu des filtres
-  // on ait un background gris pour le bouton
-  width: 44px;
-  min-width: 44px;
-  max-width: 44px;
-  height: 50px;
-  min-height: 50px;
-}
-
-#search-filter-menu-toggle-button.filters-are-opened {
-  background: #EDF1F2;
-}
-
-/* ------------------------------------------------
-
- Boutons permettant de réinitialiser
- les filtres de recherche ou de les appliquer
-
------------------------------------------------- */
-#search-filter-menu-controls {
-  border-top: 2px solid $white;
-}
-
-#search-filter-menu-controls button {
-  border: 0;
-}
-
-#search-filter-menu-controls button + button {
-  border-left: 2px solid $white;
-}

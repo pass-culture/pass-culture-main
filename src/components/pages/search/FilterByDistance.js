@@ -51,26 +51,24 @@ class FilterByDistance extends Component {
     const distanceValue = filter.query.distance || 20000
 
     return (
-      <div
-        key={distanceKey}
-        id="filter-by-distance"
-        className="p12 mb12 text-center"
-      >
+      <div key={distanceKey} id="filter-by-distance" className="px12 pt20">
         <h2 className="fs15 is-italic is-uppercase text-center mb12">
           {title}
         </h2>
-        <select
-          className="pc-selectbox pl24 py5 fs19 mb18"
-          defaultValue={distanceValue}
-          onChange={this.onChange}
-          name="distance"
-        >
-          {options.map(({ label, value }) => (
-            <option key={value} value={value}>
-              {label}
-            </option>
-          ))}
-        </select>
+        <div className="text-center mb20">
+          <select
+            className="pc-selectbox pl24 py5 fs19"
+            defaultValue={distanceValue}
+            onChange={this.onChange}
+            name="distance"
+          >
+            {options.map(({ label, value }) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </select>
+        </div>
         <hr className="dotted-bottom-primary" />
       </div>
     )
