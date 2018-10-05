@@ -30,9 +30,7 @@ class OccasionItem extends Component {
     const { id, isActive } = offer || {}
     requestData('PATCH', `offers/${id}`, {
       body: {
-        offer: {
-          isActive: !isActive,
-        },
+        isActive: !isActive,
       },
       key: 'offers',
       normalizer: offerNormalizer,
