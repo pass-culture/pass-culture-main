@@ -16,6 +16,7 @@ class DateTimeForm extends Component {
 
   render() {
     const {
+      offer,
       eventOccurrencePatch,
       isEventOccurrenceReadOnly,
       beginningDatetime,
@@ -76,7 +77,9 @@ class DateTimeForm extends Component {
         {!isEventOccurrenceReadOnly && (
           <Fragment>
             <td className="is-clipped">
-              <NavLink className="button is-secondary is-small" to={'/'}>
+              <NavLink
+                className="button is-secondary is-small"
+                to={`/offres/${get(offer, 'id')}?gestion`}>
                 Annuler
               </NavLink>
             </td>
