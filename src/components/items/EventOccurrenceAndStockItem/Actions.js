@@ -4,7 +4,7 @@ import { Portal } from 'react-portal'
 import get from 'lodash.get'
 import { connect } from 'react-redux'
 import { Icon, requestData } from 'pass-culture-shared'
-import Delete from './Delete'
+import DeleteDialog from './DeleteDialog'
 
 class Actions extends Component {
   constructor(props) {
@@ -47,7 +47,7 @@ class Actions extends Component {
       return (
         <td colSpan="2">
           <Portal node={this.props.tbody}>
-            <Delete
+            <DeleteDialog
               isStockOnly={isStockOnly}
               onCancelDeleteClick={this.onCancelDeleteClick}
               onConfirmDeleteClick={this.onConfirmDeleteClick}
