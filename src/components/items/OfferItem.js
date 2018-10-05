@@ -174,7 +174,7 @@ class OccasionItem extends Component {
               </NavLink>
 
               <button
-                className="button is-secondary is-small"
+                className="button is-secondary is-small activ-switch"
                 onClick={this.onDeactivateClick}>
                 {offer.isActive ? (
                   <span>
