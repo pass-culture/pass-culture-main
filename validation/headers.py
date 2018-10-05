@@ -30,7 +30,7 @@ def _get_origin_header_whitelist():
 
 
 def _get_endpoint_exceptions():
-    return ['patch_booking_by_token', 'get_booking_by_token', 'send_storage_file', 'health']
+    return ['patch_booking_by_token', 'get_booking_by_token', 'send_storage_file', 'health', 'list_export_urls', 'export_table', 'get_users_per_date_per_department', 'get_users_stats', 'get_bookings_stats', 'get_bookings_per_date_per_departement', 'get_offers_per_date_per_department', 'get_offerers_per_date_per_departement', 'get_venue_per_department', 'get_tracked_activity_from_id', 'get_offerers_users_offers_bookings', 'get_recommendations']
 
 
 def _get_origin_header_whitelist_for_non_dev_environments(api_url):
