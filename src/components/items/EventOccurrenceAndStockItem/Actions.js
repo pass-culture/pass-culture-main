@@ -1,5 +1,6 @@
 import React, { Component, Fragment } from 'react'
 import { NavLink } from 'react-router-dom'
+import { Portal } from 'react-portal'
 import get from 'lodash.get'
 import { connect } from 'react-redux'
 import { Icon, requestData } from 'pass-culture-shared'
@@ -38,34 +39,25 @@ class Actions extends Component {
     )
   }
 
-  componentDidMount() {
-    this.props.onRef(this.$submit)
-  }
-
   render() {
-    const {
-      isEditing,
-      offer,
-      isStockOnly,
-      stockPatch,
-      eventOccurrencePatch,
-    } = this.props
+    const { offer, isStockOnly, stockPatch, eventOccurrencePatch } = this.props
 
-    if (isEditing) {
+    // Delete dialog
+    if (this.state.isDeleting) {
       return (
-        <Fragment>
-          <td className="is-clipped">
-            <NavLink
-              className="button is-secondary is-small"
-              to={`/offres/${get(offer, 'id')}?gestion`}>
-              Annuler
-            </NavLink>
-          </td>
-          <td ref={_e => (this.$submit = _e)} />
-        </Fragment>
+        <td colSpan="2">
+          <Portal node={this.props.tbody}>
+            <Delete
+              isStockOnly={isStockOnly}
+              onCancelDeleteClick={this.onCancelDeleteClick}
+              onConfirmDeleteClick={this.onConfirmDeleteClick}
+            />
+          </Portal>
+        </td>
       )
     }
 
+    // Delete and edit buttons
     return (
       <Fragment>
         <td className="is-clipped">
@@ -79,31 +71,19 @@ class Actions extends Component {
               </span>
             </button>
           )}
-
-          {this.state.isDeleting && (
-            <Delete
-              eventOccurrencePatch={eventOccurrencePatch}
-              isStockOnly={isStockOnly}
-              stockPatch={stockPatch}
-              onCancelDeleteClick={this.onCancelDeleteClick}
-              onConfirmDeleteClick={this.onConfirmDeleteClick}
-            />
-          )}
         </td>
-        <td ref={_e => (this.$submit = _e)}>
-          {!this.state.isDeleting && (
-            <NavLink
-              to={`/offres/${get(offer, 'id')}?gestion&${
-                isStockOnly
-                  ? `stock=${get(stockPatch, 'id')}`
-                  : `date=${get(eventOccurrencePatch, 'id')}`
-              }`}
-              className="button is-small is-secondary">
-              <span className="icon">
-                <Icon svg="ico-pen-r" />
-              </span>
-            </NavLink>
-          )}
+        <td>
+          <NavLink
+            to={`/offres/${get(offer, 'id')}?gestion&${
+              isStockOnly
+                ? `stock=${get(stockPatch, 'id')}`
+                : `date=${get(eventOccurrencePatch, 'id')}`
+            }`}
+            className="button is-small is-secondary">
+            <span className="icon">
+              <Icon svg="ico-pen-r" />
+            </span>
+          </NavLink>
         </td>
       </Fragment>
     )

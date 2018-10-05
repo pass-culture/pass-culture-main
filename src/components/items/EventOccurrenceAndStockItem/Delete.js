@@ -9,24 +9,25 @@ class Delete extends Component {
     } = this.props
 
     return (
-      <div className="DeleteDialog">
-        <div className="deleteText is-size-7">
+      <tr>
+        <td colSpan="6" className="is-size-7">
           En confirmant l'annulation de{' '}
           {isStockOnly ? 'ce stock' : 'cette date'}, vous supprimerez aussi
           toutes les réservations associées. {!isStockOnly && <br />}
           Êtes-vous sûrs de vouloir continuer&nbsp;?
-        </div>
+        </td>
 
-        <div className="deleteActions">
+        <td>
           <button className="button is-primary" onClick={onConfirmDeleteClick}>
             Oui
           </button>
-
+        </td>
+        <td>
           <button className="button is-primary" onClick={onCancelDeleteClick}>
             Non
           </button>
-        </div>
-      </div>
+        </td>
+      </tr>
     )
   }
 }

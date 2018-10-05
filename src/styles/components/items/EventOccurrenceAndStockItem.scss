@@ -20,31 +20,6 @@
     }
   }
 
-  .DeleteDialog {
-    position: absolute;
-    left: 0;
-    width: 100%;
-    display: flex;
-    z-index: 9;
-    margin-top: -1em;
-    padding-top: 1.5em;
-    border: 1px solid $red;
-
-    .deleteText{
-      width: 80%;
-      background: white;
-    }
-
-    .deleteActions {
-      width: 20%;
-      background: white;
-
-      button {
-        margin: -10px 20px 0;
-      }
-    }
-  }
-
   &.with-confirm {
     background-image: none;
   }

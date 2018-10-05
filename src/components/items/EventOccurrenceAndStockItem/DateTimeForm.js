@@ -1,5 +1,5 @@
-import React, { Component } from 'react'
-import { Portal } from 'react-portal'
+import React, { Component, Fragment } from 'react'
+import { NavLink } from 'react-router-dom'
 import get from 'lodash.get'
 import { Field, Form, SubmitButton } from 'pass-culture-shared'
 
@@ -21,7 +21,6 @@ class DateTimeForm extends Component {
       beginningDatetime,
       eventOccurrences,
       tz,
-      submit,
     } = this.props
 
     return (
@@ -75,11 +74,19 @@ class DateTimeForm extends Component {
           />
         </td>
         {!isEventOccurrenceReadOnly && (
-          <Portal node={submit}>
-            <SubmitButton className="button is-primary is-small">
-              Valider
-            </SubmitButton>
-          </Portal>
+          <Fragment>
+            <td className="is-clipped">
+              <NavLink className="button is-secondary is-small" to={'/'}>
+                Annuler
+              </NavLink>
+            </td>
+            <td>
+              <SubmitButton className="button is-intermediate is-small">
+                Suivant
+              </SubmitButton>
+            </td>
+            <td colSpan="3" />
+          </Fragment>
         )}
       </Form>
     )

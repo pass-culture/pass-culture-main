@@ -1,24 +1,17 @@
 import get from 'lodash.get'
 import { mergeForm, resetForm } from 'pass-culture-shared'
 import moment from 'moment'
-import React, { Component, Fragment } from 'react'
+import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 import { compose } from 'redux'
 
 import DateTimeForm from './DateTimeForm'
-import CommonForm from './CommonForm'
+import PriceQuantityForm from './PriceQuantityForm'
 import Actions from './Actions'
 import mapStateToProps from './mapStateToProps'
 
 class EventOccurrenceAndStockItem extends Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      $submit: null,
-    }
-  }
-
   handleCrossingEndDatetime = () => {
     const {
       dispatch,
@@ -130,12 +123,23 @@ class EventOccurrenceAndStockItem extends Component {
     }
   }
 
+  getFormStep() {
+    if (this.props.isEventOccurrenceReadOnly === true) {
+      return 0
+    }
+
+    if (this.props.isEventOccurrenceReadOnly === false) {
+      return 1
+    }
+
+    return 2
+  }
+
   componentWillMount() {
     this.handleResetForm()
   }
 
   componentDidMount() {
-    this.setState({ $submit: this.$submit })
     this.handleNextDatetimes()
     this.handleInitBookingLimitDatetime()
     this.handleInitPrice()
@@ -177,7 +181,7 @@ class EventOccurrenceAndStockItem extends Component {
       formBeginningDatetime || get(eventOccurrencePatch, 'beginningDatetime')
 
     return (
-      <Fragment>
+      <tbody ref={DOMNode => (this.tbody = DOMNode)}>
         <tr className="event-occurrence-and-stock-item">
           {!isStockOnly && (
             <DateTimeForm
@@ -186,33 +190,35 @@ class EventOccurrenceAndStockItem extends Component {
               beginningDatetime={beginningDatetime}
               eventOccurrences={eventOccurrences}
               tz={tz}
-              submit={this.state.$submit}
               history={this.props.history}
               offer={offer}
               stockPatch={stockPatch}
             />
           )}
 
-          <CommonForm
-            isStockOnly={isStockOnly}
-            stockPatch={stockPatch}
-            isStockReadOnly={isStockReadOnly}
-            beginningDatetime={beginningDatetime}
-            history={this.props.history}
-            submit={this.state.$submit}
-            offer={offer}
-          />
+          {this.getFormStep() !== 1 && (
+            <PriceQuantityForm
+              isStockOnly={isStockOnly}
+              stockPatch={stockPatch}
+              isStockReadOnly={isStockReadOnly}
+              beginningDatetime={beginningDatetime}
+              history={this.props.history}
+              offer={offer}
+            />
+          )}
 
-          <Actions
-            isEditing={isEditing}
-            offer={offer}
-            isStockOnly={isStockOnly}
-            stockPatch={stockPatch}
-            eventOccurrencePatch={eventOccurrencePatch}
-            onRef={element => (this.$submit = element)}
-          />
+          {!isEditing && (
+            <Actions
+              isEditing={isEditing}
+              offer={offer}
+              isStockOnly={isStockOnly}
+              stockPatch={stockPatch}
+              eventOccurrencePatch={eventOccurrencePatch}
+              tbody={this.tbody}
+            />
+          )}
         </tr>
-      </Fragment>
+      </tbody>
     )
   }
 }
