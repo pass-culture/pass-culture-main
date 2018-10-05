@@ -84,7 +84,7 @@ class DateTimeForm extends Component {
               </NavLink>
             </td>
             <td>
-              <SubmitButton className="button is-intermediate is-small">
+              <SubmitButton className="button is-intermediate is-small submitStep">
                 Suivant
               </SubmitButton>
             </td>

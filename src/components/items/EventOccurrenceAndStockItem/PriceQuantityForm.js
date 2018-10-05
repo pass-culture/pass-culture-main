@@ -72,7 +72,7 @@ class PriceQuantityForm extends Component {
                 </NavLink>
               </td>
               <td>
-                <SubmitButton className="button is-primary is-small">
+                <SubmitButton className="button is-primary is-small submitStep">
                   Valider
                 </SubmitButton>
               </td>
