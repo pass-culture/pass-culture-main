@@ -133,19 +133,6 @@ def get_bookings_per_date_per_departement():
     return _make_csv_response(file_name, headers, result)
 
 
-@app.route('/exports/offers', methods=['GET'])
-def get_offers_per_date_per_department():
-    _check_token()
-    date_min = request.args.get('date_min')
-    date_max = request.args.get('date_max')
-    department = request.args.get('department')
-
-    result = find_offers_in_date_range_for_given_venue_departement(date_max, date_min, department)
-    file_name = 'export_%s_offers.csv' % datetime.utcnow().strftime('%y_%m_%d')
-    headers = ['offer_id', 'event_id', 'event_name', 'event_date', 'departement_code', 'Offerer_id', 'Offerer_name']
-    return _make_csv_response(file_name, headers, result)
-
-
 @app.route('/exports/offerers', methods=['GET'])
 def get_offerers_per_date_per_departement():
     _check_token()
