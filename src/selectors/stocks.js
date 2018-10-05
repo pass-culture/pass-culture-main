@@ -17,3 +17,9 @@ export default createCachedSelector(
       eventOccurrences ? eventOccurrences.map(eo => eo.id).join('_') : ''
     }`
 )
+
+// Can't understand previous selector (eventOccurences ??)
+// Creating a new one, no re-reselect, lib hurts brain and is premature optim' anyway
+// I mean, isn't this way more readable (beyond being effective)?
+export const getStockByOfferId = (state, offerId) =>
+  state.data.stocks.filter(item => item.offerId === offerId)
