@@ -5,25 +5,16 @@ import ProfilePicture from '../../layout/ProfilePicture'
 
 const MonAvatar = ({ user }) => (
   <div id="mon-avatar" className="padded flex-columns">
-    <span className="flex-1 my22">
-      <ProfilePicture colored="colored" style={{ height: 80, width: 80 }} />
-      {user && user.thumb && <img alt="Mon Avatar" src={user.thumb} />}
-      <span className="ml12 is-medium fs18">
+    <div className="flex-columns items-center flex-1 my22">
+      <ProfilePicture
+        colored="colored"
+        className="flex-0"
+        style={{ height: 80, minHeight: 80, minWidth: 80, width: 80 }}
+      />
+      <span className="flex-1 ml12 is-medium fs18">
         {user.publicName}
       </span>
-    </span>
-    {/* <button
-      disabled
-      type="button"
-      onClick={() => {}}
-      className="no-border no-background flex-0"
-    >
-      <span
-        aria-hidden
-        className="icon-next"
-        title="Modifier Mes Notifications"
-      />
-    </button> */}
+    </div>
   </div>
 )
 
