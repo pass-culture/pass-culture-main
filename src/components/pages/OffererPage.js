@@ -1,7 +1,6 @@
 import classnames from 'classnames'
 import get from 'lodash.get'
 import {
-  closeNotification,
   Field,
   Form,
   requestData,
@@ -44,7 +43,7 @@ class OffererPage extends Component {
   }
 
   handleSuccess = () => {
-    const { dispatch, history, showNotification } = this.props
+    const { dispatch, history } = this.props
 
     history.push('/structures')
 

@@ -124,6 +124,10 @@ const SignupPage = ({ errors, sirenName }) => {
   )
 }
 
-export default connect(state => ({
-  sirenName: get(state, `form.user.name`),
-}))(SignupPage)
+function mapStateToProps(state) {
+  return {
+    sirenName: get(state, `form.user.name`),
+  }
+}
+
+export default connect(mapStateToProps)(SignupPage)

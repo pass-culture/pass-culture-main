@@ -17,6 +17,7 @@ const fromWatchSirenInput = sireType =>
           longitude: null,
           name: null,
           postalCode: null,
+          sire: null,
         })
       )
 
@@ -58,12 +59,13 @@ const fromWatchSirenInput = sireType =>
             longitude: null,
             name: null,
             postalCode: null,
-            //[sireType]: null,
+            sire: null,
           })
         )
       } else {
         const body = yield call([response, 'json'])
         const dataPath = sireType === SIREN ? 'siege_social' : 'etablissement'
+        const sire = get(body, `${dataPath}.${sireType}`)
         yield put(
           mergeForm(
             name,
@@ -79,7 +81,8 @@ const fromWatchSirenInput = sireType =>
                 get(body, `${dataPath}.l1_declaree`) ||
                 '',
               postalCode: get(body, `${dataPath}.code_postal`),
-              [sireType]: get(body, `${dataPath}.${sireType}`),
+              [sireType]: sire,
+              sire,
             },
             {
               calledFromSaga: true, // Prevent infinite loop

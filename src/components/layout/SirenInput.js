@@ -13,8 +13,6 @@ class SirenInput extends Component {
 
     let value = removeWhitespaces(event.target.value)
 
-    console.log('type', type)
-
     if (type === 'siret') {
       value = value.slice(0, Math.min(14, value.length))
     } else if (type === 'siren') {
