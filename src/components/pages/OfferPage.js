@@ -44,17 +44,31 @@ import { offerNormalizer } from '../../utils/normalizers'
 
 const CONDITIONAL_FIELDS = {
   speaker: [
-    'CONFERENCE_DEBAT_DEDICACE',
-    'PRATIQUE_ARTISTIQUE_ABO',
-    'PRATIQUE_ARTISTIQUE',
+    'EventType.CONFERENCE_DEBAT_DEDICACE',
+    'ThingType.PRATIQUE_ARTISTIQUE_ABO',
+    'EventType.PRATIQUE_ARTISTIQUE',
   ],
-  author: ['CINEMA', 'MUSIQUE', 'SPECTACLE_VIVANT', 'LIVRE_EDITION'],
-  visa: ['CINEMA'],
-  isbn: ['LIVRE_EDITION'],
-  musicType: ['MUSIQUE', 'MUSIQUE_ABO'],
-  showType: ['SPECTACLE_VIVANT'],
-  stageDirector: ['CINEMA', 'SPECTACLE_VIVANT'],
-  performer: ['MUSIQUE', 'SPECTACLE_VIVANT'],
+  author: [
+    'EventType.CINEMA',
+    'EventType.MUSIQUE',
+    'ThingType.MUSIQUE',
+    'EventType.SPECTACLE_VIVANT',
+    'ThingType.LIVRE_EDITION',
+  ],
+  visa: ['EventType.CINEMA'],
+  isbn: ['ThingType.LIVRE_EDITION'],
+  musicType: [
+    'EventType.MUSIQUE',
+    'ThingType.MUSIQUE',
+    'ThingType.MUSIQUE_ABO',
+  ],
+  showType: ['EventType.SPECTACLE_VIVANT'],
+  stageDirector: ['EventType.CINEMA', 'EventType.SPECTACLE_VIVANT'],
+  performer: [
+    'EventType.MUSIQUE',
+    'ThingType.MUSIQUE',
+    'EventType.SPECTACLE_VIVANT',
+  ],
 }
 
 class OfferPage extends Component {
