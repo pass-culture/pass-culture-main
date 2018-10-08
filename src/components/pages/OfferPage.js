@@ -385,6 +385,57 @@ class OfferPage extends Component {
                 required
                 type="select"
               />
+              {this.hasConditionalField('musicType') && (
+                <Fragment>
+                  <Field
+                    label="Genre musical"
+                    name="musicType"
+                    options={musicOptions}
+                    optionValue="code"
+                    optionLabel="label"
+                    setKey="extraData"
+                    type="select"
+                  />
+
+                  {get(musicSubOptions, 'length') > 0 && (
+                    <Field
+                      label="Sous genre"
+                      name="musicSubType"
+                      options={musicSubOptions}
+                      optionValue="code"
+                      optionLabel="label"
+                      setKey="extraData"
+                      type="select"
+                    />
+                  )}
+                </Fragment>
+              )}
+
+              {this.hasConditionalField('showType') && (
+                <Fragment>
+                  <Field
+                    label="Type de spectacle"
+                    name="showType"
+                    options={showOptions}
+                    optionValue="code"
+                    optionLabel="label"
+                    setKey="extraData"
+                    type="select"
+                  />
+
+                  {get(showSubOptions, 'length') > 0 && (
+                    <Field
+                      type="select"
+                      label="Sous type"
+                      name="showSubType"
+                      setKey="extraData"
+                      options={showSubOptions}
+                      optionValue="code"
+                      optionLabel="label"
+                    />
+                  )}
+                </Fragment>
+              )}
               {!isNew &&
                 hasEventOrThing && (
                   <div className="field is-horizontal field-text">
@@ -548,58 +599,6 @@ class OfferPage extends Component {
                       sublabel="(obligatoire si applicable)"
                       type="text"
                     />
-                  )}
-
-                  {this.hasConditionalField('musicType') && (
-                    <Fragment>
-                      <Field
-                        label="Genre musical"
-                        name="musicType"
-                        options={musicOptions}
-                        optionValue="code"
-                        optionLabel="label"
-                        setKey="extraData"
-                        type="select"
-                      />
-
-                      {get(musicSubOptions, 'length') > 0 && (
-                        <Field
-                          label="Sous genre"
-                          name="musicSubType"
-                          options={musicSubOptions}
-                          optionValue="code"
-                          optionLabel="label"
-                          setKey="extraData"
-                          type="select"
-                        />
-                      )}
-                    </Fragment>
-                  )}
-
-                  {this.hasConditionalField('showType') && (
-                    <Fragment>
-                      <Field
-                        label="Type de spectacle"
-                        name="showType"
-                        options={showOptions}
-                        optionValue="code"
-                        optionLabel="label"
-                        setKey="extraData"
-                        type="select"
-                      />
-
-                      {get(showSubOptions, 'length') > 0 && (
-                        <Field
-                          type="select"
-                          label="Sous type"
-                          name="showSubType"
-                          setKey="extraData"
-                          options={showSubOptions}
-                          optionValue="code"
-                          optionLabel="label"
-                        />
-                      )}
-                    </Fragment>
                   )}
 
                   {this.hasConditionalField('stageDirector') && (
