@@ -127,7 +127,10 @@ PRO_BOOKING_INCLUDES = [
                 "eventOccurrence"
             ]
     },
-    "user"
+    {
+        "key": 'user',
+        "resolve": (lambda element, filters: {'email': element['email']}),
+    }
 ]
 
 USER_INCLUDES = [
