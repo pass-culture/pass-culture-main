@@ -1,11 +1,14 @@
 """ routes offerer """
 import secrets
 from datetime import timedelta, datetime
+from pprint import pprint
+
+import simplejson as json
 
 import pytest
 
 from domain.reimbursement import ReimbursementRules
-from models import PcObject
+from models import PcObject, ThingType, EventType
 from models.pc_object import serialize
 from tests.conftest import clean_database
 from utils.human_ids import dehumanize, humanize
@@ -19,7 +22,7 @@ from utils.test_utils import API_URL, \
     create_user_offerer, \
     create_venue, \
     req, \
-    req_with_auth
+    req_with_auth, create_stock_from_offer, create_thing_offer, create_event_offer
 
 
 @pytest.mark.standalone
@@ -107,7 +110,7 @@ def test_get_offerer_bookings_returns_bookings_with_their_reimbursements_ordered
     auth_request = req_with_auth(email=user_pro.email, password='p@55sw0rd')
 
     # when
-    response = auth_request.get(API_URL + '/offerers/%s/bookings?order_by=booking.id desc' % humanize(offerer.id))
+    response = auth_request.get(API_URL + '/offerers/%s/bookings?order_by_column=booking_id&order=desc' % humanize(offerer.id))
 
     # then
     assert response.status_code == 200
@@ -430,3 +433,316 @@ def test_patch_offerer_for_non_authorised_fields_status_code_400(app):
     assert response.status_code == 400
     for key in body:
         assert response.json()[key] == ['Vous ne pouvez pas modifier ce champ']
+
+
+@pytest.mark.standalone
+@clean_database
+def test_get_offerer_bookings_ordered_by_venue_name_desc(app):
+    # given
+    now = datetime.utcnow()
+    user_pro = create_user(can_book_free_offers=False, password='p@55sw0rd')
+    user = create_user(email='test@email.com')
+    deposit = create_deposit(user, now, amount=500)
+    offerer = create_offerer()
+    user_offerer = create_user_offerer(user_pro, offerer)
+
+    venue_1 = create_venue(offerer, name='La petite librairie')
+    venue_2 = create_venue(offerer, name='Atelier expérimental')
+    offer_1 = create_thing_offer(venue_1)
+    offer_2 = create_event_offer(venue_2)
+    stock1 = create_stock_from_offer(offer_1)
+    stock2 = create_stock_from_offer(offer_2)
+    stock3 = create_stock_from_offer(offer_2)
+    booking1 = create_booking(user, stock2, venue_2, recommendation=None, quantity=2)
+    booking2 = create_booking(user, stock1, venue_1, recommendation=None, quantity=2)
+    booking3 = create_booking(user, stock3, venue_2, recommendation=None, quantity=1)
+    PcObject.check_and_save(deposit, user_offerer, booking1, booking2, booking3)
+    auth_request = req_with_auth(email=user_pro.email, password='p@55sw0rd')
+
+    # when
+    response = auth_request.get(API_URL + '/offerers/%s/bookings?order_by_column=venue_name&order=desc' % humanize(offerer.id))
+
+    # then
+    assert response.status_code == 200
+    elements = response.json()
+    assert elements[0]['stock']['resolvedOffer']['venueId'] == humanize(venue_1.id)
+    assert elements[1]['stock']['resolvedOffer']['venueId'] == humanize(venue_2.id)
+    assert elements[2]['stock']['resolvedOffer']['venueId'] == humanize(venue_2.id)
+
+
+@pytest.mark.standalone
+@clean_database
+def test_get_offerer_bookings_ordered_by_venue_name_asc(app):
+    # given
+    now = datetime.utcnow()
+    user_pro = create_user(can_book_free_offers=False, password='p@55sw0rd')
+    user = create_user(email='test@email.com')
+    deposit = create_deposit(user, now, amount=500)
+    offerer = create_offerer()
+    user_offerer = create_user_offerer(user_pro, offerer)
+
+    venue_1 = create_venue(offerer, name='La petite librairie')
+    venue_2 = create_venue(offerer, name='Atelier expérimental')
+    offer_1 = create_thing_offer(venue_1)
+    offer_2 = create_event_offer(venue_2)
+    stock1 = create_stock_from_offer(offer_1)
+    stock2 = create_stock_from_offer(offer_2)
+    stock3 = create_stock_from_offer(offer_2)
+    booking1 = create_booking(user, stock2, venue_2, recommendation=None, quantity=2)
+    booking2 = create_booking(user, stock1, venue_1, recommendation=None, quantity=2)
+    booking3 = create_booking(user, stock3, venue_2, recommendation=None, quantity=1)
+    PcObject.check_and_save(deposit, user_offerer, booking1, booking2, booking3)
+    auth_request = req_with_auth(email=user_pro.email, password='p@55sw0rd')
+
+    # when
+    response = auth_request.get(API_URL + '/offerers/%s/bookings?order_by_column=venue_name&order=asc' % humanize(offerer.id))
+
+    # then
+    assert response.status_code == 200
+    elements = response.json()
+    assert elements[0]['stock']['resolvedOffer']['venueId'] == humanize(venue_2.id)
+    assert elements[1]['stock']['resolvedOffer']['venueId'] == humanize(venue_2.id)
+    assert elements[2]['stock']['resolvedOffer']['venueId'] == humanize(venue_1.id)
+
+
+@pytest.mark.standalone
+@clean_database
+def test_get_offerer_bookings_ordered_by_date_asc(app):
+    # given
+    now = datetime.utcnow()
+    user_pro = create_user(can_book_free_offers=False, password='p@55sw0rd')
+    user = create_user(email='test@email.com')
+    deposit = create_deposit(user, now, amount=500)
+    offerer = create_offerer()
+    user_offerer = create_user_offerer(user_pro, offerer)
+
+    venue = create_venue(offerer, name='La petite librairie')
+    offer = create_thing_offer(venue)
+    stock1 = create_stock_from_offer(offer)
+    stock2 = create_stock_from_offer(offer)
+    stock3 = create_stock_from_offer(offer)
+    booking1 = create_booking(user, stock2, venue, recommendation=None, date_modified=serialize(datetime(2018,10,1)))
+    booking2 = create_booking(user, stock1, venue, recommendation=None, date_modified=serialize(datetime(2018,10,5)))
+    booking3 = create_booking(user, stock3, venue, recommendation=None, date_modified=serialize(datetime(2018,10,3)))
+    PcObject.check_and_save(deposit, user_offerer, booking1, booking2, booking3)
+    auth_request = req_with_auth(email=user_pro.email, password='p@55sw0rd')
+
+    # when
+    response = auth_request.get(API_URL + '/offerers/%s/bookings?order_by_column=date&order=asc' % humanize(offerer.id))
+
+    # then
+    assert response.status_code == 200
+    elements = response.json()
+    assert elements[0]['dateModified'].startswith('2018-10-01')
+    assert elements[1]['dateModified'].startswith('2018-10-03')
+    assert elements[2]['dateModified'].startswith('2018-10-05')
+
+
+@pytest.mark.standalone
+@clean_database
+def test_get_offerer_bookings_ordered_by_date_desc(app):
+    # given
+    now = datetime.utcnow()
+    user_pro = create_user(can_book_free_offers=False, password='p@55sw0rd')
+    user = create_user(email='test@email.com')
+    deposit = create_deposit(user, now, amount=500)
+    offerer = create_offerer()
+    user_offerer = create_user_offerer(user_pro, offerer)
+
+    venue = create_venue(offerer, name='La petite librairie')
+    offer = create_thing_offer(venue)
+    stock1 = create_stock_from_offer(offer)
+    stock2 = create_stock_from_offer(offer)
+    stock3 = create_stock_from_offer(offer)
+    booking1 = create_booking(user, stock2, venue, recommendation=None, date_modified=serialize(datetime(2018,10,1)))
+    booking2 = create_booking(user, stock1, venue, recommendation=None, date_modified=serialize(datetime(2018,10,5)))
+    booking3 = create_booking(user, stock3, venue, recommendation=None, date_modified=serialize(datetime(2018,10,3)))
+    PcObject.check_and_save(deposit, user_offerer, booking1, booking2, booking3)
+    auth_request = req_with_auth(email=user_pro.email, password='p@55sw0rd')
+
+    # when
+    response = auth_request.get(API_URL + '/offerers/%s/bookings?order_by_column=date&order=desc' % humanize(offerer.id))
+
+    # then
+    assert response.status_code == 200
+    elements = response.json()
+    assert elements[0]['dateModified'].startswith('2018-10-05')
+    assert elements[1]['dateModified'].startswith('2018-10-03')
+    assert elements[2]['dateModified'].startswith('2018-10-01')
+
+
+@pytest.mark.standalone
+@clean_database
+def test_get_offerer_bookings_ordered_by_category_asc(app):
+    # given
+    now = datetime.utcnow()
+    user_pro = create_user(can_book_free_offers=False, password='p@55sw0rd')
+    user = create_user(email='test@email.com')
+    deposit = create_deposit(user, now, amount=500)
+    offerer = create_offerer()
+    user_offerer = create_user_offerer(user_pro, offerer)
+
+    venue_1 = create_venue(offerer, name='La petite librairie')
+    venue_2 = create_venue(offerer, name='Atelier expérimental')
+    offer_1 = create_thing_offer(venue_1, thing_type=ThingType.LIVRE_EDITION)
+    offer_2 = create_event_offer(venue_2, event_type=EventType.SPECTACLE_VIVANT)
+    stock1 = create_stock_from_offer(offer_1)
+    stock2 = create_stock_from_offer(offer_2)
+    stock3 = create_stock_from_offer(offer_2)
+    booking1 = create_booking(user, stock2, venue_2, recommendation=None)
+    booking2 = create_booking(user, stock1, venue_1, recommendation=None)
+    booking3 = create_booking(user, stock3, venue_2, recommendation=None)
+    PcObject.check_and_save(deposit, user_offerer, booking1, booking2, booking3)
+    auth_request = req_with_auth(email=user_pro.email, password='p@55sw0rd')
+
+    # when
+    response = auth_request.get(API_URL + '/offerers/%s/bookings?order_by_column=category&order=asc' % humanize(offerer.id))
+
+    # then
+    assert response.status_code == 200
+    elements = response.json()
+    assert elements[0]['stock']['resolvedOffer']['event']['type'] == 'EventType.SPECTACLE_VIVANT'
+    assert elements[1]['stock']['resolvedOffer']['event']['type'] == 'EventType.SPECTACLE_VIVANT'
+    assert elements[r]['stock']['resolvedOffer']['thing']['type'] == 'ThingType.LIVRE_EDITION'
+
+
+@pytest.mark.standalone
+@clean_database
+def test_get_offerer_bookings_ordered_by_category_desc(app):
+    # given
+    now = datetime.utcnow()
+    user_pro = create_user(can_book_free_offers=False, password='p@55sw0rd')
+    user = create_user(email='test@email.com')
+    deposit = create_deposit(user, now, amount=500)
+    offerer = create_offerer()
+    user_offerer = create_user_offerer(user_pro, offerer)
+
+    venue_1 = create_venue(offerer, name='La petite librairie')
+    venue_2 = create_venue(offerer, name='Atelier expérimental')
+    offer_1 = create_thing_offer(venue_1, thing_type=ThingType.LIVRE_EDITION)
+    offer_2 = create_event_offer(venue_2, event_type=EventType.SPECTACLE_VIVANT)
+    stock1 = create_stock_from_offer(offer_1)
+    stock2 = create_stock_from_offer(offer_2)
+    stock3 = create_stock_from_offer(offer_2)
+    booking1 = create_booking(user, stock2, venue_2, recommendation=None)
+    booking2 = create_booking(user, stock1, venue_1, recommendation=None)
+    booking3 = create_booking(user, stock3, venue_2, recommendation=None)
+    PcObject.check_and_save(deposit, user_offerer, booking1, booking2, booking3)
+    auth_request = req_with_auth(email=user_pro.email, password='p@55sw0rd')
+
+    # when
+    response = auth_request.get(API_URL + '/offerers/%s/bookings?order_by_column=category&order=desc' % humanize(offerer.id))
+
+    # then
+    assert response.status_code == 200
+    elements = response.json()
+    assert elements[0]['stock']['resolvedOffer']['thing']['type'] == 'ThingType.LIVRE_EDITION'
+    assert elements[1]['stock']['resolvedOffer']['event']['type'] == 'EventType.SPECTACLE_VIVANT'
+    assert elements[2]['stock']['resolvedOffer']['event']['type'] == 'EventType.SPECTACLE_VIVANT'
+
+
+@pytest.mark.standalone
+@clean_database
+def test_get_offerer_bookings_ordered_by_category_asc(app):
+    # given
+    now = datetime.utcnow()
+    user_pro = create_user(can_book_free_offers=False, password='p@55sw0rd')
+    user = create_user(email='test@email.com')
+    deposit = create_deposit(user, now, amount=500)
+    offerer = create_offerer()
+    user_offerer = create_user_offerer(user_pro, offerer)
+
+    venue_1 = create_venue(offerer, name='La petite librairie')
+    venue_2 = create_venue(offerer, name='Atelier expérimental')
+    offer_1 = create_thing_offer(venue_1, thing_type=ThingType.LIVRE_EDITION)
+    offer_2 = create_event_offer(venue_2, event_type=EventType.SPECTACLE_VIVANT)
+    stock1 = create_stock_from_offer(offer_1)
+    stock2 = create_stock_from_offer(offer_2)
+    stock3 = create_stock_from_offer(offer_2)
+    booking1 = create_booking(user, stock2, venue_2, recommendation=None)
+    booking2 = create_booking(user, stock1, venue_1, recommendation=None)
+    booking3 = create_booking(user, stock3, venue_2, recommendation=None)
+    PcObject.check_and_save(deposit, user_offerer, booking1, booking2, booking3)
+    auth_request = req_with_auth(email=user_pro.email, password='p@55sw0rd')
+
+    # when
+    response = auth_request.get(API_URL + '/offerers/%s/bookings?order_by_column=category&order=asc' % humanize(offerer.id))
+
+    # then
+    assert response.status_code == 200
+    elements = response.json()
+    assert elements[0]['stock']['resolvedOffer']['event']['type'] == 'EventType.SPECTACLE_VIVANT'
+    assert elements[1]['stock']['resolvedOffer']['event']['type'] == 'EventType.SPECTACLE_VIVANT'
+    assert elements[2]['stock']['resolvedOffer']['thing']['type'] == 'ThingType.LIVRE_EDITION'
+
+
+@pytest.mark.standalone
+@clean_database
+def test_get_offerer_bookings_ordered_by_amount_desc(app):
+    # given
+    now = datetime.utcnow()
+    user_pro = create_user(can_book_free_offers=False, password='p@55sw0rd')
+    user = create_user(email='test@email.com')
+    deposit = create_deposit(user, now, amount=500)
+    offerer = create_offerer()
+    user_offerer = create_user_offerer(user_pro, offerer)
+
+    venue_1 = create_venue(offerer, name='La petite librairie', is_virtual=True)
+    venue_2 = create_venue(offerer, name='Atelier expérimental')
+    offer_1 = create_thing_offer(venue_1, thing_type=ThingType.JEUX_VIDEO, url='http://game.fr/jeu')
+    offer_2 = create_event_offer(venue_2, event_type=EventType.SPECTACLE_VIVANT)
+    stock1 = create_stock_from_offer(offer_1, price=10)
+    stock2 = create_stock_from_offer(offer_2, price=20)
+    stock3 = create_stock_from_offer(offer_2, price=0)
+    booking1 = create_booking(user, stock2, venue_2, recommendation=None)
+    booking2 = create_booking(user, stock1, venue_1, recommendation=None)
+    booking3 = create_booking(user, stock3, venue_2, recommendation=None)
+    PcObject.check_and_save(deposit, user_offerer, booking1, booking2, booking3)
+    auth_request = req_with_auth(email=user_pro.email, password='p@55sw0rd')
+
+    # when
+    response = auth_request.get(API_URL + '/offerers/%s/bookings?order_by_column=amount&order=desc' % humanize(offerer.id))
+
+    # then
+    assert response.status_code == 200
+    elements = response.json()
+    pprint(elements)
+    assert elements[0]['amount'] == 20
+    assert elements[1]['amount'] == 10
+    assert elements[2]['amount'] == 0
+
+
+@pytest.mark.standalone
+@clean_database
+def test_get_offerer_bookings_ordered_by_amount_desc(app):
+    # given
+    now = datetime.utcnow()
+    user_pro = create_user(can_book_free_offers=False, password='p@55sw0rd')
+    user = create_user(email='test@email.com')
+    deposit = create_deposit(user, now, amount=500)
+    offerer = create_offerer()
+    user_offerer = create_user_offerer(user_pro, offerer)
+
+    venue_1 = create_venue(offerer, name='La petite librairie', is_virtual=True)
+    venue_2 = create_venue(offerer, name='Atelier expérimental')
+    offer_1 = create_thing_offer(venue_1, thing_type=ThingType.JEUX_VIDEO, url='http://game.fr/jeu')
+    offer_2 = create_event_offer(venue_2, event_type=EventType.SPECTACLE_VIVANT)
+    stock1 = create_stock_from_offer(offer_1, price=10)
+    stock2 = create_stock_from_offer(offer_2, price=20)
+    stock3 = create_stock_from_offer(offer_2, price=0)
+    booking1 = create_booking(user, stock2, venue_2, recommendation=None)
+    booking2 = create_booking(user, stock1, venue_1, recommendation=None)
+    booking3 = create_booking(user, stock3, venue_2, recommendation=None)
+    PcObject.check_and_save(deposit, user_offerer, booking1, booking2, booking3)
+    auth_request = req_with_auth(email=user_pro.email, password='p@55sw0rd')
+
+    # when
+    response = auth_request.get(API_URL + '/offerers/%s/bookings?order_by_column=amount&order=asc' % humanize(offerer.id))
+
+    # then
+    assert response.status_code == 200
+    elements = response.json()
+    pprint(elements)
+    assert elements[0]['amount'] == 0
+    assert elements[1]['amount'] == 10
+    assert elements[2]['amount'] == 20

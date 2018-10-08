@@ -1,5 +1,6 @@
 """ booking queries """
 from flask import render_template
+from sqlalchemy import and_
 from sqlalchemy.exc import InternalError
 from sqlalchemy.orm import aliased
 
@@ -34,6 +35,8 @@ def find_offerer_bookings(offerer_id, search=None, order_by=None, page=1):
               ((Stock.offerId == Offer.id) | \
                (EventOccurrence.offerId == Offer.id))) \
         .join(Venue) \
+        .outerjoin(Thing, and_(Offer.thingId == Thing.id)) \
+        .outerjoin(Event, and_(Offer.eventId == Event.id)) \
         .filter(Venue.managingOffererId == offerer_id)
 
     if search:

@@ -51,13 +51,14 @@ def get_offerer(id):
 @app.route('/offerers/<id>/bookings', methods=['GET'])
 @login_required
 def get_offerer_bookings(id):
-
     ensure_current_user_has_rights(RightsType.editor, dehumanize(id))
-
+    order_by_key = request.args.get('order_by_column')
+    order = request.args.get('order')
+    order_by = _generate_orderby_criterium(order, order_by_key)
     bookings = find_offerer_bookings(
         dehumanize(id),
         search=request.args.get('search'),
-        order_by=request.args.get('order_by'),
+        order_by=order_by,
         page=request.args.get('page', 1)
     )
 
@@ -100,3 +101,15 @@ def patch_offerer(offererId):
     offerer.populateFromDict(data, skipped_keys=['validationToken'])
     PcObject.check_and_save(offerer)
     return jsonify(offerer._asdict(include=OFFERER_INCLUDES)), 200
+
+
+def _generate_orderby_criterium(order, order_by_key):
+    allowed_columns_for_order = {'booking_id': 'booking.id', 'venue_name': 'venue.name',
+                                 'date': 'booking."dateModified"', 'category': "COALESCE(thing.type, event.type)",
+                                 'amount': 'booking.amount'}
+    if order_by_key and order:
+        column = allowed_columns_for_order[order_by_key]
+        order_by = '{} {}'.format(column, order)
+    else:
+        order_by = None
+    return order_by
