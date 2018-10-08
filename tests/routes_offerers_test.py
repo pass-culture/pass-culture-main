@@ -603,7 +603,7 @@ def test_get_offerer_bookings_ordered_by_category_asc(app):
     elements = response.json()
     assert elements[0]['stock']['resolvedOffer']['event']['type'] == 'EventType.SPECTACLE_VIVANT'
     assert elements[1]['stock']['resolvedOffer']['event']['type'] == 'EventType.SPECTACLE_VIVANT'
-    assert elements[2]['stock']['resolvedOffer']['thing']['type'] == 'ThingType.LIVRE_EDITION'
+    assert elements[r]['stock']['resolvedOffer']['thing']['type'] == 'ThingType.LIVRE_EDITION'
 
 
 @pytest.mark.standalone
@@ -636,10 +636,9 @@ def test_get_offerer_bookings_ordered_by_category_desc(app):
     # then
     assert response.status_code == 200
     elements = response.json()
-    pprint(list(map(lambda x: x['stock']['resolvedOffer'], elements)))
-    assert elements[0]['stock']['resolvedOffer']['event']['type'] == 'EventType.SPECTACLE_VIVANT'
+    assert elements[0]['stock']['resolvedOffer']['thing']['type'] == 'ThingType.LIVRE_EDITION'
     assert elements[1]['stock']['resolvedOffer']['event']['type'] == 'EventType.SPECTACLE_VIVANT'
-    assert elements[2]['stock']['resolvedOffer']['thing']['type'] == 'ThingType.LIVRE_EDITION'
+    assert elements[2]['stock']['resolvedOffer']['event']['type'] == 'EventType.SPECTACLE_VIVANT'
 
 
 @pytest.mark.standalone
@@ -672,9 +671,9 @@ def test_get_offerer_bookings_ordered_by_category_asc(app):
     # then
     assert response.status_code == 200
     elements = response.json()
-    assert elements[0]['stock']['resolvedOffer']['thing']['type'] == 'ThingType.LIVRE_EDITION'
+    assert elements[0]['stock']['resolvedOffer']['event']['type'] == 'EventType.SPECTACLE_VIVANT'
     assert elements[1]['stock']['resolvedOffer']['event']['type'] == 'EventType.SPECTACLE_VIVANT'
-    assert elements[2]['stock']['resolvedOffer']['event']['type'] == 'EventType.SPECTACLE_VIVANT'
+    assert elements[2]['stock']['resolvedOffer']['thing']['type'] == 'ThingType.LIVRE_EDITION'
 
 
 @pytest.mark.standalone
