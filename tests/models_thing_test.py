@@ -57,21 +57,3 @@ def test_thing_error_when_thing_type_is_offlineOnly_but_has_url(app):
 
     # Then
     assert errors.value.errors['url'] == ['Une offre de type Jeux (Biens physiques) ne peut pas être numérique']
-
-
-@clean_database
-@pytest.mark.standalone
-def test_thing_error_when_thing_venue_not_virtual_but_has_url(app):
-    # Given
-    thing = create_thing(thing_type='ThingType.JEUX_VIDEO', url='http://mygame.fr/offre')
-    offerer = create_offerer()
-    venue = create_venue(offerer)
-    PcObject.check_and_save(venue)
-
-    # When
-    with pytest.raises(ApiErrors) as errors:
-        PcObject.check_and_save(thing)
-
-    # Then
-    assert errors.value.errors['venue'] == [
-        'Une offre numérique doit obligatoirement être associée au lieu "Offre en ligne"']
