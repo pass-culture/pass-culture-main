@@ -5,11 +5,11 @@ import { requestData, withLogin } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators, compose } from 'redux'
-import { Link } from 'react-router-dom'
 import get from 'lodash.get'
 
 import { ROOT_PATH } from '../../utils/config'
-import BookingItem from './my-bookings/MyBookingItem'
+import MyBookingItem from './my-bookings/MyBookingItem'
+import NoBookingView from './my-bookings/NoBookingView'
 import {
   selectSoonBookings,
   selectOtherBookings,
@@ -21,24 +21,11 @@ import { toggleMainMenu } from '../../reducers/menu'
 import NavigationFooter from '../layout/NavigationFooter'
 import { bookingNormalizer } from '../../utils/normalizers'
 
-const renderNoBookingSection = () => (
-  <div className="has-text-centered">
-    <p className="mt20">
-      <b>Pas encore de réservation.</b>
-    </p>
-    <p className="mt20">
-      <Link to="/decouverte" className="button is-primary">
-        Allez-y !
-      </Link>
-    </p>
-  </div>
-)
-
 const renderBookingList = items => (
   <ul className="bookings">
     {items.map(booking => {
       const key = booking.id
-      return <BookingItem key={key} booking={booking} />
+      return <MyBookingItem key={key} booking={booking} />
     })}
   </ul>
 )
@@ -115,7 +102,7 @@ class MyBookingsPage extends Component {
                 - si aucune reservations API
                 - si aucune reservations dans les deja charges
               */}
-                {(isempty || hasNoBooking) && renderNoBookingSection()}
+                {(isempty || hasNoBooking) && <NoBookingView />}
               </div>
             </main>
             <NavigationFooter theme="purple" className="dotted-top-white" />

@@ -40,6 +40,10 @@
   @extend .border-y;
 }
 
+.border-white {
+  border-color: $white;
+}
+
 /* ------------------------------------------------
 
  DOTTED
