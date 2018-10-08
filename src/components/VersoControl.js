@@ -64,6 +64,7 @@ class VersoControl extends React.PureComponent {
         </li>
         <li>
           <button
+            disabled
             type="button"
             className="button is-secondary"
             onClick={this.onClickFavorite}

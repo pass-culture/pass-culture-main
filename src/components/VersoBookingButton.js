@@ -21,6 +21,8 @@ const renderBookingLink = (url, offer) => {
 
 const VersoBookingButton = ({ booking, isFinished, offer, url }) => {
   const onlineOfferUrl = get(booking, 'completedUrl')
+  console.log('url', url)
+  console.log('onlineOfferUrl', onlineOfferUrl)
   return (
     <React.Fragment>
       {booking && (
@@ -56,11 +58,12 @@ const VersoBookingButton = ({ booking, isFinished, offer, url }) => {
 }
 
 VersoBookingButton.defaultProps = {
+  booking: null,
   offer: null,
 }
 
 VersoBookingButton.propTypes = {
-  booking: PropTypes.object.isRequired,
+  booking: PropTypes.object,
   isFinished: PropTypes.bool.isRequired,
   offer: PropTypes.object,
   url: PropTypes.string.isRequired,
