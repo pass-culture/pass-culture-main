@@ -28,11 +28,6 @@ import selectTypeSublabels from '../../selectors/selectTypes'
 
 import { mapApiToWindow, windowToApiQuery } from '../../utils/pagination'
 
-// TODO
-// import stateWithTypes from '../../../mocks/stateWithTypes'
-// import selectTypes from '../../../selectors/selectTypes'
-// when api will ready change selectTypeSublabels to typeSublabelsAndDescription
-
 const renderPageHeader = () => (
   <header className="no-dotted-border">
     <h1 className="is-normal fs19">
@@ -133,6 +128,7 @@ class SearchPage extends PureComponent {
     const isfilterIconActive = filterIconByState(filtersActive)
     const filtersToggleButtonClass = (withFilter && 'filters-are-opened') || ''
 
+    // FIXME Waiting for api get styles to return typeSublabelsAndDescription
     const typeSublabelsAndDescription = [
       {
         description:
@@ -169,6 +165,11 @@ class SearchPage extends PureComponent {
     let description
 
     // if location.pathname contient /resultats/
+    // when api will ready change selectTypeSublabels to typeSublabelsAndDescription
+    // TODO
+    // import stateWithTypes from '../../../mocks/stateWithTypes'
+    // import selectTypes from '../../../selectors/selectTypes'
+
     if (location.pathname.indexOf('/resultats/') !== -1) {
       category = pagination.windowQuery.categories
       description = descriptionForSublabel(
@@ -189,6 +190,7 @@ class SearchPage extends PureComponent {
         header={renderPageHeader}
         name="search"
         footer={renderPageFooter}
+        closeSearchButton
       >
         <form onSubmit={this.onSubmit}>
           <div className="flex-columns items-start">
