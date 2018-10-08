@@ -135,8 +135,9 @@ class VenuePage extends Component {
     } = this.props
     const { isNew, isReadOnly } = this.state
 
+    const savedVenueId = get(venuePatch, 'id')
     const isSiretReadOnly = get(venuePatch, 'siret')
-    const isSiretSkipping = !get(venuePatch, 'id') && name && !formSire
+    const isSiretSkipping = !venueId && name && !formSire
     const isReadOnlyFromGeoOrSiren = formGeo || formSire
     const isLatitudeReadOnlyFromGeoOrSiren =
       formGeo || (formSire && formLatitude)
@@ -160,7 +161,7 @@ class VenuePage extends Component {
           )}
 
           {get(offerer, 'id') &&
-            get(venuePatch, 'id') && (
+            savedVenueId && (
               <NavLink
                 to={`/offres/nouveau?lieu=${venuePatch.id}`}
                 className="cta button is-primary">
@@ -176,7 +177,7 @@ class VenuePage extends Component {
 
         {!get(venuePatch, 'isVirtual') && (
           <Form
-            action={`/venues/${get(venuePatch, 'id', '')}`}
+            action={`/venues/${savedVenueId || ''}`}
             handleSuccess={this.handleSuccess}
             name="venue"
             patch={venuePatch}
@@ -291,7 +292,7 @@ Si les informations ne correspondent pas au SIRET saisi, <a href='http://passcul
                   </CancelButton>
                 )}
               </div>
-              {venueId && (
+              {savedVenueId && (
                 <div className="control">
                   <div
                     className="field is-grouped is-grouped-centered"
