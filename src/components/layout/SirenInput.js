@@ -7,8 +7,21 @@ import { formatSiren } from '../../utils/string'
 
 class SirenInput extends Component {
   onChange = event => {
+    const { type } = this.props
+
     event.persist()
-    this.props.onChange(removeWhitespaces(event.target.value), {
+
+    let value = removeWhitespaces(event.target.value)
+
+    console.log('type', type)
+
+    if (type === 'siret') {
+      value = value.slice(0, Math.min(14, value.length))
+    } else if (type === 'siren') {
+      value = value.slice(0, Math.min(9, value.length))
+    }
+
+    this.props.onChange(value, {
       event,
       isSagaCalling: true,
     })

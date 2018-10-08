@@ -1,6 +1,7 @@
 import get from 'lodash.get'
 import {
   CancelButton,
+  closeNotification,
   Icon,
   Field,
   Form,
@@ -88,11 +89,26 @@ class VenuePage extends Component {
         ? `/structures/${get(offerer, 'id')}/lieux/${venueId}`
         : `/structures/${get(offerer, 'id')}`
     history.push(redirectPathname)
+
+    const createOfferPathname = `/offres/nouveau?lieu=${venueId}`
+
+    const text =
+      get(action, 'method') === 'POST' ? (
+        <p>
+          Lieu créé. Vous pouvez maintenant y{' '}
+          <NavLink
+            to={createOfferPathname}
+            onClick={() => this.props.dispatch(closeNotification())}>
+            créer une offre
+          </NavLink>
+          , ou en importer automatiquement.
+        </p>
+      ) : (
+        'Lieu modifié avec succès !'
+      )
+
     showNotification({
-      text:
-        get(action, 'method') === 'POST'
-          ? 'Lieu ajouté avec succès !'
-          : 'Lieu modifié avec succès !',
+      text,
       type: 'success',
     })
     // TODO: do it in the way that the notification
@@ -222,6 +238,21 @@ class VenuePage extends Component {
                   </CancelButton>
                 )}
               </div>
+              {venueId && (
+                <div className="control">
+                  <div
+                    className="field is-grouped is-grouped-centered"
+                    style={{ justifyContent: 'space-between' }}>
+                    <div className="control">
+                      <NavLink
+                        className="button is-secondary is-medium"
+                        to={`/offres/nouveau?lieu=${venueId}`}>
+                        Créer une offre dans ce lieu
+                      </NavLink>
+                    </div>
+                  </div>
+                </div>
+              )}
               <div className="control">
                 <div
                   className="field is-grouped is-grouped-centered"

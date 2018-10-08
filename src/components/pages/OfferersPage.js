@@ -84,7 +84,7 @@ class OfferersPage extends Component {
               <input
                 id="search"
                 className="input search-input"
-                placeholder="Saisissez une recherche"
+                placeholder="Saisissez un ou plusieurs mots complets"
                 type="text"
                 defaultValue={search}
               />

@@ -1,23 +1,31 @@
 import get from 'lodash.get'
 import createCachedSelector from 're-reselect'
 
-import { THUMBS_URL } from '../utils/config'
-
-import mediationsSelector from './mediations'
+import selectActiveMediationsByOfferId from './selectActiveMediationsByOfferId'
 import eventSelector from './event'
 import thingSelector from './thing'
+import { THUMBS_URL } from '../utils/config'
+
+function mapArgsToKey(state, offerId, eventId, thingId) {
+  return `${offerId || ''}/${eventId || ''}/${thingId || ''}`
+}
 
 export default createCachedSelector(
-  (state, offerId, eventId, thingId) => mediationsSelector(state, offerId),
+  (state, offerId, eventId, thingId) =>
+    selectActiveMediationsByOfferId(state, offerId),
   (state, offerId, eventId, thingId) => eventSelector(state, eventId),
   (state, offerId, eventId, thingId) => thingSelector(state, thingId),
-  (mediations, event, thing) =>
-    get(mediations, '0')
-      ? `${THUMBS_URL}/mediations/${mediations[0].id}`
-      : get(event, 'thumbCount')
-        ? `${THUMBS_URL}/events/${get(event, 'id')}`
-        : get(thing, 'thumbCount') && `${THUMBS_URL}/things/${get(thing, 'id')}`
-)(
-  (state, offerId, eventId, thingId) =>
-    `${offerId || ''}/${eventId || ''}/${thingId || ''}`
-)
+  (mediations, event, thing) => {
+    if (get(mediations, '0')) {
+      return `${THUMBS_URL}/mediations/${mediations[0].id}`
+    }
+
+    if (get(event, 'thumbCount')) {
+      return `${THUMBS_URL}/events/${get(event, 'id')}`
+    }
+
+    return (
+      get(thing, 'thumbCount') && `${THUMBS_URL}/things/${get(thing, 'id')}`
+    )
+  }
+)(mapArgsToKey)
