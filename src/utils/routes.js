@@ -2,7 +2,7 @@ import React from 'react'
 import { Redirect } from 'react-router-dom'
 
 import BetaPage from '../components/pages/BetaPage'
-import BookingsPage from '../components/pages/BookingsPage'
+import MyBookingsPage from '../components/pages/MyBookingsPage'
 import DiscoveryPage from '../components/pages/DiscoveryPage'
 import FavoritesPage from '../components/pages/FavoritesPage'
 import ForgotPasswordPage from '../components/pages/ForgotPasswordPage'
@@ -63,7 +63,7 @@ const routes = [
     title: 'Recherche',
   },
   {
-    component: BookingsPage,
+    component: MyBookingsPage,
     disabled: false,
     icon: 'calendar-w',
     path: '/reservations',

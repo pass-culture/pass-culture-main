@@ -9,13 +9,13 @@ import { connect } from 'react-redux'
 import Dotdotdot from 'react-dotdotdot'
 import { Link } from 'react-router-dom'
 
-import Thumb from './Thumb'
-import { getQueryURL } from '../../helpers'
-import { THUMBS_URL } from '../../utils/config'
-import { getTimezone } from '../../utils/timezone'
-import { selectRecommendation } from '../../selectors'
+import Thumb from '../../layout/Thumb'
+import { getQueryURL } from '../../../helpers'
+import { THUMBS_URL } from '../../../utils/config'
+import { getTimezone } from '../../../utils/timezone'
+import { selectRecommendation } from '../../../selectors'
 
-const BookingItem = ({ booking, recommendation }) => {
+const MyBookingItem = ({ booking, recommendation }) => {
   const token = get(booking, 'token')
   const offerId = get(booking, 'stock.resolvedOffer.id')
   const mediationId = get(recommendation, 'mediationId')
@@ -61,12 +61,12 @@ const BookingItem = ({ booking, recommendation }) => {
   )
 }
 
-BookingItem.defaultProps = {
+MyBookingItem.defaultProps = {
   booking: null,
   recommendation: null,
 }
 
-BookingItem.propTypes = {
+MyBookingItem.propTypes = {
   booking: PropTypes.object,
   recommendation: PropTypes.object,
 }
@@ -75,4 +75,4 @@ export default connect((state, ownProps) => {
   const { recommendationId } = ownProps.booking
   const recommendation = selectRecommendation(state, recommendationId)
   return { recommendation }
-})(BookingItem)
+})(MyBookingItem)

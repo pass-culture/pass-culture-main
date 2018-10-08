@@ -9,7 +9,7 @@ import { Link } from 'react-router-dom'
 import get from 'lodash.get'
 
 import { ROOT_PATH } from '../../utils/config'
-import BookingItem from '../layout/BookingItem'
+import BookingItem from './my-bookings/MyBookingItem'
 import {
   selectSoonBookings,
   selectOtherBookings,
@@ -43,7 +43,7 @@ const renderBookingList = items => (
   </ul>
 )
 
-class BookingsPage extends Component {
+class MyBookingsPage extends Component {
   constructor(props) {
     super(props)
     const { dispatch } = props
@@ -129,7 +129,7 @@ class BookingsPage extends Component {
   }
 }
 
-BookingsPage.propTypes = {
+MyBookingsPage.propTypes = {
   dispatch: PropTypes.func.isRequired,
   otherBookings: PropTypes.array.isRequired,
   soonBookings: PropTypes.array.isRequired,
@@ -145,4 +145,4 @@ const mapStateToProps = state => {
 export default compose(
   withLogin({ failRedirect: '/connexion' }),
   connect(mapStateToProps)
-)(BookingsPage)
+)(MyBookingsPage)
