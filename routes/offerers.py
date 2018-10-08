@@ -47,6 +47,7 @@ def get_offerer(id):
     offerer = load_or_404(Offerer, id)
     return jsonify(offerer._asdict(include=OFFERER_INCLUDES)), 200
 
+
 @app.route('/offerers/<id>/bookings', methods=['GET'])
 @login_required
 def get_offerer_bookings(id):
@@ -63,6 +64,7 @@ def get_offerer_bookings(id):
     bookings_reimbursements = find_all_booking_reimbursement(bookings)
 
     return jsonify([b.as_dict(include=PRO_BOOKING_INCLUDES) for b in bookings_reimbursements]), 200
+
 
 @app.route('/offerers', methods=['POST'])
 @login_or_api_key_required

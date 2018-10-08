@@ -1,7 +1,6 @@
 """ routes offerer """
 import secrets
 from datetime import timedelta, datetime
-import simplejson as json
 
 import pytest
 
@@ -116,6 +115,33 @@ def test_get_offerer_bookings_returns_bookings_with_their_reimbursements_ordered
     assert dehumanize(elements[0]['id']) == booking3.id
     assert dehumanize(elements[1]['id']) == booking2.id
     assert dehumanize(elements[2]['id']) == booking1.id
+
+
+@pytest.mark.standalone
+@clean_database
+def test_get_offerer_bookings_returns_bookings_with_only_email_as_user_info(app):
+    # given
+    now = datetime.utcnow()
+    user_pro = create_user(can_book_free_offers=False, password='p@55sw0rd')
+    user = create_user(email='test@email.com')
+    deposit = create_deposit(user, now, amount=24000)
+    PcObject.check_and_save(deposit)
+    offerer = create_offerer()
+    user_offerer = create_user_offerer(user_pro, offerer)
+    PcObject.check_and_save(user_offerer)
+
+    venue = create_venue(offerer)
+    stock = create_stock_with_event_offer(offerer, venue, price=20)
+    booking = create_booking(user, stock, venue, recommendation=None, quantity=2)
+    PcObject.check_and_save(booking)
+    auth_request = req_with_auth(email=user_pro.email, password='p@55sw0rd')
+
+    # when
+    response = auth_request.get(API_URL + '/offerers/%s/bookings' % humanize(offerer.id))
+
+    # then
+    assert response.status_code == 200
+    assert response.json()[0]['user'] == {'email': user.email}
 
 
 @pytest.mark.standalone
@@ -391,8 +417,10 @@ def test_patch_offerer_for_non_authorised_fields_status_code_400(app):
     PcObject.check_and_save(user_offerer)
     auth_request = req_with_auth(email=user.email, password=user.clearTextPassword)
     body = {'isActive': False, 'thumbCount': 0, 'idAtProviders': 'zfeej',
-            'dateModifiedAtLastProvider': serialize(datetime(2016,2,1)), 'address': '123 nouvelle adresse', 'postalCode': '75001',
-            'city': 'Paris', 'validationToken': 'ozieghieof', 'id': humanize(10), 'dateCreated': serialize(datetime(2015,2,1)),
+            'dateModifiedAtLastProvider': serialize(datetime(2016, 2, 1)), 'address': '123 nouvelle adresse',
+            'postalCode': '75001',
+            'city': 'Paris', 'validationToken': 'ozieghieof', 'id': humanize(10),
+            'dateCreated': serialize(datetime(2015, 2, 1)),
             'name': 'Nouveau Nom', 'siren': '989807829', 'lastProviderId': humanize(1)}
 
     # when
