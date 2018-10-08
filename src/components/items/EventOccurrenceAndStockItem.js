@@ -402,7 +402,7 @@ class EventOccurrenceAndStockItem extends Component {
               En confirmant l'annulation de{' '}
               {isStockOnly ? 'ce stock' : 'cette date'}, vous supprimerez aussi
               toutes les réservations associées. {!isStockOnly && <br />}
-              Êtes-vous sûrs de vouloir continuer&nbsp;?
+              Êtes-vous sûr•e de vouloir continuer&nbsp;?
             </td>
             <td>
               <button
