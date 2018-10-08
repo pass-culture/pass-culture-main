@@ -3,7 +3,7 @@ import pytest
 from models import ApiErrors, PcObject
 from models.venue import TooManyVirtualVenuesException
 from tests.conftest import clean_database
-from utils.test_utils import create_offerer, create_venue
+from utils.test_utils import create_offerer, create_venue, create_thing_offer, create_event_offer
 
 
 @clean_database
@@ -78,3 +78,21 @@ def test_offerer_cannot_update_a_second_venue_to_be_virtual(app):
     # Then
     with pytest.raises(TooManyVirtualVenuesException):
         PcObject.check_and_save(new_venue)
+
+
+@pytest.mark.standalone
+@clean_database
+def test_nOffers(app):
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    offer_1 = create_thing_offer(venue)
+    offer_2 = create_event_offer(venue)
+    offer_4 = create_event_offer(venue)
+    offer_5 = create_thing_offer(venue)
+    PcObject.check_and_save(offer_1, offer_2, offer_4, offer_5)
+
+    # when
+    n_offers = venue.nOffers
+
+    # then
+    assert n_offers == 4
