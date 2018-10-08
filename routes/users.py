@@ -166,7 +166,8 @@ def signup():
         if existing_offerer is None:
             offerer = Offerer()
             offerer.populateFromDict(request.json)
-            offerer.generate_validation_token()
+            if not IS_INTEGRATION:
+                offerer.generate_validation_token()
             if offerer.postalCode is not None:
                 offerer_dept_code = offerer.postalCode[:2]
                 new_user.departementCode = '93' if offerer_dept_code in ILE_DE_FRANCE_DEPT_CODES \
@@ -185,7 +186,8 @@ def signup():
             new_user.departementCode = offerer.postalCode[:2]
             user_offerer = offerer.give_rights(new_user,
                                                RightsType.editor)
-            user_offerer.generate_validation_token()
+            if not IS_INTEGRATION:
+                user_offerer.generate_validation_token()
             objects_to_save = [new_user, user_offerer]
     else:
         if IS_INTEGRATION:
