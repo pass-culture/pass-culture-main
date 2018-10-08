@@ -353,7 +353,7 @@ def create_stock_with_thing_offer(offerer, venue, thing_offer, price=10, availab
 def create_thing(thing_type=ThingType.LIVRE_EDITION, thing_name='Test Book', media_urls='test/urls', author_name='Test Author', url=None,
                  thumb_count=1, is_national=False):
     thing = Thing()
-    thing.type = thing_type.__str__()
+    thing.type = str(thing_type)
     thing.name = thing_name
     thing.mediaUrls = media_urls
     thing.idAtProviders = ''.join(random.choices(string.digits, k=13))
@@ -380,7 +380,7 @@ def create_event(
     event.thumbCount = thumb_count
     event.firstThumbDominantColor = dominant_color
     event.isNational = is_national
-    event.type = type.__str__()
+    event.type = str(type)
     return event
 
 
