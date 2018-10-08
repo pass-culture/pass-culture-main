@@ -55,9 +55,8 @@ class VenuePage extends Component {
       match: {
         params: { offererId, venueId },
       },
-      venuePatch,
     } = this.props
-    if (!venuePatch && venueId !== 'nouveau') {
+    if (venueId !== 'nouveau') {
       dispatch(
         requestData('GET', `offerers/${offererId}`, {
           handleSuccess: () => {
@@ -196,7 +195,12 @@ class VenuePage extends Component {
                   label="SIRET (si applicable)"
                   name="siret"
                   renderInfo={() => (
-                    <span data-tip="hello world" className="button">
+                    <span
+                      className="button"
+                      data-tip="<p>Saisissez ici le SIRET du lieu lié à votre structure pour retrouver ses informations automatiquement.
+Si les informations ne correspondent pas au SIRET saisi, <a href='http://passculture.fr'> contactez notre équipe </a></p>"
+                      data-place="bottom"
+                      data-type="info">
                       <Icon svg="picto-info" />
                     </span>
                   )}
