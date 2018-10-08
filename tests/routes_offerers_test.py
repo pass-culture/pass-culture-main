@@ -110,7 +110,7 @@ def test_get_offerer_bookings_returns_bookings_with_their_reimbursements_ordered
     auth_request = req_with_auth(email=user_pro.email, password='p@55sw0rd')
 
     # when
-    response = auth_request.get(API_URL + '/offerers/%s/bookings?order_by=booking.id desc' % humanize(offerer.id))
+    response = auth_request.get(API_URL + '/offerers/%s/bookings?order_by_column=booking_id&order=desc' % humanize(offerer.id))
 
     # then
     assert response.status_code == 200
@@ -636,9 +636,10 @@ def test_get_offerer_bookings_ordered_by_category_desc(app):
     # then
     assert response.status_code == 200
     elements = response.json()
-    assert elements[0]['stock']['resolvedOffer']['thing']['type'] == 'ThingType.LIVRE_EDITION'
+    pprint(list(map(lambda x: x['stock']['resolvedOffer'], elements)))
+    assert elements[0]['stock']['resolvedOffer']['event']['type'] == 'EventType.SPECTACLE_VIVANT'
     assert elements[1]['stock']['resolvedOffer']['event']['type'] == 'EventType.SPECTACLE_VIVANT'
-    assert elements[2]['stock']['resolvedOffer']['event']['type'] == 'EventType.SPECTACLE_VIVANT'
+    assert elements[2]['stock']['resolvedOffer']['thing']['type'] == 'ThingType.LIVRE_EDITION'
 
 
 @pytest.mark.standalone
