@@ -123,19 +123,25 @@ class VenuePage extends Component {
 
   render() {
     const {
+      formGeo,
       formLatitude,
       formLongitude,
+      formSire,
       match: {
         params: { offererId, venueId },
       },
       name,
       offerer,
-      sire,
       venuePatch,
     } = this.props
     const { isNew, isReadOnly } = this.state
 
-    const isSiretSkipping = name && !sire
+    const isSiretSkipping = name && !formSire
+    const isReadOnlyFromGeoOrSiren = formGeo || formSire
+    const isLatitudeReadOnlyFromGeoOrSiren =
+      formGeo || (formSire && formLatitude)
+    const isLongitudeReadOnlyFromGeoOrSiren =
+      formGeo || (formSire && formLongitude)
 
     return (
       <Main
@@ -201,7 +207,7 @@ class VenuePage extends Component {
                   isExpanded
                   label="Nom"
                   name="name"
-                  readOnly={sire}
+                  readOnly={formSire}
                   required
                 />
                 <Field
@@ -221,7 +227,7 @@ class VenuePage extends Component {
                   latitude={formLatitude}
                   longitude={formLongitude}
                   name="address"
-                  readOnly={sire}
+                  readOnly={formSire}
                   required
                   type="geo"
                   withMap
@@ -230,18 +236,28 @@ class VenuePage extends Component {
                   autocomplete="postal-code"
                   label="Code postal"
                   name="postalCode"
-                  readOnly={sire}
+                  readOnly={isReadOnlyFromGeoOrSiren}
                   required
                 />
                 <Field
                   autocomplete="address-level2"
                   label="Ville"
                   name="city"
-                  readOnly={sire}
+                  readOnly={isReadOnlyFromGeoOrSiren}
                   required
                 />
-                <Field label="Latitude" name="latitude" required />
-                <Field label="Longitude" name="longitude" required />
+                <Field
+                  label="Latitude"
+                  name="latitude"
+                  readOnly={isLatitudeReadOnlyFromGeoOrSiren}
+                  required
+                />
+                <Field
+                  label="Longitude"
+                  name="longitude"
+                  readOnly={isLongitudeReadOnlyFromGeoOrSiren}
+                  required
+                />
               </div>
             </div>
             <hr />
@@ -312,11 +328,12 @@ class VenuePage extends Component {
 function mapStateToProps(state, ownProps) {
   const { offererId, venueId } = ownProps.match.params
   return {
+    formGeo: get(state, 'form.venue.geo'),
     formLatitude: get(state, 'form.venue.latitude'),
     formLongitude: get(state, 'form.venue.longitude'),
+    formSire: get(state, `form.venue.sire`),
     name: get(state, `form.venue.name`),
     offerer: offererSelector(state, offererId),
-    sire: get(state, `form.venue.sire`),
     user: state.user,
     venuePatch: selectVenuePatchByVenueIdByOffererId(state, venueId, offererId),
   }
