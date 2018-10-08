@@ -1,27 +1,23 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-// import get from 'lodash.get'
-
 import { ROOT_PATH } from '../../../utils/config'
 
 const NavResultsHeader = ({ category, description }) => {
   const searchTypeWithoutSpecialChar = category.replace(/É/g, 'E')
-  const src = `${ROOT_PATH}/icons/img-${searchTypeWithoutSpecialChar}.png`
+  const src = `${ROOT_PATH}/icons/img-${searchTypeWithoutSpecialChar}-L.jpg`
   const imgDescription = `Liste des offres de type ${category}`
   return (
-    <div id="nav-results-header">
-      <div className="flex-rows text-right is-white-text">
-        <div className="flex-1 fs22 is-bold">
-          <h2>
-            {category}
-          </h2>
-        </div>
-        <div className="flex-1">
-          {description}
-        </div>
-      </div>
+    <div id="nav-results-header" className="is-absolute">
       <img src={src} alt={imgDescription} />
+      <div id="category-description" className="text-left is-white-text">
+        <h2 className="is-bold mb3">
+          {category}
+        </h2>
+        <span>
+          {description}
+        </span>
+      </div>
     </div>
   )
 }

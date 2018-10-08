@@ -13,7 +13,7 @@ describe('src | utils | pagination ', () => {
         categories: 'Applaudir',
         date: null,
         days: '1-5',
-        search: 'fake',
+        keywords: 'fake',
       }
       expect(windowToApiQuery(queryString)).toEqual(expected)
     })

@@ -19,12 +19,55 @@ ShallowWrapper {
     "key": undefined,
     "nodeType": "host",
     "props": Object {
-      "alt": "Rechercher des offres de type Écouter",
-      "src": "http://localhost/icons/img-Ecouter.png",
+      "children": Array [
+        <img
+          alt="Rechercher des offres de type Écouter"
+          src="http://localhost/icons/img-Ecouter.png"
+        />,
+        <span
+          className="is-absolute text-left fs20"
+          style={
+            Object {
+              "backgroundOpacity": 0.75,
+            }
+          }
+        >
+          Écouter
+        </span>,
+      ],
+      "className": "search-picture is-relative",
     },
     "ref": null,
-    "rendered": null,
-    "type": "img",
+    "rendered": Array [
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "alt": "Rechercher des offres de type Écouter",
+          "src": "http://localhost/icons/img-Ecouter.png",
+        },
+        "ref": null,
+        "rendered": null,
+        "type": "img",
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": "Écouter",
+          "className": "is-absolute text-left fs20",
+          "style": Object {
+            "backgroundOpacity": 0.75,
+          },
+        },
+        "ref": null,
+        "rendered": "Écouter",
+        "type": "span",
+      },
+    ],
+    "type": "div",
   },
   Symbol(enzyme.__nodes__): Array [
     Object {
@@ -32,12 +75,55 @@ ShallowWrapper {
       "key": undefined,
       "nodeType": "host",
       "props": Object {
-        "alt": "Rechercher des offres de type Écouter",
-        "src": "http://localhost/icons/img-Ecouter.png",
+        "children": Array [
+          <img
+            alt="Rechercher des offres de type Écouter"
+            src="http://localhost/icons/img-Ecouter.png"
+          />,
+          <span
+            className="is-absolute text-left fs20"
+            style={
+              Object {
+                "backgroundOpacity": 0.75,
+              }
+            }
+          >
+            Écouter
+          </span>,
+        ],
+        "className": "search-picture is-relative",
       },
       "ref": null,
-      "rendered": null,
-      "type": "img",
+      "rendered": Array [
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "alt": "Rechercher des offres de type Écouter",
+            "src": "http://localhost/icons/img-Ecouter.png",
+          },
+          "ref": null,
+          "rendered": null,
+          "type": "img",
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": "Écouter",
+            "className": "is-absolute text-left fs20",
+            "style": Object {
+              "backgroundOpacity": 0.75,
+            },
+          },
+          "ref": null,
+          "rendered": "Écouter",
+          "type": "span",
+        },
+      ],
+      "type": "div",
     },
   ],
   Symbol(enzyme.__options__): Object {
