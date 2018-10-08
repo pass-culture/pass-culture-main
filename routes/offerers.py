@@ -53,11 +53,15 @@ def get_offerer(id):
 def get_offerer_bookings(id):
 
     ensure_current_user_has_rights(RightsType.editor, dehumanize(id))
-
+    allowed_columns_for_order = {'venue_name': 'venue.name', 'date': 'booking."dateModified"', 'category': "COALESCE(thing.type, event.type)", 'amount': 'booking.amount'}
+    order_by_key = request.args.get('order_by_column')
+    column = allowed_columns_for_order[order_by_key]
+    order = request.args.get('order')
+    order_by = '{} {}'.format(column, order)
     bookings = find_offerer_bookings(
         dehumanize(id),
         search=request.args.get('search'),
-        order_by=request.args.get('order_by'),
+        order_by=order_by,
         page=request.args.get('page', 1)
     )
 

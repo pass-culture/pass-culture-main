@@ -10,7 +10,7 @@ import requests as req
 import simplejson
 from postgresql_audit.flask import versioning_manager
 
-from models import Thing, Deposit, UserOfferer, Recommendation, RightsType, Mediation
+from models import Thing, Deposit, UserOfferer, Recommendation, RightsType, Mediation, EventType, ThingType
 from models.booking import Booking
 from models.event import Event
 from models.event_occurrence import EventOccurrence
@@ -350,10 +350,10 @@ def create_stock_with_thing_offer(offerer, venue, thing_offer, price=10, availab
     return stock
 
 
-def create_thing(thing_type='Book', thing_name='Test Book', media_urls='test/urls', author_name='Test Author', url=None,
+def create_thing(thing_type=ThingType.LIVRE_EDITION, thing_name='Test Book', media_urls='test/urls', author_name='Test Author', url=None,
                  thumb_count=1, is_national=False):
     thing = Thing()
-    thing.type = thing_type
+    thing.type = thing_type.__str__()
     thing.name = thing_name
     thing.mediaUrls = media_urls
     thing.idAtProviders = ''.join(random.choices(string.digits, k=13))
@@ -372,7 +372,7 @@ def create_event(
     thumb_count=0,
     dominant_color=None,
     is_national=False,
-    type=None
+    type=EventType.SPECTACLE_VIVANT
 ):
     event = Event()
     event.name = event_name
@@ -380,27 +380,19 @@ def create_event(
     event.thumbCount = thumb_count
     event.firstThumbDominantColor = dominant_color
     event.isNational = is_national
-    event.type = type
+    event.type = type.__str__()
     return event
 
 
-def create_thing_offer(
-    venue,
-    thing=None,
-    date_created=datetime.utcnow(),
-    booking_email='booking.email@test.com',
-    thing_type='Book',
-    thing_name='Test Book',
-    media_urls='test/urls',
-    author_name='Test Author',
-    thumb_count=1
-):
+def create_thing_offer(venue, thing=None, date_created=datetime.utcnow(), booking_email='booking.email@test.com',
+                       thing_type='Book', thing_name='Test Book', media_urls='test/urls', author_name='Test Author',
+                       thumb_count=1, url=None):
     offer = Offer()
     if thing:
         offer.thing = thing
     else:
         offer.thing = create_thing(thing_type=thing_type, thing_name=thing_name, media_urls=media_urls,
-                                   author_name=author_name, thumb_count=thumb_count)
+                                   author_name=author_name, thumb_count=thumb_count, url=url)
     offer.venue = venue
     offer.dateCreated = date_created
     offer.bookingEmail = booking_email
@@ -408,11 +400,11 @@ def create_thing_offer(
 
 
 def create_event_offer(venue, event=None, event_name='Test event', duration_minutes=60, date_created=datetime.utcnow(),
-                       booking_email='booking.email@test.com', thumb_count=0, dominant_color=None):
+                       booking_email='booking.email@test.com', thumb_count=0, dominant_color=None, event_type=EventType.SPECTACLE_VIVANT):
     offer = Offer()
     if event is None:
         event = create_event(event_name=event_name, duration_minutes=duration_minutes, thumb_count=thumb_count,
-                             dominant_color=dominant_color)
+                             dominant_color=dominant_color, type=event_type)
     offer.event = event
     offer.venue = venue
     offer.dateCreated = date_created
