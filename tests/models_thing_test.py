@@ -1,12 +1,10 @@
 import pytest
 
-from models import PcObject, ApiErrors
-from models import ThingType
+from models import PcObject, ApiErrors, ThingType
 from tests.conftest import clean_database
 from utils.test_utils import create_thing, create_venue, create_offerer
 
 
-@pytest.mark.standalone
 def test_thing_type_find_from_sub_labels_returns_nothing_if_no_sub_labels():
     # given
     sub_labels = []

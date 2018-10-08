@@ -1,5 +1,6 @@
 """ thing model """
 import enum
+
 from sqlalchemy import BigInteger, \
     CheckConstraint, \
     Column, \
@@ -10,6 +11,7 @@ from sqlalchemy.dialects.postgresql import ARRAY, TEXT
 from sqlalchemy.sql.expression import cast
 from sqlalchemy.sql.functions import coalesce
 
+from models.offer_type import ThingType
 from models.db import Model
 from models.extra_data_mixin import ExtraDataMixin
 from models.has_thumb_mixin import HasThumbMixin
@@ -23,6 +25,7 @@ class BookFormat(enum.Enum):
     EBook = "EBook"
     Hardcover = "Hardcover"
     Paperback = "Paperback"
+
 
 class Thing(PcObject,
             Model,
@@ -72,7 +75,8 @@ class Thing(PcObject,
     def errors(self):
         api_errors = super(Thing, self).errors()
         if self.isDigital and self._type_can_only_be_offline():
-            api_errors.addError('url', 'Une offre de type {} ne peut pas être numérique'.format(self._get_label_from_type_string()))
+            api_errors.addError('url', 'Une offre de type {} ne peut pas être numérique'.format(
+                self._get_label_from_type_string()))
         return api_errors
 
 
