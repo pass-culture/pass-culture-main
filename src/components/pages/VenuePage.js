@@ -135,7 +135,8 @@ class VenuePage extends Component {
     } = this.props
     const { isNew, isReadOnly } = this.state
 
-    const isSiretSkipping = name && !formSire
+    const isSiretReadOnly = get(venuePatch, 'siret')
+    const isSiretSkipping = !get(venuePatch, 'id') && name && !formSire
     const isReadOnlyFromGeoOrSiren = formGeo || formSire
     const isLatitudeReadOnlyFromGeoOrSiren =
       formGeo || (formSire && formLatitude)
@@ -194,16 +195,19 @@ class VenuePage extends Component {
                   className={classnames({ 'is-invisible': isSiretSkipping })}
                   label="SIRET (si applicable)"
                   name="siret"
-                  renderInfo={() => (
-                    <span
-                      className="button"
-                      data-tip="<p>Saisissez ici le SIRET du lieu lié à votre structure pour retrouver ses informations automatiquement.
+                  readOnly={isSiretReadOnly}
+                  renderInfo={() =>
+                    !isSiretReadOnly && (
+                      <span
+                        className="button"
+                        data-tip="<p>Saisissez ici le SIRET du lieu lié à votre structure pour retrouver ses informations automatiquement.
 Si les informations ne correspondent pas au SIRET saisi, <a href='http://passculture.fr'> contactez notre équipe </a></p>"
-                      data-place="bottom"
-                      data-type="info">
-                      <Icon svg="picto-info" />
-                    </span>
-                  )}
+                        data-place="bottom"
+                        data-type="info">
+                        <Icon svg="picto-info" />
+                      </span>
+                    )
+                  }
                   type="siret"
                 />
 
