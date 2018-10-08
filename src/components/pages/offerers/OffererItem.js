@@ -12,7 +12,7 @@ const OffererItem = ({ offerer, physicalVenues, venues }) => {
   const showPath = `/structures/${id}`
 
   const $offersCount =
-    isValidated && nOffers > 0 ? (
+    nOffers && nOffers > 0 ? (
       <li>
         <NavLink to={`/offres?structure=${id}`} className="has-text-primary">
           <Icon svg="ico-offres-r" />
