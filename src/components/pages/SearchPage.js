@@ -47,7 +47,7 @@ class SearchPage extends PureComponent {
       keywordsKey: 0,
       keywordsValue: get(
         props,
-        `pagination.windowQuery.${mapApiToWindow.search}`
+        `pagination.windowQuery.${mapApiToWindow.keywords}`
       ),
       withFilter: false,
     }
@@ -61,7 +61,7 @@ class SearchPage extends PureComponent {
 
     pagination.change(
       {
-        [mapApiToWindow.search]: value === '' ? null : value,
+        [mapApiToWindow.keywords]: value === '' ? null : value,
       },
       { pathname: '/recherche/resultats' }
     )
@@ -119,7 +119,7 @@ class SearchPage extends PureComponent {
     } = this.props
     const { windowQuery } = pagination
     const { keywordsKey, keywordsValue, withFilter } = this.state
-    const keywords = windowQuery[mapApiToWindow.search]
+    const keywords = windowQuery[mapApiToWindow.keywords]
 
     const filtersActive = isSearchFiltersAdded(
       INITIAL_FILTER_PARAMS,
@@ -317,7 +317,7 @@ export default compose(
       categories: null,
       date: null,
       [mapApiToWindow.days]: null,
-      [mapApiToWindow.search]: null,
+      [mapApiToWindow.keywords]: null,
       distance: null,
       latitude: null,
       longitude: null,
