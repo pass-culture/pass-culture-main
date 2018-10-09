@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 import pytest
-from domain.payments import create_initial_payment_for_booking, create_initial_payments_for_eligible_bookings
+from domain.payments import create_initial_payment_for_booking
 from models.payment import Payment, PaymentType
 from utils.test_utils import create_booking, create_user
 

@@ -16,6 +16,7 @@ from models.event import Event
 from models.event_occurrence import EventOccurrence
 from models.offer import Offer
 from models.offerer import Offerer
+from models.payment import Payment, PaymentStatus, PaymentType
 from models.stock import Stock
 from models.user import User
 from models.venue import Venue
@@ -569,3 +570,15 @@ def create_mocked_bookings(num_bookings, venue_email, name='Offer name'):
         booking.stock.resolvedOffer.eventOrThing.name = name
         bookings.append(booking)
     return bookings
+
+
+def create_payment(booking, offerer, amount, type=PaymentType.INITIAL, status=PaymentStatus.PENDING, date_status=datetime.utcnow(), author='test case'):
+    payment = Payment()
+    payment.booking = booking
+    payment.offerer = offerer
+    payment.amount = amount
+    payment.type = type
+    payment.status = status
+    payment.dateStatus = date_status
+    payment.author = author
+    return payment
