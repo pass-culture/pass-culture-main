@@ -216,7 +216,7 @@ def _get_departement_code_when_authorized_or_error(authorized_emails, departemen
     departement_code = departement_codes[email_index]
     if departement_code.strip() == '':
         logger.error("[ERROR] Missing departement code in users spreadsheet for "
-              + request.json['email'])
+                     + request.json['email'])
 
         e = ApiErrors()
         e.addError('email', "Adresse non autorisée pour l'expérimentation")
