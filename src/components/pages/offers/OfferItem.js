@@ -31,9 +31,7 @@ class OccasionItem extends Component {
     dispatch(
       requestData('PATCH', `offers/${id}`, {
         body: {
-          offer: {
-            isActive: !isActive,
-          },
+          isActive: !isActive,
         },
         normalizer: offerNormalizer,
         isMergingDatum: true,
