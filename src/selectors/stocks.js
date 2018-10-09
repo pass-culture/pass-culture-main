@@ -1,5 +1,11 @@
 import createCachedSelector from 're-reselect'
 
+function mapArgsToKey(state, offerId, eventOccurrences) {
+  return `${offerId || ''}/${
+    eventOccurrences ? eventOccurrences.map(eo => eo.id).join('_') : ''
+  }`
+}
+
 export default createCachedSelector(
   state => state.data.stocks,
   (state, offerId) => offerId,
@@ -11,9 +17,4 @@ export default createCachedSelector(
           ? eventOccurrences.find(eo => eo.id === stock.eventOccurrenceId)
           : stock.offerId === offerId
     )
-)(
-  (state, offerId, eventOccurrences) =>
-    `${offerId || ''}/${
-      eventOccurrences ? eventOccurrences.map(eo => eo.id).join('_') : ''
-    }`
-)
+)(mapArgsToKey)

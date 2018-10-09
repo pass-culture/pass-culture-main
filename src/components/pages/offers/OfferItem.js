@@ -9,35 +9,36 @@ import { withRouter } from 'react-router'
 import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
 
-import Price from '../layout/Price'
-import Thumb from '../layout/Thumb'
-import aggregatedStockSelector from '../../selectors/aggregatedStock'
-import eventSelector from '../../selectors/event'
-import maxDateSelector from '../../selectors/maxDate'
-import mediationsSelector from '../../selectors/mediations'
-import eventOccurrencesSelector from '../../selectors/eventOccurrences'
-import stocksSelector from '../../selectors/stocks'
-import thingSelector from '../../selectors/thing'
-import thumbUrlSelector from '../../selectors/thumbUrl'
-import typeSelector from '../../selectors/type'
-import venueSelector from '../../selectors/venue'
-import offerrerSelector from '../../selectors/offerer'
-import { offerNormalizer } from '../../utils/normalizers'
+import Price from '../../layout/Price'
+import Thumb from '../../layout/Thumb'
+import aggregatedStockSelector from '../../../selectors/aggregatedStock'
+import eventSelector from '../../../selectors/event'
+import maxDateSelector from '../../../selectors/maxDate'
+import mediationsSelector from '../../../selectors/mediations'
+import eventOccurrencesSelector from '../../../selectors/eventOccurrences'
+import stocksSelector from '../../../selectors/stocks'
+import thingSelector from '../../../selectors/thing'
+import thumbUrlSelector from '../../../selectors/thumbUrl'
+import typeSelector from '../../../selectors/type'
+import venueSelector from '../../../selectors/venue'
+import offerrerSelector from '../../../selectors/offerer'
+import { offerNormalizer } from '../../../utils/normalizers'
 
 class OccasionItem extends Component {
   onDeactivateClick = event => {
-    const { offer, requestData } = this.props
+    const { dispatch, offer } = this.props
     const { id, isActive } = offer || {}
-    requestData('PATCH', `offers/${id}`, {
-      body: {
-        isActive: !isActive,
-      },
-      key: 'offers',
-      normalizer: offerNormalizer,
-      isMergingDatum: true,
-      isMutatingDatum: true,
-      isMutaginArray: false,
-    })
+    dispatch(
+      requestData('PATCH', `offers/${id}`, {
+        body: {
+          isActive: !isActive,
+        },
+        normalizer: offerNormalizer,
+        isMergingDatum: true,
+        isMutatingDatum: true,
+        isMutaginArray: false,
+      })
+    )
   }
 
   render() {
@@ -197,37 +198,34 @@ OccasionItem.defaultProps = {
   maxDescriptionLength: 300,
 }
 
+function mapStateToProps(state, ownProps) {
+  const { id, eventId, thingId } = ownProps.offer
+  const event = eventSelector(state, eventId)
+  const thing = thingSelector(state, thingId)
+  const typeValue = get(event, 'type') || get(thing, 'type')
+  const eventOccurrences = eventOccurrencesSelector(state, id)
+  const venue = venueSelector(state, ownProps.offer.venueId)
+  const offerrer = offerrerSelector(state, venue.managingOffererId)
+  return {
+    aggregatedStock: aggregatedStockSelector(
+      state,
+      id,
+      event && eventOccurrences
+    ),
+    event,
+    eventOccurrences,
+    maxDate: maxDateSelector(state, id),
+    mediations: mediationsSelector(state, id),
+    stocks: stocksSelector(state, id, event && eventOccurrences),
+    thing,
+    thumbUrl: thumbUrlSelector(state, id, eventId, thingId),
+    type: typeSelector(state, typeValue),
+    venue,
+    offerrer,
+  }
+}
+
 export default compose(
   withRouter,
-  connect(
-    () => {
-      return (state, ownProps) => {
-        const { id, eventId, thingId } = ownProps.offer
-        const event = eventSelector(state, eventId)
-        const thing = thingSelector(state, thingId)
-        const typeValue = get(event, 'type') || get(thing, 'type')
-        const eventOccurrences = eventOccurrencesSelector(state, id)
-        const venue = venueSelector(state, ownProps.offer.venueId)
-        const offerrer = offerrerSelector(state, venue.managingOffererId)
-        return {
-          aggregatedStock: aggregatedStockSelector(
-            state,
-            id,
-            event && eventOccurrences
-          ),
-          event: event,
-          eventOccurrences,
-          maxDate: maxDateSelector(state, id),
-          mediations: mediationsSelector(state, id),
-          stocks: stocksSelector(state, id, eventOccurrences),
-          thing: thing,
-          thumbUrl: thumbUrlSelector(state, id, eventId, thingId),
-          type: typeSelector(state, typeValue),
-          venue,
-          offerrer,
-        }
-      }
-    },
-    { requestData }
-  )
+  connect(mapStateToProps)
 )(OccasionItem)
