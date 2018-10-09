@@ -382,7 +382,9 @@ class OfferPage extends Component {
                     ? get(eventOrThingPatch, 'type')
                     : "Sélectionnez un type d'offre"
                 }
+                readOnly={offerId}
                 required
+                sublabel="Le type d'offre ne peut pas être modifié une fois l'offre enregistrée."
                 type="select"
               />
               {this.hasConditionalField('musicType') && (
