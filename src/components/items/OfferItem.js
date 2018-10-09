@@ -30,9 +30,7 @@ class OccasionItem extends Component {
     const { id, isActive } = offer || {}
     requestData('PATCH', `offers/${id}`, {
       body: {
-        offer: {
-          isActive: !isActive,
-        },
+        isActive: !isActive,
       },
       key: 'offers',
       normalizer: offerNormalizer,
@@ -61,12 +59,12 @@ class OccasionItem extends Component {
     const { isNew } = offer || {}
     const { available, groupSizeMin, groupSizeMax, priceMin, priceMax } =
       aggregatedStock || {}
-    const { name, createdAt, isActive } = event || thing || {}
+    const { name, createdAt } = event || thing || {}
 
     const mediationsLength = get(mediations, 'length')
 
     return (
-      <li className={classnames('offer-item', { active: isActive })}>
+      <li className={classnames('offer-item', { active: offer.isActive })}>
         <Thumb alt="offre" src={thumbUrl} />
         <div className="list-content">
           <NavLink
@@ -176,9 +174,9 @@ class OccasionItem extends Component {
               </NavLink>
 
               <button
-                className="button is-secondary is-small"
+                className="button is-secondary is-small activ-switch"
                 onClick={this.onDeactivateClick}>
-                {isActive ? (
+                {offer.isActive ? (
                   <span>
                     <Icon svg="ico-close-r" />
                     Désactiver
