@@ -76,6 +76,14 @@ class DateTimeForm extends Component {
         </td>
         {!isEventOccurrenceReadOnly && (
           <Fragment>
+            <td>
+              <SubmitButton className="button is-primary is-small submitStep">
+                Suivant
+              </SubmitButton>
+            </td>
+            <td />
+            <td />
+            <td />
             <td className="is-clipped">
               <NavLink
                 className="button is-secondary is-small"
@@ -83,12 +91,6 @@ class DateTimeForm extends Component {
                 Annuler
               </NavLink>
             </td>
-            <td>
-              <SubmitButton className="button is-intermediate is-small submitStep">
-                Suivant
-              </SubmitButton>
-            </td>
-            <td colSpan="3" />
           </Fragment>
         )}
       </Form>

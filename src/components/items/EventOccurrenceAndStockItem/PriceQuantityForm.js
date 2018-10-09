@@ -64,17 +64,17 @@ class PriceQuantityForm extends Component {
           </td>
           {!isStockReadOnly && (
             <Fragment>
+              <td>
+                <SubmitButton className="button is-primary is-small submitStep">
+                  Valider
+                </SubmitButton>
+              </td>
               <td className="is-clipped">
                 <NavLink
                   className="button is-secondary is-small"
                   to={`/offres/${get(offer, 'id')}?gestion`}>
                   Annuler
                 </NavLink>
-              </td>
-              <td>
-                <SubmitButton className="button is-primary is-small submitStep">
-                  Valider
-                </SubmitButton>
               </td>
             </Fragment>
           )}

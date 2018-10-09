@@ -86,8 +86,8 @@ class EventOccurrencesAndStocksManager extends Component {
                 <td>Prix</td>
                 <td>Date Limite de Réservation</td>
                 <td>Places (total)</td>
-                <td>Supprimer</td>
                 <td>Modifier</td>
+                <td>Supprimer</td>
               </tr>
             </thead>
 
@@ -164,8 +164,8 @@ class EventOccurrencesAndStocksManager extends Component {
                   <td>Prix</td>
                   <td>Date Limite de Réservation</td>
                   <td>Places (total)</td>
-                  <td>Supprimer</td>
                   <td>Modifier</td>
+                  <td>Supprimer</td>
                 </tr>
               </thead>
             )}

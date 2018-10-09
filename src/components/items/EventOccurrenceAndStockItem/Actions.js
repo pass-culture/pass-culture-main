@@ -60,18 +60,6 @@ class Actions extends Component {
     // Delete and edit buttons
     return (
       <Fragment>
-        <td className="is-clipped">
-          {!this.state.isDeleting && (
-            <button
-              className="button is-small is-secondary"
-              style={{ width: '100%' }}
-              onClick={this.onDeleteClick}>
-              <span className="icon">
-                <Icon svg="ico-close-r" />
-              </span>
-            </button>
-          )}
-        </td>
         <td>
           <NavLink
             to={`/offres/${get(offer, 'id')}?gestion&${
@@ -84,6 +72,18 @@ class Actions extends Component {
               <Icon svg="ico-pen-r" />
             </span>
           </NavLink>
+        </td>
+        <td className="is-clipped">
+          {!this.state.isDeleting && (
+            <button
+              className="button is-small is-secondary"
+              style={{ width: '100%' }}
+              onClick={this.onDeleteClick}>
+              <span className="icon">
+                <Icon svg="ico-close-r" />
+              </span>
+            </button>
+          )}
         </td>
       </Fragment>
     )
