@@ -8,8 +8,14 @@ const NavResultsHeader = ({ category, description }) => {
   const src = `${ROOT_PATH}/icons/img-${searchTypeWithoutSpecialChar}-L.jpg`
   const imgDescription = `Liste des offres de type ${category}`
   return (
-    <div id="nav-results-header" className="is-absolute">
-      <img src={src} alt={imgDescription} />
+    <div
+      id="nav-results-header"
+      className="p12"
+      title={imgDescription}
+      style={{
+        backgroundImage: `url(${src})`,
+      }}
+    >
       <div id="category-description" className="text-left is-white-text">
         <h2 className="is-bold mb3">
           {category}
