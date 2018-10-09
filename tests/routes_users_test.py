@@ -13,7 +13,7 @@ from models.user_offerer import UserOfferer, RightsType
 from tests.conftest import clean_database
 from utils.human_ids import humanize
 from utils.test_utils import API_URL, req, req_with_auth, create_thing_offer, create_user, create_offerer, create_venue, \
-    create_stock_with_thing_offer, create_recommendation, create_deposit, create_booking
+    create_stock_with_thing_offer, create_recommendation, create_user_offerer, create_deposit, create_booking
 
 BASE_DATA = {
     'email': 'toto@btmx.fr',
@@ -368,7 +368,7 @@ def test_pro_signup_should_create_user_offerer_digital_venue_and_userOfferer(app
 
 @clean_database
 @pytest.mark.standalone
-def test_pro_signup_with_existing_offerer(app):
+def test_pro_signup_when_existing_offerer(app):
     "should create user and userOfferer"
     json_offerer = {
         "name": "Test Offerer",
@@ -378,7 +378,9 @@ def test_pro_signup_with_existing_offerer(app):
         "city": "Paris"
     }
     offerer = Offerer(from_dict=json_offerer)
-    PcObject.check_and_save(offerer)
+    user = create_user(public_name='bobby', email='bobby@test.com')
+    user_offerer = create_user_offerer(user, offerer, is_admin=True)
+    PcObject.check_and_save(offerer, user_offerer)
 
     data = BASE_DATA_PRO.copy()
     r_signup = req.post(API_URL + '/users/signup',
@@ -432,6 +434,40 @@ def test_user_wallet_should_be_marked_as_activated_when_there_is_a_deposit(app):
 
     # Then
     assert r_profile.json()['wallet_is_activated'] == True
+
+
+def test_pro_signup_when_existing_offerer_but_no_user_offerer(app):
+    "should create user and userOfferer"
+    json_offerer = {
+        "name": "Test Offerer",
+        "siren": "349974931",
+        "address": "Test adresse",
+        "postalCode": "75000",
+        "city": "Paris"
+    }
+    offerer = Offerer(from_dict=json_offerer)
+    PcObject.check_and_save(offerer)
+
+    data = BASE_DATA_PRO.copy()
+    r_signup = req.post(API_URL + '/users/signup',
+                        json=data, headers={'origin': 'http://localhost:3000'})
+    assert r_signup.status_code == 201
+    assert 'Set-Cookie' in r_signup.headers
+    user = User.query \
+        .filter_by(email='toto_pro@btmx.fr') \
+        .first()
+    assert user is not None
+    offerer = Offerer.query \
+        .filter_by(siren='349974931') \
+        .first()
+    assert offerer is not None
+    user_offerer = UserOfferer.query \
+        .filter_by(user=user,
+                   offerer=offerer) \
+        .first()
+    assert user_offerer is not None
+    assert user_offerer.validationToken is not None
+    assert user_offerer.rights == RightsType.admin
 
 
 @clean_database

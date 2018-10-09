@@ -12,6 +12,7 @@ from domain.password import validate_reset_request, check_reset_token_validity, 
 from models import ApiErrors, Deposit, Offerer, PcObject, User
 from models.user_offerer import RightsType
 from models.venue import create_digital_venue
+from repository.user_offerer_queries import count_user_offerers_by_offerer
 from repository.user_queries import find_user_by_email, find_user_by_reset_password_token
 from utils import logger
 from utils.config import ILE_DE_FRANCE_DEPT_CODES, IS_INTEGRATION
@@ -176,7 +177,9 @@ def signup():
 
 
 def _generate_user_offerer_when_existing_offerer(new_user, offerer):
-    user_offerer = offerer.give_rights(new_user, RightsType.editor)
+    new_user_offerer_rights = RightsType.editor if count_user_offerers_by_offerer(offerer) > 0 \
+                                                else RightsType.admin
+    user_offerer = offerer.give_rights(new_user, new_user_offerer_rights)
     if not IS_INTEGRATION:
         user_offerer.generate_validation_token()
     return user_offerer
