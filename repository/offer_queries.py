@@ -20,6 +20,8 @@ from utils.search import get_keywords_filter
 
 
 def departement_or_national_offers(query, offer_type, departement_codes):
+    if '00' in departement_codes:
+        return query
     condition = Venue.departementCode.in_(departement_codes)
     if offer_type == Event:
         condition = (condition | (Event.isNational == True))
@@ -80,7 +82,6 @@ def get_active_offers_by_type(offer_type, user=None, departement_codes=None, off
         .join(Offerer) \
         .reset_joinpoint() \
         .join(offer_type)
-
     if offer_id is not None:
         query = query.filter(Offer.id == offer_id)
     logger.debug(lambda: '(reco) all ' + str(offer_type) + '.count ' + str(query.count()))

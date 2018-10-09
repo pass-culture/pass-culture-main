@@ -4,16 +4,17 @@ import pytest
 from models import Thing, PcObject, Event
 from models.offer_type import EventType
 from repository.offer_queries import departement_or_national_offers, \
-                                     get_offers_for_recommendations_search
+    get_offers_for_recommendations_search, get_active_offers_by_type
 from tests.conftest import clean_database
 from utils.test_utils import create_event, \
-                             create_event_occurrence, \
-                             create_event_offer, \
-                             create_stock_from_event_occurrence, \
-                             create_thing, \
-                             create_thing_offer, \
-                             create_offerer, \
-                             create_venue
+    create_event_occurrence, \
+    create_event_offer, \
+    create_stock_from_event_occurrence, \
+    create_thing, \
+    create_thing_offer, \
+    create_offerer, \
+    create_venue, create_user, create_stock_from_offer
+
 
 @pytest.mark.standalone
 @clean_database
@@ -112,3 +113,30 @@ def test_type_search(app):
     )
 
     assert conference_offer in offers
+
+
+@clean_database
+@pytest.mark.standalone
+def test_get_active_offers_by_type_when_departement_code_00(app):
+    # Given
+    offerer = create_offerer()
+    venue_34 = create_venue(offerer, postal_code='34000', departement_code='34')
+    venue_93 = create_venue(offerer, postal_code='93000', departement_code='93')
+    venue_75 = create_venue(offerer, postal_code='75000', departement_code='75')
+    offer_34 = create_thing_offer(venue_34)
+    offer_93 = create_thing_offer(venue_93)
+    offer_75 = create_thing_offer(venue_75)
+    stock_34 = create_stock_from_offer(offer_34)
+    stock_93 = create_stock_from_offer(offer_93)
+    stock_75 = create_stock_from_offer(offer_75)
+
+    PcObject.check_and_save(stock_34, stock_93, stock_75)
+
+    # When
+    user = create_user(departement_code='00')
+    offers = get_active_offers_by_type(Thing, user=user, departement_codes=['00'], offer_id=None)
+
+    # Then
+    assert offer_34 in offers
+    assert offer_93 in offers
+    assert offer_75 in offers

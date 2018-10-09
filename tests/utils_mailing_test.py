@@ -596,7 +596,8 @@ def test_write_object_validation_email_should_have_some_specific_information(app
     offerer = create_offerer(siren='732075312', address='122 AVENUE DE FRANCE', city='Paris', postal_code='75013',
                              name='Accenture', validation_token=validation_token)
 
-    user = create_user(public_name='Test', departement_code='75', email='user@accenture.com', can_book_free_offers=False,
+    user = create_user(public_name='Test', departement_code='75', email='user@accenture.com',
+                       can_book_free_offers=False,
                        validation_token=validation_token)
 
     user_offerer = create_user_offerer(user, offerer, validation_token)
@@ -647,7 +648,8 @@ def test_write_object_validation_email_does_not_include_validation_link_if_user_
     offerer = create_offerer(siren='732075312', address='122 AVENUE DE FRANCE', city='Paris', postal_code='75013',
                              name='Accenture', validation_token=validation_token)
 
-    user = create_user(public_name='Test', departement_code='75', email='user@accenture.com', can_book_free_offers=False,
+    user = create_user(public_name='Test', departement_code='75', email='user@accenture.com',
+                       can_book_free_offers=False,
                        validation_token=validation_token)
 
     user_offerer = create_user_offerer(user, offerer, validation_token=None)
@@ -670,7 +672,8 @@ def test_write_object_validation_email_does_not_include_validation_link_if_offer
     offerer = create_offerer(siren='732075312', address='122 AVENUE DE FRANCE', city='Paris', postal_code='75013',
                              name='Accenture', validation_token=None)
 
-    user = create_user(public_name='Test', departement_code='75', email='user@accenture.com', can_book_free_offers=False,
+    user = create_user(public_name='Test', departement_code='75', email='user@accenture.com',
+                       can_book_free_offers=False,
                        validation_token=validation_token)
 
     user_offerer = create_user_offerer(user, offerer, validation_token)
@@ -693,7 +696,8 @@ def test_validation_email_should_not_return_clearTextPassword(app):
     offerer = create_offerer(siren='732075312', address='122 AVENUE DE FRANCE', city='Paris', postal_code='75013',
                              name='Accenture', validation_token=validation_token)
 
-    user = create_user(public_name='Test', departement_code='75', email='user@accenture.com', can_book_free_offers=False,
+    user = create_user(public_name='Test', departement_code='75', email='user@accenture.com',
+                       can_book_free_offers=False,
                        password='totallysafepsswd', validation_token=validation_token)
 
     user_offerer = create_user_offerer(user, offerer, validation_token)
