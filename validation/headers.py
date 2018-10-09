@@ -10,6 +10,7 @@ def check_origin_header_validity(header, endpoint):
 
 
 def _get_origin_header_whitelist():
+    valid_urls = []
     if ENV == 'development':
         return [
             'http://localhost:3000',
@@ -22,11 +23,13 @@ def _get_origin_header_whitelist():
             'https://localhost:3001',
             'localhost:3001'
         ]
+    # Handle migration to Scalingo
     elif ENV == 'testing':
-        return [
+        valid_urls = [
             'https://app-passculture-testing.scalingo.io'
         ]
-    return _get_origin_header_whitelist_for_non_dev_environments(API_URL)
+    valid_urls.extend(_get_origin_header_whitelist_for_non_dev_environments(API_URL))
+    return valid_urls
 
 
 def _get_endpoint_exceptions():
