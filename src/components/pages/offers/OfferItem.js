@@ -35,7 +35,6 @@ class OccasionItem extends Component {
             isActive: !isActive,
           },
         },
-        key: 'offers',
         normalizer: offerNormalizer,
         isMergingDatum: true,
         isMutatingDatum: true,
