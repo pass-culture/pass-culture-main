@@ -14,15 +14,15 @@ const transitionDuration = 250
 
 const defaultStyle = {
   transitionDuration: `${transitionDuration}ms`,
-  transitionProperty: 'top',
+  transitionProperty: 'bottom',
   transitionTimingFunction: 'ease',
 }
 
 const transitionStyles = {
-  entered: { opacity: 1, top: 0 },
-  entering: { opacity: 1, top: '-100%' },
-  exited: { opacity: 0, top: '-100%' },
-  exiting: { opacity: 0, top: '-100%' },
+  entered: { bottom: 0, opacity: 1 },
+  entering: { bottom: '-100%', opacity: 1 },
+  exited: { bottom: '-100%', opacity: 0 },
+  exiting: { bottom: '-100%', opacity: 0 },
 }
 
 class SharePopin extends React.PureComponent {
@@ -55,7 +55,7 @@ class SharePopin extends React.PureComponent {
 
   render() {
     const { iscopied } = this.state
-    const { visible, options } = this.props
+    const { email, visible, options } = this.props
     const { text, title, url } = options
     const headers = {
       body: url,
@@ -66,7 +66,7 @@ class SharePopin extends React.PureComponent {
         {status => (
           <div
             id="share-popin"
-            className={`is-absolute mx60 mt60 transition-${status}`}
+            className={`is-absolute mx6 mt6 transition-${status}`}
             style={{ ...defaultStyle, ...transitionStyles[status] }}
           >
             {options && (
@@ -91,20 +91,15 @@ class SharePopin extends React.PureComponent {
                     {/* <!-- Popin buttons --> */}
                     <CopyToClipboardButton
                       value={url}
-                      className="py12 fs12"
+                      className="py12 is-bold fs14"
                       onClick={this.onCopyHandler}
                     />
                     {!iscopied && (
                       <MailToLink
-                        // email={email}
+                        email={email}
                         headers={headers}
-                        className="no-underline is-block is-white-text py12 fs12"
+                        className="no-underline is-block is-white-text py12 is-bold fs14"
                       >
-                        {/* <span
-                        aria-hidden
-                        className="icon-close mr7"
-                        title="Envoyer à un ami le lien de partage"
-                      /> */}
                         <span>Envoyer par e-mail</span>
                       </MailToLink>
                     )}
@@ -121,10 +116,14 @@ class SharePopin extends React.PureComponent {
 
 SharePopin.propTypes = {
   dispatch: PropTypes.func.isRequired,
+  email: PropTypes.string.isRequired,
   options: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]).isRequired,
   visible: PropTypes.bool.isRequired,
 }
 
-const mapStateToProps = ({ share }) => ({ ...share })
+const mapStateToProps = ({ user, share }) => {
+  const email = user && user.email
+  return { email, ...share }
+}
 
 export default connect(mapStateToProps)(SharePopin)
