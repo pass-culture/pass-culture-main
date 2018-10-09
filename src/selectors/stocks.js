@@ -1,5 +1,11 @@
 import createCachedSelector from 're-reselect'
 
+function mapArgsToKey(state, offerId, eventOccurrences) {
+  return `${offerId || ''}/${
+    eventOccurrences ? eventOccurrences.map(eo => eo.id).join('_') : ''
+  }`
+}
+
 export default createCachedSelector(
   state => state.data.stocks,
   (state, offerId) => offerId,
@@ -11,15 +17,4 @@ export default createCachedSelector(
           ? eventOccurrences.find(eo => eo.id === stock.eventOccurrenceId)
           : stock.offerId === offerId
     )
-)(
-  (state, offerId, eventOccurrences) =>
-    `${offerId || ''}/${
-      eventOccurrences ? eventOccurrences.map(eo => eo.id).join('_') : ''
-    }`
-)
-
-// Can't understand previous selector (eventOccurences ??)
-// Creating a new one, no re-reselect, lib hurts brain and is premature optim' anyway
-// I mean, isn't this way more readable (beyond being effective)?
-export const getStockByOfferId = (state, offerId) =>
-  state.data.stocks.filter(item => item.offerId === offerId)
+)(mapArgsToKey)

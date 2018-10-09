@@ -16,7 +16,7 @@ import eventSelector from '../../selectors/event'
 import maxDateSelector from '../../selectors/maxDate'
 import mediationsSelector from '../../selectors/mediations'
 import eventOccurrencesSelector from '../../selectors/eventOccurrences'
-import { getStockByOfferId } from '../../selectors/stocks'
+import stocksSelector from '../../selectors/stocks'
 import thingSelector from '../../selectors/thing'
 import thumbUrlSelector from '../../selectors/thumbUrl'
 import typeSelector from '../../selectors/type'
@@ -219,7 +219,7 @@ export default compose(
           eventOccurrences,
           maxDate: maxDateSelector(state, id),
           mediations: mediationsSelector(state, id),
-          stocks: getStockByOfferId(state, id),
+          stocks: stocksSelector(state, id, event && eventOccurrences),
           thing: thing,
           thumbUrl: thumbUrlSelector(state, id, eventId, thingId),
           type: typeSelector(state, typeValue),
