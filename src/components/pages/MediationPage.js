@@ -54,39 +54,45 @@ class MediationPage extends Component {
 
   handleDataRequest = (handleSuccess, handleFail) => {
     const {
+      dispatch,
       match: {
         params: { mediationId, offerId },
       },
       offer,
-      requestData,
     } = this.props
     const { isNew } = this.state
     !offer &&
-      requestData('GET', `offers/${offerId}`, {
-        key: 'offers',
-        normalizer: offerNormalizer,
-      })
+      dispatch(
+        requestData('GET', `offers/${offerId}`, {
+          key: 'offers',
+          normalizer: offerNormalizer,
+        })
+      )
     if (!isNew) {
-      requestData('GET', `mediations/${mediationId}`, {
-        handleSuccess,
-        handleFail,
-        key: 'mediations',
-        normalizer: mediationNormalizer,
-      })
+      dispatch(
+        requestData('GET', `mediations/${mediationId}`, {
+          handleSuccess,
+          handleFail,
+          key: 'mediations',
+          normalizer: mediationNormalizer,
+        })
+      )
       return
     }
     handleSuccess()
   }
 
   handleSuccessData = (state, action) => {
-    const { history, showNotification, offer } = this.props
+    const { dispatch, history, offer } = this.props
 
     this.setState({ isLoading: false }, () => {
       history.push(`/offres/${offer.id}`)
-      showNotification({
-        text: 'Votre accroche a bien été enregistrée',
-        type: 'success',
-      })
+      dispatch(
+        showNotification({
+          text: 'Votre accroche a bien été enregistrée',
+          type: 'success',
+        })
+      )
     })
   }
 
@@ -139,7 +145,7 @@ class MediationPage extends Component {
   }
 
   onSubmit = () => {
-    const { match, mediation, offerer, requestData } = this.props
+    const { dispatch, match, mediation, offerer } = this.props
     const { croppingRect, image, credit, isNew } = this.state
 
     const offererId = get(offerer, 'id')
@@ -161,15 +167,17 @@ class MediationPage extends Component {
 
     this.setState({ isLoading: true })
 
-    requestData(
-      isNew ? 'POST' : 'PATCH',
-      `mediations${isNew ? '' : `/${get(mediation, 'id')}`}`,
-      {
-        body,
-        encode: 'multipart/form-data',
-        handleSuccess: this.handleSuccessData,
-        key: 'mediations',
-      }
+    dispatch(
+      requestData(
+        isNew ? 'POST' : 'PATCH',
+        `mediations${isNew ? '' : `/${get(mediation, 'id')}`}`,
+        {
+          body,
+          encode: 'multipart/form-data',
+          handleSuccess: this.handleSuccessData,
+          key: 'mediations',
+        }
+      )
     )
   }
 
@@ -310,19 +318,18 @@ class MediationPage extends Component {
   }
 }
 
+function mapStateToProps(state, ownProps) {
+  const offer = offerSelector(state, ownProps.match.params.offerId)
+  const venue = venueSelector(state, get(offer, 'venueId'))
+  return {
+    offer,
+    offerer: offererSelector(state, get(venue, 'managingOffererId')),
+    mediation: mediationSelector(state, ownProps.match.params.mediationId),
+  }
+}
+
 export default compose(
   withLogin({ failRedirect: '/connexion' }),
   withRouter,
-  connect(
-    (state, ownProps) => {
-      const offer = offerSelector(state, ownProps.match.params.offerId)
-      const venue = venueSelector(state, get(offer, 'venueId'))
-      return {
-        offer,
-        offerer: offererSelector(state, get(venue, 'managingOffererId')),
-        mediation: mediationSelector(state, ownProps.match.params.mediationId),
-      }
-    },
-    { requestData, showNotification }
-  )
+  connect(mapStateToProps)
 )(MediationPage)
