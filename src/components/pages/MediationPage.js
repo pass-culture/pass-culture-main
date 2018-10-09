@@ -125,6 +125,11 @@ class MediationPage extends Component {
 
     // First violet rectangle
     ctx.beginPath()
+    ctx.lineWidth = '7'
+    ctx.strokeStyle = 'white'
+    ctx.rect(...firstDimensions)
+    ctx.stroke()
+    ctx.beginPath()
     ctx.lineWidth = '3'
     ctx.strokeStyle = '#b921d7'
     ctx.rect(...firstDimensions)
@@ -132,12 +137,22 @@ class MediationPage extends Component {
 
     // Second green rectangle
     ctx.beginPath()
+    ctx.lineWidth = '7'
+    ctx.strokeStyle = 'white'
+    ctx.rect(...secondDimensions)
+    ctx.stroke()
+    ctx.beginPath()
     ctx.lineWidth = '3'
     ctx.strokeStyle = '#4CD964'
     ctx.rect(...secondDimensions)
     ctx.stroke()
 
     // Third blue rectangle
+    ctx.beginPath()
+    ctx.lineWidth = '7'
+    ctx.strokeStyle = 'white'
+    ctx.rect(...thirdDimensions)
+    ctx.stroke()
     ctx.beginPath()
     ctx.lineWidth = '3'
     ctx.strokeStyle = '#54c7fc'
