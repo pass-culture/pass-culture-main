@@ -16,7 +16,8 @@ ShallowWrapper {
     }
   >
     <FilterByDates
-      filter={Object {}}
+      filterActions={Object {}}
+      filterState={Object {}}
       title="Fake title"
     />
   </Provider>,
@@ -33,7 +34,8 @@ ShallowWrapper {
     "key": undefined,
     "nodeType": "class",
     "props": Object {
-      "filter": Object {},
+      "filterActions": Object {},
+      "filterState": Object {},
       "title": "Fake title",
     },
     "ref": null,

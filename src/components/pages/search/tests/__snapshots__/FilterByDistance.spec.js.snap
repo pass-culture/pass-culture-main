@@ -16,7 +16,8 @@ ShallowWrapper {
     }
   >
     <Connect(FilterByDistance)
-      filter={Object {}}
+      filterActions={Object {}}
+      filterState={Object {}}
       geolocation={Object {}}
       title="Fake title"
     />

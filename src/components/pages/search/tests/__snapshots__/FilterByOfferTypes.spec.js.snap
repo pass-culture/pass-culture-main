@@ -16,7 +16,8 @@ ShallowWrapper {
     }
   >
     <Connect(FilterByOfferTypes)
-      filter={Object {}}
+      filterActions={Object {}}
+      filterState={Object {}}
       title="Fake title"
       typeSublabels={Array []}
     />
