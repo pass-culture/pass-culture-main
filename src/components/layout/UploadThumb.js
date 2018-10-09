@@ -237,7 +237,4 @@ UploadThumb.defaultProps = {
   width: 250,
 }
 
-export default connect(
-  null,
-  { requestData }
-)(UploadThumb)
+export default connect()(UploadThumb)
