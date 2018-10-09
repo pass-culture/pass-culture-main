@@ -15,7 +15,8 @@ describe('src | components | pages | search | FilterByDates', () => {
       const initialState = {}
       const store = mockStore(initialState)
       const props = {
-        filter: {},
+        filterActions: {},
+        filterState: {},
         title: 'Fake title',
       }
 

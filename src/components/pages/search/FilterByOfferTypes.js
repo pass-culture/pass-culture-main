@@ -7,24 +7,24 @@ import SearchPicture from './SearchPicture'
 
 class FilterByOfferTypes extends PureComponent {
   onChange = typeSublabel => {
-    const { filter } = this.props
+    const { filterActions, filterState } = this.props
 
-    const typesValue = decodeURI(filter.query.categories || '')
+    const typesValue = decodeURI(filterState.query.categories || '')
 
     const isAlreadyIncluded = typesValue.includes(typeSublabel)
 
     if (isAlreadyIncluded) {
-      filter.remove('categories', typeSublabel)
+      filterActions.remove('categories', typeSublabel)
       return
     }
 
-    filter.add('categories', typeSublabel)
+    filterActions.add('categories', typeSublabel)
   }
 
   render() {
-    const { filter, typeSublabels, title } = this.props
+    const { filterState, typeSublabels, title } = this.props
 
-    const typesValue = decodeURI(filter.query.categories || '')
+    const typesValue = decodeURI(filterState.query.categories || '')
 
     return (
       <div id="filter-by-offer-types" className="px12 pt20">
@@ -59,11 +59,16 @@ class FilterByOfferTypes extends PureComponent {
 }
 
 FilterByOfferTypes.propTypes = {
-  filter: PropTypes.object.isRequired,
+  filterActions: PropTypes.object.isRequired,
+  filterState: PropTypes.object.isRequired,
   title: PropTypes.string.isRequired,
   typeSublabels: PropTypes.array.isRequired,
 }
 
-export default connect(state => ({
-  typeSublabels: selectTypeSublabels(state),
-}))(FilterByOfferTypes)
+function mapStateToProps(state) {
+  return {
+    typeSublabels: selectTypeSublabels(state),
+  }
+}
+
+export default connect(mapStateToProps)(FilterByOfferTypes)

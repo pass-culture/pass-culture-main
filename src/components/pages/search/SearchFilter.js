@@ -1,4 +1,3 @@
-/* eslint-disable */
 import get from 'lodash.get'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
@@ -20,10 +19,10 @@ const defaultStyle = {
 }
 
 const transitionStyles = {
-  exiting: { marginTop: `-${filtersPanelHeight}px` },
-  exited: { marginTop: `-${filtersPanelHeight}px` },
-  entering: { marginTop: 0 },
   entered: { marginTop: 0 },
+  entering: { marginTop: 0 },
+  exited: { marginTop: `-${filtersPanelHeight}px` },
+  exiting: { marginTop: `-${filtersPanelHeight}px` },
 }
 
 class SearchFilter extends Component {
@@ -32,10 +31,12 @@ class SearchFilter extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      add: this.handleQueryAdd,
-      change: this.handleQueryChange,
       isNew: false,
       query: Object.assign({}, props.pagination.windowQuery),
+    }
+    this.filterActions = {
+      add: this.handleQueryAdd,
+      change: this.handleQueryChange,
       remove: this.handleQueryRemove,
     }
   }
@@ -45,6 +46,7 @@ class SearchFilter extends Component {
     const { windowQuery } = pagination
     // TODO: eslint does not support setState inside componentDidUpdate
     if (windowQuery !== prevProps.pagination.windowQuery) {
+      /* eslint-disable */
       this.setState({
         isNew: false,
         query: windowQuery,
@@ -130,9 +132,21 @@ class SearchFilter extends Component {
               id="search-filter-menu"
               className={`is-full-width transition-status-${status} mb20`}
               style={{ ...defaultStyle, ...transitionStyles[status] }}>
-              <FilterByDates filter={this.state} title="QUAND" />
-              <FilterByDistance filter={this.state} title="OÙ" />
-              <FilterByOfferTypes filter={this.state} title="QUOI" />
+              <FilterByDates
+                filterActions={this.filterActions}
+                filterState={this.state}
+                title="QUAND"
+              />
+              <FilterByDistance
+                filterActions={this.filterActions}
+                filterState={this.state}
+                title="OÙ"
+              />
+              <FilterByOfferTypes
+                filterActions={this.filterActions}
+                filterState={this.state}
+                title="QUOI"
+              />
               <div
                 id="search-filter-menu-footer-controls"
                 className="flex-columns mt20">

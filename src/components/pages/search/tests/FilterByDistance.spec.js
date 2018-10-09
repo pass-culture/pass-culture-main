@@ -15,7 +15,8 @@ describe('src | components | pages | search | FilterByDistance', () => {
       const initialState = {}
       const store = mockStore(initialState)
       const props = {
-        filter: {},
+        filterActions: {},
+        filterState: {},
         geolocation: {},
         title: 'Fake title',
       }

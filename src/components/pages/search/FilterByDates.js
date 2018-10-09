@@ -28,9 +28,9 @@ const checkboxes = [
 
 class FilterByDates extends PureComponent {
   onChange = day => {
-    const { filter } = this.props
+    const { filterActions, filterState } = this.props
 
-    const days = decodeURI(filter.query[mapApiToWindow.days] || '')
+    const days = decodeURI(filterState.query[mapApiToWindow.days] || '')
     const isAlreadyIncluded = days.includes(day)
 
     // WE ADD THE DATE AT THE FIRST DAYS SEGMENTS CLICKED
@@ -38,22 +38,22 @@ class FilterByDates extends PureComponent {
     let callback
     if (!get(days, 'length')) {
       const date = moment(moment.now()).toISOString()
-      callback = () => filter.change({ date })
+      callback = () => filterActions.change({ date })
     } else if (isAlreadyIncluded && days.split(',').length === 1) {
-      callback = () => filter.change({ date: null })
+      callback = () => filterActions.change({ date: null })
     }
     if (isAlreadyIncluded) {
-      filter.remove(mapApiToWindow.days, day, callback)
+      filterActions.remove(mapApiToWindow.days, day, callback)
       return
     }
 
-    filter.add(mapApiToWindow.days, day, callback)
+    filterActions.add(mapApiToWindow.days, day, callback)
   }
 
   render() {
-    const { filter, title } = this.props
+    const { filterState, title } = this.props
 
-    const days = decodeURI(filter.query[mapApiToWindow.days] || '')
+    const days = decodeURI(filterState.query[mapApiToWindow.days] || '')
 
     return (
       <div id="filter-by-dates" className="px12 pt20">
@@ -91,7 +91,8 @@ class FilterByDates extends PureComponent {
 }
 
 FilterByDates.propTypes = {
-  filter: PropTypes.object.isRequired,
+  filterActions: PropTypes.object.isRequired,
+  filterState: PropTypes.object.isRequired,
   title: PropTypes.string.isRequired,
 }
 

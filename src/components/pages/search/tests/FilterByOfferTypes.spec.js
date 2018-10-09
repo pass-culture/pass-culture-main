@@ -15,7 +15,8 @@ describe('src | components | pages | search | FilterByOfferTypes', () => {
       const initialState = {}
       const store = mockStore(initialState)
       const props = {
-        filter: {},
+        filterActions: {},
+        filterState: {},
         title: 'Fake title',
         typeSublabels: [],
       }
