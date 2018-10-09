@@ -1,7 +1,6 @@
 import { Icon } from 'pass-culture-shared'
 import get from 'lodash.get'
 import React from 'react'
-import ReactMarkdown from 'react-markdown'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 import { NavLink } from 'react-router-dom'
@@ -11,20 +10,27 @@ import MediationItem from '../items/MediationItem'
 import mediationsSelector from '../../selectors/mediations'
 import offerSelector from '../../selectors/offer'
 
-const mediationExplanation = `
-  **L'accroche permet d'afficher votre offre "à la une" de l'app**, et la rend visuellement plus attrayante. C'est une image, une citation, ou une vidéo, intrigante, percutante, séduisante... en un mot : accrocheuse.
-
-  Les accroches font la **spécificité du Pass Culture**. Prenez le temps de les choisir avec soin !
-`
-
 const MediationManager = ({ mediations, offer }) => {
   const mediationsLength = get(mediations, 'length')
 
   return (
     <div className="box content has-text-centered">
-      <ReactMarkdown source={mediationExplanation} className="section" />
+      <div className="section">
+        <p>
+          <b>L'accroche permet d'afficher votre offre "à la une" de l'app</b>,
+          et la rend visuellement plus attrayante. C'est une image, une
+          citation, ou une vidéo, intrigante, percutante, séduisante... en un
+          mot : accrocheuse.
+        </p>
+        <p>
+          Les accroches font la <b>spécificité du Pass Culture</b>. Prenez le
+          temps de les choisir avec soin !
+        </p>
+      </div>
       <ul className="mediations-list">
-        {mediations.map(m => <MediationItem key={m.id} mediation={m} />)}
+        {mediations.map(m => (
+          <MediationItem key={m.id} mediation={m} />
+        ))}
       </ul>
       <p>
         {offer && (
