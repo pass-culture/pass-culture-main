@@ -10,7 +10,7 @@ import FilterByOfferTypes from './FilterByOfferTypes'
 
 import { getFirstChangingKey, INITIAL_FILTER_PARAMS } from './utils'
 
-const filtersPanelHeight = 455
+const filtersPanelHeight = 475
 const transitionDelay = 0
 const transitionDuration = 500
 
@@ -128,7 +128,7 @@ class SearchFilter extends Component {
           {status => (
             <div
               id="search-filter-menu"
-              className={`is-full-width transition-status-${status}`}
+              className={`is-full-width transition-status-${status} mb20`}
               style={{ ...defaultStyle, ...transitionStyles[status] }}>
               <FilterByDates filter={this.state} title="QUAND" />
               <FilterByDistance filter={this.state} title="OÙ" />
