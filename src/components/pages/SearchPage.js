@@ -55,7 +55,7 @@ class SearchPage extends PureComponent {
 
   onSubmit = event => {
     const { pagination } = this.props
-    const { value } = event.target.elements.search
+    const { value } = event.target.elements.keywords
 
     event.preventDefault()
 
@@ -63,7 +63,10 @@ class SearchPage extends PureComponent {
       {
         [mapApiToWindow.keywords]: value === '' ? null : value,
       },
-      { pathname: '/recherche/resultats' }
+      {
+        isClearingData: value !== '',
+        pathname: '/recherche/resultats',
+      }
     )
   }
 
@@ -106,6 +109,38 @@ class SearchPage extends PureComponent {
     const { history, location, pagination } = this.props
     const { windowQueryString, page } = pagination
     history.push(`${location.pathname}?page=${page}&${windowQueryString}`)
+  }
+
+  onKeywordsChange = event => {
+    this.setState({ keywordsValue: event.target.value })
+  }
+
+  onKeywordsEraseClick = () => {
+    const { pagination } = this.props
+    const { keywordsKey } = this.state
+    this.setState({
+      // https://stackoverflow.com/questions/37946229/how-do-i-reset-the-defaultvalue-for-a-react-input
+      // WE NEED TO MAKE THE PARENT OF THE KEYWORD INPUT
+      // DEPENDING ON THE KEYWORDS VALUE IN ORDER TO RERENDER
+      // THE INPUT WITH A SYNCED DEFAULT VALUE
+      keywordsKey: keywordsKey + 1,
+      keywordsValue: '',
+    })
+
+    const keywordsValue = pagination.windowQuery[mapApiToWindow.keywords]
+
+    if (!keywordsValue) {
+      return
+    }
+
+    pagination.change(
+      {
+        [mapApiToWindow.keywords]: null,
+      },
+      {
+        pathname: '/recherche/resultats',
+      }
+    )
   }
 
   render() {
@@ -200,37 +235,27 @@ class SearchPage extends PureComponent {
             >
               <p className="control has-icons-right flex-1" key={keywordsKey}>
                 <input
-                  id="search"
+                  id="keywords"
                   defaultValue={keywordsValue}
                   className="input search-input"
                   placeholder="Saisissez une recherche"
                   type="text"
-                  onChange={e =>
-                    this.setState({ keywordsValue: e.target.value })
-                  }
+                  onChange={this.onKeywordsChange}
                 />
 
-                {get(keywordsValue, 'length') > 0 && (
-                  <span className="icon is-small is-right">
-                    <button
-                      type="button"
-                      className="no-border no-background is-red-text"
-                      id="refresh-keywords-button"
-                      onClick={() =>
-                        this.setState({
-                          // https://stackoverflow.com/questions/37946229/how-do-i-reset-the-defaultvalue-for-a-react-input
-                          // WE NEED TO MAKE THE PARENT OF THE KEYWORD INPUT
-                          // DEPENDING ON THE KEYWORDS VALUE IN ORDER TO RERENDER
-                          // THE INPUT WITH A SYNCED DEFAULT VALUE
-                          keywordsKey: keywordsKey + 1,
-                          keywordsValue: '',
-                        })
-                      }
-                    >
-                      <span aria-hidden className="icon-close" title="" />
-                    </button>
-                  </span>
-                )}
+                {match.params.view === 'resultats' &&
+                  get(keywordsValue, 'length') > 0 && (
+                    <span className="icon is-small is-right">
+                      <button
+                        type="button"
+                        className="no-border no-background is-red-text"
+                        id="refresh-keywords-button"
+                        onClick={this.onKeywordsEraseClick}
+                      >
+                        <span aria-hidden className="icon-close" title="" />
+                      </button>
+                    </span>
+                  )}
               </p>
               <div className="control flex-0">
                 <button
