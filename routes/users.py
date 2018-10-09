@@ -13,6 +13,7 @@ from models import ApiErrors, Deposit, Offerer, PcObject, User
 from models.user_offerer import RightsType
 from models.venue import create_digital_venue
 from repository.user_queries import find_user_by_email, find_user_by_reset_password_token
+from utils import logger
 from utils.config import ILE_DE_FRANCE_DEPT_CODES, IS_INTEGRATION
 from utils.credentials import get_user_with_credentials
 from utils.includes import USER_INCLUDES
@@ -194,7 +195,6 @@ def _generate_offerer(data):
     offerer.populateFromDict(data)
     if not IS_INTEGRATION:
         offerer.generate_validation_token()
-    # offerer.bookingEmail = new_user.email
     return offerer
 
 
@@ -215,7 +215,7 @@ def _get_departement_code_when_authorized_or_error(authorized_emails, departemen
     email_index = _get_email_index_in_spreadsheet_or_error(authorized_emails)
     departement_code = departement_codes[email_index]
     if departement_code.strip() == '':
-        print("[ERROR] Missing departement code in users spreadsheet for "
+        logger.error("[ERROR] Missing departement code in users spreadsheet for "
               + request.json['email'])
 
         e = ApiErrors()

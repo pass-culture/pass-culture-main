@@ -20,7 +20,7 @@ from utils.search import get_keywords_filter
 
 
 def departement_or_national_offers(query, offer_type, departement_codes):
-    if departement_codes == ['00']:
+    if '00' in departement_codes:
         return query
     condition = Venue.departementCode.in_(departement_codes)
     if offer_type == Event:
