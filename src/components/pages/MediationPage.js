@@ -140,6 +140,7 @@ class MediationPage extends Component {
   onOkClick = e => {
     this.state.inputUrl &&
       this.setState({
+        image: null,
         imageUrl: this.state.inputUrl,
       })
   }
@@ -181,6 +182,18 @@ class MediationPage extends Component {
     )
   }
 
+  onUrlChange = event => {
+    this.setState({ inputUrl: event.target.value })
+  }
+
+  onUploadClick = event => {
+    this.setState({
+      image: this.$uploadInput.files[0],
+      imageUrl: null,
+      inputUrl: '',
+    })
+  }
+
   render() {
     const {
       imageUploadSize,
@@ -193,12 +206,10 @@ class MediationPage extends Component {
     const { image, credit, imageUrl, inputUrl, isLoading, isNew } = this.state
     const backPath = `/offres/${offerId}`
 
-    const $imageSections = image && (
+    const $imageSections = (image || imageUrl) && (
       <Fragment>
         <div className="section columns">
           <div className="column is-three-quarters">
-            <label className="label">... ou depuis votre poste :</label>
-
             <UploadThumb
               border={imageUploadBorder}
               borderRadius={0}
@@ -206,9 +217,10 @@ class MediationPage extends Component {
               entityId={get(mediation, 'id')}
               hasExistingImage={!isNew}
               height={imageUploadSize}
-              image={imageUrl}
+              image={image || imageUrl}
               index={0}
               width={imageUploadSize}
+              readOnly
               required
               onImageChange={this.onImageChange}
               storeKey="mediations"
@@ -292,7 +304,7 @@ class MediationPage extends Component {
                 className="input is-rounded"
                 placeholder="URL du fichier"
                 value={inputUrl}
-                onChange={e => this.setState({ inputUrl: e.target.value })}
+                onChange={this.onUrlChange}
               />
             </p>
             <p className="control">
@@ -307,10 +319,15 @@ class MediationPage extends Component {
 
         <div className="section">
           <label className="label">...ou depuis votre poste :</label>
-          <button className="button is-primary is-outlined">
-            {' '}
+          <label className="button is-primary is-outlined">
             Choisir un fichier{' '}
-          </button>
+            <input
+              hidden
+              onChange={this.onUploadClick}
+              ref={$element => (this.$uploadInput = $element)}
+              type="file"
+            />
+          </label>
         </div>
         {$imageSections}
       </Main>
