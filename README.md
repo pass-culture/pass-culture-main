@@ -88,7 +88,7 @@ Then connect to the staging server:
 cd ~/pass-culture-main
 cat "../dumps_prod/2018_<TBD>_<TBD>.pgdump" docker exec -i docker ps | grep postgres | cut -d" " -f 1 pg_restore -d pass_culture -U pass_culture -c -vvvv
 ./pc update-db
-./pc sandbox
+./pc sandbox --name=webapp
 ```
 
 ### Migrate
