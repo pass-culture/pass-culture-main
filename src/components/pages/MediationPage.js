@@ -1,7 +1,7 @@
 import classnames from 'classnames'
 import get from 'lodash.get'
 import { requestData, showNotification, withLogin } from 'pass-culture-shared'
-import React, { Component } from 'react'
+import React, { Component, Fragment } from 'react'
 import ReactMarkdown from 'react-markdown'
 import { connect } from 'react-redux'
 import { NavLink, withRouter } from 'react-router-dom'
@@ -181,48 +181,16 @@ class MediationPage extends Component {
         params: { offerId },
       },
       mediation,
-      offer,
     } = this.props
     const { image, credit, imageUrl, inputUrl, isLoading, isNew } = this.state
     const backPath = `/offres/${offerId}`
 
-    return (
-      <Main
-        name="mediation"
-        backTo={{ path: backPath, label: "Revenir à l'offre" }}
-        handleDataRequest={this.handleDataRequest}>
-        <HeroSection title={`${isNew ? 'Créez' : 'Modifiez'} une accroche`}>
-          <p className="subtitle">
-            Ajoutez un visuel marquant pour mettre en avant cette offre.
-            <br />
-            <span className="label">Le fichier doit peser 100Ko minimum.</span>
-          </p>
-        </HeroSection>
-
-        <div className="section">
-          <label className="label">Depuis une adresse Internet :</label>
-          <div className="field is-grouped">
-            <p className="control is-expanded">
-              <input
-                type="url"
-                className="input is-rounded"
-                placeholder="URL du fichier"
-                value={inputUrl}
-                onChange={e => this.setState({ inputUrl: e.target.value })}
-              />
-            </p>
-            <p className="control">
-              <button
-                className="button is-primary is-outlined is-medium"
-                onClick={this.onOkClick}>
-                OK
-              </button>
-            </p>
-          </div>
-        </div>
+    const $imageSections = image && (
+      <Fragment>
         <div className="section columns">
           <div className="column is-three-quarters">
             <label className="label">... ou depuis votre poste :</label>
+
             <UploadThumb
               border={imageUploadBorder}
               borderRadius={0}
@@ -291,6 +259,52 @@ class MediationPage extends Component {
             </button>
           </div>
         </div>
+      </Fragment>
+    )
+
+    return (
+      <Main
+        name="mediation"
+        backTo={{ path: backPath, label: "Revenir à l'offre" }}
+        handleDataRequest={this.handleDataRequest}>
+        <HeroSection title={`${isNew ? 'Créez' : 'Modifiez'} une accroche`}>
+          <p className="subtitle">
+            Ajoutez un visuel marquant pour mettre en avant cette offre.
+            <br />
+            <span className="label">Le fichier doit peser 100Ko minimum.</span>
+          </p>
+        </HeroSection>
+
+        <div className="section">
+          <label className="label">Depuis une adresse Internet :</label>
+          <div className="field is-grouped">
+            <p className="control is-expanded">
+              <input
+                type="url"
+                className="input is-rounded"
+                placeholder="URL du fichier"
+                value={inputUrl}
+                onChange={e => this.setState({ inputUrl: e.target.value })}
+              />
+            </p>
+            <p className="control">
+              <button
+                className="button is-primary is-outlined is-medium"
+                onClick={this.onOkClick}>
+                OK
+              </button>
+            </p>
+          </div>
+        </div>
+
+        <div className="section">
+          <label className="label">...ou depuis votre poste :</label>
+          <button className="button is-primary is-outlined">
+            {' '}
+            Choisir un fichier{' '}
+          </button>
+        </div>
+        {$imageSections}
       </Main>
     )
   }
