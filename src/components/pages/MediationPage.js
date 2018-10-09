@@ -111,9 +111,9 @@ class MediationPage extends Component {
 
     const secondDimensions = [
       imageUploadBorder + size / 7.5,
-      imageUploadBorder + size / 32,
+      imageUploadBorder + size / 20,
       size - 2 * (imageUploadBorder + size / 7.5),
-      size - 2 * (imageUploadBorder + size / 32),
+      size - 2 * (imageUploadBorder + size / 20),
     ]
 
     const thirdDimensions = [
