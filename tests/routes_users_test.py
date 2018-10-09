@@ -854,7 +854,7 @@ def test_patch_user_returns_400_when_not_allowed_changes(app):
 
 @pytest.mark.standalone
 @clean_database
-def test_ger_current_user_returns_400_when_header_not_in_whitelist(app):
+def test_get_current_user_returns_400_when_header_not_in_whitelist(app):
     # given
     user = create_user(email='e@mail.com', password='p@55sw0rd', is_admin=False, can_book_free_offers=True)
     PcObject.check_and_save(user)
