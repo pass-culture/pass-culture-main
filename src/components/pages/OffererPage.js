@@ -1,7 +1,6 @@
 import classnames from 'classnames'
 import get from 'lodash.get'
 import {
-  closeNotification,
   Field,
   Form,
   requestData,
@@ -44,7 +43,7 @@ class OffererPage extends Component {
   }
 
   handleSuccess = () => {
-    const { dispatch, history, showNotification } = this.props
+    const { dispatch, history } = this.props
 
     history.push('/structures')
 
@@ -63,8 +62,7 @@ class OffererPage extends Component {
 
   render() {
     const { offerer, sirenName, venues } = this.props
-
-    const hasOffererName = get(offerer, 'name') || sirenName
+    const areSirenFieldsVisible = get(offerer, 'id') || sirenName
 
     return (
       <Main
@@ -94,7 +92,7 @@ class OffererPage extends Component {
               type="siren"
             />
             <Field
-              className={classnames({ 'is-invisible': hasOffererName })}
+              className={classnames({ 'is-invisible': !areSirenFieldsVisible })}
               isExpanded
               label="Désignation"
               name="name"
@@ -102,7 +100,7 @@ class OffererPage extends Component {
               required
             />
             <Field
-              className={classnames({ 'is-invisible': hasOffererName })}
+              className={classnames({ 'is-invisible': !areSirenFieldsVisible })}
               isExpanded
               label="Siège social"
               name="address"
@@ -111,7 +109,9 @@ class OffererPage extends Component {
             />
             {false && (
               <Field
-                className={classnames({ 'is-invisible': hasOffererName })}
+                className={classnames({
+                  'is-invisible': !areSirenFieldsVisible,
+                })}
                 isExpanded
                 label="BIC"
                 name="bic"
@@ -121,7 +121,9 @@ class OffererPage extends Component {
             )}
             {false && (
               <Field
-                className={classnames({ 'is-invisible': hasOffererName })}
+                className={classnames({
+                  'is-invisible': !areSirenFieldsVisible,
+                })}
                 isExpanded
                 label="IBAN"
                 name="iban"

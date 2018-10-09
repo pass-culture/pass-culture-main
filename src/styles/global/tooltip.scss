@@ -1,0 +1,18 @@
+.__react_component_tooltip {
+
+  a {
+    color: white;
+    pointer-events: visible;
+    text-decoration: underline;
+  }
+
+  &.show {
+    opacity: 1;
+  }
+
+  &.type-info {
+    background-color: $blue;
+  }
+
+  width: 200px;
+}

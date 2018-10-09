@@ -1,3 +1,4 @@
+import classnames from 'classnames'
 import get from 'lodash.get'
 import {
   CancelButton,
@@ -50,33 +51,34 @@ class VenuePage extends Component {
 
   handleDataRequest = (handleSuccess, handleFail) => {
     const {
+      dispatch,
       match: {
         params: { offererId, venueId },
       },
-      requestData,
-      venuePatch,
     } = this.props
-    if (!venuePatch && venueId !== 'nouveau') {
-      requestData('GET', `offerers/${offererId}`, {
-        handleSuccess: () => {
-          requestData('GET', `venues/${venueId}`, {
-            handleSuccess,
-            handleFail,
-            key: 'venues',
-            normalizer: venueNormalizer,
-          })
-        },
-        handleFail,
-        key: 'offerers',
-        normalizer: offererNormalizer,
-      })
+    if (venueId !== 'nouveau') {
+      dispatch(
+        requestData('GET', `offerers/${offererId}`, {
+          handleSuccess: () => {
+            requestData('GET', `venues/${venueId}`, {
+              handleSuccess,
+              handleFail,
+              key: 'venues',
+              normalizer: venueNormalizer,
+            })
+          },
+          handleFail,
+          key: 'offerers',
+          normalizer: offererNormalizer,
+        })
+      )
     } else {
       return handleSuccess()
     }
   }
 
   handleSuccess = (state, action) => {
-    const { history, offerer, showNotification } = this.props
+    const { dispatch, history, offerer } = this.props
     const venueId = get(action, 'data.id')
     if (!venueId) {
       console.warn('You should have a venueId here')
@@ -98,7 +100,7 @@ class VenuePage extends Component {
           Lieu créé. Vous pouvez maintenant y{' '}
           <NavLink
             to={createOfferPathname}
-            onClick={() => this.props.dispatch(closeNotification())}>
+            onClick={() => dispatch(closeNotification())}>
             créer une offre
           </NavLink>
           , ou en importer automatiquement.
@@ -107,10 +109,12 @@ class VenuePage extends Component {
         'Lieu modifié avec succès !'
       )
 
-    showNotification({
-      text,
-      type: 'success',
-    })
+    dispatch(
+      showNotification({
+        text,
+        type: 'success',
+      })
+    )
     // TODO: do it in the way that the notification
     // is displayed in the next page an disapeear when
     // the user is after changing to another page
@@ -118,15 +122,27 @@ class VenuePage extends Component {
 
   render() {
     const {
+      formGeo,
       formLatitude,
       formLongitude,
+      formSire,
       match: {
         params: { offererId, venueId },
       },
+      name,
       offerer,
       venuePatch,
     } = this.props
     const { isNew, isReadOnly } = this.state
+
+    const savedVenueId = get(venuePatch, 'id')
+    const isSiretReadOnly = get(venuePatch, 'siret')
+    const isSiretSkipping = !venueId && name && !formSire
+    const isReadOnlyFromGeoOrSiren = formGeo || formSire
+    const isLatitudeReadOnlyFromGeoOrSiren =
+      formGeo || (formSire && formLatitude)
+    const isLongitudeReadOnlyFromGeoOrSiren =
+      formGeo || (formSire && formLongitude)
 
     return (
       <Main
@@ -145,7 +161,7 @@ class VenuePage extends Component {
           )}
 
           {get(offerer, 'id') &&
-            get(venuePatch, 'id') && (
+            savedVenueId && (
               <NavLink
                 to={`/offres/nouveau?lieu=${venuePatch.id}`}
                 className="cta button is-primary">
@@ -161,7 +177,7 @@ class VenuePage extends Component {
 
         {!get(venuePatch, 'isVirtual') && (
           <Form
-            action={`/venues/${get(venuePatch, 'id', '')}`}
+            action={`/venues/${savedVenueId || ''}`}
             handleSuccess={this.handleSuccess}
             name="venue"
             patch={venuePatch}
@@ -176,8 +192,33 @@ class VenuePage extends Component {
                 </span>
               </h2>
               <div className="field-group">
-                <Field label="SIRET" name="siret" type="siret" />
-                <Field isExpanded label="Nom" name="name" required />
+                <Field
+                  className={classnames({ 'is-invisible': isSiretSkipping })}
+                  label="SIRET (si applicable)"
+                  name="siret"
+                  readOnly={isSiretReadOnly}
+                  renderInfo={() =>
+                    !isSiretReadOnly && (
+                      <span
+                        className="button"
+                        data-tip="<p>Saisissez ici le SIRET du lieu lié à votre structure pour retrouver ses informations automatiquement.
+Si les informations ne correspondent pas au SIRET saisi, <a href='http://passculture.fr' target='_blank'> contactez notre équipe </a></p>"
+                        data-place="bottom"
+                        data-type="info">
+                        <Icon svg="picto-info" />
+                      </span>
+                    )
+                  }
+                  type="siret"
+                />
+
+                <Field
+                  isExpanded
+                  label="Nom"
+                  name="name"
+                  readOnly={formSire}
+                  required
+                />
                 <Field
                   label="E-mail"
                   name="bookingEmail"
@@ -195,6 +236,7 @@ class VenuePage extends Component {
                   latitude={formLatitude}
                   longitude={formLongitude}
                   name="address"
+                  readOnly={formSire}
                   required
                   type="geo"
                   withMap
@@ -203,16 +245,28 @@ class VenuePage extends Component {
                   autocomplete="postal-code"
                   label="Code postal"
                   name="postalCode"
+                  readOnly={isReadOnlyFromGeoOrSiren}
                   required
                 />
                 <Field
                   autocomplete="address-level2"
                   label="Ville"
                   name="city"
+                  readOnly={isReadOnlyFromGeoOrSiren}
                   required
                 />
-                <Field label="Latitude" name="latitude" required />
-                <Field label="Longitude" name="longitude" required />
+                <Field
+                  label="Latitude"
+                  name="latitude"
+                  readOnly={isLatitudeReadOnlyFromGeoOrSiren}
+                  required
+                />
+                <Field
+                  label="Longitude"
+                  name="longitude"
+                  readOnly={isLongitudeReadOnlyFromGeoOrSiren}
+                  required
+                />
               </div>
             </div>
             <hr />
@@ -238,7 +292,7 @@ class VenuePage extends Component {
                   </CancelButton>
                 )}
               </div>
-              {venueId && (
+              {savedVenueId && (
                 <div className="control">
                   <div
                     className="field is-grouped is-grouped-centered"
@@ -280,27 +334,22 @@ class VenuePage extends Component {
   }
 }
 
+function mapStateToProps(state, ownProps) {
+  const { offererId, venueId } = ownProps.match.params
+  return {
+    formGeo: get(state, 'form.venue.geo'),
+    formLatitude: get(state, 'form.venue.latitude'),
+    formLongitude: get(state, 'form.venue.longitude'),
+    formSire: get(state, `form.venue.sire`),
+    name: get(state, `form.venue.name`),
+    offerer: offererSelector(state, offererId),
+    user: state.user,
+    venuePatch: selectVenuePatchByVenueIdByOffererId(state, venueId, offererId),
+  }
+}
+
 export default compose(
   withLogin({ failRedirect: '/connexion' }),
   withRouter,
-  connect(
-    (state, ownProps) => {
-      const { offererId, venueId } = ownProps.match.params
-      return {
-        formLatitude: get(state, 'form.venue.latitude'),
-        formLongitude: get(state, 'form.venue.longitude'),
-        user: state.user,
-        venuePatch: selectVenuePatchByVenueIdByOffererId(
-          state,
-          venueId,
-          offererId
-        ),
-        offerer: offererSelector(state, offererId),
-      }
-    },
-    {
-      requestData,
-      showNotification,
-    }
-  )
+  connect(mapStateToProps)
 )(VenuePage)

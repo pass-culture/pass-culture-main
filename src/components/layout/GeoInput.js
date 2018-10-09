@@ -2,7 +2,7 @@ import classnames from 'classnames'
 import L from 'leaflet'
 import debounce from 'lodash.debounce'
 import { BasicInput } from 'pass-culture-shared'
-import React, { Component } from 'react'
+import React, { Component, Fragment } from 'react'
 import Autocomplete from 'react-autocomplete'
 import { Map, Marker, TileLayer } from 'react-leaflet'
 
@@ -21,10 +21,11 @@ class GeoInput extends Component {
     super(props)
     this.state = {
       draggable: true,
+      isLoading: false,
       marker: null,
       position: props.initialPosition,
       value: '',
-      suggestions: null,
+      suggestions: [],
     }
     this.refmarker = React.createRef()
     this.onDebouncedFetchSuggestions = debounce(
@@ -96,12 +97,19 @@ class GeoInput extends Component {
   }
 
   onTextChange = e => {
+    const { name, onChange: onFieldChange } = this.props
     const value = e.target.value
-    this.setState({
-      value,
-    })
+    this.setState({ value })
     this.onDebouncedFetchSuggestions(value)
-    this.props.onChange(value)
+    onFieldChange({
+      address: null,
+      city: null,
+      geo: null,
+      latitude: null,
+      longitude: null,
+      [name]: value,
+      postalCode: null,
+    })
   }
 
   onSelect = (value, item) => {
@@ -123,11 +131,14 @@ class GeoInput extends Component {
   }
 
   fetchSuggestions = value => {
-    if (value.split(/\s/).filter(v => v).length < 2)
-      // start querying if more than 1 word
+    const wordsCount = value.split(/\s/).filter(v => v).length
+    if (wordsCount < 2)
       return this.setState({
-        suggestions: null,
+        suggestions: [],
       })
+
+    this.setState({ isLoading: true })
+
     fetch(
       `https://api-adresse.data.gouv.fr/search/?limit=${
         this.props.maxSuggestions
@@ -135,16 +146,28 @@ class GeoInput extends Component {
     )
       .then(response => response.json())
       .then(data => {
+        const defaultSuggestion = {
+          label: this.props.placeholder,
+          placeholder: true,
+          id: 'placeholder',
+        }
+
+        const fetchedSuggestions = data.features.map(f => ({
+          address: f.properties.name,
+          city: f.properties.city,
+          geo: f.geometry.coordinates,
+          id: f.properties.id,
+          latitude: f.geometry.coordinates[1],
+          longitude: f.geometry.coordinates[0],
+          label: f.properties.label,
+          postalCode: f.properties.postcode,
+        }))
+
+        const suggestions = fetchedSuggestions.concat(defaultSuggestion)
+
         this.setState({
-          suggestions: data.features.map(f => ({
-            latitude: f.geometry.coordinates[1],
-            longitude: f.geometry.coordinates[0],
-            label: f.properties.label,
-            address: f.properties.name,
-            postalCode: f.properties.postcode,
-            city: f.properties.city,
-            id: f.properties.id,
-          })),
+          isLoading: false,
+          suggestions,
         })
       })
   }
@@ -153,57 +176,59 @@ class GeoInput extends Component {
     const {
       className,
       id,
+      placeholder,
       readOnly,
       required,
-      placeholder,
       size,
       withMap,
     } = this.props
 
-    const { marker, position, suggestions, value } = this.state
-
-    const defaultSuggestion = {
-      label: placeholder,
-      placeholder: true,
-      id: 'placeholder',
-    }
+    const { isLoading, marker, position, suggestions, value } = this.state
 
     const $input = readOnly ? (
       <BasicInput {...this.props} />
     ) : (
-      <Autocomplete
-        autocomplete="street-address"
-        getItemValue={value => value.label}
-        inputProps={{
-          className: className || `input is-${size}`,
-          id,
-          placeholder,
-          readOnly,
-          required,
-        }}
-        items={[].concat(suggestions || defaultSuggestion)}
-        onChange={this.onTextChange}
-        onSelect={this.onSelect}
-        readOnly={readOnly}
-        renderItem={({ id, label, placeholder }, highlighted) => (
-          <div
-            className={classnames({
-              item: true,
-              highlighted,
-              placeholder,
-            })}
-            key={id}>
-            {label}
-          </div>
-        )}
-        renderMenu={children => (
-          <div className={classnames('menu', { empty: children.length === 0 })}>
-            {children}
-          </div>
-        )}
-        value={this.props.value || value}
-        wrapperProps={{ className: 'input-wrapper' }}
-      />
+      <Fragment>
+        <Autocomplete
+          autocomplete="street-address"
+          getItemValue={value => value.label}
+          inputProps={{
+            className: className || `input is-${size}`,
+            id,
+            placeholder,
+            readOnly,
+            required,
+          }}
+          items={suggestions}
+          onChange={this.onTextChange}
+          onSelect={this.onSelect}
+          readOnly={readOnly}
+          renderItem={({ id, label, placeholder }, highlighted) => (
+            <div
+              className={classnames({
+                item: true,
+                highlighted,
+                placeholder,
+              })}
+              key={id}>
+              {label}
+            </div>
+          )}
+          renderMenu={children => (
+            <div
+              className={classnames('menu', { empty: children.length === 0 })}>
+              {children}
+            </div>
+          )}
+          value={this.props.value || value}
+          wrapperProps={{ className: 'input-wrapper' }}
+        />
+        <button
+          className={classnames('button is-loading', {
+            'is-invisible': !isLoading,
+          })}
+        />
+      </Fragment>
     )
 
     if (!withMap) return $input
