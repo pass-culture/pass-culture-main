@@ -15,7 +15,7 @@ def get_format_types():
 
 
 def get_type_values_from_sublabels(sublabels):
-    event_type_values = [et.value['value'] for et in EventType if et.value['sublabel'] in sublabels]
-    thing_type_values = [tt.value['value'] for tt in ThingType if tt.value['sublabel'] in sublabels]
+    event_type_values = [str(et) for et in EventType if et.value['sublabel'] in sublabels]
+    thing_type_values = [str(tt) for tt in ThingType if tt.value['sublabel'] in sublabels]
 
     return event_type_values + thing_type_values
