@@ -119,7 +119,7 @@ def find_offers_in_date_range_for_given_venue_departement(date_max, date_min, de
 def get_offers_for_recommendations_search(
     page=1,
     keywords=None,
-    type_labels=None,
+    type_values=None,
     latitude=None,
     longitude=None,
     max_distance=None,
@@ -156,7 +156,6 @@ def get_offers_for_recommendations_search(
                                            )
             offer_query = offer_query.union_all(date_offer_query)
 
-
     if keywords is not None:
         offer_query = offer_query.from_self()\
                                  .outerjoin(Event)\
@@ -164,14 +163,14 @@ def get_offers_for_recommendations_search(
                                  .outerjoin(Venue)\
                                  .filter(get_keywords_filter([Event, Thing, Venue], keywords))
 
-    if type_labels is not None:
+    if type_values is not None:
         event_offer_query = offer_query.from_self()\
                                        .outerjoin(Event)\
-                                       .filter(Event.type.in_(type_labels))
+                                       .filter(Event.type.in_(type_values))
 
         thing_offer_query = offer_query.from_self()\
                                        .outerjoin(Thing)\
-                                       .filter(Thing.type.in_(type_labels))
+                                       .filter(Thing.type.in_(type_values))
 
         offer_query = event_offer_query.union_all(thing_offer_query)
 
