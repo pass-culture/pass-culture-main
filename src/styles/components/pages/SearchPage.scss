@@ -71,3 +71,9 @@
   min-height: 120px;
   margin-top: 180px;
 }
+
+#keywords-search-button {
+  @extend .pc-theme-primary;
+
+  border-color: $primary;
+}
