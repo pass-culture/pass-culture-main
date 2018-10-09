@@ -24,6 +24,13 @@
     box-shadow: none;
   }
 
+  &.is-intermediate {
+    background: none;
+    text-decoration: none;
+    border: 1px solid $red;
+    color: $red;
+  }
+
   &.is-secondary {
     background: none;
     border-color: transparent;

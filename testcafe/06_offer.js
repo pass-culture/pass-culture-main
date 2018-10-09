@@ -30,9 +30,8 @@ const offererOption = Selector('option').withText(
 const offerersNavbarLink = Selector("a.navbar-item[href='/structures']")
 const priceInput = Selector('#stock-price')
 const scheduleCloseButton = Selector('button.button').withText('Fermer')
-const scheduleSubmitButton = Selector('button.button.is-primary').withText(
-  'Valider'
-)
+const scheduleSubmitButton = Selector('button.button.submitStep')
+
 const submitButton = Selector('button.button.is-primary').withText(
   'Enregistrer'
 )

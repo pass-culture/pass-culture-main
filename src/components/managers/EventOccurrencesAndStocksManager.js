@@ -86,19 +86,26 @@ class EventOccurrencesAndStocksManager extends Component {
                 <td>Prix</td>
                 <td>Date Limite de Réservation</td>
                 <td>Places (total)</td>
-                <td>Supprimer</td>
                 <td>Modifier</td>
+                <td>Supprimer</td>
               </tr>
             </thead>
-            <tbody>
-              <tr>
-                <td colSpan="10">
-                  {provider ? (
+
+            {provider ? (
+              <tbody>
+                <tr>
+                  <td colSpan="10">
                     <i>
                       Il n'est pas possible d'ajouter ni de supprimer d'horaires
                       pour cet événement {provider.name}
                     </i>
-                  ) : (
+                  </td>
+                </tr>
+              </tbody>
+            ) : (
+              <tbody>
+                <tr>
+                  <td colSpan="10">
                     <NavLink
                       className="button is-secondary"
                       disabled={isEditing}
@@ -121,24 +128,26 @@ class EventOccurrencesAndStocksManager extends Component {
                           : '+ Ajouter un prix'
                         : '+ Ajouter un horaire'}
                     </NavLink>
-                  )}
-                </td>
-              </tr>
-              {isNew && (
-                <EventOccurrenceAndStockItem
-                  isFullyEditable={!provider}
-                  isStockOnly={isStockOnly}
-                />
-              )}
-              {(isStockOnly ? stocks : eventOccurrences).map(item => (
-                <EventOccurrenceAndStockItem
-                  key={item.id}
-                  isFullyEditable={!provider}
-                  isStockOnly={isStockOnly}
-                  {...{ [isStockOnly ? 'stock' : 'eventOccurrence']: item }}
-                />
-              ))}
-            </tbody>
+                  </td>
+                </tr>
+              </tbody>
+            )}
+
+            {isNew && (
+              <EventOccurrenceAndStockItem
+                isFullyEditable={!provider}
+                isStockOnly={isStockOnly}
+              />
+            )}
+            {(isStockOnly ? stocks : eventOccurrences).map(item => (
+              <EventOccurrenceAndStockItem
+                key={item.id}
+                isFullyEditable={!provider}
+                isStockOnly={isStockOnly}
+                {...{ [isStockOnly ? 'stock' : 'eventOccurrence']: item }}
+              />
+            ))}
+
             {Math.max(
               get(stocks, 'length', 0),
               get(eventOccurrences, 'length', 0)
@@ -155,8 +164,8 @@ class EventOccurrencesAndStocksManager extends Component {
                   <td>Prix</td>
                   <td>Date Limite de Réservation</td>
                   <td>Places (total)</td>
-                  <td>Supprimer</td>
                   <td>Modifier</td>
+                  <td>Supprimer</td>
                 </tr>
               </thead>
             )}
