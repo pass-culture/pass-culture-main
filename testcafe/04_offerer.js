@@ -37,10 +37,9 @@ test('Je ne peux pas ajouter de nouvelle structure avec un siren faux', async t 
 
     // input
     .typeText(sirenInput, '69256356275794356243264')
-    .wait(1000)
 
   // submit
-  await t.click(submitButton).wait(3000)
+  await t.click(submitButton)
 
   // api return an error message
   await t.expect(sirenErrorInput.innerText).eql('\nSiren invalide\n')
@@ -55,12 +54,11 @@ test('Je ne peux pas ajouter de nouvelle structure ayant un siren déjà existan
 
     // input
     .typeText(sirenInput, '692 039 514')
-    // .typeText(ibanInput, 'FR7630004000031234567890143')
-    // .typeText(bicInput, 'BNPAFRPP')
-    .wait(1000)
+  // .typeText(ibanInput, 'FR7630004000031234567890143')
+  // .typeText(bicInput, 'BNPAFRPP')
 
   // submit
-  await t.click(submitButton).wait(3000)
+  await t.click(submitButton)
 
   // api return an error message
   await t
@@ -79,16 +77,15 @@ test('Je rentre une nouvelle structure via son siren', async t => {
 
     // input
     .typeText(sirenInput, '492 475 033')
-    // .typeText(ibanInput, 'FR7630004000031234567890143')
-    // .typeText(bicInput, 'BNPAFRPP')
-    .wait(1000)
+  // .typeText(ibanInput, 'FR7630004000031234567890143')
+  // .typeText(bicInput, 'BNPAFRPP')
 
   // check other completed fields
   await t.expect(nameInput.value).eql('NASKA PROD')
   await t.expect(adressInput.value).eql('167 QUAI DE VALMY')
 
   // submit
-  await t.click(submitButton).wait(3000)
+  await t.click(submitButton)
 
   // check location success change
   location = await t.eval(() => window.location)

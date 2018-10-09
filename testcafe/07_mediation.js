@@ -20,9 +20,8 @@ test("Lorsque je clique sur le bouton créer une accroche sur la page d'une offr
   await t
     .useRole(regularOfferer)
     .click(editOfferAnchor)
-    .wait(500)
+
     .click(addMediationAnchor)
-    .wait(500)
 
   const location = await t.eval(() => window.location)
   await t
@@ -34,9 +33,8 @@ test('Je peux charger une image same origin', async t => {
   await t
     .useRole(regularOfferer)
     .click(editOfferAnchor)
-    .wait(500)
+
     .click(addMediationAnchor)
-    .wait(500)
 
   await t
     .expect(dragAndDropDiv.innerText)
@@ -44,9 +42,8 @@ test('Je peux charger une image same origin', async t => {
 
   await t
     .typeText(urlInput, '/images/mediation-test.jpg')
-    .wait(500)
+
     .click(urlButton)
-    .wait(500)
 
   await t.expect(dropZoneDiv).ok()
 })
@@ -55,9 +52,8 @@ test('Je peux charger une cors image', async t => {
   await t
     .useRole(regularOfferer)
     .click(editOfferAnchor)
-    .wait(500)
+
     .click(addMediationAnchor)
-    .wait(500)
 
   await t
     .expect(dragAndDropDiv.innerText)
@@ -68,9 +64,8 @@ test('Je peux charger une cors image', async t => {
       urlInput,
       'https://www.deridet.com/photo/art/grande/8682609-13705793.jpg?v=1450665370'
     )
-    .wait(500)
+
     .click(urlButton)
-    .wait(500)
 
   await t.expect(dropZoneDiv).ok()
 })
@@ -79,9 +74,8 @@ test('Je peux changer d image chargee', async t => {
   await t
     .useRole(regularOfferer)
     .click(editOfferAnchor)
-    .wait(500)
+
     .click(addMediationAnchor)
-    .wait(500)
 
   await t
     .expect(dragAndDropDiv.innerText)
@@ -89,16 +83,15 @@ test('Je peux changer d image chargee', async t => {
 
   await t
     .typeText(urlInput, '/images/mediation-test.jpg')
-    .wait(500)
+
     .click(urlButton)
-    .wait(500)
+
     .typeText(
       urlInput,
       'https://www.deridet.com/photo/art/grande/8682609-13705793.jpg?v=1450665370',
       { replace: true }
     )
     .click(urlButton)
-    .wait(500)
 
   await t.expect(dropZoneDiv).ok()
 })
@@ -107,9 +100,8 @@ test('Je peux creer une accroche', async t => {
   await t
     .useRole(regularOfferer)
     .click(editOfferAnchor)
-    .wait(500)
+
     .click(addMediationAnchor)
-    .wait(500)
 
   await t
     .typeText(
@@ -117,10 +109,6 @@ test('Je peux creer une accroche', async t => {
       'https://www.deridet.com/photo/art/grande/8682609-13705793.jpg?v=1450665370'
     )
     .click(urlButton)
-    .wait(500)
 
-  await t
-    .typeText(creditInput, 'deridet')
-    .click(submitButton)
-    .wait(5000)
+  await t.typeText(creditInput, 'deridet').click(submitButton)
 })

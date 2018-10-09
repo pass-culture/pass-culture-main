@@ -15,7 +15,7 @@ fixture`08_01 Lost Password link | La page de connexion propose un lien pour cha
   .page`${ROOT_PATH + 'connexion'}`
 
 test('Je peux cliquer sur lien mot de passe oublié', async t => {
-  await t.click(forgotPasswordLink).wait(500)
+  await t.click(forgotPasswordLink)
   let location = await t.eval(() => window.location)
   await t
     .expect(location.pathname)
@@ -23,10 +23,7 @@ test('Je peux cliquer sur lien mot de passe oublié', async t => {
     .expect(pageH1.innerText)
     .eql('Mot de passe égaré ?')
 
-  await t
-    .typeText(inputUsersEmail, offererUser.email)
-    .click(sendTokenButton)
-    .wait(500)
+  await t.typeText(inputUsersEmail, offererUser.email).click(sendTokenButton)
 
   location = await t.eval(() => window.location)
   await t
@@ -43,10 +40,7 @@ fixture`08_03 Lost Password form | La page de changement de mot de passe vérifi
 
 test('Je ne peux pas changer mon mot de passe de sans token valide', async t => {
   await t.expect(pageH1.innerText).eql('Créer un nouveau mot de passe')
-  await t
-    .typeText(passwordInput, 'ABCD')
-    .click(changePasswordButton)
-    .wait(500)
+  await t.typeText(passwordInput, 'ABCD').click(changePasswordButton)
 
   await t.expect(errorsDiv.innerText).notEql('')
 })

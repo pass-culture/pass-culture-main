@@ -12,10 +12,7 @@ const offerActivSwitchText = () => trimed(Selector('.offer-item .activ-switch'))
 fixture`061_01 OfferList | Lister les offres`
 
 test("Lorsque je cliques sur `Mes offres`, j'accès de à la liste des offres", async t => {
-  await t
-    .useRole(regularOfferer)
-    .click(offerListLink)
-    .wait(100)
+  await t.useRole(regularOfferer).click(offerListLink)
 
   const location = await t.eval(() => window.location)
   let value
