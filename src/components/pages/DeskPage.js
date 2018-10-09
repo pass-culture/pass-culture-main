@@ -31,6 +31,18 @@ const DESK_FAIL_REGISTER = 'DESK_FAIL_REGISTER'
 
 const DEFAULT_STATE = { name: DESK_WAIT, code: '', booking: null }
 
+const displayBookingDate = booking => {
+  if (!booking) {
+    return null
+  }
+
+  if (booking.date) {
+    return formatLocalTimeDateString(booking.date, booking.venueDepartementCode)
+  }
+
+  return 'Permanent'
+}
+
 const DeskState = ({ message, level, booking }) => (
   <div className="desk-state">
     <table className="booking-summary">
@@ -45,13 +57,7 @@ const DeskState = ({ message, level, booking }) => (
         </tr>
         <tr>
           <th>Date de l'offre :</th>
-          <td>
-            {booking &&
-              formatLocalTimeDateString(
-                booking.date,
-                booking.venueDepartementCode
-              )}
-          </td>
+          <td>{displayBookingDate(booking)}</td>
         </tr>
       </tbody>
     </table>
