@@ -22,13 +22,13 @@ fixture`01_01 SignupPage |  Component | Je crée un compte utilisateur·ice`
   .page`${ROOT_PATH + 'inscription'}`
 
 test("Je peux cliquer sur lien pour me connecter si j'ai déja un compte", async t => {
-  await t.click(signInButton).wait(500)
+  await t.click(signInButton)
   const location = await t.eval(() => window.location)
   await t.expect(location.pathname).eql('/connexion')
 })
 
 test("Lorsque l'un des champs obligatoire est manquant, le bouton créer est desactivé", async t => {
-  await t.typeText(emailInput, 'email@email.test').wait(500)
+  await t.typeText(emailInput, 'email@email.test')
   await t.expect(signUpButton.innerText).eql('Créer')
   await t.expect(signUpButton.hasAttribute('disabled')).ok()
 })
@@ -41,14 +41,13 @@ test('Je créé un compte, je suis redirigé·e vers la page /structures', async
     .typeText(lastNameInput, offererUser.lastName)
     .typeText(firstNameInput, offererUser.firstName)
     .typeText(sirenInput, offererUser.siren)
-    .wait(3000)
+
     .expect(signUpButton.hasAttribute('disabled'))
     .ok()
     .click(contactOkInput)
     .click(newsletterOkInput)
-    .wait(1000)
 
-  await t.click(signUpButton).wait(5000)
+  await t.click(signUpButton)
 
   const location = await t.eval(() => window.location)
   await t.expect(location.pathname).eql('/structures')
@@ -63,11 +62,10 @@ test.skip('E-mail déjà présent dans la base et mot de passe invalide', async 
     .typeText(emailInput, offererUser.email)
     .typeText(passwordInput, 'pas')
     .typeText(sirenInput, offererUser.siren)
-    .wait(3000)
-    .click(contactOkInput)
-    .wait(1000)
 
-  await t.click(signUpButton).wait(5000)
+    .click(contactOkInput)
+
+  await t.click(signUpButton)
 
   await t
     .expect(emailInputError.innerText)

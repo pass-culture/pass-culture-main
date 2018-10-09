@@ -69,7 +69,7 @@ test("L'état de départ de la page /guichet est conforme", async t => {
   await t.click(registerButton)
   await t.expect(state.classNames).contains('error')
 
-  await t.click(exitlink).wait(500)
+  await t.click(exitlink)
   const location = await t.eval(() => window.location)
   await t.expect(location.pathname).eql('/accueil')
 })

@@ -40,13 +40,13 @@ test('Je rentre une nouveau lieu via son siret avec succès', async t => {
     .click(navbarAnchor)
     .click(offerersNavbarAnchor)
     .click(offererButton)
-    .wait(500)
+
     .click(newVenueAnchor)
 
   // input
   // WATCH WE ENTER AN OTHER SIRET THAN THE FIRST CHAILLOT ONE '69203951400017'
   // to be sure to have one different
-  await t.typeText(siretInput, '69203951400033').wait(1000)
+  await t.typeText(siretInput, '69203951400033')
 
   // check other completed fields
   await t.expect(nameInput.value).eql('THEATRE NATIONAL DE CHAILLOT')
@@ -58,7 +58,7 @@ test('Je rentre une nouveau lieu via son siret avec succès', async t => {
   await t.expect(venueMarker.getAttribute('alt')).eql('48.765134-2.338438')
 
   // create venue
-  await t.click(submitButton).wait(5000)
+  await t.click(submitButton)
   const location = await t.eval(() => window.location)
   await t
     .expect(location.pathname)
@@ -84,17 +84,17 @@ fixture`05_02 VenuePage | Je ne peux pas créer de lieu, j'ai des erreurs`.befor
       .click(navbarAnchor)
       .click(offerersNavbarAnchor)
       .click(offererButton)
-      .wait(500)
+
       .click(newVenueAnchor)
   }
 )
 
 test('Une entrée avec cet identifiant existe déjà', async t => {
   // input
-  await t.typeText(siretInput, '69203951400033').wait(2000)
+  await t.typeText(siretInput, '69203951400033')
 
   // create venue
-  await t.click(submitButton).wait(5000)
+  await t.click(submitButton)
 
   // error response
   await t
@@ -114,10 +114,10 @@ test('Une entrée avec cet identifiant existe déjà', async t => {
 
 test('Le code SIRET doit correspondre à un établissement de votre structure', async t => {
   // input
-  await t.typeText(siretInput, '492475033 00022').wait(2000)
+  await t.typeText(siretInput, '492475033 00022')
 
   // create venue
-  await t.click(submitButton).wait(5000)
+  await t.click(submitButton)
 
   // error response
   await t
@@ -142,7 +142,7 @@ fixture`05_03 VenuePage |  Component | Je suis sur la page de détail du lieu`.b
       .click(navbarAnchor)
       .click(offerersNavbarAnchor)
       .click(offererButton)
-      .wait(500)
+
       .click(venueAnchor)
   }
 )
