@@ -2,7 +2,7 @@ import { Selector } from 'testcafe'
 
 import { regularOfferer } from './helpers/roles'
 
-const addScheduleAnchor = Selector('a.button').withText('+ Ajouter un horaire')
+const addScheduleAnchor = Selector('#add-occurrence-or-stock')
 const availableInput = Selector('#stock-available')
 const beginningDateInput = Selector('#occurrence-beginningDate')
 const bookingLimitDatetimeInput = Selector('#stock-bookingLimitDatetime')
