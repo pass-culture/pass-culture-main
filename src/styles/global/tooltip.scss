@@ -6,6 +6,10 @@
     text-decoration: underline;
   }
 
+  p {
+    margin-bottom: 6px;
+  }
+
   &.show {
     opacity: 1;
   }
@@ -14,5 +18,6 @@
     background-color: $blue;
   }
 
+  padding: 12px;
   width: 300px;
 }

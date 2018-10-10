@@ -201,8 +201,8 @@ class VenuePage extends Component {
                     !isSiretReadOnly && (
                       <span
                         className="button"
-                        data-tip="<p>Saisissez ici le SIRET du lieu lié à votre structure pour retrouver ses informations automatiquement.
-Si les informations ne correspondent pas au SIRET saisi, <a href='mailto:pass@culture.gouv.fr?subject=Question%20SIRET'> contactez notre équipe </a></p>"
+                        data-tip="<div><p>Saisissez ici le SIRET du lieu lié à votre structure pour retrouver ses informations automatiquement.</p>
+<p>Si les informations ne correspondent pas au SIRET saisi, <a href='mailto:pass@culture.gouv.fr?subject=Question%20SIRET'> contactez notre équipe</a>.</p></div>"
                         data-place="bottom"
                         data-type="info">
                         <Icon svg="picto-info" />
