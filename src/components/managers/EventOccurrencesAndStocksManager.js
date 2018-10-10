@@ -59,7 +59,7 @@ class EventOccurrencesAndStocksManager extends Component {
                 ? 'Dates, horaires et prix'
                 : get(thing, 'id') && 'Prix'
             }
-            subtitle={get(event, 'name')}
+            subtitle={get(event, 'name') || get(thing, 'name')}
           />
           <table
             className={classnames(
@@ -109,6 +109,7 @@ class EventOccurrencesAndStocksManager extends Component {
                     <NavLink
                       className="button is-secondary"
                       disabled={isEditing}
+                      id="add-occurrence-or-stock"
                       to={
                         isEditing
                           ? `${location.pathname}${location.search}`
@@ -125,8 +126,8 @@ class EventOccurrencesAndStocksManager extends Component {
                       {isStockOnly
                         ? stocks.length
                           ? ''
-                          : '+ Ajouter un prix'
-                        : '+ Ajouter un horaire'}
+                          : '+ Ajouter un stock'
+                        : '+ Ajouter une date'}
                     </NavLink>
                   </td>
                 </tr>
