@@ -316,10 +316,10 @@ class OfferPage extends Component {
     const offererId = get(offerer, 'id')
     const showAllForm = type || !isNew
     const venueId = get(venue, 'id')
-    const isVenueVirtual = get(venue, 'isVirtual')
-
+    const isOfferActive = get(offer, 'isActive')
     const isOffererSelectReadOnly = typeof offererId !== 'undefined'
     const isVenueSelectReadOnly = typeof venueId !== 'undefined'
+    const isVenueVirtual = get(venue, 'isVirtual')
 
     let title
     if (isNew) {
@@ -622,6 +622,22 @@ class OfferPage extends Component {
               style={{ justifyContent: 'space-between' }}>
               <div className="control">
                 {isReadOnly ? (
+                  <NavLink to="/offres" className="button is-primary is-medium">
+                    Terminer {search.modifie && !isOfferActive && 'et activer'}
+                  </NavLink>
+                ) : (
+                  showAllForm && (
+                    <SubmitButton className="button is-primary is-medium">
+                      Enregistrer{' '}
+                      {isNew &&
+                        'et passer ' +
+                          (isEventType ? 'aux dates' : 'aux stocks')}
+                    </SubmitButton>
+                  )
+                )}
+              </div>
+              <div className="control">
+                {isReadOnly ? (
                   <NavLink
                     to={`/offres/${offerId}?modifie`}
                     className="button is-secondary is-medium">
@@ -633,20 +649,6 @@ class OfferPage extends Component {
                     to={isNew ? '/offres' : `/offres/${offerId}`}>
                     Annuler
                   </CancelButton>
-                )}
-              </div>
-              <div className="control">
-                {isReadOnly ? (
-                  <NavLink to="/offres" className="button is-primary is-medium">
-                    Terminer
-                  </NavLink>
-                ) : (
-                  showAllForm && (
-                    <SubmitButton className="button is-primary is-medium">
-                      Enregistrer et passer{' '}
-                      {isEventType ? 'aux dates' : 'aux stocks'}
-                    </SubmitButton>
-                  )
                 )}
               </div>
             </div>
