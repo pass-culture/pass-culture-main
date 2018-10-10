@@ -22,21 +22,17 @@ Ceci décrit l'API utilisable par les partenaires techniques de Pass Culture qui
 
     + Body
 
-            [
-              {
-                 "global": "Ce coupon n'a pas été trouvé"
-              }
-            ]
+          {
+             "global": [ "Ce coupon n'a pas été trouvé" ]
+          }
 
 + Response 400 (application/json)
 
     + Body
-
-            [
-              {
-                 "email": "Vous devez préciser l\'email de l\'utilisateur quand vous n\'êtes pas connecté(e)"
-              }
-            ]
+    
+          {
+             "email": [ "Vous devez préciser l\'email de l\'utilisateur quand vous n\'êtes pas connecté(e)" ]
+          }
 
 ##### Valider une contremarque [PATCH /bookings/token/<token>?email=\<email\>&offer_id=\<offer_id\>]
 
@@ -56,50 +52,41 @@ Valide une contremarque (et la transaction associée). Le partenaire doit rensei
 + Response 400 (application/json)
 
     + Body
-
-            [
-              {
-                 "global": "L'adresse email qui a servie à la réservation est obligatoire dans l'URL [?email=<email>]"
-              }
-            ]
+    
+          {
+             "global": [ "L'adresse email qui a servie à la réservation est obligatoire dans l'URL [?email=<email>]" ]
+          }
 
 + Response 400 (application/json)
 
     + Body
 
-            [
-              {
-                 "global": "L'id de l'offre réservée est obligatoire dans l'URL [?offer_id=<id>]"
-              }
-            ]
-
+          {
+             "global": [ "L'id de l'offre réservée est obligatoire dans l'URL [?offer_id=<id>]" ]
+          }
+    
 + Response 404 (application/json)
 
     + Body
 
-            [
-              {
-                 "global": "Cette contremarque n'a pas été trouvée"
-              }
-            ]
+          {
+             "global": [ "Cette contremarque n'a pas été trouvée" ]
+          }
 
 + Response 410 (application/json)
 
     + Body
 
-            [
-              {
-                 "booking": "Cette réservation a été annulée"
-              }
-            ]
+          {
+             "booking": [ "Cette réservation a été annulée" ]
+          }
 
 
 + Response 410 (application/json)
 
     + Body
 
-            [
-              {
-                 "booking": "Cette réservation a déjà été validée"
-              }
-            ]
+          {
+             "booking": [ "Cette réservation a déjà été validée" ]
+          }
+ 
