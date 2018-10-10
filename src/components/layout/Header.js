@@ -18,8 +18,7 @@ class Header extends Component {
   }
 
   render() {
-    const { location, name, whiteHeader } = this.props
-    const { search } = location
+    const { name, whiteHeader } = this.props
     const { showMobileMenu } = this.state
     return (
       <header className={classnames('navbar', { 'is-primary': !whiteHeader })}>
