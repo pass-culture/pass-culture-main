@@ -339,7 +339,7 @@ class OfferPage extends Component {
 
     return (
       <Main
-        backTo={{ path: `/offres${search}`, label: 'Vos offres' }}
+        backTo={{ path: '/offres', label: 'Vos offres' }}
         name="offer"
         handleDataRequest={this.handleDataRequest}>
         <HeroSection
