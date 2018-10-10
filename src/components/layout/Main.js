@@ -100,7 +100,12 @@ class Main extends Component {
     return (
       <Fragment>
         {!fullscreen && <Header whiteHeader={whiteHeader} {...header} />}
-        <ReactTooltip className="flex-center items-center" event="click" html />
+        <ReactTooltip
+          className="flex-center items-center"
+          delayHide={500}
+          effect="solid"
+          html
+        />
         <Tag
           className={classnames({
             page: true,
