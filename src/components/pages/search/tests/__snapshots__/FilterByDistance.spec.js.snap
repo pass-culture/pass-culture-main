@@ -35,7 +35,8 @@ ShallowWrapper {
     "key": undefined,
     "nodeType": "class",
     "props": Object {
-      "filter": Object {},
+      "filterActions": Object {},
+      "filterState": Object {},
       "geolocation": Object {},
       "title": "Fake title",
     },
@@ -49,7 +50,8 @@ ShallowWrapper {
       "key": undefined,
       "nodeType": "class",
       "props": Object {
-        "filter": Object {},
+        "filterActions": Object {},
+        "filterState": Object {},
         "geolocation": Object {},
         "title": "Fake title",
       },
