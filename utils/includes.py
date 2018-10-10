@@ -118,6 +118,13 @@ BOOKING_INCLUDES = [
 PRO_BOOKING_INCLUDES = [
     {
         "key": "stock",
+        "resolve": (
+            lambda element, filters:
+            dict(
+                {"token": element['token'] if element['isUsed'] else None},
+                **element
+            )
+        ),
         "sub_joins":
             [
                 {
@@ -129,7 +136,11 @@ PRO_BOOKING_INCLUDES = [
     },
     {
         "key": 'user',
-        "resolve": (lambda element, filters: {'email': element['email']}),
+        "resolve": (lambda element, filters: {
+            'email': element['email'],
+            'firstName': element['firstName'],
+            'lastName': element['lastName']
+        }),
     }
 ]
 
