@@ -16,10 +16,13 @@ describe('src | components | pages | NavByOfferType', () => {
         data: {
           types: [
             {
+              description:
+                'Voulez-vous suivre un géant de 12 mètres dans la ville ? Rire devant un seul-en-scène ? Rêver le temps d’un opéra ou d’un spectacle de danse, assister à une pièce de théâtre, ou vous laisser conter une histoire ?',
               id: 0,
               sublabel: 'Regarder',
             },
             {
+              description: 'Lorem Ipsum',
               id: 1,
               sublabel: 'Rencontrer',
             },
@@ -28,8 +31,9 @@ describe('src | components | pages | NavByOfferType', () => {
       }
       const store = mockStore(initialState)
       const props = {
-        handleQueryParamsChange: jest.fn(),
+        pagination: {},
         title: 'fake Title',
+        typeSublabels: [],
       }
 
       // when

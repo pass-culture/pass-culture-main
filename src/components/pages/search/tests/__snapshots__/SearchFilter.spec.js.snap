@@ -4,8 +4,21 @@ exports[`src | components | pages | search | SearchFilter snapshot should match 
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <SearchFilter
-    handleQueryParamsChange={[MockFunction]}
-    queryParams={Object {}}
+    isVisible={true}
+    pagination={
+      Object {
+        "windowQuery": Object {
+          "categories": null,
+          "date": "2018-09-28T12:52:52.341Z",
+          "distance": "50",
+          "jours": "0-1",
+          "latitude": "48.8637546",
+          "longitude": "2.337428",
+          "mots-cles": "fake",
+          "orderBy": "offer.id+desc",
+        },
+      }
+    }
   />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
@@ -20,115 +33,50 @@ ShallowWrapper {
     "key": undefined,
     "nodeType": "host",
     "props": Object {
-      "children": Array [
-        <FilterByDates
-          filterParams={Object {}}
-          handleFilterParamAdd={[Function]}
-          handleFilterParamRemove={[Function]}
-          handleFilterParamsChange={[Function]}
-          title="QUAND"
-        />,
-        <Connect(FilterByDistance)
-          filterParams={Object {}}
-          handleFilterParamsChange={[Function]}
-          title="OÙ"
-        />,
-        <Connect(FilterByOfferTypes)
-          filterParams={Object {}}
-          handleFilterParamAdd={[Function]}
-          handleFilterParamRemove={[Function]}
-          title="QUOI"
-        />,
-        <button
-          className="button fs24"
-          onClick={[Function]}
-          type="button"
-        >
-          Réinitialiser
-        </button>,
-        <button
-          className="button fs24"
-          onClick={[Function]}
-          type="button"
-        >
-          Filtrer
-        </button>,
-      ],
-      "id": "search-filter-menu",
+      "children": <Transition
+        appear={false}
+        enter={true}
+        exit={true}
+        in={true}
+        mountOnEnter={false}
+        onEnter={[Function]}
+        onEntered={[Function]}
+        onEntering={[Function]}
+        onExit={[Function]}
+        onExited={[Function]}
+        onExiting={[Function]}
+        timeout={0}
+        unmountOnExit={false}
+      >
+        [Function]
+      </Transition>,
+      "className": "is-relative is-clipped",
     },
     "ref": null,
-    "rendered": Array [
-      Object {
-        "instance": null,
-        "key": undefined,
-        "nodeType": "class",
-        "props": Object {
-          "filterParams": Object {},
-          "handleFilterParamAdd": [Function],
-          "handleFilterParamRemove": [Function],
-          "handleFilterParamsChange": [Function],
-          "title": "QUAND",
-        },
-        "ref": null,
-        "rendered": null,
-        "type": [Function],
+    "rendered": Object {
+      "instance": null,
+      "key": undefined,
+      "nodeType": "class",
+      "props": Object {
+        "appear": false,
+        "children": [Function],
+        "enter": true,
+        "exit": true,
+        "in": true,
+        "mountOnEnter": false,
+        "onEnter": [Function],
+        "onEntered": [Function],
+        "onEntering": [Function],
+        "onExit": [Function],
+        "onExited": [Function],
+        "onExiting": [Function],
+        "timeout": 0,
+        "unmountOnExit": false,
       },
-      Object {
-        "instance": null,
-        "key": undefined,
-        "nodeType": "class",
-        "props": Object {
-          "filterParams": Object {},
-          "handleFilterParamsChange": [Function],
-          "title": "OÙ",
-        },
-        "ref": null,
-        "rendered": null,
-        "type": [Function],
-      },
-      Object {
-        "instance": null,
-        "key": undefined,
-        "nodeType": "class",
-        "props": Object {
-          "filterParams": Object {},
-          "handleFilterParamAdd": [Function],
-          "handleFilterParamRemove": [Function],
-          "title": "QUOI",
-        },
-        "ref": null,
-        "rendered": null,
-        "type": [Function],
-      },
-      Object {
-        "instance": null,
-        "key": undefined,
-        "nodeType": "host",
-        "props": Object {
-          "children": "Réinitialiser",
-          "className": "button fs24",
-          "onClick": [Function],
-          "type": "button",
-        },
-        "ref": null,
-        "rendered": "Réinitialiser",
-        "type": "button",
-      },
-      Object {
-        "instance": null,
-        "key": undefined,
-        "nodeType": "host",
-        "props": Object {
-          "children": "Filtrer",
-          "className": "button fs24",
-          "onClick": [Function],
-          "type": "button",
-        },
-        "ref": null,
-        "rendered": "Filtrer",
-        "type": "button",
-      },
-    ],
+      "ref": null,
+      "rendered": [Function],
+      "type": [Function],
+    },
     "type": "div",
   },
   Symbol(enzyme.__nodes__): Array [
@@ -137,115 +85,50 @@ ShallowWrapper {
       "key": undefined,
       "nodeType": "host",
       "props": Object {
-        "children": Array [
-          <FilterByDates
-            filterParams={Object {}}
-            handleFilterParamAdd={[Function]}
-            handleFilterParamRemove={[Function]}
-            handleFilterParamsChange={[Function]}
-            title="QUAND"
-          />,
-          <Connect(FilterByDistance)
-            filterParams={Object {}}
-            handleFilterParamsChange={[Function]}
-            title="OÙ"
-          />,
-          <Connect(FilterByOfferTypes)
-            filterParams={Object {}}
-            handleFilterParamAdd={[Function]}
-            handleFilterParamRemove={[Function]}
-            title="QUOI"
-          />,
-          <button
-            className="button fs24"
-            onClick={[Function]}
-            type="button"
-          >
-            Réinitialiser
-          </button>,
-          <button
-            className="button fs24"
-            onClick={[Function]}
-            type="button"
-          >
-            Filtrer
-          </button>,
-        ],
-        "id": "search-filter-menu",
+        "children": <Transition
+          appear={false}
+          enter={true}
+          exit={true}
+          in={true}
+          mountOnEnter={false}
+          onEnter={[Function]}
+          onEntered={[Function]}
+          onEntering={[Function]}
+          onExit={[Function]}
+          onExited={[Function]}
+          onExiting={[Function]}
+          timeout={0}
+          unmountOnExit={false}
+        >
+          [Function]
+        </Transition>,
+        "className": "is-relative is-clipped",
       },
       "ref": null,
-      "rendered": Array [
-        Object {
-          "instance": null,
-          "key": undefined,
-          "nodeType": "class",
-          "props": Object {
-            "filterParams": Object {},
-            "handleFilterParamAdd": [Function],
-            "handleFilterParamRemove": [Function],
-            "handleFilterParamsChange": [Function],
-            "title": "QUAND",
-          },
-          "ref": null,
-          "rendered": null,
-          "type": [Function],
+      "rendered": Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "class",
+        "props": Object {
+          "appear": false,
+          "children": [Function],
+          "enter": true,
+          "exit": true,
+          "in": true,
+          "mountOnEnter": false,
+          "onEnter": [Function],
+          "onEntered": [Function],
+          "onEntering": [Function],
+          "onExit": [Function],
+          "onExited": [Function],
+          "onExiting": [Function],
+          "timeout": 0,
+          "unmountOnExit": false,
         },
-        Object {
-          "instance": null,
-          "key": undefined,
-          "nodeType": "class",
-          "props": Object {
-            "filterParams": Object {},
-            "handleFilterParamsChange": [Function],
-            "title": "OÙ",
-          },
-          "ref": null,
-          "rendered": null,
-          "type": [Function],
-        },
-        Object {
-          "instance": null,
-          "key": undefined,
-          "nodeType": "class",
-          "props": Object {
-            "filterParams": Object {},
-            "handleFilterParamAdd": [Function],
-            "handleFilterParamRemove": [Function],
-            "title": "QUOI",
-          },
-          "ref": null,
-          "rendered": null,
-          "type": [Function],
-        },
-        Object {
-          "instance": null,
-          "key": undefined,
-          "nodeType": "host",
-          "props": Object {
-            "children": "Réinitialiser",
-            "className": "button fs24",
-            "onClick": [Function],
-            "type": "button",
-          },
-          "ref": null,
-          "rendered": "Réinitialiser",
-          "type": "button",
-        },
-        Object {
-          "instance": null,
-          "key": undefined,
-          "nodeType": "host",
-          "props": Object {
-            "children": "Filtrer",
-            "className": "button fs24",
-            "onClick": [Function],
-            "type": "button",
-          },
-          "ref": null,
-          "rendered": "Filtrer",
-          "type": "button",
-        },
-      ],
+        "ref": null,
+        "rendered": [Function],
+        "type": [Function],
+      },
       "type": "div",
     },
   ],

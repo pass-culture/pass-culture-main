@@ -1,0 +1,28 @@
+.scroll-x {
+  overflow-x: scroll;
+}
+
+.scroll-y {
+  overflow-y: scroll;
+}
+
+.overflow-x {
+  overflow-x: auto;
+}
+
+.overflow-y {
+  overflow-y: auto;
+}
+
+.pc-scroll-container {
+  @extend .is-full-layout;
+
+  overflow: auto;
+}
+
+.pc-scroll-horizontal {
+  @extend .scroll-x;
+  @extend .no-scroll-y;
+  @extend .is-absolute;
+  @extend .is-full-width;
+}

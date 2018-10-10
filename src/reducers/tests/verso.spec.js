@@ -31,7 +31,7 @@ describe('src | reducers | verso  ', () => {
 
       // when
       const queriesReducer = verso(state, action)
-      const expected = { isFlipped: false }
+      const expected = { isFlipped: false, unFlippable: false }
 
       // then
       expect(queriesReducer).toEqual(expected)

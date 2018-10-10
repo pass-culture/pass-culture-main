@@ -1,5 +1,11 @@
+.pc-background-red,
+.pc-background-primary {
+  background-color: $primary;
+}
+
 .pc-theme-purple {
-  color: $white;
+  @extend .is-white-text;
+
   background-color: $purple-blue;
 
   [class*='border-'] {
@@ -8,7 +14,8 @@
 }
 
 .pc-theme-transparent {
-  color: $white;
+  @extend .is-white-text;
+
   background-color: transparent;
 
   a {
@@ -40,8 +47,8 @@
 
 .pc-theme-red,
 .pc-theme-primary {
-  color: $white;
-  background-color: $primary;
+  @extend .is-white-text;
+  @extend .pc-background-primary;
 
   [class*='border-'] {
     border-color: $white;
@@ -50,8 +57,7 @@
 
 .pc-theme-gradient {
   @extend .pc-gradient;
-
-  color: $white;
+  @extend .is-white-text;
 
   [class*='border-'] {
     border-color: $white;

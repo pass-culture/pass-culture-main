@@ -65,3 +65,21 @@
   // si on a plusieurs erreurs pour un seul champ
   @extend .pt5;
 }
+
+// Style des Select pour la page recherche
+.pc-selectbox {
+  @extend .no-outline;
+  @extend .no-background;
+
+  border-radius: 17px;
+  border: 1px solid $primary;
+  width: 250px;
+  height: 35px;
+  min-width: 250px;
+  min-height: 35px;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-repeat: no-repeat;
+  background-position: 212px 12px;
+  background-image: url('/icons/dropdown-disclosure-down.svg');
+}

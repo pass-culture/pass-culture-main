@@ -1,69 +1,128 @@
 #search-filter-menu {
-  background-color: #EDF1F2;
-  border-radius: 0.25em;
-  position: relative;
-
-  h2 {
-    margin-bottom: 1em;
-    margin-top: 1em;
-  }
+  background-color: $grey-lighter;
+  border-radius: 0.25em 0 0.25em 0.25em;
 
   button {
-    background-color: #EDF1F2;
-    border-color: white;
-    border-radius: 0em;
+    background-color: $grey-lighter;
+    border-color: $white;
+    border-radius: 0;
     color: $primary;
     font-size: 1.375rem;
   }
 }
 
-#filter-by-dates {
-  #date-checkbox {
-    border-radius: 0.5em;
-    border: solid $primary 0.1em;
-    margin: 1rem;
-    padding: 1rem;
+/* ------------------------------------------------
+
+ Boutons du footer du panneau des filtres
+ permettant de réinitialiser/appliquer les filtres de recherche
+
+------------------------------------------------ */
+#search-filter-menu-footer-controls {
+  border-top: 2px solid $white;
+
+  button {
+    border: 0;
+  }
+
+  button + button {
+    border-left: 2px solid $white;
   }
 }
+
+/* ------------------------------------------------
+
+ Boutons permettant de masquer/afficher
+ le menu des filtres
+
+------------------------------------------------ */
+#search-filter-menu-toggle-button {
+  // on fixe la taille et la hauteur
+  // pour que le bouton est la même hauteur que le search input
+  // et que quand on ouvre le menu des filtres
+  // on ait un background gris pour le bouton
+  width: 44px;
+  min-width: 44px;
+  max-width: 44px;
+  height: 50px;
+  min-height: 50px;
+
+  &.filters-are-opened {
+    background: $grey-lighter;
+    border-radius: 4px 4px 0 0;
+  }
+}
+
+/* ------------------------------------------------
+
+ Section des filtres par dates
+
+------------------------------------------------ */
+
+#filter-by-dates .pc-scroll-horizontal {
+  height: 65px;
+  overflow-x: scroll;
+}
+
+#filter-by-dates .list .item {
+  border-radius: 4px;
+  border: 1px solid $primary;
+
+  & + .item {
+    @extend .ml22;
+  }
+
+  .field {
+    margin-bottom: 0;
+  }
+
+  .field .input {
+    margin-right: 7px;
+  }
+}
+
+/* ------------------------------------------------
+
+ Section des filtres par distances
+
+------------------------------------------------ */
 
 #filter-by-distance {
-  padding-bottom: 0.25rem;
-  select {
-    border-color: $primary;
-    border-radius: $control-radius;
-    min-width: 250px;
-    margin: 3rem;
-    padding: 1rem;
-    -webkit-appearance: none;  /*Removes default chrome and safari style*/
-    -moz-appearance: none;  /*Removes default style Firefox*/
-    background: url('/icons/dropdown-disclosure-down.svg') no-repeat;
-    background-position: right;
-  }
+  // .pc-selectbox
+  // Voir le fichier global/forms.scss pour le style de la selectbox
 }
 
-#filter-by-offer-types {
-  label {
-    color: $white;
-    height: 23px;
+/* ------------------------------------------------
+
+ Section des filtres par types d'offres
+
+------------------------------------------------ */
+
+#filter-by-offer-types .list .item {
+  cursor: pointer;
+  border-radius: 4px;
+  border: 1px solid transparent;
+  transition: border-color 450ms;
+
+  &.checked {
+    border: 1px solid $primary;
+  }
+
+  & + .item {
+    @extend .ml18;
+  }
+
+  .search-picture img {
     width: 86px;
-    opacity: 0.8;
-    background-color: #000000;
-  }
-  margin-bottom: 1rem;
-}
-
-.filter-menu-outer {
-  display: flex; /* displays flex-items (children) inline */
-  overflow-x: auto;
-}
-
-.filter-menu-inner {
-  flex: 0 0 25%; /* doesn't grow nor shrink, initial width set to 25% of the parent's */
-  padding: 0.5em;
-  border-radius: 1.125em;
-
-  img {
-   height: 86px;
+    min-width: 86px;
+    height: 86px;
+    min-height: 86px;
   }
 
+  .search-picture span {
+    @extend .px5;
+    @extend .py3;
+    @extend .fs16;
+
+    background: rgba($black, 0.75);
+  }
 }

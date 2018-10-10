@@ -13,20 +13,24 @@ import {
 } from 'pass-culture-shared'
 
 import NavByOfferType from './search/NavByOfferType'
+import NavResultsHeader from './search/NavResultsHeader'
 import SearchFilter from './search/SearchFilter'
 import SearchResults from './search/SearchResults'
 import filterIconByState, {
+  descriptionForSublabel,
   INITIAL_FILTER_PARAMS,
   isSearchFiltersAdded,
 } from './search/utils'
 import Main from '../layout/Main'
 import NavigationFooter from '../layout/NavigationFooter'
 import { selectRecommendations } from '../../selectors'
+import selectTypeSublabels from '../../selectors/selectTypes'
+
 import { mapApiToWindow, windowToApiQuery } from '../../utils/pagination'
 
 const renderPageHeader = () => (
-  <header>
-    <h1>
+  <header className="no-dotted-border">
+    <h1 className="is-normal fs19">
 Recherche
     </h1>
   </header>
@@ -43,28 +47,33 @@ class SearchPage extends PureComponent {
       keywordsKey: 0,
       keywordsValue: get(
         props,
-        `pagination.windowQuery.${mapApiToWindow.search}`
+        `pagination.windowQuery.${mapApiToWindow.keywords}`
       ),
+      withFilter: false,
     }
   }
 
   onSubmit = event => {
     const { pagination } = this.props
-    const { value } = event.target.elements.search
+    const { value } = event.target.elements.keywords
 
     event.preventDefault()
 
     pagination.change(
       {
-        [mapApiToWindow.search]: value === '' ? null : value,
+        [mapApiToWindow.keywords]: value === '' ? null : value,
       },
-      { pathname: '/recherche/resultats' }
+      {
+        isClearingData: value !== '',
+        pathname: '/recherche/resultats',
+      }
     )
   }
 
   handleDataRequest = (handleSuccess = () => {}, handleFail = () => {}) => {
     const { dispatch, location, match, pagination, search } = this.props
     const { apiQueryString, goToNextPage, page } = pagination
+    const { withFilter } = this.state
 
     // BECAUSE THE INFINITE SCROLLER CALLS ONCE THIS FUNCTION
     // BUT THEN PUSH THE SEARCH TO PAGE + 1
@@ -74,6 +83,7 @@ class SearchPage extends PureComponent {
       return
     }
 
+    // this request Data get typeSublabels to state
     dispatch(requestData('GET', 'types'))
 
     const len = get(location, 'search.length')
@@ -86,7 +96,7 @@ class SearchPage extends PureComponent {
         handleFail,
         handleSuccess: (state, action) => {
           handleSuccess(state, action)
-          if (match.params.view === 'resultats' && !match.params.filtres) {
+          if (match.params.view === 'resultats' && !withFilter) {
             goToNextPage()
           }
         },
@@ -101,21 +111,111 @@ class SearchPage extends PureComponent {
     history.push(`${location.pathname}?page=${page}&${windowQueryString}`)
   }
 
-  render() {
-    const { history, location, match, pagination, recommendations } = this.props
-    const { page, windowQuery, windowQueryString } = pagination
-    const { keywordsKey, keywordsValue } = this.state
+  onKeywordsChange = event => {
+    this.setState({ keywordsValue: event.target.value })
+  }
 
-    const keywords = windowQuery[mapApiToWindow.search]
+  onKeywordsEraseClick = () => {
+    const { pagination } = this.props
+    const { keywordsKey } = this.state
+    this.setState({
+      // https://stackoverflow.com/questions/37946229/how-do-i-reset-the-defaultvalue-for-a-react-input
+      // WE NEED TO MAKE THE PARENT OF THE KEYWORD INPUT
+      // DEPENDING ON THE KEYWORDS VALUE IN ORDER TO RERENDER
+      // THE INPUT WITH A SYNCED DEFAULT VALUE
+      keywordsKey: keywordsKey + 1,
+      keywordsValue: '',
+    })
+
+    const keywordsValue = pagination.windowQuery[mapApiToWindow.keywords]
+
+    if (!keywordsValue) {
+      return
+    }
+
+    pagination.change(
+      {
+        [mapApiToWindow.keywords]: null,
+      },
+      {
+        pathname: '/recherche/resultats',
+      }
+    )
+  }
+
+  render() {
+    const {
+      history,
+      location,
+      match,
+      pagination,
+      recommendations,
+      typeSublabels,
+    } = this.props
+    const { windowQuery } = pagination
+    const { keywordsKey, keywordsValue, withFilter } = this.state
+    const keywords = windowQuery[mapApiToWindow.keywords]
 
     const filtersActive = isSearchFiltersAdded(
       INITIAL_FILTER_PARAMS,
       windowQuery
     )
     const isfilterIconActive = filterIconByState(filtersActive)
+    const filtersToggleButtonClass = (withFilter && 'filters-are-opened') || ''
+
+    // FIXME Waiting for api get styles to return typeSublabelsAndDescription
+    const typeSublabelsAndDescription = [
+      {
+        description:
+          'Voulez-vous suivre un géant de 12 mètres dans la ville ? Rire devant un seul-en-scène ? Rêver le temps d’un opéra ou d’un spectacle de danse, assister à une pièce de théâtre, ou vous laisser conter une histoire ?',
+        sublabel: 'Applaudir',
+      },
+      {
+        description: 'Lorem Ipsum Jouer',
+        sublabel: 'Jouer',
+      },
+      {
+        description: 'Lorem Ipsum Lire',
+        sublabel: 'Lire',
+      },
+      {
+        description: 'Lorem Ipsum Pratiquer',
+        sublabel: 'Pratiquer',
+      },
+      {
+        description: 'Lorem Ipsum Regarder',
+        sublabel: 'Regarder',
+      },
+      {
+        description: 'Lorem Ipsum Rencontrer',
+        sublabel: 'Rencontrer',
+      },
+      {
+        description: 'Lorem Ipsum Écouter',
+        sublabel: 'Écouter',
+      },
+    ]
+
+    let category
+    let description
+
+    // if location.pathname contient /resultats/
+    // when api will ready change selectTypeSublabels to typeSublabelsAndDescription
+    // TODO
+    // import stateWithTypes from '../../../mocks/stateWithTypes'
+    // import selectTypes from '../../../selectors/selectTypes'
+
+    if (location.pathname.indexOf('/resultats/') !== -1) {
+      category = pagination.windowQuery.categories
+      description = descriptionForSublabel(
+        category,
+        typeSublabelsAndDescription
+      )
+    }
 
     return (
       <Main
+        id="search-page"
         backButton={
           match.params.view === 'resultats' && {
             onClick: () => history.push('/recherche'),
@@ -125,102 +225,95 @@ class SearchPage extends PureComponent {
         header={renderPageHeader}
         name="search"
         footer={renderPageFooter}
+        closeSearchButton
       >
-        <form className="section" onSubmit={this.onSubmit}>
-          <div className="field has-addons">
-            <p
-              className="control has-icons-right is-expanded"
-              key={keywordsKey}
+        <form onSubmit={this.onSubmit}>
+          <div className="flex-columns items-start">
+            <div
+              id="search-page-keywords-field"
+              className="field has-addons flex-columns flex-1"
             >
-              <input
-                id="search"
-                defaultValue={keywordsValue}
-                className="input search-input"
-                placeholder="Saisissez une recherche"
-                type="text"
-                onChange={e => this.setState({ keywordsValue: e.target.value })}
-              />
+              <p className="control has-icons-right flex-1" key={keywordsKey}>
+                <input
+                  id="keywords"
+                  defaultValue={keywordsValue}
+                  className="input search-input"
+                  placeholder="Saisissez une recherche"
+                  type="text"
+                  onChange={this.onKeywordsChange}
+                />
 
-              {get(keywordsValue, 'length') > 0 && (
-                <span className="icon is-small is-right">
-                  <button
-                    type="button"
-                    className="no-border no-background is-red-text"
-                    id="refresh-keywords-button"
-                    onClick={() =>
-                      this.setState({
-                        // https://stackoverflow.com/questions/37946229/how-do-i-reset-the-defaultvalue-for-a-react-input
-                        // WE NEED TO MAKE THE PARENT OF THE KEYWORD INPUT
-                        // DEPENDING ON THE KEYWORDS VALUE IN ORDER TO RERENDER
-                        // THE INPUT WITH A SYNCED DEFAULT VALUE
-                        keywordsKey: keywordsKey + 1,
-                        keywordsValue: '',
-                      })
-                    }
-                  >
-                    <span aria-hidden className="icon-close" title="" />
-                  </button>
-                </span>
-              )}
-            </p>
-            <div className="control">
+                {match.params.view === 'resultats' &&
+                  get(keywordsValue, 'length') > 0 && (
+                    <span className="icon is-small is-right">
+                      <button
+                        type="button"
+                        className="no-border no-background is-red-text"
+                        id="refresh-keywords-button"
+                        onClick={this.onKeywordsEraseClick}
+                      >
+                        <span aria-hidden className="icon-close" title="" />
+                      </button>
+                    </span>
+                  )}
+              </p>
+              <div className="control flex-0">
+                <button
+                  className="button is-rounded is-medium"
+                  id="keywords-search-button"
+                  type="submit"
+                >
+                  Chercher
+                </button>
+              </div>
+            </div>
+
+            <div
+              id="search-filter-menu-toggle-button"
+              className={`flex-0 text-center flex-rows flex-center pb12 ml12 ${filtersToggleButtonClass}`}
+            >
               <button
-                className="button is-rounded is-medium"
-                id="keywords-search-button"
-                type="submit"
+                type="button"
+                className="no-border no-background no-outline "
+                onClick={() => this.setState({ withFilter: !withFilter })}
               >
-                Chercher
+                <Icon
+                  svg={`ico-${withFilter ? 'chevron-up' : isfilterIconActive}`}
+                />
               </button>
             </div>
-            <button
-              type="button"
-              className="button is-secondary"
-              id="open-close-filter-menu-button"
-              onClick={() => {
-                let pathname = `/recherche/${match.params.view}`
-                if (!match.params.filtres) {
-                  pathname = `${pathname}/filtres`
-                }
-                history.push(`${pathname}?page=${page}&${windowQueryString}`)
-              }}
-            >
-              &nbsp;
-              <Icon
-                svg={`ico-${
-                  match.params.filtres ? 'chevron-up' : isfilterIconActive
-                }`}
-              />
-              &nbsp;
-            </button>
           </div>
         </form>
+
+        <SearchFilter isVisible={withFilter} pagination={pagination} />
 
         <Switch location={location}>
           <Route
             exact
             path="/recherche"
             render={() => (
-              <NavByOfferType pagination={pagination} title="PAR CATÉGORIES" />
+              <NavByOfferType
+                pagination={pagination}
+                title="PAR CATÉGORIES"
+                typeSublabels={typeSublabels}
+              />
             )}
           />
           <Route
-            path="/recherche/:view/filtres"
-            render={() => <SearchFilter pagination={pagination} />}
+            path="/recherche/resultats/:categorie"
+            render={() => (
+              <NavResultsHeader category={category} description={description} />
+            )}
           />
-
           <Route
             path="/recherche/resultats"
             render={() => (
-              <Route
-                path="/recherche/resultats"
-                render={() => (
-                  <SearchResults
-                    keywords={keywords}
-                    items={recommendations}
-                    pagination={pagination}
-                    loadMoreHandler={this.loadMoreHandler}
-                  />
-                )}
+              <SearchResults
+                keywords={keywords}
+                items={recommendations}
+                loadMoreHandler={this.loadMoreHandler}
+                pagination={pagination}
+                typeSublabels={typeSublabels}
               />
             )}
           />
@@ -228,10 +321,6 @@ class SearchPage extends PureComponent {
       </Main>
     )
   }
-}
-
-SearchPage.defaultProps = {
-  querySearch: null,
 }
 
 SearchPage.propTypes = {
@@ -242,6 +331,7 @@ SearchPage.propTypes = {
   pagination: PropTypes.object.isRequired,
   recommendations: PropTypes.array.isRequired,
   search: PropTypes.object.isRequired,
+  typeSublabels: PropTypes.array.isRequired,
 }
 
 export default compose(
@@ -252,7 +342,7 @@ export default compose(
       categories: null,
       date: null,
       [mapApiToWindow.days]: null,
-      [mapApiToWindow.search]: null,
+      [mapApiToWindow.keywords]: null,
       distance: null,
       latitude: null,
       longitude: null,
@@ -262,6 +352,7 @@ export default compose(
   }),
   connect(state => ({
     recommendations: selectRecommendations(state),
+    typeSublabels: selectTypeSublabels(state),
     user: state.user,
   }))
 )(SearchPage)

@@ -1,5 +1,5 @@
 /* eslint no-console: 0, max-nested-callbacks: 0 */
-import { getReactRoutes, getMainMenuItems } from './routes-utils'
+import { getReactRoutes, getMainMenuItems } from '../routes-utils'
 
 describe('getReactRoutes', () => {
   it('filtre les routes pour react-router', () => {

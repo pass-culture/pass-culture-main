@@ -4,7 +4,7 @@ exports[`src | components | pages | TermsPage snapshot should match snapshot 1`]
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <TermsPage
-    appversion="0.5.1"
+    appversion="0.6.1"
     errors={Object {}}
   />,
   Symbol(enzyme.__renderer__): Object {
@@ -63,7 +63,7 @@ ShallowWrapper {
                 <p
                   className="text-right"
                 >
-                  Pass Culture v.0.5.1
+                  Pass Culture v.0.6.1
                 </p>
               </div>
             </div>
@@ -130,7 +130,7 @@ ShallowWrapper {
                 <p
                   className="text-right"
                 >
-                  Pass Culture v.0.5.1
+                  Pass Culture v.0.6.1
                 </p>
               </div>
             </div>
@@ -169,7 +169,7 @@ ShallowWrapper {
                 <p
                   className="text-right"
                 >
-                  Pass Culture v.0.5.1
+                  Pass Culture v.0.6.1
                 </p>
               </div>
             </div>,
@@ -199,7 +199,7 @@ ShallowWrapper {
                   <p
                     className="text-right"
                   >
-                    Pass Culture v.0.5.1
+                    Pass Culture v.0.6.1
                   </p>
                 </div>,
               ],
@@ -237,7 +237,7 @@ ShallowWrapper {
                   "children": <p
                     className="text-right"
                   >
-                    Pass Culture v.0.5.1
+                    Pass Culture v.0.6.1
                   </p>,
                   "className": "mt16",
                 },
@@ -247,11 +247,11 @@ ShallowWrapper {
                   "key": undefined,
                   "nodeType": "host",
                   "props": Object {
-                    "children": "Pass Culture v.0.5.1",
+                    "children": "Pass Culture v.0.6.1",
                     "className": "text-right",
                   },
                   "ref": null,
-                  "rendered": "Pass Culture v.0.5.1",
+                  "rendered": "Pass Culture v.0.6.1",
                   "type": "p",
                 },
                 "type": "div",
@@ -327,7 +327,7 @@ ShallowWrapper {
                   <p
                     className="text-right"
                   >
-                    Pass Culture v.0.5.1
+                    Pass Culture v.0.6.1
                   </p>
                 </div>
               </div>
@@ -394,7 +394,7 @@ ShallowWrapper {
                   <p
                     className="text-right"
                   >
-                    Pass Culture v.0.5.1
+                    Pass Culture v.0.6.1
                   </p>
                 </div>
               </div>
@@ -433,7 +433,7 @@ ShallowWrapper {
                   <p
                     className="text-right"
                   >
-                    Pass Culture v.0.5.1
+                    Pass Culture v.0.6.1
                   </p>
                 </div>
               </div>,
@@ -463,7 +463,7 @@ ShallowWrapper {
                     <p
                       className="text-right"
                     >
-                      Pass Culture v.0.5.1
+                      Pass Culture v.0.6.1
                     </p>
                   </div>,
                 ],
@@ -501,7 +501,7 @@ ShallowWrapper {
                     "children": <p
                       className="text-right"
                     >
-                      Pass Culture v.0.5.1
+                      Pass Culture v.0.6.1
                     </p>,
                     "className": "mt16",
                   },
@@ -511,11 +511,11 @@ ShallowWrapper {
                     "key": undefined,
                     "nodeType": "host",
                     "props": Object {
-                      "children": "Pass Culture v.0.5.1",
+                      "children": "Pass Culture v.0.6.1",
                       "className": "text-right",
                     },
                     "ref": null,
-                    "rendered": "Pass Culture v.0.5.1",
+                    "rendered": "Pass Culture v.0.6.1",
                     "type": "p",
                   },
                   "type": "div",

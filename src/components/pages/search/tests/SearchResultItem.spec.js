@@ -4,11 +4,11 @@ import { shallow } from 'enzyme'
 import Dotdotdot from 'react-dotdotdot'
 
 import SearchResultItem from '../SearchResultItem'
-import Thumb from '../../../layout/Thumb'
-import state from './mocks/state'
+import state from '../../../../mocks/global_state_1'
+// import state from '../../../../mocks/global_state_2_Testing_10_10_18'
 import { selectRecommendations } from '../../../../selectors/recommendations'
 
-describe.skip('src | components | pages | SearchResultItem', () => {
+describe('src | components | pages | SearchResultItem', () => {
   const recommendations = selectRecommendations(state)
 
   describe('snapshot', () => {
@@ -30,25 +30,31 @@ describe.skip('src | components | pages | SearchResultItem', () => {
   describe('render', () => {
     let props
     let wrapper
+    describe.skip('with an event type recommendation with no dates', () => {
+      // TODO Tester quels sont nos cas de figure...  Ou bien dans discovery
+      // Un event avec une date fixe Le YYYY
+    })
     describe('with an event type recommendation', () => {
-      it('it should display item details with a permanent date', () => {
+      it('it should display item details', () => {
         props = {
           recommendation: recommendations[0],
         }
         wrapper = shallow(<SearchResultItem {...props} />)
 
         const linkUrl = wrapper.find(Link).props()
-        const thumbUrl = wrapper.find(Thumb).props()
+        const img = wrapper.find('img').props()
+        const h5 = wrapper.find('h5').props()
         const dotdotdot = wrapper.find(Dotdotdot).props()
-        const span = wrapper.find('span').props()
+        const recommendationDate = wrapper.find('#recommendation-date').props()
         expect(linkUrl.to).toEqual('/decouverte/X9')
-        expect(thumbUrl.src).toEqual(
-          'http://localhost/storage/thumbs/things/QE'
-        )
+        expect(img.src).toEqual('http://localhost/storage/thumbs/things/QE')
         expect(dotdotdot.children).toEqual(
           'sur la route des migrants ; rencontres à Calais'
         )
-        expect(span.children).toEqual('permanent')
+        expect(recommendationDate.children).toEqual('permanent')
+        expect(h5.title).toEqual(
+          'sur la route des migrants ; rencontres à Calais'
+        )
       })
     })
   })

@@ -42,12 +42,6 @@
   @extend .flex-1;
 }
 
-.pc-scroll-container {
-  @extend .is-full-layout;
-
-  overflow: auto;
-}
-
 .pc-header {
   @extend .padded;
   @extend .text-center;

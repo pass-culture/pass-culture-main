@@ -1,25 +1,43 @@
-/* eslint-disable */
 import get from 'lodash.get'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
-import { shallowCompare } from 'react-redux'
+import { Transition } from 'react-transition-group'
 
 import FilterByDates from './FilterByDates'
 import FilterByDistance from './FilterByDistance'
 import FilterByOfferTypes from './FilterByOfferTypes'
 
-import { getFirstChangingKey, INITIAL_FILTER_PARAMS } from '../search/utils'
+import { getFirstChangingKey, INITIAL_FILTER_PARAMS } from './utils'
+
+const filtersPanelHeight = 475
+const transitionDelay = 0
+const transitionDuration = 500
+
+const defaultStyle = {
+  marginTop: `-${filtersPanelHeight}px`,
+  transition: `margin-top ${transitionDuration}ms ease`,
+}
+
+const transitionStyles = {
+  entered: { marginTop: 0 },
+  entering: { marginTop: 0 },
+  exited: { marginTop: `-${filtersPanelHeight}px` },
+  exiting: { marginTop: `-${filtersPanelHeight}px` },
+}
 
 class SearchFilter extends Component {
+  // add, remove and change passed as props via this.state to filter components
+  // ex <FilterByDates filter={this.state} title="QUAND" />
   constructor(props) {
     super(props)
     this.state = {
+      isNew: false,
+      query: Object.assign({}, props.pagination.windowQuery),
+    }
+    this.filterActions = {
       add: this.handleQueryAdd,
       change: this.handleQueryChange,
       remove: this.handleQueryRemove,
-
-      query: Object.assign({}, props.pagination.windowQuery),
-      isNew: false,
     }
   }
 
@@ -28,9 +46,10 @@ class SearchFilter extends Component {
     const { windowQuery } = pagination
     // TODO: eslint does not support setState inside componentDidUpdate
     if (windowQuery !== prevProps.pagination.windowQuery) {
+      /* eslint-disable */
       this.setState({
-        query: windowQuery,
         isNew: false,
+        query: windowQuery,
       })
     }
   }
@@ -38,7 +57,6 @@ class SearchFilter extends Component {
   onFilterClick = () => {
     const { pagination } = this.props
     const { isNew, query } = this.state
-
     pagination.change(query, {
       isClearingData: isNew,
       pathname: '/recherche/resultats',
@@ -50,24 +68,25 @@ class SearchFilter extends Component {
       this.props.pagination.windowQuery,
       INITIAL_FILTER_PARAMS
     )
-
     this.setState({
       isNew,
-      query: INITIAL_FILTER_PARAMS,
+    })
+
+    this.props.pagination.change(INITIAL_FILTER_PARAMS, {
+      pathname: '/recherche/resultats',
     })
   }
 
   handleQueryChange = (newValue, callback) => {
     const { pagination } = this.props
     const { query } = this.state
-
     const nextFilterParams = Object.assign({}, query, newValue)
     const isNew = getFirstChangingKey(pagination.windowQuery, newValue)
 
     this.setState(
       {
-        query: nextFilterParams,
         isNew,
+        query: nextFilterParams,
       },
       callback
     )
@@ -89,7 +108,6 @@ class SearchFilter extends Component {
 
   handleQueryRemove = (key, value, callback) => {
     const { query } = this.state
-
     const previousValue = query[key]
 
     if (get(previousValue, 'length')) {
@@ -105,29 +123,56 @@ class SearchFilter extends Component {
   }
 
   render() {
+    const { isVisible } = this.props
     return (
-      <div id="search-filter-menu">
-        <FilterByDates filter={this.state} title="QUAND" />
-        <FilterByDistance filter={this.state} title="OÙ" />
-        <FilterByOfferTypes filter={this.state} title="QUOI" />
-        <button
-          className="button fs24"
-          onClick={this.onResetClick}
-          type="button">
-          Réinitialiser
-        </button>
-        <button
-          className="button fs24"
-          onClick={this.onFilterClick}
-          type="button">
-          Filtrer
-        </button>
+      <div className="is-relative is-clipped">
+        <Transition in={isVisible} timeout={transitionDelay}>
+          {status => (
+            <div
+              id="search-filter-menu"
+              className={`is-full-width transition-status-${status} mb20`}
+              style={{ ...defaultStyle, ...transitionStyles[status] }}>
+              <FilterByDates
+                filterActions={this.filterActions}
+                filterState={this.state}
+                title="QUAND"
+              />
+              <FilterByDistance
+                filterActions={this.filterActions}
+                filterState={this.state}
+                title="OÙ"
+              />
+              <FilterByOfferTypes
+                filterActions={this.filterActions}
+                filterState={this.state}
+                title="QUOI"
+              />
+              <div
+                id="search-filter-menu-footer-controls"
+                className="flex-columns mt20">
+                <button
+                  className="no-background no-outline col-1of2 fs20 py12"
+                  onClick={this.onResetClick}
+                  type="button">
+                  Réinitialiser
+                </button>
+                <button
+                  className="no-background no-outline col-1of2 fs20 py12"
+                  onClick={this.onFilterClick}
+                  type="button">
+                  <span className="is-bold">Filtrer</span>
+                </button>
+              </div>
+            </div>
+          )}
+        </Transition>
       </div>
     )
   }
 }
 
 SearchFilter.propTypes = {
+  isVisible: PropTypes.bool.isRequired,
   pagination: PropTypes.object.isRequired,
 }
 

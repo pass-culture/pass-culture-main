@@ -60,10 +60,31 @@ class Main extends React.PureComponent {
     handleDataRequest(this.handleDataSuccess, this.handleDataFail)
   }
 
+  closeHandler = () => {
+    const { history } = this.props
+    history.push('/decouverte')
+  }
+
+  renderCloseButton = () => (
+    <button
+      type="button"
+      id="search-close-button"
+      className="pc-text-button is-absolute fs16"
+      onClick={this.closeHandler}
+    >
+      <span
+        aria-hidden
+        className="icon-close is-white-text"
+        title="Fermer la popin de partage"
+      />
+    </button>
+  )
+
   render() {
     const {
       backButton,
       children,
+      closeSearchButton,
       name,
       noPadding,
       redBg,
@@ -90,6 +111,7 @@ class Main extends React.PureComponent {
           })}
         >
           {header && header()}
+          {closeSearchButton && this.renderCloseButton()}
           {backButton && <BackButton {...backButton} />}
           <div className="page-content is-relative">
             {children}
@@ -105,6 +127,7 @@ class Main extends React.PureComponent {
 
 Main.defaultProps = {
   backButton: false,
+  closeSearchButton: false,
   footer: null,
   handleDataRequest: null,
   header: null,
@@ -116,6 +139,7 @@ Main.defaultProps = {
 Main.propTypes = {
   backButton: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
   children: PropTypes.node.isRequired,
+  closeSearchButton: PropTypes.bool,
   dispatch: PropTypes.func.isRequired,
   footer: PropTypes.func,
   handleDataRequest: PropTypes.func,
