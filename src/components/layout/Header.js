@@ -43,19 +43,16 @@ class Header extends Component {
               'is-active': showMobileMenu,
             })}>
             <div className="navbar-end">
-              <NavLink className="navbar-item" to={'/guichet'} key={0}>
+              <NavLink className="navbar-item" to="/guichet">
                 <span className="icon">
-                  <Icon svg={'ico-guichet-w'} />
+                  <Icon svg="ico-guichet-w" />
                 </span>
                 <span>Guichet</span>
               </NavLink>
               {!whiteHeader && (
-                <NavLink
-                  className="navbar-item"
-                  to={`/offres${search}`}
-                  key={1}>
+                <NavLink className="navbar-item" to={`/offres${search}`}>
                   <span className="icon">
-                    <Icon svg={'ico-offres-w'} />
+                    <Icon svg="ico-offres-w" />
                   </span>
                   <span>Vos offres</span>
                 </NavLink>
@@ -68,29 +65,29 @@ class Header extends Component {
                   <span>{name}</span>
                 </NavLink>
                 <div className="navbar-dropdown is-right">
-                  <NavLink to={'/profil'} className="navbar-item">
+                  <NavLink to="/profil" className="navbar-item">
                     <span className="icon">
-                      <Icon svg={'ico-user'} />
+                      <Icon svg="ico-user" />
                     </span>
                     <span>Profil</span>
                   </NavLink>
-                  <NavLink to={'/structures'} className="navbar-item">
+                  <NavLink to="/structures" className="navbar-item">
                     <span className="icon">
-                      <Icon svg={'ico-structure-r'} />
+                      <Icon svg="ico-structure-r" />
                     </span>
                     <span>Structures</span>
                   </NavLink>
                   {false && (
-                    <NavLink to={'/delegations'} className="navbar-item">
+                    <NavLink to="/delegations" className="navbar-item">
                       <span className="icon">
-                        <Icon svg={'ico-delegation-r'} />
+                        <Icon svg="ico-delegation-r" />
                       </span>
                       <span>Délégations</span>
                     </NavLink>
                   )}
-                  <NavLink to={'/comptabilite'} className="navbar-item">
+                  <NavLink to="/comptabilite" className="navbar-item">
                     <span className="icon">
-                      <Icon svg={'ico-compta'} />
+                      <Icon svg="ico-compta" />
                     </span>
                     <span>Comptabilité</span>
                   </NavLink>
@@ -99,7 +96,7 @@ class Header extends Component {
                     handleSuccessRedirect={() => '/connexion'}
                     Tag="a">
                     <span className="icon">
-                      <Icon svg={'ico-deconnect'} />
+                      <Icon svg="ico-deconnect" />
                     </span>
                     <span>Déconnexion</span>
                   </SignoutButton>
@@ -113,9 +110,13 @@ class Header extends Component {
   }
 }
 
+function mapStateToProps(state) {
+  return {
+    name: get(state, 'user.publicName'),
+  }
+}
+
 export default compose(
   withRouter,
-  connect(state => ({
-    name: get(state, 'user.publicName'),
-  }))
+  connect(mapStateToProps)
 )(Header)
