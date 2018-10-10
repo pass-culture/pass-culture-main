@@ -223,6 +223,17 @@ class VenuePage extends Component {
                   label="E-mail"
                   name="bookingEmail"
                   required
+                  renderInfo={() =>
+                    !isSiretReadOnly && (
+                      <span
+                        className="button"
+                        data-tip="<p>Cette adresse recevra les e-mails de notification de réservation (sauf si une autre adresse différente est saisie lors de la création d'une offre)</p>"
+                        data-place="bottom"
+                        data-type="info">
+                        <Icon svg="picto-info" />
+                      </span>
+                    )
+                  }
                   type="email"
                 />
               </div>
