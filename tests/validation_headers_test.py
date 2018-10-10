@@ -15,6 +15,17 @@ def test_is_valid_header_when_is_dev_and_header_is_local_host_for_normal_endpoin
     # Then
     assert is_valid_header
 
+def test_is_valid_header_when_is_testing_and_header_is_local_host_for_normal_endpoint():
+    # Given
+    header_origin = 'http://localhost:3000'
+    endpoint = 'list_offers'
+
+    # When
+    with patch('validation.headers.ENV', 'testing'):
+        is_valid_header = check_origin_header_validity(header_origin, endpoint)
+
+    # Then
+    assert is_valid_header
 
 def test_is_not_valid_header_when_is_staging_and_header_is_local_host_for_normal_endpoint():
     # Given
