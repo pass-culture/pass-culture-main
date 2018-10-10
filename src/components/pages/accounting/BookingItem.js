@@ -1,6 +1,13 @@
 import get from 'lodash.get'
 import moment from 'moment'
-import { closeModal, Icon, requestData, showModal } from 'pass-culture-shared'
+import {
+  closeModal,
+  Icon,
+  requestData,
+  showModal,
+  showNotification,
+  getRequestErrorString,
+} from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import React, { Component, Fragment } from 'react'
 import { connect } from 'react-redux'
@@ -56,6 +63,18 @@ const getBookingState = booking => {
 }
 
 class BookingItem extends Component {
+  cancelError = (state, request) => {
+    const { dispatch } = this.props
+
+    dispatch(
+      showNotification({
+        name: 'bookings',
+        text: getRequestErrorString(request),
+        type: 'danger',
+      })
+    )
+  }
+
   onCancelClick = () => {
     const { booking, dispatch, isCancelled } = this.props
     const { id } = booking
@@ -80,6 +99,7 @@ class BookingItem extends Component {
                       isCancelled: true,
                     },
                     normalizer: bookingNormalizer,
+                    handleFail: this.cancelError,
                   })
                 )
                 dispatch(closeModal())
@@ -188,7 +208,6 @@ export default connect((state, ownProps) => {
   const offerer = offererSelector(state, get(venue, 'managingOffererId'))
   const user = selectUserById(state, ownProps.booking.userId)
 
-  console.log('user', user)
   return {
     event,
     eventOccurrence,
