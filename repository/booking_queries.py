@@ -17,7 +17,6 @@ from models import ApiErrors, \
     User, \
     Venue, Offerer
 from models.db import db
-from models.payment import Payment
 from utils.rest import query_with_order_by
 from utils.search import get_keywords_filter
 from validation.errors import ResourceNotFound
@@ -140,7 +139,7 @@ def find_all_bookings_for_event_occurrence(event_occurrence):
     return Booking.query.join(Stock).join(EventOccurrence).filter_by(id=event_occurrence.id).all()
 
 
-def find_bookings_to_pay(offerer_id):
+def find_final_offerer_bookings(offerer_id):
     join_on_offer_or_event_occurrence = (Stock.offerId == Offer.id) | (EventOccurrence.offerId == Offer.id)
     booking_on_event_older_than_two_days = (datetime.utcnow() > EventOccurrence.beginningDatetime + timedelta(hours=48))
 
@@ -150,9 +149,7 @@ def find_bookings_to_pay(offerer_id):
         .join(Offer, join_on_offer_or_event_occurrence) \
         .join(Venue) \
         .join(Offerer) \
-        .outerjoin(Payment) \
         .filter(Offerer.id == offerer_id) \
         .filter(Booking.isCancelled == False) \
-        .filter(Booking.payments == None) \
         .filter((Booking.isUsed == True) | booking_on_event_older_than_two_days) \
         .all()

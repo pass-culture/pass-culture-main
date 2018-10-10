@@ -5,7 +5,7 @@ import pytest
 
 from models import PcObject
 from repository.booking_queries import find_all_ongoing_bookings_by_stock, \
-    find_offerer_bookings, find_all_bookings_for_stock, find_all_bookings_for_event_occurrence, find_bookings_to_pay
+    find_offerer_bookings, find_all_bookings_for_stock, find_all_bookings_for_event_occurrence, find_final_offerer_bookings
 from tests.conftest import clean_database
 from utils.test_utils import create_booking, \
     create_deposit, \
@@ -124,7 +124,7 @@ def test_find_all_bookings_for_event_occurrence(app):
 
 @pytest.mark.standalone
 @clean_database
-def test_find_bookings_to_pay_returns_bookings_for_given_offerer(app):
+def test_find_final_offerer_bookings_returns_bookings_for_given_offerer(app):
     # Given
     user = create_user()
     deposit = create_deposit(user, datetime.utcnow(), amount=500)
@@ -145,7 +145,7 @@ def test_find_bookings_to_pay_returns_bookings_for_given_offerer(app):
     PcObject.check_and_save(deposit, booking1, booking2, booking3)
 
     # When
-    bookings = find_bookings_to_pay(offerer1.id)
+    bookings = find_final_offerer_bookings(offerer1.id)
 
     # Then
     assert len(bookings) == 2
@@ -155,7 +155,7 @@ def test_find_bookings_to_pay_returns_bookings_for_given_offerer(app):
 
 @pytest.mark.standalone
 @clean_database
-def test_find_bookings_to_pay_returns_not_cancelled_bookings_for_offerer(app):
+def test_find_final_offerer_bookings_returns_not_cancelled_bookings_for_offerer(app):
     # Given
     user = create_user()
     deposit = create_deposit(user, datetime.utcnow(), amount=500)
@@ -170,7 +170,7 @@ def test_find_bookings_to_pay_returns_not_cancelled_bookings_for_offerer(app):
     PcObject.check_and_save(deposit, booking1, booking2)
 
     # When
-    bookings = find_bookings_to_pay(offerer1.id)
+    bookings = find_final_offerer_bookings(offerer1.id)
 
     # Then
     assert len(bookings) == 1
@@ -179,33 +179,7 @@ def test_find_bookings_to_pay_returns_not_cancelled_bookings_for_offerer(app):
 
 @pytest.mark.standalone
 @clean_database
-def test_find_bookings_to_pay_returns_not_already_paid_for_bookings(app):
-    # Given
-    user = create_user()
-    deposit = create_deposit(user, datetime.utcnow(), amount=500)
-
-    offerer1 = create_offerer(siren='123456789')
-    venue = create_venue(offerer1)
-    offer = create_thing_offer(venue)
-    stock = create_stock_with_thing_offer(offerer1, venue, offer)
-    booking1 = create_booking(user, stock=stock, venue=venue, is_used=True)
-    booking2 = create_booking(user, stock=stock, venue=venue, is_used=True)
-
-    payment = create_payment(booking2, offerer1, 10)
-
-    PcObject.check_and_save(deposit, payment, booking1, booking2)
-
-    # When
-    bookings = find_bookings_to_pay(offerer1.id)
-
-    # Then
-    assert len(bookings) == 1
-    assert booking1 in bookings
-
-
-@pytest.mark.standalone
-@clean_database
-def test_find_bookings_to_pay_returns_only_used_bookings(app):
+def test_find_final_offerer_bookings_returns_only_used_bookings(app):
     # Given
     user = create_user()
     deposit = create_deposit(user, datetime.utcnow(), amount=500)
@@ -220,7 +194,7 @@ def test_find_bookings_to_pay_returns_only_used_bookings(app):
     PcObject.check_and_save(deposit, booking1, booking2)
 
     # When
-    bookings = find_bookings_to_pay(offerer1.id)
+    bookings = find_final_offerer_bookings(offerer1.id)
 
     # Then
     assert len(bookings) == 1
@@ -229,7 +203,7 @@ def test_find_bookings_to_pay_returns_only_used_bookings(app):
 
 @pytest.mark.standalone
 @clean_database
-def test_find_bookings_to_pay_returns_only_bookings_on_events_older_than_two_days(app):
+def test_find_final_offerer_bookings_returns_only_bookings_on_events_older_than_two_days(app):
     # Given
     user = create_user()
     deposit = create_deposit(user, datetime.utcnow(), amount=500)
@@ -247,7 +221,7 @@ def test_find_bookings_to_pay_returns_only_bookings_on_events_older_than_two_day
     PcObject.check_and_save(deposit, booking1, booking2)
 
     # When
-    bookings = find_bookings_to_pay(offerer1.id)
+    bookings = find_final_offerer_bookings(offerer1.id)
 
     # Then
     assert len(bookings) == 1
