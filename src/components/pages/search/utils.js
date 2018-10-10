@@ -1,6 +1,7 @@
-import { pluralize } from 'pass-culture-shared'
-import get from 'lodash.get'
+import { capitalize, pluralize } from 'pass-culture-shared'
 import find from 'lodash.find'
+import moment from 'moment'
+import { getTimezone } from '../../../utils/timezone'
 
 const filterIconByState = filters => (filters ? 'filter' : 'filter-active')
 
@@ -46,7 +47,33 @@ export const searchResultsTitle = (keywords, items, queryParams) => {
   return resultTitle
 }
 
-// TODO SEARCH FILTER FUNCTIONS REFACTORING
+const formatDate = (date, tz) =>
+  capitalize(
+    moment(date)
+      .tz(tz)
+      .format('dddd DD/MM/YYYY')
+  )
+
+export const getRecommendationDateString = offer => {
+  if (offer.eventId === null) return 'permanent'
+
+  const departementCode = offer.venue.departementCode
+  const tz = getTimezone(departementCode)
+
+  const fromDate = offer.dateRange[0]
+  const toDate = offer.dateRange[1]
+  const formatedDate = `du ${formatDate(fromDate, tz)} au ${formatDate(
+    toDate,
+    tz
+  )}`
+  return formatedDate
+}
+
+export const descriptionForSublabel = (category, data) => {
+  // TODO continue with special chars...
+  const categoryWithoutSpecialChar = category.replace(/%C3%89/g, 'É')
+  return find(data, ['sublabel', categoryWithoutSpecialChar]).description
+}
 
 export const handleQueryChange = (newValue, callback) => {
   const { pagination } = this.props
@@ -64,25 +91,6 @@ export const handleQueryChange = (newValue, callback) => {
   )
 }
 
-export const descriptionForSublabel = (category, data) => {
-  // TODO continue with special chars...
-  const categoryWithoutSpecialChar = category.replace(/%C3%89/g, 'É')
-  return find(data, ['sublabel', categoryWithoutSpecialChar]).description
-}
-
-// filter = le this.state du composant parent
-export const handleQueryAdd = (key, value, filter, callback) => {
-  const { query } = filter
-  const encodedValue = encodeURI(value)
-  let nextValue = encodedValue
-  const previousValue = query[key]
-  if (get(previousValue, 'length')) {
-    const args = previousValue.split(',').concat([encodedValue])
-    args.sort()
-    nextValue = args.join(',')
-  }
-
-  handleQueryChange({ [key]: nextValue }, callback)
-}
+// TODO SEARCH FILTER FUNCTIONS REFACTORING handleQueryChange etc
 
 export default filterIconByState

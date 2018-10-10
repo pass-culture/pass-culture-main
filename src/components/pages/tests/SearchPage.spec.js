@@ -8,7 +8,7 @@ import SearchPage from '../SearchPage'
 const middlewares = []
 const mockStore = configureStore(middlewares)
 
-describe.skip('src | components | pages | SearchPage', () => {
+describe('src | components | pages | SearchPage', () => {
   describe('snapshot', () => {
     it('should match snapshot', () => {
       // given

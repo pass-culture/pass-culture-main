@@ -2,39 +2,19 @@
   react/jsx-one-expression-per-line: 0 */
 import PropTypes from 'prop-types'
 import get from 'lodash.get'
-import moment from 'moment'
-import { capitalize } from 'pass-culture-shared'
 import React, { Fragment } from 'react'
 import Dotdotdot from 'react-dotdotdot'
 import { Link } from 'react-router-dom'
 
 import { getQueryURL } from '../../../helpers'
-import { getTimezone } from '../../../utils/timezone'
-
-const formatDate = (date, tz) =>
-  capitalize(
-    moment(date)
-      .tz(tz)
-      .format('dddd DD/MM/YYYY')
-  )
-
-const getRecommendationDateString = (offer, tz) => {
-  if (offer.eventId === null) return 'permanent'
-  const fromDate = offer.dateRange[0]
-  const toDate = offer.dateRange[1]
-  const formatedDate = `du
-  ${formatDate(fromDate, tz)} au ${formatDate(toDate, tz)}`
-  return formatedDate
-}
+import { getRecommendationDateString } from './utils'
 
 const SearchResultItem = ({ recommendation }) => {
   const offerId = get(recommendation, 'offerId')
   const mediationId = get(recommendation, 'mediationId')
-  const departementCode = get(recommendation, 'offer.venue.departementCode')
-  const tz = getTimezone(departementCode)
-
   const queryURL = getQueryURL({ mediationId, offerId })
   const linkURL = `/decouverte/${queryURL}`
+
   return (
     <li className="recommendation-list-item">
       <hr className="dotted-top-primary" />
@@ -53,9 +33,9 @@ const SearchResultItem = ({ recommendation }) => {
                   {recommendation.offer.eventOrThing.name}
                 </Dotdotdot>
               </h5>
-              <span className="fs13">
+              <span id="recommendation-date" className="fs13">
                 {recommendation.offer &&
-                  getRecommendationDateString(recommendation.offer, tz)}
+                  getRecommendationDateString(recommendation.offer)}
               </span>
             </Fragment>
           )}

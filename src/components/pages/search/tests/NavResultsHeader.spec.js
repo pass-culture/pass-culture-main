@@ -3,17 +3,17 @@ import { shallow } from 'enzyme'
 
 import NavResultsHeader from '../NavResultsHeader'
 
-describe.skip('src | components | pages | search | NavResultsHeader', () => {
+import { ROOT_PATH } from '../../../../utils/config'
+
+describe('src | components | pages | search | NavResultsHeader', () => {
   describe('snapshot', () => {
     it('should match snapshot', () => {
       // given
       const props = {
-        searchType: 'Écouter',
-        typeSublabels: {
-          description:
-            'Voulez-vous suivre un géant de 12 mètres dans la ville ? Rire devant un seul-en-scène ? Rêver le temps d’un opéra ou d’un spectacle de danse, assister à une pièce de théâtre, ou vous laisser conter une histoire ?',
-          sublabel: 'Applaudir',
-        },
+        category: 'Applaudir',
+        description:
+          'Voulez-vous suivre un géant de 12 mètres dans la ville ? Rire devant un seul-en-scène ? Rêver le temps d’un opéra ou d’un spectacle de danse, assister à une pièce de théâtre, ou vous laisser conter une histoire ?',
+        sublabel: 'Applaudir',
       }
 
       // when
@@ -25,19 +25,21 @@ describe.skip('src | components | pages | search | NavResultsHeader', () => {
     })
   })
   describe('render', () => {
-    it('should display image with the right url', () => {
+    it('should display the background image with the right description', () => {
       // given
       const props = {
-        searchType: 'Écouter',
+        category: 'Écouter',
+        description: 'Lorem Ipsum',
       }
 
       // when
       const wrapper = shallow(<NavResultsHeader {...props} />)
-      const img = wrapper.find('img').props()
-
-      // then
-      expect(img.src).toEqual('http://localhost/icons/img-Ecouter.png')
-      expect(img.alt).toEqual('Rechercher des offres de type Écouter')
+      const img = wrapper.find('#nav-results-header').props()
+      //
+      // // then
+      const imgUrl = `${ROOT_PATH}/icons/img-Ecouter-L.jpg`
+      expect(img.style.backgroundImage).toEqual(`url(${imgUrl})`)
+      expect(img.title).toEqual('Liste des offres de type Écouter')
     })
   })
 })

@@ -36,8 +36,8 @@ describe('src | components | pages | search | SearchFilter', () => {
   })
 
   describe('functions ', () => {
-    describe.skip('constructor', () => {
-      it('should initilize state with functions', () => {
+    describe('constructor', () => {
+      it.skip('should initilize state with functions', () => {
         // given
         const props = {
           isVisible: false,
