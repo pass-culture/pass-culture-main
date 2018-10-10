@@ -118,7 +118,8 @@ class Main extends Component {
           })}>
           {fullscreen ? (
             <Fragment>
-              <Notification isFullscreen />,{$content}
+              <Notification isFullscreen />
+              {$content}
             </Fragment>
           ) : (
             <div className="columns is-gapless">
