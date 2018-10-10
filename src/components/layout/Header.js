@@ -50,7 +50,7 @@ class Header extends Component {
                 <span>Guichet</span>
               </NavLink>
               {!whiteHeader && (
-                <NavLink className="navbar-item" to={`/offres${search}`}>
+                <NavLink className="navbar-item" to="/offres">
                   <span className="icon">
                     <Icon svg="ico-offres-w" />
                   </span>
