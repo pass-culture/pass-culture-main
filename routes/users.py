@@ -113,7 +113,9 @@ def signin():
     identifier = json.get("identifier")
     password = json.get("password")
     user = get_user_with_credentials(identifier, password)
-    return jsonify(user._asdict(include=USER_INCLUDES)), 200
+    user_dict = user._asdict(include=USER_INCLUDES)
+    user_dict['expenses'] = get_expenses(user)
+    return jsonify(user_dict), 200
 
 
 @app.route("/users/signout", methods=["GET"])
