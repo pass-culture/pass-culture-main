@@ -1,14 +1,8 @@
-from models.payment import Payment, PaymentType
+from models import Booking
+from models.payment import Payment
 
 
-def create_initial_payment_for_booking(booking, author, comment=None):
-    offerer = booking.stock.resolvedOffer.venue.managingOfferer
-
+def create_payment_for_booking(booking: Booking) -> Payment:
     payment = Payment()
     payment.booking = booking
-    payment.author = author
-    payment.offerer = offerer
-    payment.iban = offerer.iban
-    payment.type = PaymentType.INITIAL
-
     return payment

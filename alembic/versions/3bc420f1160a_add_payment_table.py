@@ -25,9 +25,9 @@ def upgrade():
         sa.Column('id', sa.BigInteger, primary_key=True, autoincrement=True),
         sa.Column('author', sa.VARCHAR(27), nullable=False),
         sa.Column('comment', sa.Text, nullable=True),
+        sa.Column('recipient', sa.VARCHAR(140), nullable=True),
         sa.Column('iban', sa.VARCHAR(27), nullable=True),
         sa.Column('bookingId', sa.BigInteger, ForeignKey('booking.id'), index=True, nullable=False),
-        sa.Column('venueId', sa.BigInteger, ForeignKey('venue.id'), nullable=False),
         sa.Column('amount', sa.Numeric(10, 2), nullable=False),
     )
 

@@ -28,16 +28,9 @@ class Payment(PcObject, Model):
                            foreign_keys=[bookingId],
                            backref='payments')
 
-    venueId = Column(BigInteger,
-                     ForeignKey("venue.id"),
-                     index=True,
-                     nullable=False)
-
-    venue = relationship('Venue',
-                         foreign_keys=[venueId],
-                         backref='payments')
-
     amount = Column(Numeric(10, 2), nullable=False)
+
+    recipient = Column(String(140), nullable=False)
 
     iban = Column(String(27), nullable=True)
 
