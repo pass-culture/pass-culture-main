@@ -339,7 +339,7 @@ class OfferPage extends Component {
 
     return (
       <Main
-        backTo={{ path: `/offres${search}`, label: 'Vos offres' }}
+        backTo={{ path: '/offres', label: 'Vos offres' }}
         name="offer"
         handleDataRequest={this.handleDataRequest}>
         <HeroSection
@@ -622,6 +622,21 @@ class OfferPage extends Component {
               style={{ justifyContent: 'space-between' }}>
               <div className="control">
                 {isReadOnly ? (
+                  <NavLink
+                    to={`/offres/${offerId}?modifie`}
+                    className="button is-secondary is-medium">
+                    Modifier l'offre
+                  </NavLink>
+                ) : (
+                  <CancelButton
+                    className="button is-secondary is-medium"
+                    to={isNew ? '/offres' : `/offres/${offerId}`}>
+                    Annuler
+                  </CancelButton>
+                )}
+              </div>
+              <div className="control">
+                {isReadOnly ? (
                   <NavLink to="/offres" className="button is-primary is-medium">
                     Terminer {search.modifie && !isOfferActive && 'et activer'}
                   </NavLink>
@@ -634,21 +649,6 @@ class OfferPage extends Component {
                           (isEventType ? 'aux dates' : 'aux stocks')}
                     </SubmitButton>
                   )
-                )}
-              </div>
-              <div className="control">
-                {isReadOnly ? (
-                  <NavLink
-                    to={`/offres/${offerId}?modifie`}
-                    className="button is-secondary is-medium">
-                    Modifier l'offre
-                  </NavLink>
-                ) : (
-                  <CancelButton
-                    className="button is-secondary is-medium"
-                    to={isNew ? '/offres' : `/offres/${offerId}`}>
-                    Annuler
-                  </CancelButton>
                 )}
               </div>
             </div>
