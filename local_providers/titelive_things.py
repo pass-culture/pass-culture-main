@@ -9,9 +9,13 @@ from models.thing import Thing, BookFormat
 from models import ThingType
 from utils.string_processing import trim_with_elipsis
 
+import ftplib
+from io import TextIOWrapper, BytesIO
+
 DATE_FORMAT = "%d/%m/%Y"
 DATETIME_FORMAT = "%d/%m/%Y %H:%M:%S"
 DATE_REGEXP = re.compile('Quotidien(\d+).tit')
+FTP_TITELIVE = ftplib.FTP(os.environ.get("FTP_TITELIVE_URI"))
 
 
 def read_date(date):
@@ -30,6 +34,10 @@ def file_date(filename):
     return int(match.group(1))
 
 
+def grp(pat, txt):
+    r = re.search(pat, txt)
+    return r.group(0) if r else '&'
+
 class TiteLiveThings(LocalProvider):
 
     help = ""
@@ -40,20 +48,37 @@ class TiteLiveThings(LocalProvider):
     objectType = Thing
     canCreate = True
 
+
     def __init__(self, venueProvider, **options):
         super().__init__(venueProvider, **options)
         if 'mock' in options and options['mock']:
             data_root_path = Path(os.path.dirname(os.path.realpath(__file__)))\
                             / '..' / 'sandboxes' / 'providers' / 'titelive_works'
+            if not os.path.isdir(data_root_path):
+                raise ValueError('File not found : '+str(data_root_path)
+                                 + '\nDid you run "pc ftp_mirrors" ?')
         else:
-            data_root_path = Path(os.path.dirname(os.path.realpath(__file__)))\
-                            / '..' / 'ftp_mirrors' / 'titelive_works'
-        if not os.path.isdir(data_root_path):
-            raise ValueError('File not found : '+str(data_root_path)
-                             + '\nDid you run "pc ftp_mirrors" ?')
-        data_thing_paths = data_root_path / 'livre3_11'
+            if "FTP_TITELIVE_USER" in os.environ:
+                FTP_TITELIVE_USER = os.environ.get("FTP_TITELIVE_USER")
+                FTP_TITELIVE_PWD = os.environ.get("FTP_TITELIVE_PWD")
+                FTP_TITELIVE.login(FTP_TITELIVE_USER, FTP_TITELIVE_PWD)
+                data_root_path = ''
+            else:
+                raise ValueError('Information de connexion non spécifiée.')
 
-        all_thing_files = sorted(data_thing_paths.glob('Quotidien*.tit'))
+        data_thing_paths = data_root_path + 'livre3_11/'
+
+        # try:
+        files_list = FTP_TITELIVE.nlst(data_thing_paths)
+        # except ftplib.error_perm, resp:
+        #     if str(resp) == "550 No files found":
+        #         raise ValueError('File not found : '+str(data_root_path)
+        #                          + '\nDid you run "pc ftp_mirrors" ?')
+        #     else:
+        #         raise ValueError('Error inconnue')
+        files_list_final = [file_name for file_name in files_list if DATE_REGEXP.search(str(file_name))]
+
+        all_thing_files = sorted(files_list_final)
 
         if 'mock' in options and options['mock']:
             ordered_thing_files = all_thing_files
@@ -63,7 +88,7 @@ class TiteLiveThings(LocalProvider):
             # 26 days. A file with today's date can therefore only be from
             # today, and should always be imported last
             ordered_thing_files = list(filter(lambda f: file_date(f) > today,
-                                             all_thing_files))\
+                                              all_thing_files))\
                                  + list(filter(lambda f: file_date(f) <= today,
                                                all_thing_files))
 
@@ -86,8 +111,21 @@ class TiteLiveThings(LocalProvider):
         self.thing_file = self.thing_files.__next__()
         print("  Importing things from file "+str(self.thing_file))
         self.logEvent(LocalProviderEventType.SyncPartStart, file_date(self.thing_file))
-        with open(self.thing_file, 'r', encoding='iso-8859-1') as f:
-            self.data_lines = iter(f.readlines())
+        data_file = BytesIO()
+        data_wrapper = TextIOWrapper(
+            data_file,
+            encoding='iso-8859-1',
+            # errors=None,         #  defalut
+            # newline=None,        #  defalut
+            line_buffering=True,
+            # write_through=False  #  defalut
+        )
+
+        file_path = 'RETR '+ 'livre3_11/' + str(self.thing_file)
+        FTP_TITELIVE.retrbinary(file_path, data_file.write)
+        data_wrapper.seek(0, 0)
+
+        self.data_lines = iter(data_wrapper.readlines())
 
     def __next__(self):
         if self.data_lines is None:

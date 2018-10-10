@@ -61,8 +61,9 @@ def update_providables(provider, venue, venueProvider, limit, type, mock=False):
                         Thing,
                         Stock]
     if not venue:
-        model = getattr(models, type.capitalize())
-        for providable_type in model if type else PROVIDABLE_TYPES:
+        if type:
+            model = getattr(models, type.capitalize())
+        for providable_type in [model] if type else PROVIDABLE_TYPES:
             for provider_name in local_providers.__all__:
                 if provider and provider_name != provider:
                     print("Provider " + provider_name + " does not match provider"
@@ -78,8 +79,9 @@ def update_providables(provider, venue, venueProvider, limit, type, mock=False):
     venueProviderObjs = venueProviderQuery.filter_by(id=int(venue))\
                   if venue\
                   else venueProviderQuery.all()
-    model = getattr(models, type.capitalize())
-    for providable_type in model if type else PROVIDABLE_TYPES:
+    if type:
+        model = getattr(models, type.capitalize())
+    for providable_type in [model] if type else PROVIDABLE_TYPES:
         for venueProviderObj in venueProviderObjs:
             db.session.add(venueProviderObj)
             provider_name = venueProviderObj.provider.localClass
