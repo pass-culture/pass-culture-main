@@ -21,6 +21,6 @@ class Deposit(PcObject,
 
     user = relationship('User',
                         foreign_keys=[userId],
-                        backref='userDeposits')
+                        backref='deposits')
     source = Column(String(12),
                    nullable=False)

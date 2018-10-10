@@ -404,6 +404,38 @@ def test_pro_signup_with_existing_offerer(app):
 
 @clean_database
 @pytest.mark.standalone
+def test_user_should_not_be_activated_by_default(app):
+    # Given
+    user = create_user(public_name='Test', departement_code='93', email='wallet_test@email.com', password='testpsswd')
+    PcObject.check_and_save(user)
+
+    # when
+    r_profile = req_with_auth('wallet_test@email.com', 'testpsswd').get(API_URL + '/users/current')
+
+    # Then
+    assert r_profile.json()['wallet_is_activated'] == False
+
+
+@clean_database
+@pytest.mark.standalone
+def test_user_wallet_should_be_marked_as_activated_when_there_is_a_deposit(app):
+    # Given
+    user = create_user(public_name='Test', departement_code='93', email='wallet_test@email.com', password='testpsswd')
+    PcObject.check_and_save(user)
+
+    deposit_date = datetime.utcnow() - timedelta(minutes=2)
+    deposit = create_deposit(user, deposit_date, amount=10)
+    PcObject.check_and_save(deposit)
+
+    # when
+    r_profile = req_with_auth('wallet_test@email.com', 'testpsswd').get(API_URL + '/users/current')
+
+    # Then
+    assert r_profile.json()['wallet_is_activated'] == True
+
+
+@clean_database
+@pytest.mark.standalone
 def test_user_should_have_its_wallet_balance(app):
     # Given
     user = create_user(public_name='Test', departement_code='93', email='wallet_test@email.com', password='testpsswd')

@@ -6,8 +6,9 @@ from sqlalchemy import Binary, Boolean, Column, DateTime, String, func, CheckCon
 from sqlalchemy.event import listens_for
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import relationship
-from sqlalchemy.sql import expression
+from sqlalchemy.sql import exists, expression
 
+from models.deposit import Deposit
 from models.db import Model, db
 from models.has_thumb_mixin import HasThumbMixin
 from models.needs_validation_mixin import NeedsValidationMixin
@@ -132,3 +133,7 @@ class User(PcObject,
     @property
     def wallet_balance(self):
         return db.session.query(func.get_wallet_balance(self.id)).scalar()
+
+    @property
+    def wallet_is_activated(self):
+        return len(self.deposits) > 0

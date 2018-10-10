@@ -135,7 +135,8 @@ PRO_BOOKING_INCLUDES = [
 
 USER_INCLUDES = [
     '-password',
-    'wallet_balance'
+    'wallet_balance',
+    'wallet_is_activated'
 ]
 
 VENUE_INCLUDES = [
