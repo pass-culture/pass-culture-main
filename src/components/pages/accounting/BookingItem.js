@@ -124,6 +124,7 @@ class BookingItem extends Component {
       amount,
       dateModified,
       isCancelled,
+      isUsed,
       reimbursed_amount,
       token,
     } = booking
@@ -148,18 +149,19 @@ class BookingItem extends Component {
             {token}: {userIdentifier}
           </td>
           <td rowSpan="2">
-            {!isCancelled && (
-              <div className="navbar-item has-dropdown is-hoverable AccountingPage-actions">
-                <div className="actionButton" />
-                <div className="navbar-dropdown is-right">
-                  <a
-                    className="navbar-item cancel"
-                    onClick={this.onCancelClick}>
-                    <Icon svg="ico-close-r" /> Annuler la réservation
-                  </a>
+            {!isCancelled &&
+              !isUsed && (
+                <div className="navbar-item has-dropdown is-hoverable AccountingPage-actions">
+                  <div className="actionButton" />
+                  <div className="navbar-dropdown is-right">
+                    <a
+                      className="navbar-item cancel"
+                      onClick={this.onCancelClick}>
+                      <Icon svg="ico-close-r" /> Annuler la réservation
+                    </a>
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
           </td>
         </tr>
         <tr className="offer-item first-col">
