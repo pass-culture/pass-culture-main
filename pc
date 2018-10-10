@@ -292,15 +292,18 @@ elif [[ "$CMD" == "ssh" ]]; then
 elif [[ "$CMD" == "start-backend" ]]; then
   RUN='cd $ROOT_PATH && docker-compose up'
 elif [[ "$CMD" == "start-webapp" ]] || [[ "$CMD" == "start-pro" ]]; then
-	NGROK_API_URL=''
-	if [[ $# == 1 ]] && [[ $1 == '-t' ]]; then
-		NGROK_API_URL=$(node $ROOT_PATH/webapp/scripts/ngrok.js)
-	fi
 	if [[ "$CMD" == "start-webapp" ]]; then
-		RUN='cd $ROOT_PATH/webapp && NGROK_API_URL=$NGROK_API_URL yarn start'
+		RUN='cd $ROOT_PATH/webapp'
 	else
-		RUN='cd $ROOT_PATH/pro && NGROK_API_URL=$NGROK_API_URL yarn start'
+		RUN='cd $ROOT_PATH/pro'
 	fi
+	if [[ $# == 1 ]] && [[ $1 == '-t' ]]; then
+		RUN=$RUN' && NGROK_API_URL='$(node $ROOT_PATH/webapp/scripts/ngrok.js)
+	fi
+	if [[ "$ENV" == "testing" ]]; then
+		RUN=$RUN' && export THUMBS_URL=https://storage.gra3.cloud.ovh.net/v1/AUTH_810600e32fdc4cb49a8d15332b68d2cc/storage-pc/thumbs/ && export API_URL=https://backend.passculture-testing.beta.gouv.fr'
+	fi
+	RUN=$RUN' && yarn start'
 elif [[ "$CMD" == "start-ios" ]]; then
 	RUN='open /Applications/Xcode.app/Contents/Developer/Applications/Simulator.app'
 elif [[ "$CMD" == "shared" ]]; then
@@ -329,7 +332,7 @@ elif [[ "$CMD" == "test-cafe-webapp" ]] || [[ "$CMD" == "test-cafe-pro" ]]; then
 	if [[ $# == 0 ]]; then
 		confirm "Warning: your database will be wiped. Is this OK ?"
 	 	"$ROOT_PATH"/pc -e $ENV reset-all-db
-		"$ROOT_PATH"/pc -e $ENV sandbox
+		"$ROOT_PATH"/pc -e $ENV sandbox --name=light
 		RUN='cd $APP_PATH && ./scripts/pc.js testcafe '
 	else
   	RUN='cd $APP_PATH && ./scripts/pc.js testcafe '"$*"
