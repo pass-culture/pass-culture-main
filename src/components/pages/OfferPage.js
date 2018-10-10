@@ -463,8 +463,8 @@ class OfferPage extends Component {
                           </span>
                           <span>
                             {isEventType
-                              ? 'Gérer les dates et les prix'
-                              : 'Gérer les prix'}
+                              ? 'Gérer les dates et les stocks'
+                              : 'Gérer les stocks'}
                           </span>
                         </NavLink>
                       </div>
