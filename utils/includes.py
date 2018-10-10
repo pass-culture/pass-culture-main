@@ -118,13 +118,6 @@ BOOKING_INCLUDES = [
 PRO_BOOKING_INCLUDES = [
     {
         "key": "stock",
-        "resolve": (
-            lambda element, filters:
-            dict(
-                {"token": element['token'] if element['isUsed'] else None},
-                **element
-            )
-        ),
         "sub_joins":
             [
                 {
