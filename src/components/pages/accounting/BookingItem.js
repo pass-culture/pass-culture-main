@@ -76,14 +76,8 @@ class BookingItem extends Component {
   }
 
   onCancelClick = () => {
-    const { booking, dispatch, isCancelled } = this.props
+    const { booking, dispatch } = this.props
     const { id } = booking
-    console.log('cancel booking for id:', id)
-
-    if (isCancelled) {
-      console.warn(`Weird your booking ${id} is already cancelled`)
-      return
-    }
 
     dispatch(
       showModal(
@@ -136,8 +130,7 @@ class BookingItem extends Component {
     const { name, type } = eventOrThing || {}
     const offererName = get(offerer, 'name')
     const venueName = get(venue, 'name')
-    const bookingState = getBookingState(booking)
-    const { picto, message } = bookingState || {}
+    const { picto, message } = getBookingState(booking)
 
     return (
       <Fragment>
