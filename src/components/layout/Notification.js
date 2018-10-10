@@ -1,7 +1,7 @@
 import classnames from 'classnames'
 import get from 'lodash.get'
 import { closeNotification, Icon } from 'pass-culture-shared'
-import React, { Component, Fragment } from 'react'
+import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import ReactTooltip from 'react-tooltip'
 
@@ -25,17 +25,21 @@ class Notification extends Component {
     } else if (type === 'info') {
       svg = 'picto-info'
     } else {
-      svg = 'picto-echec-S'
+      svg = 'picto-echec'
     }
 
     if (!notification) {
       return <div />
     }
 
-    const $content = (
-      <Fragment>
+    return (
+      <div
+        className={classnames(`notification is-${type || 'info'}`, {
+          fullscreen: isFullscreen,
+          columns: !isFullscreen,
+        })}>
         <div
-          className={classnames({
+          className={classnames('container', {
             column: !isFullscreen,
           })}>
           <span className="mr12">
@@ -61,19 +65,6 @@ class Notification extends Component {
             onClick={() => dispatch(closeNotification())}>
             OK
           </button>
-        )}
-      </Fragment>
-    )
-
-    return (
-      <div
-        className={classnames(`notification columns is-${type || 'info'}`, {
-          columns: !isFullscreen,
-        })}>
-        {isFullscreen ? (
-          <div className={isFullscreen && 'is-pulled-right'}>{$content}</div>
-        ) : (
-          $content
         )}
       </div>
     )

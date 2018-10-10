@@ -24,4 +24,13 @@
       opacity: 0.75;
     }
   }
+
+  &.fullscreen {
+    margin-left: calc(50% + 1px);
+    width: auto;
+
+    .container {
+      display: inline;
+    }
+  }
 }
