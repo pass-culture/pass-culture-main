@@ -1,0 +1,40 @@
+import enum
+from datetime import datetime
+
+from sqlalchemy import BigInteger, \
+    Column, \
+    DateTime, \
+    ForeignKey, \
+    Text, \
+    Enum
+from sqlalchemy.orm import relationship
+
+from models.db import Model
+from models.pc_object import PcObject
+
+
+class TransactionStatus(enum.Enum):
+    PENDING = 'PENDING'
+    SENT = 'SENT'
+    ERROR = 'ERROR'
+    SUCCESS = 'SUCCESS'
+
+
+class PaymentStatus(PcObject, Model):
+    id = Column(BigInteger,
+                primary_key=True,
+                autoincrement=True)
+
+    paymentId = Column(BigInteger,
+                       ForeignKey("payment.id"),
+                       nullable=False)
+
+    payment = relationship('Payment',
+                           foreign_keys=[paymentId],
+                           backref='statuses')
+
+    date = Column(DateTime, nullable=False, default=datetime.utcnow)
+
+    status = Column(Enum(TransactionStatus), nullable=False)
+
+    detail = Column(Text, nullable=True)
