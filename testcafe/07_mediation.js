@@ -4,7 +4,6 @@ import { regularOfferer } from './helpers/roles'
 
 const addMediationAnchor = Selector('a.button').withText('Ajouter une accroche')
 const creditInput = Selector('#mediation-credit')
-const dragAndDropDiv = Selector('div.drag-n-drop')
 const dropZoneDiv = Selector('div.dropzone').filterVisible()
 const editOfferAnchor = Selector('a.name').withText(
   'Rencontre avec Franck Lepage'
@@ -37,10 +36,6 @@ test('Je peux charger une image same origin', async t => {
     .click(addMediationAnchor)
 
   await t
-    .expect(dragAndDropDiv.innerText)
-    .eql('Cliquez ou glissez-déposez pour charger une image')
-
-  await t
     .typeText(urlInput, '/images/mediation-test.jpg')
 
     .click(urlButton)
@@ -54,10 +49,6 @@ test('Je peux charger une cors image', async t => {
     .click(editOfferAnchor)
 
     .click(addMediationAnchor)
-
-  await t
-    .expect(dragAndDropDiv.innerText)
-    .eql('Cliquez ou glissez-déposez pour charger une image')
 
   await t
     .typeText(
@@ -76,10 +67,6 @@ test('Je peux changer d image chargee', async t => {
     .click(editOfferAnchor)
 
     .click(addMediationAnchor)
-
-  await t
-    .expect(dragAndDropDiv.innerText)
-    .eql('Cliquez ou glissez-déposez pour charger une image')
 
   await t
     .typeText(urlInput, '/images/mediation-test.jpg')

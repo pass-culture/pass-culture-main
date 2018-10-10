@@ -55,13 +55,7 @@ class UploadThumb extends Component {
   }
 
   onUploadClick = e => {
-    const {
-      collectionName,
-      entityId,
-      index,
-      requestData,
-      storeKey,
-    } = this.props
+    const { collectionName, dispatch, entityId, index, storeKey } = this.props
     const { image, isUploadDisabled } = this.state
     this.setState({
       isEdited: false,
@@ -75,14 +69,16 @@ class UploadThumb extends Component {
     if (!entityId) {
       console.warn('entityId not defined for upload')
     }
-    requestData(
-      'POST',
-      `storage/thumb/${collectionName}/${entityId}/${index}`,
-      {
-        body: formData,
-        encode: 'multipart/form-data',
-        key: storeKey,
-      }
+    dispatch(
+      requestData(
+        'POST',
+        `storage/thumb/${collectionName}/${entityId}/${index}`,
+        {
+          body: formData,
+          encode: 'multipart/form-data',
+          key: storeKey,
+        }
+      )
     )
     window && window.URL.revokeObjectURL(image.preview)
   }
@@ -196,7 +192,8 @@ class UploadThumb extends Component {
                   )}
               </div>
               {!readOnly &&
-                image && (
+                image &&
+                !this.props.image && (
                   <div className="control">
                     <button
                       onClick={e =>
@@ -240,4 +237,4 @@ UploadThumb.defaultProps = {
   width: 250,
 }
 
-export default connect(null, { requestData })(UploadThumb)
+export default connect()(UploadThumb)

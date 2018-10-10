@@ -1,8 +1,7 @@
 import classnames from 'classnames'
 import get from 'lodash.get'
 import { requestData, showNotification, withLogin } from 'pass-culture-shared'
-import React, { Component } from 'react'
-import ReactMarkdown from 'react-markdown'
+import React, { Component, Fragment } from 'react'
 import { connect } from 'react-redux'
 import { NavLink, withRouter } from 'react-router-dom'
 import { compose } from 'redux'
@@ -15,12 +14,6 @@ import offerSelector from '../../selectors/offer'
 import offererSelector from '../../selectors/offerer'
 import venueSelector from '../../selectors/venue'
 import { mediationNormalizer, offerNormalizer } from '../../utils/normalizers'
-
-const uploadExplanation = `
-**Les éléments importants du visuel doivent se situer dans la zone violette : c'est la première vision de l'offre qu'aura l'utilisateur.**
-
-La zone bleue représente le cadrage de l'image dans la fiche détails.
-`
 
 class MediationPage extends Component {
   constructor() {
@@ -54,39 +47,45 @@ class MediationPage extends Component {
 
   handleDataRequest = (handleSuccess, handleFail) => {
     const {
+      dispatch,
       match: {
         params: { mediationId, offerId },
       },
       offer,
-      requestData,
     } = this.props
     const { isNew } = this.state
     !offer &&
-      requestData('GET', `offers/${offerId}`, {
-        key: 'offers',
-        normalizer: offerNormalizer,
-      })
+      dispatch(
+        requestData('GET', `offers/${offerId}`, {
+          key: 'offers',
+          normalizer: offerNormalizer,
+        })
+      )
     if (!isNew) {
-      requestData('GET', `mediations/${mediationId}`, {
-        handleSuccess,
-        handleFail,
-        key: 'mediations',
-        normalizer: mediationNormalizer,
-      })
+      dispatch(
+        requestData('GET', `mediations/${mediationId}`, {
+          handleSuccess,
+          handleFail,
+          key: 'mediations',
+          normalizer: mediationNormalizer,
+        })
+      )
       return
     }
     handleSuccess()
   }
 
   handleSuccessData = (state, action) => {
-    const { history, showNotification, offer } = this.props
+    const { dispatch, history, offer } = this.props
 
     this.setState({ isLoading: false }, () => {
       history.push(`/offres/${offer.id}`)
-      showNotification({
-        text: 'Votre accroche a bien été enregistrée',
-        type: 'success',
-      })
+      dispatch(
+        showNotification({
+          text: 'Votre accroche a bien été enregistrée',
+          type: 'success',
+        })
+      )
     })
   }
 
@@ -104,42 +103,73 @@ class MediationPage extends Component {
     const size =
       window.devicePixelRatio * (imageUploadSize + 2 * imageUploadBorder)
     const firstDimensions = [
-      imageUploadBorder + size / 7.5,
       imageUploadBorder + size / 32,
-      size - 2 * (imageUploadBorder + size / 7.5),
+      imageUploadBorder + size / 32,
+      size - 2 * (imageUploadBorder + size / 32),
       size - 2 * (imageUploadBorder + size / 32),
     ]
 
     const secondDimensions = [
+      imageUploadBorder + size / 7.5,
+      imageUploadBorder + size / 20,
+      size - 2 * (imageUploadBorder + size / 7.5),
+      size - 2 * (imageUploadBorder + size / 20),
+    ]
+
+    const thirdDimensions = [
       imageUploadBorder + size / 6,
       imageUploadBorder + size / 4.5,
       size - 2 * (imageUploadBorder + size / 6),
       size / 2.7 - 2 * imageUploadBorder,
     ]
 
-    // First rectangle
+    // First violet rectangle
     ctx.beginPath()
-    ctx.lineWidth = '2'
+    ctx.lineWidth = '7'
+    ctx.strokeStyle = 'white'
+    ctx.rect(...firstDimensions)
+    ctx.stroke()
+    ctx.beginPath()
+    ctx.lineWidth = '3'
     ctx.strokeStyle = '#b921d7'
     ctx.rect(...firstDimensions)
     ctx.stroke()
 
-    // Second rectangle
+    // Second green rectangle
     ctx.beginPath()
-    ctx.strokeStyle = '#54c7fc'
+    ctx.lineWidth = '7'
+    ctx.strokeStyle = 'white'
     ctx.rect(...secondDimensions)
+    ctx.stroke()
+    ctx.beginPath()
+    ctx.lineWidth = '3'
+    ctx.strokeStyle = '#4CD964'
+    ctx.rect(...secondDimensions)
+    ctx.stroke()
+
+    // Third blue rectangle
+    ctx.beginPath()
+    ctx.lineWidth = '7'
+    ctx.strokeStyle = 'white'
+    ctx.rect(...thirdDimensions)
+    ctx.stroke()
+    ctx.beginPath()
+    ctx.lineWidth = '3'
+    ctx.strokeStyle = '#54c7fc'
+    ctx.rect(...thirdDimensions)
     ctx.stroke()
   }
 
   onOkClick = e => {
     this.state.inputUrl &&
       this.setState({
+        image: null,
         imageUrl: this.state.inputUrl,
       })
   }
 
   onSubmit = () => {
-    const { match, mediation, offerer, requestData } = this.props
+    const { dispatch, match, mediation, offerer } = this.props
     const { croppingRect, image, credit, isNew } = this.state
 
     const offererId = get(offerer, 'id')
@@ -161,16 +191,30 @@ class MediationPage extends Component {
 
     this.setState({ isLoading: true })
 
-    requestData(
-      isNew ? 'POST' : 'PATCH',
-      `mediations${isNew ? '' : `/${get(mediation, 'id')}`}`,
-      {
-        body,
-        encode: 'multipart/form-data',
-        handleSuccess: this.handleSuccessData,
-        key: 'mediations',
-      }
+    dispatch(
+      requestData(
+        isNew ? 'POST' : 'PATCH',
+        `mediations${isNew ? '' : `/${get(mediation, 'id')}`}`,
+        {
+          body,
+          encode: 'multipart/form-data',
+          handleSuccess: this.handleSuccessData,
+          key: 'mediations',
+        }
+      )
     )
+  }
+
+  onUrlChange = event => {
+    this.setState({ inputUrl: event.target.value })
+  }
+
+  onUploadClick = event => {
+    this.setState({
+      image: this.$uploadInput.files[0],
+      imageUrl: null,
+      inputUrl: '',
+    })
   }
 
   render() {
@@ -181,48 +225,30 @@ class MediationPage extends Component {
         params: { offerId },
       },
       mediation,
-      offer,
     } = this.props
     const { image, credit, imageUrl, inputUrl, isLoading, isNew } = this.state
     const backPath = `/offres/${offerId}`
 
-    return (
-      <Main
-        name="mediation"
-        backTo={{ path: backPath, label: "Revenir à l'offre" }}
-        handleDataRequest={this.handleDataRequest}>
-        <HeroSection title={`${isNew ? 'Créez' : 'Modifiez'} une accroche`}>
-          <p className="subtitle">
-            Ajoutez un visuel marquant pour mettre en avant cette offre.
-            <br />
-            <span className="label">Le fichier doit peser 100Ko minimum.</span>
-          </p>
-        </HeroSection>
-
+    const $imageSections = (image || imageUrl) && (
+      <Fragment>
         <div className="section">
-          <label className="label">Depuis une adresse Internet :</label>
-          <div className="field is-grouped">
-            <p className="control is-expanded">
-              <input
-                type="url"
-                className="input is-rounded"
-                placeholder="URL du fichier"
-                value={inputUrl}
-                onChange={e => this.setState({ inputUrl: e.target.value })}
-              />
-            </p>
-            <p className="control">
-              <button
-                className="button is-primary is-outlined is-medium"
-                onClick={this.onOkClick}>
-                OK
-              </button>
-            </p>
-          </div>
+          <p className="mb12">Pour obtenir le meilleur effet:</p>
+          <ul>
+            <li className="mb12">
+              1. Votre visuel doit remplir le cadre violet
+            </li>
+            <li className="mb12">
+              2. Les élèments importants du visuel doivent se situer dans la{' '}
+              <b>
+                zone verte : c'est la première vision de l'offre qu'aura
+                l'utilisateur.
+              </b>
+            </li>
+          </ul>
+          La zone bleue représente le cadrage de l'image dans la fiche détails.
         </div>
         <div className="section columns">
           <div className="column is-three-quarters">
-            <label className="label">... ou depuis votre poste :</label>
             <UploadThumb
               border={imageUploadBorder}
               borderRadius={0}
@@ -230,19 +256,15 @@ class MediationPage extends Component {
               entityId={get(mediation, 'id')}
               hasExistingImage={!isNew}
               height={imageUploadSize}
-              image={imageUrl}
+              image={image || imageUrl}
               index={0}
               width={imageUploadSize}
+              readOnly
               required
               onImageChange={this.onImageChange}
               storeKey="mediations"
               type="thumb"
             />
-            {image && (
-              <div className="section content">
-                <ReactMarkdown source={uploadExplanation} />
-              </div>
-            )}
           </div>
           <div className="column is-one-quarter">
             <div className="section">
@@ -291,24 +313,74 @@ class MediationPage extends Component {
             </button>
           </div>
         </div>
+      </Fragment>
+    )
+
+    return (
+      <Main
+        name="mediation"
+        backTo={{ path: backPath, label: "Revenir à l'offre" }}
+        handleDataRequest={this.handleDataRequest}>
+        <HeroSection title={`${isNew ? 'Créez' : 'Modifiez'} une accroche`}>
+          <p className="subtitle">
+            Ajoutez un visuel marquant pour mettre en avant cette offre.
+            <br />
+            <span className="label">Le fichier doit peser 100Ko minimum.</span>
+          </p>
+        </HeroSection>
+
+        <div className="section">
+          <label className="label">Depuis une adresse Internet :</label>
+          <div className="field is-grouped">
+            <p className="control is-expanded">
+              <input
+                type="url"
+                className="input is-rounded"
+                placeholder="URL du fichier"
+                value={inputUrl}
+                onChange={this.onUrlChange}
+              />
+            </p>
+            <p className="control">
+              <button
+                className="button is-primary is-outlined is-medium"
+                onClick={this.onOkClick}>
+                OK
+              </button>
+            </p>
+          </div>
+        </div>
+
+        <div className="section">
+          <label className="label">...ou depuis votre poste :</label>
+          <label className="button is-primary is-outlined">
+            Choisir un fichier{' '}
+            <input
+              hidden
+              onChange={this.onUploadClick}
+              ref={$element => (this.$uploadInput = $element)}
+              type="file"
+            />
+          </label>
+        </div>
+        {$imageSections}
       </Main>
     )
+  }
+}
+
+function mapStateToProps(state, ownProps) {
+  const offer = offerSelector(state, ownProps.match.params.offerId)
+  const venue = venueSelector(state, get(offer, 'venueId'))
+  return {
+    offer,
+    offerer: offererSelector(state, get(venue, 'managingOffererId')),
+    mediation: mediationSelector(state, ownProps.match.params.mediationId),
   }
 }
 
 export default compose(
   withLogin({ failRedirect: '/connexion' }),
   withRouter,
-  connect(
-    (state, ownProps) => {
-      const offer = offerSelector(state, ownProps.match.params.offerId)
-      const venue = venueSelector(state, get(offer, 'venueId'))
-      return {
-        offer,
-        offerer: offererSelector(state, get(venue, 'managingOffererId')),
-        mediation: mediationSelector(state, ownProps.match.params.mediationId),
-      }
-    },
-    { requestData, showNotification }
-  )
+  connect(mapStateToProps)
 )(MediationPage)
