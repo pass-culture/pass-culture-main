@@ -1,9 +1,13 @@
 .notification {
   margin: 2px;
   overflow-y: hidden;
+  padding: 6px;
   position: relative;
+  img {
+    width: 20px;
+  }
   span {
-    margin-right: 0.25rem;
+    margin-right: 12px;
   }
   button.close {
     background: none;

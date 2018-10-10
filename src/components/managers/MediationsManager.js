@@ -1,4 +1,4 @@
-import { Icon } from 'pass-culture-shared'
+import { closeNotification, Icon, showNotification } from 'pass-culture-shared'
 import get from 'lodash.get'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
@@ -11,6 +11,33 @@ import mediationsSelector from '../../selectors/mediations'
 import offerSelector from '../../selectors/offer'
 
 class MediationManager extends Component {
+  componentDidMount() {
+    const { dispatch, mediations } = this.props
+    if (!get(mediations, 'length')) {
+      dispatch(
+        showNotification({
+          tag: 'mediations-manager',
+          text: "Cette offre n'apparaîtra pas dans l'app pass Culture.",
+          tooltip: {
+            children: <a> Pourquoi ? </a>,
+            place: 'bottom',
+            tip:
+              "<div><p>Pour que votre offre s'affiche dans l'application du Pass Culture, vous devez:</p><p>- ajoutez une ou plusieurs accroches.</p></div>",
+            type: 'info',
+          },
+          type: 'warning',
+        })
+      )
+    }
+  }
+
+  componentWillUnmount() {
+    const { dispatch, notification } = this.props
+    if (get(notification, 'tag') === 'mediations-manager') {
+      dispatch(closeNotification())
+    }
+  }
+
   render() {
     const { mediations, offer } = this.props
     const mediationsLength = get(mediations, 'length')
@@ -58,6 +85,7 @@ class MediationManager extends Component {
 function mapStateToProps(state, ownProps) {
   return {
     mediations: mediationsSelector(state, ownProps.match.params.offerId),
+    notification: state.notification,
     offer: offerSelector(state, ownProps.match.params.offerId),
   }
 }

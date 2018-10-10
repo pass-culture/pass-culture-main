@@ -1,10 +1,8 @@
 import classnames from 'classnames'
 import get from 'lodash.get'
 import {
-  closeNotification,
   Icon,
   Modal,
-  requestData,
   resetForm,
   showNotification,
   Spinner,
@@ -18,6 +16,7 @@ import ReactTooltip from 'react-tooltip'
 import { compose } from 'redux'
 
 import Header from './Header'
+import Notification from './Notification'
 
 class Main extends Component {
   constructor() {
@@ -35,10 +34,12 @@ class Main extends Component {
     this.setState({
       loading: false,
     })
-    this.props.showNotification({
-      type: 'danger',
-      text: get(action, 'errors.0.global') || 'Erreur de chargement',
-    })
+    this.props.dispatch(
+      showNotification({
+        type: 'danger',
+        text: get(action, 'errors.0.global') || 'Erreur de chargement',
+      })
+    )
   }
 
   handleDataRequest = () => {
@@ -74,18 +75,16 @@ class Main extends Component {
 
   componentWillUnmount() {
     this.unblock && this.unblock()
-    this.props.resetForm()
+    this.props.dispatch(resetForm())
   }
 
   render() {
     const {
       backTo,
       children,
-      closeNotification,
       fullscreen,
       header,
       name,
-      notification,
       redBg,
       Tag,
       whiteHeader,
@@ -93,7 +92,7 @@ class Main extends Component {
     } = this.props
     const { loading } = this.state
     const footer = [].concat(children).find(e => e && e.type === 'footer')
-    const content = []
+    const $content = []
       .concat(children)
       .filter(e => e && e.type !== 'header' && e.type !== 'footer')
 
@@ -118,36 +117,13 @@ class Main extends Component {
             loading,
           })}>
           {fullscreen ? (
-            [
-              notification && (
-                <div
-                  className={`notification is-${notification.type || 'info'}`}
-                  key="notification">
-                  <div className="is-pulled-right">
-                    <span> {notification.text} </span>
-                    <button className="close" onClick={closeNotification}>
-                      OK
-                    </button>
-                  </div>
-                </div>
-              ),
-              content,
-            ]
+            <Fragment>
+              <Notification isFullscreen />,{$content}
+            </Fragment>
           ) : (
             <div className="columns is-gapless">
               <div className="page-content column is-10 is-offset-1">
-                {notification && (
-                  <div
-                    className={`notification columns is-${notification.type ||
-                      'info'}`}>
-                    <span className="column"> {notification.text} </span>
-                    <button
-                      className="column is-1 close"
-                      onClick={closeNotification}>
-                      OK
-                    </button>
-                  </div>
-                )}
+                <Notification />
                 <div
                   className={classnames('after-notification-content', {
                     'with-padding': backTo,
@@ -160,7 +136,7 @@ class Main extends Component {
                       {` ${backTo.label}`}
                     </NavLink>
                   )}
-                  <div className="main-content">{content}</div>
+                  <div className="main-content">{$content}</div>
                   {withLoading && loading && <Spinner />}
                 </div>
               </div>
@@ -174,19 +150,14 @@ class Main extends Component {
   }
 }
 
+function mapStateToProps(state) {
+  return {
+    user: state.user,
+  }
+}
+
 export default compose(
   withRouter,
   withBlock,
-  connect(
-    state => ({
-      notification: state.notification,
-      user: state.user,
-    }),
-    {
-      closeNotification,
-      requestData,
-      resetForm,
-      showNotification,
-    }
-  )
+  connect(mapStateToProps)
 )(Main)
