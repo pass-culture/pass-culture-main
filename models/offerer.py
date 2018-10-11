@@ -37,7 +37,7 @@ class Offerer(PcObject,
                          nullable=False,
                          default=datetime.utcnow)
 
-    name = Column(String(140), nullable=True)
+    name = Column(String(140), nullable=False)
 
     users = relationship('User',
                          secondary='user_offerer')
