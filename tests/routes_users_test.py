@@ -279,8 +279,9 @@ def test_pro_signup_should_not_work_without_offerer_name(app):
     assert 'name' in error
 
 
+@clean_database
 @pytest.mark.standalone
-def test_pro_signup_should_not_work_without_offerer_address():
+def test_pro_signup_should_not_work_without_offerer_address(app):
     data = BASE_DATA_PRO.copy()
     del (data['address'])
 
@@ -294,8 +295,9 @@ def test_pro_signup_should_not_work_without_offerer_address():
     assert 'address' in error
 
 
+@clean_database
 @pytest.mark.standalone
-def test_pro_signup_should_not_work_without_offerer_city():
+def test_pro_signup_should_not_work_without_offerer_city(app):
     data = BASE_DATA_PRO.copy()
     del (data['city'])
 
@@ -309,8 +311,9 @@ def test_pro_signup_should_not_work_without_offerer_city():
     assert 'city' in error
 
 
+@clean_database
 @pytest.mark.standalone
-def test_pro_signup_should_not_work_without_offerer_postal_code():
+def test_pro_signup_should_not_work_without_offerer_postal_code(app):
     data = BASE_DATA_PRO.copy()
     del (data['postalCode'])
 
@@ -324,8 +327,9 @@ def test_pro_signup_should_not_work_without_offerer_postal_code():
     assert 'postalCode' in error
 
 
+@clean_database
 @pytest.mark.standalone
-def test_pro_signup_should_not_work_with_invalid_offerer_postal_code():
+def test_pro_signup_should_not_work_with_invalid_offerer_postal_code(app):
     data = BASE_DATA_PRO.copy()
     data['postalCode'] = '111'
 
@@ -510,8 +514,9 @@ def test_user_should_have_its_wallet_balance(app):
     assert wallet_balance == 15
 
 
+@clean_database
 @pytest.mark.standalone
-def test_user_with_isAdmin_true_and_canBookFreeOffers_raises_error():
+def test_user_with_isAdmin_true_and_canBookFreeOffers_raises_error(app):
     # Given
     user_json = {
         'email': 'pctest.isAdmin.canBook@btmx.fr',
