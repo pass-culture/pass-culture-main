@@ -7,6 +7,7 @@ from flask import current_app as app
 import local_providers
 import models
 from models import db, Event, Offerer, Stock, Thing, Venue, VenueProvider
+from models.db import db
 
 
 def do_update(provider, limit):
@@ -36,12 +37,10 @@ def do_update(provider, limit):
 @app.manager.option('-w',
                     '--venueProvider',
                     help='Limit update to this venueProvider')
-
 @app.manager.option('-t',
                     '--type',
                     help='Sync only this type of object'
                          + ' (stock, thing or venue)')
-
 def update_providables(provider, venue, venueProvider, limit, type, mock=False):
 
     if venueProvider is not None:

@@ -132,7 +132,7 @@ class OpenAgendaEvents(LocalProvider):
                                 if 'fr' in self.oa_event['description']\
                                 else self.oa_event['description']['en']
             obj.durationMinutes = self.duration
-            # obj.extraData['tags'] = list(map(lambda t: t['slug'], self.oa_event['tags']))
+            # obj.extraData['tags'] = list(map(lambda t: t['slug'], self.oa_stock['tags']))
         elif isinstance(obj, EventOccurrence):
             index = len(self.providables)-3
             oa_timing = self.oa_event['timings'][index]
@@ -148,7 +148,7 @@ class OpenAgendaEvents(LocalProvider):
 
 
         # TODO
-        # for access in oa_event['accessibility']:
+        # for access in oa_stock['accessibility']:
         #     event.accessibility = event.accessibility
 
     def getObjectThumbDates(self, obj):

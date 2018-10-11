@@ -196,9 +196,10 @@ class LocalProvider(Iterator):
                 obj.venue = self.venueProvider.venue
             PcObject.check_and_save(obj)
         except Exception as e:
-            self.logEvent(LocalProviderEventType.SyncError, e.__class__.__name__)
+            print("TOTO")
             print('ERROR during updateObject: '
                   + e.__class__.__name__+' '+str(e))
+            self.logEvent(LocalProviderEventType.SyncError, e.__class__.__name__)
             self.erroredObjects += 1
             traceback.print_tb(e.__traceback__)
             pprint(vars(e))
@@ -225,6 +226,7 @@ class LocalProvider(Iterator):
         sys.stdout.write("Updating "
                          + inflect_engine.plural(self.objectType.__name__)
                          + " from provider " + self.name)
+        print("AH bah voilà")
         self.logEvent(LocalProviderEventType.SyncStart)
         if self.venueProvider is not None:
             print(" for venue " + self.venueProvider.venue.name
