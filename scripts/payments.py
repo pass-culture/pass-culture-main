@@ -27,6 +27,8 @@ def do_generate_payments():
         booking_reimbursements = find_all_booking_reimbursement(final_offerer_bookings)
         booking_reimbursements_to_pay = filter_out_already_paid_for_bookings(booking_reimbursements)
         payments = list(map(create_payment_for_booking, booking_reimbursements_to_pay))
-
-        PcObject.check_and_save(*payments)
-        print('Saved %s payments for Offerer : %s' % (len(payments), offerer.name))
+        if payments:
+            PcObject.check_and_save(*payments)
+            print('Saved %s payments for Offerer : %s' % (len(payments), offerer.name))
+        else:
+            print('No payments to save for Offerer : %s' % offerer.name)
