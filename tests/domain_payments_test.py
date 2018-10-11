@@ -53,6 +53,26 @@ def test_create_payment_for_booking_when_iban_is_on_offerer():
 
 
 @pytest.mark.standalone
+def test_create_payment_for_booking_with_not_processable_status_when_iban_is_missing_on_offerer():
+    # given
+    user = create_user()
+    stock = create_stock(price=10, available=5)
+    booking = create_booking(user, stock=stock, quantity=1)
+    booking.stock.offer = Offer()
+    booking.stock.offer.venue = Venue()
+    booking.stock.offer.venue.managingOfferer = create_offerer(name='Test Offerer', iban=None)
+    booking_reimbursement = BookingReimbursement(booking, ReimbursementRules.PHYSICAL_OFFERS, Decimal(10))
+
+    # when
+    payment = create_payment_for_booking(booking_reimbursement)
+
+    # then
+    assert len(payment.statuses) == 1
+    assert payment.statuses[0].status == TransactionStatus.NOT_PROCESSABLE
+    assert payment.statuses[0].detail == 'IBAN manquant sur l\'offreur'
+
+
+@pytest.mark.standalone
 def test_create_payment_for_booking_with_pending_status():
     # given
     one_second = timedelta(seconds=1)

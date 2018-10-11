@@ -12,16 +12,23 @@ def create_payment_for_booking(booking_reimbursement: BookingReimbursement) -> P
     payment.amount = booking_reimbursement.reimbursed_amount
     payment.reimbursementRule = booking_reimbursement.reimbursement.value.description
     payment.author = 'batch'
-    payment.iban = booking_reimbursement.booking.stock.resolvedOffer.venue.managingOfferer.iban
     payment.recipient = booking_reimbursement.booking.stock.resolvedOffer.venue.managingOfferer.name
-
-    payment_status = PaymentStatus()
-    payment_status.date = datetime.utcnow()
-    payment_status.status = TransactionStatus.PENDING
-    payment.statuses = [payment_status]
-
+    payment.iban = booking_reimbursement.booking.stock.resolvedOffer.venue.managingOfferer.iban
+    payment.statuses = [_create_status_for_payment(payment)]
     return payment
 
 
-def filter_out_already_paid_for_bookings(booking_reimbursements: List[BookingReimbursement]) -> List[BookingReimbursement]:
-    return list(filter(lambda x: not x.booking.payments,booking_reimbursements))
+def filter_out_already_paid_for_bookings(booking_reimbursements: List[BookingReimbursement]) -> List[
+    BookingReimbursement]:
+    return list(filter(lambda x: not x.booking.payments, booking_reimbursements))
+
+
+def _create_status_for_payment(payment):
+    payment_status = PaymentStatus()
+    payment_status.date = datetime.utcnow()
+    if payment.iban:
+        payment_status.status = TransactionStatus.PENDING
+    else:
+        payment_status.status = TransactionStatus.NOT_PROCESSABLE
+        payment_status.detail = 'IBAN manquant sur l\'offreur'
+    return payment_status

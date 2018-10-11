@@ -15,6 +15,7 @@ from models.pc_object import PcObject
 
 class TransactionStatus(enum.Enum):
     PENDING = 'PENDING'
+    NOT_PROCESSABLE = 'NOT PROCESSABLE'
     SENT = 'SENT'
     ERROR = 'ERROR'
     SUCCESS = 'SUCCESS'
