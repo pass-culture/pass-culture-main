@@ -122,11 +122,15 @@ def test_get_offerer_bookings_returns_bookings_with_their_reimbursements_ordered
 
 @pytest.mark.standalone
 @clean_database
-def test_get_offerer_bookings_returns_bookings_with_only_email_as_user_info(app):
+def test_get_offerer_bookings_returns_bookings_with_only_public_user_info_and_none_token(app):
     # given
     now = datetime.utcnow()
     user_pro = create_user(can_book_free_offers=False, password='p@55sw0rd')
-    user = create_user(email='test@email.com')
+    user = create_user(
+        email='jean.aimarx@disrupflux.fr',
+        first_name='Jean',
+        last_name='Aimarx'
+    )
     deposit = create_deposit(user, now, amount=24000)
     PcObject.check_and_save(deposit)
     offerer = create_offerer()
@@ -143,9 +147,56 @@ def test_get_offerer_bookings_returns_bookings_with_only_email_as_user_info(app)
     response = auth_request.get(API_URL + '/offerers/%s/bookings' % humanize(offerer.id))
 
     # then
+    response_first_booking_json = response.json()[0]
     assert response.status_code == 200
-    assert response.json()[0]['user'] == {'email': user.email}
+    assert response_first_booking_json['token'] == None
+    assert response_first_booking_json['user'] == {
+        'firstName': user.firstName,
+        'email': user.email,
+        'lastName': user.lastName
+    }
 
+@pytest.mark.standalone
+@clean_database
+def test_get_offerer_bookings_returns_bookings_with_publib_user_info_and_token_when_it_is_used(app):
+    # given
+    now = datetime.utcnow()
+    user_pro = create_user(can_book_free_offers=False, password='p@55sw0rd')
+    user = create_user(
+        email='jean.aimarx@disrupflux.fr',
+        first_name='Jean',
+        last_name='Aimarx'
+    )
+    deposit = create_deposit(user, now, amount=24000)
+    PcObject.check_and_save(deposit)
+    offerer = create_offerer()
+    user_offerer = create_user_offerer(user_pro, offerer)
+    PcObject.check_and_save(user_offerer)
+
+    venue = create_venue(offerer)
+    stock = create_stock_with_event_offer(offerer, venue, price=20)
+    booking = create_booking(user,
+        stock,
+        venue,
+        recommendation=None,
+        quantity=2,
+        is_used=True
+    )
+    PcObject.check_and_save(booking)
+    auth_request = req_with_auth(email=user_pro.email, password='p@55sw0rd')
+
+    # when
+    response = auth_request.get(API_URL + '/offerers/%s/bookings' % humanize(offerer.id))
+
+    # then
+    response_first_booking_json = response.json()[0]
+    assert response.status_code == 200
+    assert response_first_booking_json['token'] == booking.token
+    assert response_first_booking_json['user'] == {
+        'firstName': user.firstName,
+        'email': user.email,
+        'lastName': user.lastName
+    }
 
 @pytest.mark.standalone
 @clean_database
