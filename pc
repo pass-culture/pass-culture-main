@@ -39,6 +39,13 @@ else
   ENV=${ENV:-'development'}
 fi
 
+if [[ $# -gt 2 ]] && [[ "$1" == "-b" ]]; then
+  BACKEND=$2
+  shift 2
+else
+  BACKEND=${BACKEND:-'localhost'}
+fi
+
 API_HOST='localhost:80'
 if [[ "$ENV" == "production" ]]; then
 	API_HOST=api.passculture.beta.gouv.fr
@@ -292,15 +299,20 @@ elif [[ "$CMD" == "ssh" ]]; then
 elif [[ "$CMD" == "start-backend" ]]; then
   RUN='cd $ROOT_PATH && docker-compose up'
 elif [[ "$CMD" == "start-webapp" ]] || [[ "$CMD" == "start-pro" ]]; then
-	NGROK_API_URL=''
-	if [[ $# == 1 ]] && [[ $1 == '-t' ]]; then
-		NGROK_API_URL=$(node $ROOT_PATH/webapp/scripts/ngrok.js)
-	fi
 	if [[ "$CMD" == "start-webapp" ]]; then
-		RUN='cd $ROOT_PATH/webapp && NGROK_API_URL=$NGROK_API_URL yarn start'
+		RUN='cd $ROOT_PATH/webapp'
 	else
-		RUN='cd $ROOT_PATH/pro && NGROK_API_URL=$NGROK_API_URL yarn start'
+		RUN='cd $ROOT_PATH/pro'
 	fi
+	if [[ "$BACKEND" == "testing" ]]; then
+		RUN=$RUN' && export THUMBS_URL=https://storage.gra3.cloud.ovh.net/v1/AUTH_810600e32fdc4cb49a8d15332b68d2cc/storage-pc/thumbs/ && export API_URL=https://backend.passculture-testing.beta.gouv.fr'
+	elif [[ "$BACKEND" == "ngrok" ]]; then
+		RUN=$RUN' && NGROK_API_URL='$(node $ROOT_PATH/webapp/scripts/ngrok.js)
+	elif [[ "$BACKEND" != "localhost" ]]; then
+		echo "Can only set backend as localhost or testing for developping your front app."
+		exit
+	fi
+	RUN=$RUN' && yarn start'
 elif [[ "$CMD" == "start-ios" ]]; then
 	RUN='open /Applications/Xcode.app/Contents/Developer/Applications/Simulator.app'
 elif [[ "$CMD" == "shared" ]]; then
