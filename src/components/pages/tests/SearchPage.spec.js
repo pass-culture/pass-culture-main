@@ -67,3 +67,5 @@ describe('src | components | pages | SearchPage', () => {
     })
   })
 })
+
+// Titre de la page selon s'il y a des recommendations ou pas.

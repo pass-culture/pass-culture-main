@@ -90,6 +90,7 @@ class Main extends React.PureComponent {
       redBg,
       footer,
       header,
+      pageTitle,
     } = this.props
     // FIXME [PERFS] -> ne pas faire une itération
     // utiliser plutot une propriete avec un composant
@@ -110,7 +111,7 @@ class Main extends React.PureComponent {
             'with-header': header !== null,
           })}
         >
-          {header && header()}
+          {header && header(pageTitle)}
           {closeSearchButton && this.renderCloseButton()}
           {backButton && <BackButton {...backButton} />}
           <div className="page-content is-relative">

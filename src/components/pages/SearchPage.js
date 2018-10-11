@@ -28,10 +28,10 @@ import selectTypeSublabels from '../../selectors/selectTypes'
 
 import { mapApiToWindow, windowToApiQuery } from '../../utils/pagination'
 
-const renderPageHeader = () => (
+const renderPageHeader = searchPageTitle => (
   <header className="no-dotted-border">
     <h1 className="is-normal fs19">
-Recherche
+      {searchPageTitle}
     </h1>
   </header>
 )
@@ -152,6 +152,10 @@ class SearchPage extends PureComponent {
       recommendations,
       typeSublabels,
     } = this.props
+
+    const searchPageTitle =
+      recommendations.length === 0 ? 'Recherche' : 'Recherche : résultats'
+
     const { windowQuery } = pagination
     const { keywordsKey, keywordsValue, withFilter } = this.state
     const keywords = windowQuery[mapApiToWindow.keywords]
@@ -223,6 +227,7 @@ class SearchPage extends PureComponent {
         }
         handleDataRequest={this.handleDataRequest}
         header={renderPageHeader}
+        pageTitle={searchPageTitle}
         name="search"
         footer={renderPageFooter}
         closeSearchButton
