@@ -64,7 +64,7 @@ jobs:
           command: |
             cd pass-culture-main
             dockerize -wait http://localhost/health -timeout 3m -wait-retry-interval 5s
-            ./pc test-backend tests/10_local_providers_test.py
+            ./pc sandbox --name=webapp
       - run:
           name: Running tests
           command: |
