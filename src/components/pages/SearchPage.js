@@ -301,9 +301,19 @@ class SearchPage extends PureComponent {
           />
           <Route
             path="/recherche/resultats/:categorie"
-            render={() => (
-              <NavResultsHeader category={category} description={description} />
-            )}
+            render={() => [
+              <NavResultsHeader
+                category={category}
+                description={description}
+              />,
+              <SearchResults
+                keywords={keywords}
+                items={recommendations}
+                loadMoreHandler={this.loadMoreHandler}
+                pagination={pagination}
+                typeSublabels={typeSublabels}
+              />,
+            ]}
           />
           <Route
             path="/recherche/resultats"

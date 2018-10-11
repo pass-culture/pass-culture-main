@@ -15,7 +15,8 @@ yarn
 
 ## Variables d'environnements
 
-A la racine de webapp créer un fichier `env.local`. Les variables disponibles pour l'application sont décrites dans le fichier `src/config.js`
+A la racine de webapp créer un fichier `env.local`<br>
+Les variables disponibles pour l'application sont décrites dans le fichier `src/utils/config.js`
 
 ## Upgrade de la version
 
