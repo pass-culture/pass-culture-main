@@ -114,15 +114,19 @@ class SharePopin extends React.PureComponent {
   }
 }
 
+SharePopin.defaultProps = {
+  email: null,
+}
+
 SharePopin.propTypes = {
   dispatch: PropTypes.func.isRequired,
-  email: PropTypes.string.isRequired,
+  email: PropTypes.string,
   options: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]).isRequired,
   visible: PropTypes.bool.isRequired,
 }
 
 const mapStateToProps = ({ user, share }) => {
-  const email = user && user.email
+  const email = (user && user.email) || ''
   return { email, ...share }
 }
 
