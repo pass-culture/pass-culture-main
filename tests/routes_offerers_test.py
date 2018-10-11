@@ -132,15 +132,14 @@ def test_get_offerer_bookings_returns_bookings_with_only_public_user_info_and_no
         last_name='Aimarx'
     )
     deposit = create_deposit(user, now, amount=24000)
-    PcObject.check_and_save(deposit)
     offerer = create_offerer()
     user_offerer = create_user_offerer(user_pro, offerer)
-    PcObject.check_and_save(user_offerer)
-
     venue = create_venue(offerer)
     stock = create_stock_with_event_offer(offerer, venue, price=20)
     booking = create_booking(user, stock, venue, recommendation=None, quantity=2)
-    PcObject.check_and_save(booking)
+
+    PcObject.check_and_save(deposit, user_offerer, booking)
+
     auth_request = req_with_auth(email=user_pro.email, password='p@55sw0rd')
 
     # when
@@ -168,11 +167,8 @@ def test_get_offerer_bookings_returns_bookings_with_public_user_info_and_token_w
         last_name='Aimarx'
     )
     deposit = create_deposit(user, now, amount=24000)
-    PcObject.check_and_save(deposit)
     offerer = create_offerer()
     user_offerer = create_user_offerer(user_pro, offerer)
-    PcObject.check_and_save(user_offerer)
-
     venue = create_venue(offerer)
     stock = create_stock_with_event_offer(offerer, venue, price=20)
     booking = create_booking(user,
@@ -182,7 +178,9 @@ def test_get_offerer_bookings_returns_bookings_with_public_user_info_and_token_w
         quantity=2,
         is_used=True
     )
-    PcObject.check_and_save(booking)
+
+    PcObject.check_and_save(deposit, user_offerer, booking)
+
     auth_request = req_with_auth(email=user_pro.email, password='p@55sw0rd')
 
     # when
