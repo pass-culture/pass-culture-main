@@ -48,6 +48,8 @@ class PriceQuantityForm extends Component {
               name="price"
               placeholder="Gratuit"
               type="number"
+              step="0.01"
+              min="0"
               title="Prix"
             />
           </td>
