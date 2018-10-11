@@ -29,6 +29,7 @@ def upgrade():
         sa.Column('iban', sa.VARCHAR(27), nullable=True),
         sa.Column('bookingId', sa.BigInteger, ForeignKey('booking.id'), index=True, nullable=False),
         sa.Column('amount', sa.Numeric(10, 2), nullable=False),
+        sa.Column('reimbursementRule', sa.VARCHAR(200), nullable=False)
     )
 
     op.create_table(

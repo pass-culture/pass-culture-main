@@ -2,19 +2,7 @@ from abc import ABC, abstractmethod
 from decimal import Decimal
 from enum import Enum
 
-
-class BookingReimbursement:
-    def __init__(self, booking, reimbursement, reimbursed_amount):
-        self.booking = booking
-        self.reimbursement = reimbursement
-        self.reimbursed_amount = reimbursed_amount
-
-    def as_dict(self, **kwargs):
-        dict_booking = self.booking._asdict(**kwargs)
-        dict_booking['token'] = dict_booking['token'] if dict_booking['isUsed'] else None
-        dict_booking['reimbursed_amount'] = self.reimbursed_amount
-        dict_booking['reimbursement_rule'] = self.reimbursement.value.description
-        return dict_booking
+from models import Booking
 
 
 class ReimbursementRule(ABC):
@@ -75,6 +63,20 @@ class ReimbursementRules(Enum):
     DIGITAL_THINGS = DigitalThingsReimbursement()
     PHYSICAL_OFFERS = PhysicalOffersReimbursement()
     MAX_REIMBURSEMENT = MaxReimbursementByOfferer()
+
+
+class BookingReimbursement:
+    def __init__(self, booking: Booking, reimbursement: ReimbursementRules, reimbursed_amount: Decimal):
+        self.booking = booking
+        self.reimbursement = reimbursement
+        self.reimbursed_amount = reimbursed_amount
+
+    def as_dict(self, include=None):
+        dict_booking = self.booking._asdict(include=include)
+        dict_booking['token'] = dict_booking['token'] if dict_booking['isUsed'] else None
+        dict_booking['reimbursed_amount'] = self.reimbursed_amount
+        dict_booking['reimbursement_rule'] = self.reimbursement.value.description
+        return dict_booking
 
 
 def find_all_booking_reimbursement(bookings):

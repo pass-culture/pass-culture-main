@@ -1,13 +1,11 @@
 """ transfer model """
-import enum
 
 from sqlalchemy import BigInteger, \
     Column, \
     ForeignKey, \
     String, \
     Numeric, \
-    Text, \
-    Enum
+    Text
 from sqlalchemy.orm import relationship
 
 from models.db import Model
@@ -29,6 +27,8 @@ class Payment(PcObject, Model):
                            backref='payments')
 
     amount = Column(Numeric(10, 2), nullable=False)
+
+    reimbursementRule = Column(String(200), nullable=False)
 
     recipient = Column(String(140), nullable=False)
 
