@@ -27,6 +27,15 @@ def pc_send_final_booking_recaps():
     print("Cron send_final_booking_recaps: END")
 
 
+def pc_generate_payments():
+    print("Cron generate_payments: START")
+    with app.app_context():
+        from scripts.payments import generate_payments
+        generate_payments()
+
+    print("Cron generate_payments: END")
+
+
 def pc_restore_database():
     print("Cron update database: START")
     if "TARGET_DATABASE" not in os.environ:
@@ -75,6 +84,6 @@ def pc_restore_database():
 if __name__ == '__main__':
     scheduler = BlockingScheduler()
     scheduler.add_job(pc_send_final_booking_recaps, 'cron', id='send_final_booking_recaps', minute='*/10')
-    scheduler.add_job(pc_restore_database, 'cron', id='restore_database', minute='*/5') # day_of_week='mon')
-
+    scheduler.add_job(pc_restore_database, 'cron', id='restore_database', minute='*/5')
+    scheduler.add_job(pc_generate_payments, 'cron', id='generate_payments', day='1,15')
     scheduler.start()

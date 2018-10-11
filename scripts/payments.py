@@ -1,7 +1,19 @@
+import traceback
+from pprint import pprint
+
 from domain.payments import filter_out_already_paid_for_bookings, create_payment_for_booking
 from domain.reimbursement import find_all_booking_reimbursement
 from models import Offerer, PcObject
 from repository.booking_queries import find_final_offerer_bookings
+
+
+def generate_payments():
+    try:
+        do_generate_payments()
+    except Exception as e:
+        print('ERROR: ' + str(e))
+        traceback.print_tb(e.__traceback__)
+        pprint(vars(e))
 
 
 def do_generate_payments():
