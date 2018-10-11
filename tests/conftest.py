@@ -13,6 +13,7 @@ from models.activity import load_activity
 from models.db import db
 from models.install import install_models
 from models.payment import Payment
+from models.payment_status import PaymentStatus
 
 items_by_category = {'first': [], 'last': []}
 
@@ -71,6 +72,7 @@ def clean_database(f):
         """ Order of deletions matters because of foreign key constraints """
         Activity = load_activity()
         VenueProvider.query.delete()
+        PaymentStatus.query.delete()
         Payment.query.delete()
         Booking.query.delete()
         Stock.query.delete()

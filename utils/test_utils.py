@@ -16,6 +16,7 @@ from models.event_occurrence import EventOccurrence
 from models.offer import Offer
 from models.offerer import Offerer
 from models.payment import Payment
+from models.payment_status import PaymentStatus, TransactionStatus
 from models.stock import Stock
 from models.user import User
 from models.venue import Venue
@@ -573,11 +574,16 @@ def create_mocked_bookings(num_bookings, venue_email, name='Offer name'):
     return bookings
 
 
-def create_payment(booking, offerer, amount, author='test author', recipient='recipient'):
+def create_payment(booking, offerer, amount, author='test author', recipient='recipient',
+                   reimbursement_rule='remboursement à 100%'):
     payment = Payment()
     payment.booking = booking
     payment.offerer = offerer
     payment.amount = amount
     payment.author = author
     payment.recipient = recipient
+    payment_status = PaymentStatus()
+    payment_status.status = TransactionStatus.PENDING
+    payment.statuses = [payment_status]
+    payment.reimbursementRule = reimbursement_rule
     return payment
