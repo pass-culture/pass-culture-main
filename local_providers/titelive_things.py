@@ -16,7 +16,7 @@ DATE_FORMAT = "%d/%m/%Y"
 DATETIME_FORMAT = "%d/%m/%Y %H:%M:%S"
 DATE_REGEXP = re.compile('Quotidien(\d+).tit')
 FTP_TITELIVE = ftplib.FTP(os.environ.get("FTP_TITELIVE_URI"))
-
+FOLDER_NAME_TITELIVE = 'livre3_11'
 
 def read_date(date):
     return datetime.strptime(date, DATE_FORMAT)
@@ -32,11 +32,6 @@ def file_date(filename):
         raise ValueError('Invalid filename in titelive_works : '
                          + filename)
     return int(match.group(1))
-
-
-def grp(pat, txt):
-    r = re.search(pat, txt)
-    return r.group(0) if r else '&'
 
 
 class TiteLiveThings(LocalProvider):
@@ -57,7 +52,7 @@ class TiteLiveThings(LocalProvider):
             self.is_mock = True
             data_root_path = Path(os.path.dirname(os.path.realpath(__file__)))\
                             / '..' / 'sandboxes' / 'providers' / 'titelive_works'
-            data_thing_paths = data_root_path / 'livre3_11'
+            data_thing_paths = data_root_path / FOLDER_NAME_TITELIVE
             all_thing_files = sorted(data_thing_paths.glob('Quotidien*.tit'))
             if not os.path.isdir(data_root_path):
                 raise ValueError('File not found : '+str(data_root_path)
@@ -68,15 +63,10 @@ class TiteLiveThings(LocalProvider):
                 FTP_TITELIVE_PWD = os.environ.get("FTP_TITELIVE_PWD")
                 FTP_TITELIVE.login(FTP_TITELIVE_USER, FTP_TITELIVE_PWD)
                 data_root_path = ''
-                data_thing_paths = data_root_path + 'livre3_11/'
+                data_thing_paths = data_root_path + FOLDER_NAME_TITELIVE
 
-                # try:
                 files_list = FTP_TITELIVE.nlst(data_thing_paths)
-                # except ftplib.error_perm, resp:
-                #     if str(resp) == "550 No files found":
-                #         raise ValueError('File not found : '+str(data_root_path))
-                #     else:
-                #         raise ValueError('Error inconnue')
+
                 files_list_final = [file_name for file_name in files_list if DATE_REGEXP.search(str(file_name))]
 
                 all_thing_files = sorted(files_list_final)
