@@ -158,7 +158,7 @@ def test_get_offerer_bookings_returns_bookings_with_only_public_user_info_and_no
 
 @pytest.mark.standalone
 @clean_database
-def test_get_offerer_bookings_returns_bookings_with_publib_user_info_and_token_when_it_is_used(app):
+def test_get_offerer_bookings_returns_bookings_with_public_user_info_and_token_when_it_is_used(app):
     # given
     now = datetime.utcnow()
     user_pro = create_user(can_book_free_offers=False, password='p@55sw0rd')
