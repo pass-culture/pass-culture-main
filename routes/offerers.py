@@ -4,7 +4,7 @@ from flask_login import current_user, login_required
 
 from domain.admin_emails import maybe_send_offerer_validation_email
 from domain.reimbursement import find_all_booking_reimbursement
-from models import Offerer, PcObject, RightsType, ApiErrors
+from models import Offerer, PcObject, RightsType
 from models.venue import create_digital_venue
 from repository.booking_queries import find_offerer_bookings
 from repository.user_offerer_queries import filter_query_where_user_is_user_offerer_and_is_validated

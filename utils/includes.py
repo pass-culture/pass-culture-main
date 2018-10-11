@@ -129,7 +129,11 @@ PRO_BOOKING_INCLUDES = [
     },
     {
         "key": 'user',
-        "resolve": (lambda element, filters: {'email': element['email']}),
+        "resolve": (lambda element, filters: {
+            'email': element['email'],
+            'firstName': element['firstName'],
+            'lastName': element['lastName']
+        }),
     }
 ]
 

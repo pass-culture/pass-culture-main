@@ -9,8 +9,9 @@ class BookingReimbursement:
         self.reimbursement = reimbursement
         self.reimbursed_amount = reimbursed_amount
 
-    def as_dict(self, include=None):
-        dict_booking = self.booking._asdict(include=include)
+    def as_dict(self, **kwargs):
+        dict_booking = self.booking._asdict(**kwargs)
+        dict_booking['token'] = dict_booking['token'] if dict_booking['isUsed'] else None
         dict_booking['reimbursed_amount'] = self.reimbursed_amount
         dict_booking['reimbursement_rule'] = self.reimbursement.value.description
         return dict_booking
