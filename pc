@@ -39,6 +39,13 @@ else
   ENV=${ENV:-'development'}
 fi
 
+if [[ $# -gt 2 ]] && [[ "$1" == "-b" ]]; then
+  BACKEND=$2
+  shift 2
+else
+  BACKEND=${BACKEND:-'localhost'}
+fi
+
 API_HOST='localhost:80'
 if [[ "$ENV" == "production" ]]; then
 	API_HOST=api.passculture.beta.gouv.fr
@@ -297,11 +304,10 @@ elif [[ "$CMD" == "start-webapp" ]] || [[ "$CMD" == "start-pro" ]]; then
 	else
 		RUN='cd $ROOT_PATH/pro'
 	fi
-	if [[ $# == 1 ]] && [[ $1 == '-t' ]]; then
-		RUN=$RUN' && NGROK_API_URL='$(node $ROOT_PATH/webapp/scripts/ngrok.js)
-	fi
-	if [[ "$ENV" == "testing" ]]; then
+	if [[ "$BACKEND" == "testing" ]]; then
 		RUN=$RUN' && export THUMBS_URL=https://storage.gra3.cloud.ovh.net/v1/AUTH_810600e32fdc4cb49a8d15332b68d2cc/storage-pc/thumbs/ && export API_URL=https://backend.passculture-testing.beta.gouv.fr'
+	elif [[ "$BACKEND" == "ngrok" ]]; then
+		RUN=$RUN' && NGROK_API_URL='$(node $ROOT_PATH/webapp/scripts/ngrok.js)
 	fi
 	RUN=$RUN' && yarn start'
 elif [[ "$CMD" == "start-ios" ]]; then
