@@ -98,10 +98,10 @@
       <path value="$PROJECT_DIR$/package.json" />
     </packageJsonPaths>
   </component>
-  <component name="ProjectFrameBounds" extendedState="4">
-    <option name="y" value="30" />
+  <component name="ProjectFrameBounds">
+    <option name="y" value="23" />
     <option name="width" value="959" />
-    <option name="height" value="1049" />
+    <option name="height" value="773" />
   </component>
   <component name="ProjectView">
     <navigator proportions="" version="1">
@@ -160,6 +160,7 @@
     </panes>
   </component>
   <component name="PropertiesComponent">
+    <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/../shared" />
     <property name="node.js.detected.package.eslint" value="true" />

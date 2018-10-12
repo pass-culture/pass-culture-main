@@ -9,11 +9,11 @@ const ProfilePicture = ({ colored, ...props }) => {
 }
 
 ProfilePicture.defaultProps = {
-  colored: null,
+  colored: false,
 }
 
 ProfilePicture.propTypes = {
-  colored: PropTypes.string,
+  colored: PropTypes.bool,
 }
 
 export default ProfilePicture

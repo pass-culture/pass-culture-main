@@ -1,20 +1,18 @@
 import React from 'react'
 import { shallow } from 'enzyme'
 
-import TermsPage from '../TermsPage'
-import { version } from '../../../../package.json'
+import PageHeader from '../PageHeader'
 
-describe('src | components | pages | TermsPage', () => {
+describe('src | components | pages | PageHeader', () => {
   describe('snapshot', () => {
     it('should match snapshot', () => {
       // given
       const props = {
-        appversion: version,
-        dispatch: jest.fn(),
+        title: 'fake title',
       }
 
       // when
-      const wrapper = shallow(<TermsPage {...props} />)
+      const wrapper = shallow(<PageHeader {...props} />)
 
       // then
       expect(wrapper).toBeDefined()
