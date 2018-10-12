@@ -26,10 +26,9 @@ describe('src | components | pages | search | utils', () => {
     it('should render permanent is there is no date given', () => {
       // given
       const recommendation = recommendations[0]
-      const tz = 'Europe/Paris'
 
       // when
-      const result = getRecommendationDateString(recommendation.offer, tz)
+      const result = getRecommendationDateString(recommendation.offer)
 
       // then
       expect(result).toEqual('permanent')
@@ -37,15 +36,14 @@ describe('src | components | pages | search | utils', () => {
     it('should render date is there is a date range for Europe/Paris Timezone', () => {
       // given
       const recommendation = recommendations[5]
-      const tz = 'Europe/Paris'
 
       // when
-      const result = getRecommendationDateString(recommendation.offer, tz)
+      const result = getRecommendationDateString(recommendation.offer)
 
       // then
       expect(result).toEqual('du Jeudi 25/10/2018 au Vendredi 26/10/2018')
     })
-    it('should render date is there is a date range for Cayenne Timezone', () => {
+    it.only('should render date is there is a date range for Cayenne Timezone', () => {
       // given
       const recommendation = {
         id: 'AEWP9',
@@ -147,7 +145,7 @@ describe('src | components | pages | search | utils', () => {
             bookingEmail: 'contact@cotecourt.org',
             city: 'Cayenne',
             dateModifiedAtLastProvider: '2018-10-05T13:46:48.082384Z',
-            departementCode: '973',
+            departementCode: '97',
             firstThumbDominantColor: null,
             id: 'ARAQ',
             idAtProviders: null,
@@ -189,7 +187,6 @@ describe('src | components | pages | search | utils', () => {
         validUntilDate: '2018-10-13T14:19:05.431082Z',
         bookingsIds: [],
       }
-      // const tz = 'America/Cayenne'
 
       // when
       const result = getRecommendationDateString(recommendation.offer)
