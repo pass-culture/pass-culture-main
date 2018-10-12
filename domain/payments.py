@@ -12,8 +12,10 @@ def create_payment_for_booking(booking_reimbursement: BookingReimbursement) -> P
     payment.amount = booking_reimbursement.reimbursed_amount
     payment.reimbursementRule = booking_reimbursement.reimbursement.value.description
     payment.author = 'batch'
-    payment.recipient = booking_reimbursement.booking.stock.resolvedOffer.venue.managingOfferer.name
-    payment.iban = booking_reimbursement.booking.stock.resolvedOffer.venue.managingOfferer.iban
+    offerer = booking_reimbursement.booking.stock.resolvedOffer.venue.managingOfferer
+    payment.recipient = offerer.name
+    payment.iban = offerer.iban
+    payment.bic = offerer.bic
     payment.statuses = [_create_status_for_payment(payment)]
     return payment
 
@@ -30,5 +32,5 @@ def _create_status_for_payment(payment):
         payment_status.status = TransactionStatus.PENDING
     else:
         payment_status.status = TransactionStatus.NOT_PROCESSABLE
-        payment_status.detail = 'IBAN manquant sur l\'offreur'
+        payment_status.detail = 'IBAN et BIC manquants sur l\'offreur'
     return payment_status
