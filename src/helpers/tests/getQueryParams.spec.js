@@ -1,5 +1,5 @@
 /* eslint no-console: 0, max-nested-callbacks: 0 */
-import { getQueryParams, getQueryURL } from './getQueryParams'
+import { getQueryParams, getQueryURL } from '../getQueryParams'
 
 describe('getQueryParams', () => {
   beforeEach(() => {})

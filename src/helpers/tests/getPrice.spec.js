@@ -1,4 +1,4 @@
-import { getPrice } from './getPrice'
+import { getPrice } from '../getPrice'
 
 describe('getPrice - format a value with devise', () => {
   it('should return empty string if undefined || null', () => {
