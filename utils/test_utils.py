@@ -582,9 +582,10 @@ def create_payment(booking, offerer, amount, author='test author', recipient='re
                    reimbursement_rule='remboursement à 100%'):
     payment = Payment()
     payment.booking = booking
-    payment.offerer = offerer
     payment.amount = amount
     payment.author = author
+    payment.iban = offerer.iban
+    payment.bic = offerer.bic
     payment.recipient = recipient
     payment_status = PaymentStatus()
     payment_status.status = TransactionStatus.PENDING

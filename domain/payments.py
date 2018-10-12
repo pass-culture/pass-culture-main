@@ -1,4 +1,5 @@
 from datetime import datetime
+from itertools import groupby
 from typing import List
 
 from flask import render_template
@@ -34,7 +35,21 @@ def filter_out_already_paid_for_bookings(booking_reimbursements: List[BookingRei
 
 
 def generate_transaction_file(payments: List[Payment]) -> str:
-    return render_template('transactions/transaction_banque_de_france.xml')
+    total_amount = sum([payment.amount for payment in payments])
+
+    payments_by_iban = {}
+    for payment in filter(lambda x: x.iban, payments):
+        if payment.iban in payments_by_iban:
+            payments_by_iban[payment.iban].append(payment)
+        else:
+            payments_by_iban[payment.iban] = [payment]
+
+    return render_template(
+        'transactions/transaction_banque_de_france.xml',
+        payments_by_iban=payments_by_iban,
+        number_of_transactions=len(payments_by_iban),
+        total_amount=total_amount
+    )
 
 
 def _create_status_for_payment(payment):

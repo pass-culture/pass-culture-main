@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Document xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="urn:iso:std:iso:20022:tech:xsd:pain.001.001.03">
+<Document xmlns="urn:iso:std:iso:20022:tech:xsd:pain.001.001.03">
     <CstmrCdtTrfInitn>
         <GrpHdr>
             <MsgId>XXXX-SCTSCT-17324-512</MsgId>
             <CreDtTm>2017-11-20T04:05:13</CreDtTm>
-            <NbOfTxs>7</NbOfTxs>
-            <CtrlSum>30</CtrlSum>
+            <NbOfTxs>{{ number_of_transactions }}</NbOfTxs>
+            <CtrlSum>{{ total_amount }}</CtrlSum>
             <InitgPty>
-                <Nm>Nom de Emetteur</Nm>
+                <Nm>pass Culture</Nm>
             </InitgPty>
         </GrpHdr>
         <PmtInf>
             <PmtInfId>identification-lot</PmtInfId>
             <PmtMtd>TRF</PmtMtd>
-            <NbOfTxs>7</NbOfTxs>
-            <CtrlSum>1781426.64</CtrlSum>
+            <NbOfTxs>{{ number_of_transactions }}</NbOfTxs>
+            <CtrlSum>{{ total_amount }}</CtrlSum>
             <PmtTpInf>
                 <SvcLvl>
                     <Cd>SEPA</Cd>
@@ -25,7 +25,7 @@
             </PmtTpInf>
             <ReqdExctnDt>{{ requested_execution_date }}</ReqdExctnDt>
             <Dbtr>
-                <Nm>nom du donneur ordre</Nm>
+                <Nm>pass Culture</Nm>
             </Dbtr>
             <DbtrAcct>
                 <Id>
@@ -38,7 +38,7 @@
                 </FinInstnId>
             </DbtrAgt>
             <ChrgBr>SLEV</ChrgBr>
-            {% for transaction in transactions %}
+            {% for iban, payments in payments_by_iban.items() %}
             <CdtTrfTxInf>
                 <PmtId>
                     <EndToEndId>venue_id_transaction_id</EndToEndId>
@@ -51,34 +51,14 @@
                 </UltmtDbtr>
                 <CdtrAgt>
                     <FinInstnId>
-                        <BIC>BIC_offerer_ou_venue</BIC>
+                        <BIC>{{ bic }}</BIC>
                     </FinInstnId>
                 </CdtrAgt>
-                <Cdtr>
-                    <Nm>Nom du beneficiaire1</Nm>
-                    <Id>
-                        <OrgId>
-                            <Othr>
-                                <Id>humanized id</Id>
-                            </Othr>
-                        </OrgId>
-                    </Id>
-                </Cdtr>
                 <CdtrAcct>
                     <Id>
-                        <IBAN>GB29NWBK60161331926819</IBAN>
+                        <IBAN>{{ iban }}</IBAN>
                     </Id>
                 </CdtrAcct>
-                <UltmtCdtr>
-                    <Nm>Nom du beneficiaire final</Nm>
-                    <Id>
-                        <OrgId>
-                            <Othr>
-                                <Id>identifiant</Id>
-                            </Othr>
-                        </OrgId>
-                    </Id>
-                </UltmtCdtr>
                 <Purp>
                     <Cd>GOVT</Cd>
                 </Purp>
