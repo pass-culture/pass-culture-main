@@ -12,10 +12,10 @@ from utils.human_ids import dehumanize
 from utils.includes import PRO_BOOKING_INCLUDES, OFFERER_INCLUDES
 from utils.mailing import MailServiceException
 from utils.rest import ensure_current_user_has_rights, \
-                       expect_json_data, \
-                       handle_rest_get_list, \
-                       load_or_404, \
-                       login_or_api_key_required
+    expect_json_data, \
+    handle_rest_get_list, \
+    load_or_404, \
+    login_or_api_key_required
 from utils.search import get_keywords_filter
 from validation.offerers import check_valid_edition
 

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Document xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="urn:iso:std:iso:20022:tech:xsd:pain.001.001.03">
+    <CstmrCdtTrfInitn>
+        <GrpHdr>
+            <MsgId>XXXX-SCTSCT-17324-512</MsgId>
+            <CreDtTm>2017-11-20T04:05:13</CreDtTm>
+            <NbOfTxs>7</NbOfTxs>
+            <CtrlSum>1781426.64</CtrlSum>
+            <InitgPty>
+                <Nm>Nom de Emetteur</Nm>
+            </InitgPty>
+        </GrpHdr>
+        <PmtInf>
+            <PmtInfId>identification-lot</PmtInfId>
+            <PmtMtd>TRF</PmtMtd>
+            <NbOfTxs>7</NbOfTxs>
+            <CtrlSum>1781426.64</CtrlSum>
+            <PmtTpInf>
+                <SvcLvl>
+                    <Cd>SEPA</Cd>
+                </SvcLvl>
+                <CtgyPurp>
+                    <Cd>GOVT</Cd>
+                </CtgyPurp>
+            </PmtTpInf>
+            <ReqdExctnDt>{{ requested_execution_date }}</ReqdExctnDt>
+            <Dbtr>
+                <Nm>nom du donneur ordre</Nm>
+            </Dbtr>
+            <DbtrAcct>
+                <Id>
+                    <IBAN>FR0130001XXXXXXXXXXXXXXXXXX</IBAN>
+                </Id>
+            </DbtrAcct>
+            <DbtrAgt>
+                <FinInstnId>
+                    <BIC>BDFEFRPPCCT</BIC>
+                </FinInstnId>
+            </DbtrAgt>
+            <ChrgBr>SLEV</ChrgBr>
+            {% for transaction in transactions %}
+            <CdtTrfTxInf>
+                <PmtId>
+                    <EndToEndId>venue_id_transaction_id</EndToEndId>
+                </PmtId>
+                <Amt>
+                    <InstdAmt Ccy="EUR">890289.01</InstdAmt>
+                </Amt>
+                <UltmtDbtr>
+                    <Nm>nom du donneur ordre initial</Nm>
+                </UltmtDbtr>
+                <CdtrAgt>
+                    <FinInstnId>
+                        <BIC>BIC_offerer_ou_venue</BIC>
+                    </FinInstnId>
+                </CdtrAgt>
+                <Cdtr>
+                    <Nm>Nom du beneficiaire1</Nm>
+                    <Id>
+                        <OrgId>
+                            <Othr>
+                                <Id>humanized id</Id>
+                            </Othr>
+                        </OrgId>
+                    </Id>
+                </Cdtr>
+                <CdtrAcct>
+                    <Id>
+                        <IBAN>GB29NWBK60161331926819</IBAN>
+                    </Id>
+                </CdtrAcct>
+                <UltmtCdtr>
+                    <Nm>Nom du beneficiaire final</Nm>
+                    <Id>
+                        <OrgId>
+                            <Othr>
+                                <Id>identifiant</Id>
+                            </Othr>
+                        </OrgId>
+                    </Id>
+                </UltmtCdtr>
+                <Purp>
+                    <Cd>GOVT</Cd>
+                </Purp>
+            </CdtTrfTxInf>
+            {% endfor %}
+        </PmtInf>
+    </CstmrCdtTrfInitn>
+</Document>

@@ -7,7 +7,6 @@ from pathlib import Path
 from unittest.mock import Mock
 
 import requests as req
-import simplejson
 from postgresql_audit.flask import versioning_manager
 
 from models import Thing, Deposit, UserOfferer, Recommendation, RightsType, Mediation, EventType, ThingType
@@ -16,6 +15,8 @@ from models.event import Event
 from models.event_occurrence import EventOccurrence
 from models.offer import Offer
 from models.offerer import Offerer
+from models.payment import Payment
+from models.payment_status import PaymentStatus, TransactionStatus
 from models.stock import Stock
 from models.user import User
 from models.venue import Venue
@@ -186,14 +187,14 @@ def req_with_auth(email=None, password=None, headers={'origin': 'http://localhos
 
 
 def create_booking(
-    user,
-    stock=None,
-    venue=None,
-    recommendation=None,
-    quantity=1,
-    date_modified=datetime.utcnow(),
-    is_cancelled=False,
-    is_used=False
+        user,
+        stock=None,
+        venue=None,
+        recommendation=None,
+        quantity=1,
+        date_modified=datetime.utcnow(),
+        is_cancelled=False,
+        is_used=False
 ):
     booking = Booking()
     if venue is None:
@@ -235,10 +236,10 @@ def create_booking_for_thing(url=None, amount=50, quantity=1, user=None):
 
 
 def create_booking_for_event(
-    amount=50,
-    quantity=1,
-    user=None,
-    isCancelled=False
+        amount=50,
+        quantity=1,
+        user=None,
+        isCancelled=False
 ):
     event = Event()
     offer = Offer()
@@ -277,12 +278,12 @@ def create_user(public_name='John Doe', first_name='John', last_name='Doe', post
 
 
 def create_stock_with_event_offer(
-    offerer,
-    venue,
-    beginning_datetime_future=True,
-    price=10,
-    booking_email='offer.booking.email@test.com',
-    available=10
+        offerer,
+        venue,
+        beginning_datetime_future=True,
+        price=10,
+        booking_email='offer.booking.email@test.com',
+        available=10
 ):
     stock = Stock()
     stock.offerer = offerer
@@ -350,7 +351,8 @@ def create_stock_with_thing_offer(offerer, venue, thing_offer, price=10, availab
     return stock
 
 
-def create_thing(thing_type=ThingType.LIVRE_EDITION, thing_name='Test Book', media_urls='test/urls', author_name='Test Author', url=None,
+def create_thing(thing_type=ThingType.LIVRE_EDITION, thing_name='Test Book', media_urls='test/urls',
+                 author_name='Test Author', url=None,
                  thumb_count=1, is_national=False):
     thing = Thing()
     thing.type = str(thing_type)
@@ -367,12 +369,12 @@ def create_thing(thing_type=ThingType.LIVRE_EDITION, thing_name='Test Book', med
 
 
 def create_event(
-    event_name='Test event',
-    duration_minutes=60,
-    thumb_count=0,
-    dominant_color=None,
-    is_national=False,
-    type=EventType.SPECTACLE_VIVANT
+        event_name='Test event',
+        duration_minutes=60,
+        thumb_count=0,
+        dominant_color=None,
+        is_national=False,
+        type=EventType.SPECTACLE_VIVANT
 ):
     event = Event()
     event.name = event_name
@@ -400,7 +402,8 @@ def create_thing_offer(venue, thing=None, date_created=datetime.utcnow(), bookin
 
 
 def create_event_offer(venue, event=None, event_name='Test event', duration_minutes=60, date_created=datetime.utcnow(),
-                       booking_email='booking.email@test.com', thumb_count=0, dominant_color=None, event_type=EventType.SPECTACLE_VIVANT):
+                       booking_email='booking.email@test.com', thumb_count=0, dominant_color=None,
+                       event_type=EventType.SPECTACLE_VIVANT):
     offer = Offer()
     if event is None:
         event = create_event(event_name=event_name, duration_minutes=duration_minutes, thumb_count=thumb_count,
@@ -422,14 +425,14 @@ def create_n_mixed_offers_with_same_venue(venue, n=10):
 
 
 def create_offerer(
-    siren='123456789',
-    address='123 rue de Paris',
-    city='Montreuil',
-    postal_code='93100',
-    name='Test Offerer',
-    validation_token=None,
-    iban=None,
-    bic=None
+        siren='123456789',
+        address='123 rue de Paris',
+        city='Montreuil',
+        postal_code='93100',
+        name='Test Offerer',
+        validation_token=None,
+        iban=None,
+        bic=None
 ):
     offerer = Offerer()
     offerer.siren = siren
@@ -445,17 +448,17 @@ def create_offerer(
 
 
 def create_venue(
-    offerer,
-    name='La petite librairie',
-    booking_email='john.doe@test.com',
-    address='123 rue de Paris',
-    postal_code='93100',
-    city='Montreuil',
-    departement_code='93',
-    is_virtual=False,
-    longitude="2.4002701",
-    latitude="48.8363788",
-    siret='12345678912345'
+        offerer,
+        name='La petite librairie',
+        booking_email='john.doe@test.com',
+        address='123 rue de Paris',
+        postal_code='93100',
+        city='Montreuil',
+        departement_code='93',
+        is_virtual=False,
+        longitude="2.4002701",
+        latitude="48.8363788",
+        siret='12345678912345'
 ):
     venue = Venue()
     venue.bookingEmail = booking_email
@@ -506,9 +509,9 @@ def create_recommendation(offer=None,
 
 
 def create_event_occurrence(
-    offer,
-    beginning_datetime=datetime.utcnow() + timedelta(hours=2),
-    end_datetime=datetime.utcnow() + timedelta(hours=5)
+        offer,
+        beginning_datetime=datetime.utcnow() + timedelta(hours=2),
+        end_datetime=datetime.utcnow() + timedelta(hours=5)
 ):
     event_occurrence = EventOccurrence()
     event_occurrence.offer = offer
@@ -569,3 +572,18 @@ def create_mocked_bookings(num_bookings, venue_email, name='Offer name'):
         booking.stock.resolvedOffer.eventOrThing.name = name
         bookings.append(booking)
     return bookings
+
+
+def create_payment(booking, offerer, amount, author='test author', recipient='recipient',
+                   reimbursement_rule='remboursement à 100%'):
+    payment = Payment()
+    payment.booking = booking
+    payment.offerer = offerer
+    payment.amount = amount
+    payment.author = author
+    payment.recipient = recipient
+    payment_status = PaymentStatus()
+    payment_status.status = TransactionStatus.PENDING
+    payment.statuses = [payment_status]
+    payment.reimbursementRule = reimbursement_rule
+    return payment
