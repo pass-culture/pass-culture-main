@@ -245,6 +245,28 @@ class VenuePage extends Component {
                 />
               </div>
             </div>
+
+            <div className="section">
+              <h2 className="main-list-title">
+                INFORMATIONS BANCAIRES
+                <span className="is-pulled-right is-size-7 has-text-grey">
+                  Les champs marqués d'un{' '}
+                  <span className="required-legend"> * </span> sont obligatoires
+                </span>
+              </h2>
+              <div className="field-group">
+                <Field isExpanded label="BIC" name="bic" type="bic" required />
+
+                <Field
+                  isExpanded
+                  label="IBAN"
+                  name="iban"
+                  type="iban"
+                  required
+                />
+              </div>
+            </div>
+
             <div className="section">
               <h2 className="main-list-title">ADRESSE</h2>
               <div className="field-group">
