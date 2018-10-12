@@ -1,8 +1,10 @@
 export const SET_GEOLOCATION_POSITION = 'SET_GEOLOCATION_POSITION'
 export const SET_GEOLOCATION_WATCH_ID = 'SET_GEOLOCATION_WATCH_ID'
 
+// INITIAL STATE
 const initialState = { latitude: null, longitude: null, watchId: null }
 
+// REDUCER
 function geolocation(state = initialState, action) {
   switch (action.type) {
     case SET_GEOLOCATION_POSITION:
@@ -17,6 +19,7 @@ function geolocation(state = initialState, action) {
   }
 }
 
+// ACTION CREATORS
 export function setGeolocationPosition({ latitude, longitude }) {
   return { latitude, longitude, type: SET_GEOLOCATION_POSITION }
 }

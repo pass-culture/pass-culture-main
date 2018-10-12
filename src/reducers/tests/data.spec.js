@@ -1,20 +1,13 @@
 import data from '../data'
 
 describe('src | reducers | data  ', () => {
-  beforeEach(() => {
-    const state = {
-      bookings: [],
-      recommendations: [],
-    }
-  })
-
   it('should return the initial state by default', () => {
     // given
     const action = {}
     const expected = {
       bookings: [],
       recommendations: [],
-      types: []
+      types: [],
     }
 
     // when
