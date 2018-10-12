@@ -62,7 +62,7 @@ describe('src | components | pages | SearchPage', () => {
           </Provider>
         )
         // then
-        // FAUX POSITIF
+        // FAUX POSITIF car ne demande pas des props qui sont required pourtant... Le snapshot n'est pas bon non plus
       })
     })
   })

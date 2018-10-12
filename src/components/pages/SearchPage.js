@@ -17,14 +17,14 @@ import NavResultsHeader from './search/NavResultsHeader'
 import SearchFilter from './search/SearchFilter'
 import SearchResults from './search/SearchResults'
 import filterIconByState, {
-  descriptionForSublabel,
+  getDescriptionForSublabel,
   INITIAL_FILTER_PARAMS,
   isSearchFiltersAdded,
 } from './search/utils'
 import Main from '../layout/Main'
 import NavigationFooter from '../layout/NavigationFooter'
 import { selectRecommendations } from '../../selectors'
-import selectTypeSublabels from '../../selectors/selectTypes'
+import selectTypeSublabels, { selectTypes } from '../../selectors/selectTypes'
 
 import { mapApiToWindow, windowToApiQuery } from '../../utils/pagination'
 
@@ -151,6 +151,7 @@ class SearchPage extends PureComponent {
       pagination,
       recommendations,
       typeSublabels,
+      typeSublabelsAndDescription,
     } = this.props
 
     const searchPageTitle =
@@ -167,51 +168,12 @@ class SearchPage extends PureComponent {
     const isfilterIconActive = filterIconByState(filtersActive)
     const filtersToggleButtonClass = (withFilter && 'filters-are-opened') || ''
 
-    // FIXME Waiting for api get styles to return typeSublabelsAndDescription
-    const typeSublabelsAndDescription = [
-      {
-        description:
-          'Voulez-vous suivre un géant de 12 mètres dans la ville ? Rire devant un seul-en-scène ? Rêver le temps d’un opéra ou d’un spectacle de danse, assister à une pièce de théâtre, ou vous laisser conter une histoire ?',
-        sublabel: 'Applaudir',
-      },
-      {
-        description: 'Lorem Ipsum Jouer',
-        sublabel: 'Jouer',
-      },
-      {
-        description: 'Lorem Ipsum Lire',
-        sublabel: 'Lire',
-      },
-      {
-        description: 'Lorem Ipsum Pratiquer',
-        sublabel: 'Pratiquer',
-      },
-      {
-        description: 'Lorem Ipsum Regarder',
-        sublabel: 'Regarder',
-      },
-      {
-        description: 'Lorem Ipsum Rencontrer',
-        sublabel: 'Rencontrer',
-      },
-      {
-        description: 'Lorem Ipsum Écouter',
-        sublabel: 'Écouter',
-      },
-    ]
-
     let category
     let description
 
-    // if location.pathname contient /resultats/
-    // when api will ready change selectTypeSublabels to typeSublabelsAndDescription
-    // TODO
-    // import stateWithTypes from '../../../mocks/stateWithTypes'
-    // import selectTypes from '../../../selectors/selectTypes'
-
     if (location.pathname.indexOf('/resultats/') !== -1) {
       category = pagination.windowQuery.categories
-      description = descriptionForSublabel(
+      description = getDescriptionForSublabel(
         category,
         typeSublabelsAndDescription
       )
@@ -347,6 +309,7 @@ SearchPage.propTypes = {
   recommendations: PropTypes.array.isRequired,
   search: PropTypes.object.isRequired,
   typeSublabels: PropTypes.array.isRequired,
+  typeSublabelsAndDescription: PropTypes.array.isRequired,
 }
 
 export default compose(
@@ -368,6 +331,7 @@ export default compose(
   connect(state => ({
     recommendations: selectRecommendations(state),
     typeSublabels: selectTypeSublabels(state),
+    typeSublabelsAndDescription: selectTypes(state),
     user: state.user,
   }))
 )(SearchPage)

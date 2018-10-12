@@ -1,5 +1,5 @@
 import filterIconByState, {
-  descriptionForSublabel,
+  getDescriptionForSublabel,
   getFirstChangingKey,
   getRecommendationDateString,
   INITIAL_FILTER_PARAMS,
@@ -311,7 +311,7 @@ describe('src | components | pages | search | utils', () => {
     })
   })
 
-  describe('descriptionForSublabel', () => {
+  describe('getDescriptionForSublabel', () => {
     it('should return the description corresponding to the label', () => {
       const typeSublabels = [
         {
@@ -345,7 +345,7 @@ describe('src | components | pages | search | utils', () => {
         },
       ]
       const category = 'Applaudir'
-      const result = descriptionForSublabel(category, typeSublabels)
+      const result = getDescriptionForSublabel(category, typeSublabels)
 
       expect(result).toEqual(typeSublabels[0].description)
     })

@@ -69,7 +69,7 @@ export const getRecommendationDateString = offer => {
   return formatedDate
 }
 
-export const descriptionForSublabel = (category, data) => {
+export const getDescriptionForSublabel = (category, data) => {
   // TODO continue with special chars...
   const categoryWithoutSpecialChar = category.replace(/%C3%89/g, 'É')
   return find(data, ['sublabel', categoryWithoutSpecialChar]).description
