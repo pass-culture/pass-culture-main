@@ -5,7 +5,7 @@
             <MsgId>XXXX-SCTSCT-17324-512</MsgId>
             <CreDtTm>2017-11-20T04:05:13</CreDtTm>
             <NbOfTxs>7</NbOfTxs>
-            <CtrlSum>1781426.64</CtrlSum>
+            <CtrlSum>30</CtrlSum>
             <InitgPty>
                 <Nm>Nom de Emetteur</Nm>
             </InitgPty>

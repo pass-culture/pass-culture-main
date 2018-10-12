@@ -1,6 +1,8 @@
 from datetime import datetime
 from typing import List
 
+from flask import render_template
+
 from domain.reimbursement import BookingReimbursement
 from models.payment import Payment
 from models.payment_status import PaymentStatus, TransactionStatus
@@ -29,6 +31,10 @@ def create_payment_for_booking(booking_reimbursement: BookingReimbursement) -> P
 def filter_out_already_paid_for_bookings(booking_reimbursements: List[BookingReimbursement]) -> List[
     BookingReimbursement]:
     return list(filter(lambda x: not x.booking.payments, booking_reimbursements))
+
+
+def generate_transaction_file(payments: List[Payment]) -> str:
+    return render_template('transactions/transaction_banque_de_france.xml')
 
 
 def _create_status_for_payment(payment):

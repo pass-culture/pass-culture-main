@@ -1,14 +1,18 @@
 from datetime import datetime, timedelta
 from decimal import Decimal
+from io import BytesIO
 
 import pytest
+from lxml import etree
 
-from domain.payments import create_payment_for_booking, filter_out_already_paid_for_bookings
+from domain.payments import create_payment_for_booking, filter_out_already_paid_for_bookings, generate_transaction_file
 from domain.reimbursement import BookingReimbursement, ReimbursementRules
 from models import Offer, Venue, Booking
 from models.payment import Payment
 from models.payment_status import TransactionStatus
-from utils.test_utils import create_booking, create_stock, create_user, create_offerer, create_venue
+from utils.test_utils import create_booking, create_stock, create_user, create_offerer, create_payment, create_venue
+
+XML_NAMESPACE = {'ns': 'urn:iso:std:iso:20022:tech:xsd:pain.001.001.03'}
 
 
 @pytest.mark.standalone
@@ -133,3 +137,24 @@ def test_filter_out_already_paid_for_bookings():
     # Then
     assert len(bookings_not_paid) == 1
     assert not bookings_not_paid[0].booking.payments
+
+
+@pytest.mark.standalone
+def test_generate_transaction_file_computes_total_amount_of_transactions(app):
+    # Given
+    payments = []
+    offerer = create_offerer(iban='B135TGGEG532TG', bic='LAJR93')
+    payment1 = create_payment(Booking(), offerer, Decimal(10))
+    payments.append(payment1)
+    payment2 = create_payment(Booking(), offerer, Decimal(20))
+    payments.append(payment2)
+
+    # When
+    transaction_file = generate_transaction_file(payments)
+
+    # Then
+    xml = BytesIO(transaction_file.encode())
+    tree = etree.parse(xml, etree.XMLParser())
+    control_sum = tree.find('//ns:GrpHdr/ns:CtrlSum', namespaces=XML_NAMESPACE)
+
+    assert control_sum.text == '30'
