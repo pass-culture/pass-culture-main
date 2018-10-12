@@ -1,5 +1,5 @@
 import bookingSelector from '../booking'
-import state from './mocks/state'
+import state from '../../mocks/global_state_2_Testing_10_10_18'
 
 describe('bookingSelector', () => {
   // TODO
