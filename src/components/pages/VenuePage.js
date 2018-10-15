@@ -11,7 +11,7 @@ import {
   SubmitButton,
   withLogin,
 } from 'pass-culture-shared'
-import React, { Component } from 'react'
+import React, { Component, Fragment } from 'react'
 import { connect } from 'react-redux'
 import { NavLink, withRouter } from 'react-router-dom'
 import { compose } from 'redux'
@@ -136,6 +136,10 @@ class VenuePage extends Component {
     const { isNew, isReadOnly } = this.state
 
     const savedVenueId = get(venuePatch, 'id')
+    // TODO: offerer should provide a offerer.userRight
+    // to determine if it can edit iban stuff
+    // let s make true for now
+    const isRibEditable = !isReadOnly && true
     const isSiretReadOnly = get(venuePatch, 'siret')
     const isSiretSkipping = !venueId && name && !formSire
     const isReadOnlyFromGeoOrSiren = formGeo || formSire
@@ -184,7 +188,7 @@ class VenuePage extends Component {
             readOnly={isReadOnly}>
             <Field type="hidden" name="managingOffererId" />
             <div className="section">
-              <h2 className="main-list-title">
+              <h2 className="main-list-title is-relative">
                 IDENTIFIANTS
                 <span className="is-pulled-right is-size-7 has-text-grey">
                   Les champs marqués d'un{' '}
@@ -250,19 +254,33 @@ class VenuePage extends Component {
               <h2 className="main-list-title">
                 INFORMATIONS BANCAIRES
                 <span className="is-pulled-right is-size-7 has-text-grey">
-                  Les champs marqués d'un{' '}
-                  <span className="required-legend"> * </span> sont obligatoires
+                  {isRibEditable ? (
+                    <Fragment>
+                      Les champs marqués d'un{' '}
+                      <span className="required-legend"> * </span> sont
+                      obligatoires
+                    </Fragment>
+                  ) : (
+                    "Vous avez besoin d'être administrateur de la structure pour editer le rib et l'iban."
+                  )}
                 </span>
               </h2>
               <div className="field-group">
-                <Field isExpanded label="BIC" name="bic" type="bic" required />
+                <Field
+                  label="BIC"
+                  name="bic"
+                  readOnly={!isRibEditable}
+                  required
+                  type="bic"
+                />
 
                 <Field
                   isExpanded
                   label="IBAN"
                   name="iban"
-                  type="iban"
+                  readOnly={!isRibEditable}
                   required
+                  type="iban"
                 />
               </div>
             </div>
