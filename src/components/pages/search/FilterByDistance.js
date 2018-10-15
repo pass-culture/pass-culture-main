@@ -52,7 +52,7 @@ class FilterByDistance extends PureComponent {
     const distanceValue = filterState.query.distance || 20000
 
     return (
-      <div key={distanceKey} id="filter-by-distance" className="px12 pt20">
+      <div key={distanceKey} id="filter-by-distance" className="pt18">
         <h2 className="fs15 is-italic is-medium is-uppercase text-center mb12">
           {title}
         </h2>

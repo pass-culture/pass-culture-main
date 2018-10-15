@@ -56,14 +56,14 @@ class FilterByDates extends PureComponent {
     const days = decodeURI(filterState.query[mapApiToWindow.days] || '')
 
     return (
-      <div id="filter-by-dates" className="px12 pt20">
+      <div id="filter-by-dates" className="pt18">
         <h2 className="fs15 is-italic is-medium is-uppercase text-center mb12">
           {title}
         </h2>
         {/* FIXME: le scroll sous ios est pas terrible
         du fait que le input soit cliquable */}
-        <div className="pc-scroll-horizontal is-relative is-full-width">
-          <div className="list flex-columns pb32">
+        <div className="pc-scroll-horizontal is-relative is-full-width pb18">
+          <div className="list flex-columns pl18 pr18">
             {checkboxes.map(({ label, value }) => (
               <label
                 key={value}

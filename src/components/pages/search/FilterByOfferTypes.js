@@ -27,12 +27,12 @@ class FilterByOfferTypes extends PureComponent {
     const typesValue = decodeURI(filterState.query.categories || '')
 
     return (
-      <div id="filter-by-offer-types" className="px12 pt20">
+      <div id="filter-by-offer-types" className="pt18">
         <h2 className="fs15 is-italic is-medium is-uppercase text-center mb12">
           {title}
         </h2>
         <div className="pc-scroll-horizontal is-relative is-full-width">
-          <div className="list flex-columns">
+          <div className="list flex-columns pl18 pr18">
             {typeSublabels.map(typeSublabel => {
               const ischecked = typesValue.includes(typeSublabel)
               return (

@@ -147,7 +147,7 @@ class SearchFilter extends Component {
               />
               <div
                 id="search-filter-menu-footer-controls"
-                className="flex-columns mt20">
+                className="flex-columns mt18">
                 <button
                   className="no-background no-outline col-1of2 fs20 py12"
                   onClick={this.onResetClick}

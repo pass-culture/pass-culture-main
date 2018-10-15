@@ -205,7 +205,7 @@ class SearchPage extends PureComponent {
                   id="keywords"
                   defaultValue={keywordsValue}
                   className="input search-input"
-                  placeholder="Saisissez une recherche"
+                  placeholder="Mot-clé"
                   type="text"
                   onChange={this.onKeywordsChange}
                 />
@@ -237,7 +237,7 @@ class SearchPage extends PureComponent {
 
             <div
               id="search-filter-menu-toggle-button"
-              className={`flex-0 text-center flex-rows flex-center pb12 ml12 ${filtersToggleButtonClass}`}
+              className={`flex-0 text-center flex-rows flex-center pb12 ${filtersToggleButtonClass}`}
             >
               <button
                 type="button"

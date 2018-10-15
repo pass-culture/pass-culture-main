@@ -3,6 +3,8 @@ import PropTypes from 'prop-types'
 
 import { ROOT_PATH } from '../../../utils/config'
 
+// TODO > span font size is not the same
+
 const SearchPicture = ({ searchType }) => {
   const searchTypeWithoutSpecialChar = searchType.replace(/É/g, 'E')
   const src = `${ROOT_PATH}/icons/img-${searchTypeWithoutSpecialChar}.png`
@@ -12,7 +14,7 @@ const SearchPicture = ({ searchType }) => {
       <img src={src} alt={navigation} />
       <span
         style={{ backgroundOpacity: 0.75 }}
-        className="is-absolute text-left fs18 is-bold"
+        className="is-absolute text-left fs15"
       >
         {searchType}
       </span>
