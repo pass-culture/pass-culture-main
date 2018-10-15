@@ -12,6 +12,8 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.sql.expression import cast
 from sqlalchemy.sql.functions import coalesce
 
+from models.has_bank_information_mixin import HasBankInformation
+from models.versioned_mixin import VersionedMixin
 from models.db import Model
 from models.deactivable_mixin import DeactivableMixin
 from models.has_address_mixin import HasAddressMixin
@@ -30,6 +32,8 @@ class Offerer(PcObject,
               ProvidableMixin,
               NeedsValidationMixin,
               DeactivableMixin,
+              VersionedMixin,
+              HasBankInformation,
               Model):
     id = Column(BigInteger, primary_key=True)
 
@@ -44,15 +48,6 @@ class Offerer(PcObject,
 
     siren = Column(String(9), nullable=True,
                    unique=True)  # FIXME: should not be nullable, is until we have all SIRENs filled in the DB
-
-    iban = Column(
-        String(27), 
-        nullable=True)
-
-    bic = Column(String(11),
-                 CheckConstraint('(iban IS NULL AND bic IS NULL) OR (iban IS NOT NULL AND bic IS NOT NULL)',
-                                 name='check_iban_and_bic_xor_not_iban_and_not_bic'),
-                 nullable=True)
 
     def give_rights(self, user, rights):
         if user:
@@ -69,24 +64,7 @@ class Offerer(PcObject,
                 and (not len(self.siren) == 9):
             # TODO: or not verify_luhn(self.siren)):
             api_errors.addError('siren', 'Ce code SIREN est invalide')
-        if self.iban and self.bic:
-
-            try:
-                IBAN(self.iban)
-            except ValueError:
-                api_errors.addError('iban', "L'IBAN saisi est invalide")
-
-            try:
-                BIC(self.bic)
-            except ValueError:
-                api_errors.addError('bic', "Le BIC saisi est invalide")
-            else:
-                if not check_bic_is_known(self.bic):
-                    api_errors.addError('bic', "Le BIC saisi est inconnu")
-        if not self.bic and self.iban:
-            api_errors.addError('bic', "Le BIC es manquant")
-        if not self.iban and self.bic:
-            api_errors.addError('iban', "L'IBAN es manquant")
+        api_errors = self.check_bank_account_information(api_errors)
 
         return api_errors
 

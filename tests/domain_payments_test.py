@@ -8,7 +8,7 @@ from domain.reimbursement import BookingReimbursement, ReimbursementRules
 from models import Offer, Venue, Booking
 from models.payment import Payment
 from models.payment_status import TransactionStatus
-from utils.test_utils import create_booking, create_stock, create_user, create_offerer
+from utils.test_utils import create_booking, create_stock, create_user, create_offerer, create_venue
 
 
 @pytest.mark.standalone
@@ -34,14 +34,36 @@ def test_create_payment_for_booking_with_common_information():
 
 
 @pytest.mark.standalone
-def test_create_payment_for_booking_when_iban_is_on_offerer():
+def test_create_payment_for_booking_when_iban_is_on_venue_should_take_payment_info_from_venue():
     # given
     user = create_user()
     stock = create_stock(price=10, available=5)
     booking = create_booking(user, stock=stock, quantity=1)
     booking.stock.offer = Offer()
-    booking.stock.offer.venue = Venue()
-    booking.stock.offer.venue.managingOfferer = create_offerer(name='Test Offerer', iban='B135TGGEG532TG', bic='LAJR93')
+    offerer = create_offerer(name='Test Offerer', iban='B135TGGEG532TG', bic='LAJR93')
+    booking.stock.offer.venue = create_venue(offerer, name='Test Venue', iban='KD98765RFGHZ788', bic='LOKIJU76')
+    booking.stock.offer.venue.managingOfferer = offerer
+    booking_reimbursement = BookingReimbursement(booking, ReimbursementRules.PHYSICAL_OFFERS, Decimal(10))
+
+    # when
+    payment = create_payment_for_booking(booking_reimbursement)
+
+    # then
+    assert payment.iban == 'KD98765RFGHZ788'
+    assert payment.bic == 'LOKIJU76'
+    assert payment.recipient == 'Test Venue'
+
+
+@pytest.mark.standalone
+def test_create_payment_for_booking_when_no_iban_on_venue_should_take_payment_info_on_offerer():
+    # given
+    user = create_user()
+    stock = create_stock(price=10, available=5)
+    booking = create_booking(user, stock=stock, quantity=1)
+    booking.stock.offer = Offer()
+    offerer = create_offerer(name='Test Offerer', iban='B135TGGEG532TG', bic='LAJR93')
+    booking.stock.offer.venue = create_venue(offerer, name='Test Venue', iban=None, bic=None)
+    booking.stock.offer.venue.managingOfferer = offerer
     booking_reimbursement = BookingReimbursement(booking, ReimbursementRules.PHYSICAL_OFFERS, Decimal(10))
 
     # when
