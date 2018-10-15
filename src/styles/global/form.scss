@@ -78,13 +78,14 @@
   }
 
   &.is-horizontal {
+    &.field-bic,
     &.field-checkbox,
+    &.field-file,
     &.field-email,
     &.field-select,
     &.field-siren,
     &.field-siret,
     &.field-iban,
-    &.field-bic,
     &.field-text {
       height: 3.375em;
       &.readonly {
@@ -150,6 +151,12 @@
 
       .control-checkbox {
         margin-top: 0.5rem;
+      }
+
+      .control-file {
+        align-items: center;
+        display: flex;
+        justify-content: start;
       }
     }
   }

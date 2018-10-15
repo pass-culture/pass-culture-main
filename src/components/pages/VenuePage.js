@@ -120,6 +120,47 @@ class VenuePage extends Component {
     // the user is after changing to another page
   }
 
+  onUploadClick = event => {
+    this.setState({
+      image: this.$uploadInput.files[0],
+      imageUrl: null,
+      inputUrl: '',
+    })
+  }
+
+  onSubmit = () => {
+    const { dispatch, match, mediation, offerer } = this.props
+    const { image, credit, isNew } = this.state
+
+    const offererId = get(offerer, 'id')
+    const offerId = match.params.offerId
+
+    const body = new FormData()
+    body.append('offererId', offererId)
+    body.append('offerId', offerId)
+    body.append('credit', credit)
+    if (typeof image === 'string') {
+      body.append('thumbUrl', image)
+    } else {
+      body.append('thumb', image)
+    }
+
+    this.setState({ isLoading: true })
+
+    dispatch(
+      requestData(
+        isNew ? 'POST' : 'PATCH',
+        `mediations${isNew ? '' : `/${get(mediation, 'id')}`}`,
+        {
+          body,
+          encode: 'multipart/form-data',
+          handleSuccess: this.handleSuccessData,
+          key: 'mediations',
+        }
+      )
+    )
+  }
+
   render() {
     const {
       formGeo,
@@ -139,6 +180,8 @@ class VenuePage extends Component {
     // TODO: offerer should provide a offerer.userRight
     // to determine if it can edit iban stuff
     // let s make true for now
+    const hasAlreadyRibUploaded =
+      get('venuePatch', 'iban') && get('venuePatch', 'thumbCount')
     const isRibEditable = !isReadOnly && true
     const isSiretReadOnly = get(venuePatch, 'siret')
     const isSiretSkipping = !venueId && name && !formSire
@@ -270,17 +313,22 @@ class VenuePage extends Component {
                   label="BIC"
                   name="bic"
                   readOnly={!isRibEditable}
-                  required
                   type="bic"
                 />
-
                 <Field
                   isExpanded
                   label="IBAN"
                   name="iban"
                   readOnly={!isRibEditable}
-                  required
                   type="iban"
+                />
+                <Field
+                  isExpanded
+                  label="Justificatif"
+                  name="rib"
+                  readOnly={isReadOnly || !isRibEditable}
+                  uploaded={hasAlreadyRibUploaded}
+                  type="file"
                 />
               </div>
             </div>
