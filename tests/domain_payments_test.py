@@ -3,6 +3,7 @@ from decimal import Decimal
 from io import BytesIO
 
 import pytest
+from freezegun import freeze_time
 from lxml import etree
 
 from domain.payments import create_payment_for_booking, filter_out_already_paid_for_bookings, generate_transaction_file
@@ -142,6 +143,56 @@ def test_filter_out_already_paid_for_bookings():
 
 
 @pytest.mark.standalone
+@freeze_time('2018-10-15 09:21:34')
+def test_generate_transaction_file_has_custom_message_id_in_group_header(app):
+    # Given
+    offerer = create_offerer(iban='B135TGGEG532TG', bic='LAJR93', idx=1)
+    user = create_user()
+    venue = create_venue(offerer, idx=2)
+    stock = create_stock_from_offer(create_thing_offer(venue))
+    booking = create_booking(user, stock)
+    offerer = create_offerer(iban='B135TGGEG532TG', bic='LAJR93')
+    payment1 = create_payment(booking, offerer, Decimal(10), idx=3)
+    payment2 = create_payment(booking, offerer, Decimal(20), idx=4)
+    payments = [
+        payment1,
+        payment2
+    ]
+
+    # When
+    xml = generate_transaction_file(payments, 'BDFAZ2352352532', 'BDFVEFBV')
+
+    # Then
+    assert find_node('//ns:GrpHdr/ns:MsgId', xml) == 'passCulture-SCT-20181015-092134', \
+        'The message id should look like "passCulture-SCT-YYYYMMDD-HHMMSS"'
+
+
+@pytest.mark.standalone
+@freeze_time('2018-10-15 09:21:34')
+def test_generate_transaction_file_has_creation_datetime_in_group_header(app):
+    # Given
+    offerer = create_offerer(iban='B135TGGEG532TG', bic='LAJR93', idx=1)
+    user = create_user()
+    venue = create_venue(offerer, idx=2)
+    stock = create_stock_from_offer(create_thing_offer(venue))
+    booking = create_booking(user, stock)
+    offerer = create_offerer(iban='B135TGGEG532TG', bic='LAJR93')
+    payment1 = create_payment(booking, offerer, Decimal(10), idx=3)
+    payment2 = create_payment(booking, offerer, Decimal(20), idx=4)
+    payments = [
+        payment1,
+        payment2
+    ]
+
+    # When
+    xml = generate_transaction_file(payments, 'BDFAZ2352352532', 'BDFVEFBV')
+
+    # Then
+    assert find_node('//ns:GrpHdr/ns:CreDtTm', xml) == '2018-10-15T09:21:34', \
+        'The creation datetime should look like YYYY-MM-DDTHH:MM:SS"'
+
+
+@pytest.mark.standalone
 def test_generate_transaction_file_has_initiating_party_in_group_header(app):
     # Given
     offerer = create_offerer(iban='B135TGGEG532TG', bic='LAJR93', idx=1)
@@ -158,7 +209,7 @@ def test_generate_transaction_file_has_initiating_party_in_group_header(app):
     ]
 
     # When
-    xml = generate_transaction_file(payments)
+    xml = generate_transaction_file(payments, 'BDFAZ2352352532', 'BDFVEFBV')
 
     # Then
     assert find_node('//ns:GrpHdr/ns:InitgPty/ns:Nm', xml) == 'pass Culture', \
@@ -182,7 +233,7 @@ def test_generate_transaction_file_has_control_sum_in_group_header(app):
     ]
 
     # When
-    xml = generate_transaction_file(payments)
+    xml = generate_transaction_file(payments, 'BDFAZ2352352532', 'BDFVEFBV')
 
     # Then
     assert find_node('//ns:GrpHdr/ns:CtrlSum', xml) == '30', \
@@ -213,11 +264,31 @@ def test_generate_transaction_file_has_number_of_transactions_in_group_header(ap
     ]
 
     # When
-    xml = generate_transaction_file(payments)
+    xml = generate_transaction_file(payments, 'BDFAZ2352352532', 'BDFVEFBV')
 
     # Then
     assert find_node('//ns:GrpHdr/ns:NbOfTxs', xml) == '2', \
         'The number of transactions should match the distinct number of IBANs'
+
+
+@pytest.mark.standalone
+@freeze_time('2018-10-15 09:21:34')
+def test_generate_transaction_file_has_payment_info_id_in_payment_info(app):
+    # Given
+    offerer1 = create_offerer(iban='B135TGGEG532TG', bic='LAJR93', idx=1)
+    user = create_user()
+    venue1 = create_venue(offerer1, idx=4)
+    stock1 = create_stock_from_offer(create_thing_offer(venue1))
+    booking1 = create_booking(user, stock1)
+
+    payments = [create_payment(booking1, offerer1, Decimal(10), idx=7)]
+
+    # When
+    xml = generate_transaction_file(payments, 'BDFAZ2352352532', 'BDFVEFBV')
+
+    # Then
+    assert find_node('//ns:PmtInf/ns:PmtInfId', xml) == 'passCulture-SCT-20181015-092134', \
+        'The payment info id should be the same as message id since we only send one payment per XML message'
 
 
 @pytest.mark.standalone
@@ -244,7 +315,7 @@ def test_generate_transaction_file_has_number_of_transactions_in_payment_info(ap
     ]
 
     # When
-    xml = generate_transaction_file(payments)
+    xml = generate_transaction_file(payments, 'BDFAZ2352352532', 'BDFVEFBV')
 
     # Then
     assert find_node('//ns:PmtInf/ns:NbOfTxs', xml) == '2', \
@@ -266,7 +337,7 @@ def test_generate_transaction_file_has_control_sum_in_payment_info(app):
     ]
 
     # When
-    xml = generate_transaction_file(payments)
+    xml = generate_transaction_file(payments, 'BDFAZ2352352532', 'BDFVEFBV')
 
     # Then
     assert find_node('//ns:PmtInf/ns:CtrlSum', xml) == '30', \
@@ -285,7 +356,7 @@ def test_generate_transaction_file_has_payment_method_in_payment_info(app):
     payments = [create_payment(booking, offerer, Decimal(10), idx=7)]
 
     # When
-    xml = generate_transaction_file(payments)
+    xml = generate_transaction_file(payments, 'BDFAZ2352352532', 'BDFVEFBV')
 
     # Then
     assert find_node('//ns:PmtInf/ns:PmtMtd', xml) == 'TRF', \
@@ -304,7 +375,7 @@ def test_generate_transaction_file_has_service_level_in_payment_info(app):
     payments = [create_payment(booking, offerer, Decimal(10), idx=7)]
 
     # When
-    xml = generate_transaction_file(payments)
+    xml = generate_transaction_file(payments, 'BDFAZ2352352532', 'BDFVEFBV')
 
     # Then
     assert find_node('//ns:PmtInf/ns:PmtTpInf/ns:SvcLvl/ns:Cd', xml) == 'SEPA', \
@@ -323,7 +394,7 @@ def test_generate_transaction_file_has_category_purpose_in_payment_info(app):
     payments = [create_payment(booking, offerer, Decimal(10), idx=7)]
 
     # When
-    xml = generate_transaction_file(payments)
+    xml = generate_transaction_file(payments, 'BDFAZ2352352532', 'BDFVEFBV')
 
     # Then
     assert find_node('//ns:PmtInf/ns:PmtTpInf/ns:CtgyPurp/ns:Cd', xml) == 'GOVT', \
@@ -342,10 +413,28 @@ def test_generate_transaction_file_has_banque_de_france_bic_in_debtor_agent(app)
     payments = [create_payment(booking, offerer, Decimal(10), idx=7)]
 
     # When
-    xml = generate_transaction_file(payments)
+    xml = generate_transaction_file(payments, 'BDFAZ2352352532', 'BDFVEFBV')
 
     # Then
-    assert find_node('//ns:PmtInf/ns:DbtrAgt/ns:FinInstnId/ns:BIC', xml) == 'BDFEFRPPCCT'
+    assert find_node('//ns:PmtInf/ns:DbtrAgt/ns:FinInstnId/ns:BIC', xml) == 'BDFVEFBV'
+
+
+@pytest.mark.standalone
+def test_generate_transaction_file_has_banque_de_france_iban_in_debtor_account(app):
+    # Given
+    offerer = create_offerer(iban='B135TGGEG532TG', bic='LAJR93', idx=1)
+    user = create_user()
+    venue = create_venue(offerer, idx=4)
+    stock = create_stock_from_offer(create_thing_offer(venue))
+    booking = create_booking(user, stock)
+
+    payments = [create_payment(booking, offerer, Decimal(10), idx=7)]
+
+    # When
+    xml = generate_transaction_file(payments, 'BDFAZ2352352532', 'BDFVEFBV')
+
+    # Then
+    assert find_node('//ns:PmtInf/ns:DbtrAcct/ns:Id/ns:IBAN', xml) == 'BDFAZ2352352532'
 
 
 @pytest.mark.standalone
@@ -360,7 +449,7 @@ def test_generate_transaction_file_has_debtor_name_in_payment_info(app):
     payments = [create_payment(booking, offerer, Decimal(10), idx=7)]
 
     # When
-    xml = generate_transaction_file(payments)
+    xml = generate_transaction_file(payments, 'BDFAZ2352352532', 'BDFVEFBV')
 
     # Then
     assert find_node('//ns:PmtInf/ns:Dbtr/ns:Nm', xml) == 'pass Culture', \
@@ -379,7 +468,7 @@ def test_generate_transaction_file_has_charge_bearer_in_payment_info(app):
     payments = [create_payment(booking, offerer, Decimal(10), idx=7)]
 
     # When
-    xml = generate_transaction_file(payments)
+    xml = generate_transaction_file(payments, 'BDFAZ2352352532', 'BDFVEFBV')
 
     # Then
     assert find_node('//ns:PmtInf/ns:ChrgBr', xml) == 'SLEV', \
@@ -410,7 +499,7 @@ def test_generate_transaction_file_has_iban_in_credit_transfer_transaction_info(
     ]
 
     # When
-    xml = generate_transaction_file(payments)
+    xml = generate_transaction_file(payments, 'BDFAZ2352352532', 'BDFVEFBV')
 
     # Then
     assert find_all_nodes('//ns:PmtInf/ns:CdtTrfTxInf/ns:CdtrAcct/ns:Id/ns:IBAN', xml)[0] == 'B135TGGEG532TG'
@@ -441,7 +530,7 @@ def test_generate_transaction_file_has_bic_in_credit_transfer_transaction_info(a
     ]
 
     # When
-    xml = generate_transaction_file(payments)
+    xml = generate_transaction_file(payments, 'BDFAZ2352352532', 'BDFVEFBV')
 
     # Then
     assert find_all_nodes('//ns:PmtInf/ns:CdtTrfTxInf/ns:CdtrAgt/ns:FinInstnId/ns:BIC', xml)[0] == 'LAJR93'
@@ -470,7 +559,7 @@ def test_generate_transaction_file_has_amount_in_credit_transfer_transaction_inf
     ]
 
     # When
-    xml = generate_transaction_file(payments)
+    xml = generate_transaction_file(payments, 'BDFAZ2352352532', 'BDFVEFBV')
 
     # Then
     nodes_amount = find_all_nodes('//ns:PmtInf/ns:CdtTrfTxInf/ns:Amt/ns:InstdAmt', xml)
@@ -492,7 +581,7 @@ def test_generate_transaction_file_has_unique_ids_in_credit_transfer_transaction
     ]
 
     # When
-    xml = generate_transaction_file(payments)
+    xml = generate_transaction_file(payments, 'BDFAZ2352352532', 'BDFVEFBV')
 
     # Then
     node_id = find_node('//ns:PmtInf/ns:CdtTrfTxInf/ns:PmtId/ns:EndToEndId', xml)
@@ -516,7 +605,7 @@ def test_generate_transaction_file_has_initiating_party_in_group_header(app):
     ]
 
     # When
-    xml = generate_transaction_file(payments)
+    xml = generate_transaction_file(payments, 'BDFAZ2352352532', 'BDFVEFBV')
 
     # Then
     assert find_node('//ns:PmtInf/ns:CdtTrfTxInf/ns:UltmtDbtr/ns:Nm', xml) == 'pass Culture', \

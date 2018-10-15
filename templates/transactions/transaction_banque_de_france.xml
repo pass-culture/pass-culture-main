@@ -2,8 +2,8 @@
 <Document xmlns="urn:iso:std:iso:20022:tech:xsd:pain.001.001.03">
     <CstmrCdtTrfInitn>
         <GrpHdr>
-            <MsgId>XXXX-SCTSCT-17324-512</MsgId>
-            <CreDtTm>2017-11-20T04:05:13</CreDtTm>
+            <MsgId>{{ message_id }}</MsgId>
+            <CreDtTm>{{ creation_datetime }}</CreDtTm>
             <NbOfTxs>{{ number_of_transactions }}</NbOfTxs>
             <CtrlSum>{{ total_amount }}</CtrlSum>
             <InitgPty>
@@ -11,7 +11,7 @@
             </InitgPty>
         </GrpHdr>
         <PmtInf>
-            <PmtInfId>identification-lot</PmtInfId>
+            <PmtInfId>{{ message_id }}</PmtInfId>
             <PmtMtd>TRF</PmtMtd>
             <NbOfTxs>{{ number_of_transactions }}</NbOfTxs>
             <CtrlSum>{{ total_amount }}</CtrlSum>
@@ -29,12 +29,12 @@
             </Dbtr>
             <DbtrAcct>
                 <Id>
-                    <IBAN>FR0130001XXXXXXXXXXXXXXXXXX</IBAN>
+                    <IBAN>{{ pass_culture_iban }}</IBAN>
                 </Id>
             </DbtrAcct>
             <DbtrAgt>
                 <FinInstnId>
-                    <BIC>BDFEFRPPCCT</BIC>
+                    <BIC>{{ pass_culture_bic }}</BIC>
                 </FinInstnId>
             </DbtrAgt>
             <ChrgBr>SLEV</ChrgBr>

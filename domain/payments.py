@@ -1,7 +1,6 @@
 import itertools
 import operator
 from datetime import datetime
-from itertools import groupby
 from typing import List
 
 from flask import render_template
@@ -37,18 +36,22 @@ def filter_out_already_paid_for_bookings(booking_reimbursements: List[BookingRei
     return list(filter(lambda x: not x.booking.payments, booking_reimbursements))
 
 
-def generate_transaction_file(payments: List[Payment]) -> str:
+def generate_transaction_file(payments: List[Payment], pass_culture_iban: str, pass_culture_bic: str) -> str:
     total_amount = sum([payment.amount for payment in payments])
     payments_with_iban = sorted(filter(lambda x: x.iban, payments), key=operator.attrgetter('iban'))
     payment_information = [_extract_payment_information(list(grouped_payments)) for iban, grouped_payments in
              itertools.groupby(payments_with_iban, lambda x: x.iban)]
-
+    now = datetime.utcnow()
 
     return render_template(
         'transactions/transaction_banque_de_france.xml',
+        message_id='passCulture-SCT-%s' % datetime.strftime(now, "%Y%m%d-%H%M%S"),
+        creation_datetime=now.isoformat(),
         payments_by_iban=payment_information,
         number_of_transactions=len(payment_information),
-        total_amount=total_amount
+        total_amount=total_amount,
+        pass_culture_iban=pass_culture_iban,
+        pass_culture_bic=pass_culture_bic
     )
 
 
