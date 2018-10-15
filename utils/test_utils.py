@@ -427,7 +427,8 @@ def create_offerer(
         name='Test Offerer',
         validation_token=None,
         iban=None,
-        bic=None
+        bic=None,
+        idx=None
 ):
     offerer = Offerer()
     offerer.siren = siren
@@ -439,6 +440,7 @@ def create_offerer(
     offerer.validationToken = validation_token
     offerer.bic = bic
     offerer.iban = iban
+    offerer.id = idx
     return offerer
 
 
@@ -456,7 +458,8 @@ def create_venue(
         longitude='2.4002701',
         latitude='48.8363788',
         siret='12345678912345',
-        comment=None
+        comment=None,
+        idx=None
 ):
     venue = Venue()
     venue.bookingEmail = booking_email
@@ -474,6 +477,7 @@ def create_venue(
     venue.latitude = latitude
     venue.siret = siret
     venue.comment = comment
+    venue.id = idx
     return venue
 
 
@@ -579,7 +583,7 @@ def create_mocked_bookings(num_bookings, venue_email, name='Offer name'):
 
 
 def create_payment(booking, offerer, amount, author='test author', recipient='recipient',
-                   reimbursement_rule='remboursement à 100%'):
+                   reimbursement_rule='remboursement à 100%', idx=None):
     payment = Payment()
     payment.booking = booking
     payment.amount = amount
@@ -591,4 +595,5 @@ def create_payment(booking, offerer, amount, author='test author', recipient='re
     payment_status.status = TransactionStatus.PENDING
     payment.statuses = [payment_status]
     payment.reimbursementRule = reimbursement_rule
+    payment.id = idx
     return payment

@@ -38,25 +38,25 @@
                 </FinInstnId>
             </DbtrAgt>
             <ChrgBr>SLEV</ChrgBr>
-            {% for iban, payments in payments_by_iban.items() %}
+            {% for payment in payments_by_iban %}
             <CdtTrfTxInf>
                 <PmtId>
-                    <EndToEndId>venue_id_transaction_id</EndToEndId>
+                    <EndToEndId>{{ payment['unique_id'] }}</EndToEndId>
                 </PmtId>
                 <Amt>
-                    <InstdAmt Ccy="EUR">890289.01</InstdAmt>
+                    <InstdAmt Ccy="EUR">{{ payment['amount'] }}</InstdAmt>
                 </Amt>
                 <UltmtDbtr>
-                    <Nm>nom du donneur ordre initial</Nm>
+                    <Nm>pass Culture</Nm>
                 </UltmtDbtr>
                 <CdtrAgt>
                     <FinInstnId>
-                        <BIC>{{ bic }}</BIC>
+                        <BIC>{{ payment['bic'] }}</BIC>
                     </FinInstnId>
                 </CdtrAgt>
                 <CdtrAcct>
                     <Id>
-                        <IBAN>{{ iban }}</IBAN>
+                        <IBAN>{{ payment['iban'] }}</IBAN>
                     </Id>
                 </CdtrAcct>
                 <Purp>

@@ -10,7 +10,9 @@ from domain.reimbursement import BookingReimbursement, ReimbursementRules
 from models import Offer, Venue, Booking
 from models.payment import Payment
 from models.payment_status import TransactionStatus
-from utils.test_utils import create_booking, create_stock, create_user, create_offerer, create_payment, create_venue
+from utils.human_ids import humanize
+from utils.test_utils import create_booking, create_stock, create_user, create_offerer, create_payment, \
+    create_stock_from_offer, create_thing_offer, create_venue
 
 XML_NAMESPACE = {'ns': 'urn:iso:std:iso:20022:tech:xsd:pain.001.001.03'}
 
@@ -142,10 +144,17 @@ def test_filter_out_already_paid_for_bookings():
 @pytest.mark.standalone
 def test_generate_transaction_file_has_initiating_party_in_group_header(app):
     # Given
+    offerer = create_offerer(iban='B135TGGEG532TG', bic='LAJR93', idx=1)
+    user = create_user()
+    venue = create_venue(offerer, idx=2)
+    stock = create_stock_from_offer(create_thing_offer(venue))
+    booking = create_booking(user, stock)
     offerer = create_offerer(iban='B135TGGEG532TG', bic='LAJR93')
+    payment1 = create_payment(booking, offerer, Decimal(10), idx=3)
+    payment2 = create_payment(booking, offerer, Decimal(20), idx=4)
     payments = [
-        create_payment(Booking(), offerer, Decimal(10)),
-        create_payment(Booking(), offerer, Decimal(20))
+        payment1,
+        payment2
     ]
 
     # When
@@ -159,10 +168,17 @@ def test_generate_transaction_file_has_initiating_party_in_group_header(app):
 @pytest.mark.standalone
 def test_generate_transaction_file_has_control_sum_in_group_header(app):
     # Given
+    offerer = create_offerer(iban='B135TGGEG532TG', bic='LAJR93', idx=1)
+    user = create_user()
+    venue = create_venue(offerer, idx=2)
+    stock = create_stock_from_offer(create_thing_offer(venue))
+    booking = create_booking(user, stock)
     offerer = create_offerer(iban='B135TGGEG532TG', bic='LAJR93')
+    payment1 = create_payment(booking, offerer, Decimal(10), idx=3)
+    payment2 = create_payment(booking, offerer, Decimal(20), idx=4)
     payments = [
-        create_payment(Booking(), offerer, Decimal(10)),
-        create_payment(Booking(), offerer, Decimal(20))
+        payment1,
+        payment2
     ]
 
     # When
@@ -176,13 +192,24 @@ def test_generate_transaction_file_has_control_sum_in_group_header(app):
 @pytest.mark.standalone
 def test_generate_transaction_file_has_number_of_transactions_in_group_header(app):
     # Given
-    offerer1 = create_offerer(iban='B135TGGEG532TG', bic='LAJR93')
-    offerer2 = create_offerer(iban='ZEFGERBHT345VZ', bic='BGH995')
-    offerer3 = create_offerer(iban=None, bic=None)
+    offerer1 = create_offerer(iban='B135TGGEG532TG', bic='LAJR93', idx=1)
+    offerer2 = create_offerer(iban='ZEFGERBHT345VZ', bic='BGH995', idx=2)
+    offerer3 = create_offerer(iban=None, bic=None, idx=3)
+    user = create_user()
+    venue1 = create_venue(offerer1, idx=4)
+    venue2 = create_venue(offerer2, idx=5)
+    venue3 = create_venue(offerer3, idx=6)
+    stock1 = create_stock_from_offer(create_thing_offer(venue1))
+    stock2 = create_stock_from_offer(create_thing_offer(venue2))
+    stock3 = create_stock_from_offer(create_thing_offer(venue3))
+    booking1 = create_booking(user, stock1)
+    booking2 = create_booking(user, stock2)
+    booking3 = create_booking(user, stock3)
+
     payments = [
-        create_payment(Booking(), offerer1, Decimal(10)),
-        create_payment(Booking(), offerer2, Decimal(20)),
-        create_payment(Booking(), offerer3, Decimal(20))
+        create_payment(booking1, offerer1, Decimal(10), idx=7),
+        create_payment(booking2, offerer2, Decimal(20), idx=8),
+        create_payment(booking3, offerer3, Decimal(20), idx=9)
     ]
 
     # When
@@ -196,13 +223,24 @@ def test_generate_transaction_file_has_number_of_transactions_in_group_header(ap
 @pytest.mark.standalone
 def test_generate_transaction_file_has_number_of_transactions_in_payment_info(app):
     # Given
-    offerer1 = create_offerer(iban='B135TGGEG532TG', bic='LAJR93')
-    offerer2 = create_offerer(iban='ZEFGERBHT345VZ', bic='BGH995')
-    offerer3 = create_offerer(iban=None, bic=None)
+    offerer1 = create_offerer(iban='B135TGGEG532TG', bic='LAJR93', idx=1)
+    offerer2 = create_offerer(iban='ZEFGERBHT345VZ', bic='BGH995', idx=2)
+    offerer3 = create_offerer(iban=None, bic=None, idx=3)
+    user = create_user()
+    venue1 = create_venue(offerer1, idx=4)
+    venue2 = create_venue(offerer2, idx=5)
+    venue3 = create_venue(offerer3, idx=6)
+    stock1 = create_stock_from_offer(create_thing_offer(venue1))
+    stock2 = create_stock_from_offer(create_thing_offer(venue2))
+    stock3 = create_stock_from_offer(create_thing_offer(venue3))
+    booking1 = create_booking(user, stock1)
+    booking2 = create_booking(user, stock2)
+    booking3 = create_booking(user, stock3)
+
     payments = [
-        create_payment(Booking(), offerer1, Decimal(10)),
-        create_payment(Booking(), offerer2, Decimal(20)),
-        create_payment(Booking(), offerer3, Decimal(20))
+        create_payment(booking1, offerer1, Decimal(10), idx=7),
+        create_payment(booking2, offerer2, Decimal(20), idx=8),
+        create_payment(booking3, offerer3, Decimal(20), idx=9)
     ]
 
     # When
@@ -216,10 +254,15 @@ def test_generate_transaction_file_has_number_of_transactions_in_payment_info(ap
 @pytest.mark.standalone
 def test_generate_transaction_file_has_control_sum_in_payment_info(app):
     # Given
-    offerer = create_offerer(iban='B135TGGEG532TG', bic='LAJR93')
+    offerer = create_offerer(iban='B135TGGEG532TG', bic='LAJR93', idx=1)
+    user = create_user()
+    venue = create_venue(offerer, idx=4)
+    stock = create_stock_from_offer(create_thing_offer(venue))
+    booking = create_booking(user, stock)
+
     payments = [
-        create_payment(Booking(), offerer, Decimal(10)),
-        create_payment(Booking(), offerer, Decimal(20))
+        create_payment(booking, offerer, Decimal(10), idx=7),
+        create_payment(booking, offerer, Decimal(20), idx=8),
     ]
 
     # When
@@ -233,8 +276,13 @@ def test_generate_transaction_file_has_control_sum_in_payment_info(app):
 @pytest.mark.standalone
 def test_generate_transaction_file_has_payment_method_in_payment_info(app):
     # Given
-    offerer1 = create_offerer(iban='B135TGGEG532TG', bic='LAJR93')
-    payments = [create_payment(Booking(), offerer1, Decimal(10))]
+    offerer = create_offerer(iban='B135TGGEG532TG', bic='LAJR93', idx=1)
+    user = create_user()
+    venue = create_venue(offerer, idx=4)
+    stock = create_stock_from_offer(create_thing_offer(venue))
+    booking = create_booking(user, stock)
+
+    payments = [create_payment(booking, offerer, Decimal(10), idx=7)]
 
     # When
     xml = generate_transaction_file(payments)
@@ -247,8 +295,13 @@ def test_generate_transaction_file_has_payment_method_in_payment_info(app):
 @pytest.mark.standalone
 def test_generate_transaction_file_has_service_level_in_payment_info(app):
     # Given
-    offerer1 = create_offerer(iban='B135TGGEG532TG', bic='LAJR93')
-    payments = [create_payment(Booking(), offerer1, Decimal(10))]
+    offerer = create_offerer(iban='B135TGGEG532TG', bic='LAJR93', idx=1)
+    user = create_user()
+    venue = create_venue(offerer, idx=4)
+    stock = create_stock_from_offer(create_thing_offer(venue))
+    booking = create_booking(user, stock)
+
+    payments = [create_payment(booking, offerer, Decimal(10), idx=7)]
 
     # When
     xml = generate_transaction_file(payments)
@@ -261,8 +314,13 @@ def test_generate_transaction_file_has_service_level_in_payment_info(app):
 @pytest.mark.standalone
 def test_generate_transaction_file_has_category_purpose_in_payment_info(app):
     # Given
-    offerer1 = create_offerer(iban='B135TGGEG532TG', bic='LAJR93')
-    payments = [create_payment(Booking(), offerer1, Decimal(10))]
+    offerer = create_offerer(iban='B135TGGEG532TG', bic='LAJR93', idx=1)
+    user = create_user()
+    venue = create_venue(offerer, idx=4)
+    stock = create_stock_from_offer(create_thing_offer(venue))
+    booking = create_booking(user, stock)
+
+    payments = [create_payment(booking, offerer, Decimal(10), idx=7)]
 
     # When
     xml = generate_transaction_file(payments)
@@ -275,8 +333,13 @@ def test_generate_transaction_file_has_category_purpose_in_payment_info(app):
 @pytest.mark.standalone
 def test_generate_transaction_file_has_banque_de_france_bic_in_debtor_agent(app):
     # Given
-    offerer1 = create_offerer(iban='B135TGGEG532TG', bic='LAJR93')
-    payments = [create_payment(Booking(), offerer1, Decimal(10))]
+    offerer = create_offerer(iban='B135TGGEG532TG', bic='LAJR93', idx=1)
+    user = create_user()
+    venue = create_venue(offerer, idx=4)
+    stock = create_stock_from_offer(create_thing_offer(venue))
+    booking = create_booking(user, stock)
+
+    payments = [create_payment(booking, offerer, Decimal(10), idx=7)]
 
     # When
     xml = generate_transaction_file(payments)
@@ -288,8 +351,13 @@ def test_generate_transaction_file_has_banque_de_france_bic_in_debtor_agent(app)
 @pytest.mark.standalone
 def test_generate_transaction_file_has_debtor_name_in_payment_info(app):
     # Given
-    offerer1 = create_offerer(iban='B135TGGEG532TG', bic='LAJR93')
-    payments = [create_payment(Booking(), offerer1, Decimal(10))]
+    offerer = create_offerer(iban='B135TGGEG532TG', bic='LAJR93', idx=1)
+    user = create_user()
+    venue = create_venue(offerer, idx=4)
+    stock = create_stock_from_offer(create_thing_offer(venue))
+    booking = create_booking(user, stock)
+
+    payments = [create_payment(booking, offerer, Decimal(10), idx=7)]
 
     # When
     xml = generate_transaction_file(payments)
@@ -302,8 +370,13 @@ def test_generate_transaction_file_has_debtor_name_in_payment_info(app):
 @pytest.mark.standalone
 def test_generate_transaction_file_has_charge_bearer_in_payment_info(app):
     # Given
-    offerer1 = create_offerer(iban='B135TGGEG532TG', bic='LAJR93')
-    payments = [create_payment(Booking(), offerer1, Decimal(10))]
+    offerer = create_offerer(iban='B135TGGEG532TG', bic='LAJR93', idx=1)
+    user = create_user()
+    venue = create_venue(offerer, idx=4)
+    stock = create_stock_from_offer(create_thing_offer(venue))
+    booking = create_booking(user, stock)
+
+    payments = [create_payment(booking, offerer, Decimal(10), idx=7)]
 
     # When
     xml = generate_transaction_file(payments)
@@ -316,13 +389,24 @@ def test_generate_transaction_file_has_charge_bearer_in_payment_info(app):
 @pytest.mark.standalone
 def test_generate_transaction_file_has_iban_in_credit_transfer_transaction_info(app):
     # Given
-    offerer1 = create_offerer(name='first offerer', iban='B135TGGEG532TG', bic='LAJR93')
-    offerer2 = create_offerer(name='second offerer', iban='ZEFGERBHT345VZ', bic='BGH995')
-    offerer3 = create_offerer(name='third offerer', iban=None, bic=None)
+    offerer1 = create_offerer(name='first offerer', iban='B135TGGEG532TG', bic='LAJR93', idx=1)
+    offerer2 = create_offerer(name='second offerer', iban='ZEFGERBHT345VZ', bic='BGH995', idx=2)
+    offerer3 = create_offerer(name='third offerer', iban=None, bic=None, idx=3)
+    user = create_user()
+    venue1 = create_venue(offerer1, idx=4)
+    venue2 = create_venue(offerer2, idx=5)
+    venue3 = create_venue(offerer3, idx=6)
+    stock1 = create_stock_from_offer(create_thing_offer(venue1))
+    stock2 = create_stock_from_offer(create_thing_offer(venue2))
+    stock3 = create_stock_from_offer(create_thing_offer(venue3))
+    booking1 = create_booking(user, stock1)
+    booking2 = create_booking(user, stock2)
+    booking3 = create_booking(user, stock3)
+
     payments = [
-        create_payment(Booking(), offerer1, Decimal(10)),
-        create_payment(Booking(), offerer2, Decimal(20)),
-        create_payment(Booking(), offerer3, Decimal(20))
+        create_payment(booking1, offerer1, Decimal(10), idx=7),
+        create_payment(booking2, offerer2, Decimal(20), idx=8),
+        create_payment(booking3, offerer3, Decimal(20), idx=9)
     ]
 
     # When
@@ -336,13 +420,24 @@ def test_generate_transaction_file_has_iban_in_credit_transfer_transaction_info(
 @pytest.mark.standalone
 def test_generate_transaction_file_has_bic_in_credit_transfer_transaction_info(app):
     # Given
-    offerer1 = create_offerer(name='first offerer', iban='B135TGGEG532TG', bic='LAJR93')
-    offerer2 = create_offerer(name='second offerer', iban='ZEFGERBHT345VZ', bic='BGH995')
-    offerer3 = create_offerer(name='third offerer', iban=None, bic=None)
+    offerer1 = create_offerer(name='first offerer', iban='B135TGGEG532TG', bic='LAJR93', idx=1)
+    offerer2 = create_offerer(name='second offerer', iban='ZEFGERBHT345VZ', bic='BGH995', idx=2)
+    offerer3 = create_offerer(name='third offerer', iban=None, bic=None, idx=3)
+    user = create_user()
+    venue1 = create_venue(offerer1, idx=4)
+    venue2 = create_venue(offerer2, idx=5)
+    venue3 = create_venue(offerer3, idx=6)
+    stock1 = create_stock_from_offer(create_thing_offer(venue1))
+    stock2 = create_stock_from_offer(create_thing_offer(venue2))
+    stock3 = create_stock_from_offer(create_thing_offer(venue3))
+    booking1 = create_booking(user, stock1)
+    booking2 = create_booking(user, stock2)
+    booking3 = create_booking(user, stock3)
+
     payments = [
-        create_payment(Booking(), offerer1, Decimal(10)),
-        create_payment(Booking(), offerer2, Decimal(20)),
-        create_payment(Booking(), offerer3, Decimal(20))
+        create_payment(booking1, offerer1, Decimal(10), idx=7),
+        create_payment(booking2, offerer2, Decimal(20), idx=8),
+        create_payment(booking3, offerer3, Decimal(20), idx=9)
     ]
 
     # When
@@ -351,6 +446,81 @@ def test_generate_transaction_file_has_bic_in_credit_transfer_transaction_info(a
     # Then
     assert find_all_nodes('//ns:PmtInf/ns:CdtTrfTxInf/ns:CdtrAgt/ns:FinInstnId/ns:BIC', xml)[0] == 'LAJR93'
     assert find_all_nodes('//ns:PmtInf/ns:CdtTrfTxInf/ns:CdtrAgt/ns:FinInstnId/ns:BIC', xml)[1] == 'BGH995'
+
+
+@pytest.mark.standalone
+def test_generate_transaction_file_has_amount_in_credit_transfer_transaction_info(app):
+    # Given
+    offerer1 = create_offerer(name='first offerer', iban='B135TGGEG532TG', bic='LAJR93', idx=1)
+    offerer2 = create_offerer(name='second offerer', iban='ZEFGERBHT345VZ', bic='BGH995', idx=2)
+    user = create_user()
+    venue1 = create_venue(offerer1, idx=4)
+    venue2 = create_venue(offerer2, idx=5)
+    stock1 = create_stock_from_offer(create_thing_offer(venue1))
+    stock2 = create_stock_from_offer(create_thing_offer(venue1))
+    stock3 = create_stock_from_offer(create_thing_offer(venue2))
+    booking1 = create_booking(user, stock1)
+    booking2 = create_booking(user, stock2)
+    booking3 = create_booking(user, stock3)
+
+    payments = [
+        create_payment(booking1, offerer1, Decimal(10), idx=7),
+        create_payment(booking2, offerer1, Decimal(20), idx=8),
+        create_payment(booking3, offerer2, Decimal(20), idx=9)
+    ]
+
+    # When
+    xml = generate_transaction_file(payments)
+
+    # Then
+    nodes_amount = find_all_nodes('//ns:PmtInf/ns:CdtTrfTxInf/ns:Amt/ns:InstdAmt', xml)
+    assert nodes_amount[0] == '30'
+    assert nodes_amount[1] == '20'
+
+
+@pytest.mark.standalone
+def test_generate_transaction_file_has_unique_ids_in_credit_transfer_transaction_info(app):
+    # Given
+    offerer = create_offerer(name='first offerer', iban='B135TGGEG532TG', bic='LAJR93', idx=1)
+    user = create_user()
+    venue = create_venue(offerer, idx=4)
+    stock = create_stock_from_offer(create_thing_offer(venue))
+    booking = create_booking(user, stock)
+
+    payments = [
+        create_payment(booking, offerer, Decimal(10), idx=7),
+    ]
+
+    # When
+    xml = generate_transaction_file(payments)
+
+    # Then
+    node_id = find_node('//ns:PmtInf/ns:CdtTrfTxInf/ns:PmtId/ns:EndToEndId', xml)
+    assert node_id == '{}_{}_{}'.format(humanize(1), humanize(4), humanize(7))
+
+
+@pytest.mark.standalone
+def test_generate_transaction_file_has_initiating_party_in_group_header(app):
+    # Given
+    offerer = create_offerer(iban='B135TGGEG532TG', bic='LAJR93', idx=1)
+    user = create_user()
+    venue = create_venue(offerer, idx=2)
+    stock = create_stock_from_offer(create_thing_offer(venue))
+    booking = create_booking(user, stock)
+    offerer = create_offerer(iban='B135TGGEG532TG', bic='LAJR93')
+    payment1 = create_payment(booking, offerer, Decimal(10), idx=3)
+    payment2 = create_payment(booking, offerer, Decimal(20), idx=4)
+    payments = [
+        payment1,
+        payment2
+    ]
+
+    # When
+    xml = generate_transaction_file(payments)
+
+    # Then
+    assert find_node('//ns:PmtInf/ns:CdtTrfTxInf/ns:UltmtDbtr/ns:Nm', xml) == 'pass Culture', \
+        'The ultimate debitor name should be "pass Culture"'
 
 
 def find_node(xpath, transaction_file):

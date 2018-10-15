@@ -1,3 +1,5 @@
+import itertools
+import operator
 from datetime import datetime
 from itertools import groupby
 from typing import List
@@ -7,6 +9,7 @@ from flask import render_template
 from domain.reimbursement import BookingReimbursement
 from models.payment import Payment
 from models.payment_status import PaymentStatus, TransactionStatus
+from utils.human_ids import humanize
 
 
 def create_payment_for_booking(booking_reimbursement: BookingReimbursement) -> Payment:
@@ -36,18 +39,15 @@ def filter_out_already_paid_for_bookings(booking_reimbursements: List[BookingRei
 
 def generate_transaction_file(payments: List[Payment]) -> str:
     total_amount = sum([payment.amount for payment in payments])
+    payments_with_iban = sorted(filter(lambda x: x.iban, payments), key=operator.attrgetter('iban'))
+    payment_information = [_extract_payment_information(list(grouped_payments)) for iban, grouped_payments in
+             itertools.groupby(payments_with_iban, lambda x: x.iban)]
 
-    payments_by_iban = {}
-    for payment in filter(lambda x: x.iban, payments):
-        if payment.iban in payments_by_iban:
-            payments_by_iban[payment.iban].append(payment)
-        else:
-            payments_by_iban[payment.iban] = [payment]
 
     return render_template(
         'transactions/transaction_banque_de_france.xml',
-        payments_by_iban=payments_by_iban,
-        number_of_transactions=len(payments_by_iban),
+        payments_by_iban=payment_information,
+        number_of_transactions=len(payment_information),
         total_amount=total_amount
     )
 
@@ -61,3 +61,15 @@ def _create_status_for_payment(payment):
         payment_status.status = TransactionStatus.NOT_PROCESSABLE
         payment_status.detail = 'IBAN et BIC manquants sur l\'offreur'
     return payment_status
+
+
+def _extract_payment_information(payments: List[Payment]):
+    amount = sum([payment.amount for payment in payments])
+    first_payment = next(iter(payments))
+    payment_id = first_payment.id
+    venue_id = first_payment.booking.stock.resolvedOffer.venue.id
+    offerer_id = first_payment.booking.stock.resolvedOffer.venue.managingOfferer.id
+    unique_id = '{}_{}_{}'.format(humanize(offerer_id), humanize(venue_id), humanize(payment_id))
+
+    return {'iban': first_payment.iban, 'bic':first_payment.bic, 'unique_id': unique_id, 'amount': amount}
+
