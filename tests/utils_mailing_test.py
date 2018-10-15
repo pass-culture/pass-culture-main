@@ -1,9 +1,11 @@
+import base64
 import secrets
 from datetime import datetime, timezone
 from unittest.mock import MagicMock, patch
 
 import pytest
 from bs4 import BeautifulSoup
+from freezegun import freeze_time
 
 from models import PcObject, Offerer
 from tests.conftest import clean_database, mocked_mail
@@ -12,7 +14,7 @@ from utils.mailing import make_user_booking_recap_email, \
     write_object_validation_email, make_offerer_driven_cancellation_email_for_user, \
     make_reset_password_email, \
     make_offerer_driven_cancellation_email_for_offerer, make_validation_confirmation_email, \
-    make_batch_cancellation_email
+    make_batch_cancellation_email, make_payment_xml_email
 from utils.test_utils import create_stock_with_event_offer, create_stock_with_thing_offer, \
     create_user, create_booking, MOCKED_SIREN_ENTREPRISES_API_RETURN, create_user_offerer, \
     create_offerer, create_venue, create_thing_offer, create_event_offer, create_stock_from_offer, \
@@ -1047,3 +1049,24 @@ def test_make_make_batch_cancellation_email_for_case_stock(app):
     assert email['FromEmail'] == 'passculture@beta.gouv.fr'
     assert email['FromName'] == 'pass Culture pro'
     assert email['Subject'] == 'Annulation de réservations pour Le récit de voyage'
+
+
+@freeze_time('2018-10-15 09:21:34')
+def test_make_payment_xml_email():
+    # Given
+    xml = '<?xml version="1.0" encoding="UTF-8"?><Document xmlns="urn:iso:std:iso:20022:tech:xsd:pain.001.001.03"></Document>'
+    xml_b64encode = base64.b64encode(xml.encode())
+    # When
+    email = make_payment_xml_email(xml)
+
+    # Then
+    assert email["From"] == {"Email": "passculture@beta.gouv.fr",
+                             "Name": "pass Culture Pro"}
+    assert email["To"] == [{"Email": "passculture-dev@beta.gouv.fr",
+                            "Name": "Compta pass Culture"}]
+    assert email["Subject"] =="Virements pass Culture Pro - 2018-10-15"
+    assert email["Attachments"] == [{"ContentType": "text/xml",
+                                     "Filename": "transaction_banque_de_france_20181015.xml",
+                                     "Base64Content": b'PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48RG9j'
+                                                      b'dW1lbnQgeG1sbnM9InVybjppc286c3RkOmlzbzoyMDAyMjp0ZWNoOnhz'
+                                                      b'ZDpwYWluLjAwMS4wMDEuMDMiPjwvRG9jdW1lbnQ+'}]

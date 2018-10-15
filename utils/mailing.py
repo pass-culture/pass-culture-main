@@ -1,5 +1,7 @@
 """ mailing """
+import base64
 import os
+from datetime import datetime
 from pprint import pformat
 
 from flask import current_app as app, render_template
@@ -311,6 +313,20 @@ def subscribe_newsletter(user):
         id=contact['ID'],
         data=contact_lists_data
     ).json()
+
+
+def make_payment_xml_email(xml: str) -> dict:
+    now = datetime.utcnow()
+    xml_b64encode = base64.b64encode(xml.encode())
+    return {
+        'From': {"Email": "passculture@beta.gouv.fr",
+                 "Name": "pass Culture Pro"},
+        'To': [{"Email": "passculture-dev@beta.gouv.fr",
+              "Name": "Compta pass Culture"}],
+        'Subject': "Virements pass Culture Pro - {}".format(datetime.strftime(now, "%Y-%m-%d")),
+        'Attachments': [{"ContentType": "text/xml",
+                          "Filename": "transaction_banque_de_france_{}.xml".format(datetime.strftime(now, "%Y%m%d")),
+                          "Base64Content": xml_b64encode}]}
 
 
 def _generate_reservation_email_html_subject(booking):
