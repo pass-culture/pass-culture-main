@@ -1,7 +1,6 @@
 /* eslint
   react/jsx-one-expression-per-line: 0 */
 import React from 'react'
-import get from 'lodash.get'
 import PropTypes from 'prop-types'
 import { Logger, Icon, requestData } from 'pass-culture-shared'
 import { connect } from 'react-redux'
@@ -10,8 +9,7 @@ import { compose, bindActionCreators } from 'redux'
 
 import ShareButton from './share/ShareButton'
 import VersoBookingButton from './verso/VersoBookingButton'
-import { getShareURL, isRecommendationFinished } from '../helpers'
-import { selectBookings } from '../selectors/selectBookings'
+import { getShareURL } from '../helpers'
 import currentRecommendationSelector from '../selectors/currentRecommendation'
 
 class VersoControl extends React.PureComponent {
@@ -42,17 +40,7 @@ class VersoControl extends React.PureComponent {
   }
 
   render() {
-    const {
-      booking,
-      isFavorite,
-      isFinished,
-      location,
-      offer,
-      recommendation,
-      url,
-      user,
-      wallet,
-    } = this.props
+    const { isFavorite, location, recommendation, user, wallet } = this.props
 
     const shareURL = getShareURL(location, user)
     const shareTitle = recommendation.offer.eventOrThing.name
@@ -79,12 +67,7 @@ class VersoControl extends React.PureComponent {
           <ShareButton shareURL={shareURL} shareTitle={shareTitle} />
         </li>
         <li>
-          <VersoBookingButton
-            isFinished={isFinished}
-            booking={booking}
-            offer={offer}
-            url={url}
-          />
+          <VersoBookingButton />
         </li>
       </ul>
     )
@@ -92,25 +75,18 @@ class VersoControl extends React.PureComponent {
 }
 
 VersoControl.defaultProps = {
-  booking: null,
   isFavorite: false,
-  isFinished: false,
-  offer: null,
   recommendation: null,
   recommendationId: null,
   wallet: null,
 }
 
 VersoControl.propTypes = {
-  booking: PropTypes.object,
   dispatch: PropTypes.func.isRequired,
   isFavorite: PropTypes.bool,
-  isFinished: PropTypes.bool,
   location: PropTypes.object.isRequired,
-  offer: PropTypes.object,
   recommendation: PropTypes.object,
   recommendationId: PropTypes.string,
-  url: PropTypes.string.isRequired,
   user: PropTypes.object.isRequired,
   wallet: PropTypes.number,
 }
@@ -124,21 +100,10 @@ const mapStateToProps = (state, ownProps) => {
     offerId,
     mediationId
   )
-  // NOTE -> on ne peut pas faire confiance a bookingsIds
-  // bookingsIds n'est pas mis à jour avec le state
-  const stocks = get(recommendation, 'offer.stocks')
-  const stockIds = (stocks || []).map(o => o.id)
-  const bookings = selectBookings(state)
-  const booking = bookings.find(b => stockIds.includes(b.stockId))
-  const isFinished = isRecommendationFinished(recommendation, offerId)
   return {
-    booking,
     isFavorite: recommendation && recommendation.isFavorite,
-    isFinished,
-    offer: recommendation.offer,
     recommendation,
     recommendationId: recommendation.id,
-    url: ownProps.match.url,
     user,
     wallet,
   }

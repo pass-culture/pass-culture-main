@@ -2,57 +2,65 @@
   react/jsx-one-expression-per-line: 0 */
 import React from 'react'
 import get from 'lodash.get'
+import { compose } from 'redux'
 import PropTypes from 'prop-types'
-import { Link } from 'react-router-dom'
+import { connect } from 'react-redux'
 import { Icon } from 'pass-culture-shared'
+import { Link, withRouter } from 'react-router-dom'
 
 import Price from '../Price'
 import Finishable from '../layout/Finishable'
 
-const renderBookingLink = (url, offer) => {
-  const priceValue = get(offer, 'price') || get(offer, 'displayPrice')
-  return (
-    <Link to={`${url}/booking`} className="button is-primary is-medium">
-      <Price free="——" value={priceValue} />
-      <span>J&apos;y vais!</span>
-    </Link>
-  )
-}
+import { isRecommendationFinished } from '../../helpers'
+import { selectBookings } from '../../selectors/selectBookings'
+import currentRecommendation from '../../selectors/currentRecommendation'
 
 class VersoBookingButton extends React.PureComponent {
+  renderBookingLink = () => {
+    const { offer, url } = this.props
+    const priceValue = get(offer, 'price') || get(offer, 'displayPrice')
+    return (
+      <Link to={`${url}/booking`} className="button is-primary is-medium">
+        <Price free="——" value={priceValue} />
+        <span>J&apos;y vais!</span>
+      </Link>
+    )
+  }
+
+  renderOfflineButton = () => (
+    <Link to="/reservations" className="button is-primary is-medium">
+      <Icon name="Check" />
+      Réservé
+    </Link>
+  )
+
+  renderOnlineButton = () => {
+    const { booking } = this.props
+    const onlineOfferUrl = get(booking, 'completedUrl')
+    return (
+      <a
+        href={`${onlineOfferUrl}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="button is-primary is-medium"
+      >
+        Accéder
+      </a>
+    )
+  }
+
   render() {
-    const { booking, isFinished, offer, url } = this.props
+    const { booking, isFinished } = this.props
     const onlineOfferUrl = get(booking, 'completedUrl')
     return (
       <React.Fragment>
-        {booking && (
-          <React.Fragment>
-            {onlineOfferUrl ? (
-              <a
-                href={`${onlineOfferUrl}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="button is-primary is-medium"
-              >
-                Accéder
-              </a>
-            ) : (
-              <Link to="/reservations" className="button is-primary is-medium">
-                <Icon name="Check" />
-                Réservé
-              </Link>
-            )}
-          </React.Fragment>
-        )}
-        {!booking && (
-          <React.Fragment>
-            {/* FIXME -> décorer avec isFinished/Finishable */}
-            {!isFinished && renderBookingLink(url, offer)}
-            {isFinished && (
-              <Finishable finished>{renderBookingLink(url, offer)}</Finishable>
-            )}
-          </React.Fragment>
-        )}
+        {booking && onlineOfferUrl && this.renderOnlineButton()}
+        {booking && !onlineOfferUrl && this.renderOfflineButton()}
+        {!booking && !isFinished && this.renderBookingLink()}
+        {!booking &&
+          isFinished && (
+            <Finishable finished>{this.renderBookingLink()}</Finishable>
+          )}
       </React.Fragment>
     )
   }
@@ -60,14 +68,36 @@ class VersoBookingButton extends React.PureComponent {
 
 VersoBookingButton.defaultProps = {
   booking: null,
+  isFinished: false,
   offer: null,
 }
 
 VersoBookingButton.propTypes = {
   booking: PropTypes.object,
-  isFinished: PropTypes.bool.isRequired,
+  isFinished: PropTypes.bool,
   offer: PropTypes.object,
   url: PropTypes.string.isRequired,
 }
 
-export default VersoBookingButton
+const mapStateToProps = (state, { match }) => {
+  const { mediationId, offerId, url } = match.params
+  const recommendation = currentRecommendation(state, offerId, mediationId)
+  const isFinished = isRecommendationFinished(recommendation, offerId)
+  // NOTE -> on ne peut pas faire confiance a bookingsIds
+  // bookingsIds n'est pas mis à jour avec le state
+  const stocks = get(recommendation, 'offer.stocks')
+  const stockIds = (stocks || []).map(o => o.id)
+  const bookings = selectBookings(state)
+  const booking = bookings.find(b => stockIds.includes(b.stockId))
+  return {
+    booking,
+    isFinished,
+    offer: recommendation.offer,
+    url,
+  }
+}
+
+export default compose(
+  withRouter,
+  connect(mapStateToProps)
+)(VersoBookingButton)
