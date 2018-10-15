@@ -39,5 +39,8 @@ docker-compose.yml
 env_file
 ngrok.yml
 temp
-fontello
-fontello/config.*
+
+# Fontello Icon Fonts
+fontello/css/*
+fontello/font/*
+fontello/.fontello.session
