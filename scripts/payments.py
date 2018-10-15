@@ -1,5 +1,6 @@
 import os
 import traceback
+from datetime import datetime
 from pprint import pprint
 from typing import List
 
@@ -7,12 +8,13 @@ from flask import current_app as app
 
 from domain.admin_emails import send_payment_transaction_email
 from domain.payments import filter_out_already_paid_for_bookings, create_payment_for_booking, generate_transaction_file, \
-    validate_transaction_file
+    validate_transaction_file, append_sent_status_to
 from domain.reimbursement import find_all_booking_reimbursement
 from models import Offerer, PcObject
 from models.payment import Payment
 from repository.booking_queries import find_final_offerer_bookings
 from utils.logger import logger
+from utils.mailing import MailServiceException
 
 iban = os.environ.get('PASS_CULTURE_IBAN')
 bic = os.environ.get('PASS_CULTURE_BIC')
@@ -55,6 +57,15 @@ def do_send_payments(payments: List[Payment], pass_culture_iban: str, pass_cultu
         logger.error('Missing PASS_CULTURE_IBAN[%s] or PASS_CULTURE_BIC[%s] in environment variables' % (
             pass_culture_iban, pass_culture_bic))
     else:
-        file = generate_transaction_file(payments, pass_culture_iban, pass_culture_bic)
+        message_id = 'passCulture-SCT-%s' % datetime.strftime(datetime.utcnow(), "%Y%m%d-%H%M%S")
+        file = generate_transaction_file(payments, pass_culture_iban, pass_culture_bic, message_id)
         validate_transaction_file(file)
-        send_payment_transaction_email(file, app.mailjet_client.send.create)
+        try:
+            send_payment_transaction_email(file, app.mailjet_client.send.create)
+        except MailServiceException as e:
+            logger.error('Error while sending payment transaction email to MailJet', e)
+        else:
+            for payment in payments:
+                payment.paymentTransactionId = message_id
+                append_sent_status_to(payment)
+            PcObject.check_and_save(*payments)

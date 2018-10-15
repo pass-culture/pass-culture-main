@@ -1,7 +1,7 @@
 import itertools
 import operator
 from datetime import datetime, timedelta
-from io import StringIO, BytesIO
+from io import BytesIO
 from typing import List
 
 from flask import render_template
@@ -42,7 +42,8 @@ def filter_out_already_paid_for_bookings(booking_reimbursements: List[BookingRei
     return list(filter(lambda x: not x.booking.payments, booking_reimbursements))
 
 
-def generate_transaction_file(payments: List[Payment], pass_culture_iban: str, pass_culture_bic: str) -> str:
+def generate_transaction_file(payments: List[Payment], pass_culture_iban: str, pass_culture_bic: str,
+                              message_id: str) -> str:
     total_amount = sum([payment.amount for payment in payments])
     payments_with_iban = sorted(filter(lambda x: x.iban, payments), key=operator.attrgetter('iban'))
     payment_information = [_extract_payment_information(list(grouped_payments)) for iban, grouped_payments in
@@ -51,7 +52,7 @@ def generate_transaction_file(payments: List[Payment], pass_culture_iban: str, p
 
     return render_template(
         'transactions/transaction_banque_de_france.xml',
-        message_id='passCulture-SCT-%s' % datetime.strftime(now, "%Y%m%d-%H%M%S"),
+        message_id=message_id,
         creation_datetime=now.isoformat(),
         requested_execution_datetime=datetime.strftime(now + timedelta(days=7), "%Y-%m-%d"),
         payments_by_iban=payment_information,
@@ -71,6 +72,13 @@ def validate_transaction_file(transaction_file: str):
     xml_doc = etree.parse(xml)
 
     xsd_schema.assertValid(xml_doc)
+
+
+def append_sent_status_to(payment):
+    payment_status = PaymentStatus()
+    payment_status.date = datetime.utcnow()
+    payment_status.status = TransactionStatus.SENT
+    payment.statuses.append(payment_status)
 
 
 def _create_status_for_payment(payment):
