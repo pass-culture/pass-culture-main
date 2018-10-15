@@ -25,7 +25,7 @@ ShallowWrapper {
           src="http://localhost/icons/img-Ecouter.png"
         />,
         <span
-          className="is-absolute text-left fs20"
+          className="is-absolute text-left fs18 is-bold"
           style={
             Object {
               "backgroundOpacity": 0.75,
@@ -57,7 +57,7 @@ ShallowWrapper {
         "nodeType": "host",
         "props": Object {
           "children": "Écouter",
-          "className": "is-absolute text-left fs20",
+          "className": "is-absolute text-left fs18 is-bold",
           "style": Object {
             "backgroundOpacity": 0.75,
           },
@@ -81,7 +81,7 @@ ShallowWrapper {
             src="http://localhost/icons/img-Ecouter.png"
           />,
           <span
-            className="is-absolute text-left fs20"
+            className="is-absolute text-left fs18 is-bold"
             style={
               Object {
                 "backgroundOpacity": 0.75,
@@ -113,7 +113,7 @@ ShallowWrapper {
           "nodeType": "host",
           "props": Object {
             "children": "Écouter",
-            "className": "is-absolute text-left fs20",
+            "className": "is-absolute text-left fs18 is-bold",
             "style": Object {
               "backgroundOpacity": 0.75,
             },

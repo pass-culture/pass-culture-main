@@ -4,7 +4,11 @@
 }
 
 #category-description h2 {
-  margin-bottom: 1em;
+  margin-bottom: rem(12px);
+}
+
+.recommendation-list-item {
+
 }
 
 .recommendation-list-item .image {
@@ -15,6 +19,8 @@
   max-height: rem(96px);
   min-width: rem(96px);
   min-height: rem(96px);
+  margin-left: -12px;
+  margin-bottom: -12px;
 
   img {
     width: 100%;

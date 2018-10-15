@@ -20,7 +20,7 @@ const NavResultsHeader = ({ category, description }) => {
         <h2 className="is-bold mb3">
           {category}
         </h2>
-        <span>
+        <span className="fs13 .is-medium">
           {description}
         </span>
       </div>

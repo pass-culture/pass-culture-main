@@ -18,7 +18,7 @@ const SearchResultItem = ({ recommendation }) => {
   return (
     <li className="recommendation-list-item">
       <hr className="dotted-top-primary" />
-      <Link to={linkURL} className="flex-columns items-center">
+      <Link to={linkURL} className="flex-columns">
         <div className="image flex-0 dotted-right-primary flex-rows flex-center">
           <img src={recommendation.thumbUrl} alt="" />
         </div>

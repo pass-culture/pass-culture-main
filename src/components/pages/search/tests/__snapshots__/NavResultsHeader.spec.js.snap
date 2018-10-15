@@ -30,7 +30,9 @@ ShallowWrapper {
         >
           Applaudir
         </h2>
-        <span>
+        <span
+          className="fs13 .is-medium"
+        >
           Voulez-vous suivre un géant de 12 mètres dans la ville ? Rire devant un seul-en-scène ? Rêver le temps d’un opéra ou d’un spectacle de danse, assister à une pièce de théâtre, ou vous laisser conter une histoire ?
         </span>
       </div>,
@@ -53,7 +55,9 @@ ShallowWrapper {
           >
             Applaudir
           </h2>,
-          <span>
+          <span
+            className="fs13 .is-medium"
+          >
             Voulez-vous suivre un géant de 12 mètres dans la ville ? Rire devant un seul-en-scène ? Rêver le temps d’un opéra ou d’un spectacle de danse, assister à une pièce de théâtre, ou vous laisser conter une histoire ?
           </span>,
         ],
@@ -80,6 +84,7 @@ ShallowWrapper {
           "nodeType": "host",
           "props": Object {
             "children": "Voulez-vous suivre un géant de 12 mètres dans la ville ? Rire devant un seul-en-scène ? Rêver le temps d’un opéra ou d’un spectacle de danse, assister à une pièce de théâtre, ou vous laisser conter une histoire ?",
+            "className": "fs13 .is-medium",
           },
           "ref": null,
           "rendered": "Voulez-vous suivre un géant de 12 mètres dans la ville ? Rire devant un seul-en-scène ? Rêver le temps d’un opéra ou d’un spectacle de danse, assister à une pièce de théâtre, ou vous laisser conter une histoire ?",
@@ -105,7 +110,9 @@ ShallowWrapper {
           >
             Applaudir
           </h2>
-          <span>
+          <span
+            className="fs13 .is-medium"
+          >
             Voulez-vous suivre un géant de 12 mètres dans la ville ? Rire devant un seul-en-scène ? Rêver le temps d’un opéra ou d’un spectacle de danse, assister à une pièce de théâtre, ou vous laisser conter une histoire ?
           </span>
         </div>,
@@ -128,7 +135,9 @@ ShallowWrapper {
             >
               Applaudir
             </h2>,
-            <span>
+            <span
+              className="fs13 .is-medium"
+            >
               Voulez-vous suivre un géant de 12 mètres dans la ville ? Rire devant un seul-en-scène ? Rêver le temps d’un opéra ou d’un spectacle de danse, assister à une pièce de théâtre, ou vous laisser conter une histoire ?
             </span>,
           ],
@@ -155,6 +164,7 @@ ShallowWrapper {
             "nodeType": "host",
             "props": Object {
               "children": "Voulez-vous suivre un géant de 12 mètres dans la ville ? Rire devant un seul-en-scène ? Rêver le temps d’un opéra ou d’un spectacle de danse, assister à une pièce de théâtre, ou vous laisser conter une histoire ?",
+              "className": "fs13 .is-medium",
             },
             "ref": null,
             "rendered": "Voulez-vous suivre un géant de 12 mètres dans la ville ? Rire devant un seul-en-scène ? Rêver le temps d’un opéra ou d’un spectacle de danse, assister à une pièce de théâtre, ou vous laisser conter une histoire ?",

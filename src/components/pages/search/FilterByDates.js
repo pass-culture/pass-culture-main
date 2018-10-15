@@ -57,7 +57,7 @@ class FilterByDates extends PureComponent {
 
     return (
       <div id="filter-by-dates" className="px12 pt20">
-        <h2 className="fs15 is-italic is-uppercase text-center mb12">
+        <h2 className="fs15 is-italic is-medium is-uppercase text-center mb12">
           {title}
         </h2>
         {/* FIXME: le scroll sous ios est pas terrible
