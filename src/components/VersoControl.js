@@ -9,7 +9,7 @@ import { withRouter } from 'react-router-dom'
 import { compose, bindActionCreators } from 'redux'
 
 import ShareButton from './share/ShareButton'
-import VersoBookingButton from './VersoBookingButton'
+import VersoBookingButton from './verso/VersoBookingButton'
 import { getShareURL, isRecommendationFinished } from '../helpers'
 import { selectBookings } from '../selectors/selectBookings'
 import currentRecommendationSelector from '../selectors/currentRecommendation'

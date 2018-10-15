@@ -6,8 +6,8 @@ import PropTypes from 'prop-types'
 import { Link } from 'react-router-dom'
 import { Icon } from 'pass-culture-shared'
 
-import Price from './Price'
-import Finishable from './layout/Finishable'
+import Price from '../Price'
+import Finishable from '../layout/Finishable'
 
 const renderBookingLink = (url, offer) => {
   const priceValue = get(offer, 'price') || get(offer, 'displayPrice')
