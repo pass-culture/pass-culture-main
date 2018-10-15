@@ -40,3 +40,4 @@ env_file
 ngrok.yml
 temp
 fontello
+fontello/config.*

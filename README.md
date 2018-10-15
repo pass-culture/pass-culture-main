@@ -23,3 +23,11 @@ A la racine de webapp créer un fichier `env.local`. Les variables disponibles p
 yarn version
 # yarn version --new-version 0.2.1
 ```
+
+## Update de la font icon
+
+- Ouvrir le site [Fontello.com](https://fontello.com)
+- Glisser/Déposer le fichier `public/static/fontello/config.json` dans la page du navigateur
+- Ajouter une/des icônes
+- Cliquer sur `Download webfont (n)`
+- Remplacer et committer le fichier `public/static/fontello/config.json`
