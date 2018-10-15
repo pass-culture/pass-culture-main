@@ -54,10 +54,9 @@ class Booking extends React.PureComponent {
     this.setState({ mounted: false })
   }
 
-  onFormMutation = ({ invalid, _pristine, values }) => {
+  onFormMutation = ({ invalid, values }) => {
     // intervient aux changement sur le form
     // pour les changements sur 'invalid | values'
-    console.log(_pristine)
     const nextCanSubmitForm = !invalid && values.stockId && values.price >= 0
     const { canSubmitForm } = this.state
     const hasFormValid = canSubmitForm !== nextCanSubmitForm
