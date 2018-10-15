@@ -23,7 +23,7 @@
                     <Cd>GOVT</Cd>
                 </CtgyPurp>
             </PmtTpInf>
-            <ReqdExctnDt>{{ requested_execution_date }}</ReqdExctnDt>
+            <ReqdExctnDt>{{ requested_execution_datetime }}</ReqdExctnDt>
             <Dbtr>
                 <Nm>pass Culture</Nm>
             </Dbtr>
