@@ -27,13 +27,13 @@ def pc_send_final_booking_recaps():
     print("Cron send_final_booking_recaps: END")
 
 
-def pc_generate_payments():
-    print("Cron generate_payments: START")
+def pc_generate_and_send_payments():
+    print("Cron generate_and_send_payments: START")
     with app.app_context():
-        from scripts.payments import generate_payments
-        generate_payments()
+        from scripts.payments import generate_and_send_payments
+        generate_and_send_payments()
 
-    print("Cron generate_payments: END")
+    print("Cron generate_and_send_payments: END")
 
 
 def pc_restore_database():
@@ -85,5 +85,5 @@ if __name__ == '__main__':
     scheduler = BlockingScheduler()
     scheduler.add_job(pc_send_final_booking_recaps, 'cron', id='send_final_booking_recaps', minute='*/10')
     scheduler.add_job(pc_restore_database, 'cron', id='restore_database', minute='*/5')
-    scheduler.add_job(pc_generate_payments, 'cron', id='generate_payments', day='1,15')
+    scheduler.add_job(pc_generate_and_send_payments, 'cron', id='generate_and_send_payments', day='1,15')
     scheduler.start()

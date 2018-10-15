@@ -315,7 +315,7 @@ def subscribe_newsletter(user):
     ).json()
 
 
-def make_payment_xml_email(xml: str) -> dict:
+def make_payment_transaction_email(xml: str) -> dict:
     now = datetime.utcnow()
     xml_b64encode = base64.b64encode(xml.encode())
     return {

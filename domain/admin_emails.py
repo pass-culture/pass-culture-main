@@ -1,4 +1,4 @@
-from utils.mailing import write_object_validation_email, check_if_email_sent
+from utils.mailing import write_object_validation_email, check_if_email_sent, make_payment_transaction_email
 
 
 def send_dev_email(subject, html_text, send_create_email):
@@ -20,4 +20,10 @@ def maybe_send_offerer_validation_email(offerer, user_offerer, send_create_email
     email = write_object_validation_email(offerer, user_offerer)
     mail_result = send_create_email(data=email)
 
+    check_if_email_sent(mail_result)
+
+
+def send_payment_transaction_email(xml_attachment, send_create_email):
+    email = make_payment_transaction_email(xml_attachment)
+    mail_result = send_create_email(data=email)
     check_if_email_sent(mail_result)
