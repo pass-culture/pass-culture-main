@@ -19,40 +19,43 @@ const renderBookingLink = (url, offer) => {
   )
 }
 
-const VersoBookingButton = ({ booking, isFinished, offer, url }) => {
-  const onlineOfferUrl = get(booking, 'completedUrl')
-  return (
-    <React.Fragment>
-      {booking && (
-        <React.Fragment>
-          {onlineOfferUrl ? (
-            <a
-              href={`${onlineOfferUrl}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="button is-primary is-medium"
-            >
-              Accéder
-            </a>
-          ) : (
-            <Link to="/reservations" className="button is-primary is-medium">
-              <Icon name="Check" />
-              Réservé
-            </Link>
-          )}
-        </React.Fragment>
-      )}
-      {!booking && (
-        <React.Fragment>
-          {/* FIXME -> décorer avec isFinished/Finishable */}
-          {!isFinished && renderBookingLink(url, offer)}
-          {isFinished && (
-            <Finishable finished>{renderBookingLink(url, offer)}</Finishable>
-          )}
-        </React.Fragment>
-      )}
-    </React.Fragment>
-  )
+class VersoBookingButton extends React.PureComponent {
+  render() {
+    const { booking, isFinished, offer, url } = this.props
+    const onlineOfferUrl = get(booking, 'completedUrl')
+    return (
+      <React.Fragment>
+        {booking && (
+          <React.Fragment>
+            {onlineOfferUrl ? (
+              <a
+                href={`${onlineOfferUrl}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="button is-primary is-medium"
+              >
+                Accéder
+              </a>
+            ) : (
+              <Link to="/reservations" className="button is-primary is-medium">
+                <Icon name="Check" />
+                Réservé
+              </Link>
+            )}
+          </React.Fragment>
+        )}
+        {!booking && (
+          <React.Fragment>
+            {/* FIXME -> décorer avec isFinished/Finishable */}
+            {!isFinished && renderBookingLink(url, offer)}
+            {isFinished && (
+              <Finishable finished>{renderBookingLink(url, offer)}</Finishable>
+            )}
+          </React.Fragment>
+        )}
+      </React.Fragment>
+    )
+  }
 }
 
 VersoBookingButton.defaultProps = {
