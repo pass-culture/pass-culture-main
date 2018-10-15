@@ -54,3 +54,29 @@ def find_offerers_with_user_venues_and_bookings_by_departement(department):
         query = query.filter(Venue.departementCode == department)
     result = query.order_by(Offerer.id).all()
     return result
+
+def find_all_offerers_siren_with_user_informations():
+    query = db.session.query(Offerer.name, Offerer.siren, User.firstName, User.lastName, User.email, User.phoneNumber, User.postalCode) \
+        .join(UserOfferer) \
+        .join(User)
+
+    result = query.order_by(Offerer.name, User.email).all()
+    return result
+
+def find_all_offerers_siren_with_user_informations_and_venue():
+    query = db.session.query(Offerer.name, Offerer.siren, Venue.name, Venue.postalCode,  User.firstName, User.lastName, User.email, User.phoneNumber, User.postalCode) \
+        .join(UserOfferer) \
+        .join(User) \
+        .join(Venue)
+
+    result = query.order_by(Offerer.name, Venue.name, User.email).all()
+    return result
+
+def find_all_offerers_siren_with_user_informations_and_not_virtual_venue():
+    query = db.session.query(Offerer.name, Offerer.siren, Venue.name, Venue.postalCode,  User.firstName, User.lastName, User.email, User.phoneNumber, User.postalCode) \
+        .join(UserOfferer) \
+        .join(User) \
+        .join(Venue)
+
+    result = query.filter(Venue.isVirtual == False).order_by(Offerer.name, Venue.name, User.email).all()
+    return result
