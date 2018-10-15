@@ -55,6 +55,10 @@
   background-position: center center;
   background-repeat: no-repeat;
   background-size: cover;
+  margin-left: -12px;
+  margin-right: -12px;
+  margin-bottom: -12px;
+  height: rem(250px);
 }
 
 #search-close-button {
@@ -68,8 +72,7 @@
 }
 
 #category-description {
-  min-height: 120px;
-  margin-top: 180px;
+  bottom: 12px;
 }
 
 #keywords-search-button {

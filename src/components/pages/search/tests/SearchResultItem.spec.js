@@ -5,7 +5,6 @@ import Dotdotdot from 'react-dotdotdot'
 
 import SearchResultItem from '../SearchResultItem'
 import state from '../../../../mocks/global_state_1'
-// import state from '../../../../mocks/global_state_2_Testing_10_10_18'
 import { selectRecommendations } from '../../../../selectors/recommendations'
 
 describe('src | components | pages | SearchResultItem', () => {

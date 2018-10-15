@@ -26,8 +26,6 @@ const transitionStyles = {
 }
 
 class SearchFilter extends Component {
-  // add, remove and change passed as props via this.state to filter components
-  // ex <FilterByDates filter={this.state} title="QUAND" />
   constructor(props) {
     super(props)
     this.state = {

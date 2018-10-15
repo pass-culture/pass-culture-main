@@ -63,6 +63,10 @@
   overflow-x: scroll;
 }
 
+#filter-by-dates h2 {
+  margin-bottom: rem(12px);
+}
+
 #filter-by-dates .list .item {
   border-radius: 4px;
   border: 1px solid $primary;

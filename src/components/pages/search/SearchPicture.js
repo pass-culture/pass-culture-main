@@ -12,7 +12,7 @@ const SearchPicture = ({ searchType }) => {
       <img src={src} alt={navigation} />
       <span
         style={{ backgroundOpacity: 0.75 }}
-        className="is-absolute text-left fs20"
+        className="is-absolute text-left fs18 is-bold"
       >
         {searchType}
       </span>

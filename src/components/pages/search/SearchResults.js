@@ -11,7 +11,6 @@ const SearchResults = ({ items, keywords, loadMoreHandler, pagination }) => {
     items,
     pagination.windowQuery
   )
-
   return (
     <div className="search-results">
       <h2

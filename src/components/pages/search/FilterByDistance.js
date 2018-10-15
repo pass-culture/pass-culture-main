@@ -53,7 +53,7 @@ class FilterByDistance extends PureComponent {
 
     return (
       <div key={distanceKey} id="filter-by-distance" className="px12 pt20">
-        <h2 className="fs15 is-italic is-uppercase text-center mb12">
+        <h2 className="fs15 is-italic is-medium is-uppercase text-center mb12">
           {title}
         </h2>
         <div className="text-center mb20">

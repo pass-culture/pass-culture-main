@@ -146,7 +146,7 @@ ShallowWrapper {
           className="dotted-top-primary"
         />,
         <Link
-          className="flex-columns items-center"
+          className="flex-columns"
           replace={false}
           to="/decouverte/X9"
         >
@@ -258,7 +258,7 @@ ShallowWrapper {
               />
             </div>,
           ],
-          "className": "flex-columns items-center",
+          "className": "flex-columns",
           "replace": false,
           "to": "/decouverte/X9",
         },
@@ -445,7 +445,7 @@ ShallowWrapper {
             className="dotted-top-primary"
           />,
           <Link
-            className="flex-columns items-center"
+            className="flex-columns"
             replace={false}
             to="/decouverte/X9"
           >
@@ -557,7 +557,7 @@ ShallowWrapper {
                 />
               </div>,
             ],
-            "className": "flex-columns items-center",
+            "className": "flex-columns",
             "replace": false,
             "to": "/decouverte/X9",
           },

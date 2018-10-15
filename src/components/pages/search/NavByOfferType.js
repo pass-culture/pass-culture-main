@@ -5,7 +5,7 @@ import SearchPicture from './SearchPicture'
 
 const NavByOfferType = ({ pagination, title, typeSublabels }) => (
   <div id="nav-by-offer-type">
-    <h2 className="is-italic fs18">
+    <h2 className="is-italic fs15">
       {title}
     </h2>
     <div className="list flex-columns wrap-2">
@@ -19,7 +19,7 @@ const NavByOfferType = ({ pagination, title, typeSublabels }) => (
             )
           }
           type="button"
-          className="item no-border no-background no-outline mt22 col-1of2"
+          className="item no-border no-background no-outline mt12 col-1of2"
         >
           <SearchPicture searchType={typeSublabel} />
         </button>

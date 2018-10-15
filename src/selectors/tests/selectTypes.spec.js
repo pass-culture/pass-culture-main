@@ -14,39 +14,44 @@ describe('selectTypeSublabels', () => {
     ])
   })
 })
-describe.skip('selectTypes', () => {
+describe('selectTypes', () => {
   it('should select the global state', () => {
-    // TODO
-    expect(selectTypes(state)).toEqual([
+    const expected = [
       {
         description:
-          'Voulez-vous suivre un géant de 12 mètres dans la ville ? Rire devant un seul-en-scène ? Rêver le temps d’un opéra ou d’un spectacle de danse, assister à une pièce de théâtre, ou vous laisser conter une histoire ?',
+          'Suivre un géant de 12 mètres dans la ville ? Rire aux éclats devant un stand up ? Rêver le temps d’un opéra ou d’un spectacle de danse ? Assister à une pièce de théâtre, ou se laisser conter une histoire ?',
         sublabel: 'Applaudir',
       },
       {
-        description: 'Lorem Ipsum',
+        description:
+          'Plutôt rock, rap ou classique ? Sur un smartphone avec des écouteurs ou entre amis au concert ?',
+        sublabel: 'Écouter',
+      },
+      {
+        description:
+          'Résoudre l’énigme d’un jeu de piste dans votre ville ? Jouer en ligne entre amis ? Découvrir cet univers étrange avec une manette ?',
         sublabel: 'Jouer',
       },
       {
-        description: 'Lorem Ipsum',
+        description:
+          'S’abonner à un quotidien d’actualité ? À un hebdomadaire humoristique ? À un mensuel dédié à la nature ? Acheter une BD ou un manga ? Ou tout simplement ce livre dont tout le monde parle ?',
         sublabel: 'Lire',
       },
       {
-        description: 'Lorem Ipsum',
+        description:
+          'Jamais osé monter sur les planches ? Tenter d’apprendre la guitare, le piano ou la photographie ? Partir cinq jours découvrir un autre monde ? Bricoler dans un fablab, ou pourquoi pas, enregistrer votre premier titre ?',
         sublabel: 'Pratiquer',
       },
       {
-        description: 'Lorem Ipsum',
+        description:
+          'Action, science-fiction, documentaire ou comédie sentimentale ? En salle, en plein air ou bien au chaud chez soi ? Et si c’était plutôt cette exposition qui allait faire son cinéma ?',
         sublabel: 'Regarder',
       },
       {
-        description: 'Lorem Ipsum',
+        description: 'Parfois une simple rencontre peut changer une vie...',
         sublabel: 'Rencontrer',
       },
-      {
-        description: 'Lorem Ipsum',
-        sublabel: 'Écouter',
-      },
-    ])
+    ]
+    expect(selectTypes(state)).toEqual(expected)
   })
 })
