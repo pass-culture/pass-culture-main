@@ -3,7 +3,8 @@ import secrets
 import pytest
 
 from models import PcObject
-from repository.offerer_queries import find_all_admin_offerer_emails, find_all_offerers_siren_with_user_informations, find_all_offerers_siren_with_user_informations_and_venue, find_all_offerers_siren_with_user_informations_and_not_virtual_venue
+from repository.offerer_queries import find_all_admin_offerer_emails, find_all_offerers_siren_with_user_informations, \
+     find_all_offerers_siren_with_user_informations_and_venue, find_all_offerers_siren_with_user_informations_and_not_virtual_venue, find_all_offerers_with_venue
 from tests.conftest import clean_database
 from utils.test_utils import create_user, create_offerer, create_user_offerer, create_venue
 
@@ -53,10 +54,10 @@ def test_find_all_offerers_siren_with_user_informations(app):
 
     #then
     assert len(offerers) == 4
-    assert (offerer1.name, offerer1.siren, user_admin1.firstName, user_admin1.lastName, user_admin1.email, user_admin1.phoneNumber, user_admin1.postalCode) in offerers
-    assert (offerer1.name, offerer1.siren, user_editor1.firstName, user_editor1.lastName, user_editor1.email, user_editor1.phoneNumber, user_editor1.postalCode) in offerers
-    assert (offerer2.name, offerer2.siren, user_admin1.firstName, user_admin1.lastName, user_admin1.email, user_admin1.phoneNumber, user_admin1.postalCode) in offerers
-    assert (offerer2.name, offerer2.siren, user_admin2.firstName, user_admin2.lastName, user_admin2.email, user_admin2.phoneNumber, user_admin2.postalCode) in offerers
+    assert (offerer1.name, offerer1.siren, offerer1.postalCode, offerer1.city, user_admin1.firstName, user_admin1.lastName, user_admin1.email, user_admin1.phoneNumber, user_admin1.postalCode) in offerers
+    assert (offerer1.name, offerer1.siren, offerer1.postalCode, offerer1.city, user_editor1.firstName, user_editor1.lastName, user_editor1.email, user_editor1.phoneNumber, user_editor1.postalCode) in offerers
+    assert (offerer2.name, offerer2.siren, offerer2.postalCode, offerer2.city, user_admin1.firstName, user_admin1.lastName, user_admin1.email, user_admin1.phoneNumber, user_admin1.postalCode) in offerers
+    assert (offerer2.name, offerer2.siren, offerer2.postalCode, offerer2.city, user_admin2.firstName, user_admin2.lastName, user_admin2.email, user_admin2.phoneNumber, user_admin2.postalCode) in offerers
 
 @pytest.mark.standalone
 @clean_database
@@ -114,3 +115,25 @@ def test_find_all_offerers_siren_with_user_informations_and_not_virtual_venue(ap
     assert len(offerers) == 2
     assert (offerer2.name, offerer2.siren, venue3.name, venue3.postalCode, user_admin1.firstName, user_admin1.lastName, user_admin1.email, user_admin1.phoneNumber, user_admin1.postalCode) in offerers
     assert (offerer2.name, offerer2.siren, venue3.name, venue3.postalCode, user_admin2.firstName, user_admin2.lastName, user_admin2.email, user_admin2.phoneNumber, user_admin2.postalCode) in offerers
+
+
+@pytest.mark.standalone
+@clean_database
+def test_find_all_offerers_with_venue(app):
+    #given
+    offerer1 = create_offerer(name='offerer1')
+    offerer2 = create_offerer(name='offerer2', siren='789456123')
+    venue1 = create_venue(offerer1, is_virtual=True)
+    venue2 = create_venue(offerer2, is_virtual=True)
+    venue3 = create_venue(offerer2, is_virtual=False)
+    PcObject.check_and_save(offerer1, offerer2, venue1, venue2, venue3)
+
+    #when
+    offerers = find_all_offerers_with_venue()
+
+    #then
+    assert len(offerers) == 3
+    assert(offerer1.id, offerer1.name, venue1.id, venue1.name, venue1.bookingEmail, venue1.postalCode, venue1.isVirtual) in offerers
+    assert(offerer2.id, offerer2.name, venue2.id, venue2.name, venue2.bookingEmail, venue2.postalCode, venue2.isVirtual) in offerers
+    assert(offerer2.id, offerer2.name, venue3.id, venue3.name, venue3.bookingEmail, venue3.postalCode, venue3.isVirtual) in offerers
+
