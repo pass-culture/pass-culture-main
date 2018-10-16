@@ -236,6 +236,12 @@ class VenuePage extends Component {
                   }
                   type="email"
                 />
+                <Field
+                  label="Commentaire (si pas de SIRET)"
+                  name="comment"
+                  readOnly={formSire}
+                  type="textarea"
+                />
               </div>
             </div>
             <div className="section">
