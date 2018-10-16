@@ -1,6 +1,9 @@
+from datetime import datetime, timedelta
+from decimal import Decimal
+
 import pytest
 
-from domain.reimbursement import ReimbursementRules, find_all_booking_reimbursement
+from domain.reimbursement import ReimbursementRules, find_all_booking_reimbursement, ReimbursementRule
 from utils.test_utils import create_booking_for_thing, create_booking_for_event
 
 
@@ -185,6 +188,43 @@ class MaxReimbursementByOffererTest:
 
         # then
         assert is_relevant is False
+
+
+class DummyRule(ReimbursementRule):
+    rate = Decimal(10)
+    description = 'Dummy rule'
+    valid_from = None
+    valid_until = None
+
+    def is_relevant(self, booking, **kwargs):
+        return True
+
+
+class ReimbursementRuleIsActiveTest:
+
+    def test_is_active_if_valid_from_is_none_and_valid_until_is_none(self):
+        # given
+        DummyRule.valid_from = None
+        DummyRule.valid_until = None
+
+        # then
+        assert DummyRule().is_active() is True
+
+    def test_is_active_if_valid_from_is_past_and_valid_until_is_none(self):
+        # given
+        DummyRule.valid_from = datetime(2016, 4, 22, 11, 53, 19)
+        DummyRule.valid_until = None
+
+        # then
+        assert DummyRule().is_active() is True
+
+    def skipped_test_is_not_active_if_valid_from_is_future_and_valid_until_is_none(self):
+        # given
+        DummyRule.valid_from = datetime.utcnow() + timedelta(weeks=3)
+        DummyRule.valid_until = None
+
+        # then
+        assert DummyRule().is_active() is False
 
 
 @pytest.mark.standalone

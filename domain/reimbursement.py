@@ -6,6 +6,9 @@ from models import Booking
 
 
 class ReimbursementRule(ABC):
+    def is_active(self):
+        return True
+
     @abstractmethod
     def is_relevant(self, booking, **kwargs):
         pass
@@ -17,7 +20,12 @@ class ReimbursementRule(ABC):
 
     @property
     @abstractmethod
-    def is_active(self):
+    def valid_from(self):
+        pass
+
+    @property
+    @abstractmethod
+    def valid_until(self):
         pass
 
     @property
@@ -25,14 +33,15 @@ class ReimbursementRule(ABC):
     def description(self):
         pass
 
-    def apply(self, booking):
+    def apply(self, booking: Booking):
         return Decimal(booking.value * self.rate)
 
 
 class DigitalThingsReimbursement(ReimbursementRule):
     rate = Decimal(0)
     description = 'Pas de remboursement pour les offres digitales'
-    is_active = True
+    valid_from = None
+    valid_until = None
 
     def is_relevant(self, booking, **kwargs):
         return booking.stock.resolvedOffer.eventOrThing.isDigital
@@ -41,7 +50,8 @@ class DigitalThingsReimbursement(ReimbursementRule):
 class PhysicalOffersReimbursement(ReimbursementRule):
     rate = Decimal(1)
     description = 'Remboursement total pour les offres physiques'
-    is_active = True
+    valid_from = None
+    valid_until = None
 
     def is_relevant(self, booking, **kwargs):
         return not booking.stock.resolvedOffer.eventOrThing.isDigital
@@ -50,7 +60,8 @@ class PhysicalOffersReimbursement(ReimbursementRule):
 class MaxReimbursementByOfferer(ReimbursementRule):
     rate = Decimal(0)
     description = 'Pas de remboursement au dessus du plafond de 23 000 € par offreur'
-    is_active = True
+    valid_from = None
+    valid_until = None
 
     def is_relevant(self, booking, **kwargs):
         if booking.stock.resolvedOffer.eventOrThing.isDigital:
