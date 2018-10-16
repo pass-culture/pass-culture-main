@@ -227,6 +227,7 @@ class VenuePage extends Component {
             action={`/venues/${savedVenueId || ''}`}
             handleSuccess={this.handleSuccess}
             name="venue"
+            normalizer={venueNormalizer}
             patch={venuePatch}
             readOnly={isReadOnly}>
             <Field type="hidden" name="managingOffererId" />

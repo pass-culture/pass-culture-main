@@ -70,12 +70,14 @@ export const venueNormalizer = {
       event: 'events',
     },
   },
+  managingOfferer: 'offerers',
   offers: {
     key: 'offers',
     normalizer: {
       thing: 'things',
     },
   },
+  venueProviders: 'venueProviders',
 }
 
 export const eventOccurrenceNormalizer = {
