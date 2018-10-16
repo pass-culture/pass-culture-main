@@ -1,4 +1,5 @@
 """ venue """
+from schwifty import IBAN, BIC
 from sqlalchemy import BigInteger, \
     Column, \
     ForeignKey, \
@@ -12,12 +13,15 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.sql.expression import cast
 from sqlalchemy.sql.functions import coalesce
 
+from models.has_bank_information_mixin import HasBankInformationMixin
+from models.versioned_mixin import VersionedMixin
 from models.db import Model
 from models.has_address_mixin import HasAddressMixin
 from models.has_thumb_mixin import HasThumbMixin
 from models.offerer import Offerer
 from models.pc_object import PcObject
 from models.providable_mixin import ProvidableMixin
+from repository.bic_queries import check_bic_is_known
 from utils.search import create_tsvector
 
 CONSTRAINT_CHECK_IS_VIRTUAL_XOR_HAS_ADDRESS = """
@@ -37,6 +41,8 @@ class Venue(PcObject,
             HasThumbMixin,
             HasAddressMixin,
             ProvidableMixin,
+            VersionedMixin,
+            HasBankInformationMixin,
             Model):
     id = Column(BigInteger, primary_key=True)
 
@@ -92,7 +98,7 @@ class Venue(PcObject,
                 and not len(self.siret) == 14:
             api_errors.addError('siret', 'Ce code SIRET est invalide : ' + self.siret)
         if self.postalCode is not None \
-           and len(self.postalCode) != 5:
+                and len(self.postalCode) != 5:
             api_errors.addError('postalCode', 'Ce code postal est invalide')
         if self.managingOffererId is not None:
             if self.managingOfferer is None:
@@ -101,12 +107,14 @@ class Venue(PcObject,
             else:
                 managingOfferer = self.managingOfferer
             if managingOfferer.siren is None:
-                api_errors.addError('siren', 'Ce lieu ne peut enregistrer de SIRET car la structure associée n\'a pas de'
-                                + 'SIREN renseigné')
+                api_errors.addError('siren',
+                                    'Ce lieu ne peut enregistrer de SIRET car la structure associée n\'a pas de'
+                                    + 'SIREN renseigné')
             if self.siret is not None \
                     and managingOfferer is not None \
                     and not self.siret.startswith(managingOfferer.siren):
                 api_errors.addError('siret', 'Le code SIRET doit correspondre à un établissement de votre structure')
+        self.check_bank_account_information(api_errors)
 
         return api_errors
 
@@ -168,4 +176,3 @@ Venue.__table_args__ = (
         postgresql_using='gin'
     ),
 )
-

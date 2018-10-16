@@ -456,6 +456,8 @@ def create_venue(
         city='Montreuil',
         departement_code='93',
         is_virtual=False,
+        iban=None,
+        bic=None,
         longitude="2.4002701",
         latitude="48.8363788",
         siret='12345678912345'
@@ -470,6 +472,8 @@ def create_venue(
     venue.name = name
     venue.managingOfferer = offerer
     venue.isVirtual = is_virtual
+    venue.iban = iban
+    venue.bic = bic
     return venue
 
 

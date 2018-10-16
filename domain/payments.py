@@ -12,10 +12,16 @@ def create_payment_for_booking(booking_reimbursement: BookingReimbursement) -> P
     payment.amount = booking_reimbursement.reimbursed_amount
     payment.reimbursementRule = booking_reimbursement.reimbursement.value.description
     payment.author = 'batch'
-    offerer = booking_reimbursement.booking.stock.resolvedOffer.venue.managingOfferer
-    payment.recipient = offerer.name
-    payment.iban = offerer.iban
-    payment.bic = offerer.bic
+    venue = booking_reimbursement.booking.stock.resolvedOffer.venue
+    if venue.iban:
+        payment.recipient = venue.name
+        payment.iban = venue.iban
+        payment.bic = venue.bic
+    else:
+        offerer = venue.managingOfferer
+        payment.recipient = offerer.name
+        payment.iban = offerer.iban
+        payment.bic = offerer.bic
     payment.statuses = [_create_status_for_payment(payment)]
     return payment
 
