@@ -120,47 +120,6 @@ class VenuePage extends Component {
     // the user is after changing to another page
   }
 
-  onUploadClick = event => {
-    this.setState({
-      image: this.$uploadInput.files[0],
-      imageUrl: null,
-      inputUrl: '',
-    })
-  }
-
-  onSubmit = () => {
-    const { dispatch, match, mediation, offerer } = this.props
-    const { image, credit, isNew } = this.state
-
-    const offererId = get(offerer, 'id')
-    const offerId = match.params.offerId
-
-    const body = new FormData()
-    body.append('offererId', offererId)
-    body.append('offerId', offerId)
-    body.append('credit', credit)
-    if (typeof image === 'string') {
-      body.append('thumbUrl', image)
-    } else {
-      body.append('thumb', image)
-    }
-
-    this.setState({ isLoading: true })
-
-    dispatch(
-      requestData(
-        isNew ? 'POST' : 'PATCH',
-        `mediations${isNew ? '' : `/${get(mediation, 'id')}`}`,
-        {
-          body,
-          encode: 'multipart/form-data',
-          handleSuccess: this.handleSuccessData,
-          key: 'mediations',
-        }
-      )
-    )
-  }
-
   render() {
     const {
       formGeo,
@@ -181,7 +140,7 @@ class VenuePage extends Component {
     // to determine if it can edit iban stuff
     // let s make true for now
     const hasAlreadyRibUploaded =
-      get('venuePatch', 'iban') && get('venuePatch', 'thumbCount')
+      get(venuePatch, 'iban') && get(venuePatch, 'thumbCount')
     const isRibEditable = !isReadOnly && true
     const isSiretReadOnly = get(venuePatch, 'siret')
     const isSiretSkipping = !venueId && name && !formSire
