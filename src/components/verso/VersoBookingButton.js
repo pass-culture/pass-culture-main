@@ -5,7 +5,6 @@ import get from 'lodash.get'
 import { compose } from 'redux'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { Icon } from 'pass-culture-shared'
 import { Link, withRouter } from 'react-router-dom'
 
 import Price from '../Price'
@@ -29,7 +28,6 @@ class VersoBookingButton extends React.PureComponent {
 
   renderOfflineButton = () => (
     <Link to="/reservations" className="button is-primary is-medium">
-      <Icon name="Check" />
       Réservé
     </Link>
   )
