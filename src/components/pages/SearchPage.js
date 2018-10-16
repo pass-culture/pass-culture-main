@@ -1,3 +1,4 @@
+/* eslint-disable */
 import get from 'lodash.get'
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
@@ -30,9 +31,7 @@ import { mapApiToWindow, windowToApiQuery } from '../../utils/pagination'
 
 const renderPageHeader = searchPageTitle => (
   <header className="no-dotted-border">
-    <h1 className="is-normal fs19">
-      {searchPageTitle}
-    </h1>
+    <h1 className="is-normal fs19">{searchPageTitle}</h1>
   </header>
 )
 
@@ -135,9 +134,10 @@ class SearchPage extends PureComponent {
 
     const keywordsValue = pagination.windowQuery[mapApiToWindow.keywords]
 
-    if (!keywordsValue) {
-      return
-    }
+    // FIXME A quoi servent encore ces lignes de code ci-dessous ?
+    // if (!keywordsValue) {
+    //   return
+    // }
 
     pagination.change(
       {
@@ -202,16 +202,15 @@ class SearchPage extends PureComponent {
         pageTitle={searchPageTitle}
         name="search"
         footer={renderPageFooter}
-        closeSearchButton
-      >
+        closeSearchButton>
         <form onSubmit={this.onSubmit}>
           <div className="flex-columns items-start">
             <div
               id="search-page-keywords-field"
-              className="field has-addons flex-columns flex-1"
-            >
+              className="field has-addons flex-columns flex-1">
               <p className="control has-icons-right flex-1" key={keywordsKey}>
                 <input
+                  autoFocus
                   id="keywords"
                   defaultValue={keywordsValue}
                   className="input search-input"
@@ -228,8 +227,7 @@ class SearchPage extends PureComponent {
                       id="refresh-keywords-button"
                       onClick={() =>
                         this.onKeywordsEraseClick('/recherche/resultats')
-                      }
-                    >
+                      }>
                       <span aria-hidden className="icon-close" title="" />
                     </button>
                   </span>
@@ -241,8 +239,7 @@ class SearchPage extends PureComponent {
                   className="button is-rounded is-medium"
                   id="keywords-search-button"
                   type="submit"
-                  disabled={!isOneCharInKeywords}
-                >
+                  disabled={!isOneCharInKeywords}>
                   Chercher
                 </button>
               </div>
@@ -250,13 +247,11 @@ class SearchPage extends PureComponent {
 
             <div
               id="search-filter-menu-toggle-button"
-              className={`flex-0 text-center flex-rows flex-center pb12 ${filtersToggleButtonClass}`}
-            >
+              className={`flex-0 text-center flex-rows flex-center pb12 ${filtersToggleButtonClass}`}>
               <button
                 type="button"
                 className="no-border no-background no-outline "
-                onClick={() => this.setState({ withFilter: !withFilter })}
-              >
+                onClick={() => this.setState({ withFilter: !withFilter })}>
                 <Icon
                   svg={`ico-${withFilter ? 'chevron-up' : isfilterIconActive}`}
                 />
