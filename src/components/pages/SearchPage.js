@@ -184,6 +184,8 @@ class SearchPage extends PureComponent {
       )
     }
 
+    const isOneCharInKeywords = get(keywordsValue, 'length') > 0
+
     return (
       <Main
         id="search-page"
@@ -215,7 +217,7 @@ class SearchPage extends PureComponent {
                   onChange={this.onKeywordsChange}
                 />
 
-                {get(keywordsValue, 'length') > 0 && (
+                {isOneCharInKeywords && (
                   <span className="icon is-small is-right">
                     <button
                       type="button"
@@ -229,10 +231,12 @@ class SearchPage extends PureComponent {
                 )}
               </p>
               <div className="control flex-0">
+                {/* --------------------------- SEARCH TEXT BUTTON --------------------------- */}
                 <button
                   className="button is-rounded is-medium"
                   id="keywords-search-button"
                   type="submit"
+                  disabled={!isOneCharInKeywords}
                 >
                   Chercher
                 </button>
