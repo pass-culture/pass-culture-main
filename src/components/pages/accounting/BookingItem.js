@@ -1,6 +1,13 @@
 import get from 'lodash.get'
 import moment from 'moment'
-import { closeModal, Icon, requestData, showModal } from 'pass-culture-shared'
+import {
+  closeModal,
+  Icon,
+  requestData,
+  showModal,
+  showNotification,
+  getRequestErrorString,
+} from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import React, { Component, Fragment } from 'react'
 import { connect } from 'react-redux'
@@ -56,15 +63,21 @@ const getBookingState = booking => {
 }
 
 class BookingItem extends Component {
-  onCancelClick = () => {
-    const { booking, dispatch, isCancelled } = this.props
-    const { id } = booking
-    console.log('cancel booking for id:', id)
+  cancelError = (state, request) => {
+    const { dispatch } = this.props
 
-    if (isCancelled) {
-      console.warn(`Weird your booking ${id} is already cancelled`)
-      return
-    }
+    dispatch(
+      showNotification({
+        name: 'bookings',
+        text: getRequestErrorString(request),
+        type: 'danger',
+      })
+    )
+  }
+
+  onCancelClick = () => {
+    const { booking, dispatch } = this.props
+    const { id } = booking
 
     dispatch(
       showModal(
@@ -80,6 +93,7 @@ class BookingItem extends Component {
                       isCancelled: true,
                     },
                     normalizer: bookingNormalizer,
+                    handleFail: this.cancelError,
                   })
                 )
                 dispatch(closeModal())
@@ -104,6 +118,7 @@ class BookingItem extends Component {
       amount,
       dateModified,
       isCancelled,
+      isUsed,
       reimbursed_amount,
       token,
     } = booking
@@ -115,8 +130,7 @@ class BookingItem extends Component {
     const { name, type } = eventOrThing || {}
     const offererName = get(offerer, 'name')
     const venueName = get(venue, 'name')
-    const bookingState = getBookingState(booking)
-    const { picto, message } = bookingState || {}
+    const { picto, message } = getBookingState(booking)
 
     return (
       <Fragment>
@@ -128,18 +142,19 @@ class BookingItem extends Component {
             {token}: {userIdentifier}
           </td>
           <td rowSpan="2">
-            {!isCancelled && (
-              <div className="navbar-item has-dropdown is-hoverable AccountingPage-actions">
-                <div className="actionButton" />
-                <div className="navbar-dropdown is-right">
-                  <a
-                    className="navbar-item cancel"
-                    onClick={this.onCancelClick}>
-                    <Icon svg="ico-close-r" /> Annuler la réservation
-                  </a>
+            {!isCancelled &&
+              !isUsed && (
+                <div className="navbar-item has-dropdown is-hoverable AccountingPage-actions">
+                  <div className="actionButton" />
+                  <div className="navbar-dropdown is-right">
+                    <a
+                      className="navbar-item cancel"
+                      onClick={this.onCancelClick}>
+                      <Icon svg="ico-close-r" /> Annuler la réservation
+                    </a>
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
           </td>
         </tr>
         <tr className="offer-item first-col">
@@ -188,7 +203,6 @@ export default connect((state, ownProps) => {
   const offerer = offererSelector(state, get(venue, 'managingOffererId'))
   const user = selectUserById(state, ownProps.booking.userId)
 
-  console.log('user', user)
   return {
     event,
     eventOccurrence,
