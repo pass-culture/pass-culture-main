@@ -244,5 +244,5 @@ def test_patch_mediation_make_mediations_invalid_when_deactivating_mediation(app
     db.session.refresh(recommendation2)
     db.session.refresh(other_recommendation)
     assert recommendation1.validUntilDate < datetime.utcnow()
-    assert recommendation2.validUntilDate < datetime.utcnow)
+    assert recommendation2.validUntilDate < datetime.utcnow()
     assert other_recommendation.validUntilDate == original_validity_date
