@@ -81,15 +81,17 @@ def test_create_booking_should_work_before_limit_date(app):
 def test_create_booking_should_not_work_if_too_many_bookings(app):
     offerer = create_offerer('987654321', 'Test address', 'Test city', '93000', 'Test name')
     venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
-    too_many_bookings_stock = create_stock_with_thing_offer(offerer=Offerer(), venue=venue, thing_offer=None)
-    too_many_bookings_stock.available = 0
+    too_many_bookings_stock = create_stock_with_thing_offer(offerer=Offerer(), venue=venue, thing_offer=None, available=2)
     PcObject.check_and_save(too_many_bookings_stock)
 
     user = create_user(email='test@email.com', password='mdppsswd')
-    PcObject.check_and_save(user)
+
+    deposit = create_deposit(user, datetime.utcnow(), amount=50)
 
     recommendation = create_recommendation(offer=too_many_bookings_stock.offer, user=user)
-    PcObject.check_and_save(recommendation)
+    booking = create_booking(deposit, user, too_many_bookings_stock, venue, quantity=2)
+
+    PcObject.check_and_save(booking, recommendation, user)
 
     booking_json = {
         'stockId': humanize(too_many_bookings_stock.id),
@@ -115,8 +117,40 @@ def test_create_booking_should_work_if_user_can_book_and_enough_credit(app):
     user = create_user(email='test@email.com', password='mdppsswd')
     PcObject.check_and_save(user)
 
-    stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=50)
+    stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=50, available=1)
     PcObject.check_and_save(stock)
+
+    recommendation = create_recommendation(thing_offer, user)
+    PcObject.check_and_save(recommendation)
+
+    deposit = create_deposit(user, datetime.utcnow(), amount=50)
+    PcObject.check_and_save(deposit)
+
+    booking_json = {
+        'stockId': humanize(stock.id),
+        'recommendationId': humanize(recommendation.id),
+        'quantity': 1
+    }
+    r_create = req_with_auth('test@email.com', 'mdppsswd').post(API_URL + '/bookings', json=booking_json)
+    assert r_create.status_code == 201
+
+
+@clean_database
+@pytest.mark.standalone
+def test_create_booking_should_work_if_canceled_bookings_user_can_book_and_enough_credit_(app):
+    # Given
+    offerer = create_offerer('819202819', '1 Fake Address', 'Fake city', '93000', 'Fake offerer')
+    venue = create_venue(offerer, 'venue name', 'booking@email.com', '1 fake street', '93000', 'False city', '93')
+    thing_offer = create_thing_offer(venue)
+
+    user = create_user(email='test@email.com', password='mdppsswd')
+    PcObject.check_and_save(user)
+
+    stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=50, available=1)
+    PcObject.check_and_save(stock)
+
+    booking = create_booking(user, stock, venue, is_cancelled=True)
+    PcObject.check_and_save(booking)
 
     recommendation = create_recommendation(thing_offer, user)
     PcObject.check_and_save(recommendation)
