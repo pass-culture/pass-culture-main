@@ -5,7 +5,7 @@ from models import ApiErrors
 from repository.bic_queries import check_bic_is_known
 
 
-class HasBankInformation(object):
+class HasBankInformationMixin(object):
     iban = Column(
         String(27),
         nullable=True)

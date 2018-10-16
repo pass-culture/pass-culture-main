@@ -12,7 +12,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.sql.expression import cast
 from sqlalchemy.sql.functions import coalesce
 
-from models.has_bank_information_mixin import HasBankInformation
+from models.has_bank_information_mixin import HasBankInformationMixin
 from models.versioned_mixin import VersionedMixin
 from models.db import Model
 from models.deactivable_mixin import DeactivableMixin
@@ -33,7 +33,7 @@ class Offerer(PcObject,
               NeedsValidationMixin,
               DeactivableMixin,
               VersionedMixin,
-              HasBankInformation,
+              HasBankInformationMixin,
               Model):
     id = Column(BigInteger, primary_key=True)
 

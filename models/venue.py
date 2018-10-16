@@ -13,7 +13,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.sql.expression import cast
 from sqlalchemy.sql.functions import coalesce
 
-from models.has_bank_information_mixin import HasBankInformation
+from models.has_bank_information_mixin import HasBankInformationMixin
 from models.versioned_mixin import VersionedMixin
 from models.db import Model
 from models.has_address_mixin import HasAddressMixin
@@ -42,7 +42,7 @@ class Venue(PcObject,
             HasAddressMixin,
             ProvidableMixin,
             VersionedMixin,
-            HasBankInformation,
+            HasBankInformationMixin,
             Model):
     id = Column(BigInteger, primary_key=True)
 
@@ -82,15 +82,6 @@ class Venue(PcObject,
         nullable=False,
         default=False
     )
-
-    iban = Column(
-        String(27),
-        nullable=True)
-
-    bic = Column(String(11),
-                 CheckConstraint('(iban IS NULL AND bic IS NULL) OR (iban IS NOT NULL AND bic IS NOT NULL)',
-                                 name='check_iban_and_bic_xor_not_iban_and_not_bic'),
-                 nullable=True)
 
     # openingHours = Column(ARRAY(TIME))
     # Ex: [['09:00', '18:00'], ['09:00', '19:00'], null,  ['09:00', '18:00']]
