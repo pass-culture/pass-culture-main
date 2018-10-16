@@ -89,7 +89,7 @@ def update_offer(offer_id):
     if 'isActive' in request.json\
        and not newProps['isActive']:
         Recommendation.query.filter((Recommendation.offerId == offer.id)
-                                    & (Recommendation.validUntilDate > datetime.now()))\
-                            .update({'validUntilDate': datetime.now()})
+                                    & (Recommendation.validUntilDate > datetime.utcnow()))\
+                            .update({'validUntilDate': datetime.utcnow()})
         db.session.commit()
     return jsonify(offer._asdict()), 200

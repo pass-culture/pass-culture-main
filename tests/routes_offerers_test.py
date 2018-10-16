@@ -996,8 +996,8 @@ def test_deactivating_offerer_returns_200_and_expires_recos(app):
     db.session.refresh(recommendation3)
     db.session.refresh(recommendation4)
     db.session.refresh(other_recommendation)
-    assert recommendation1.validUntilDate < datetime.now()
-    assert recommendation2.validUntilDate < datetime.now()
-    assert recommendation3.validUntilDate < datetime.now()
-    assert recommendation4.validUntilDate < datetime.now()
+    assert recommendation1.validUntilDate < datetime.utcnow()
+    assert recommendation2.validUntilDate < datetime.utcnow()
+    assert recommendation3.validUntilDate < datetime.utcnow()
+    assert recommendation4.validUntilDate < datetime.utcnow()
     assert other_recommendation.validUntilDate == original_validity_date
