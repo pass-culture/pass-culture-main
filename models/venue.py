@@ -123,7 +123,7 @@ class Venue(PcObject,
                     and managingOfferer is not None \
                     and not self.siret.startswith(managingOfferer.siren):
                 api_errors.addError('siret', 'Le code SIRET doit correspondre à un établissement de votre structure')
-        api_errors = self.check_bank_account_information(api_errors)
+        self.check_bank_account_information(api_errors)
 
         return api_errors
 

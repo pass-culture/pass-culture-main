@@ -34,5 +34,3 @@ class HasBankInformation(object):
             api_errors.addError('bic', "Le BIC es manquant")
         if not self.iban and self.bic:
             api_errors.addError('iban', "L'IBAN es manquant")
-
-        return api_errors
