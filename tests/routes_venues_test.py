@@ -55,7 +55,7 @@ def test_modify_venue_with_is_virtual_returns_400_if_a_virtual_venue_already_exi
     # given
     offerer = create_offerer()
     user = create_user(email='user.pro@test.com')
-    venue1 = create_venue(offerer, name='Les petits papiers', is_virtual=True)
+    venue1 = create_venue(offerer, name='Les petits papiers', is_virtual=True, siret=None)
     venue2 = create_venue(offerer, name='L\'encre et la plume', is_virtual=False)
     user_offerer = create_user_offerer(user, offerer)
     PcObject.check_and_save(user_offerer, venue1, venue2)
@@ -138,7 +138,7 @@ def test_create_venue_returns_400_if_a_virtual_venue_already_exist_for_an_offere
     offerer = create_offerer(siren='302559178')
     user = create_user(email='user.pro@test.com')
     user_offerer = create_user_offerer(user, offerer)
-    venue = create_venue(offerer, name='L\'encre et la plume', is_virtual=True)
+    venue = create_venue(offerer, name='L\'encre et la plume', is_virtual=True, siret=None)
     PcObject.check_and_save(venue, user_offerer)
 
     venue_data = {

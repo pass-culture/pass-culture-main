@@ -643,7 +643,7 @@ def test_get_booking_by_token_when_user_has_rights(app):
     offer = create_event_offer(venue, event_name='Event Name')
     event_occurrence = create_event_occurrence(offer)
     stock = create_stock_from_event_occurrence(event_occurrence, price=0)
-    booking = create_booking(user, stock)
+    booking = create_booking(user, stock, venue=venue)
     date = serialize(event_occurrence.beginningDatetime)
 
     PcObject.check_and_save(user_offerer, booking, event_occurrence)
@@ -673,7 +673,7 @@ def test_get_booking_by_token_when_user_doesnt_have_rights(app):
     offer = create_event_offer(venue, event_name='Event Name')
     event_occurrence = create_event_occurrence(offer)
     stock = create_stock_from_event_occurrence(event_occurrence, price=0)
-    booking = create_booking(user, stock)
+    booking = create_booking(user, stock, venue=venue)
 
     PcObject.check_and_save(querying_user, booking, event_occurrence)
 
@@ -708,7 +708,7 @@ def test_get_booking_by_token_when_not_logged_in_and_doesnt_give_email(app):
     offer = create_event_offer(venue, event_name='Event Name')
     event_occurrence = create_event_occurrence(offer)
     stock = create_stock_from_event_occurrence(event_occurrence, price=0)
-    booking = create_booking(user, stock)
+    booking = create_booking(user, stock, venue=venue)
     date = serialize(event_occurrence.beginningDatetime)
 
     PcObject.check_and_save(admin_user, booking, event_occurrence)
@@ -734,7 +734,7 @@ def test_get_booking_by_token_when_user_does_not_have_rights_in_and_give_right_e
     offer = create_event_offer(venue, event_name='Event Name')
     event_occurrence = create_event_occurrence(offer)
     stock = create_stock_from_event_occurrence(event_occurrence, price=0)
-    booking = create_booking(user, stock)
+    booking = create_booking(user, stock, venue=venue)
 
     PcObject.check_and_save(admin_user, booking, event_occurrence)
 
@@ -756,7 +756,7 @@ def test_get_booking_by_token_when_not_logged_in_and_give_right_email_and_offer_
     offer = create_event_offer(venue, event_name='Event Name')
     event_occurrence = create_event_occurrence(offer)
     stock = create_stock_from_event_occurrence(event_occurrence, price=0)
-    booking = create_booking(user, stock)
+    booking = create_booking(user, stock, venue=venue)
 
     PcObject.check_and_save(admin_user, booking, event_occurrence)
     url = API_URL + '/bookings/token/{}?email={}&offer_id={}'.format(booking.token, 'user@email.fr', humanize(offer.id))
@@ -776,7 +776,7 @@ def test_get_booking_by_token_when_not_logged_in_and_give_right_email_and_offer_
     offerer = create_offerer()
     venue = create_venue(offerer)
     stock = create_stock_with_thing_offer(offerer, venue, thing_offer=None, price=0)
-    booking = create_booking(user, stock)
+    booking = create_booking(user, stock, venue=venue)
 
     PcObject.check_and_save(admin_user, booking)
     url = API_URL + '/bookings/token/{}?email={}&offer_id={}'.format(booking.token, 'user@email.fr',
@@ -797,7 +797,7 @@ def test_validate_get_booking_by_token_when_not_logged_in_and_give_right_email_a
     offerer = create_offerer()
     venue = create_venue(offerer)
     stock = create_stock_with_thing_offer(offerer, venue, thing_offer=None, price=0)
-    booking = create_booking(user, stock)
+    booking = create_booking(user, stock, venue=venue)
 
     PcObject.check_and_save(admin_user, booking)
     url = API_URL + '/bookings/token/{}?email={}&offer_id={}'.format(booking.token, 'user@email.fr', humanize(123))
@@ -820,7 +820,7 @@ def test_get_booking_by_token_when_not_logged_in_but_wrong_email(app):
     offer = create_event_offer(venue, event_name='Event Name')
     event_occurrence = create_event_occurrence(offer)
     stock = create_stock_from_event_occurrence(event_occurrence, price=0)
-    booking = create_booking(user, stock)
+    booking = create_booking(user, stock, venue=venue)
 
     PcObject.check_and_save(admin_user, booking, event_occurrence)
 
@@ -841,7 +841,7 @@ class PatchBookingAsAnonymousUserTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         stock = create_stock_with_event_offer(offerer, venue, price=0)
-        booking = create_booking(user, stock)
+        booking = create_booking(user, stock, venue=venue)
         PcObject.check_and_save(booking)
         url = API_URL + '/bookings/token/{}?email={}&offer_id={}'.format(booking.token, user.email,
                                                                          humanize(stock.resolvedOffer.id))
@@ -861,7 +861,7 @@ class PatchBookingAsAnonymousUserTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         stock = create_stock_with_event_offer(offerer, venue, price=0)
-        booking = create_booking(user, stock)
+        booking = create_booking(user, stock, venue=venue)
         PcObject.check_and_save(booking)
         url = API_URL + '/bookings/token/{}?&offer_id={}'.format(booking.token, humanize(stock.resolvedOffer.id))
 
@@ -880,7 +880,7 @@ class PatchBookingAsAnonymousUserTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         stock = create_stock_with_event_offer(offerer, venue, price=0)
-        booking = create_booking(user, stock)
+        booking = create_booking(user, stock, venue=venue)
         PcObject.check_and_save(booking)
         url = API_URL + '/bookings/token/{}?email={}'.format(booking.token, user.email)
 
@@ -898,7 +898,7 @@ class PatchBookingAsAnonymousUserTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         stock = create_stock_with_event_offer(offerer, venue, price=0)
-        booking = create_booking(user, stock)
+        booking = create_booking(user, stock, venue=venue)
         PcObject.check_and_save(booking)
         url = API_URL + '/bookings/token/{}'.format(booking.token, user.email)
 
@@ -918,7 +918,7 @@ class PatchBookingAsAnonymousUserTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         stock = create_stock_with_event_offer(offerer, venue, price=0)
-        booking = create_booking(user, stock)
+        booking = create_booking(user, stock, venue=venue)
         PcObject.check_and_save(booking)
         url = API_URL + '/bookings/token/{}?email={}&offer_id={}'.format(booking.token, 'wrong.email@test.com',
                                                                          humanize(stock.resolvedOffer.id))
@@ -942,7 +942,7 @@ class PatchBookingAsLoggedInUserTest:
         user_offerer = create_user_offerer(admin_user, offerer)
         venue = create_venue(offerer)
         stock = create_stock_with_event_offer(offerer, venue, price=0)
-        booking = create_booking(user, stock)
+        booking = create_booking(user, stock, venue=venue)
         PcObject.check_and_save(booking, user_offerer)
         url = API_URL + '/bookings/token/{}'.format(booking.token)
 
@@ -966,7 +966,7 @@ class PatchBookingAsLoggedInUserTest:
         user_offerer = create_user_offerer(admin_user, offerer)
         venue = create_venue(offerer)
         stock = create_stock_with_event_offer(offerer, venue, price=0)
-        booking = create_booking(user, stock)
+        booking = create_booking(user, stock, venue=venue)
         PcObject.check_and_save(booking, user_offerer)
         url = API_URL + '/bookings/token/{}'.format(booking.token)
 
@@ -986,7 +986,7 @@ class PatchBookingAsLoggedInUserTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         stock = create_stock_with_event_offer(offerer, venue, price=0)
-        booking = create_booking(user, stock)
+        booking = create_booking(user, stock, venue=venue)
         PcObject.check_and_save(booking, admin_user)
         url = API_URL + '/bookings/token/{}?email={}'.format(booking.token, user.email)
 
@@ -1007,7 +1007,7 @@ class PatchBookingAsLoggedInUserTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         stock = create_stock_with_event_offer(offerer, venue, price=0)
-        booking = create_booking(user, stock)
+        booking = create_booking(user, stock, venue=venue)
         PcObject.check_and_save(booking, admin_user)
         url = API_URL + '/bookings/token/{}?email={}'.format(booking.token, 'wrong@email.fr')
 
@@ -1027,7 +1027,7 @@ class PatchBookingAsLoggedInUserTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         stock = create_stock_with_event_offer(offerer, venue, price=0)
-        booking = create_booking(user, stock)
+        booking = create_booking(user, stock, venue=venue)
         PcObject.check_and_save(booking, admin_user)
         url = API_URL + '/bookings/token/{}?email={}&offer_id={}'.format(booking.token, user.email, humanize(123))
 
@@ -1048,7 +1048,7 @@ class PatchBookingAsLoggedInUserTest:
         user_offerer = create_user_offerer(admin_user, offerer)
         venue = create_venue(offerer)
         stock = create_stock_with_event_offer(offerer, venue, price=0)
-        booking = create_booking(user, stock)
+        booking = create_booking(user, stock, venue=venue)
         booking.isCancelled = True
         PcObject.check_and_save(booking, user_offerer)
         url = API_URL + '/bookings/token/{}'.format(booking.token)
@@ -1071,7 +1071,7 @@ class PatchBookingAsLoggedInUserTest:
         user_offerer = create_user_offerer(admin_user, offerer)
         venue = create_venue(offerer)
         stock = create_stock_with_event_offer(offerer, venue, price=0)
-        booking = create_booking(user, stock)
+        booking = create_booking(user, stock, venue=venue)
         booking.isUsed = True
         PcObject.check_and_save(booking, user_offerer)
         url = API_URL + '/bookings/token/{}'.format(booking.token)

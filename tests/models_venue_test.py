@@ -13,7 +13,7 @@ def test_offerer_cannot_have_address_and_isVirtual(app):
     offerer = create_offerer('123456789', '1 rue Test', 'Test city', '93000', 'Test offerer')
     PcObject.check_and_save(offerer)
 
-    venue = create_venue(offerer, name='Venue_name', booking_email='booking@email.com', is_virtual=True)
+    venue = create_venue(offerer, name='Venue_name', booking_email='booking@email.com', is_virtual=True, siret=None)
     venue.address = '1 test address'
 
     # When
@@ -44,11 +44,11 @@ def test_offerer_cannot_create_a_second_virtual_venue(app):
     PcObject.check_and_save(offerer)
 
     venue = create_venue(offerer, name='Venue_name', booking_email='booking@email.com', address=None, postal_code=None,
-                         city=None, departement_code=None, is_virtual=True)
+                         city=None, departement_code=None, is_virtual=True, siret=None)
     PcObject.check_and_save(venue)
 
     new_venue = create_venue(offerer, name='Venue_name', booking_email='booking@email.com', address=None,
-                             postal_code=None, city=None, departement_code=None, is_virtual=True)
+                             postal_code=None, city=None, departement_code=None, is_virtual=True, siret=None)
 
     # When
     with pytest.raises(TooManyVirtualVenuesException):
@@ -62,10 +62,11 @@ def test_offerer_cannot_update_a_second_venue_to_be_virtual(app):
     offerer = create_offerer('123456789', '1 rue Test', 'Test city', '93000', 'Test offerer')
     PcObject.check_and_save(offerer)
 
-    venue = create_venue(offerer, address=None, postal_code=None, city=None, departement_code=None, is_virtual=True)
+    venue = create_venue(offerer, address=None, postal_code=None, city=None, departement_code=None, is_virtual=True,
+                         siret=None)
     PcObject.check_and_save(venue)
 
-    new_venue = create_venue(offerer, is_virtual=False)
+    new_venue = create_venue(offerer, is_virtual=False, siret='12345678998765')
     PcObject.check_and_save(new_venue)
 
     # When
@@ -78,6 +79,30 @@ def test_offerer_cannot_update_a_second_venue_to_be_virtual(app):
     # Then
     with pytest.raises(TooManyVirtualVenuesException):
         PcObject.check_and_save(new_venue)
+
+
+@clean_database
+@pytest.mark.standalone
+def test_venue_cannot_be_virtual_and_have_a_siret(app):
+    # given
+    offerer = create_offerer()
+    venue = create_venue(offerer, is_virtual=True, siret='12345678912345')
+
+    # when
+    with pytest.raises(ApiErrors):
+        PcObject.check_and_save(venue)
+
+
+@clean_database
+@pytest.mark.standalone
+def test_venue_cannot_have_no_siret_without_comment(app):
+    # given
+    offerer = create_offerer()
+    venue = create_venue(offerer, siret=None, comment=None)
+
+    # when
+    with pytest.raises(ApiErrors):
+        PcObject.check_and_save(venue)
 
 
 @pytest.mark.standalone
@@ -144,7 +169,6 @@ def test_venue_errors_raises_an_error_if_iban_is_valid_but_bic_is_not():
     venue = create_venue(offerer, bic='random bic', iban='FR7630006000011234567890189')
     # when
     errors = venue.errors()
-
 
     # then
     assert errors.errors['bic'] == ["Le BIC saisi est invalide"]

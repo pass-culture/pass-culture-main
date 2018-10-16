@@ -1,30 +1,31 @@
 """ routes offers tests """
 import secrets
-
 from datetime import datetime, timedelta
+
 import pytest
 
 from models import PcObject, Venue
 from models.db import db
 from tests.conftest import clean_database
 from utils.human_ids import dehumanize, humanize
-from utils.test_utils import API_URL,\
-                             create_event, \
-                             create_event_offer, \
-                             create_n_mixed_offers_with_same_venue, \
-                             create_offerer, \
-                             create_recommendation, \
-                             create_thing, \
-                             create_thing_offer, \
-                             create_user, \
-                             create_user_offerer, \
-                             create_venue, \
-                             req_with_auth
+from utils.test_utils import API_URL, \
+    create_event, \
+    create_event_offer, \
+    create_n_mixed_offers_with_same_venue, \
+    create_offerer, \
+    create_recommendation, \
+    create_thing, \
+    create_thing_offer, \
+    create_user, \
+    create_user_offerer, \
+    create_venue, \
+    req_with_auth
+
 
 def insert_offers_for(user, n, siren='123456789'):
     offerer = create_offerer(siren=siren)
     user_offerer = create_user_offerer(user, offerer)
-    venue = create_venue(offerer)
+    venue = create_venue(offerer, siret=siren + '1345')
     offers = create_n_mixed_offers_with_same_venue(venue, n=n)
 
     PcObject.check_and_save(user_offerer)
@@ -195,7 +196,7 @@ def test_create_thing_offer_returns_bad_request_if_thing_is_physical_and_venue_i
     user = create_user(email='user@test.com', password='azerty123')
     offerer = create_offerer()
     user_offerer = create_user_offerer(user, offerer)
-    venue = create_venue(offerer, is_virtual=True)
+    venue = create_venue(offerer, is_virtual=True, siret=None)
     thing = create_thing(url=None)
     PcObject.check_and_save(user_offerer, venue, thing)
 

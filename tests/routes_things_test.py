@@ -12,7 +12,7 @@ def test_things_with_urls_cannot_be_saved_with_type_offline_only(app):
     # Given
     user = create_user(password='P@55W0rd!')
     offerer = create_offerer()
-    venue = create_venue(offerer, is_virtual=True)
+    venue = create_venue(offerer, is_virtual=True, siret=None)
     PcObject.check_and_save(user, venue)
     thing_json = {'thumbCount': 0, 'type': 'ThingType.JEUX_ABO', 'name': 'Le grand jeu', 'mediaUrls': 'http://media.url',
               'url': 'http://jeux_abo.fr/offre', 'isNational': False, 'venueId': humanize(venue.id)}
