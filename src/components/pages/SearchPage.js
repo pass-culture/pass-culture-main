@@ -154,8 +154,8 @@ class SearchPage extends PureComponent {
       typeSublabelsAndDescription,
     } = this.props
 
-    const searchPageTitle =
-      match.params.view === 'resultats' ? 'Recherche : résultats' : 'Recherche'
+    const isResultPage = match.params.view === 'resultats'
+    const searchPageTitle = isResultPage ? 'Recherche : résultats' : 'Recherche'
 
     const { windowQuery } = pagination
     const { keywordsKey, keywordsValue, withFilter } = this.state
@@ -183,7 +183,7 @@ class SearchPage extends PureComponent {
       <Main
         id="search-page"
         backButton={
-          match.params.view === 'resultats' && {
+          isResultPage && {
             onClick: () => history.push('/recherche'),
           }
         }
@@ -210,19 +210,18 @@ class SearchPage extends PureComponent {
                   onChange={this.onKeywordsChange}
                 />
 
-                {match.params.view === 'resultats' &&
-                  get(keywordsValue, 'length') > 0 && (
-                    <span className="icon is-small is-right">
-                      <button
-                        type="button"
-                        className="no-border no-background is-red-text"
-                        id="refresh-keywords-button"
-                        onClick={this.onKeywordsEraseClick}
-                      >
-                        <span aria-hidden className="icon-close" title="" />
-                      </button>
-                    </span>
-                  )}
+                {get(keywordsValue, 'length') > 0 && (
+                  <span className="icon is-small is-right">
+                    <button
+                      type="button"
+                      className="no-border no-background is-red-text"
+                      id="refresh-keywords-button"
+                      onClick={this.onKeywordsEraseClick}
+                    >
+                      <span aria-hidden className="icon-close" title="" />
+                    </button>
+                  </span>
+                )}
               </p>
               <div className="control flex-0">
                 <button
