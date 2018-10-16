@@ -238,6 +238,26 @@ def test_get_profile_should_return_the_users_profile_without_password_hash(app):
 
 @pytest.mark.standalone
 @clean_database
+def test_signin_should_return_the_signed_in_user_with_his_expenses(app):
+    # given
+    user = create_user(email='user@example.com', password='toto123456789')
+    PcObject.check_and_save(user)
+    data = {'identifier': user.email, 'password': user.clearTextPassword}
+
+    # when
+    response = req.post(API_URL + '/users/signin', json=data, headers={'origin': 'http://localhost:3000'})
+
+    # then
+    assert response.status_code == 200
+    assert response.json()['expenses'] == {
+        'all': {'actual': 0, 'max': 500},
+        'digital': {'actual': 0, 'max': 200},
+        'physical': {'actual': 0, 'max': 100}
+    }
+
+
+@pytest.mark.standalone
+@clean_database
 @patch('connectors.google_spreadsheet.get_authorized_emails_and_dept_codes')
 def test_signup_should_not_work_for_user_not_in_exp_spreadsheet(get_authorized_emails_and_dept_codes, app):
     # Given
@@ -677,7 +697,7 @@ def test_post_for_password_token_records_a_new_password_token_if_email_is_known(
     PcObject.check_and_save(user)
 
     # when
-    response = req.post(API_URL + '/users/reset-password', json=data, headers={'origin' :'http://localhost:3000'})
+    response = req.post(API_URL + '/users/reset-password', json=data, headers={'origin': 'http://localhost:3000'})
 
     # then
     db.session.refresh(user)
@@ -694,7 +714,7 @@ def test_post_for_password_token_returns_no_content_if_email_is_unknown(app):
     data = {'email': 'unknown.user@test.com'}
 
     # when
-    response = req.post(API_URL + '/users/reset-password', json=data, headers={'origin' :'http://localhost:3000'})
+    response = req.post(API_URL + '/users/reset-password', json=data, headers={'origin': 'http://localhost:3000'})
 
     # then
     assert response.status_code == 204
@@ -707,7 +727,7 @@ def test_post_for_password_token_returns_bad_request_if_email_is_empty(app):
     data = {'email': ''}
 
     # when
-    response = req.post(API_URL + '/users/reset-password', json=data, headers={'origin' :'http://localhost:3000'})
+    response = req.post(API_URL + '/users/reset-password', json=data, headers={'origin': 'http://localhost:3000'})
 
     # then
     assert response.status_code == 400
@@ -721,7 +741,7 @@ def test_post_for_password_token_returns_bad_request_if_email_is_missing(app):
     data = {}
 
     # when
-    response = req.post(API_URL + '/users/reset-password', json=data, headers={'origin' :'http://localhost:3000'})
+    response = req.post(API_URL + '/users/reset-password', json=data, headers={'origin': 'http://localhost:3000'})
 
     # then
     assert response.status_code == 400
@@ -881,10 +901,11 @@ def test_patch_user_returns_200_for_allowed_changes(app):
     PcObject.check_and_save(user)
 
     auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
-    data = {'publicName': 'plop', 'email': 'new@email.com', 'postalCode': '93020', 'phoneNumber': '0612345678', 'departementCode': '97'}
+    data = {'publicName': 'plop', 'email': 'new@email.com', 'postalCode': '93020', 'phoneNumber': '0612345678',
+            'departementCode': '97'}
 
     # when
-    response = auth_request.patch(API_URL + '/users/current', json=data, headers={'origin' :'http://localhost:3000'})
+    response = auth_request.patch(API_URL + '/users/current', json=data, headers={'origin': 'http://localhost:3000'})
 
     # then
     db.session.refresh(user)
@@ -933,7 +954,8 @@ def test_get_current_user_returns_400_when_header_not_in_whitelist(app):
     PcObject.check_and_save(user)
 
     # when
-    response = requests.get(API_URL + '/users/current', auth=('e@mail.com', 'p@55sw0rd'), headers={'origin': 'random.header.fr'})
+    response = requests.get(API_URL + '/users/current', auth=('e@mail.com', 'p@55sw0rd'),
+                            headers={'origin': 'random.header.fr'})
 
     # then
     assert response.status_code == 400
