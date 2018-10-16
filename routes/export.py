@@ -192,7 +192,7 @@ def get_offerers_users_offers_bookings():
     result = find_offerers_with_user_venues_and_bookings_by_departement(department)
     file_name = 'export_%s_offerers_users_offers_bookings.csv' % datetime.utcnow().strftime('%y_%m_%d')
     headers = ['Offerer_name', 'UserOfferer_id', 'User_email', 'User_dateCreated', 'Venue_departementCode',
-               'Offer_dateCreated', 'Event_name', 'Activity_issued_at', 'Booking_dateModified']
+               'Offer_dateCreated', 'Event_name', 'Activity_issued_at', 'Booking_dateCreated']
     return _make_csv_response(file_name, headers, result)
 
 

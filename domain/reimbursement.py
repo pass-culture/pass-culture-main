@@ -1,13 +1,22 @@
+import datetime
 from abc import ABC, abstractmethod
 from decimal import Decimal
 from enum import Enum
 
 from models import Booking
 
+MIN_DATETIME = datetime.datetime(datetime.MINYEAR, 1, 1)
+MAX_DATETIME = datetime.datetime(datetime.MAXYEAR, 1, 1)
+
 
 class ReimbursementRule(ABC):
+    def is_active(self, booking: Booking):
+        valid_from = self.valid_from if self.valid_from else MIN_DATETIME
+        valid_until = self.valid_until if self.valid_until else MAX_DATETIME
+        return valid_from < booking.dateCreated < valid_until
+
     @abstractmethod
-    def is_relevant(self, booking, **kwargs):
+    def is_relevant(self, booking: Booking, **kwargs):
         pass
 
     @property
@@ -17,7 +26,12 @@ class ReimbursementRule(ABC):
 
     @property
     @abstractmethod
-    def is_active(self):
+    def valid_from(self):
+        pass
+
+    @property
+    @abstractmethod
+    def valid_until(self):
         pass
 
     @property
@@ -25,14 +39,15 @@ class ReimbursementRule(ABC):
     def description(self):
         pass
 
-    def apply(self, booking):
+    def apply(self, booking: Booking):
         return Decimal(booking.value * self.rate)
 
 
 class DigitalThingsReimbursement(ReimbursementRule):
     rate = Decimal(0)
     description = 'Pas de remboursement pour les offres digitales'
-    is_active = True
+    valid_from = None
+    valid_until = None
 
     def is_relevant(self, booking, **kwargs):
         return booking.stock.resolvedOffer.eventOrThing.isDigital
@@ -41,7 +56,8 @@ class DigitalThingsReimbursement(ReimbursementRule):
 class PhysicalOffersReimbursement(ReimbursementRule):
     rate = Decimal(1)
     description = 'Remboursement total pour les offres physiques'
-    is_active = True
+    valid_from = None
+    valid_until = None
 
     def is_relevant(self, booking, **kwargs):
         return not booking.stock.resolvedOffer.eventOrThing.isDigital
@@ -50,7 +66,8 @@ class PhysicalOffersReimbursement(ReimbursementRule):
 class MaxReimbursementByOfferer(ReimbursementRule):
     rate = Decimal(0)
     description = 'Pas de remboursement au dessus du plafond de 23 000 € par offreur'
-    is_active = True
+    valid_from = None
+    valid_until = None
 
     def is_relevant(self, booking, **kwargs):
         if booking.stock.resolvedOffer.eventOrThing.isDigital:

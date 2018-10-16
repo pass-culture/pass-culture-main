@@ -105,7 +105,7 @@ def patch_offerer(offererId):
 
 def _generate_orderby_criterium(order, order_by_key):
     allowed_columns_for_order = {'booking_id': 'booking.id', 'venue_name': 'venue.name',
-                                 'date': 'booking."dateModified"', 'category': "COALESCE(thing.type, event.type)",
+                                 'date': 'booking."dateCreated"', 'category': "COALESCE(thing.type, event.type)",
                                  'amount': 'booking.amount'}
     if order_by_key and order:
         column = allowed_columns_for_order[order_by_key]

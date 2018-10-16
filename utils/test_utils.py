@@ -186,16 +186,8 @@ def req_with_auth(email=None, password=None, headers={'origin': 'http://localhos
     return request
 
 
-def create_booking(
-        user,
-        stock=None,
-        venue=None,
-        recommendation=None,
-        quantity=1,
-        date_modified=datetime.utcnow(),
-        is_cancelled=False,
-        is_used=False
-):
+def create_booking(user, stock=None, venue=None, recommendation=None, quantity=1, date_created=datetime.utcnow(),
+                   is_cancelled=False, is_used=False):
     booking = Booking()
     if venue is None:
         offerer = create_offerer('987654321', 'Test address', 'Test city', '93000', 'Test name')
@@ -209,7 +201,7 @@ def create_booking(
     booking.token = random_token()
     booking.amount = stock.price
     booking.quantity = quantity
-    booking.dateModified = date_modified
+    booking.dateCreated = date_created
     if recommendation:
         booking.recommendation = recommendation
     elif not stock.offer:
@@ -222,7 +214,7 @@ def create_booking(
     return booking
 
 
-def create_booking_for_thing(url=None, amount=50, quantity=1, user=None):
+def create_booking_for_thing(url=None, amount=50, quantity=1, user=None, date_created=datetime.utcnow()):
     thing = Thing(from_dict={'url': url})
     offer = Offer()
     stock = Stock()
@@ -232,6 +224,7 @@ def create_booking_for_thing(url=None, amount=50, quantity=1, user=None):
     booking.stock = stock
     booking.quantity = quantity
     booking.user = user
+    booking.dateCreated = date_created
     return booking
 
 
@@ -239,7 +232,8 @@ def create_booking_for_event(
         amount=50,
         quantity=1,
         user=None,
-        isCancelled=False
+        isCancelled=False,
+        date_created=datetime.utcnow()
 ):
     event = Event()
     offer = Offer()
@@ -252,6 +246,7 @@ def create_booking_for_event(
     booking.user = user
     booking.isCancelled = isCancelled
     booking.token = random_token()
+    booking.dateCreated = date_created
     return booking
 
 

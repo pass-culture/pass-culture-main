@@ -25,9 +25,9 @@ class Booking(PcObject,
                 primary_key=True,
                 autoincrement=True)
 
-    dateModified = Column(DateTime,
-                          nullable=False,
-                          default=datetime.utcnow)
+    dateCreated = Column(DateTime,
+                         nullable=False,
+                         default=datetime.utcnow)
 
     recommendationId = Column(BigInteger,
                               ForeignKey("recommendation.id"))
