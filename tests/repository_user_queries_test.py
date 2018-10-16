@@ -261,8 +261,7 @@ def _create_bookings_for_test():
     booking_thing_stock_34 = create_booking(user_93, stock_thing_34, venue_34)
     booking_event_out_of_date = create_booking(user_93, stock_event_out_of_date, venue_75)
     booking_user_34 = create_booking(user_34, stock_event, venue_75)
-    booking_user_cant_book_free_offers = create_booking(user_cant_book_free_offers, stock_thing, venue_75,
-                                                )
+    booking_user_cant_book_free_offers = create_booking(user_cant_book_free_offers, stock_thing, venue_75)
     booking_activity_out_of_date = create_booking(user_93_2, stock_thing, venue_75)
     return booking_activity_out_of_date, booking_event_OK, booking_event_out_of_date, booking_thing_OK, booking_thing_stock_34, booking_user_34, booking_user_cant_book_free_offers
 

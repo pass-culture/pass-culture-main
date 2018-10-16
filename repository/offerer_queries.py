@@ -39,7 +39,7 @@ def find_offerers_in_date_range_for_given_departement(date_max, date_min, depart
 def find_offerers_with_user_venues_and_bookings_by_departement(department):
     Activity = load_activity()
     query = db.session.query(Offerer.name, UserOfferer.id, User.email, User.dateCreated, Venue.departementCode,
-                             Offer.dateCreated, Event.name, Activity.issued_at, Booking.dateModified) \
+                             Offer.dateCreated, Event.name, Activity.issued_at, Booking.dateCreated) \
         .join(Venue) \
         .outerjoin(Offer) \
         .outerjoin(EventOccurrence) \

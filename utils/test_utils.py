@@ -186,16 +186,8 @@ def req_with_auth(email=None, password=None, headers={'origin': 'http://localhos
     return request
 
 
-def create_booking(
-        user,
-        stock=None,
-        venue=None,
-        recommendation=None,
-        quantity=1,
-        date_modified=datetime.utcnow(),
-        is_cancelled=False,
-        is_used=False
-):
+def create_booking(user, stock=None, venue=None, recommendation=None, quantity=1, date_created=datetime.utcnow(),
+                   is_cancelled=False, is_used=False):
     booking = Booking()
     if venue is None:
         offerer = create_offerer('987654321', 'Test address', 'Test city', '93000', 'Test name')
@@ -209,7 +201,7 @@ def create_booking(
     booking.token = random_token()
     booking.amount = stock.price
     booking.quantity = quantity
-    booking.dateModified = date_modified
+    booking.dateCreated = date_created
     if recommendation:
         booking.recommendation = recommendation
     elif not stock.offer:

@@ -171,13 +171,7 @@ def test_get_offerer_bookings_returns_bookings_with_public_user_info_and_token_w
     user_offerer = create_user_offerer(user_pro, offerer)
     venue = create_venue(offerer)
     stock = create_stock_with_event_offer(offerer, venue, price=20)
-    booking = create_booking(user,
-        stock,
-        venue,
-        recommendation=None,
-        quantity=2,
-        is_used=True
-    )
+    booking = create_booking(user, stock, venue, recommendation=None, quantity=2, is_used=True)
 
     PcObject.check_and_save(deposit, user_offerer, booking)
 
@@ -211,7 +205,7 @@ def test_get_offerer_bookings_returns_bookings_with_their_reimbursements_infos(a
 
     venue = create_venue(offerer)
     stock = create_stock_with_event_offer(offerer, venue, price=20)
-    booking = create_booking(user, stock, venue, recommendation=None, quantity=2, date_modified=now - timedelta(days=5))
+    booking = create_booking(user, stock, venue, recommendation=None, quantity=2, date_created=now - timedelta(days=5))
 
     PcObject.check_and_save(booking)
     auth_request = req_with_auth(email=user_pro.email, password='p@55sw0rd')
@@ -570,9 +564,9 @@ def test_get_offerer_bookings_ordered_by_date_asc(app):
     stock1 = create_stock_from_offer(offer)
     stock2 = create_stock_from_offer(offer)
     stock3 = create_stock_from_offer(offer)
-    booking1 = create_booking(user, stock2, venue, recommendation=None, date_modified=serialize(datetime(2018,10,1)))
-    booking2 = create_booking(user, stock1, venue, recommendation=None, date_modified=serialize(datetime(2018,10,5)))
-    booking3 = create_booking(user, stock3, venue, recommendation=None, date_modified=serialize(datetime(2018,10,3)))
+    booking1 = create_booking(user, stock2, venue, recommendation=None, date_created=serialize(datetime(2018, 10, 1)))
+    booking2 = create_booking(user, stock1, venue, recommendation=None, date_created=serialize(datetime(2018, 10, 5)))
+    booking3 = create_booking(user, stock3, venue, recommendation=None, date_created=serialize(datetime(2018, 10, 3)))
     PcObject.check_and_save(deposit, user_offerer, booking1, booking2, booking3)
     auth_request = req_with_auth(email=user_pro.email, password='p@55sw0rd')
 
@@ -582,9 +576,9 @@ def test_get_offerer_bookings_ordered_by_date_asc(app):
     # then
     assert response.status_code == 200
     elements = response.json()
-    assert elements[0]['dateModified'].startswith('2018-10-01')
-    assert elements[1]['dateModified'].startswith('2018-10-03')
-    assert elements[2]['dateModified'].startswith('2018-10-05')
+    assert elements[0]['dateCreated'].startswith('2018-10-01')
+    assert elements[1]['dateCreated'].startswith('2018-10-03')
+    assert elements[2]['dateCreated'].startswith('2018-10-05')
 
 
 @pytest.mark.standalone
@@ -603,9 +597,9 @@ def test_get_offerer_bookings_ordered_by_date_desc(app):
     stock1 = create_stock_from_offer(offer)
     stock2 = create_stock_from_offer(offer)
     stock3 = create_stock_from_offer(offer)
-    booking1 = create_booking(user, stock2, venue, recommendation=None, date_modified=serialize(datetime(2018,10,1)))
-    booking2 = create_booking(user, stock1, venue, recommendation=None, date_modified=serialize(datetime(2018,10,5)))
-    booking3 = create_booking(user, stock3, venue, recommendation=None, date_modified=serialize(datetime(2018,10,3)))
+    booking1 = create_booking(user, stock2, venue, recommendation=None, date_created=serialize(datetime(2018, 10, 1)))
+    booking2 = create_booking(user, stock1, venue, recommendation=None, date_created=serialize(datetime(2018, 10, 5)))
+    booking3 = create_booking(user, stock3, venue, recommendation=None, date_created=serialize(datetime(2018, 10, 3)))
     PcObject.check_and_save(deposit, user_offerer, booking1, booking2, booking3)
     auth_request = req_with_auth(email=user_pro.email, password='p@55sw0rd')
 
@@ -615,9 +609,9 @@ def test_get_offerer_bookings_ordered_by_date_desc(app):
     # then
     assert response.status_code == 200
     elements = response.json()
-    assert elements[0]['dateModified'].startswith('2018-10-05')
-    assert elements[1]['dateModified'].startswith('2018-10-03')
-    assert elements[2]['dateModified'].startswith('2018-10-01')
+    assert elements[0]['dateCreated'].startswith('2018-10-05')
+    assert elements[1]['dateCreated'].startswith('2018-10-03')
+    assert elements[2]['dateCreated'].startswith('2018-10-01')
 
 
 @pytest.mark.standalone

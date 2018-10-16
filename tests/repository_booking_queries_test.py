@@ -165,7 +165,7 @@ def test_find_final_offerer_bookings_returns_not_cancelled_bookings_for_offerer(
     offer = create_thing_offer(venue)
     stock = create_stock_with_thing_offer(offerer1, venue, offer)
     booking1 = create_booking(user, stock=stock, venue=venue, is_used=True)
-    booking2 = create_booking(user, stock=stock, venue=venue, is_used=True, is_cancelled=True)
+    booking2 = create_booking(user, stock=stock, venue=venue, is_cancelled=True, is_used=True)
 
     PcObject.check_and_save(deposit, booking1, booking2)
 
