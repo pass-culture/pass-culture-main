@@ -493,17 +493,13 @@ def create_user_offerer(user, offerer, validation_token=None, is_admin=False):
     return user_offerer
 
 
-def create_recommendation(offer=None,
-                          user=None,
-                          id=None,
-                          date_read=None,
-                          valid_until_date=datetime.utcnow() + timedelta(days=7),
-                          search=None,
-                          is_favorite=False):
+def create_recommendation(offer=None, user=None, mediation=None, idx=None, date_read=None,
+                          valid_until_date=datetime.utcnow() + timedelta(days=7), search=None, is_favorite=False):
     recommendation = Recommendation()
-    recommendation.id = id
+    recommendation.id = idx
     recommendation.offer = offer
     recommendation.user = user
+    recommendation.mediation = mediation
     recommendation.dateRead = date_read
     recommendation.validUntilDate = valid_until_date
     recommendation.search = search

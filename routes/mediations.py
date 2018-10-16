@@ -1,4 +1,6 @@
 """ mediations """
+from datetime import datetime
+
 from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
 
@@ -55,6 +57,10 @@ def update_mediation(mediation_id):
     mediation = load_or_404(Mediation, mediation_id)
     ensure_current_user_has_rights(RightsType.editor, mediation.offer.venue.managingOffererId)
     mediation = Mediation.query.filter_by(id=dehumanize(mediation_id)).first()
-    mediation.populateFromDict(request.json)
+    data = request.json
+    mediation.populateFromDict(data)
+    if 'isActive' in data and not data['isActive']:
+        for recommendation in mediation.recommendations:
+            recommendation.validUntilDate = datetime.utcnow()
     PcObject.check_and_save(mediation)
     return jsonify(mediation._asdict()), 200

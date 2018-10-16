@@ -1,4 +1,5 @@
 """ tests routes mediations """
+from datetime import datetime, timedelta
 from os import path
 from pathlib import Path
 
@@ -15,7 +16,7 @@ from utils.test_utils import API_URL, \
     create_mediation, \
     create_offerer, \
     create_user_offerer, \
-    create_venue
+    create_venue, create_recommendation
 
 
 @clean_database
@@ -208,3 +209,40 @@ def test_get_mediation_returns_404_if_mediation_does_not_exist(app):
 
     # then
     assert response.status_code == 404
+
+
+@pytest.mark.standalone
+@clean_database
+def test_patch_mediation_make_mediations_invalid_when_deactivating_mediation(app):
+    # given
+    user = create_user(password='p@55sw0rd')
+    other_user = create_user(email='other@email.com')
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    offer = create_event_offer(venue)
+    user_offerer = create_user_offerer(user, offerer)
+    mediation1 = create_mediation(offer, is_active=True)
+    mediation2 = create_mediation(offer, is_active=True)
+    original_validity_date = datetime.utcnow() + timedelta(days=7)
+    recommendation1 = create_recommendation(offer, user, mediation1, valid_until_date=original_validity_date)
+    recommendation2 = create_recommendation(offer, other_user, mediation1, valid_until_date=original_validity_date)
+    other_recommendation = create_recommendation(offer, other_user, mediation2, valid_until_date=original_validity_date)
+    PcObject.check_and_save(other_user,  user_offerer, recommendation1, recommendation2, other_recommendation)
+
+    auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
+    data = {'isActive': False}
+
+    # when
+    response = auth_request.patch(API_URL + '/mediations/%s' % humanize(mediation1.id), json=data)
+
+    # then
+    db.session.refresh(mediation1)
+    assert response.status_code == 200
+    assert response.json()['isActive'] == mediation1.isActive
+    assert mediation1.isActive == data['isActive']
+    db.session.refresh(recommendation1)
+    db.session.refresh(recommendation2)
+    db.session.refresh(other_recommendation)
+    assert recommendation1.validUntilDate < datetime.now()
+    assert recommendation2.validUntilDate < datetime.now()
+    assert other_recommendation.validUntilDate == original_validity_date
