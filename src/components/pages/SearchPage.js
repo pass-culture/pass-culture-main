@@ -59,6 +59,8 @@ class SearchPage extends PureComponent {
 
     event.preventDefault()
 
+    this.setState({ withFilter: false })
+
     pagination.change(
       {
         [mapApiToWindow.keywords]: value === '' ? null : value,

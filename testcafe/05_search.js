@@ -107,3 +107,7 @@ test('Je clique sur la vignette Lire et je suis redirigé vers la page de résul
 // pour tout rénitialiser, il faut cliquer sur la croix dans le form et sur réninitaliser aussi donc
 
 // Tu peux cumuler recherche textuelle + filtrage des résultats, et tu peux appliquer un filtre à toute la base d’offres puis faire une recherche textuelle dans la base filtrée
+
+// in search input, i can delete my search words by clicking in the close icon
+
+// Quand on clique sur chercher, si le filtre est ouvert, il se referme mais la recherche reste active
