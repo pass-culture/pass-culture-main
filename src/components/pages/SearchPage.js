@@ -176,11 +176,12 @@ class SearchPage extends PureComponent {
     let category
     let description
 
+    category = pagination.windowQuery.categories
+
     if (location.pathname.indexOf('/resultats/') !== -1) {
       // FIXME Quand on rafraîchit la page ne fonctionne plus
-      // TypeError: Cannot read property 'description' of undefined
+      // Le state global est remis à zéro... Cf redux tool
 
-      category = pagination.windowQuery.categories
       description = getDescriptionForSublabel(
         category,
         typeSublabelsAndDescription
@@ -234,7 +235,6 @@ class SearchPage extends PureComponent {
                 )}
               </p>
               <div className="control flex-0">
-                {/* --------------------------- SEARCH TEXT BUTTON --------------------------- */}
                 <button
                   className="button is-rounded is-medium"
                   id="keywords-search-button"

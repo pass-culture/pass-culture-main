@@ -1,3 +1,4 @@
+import classnames from 'classnames'
 import React from 'react'
 import { InfiniteScroller } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
@@ -18,11 +19,12 @@ const SearchResults = ({
     pagination.windowQuery,
     withNavigation
   )
-
   return (
     <div className="search-results">
       <h2
-        className="fs15 is-uppercase is-italic is-semi-bold mb12"
+        className={classnames('fs15 is-uppercase is-italic is-semi-bold mb12', {
+          [`nav-result-title`]: withNavigation,
+        })}
         id="results-title"
       >
         {resultTitle}
