@@ -7,10 +7,10 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import { compose, bindActionCreators } from 'redux'
 
-import ShareButton from './share/ShareButton'
-import VersoBookingButton from './verso/VersoBookingButton'
-import { getShareURL } from '../helpers'
-import currentRecommendationSelector from '../selectors/currentRecommendation'
+import ShareButton from '../share/ShareButton'
+import VersoBookingButton from './VersoBookingButton'
+import { getShareURL } from '../../helpers'
+import currentRecommendationSelector from '../../selectors/currentRecommendation'
 
 class VersoControl extends React.PureComponent {
   constructor(props) {

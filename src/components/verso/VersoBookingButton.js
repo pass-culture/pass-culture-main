@@ -78,7 +78,8 @@ VersoBookingButton.propTypes = {
 }
 
 const mapStateToProps = (state, { match }) => {
-  const { mediationId, offerId, url } = match.params
+  const { params, url } = match
+  const { mediationId, offerId } = params
   const recommendation = currentRecommendation(state, offerId, mediationId)
   const isFinished = isRecommendationFinished(recommendation, offerId)
   // NOTE -> on ne peut pas faire confiance a bookingsIds

@@ -7,7 +7,7 @@ import withSizes from 'react-sizes'
 import { compose } from 'redux'
 
 import Recto from './Recto'
-import Verso from './Verso'
+import Verso from './verso'
 import { getHeaderColor } from '../utils/colors'
 import currentRecommendationSelector from '../selectors/currentRecommendation'
 import nextRecommendationSelector from '../selectors/nextRecommendation'

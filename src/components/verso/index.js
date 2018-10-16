@@ -5,11 +5,11 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 
-import Footer from './layout/Footer'
+import Footer from '../layout/Footer'
 import VersoInfo from './VersoInfo'
 import VersoWrapper from './VersoWrapper'
-import currentRecommendationSelector from '../selectors/currentRecommendation'
-import { THUMBS_URL } from '../utils/config'
+import currentRecommendationSelector from '../../selectors/currentRecommendation'
+import { THUMBS_URL } from '../../utils/config'
 
 const Verso = ({ currentRecommendation, isFlipped }) => {
   const { mediation } = currentRecommendation || {}

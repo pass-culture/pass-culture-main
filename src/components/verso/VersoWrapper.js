@@ -6,11 +6,11 @@ import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 
 import VersoControl from './VersoControl'
-import { getHeaderColor } from '../utils/colors'
-import currentRecommendationSelector from '../selectors/currentRecommendation'
-import { ROOT_PATH } from '../utils/config'
+import { getHeaderColor } from '../../utils/colors'
+import currentRecommendationSelector from '../../selectors/currentRecommendation'
+import { ROOT_PATH } from '../../utils/config'
 
-import { makeDraggable, makeUndraggable } from '../reducers/verso'
+import { makeDraggable, makeUndraggable } from '../../reducers/verso'
 
 class VersoWrapper extends Component {
   constructor(props) {
