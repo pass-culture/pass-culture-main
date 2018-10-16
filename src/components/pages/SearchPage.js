@@ -117,7 +117,11 @@ class SearchPage extends PureComponent {
     this.setState({ keywordsValue: event.target.value })
   }
 
-  onKeywordsEraseClick = () => {
+  onBackToSearchHome = () => {
+    this.setState({ keywordsValue: '' })
+  }
+
+  onKeywordsEraseClick = pathname => {
     const { pagination } = this.props
     const { keywordsKey } = this.state
     this.setState({
@@ -140,14 +144,13 @@ class SearchPage extends PureComponent {
         [mapApiToWindow.keywords]: null,
       },
       {
-        pathname: '/recherche/resultats',
+        pathname,
       }
     )
   }
 
   render() {
     const {
-      history,
       location,
       match,
       pagination,
@@ -186,14 +189,14 @@ class SearchPage extends PureComponent {
 
     const isOneCharInKeywords = get(keywordsValue, 'length') > 0
 
+    const backButton = isResultPage && {
+      onClick: () => this.onKeywordsEraseClick('/recherche'),
+    }
+
     return (
       <Main
         id="search-page"
-        backButton={
-          isResultPage && {
-            onClick: () => history.push('/recherche'),
-          }
-        }
+        backButton={backButton}
         handleDataRequest={this.handleDataRequest}
         header={renderPageHeader}
         pageTitle={searchPageTitle}
@@ -223,7 +226,9 @@ class SearchPage extends PureComponent {
                       type="button"
                       className="no-border no-background is-red-text"
                       id="refresh-keywords-button"
-                      onClick={this.onKeywordsEraseClick}
+                      onClick={() =>
+                        this.onKeywordsEraseClick('/recherche/resultats')
+                      }
                     >
                       <span aria-hidden className="icon-close" title="" />
                     </button>
