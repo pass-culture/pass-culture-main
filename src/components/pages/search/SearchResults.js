@@ -5,12 +5,20 @@ import PropTypes from 'prop-types'
 import SearchResultItem from './SearchResultItem'
 import { searchResultsTitle } from './utils'
 
-const SearchResults = ({ items, keywords, loadMoreHandler, pagination }) => {
+const SearchResults = ({
+  items,
+  keywords,
+  loadMoreHandler,
+  pagination,
+  withNavigation,
+}) => {
   const resultTitle = searchResultsTitle(
     keywords,
     items,
-    pagination.windowQuery
+    pagination.windowQuery,
+    withNavigation
   )
+
   return (
     <div className="search-results">
       <h2
@@ -37,6 +45,7 @@ SearchResults.propTypes = {
   keywords: PropTypes.string,
   loadMoreHandler: PropTypes.func.isRequired,
   pagination: PropTypes.object.isRequired,
+  withNavigation: PropTypes.bool.isRequired,
 }
 
 export default SearchResults

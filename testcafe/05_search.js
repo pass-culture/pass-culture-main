@@ -110,4 +110,6 @@ test('Je clique sur la vignette Lire et je suis redirigé vers la page de résul
 
 // in search input, i can delete my search words by clicking in the close icon
 
-// Quand on clique sur chercher, si le filtre est ouvert, il se referme mais la recherche reste active
+// Quand on clique sur le bouton chercher, si le filtre est ouvert, il se referme mais la recherche reste active
+
+// Quand on navigue par type d'offre, dans la page de résultats on peut lire "il n'y pas d'offre pour le moment " sinon "" s'il y a des offres, elles sont affichées

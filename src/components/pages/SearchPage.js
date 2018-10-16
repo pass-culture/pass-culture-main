@@ -174,6 +174,9 @@ class SearchPage extends PureComponent {
     let description
 
     if (location.pathname.indexOf('/resultats/') !== -1) {
+      // FIXME Quand on rafraîchit la page ne fonctionne plus
+      // TypeError: Cannot read property 'description' of undefined
+
       category = pagination.windowQuery.categories
       description = getDescriptionForSublabel(
         category,
@@ -207,7 +210,7 @@ class SearchPage extends PureComponent {
                   id="keywords"
                   defaultValue={keywordsValue}
                   className="input search-input"
-                  placeholder="Mot-clé"
+                  placeholder="Un mot-clé"
                   type="text"
                   onChange={this.onKeywordsChange}
                 />
@@ -280,6 +283,7 @@ class SearchPage extends PureComponent {
                 loadMoreHandler={this.loadMoreHandler}
                 pagination={pagination}
                 typeSublabels={typeSublabels}
+                withNavigation
               />,
             ]}
           />

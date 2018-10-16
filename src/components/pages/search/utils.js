@@ -35,15 +35,26 @@ export const getFirstChangingKey = (previousObject, nextObject) =>
     return previousObject[key] !== nextObject[key]
   })
 
-export const searchResultsTitle = (keywords, items, queryParams) => {
+export const searchResultsTitle = (
+  keywords,
+  items,
+  queryParams,
+  withNavigation = false
+) => {
   let resultTitle
-  if (keywords) {
+  if (withNavigation) {
+    resultTitle =
+      items.length === 0
+        ? "Il n'y a pas d'offres dans cette catégorie pour le moment."
+        : ''
+  } else {
     const count = items.length
     const resultString = pluralize(count, 'résultats')
     const keywordsString = decodeURI(keywords || '')
     const typesString = decodeURI(queryParams.types || '')
     resultTitle = `"${keywordsString}" ${typesString}: ${resultString}`
   }
+
   return resultTitle
 }
 
