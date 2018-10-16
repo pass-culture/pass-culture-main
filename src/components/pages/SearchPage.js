@@ -155,7 +155,7 @@ class SearchPage extends PureComponent {
     } = this.props
 
     const searchPageTitle =
-      recommendations.length === 0 ? 'Recherche' : 'Recherche : résultats'
+      match.params.view === 'resultats' ? 'Recherche : résultats' : 'Recherche'
 
     const { windowQuery } = pagination
     const { keywordsKey, keywordsValue, withFilter } = this.state
