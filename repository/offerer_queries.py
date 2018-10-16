@@ -1,6 +1,6 @@
 from sqlalchemy import func
 
-from models import Offerer, Venue, Offer, EventOccurrence, UserOfferer, User, Event, Booking, Stock
+from models import Offerer, Venue, Offer, EventOccurrence, UserOfferer, User, Event, Booking, Stock, Recommendation
 from models import RightsType
 from models.activity import load_activity
 from models.db import db
@@ -54,6 +54,10 @@ def find_offerers_with_user_venues_and_bookings_by_departement(department):
         query = query.filter(Venue.departementCode == department)
     result = query.order_by(Offerer.id).all()
     return result
+
+
+def find_all_recommendations_for_offerer(offerer):
+    return Recommendation.query.join(Offer).join(Venue).join(Offerer).filter_by(id=offerer.id).all()
 
 
 def find_all_offerers_with_managing_user_information():

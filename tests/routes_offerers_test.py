@@ -7,6 +7,7 @@ import pytest
 
 from domain.reimbursement import ReimbursementRules
 from models import PcObject, ThingType, EventType
+from models.db import db
 from models.pc_object import serialize
 from tests.conftest import clean_database
 from utils.human_ids import dehumanize, humanize
@@ -20,7 +21,7 @@ from utils.test_utils import API_URL, \
     create_user_offerer, \
     create_venue, \
     req, \
-    req_with_auth, create_stock_from_offer, create_thing_offer, create_event_offer
+    req_with_auth, create_stock_from_offer, create_thing_offer, create_event_offer, create_recommendation
 
 
 @pytest.mark.standalone
@@ -653,7 +654,7 @@ def test_patch_offerer_for_non_authorised_fields_status_code_400(app):
     user_offerer = create_user_offerer(user, offerer, is_admin=True)
     PcObject.check_and_save(user_offerer)
     auth_request = req_with_auth(email=user.email, password=user.clearTextPassword)
-    body = {'isActive': False, 'thumbCount': 0, 'idAtProviders': 'zfeej',
+    body = {'thumbCount': 0, 'idAtProviders': 'zfeej',
             'dateModifiedAtLastProvider': serialize(datetime(2016, 2, 1)), 'address': '123 nouvelle adresse',
             'postalCode': '75001',
             'city': 'Paris', 'validationToken': 'ozieghieof', 'id': humanize(10),
@@ -952,3 +953,51 @@ def test_get_offerer_bookings_ordered_by_amount_asc(app):
     assert elements[0]['amount'] == 0
     assert elements[1]['amount'] == 10
     assert elements[2]['amount'] == 20
+
+
+@pytest.mark.standalone
+@clean_database
+def test_deactivating_offerer_returns_200_and_expires_recos(app):
+    # given
+    user = create_user(password='p@55sw0rd')
+    other_user = create_user(email='other@email.fr')
+    offerer = create_offerer(siren='987654321')
+    other_offerer = create_offerer()
+    venue1 = create_venue(offerer)
+    venue2 = create_venue(offerer)
+    other_venue = create_venue(other_offerer)
+    offer_venue1_1 = create_event_offer(venue1)
+    offer_venue2_1 = create_event_offer(venue2)
+    offer_venue2_2 = create_thing_offer(venue2)
+    other_offer = create_event_offer(other_venue)
+    user_offerer = create_user_offerer(user, offerer, is_admin=True)
+    original_validity_date = datetime.utcnow() + timedelta(days=7)
+    recommendation1 = create_recommendation(offer_venue1_1, other_user, valid_until_date=original_validity_date)
+    recommendation2 = create_recommendation(offer_venue2_1, other_user, valid_until_date=original_validity_date)
+    recommendation3 = create_recommendation(offer_venue2_2, other_user, valid_until_date=original_validity_date)
+    recommendation4 = create_recommendation(offer_venue2_2, user, valid_until_date=original_validity_date)
+    other_recommendation = create_recommendation(other_offer, user, valid_until_date=original_validity_date)
+    PcObject.check_and_save(recommendation1, recommendation2, recommendation3, recommendation4, other_recommendation,
+                            user_offerer)
+
+    auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
+    data = {'isActive': False}
+
+    # when
+    response = auth_request.patch(API_URL + '/offerers/%s' % humanize(offerer.id), json=data)
+
+    # then
+    db.session.refresh(offerer)
+    assert response.status_code == 200
+    assert response.json()['isActive'] == offerer.isActive
+    assert offerer.isActive == data['isActive']
+    db.session.refresh(recommendation1)
+    db.session.refresh(recommendation2)
+    db.session.refresh(recommendation3)
+    db.session.refresh(recommendation4)
+    db.session.refresh(other_recommendation)
+    assert recommendation1.validUntilDate < datetime.now()
+    assert recommendation2.validUntilDate < datetime.now()
+    assert recommendation3.validUntilDate < datetime.now()
+    assert recommendation4.validUntilDate < datetime.now()
+    assert other_recommendation.validUntilDate == original_validity_date

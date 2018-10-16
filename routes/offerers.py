@@ -1,4 +1,6 @@
 """ offerers """
+from datetime import datetime
+
 from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
 
@@ -7,8 +9,9 @@ from domain.reimbursement import find_all_booking_reimbursement
 from models import Offerer, PcObject, RightsType
 from models.venue import create_digital_venue
 from repository.booking_queries import find_offerer_bookings
-from repository.user_offerer_queries import filter_query_where_user_is_user_offerer_and_is_validated, \
-    filter_query_where_user_is_user_offerer_and_is_not_validated
+from repository.offerer_queries import find_all_recommendations_for_offerer
+from repository.user_offerer_queries import filter_query_where_user_is_user_offerer_and_is_not_validated
+from repository.user_offerer_queries import filter_query_where_user_is_user_offerer_and_is_validated
 from utils.human_ids import dehumanize
 from utils.includes import PRO_BOOKING_INCLUDES, OFFERER_INCLUDES, NOT_VALIDATED_OFFERER_INCLUDES
 from utils.mailing import MailServiceException
@@ -105,6 +108,9 @@ def patch_offerer(offererId):
     check_valid_edition(data)
     offerer = Offerer.query.filter_by(id=dehumanize(offererId)).first()
     offerer.populateFromDict(data, skipped_keys=['validationToken'])
+    if 'isActive' in data and not data['isActive']:
+        for recommendation in find_all_recommendations_for_offerer(offerer):
+            recommendation.validUntilDate = datetime.utcnow()
     PcObject.check_and_save(offerer)
     return jsonify(offerer._asdict(include=OFFERER_INCLUDES)), 200
 
