@@ -1,16 +1,22 @@
+import datetime
 from abc import ABC, abstractmethod
 from decimal import Decimal
 from enum import Enum
 
 from models import Booking
 
+MIN_DATETIME = datetime.datetime(datetime.MINYEAR, 1, 1)
+MAX_DATETIME = datetime.datetime(datetime.MAXYEAR, 1, 1)
+
 
 class ReimbursementRule(ABC):
-    def is_active(self):
-        return True
+    def is_active(self, booking: Booking):
+        valid_from = self.valid_from if self.valid_from else MIN_DATETIME
+        valid_until = self.valid_until if self.valid_until else MAX_DATETIME
+        return valid_from < booking.dateCreated < valid_until
 
     @abstractmethod
-    def is_relevant(self, booking, **kwargs):
+    def is_relevant(self, booking: Booking, **kwargs):
         pass
 
     @property

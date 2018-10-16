@@ -4,6 +4,7 @@ from decimal import Decimal
 import pytest
 
 from domain.reimbursement import ReimbursementRules, find_all_booking_reimbursement, ReimbursementRule
+from models import Booking
 from utils.test_utils import create_booking_for_thing, create_booking_for_event
 
 
@@ -190,41 +191,89 @@ class MaxReimbursementByOffererTest:
         assert is_relevant is False
 
 
-class DummyRule(ReimbursementRule):
-    rate = Decimal(10)
-    description = 'Dummy rule'
-    valid_from = None
-    valid_until = None
-
-    def is_relevant(self, booking, **kwargs):
-        return True
-
-
 class ReimbursementRuleIsActiveTest:
+    class DummyRule(ReimbursementRule):
+        rate = Decimal(10)
+        description = 'Dummy rule'
+        valid_from = None
+        valid_until = None
+
+        def is_relevant(self, booking, **kwargs):
+            return True
+
+    booking = Booking()
 
     def test_is_active_if_valid_from_is_none_and_valid_until_is_none(self):
         # given
-        DummyRule.valid_from = None
-        DummyRule.valid_until = None
+        self.booking.dateCreated = datetime.utcnow()
+        self.DummyRule.valid_from = None
+        self.DummyRule.valid_until = None
 
         # then
-        assert DummyRule().is_active() is True
+        assert self.DummyRule().is_active(self.booking) is True
 
     def test_is_active_if_valid_from_is_past_and_valid_until_is_none(self):
         # given
-        DummyRule.valid_from = datetime(2016, 4, 22, 11, 53, 19)
-        DummyRule.valid_until = None
+        self.booking.dateCreated = datetime.utcnow()
+        self.DummyRule.valid_from = datetime.utcnow() - timedelta(weeks=3)
+        self.DummyRule.valid_until = None
 
         # then
-        assert DummyRule().is_active() is True
+        assert self.DummyRule().is_active(self.booking) is True
 
-    def skipped_test_is_not_active_if_valid_from_is_future_and_valid_until_is_none(self):
+    def test_is_not_active_if_valid_from_is_future_and_valid_until_is_none(self):
         # given
-        DummyRule.valid_from = datetime.utcnow() + timedelta(weeks=3)
-        DummyRule.valid_until = None
+        self.booking.dateCreated = datetime.utcnow()
+        self.DummyRule.valid_from = datetime.utcnow() + timedelta(weeks=3)
+        self.DummyRule.valid_until = None
 
         # then
-        assert DummyRule().is_active() is False
+        assert self.DummyRule().is_active(self.booking) is False
+
+    def test_is_active_if_valid_from_is_none_and_valid_until_is_future(self):
+        # given
+        self.booking.dateCreated = datetime.utcnow()
+        self.DummyRule.valid_from = None
+        self.DummyRule.valid_until = datetime.utcnow() + timedelta(weeks=3)
+
+        # then
+        assert self.DummyRule().is_active(self.booking) is True
+
+    def test_is_not_active_if_valid_from_is_none_and_valid_until_is_past(self):
+        # given
+        self.booking.dateCreated = datetime.utcnow()
+        self.DummyRule.valid_from = None
+        self.DummyRule.valid_until = datetime.utcnow() - timedelta(weeks=3)
+
+        # then
+        assert self.DummyRule().is_active(self.booking) is False
+
+    def test_is_active_if_valid_from_is_past_and_valid_until_is_future(self):
+        # given
+        self.booking.dateCreated = datetime.utcnow()
+        self.DummyRule.valid_from = datetime.utcnow() - timedelta(weeks=3)
+        self.DummyRule.valid_until = datetime.utcnow() + timedelta(weeks=3)
+
+        # then
+        assert self.DummyRule().is_active(self.booking) is True
+
+    def test_is_not_active_if_valid_from_is_future_and_valid_until_is_future(self):
+        # given
+        self.booking.dateCreated = datetime.utcnow()
+        self.DummyRule.valid_from = datetime.utcnow() + timedelta(weeks=3)
+        self.DummyRule.valid_until = datetime.utcnow() + timedelta(weeks=6)
+
+        # then
+        assert self.DummyRule().is_active(self.booking) is False
+
+    def test_is_not_active_if_valid_from_is_past_and_valid_until_is_past(self):
+        # given
+        self.booking.dateCreated = datetime.utcnow()
+        self.DummyRule.valid_from = datetime.utcnow() - timedelta(weeks=3)
+        self.DummyRule.valid_until = datetime.utcnow() - timedelta(weeks=6)
+
+        # then
+        assert self.DummyRule().is_active(self.booking) is False
 
 
 @pytest.mark.standalone
@@ -259,13 +308,15 @@ class FindAllBookingsReimbursementsTest:
         assert_no_reimbursement_for_digital(booking_reimbursements[1], booking2)
         assert_total_reimbursement(booking_reimbursements[2], booking3)
 
-    def test_returns_full_reimbursement_for_all_bookings_above_23000_if_rule_is_deactivated(self):
+    def test_returns_full_reimbursement_for_all_bookings_above_23000_if_rule_is_not_valid_anymore(self):
         # given
-        booking1 = create_booking_for_event(amount=50, quantity=1)
-        booking2 = create_booking_for_thing(url='http://truc', amount=50, quantity=3)
-        booking3 = create_booking_for_thing(amount=2295, quantity=10)
+        now = datetime.utcnow()
+        booking1 = create_booking_for_event(amount=50, quantity=1, date_created=now)
+        booking2 = create_booking_for_thing(url='http://truc', amount=50, quantity=3, date_created=now)
+        booking3 = create_booking_for_thing(amount=2295, quantity=10, date_created=now)
         bookings = [booking1, booking2, booking3]
-        ReimbursementRules.MAX_REIMBURSEMENT.value.is_active = False
+        ReimbursementRules.MAX_REIMBURSEMENT.value.valid_from = now - timedelta(weeks=5)
+        ReimbursementRules.MAX_REIMBURSEMENT.value.valid_until = now + timedelta(weeks=5)
 
         # when
         booking_reimbursements = find_all_booking_reimbursement(bookings)
@@ -276,7 +327,8 @@ class FindAllBookingsReimbursementsTest:
         assert_total_reimbursement(booking_reimbursements[2], booking3)
 
         # tear down
-        ReimbursementRules.MAX_REIMBURSEMENT.value.is_active = True
+        ReimbursementRules.MAX_REIMBURSEMENT.value.valid_from = None
+        ReimbursementRules.MAX_REIMBURSEMENT.value.valid_until = None
 
     def test_returns_no_reimbursement_above_23000_euros_for_last_booking(self):
         # given

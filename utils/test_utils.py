@@ -214,7 +214,7 @@ def create_booking(user, stock=None, venue=None, recommendation=None, quantity=1
     return booking
 
 
-def create_booking_for_thing(url=None, amount=50, quantity=1, user=None):
+def create_booking_for_thing(url=None, amount=50, quantity=1, user=None, date_created=datetime.utcnow()):
     thing = Thing(from_dict={'url': url})
     offer = Offer()
     stock = Stock()
@@ -224,6 +224,7 @@ def create_booking_for_thing(url=None, amount=50, quantity=1, user=None):
     booking.stock = stock
     booking.quantity = quantity
     booking.user = user
+    booking.dateCreated = date_created
     return booking
 
 
@@ -231,7 +232,8 @@ def create_booking_for_event(
         amount=50,
         quantity=1,
         user=None,
-        isCancelled=False
+        isCancelled=False,
+        date_created=datetime.utcnow()
 ):
     event = Event()
     offer = Offer()
@@ -244,6 +246,7 @@ def create_booking_for_event(
     booking.user = user
     booking.isCancelled = isCancelled
     booking.token = random_token()
+    booking.dateCreated = date_created
     return booking
 
 
