@@ -66,7 +66,7 @@ def find_all_offerers_siren_with_user_informations():
 
 
 def find_all_offerers_siren_with_user_informations_and_venue():
-    query = db.session.query(Offerer.name, Offerer.siren, Venue.name, Venue.postalCode,  User.firstName, User.lastName, User.email, User.phoneNumber, User.postalCode) \
+    query = db.session.query(Offerer.name, Offerer.siren, Offerer.postalCode, Offerer.city, Venue.name, Venue.bookingEmail, Venue.postalCode,  User.firstName, User.lastName, User.email, User.phoneNumber, User.postalCode) \
         .join(UserOfferer) \
         .join(User) \
         .join(Venue)
@@ -76,7 +76,7 @@ def find_all_offerers_siren_with_user_informations_and_venue():
 
 
 def find_all_offerers_siren_with_user_informations_and_not_virtual_venue():
-    query = db.session.query(Offerer.name, Offerer.siren, Venue.name, Venue.postalCode,  User.firstName, User.lastName, User.email, User.phoneNumber, User.postalCode) \
+    query = db.session.query(Offerer.name, Offerer.siren, Offerer.postalCode, Offerer.city, Venue.name, Venue.bookingEmail, Venue.postalCode,  User.firstName, User.lastName, User.email, User.phoneNumber, User.postalCode) \
         .join(UserOfferer) \
         .join(User) \
         .join(Venue)

@@ -82,12 +82,12 @@ def test_find_all_offerers_siren_with_user_informations_and_venue(app):
 
     #then
     assert len(offerers) == 6
-    assert (offerer1.name, offerer1.siren, venue1.name, venue1.postalCode, user_admin1.firstName, user_admin1.lastName, user_admin1.email, user_admin1.phoneNumber, user_admin1.postalCode) in offerers
-    assert (offerer1.name, offerer1.siren, venue1.name, venue1.postalCode, user_editor1.firstName, user_editor1.lastName, user_editor1.email, user_editor1.phoneNumber, user_editor1.postalCode) in offerers
-    assert (offerer2.name, offerer2.siren, venue2.name, venue2.postalCode, user_admin1.firstName, user_admin1.lastName, user_admin1.email, user_admin1.phoneNumber, user_admin1.postalCode) in offerers
-    assert (offerer2.name, offerer2.siren, venue2.name, venue2.postalCode, user_admin2.firstName, user_admin2.lastName, user_admin2.email, user_admin2.phoneNumber, user_admin2.postalCode) in offerers
-    assert (offerer2.name, offerer2.siren, venue3.name, venue3.postalCode, user_admin1.firstName, user_admin1.lastName, user_admin1.email, user_admin1.phoneNumber, user_admin1.postalCode) in offerers
-    assert (offerer2.name, offerer2.siren, venue3.name, venue3.postalCode, user_admin2.firstName, user_admin2.lastName, user_admin2.email, user_admin2.phoneNumber, user_admin2.postalCode) in offerers
+    assert (offerer1.name, offerer1.siren, offerer1.postalCode, offerer1.city, venue1.name, venue1.bookingEmail, venue1.postalCode, user_admin1.firstName, user_admin1.lastName, user_admin1.email, user_admin1.phoneNumber, user_admin1.postalCode) in offerers
+    assert (offerer1.name, offerer1.siren, offerer1.postalCode, offerer1.city, venue1.name, venue1.bookingEmail, venue1.postalCode, user_editor1.firstName, user_editor1.lastName, user_editor1.email, user_editor1.phoneNumber, user_editor1.postalCode) in offerers
+    assert (offerer2.name, offerer2.siren, offerer2.postalCode, offerer2.city, venue2.name, venue2.bookingEmail, venue2.postalCode, user_admin1.firstName, user_admin1.lastName, user_admin1.email, user_admin1.phoneNumber, user_admin1.postalCode) in offerers
+    assert (offerer2.name, offerer2.siren, offerer2.postalCode, offerer2.city, venue2.name, venue2.bookingEmail, venue2.postalCode, user_admin2.firstName, user_admin2.lastName, user_admin2.email, user_admin2.phoneNumber, user_admin2.postalCode) in offerers
+    assert (offerer2.name, offerer2.siren, offerer2.postalCode, offerer2.city, venue3.name, venue3.bookingEmail, venue3.postalCode, user_admin1.firstName, user_admin1.lastName, user_admin1.email, user_admin1.phoneNumber, user_admin1.postalCode) in offerers
+    assert (offerer2.name, offerer2.siren, offerer2.postalCode, offerer2.city, venue3.name, venue3.bookingEmail, venue3.postalCode, user_admin2.firstName, user_admin2.lastName, user_admin2.email, user_admin2.phoneNumber, user_admin2.postalCode) in offerers
 
 
 @pytest.mark.standalone
@@ -113,8 +113,8 @@ def test_find_all_offerers_siren_with_user_informations_and_not_virtual_venue(ap
 
     #then
     assert len(offerers) == 2
-    assert (offerer2.name, offerer2.siren, venue3.name, venue3.postalCode, user_admin1.firstName, user_admin1.lastName, user_admin1.email, user_admin1.phoneNumber, user_admin1.postalCode) in offerers
-    assert (offerer2.name, offerer2.siren, venue3.name, venue3.postalCode, user_admin2.firstName, user_admin2.lastName, user_admin2.email, user_admin2.phoneNumber, user_admin2.postalCode) in offerers
+    assert (offerer2.name, offerer2.siren, offerer2.postalCode, offerer2.city, venue3.name, venue3.bookingEmail, venue3.postalCode, user_admin1.firstName, user_admin1.lastName, user_admin1.email, user_admin1.phoneNumber, user_admin1.postalCode) in offerers
+    assert (offerer2.name, offerer2.siren, offerer2.postalCode, offerer2.city, venue3.name, venue3.bookingEmail, venue3.postalCode, user_admin2.firstName, user_admin2.lastName, user_admin2.email, user_admin2.phoneNumber, user_admin2.postalCode) in offerers
 
 
 @pytest.mark.standalone

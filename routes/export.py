@@ -228,7 +228,7 @@ def get_all_offerers_siren_with_user_informations_and_venue():
 
     result = find_all_offerers_siren_with_user_informations_and_venue()
     file_name = 'export_%s_offerers_siren_with_venue.csv' % datetime.utcnow().strftime('%y_%m_%d')
-    headers = ['Offerer_name', 'Offerer_siren', 'Venue_name', 'Venue_postalCode', 'User_firstName', 'User_lastName', 'User_email', 'User_phoneNumber', 'User.postalCode']
+    headers = ['Offerer_name', 'Offerer_siren', 'Offerer_postalCode', 'Offerer_city', 'Venue_name', 'Venue_postalCode', 'User_firstName', 'User_lastName', 'User_email', 'User_phoneNumber', 'User.postalCode']
     return _make_csv_response(file_name, headers, result)
 
 
@@ -238,7 +238,7 @@ def get_all_offerers_siren_with_user_informations_and_not_virtual_venue():
 
     result = find_all_offerers_siren_with_user_informations_and_not_virtual_venue()
     file_name = 'export_%s_offerers_siren_with_not_virtual_venue.csv' % datetime.utcnow().strftime('%y_%m_%d')
-    headers = ['Offerer_name', 'Offerer_siren', 'Venue_name', 'Venue_postalCode', 'User_firstName', 'User_lastName', 'User_email', 'User_phoneNumber', 'User.postalCode']
+    headers = ['Offerer_name', 'Offerer_siren', 'Offerer_postalCode', 'Offerer_city', 'Venue_name', 'Venue_postalCode', 'User_firstName', 'User_lastName', 'User_email', 'User_phoneNumber', 'User.postalCode']
     return _make_csv_response(file_name, headers, result)
 
 @app.route('/exports/offerers_with_venue', methods=['GET'])
