@@ -1,4 +1,5 @@
 export * from './CalendarField'
+export * from './EmailField'
 export * from './HiddenField'
 export * from './InputField'
 export * from './PasswordField'
