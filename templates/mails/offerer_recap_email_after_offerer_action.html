@@ -1,5 +1,6 @@
 {% extends "mails/offerer_recap_email.html" %}
-{% block new_reservation %}<p id="action">Vous venez d'annuler la réservation de {{ user_name }} ({{ user_email }}).</p>{% endblock %}
+{% block new_reservation %}<p id="action">Vous venez d'annuler la réservation de {{ user_name }} ({{ user_email }})
+        pour {{ stock_name }}{% if stock_date_time %}<br/> le {{ stock_date_time }}{% endif %},<br/>{% if venue.isVirtual %}Offre numérique proposée par {{ venue.name }}{% endif %}{% if not booking_is_on_event %}proposé par {{ venue.name }} (Adresse : {{ venue.address }}, {{ venue.postalCode }} {{ venue.city }}).{% endif %}</p>{% endblock %}
 {% block past_or_future %}des réservations à ce jour{% endblock %}
 {% block recap %}
 {% if stock_bookings %}

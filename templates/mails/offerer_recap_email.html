@@ -8,9 +8,6 @@
             Voici le récapitulatif {% block past_or_future %}{% endblock %}<br/> (total {{ number_of_bookings }}) pour {{ stock_name }}{% if stock_date_time %}<br/> le {{ stock_date_time }}{% endif %},<br/>{% if venue.isVirtual %}Offre numérique proposée par {{ venue.name }}{% else %} proposé par {{ venue.name }} (Adresse : {{ venue.address }}, {{ venue.postalCode }} {{ venue.city }}){% endif %}.
         </p>
         {% block recap %}{% endblock %}
-        {% else %}
-        <p id="recap">Pour {{ stock_name }}{% if stock_date_time %}<br/> le {{ stock_date_time }}{% endif %},<br/>{% if venue.isVirtual %}Offre numérique proposée par {{ venue.name }}{% else %}proposé par {{ venue.name }} (Adresse : {{ venue.address }}, {{ venue.postalCode }} {{ venue.city }}).{% endif %}
-        </p>
         {% endif %}
     </body>
 </html>

@@ -906,6 +906,7 @@ def test_make_offerer_driven_cancellation_email_for_offerer_thing_and_already_ex
     html_action = str(email_html.find("p", {"id": "action"}))
     html_recap = str(email_html.find("p", {"id": "recap"}))
     html_recap_table = str(email_html.find("table", {"id": "recap-table"}))
+    print(email_html)
     assert 'Vous venez d\'annuler' in html_action
     assert 'John Doe' in html_action
     assert 'john@doe.fr' in html_action
