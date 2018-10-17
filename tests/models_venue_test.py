@@ -83,7 +83,7 @@ def test_offerer_cannot_update_a_second_venue_to_be_virtual(app):
 
 @clean_database
 @pytest.mark.standalone
-def test_venue_cannot_be_virtual_and_have_a_siret(app):
+def test_venue_raises_exeption_when_is_virtual_and_has_siret(app):
     # given
     offerer = create_offerer()
     venue = create_venue(offerer, is_virtual=True, siret='12345678912345')
@@ -95,7 +95,7 @@ def test_venue_cannot_be_virtual_and_have_a_siret(app):
 
 @clean_database
 @pytest.mark.standalone
-def test_venue_cannot_have_no_siret_without_comment(app):
+def test_venue_raises_exeption_when_no_siret_and_no_comment(app):
     # given
     offerer = create_offerer()
     venue = create_venue(offerer, siret=None, comment=None)

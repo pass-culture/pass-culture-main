@@ -31,4 +31,3 @@ def upgrade():
 def downgrade():
     op.drop_constraint('check_has_siret_xor_comment_xor_isVirtual', 'venue')
     op.drop_column('venue', 'comment')
-test_pro_signup_should_create_user_offerer_digital_venue_and_userOfferer
