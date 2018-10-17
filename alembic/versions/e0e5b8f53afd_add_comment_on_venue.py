@@ -17,13 +17,21 @@ depends_on = None
 
 def upgrade():
     op.add_column('venue', sa.Column('comment', sa.TEXT, nullable=True))
+    op.execute(
+        """
+        UPDATE venue
+        SET comment = 'Merci de contacter l''équipe pass Culture pour lui communiquer le SIRET de ce lieu.'
+        WHERE siret IS NULL
+        AND "isVirtual" is FALSE;
+        """
+    )
     op.create_check_constraint(
         constraint_name='check_has_siret_xor_comment_xor_isVirtual',
         table_name='venue',
         condition="""
-        (siret IS NULL AND comment IS NOT NULL AND "isVirtual" IS NOT NULL)
-        OR (siret IS NOT NULL AND comment IS NULL AND "isVirtual" IS NOT NULL)
-        OR (siret IS NOT NULL AND comment IS NOT NULL AND "isVirtual" IS NULL)
+        (siret IS NULL AND comment IS NULL AND "isVirtual" IS TRUE)
+        OR (siret IS NULL AND comment IS NOT NULL AND "isVirtual" IS FALSE)
+        OR (siret IS NOT NULL AND comment IS NULL AND "isVirtual" IS FALSE)
         """
     )
 
