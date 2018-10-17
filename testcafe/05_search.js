@@ -115,3 +115,5 @@ test('Je clique sur la vignette Lire et je suis redirigé vers la page de résul
 // Quand on navigue par type d'offre, dans la page de résultats on peut lire "il n'y pas d'offre pour le moment " sinon "" s'il y a des offres, elles sont affichées
 
 // Le bouton submit search keyword est désactivé si rien n'est écrit
+
+// Après une navigation par type, si on ouvre le filtre puis quand clique sur le bouton back, le filtre se referme est la recherche est réinitialisée.

@@ -111,13 +111,32 @@ class SearchPage extends PureComponent {
     this.setState({ keywordsValue: event.target.value })
   }
 
-  onBackToSearchHome = () => {
-    this.setState({ keywordsValue: '' })
+  onBackToSearchHome = (pathname, pagination, keywordsKey) => {
+    // const { pagination } = this.props
+    // const { keywordsKey } = this.state
+    this.setState({
+      // https://stackoverflow.com/questions/37946229/how-do-i-reset-the-defaultvalue-for-a-react-input
+      // WE NEED TO MAKE THE PARENT OF THE KEYWORD INPUT
+      // DEPENDING ON THE KEYWORDS VALUE IN ORDER TO RERENDER
+      // THE INPUT WITH A SYNCED DEFAULT VALUE
+      keywordsKey: keywordsKey + 1,
+      keywordsValue: '',
+      withFilter: false,
+    })
+
+    const keywordsValue = pagination.windowQuery['mots-cles']
+    pagination.change(
+      {
+        'mots-cles': null,
+        categories: null,
+      },
+      {
+        pathname,
+      }
+    )
   }
 
-  onKeywordsEraseClick = pathname => {
-    const { pagination } = this.props
-    const { keywordsKey } = this.state
+  onKeywordsEraseClick = (pathname, pagination, keywordsKey) => {
     this.setState({
       // https://stackoverflow.com/questions/37946229/how-do-i-reset-the-defaultvalue-for-a-react-input
       // WE NEED TO MAKE THE PARENT OF THE KEYWORD INPUT
@@ -128,12 +147,6 @@ class SearchPage extends PureComponent {
     })
 
     const keywordsValue = pagination.windowQuery['mots-cles']
-
-    // FIXME A quoi servent encore ces lignes de code ci-dessous ?
-    // if (!keywordsValue) {
-    //   return
-    // }
-
     pagination.change(
       {
         'mots-cles': null,
@@ -154,8 +167,8 @@ class SearchPage extends PureComponent {
       typeSublabelsAndDescription,
     } = this.props
 
-    const isResultPage = match.params.view === 'resultats'
-    const searchPageTitle = isResultPage ? 'Recherche : résultats' : 'Recherche'
+    const onResultPage = match.params.view === 'resultats'
+    const searchPageTitle = onResultPage ? 'Recherche : résultats' : 'Recherche'
 
     const { windowQuery } = pagination
     const { keywordsKey, keywordsValue, withFilter } = this.state
@@ -181,9 +194,9 @@ class SearchPage extends PureComponent {
     }
 
     const isOneCharInKeywords = get(keywordsValue, 'length') > 0
-
-    const backButton = isResultPage && {
-      onClick: () => this.onKeywordsEraseClick('/recherche'),
+    const backButton = onResultPage && {
+      onClick: () =>
+        this.onBackToSearchHome('/recherche', pagination, keywordsKey),
     }
 
     return (
@@ -219,7 +232,11 @@ class SearchPage extends PureComponent {
                       className="no-border no-background is-red-text"
                       id="refresh-keywords-button"
                       onClick={() =>
-                        this.onKeywordsEraseClick('/recherche/resultats')
+                        this.onKeywordsEraseClick(
+                          '/recherche/resultats',
+                          pagination,
+                          keywordsKey
+                        )
                       }>
                       <span aria-hidden className="icon-close" title="" />
                     </button>
@@ -314,6 +331,19 @@ SearchPage.propTypes = {
   typeSublabelsAndDescription: PropTypes.array.isRequired,
 }
 
+const mapStateToProps = state => {
+  const recommendations = selectRecommendations(state)
+  const typeSublabels = selectTypeSublabels(state)
+  const typeSublabelsAndDescription = selectTypes(state)
+  const user = state.user
+  return {
+    recommendations,
+    typeSublabels,
+    typeSublabelsAndDescription,
+    user,
+  }
+}
+
 export default compose(
   withLogin({ failRedirect: '/connexion' }),
   withPagination({
@@ -330,10 +360,5 @@ export default compose(
     },
     windowToApiQuery: translateUrlParamsToApiParams,
   }),
-  connect(state => ({
-    recommendations: selectRecommendations(state),
-    typeSublabels: selectTypeSublabels(state),
-    typeSublabelsAndDescription: selectTypes(state),
-    user: state.user,
-  }))
+  connect(mapStateToProps)
 )(SearchPage)
