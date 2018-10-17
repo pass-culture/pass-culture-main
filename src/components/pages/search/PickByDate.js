@@ -47,15 +47,17 @@ class PickByDate extends Component {
 
 PickByDate.defaultProps = {
   dateFormat: 'DD/MM/YYYY',
+  maxDate: 'today',
+  minDate: 'today',
 }
 
 PickByDate.propTypes = {
   dateFormat: PropTypes.string,
-  filterDate: PropTypes.string.isRequired,
+  filterDate: PropTypes.func.isRequired,
   highlightedDates: PropTypes.string.isRequired,
   id: PropTypes.string.isRequired,
-  maxDate: PropTypes.string.isRequired,
-  minDate: PropTypes.string.isRequired,
+  maxDate: PropTypes.string,
+  minDate: PropTypes.string,
   size: PropTypes.string.isRequired,
   value: PropTypes.string.isRequired,
 }

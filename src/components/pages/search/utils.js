@@ -1,6 +1,12 @@
-import { capitalize, pluralize } from 'pass-culture-shared'
+import {
+  capitalize,
+  pluralize,
+  getObjectWithMappedKeys,
+} from 'pass-culture-shared'
 import find from 'lodash.find'
+import get from 'lodash.get'
 import moment from 'moment'
+
 import { getTimezone } from '../../../utils/timezone'
 
 const filterIconByState = filters => (filters ? 'filter' : 'filter-active')
@@ -80,11 +86,8 @@ export const getRecommendationDateString = offer => {
   return formatedDate
 }
 
-export const getDescriptionForSublabel = (category, data) => {
-  // TODO continue with special chars...
-  const categoryWithoutSpecialChar = category.replace(/%C3%89/g, 'É')
-  return find(data, ['sublabel', categoryWithoutSpecialChar]).description
-}
+export const getDescriptionForSublabel = (category, data) =>
+  get(find(data, ['sublabel', category]), 'description')
 
 export const handleQueryChange = (newValue, callback) => {
   const { pagination } = this.props
@@ -103,5 +106,13 @@ export const handleQueryChange = (newValue, callback) => {
 }
 
 // TODO SEARCH FILTER FUNCTIONS REFACTORING handleQueryChange etc
+
+const mapWindowToApi = {
+  jours: 'days',
+  'mots-cles': 'keywords',
+}
+
+export const translateUrlParamsToApiParams = windowQuery =>
+  getObjectWithMappedKeys(windowQuery, mapWindowToApi)
 
 export default filterIconByState

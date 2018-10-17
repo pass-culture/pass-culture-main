@@ -4,7 +4,14 @@ exports[`src | components | pages | search | PickByDate snapshot should match sn
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <PickByDate
-    dateFormat="DD/MM/YYYY"
+    dateFormat=""
+    filterDate={[MockFunction]}
+    highlightedDates=""
+    id=""
+    maxDate=""
+    minDate=""
+    size=""
+    value=""
   />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
@@ -24,12 +31,16 @@ ShallowWrapper {
           <DatePicker
             allowSameDay={false}
             className="date"
-            dateFormat="DD/MM/YYYY"
+            dateFormat=""
             dateFormatCalendar="MMMM YYYY"
             disabled={false}
             disabledKeyboardNavigation={false}
             dropdownMode="scroll"
+            filterDate={[MockFunction]}
             highlightDates={Array []}
+            id=""
+            maxDate=""
+            minDate=""
             monthsShown={1}
             nextMonthButtonLabel="Next month"
             onBlur={[Function]}
@@ -61,7 +72,7 @@ ShallowWrapper {
           />
         </span>,
       ],
-      "className": "input is-undefined date-picker",
+      "className": "input is- date-picker",
     },
     "ref": null,
     "rendered": Array [
@@ -73,12 +84,16 @@ ShallowWrapper {
           "children": <DatePicker
             allowSameDay={false}
             className="date"
-            dateFormat="DD/MM/YYYY"
+            dateFormat=""
             dateFormatCalendar="MMMM YYYY"
             disabled={false}
             disabledKeyboardNavigation={false}
             dropdownMode="scroll"
+            filterDate={[MockFunction]}
             highlightDates={Array []}
+            id=""
+            maxDate=""
+            minDate=""
             monthsShown={1}
             nextMonthButtonLabel="Next month"
             onBlur={[Function]}
@@ -108,16 +123,16 @@ ShallowWrapper {
           "props": Object {
             "allowSameDay": false,
             "className": "date",
-            "dateFormat": "DD/MM/YYYY",
+            "dateFormat": "",
             "dateFormatCalendar": "MMMM YYYY",
             "disabled": false,
             "disabledKeyboardNavigation": false,
             "dropdownMode": "scroll",
-            "filterDate": undefined,
+            "filterDate": [MockFunction],
             "highlightDates": Array [],
-            "id": undefined,
-            "maxDate": undefined,
-            "minDate": undefined,
+            "id": "",
+            "maxDate": "",
+            "minDate": "",
             "monthsShown": 1,
             "nextMonthButtonLabel": "Next month",
             "onBlur": [Function],
@@ -186,12 +201,16 @@ ShallowWrapper {
             <DatePicker
               allowSameDay={false}
               className="date"
-              dateFormat="DD/MM/YYYY"
+              dateFormat=""
               dateFormatCalendar="MMMM YYYY"
               disabled={false}
               disabledKeyboardNavigation={false}
               dropdownMode="scroll"
+              filterDate={[MockFunction]}
               highlightDates={Array []}
+              id=""
+              maxDate=""
+              minDate=""
               monthsShown={1}
               nextMonthButtonLabel="Next month"
               onBlur={[Function]}
@@ -223,7 +242,7 @@ ShallowWrapper {
             />
           </span>,
         ],
-        "className": "input is-undefined date-picker",
+        "className": "input is- date-picker",
       },
       "ref": null,
       "rendered": Array [
@@ -235,12 +254,16 @@ ShallowWrapper {
             "children": <DatePicker
               allowSameDay={false}
               className="date"
-              dateFormat="DD/MM/YYYY"
+              dateFormat=""
               dateFormatCalendar="MMMM YYYY"
               disabled={false}
               disabledKeyboardNavigation={false}
               dropdownMode="scroll"
+              filterDate={[MockFunction]}
               highlightDates={Array []}
+              id=""
+              maxDate=""
+              minDate=""
               monthsShown={1}
               nextMonthButtonLabel="Next month"
               onBlur={[Function]}
@@ -270,16 +293,16 @@ ShallowWrapper {
             "props": Object {
               "allowSameDay": false,
               "className": "date",
-              "dateFormat": "DD/MM/YYYY",
+              "dateFormat": "",
               "dateFormatCalendar": "MMMM YYYY",
               "disabled": false,
               "disabledKeyboardNavigation": false,
               "dropdownMode": "scroll",
-              "filterDate": undefined,
+              "filterDate": [MockFunction],
               "highlightDates": Array [],
-              "id": undefined,
-              "maxDate": undefined,
-              "minDate": undefined,
+              "id": "",
+              "maxDate": "",
+              "minDate": "",
               "monthsShown": 1,
               "nextMonthButtonLabel": "Next month",
               "onBlur": [Function],

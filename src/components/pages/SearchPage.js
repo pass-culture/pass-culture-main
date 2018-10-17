@@ -21,13 +21,12 @@ import filterIconByState, {
   getDescriptionForSublabel,
   INITIAL_FILTER_PARAMS,
   isSearchFiltersAdded,
+  translateUrlParamsToApiParams,
 } from './search/utils'
 import Main from '../layout/Main'
 import NavigationFooter from '../layout/NavigationFooter'
 import { selectRecommendations } from '../../selectors'
 import selectTypeSublabels, { selectTypes } from '../../selectors/selectTypes'
-
-import { mapApiToWindow, windowToApiQuery } from '../../utils/pagination'
 
 const renderPageHeader = searchPageTitle => (
   <header className="no-dotted-border">
@@ -44,10 +43,7 @@ class SearchPage extends PureComponent {
     super(props)
     this.state = {
       keywordsKey: 0,
-      keywordsValue: get(
-        props,
-        `pagination.windowQuery.${mapApiToWindow.keywords}`
-      ),
+      keywordsValue: get(props, `pagination.windowQuery.mots-cles`),
       withFilter: false,
     }
   }
@@ -62,7 +58,7 @@ class SearchPage extends PureComponent {
 
     pagination.change(
       {
-        [mapApiToWindow.keywords]: value === '' ? null : value,
+        'mots-cles': value === '' ? null : value,
       },
       {
         isClearingData: value !== '',
@@ -84,7 +80,6 @@ class SearchPage extends PureComponent {
       return
     }
 
-    // this request Data get typeSublabels to state
     dispatch(requestData('GET', 'types'))
 
     const len = get(location, 'search.length')
@@ -132,7 +127,7 @@ class SearchPage extends PureComponent {
       keywordsValue: '',
     })
 
-    const keywordsValue = pagination.windowQuery[mapApiToWindow.keywords]
+    const keywordsValue = pagination.windowQuery['mots-cles']
 
     // FIXME A quoi servent encore ces lignes de code ci-dessous ?
     // if (!keywordsValue) {
@@ -141,7 +136,7 @@ class SearchPage extends PureComponent {
 
     pagination.change(
       {
-        [mapApiToWindow.keywords]: null,
+        'mots-cles': null,
       },
       {
         pathname,
@@ -164,7 +159,7 @@ class SearchPage extends PureComponent {
 
     const { windowQuery } = pagination
     const { keywordsKey, keywordsValue, withFilter } = this.state
-    const keywords = windowQuery[mapApiToWindow.keywords]
+    const keywords = windowQuery['mots-cles']
 
     const filtersActive = isSearchFiltersAdded(
       INITIAL_FILTER_PARAMS,
@@ -173,15 +168,12 @@ class SearchPage extends PureComponent {
     const isfilterIconActive = filterIconByState(filtersActive)
     const filtersToggleButtonClass = (withFilter && 'filters-are-opened') || ''
 
+    // Get label and description for nav results header
     let category
     let description
-
-    category = pagination.windowQuery.categories
+    category = decodeURIComponent(pagination.windowQuery.categories)
 
     if (location.pathname.indexOf('/resultats/') !== -1) {
-      // FIXME Quand on rafraîchit la page ne fonctionne plus
-      // Le state global est remis à zéro... Cf redux tool
-
       description = getDescriptionForSublabel(
         category,
         typeSublabelsAndDescription
@@ -300,6 +292,7 @@ class SearchPage extends PureComponent {
                 loadMoreHandler={this.loadMoreHandler}
                 pagination={pagination}
                 typeSublabels={typeSublabels}
+                withNavigation={false}
               />
             )}
           />
@@ -328,14 +321,14 @@ export default compose(
     defaultWindowQuery: {
       categories: null,
       date: null,
-      [mapApiToWindow.days]: null,
-      [mapApiToWindow.keywords]: null,
+      jours: null,
+      'mots-cles': null,
       distance: null,
       latitude: null,
       longitude: null,
       orderBy: 'offer.id+desc',
     },
-    windowToApiQuery,
+    windowToApiQuery: translateUrlParamsToApiParams,
   }),
   connect(state => ({
     recommendations: selectRecommendations(state),

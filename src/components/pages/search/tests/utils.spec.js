@@ -5,6 +5,7 @@ import filterIconByState, {
   INITIAL_FILTER_PARAMS,
   isSearchFiltersAdded,
   searchResultsTitle,
+  translateUrlParamsToApiParams,
 } from '../utils'
 
 import state from '../../../../mocks/global_state_2_Testing_10_10_18'
@@ -360,6 +361,26 @@ describe('src | components | pages | search | utils', () => {
       const result = getDescriptionForSublabel(category, typeSublabels)
 
       expect(result).toEqual(typeSublabels[0].description)
+    })
+  })
+})
+
+describe('src | utils | translateUrlParamsToApiParams ', () => {
+  describe('src | utils | translateUrlParamsToApiParams ', () => {
+    it('should return object with french key', () => {
+      const queryString = {
+        categories: 'Applaudir',
+        date: null,
+        jours: '1-5',
+        [`mots-cles`]: 'fake',
+      }
+      const expected = {
+        categories: 'Applaudir',
+        date: null,
+        days: '1-5',
+        keywords: 'fake',
+      }
+      expect(translateUrlParamsToApiParams(queryString)).toEqual(expected)
     })
   })
 })
