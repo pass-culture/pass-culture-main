@@ -170,19 +170,9 @@ def req_with_auth(email=None, password=None, headers={'origin': 'http://localhos
     request = req.Session()
     request.headers = headers
     if email is None:
-        request.auth = ('pctest.admin@btmx.fr', 'pctestadmin')
+        request.auth = ('pctest.admin.1@btmx.fr', 'pctest.admin.1')
     elif password is not None:
         request.auth = (email, password)
-    else:
-        json_path = Path(path.dirname(path.realpath(__file__))) / '..' / 'mock' / 'jsons' / 'users.json'
-
-        with open(json_path) as json_file:
-            for user_json in json.load(json_file):
-                print('user_json', user_json)
-                if email == user_json['email']:
-                    request.auth = (user_json['email'], user_json['password'])
-                    break
-                raise ValueError("Utilisateur inconnu: " + email)
     return request
 
 
