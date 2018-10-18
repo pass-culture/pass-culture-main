@@ -56,7 +56,7 @@ def find_offerers_with_user_venues_and_bookings_by_departement(department):
     return result
 
 
-def find_all_offerers_siren_with_user_informations():
+def find_all_offerers_with_managing_user_information():
     query = db.session.query(Offerer.id, Offerer.name, Offerer.siren, Offerer.postalCode, Offerer.city, User.firstName, User.lastName, User.email, User.phoneNumber, User.postalCode) \
         .join(UserOfferer) \
         .join(User)
@@ -65,7 +65,7 @@ def find_all_offerers_siren_with_user_informations():
     return result
 
 
-def find_all_offerers_siren_with_user_informations_and_venue():
+def find_all_offerers_with_managing_user_information_and_venue():
     query = db.session.query(Offerer.id, Offerer.name, Offerer.siren, Offerer.postalCode, Offerer.city, Venue.name, Venue.bookingEmail, Venue.postalCode,  User.firstName, User.lastName, User.email, User.phoneNumber, User.postalCode) \
         .join(UserOfferer) \
         .join(User) \
@@ -75,7 +75,7 @@ def find_all_offerers_siren_with_user_informations_and_venue():
     return result
 
 
-def find_all_offerers_siren_with_user_informations_and_not_virtual_venue():
+def find_all_offerers_with_managing_user_information_and_not_virtual_venue():
     query = db.session.query(Offerer.id, Offerer.name, Offerer.siren, Offerer.postalCode, Offerer.city, Venue.name, Venue.bookingEmail, Venue.postalCode,  User.firstName, User.lastName, User.email, User.phoneNumber, User.postalCode) \
         .join(UserOfferer) \
         .join(User) \

@@ -16,9 +16,9 @@ from repository.booking_queries import find_bookings_stats_per_department, \
     find_bookings_in_date_range_for_given_user_or_venue_departement
 from repository.offer_queries import find_offers_in_date_range_for_given_venue_departement
 from repository.offerer_queries import find_offerers_in_date_range_for_given_departement, \
-    find_offerers_with_user_venues_and_bookings_by_departement, find_all_offerers_siren_with_user_informations, \
-    find_all_offerers_siren_with_user_informations_and_venue, find_all_offerers_with_venue, \
-    find_all_offerers_siren_with_user_informations_and_not_virtual_venue
+    find_offerers_with_user_venues_and_bookings_by_departement, find_all_offerers_with_managing_user_information, \
+    find_all_offerers_with_managing_user_information_and_venue, find_all_offerers_with_venue, \
+    find_all_offerers_with_managing_user_information_and_not_virtual_venue
 from repository.recommendation_queries import find_recommendations_in_date_range_for_given_departement
 from repository.user_queries import find_users_by_department_and_date_range, find_users_stats_per_department
 from repository.venue_queries import count_venues_by_departement
@@ -213,40 +213,41 @@ def get_recommendations():
 
 
 @app.route('/exports/offerers_siren', methods=['GET'])
-def get_all_offerers_siren_with_user_informations():
+def get_all_offerers_with_managing_user_information():
     _check_token()
 
-    result = find_all_offerers_siren_with_user_informations()
+    result = find_all_offerers_with_managing_user_information()
     file_name = 'export_%s_offerer_siren.csv' % datetime.utcnow().strftime('%y_%m_%d')
     headers = ['Offerer_id', 'Offerer_name', 'Offerer_siren','Offerer_postalCode', 'Offerer_city','User_firstName', 'User_lastName', 'User_email', 'User_phoneNumber', 'User.postalCode']
     return _make_csv_response(file_name, headers, result)
 
 
 @app.route('/exports/offerers_siren_with_venue', methods=['GET'])
-def get_all_offerers_siren_with_user_informations_and_venue():
+def get_all_offerers_with_managing_user_information_and_venue():
     _check_token()
 
-    result = find_all_offerers_siren_with_user_informations_and_venue()
+    result = find_all_offerers_with_managing_user_information_and_venue()
     file_name = 'export_%s_offerers_siren_with_venue.csv' % datetime.utcnow().strftime('%y_%m_%d')
-    headers = ['Offerer_id', 'Offerer_name', 'Offerer_siren', 'Offerer_postalCode', 'Offerer_city', 'Venue_name', 'Venue_postalCode', 'User_firstName', 'User_lastName', 'User_email', 'User_phoneNumber', 'User.postalCode']
+    headers = ['Offerer_id', 'Offerer_name', 'Offerer_siren', 'Offerer_postalCode', 'Offerer_city', 'Venue_name', 'Venue.bookingEmail', 'Venue_postalCode', 'User_firstName', 'User_lastName', 'User_email', 'User_phoneNumber', 'User.postalCode']
     return _make_csv_response(file_name, headers, result)
 
 
 @app.route('/exports/offerers_siren_with_not_virtual_venue', methods=['GET'])
-def get_all_offerers_siren_with_user_informations_and_not_virtual_venue():
+def get_all_offerers_with_managing_user_information_and_not_virtual_venue():
     _check_token()
 
-    result = find_all_offerers_siren_with_user_informations_and_not_virtual_venue()
+    result = find_all_offerers_with_managing_user_information_and_not_virtual_venue()
     file_name = 'export_%s_offerers_siren_with_not_virtual_venue.csv' % datetime.utcnow().strftime('%y_%m_%d')
-    headers = ['Offerer_id', 'Offerer_name', 'Offerer_siren', 'Offerer_postalCode', 'Offerer_city', 'Venue_name', 'Venue_postalCode', 'User_firstName', 'User_lastName', 'User_email', 'User_phoneNumber', 'User.postalCode']
+    headers = ['Offerer_id', 'Offerer_name', 'Offerer_siren', 'Offerer_postalCode', 'Offerer_city', 'Venue_name', 'Venue.bookingEmail', 'Venue_postalCode', 'User_firstName', 'User_lastName', 'User_email', 'User_phoneNumber', 'User.postalCode']
     return _make_csv_response(file_name, headers, result)
+
 
 @app.route('/exports/offerers_with_venue', methods=['GET'])
 def get_all_offerers_with_venue():
     _check_token()
 
     result = find_all_offerers_with_venue()
-    file_name = 'export_%s_offerers_siren_with_not_virtual_venue.csv' % datetime.utcnow().strftime('%y_%m_%d')
+    file_name = 'export_%s_offerers_with_venue_venue.csv' % datetime.utcnow().strftime('%y_%m_%d')
     headers = ['Offerer_id', 'Offerer_name', 'Venue_id', 'Venue_name', 'Venue_bookingEmail', 'Venue_postalCode', 'Venue_isVirtual']
     return _make_csv_response(file_name, headers, result)
 
