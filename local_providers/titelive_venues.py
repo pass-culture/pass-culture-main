@@ -26,7 +26,7 @@ class TiteLiveVenues(LocalProvider):
         super().__init__(venueProvider, **options)
         if 'mock' in options and options['mock']:
             data_root_path = Path(os.path.dirname(os.path.realpath(__file__)))\
-                            / '..' / 'mock' / 'providers' / 'titelive_stocks'
+                            / '..' / 'sandboxes' / 'providers' / 'titelive_stocks'
         else:
             data_root_path = Path(os.path.dirname(os.path.realpath(__file__)))\
                             / '..' / 'ftp_mirrors' / 'titelive_stocks'

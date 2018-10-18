@@ -26,7 +26,7 @@ def make_url(page, id):
 def get_data(page, id, is_mock):
     if is_mock:
         with open(Path(os.path.dirname(os.path.realpath(__file__)))
-                    / '..' / 'mock' / 'providers'
+                    / '..' / 'sandboxes' / 'providers'
                     / ('openagenda' + str(page) + '.json')) as f:
             return json.load(f)
     else:
