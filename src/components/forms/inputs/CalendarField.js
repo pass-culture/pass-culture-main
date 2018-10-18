@@ -6,7 +6,7 @@ import { Field } from 'react-final-form'
 import momentPropTypes from 'react-moment-proptypes'
 import locale from 'antd/lib/date-picker/locale/fr_FR'
 
-import renderLabel from '../renderLabel'
+import { renderLabel } from '../utils'
 import { isSameDayInEachTimezone } from '../../../helpers'
 
 // We use format so that each date is converted to a day in its own timezone

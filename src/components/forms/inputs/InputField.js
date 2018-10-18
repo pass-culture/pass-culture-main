@@ -5,14 +5,7 @@ import PropTypes from 'prop-types'
 import { Field } from 'react-final-form'
 
 import { FormError } from '../FormError'
-import { isEmpty } from '../../../utils/strings'
-
-const DEFAULT_REQUIRED_ERROR = 'Ce champs est requis'
-
-const validateRequiredField = value => {
-  if (value && !isEmpty(value)) return undefined
-  return DEFAULT_REQUIRED_ERROR
-}
+import { validateRequiredField } from '../validators'
 
 export const InputField = ({
   autoComplete,

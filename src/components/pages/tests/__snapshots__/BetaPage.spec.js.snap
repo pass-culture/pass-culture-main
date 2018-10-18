@@ -59,6 +59,7 @@ ShallowWrapper {
         >
           <Link
             className="flex-center items-center"
+            id="beta-inscription-link"
             replace={false}
             to="/inscription"
           >
@@ -222,6 +223,7 @@ ShallowWrapper {
         "props": Object {
           "children": <Link
             className="flex-center items-center"
+            id="beta-inscription-link"
             replace={false}
             to="/inscription"
           >
@@ -258,6 +260,7 @@ ShallowWrapper {
               />,
             ],
             "className": "flex-center items-center",
+            "id": "beta-inscription-link",
             "replace": false,
             "to": "/inscription",
           },
@@ -342,6 +345,7 @@ ShallowWrapper {
           >
             <Link
               className="flex-center items-center"
+              id="beta-inscription-link"
               replace={false}
               to="/inscription"
             >
@@ -505,6 +509,7 @@ ShallowWrapper {
           "props": Object {
             "children": <Link
               className="flex-center items-center"
+              id="beta-inscription-link"
               replace={false}
               to="/inscription"
             >
@@ -541,6 +546,7 @@ ShallowWrapper {
                 />,
               ],
               "className": "flex-center items-center",
+              "id": "beta-inscription-link",
               "replace": false,
               "to": "/inscription",
             },

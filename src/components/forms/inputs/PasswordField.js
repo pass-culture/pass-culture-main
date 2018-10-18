@@ -5,7 +5,7 @@ import PropTypes from 'prop-types'
 import { Field } from 'react-final-form'
 
 import { FormError } from '../FormError'
-import { validatePasswordField } from '../validators/validatePasswordField'
+import { validatePasswordField } from '../validators'
 
 export class PasswordField extends React.PureComponent {
   constructor(props) {
@@ -34,7 +34,7 @@ export class PasswordField extends React.PureComponent {
     const validateFunc =
       required && typeof required === 'function'
         ? required
-        : (required && validatePasswordField(name)) || undefined
+        : (required && validatePasswordField) || undefined
     return (
       <Field
         name={name}

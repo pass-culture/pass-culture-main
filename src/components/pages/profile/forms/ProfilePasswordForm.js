@@ -6,13 +6,14 @@ import React from 'react'
 import { FormError } from '../../../forms'
 import { isEmpty } from '../../../../utils/strings'
 import { PasswordField } from '../../../forms/inputs'
+import { validateMatchingFields } from '../../../forms/validators'
 import withProfileForm from './withProfileForm'
 
 // NOTE: les anciens mot de passe lors de la phase beta
 // n'avaient de règle de validation
-// FIXME: peu être mettre un if avec une version du package.json
+// FIXME: peut être mettre un if avec une version du package.json
 // si on considére que la v1 correspond à la mise en ligne d'octobre
-const ERROR_OLD_PASSWORD = "L'ancien mot de passe est manquant"
+const ERROR_OLD_PASSWORD = "L'ancien mot de passe est manquant."
 
 const initialValues = {
   newPassword: null,
@@ -44,7 +45,10 @@ class ProfilePasswordForm extends React.PureComponent {
             label="Saisissez votre nouveau mot de passe"
           />
           <PasswordField
-            required
+            required={(value, formvalues) => {
+              const mainvalue = formvalues.newPassword
+              return validateMatchingFields(value, mainvalue)
+            }}
             className="mt36"
             name="newPasswordConfirm"
             disabled={isLoading}

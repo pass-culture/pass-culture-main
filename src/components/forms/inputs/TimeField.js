@@ -2,7 +2,8 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Form, TimePicker } from 'antd'
 import { Field } from 'react-final-form'
-import renderLabel from '../renderLabel'
+
+import { renderLabel } from '../utils'
 
 export class TimeField extends React.PureComponent {
   constructor(props) {

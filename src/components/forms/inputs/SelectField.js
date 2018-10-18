@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { Form, Select } from 'antd'
 import { Field } from 'react-final-form'
 
-import renderLabel from '../renderLabel'
+import { renderLabel } from '../utils'
 
 const filterOption = (input, option) => {
   const child = option.props.children

@@ -13,10 +13,8 @@ test('Je suis redirigé·e  vers /beta', async t => {
 })
 
 test('Lorsque je clique sur la flêche, je suis redirigé·e  vers la page /inscription', async t => {
-  await t
-    .expect(Selector("a[href='/inscription']").innerText)
-    .eql("C'est par là\n")
-    .click('a')
+  const button = Selector('#beta-inscription-link')
+  await t.click(button).wait(1000)
   const location = await t.eval(() => window.location)
   await t.expect(location.pathname).eql('/inscription')
 })

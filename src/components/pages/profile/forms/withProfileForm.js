@@ -8,6 +8,7 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 
 import { ROOT_PATH } from '../../../../utils/config'
+import { parseSubmitErrors } from '../../../forms/utils'
 import PageHeader from '../../../layout/PageHeader'
 import NavigationFooter from '../../../layout/NavigationFooter'
 
@@ -18,15 +19,6 @@ const getInitialValuesFromUser = (obj, user) =>
   Object.keys(obj).reduce((acc, key) => {
     const propobj = (user[key] && { [key]: user[key] }) || { [key]: null }
     return { ...acc, ...propobj }
-  }, {})
-
-const parseSubmitErrors = errors =>
-  Object.keys(errors).reduce((acc, key) => {
-    // FIXME -> test avec un array d'erreurs
-    // a deplacer dans un tests unitaires
-    // const err = errors[key].concat('toto')
-    const err = errors[key]
-    return { ...acc, [key]: err }
   }, {})
 
 /**

@@ -9,7 +9,7 @@ import { requestData } from 'pass-culture-shared'
 import { Transition } from 'react-transition-group'
 
 import { ROOT_PATH } from '../utils/config'
-import submitForm from './forms/submitForm'
+import { externalSubmitForm } from './forms/utils'
 import BookingForm from './booking/BookingForm'
 import BookingError from './booking/BookingError'
 import BookingLoader from './booking/BookingLoader'
@@ -121,8 +121,8 @@ class Booking extends React.PureComponent {
         {showSubmitButton && (
           <button
             type="submit"
-            className="text-center my5"
-            onClick={() => submitForm(this.formId)}
+            className="has-text-centered my5"
+            onClick={() => externalSubmitForm(this.formId)}
           >
             <b>Valider</b>
           </button>
