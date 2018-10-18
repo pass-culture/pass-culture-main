@@ -24,7 +24,7 @@ from models.payment_status import PaymentStatus, TransactionStatus
 from models.stock import Stock
 from models.user import User
 from models.venue import Venue
-from sandboxes.scripts.chunks.users_light import admin_user_mock
+from sandboxes.scripts.mocks.users_light import admin_user_mock
 from utils.token import random_token
 
 print("admin_user_mock ",admin_user_mock)
