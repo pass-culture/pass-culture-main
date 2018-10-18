@@ -1,4 +1,5 @@
 """ transfer model """
+from datetime import datetime
 
 from sqlalchemy import BigInteger, \
     Column, \
@@ -9,6 +10,7 @@ from sqlalchemy import BigInteger, \
 from sqlalchemy.orm import relationship
 
 from models.db import Model
+from models.payment_status import TransactionStatus, PaymentStatus
 from models.pc_object import PcObject
 
 
@@ -44,3 +46,14 @@ class Payment(PcObject, Model):
     author = Column(String(27), nullable=False)
 
     paymentTransactionId = Column(String(50), nullable=True)
+
+    def setStatus(self, status: TransactionStatus, detail: str=None):
+        payment_status = PaymentStatus()
+        payment_status.status = status
+        payment_status.date = datetime.utcnow()
+        payment_status.detail = detail
+
+        if self.statuses:
+            self.statuses.append(payment_status)
+        else:
+            self.statuses = [payment_status]

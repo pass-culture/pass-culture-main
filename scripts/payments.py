@@ -8,10 +8,11 @@ from flask import current_app as app
 
 from domain.admin_emails import send_payment_transaction_email
 from domain.payments import filter_out_already_paid_for_bookings, create_payment_for_booking, generate_transaction_file, \
-    validate_transaction_file, append_sent_status_to
+    validate_transaction_file
 from domain.reimbursement import find_all_booking_reimbursement
 from models import Offerer, PcObject
 from models.payment import Payment
+from models.payment_status import TransactionStatus
 from repository.booking_queries import find_final_offerer_bookings
 from utils.logger import logger
 from utils.mailing import MailServiceException
@@ -67,5 +68,5 @@ def do_send_payments(payments: List[Payment], pass_culture_iban: str, pass_cultu
         else:
             for payment in payments:
                 payment.paymentTransactionId = message_id
-                append_sent_status_to(payment)
+                payment.setStatus(TransactionStatus.SENT)
             PcObject.check_and_save(*payments)

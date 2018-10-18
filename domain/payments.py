@@ -9,7 +9,7 @@ from lxml import etree
 
 from domain.reimbursement import BookingReimbursement
 from models.payment import Payment
-from models.payment_status import PaymentStatus, TransactionStatus
+from models.payment_status import TransactionStatus
 from utils.human_ids import humanize
 
 
@@ -24,6 +24,7 @@ def create_payment_for_booking(booking_reimbursement: BookingReimbursement) -> P
     payment.reimbursementRule = booking_reimbursement.reimbursement.value.description
     payment.author = 'batch'
     venue = booking_reimbursement.booking.stock.resolvedOffer.venue
+
     if venue.iban:
         payment.recipient = venue.name
         payment.iban = venue.iban
@@ -33,7 +34,12 @@ def create_payment_for_booking(booking_reimbursement: BookingReimbursement) -> P
         payment.recipient = offerer.name
         payment.iban = offerer.iban
         payment.bic = offerer.bic
-    payment.statuses = [_create_status_for_payment(payment)]
+
+    if payment.iban:
+        payment.setStatus(TransactionStatus.PENDING)
+    else:
+        payment.setStatus(TransactionStatus.NOT_PROCESSABLE, detail='IBAN et BIC manquants sur l\'offreur')
+
     return payment
 
 
@@ -72,24 +78,6 @@ def validate_transaction_file(transaction_file: str):
     xml_doc = etree.parse(xml)
 
     xsd_schema.assertValid(xml_doc)
-
-
-def append_sent_status_to(payment):
-    payment_status = PaymentStatus()
-    payment_status.date = datetime.utcnow()
-    payment_status.status = TransactionStatus.SENT
-    payment.statuses.append(payment_status)
-
-
-def _create_status_for_payment(payment):
-    payment_status = PaymentStatus()
-    payment_status.date = datetime.utcnow()
-    if payment.iban:
-        payment_status.status = TransactionStatus.PENDING
-    else:
-        payment_status.status = TransactionStatus.NOT_PROCESSABLE
-        payment_status.detail = 'IBAN et BIC manquants sur l\'offreur'
-    return payment_status
 
 
 def _extract_payment_information(payments: List[Payment]):
