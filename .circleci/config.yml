@@ -91,7 +91,7 @@ jobs:
           name: Install dependencies
           command: |
             yarn install
-            sudo npm install -g netlify-cli
+            sudo npm install -g netlify-cli@1.2.3
       - save_cache:
           paths:
             - node_modules
