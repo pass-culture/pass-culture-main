@@ -64,8 +64,8 @@ test('Je rentre une nouveau lieu via son siret avec succès', async t => {
     .expect(location.pathname)
     .match(/\/structures\/([A-Z0-9]*)\/lieux\/([A-Z0-9]*)$/)
     .expect(notificationSuccess.innerText)
-    .eql(
-      '\nLieu créé. Vous pouvez maintenant y créer une offre, ou en importer automatiquement.\n\nOK\n'
+    .contains(
+      'Lieu créé. Vous pouvez maintenant y créer une offre, ou en importer automatiquement.\n\nOK'
     )
 
   // close notification div
@@ -99,11 +99,11 @@ test('Une entrée avec cet identifiant existe déjà', async t => {
   // error response
   await t
     .expect(siretInputError.innerText)
-    .eql(
-      '\nUne entrée avec cet identifiant existe déjà dans notre base de données\n'
+    .contains(
+      'Une entrée avec cet identifiant existe déjà dans notre base de données'
     )
     .expect(notificationError.innerText)
-    .eql('Formulaire non validé\nOK\n')
+    .contains('Formulaire non validé\nOK')
 
   // close notification div
   await t
@@ -122,11 +122,11 @@ test('Le code SIRET doit correspondre à un établissement de votre structure', 
   // error response
   await t
     .expect(siretInputError.innerText)
-    .eql(
-      '\nLe code SIRET doit correspondre à un établissement de votre structure\n'
+    .contains(
+      'Le code SIRET doit correspondre à un établissement de votre structure'
     )
     .expect(notificationError.innerText)
-    .eql('Formulaire non validé\nOK\n')
+    .contains('Formulaire non validé\nOK')
 })
 
 test("Le siret n'est pas valide", async t => {
