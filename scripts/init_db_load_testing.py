@@ -23,7 +23,7 @@ def init_db_load_testing():
 
 
 def populate_json():
-    json_path = Path(path.dirname(path.realpath(__file__))) / '..' / 'mock' / 'jsons' / 'lt_users.json'
+    json_path = Path(path.dirname(path.realpath(__file__))) / '..' / 'sandboxes' / 'jsons' / 'lt_users.json'
 
     data = []
     print("Create json file with 150 users")
