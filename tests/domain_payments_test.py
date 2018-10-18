@@ -71,7 +71,7 @@ def test_create_payment_for_booking_when_no_iban_on_venue_should_take_payment_in
     stock = create_stock(price=10, available=5)
     booking = create_booking(user, stock=stock, quantity=1)
     booking.stock.offer = Offer()
-    offerer = create_offerer(name='Test Offerer', iban='B135TGGEG532TG', bic='LAJR93')
+    offerer = create_offerer(name='Test Offerer', iban='CF13QSDFGH456789', bic='QSDFGH8Z555')
     booking.stock.offer.venue = create_venue(offerer, name='Test Venue', iban=None, bic=None)
     booking.stock.offer.venue.managingOfferer = offerer
     booking_reimbursement = BookingReimbursement(booking, ReimbursementRules.PHYSICAL_OFFERS, Decimal(10))
