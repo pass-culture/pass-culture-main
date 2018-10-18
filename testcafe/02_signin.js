@@ -45,7 +45,7 @@ test("J'ai un compte Identifiant invalide, je vois un messages d'erreur et je re
     .click(signInButton)
 
     .expect(inputUsersIdentifierError.innerText)
-    .eql('\nIdentifiant incorrect\n\n')
+    .contains('Identifiant incorrect')
 
   const location = await t.eval(() => window.location)
   await t.expect(location.pathname).eql('/connexion')
@@ -59,7 +59,7 @@ test("J'ai un mot de passe invalide, je vois un messages d'erreur et je reste su
     .click(signInButton)
 
     .expect(inputUsersPasswordError.innerText)
-    .eql('\nMot de passe incorrect\n\n')
+    .contains('Mot de passe incorrect')
 
   const location = await t.eval(() => window.location)
   await t.expect(location.pathname).eql('/connexion')

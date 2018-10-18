@@ -42,7 +42,7 @@ test('Je ne peux pas ajouter de nouvelle structure avec un siren faux', async t 
   await t.click(submitButton)
 
   // api return an error message
-  await t.expect(sirenErrorInput.innerText).eql('\nSiren invalide\n')
+  await t.expect(sirenErrorInput.innerText).contains('Siren invalide')
 })
 
 test('Je ne peux pas ajouter de nouvelle structure ayant un siren déjà existant dans la base', async t => {
@@ -63,8 +63,8 @@ test('Je ne peux pas ajouter de nouvelle structure ayant un siren déjà existan
   // api return an error message
   await t
     .expect(sirenErrorInput.innerText)
-    .eql(
-      '\nUne entrée avec cet identifiant existe déjà dans notre base de données\n'
+    .contains(
+      'Une entrée avec cet identifiant existe déjà dans notre base de données'
     )
 })
 
