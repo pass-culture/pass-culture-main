@@ -23,7 +23,7 @@ from sandboxes.save import save
 from sandboxes.scripts import sandbox_webapp, sandbox_light
 
 def do(name):
-    function_name = "mock.scripts.sandbox_" + name
+    function_name = "sandboxes.scripts.sandbox_" + name
     sandbox_module = sys.modules[function_name]
 
     offerers_by_name = {}

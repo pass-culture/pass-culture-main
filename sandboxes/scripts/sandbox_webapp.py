@@ -1,16 +1,16 @@
 """ sandbox webapp """
-from sandboxes.scripts.chunks.bookings import booking_mocks
-from sandboxes.scripts.chunks.deposits import deposit_mocks
-from sandboxes.scripts.chunks.events import event_mocks
-from sandboxes.scripts.chunks.event_occurrences import event_occurrence_mocks
-from sandboxes.scripts.chunks.offers import offer_mocks
-from sandboxes.scripts.chunks.offerers import offerer_mocks
-from sandboxes.scripts.chunks.recommendations import recommendation_mocks
-from sandboxes.scripts.chunks.stocks import stock_mocks
-from sandboxes.scripts.chunks.things import thing_mocks
-from sandboxes.scripts.chunks.user_offerers import user_offerer_mocks
-from sandboxes.scripts.chunks.users_webapp import user_mocks
-from sandboxes.scripts.chunks.venues import venue_mocks
+from sandboxes.scripts.mocks.bookings import booking_mocks
+from sandboxes.scripts.mocks.deposits import deposit_mocks
+from sandboxes.scripts.mocks.events import event_mocks
+from sandboxes.scripts.mocks.event_occurrences import event_occurrence_mocks
+from sandboxes.scripts.mocks.offers import offer_mocks
+from sandboxes.scripts.mocks.offerers import offerer_mocks
+from sandboxes.scripts.mocks.recommendations import recommendation_mocks
+from sandboxes.scripts.mocks.stocks import stock_mocks
+from sandboxes.scripts.mocks.things import thing_mocks
+from sandboxes.scripts.mocks.user_offerers import user_offerer_mocks
+from sandboxes.scripts.mocks.users_webapp import user_mocks
+from sandboxes.scripts.mocks.venues import venue_mocks
 
 __all__ = (
     "booking_mocks",
