@@ -1,13 +1,14 @@
 """ sandbox script """
 #https://docs.python.org/3/library/datetime.html#strftime-strptime-behavior
 # -*- coding: utf-8 -*-
-from pprint import pprint
-import traceback
-from flask import current_app as app
 import json
 from os import path
 from pathlib import Path
-from utils.mock import set_from_mock
+from pprint import pprint
+import traceback
+from flask import current_app as app
+
+from sandboxes import save
 
 
 @app.manager.command
@@ -62,6 +63,6 @@ def populate_db():
                         userOfferer.user = user
                         userOfferer.offerer = offerer
                         check_and_save(userOfferer)
-                    set_from_mock("thumbs", user, 2)
+                    save("thumbs", user, 2)
                 else:
-                    set_from_mock("thumbs", user, 1)
+                    save("thumbs", user, 1)

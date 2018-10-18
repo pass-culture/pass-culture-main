@@ -13,11 +13,10 @@ mimes_by_folder = {
     "zips": "application/zip"
 }
 
-
-def set_from_mock(folder, obj, thumb_id):
+def save(folder, obj, thumb_id):
     dir_path = Path(os.path.dirname(os.path.realpath(__file__)))
     collection_name = inflect_engine.plural(obj.__class__.__name__.lower())
-    thumb_path = dir_path / '..' / 'mock'\
+    thumb_path = dir_path\
                  / folder / collection_name\
                  / str(thumb_id)
     with open(thumb_path, mode='rb') as file:

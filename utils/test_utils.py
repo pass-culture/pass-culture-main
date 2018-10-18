@@ -6,7 +6,6 @@ from unittest.mock import Mock
 import requests as req
 from postgresql_audit.flask import versioning_manager
 
-from mock.scripts.chunks.users_light import admin_user_mock
 from models import Deposit,\
                    EventType,\
                    Mediation,\
@@ -25,7 +24,11 @@ from models.payment_status import PaymentStatus, TransactionStatus
 from models.stock import Stock
 from models.user import User
 from models.venue import Venue
+from sandboxes.scripts.chunks.users_light import admin_user_mock
 from utils.token import random_token
+
+print("admin_user_mock ",admin_user_mock)
+print(admin_user_mock)
 
 API_URL = "http://localhost:5000"
 MOCKED_SIREN_ENTREPRISES_API_RETURN = {
