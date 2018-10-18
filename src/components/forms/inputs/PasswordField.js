@@ -22,6 +22,7 @@ export class PasswordField extends React.PureComponent {
       autoComplete,
       className,
       disabled,
+      id,
       label,
       name,
       placeholder,
@@ -42,7 +43,7 @@ export class PasswordField extends React.PureComponent {
         validate={validateFunc || undefined}
         render={({ input, meta }) => (
           <p className={`${className}`}>
-            <label htmlFor={name} className="pc-final-form-password">
+            <label htmlFor={id || name} className="pc-final-form-password">
               {label && (
                 <span className="pc-final-form-label">
                   <span>{label}</span>
@@ -54,7 +55,7 @@ export class PasswordField extends React.PureComponent {
               <span className="pc-final-form-inner">
                 <input
                   {...input}
-                  id={name}
+                  id={id || name}
                   type={inputType}
                   disabled={disabled}
                   required={!!required} // cast to boolean
@@ -71,11 +72,11 @@ export class PasswordField extends React.PureComponent {
                   <span
                     aria-hidden
                     className={`icon-eye${status} fs22`}
-                    title=""
+                    title="Afficher/Masquer le mot de passe"
                   />
                 </button>
               </span>
-              <FormError meta={meta} />
+              <FormError id={`${id || name}-error`} meta={meta} />
             </label>
           </p>
         )}
@@ -88,6 +89,7 @@ PasswordField.defaultProps = {
   autoComplete: false,
   className: '',
   disabled: false,
+  id: null,
   label: 'Saisissez Votre mot de passe',
   placeholder: '',
   required: false,
@@ -97,6 +99,7 @@ PasswordField.propTypes = {
   autoComplete: PropTypes.bool,
   className: PropTypes.string,
   disabled: PropTypes.bool,
+  id: PropTypes.string,
   label: PropTypes.string,
   name: PropTypes.string.isRequired,
   placeholder: PropTypes.string,

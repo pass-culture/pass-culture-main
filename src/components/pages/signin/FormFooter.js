@@ -8,6 +8,7 @@ import { FormFooterObject } from '../../../types'
 
 const renderSubmitButton = obj => (
   <button
+    id="signin-submit-button"
     type="submit"
     disabled={obj.disabled}
     className={`flex-1  ${obj.className || ''}`}
@@ -18,6 +19,7 @@ const renderSubmitButton = obj => (
 
 const renderLinkButton = obj => (
   <Link
+    id="signin-signup-button"
     to={obj.url}
     disabled={obj.disabled}
     className={`flex-1  ${obj.className || ''}`}

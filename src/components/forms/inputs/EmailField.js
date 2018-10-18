@@ -18,6 +18,7 @@ export const EmailField = ({
   autoComplete,
   className,
   disabled,
+  id,
   label,
   name,
   placeholder,
@@ -33,7 +34,7 @@ export const EmailField = ({
       validate={validateFunc || undefined}
       render={({ input, meta }) => (
         <p className={`${className}`}>
-          <label htmlFor={name} className="pc-final-form-text">
+          <label htmlFor={id || name} className="pc-final-form-text">
             {label && (
               <span className="pc-final-form-label">
                 <span>{label}</span>
@@ -43,7 +44,7 @@ export const EmailField = ({
             <span className="pc-final-form-inner">
               <input
                 {...input}
-                id={name}
+                id={id || name}
                 type="email"
                 disabled={disabled}
                 required={!!required} // cast to boolean
@@ -52,7 +53,7 @@ export const EmailField = ({
                 className="pc-final-form-input is-block"
               />
             </span>
-            <FormError meta={meta} />
+            <FormError id={`${id || name}-error`} meta={meta} />
           </label>
         </p>
       )}
@@ -64,6 +65,7 @@ EmailField.defaultProps = {
   autoComplete: false,
   className: '',
   disabled: false,
+  id: null,
   label: '',
   placeholder: 'Identifiant (email)',
   required: false,
@@ -73,6 +75,7 @@ EmailField.propTypes = {
   autoComplete: PropTypes.bool,
   className: PropTypes.string,
   disabled: PropTypes.bool,
+  id: PropTypes.string,
   label: PropTypes.string,
   name: PropTypes.string.isRequired,
   placeholder: PropTypes.string,

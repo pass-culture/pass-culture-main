@@ -12,7 +12,16 @@ import FormInputs from './FormInputs'
 import FormFooter from './FormFooter'
 import FormHeader from './FormHeader'
 
-// const inputClassName = 'pc-form-text-input input block col-12 mb2 red'
+const cancelButtonOptions = {
+  className: 'is-white-text',
+  label: 'Créer un compte',
+  url: '/inscription',
+}
+
+const submitButtonOptions = {
+  className: 'is-bold is-white-text',
+  label: 'Connexion',
+}
 
 const parseSubmitErrors = errors =>
   Object.keys(errors).reduce((acc, key) => {
@@ -71,16 +80,19 @@ class Signin extends React.PureComponent {
       <div id="sign-in-page" className="page pc-gradient is-relative">
         <Form
           onSubmit={this.onFormSubmit}
-          render={({ handleSubmit }) => {
-            const canSubmit = true
-            // const canSubmit =
-            //   (!pristine &&
-            //     !hasSubmitErrors &&
-            //     !hasValidationErrors &&
-            //     !isloading) ||
-            //   (!hasValidationErrors &&
-            //     hasSubmitErrors &&
-            //     dirtySinceLastSubmit)
+          render={({
+            dirtySinceLastSubmit,
+            handleSubmit,
+            hasSubmitErrors,
+            hasValidationErrors,
+            pristine,
+          }) => {
+            const canSubmit =
+              (!pristine &&
+                !hasSubmitErrors &&
+                !hasValidationErrors &&
+                !isloading) ||
+              (!hasValidationErrors && hasSubmitErrors && dirtySinceLastSubmit)
             return (
               <form
                 noValidate
@@ -94,17 +106,8 @@ class Signin extends React.PureComponent {
                   <FormInputs />
                 </div>
                 <FormFooter
-                  cancel={{
-                    className: 'is-white-text',
-                    disabled: isloading,
-                    label: 'Créer un compte',
-                    url: '/inscription',
-                  }}
-                  submit={{
-                    className: 'is-bold is-white-text',
-                    disabled: !canSubmit,
-                    label: 'Connexion',
-                  }}
+                  cancel={{ ...cancelButtonOptions, disabled: isloading }}
+                  submit={{ ...submitButtonOptions, disabled: !canSubmit }}
                 />
               </form>
             )

@@ -10,7 +10,7 @@ import PropTypes from 'prop-types'
 // Documentation: https://reactjs.org/docs/lists-and-keys.html#keys
 const setDangerousArrayKeyIndex = index => `field_error_${index}`
 
-export const FormError = ({ className, customMessage, meta, theme }) => {
+export const FormError = ({ className, customMessage, id, meta, theme }) => {
   const showError =
     customMessage ||
     (meta &&
@@ -28,6 +28,7 @@ export const FormError = ({ className, customMessage, meta, theme }) => {
     : (Array.isArray(errorMessage) && errorMessage) || [].concat(errorMessage)
   return (
     <span
+      id={id}
       className={`pc-final-form-errors is-block mt7 pc-theme-${theme} no-no-background ${className}`}
     >
       {(errorMessage && (
@@ -55,6 +56,7 @@ export const FormError = ({ className, customMessage, meta, theme }) => {
 FormError.defaultProps = {
   className: '',
   customMessage: '',
+  id: null,
   meta: null,
   theme: 'white',
 }
@@ -65,6 +67,7 @@ FormError.propTypes = {
   // ne doit pas faire doublon avec les erreurs générées par le form
   // doit être utilisé par exemple pour passer une erreur générale de formulaire
   customMessage: PropTypes.string,
+  id: PropTypes.string,
   // NOTE: les erreurs des fields sont générées automatiquement
   // par le formulaire via la propriété `meta`
   // Exemple: https://codesandbox.io/s/9y9om95lyp

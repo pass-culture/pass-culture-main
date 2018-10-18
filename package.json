@@ -103,6 +103,7 @@
     "husky": "^0.14.3",
     "indexeddbshim": "^3.6.2",
     "jest": "^23.5.0",
+    "minimist": "^1.2.0",
     "node-env-file": "^0.1.8",
     "node-sass": "^4.9.0",
     "phonegap-build-api": "^0.4.0",

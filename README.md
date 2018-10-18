@@ -18,6 +18,13 @@ yarn
 A la racine de webapp créer un fichier `env.local`<br>
 Les variables disponibles pour l'application sont décrites dans le fichier `src/utils/config.js`
 
+## TestCafé
+
+Lancer un seul fichier en ligne de commande depuis un environnement local
+```
+./node_modules/.bin/testcafe chrome ./testcafe/02_signin.js --env=local
+```
+
 ## Upgrade de la version
 
 ```bash

@@ -8,6 +8,7 @@ const FormInputs = () => (
   <div>
     <input type="hidden" name="name" value="user" />
     <EmailField
+      id="user-identifier"
       required
       className="mb36"
       name="identifier"
@@ -15,6 +16,7 @@ const FormInputs = () => (
       placeholder="Identifiant (email)"
     />
     <PasswordField
+      id="user-password"
       required
       className="mb36"
       name="password"
