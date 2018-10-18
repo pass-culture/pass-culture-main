@@ -951,7 +951,7 @@ def test_make_make_batch_cancellation_email_for_case_stock(app):
 def test_make_offerer_booking_user_cancellation_email_when_virtual_venue_does_not_show_address(app):
     # Given
     offerer = create_offerer()
-    venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', is_virtual=True, siret=offerer.siren + '12345')
+    venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', is_virtual=True, siret=None)
     thing_offer = create_thing_offer(venue)
     stock = create_stock_from_offer(thing_offer, price=0)
     user_1 = create_user('Test1', departement_code='93', email='test1@email.com')
@@ -977,7 +977,7 @@ def test_make_offerer_booking_user_cancellation_email_when_virtual_venue_does_no
 def test_make_offerer_booking_user_cancellation_does_not_have_recap_information(app):
     # Given
     offerer = create_offerer()
-    venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', is_virtual=True, siret=offerer.siren + '12345')
+    venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', is_virtual=True, siret=None)
     thing_offer = create_thing_offer(venue)
     stock = create_stock_from_offer(thing_offer, price=0)
     user_1 = create_user('Test1', departement_code='93', email='test1@email.com')
