@@ -125,7 +125,7 @@ def test_do_send_payments_should_send_an_email_with_xml_attachment(app):
 @clean_database
 @mocked_mail
 @freeze_time('2018-10-15 09:21:34')
-def test_do_send_payments_updates_payments_with_message_id_and_sent_transaction_status_if_email_sent(app):
+def test_do_send_payments_updates_payments_with_message_id_and_end_to_end_id_and_status_if_email_sent(app):
     # given
     offerer1 = create_offerer(name='first offerer', iban='CF13QSDFGH456789', bic='QSDFGH8Z555', idx=1)
     user = create_user()
@@ -153,6 +153,7 @@ def test_do_send_payments_updates_payments_with_message_id_and_sent_transaction_
     updated_payments = Payment.query.all()
     for payment in updated_payments:
         assert payment.transactionMessageId == 'passCulture-SCT-20181015-092134'
+        assert payment.transactionEndToEndId is not None
         assert len(payment.statuses) == 2
         assert payment.statuses[1].status == TransactionStatus.SENT
 
@@ -161,7 +162,8 @@ def test_do_send_payments_updates_payments_with_message_id_and_sent_transaction_
 @clean_database
 @mocked_mail
 @freeze_time('2018-10-15 09:21:34')
-def test_do_send_payments_does_not_update_payments_with_message_id_if_email_was_not_sent_properly(app):
+def test_do_send_payments_does_not_update_payments_with_message_id_and_end_to_end_id_and_status_if_email_was_not_sent_properly(
+        app):
     # given
     offerer1 = create_offerer(name='first offerer', iban='CF13QSDFGH456789', bic='QSDFGH8Z555', idx=1)
     user = create_user()
@@ -189,5 +191,6 @@ def test_do_send_payments_does_not_update_payments_with_message_id_if_email_was_
     updated_payments = Payment.query.all()
     for payment in updated_payments:
         assert payment.transactionMessageId is None
+        assert payment.transactionEndToEndId is None
         assert len(payment.statuses) == 1
         assert payment.statuses[0].status == TransactionStatus.PENDING

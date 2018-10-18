@@ -1,7 +1,7 @@
 import itertools
-import operator
 import uuid
 from datetime import datetime, timedelta
+from decimal import Decimal
 from io import BytesIO
 from typing import List
 
@@ -15,6 +15,14 @@ from models.payment_status import TransactionStatus
 
 class InvalidTransactionXML(Exception):
     pass
+
+
+class Transaction:
+    def __init__(self, creditor_iban: str, creditor_bic: str, end_to_end_id: str, amount: Decimal):
+        self.creditor_iban = creditor_iban
+        self.creditor_bic = creditor_bic
+        self.end_to_end_id = end_to_end_id
+        self.amount = amount
 
 
 def create_payment_for_booking(booking_reimbursement: BookingReimbursement) -> Payment:
@@ -50,20 +58,8 @@ def filter_out_already_paid_for_bookings(booking_reimbursements: List[BookingRei
 
 def generate_transaction_file(payments: List[Payment], pass_culture_iban: str, pass_culture_bic: str,
                               message_id: str) -> str:
-    payments_with_iban = sorted(filter(lambda x: x.iban, payments), key=lambda x: (x.iban, x.bic))
-    total_amount = sum([payment.amount for payment in payments_with_iban])
-
-    payments_info_by_iban = []
-    payments_by_iban = itertools.groupby(payments_with_iban, lambda x: (x.iban, x.bic))
-    for (iban, bic), grouped_payments in payments_by_iban:
-        info = {
-            'iban': iban,
-            'bic': bic,
-            'unique_id': uuid.uuid4().hex,
-            'amount': sum([payment.amount for payment in grouped_payments])
-        }
-        payments_info_by_iban.append(info)
-
+    transactions = _group_payments_into_transactions(payments, message_id)
+    total_amount = sum([transaction.amount for transaction in transactions])
     now = datetime.utcnow()
 
     return render_template(
@@ -71,8 +67,8 @@ def generate_transaction_file(payments: List[Payment], pass_culture_iban: str, p
         message_id=message_id,
         creation_datetime=now.isoformat(),
         requested_execution_datetime=datetime.strftime(now + timedelta(days=7), "%Y-%m-%d"),
-        payments_info_by_iban=payments_info_by_iban,
-        number_of_transactions=len(payments_info_by_iban),
+        transactions=transactions,
+        number_of_transactions=len(transactions),
         total_amount=total_amount,
         pass_culture_iban=pass_culture_iban,
         pass_culture_bic=pass_culture_bic
@@ -88,3 +84,21 @@ def validate_transaction_file(transaction_file: str):
     xml_doc = etree.parse(xml)
 
     xsd_schema.assertValid(xml_doc)
+
+
+def _group_payments_into_transactions(payments: List[Payment],  message_id: str) -> List[Transaction]:
+    payments_with_iban = sorted(filter(lambda x: x.iban, payments), key=lambda x: (x.iban, x.bic))
+    payments_by_iban = itertools.groupby(payments_with_iban, lambda x: (x.iban, x.bic))
+
+    transactions = []
+    for (iban, bic), grouped_payments in payments_by_iban:
+        payments_of_iban = list(grouped_payments)
+        amount = sum([payment.amount for payment in payments_of_iban])
+        end_to_end_id = uuid.uuid4().hex
+
+        for payment in payments_of_iban:
+            payment.transactionMessageId = message_id
+            payment.transactionEndToEndId = end_to_end_id
+
+        transactions.append(Transaction(iban, bic, end_to_end_id, amount))
+    return transactions
