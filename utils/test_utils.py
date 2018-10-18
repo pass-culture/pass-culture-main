@@ -354,7 +354,7 @@ def create_thing(thing_type=ThingType.LIVRE_EDITION, thing_name='Test Book', med
     thing.thumbCount = thumb_count
     thing.isNational = is_national
     if thumb_count > 0:
-        thing.firstThumbDominantColor = b'123'
+        thing.firstThumbDominantColor = b'\x00\x00\x00'
     return thing
 
 
@@ -370,9 +370,11 @@ def create_event(
     event.name = event_name
     event.durationMinutes = duration_minutes
     event.thumbCount = thumb_count
-    event.firstThumbDominantColor = dominant_color
     event.isNational = is_national
     event.type = str(type)
+    event.firstThumbDominantColor = dominant_color
+    if event.thumbCount > 0 and not dominant_color:
+        event.firstThumbDominantColor = b'\x00\x00\x00'
     return event
 
 
@@ -388,6 +390,7 @@ def create_thing_offer(venue, thing=None, date_created=datetime.utcnow(), bookin
     offer.venue = venue
     offer.dateCreated = date_created
     offer.bookingEmail = booking_email
+    offer
     return offer
 
 

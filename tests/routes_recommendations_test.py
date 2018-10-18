@@ -375,3 +375,34 @@ def test_get_favorite_recommendations_returns_recommendations_favored_by_current
     # then
     assert response.status_code == 200
     assert len(response.json()) == 2
+
+
+@clean_database
+@pytest.mark.standalone
+def test_put_recommendations_returns_requested_recommendation_first(app):
+    # given
+    user = create_user(email='weird.bug@email.com', password='P@55w0rd')
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    offer1 = create_thing_offer(venue, thumb_count=1)
+    offer2 = create_event_offer(venue, thumb_count=1)
+    event_occurrence = create_event_occurrence(offer2)
+    mediation = create_mediation(offer2)
+    stock1 = create_stock_from_offer(offer1, price=0)
+    stock2 = create_stock_from_offer(offer2, price=0)
+    PcObject.check_and_save(user, stock1, stock2, mediation, event_occurrence)
+    auth_request = req_with_auth(user.email, user.clearTextPassword)
+
+    data = {'seenRecommendationIds': []}
+    # when
+    response = auth_request.put(RECOMMENDATION_URL + '?offerId=%s' % humanize(offer1.id), json=data)
+
+    # then
+    assert response.status_code == 200
+    response_json = response.json()
+    print('offer1', offer1.id)
+    print('offer2', offer2.id)
+    print(response_json)
+    assert len(response_json) == 2
+    assert response_json[0].offer == offer1
+    assert response_json[1].offer == offer2
