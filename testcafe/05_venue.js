@@ -103,7 +103,7 @@ test('Une entrée avec cet identifiant existe déjà', async t => {
       'Une entrée avec cet identifiant existe déjà dans notre base de données'
     )
     .expect(notificationError.innerText)
-    .eql('Formulaire non validé\nOK\n')
+    .contains('Formulaire non validé\nOK')
 
   // close notification div
   await t
