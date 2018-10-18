@@ -77,8 +77,8 @@ def test_find_bookings_stats_per_department(app):
                         date_created=datetime(2018, 6, 10))
 
     offerer = create_offerer()
-    venue34 = create_venue(offerer, departement_code='34', postal_code='34000')
-    venue93 = create_venue(offerer, departement_code='93', postal_code='93100')
+    venue34 = create_venue(offerer, departement_code='34', postal_code='34000', siret=offerer.siren + '12345')
+    venue93 = create_venue(offerer, departement_code='93', postal_code='93100', siret=offerer.siren + '54321')
     thing_offer = create_thing_offer(venue93)
 
     stock1 = create_stock_with_event_offer(offerer, venue34, price=0)
@@ -246,8 +246,8 @@ def _create_bookings_for_test():
     user_cant_book_free_offers = create_user(departement_code='93', email='cnbfo@email.com', can_book_free_offers=False)
     user_34 = create_user(departement_code='34', email='34@email.com')
     offerer = create_offerer(name='Librairies et événements')
-    venue_75 = create_venue(offerer, postal_code='75001', city='Paris', departement_code='75')
-    venue_34 = create_venue(offerer, postal_code='34500', city='Béziers', departement_code='34')
+    venue_75 = create_venue(offerer, postal_code='75001', city='Paris', departement_code='75', siret=offerer.siren + '12345')
+    venue_34 = create_venue(offerer, postal_code='34500', city='Béziers', departement_code='34', siret=offerer.siren + '54321')
     stock_thing = create_stock_with_thing_offer(offerer, venue_75, thing_offer=None, price=0)
     stock_event = create_stock_with_event_offer(offerer, venue_75, price=0)
     stock_event.eventOccurrence.beginningDatetime = datetime(2018, 4, 21)

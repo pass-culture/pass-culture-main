@@ -1,5 +1,4 @@
 """ venue """
-from schwifty import IBAN, BIC
 from sqlalchemy import BigInteger, \
     Column, \
     ForeignKey, \
@@ -13,15 +12,14 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.sql.expression import cast
 from sqlalchemy.sql.functions import coalesce
 
-from models.has_bank_information_mixin import HasBankInformationMixin
-from models.versioned_mixin import VersionedMixin
 from models.db import Model
 from models.has_address_mixin import HasAddressMixin
+from models.has_bank_information_mixin import HasBankInformationMixin
 from models.has_thumb_mixin import HasThumbMixin
 from models.offerer import Offerer
 from models.pc_object import PcObject
 from models.providable_mixin import ProvidableMixin
-from repository.bic_queries import check_bic_is_known
+from models.versioned_mixin import VersionedMixin
 from utils.search import create_tsvector
 
 CONSTRAINT_CHECK_IS_VIRTUAL_XOR_HAS_ADDRESS = """
@@ -34,6 +32,12 @@ OR
     "isVirtual" IS FALSE
     AND (address IS NOT NULL AND "postalCode" IS NOT NULL AND city IS NOT NULL AND "departementCode" IS NOT NULL)
 )
+"""
+
+CONSTRAINT_CHECK_HAS_SIRET_XOR_HAS_COMMENT_XOR_IS_VIRTUAL = """
+    (siret IS NULL AND comment IS NULL AND "isVirtual" IS TRUE)
+    OR (siret IS NULL AND comment IS NOT NULL AND "isVirtual" IS FALSE)
+    OR (siret IS NOT NULL AND comment IS NULL AND "isVirtual" IS FALSE)
 """
 
 
@@ -81,6 +85,15 @@ class Venue(PcObject,
         CheckConstraint(CONSTRAINT_CHECK_IS_VIRTUAL_XOR_HAS_ADDRESS, name='check_is_virtual_xor_has_address'),
         nullable=False,
         default=False
+    )
+
+    comment = Column(
+        TEXT,
+        CheckConstraint(
+            CONSTRAINT_CHECK_HAS_SIRET_XOR_HAS_COMMENT_XOR_IS_VIRTUAL,
+            name='check_has_siret_xor_comment_xor_isVirtual'
+        ),
+        nullable=True
     )
 
     # openingHours = Column(ARRAY(TIME))

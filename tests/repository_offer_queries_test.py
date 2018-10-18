@@ -120,9 +120,9 @@ def test_type_search(app):
 def test_get_active_offers_by_type_when_departement_code_00(app):
     # Given
     offerer = create_offerer()
-    venue_34 = create_venue(offerer, postal_code='34000', departement_code='34')
-    venue_93 = create_venue(offerer, postal_code='93000', departement_code='93')
-    venue_75 = create_venue(offerer, postal_code='75000', departement_code='75')
+    venue_34 = create_venue(offerer, postal_code='34000', departement_code='34', siret=offerer.siren + '11111')
+    venue_93 = create_venue(offerer, postal_code='93000', departement_code='93', siret=offerer.siren + '22222')
+    venue_75 = create_venue(offerer, postal_code='75000', departement_code='75', siret=offerer.siren + '33333')
     offer_34 = create_thing_offer(venue_34)
     offer_93 = create_thing_offer(venue_93)
     offer_75 = create_thing_offer(venue_75)

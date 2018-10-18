@@ -131,9 +131,9 @@ def test_validate_bank_information_raises_an_error_if_bic_has_correct_length_of_
 def test_nOffers(app):
     # given
     offerer = create_offerer()
-    venue_1 = create_venue(offerer)
-    venue_2 = create_venue(offerer)
-    venue_3 = create_venue(offerer)
+    venue_1 = create_venue(offerer, siret='12345678912345')
+    venue_2 = create_venue(offerer, siret='67891234512345')
+    venue_3 = create_venue(offerer, siret='23451234567891')
     offer_v1_1 = create_thing_offer(venue_1)
     offer_v1_2 = create_event_offer(venue_1)
     offer_v2_1 = create_event_offer(venue_2)

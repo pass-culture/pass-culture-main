@@ -453,9 +453,10 @@ def create_venue(
         is_virtual=False,
         iban=None,
         bic=None,
-        longitude="2.4002701",
-        latitude="48.8363788",
-        siret='12345678912345'
+        longitude='2.4002701',
+        latitude='48.8363788',
+        siret='12345678912345',
+        comment=None
 ):
     venue = Venue()
     venue.bookingEmail = booking_email
@@ -469,6 +470,10 @@ def create_venue(
     venue.isVirtual = is_virtual
     venue.iban = iban
     venue.bic = bic
+    venue.longitude = longitude
+    venue.latitude = latitude
+    venue.siret = siret
+    venue.comment = comment
     return venue
 
 
