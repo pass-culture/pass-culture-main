@@ -58,6 +58,7 @@ class Stock(PcObject,
 
 
     price = Column(Numeric(10, 2),
+                   CheckConstraint('price >= 0', name='check_price_is_not_negative'),
                    nullable=False)
 
     available = Column(Integer,

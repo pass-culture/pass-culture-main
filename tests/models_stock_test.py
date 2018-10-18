@@ -4,7 +4,7 @@ from models import Stock, ApiErrors, PcObject
 from models.pc_object import DeletedRecordException
 from tests.conftest import clean_database
 from utils.test_utils import create_stock_with_event_offer, create_offerer, create_venue, create_event_offer, \
-    create_event_occurrence, create_stock_from_offer
+    create_event_occurrence, create_stock_from_offer, create_thing_offer
 
 
 @clean_database
@@ -69,3 +69,20 @@ def test_populate_dict_on_soft_deleted_object_raises_DeletedRecordException(app)
     # When
     with pytest.raises(DeletedRecordException):
         stock.populateFromDict({"available": 5})
+
+
+@clean_database
+@pytest.mark.standalone
+def test_stock_cannot_have_a_negative_price(app):
+    # given
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    offer = create_thing_offer(venue)
+    stock = create_stock_from_offer(offer, price=-10)
+
+    # when
+    with pytest.raises(ApiErrors) as e:
+        PcObject.check_and_save(stock)
+
+    # then
+    assert e.value.errors['global'] is not None
