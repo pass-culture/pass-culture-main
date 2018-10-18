@@ -44,7 +44,7 @@ def populate_db():
     check_and_save = app.model.PcObject.check_and_save
     model = app.model
 
-    json_path = Path(path.dirname(path.realpath(__file__))) / '..' / 'mock' / 'jsons' / 'lt_users.json'
+    json_path = Path(path.dirname(path.realpath(__file__))) / '..' / 'sandboxes' / 'jsons' / 'lt_users.json'
 
     with open(json_path) as json_file:
         for user_dict in json.load(json_file):
