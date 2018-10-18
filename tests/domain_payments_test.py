@@ -326,15 +326,20 @@ def test_generate_transaction_file_has_number_of_transactions_in_payment_info(ap
 @pytest.mark.standalone
 def test_generate_transaction_file_has_control_sum_in_payment_info(app):
     # Given
-    offerer = create_offerer(iban='CF13QSDFGH456789', bic='QSDFGH8Z555', idx=1)
     user = create_user()
-    venue = create_venue(offerer, idx=4)
-    stock = create_stock_from_offer(create_thing_offer(venue))
-    booking = create_booking(user, stock)
+    offerer1 = create_offerer(iban='CF13QSDFGH456789', bic='QSDFGH8Z555', idx=1)
+    offerer2 = create_offerer(iban=None, bic=None, idx=2)
+    venue1 = create_venue(offerer1, idx=3)
+    venue2 = create_venue(offerer2, idx=4)
+    stock1 = create_stock_from_offer(create_thing_offer(venue1))
+    stock2 = create_stock_from_offer(create_thing_offer(venue2))
+    booking1 = create_booking(user, stock1)
+    booking2 = create_booking(user, stock2)
 
     payments = [
-        create_payment(booking, offerer, Decimal(10), idx=7),
-        create_payment(booking, offerer, Decimal(20), idx=8),
+        create_payment(booking1, offerer1, Decimal(10), idx=7),
+        create_payment(booking1, offerer1, Decimal(20), idx=8),
+        create_payment(booking2, offerer2, Decimal(30), idx=9)
     ]
 
     # When

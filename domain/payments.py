@@ -44,8 +44,8 @@ def filter_out_already_paid_for_bookings(booking_reimbursements: List[BookingRei
 
 def generate_transaction_file(payments: List[Payment], pass_culture_iban: str, pass_culture_bic: str,
                               message_id: str) -> str:
-    total_amount = sum([payment.amount for payment in payments])
     payments_with_iban = sorted(filter(lambda x: x.iban, payments), key=operator.attrgetter('iban'))
+    total_amount = sum([payment.amount for payment in payments_with_iban])
     payment_information = [_extract_payment_information(list(grouped_payments)) for iban, grouped_payments in
                            itertools.groupby(payments_with_iban, lambda x: x.iban)]
     now = datetime.utcnow()
