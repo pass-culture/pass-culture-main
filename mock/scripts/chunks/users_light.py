@@ -1,4 +1,17 @@
 """ users light """
+
+admin_user_mock = {
+    "canBookFreeOffers": False,
+    "departementCode": "93",
+    "email": "pctest.admin.1@btmx.fr",
+    "firstName": "PC Test",
+    "isAdmin": True,
+    "lastName": "Admin 1",
+    "password": "pctest.Admin.1",
+    "postalCode": "93100",
+    "publicName": "PC Test Admin 1",
+}
+
 user_mocks = [
     {
         "email": "pctest.jeune.93@btmx.fr",
@@ -36,15 +49,5 @@ user_mocks = [
         "postalCode": "93100",
         "publicName": "PC Test Pro 2",
     },
-    {
-        "canBookFreeOffers": False,
-        "departementCode": "93",
-        "email": "pctest.admin.1@btmx.fr",
-        "firstName": "PC Test",
-        "isAdmin": True,
-        "lastName": "Admin 1",
-        "password": "pctest.Admin.1",
-        "postalCode": "93100",
-        "publicName": "PC Test Admin 1",
-    }
+    admin_user_mock
 ]

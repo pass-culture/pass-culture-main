@@ -1,15 +1,20 @@
-import json
+""" test utils """
 import random
 import string
 from datetime import datetime, timedelta, timezone
-from os import path
-from pathlib import Path
 from unittest.mock import Mock
-
 import requests as req
 from postgresql_audit.flask import versioning_manager
 
-from models import Thing, Deposit, UserOfferer, Recommendation, RightsType, Mediation, EventType, ThingType
+from mock.scripts.chunks.users_light import admin_user_mock
+from models import Deposit,\
+                   EventType,\
+                   Mediation,\
+                   Recommendation,\
+                   RightsType,\
+                   Thing,\
+                   ThingType,\
+                   UserOfferer
 from models.booking import Booking
 from models.event import Event
 from models.event_occurrence import EventOccurrence
@@ -170,7 +175,7 @@ def req_with_auth(email=None, password=None, headers={'origin': 'http://localhos
     request = req.Session()
     request.headers = headers
     if email is None:
-        request.auth = ('pctest.admin.1@btmx.fr', 'pctest.admin.1')
+        request.auth = (admin_user_mock['email'], admin_user_mock['password'])
     elif password is not None:
         request.auth = (email, password)
     return request
