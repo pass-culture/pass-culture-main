@@ -67,6 +67,6 @@ def do_send_payments(payments: List[Payment], pass_culture_iban: str, pass_cultu
             logger.error('Error while sending payment transaction email to MailJet', e)
         else:
             for payment in payments:
-                payment.paymentTransactionId = message_id
+                payment.transactionMessageId = message_id
                 payment.setStatus(TransactionStatus.SENT)
             PcObject.check_and_save(*payments)

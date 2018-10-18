@@ -45,7 +45,9 @@ class Payment(PcObject, Model):
 
     author = Column(String(27), nullable=False)
 
-    paymentTransactionId = Column(String(50), nullable=True)
+    transactionMessageId = Column(String(50), nullable=True)
+
+    transactionPaymentInfoId = Column(String(50), nullable=True)
 
     def setStatus(self, status: TransactionStatus, detail: str=None):
         payment_status = PaymentStatus()
