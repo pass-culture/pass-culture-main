@@ -4,6 +4,7 @@ from datetime import datetime
 from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
 
+from domain.cancel_soft_delete_and_invalidate import invalidate_recommendations_if_deactivating_object
 from models.api_errors import ApiErrors
 from models.mediation import Mediation
 from models.pc_object import PcObject
@@ -59,8 +60,6 @@ def update_mediation(mediation_id):
     mediation = Mediation.query.filter_by(id=dehumanize(mediation_id)).first()
     data = request.json
     mediation.populateFromDict(data)
-    if 'isActive' in data and not data['isActive']:
-        for recommendation in mediation.recommendations:
-            recommendation.validUntilDate = datetime.utcnow()
+    invalidate_recommendations_if_deactivating_object(data, mediation.recommendations)
     PcObject.check_and_save(mediation)
     return jsonify(mediation._asdict()), 200

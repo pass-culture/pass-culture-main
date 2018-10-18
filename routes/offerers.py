@@ -5,6 +5,7 @@ from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
 
 from domain.admin_emails import maybe_send_offerer_validation_email
+from domain.cancel_soft_delete_and_invalidate import invalidate_recommendations_if_deactivating_object
 from domain.reimbursement import find_all_booking_reimbursement
 from models import Offerer, PcObject, RightsType
 from models.venue import create_digital_venue
@@ -108,9 +109,8 @@ def patch_offerer(offererId):
     check_valid_edition(data)
     offerer = Offerer.query.filter_by(id=dehumanize(offererId)).first()
     offerer.populateFromDict(data, skipped_keys=['validationToken'])
-    if 'isActive' in data and not data['isActive']:
-        for recommendation in find_all_recommendations_for_offerer(offerer):
-            recommendation.validUntilDate = datetime.utcnow()
+    recommendations = find_all_recommendations_for_offerer(offerer)
+    invalidate_recommendations_if_deactivating_object(data, recommendations)
     PcObject.check_and_save(offerer)
     return jsonify(offerer._asdict(include=OFFERER_INCLUDES)), 200
 

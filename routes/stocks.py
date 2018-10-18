@@ -2,7 +2,7 @@
 from flask import current_app as app, jsonify, request
 from flask_login import current_user
 
-from domain.cancel_and_soft_delete import cancel_bookings
+from domain.cancel_soft_delete_and_invalidate import cancel_bookings
 from domain.stocks import find_offerer_for_new_stock
 from domain.user_emails import send_batch_cancellation_emails_to_users, send_batch_cancellation_email_to_offerer
 from models.event import Event
