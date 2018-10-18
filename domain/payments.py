@@ -1,5 +1,6 @@
 import itertools
 import operator
+import uuid
 from datetime import datetime, timedelta
 from io import BytesIO
 from typing import List
@@ -10,7 +11,6 @@ from lxml import etree
 from domain.reimbursement import BookingReimbursement
 from models.payment import Payment
 from models.payment_status import TransactionStatus
-from utils.human_ids import humanize
 
 
 class InvalidTransactionXML(Exception):
@@ -50,10 +50,20 @@ def filter_out_already_paid_for_bookings(booking_reimbursements: List[BookingRei
 
 def generate_transaction_file(payments: List[Payment], pass_culture_iban: str, pass_culture_bic: str,
                               message_id: str) -> str:
-    payments_with_iban = sorted(filter(lambda x: x.iban, payments), key=operator.attrgetter('iban'))
+    payments_with_iban = sorted(filter(lambda x: x.iban, payments), key=lambda x: (x.iban, x.bic))
     total_amount = sum([payment.amount for payment in payments_with_iban])
-    payment_information = [_extract_payment_information(list(grouped_payments)) for iban, grouped_payments in
-                           itertools.groupby(payments_with_iban, lambda x: x.iban)]
+
+    payments_info_by_iban = []
+    payments_by_iban = itertools.groupby(payments_with_iban, lambda x: (x.iban, x.bic))
+    for (iban, bic), grouped_payments in payments_by_iban:
+        info = {
+            'iban': iban,
+            'bic': bic,
+            'unique_id': uuid.uuid4().hex,
+            'amount': sum([payment.amount for payment in grouped_payments])
+        }
+        payments_info_by_iban.append(info)
+
     now = datetime.utcnow()
 
     return render_template(
@@ -61,8 +71,8 @@ def generate_transaction_file(payments: List[Payment], pass_culture_iban: str, p
         message_id=message_id,
         creation_datetime=now.isoformat(),
         requested_execution_datetime=datetime.strftime(now + timedelta(days=7), "%Y-%m-%d"),
-        payments_by_iban=payment_information,
-        number_of_transactions=len(payment_information),
+        payments_info_by_iban=payments_info_by_iban,
+        number_of_transactions=len(payments_info_by_iban),
         total_amount=total_amount,
         pass_culture_iban=pass_culture_iban,
         pass_culture_bic=pass_culture_bic
@@ -78,14 +88,3 @@ def validate_transaction_file(transaction_file: str):
     xml_doc = etree.parse(xml)
 
     xsd_schema.assertValid(xml_doc)
-
-
-def _extract_payment_information(payments: List[Payment]):
-    amount = sum([payment.amount for payment in payments])
-    first_payment = next(iter(payments))
-    payment_id = first_payment.id
-    venue_id = first_payment.booking.stock.resolvedOffer.venue.id
-    offerer_id = first_payment.booking.stock.resolvedOffer.venue.managingOfferer.id
-    unique_id = '{}_{}_{}'.format(humanize(offerer_id), humanize(venue_id), humanize(payment_id))
-
-    return {'iban': first_payment.iban, 'bic': first_payment.bic, 'unique_id': unique_id, 'amount': amount}

@@ -7,6 +7,7 @@ from sqlalchemy import BigInteger, \
     String, \
     Numeric, \
     Text, CheckConstraint
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
 from models.db import Model
@@ -47,7 +48,7 @@ class Payment(PcObject, Model):
 
     transactionMessageId = Column(String(50), nullable=True)
 
-    transactionPaymentInfoId = Column(String(50), nullable=True)
+    transactionEndToEndId = Column(UUID(), nullable=True)
 
     def setStatus(self, status: TransactionStatus, detail: str=None):
         payment_status = PaymentStatus()

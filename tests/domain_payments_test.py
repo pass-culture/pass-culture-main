@@ -1,6 +1,8 @@
 from datetime import datetime, timedelta
 from decimal import Decimal
 from io import BytesIO
+from unittest.mock import patch
+from uuid import UUID
 
 import pytest
 from freezegun import freeze_time
@@ -13,7 +15,6 @@ from domain.reimbursement import BookingReimbursement, ReimbursementRules
 from models import Offer, Venue, Booking
 from models.payment import Payment
 from models.payment_status import TransactionStatus
-from utils.human_ids import humanize
 from utils.test_utils import create_booking, create_stock, create_user, create_offerer, create_payment, \
     create_stock_from_offer, create_thing_offer, create_venue
 
@@ -597,24 +598,34 @@ def test_generate_transaction_file_has_amount_in_credit_transfer_transaction_inf
 
 
 @pytest.mark.standalone
-def test_generate_transaction_file_has_unique_ids_in_credit_transfer_transaction_info(app):
+@patch('domain.payments.uuid.uuid4')
+def test_generate_transaction_file_has_hexadecimal_uuids_as_end_to_end_ids_in_transaction_info(uuid4, app):
     # Given
-    offerer = create_offerer(name='first offerer', iban='CF13QSDFGH456789', bic='QSDFGH8Z555', idx=1)
     user = create_user()
-    venue = create_venue(offerer, idx=4)
-    stock = create_stock_from_offer(create_thing_offer(venue))
-    booking = create_booking(user, stock)
+    offerer1 = create_offerer(name='first offerer', iban='CF13QSDFGH456789', bic='QSDFGH8Z555', idx=1)
+    offerer2 = create_offerer(name='second offerer', iban='DE14QSDFGH456789', bic='MLKJHG8Z555', idx=1)
+    venue1 = create_venue(offerer1, idx=4)
+    venue2 = create_venue(offerer2, idx=4)
+    stock1 = create_stock_from_offer(create_thing_offer(venue1))
+    stock2 = create_stock_from_offer(create_thing_offer(venue2))
+    booking1 = create_booking(user, stock1)
+    booking2 = create_booking(user, stock2)
+    uuid1 = UUID(hex='abcd1234abcd1234abcd1234abcd1234', version=4)
+    uuid2 = UUID(hex='cdef5678cdef5678cdef5678cdef5678', version=4)
+    uuid4.side_effect = [uuid1, uuid2]
 
     payments = [
-        create_payment(booking, offerer, Decimal(10), idx=7),
+        create_payment(booking1, offerer1, Decimal(10), idx=7),
+        create_payment(booking2, offerer2, Decimal(20), idx=7)
     ]
 
     # When
     xml = generate_transaction_file(payments, 'BD12AZERTY123456', 'AZERTY9Q666', MESSAGE_ID)
 
     # Then
-    node_id = find_node('//ns:PmtInf/ns:CdtTrfTxInf/ns:PmtId/ns:EndToEndId', xml)
-    assert node_id == '{}_{}_{}'.format(humanize(1), humanize(4), humanize(7))
+    nodes_id = find_all_nodes('//ns:PmtInf/ns:CdtTrfTxInf/ns:PmtId/ns:EndToEndId', xml)
+    assert nodes_id[0] == uuid1.hex
+    assert nodes_id[1] == uuid2.hex
 
 
 @pytest.mark.standalone

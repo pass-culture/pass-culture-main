@@ -38,7 +38,7 @@
                 </FinInstnId>
             </DbtrAgt>
             <ChrgBr>SLEV</ChrgBr>
-            {% for payment in payments_by_iban %}
+            {% for payment in payments_info_by_iban %}
             <CdtTrfTxInf>
                 <PmtId>
                     <EndToEndId>{{ payment['unique_id'] }}</EndToEndId>
