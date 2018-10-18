@@ -1,7 +1,7 @@
 """ event_occurrences """
 from flask import current_app as app, jsonify, request
 
-from domain.cancel_soft_delete_and_invalidate import soft_delete_objects, cancel_bookings
+from domain.discard_pc_objects import soft_delete_objects, cancel_bookings
 from domain.user_emails import send_batch_cancellation_emails_to_users, send_batch_cancellation_email_to_offerer
 from models import Event, EventOccurrence, Offer, PcObject, RightsType, Venue
 from repository import booking_queries

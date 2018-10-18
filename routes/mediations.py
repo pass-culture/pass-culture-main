@@ -4,7 +4,7 @@ from datetime import datetime
 from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
 
-from domain.cancel_soft_delete_and_invalidate import invalidate_recommendations_if_deactivating_object
+from domain.discard_pc_objects import invalidate_recommendations_if_deactivating_object
 from models.api_errors import ApiErrors
 from models.mediation import Mediation
 from models.pc_object import PcObject

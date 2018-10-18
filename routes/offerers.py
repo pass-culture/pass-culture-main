@@ -5,7 +5,7 @@ from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
 
 from domain.admin_emails import maybe_send_offerer_validation_email
-from domain.cancel_soft_delete_and_invalidate import invalidate_recommendations_if_deactivating_object
+from domain.discard_pc_objects import invalidate_recommendations_if_deactivating_object
 from domain.reimbursement import find_all_booking_reimbursement
 from models import Offerer, PcObject, RightsType
 from models.venue import create_digital_venue
