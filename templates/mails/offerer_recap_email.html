@@ -4,10 +4,29 @@
         {% block new_reservation %}{% endblock %}
 
         {% if booking_is_on_event %}
-        <p id="recap">
-            Voici le récapitulatif {% block past_or_future %}{% endblock %}<br/> (total {{ number_of_bookings }}) pour {{ stock_name }}{% if stock_date_time %}<br/> le {{ stock_date_time }}{% endif %},<br/>{% if venue.isVirtual %}Offre numérique proposée par {{ venue.name }}{% else %} proposé par {{ venue.name }} (Adresse : {{ venue.address }}, {{ venue.postalCode }} {{ venue.city }}){% endif %}.
-        </p>
-        {% block recap %}{% endblock %}
+            {% block recap %}
+                <p id="recap">
+                    Voici le récapitulatif {% if is_final %}final des réservations :{% else %}des réservations à ce jour :{% endif %}<br/> (total {{ number_of_bookings }}) pour {{ stock_name }}{% if stock_date_time %}<br/> le {{ stock_date_time }}{% endif %},<br/>{% if venue.isVirtual %}Offre numérique proposée par {{ venue.name }}{% else %} proposé par {{ venue.name }} (Adresse : {{ venue.address }}, {{ venue.postalCode }} {{ venue.city }}){% endif %}.
+                </p>
+                {% if stock_bookings %}
+                <table id="recap-table">
+                    <tr>
+                        <th>Nom ou pseudo</th>
+                        <th>Email</th>
+                        <th>Code réservation</th>
+                    </tr>
+                    {% for booking in stock_bookings %}
+                    <tr>
+                        <td>{{ booking.user.publicName }}</td>
+                        <td>{{ booking.user.email }}</td>
+                        <td>{{ booking.token }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+                {% else %}
+                <p id="no-recap">Aucune réservation</p>
+                {% endif %}
+            {% endblock %}
         {% endif %}
     </body>
 </html>
