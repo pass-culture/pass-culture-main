@@ -54,3 +54,40 @@ def find_offerers_with_user_venues_and_bookings_by_departement(department):
         query = query.filter(Venue.departementCode == department)
     result = query.order_by(Offerer.id).all()
     return result
+
+
+def find_all_offerers_with_managing_user_information():
+    query = db.session.query(Offerer.id, Offerer.name, Offerer.siren, Offerer.postalCode, Offerer.city, User.firstName, User.lastName, User.email, User.phoneNumber, User.postalCode) \
+        .join(UserOfferer) \
+        .join(User)
+
+    result = query.order_by(Offerer.name, User.email).all()
+    return result
+
+
+def find_all_offerers_with_managing_user_information_and_venue():
+    query = db.session.query(Offerer.id, Offerer.name, Offerer.siren, Offerer.postalCode, Offerer.city, Venue.name, Venue.bookingEmail, Venue.postalCode,  User.firstName, User.lastName, User.email, User.phoneNumber, User.postalCode) \
+        .join(UserOfferer) \
+        .join(User) \
+        .join(Venue)
+
+    result = query.order_by(Offerer.name, Venue.name, User.email).all()
+    return result
+
+
+def find_all_offerers_with_managing_user_information_and_not_virtual_venue():
+    query = db.session.query(Offerer.id, Offerer.name, Offerer.siren, Offerer.postalCode, Offerer.city, Venue.name, Venue.bookingEmail, Venue.postalCode,  User.firstName, User.lastName, User.email, User.phoneNumber, User.postalCode) \
+        .join(UserOfferer) \
+        .join(User) \
+        .join(Venue)
+
+    result = query.filter(Venue.isVirtual == False).order_by(Offerer.name, Venue.name, User.email).all()
+    return result
+
+
+def find_all_offerers_with_venue():
+    query = db.session.query(Offerer.id, Offerer.name, Venue.id, Venue.name, Venue.bookingEmail, Venue.postalCode, Venue.isVirtual) \
+        .join(Venue)
+
+    result = query.order_by(Offerer.name, Venue.name, Venue.id).all()
+    return result
