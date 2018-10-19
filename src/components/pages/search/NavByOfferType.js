@@ -8,7 +8,7 @@ const NavByOfferType = ({ pagination, title, typeSublabels }) => (
     <h2 className="is-italic fs15">
       {title}
     </h2>
-    <div className="list flex-columns wrap-2">
+    <div className="pc-list flex-columns wrap-2">
       {typeSublabels.map(typeSublabel => (
         <button
           key={typeSublabel}

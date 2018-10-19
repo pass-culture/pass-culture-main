@@ -61,7 +61,7 @@ class MesInformations extends React.PureComponent {
         <h3 className="dotted-bottom-primary is-primary-text is-uppercase pb6 px12 fs15">
           <span className="is-italic">Mes Informations</span>
         </h3>
-        <div className="px12 list">{fields.map(this.renderInformation)}</div>
+        <div className="px12 pc-list">{fields.map(this.renderInformation)}</div>
       </div>
     )
   }

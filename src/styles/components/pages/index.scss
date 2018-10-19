@@ -42,11 +42,11 @@
     opacity: 1;
   }
 
-  #mes-informations .list {
+  #mes-informations .pc-list {
     background-color: $white;
   }
 
-  #mes-informations .list .item:last-child {
+  #mes-informations .pc-list .item:last-child {
     @extend .no-dotted-border;
   }
 }

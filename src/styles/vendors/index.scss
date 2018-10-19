@@ -8,6 +8,13 @@
 // overrides
 @import './bulma-with-overrides.scss';
 
+// quick fix Bulma removed from shared
+// .list {
+//   background-color: inherit;
+//   border-radius: inherit;
+//   box-shadow: inherit;
+// }
+
 /* antd | https://ant.design/docs/react/introduce */
 @import './antd-base.scss';
 @import './antd-select.scss';

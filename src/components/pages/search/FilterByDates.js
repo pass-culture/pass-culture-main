@@ -61,7 +61,7 @@ class FilterByDates extends PureComponent {
         {/* FIXME: le scroll sous ios est pas terrible
         du fait que le input soit cliquable */}
         <div className="pc-scroll-horizontal is-relative is-full-width pb18">
-          <div className="list flex-columns pl18 pr18">
+          <div className="pc-list flex-columns pl18 pr18">
             {checkboxes.map(({ label, value }) => (
               <label
                 key={value}
