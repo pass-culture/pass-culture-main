@@ -133,4 +133,5 @@ def test_find_all_offerers_with_venue(app):
     assert len(offerers[0]) == 7
     assert offerer1.id == offerers[0][0]
     assert venue2.bookingEmail in offerers[1].bookingEmail
+    assert venue1.bookingEmail in offerers[0].bookingEmail
     

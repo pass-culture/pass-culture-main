@@ -89,5 +89,5 @@ def find_all_offerers_with_venue():
     query = db.session.query(Offerer.id, Offerer.name, Venue.id, Venue.name, Venue.bookingEmail, Venue.postalCode, Venue.isVirtual) \
         .join(Venue)
 
-    result = query.order_by(Offerer.name, Venue.name).all()
+    result = query.order_by(Offerer.name, Venue.name, Venue.id).all()
     return result
