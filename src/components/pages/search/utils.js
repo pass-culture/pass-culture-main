@@ -8,6 +8,7 @@ import get from 'lodash.get'
 import moment from 'moment'
 
 import { getTimezone } from '../../../utils/timezone'
+import { isEmpty } from '../../../utils/strings'
 
 const filterIconByState = filters => (filters ? 'filter' : 'filter-active')
 
@@ -58,7 +59,12 @@ export const searchResultsTitle = (
     const resultString = pluralize(count, 'résultats')
     const keywordsString = decodeURI(keywords || '')
     const typesString = decodeURI(queryParams.types || '')
-    resultTitle = `"${keywordsString}" ${typesString}: ${resultString}`
+
+    if (isEmpty(keywordsString)) {
+      resultTitle = ''
+    } else {
+      resultTitle = `"${keywordsString}" ${typesString}: ${resultString}`
+    }
   }
 
   return resultTitle
@@ -75,6 +81,7 @@ export const getRecommendationDateString = offer => {
   if (offer.eventId === null) return 'permanent'
 
   const departementCode = offer.venue.departementCode
+  // TODO LINTER :  const departementCode = {...offer.venue}
   const tz = getTimezone(departementCode)
 
   const fromDate = offer.dateRange[0]

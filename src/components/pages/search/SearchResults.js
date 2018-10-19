@@ -19,6 +19,7 @@ const SearchResults = ({
     pagination.windowQuery,
     withNavigation
   )
+
   return (
     <div className="search-results">
       <h2

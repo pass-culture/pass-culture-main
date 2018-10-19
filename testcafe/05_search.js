@@ -119,3 +119,6 @@ test('Je clique sur la vignette Lire et je suis redirigé vers la page de résul
 // Le bouton submit search keyword est désactivé si rien n'est écrit
 
 // Après une navigation par type, si on ouvre le filtre puis quand clique sur le bouton back, le filtre se referme est la recherche est réinitialisée.
+
+// ****** SEARCH RESULTS ********* //
+// Tronquer le titre dans le résultat de recherche...
