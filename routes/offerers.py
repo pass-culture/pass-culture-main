@@ -7,9 +7,10 @@ from domain.reimbursement import find_all_booking_reimbursement
 from models import Offerer, PcObject, RightsType
 from models.venue import create_digital_venue
 from repository.booking_queries import find_offerer_bookings
-from repository.user_offerer_queries import filter_query_where_user_is_user_offerer_and_is_validated
+from repository.user_offerer_queries import filter_query_where_user_is_user_offerer_and_is_validated, \
+    filter_query_where_user_is_user_offerer_and_is_not_validated
 from utils.human_ids import dehumanize
-from utils.includes import PRO_BOOKING_INCLUDES, OFFERER_INCLUDES
+from utils.includes import PRO_BOOKING_INCLUDES, OFFERER_INCLUDES, NOT_VALIDATED_OFFERER_INCLUDES
 from utils.mailing import MailServiceException
 from utils.rest import ensure_current_user_has_rights, \
     expect_json_data, \
@@ -24,16 +25,20 @@ from validation.offerers import check_valid_edition
 @login_required
 def list_offerers():
     query = Offerer.query
+    is_validated = request.args.get('validated', 'true').lower() == 'true'
 
     if not current_user.isAdmin:
-        query = filter_query_where_user_is_user_offerer_and_is_validated(query, current_user)
+        if is_validated:
+            query = filter_query_where_user_is_user_offerer_and_is_validated(query, current_user)
+        else:
+            query = filter_query_where_user_is_user_offerer_and_is_not_validated(query, current_user)
 
     keywords = request.args.get('keywords')
     if keywords is not None:
         query = query.filter(get_keywords_filter([Offerer], keywords))
 
     return handle_rest_get_list(Offerer,
-                                include=OFFERER_INCLUDES,
+                                include=OFFERER_INCLUDES if (is_validated or current_user.isAdmin) else NOT_VALIDATED_OFFERER_INCLUDES,
                                 order_by=Offerer.name,
                                 page=request.args.get('page'),
                                 paginate=10,
