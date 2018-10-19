@@ -13,7 +13,7 @@ ProfilePicture.defaultProps = {
 }
 
 ProfilePicture.propTypes = {
-  colored: PropTypes.bool,
+  colored: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
 }
 
 export default ProfilePicture
