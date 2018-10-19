@@ -1,0 +1,24 @@
+{
+  "pages": [
+    {
+      "delay": 10000,
+      "title": "00_home",
+      "url": "beta"
+    },
+    {
+      "delay": 0,
+      "title": "01_signup",
+      "url": "inscription"
+    },
+    {
+      "delay": 0,
+      "title": "02_signin",
+      "url": "connexion"
+    },
+    {
+      "delay": 0,
+      "title": "09_legal",
+      "url": "mentions-legales"
+    }
+  ]
+}

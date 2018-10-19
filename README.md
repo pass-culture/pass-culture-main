@@ -22,6 +22,8 @@ Les variables disponibles pour l'application sont décrites dans le fichier `src
 
 #### Tests Unitaires (Jest/Enzyme)
 
+Pour ajouter un test visuel, voir le fichier `testcafe/visuals.json`
+
 Lancer tous les tests
 ```bash
 yarn test:unit
@@ -35,6 +37,8 @@ Lancer un seul fichier en mode watch
 # yarn test:unit ./path/to/file.spec.js --watch
 ```
 
+
+
 #### Tests Fonctionnels (Testcafe)
 
 Lancer tous les tests
@@ -46,6 +50,20 @@ Lancer un seul fichier en ligne de commande depuis un environnement local
 ```bash
 ./node_modules/.bin/testcafe chrome ./testcafe/02_signin.js --env=local
 ```
+
+#### Tests Visuels (Testcafe/RessembleJS)
+
+Lancer tous les tests
+```bash
+yarn test:visual
+```
+> Cette commande permet comparer et créer les screenshots manquants
+
+Force la mise à jour des images
+```bash
+yarn test:visual --force
+```
+> Cette commande écrase et remplace tous les screenshots de tests
 
 ## Upgrade de la version
 

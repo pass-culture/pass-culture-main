@@ -5,7 +5,9 @@
 
 # testing
 /coverage
-/testcafe/screenshots/
+/testcafe/screenshots/thumbnails
+/testcafe/screenshots/*-diff.png
+/testcafe/screenshots/*-actual.png
 
 # production
 /build
