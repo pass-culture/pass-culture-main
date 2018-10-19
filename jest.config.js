@@ -1,4 +1,12 @@
 module.exports = {
+  collectCoverageFrom: [
+    // "**/*.{js,jsx}",
+    '<rootDir>/src/**.{js,jsx}',
+    // "!**/node_modules/**",
+    '!<rootDir>/node_modules/',
+    '!<rootDir>/build/',
+  ],
+
   setupFiles: ['<rootDir>/jest.setup.js'],
   testEnvironment: 'node',
   testMatch: ['**/?(*.)+(spec).js?(x)'],
@@ -10,5 +18,5 @@ module.exports = {
     '<rootDir>/node_modules/',
     '[/\\\\]node_modules[/\\\\].+\\.(js|jsx|mjs)$',
   ],
-  verbose: false,
+  verbose: true,
 }
