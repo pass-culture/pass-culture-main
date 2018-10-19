@@ -122,6 +122,7 @@ class SearchFilter extends Component {
 
   render() {
     const { isVisible } = this.props
+
     return (
       <div className="is-relative is-clipped">
         <Transition in={isVisible} timeout={transitionDelay}>

@@ -1,4 +1,3 @@
-/* eslint-disable */
 import get from 'lodash.get'
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
@@ -13,6 +12,8 @@ import {
   withPagination,
 } from 'pass-culture-shared'
 
+import renderPageFooter from './search/Footer'
+import renderPageHeader from './search/Header'
 import NavByOfferType from './search/NavByOfferType'
 import NavResultsHeader from './search/NavResultsHeader'
 import SearchFilter from './search/SearchFilter'
@@ -21,22 +22,12 @@ import filterIconByState, {
   getDescriptionForSublabel,
   INITIAL_FILTER_PARAMS,
   isSearchFiltersAdded,
-  translateUrlParamsToApiParams,
+  translateBrowserUrlToApiUrl,
 } from './search/utils'
 import Main from '../layout/Main'
-import NavigationFooter from '../layout/NavigationFooter'
+
 import { selectRecommendations } from '../../selectors'
 import selectTypeSublabels, { selectTypes } from '../../selectors/selectTypes'
-
-const renderPageHeader = searchPageTitle => (
-  <header className="no-dotted-border">
-    <h1 className="is-normal fs19">{searchPageTitle}</h1>
-  </header>
-)
-
-const renderPageFooter = () => (
-  <NavigationFooter theme="white" className="dotted-top-red" />
-)
 
 class SearchPage extends PureComponent {
   constructor(props) {
@@ -48,27 +39,9 @@ class SearchPage extends PureComponent {
     }
   }
 
-  onSubmit = event => {
-    const { pagination } = this.props
-    const { value } = event.target.elements.keywords
-
-    event.preventDefault()
-
-    this.setState({ withFilter: false })
-
-    pagination.change(
-      {
-        'mots-cles': value === '' ? null : value,
-      },
-      {
-        isClearingData: value !== '',
-        pathname: '/recherche/resultats',
-      }
-    )
-  }
-
   handleDataRequest = (handleSuccess = () => {}, handleFail = () => {}) => {
     const { dispatch, location, match, pagination, search } = this.props
+    // pagination props comes from the hoc withPagination from pass-culture-shared folder
     const { apiQueryString, goToNextPage, page } = pagination
     const { withFilter } = this.state
 
@@ -107,13 +80,7 @@ class SearchPage extends PureComponent {
     history.push(`${location.pathname}?page=${page}&${windowQueryString}`)
   }
 
-  onKeywordsChange = event => {
-    this.setState({ keywordsValue: event.target.value })
-  }
-
   onBackToSearchHome = (pathname, pagination, keywordsKey) => {
-    // const { pagination } = this.props
-    // const { keywordsKey } = this.state
     this.setState({
       // https://stackoverflow.com/questions/37946229/how-do-i-reset-the-defaultvalue-for-a-react-input
       // WE NEED TO MAKE THE PARENT OF THE KEYWORD INPUT
@@ -123,12 +90,10 @@ class SearchPage extends PureComponent {
       keywordsValue: '',
       withFilter: false,
     })
-
-    const keywordsValue = pagination.windowQuery['mots-cles']
     pagination.change(
       {
-        'mots-cles': null,
         categories: null,
+        'mots-cles': null,
       },
       {
         pathname,
@@ -136,7 +101,37 @@ class SearchPage extends PureComponent {
     )
   }
 
-  onKeywordsEraseClick = (pathname, pagination, keywordsKey) => {
+  onSubmit = event => {
+    const { pagination } = this.props
+    const { value } = event.target.elements.keywords
+
+    event.preventDefault()
+
+    this.setState({ withFilter: false })
+
+    pagination.change(
+      {
+        'mots-cles': value === '' ? null : value,
+      },
+      {
+        isClearingData: value !== '',
+        pathname: '/recherche/resultats',
+      }
+    )
+  }
+
+  onClickOpenCloseFilterDiv = withFilter => () => {
+    this.setState({ withFilter: !withFilter })
+  }
+  // onClick={() => this.setState(prev => ({ withFilter: !prev.withFilter }))}
+
+  onKeywordsChange = event => {
+    this.setState({
+      keywordsValue: event.target.value,
+    })
+  }
+
+  onKeywordsEraseClick = (pathname, pagination, keywordsKey) => () => {
     this.setState({
       // https://stackoverflow.com/questions/37946229/how-do-i-reset-the-defaultvalue-for-a-react-input
       // WE NEED TO MAKE THE PARENT OF THE KEYWORD INPUT
@@ -145,8 +140,6 @@ class SearchPage extends PureComponent {
       keywordsKey: keywordsKey + 1,
       keywordsValue: '',
     })
-
-    const keywordsValue = pagination.windowQuery['mots-cles']
     pagination.change(
       {
         'mots-cles': null,
@@ -167,36 +160,39 @@ class SearchPage extends PureComponent {
       typeSublabelsAndDescription,
     } = this.props
 
-    const onResultPage = match.params.view === 'resultats'
-    const searchPageTitle = onResultPage ? 'Recherche : résultats' : 'Recherche'
+    const { keywordsKey, keywordsValue, withFilter } = this.state
 
     const { windowQuery } = pagination
-    const { keywordsKey, keywordsValue, withFilter } = this.state
+
+    // ************************* HELPERS ****************************
+    const onResultPage = match.params.view === 'resultats'
     const keywords = windowQuery['mots-cles']
+
+    const backButton = onResultPage && {
+      onClick: () =>
+        this.onBackToSearchHome('/recherche', pagination, keywordsKey),
+    }
 
     const filtersActive = isSearchFiltersAdded(
       INITIAL_FILTER_PARAMS,
       windowQuery
     )
+
     const isfilterIconActive = filterIconByState(filtersActive)
     const filtersToggleButtonClass = (withFilter && 'filters-are-opened') || ''
 
-    // Get label and description for nav results header
-    let category
-    let description
-    category = decodeURIComponent(pagination.windowQuery.categories)
+    const isOneCharInKeywords = get(keywordsValue, 'length') > 0
 
+    // ************************* DATAS **************************** //
+    const searchPageTitle = onResultPage ? 'Recherche : résultats' : 'Recherche'
+
+    let description
+    const category = decodeURIComponent(pagination.windowQuery.categories)
     if (location.pathname.indexOf('/resultats/') !== -1) {
       description = getDescriptionForSublabel(
         category,
         typeSublabelsAndDescription
       )
-    }
-
-    const isOneCharInKeywords = get(keywordsValue, 'length') > 0
-    const backButton = onResultPage && {
-      onClick: () =>
-        this.onBackToSearchHome('/recherche', pagination, keywordsKey),
     }
 
     return (
@@ -208,15 +204,17 @@ class SearchPage extends PureComponent {
         pageTitle={searchPageTitle}
         name="search"
         footer={renderPageFooter}
-        closeSearchButton>
+        closeSearchButton
+      >
         <form onSubmit={this.onSubmit}>
           <div className="flex-columns items-start">
             <div
               id="search-page-keywords-field"
-              className="field has-addons flex-columns flex-1">
+              className="field has-addons flex-columns flex-1"
+            >
               <p className="control has-icons-right flex-1" key={keywordsKey}>
                 <input
-                  autoFocus
+                  // FIXME autoFocus Github Issue #867
                   id="keywords"
                   defaultValue={keywordsValue}
                   className="input search-input"
@@ -224,50 +222,53 @@ class SearchPage extends PureComponent {
                   type="text"
                   onChange={this.onKeywordsChange}
                 />
-
                 {isOneCharInKeywords && (
                   <span className="icon is-small is-right">
                     <button
                       type="button"
                       className="no-border no-background is-red-text"
                       id="refresh-keywords-button"
-                      onClick={() =>
-                        this.onKeywordsEraseClick(
-                          '/recherche/resultats',
-                          pagination,
-                          keywordsKey
-                        )
-                      }>
+                      onClick={this.onKeywordsEraseClick(
+                        '/recherche/resultats',
+                        pagination,
+                        keywordsKey
+                      )}
+                    >
                       <span aria-hidden className="icon-close" title="" />
                     </button>
                   </span>
                 )}
               </p>
+
               <div className="control flex-0">
                 <button
                   className="button is-rounded is-medium"
                   id="keywords-search-button"
                   type="submit"
-                  disabled={!isOneCharInKeywords}>
+                  disabled={!isOneCharInKeywords}
+                >
                   Chercher
                 </button>
               </div>
             </div>
-
-            <div
-              id="search-filter-menu-toggle-button"
-              className={`flex-0 text-center flex-rows flex-center pb12 ${filtersToggleButtonClass}`}>
-              <button
-                type="button"
-                className="no-border no-background no-outline "
-                onClick={() => this.setState({ withFilter: !withFilter })}>
-                <Icon
-                  svg={`ico-${withFilter ? 'chevron-up' : isfilterIconActive}`}
-                />
-              </button>
-            </div>
           </div>
         </form>
+        {/* ************************* BOUTON OPEN CLOSE FILTER ************************* */}
+
+        <div
+          id="search-filter-menu-toggle-button"
+          className={`flex-0 text-center flex-rows flex-center pb12 ${filtersToggleButtonClass}`}
+        >
+          <button
+            type="button"
+            className="no-border no-background no-outline "
+            onClick={this.onClickOpenCloseFilterDiv(withFilter)}
+          >
+            <Icon
+              svg={`ico-${withFilter ? 'chevron-up' : isfilterIconActive}`}
+            />
+          </button>
+        </div>
 
         <SearchFilter isVisible={withFilter} pagination={pagination} />
 
@@ -335,7 +336,7 @@ const mapStateToProps = state => {
   const recommendations = selectRecommendations(state)
   const typeSublabels = selectTypeSublabels(state)
   const typeSublabelsAndDescription = selectTypes(state)
-  const user = state.user
+  const user = { ...state }
   return {
     recommendations,
     typeSublabels,
@@ -351,14 +352,14 @@ export default compose(
     defaultWindowQuery: {
       categories: null,
       date: null,
-      jours: null,
-      'mots-cles': null,
       distance: null,
+      jours: null,
       latitude: null,
       longitude: null,
+      'mots-cles': null,
       orderBy: 'offer.id+desc',
     },
-    windowToApiQuery: translateUrlParamsToApiParams,
+    windowToApiQuery: translateBrowserUrlToApiUrl,
   }),
   connect(mapStateToProps)
 )(SearchPage)

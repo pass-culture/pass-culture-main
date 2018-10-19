@@ -5,7 +5,7 @@ import filterIconByState, {
   INITIAL_FILTER_PARAMS,
   isSearchFiltersAdded,
   searchResultsTitle,
-  translateUrlParamsToApiParams,
+  translateBrowserUrlToApiUrl,
 } from '../utils'
 
 import state from '../../../../mocks/global_state_2_Testing_10_10_18'
@@ -365,8 +365,8 @@ describe('src | components | pages | search | utils', () => {
   })
 })
 
-describe('src | utils | translateUrlParamsToApiParams ', () => {
-  describe('src | utils | translateUrlParamsToApiParams ', () => {
+describe('src | utils | translateBrowserUrlToApiUrl ', () => {
+  describe('src | utils | translateBrowserUrlToApiUrl ', () => {
     it('should return object with french key', () => {
       const queryString = {
         categories: 'Applaudir',
@@ -380,7 +380,7 @@ describe('src | utils | translateUrlParamsToApiParams ', () => {
         days: '1-5',
         keywords: 'fake',
       }
-      expect(translateUrlParamsToApiParams(queryString)).toEqual(expected)
+      expect(translateBrowserUrlToApiUrl(queryString)).toEqual(expected)
     })
   })
 })

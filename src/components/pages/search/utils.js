@@ -112,7 +112,7 @@ const mapWindowToApi = {
   'mots-cles': 'keywords',
 }
 
-export const translateUrlParamsToApiParams = windowQuery =>
+export const translateBrowserUrlToApiUrl = windowQuery =>
   getObjectWithMappedKeys(windowQuery, mapWindowToApi)
 
 export default filterIconByState

@@ -96,6 +96,8 @@ test('Je clique sur la vignette Lire et je suis redirigé vers la page de résul
     .click(searchTypeCheckbox)
 })
 
+// Voir les fonctionnalitées sur https://github.com/betagouv/pass-culture-browser/issues/664
+
 // NAVIGATION PAR FILTRE
 // Je fais apparaître et disparaître le menu de filtres
 // Je peux faire une recherche détaillée

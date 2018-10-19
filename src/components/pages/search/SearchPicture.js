@@ -6,8 +6,7 @@ import { ROOT_PATH } from '../../../utils/config'
 // TODO > span font size is not the same
 
 const SearchPicture = ({ searchType }) => {
-  const searchTypeWithoutSpecialChar = searchType.replace(/É/g, 'E')
-  const src = `${ROOT_PATH}/icons/img-${searchTypeWithoutSpecialChar}.png`
+  const src = `${ROOT_PATH}/icons/img-${searchType}.png`
   const navigation = `Rechercher des offres de type ${searchType}`
   return (
     <div className="search-picture is-relative">
