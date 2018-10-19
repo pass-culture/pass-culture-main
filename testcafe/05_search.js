@@ -12,9 +12,9 @@ const searchTypeCheckbox = Selector('#search-type-checkbox').withText('Lire')
 // const searchResults = Selector('#search-results')
 const resultsTitle = Selector('#results-title')
 
-fixture('O5_01 Recherche | Je ne suis pas connecté·e').page(
-  `${ROOT_PATH}recherche`
-)
+fixture
+  .skip('O5_01 Recherche | Je ne suis pas connecté·e')
+  .page(`${ROOT_PATH}recherche`)
 
 test('Je suis redirigé vers la page /connexion', async t => {
   await t
