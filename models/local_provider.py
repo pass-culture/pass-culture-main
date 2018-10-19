@@ -196,7 +196,6 @@ class LocalProvider(Iterator):
                 obj.venue = self.venueProvider.venue
             PcObject.check_and_save(obj)
         except Exception as e:
-            print("TOTO")
             print('ERROR during updateObject: '
                   + e.__class__.__name__+' '+str(e))
             self.logEvent(LocalProviderEventType.SyncError, e.__class__.__name__)

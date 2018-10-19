@@ -2,7 +2,6 @@ import requests
 from datetime import datetime
 
 from models import ThingType
-from models.db import db
 from models.local_provider import LocalProvider, ProvidableInfo
 from models.offer import Offer
 from models.stock import Stock
@@ -12,7 +11,6 @@ from models.venue import Venue
 DATE_FORMAT = "%d/%m/%Y"
 DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 URL_TITELIVE_WS_STOCKS = "https://stock.epagine.fr/stocks/"
-
 
 
 def make_url(after_isbn_id, last_date_checked, venue_siret):
@@ -57,40 +55,6 @@ class TiteLiveStocks(LocalProvider):
 
     def __init__(self, venueProvider, **options):
         super().__init__(venueProvider, **options)
-        if 'mock' in options and options['mock']:
-            data_root_path = Path(os.path.dirname(os.path.realpath(__file__)))\
-                            / '..' / 'sandboxes' / 'providers' / 'titelive_stocks'
-            if not os.path.isdir(data_root_path):
-                raise ValueError('File not found : '+str(data_root_path)
-                                 + '\nDid you run "pc ftp_mirrors" ?')
-            self.zip = ZipFile(str(data_root_path / 'StockGroupes.zip'))
-            self.stock_files = iter(filter(lambda i: i.filename.startswith('association'), self.zip.infolist()))
-
-            self.data_lines = None
-            with open(data_root_path / "Date_export.txt", "r") as f:
-                infos = f.readline()
-            date_regexp = re.compile('EXTRACTION DU (.*)')
-            match = date_regexp.search(infos)
-            if match:
-                self.dateModified = datetime.strptime(match.group(1), "%d/%m/%Y %H:%M")
-            else:
-                raise ValueError('Invalid Date_export.txt file format in titelive_stocks')
-        else:
-            print(venueProvider.idAtProviders)
-            response = urlopen(URL_TITELIVE_WS_STOCKS + '77567146400110')
-            data = response.read()
-            values = json.loads(data)
-
-
-    def open_next_file(self):
-        f = self.stock_files.__next__()
-        print("  Importing from file "+str(f.filename))
-        lines = pd.read_csv(self.zip.open(f),
-                            header=None,
-                            delimiter=";",
-                            encoding='iso-8859-1')\
-                  .values
-        self.data_lines = iter(lines)
         self.venue = Venue.query \
             .filter_by(id=self.venueProvider.venueId) \
             .first()
@@ -110,13 +74,12 @@ class TiteLiveStocks(LocalProvider):
     def __next__(self):
         self.index = self.index + 1
 
-        if self.data is None or len(self.data['stocks']) <= self.index:
+        if self.data is None \
+            or len(self.data['stocks']) <= self.index:
 
             if not self.more_pages:
                 raise StopIteration
 
-            # self.page = self.page+1
-            # TODO: get last_seen_isbn
             self.index = 0
 
             self.data = get_data(self.last_seen_isbn,
@@ -126,7 +89,7 @@ class TiteLiveStocks(LocalProvider):
                                  self.siret)
 
             # total_objects = self.data['offset']+self.data['limit']
-            # TODO: why total is null ?
+            # TODO: why total is null from API?
             total_objects = 200
             if self.data['total'] is None:
                 total = 200
@@ -139,14 +102,17 @@ class TiteLiveStocks(LocalProvider):
         self.oa_stock = self.data['stocks'][self.index]
 
         self.seen_isbn.append(str(self.oa_stock['ref']))
+        # self.last_seen_isbn = self.oa_stock['ref']
 
-        # TODO: something wrong in here
         thing = Thing.query.filter((Thing.type == ThingType.LIVRE_EDITION.name) &
                                    (Thing.idAtProviders == self.oa_stock['ref'])) \
             .one_or_none()
 
-        if thing is None:
-            # print("   No such thing : Book:"+str(self.oa_stock['ref']))
+        offer_count = Offer.query.filter_by(thing=thing) \
+            .count()
+
+        if thing is None or offer_count == 0:
+            # print("   No such thing : Book:"+str(self.oa_stock['ref']) + ", or no offer associated.")
             return None
 
         p_info_stock = ProvidableInfo()
@@ -158,34 +124,20 @@ class TiteLiveStocks(LocalProvider):
 
 
     def updateObject(self, obj):
-        print(obj)
-        print(self.providables)
         assert obj.idAtProviders == str(self.oa_stock['ref'])
-        if isinstance(obj, Stock) or isinstance(obj, 'thingStock'):
+        print("OBJ: ", obj)
+        if isinstance(obj, Stock):
+            print("TOTO")
             obj.price = int(self.oa_stock['price'])
-            print("Price: ", str(self.oa_stock['price']))
             obj.available = int(self.oa_stock['available'])
             obj.bookingLimitDatetime = read_datetime(self.oa_stock['validUntil'])
-            obj.offer = self.providables[0]
-            db.session.add(self.venue)
-            print(self.venue.managingOffererId)
-            obj.offererId = self.venue.managingOffererId
             thing = Thing.query \
-                        .filter_by(idAtProviders=self.oa_stock['ref']) \
+                .filter_by(idAtProviders=self.oa_stock['ref']) \
                 .first()
-        # elif isinstance(obj, Offer):
-        #     thing = Thing.query \
-        #         .filter_by(idAtProviders=self.oa_stock['ref']) \
-        #         .first()
-        #     print("thing")
-        #     print(thing)
-        #     obj.thing = thing
-        #     print(self.venue)
-        #     print(self.venueId)
-            # obj.venue = self.venue
-        # else:
-        #     raise ValueError('Unexpected object class in updateObject: '
-        #                      + obj.__class__.__name__)
+            offer = Offer.query \
+                .filter_by(thing=thing) \
+                .first()
+            obj.offer = offer
 
     def updateObjects(self, limit=None):
         super().updateObjects(limit)
