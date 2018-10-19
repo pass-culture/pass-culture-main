@@ -4,11 +4,11 @@ from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required, logout_user, login_user
 
 from connectors.google_spreadsheet import get_authorized_emails_and_dept_codes
-from domain.user_emails import send_reset_password_email
-from domain.expenses import get_expenses
 from domain.admin_emails import maybe_send_offerer_validation_email
+from domain.expenses import get_expenses
 from domain.password import validate_reset_request, check_reset_token_validity, validate_new_password_request, \
     check_password_strength, check_new_password_validity, generate_reset_token, validate_change_password_request
+from domain.user_emails import send_reset_password_email
 from models import ApiErrors, Deposit, Offerer, PcObject, User
 from models.user_offerer import RightsType
 from models.venue import create_digital_venue
@@ -22,6 +22,7 @@ from utils.mailing import \
     subscribe_newsletter, MailServiceException
 from utils.rest import expect_json_data, \
     login_or_api_key_required
+from validation.offerers import check_offerer_is_validated
 from validation.users import check_allowed_changes_for_user, check_contact_ok
 
 
@@ -151,6 +152,7 @@ def signup():
             digital_venue = create_digital_venue(offerer)
             objects_to_save.extend([digital_venue, offerer])
         else:
+            check_offerer_is_validated(existing_offerer)
             user_offerer = _generate_user_offerer_when_existing_offerer(new_user, existing_offerer)
             offerer = existing_offerer
         objects_to_save.append(user_offerer)
@@ -180,7 +182,7 @@ def signup():
 
 def _generate_user_offerer_when_existing_offerer(new_user, offerer):
     new_user_offerer_rights = RightsType.editor if count_user_offerers_by_offerer(offerer) > 0 \
-                                                else RightsType.admin
+        else RightsType.admin
     user_offerer = offerer.give_rights(new_user, new_user_offerer_rights)
     if not IS_INTEGRATION:
         user_offerer.generate_validation_token()

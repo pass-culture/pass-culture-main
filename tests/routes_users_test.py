@@ -430,6 +430,30 @@ def test_pro_signup_when_existing_offerer(app):
 
 @clean_database
 @pytest.mark.standalone
+def test_pro_signup_throws_409_if_offerer_not_validated(app):
+    json_offerer = {
+        "name": "Test Offerer",
+        "siren": BASE_DATA_PRO['siren'],
+        "address": "Test adresse",
+        "postalCode": "75000",
+        "city": "Paris"
+    }
+    offerer = Offerer(from_dict=json_offerer)
+    offerer.generate_validation_token()
+    user = create_user(public_name='bobby', email='bobby@test.com')
+    user_offerer = create_user_offerer(user, offerer, is_admin=True)
+    PcObject.check_and_save(offerer, user_offerer)
+
+    data = BASE_DATA_PRO.copy()
+    r_signup = req.post(API_URL + '/users/signup',
+                        json=data, headers={'origin': 'http://localhost:3000'})
+    assert r_signup.status_code == 409
+    assert r_signup.json()['offerer'] == [
+        'Vous ne pouvez pas créer un deuxième compte pour une structure non validée par la pass Culture']
+
+
+@clean_database
+@pytest.mark.standalone
 def test_user_should_not_be_activated_by_default(app):
     # Given
     user = create_user(public_name='Test', departement_code='93', email='wallet_test@email.com', password='testpsswd')
@@ -460,6 +484,8 @@ def test_user_wallet_should_be_marked_as_activated_when_there_is_a_deposit(app):
     assert r_profile.json()['wallet_is_activated'] == True
 
 
+@pytest.mark.standalone
+@clean_database
 def test_pro_signup_when_existing_offerer_but_no_user_offerer(app):
     "should create user and userOfferer"
     json_offerer = {
