@@ -25,7 +25,7 @@ fixture('O5_02 Recherche | Après connexion').beforeEach(async t => {
   await t.useRole(regularUser).navigateTo(`${ROOT_PATH}recherche/`)
 })
 
-test('Je peux accéder à la page /recherche', async t => {
+test.skip('Je peux accéder à la page /recherche', async t => {
   await t
   await t.expect(getPageUrl()).contains('/recherche', { timeout: 5000 })
 })
