@@ -31,7 +31,7 @@ describe('src | components | pages | search | SearchPicture', () => {
       const img = wrapper.find('img').props()
 
       // then
-      expect(img.src).toEqual('http://localhost/icons/img-Ecouter.png')
+      expect(img.src).toEqual('http://localhost/icons/img-Écouter.png')
       expect(img.alt).toEqual('Rechercher des offres de type Écouter')
     })
   })

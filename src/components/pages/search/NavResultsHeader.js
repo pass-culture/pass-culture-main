@@ -4,8 +4,9 @@ import PropTypes from 'prop-types'
 import { ROOT_PATH } from '../../../utils/config'
 
 const NavResultsHeader = ({ category, description }) => {
-  const searchTypeWithoutSpecialChar = category.replace(/É/g, 'E')
-  const src = `${ROOT_PATH}/icons/img-${searchTypeWithoutSpecialChar}-L.jpg`
+  // const searchTypeWithoutSpecialChar = category.replace(/É/g, 'E')
+
+  const src = `${ROOT_PATH}/icons/img-${category}-L.jpg`
   const imgDescription = `Liste des offres de type ${category}`
   return (
     <div

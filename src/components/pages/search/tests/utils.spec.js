@@ -5,6 +5,7 @@ import filterIconByState, {
   INITIAL_FILTER_PARAMS,
   isSearchFiltersAdded,
   searchResultsTitle,
+  translateBrowserUrlToApiUrl,
 } from '../utils'
 
 import state from '../../../../mocks/global_state_2_Testing_10_10_18'
@@ -244,10 +245,8 @@ describe('src | components | pages | search | utils', () => {
   })
 
   describe('searchResultsTitle', () => {
-    it('should return the title corresponding to search result', () => {
-      // given
+    describe('without navigation mode', () => {
       const keywords = 'fake word'
-      const items = []
       const queryParams = {
         categories: null,
         date: null,
@@ -260,18 +259,40 @@ describe('src | components | pages | search | utils', () => {
         page: '2',
         types: null,
       }
+      const withPagination = false
+      it('should return the title corresponding to search result when there is no item', () => {
+        // given
 
-      expect(searchResultsTitle(keywords, items, queryParams)).toEqual(
-        '"fake word" : 0 résultat'
-      )
+        const items = []
+
+        expect(
+          searchResultsTitle(keywords, items, queryParams, withPagination)
+        ).toEqual('"fake word" : 0 résultat')
+      })
+
+      it('should return the title corresponding to search result when there is one item', () => {
+        // given
+        const items = [{}]
+
+        expect(
+          searchResultsTitle(keywords, items, queryParams, withPagination)
+        ).toEqual('"fake word" : 0 résultat')
+      })
+
+      it('should return the title corresponding to search result when there is many items', () => {
+        // given
+        const items = [{}, {}]
+
+        expect(
+          searchResultsTitle(keywords, items, queryParams, withPagination)
+        ).toEqual('"fake word" : 2 résultats')
+      })
     })
 
-    it('should return the title corresponding to search result', () => {
-      // given
+    describe('with navigation mode', () => {
       const keywords = 'fake word'
-      const items = []
       const queryParams = {
-        categories: 'Lire',
+        categories: null,
         date: null,
         days: null,
         distance: null,
@@ -282,32 +303,24 @@ describe('src | components | pages | search | utils', () => {
         page: '2',
         types: null,
       }
+      const withPagination = true
+      it('should return the title corresponding to search result when there is no item', () => {
+        // given
+        const items = []
 
-      expect(searchResultsTitle(keywords, items, queryParams)).toEqual(
-        '"fake word" : 0 résultat'
-      )
-    })
+        expect(
+          searchResultsTitle(keywords, items, queryParams, withPagination)
+        ).toEqual("Il n'y a pas d'offres dans cette catégorie pour le moment.")
+      })
 
-    it('should return the title corresponding to search result', () => {
-      // given
-      const keywords = 'fake word'
-      const items = [{}, {}]
-      const queryParams = {
-        categories: 'Lire',
-        date: null,
-        days: null,
-        distance: null,
-        jours: null,
-        latitude: null,
-        longitude: null,
-        [`mots-cles`]: null,
-        page: '2',
-        types: null,
-      }
+      it('should return the title corresponding to search result when there items', () => {
+        // given
+        const items = [{}]
 
-      expect(searchResultsTitle(keywords, items, queryParams)).toEqual(
-        '"fake word" : 2 résultats'
-      )
+        expect(
+          searchResultsTitle(keywords, items, queryParams, withPagination)
+        ).toEqual('')
+      })
     })
   })
 
@@ -348,6 +361,26 @@ describe('src | components | pages | search | utils', () => {
       const result = getDescriptionForSublabel(category, typeSublabels)
 
       expect(result).toEqual(typeSublabels[0].description)
+    })
+  })
+})
+
+describe('src | utils | translateBrowserUrlToApiUrl ', () => {
+  describe('src | utils | translateBrowserUrlToApiUrl ', () => {
+    it('should return object with french key', () => {
+      const queryString = {
+        categories: 'Applaudir',
+        date: null,
+        jours: '1-5',
+        [`mots-cles`]: 'fake',
+      }
+      const expected = {
+        categories: 'Applaudir',
+        date: null,
+        days: '1-5',
+        keywords: 'fake',
+      }
+      expect(translateBrowserUrlToApiUrl(queryString)).toEqual(expected)
     })
   })
 })

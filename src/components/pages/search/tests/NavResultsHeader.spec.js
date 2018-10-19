@@ -37,7 +37,7 @@ describe('src | components | pages | search | NavResultsHeader', () => {
       const img = wrapper.find('#nav-results-header').props()
       //
       // // then
-      const imgUrl = `${ROOT_PATH}/icons/img-Ecouter-L.jpg`
+      const imgUrl = `${ROOT_PATH}/icons/img-Écouter-L.jpg`
       expect(img.style.backgroundImage).toEqual(`url(${imgUrl})`)
       expect(img.title).toEqual('Liste des offres de type Écouter')
     })

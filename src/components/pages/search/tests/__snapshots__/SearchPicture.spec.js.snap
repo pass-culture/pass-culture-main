@@ -22,7 +22,7 @@ ShallowWrapper {
       "children": Array [
         <img
           alt="Rechercher des offres de type Écouter"
-          src="http://localhost/icons/img-Ecouter.png"
+          src="http://localhost/icons/img-Écouter.png"
         />,
         <span
           className="is-absolute text-left fs15"
@@ -45,7 +45,7 @@ ShallowWrapper {
         "nodeType": "host",
         "props": Object {
           "alt": "Rechercher des offres de type Écouter",
-          "src": "http://localhost/icons/img-Ecouter.png",
+          "src": "http://localhost/icons/img-Écouter.png",
         },
         "ref": null,
         "rendered": null,
@@ -78,7 +78,7 @@ ShallowWrapper {
         "children": Array [
           <img
             alt="Rechercher des offres de type Écouter"
-            src="http://localhost/icons/img-Ecouter.png"
+            src="http://localhost/icons/img-Écouter.png"
           />,
           <span
             className="is-absolute text-left fs15"
@@ -101,7 +101,7 @@ ShallowWrapper {
           "nodeType": "host",
           "props": Object {
             "alt": "Rechercher des offres de type Écouter",
-            "src": "http://localhost/icons/img-Ecouter.png",
+            "src": "http://localhost/icons/img-Écouter.png",
           },
           "ref": null,
           "rendered": null,

@@ -1,3 +1,4 @@
+import classnames from 'classnames'
 import React from 'react'
 import { InfiniteScroller } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
@@ -5,16 +6,25 @@ import PropTypes from 'prop-types'
 import SearchResultItem from './SearchResultItem'
 import { searchResultsTitle } from './utils'
 
-const SearchResults = ({ items, keywords, loadMoreHandler, pagination }) => {
+const SearchResults = ({
+  items,
+  keywords,
+  loadMoreHandler,
+  pagination,
+  withNavigation,
+}) => {
   const resultTitle = searchResultsTitle(
     keywords,
     items,
-    pagination.windowQuery
+    pagination.windowQuery,
+    withNavigation
   )
   return (
     <div className="search-results">
       <h2
-        className="fs15 is-uppercase is-italic is-semi-bold mb12"
+        className={classnames('fs15 is-uppercase is-italic is-semi-bold mb12', {
+          [`nav-result-title`]: withNavigation,
+        })}
         id="results-title"
       >
         {resultTitle}
@@ -37,6 +47,7 @@ SearchResults.propTypes = {
   keywords: PropTypes.string,
   loadMoreHandler: PropTypes.func.isRequired,
   pagination: PropTypes.object.isRequired,
+  withNavigation: PropTypes.bool.isRequired,
 }
 
 export default SearchResults

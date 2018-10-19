@@ -96,6 +96,8 @@ test('Je clique sur la vignette Lire et je suis redirigé vers la page de résul
     .click(searchTypeCheckbox)
 })
 
+// Voir les fonctionnalitées sur https://github.com/betagouv/pass-culture-browser/issues/664
+
 // NAVIGATION PAR FILTRE
 // Je fais apparaître et disparaître le menu de filtres
 // Je peux faire une recherche détaillée
@@ -107,3 +109,13 @@ test('Je clique sur la vignette Lire et je suis redirigé vers la page de résul
 // pour tout rénitialiser, il faut cliquer sur la croix dans le form et sur réninitaliser aussi donc
 
 // Tu peux cumuler recherche textuelle + filtrage des résultats, et tu peux appliquer un filtre à toute la base d’offres puis faire une recherche textuelle dans la base filtrée
+
+// in search input, i can delete my search words by clicking in the close icon
+
+// Quand on clique sur le bouton chercher, si le filtre est ouvert, il se referme mais la recherche reste active
+
+// Quand on navigue par type d'offre, dans la page de résultats on peut lire "il n'y pas d'offre pour le moment " sinon "" s'il y a des offres, elles sont affichées
+
+// Le bouton submit search keyword est désactivé si rien n'est écrit
+
+// Après une navigation par type, si on ouvre le filtre puis quand clique sur le bouton back, le filtre se referme est la recherche est réinitialisée.

@@ -3,8 +3,6 @@ import moment from 'moment'
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 
-import { mapApiToWindow } from '../../../utils/pagination'
-
 const checkboxes = [
   {
     label: 'Tout de suite !',
@@ -30,7 +28,7 @@ class FilterByDates extends PureComponent {
   onChange = day => {
     const { filterActions, filterState } = this.props
 
-    const days = decodeURI(filterState.query[mapApiToWindow.days] || '')
+    const days = decodeURI(filterState.query.jours || '')
     const isAlreadyIncluded = days.includes(day)
 
     // WE ADD THE DATE AT THE FIRST DAYS SEGMENTS CLICKED
@@ -43,17 +41,17 @@ class FilterByDates extends PureComponent {
       callback = () => filterActions.change({ date: null })
     }
     if (isAlreadyIncluded) {
-      filterActions.remove(mapApiToWindow.days, day, callback)
+      filterActions.remove('jours', day, callback)
       return
     }
 
-    filterActions.add(mapApiToWindow.days, day, callback)
+    filterActions.add('jours', day, callback)
   }
 
   render() {
     const { filterState, title } = this.props
 
-    const days = decodeURI(filterState.query[mapApiToWindow.days] || '')
+    const days = decodeURI(filterState.query.jours || '')
 
     return (
       <div id="filter-by-dates" className="pt18">

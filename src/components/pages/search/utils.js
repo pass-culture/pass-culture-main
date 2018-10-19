@@ -1,6 +1,12 @@
-import { capitalize, pluralize } from 'pass-culture-shared'
+import {
+  capitalize,
+  pluralize,
+  getObjectWithMappedKeys,
+} from 'pass-culture-shared'
 import find from 'lodash.find'
+import get from 'lodash.get'
 import moment from 'moment'
+
 import { getTimezone } from '../../../utils/timezone'
 
 const filterIconByState = filters => (filters ? 'filter' : 'filter-active')
@@ -35,15 +41,26 @@ export const getFirstChangingKey = (previousObject, nextObject) =>
     return previousObject[key] !== nextObject[key]
   })
 
-export const searchResultsTitle = (keywords, items, queryParams) => {
+export const searchResultsTitle = (
+  keywords,
+  items,
+  queryParams,
+  withNavigation = false
+) => {
   let resultTitle
-  if (keywords) {
+  if (withNavigation) {
+    resultTitle =
+      items.length === 0
+        ? "Il n'y a pas d'offres dans cette catégorie pour le moment."
+        : ''
+  } else {
     const count = items.length
     const resultString = pluralize(count, 'résultats')
     const keywordsString = decodeURI(keywords || '')
     const typesString = decodeURI(queryParams.types || '')
     resultTitle = `"${keywordsString}" ${typesString}: ${resultString}`
   }
+
   return resultTitle
 }
 
@@ -69,11 +86,8 @@ export const getRecommendationDateString = offer => {
   return formatedDate
 }
 
-export const getDescriptionForSublabel = (category, data) => {
-  // TODO continue with special chars...
-  const categoryWithoutSpecialChar = category.replace(/%C3%89/g, 'É')
-  return find(data, ['sublabel', categoryWithoutSpecialChar]).description
-}
+export const getDescriptionForSublabel = (category, data) =>
+  get(find(data, ['sublabel', category]), 'description')
 
 export const handleQueryChange = (newValue, callback) => {
   const { pagination } = this.props
@@ -92,5 +106,13 @@ export const handleQueryChange = (newValue, callback) => {
 }
 
 // TODO SEARCH FILTER FUNCTIONS REFACTORING handleQueryChange etc
+
+const mapWindowToApi = {
+  jours: 'days',
+  'mots-cles': 'keywords',
+}
+
+export const translateBrowserUrlToApiUrl = windowQuery =>
+  getObjectWithMappedKeys(windowQuery, mapWindowToApi)
 
 export default filterIconByState

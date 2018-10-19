@@ -133,3 +133,12 @@
     background: rgba($black, 0.75);
   }
 }
+#offer-type-picture-checked {
+      background-image: url(/icons/checkbox-check.svg);
+      border: none;
+      background-repeat: no-repeat;
+      background-size: 1.1875em;
+      width: 1.1875em;
+      height: 1.1875em;
+      border-radius: 0;
+}
