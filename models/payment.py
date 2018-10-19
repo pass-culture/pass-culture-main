@@ -1,4 +1,6 @@
 """ transfer model """
+import uuid
+from datetime import datetime
 
 from sqlalchemy import BigInteger, \
     Column, \
@@ -6,9 +8,11 @@ from sqlalchemy import BigInteger, \
     String, \
     Numeric, \
     Text, CheckConstraint
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
 from models.db import Model
+from models.payment_status import TransactionStatus, PaymentStatus
 from models.pc_object import PcObject
 
 
@@ -43,4 +47,25 @@ class Payment(PcObject, Model):
 
     author = Column(String(27), nullable=False)
 
-    paymentTransactionId = Column(String(50), nullable=True)
+    transactionMessageId = Column(String(50), nullable=True)
+
+    transactionEndToEndId = Column(UUID(as_uuid=True), nullable=True)
+
+    def setStatus(self, status: TransactionStatus, detail: str=None):
+        payment_status = PaymentStatus()
+        payment_status.status = status
+        payment_status.date = datetime.utcnow()
+        payment_status.detail = detail
+
+        if self.statuses:
+            self.statuses.append(payment_status)
+        else:
+            self.statuses = [payment_status]
+
+    def setTransactionIds(self, message_id: str, end_to_end_id: uuid.UUID):
+        self.transactionMessageId = message_id
+        self.transactionEndToEndId = end_to_end_id
+
+    def nullifyTransactionIds(self):
+        self.transactionMessageId = None
+        self.transactionEndToEndId = None
