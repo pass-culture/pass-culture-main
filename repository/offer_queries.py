@@ -27,7 +27,7 @@ def departement_or_national_offers(query, offer_type, departement_codes):
     if offer_type == Thing:
         condition = (condition | (Thing.isNational == True))
     query = query.filter(condition)
-    logger.error(lambda: '(reco) departement .count ' + str(query.count()))
+    logger.debug(lambda: '(reco) departement .count ' + str(query.count()))
     return query
 
 

@@ -1,6 +1,5 @@
 """ routes recommendations tests """
 from datetime import datetime, timedelta
-from pprint import pprint
 
 import pytest
 
@@ -449,7 +448,6 @@ def test_put_recommendations_when_expired_in_seen(app):
     # then
     assert response.status_code == 200
     response_json = response.json()
-    pprint(response_json)
     assert len(response_json) == 4
     recommendation_ids = set(map(lambda x: x['id'], response_json))
     assert humanize(recommendation_offer1.id) not in recommendation_ids
@@ -480,7 +478,6 @@ def test_put_recommendations_when_expired_in_seen(app):
     # then
     assert response.status_code == 200
     response_json = response.json()
-    pprint(response_json)
     assert len(response_json) == 1
     recommendation_ids = set(map(lambda x: x['id'], response_json))
     assert humanize(recommendation_offer1.id) not in recommendation_ids
