@@ -1,7 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import func
-from sqlalchemy.orm import aliased
+from sqlalchemy import func, and_
 
 from models import Booking, \
     Event, \
@@ -28,14 +27,13 @@ def departement_or_national_offers(query, offer_type, departement_codes):
     if offer_type == Thing:
         condition = (condition | (Thing.isNational == True))
     query = query.filter(condition)
-    logger.debug(lambda: '(reco) departement .count ' + str(query.count()))
+    logger.error(lambda: '(reco) departement .count ' + str(query.count()))
     return query
 
 
 def bookable_offers(query, offer_type):
     # remove events for which all occurrences are in the past
     # (crude filter to limit joins before the more complete one below)
-    query = query.reset_joinpoint()
     if offer_type == Event:
         query = query.filter(Offer.eventOccurrences.any(EventOccurrence.beginningDatetime > datetime.utcnow()))
         logger.debug(lambda: '(reco) future events.count ' + str(query.count()))
@@ -64,9 +62,6 @@ def with_active_and_validated_offerer(query):
 def not_currently_recommended_offers(query, user):
     valid_recommendation_for_user = (Recommendation.userId == user.id) \
                                     & (Recommendation.validUntilDate > datetime.utcnow())
-    all_recos = Recommendation.query.filter(valid_recommendation_for_user).all()
-    for reco in all_recos:
-        print('////////', reco.offerId)
 
     query = query.filter(~(Offer.recommendations.any(valid_recommendation_for_user)))
 
@@ -75,35 +70,28 @@ def not_currently_recommended_offers(query, user):
 
 
 def get_active_offers_by_type(offer_type, user=None, departement_codes=None, offer_id=None):
-    print('offer_id', offer_id)
     query = Offer.query.filter_by(isActive=True)
-    print(1, query.count())
     if offer_type == Event:
-        query = query.join(aliased(EventOccurrence))
-        print(2, query.count())
-    query = query.join(Stock) \
-        .filter_by(isSoftDeleted=False)\
-        .reset_joinpoint() \
-        .join(Venue) \
-        .join(Offerer) \
-        .reset_joinpoint() \
-        .join(offer_type)
-    print(3, query.count())
+        query = query.join(EventOccurrence)
+        query = query.join(Stock, and_(EventOccurrence.id == Stock.eventOccurrenceId))
+    else:
+        query = query.join(Stock, and_(Offer.id == Stock.offerId))
+    query = query.filter(Stock.isSoftDeleted == False)
+    query = query.join(Venue, and_(Offer.venueId == Venue.id))
+    query = query.join(Offerer)
+    if offer_type == Event:
+        query = query.join(Event, and_(Offer.eventId == Event.id))
+    else:
+        query = query.join(Thing, and_(Offer.thingId == Thing.id))
     if offer_id is not None:
         query = query.filter(Offer.id == offer_id)
-        print(4, query.count())
     logger.debug(lambda: '(reco) all ' + str(offer_type) + '.count ' + str(query.count()))
 
     query = departement_or_national_offers(query, offer_type, departement_codes)
-    print(5, query.count())
     query = bookable_offers(query, offer_type)
-    print(6, query.count())
     query = with_active_and_validated_offerer(query)
-    print(7, query.count())
     query = not_currently_recommended_offers(query, user)
-    print(8, query.count())
     query = query.distinct(offer_type.id)
-    print(9, query.count())
     return query.all()
 
 

@@ -299,7 +299,8 @@ def create_stock_with_event_offer(
     return stock
 
 
-def create_stock_from_event_occurrence(event_occurrence, price=10, available=10, soft_deleted=False, recap_sent=False):
+def create_stock_from_event_occurrence(event_occurrence, price=10, available=10, soft_deleted=False, recap_sent=False,
+                                       booking_limit_date=None):
     stock = Stock()
     stock.eventOccurrence = event_occurrence
     stock.price = price
@@ -307,6 +308,7 @@ def create_stock_from_event_occurrence(event_occurrence, price=10, available=10,
     stock.isSoftDeleted = soft_deleted
     if recap_sent:
         stock.bookingRecapSent = datetime.utcnow()
+    stock.bookingLimitDatetime = booking_limit_date
     return stock
 
 

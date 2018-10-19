@@ -6,21 +6,22 @@ import pytest
 from models import PcObject
 from tests.conftest import clean_database
 from utils.human_ids import humanize
-from utils.test_utils import API_URL,\
-                             create_event_occurrence,\
-                             create_event_offer,\
-                             create_mediation,\
-                             create_offerer,\
-                             create_recommendation,\
-                             create_stock_from_event_occurrence,\
-                             create_stock_from_offer,\
-                             create_thing_offer,\
-                             create_user,\
-                             create_venue,\
-                             req,\
-                             req_with_auth
+from utils.test_utils import API_URL, \
+    create_event_occurrence, \
+    create_event_offer, \
+    create_mediation, \
+    create_offerer, \
+    create_recommendation, \
+    create_stock_from_event_occurrence, \
+    create_stock_from_offer, \
+    create_thing_offer, \
+    create_user, \
+    create_venue, \
+    req, \
+    req_with_auth
 
 RECOMMENDATION_URL = API_URL + '/recommendations'
+
 
 @pytest.mark.standalone
 def test_put_recommendations_works_only_when_logged_in():
@@ -113,21 +114,9 @@ def test_get_recommendations_does_not_return_recommendations_of_offers_with_soft
     event_occurrence2 = create_event_occurrence(offer1)
     event_occurrence3 = create_event_occurrence(offer2)
 
-    stock1 = create_stock_from_event_occurrence(
-        event_occurrence1,
-        price=10,
-        soft_deleted=False
-    )
-    stock2 = create_stock_from_event_occurrence(
-        event_occurrence2,
-        price=20,
-        soft_deleted=True
-    )
-    stock3 = create_stock_from_event_occurrence(
-        event_occurrence3,
-        price=30,
-        soft_deleted=True
-    )
+    stock1 = create_stock_from_event_occurrence(event_occurrence1, price=10, soft_deleted=False)
+    stock2 = create_stock_from_event_occurrence(event_occurrence2, price=20, soft_deleted=True)
+    stock3 = create_stock_from_event_occurrence(event_occurrence3, price=30, soft_deleted=True)
 
     PcObject.check_and_save(stock1, stock2, stock3, recommendation1, recommendation2)
     auth_request = req_with_auth(user.email, user.clearTextPassword)
@@ -386,10 +375,13 @@ def test_put_recommendations_returns_requested_recommendation_first(app):
     venue = create_venue(offerer)
     offer1 = create_thing_offer(venue, thumb_count=1)
     offer2 = create_event_offer(venue, thumb_count=1)
-    event_occurrence = create_event_occurrence(offer2)
+    now = datetime.utcnow()
+    event_occurrence = create_event_occurrence(offer2, beginning_datetime=now + timedelta(hours=72),
+                                               end_datetime=now + timedelta(hours=74))
     mediation = create_mediation(offer2)
     stock1 = create_stock_from_offer(offer1, price=0)
-    stock2 = create_stock_from_offer(offer2, price=0)
+    stock2 = create_stock_from_event_occurrence(event_occurrence, price=0, available=10, soft_deleted=False,
+                                                booking_limit_date=now + timedelta(days=3))
     PcObject.check_and_save(user, stock1, stock2, mediation, event_occurrence)
     auth_request = req_with_auth(user.email, user.clearTextPassword)
 
@@ -400,9 +392,6 @@ def test_put_recommendations_returns_requested_recommendation_first(app):
     # then
     assert response.status_code == 200
     response_json = response.json()
-    print('offer1', offer1.id)
-    print('offer2', offer2.id)
-    print(response_json)
     assert len(response_json) == 2
-    assert response_json[0].offer == offer1
-    assert response_json[1].offer == offer2
+    assert response_json[0]['offer']['id'] == humanize(offer1.id)
+    assert response_json[1]['offer']['id'] == humanize(offer2.id)
