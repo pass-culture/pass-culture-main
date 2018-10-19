@@ -27,9 +27,6 @@ from models.venue import Venue
 from sandboxes.scripts.mocks.users_light import admin_user_mock
 from utils.token import random_token
 
-print("admin_user_mock ",admin_user_mock)
-print(admin_user_mock)
-
 API_URL = "http://localhost:5000"
 MOCKED_SIREN_ENTREPRISES_API_RETURN = {
     'numero_tva_intra': 'FR60732075312',
