@@ -1,6 +1,7 @@
 from datetime import datetime
 from decimal import Decimal
 from unittest.mock import Mock
+from uuid import UUID
 
 import pytest
 from freezegun import freeze_time
@@ -154,6 +155,7 @@ def test_do_send_payments_updates_payments_with_message_id_and_end_to_end_id_and
     for payment in updated_payments:
         assert payment.transactionMessageId == 'passCulture-SCT-20181015-092134'
         assert payment.transactionEndToEndId is not None
+        assert type(payment.transactionEndToEndId) is UUID
         assert len(payment.statuses) == 2
         assert payment.statuses[1].status == TransactionStatus.SENT
 

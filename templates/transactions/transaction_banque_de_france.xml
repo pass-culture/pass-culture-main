@@ -41,7 +41,7 @@
             {% for transaction in transactions %}
             <CdtTrfTxInf>
                 <PmtId>
-                    <EndToEndId>{{ transaction.end_to_end_id }}</EndToEndId>
+                    <EndToEndId>{{ transaction.end_to_end_id.hex }}</EndToEndId>
                 </PmtId>
                 <Amt>
                     <InstdAmt Ccy="EUR">{{ transaction.amount }}</InstdAmt>

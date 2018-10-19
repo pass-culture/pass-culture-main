@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 from decimal import Decimal
 from io import BytesIO
 from typing import List
+from uuid import UUID
 
 from flask import render_template
 from lxml import etree
@@ -18,7 +19,7 @@ class InvalidTransactionXML(Exception):
 
 
 class Transaction:
-    def __init__(self, creditor_iban: str, creditor_bic: str, end_to_end_id: str, amount: Decimal):
+    def __init__(self, creditor_iban: str, creditor_bic: str, end_to_end_id: UUID, amount: Decimal):
         self.creditor_iban = creditor_iban
         self.creditor_bic = creditor_bic
         self.end_to_end_id = end_to_end_id
@@ -94,11 +95,10 @@ def _group_payments_into_transactions(payments: List[Payment],  message_id: str)
     for (iban, bic), grouped_payments in payments_by_iban:
         payments_of_iban = list(grouped_payments)
         amount = sum([payment.amount for payment in payments_of_iban])
-        end_to_end_id = uuid.uuid4().hex
+        end_to_end_id = uuid.uuid4()
 
         for payment in payments_of_iban:
-            payment.transactionMessageId = message_id
-            payment.transactionEndToEndId = end_to_end_id
+            payment.setTransactionIds(message_id, end_to_end_id)
 
         transactions.append(Transaction(iban, bic, end_to_end_id, amount))
     return transactions

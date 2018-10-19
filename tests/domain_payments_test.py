@@ -107,6 +107,7 @@ def test_create_payment_for_booking_with_not_processable_status_when_iban_is_mis
 
 
 @pytest.mark.standalone
+@freeze_time('2018-10-15 09:21:34')
 def test_create_payment_for_booking_with_pending_status():
     # given
     one_second = timedelta(seconds=1)
@@ -126,7 +127,7 @@ def test_create_payment_for_booking_with_pending_status():
     assert len(payment.statuses) == 1
     assert payment.statuses[0].status == TransactionStatus.PENDING
     assert payment.statuses[0].detail is None
-    assert now - one_second < payment.statuses[0].date < now + one_second
+    assert payment.statuses[0].date == datetime(2018, 10, 15, 9, 21, 34)
 
 
 @pytest.mark.standalone
