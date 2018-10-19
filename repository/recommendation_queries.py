@@ -4,13 +4,13 @@ from datetime import datetime
 from sqlalchemy import func
 
 from models import Event, \
-                   EventOccurrence, \
-                   Mediation, \
-                   Offer, \
-                   Recommendation, \
-                   Stock, \
-                   Thing, \
-                   Venue
+    EventOccurrence, \
+    Mediation, \
+    Offer, \
+    Recommendation, \
+    Stock, \
+    Thing, \
+    Venue
 from models.db import db
 from utils.config import BLOB_SIZE
 
@@ -18,9 +18,9 @@ from utils.config import BLOB_SIZE
 def find_unseen_tutorials_for_user(seen_recommendation_ids, user):
     return Recommendation.query.join(Mediation) \
         .filter(
-            (Mediation.tutoIndex != None)
-            & (Recommendation.user == user)
-            & ~Recommendation.id.in_(seen_recommendation_ids)) \
+        (Mediation.tutoIndex != None)
+        & (Recommendation.user == user)
+        & ~Recommendation.id.in_(seen_recommendation_ids)) \
         .order_by(Mediation.tutoIndex) \
         .all()
 
@@ -33,7 +33,7 @@ def count_read_recommendations_for_user(user):
 
 def find_all_unread_recommendations(user, seen_recommendation_ids, limit=BLOB_SIZE):
     query = filter_out_recommendation_on_soft_deleted_stocks()
-    query = filter_unseen_recommendations_for_user(query, user, seen_recommendation_ids)
+    query = filter_unseen_valid_recommendations_for_user(query, user, seen_recommendation_ids)
     query = query.filter(Recommendation.dateRead == None) \
         .group_by(Recommendation) \
         .order_by(func.random()) \
@@ -44,7 +44,7 @@ def find_all_unread_recommendations(user, seen_recommendation_ids, limit=BLOB_SI
 
 def find_all_read_recommendations(user, seen_recommendation_ids, limit=BLOB_SIZE):
     query = filter_out_recommendation_on_soft_deleted_stocks()
-    query = filter_unseen_recommendations_for_user(query, user, seen_recommendation_ids)
+    query = filter_unseen_valid_recommendations_for_user(query, user, seen_recommendation_ids)
     query = query.filter(Recommendation.dateRead != None) \
         .group_by(Recommendation) \
         .order_by(func.random()) \
@@ -54,7 +54,6 @@ def find_all_read_recommendations(user, seen_recommendation_ids, limit=BLOB_SIZE
 
 
 def find_recommendations_for_user_matching_offers_and_search(user_id=None, offer_ids=None, search=None):
-
     query = Recommendation.query
 
     if user_id is not None:
@@ -107,13 +106,17 @@ def filter_out_recommendation_on_soft_deleted_stocks():
     return join_on_stocks.union_all(join_on_event_occurrences)
 
 
-def filter_unseen_recommendations_for_user(query, user, seen_recommendation_ids):
+def filter_unseen_valid_recommendations_for_user(query, user, seen_recommendation_ids):
+    recommendation_is_valid = (
+                (Recommendation.validUntilDate == None) | (Recommendation.validUntilDate > datetime.utcnow()))
+    mediation_is_not_tuto = (Mediation.tutoIndex == None)
+    recommendation_is_not_seen = ~Recommendation.id.in_(seen_recommendation_ids)
     new_query = query \
         .outerjoin(Mediation) \
         .filter((Recommendation.user == user)
-                & ~Recommendation.id.in_(seen_recommendation_ids)
-                & (Mediation.tutoIndex == None)
-                & ((Recommendation.validUntilDate == None) | (Recommendation.validUntilDate > datetime.utcnow())))
+                & recommendation_is_not_seen
+                & mediation_is_not_tuto
+                & recommendation_is_valid)
     return new_query
 
 

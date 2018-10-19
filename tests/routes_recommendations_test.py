@@ -1,5 +1,6 @@
 """ routes recommendations tests """
 from datetime import datetime, timedelta
+from pprint import pprint
 
 import pytest
 
@@ -375,14 +376,22 @@ def test_put_recommendations_returns_requested_recommendation_first(app):
     venue = create_venue(offerer)
     offer1 = create_thing_offer(venue, thumb_count=1)
     offer2 = create_event_offer(venue, thumb_count=1)
+    offer3 = create_thing_offer(venue, thumb_count=1)
+    offer4 = create_thing_offer(venue, thumb_count=1)
     now = datetime.utcnow()
+    fifteen_min_ago = now - timedelta(minutes=15)
     event_occurrence = create_event_occurrence(offer2, beginning_datetime=now + timedelta(hours=72),
                                                end_datetime=now + timedelta(hours=74))
     mediation = create_mediation(offer2)
     stock1 = create_stock_from_offer(offer1, price=0)
     stock2 = create_stock_from_event_occurrence(event_occurrence, price=0, available=10, soft_deleted=False,
                                                 booking_limit_date=now + timedelta(days=3))
-    PcObject.check_and_save(user, stock1, stock2, mediation, event_occurrence)
+    stock3 = create_stock_from_offer(offer3, price=0)
+    stock4 = create_stock_from_offer(offer4, price=0)
+    recommendation_offer3 = create_recommendation(offer3, user)
+    recommendation_offer4 = create_recommendation(offer4, user, date_read=now - timedelta(days=1))
+    PcObject.check_and_save(user, stock1, stock2, stock3, stock4, mediation, event_occurrence, recommendation_offer3,
+                            recommendation_offer4)
     auth_request = req_with_auth(user.email, user.clearTextPassword)
 
     data = {'seenRecommendationIds': []}
@@ -392,6 +401,86 @@ def test_put_recommendations_returns_requested_recommendation_first(app):
     # then
     assert response.status_code == 200
     response_json = response.json()
-    assert len(response_json) == 2
+    assert len(response_json) == 4
+    offer_ids = set(map(lambda x: x['offer']['id'], response_json))
+    recommendation_ids = set(map(lambda x: x['id'], response_json))
     assert response_json[0]['offer']['id'] == humanize(offer1.id)
-    assert response_json[1]['offer']['id'] == humanize(offer2.id)
+    assert humanize(offer1.id) in offer_ids
+    assert humanize(offer2.id) in offer_ids
+    assert humanize(offer3.id) in offer_ids
+    assert humanize(recommendation_offer4.id) in recommendation_ids
+    assert humanize(recommendation_offer3.id) in recommendation_ids
+
+
+@clean_database
+@pytest.mark.standalone
+def test_put_recommendations_when_expired_in_seen(app):
+    # given
+    now = datetime.utcnow()
+    fifteen_min_ago = now - timedelta(minutes=15)
+    user = create_user(email='weird.bug@email.com', password='P@55w0rd')
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    offer1 = create_thing_offer(venue, thumb_count=1)
+    offer2 = create_event_offer(venue, thumb_count=1)
+    offer3 = create_thing_offer(venue, thumb_count=1)
+    offer4 = create_thing_offer(venue, thumb_count=1)
+    event_occurrence = create_event_occurrence(offer2, beginning_datetime=now + timedelta(hours=72),
+                                               end_datetime=now + timedelta(hours=74))
+    mediation = create_mediation(offer2)
+    stock1 = create_stock_from_offer(offer1, price=0)
+    stock2 = create_stock_from_event_occurrence(event_occurrence, price=0, available=10, soft_deleted=False,
+                                                booking_limit_date=now + timedelta(days=3))
+    stock3 = create_stock_from_offer(offer3, price=0)
+    stock4 = create_stock_from_offer(offer4, price=0)
+    recommendation_offer1 = create_recommendation(offer1, user, valid_until_date=fifteen_min_ago)
+    recommendation_offer2 = create_recommendation(offer2, user, valid_until_date=fifteen_min_ago)
+    recommendation_offer3 = create_recommendation(offer3, user, valid_until_date=fifteen_min_ago)
+    recommendation_offer4 = create_recommendation(offer4, user, date_read=now - timedelta(days=1),
+                                                  valid_until_date=fifteen_min_ago)
+    PcObject.check_and_save(stock1, stock2, stock3, stock4, mediation, event_occurrence, recommendation_offer3,
+                            recommendation_offer4, recommendation_offer1, recommendation_offer2)
+    auth_request = req_with_auth(user.email, user.clearTextPassword)
+
+    data = {'seenRecommendationIds': []}
+    # when
+    response = auth_request.put(RECOMMENDATION_URL + '?offerId=%s' % humanize(offer1.id), json=data)
+
+    # then
+    assert response.status_code == 200
+    response_json = response.json()
+    pprint(response_json)
+    assert len(response_json) == 4
+    recommendation_ids = set(map(lambda x: x['id'], response_json))
+    assert humanize(recommendation_offer1.id) not in recommendation_ids
+    assert humanize(recommendation_offer2.id) not in recommendation_ids
+    assert humanize(recommendation_offer3.id) not in recommendation_ids
+    assert humanize(recommendation_offer4.id) not in recommendation_ids
+
+
+@clean_database
+@pytest.mark.standalone
+def test_put_recommendations_when_expired_in_seen(app):
+    # given
+    now = datetime.utcnow()
+    fifteen_min_ago = now - timedelta(minutes=15)
+    user = create_user(email='weird.bug@email.com', password='P@55w0rd')
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    offer1 = create_thing_offer(venue, thumb_count=1)
+    stock1 = create_stock_from_offer(offer1, price=0)
+    recommendation_offer1 = create_recommendation(offer1, user, valid_until_date=fifteen_min_ago)
+    PcObject.check_and_save(stock1, recommendation_offer1)
+    auth_request = req_with_auth(user.email, user.clearTextPassword)
+
+    data = {'seenRecommendationIds': []}
+    # when
+    response = auth_request.put(RECOMMENDATION_URL + '?offerId=%s' % humanize(offer1.id), json=data)
+
+    # then
+    assert response.status_code == 200
+    response_json = response.json()
+    pprint(response_json)
+    assert len(response_json) == 1
+    recommendation_ids = set(map(lambda x: x['id'], response_json))
+    assert humanize(recommendation_offer1.id) not in recommendation_ids
