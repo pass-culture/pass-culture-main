@@ -41,7 +41,7 @@ class Splash extends React.PureComponent {
         {state => (
           <div
             id="splash"
-            className="pc-gradient is-overlay has-text-centered"
+            className="pc-gradient is-overlay text-center"
             style={{ ...defaultStyle, ...transitionStyles[state] }}
           >
             <Icon svg="logo-group" alt="Logo Pass Culture" />

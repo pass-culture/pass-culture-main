@@ -112,7 +112,7 @@ class Booking extends React.PureComponent {
         {showCancelButton && (
           <button
             type="reset"
-            className="has-text-centered my5"
+            className="text-center my5"
             onClick={this.cancelBookingHandler}
           >
             <span>Annuler</span>
@@ -121,7 +121,7 @@ class Booking extends React.PureComponent {
         {showSubmitButton && (
           <button
             type="submit"
-            className="has-text-centered my5"
+            className="text-center my5"
             onClick={() => submitForm(this.formId)}
           >
             <b>Valider</b>
@@ -130,7 +130,7 @@ class Booking extends React.PureComponent {
         {bookedPayload && (
           <button
             type="button"
-            className="has-text-centered my5"
+            className="text-center my5"
             onClick={this.cancelBookingHandler}
           >
             <b>OK</b>

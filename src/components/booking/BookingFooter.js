@@ -16,29 +16,17 @@ const BookingFooter = ({
   return (
     <React.Fragment>
       {showCancelButton && (
-        <button
-          type="reset"
-          onClick={onCancel}
-          className="has-text-centered my5"
-        >
+        <button type="reset" onClick={onCancel} className="text-center my5">
           <span>Annuler</span>
         </button>
       )}
       {showSubmitButton && (
-        <button
-          type="submit"
-          onClick={onSubmit}
-          className="has-text-centered my5"
-        >
+        <button type="submit" onClick={onSubmit} className="text-center my5">
           <b>Valider</b>
         </button>
       )}
       {showOkButton && (
-        <button
-          type="button"
-          onClick={onCancel}
-          className="has-text-centered my5"
-        >
+        <button type="button" onClick={onCancel} className="text-center my5">
           <b>OK</b>
         </button>
       )}

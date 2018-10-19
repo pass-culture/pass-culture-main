@@ -105,7 +105,7 @@
 #application-loader {
   @extend .flex-center;
   @extend .flex-rows;
-  @extend .has-text-centered;
+  @extend .text-center;
   @extend .is-italic;
   @extend .is-overlay;
   @extend .pc-gradient;
