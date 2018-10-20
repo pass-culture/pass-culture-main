@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | pages | search | FilterByOfferTypes snapshot should match snapshot 1`] = `
+exports[`src | components | layout | Splash snapshot should match snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <Provider
@@ -15,12 +15,7 @@ ShallowWrapper {
       }
     }
   >
-    <Connect(FilterByOfferTypes)
-      filterActions={Object {}}
-      filterState={Object {}}
-      title="Fake title"
-      typeSublabels={Array []}
-    />
+    <Connect(Splash) />
   </Provider>,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
@@ -34,12 +29,7 @@ ShallowWrapper {
     "instance": null,
     "key": undefined,
     "nodeType": "class",
-    "props": Object {
-      "filterActions": Object {},
-      "filterState": Object {},
-      "title": "Fake title",
-      "typeSublabels": Array [],
-    },
+    "props": Object {},
     "ref": null,
     "rendered": null,
     "type": [Function],
@@ -49,12 +39,7 @@ ShallowWrapper {
       "instance": null,
       "key": undefined,
       "nodeType": "class",
-      "props": Object {
-        "filterActions": Object {},
-        "filterState": Object {},
-        "title": "Fake title",
-        "typeSublabels": Array [],
-      },
+      "props": Object {},
       "ref": null,
       "rendered": null,
       "type": [Function],
