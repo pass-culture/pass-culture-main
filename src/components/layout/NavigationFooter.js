@@ -17,7 +17,7 @@ const NavigationFooter = ({ className, disabled, dispatch, theme }) => {
       >
         <span
           aria-hidden
-          className="icon-user-circle-outline"
+          className="icon-legacy-user-circle-outline"
           title="Afficher le menu de navigation"
         />
       </button>

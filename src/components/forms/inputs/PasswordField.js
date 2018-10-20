@@ -71,7 +71,7 @@ export class PasswordField extends React.PureComponent {
                 >
                   <span
                     aria-hidden
-                    className={`icon-eye${status} fs22`}
+                    className={`icon-legacy-eye${status} fs22`}
                     title="Afficher/Masquer le mot de passe"
                   />
                 </button>

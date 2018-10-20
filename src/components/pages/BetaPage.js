@@ -25,7 +25,7 @@ const BetaPage = () => (
         <span className="fs32 is-italic is-semi-bold">C&apos;est par là</span>
         <span
           aria-hidden="true"
-          className="pc-icon icon-next-long"
+          className="pc-icon icon-legacy-next-long"
           title="C&apos;est par là"
         />
       </Link>

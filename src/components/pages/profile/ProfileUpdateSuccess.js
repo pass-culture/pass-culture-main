@@ -26,7 +26,7 @@ const ProfileUpdateSuccess = ({ config, match }) => {
         <h2 className="is-block fs22">
           <span
             aria-hidden
-            className="icon-check-circled big-success-icon"
+            className="icon-legacy-check-circled big-success-icon"
             title=""
           />
           <span className="is-block mt24">{item.title} a bien été modifié</span>

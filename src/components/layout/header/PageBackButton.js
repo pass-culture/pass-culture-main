@@ -15,7 +15,7 @@ const PageBackButton = ({ className, disabled, history, theme }) => (
       onClick={history.goBack}
       className="no-border no-background no-outline"
     >
-      <span aria-hidden className="icon-previous" title="" />
+      <span aria-hidden className="icon-legacy-previous" title="" />
     </button>
   </span>
 )

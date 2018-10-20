@@ -32,7 +32,7 @@ class CopyToClipboardButton extends React.PureComponent {
         >
           {/* <span
           aria-hidden
-          className="icon-close mr7"
+          className="icon-legacy-close mr7"
           title="Copier le lien de partage"
         /> */}
           {!copied && <span>Copier le lien</span>}

@@ -15,7 +15,7 @@ const PageCloseButton = ({ baseurl, className, disabled, history, theme }) => (
       onClick={() => history.push(`/${baseurl}`)}
       className="no-border no-background no-outline"
     >
-      <span aria-hidden className="icon-close" title="" />
+      <span aria-hidden className="icon-legacy-close" title="" />
     </button>
   </span>
 )

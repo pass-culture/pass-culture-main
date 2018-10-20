@@ -47,7 +47,7 @@ class SharePopin extends React.PureComponent {
     >
       <span
         aria-hidden
-        className="icon-close is-white-text"
+        className="icon-legacy-close is-white-text"
         title="Fermer la popin de partage"
       />
     </button>

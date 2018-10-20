@@ -29,7 +29,11 @@ class ShareButton extends React.PureComponent {
         className="button is-secondary fs32"
         onClick={this.onClickShare}
       >
-        <span aria-hidden className="icon-share" title="Partager cette offre" />
+        <span
+          aria-hidden
+          className="icon-legacy-share"
+          title="Partager cette offre"
+        />
       </button>
     )
   }

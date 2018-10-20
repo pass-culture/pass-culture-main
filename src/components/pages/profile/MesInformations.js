@@ -41,7 +41,7 @@ class MesInformations extends React.PureComponent {
             <span className="is-block flex-0">
               <span
                 aria-hidden
-                className="icon-next"
+                className="icon-legacy-next"
                 title={`Modifier ${label}`}
               />
             </span>

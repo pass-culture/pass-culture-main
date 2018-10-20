@@ -21,7 +21,7 @@ const PageSubmitButton = ({ className, disabled, isloading, theme }) => (
     )}
     {isloading && (
       <span className="fs18">
-        <span className="animate-spin icon-spin6" />
+        <span className="animate-spin icon-legacy-spin6" />
       </span>
     )}
   </span>

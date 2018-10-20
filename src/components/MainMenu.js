@@ -45,7 +45,11 @@ class MainMenu extends React.PureComponent {
       className="pc-text-button is-white-text is-absolute fs16"
       onClick={this.toggleMainMenu}
     >
-      <span aria-hidden className="icon-close" title="Fermer la navigation" />
+      <span
+        aria-hidden
+        className="icon-legacy-close"
+        title="Fermer la navigation"
+      />
     </button>
   )
 

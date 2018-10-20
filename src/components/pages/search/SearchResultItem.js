@@ -41,7 +41,7 @@ const SearchResultItem = ({ recommendation }) => {
           )}
         </div>
         <div className="flex-0 is-primary-text">
-          <span aria-hidden className="icon-next" title="" />
+          <span aria-hidden className="icon-legacy-next" title="" />
         </div>
       </Link>
     </li>

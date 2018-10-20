@@ -234,7 +234,11 @@ class SearchPage extends PureComponent {
                         keywordsKey
                       )}
                     >
-                      <span aria-hidden className="icon-close" title="" />
+                      <span
+                        aria-hidden
+                        className="icon-legacy-close"
+                        title=""
+                      />
                     </button>
                   </span>
                 )}
