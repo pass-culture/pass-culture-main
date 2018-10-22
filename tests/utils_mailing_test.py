@@ -1,7 +1,7 @@
 import re
 import base64
 import secrets
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -239,7 +239,6 @@ def test_offerer_recap_email_past_offer_without_booking(app):
 @pytest.mark.standalone
 def test_offerer_recap_email_past_offer_with_booking(app):
     # Given
-    expected_html_soup = BeautifulSoup(expected_html, 'html.parser')
     venue = create_venue(None, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
     stock = create_stock_with_event_offer(offerer=None,
                                           venue=venue,
@@ -265,7 +264,6 @@ def test_offerer_recap_email_past_offer_with_booking(app):
     assert 'Test' in recap_table_html
     assert 'test@email.com' in recap_table_html
     assert '56789' in recap_table_html
-    assert recap_email_soup.prettify() == expected_html_soup.prettify()
 
 
 @mocked_mail
@@ -566,8 +564,6 @@ def test_make_offerer_driven_cancellation_email_for_user_event(app):
 
     # Then
     email_html = BeautifulSoup(email['Html-part'], 'html.parser')
-    print(email_html.find("div", {"id": "mail-content"}))
-    print(type(email_html.find("div", {"id": "mail-content"})))
     mail_content = str(email_html.find("div", {"id": "mail-content"}))
     assert 'réservation' in mail_content
     assert 'pour Mains, sorts et papiers' in mail_content
@@ -596,8 +592,6 @@ def test_make_offerer_driven_cancellation_email_for_user_thing(app):
 
     # Then
     email_html = BeautifulSoup(email['Html-part'], 'html.parser')
-    print(email_html.find("div", {"id": "mail-content"}))
-    print(type(email_html.find("div", {"id": "mail-content"})))
     mail_content = str(email_html.find("div", {"id": "mail-content"}))
     assert 'commande' in mail_content
     assert 'pour Test Book' in mail_content
@@ -631,7 +625,6 @@ def test_make_offerer_driven_cancellation_email_for_offerer_event(app):
     html_action = str(email_html.find("p", {"id": "action"}))
     html_recap = str(email_html.find("p", {"id": "recap"}))
     html_no_recal = str(email_html.find("p", {"id": "no-recap"}))
-    print(email_html.prettify())
     assert 'Vous venez d\'annuler' in html_action
     assert 'John Doe' in html_action
     assert 'john@doe.fr' in html_action
@@ -673,7 +666,6 @@ def test_make_offerer_driven_cancellation_email_for_offerer_thing_and_already_ex
     html_action = str(email_html.find("p", {"id": "action"}))
     html_recap = email_html.find("p", {"id": "recap"})
     html_recap_table = email_html.find("table", {"id": "recap-table"})
-    print(email_html.prettify())
     assert 'Vous venez d\'annuler' in html_action
     assert 'John Doe' in html_action
     assert 'john@doe.fr' in html_action
@@ -700,7 +692,6 @@ def test_make_validation_confirmation_email_offerer_user_offerer_admin(app):
     # Then
     email_html = BeautifulSoup(email['Html-part'], 'html.parser')
     html_validation_details = str(email_html.find('p', {'id': 'validation-details'}))
-    print(email_html.prettify())
     assert 'Votre structure "Le Théâtre SAS"' in html_validation_details
     assert 'L\'utilisateur admin@letheatresas.com' in html_validation_details
     assert 'en tant qu\'administrateur' in html_validation_details
@@ -721,7 +712,6 @@ def test_make_validation_confirmation_email_offerer_user_offerer_editor(app):
     # Then
     email_html = BeautifulSoup(email['Html-part'], 'html.parser')
     html_validation_details = str(email_html.find('p', {'id': 'validation-details'}))
-    print(email_html.prettify())
     assert 'Votre structure "Le Théâtre SAS"' in html_validation_details
     assert 'L\'utilisateur editor@letheatresas.com' in html_validation_details
     assert 'en tant qu\'éditeur' in html_validation_details
@@ -742,7 +732,6 @@ def test_make_validation_confirmation_email_user_offerer_editor(app):
     # Then
     email_html = BeautifulSoup(email['Html-part'], 'html.parser')
     html_validation_details = str(email_html.find('p', {'id': 'validation-details'}))
-    print(email_html.prettify())
     assert 'Votre structure "Le Théâtre SAS"' not in html_validation_details
     assert 'L\'utilisateur editor@letheatresas.com a été validé' in html_validation_details
     assert 'en tant qu\'éditeur' in html_validation_details
