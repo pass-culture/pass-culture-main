@@ -19,3 +19,14 @@ Lors de la création d'une offre coté "pro", pour la retrouver coté "jeune", i
 - des places disponibles
 - une "accroche"
 - une date limite de réservation dans le futur ou pas de date limite de réservation
+
+### Utilisation des champs {token} et {offerId} pour les offres en lignes
+
+Lors de la création d'une offre numérique (c'est à dire dont le contenu est accessible en ligne), il vous est demandé de remplir un champ URL. Ce champ correspond à l'URL sur laquelle vous souhaitez voir renvoyer un utilisateur ayant acheté votre offre sur l'application pass Culture.
+
+Cette URL peut être personalisée en utilisant le modèle suivant : www.urldemonsite.fr/?email={email}&offerID={offerId}&token={token}
+
+Ceci vous permet de faciliter l'inscription de l'utilisateur sur votre site en récuperant automatiquement :
++ l'adresse email de l'utilisateur ayant acheté votre offre
++ l'identifiant de l'offre (cet indentifiant correspond à l'URL de votre offre sur le portail professionnel, et une offre dont l'url est https://pro.passculture.beta.gouv.fr/offres/XX aura ainsi XX pour offerID)
++ la contremarque (token) générée par le pass Culture et vous permettant de valider la transaction
