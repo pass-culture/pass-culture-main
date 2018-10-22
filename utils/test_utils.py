@@ -1,15 +1,19 @@
-import json
+""" test utils """
 import random
 import string
 from datetime import datetime, timedelta, timezone
-from os import path
-from pathlib import Path
 from unittest.mock import Mock
-
 import requests as req
 from postgresql_audit.flask import versioning_manager
 
-from models import Thing, Deposit, UserOfferer, Recommendation, RightsType, Mediation, EventType, ThingType
+from models import Deposit,\
+                   EventType,\
+                   Mediation,\
+                   Recommendation,\
+                   RightsType,\
+                   Thing,\
+                   ThingType,\
+                   UserOfferer
 from models.booking import Booking
 from models.event import Event
 from models.event_occurrence import EventOccurrence
@@ -20,6 +24,7 @@ from models.payment_status import PaymentStatus, TransactionStatus
 from models.stock import Stock
 from models.user import User
 from models.venue import Venue
+from sandboxes.scripts.mocks.users_light import admin_user_mock
 from utils.token import random_token
 
 API_URL = "http://localhost:5000"
@@ -170,19 +175,9 @@ def req_with_auth(email=None, password=None, headers={'origin': 'http://localhos
     request = req.Session()
     request.headers = headers
     if email is None:
-        request.auth = ('pctest.admin@btmx.fr', 'pctestadmin')
+        request.auth = (admin_user_mock['email'], admin_user_mock['password'])
     elif password is not None:
         request.auth = (email, password)
-    else:
-        json_path = Path(path.dirname(path.realpath(__file__))) / '..' / 'mock' / 'jsons' / 'users.json'
-
-        with open(json_path) as json_file:
-            for user_json in json.load(json_file):
-                print('user_json', user_json)
-                if email == user_json['email']:
-                    request.auth = (user_json['email'], user_json['password'])
-                    break
-                raise ValueError("Utilisateur inconnu: " + email)
     return request
 
 

@@ -38,7 +38,7 @@ class TiteLiveThingThumbs(LocalProvider):
         super().__init__(offerer, **options)
         if 'mock' in options and options['mock']:
             data_root_path = Path(os.path.dirname(os.path.realpath(__file__)))\
-                            / '..' / 'mock' / 'providers' / 'titelive_works'
+                            / '..' / 'sandboxes' / 'providers' / 'titelive_works'
         else:
             data_root_path = Path(os.path.dirname(os.path.realpath(__file__)))\
                             / '..' / 'ftp_mirrors' / 'titelive_works'

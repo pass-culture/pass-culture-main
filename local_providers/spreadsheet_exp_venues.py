@@ -34,7 +34,7 @@ class SpreadsheetExpVenues(LocalProvider):
     def __init__(self, offerer, mock=False):
         super().__init__(offerer)
         if mock:
-            self.df = read_csv(Path(path.dirname(path.realpath(__file__))) / '..' / 'mock' / 'spreadsheet_exp' / 'Lieux.csv')
+            self.df = read_csv(Path(path.dirname(path.realpath(__file__))) / '..' / 'sandboxes' / 'spreadsheet_exp' / 'Lieux.csv')
         else:
             self.df = read_csv('https://docs.google.com/spreadsheets/d/1Lj53_cgWDyQ1BqUeVtq059nXxOULL28mDmm_3p2ldpo/gviz/tq?tqx=out:csv&sheet=Lieux')
         self.lines = self.df.iterrows()

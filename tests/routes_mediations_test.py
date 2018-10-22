@@ -89,7 +89,7 @@ def test_create_mediation_with_thumb_file(app):
     auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
 
     with open(Path(path.dirname(path.realpath(__file__))) / '..'
-              / 'mock' / 'thumbs' / 'mediations' / '1', 'rb') as thumb_file:
+              / 'sandboxes' / 'thumbs' / 'mediations' / '1', 'rb') as thumb_file:
         data = {'offerId': humanize(offer.id), 'offererId': humanize(offerer.id), }
         files = {'thumb': ('1.jpg', thumb_file)}
 

@@ -1,13 +1,14 @@
 """ sandbox script """
 #https://docs.python.org/3/library/datetime.html#strftime-strptime-behavior
 # -*- coding: utf-8 -*-
-from pprint import pprint
-import traceback
-from flask import current_app as app
 import json
 from os import path
 from pathlib import Path
-from utils.mock import set_from_mock
+from pprint import pprint
+import traceback
+from flask import current_app as app
+
+from sandboxes import save
 
 
 @app.manager.command
@@ -22,7 +23,7 @@ def init_db_load_testing():
 
 
 def populate_json():
-    json_path = Path(path.dirname(path.realpath(__file__))) / '..' / 'mock' / 'jsons' / 'lt_users.json'
+    json_path = Path(path.dirname(path.realpath(__file__))) / '..' / 'sandboxes' / 'jsons' / 'lt_users.json'
 
     data = []
     print("Create json file with 150 users")
@@ -43,7 +44,7 @@ def populate_db():
     check_and_save = app.model.PcObject.check_and_save
     model = app.model
 
-    json_path = Path(path.dirname(path.realpath(__file__))) / '..' / 'mock' / 'jsons' / 'lt_users.json'
+    json_path = Path(path.dirname(path.realpath(__file__))) / '..' / 'sandboxes' / 'jsons' / 'lt_users.json'
 
     with open(json_path) as json_file:
         for user_dict in json.load(json_file):
@@ -62,6 +63,6 @@ def populate_db():
                         userOfferer.user = user
                         userOfferer.offerer = offerer
                         check_and_save(userOfferer)
-                    set_from_mock("thumbs", user, 2)
+                    save("thumbs", user, 2)
                 else:
-                    set_from_mock("thumbs", user, 1)
+                    save("thumbs", user, 1)

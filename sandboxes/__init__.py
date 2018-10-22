@@ -1,12 +1,11 @@
+
 """ sandbox """
 #https://docs.python.org/3/library/datetime.html#strftime-strptime-behavior
 # -*- coding: utf-8 -*-
-
 from datetime import datetime, timedelta
 import json
 from pprint import pprint
 import sys
-from mock.scripts import sandbox_webapp, sandbox_light
 
 from models.pc_object import PcObject
 from models import Booking,\
@@ -20,11 +19,11 @@ from models import Booking,\
                    User,\
                    UserOfferer,\
                    Venue
-from utils.mock import set_from_mock
+from sandboxes.scripts import sandbox_webapp, sandbox_light
+from sandboxes.utils import store_public_object_from_sandbox_assets
 
-
-def do_sandbox(name):
-    function_name = "mock.scripts.sandbox_" + name
+def save_sandbox_in_db(name):
+    function_name = "sandboxes.scripts.sandbox_" + name
     sandbox_module = sys.modules[function_name]
 
     offerers_by_name = {}
@@ -58,7 +57,7 @@ def do_sandbox(name):
                     userOfferer.user = user
                     userOfferer.offerer = offerer
                     PcObject.check_and_save(userOfferer)
-            set_from_mock("thumbs", user, user_index)
+            store_public_object_from_sandbox_assets("thumbs", user, user_index)
         else:
             user = query.first()
         users_by_email[user_mock['email']] = user
