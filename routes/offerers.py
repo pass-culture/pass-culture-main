@@ -18,17 +18,17 @@ from utils.rest import ensure_current_user_has_rights, \
     load_or_404, \
     login_or_api_key_required
 from utils.search import get_keywords_filter
-from validation.offerers import check_valid_edition
+from validation.offerers import check_valid_edition, parse_boolean_param_validated
 
 
 @app.route('/offerers', methods=['GET'])
 @login_required
 def list_offerers():
+    only_validated_offerers = parse_boolean_param_validated(request)
     query = Offerer.query
-    is_validated = request.args.get('validated', 'true').lower() == 'true'
-
+    
     if not current_user.isAdmin:
-        if is_validated:
+        if only_validated_offerers:
             query = filter_query_where_user_is_user_offerer_and_is_validated(query, current_user)
         else:
             query = filter_query_where_user_is_user_offerer_and_is_not_validated(query, current_user)
@@ -38,7 +38,8 @@ def list_offerers():
         query = query.filter(get_keywords_filter([Offerer], keywords))
 
     return handle_rest_get_list(Offerer,
-                                include=OFFERER_INCLUDES if (is_validated or current_user.isAdmin) else NOT_VALIDATED_OFFERER_INCLUDES,
+                                include=OFFERER_INCLUDES if (
+                                        only_validated_offerers or current_user.isAdmin) else NOT_VALIDATED_OFFERER_INCLUDES,
                                 order_by=Offerer.name,
                                 page=request.args.get('page'),
                                 paginate=10,

@@ -103,6 +103,28 @@ def test_get_offerers_should_return_all_offerers_if_current_user_is_admin(app):
 
 @pytest.mark.standalone
 @clean_database
+def test_get_offerers_should_return_bad_request_if_param_validated_is_not_true_or_false(app):
+    # given
+    offerer1 = create_offerer(siren='123456781', name='offreur C')
+    offerer2 = create_offerer(siren='123456782', name='offreur A')
+    offerer3 = create_offerer(siren='123456783', name='offreur B')
+    PcObject.check_and_save(offerer1, offerer3, offerer2)
+
+    user = create_user(password='p@55sw0rd', can_book_free_offers=False, is_admin=True)
+    user.offerers = [offerer1, offerer2]
+    PcObject.check_and_save(user)
+    auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
+
+    # when
+    response = auth_request.get(API_URL + '/offerers?validated=blabla')
+
+    # then
+    assert response.status_code == 400
+    assert response.json()['validated'] == ["Le paramètre 'validated' doit être 'true' ou 'false'"]
+
+
+@pytest.mark.standalone
+@clean_database
 def test_get_offerers_should_return_all_info_of_all_offerers_if_current_user_is_admin_and_param_validated_is_false(app):
     # given
     offerer1 = create_offerer(siren='123456781', name='offreur C')
