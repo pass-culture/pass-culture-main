@@ -11,7 +11,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision = '4fc1f5367b4c'
-down_revision = '6b0fedcc7b6a'
+down_revision = 'd176385d379e'
 branch_labels = None
 depends_on = None
 
@@ -24,7 +24,7 @@ def upgrade():
              RETURN 
                      (SELECT COALESCE(SUM(amount), 0) FROM deposit WHERE "userId"=user_id)
                      -
-                     (SELECT COALESCE(SUM(amount * quantity), 0) FROM booking WHERE "userId"=user_id WHERE NOT "isCancelled");
+                     (SELECT COALESCE(SUM(amount * quantity), 0) FROM booking WHERE "userId"=user_id AND NOT "isCancelled");
          END; $$
          LANGUAGE plpgsql;
     
