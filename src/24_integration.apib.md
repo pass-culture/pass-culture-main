@@ -20,7 +20,7 @@ Lors de la création d'une offre coté "pro", pour la retrouver coté "jeune", i
 - une "accroche"
 - une date limite de réservation dans le futur ou pas de date limite de réservation
 
-### Utilisation des champs {token} et {offerId} pour les offres en lignes
+#### Utilisation des champs {token} et {offerId} pour les offres en lignes
 
 Lors de la création d'une offre numérique (c'est à dire dont le contenu est accessible en ligne), il vous est demandé de remplir un champ URL. Ce champ correspond à l'URL sur laquelle vous souhaitez voir renvoyer un utilisateur ayant acheté votre offre sur l'application pass Culture.
 
