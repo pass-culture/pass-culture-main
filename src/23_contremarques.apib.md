@@ -8,7 +8,7 @@ Ceci décrit l'API utilisable par les partenaires techniques de Pass Culture qui
 
 Pour l'environnement de production, les API sont disponibles à l'URL suivante : https://backend.passculture.beta.gouv.fr
 
-L'utilisation des deux API de vérification de validité et de validation d'une contremarque utilisent les trois paramètre suivants :
+L'utilisation des deux API de vérification de validité et de validation d'une contremarque utilisent trois paramètres :
   + token : ce champ désigne la contremarque qui permet aux acteurs de valider que l’utilisateur qui se présente devant lui dispose bien d'un compte pass Culture et a bien reservé l'offre correspondante sur l'application mobile. Ce code est généré en temps réel pour chaque réservation d'un utilisateur sur l'application et est transmis à cette occasion à l’utilisateur.
   + email (string) : ce champ désigne l'adresse de messagerie électronique de l'utilisateur.
   + offerId (optional, string) : ce champ désigne l'identifiant unique d'une offre sur notre plateforme. Vous le trouverez sur l'URL de votre offre sur le portail professionnel (une offre dont l'url est https://pro.passculture.beta.gouv.fr/offres/XX aura ainsi XX pour offerID)
