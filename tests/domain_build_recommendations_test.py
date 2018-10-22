@@ -19,7 +19,7 @@ class MockedOffer(Offer):
 @pytest.mark.standalone
 def test_build_mixed_recommendations_with_only_created_recommendations():
     # given
-    created_recommendations = [create_recommendation(id=1), create_recommendation(id=2)]
+    created_recommendations = [create_recommendation(idx=1), create_recommendation(idx=2)]
     read_recommendations = []
     unread_recommendations = []
 
@@ -34,9 +34,9 @@ def test_build_mixed_recommendations_with_only_created_recommendations():
 @pytest.mark.standalone
 def test_build_mixed_recommendations_with_created_recommendations_and_unread_but_none_read():
     # given
-    created_recommendations = [create_recommendation(id=1), create_recommendation(id=2)]
+    created_recommendations = [create_recommendation(idx=1), create_recommendation(idx=2)]
     read_recommendations = []
-    unread_recommendations = [create_recommendation(id=3), create_recommendation(id=4)]
+    unread_recommendations = [create_recommendation(idx=3), create_recommendation(idx=4)]
 
     # when
     created_recommendations = build_mixed_recommendations(created_recommendations, read_recommendations,
@@ -49,8 +49,8 @@ def test_build_mixed_recommendations_with_created_recommendations_and_unread_but
 @pytest.mark.standalone
 def test_build_mixed_recommendations_with_created_recommendations_and_read_but_none_unread():
     # given
-    created_recommendations = [create_recommendation(id=1), create_recommendation(id=2)]
-    read_recommendations = [create_recommendation(id=3), create_recommendation(id=4)]
+    created_recommendations = [create_recommendation(idx=1), create_recommendation(idx=2)]
+    read_recommendations = [create_recommendation(idx=3), create_recommendation(idx=4)]
     unread_recommendations = []
 
     # when
@@ -65,7 +65,7 @@ def test_build_mixed_recommendations_with_created_recommendations_and_read_but_n
 def test_build_mixed_recommendations_with_only_read_recommendations_and_none_created():
     # given
     created_recommendations = []
-    read_recommendations = [create_recommendation(id=1), create_recommendation(id=2)]
+    read_recommendations = [create_recommendation(idx=1), create_recommendation(idx=2)]
     unread_recommendations = []
 
     # when
@@ -81,7 +81,7 @@ def test_build_mixed_recommendations_with_only_unread_recommendations_and_none_c
     # given
     created_recommendations = []
     read_recommendations = []
-    unread_recommendations = [create_recommendation(id=1), create_recommendation(id=2)]
+    unread_recommendations = [create_recommendation(idx=1), create_recommendation(idx=2)]
 
     # when
     created_recommendations = build_mixed_recommendations(created_recommendations, read_recommendations,
@@ -95,8 +95,8 @@ def test_build_mixed_recommendations_with_only_unread_recommendations_and_none_c
 def test_build_mixed_recommendations_with_read_recommendations_and_unread_but_none_created():
     # given
     created_recommendations = []
-    read_recommendations = [create_recommendation(id=1), create_recommendation(id=2)]
-    unread_recommendations = [create_recommendation(id=3), create_recommendation(id=4)]
+    read_recommendations = [create_recommendation(idx=1), create_recommendation(idx=2)]
+    unread_recommendations = [create_recommendation(idx=3), create_recommendation(idx=4)]
 
     # when
     created_recommendations = build_mixed_recommendations(created_recommendations, read_recommendations,
@@ -109,9 +109,9 @@ def test_build_mixed_recommendations_with_read_recommendations_and_unread_but_no
 @pytest.mark.standalone
 def test_build_mixed_recommendations_with_all_sorts_of_recommendations():
     # given
-    created_recommendations = [create_recommendation(id=5), create_recommendation(id=6)]
-    read_recommendations = [create_recommendation(id=1), create_recommendation(id=2)]
-    unread_recommendations = [create_recommendation(id=3), create_recommendation(id=4)]
+    created_recommendations = [create_recommendation(idx=5), create_recommendation(idx=6)]
+    read_recommendations = [create_recommendation(idx=1), create_recommendation(idx=2)]
+    unread_recommendations = [create_recommendation(idx=3), create_recommendation(idx=4)]
 
     # when
     created_recommendations = build_mixed_recommendations(created_recommendations, read_recommendations,
@@ -131,12 +131,12 @@ def test_build_mixed_recommendations_removes_the_recommendations_on_paid_offers_
     offer_with_paid_stock = MockedOffer([paid_stock, free_stock])
     offer_with_free_stock = MockedOffer([free_stock])
 
-    created_recommendations = [create_recommendation(id=5, offer=offer_with_paid_stock),
-                               create_recommendation(id=6, offer=offer_with_free_stock)]
-    read_recommendations = [create_recommendation(id=1, offer=offer_with_free_stock),
-                            create_recommendation(id=2, offer=offer_with_free_stock)]
-    unread_recommendations = [create_recommendation(id=3, offer=offer_with_paid_stock),
-                              create_recommendation(id=4, offer=offer_with_paid_stock)]
+    created_recommendations = [create_recommendation(offer=offer_with_paid_stock, idx=5),
+                               create_recommendation(offer=offer_with_free_stock, idx=6)]
+    read_recommendations = [create_recommendation(offer=offer_with_free_stock, idx=1),
+                            create_recommendation(offer=offer_with_free_stock, idx=2)]
+    unread_recommendations = [create_recommendation(offer=offer_with_paid_stock, idx=3),
+                              create_recommendation(offer=offer_with_paid_stock, idx=4)]
 
     # when
     created_recommendations = build_mixed_recommendations(created_recommendations, read_recommendations,

@@ -1,7 +1,10 @@
 """ mediations """
+from datetime import datetime
+
 from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
 
+from domain.discard_pc_objects import invalidate_recommendations_if_deactivating_object
 from models.api_errors import ApiErrors
 from models.mediation import Mediation
 from models.pc_object import PcObject
@@ -55,6 +58,8 @@ def update_mediation(mediation_id):
     mediation = load_or_404(Mediation, mediation_id)
     ensure_current_user_has_rights(RightsType.editor, mediation.offer.venue.managingOffererId)
     mediation = Mediation.query.filter_by(id=dehumanize(mediation_id)).first()
-    mediation.populateFromDict(request.json)
+    data = request.json
+    mediation.populateFromDict(data)
+    invalidate_recommendations_if_deactivating_object(data, mediation.recommendations)
     PcObject.check_and_save(mediation)
     return jsonify(mediation._asdict()), 200

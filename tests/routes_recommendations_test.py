@@ -6,21 +6,22 @@ import pytest
 from models import PcObject
 from tests.conftest import clean_database
 from utils.human_ids import humanize
-from utils.test_utils import API_URL,\
-                             create_event_occurrence,\
-                             create_event_offer,\
-                             create_mediation,\
-                             create_offerer,\
-                             create_recommendation,\
-                             create_stock_from_event_occurrence,\
-                             create_stock_from_offer,\
-                             create_thing_offer,\
-                             create_user,\
-                             create_venue,\
-                             req,\
-                             req_with_auth
+from utils.test_utils import API_URL, \
+    create_event_occurrence, \
+    create_event_offer, \
+    create_mediation, \
+    create_offerer, \
+    create_recommendation, \
+    create_stock_from_event_occurrence, \
+    create_stock_from_offer, \
+    create_thing_offer, \
+    create_user, \
+    create_venue, \
+    req, \
+    req_with_auth
 
 RECOMMENDATION_URL = API_URL + '/recommendations'
+
 
 @pytest.mark.standalone
 def test_put_recommendations_works_only_when_logged_in():
@@ -113,21 +114,9 @@ def test_get_recommendations_does_not_return_recommendations_of_offers_with_soft
     event_occurrence2 = create_event_occurrence(offer1)
     event_occurrence3 = create_event_occurrence(offer2)
 
-    stock1 = create_stock_from_event_occurrence(
-        event_occurrence1,
-        price=10,
-        soft_deleted=False
-    )
-    stock2 = create_stock_from_event_occurrence(
-        event_occurrence2,
-        price=20,
-        soft_deleted=True
-    )
-    stock3 = create_stock_from_event_occurrence(
-        event_occurrence3,
-        price=30,
-        soft_deleted=True
-    )
+    stock1 = create_stock_from_event_occurrence(event_occurrence1, price=10, soft_deleted=False)
+    stock2 = create_stock_from_event_occurrence(event_occurrence2, price=20, soft_deleted=True)
+    stock3 = create_stock_from_event_occurrence(event_occurrence3, price=30, soft_deleted=True)
 
     PcObject.check_and_save(stock1, stock2, stock3, recommendation1, recommendation2)
     auth_request = req_with_auth(user.email, user.clearTextPassword)
@@ -375,3 +364,93 @@ def test_get_favorite_recommendations_returns_recommendations_favored_by_current
     # then
     assert response.status_code == 200
     assert len(response.json()) == 2
+
+
+@clean_database
+@pytest.mark.standalone
+def test_put_recommendations_returns_requested_recommendation_first(app):
+    # given
+    user = create_user(email='weird.bug@email.com', password='P@55w0rd')
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    offer1 = create_thing_offer(venue, thumb_count=1)
+    offer2 = create_event_offer(venue, thumb_count=1)
+    offer3 = create_thing_offer(venue, thumb_count=1)
+    offer4 = create_thing_offer(venue, thumb_count=1)
+    now = datetime.utcnow()
+    fifteen_min_ago = now - timedelta(minutes=15)
+    event_occurrence = create_event_occurrence(offer2, beginning_datetime=now + timedelta(hours=72),
+                                               end_datetime=now + timedelta(hours=74))
+    mediation = create_mediation(offer2)
+    stock1 = create_stock_from_offer(offer1, price=0)
+    stock2 = create_stock_from_event_occurrence(event_occurrence, price=0, available=10, soft_deleted=False,
+                                                booking_limit_date=now + timedelta(days=3))
+    stock3 = create_stock_from_offer(offer3, price=0)
+    stock4 = create_stock_from_offer(offer4, price=0)
+    recommendation_offer3 = create_recommendation(offer3, user)
+    recommendation_offer4 = create_recommendation(offer4, user, date_read=now - timedelta(days=1))
+    PcObject.check_and_save(user, stock1, stock2, stock3, stock4, mediation, event_occurrence, recommendation_offer3,
+                            recommendation_offer4)
+    auth_request = req_with_auth(user.email, user.clearTextPassword)
+
+    data = {'seenRecommendationIds': []}
+    # when
+    response = auth_request.put(RECOMMENDATION_URL + '?offerId=%s' % humanize(offer1.id), json=data)
+
+    # then
+    assert response.status_code == 200
+    response_json = response.json()
+    assert len(response_json) == 4
+    offer_ids = set(map(lambda x: x['offer']['id'], response_json))
+    recommendation_ids = set(map(lambda x: x['id'], response_json))
+    assert response_json[0]['offer']['id'] == humanize(offer1.id)
+    assert humanize(offer1.id) in offer_ids
+    assert humanize(offer2.id) in offer_ids
+    assert humanize(offer3.id) in offer_ids
+    assert humanize(recommendation_offer4.id) in recommendation_ids
+    assert humanize(recommendation_offer3.id) in recommendation_ids
+
+
+@clean_database
+@pytest.mark.standalone
+def test_put_recommendations_creates_new_recommendation_when_existing_ones_invalid(app):
+    # given
+    now = datetime.utcnow()
+    fifteen_min_ago = now - timedelta(minutes=15)
+    user = create_user(email='test@email.com', password='P@55w0rd')
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    offer1 = create_thing_offer(venue, thumb_count=1)
+    offer2 = create_event_offer(venue, thumb_count=1)
+    offer3 = create_thing_offer(venue, thumb_count=1)
+    offer4 = create_thing_offer(venue, thumb_count=1)
+    event_occurrence = create_event_occurrence(offer2, beginning_datetime=now + timedelta(hours=72),
+                                               end_datetime=now + timedelta(hours=74))
+    mediation = create_mediation(offer2)
+    stock1 = create_stock_from_offer(offer1, price=0)
+    stock2 = create_stock_from_event_occurrence(event_occurrence, price=0, available=10, soft_deleted=False,
+                                                booking_limit_date=now + timedelta(days=3))
+    stock3 = create_stock_from_offer(offer3, price=0)
+    stock4 = create_stock_from_offer(offer4, price=0)
+    recommendation_offer1 = create_recommendation(offer1, user, valid_until_date=fifteen_min_ago)
+    recommendation_offer2 = create_recommendation(offer2, user, valid_until_date=fifteen_min_ago)
+    recommendation_offer3 = create_recommendation(offer3, user, valid_until_date=fifteen_min_ago)
+    recommendation_offer4 = create_recommendation(offer4, user, date_read=now - timedelta(days=1),
+                                                  valid_until_date=fifteen_min_ago)
+    PcObject.check_and_save(stock1, stock2, stock3, stock4, mediation, event_occurrence, recommendation_offer3,
+                            recommendation_offer4, recommendation_offer1, recommendation_offer2)
+    auth_request = req_with_auth(user.email, user.clearTextPassword)
+
+    data = {'seenRecommendationIds': []}
+    # when
+    response = auth_request.put(RECOMMENDATION_URL + '?offerId=%s' % humanize(offer1.id), json=data)
+
+    # then
+    assert response.status_code == 200
+    response_json = response.json()
+    assert len(response_json) == 4
+    recommendation_ids = set(map(lambda x: x['id'], response_json))
+    assert humanize(recommendation_offer1.id) not in recommendation_ids
+    assert humanize(recommendation_offer2.id) not in recommendation_ids
+    assert humanize(recommendation_offer3.id) not in recommendation_ids
+    assert humanize(recommendation_offer4.id) not in recommendation_ids

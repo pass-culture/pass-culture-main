@@ -287,7 +287,7 @@ def test_patch_offer_returns_200_and_expires_recos(app):
     assert offer.eventId != data['eventId']
     assert response.json()['eventId'] != offer.eventId
     db.session.refresh(recommendation)
-    assert recommendation.validUntilDate < datetime.now()
+    assert recommendation.validUntilDate < datetime.utcnow()
 
 
 @clean_database

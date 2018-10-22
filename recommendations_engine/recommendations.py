@@ -66,7 +66,7 @@ def _no_mediation_or_mediation_does_not_match_offer(mediation, offer_id):
 
 def _find_recommendation(offer_id, mediation_id):
     logger.info('Requested Recommendation with offer_id=%s mediation_id=%s' % (offer_id, mediation_id))
-    query = Recommendation.query
+    query = Recommendation.query.filter(Recommendation.validUntilDate > datetime.utcnow())
     if offer_id:
         query = query.join(Offer)
     mediation = Mediation.query.filter_by(id=mediation_id).first()

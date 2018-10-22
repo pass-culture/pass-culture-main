@@ -1,4 +1,6 @@
 """ repository offer queries """
+from datetime import datetime, timedelta
+
 import pytest
 
 from models import Thing, PcObject, Event
@@ -13,7 +15,7 @@ from utils.test_utils import create_event, \
     create_thing, \
     create_thing_offer, \
     create_offerer, \
-    create_venue, create_user, create_stock_from_offer
+    create_venue, create_user, create_stock_from_offer, create_mediation
 
 
 @pytest.mark.standalone
@@ -46,6 +48,7 @@ def test_departement_or_national_offers_with_national_event_returns_national_eve
     query = departement_or_national_offers(query, Event, ['93'])
 
     assert event in query.all()
+
 
 @pytest.mark.standalone
 @clean_database
@@ -96,13 +99,8 @@ def test_type_search(app):
         concert_offer
     )
 
-    conference_stock = create_stock_from_event_occurrence(
-        conference_event_occurrence
-    )
-    concert_stock = create_stock_from_event_occurrence(
-        concert_event_occurrence 
-    )
-
+    conference_stock = create_stock_from_event_occurrence(conference_event_occurrence)
+    concert_stock = create_stock_from_event_occurrence(concert_event_occurrence)
 
     PcObject.check_and_save(conference_stock, concert_stock)
 
@@ -140,3 +138,28 @@ def test_get_active_offers_by_type_when_departement_code_00(app):
     assert offer_34 in offers
     assert offer_93 in offers
     assert offer_75 in offers
+
+
+@clean_database
+@pytest.mark.standalone
+def test_get_active_event_offers_only_returns_event_offers(app):
+    # Given
+    user = create_user(departement_code='93')
+    offerer = create_offerer()
+    venue = create_venue(offerer, departement_code='93')
+    offer1 = create_thing_offer(venue, thumb_count=1)
+    offer2 = create_event_offer(venue, thumb_count=1)
+    now = datetime.utcnow()
+    event_occurrence = create_event_occurrence(offer2, beginning_datetime=now + timedelta(hours=72),
+                                               end_datetime=now + timedelta(hours=74))
+    mediation = create_mediation(offer2)
+    stock1 = create_stock_from_offer(offer1, price=0)
+    stock2 = create_stock_from_event_occurrence(event_occurrence, price=0, available=10,
+                                                booking_limit_date=now + timedelta(days=2))
+    PcObject.check_and_save(user, stock1, stock2, mediation, event_occurrence)
+
+    # When
+    offers = get_active_offers_by_type(Event, user=user, departement_codes=['93'])
+    # Then
+    assert len(offers) == 1
+    assert offers[0].id == offer2.id
