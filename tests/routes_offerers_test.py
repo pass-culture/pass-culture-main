@@ -52,9 +52,199 @@ def test_get_offerers_should_return_a_list_of_offerers_sorted_alphabetically(app
     # then
     assert response.status_code == 200
     offerers = response.json()
-    assert len(offerers) > 0
+    assert len(offerers) == 3
     names = [offerer['name'] for offerer in offerers]
     assert names == ['offreur A', 'offreur B', 'offreur C']
+
+
+@pytest.mark.standalone
+@clean_database
+def test_get_offerers_should_return_only_user_offerers_if_current_user_is_not_admin(app):
+    # given
+    offerer1 = create_offerer(siren='123456781', name='offreur C')
+    offerer2 = create_offerer(siren='123456782', name='offreur A')
+    offerer3 = create_offerer(siren='123456783', name='offreur B')
+    PcObject.check_and_save(offerer1, offerer3, offerer2)
+
+    user = create_user(password='p@55sw0rd', can_book_free_offers=True, is_admin=False)
+    user.offerers = [offerer1, offerer2]
+    PcObject.check_and_save(user)
+    auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
+
+    # when
+    response = auth_request.get(API_URL + '/offerers')
+
+    # then
+    assert response.status_code == 200
+    assert len(response.json()) == 2
+
+
+@pytest.mark.standalone
+@clean_database
+def test_get_offerers_should_return_all_offerers_if_current_user_is_admin(app):
+    # given
+    offerer1 = create_offerer(siren='123456781', name='offreur C')
+    offerer2 = create_offerer(siren='123456782', name='offreur A')
+    offerer3 = create_offerer(siren='123456783', name='offreur B')
+    PcObject.check_and_save(offerer1, offerer3, offerer2)
+
+    user = create_user(password='p@55sw0rd', can_book_free_offers=False, is_admin=True)
+    user.offerers = [offerer1, offerer2]
+    PcObject.check_and_save(user)
+    auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
+
+    # when
+    response = auth_request.get(API_URL + '/offerers')
+
+    # then
+    assert response.status_code == 200
+    assert len(response.json()) == 3
+
+
+@pytest.mark.standalone
+@clean_database
+def test_get_offerers_should_return_bad_request_if_param_validated_is_not_true_or_false(app):
+    # given
+    offerer1 = create_offerer(siren='123456781', name='offreur C')
+    offerer2 = create_offerer(siren='123456782', name='offreur A')
+    offerer3 = create_offerer(siren='123456783', name='offreur B')
+    PcObject.check_and_save(offerer1, offerer3, offerer2)
+
+    user = create_user(password='p@55sw0rd', can_book_free_offers=False, is_admin=True)
+    user.offerers = [offerer1, offerer2]
+    PcObject.check_and_save(user)
+    auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
+
+    # when
+    response = auth_request.get(API_URL + '/offerers?validated=blabla')
+
+    # then
+    assert response.status_code == 400
+    assert response.json()['validated'] == ["Le paramètre 'validated' doit être 'true' ou 'false'"]
+
+
+@pytest.mark.standalone
+@clean_database
+def test_get_offerers_should_return_all_info_of_all_offerers_if_current_user_is_admin_and_param_validated_is_false(app):
+    # given
+    offerer1 = create_offerer(siren='123456781', name='offreur C')
+    offerer2 = create_offerer(siren='123456782', name='offreur A')
+    offerer3 = create_offerer(siren='123456783', name='offreur B')
+    PcObject.check_and_save(offerer1, offerer3, offerer2)
+
+    user = create_user(password='p@55sw0rd', can_book_free_offers=False, is_admin=True)
+    user.offerers = [offerer1, offerer2]
+    PcObject.check_and_save(user)
+    auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
+
+    # when
+    response = auth_request.get(API_URL + '/offerers?validated=false')
+
+    # then
+    assert response.status_code == 200
+    assert list(response.json()[0].keys()) == [
+        'address', 'bic', 'city', 'dateCreated', 'dateModifiedAtLastProvider',
+        'firstThumbDominantColor', 'iban', 'id', 'idAtProviders', 'isActive',
+        'isValidated', 'lastProviderId', 'managedVenues', 'modelName', 'nOffers',
+        'name', 'postalCode', 'siren', 'thumbCount'
+    ]
+
+
+@pytest.mark.standalone
+@clean_database
+def test_get_offerers_should_return_only_not_validated_offerers_if_param_validated_is_false(app):
+    # given
+    user = create_user(password='p@55sw0rd')
+    offerer1 = create_offerer(siren='123456781', name='offreur C')
+    offerer2 = create_offerer(siren='123456782', name='offreur A')
+    offerer3 = create_offerer(siren='123456783', name='offreur B')
+    user_offerer1 = create_user_offerer(user, offerer1, validation_token=None)
+    user_offerer2 = create_user_offerer(user, offerer2, validation_token='AZE123')
+    user_offerer3 = create_user_offerer(user, offerer3, validation_token=None)
+    PcObject.check_and_save(user_offerer1, user_offerer2, user_offerer3)
+    auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
+
+    # when
+    response = auth_request.get(API_URL + '/offerers?validated=false')
+
+    # then
+    assert response.status_code == 200
+    assert len(response.json()) == 1
+
+
+@pytest.mark.standalone
+@clean_database
+def test_get_offerers_should_return_only_name_and_siren_of_not_validated_offerers_if_param_validated_is_false(app):
+    # given
+    user = create_user(password='p@55sw0rd')
+    offerer1 = create_offerer(siren='123456781', name='offreur C')
+    offerer2 = create_offerer(siren='123456782', name='offreur A')
+    offerer3 = create_offerer(siren='123456783', name='offreur B')
+    user_offerer1 = create_user_offerer(user, offerer1, validation_token=None)
+    user_offerer2 = create_user_offerer(user, offerer2, validation_token='AZE123')
+    user_offerer3 = create_user_offerer(user, offerer3, validation_token=None)
+    PcObject.check_and_save(user_offerer1, user_offerer2, user_offerer3)
+    auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
+
+    # when
+    response = auth_request.get(API_URL + '/offerers?validated=false')
+
+    # then
+    assert response.status_code == 200
+    assert len(response.json()) == 1
+    assert response.json()[0] == {'modelName': 'Offerer', 'name': 'offreur A', 'siren': '123456782'}
+
+
+@pytest.mark.standalone
+@clean_database
+def test_get_offerers_should_return_only_validated_offerers_if_param_validated_is_true(app):
+    # given
+    user = create_user(password='p@55sw0rd')
+    offerer1 = create_offerer(siren='123456781', name='offreur C')
+    offerer2 = create_offerer(siren='123456782', name='offreur A')
+    offerer3 = create_offerer(siren='123456783', name='offreur B')
+    user_offerer1 = create_user_offerer(user, offerer1, validation_token=None)
+    user_offerer2 = create_user_offerer(user, offerer2, validation_token='AZE123')
+    user_offerer3 = create_user_offerer(user, offerer3, validation_token=None)
+    PcObject.check_and_save(user_offerer1, user_offerer2, user_offerer3)
+    auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
+
+    # when
+    response = auth_request.get(API_URL + '/offerers?validated=true')
+
+    # then
+    assert response.status_code == 200
+    assert len(response.json()) == 2
+    assert response.json()[0]['name'] == 'offreur B'
+    assert response.json()[1]['name'] == 'offreur C'
+
+
+@pytest.mark.standalone
+@clean_database
+def test_get_offerers_should_return_all_info_of_validated_offerers_if_param_validated_is_true(app):
+    # given
+    user = create_user(password='p@55sw0rd')
+    offerer1 = create_offerer(siren='123456781', name='offreur C')
+    offerer2 = create_offerer(siren='123456782', name='offreur A')
+    offerer3 = create_offerer(siren='123456783', name='offreur B')
+    user_offerer1 = create_user_offerer(user, offerer1, validation_token=None)
+    user_offerer2 = create_user_offerer(user, offerer2, validation_token='AZE123')
+    user_offerer3 = create_user_offerer(user, offerer3, validation_token=None)
+    PcObject.check_and_save(user_offerer1, user_offerer2, user_offerer3)
+    auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
+
+    # when
+    response = auth_request.get(API_URL + '/offerers?validated=true')
+
+    # then
+    assert response.status_code == 200
+    assert len(response.json()) == 2
+    assert list(response.json()[0].keys()) == [
+        'address', 'bic', 'city', 'dateCreated', 'dateModifiedAtLastProvider',
+        'firstThumbDominantColor', 'iban', 'id', 'idAtProviders', 'isActive',
+        'isValidated', 'lastProviderId', 'managedVenues', 'modelName', 'nOffers',
+        'name', 'postalCode', 'siren', 'thumbCount'
+    ]
 
 
 @pytest.mark.standalone
@@ -108,7 +298,8 @@ def test_get_offerer_bookings_returns_bookings_with_their_reimbursements_ordered
     auth_request = req_with_auth(email=user_pro.email, password='p@55sw0rd')
 
     # when
-    response = auth_request.get(API_URL + '/offerers/%s/bookings?order_by_column=booking_id&order=desc' % humanize(offerer.id))
+    response = auth_request.get(
+        API_URL + '/offerers/%s/bookings?order_by_column=booking_id&order=desc' % humanize(offerer.id))
 
     # then
     assert response.status_code == 200
@@ -153,6 +344,7 @@ def test_get_offerer_bookings_returns_bookings_with_only_public_user_info_and_no
         'lastName': user.lastName
     }
 
+
 @pytest.mark.standalone
 @clean_database
 def test_get_offerer_bookings_returns_bookings_with_public_user_info_and_token_when_it_is_used(app):
@@ -187,6 +379,7 @@ def test_get_offerer_bookings_returns_bookings_with_public_user_info_and_token_w
         'email': user.email,
         'lastName': user.lastName
     }
+
 
 @pytest.mark.standalone
 @clean_database
@@ -487,7 +680,7 @@ def test_get_offerer_bookings_ordered_by_venue_name_desc(app):
     offerer = create_offerer()
     user_offerer = create_user_offerer(user_pro, offerer)
 
-    venue_1 = create_venue(offerer, name='La petite librairie' , siret=offerer.siren + '12345')
+    venue_1 = create_venue(offerer, name='La petite librairie', siret=offerer.siren + '12345')
     venue_2 = create_venue(offerer, name='Atelier expérimental', siret=offerer.siren + '54321')
     offer_1 = create_thing_offer(venue_1)
     offer_2 = create_event_offer(venue_2)
@@ -501,7 +694,8 @@ def test_get_offerer_bookings_ordered_by_venue_name_desc(app):
     auth_request = req_with_auth(email=user_pro.email, password='p@55sw0rd')
 
     # when
-    response = auth_request.get(API_URL + '/offerers/%s/bookings?order_by_column=venue_name&order=desc' % humanize(offerer.id))
+    response = auth_request.get(
+        API_URL + '/offerers/%s/bookings?order_by_column=venue_name&order=desc' % humanize(offerer.id))
 
     # then
     assert response.status_code == 200
@@ -522,7 +716,7 @@ def test_get_offerer_bookings_ordered_by_venue_name_asc(app):
     offerer = create_offerer()
     user_offerer = create_user_offerer(user_pro, offerer)
 
-    venue_1 = create_venue(offerer, name='La petite librairie' , siret=offerer.siren + '12345')
+    venue_1 = create_venue(offerer, name='La petite librairie', siret=offerer.siren + '12345')
     venue_2 = create_venue(offerer, name='Atelier expérimental', siret=offerer.siren + '54321')
     offer_1 = create_thing_offer(venue_1)
     offer_2 = create_event_offer(venue_2)
@@ -536,7 +730,8 @@ def test_get_offerer_bookings_ordered_by_venue_name_asc(app):
     auth_request = req_with_auth(email=user_pro.email, password='p@55sw0rd')
 
     # when
-    response = auth_request.get(API_URL + '/offerers/%s/bookings?order_by_column=venue_name&order=asc' % humanize(offerer.id))
+    response = auth_request.get(
+        API_URL + '/offerers/%s/bookings?order_by_column=venue_name&order=asc' % humanize(offerer.id))
 
     # then
     assert response.status_code == 200
@@ -602,7 +797,8 @@ def test_get_offerer_bookings_ordered_by_date_desc(app):
     auth_request = req_with_auth(email=user_pro.email, password='p@55sw0rd')
 
     # when
-    response = auth_request.get(API_URL + '/offerers/%s/bookings?order_by_column=date&order=desc' % humanize(offerer.id))
+    response = auth_request.get(
+        API_URL + '/offerers/%s/bookings?order_by_column=date&order=desc' % humanize(offerer.id))
 
     # then
     assert response.status_code == 200
@@ -623,7 +819,7 @@ def test_get_offerer_bookings_ordered_by_category_asc(app):
     offerer = create_offerer()
     user_offerer = create_user_offerer(user_pro, offerer)
 
-    venue_1 = create_venue(offerer, name='La petite librairie' , siret=offerer.siren + '12345')
+    venue_1 = create_venue(offerer, name='La petite librairie', siret=offerer.siren + '12345')
     venue_2 = create_venue(offerer, name='Atelier expérimental', siret=offerer.siren + '54321')
     offer_1 = create_thing_offer(venue_1, thing_type=ThingType.LIVRE_EDITION)
     offer_2 = create_event_offer(venue_2, event_type=EventType.SPECTACLE_VIVANT)
@@ -637,7 +833,8 @@ def test_get_offerer_bookings_ordered_by_category_asc(app):
     auth_request = req_with_auth(email=user_pro.email, password='p@55sw0rd')
 
     # when
-    response = auth_request.get(API_URL + '/offerers/%s/bookings?order_by_column=category&order=asc' % humanize(offerer.id))
+    response = auth_request.get(
+        API_URL + '/offerers/%s/bookings?order_by_column=category&order=asc' % humanize(offerer.id))
 
     # then
     assert response.status_code == 200
@@ -658,7 +855,7 @@ def test_get_offerer_bookings_ordered_by_category_desc(app):
     offerer = create_offerer()
     user_offerer = create_user_offerer(user_pro, offerer)
 
-    venue_1 = create_venue(offerer, name='La petite librairie' , siret=offerer.siren + '12345')
+    venue_1 = create_venue(offerer, name='La petite librairie', siret=offerer.siren + '12345')
     venue_2 = create_venue(offerer, name='Atelier expérimental', siret=offerer.siren + '54321')
     offer_1 = create_thing_offer(venue_1, thing_type=ThingType.LIVRE_EDITION)
     offer_2 = create_event_offer(venue_2, event_type=EventType.SPECTACLE_VIVANT)
@@ -672,7 +869,8 @@ def test_get_offerer_bookings_ordered_by_category_desc(app):
     auth_request = req_with_auth(email=user_pro.email, password='p@55sw0rd')
 
     # when
-    response = auth_request.get(API_URL + '/offerers/%s/bookings?order_by_column=category&order=desc' % humanize(offerer.id))
+    response = auth_request.get(
+        API_URL + '/offerers/%s/bookings?order_by_column=category&order=desc' % humanize(offerer.id))
 
     # then
     assert response.status_code == 200
@@ -707,7 +905,8 @@ def test_get_offerer_bookings_ordered_by_amount_desc(app):
     auth_request = req_with_auth(email=user_pro.email, password='p@55sw0rd')
 
     # when
-    response = auth_request.get(API_URL + '/offerers/%s/bookings?order_by_column=amount&order=desc' % humanize(offerer.id))
+    response = auth_request.get(
+        API_URL + '/offerers/%s/bookings?order_by_column=amount&order=desc' % humanize(offerer.id))
 
     # then
     assert response.status_code == 200
@@ -743,7 +942,8 @@ def test_get_offerer_bookings_ordered_by_amount_asc(app):
     auth_request = req_with_auth(email=user_pro.email, password='p@55sw0rd')
 
     # when
-    response = auth_request.get(API_URL + '/offerers/%s/bookings?order_by_column=amount&order=asc' % humanize(offerer.id))
+    response = auth_request.get(
+        API_URL + '/offerers/%s/bookings?order_by_column=amount&order=asc' % humanize(offerer.id))
 
     # then
     assert response.status_code == 200
