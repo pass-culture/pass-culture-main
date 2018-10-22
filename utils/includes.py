@@ -157,6 +157,8 @@ PRO_BOOKING_INCLUDES = [
 
 USER_INCLUDES = [
     '-password',
+    '-resetPasswordToken',
+    '-resetPasswordTokenValidityLimit',
     'wallet_balance',
     'wallet_is_activated'
 ]
