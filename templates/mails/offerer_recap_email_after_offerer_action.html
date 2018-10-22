@@ -2,14 +2,22 @@
 {% block new_reservation %}
     <p id="action">
         Vous venez d'annuler la réservation de {{ user_name }} ({{ user_email }})
-        {% if not booking_is_on_event %}
     </p>
+    {% if not booking_is_on_event %}
     <p id="recap">
-        pour {{ stock_name }}{% if stock_date_time %}
-        <br/> le {{ stock_date_time }}{% endif %},
-        <br/>{% if not booking_is_on_event %}{% if venue.isVirtual %}Offre numérique proposée par {{ venue.name }}{% endif %}{% endif %}proposé par {{ venue.name }} (Adresse : {{ venue.address }}, {{ venue.postalCode }} {{ venue.city }}).
+        pour {{ stock_name }}
+        {% if stock_date_time %}
+            <br/> le {{ stock_date_time }}
+        {% endif %},
+        <br/>
+        {% if not booking_is_on_event %}
+            {% if venue.isVirtual %}
+                Offre numérique proposée par {{ venue.name }}
             {% endif %}
+        {% endif %}
+        proposé par {{ venue.name }} (Adresse : {{ venue.address }}, {{ venue.postalCode }} {{ venue.city }}).
     </p>
+    {% endif %}
 
 {% endblock %}
 {% block past_or_future %}des réservations à ce jour{% endblock %}

@@ -8,14 +8,29 @@ from domain.user_emails import send_user_driven_cancellation_email_to_user, \
     send_booking_confirmation_email_to_user, send_booking_recap_emails, send_final_booking_recap_email, \
     send_validation_confirmation_email, send_batch_cancellation_emails_to_users, \
     send_batch_cancellation_email_to_offerer
-from models import Offerer, UserOfferer, User, RightsType, Booking
-from tests.utils_mailing_test import HTML_USER_BOOKING_EVENT_CONFIRMATION_EMAIL, \
-    SUBJECT_USER_EVENT_BOOKING_CONFIRMATION_EMAIL
+from models import Offerer, UserOfferer, User, RightsType
+from tests.utils_mailing_test import SUBJECT_USER_EVENT_BOOKING_CONFIRMATION_EMAIL
 from utils.config import IS_PROD, ENV
 from utils.mailing import MailServiceException
 from utils.test_utils import create_user, create_booking, create_stock_with_event_offer, create_offerer, create_venue, \
     create_thing_offer, create_stock_with_thing_offer, create_mocked_bookings
 
+HTML_USER_BOOKING_EVENT_CONFIRMATION_EMAIL = \
+    '''<html>
+    <body>
+        <p id="mail-greeting">Bonjour Test,</p>
+
+        <div id="mail-content">
+            Nous vous confirmons votre réservation pour Mains, sorts et papiers le 20 juillet 2019 à 14:00, proposé par Test offerer (Adresse : 123 rue test, 93000 Test city). Votre code de réservation est le 56789.
+        </div>
+
+        <p id="mail-salutation">
+            Cordialement,
+            <br>L\'équipe pass Culture
+        </p>
+
+    </body>
+</html>'''
 
 @pytest.mark.standalone
 def test_send_user_driven_cancellation_email_to_user_when_feature_send_mail_to_users_enabled(app):

@@ -1,14 +1,28 @@
 <html>
     <body>
         <p id="mail-greeting">Cher partenaire pass Culture,</p>
-        {% block new_reservation %}{% endblock %}
+        {% block new_reservation %}
+        {% endblock %}
 
         {% if booking_is_on_event %}
-            {% block recap %}
-                <p id="recap">
-                    Voici le récapitulatif {% if is_final %}final des réservations :{% else %}des réservations à ce jour :{% endif %}<br/> (total {{ number_of_bookings }}) pour {{ stock_name }}{% if stock_date_time %}<br/> le {{ stock_date_time }}{% endif %},<br/>{% if venue.isVirtual %}Offre numérique proposée par {{ venue.name }}{% else %} proposé par {{ venue.name }} (Adresse : {{ venue.address }}, {{ venue.postalCode }} {{ venue.city }}){% endif %}.
-                </p>
-                {% if stock_bookings %}
+            <p id="recap">
+                Voici le récapitulatif
+                {% if is_final %}
+                    final des réservations :
+                {% else %}
+                    des réservations à ce jour :
+                {% endif %}
+                <br/> (total {{ number_of_bookings }}) pour {{ stock_name }}
+                {% if stock_date_time %}
+                    <br/> le {{ stock_date_time }},
+                {% endif %}
+                {% if venue.isVirtual %}
+                    <br/> Offre numérique proposée par {{ venue.name }}.
+                {% else %}
+                    <br/> proposé par {{ venue.name }} (Adresse : {{ venue.address }}, {{ venue.postalCode }} {{ venue.city }}).
+                {% endif %}
+            </p>
+            {% if stock_bookings %}
                 <table id="recap-table">
                     <tr>
                         <th>Nom ou pseudo</th>
@@ -16,17 +30,16 @@
                         <th>Code réservation</th>
                     </tr>
                     {% for booking in stock_bookings %}
-                    <tr>
-                        <td>{{ booking.user.publicName }}</td>
-                        <td>{{ booking.user.email }}</td>
-                        <td>{{ booking.token }}</td>
-                    </tr>
+                        <tr>
+                            <td>{{ booking.user.publicName }}</td>
+                            <td>{{ booking.user.email }}</td>
+                            <td>{{ booking.token }}</td>
+                        </tr>
                     {% endfor %}
                 </table>
-                {% else %}
+            {% else %}
                 <p id="no-recap">Aucune réservation</p>
-                {% endif %}
-            {% endblock %}
+            {% endif %}
         {% endif %}
     </body>
 </html>

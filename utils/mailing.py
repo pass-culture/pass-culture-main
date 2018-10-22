@@ -78,7 +78,6 @@ def make_offerer_booking_recap_email_after_user_action(booking, is_cancellation=
     stock_bookings = find_all_ongoing_bookings_by_stock(booking.stock)
     stock_name = booking.stock.resolvedOffer.eventOrThing.name
     booking_is_on_event = booking.stock.eventOccurrence is not None
-    print('booking_is_on_event', booking_is_on_event)
 
     if booking_is_on_event:
         date_in_tz = _get_event_datetime(booking.stock)
@@ -88,7 +87,6 @@ def make_offerer_booking_recap_email_after_user_action(booking, is_cancellation=
     else:
         email_subject = '[Réservations] Nouvelle réservation pour {}'.format(stock_name)
         formatted_datetime = None
-    print('booking_is_on_event', booking_is_on_event)
     email_html = render_template('mails/offerer_recap_email_after_user_action.html',
                                  is_final=False,
                                  is_cancellation=is_cancellation,

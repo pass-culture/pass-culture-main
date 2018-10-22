@@ -5,13 +5,13 @@
         <div class="user_offerer">
 
             {% if user_offerer.isValidated %}
-            <h2>Rattachement :</h2>
+                <h2>Rattachement :</h2>
             {% else %}
-            <h2>Nouveau rattachement :</h2>
+                <h2>Nouveau rattachement :</h2>
 
-            <strong class="validation">
-                Pour valider, <a href="{{ api_url }}/validate?modelNames=UserOfferer&token={{ user_offerer.validationToken }}">cliquez ici</a>
-            </strong>
+                <strong class="validation">
+                    Pour valider, <a href="{{ api_url }}/validate?modelNames=UserOfferer&token={{ user_offerer.validationToken }}">cliquez ici</a>
+                </strong>
             {% endif %}
 
             <h3>Utilisateur :</h3>
@@ -22,12 +22,12 @@
         <hr/>
         <div class="offerer">
             {% if offerer.isValidated %}
-            <h2>Structure :</h2>
+                <h2>Structure :</h2>
             {% else %}
-            <h2>Nouvelle structure :</h2>
-            <strong class="validation">
-                Pour valider, <a href="{{ api_url }}/validate?modelNames=Offerer&token={{ offerer.validationToken }}">cliquez ici</a>
-            </strong>
+                <h2>Nouvelle structure :</h2>
+                <strong class="validation">
+                    Pour valider, <a href="{{ api_url }}/validate?modelNames=Offerer&token={{ offerer.validationToken }}">cliquez ici</a>
+                </strong>
             {% endif %}
 
             <pre class="offerer-data">{{ offerer_vars }}</pre>
