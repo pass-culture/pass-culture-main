@@ -21,7 +21,7 @@ BASE_DATA = {
     'lastName': 'Martin',
     'postalCode': '93100',
     'publicName': 'Toto',
-    'password': 'toto12345678',
+    'password': '__v4l1d_P455sw0rd__',
     'contact_ok': 'true'
 }
 
@@ -30,7 +30,7 @@ BASE_DATA_PRO = {
     'publicName': 'Toto Pro',
     'firstName': 'Toto',
     'lastName': 'Pro',
-    'password': 'toto12345678',
+    'password': '__v4l1d_P455sw0rd__',
     'contact_ok': 'true',
     'siren': '349974931',
     'address': '12 boulevard de Pesaro',
@@ -150,7 +150,7 @@ def test_signup_should_not_work_without_password():
 def test_signup_should_not_work_with_invalid_password():
     # Given
     data = BASE_DATA.copy()
-    data['password'] = 'short'
+    data['password'] = 'weakpassword'
 
     # When
     r_signup = req.post(API_URL + '/users/signup',
@@ -158,8 +158,11 @@ def test_signup_should_not_work_with_invalid_password():
 
     # Then
     assert r_signup.status_code == 400
-    error = r_signup.json()
-    assert 'password' in error
+    response = r_signup.json()
+    assert response['password'] == [
+        'Le mot de passe doit faire au moins 12 caractères et contenir à minima '
+        '1 majuscule, 1 minuscule, 1 chiffre et 1 caractère spécial parmi _-&?~#|^@=+.$,<>%*!:;'
+    ]
 
 
 @pytest.mark.standalone
@@ -572,7 +575,7 @@ def test_user_with_isAdmin_true_and_canBookFreeOffers_raises_error(app):
         'firstName': 'IsAdmin',
         'lastName': 'CanBook',
         'postalCode': '93100',
-        'password': 'toto12345678',
+        'password': '__v4l1d_P455sw0rd__',
         'contact_ok': 'true',
         'isAdmin': True,
         'canBookFreeOffers': True

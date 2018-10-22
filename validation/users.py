@@ -12,11 +12,17 @@ def check_allowed_changes_for_user(data):
         raise api_errors
 
 
-def check_contact_ok(contact_ok):
+def check_valid_signup(request):
+    contact_ok = request.json.get('contact_ok')
     if not contact_ok or _contact_ok_is_not_checked(contact_ok):
         e = ApiErrors()
         e.addError('contact_ok', 'Vous devez obligatoirement cocher cette case')
         raise e
+
+    if not request.json.get('password'):
+        errors = ApiErrors()
+        errors.addError('password', 'Vous devez renseigner un mot de passe.')
+        raise errors
 
 
 def _contact_ok_is_not_checked(contact_ok):

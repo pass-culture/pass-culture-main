@@ -20,6 +20,7 @@ def check_new_password_validity(user, old_password, new_password):
         errors.addError('newPassword', 'Votre nouveau mot de passe est identique à l\'ancien')
         raise errors
 
+
 def validate_change_password_request(json):
     errors = ApiErrors()
 
