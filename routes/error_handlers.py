@@ -4,10 +4,9 @@ import traceback
 import simplejson as json
 from flask import current_app as app, jsonify, request
 
-from models.api_errors import ApiErrors, ResourceGoneError, ConflictError
+from models.api_errors import ApiErrors, ResourceGoneError, ConflictError, ResourceNotFound
 from routes.before_request import InvalidOriginHeader
 from utils.human_ids import NonDehumanizableId
-from validation.errors import ResourceNotFound
 
 
 @app.errorhandler(ApiErrors)

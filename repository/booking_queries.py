@@ -16,10 +16,10 @@ from models import ApiErrors, \
     Thing, \
     User, \
     Venue, Offerer
+from models.api_errors import ResourceNotFound
 from models.db import db
 from utils.rest import query_with_order_by
 from utils.search import get_keywords_filter
-from validation.errors import ResourceNotFound
 
 
 def find_all_by_user_id(user_id):

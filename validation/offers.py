@@ -1,6 +1,6 @@
 from models import RightsType
+from models.api_errors import ResourceNotFound
 from utils.rest import ensure_current_user_has_rights
-from validation.errors import ResourceNotFound
 
 
 def check_user_has_rights_for_query(offerer_id, venue, venue_id):

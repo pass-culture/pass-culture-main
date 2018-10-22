@@ -21,4 +21,7 @@ def test_check_offerer_is_validated_should_not_raise_conflict_error_when_offerer
     offerer.validationToken = None
 
     # When
-    check_offerer_is_validated(offerer)
+    try:
+        check_offerer_is_validated(offerer)
+    except ConflictError:
+        assert False

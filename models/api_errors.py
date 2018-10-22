@@ -71,3 +71,7 @@ class ResourceGoneError(ApiErrors):
 
 class ConflictError(ApiErrors):
     pass
+
+
+class ResourceNotFound(ApiErrors):
+    pass
