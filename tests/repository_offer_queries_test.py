@@ -142,7 +142,7 @@ def test_get_active_offers_by_type_when_departement_code_00(app):
 
 @clean_database
 @pytest.mark.standalone
-def test_get_active_offers_by_type(app):
+def test_get_active_event_offers_only_returns_event_offers(app):
     # Given
     user = create_user(departement_code='93')
     offerer = create_offerer()

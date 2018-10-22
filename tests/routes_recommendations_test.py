@@ -413,11 +413,11 @@ def test_put_recommendations_returns_requested_recommendation_first(app):
 
 @clean_database
 @pytest.mark.standalone
-def test_put_recommendations_when_expired_in_seen(app):
+def test_put_recommendations_creates_new_recommendation_when_existing_ones_invalid(app):
     # given
     now = datetime.utcnow()
     fifteen_min_ago = now - timedelta(minutes=15)
-    user = create_user(email='weird.bug@email.com', password='P@55w0rd')
+    user = create_user(email='test@email.com', password='P@55w0rd')
     offerer = create_offerer()
     venue = create_venue(offerer)
     offer1 = create_thing_offer(venue, thumb_count=1)
@@ -454,30 +454,3 @@ def test_put_recommendations_when_expired_in_seen(app):
     assert humanize(recommendation_offer2.id) not in recommendation_ids
     assert humanize(recommendation_offer3.id) not in recommendation_ids
     assert humanize(recommendation_offer4.id) not in recommendation_ids
-
-
-@clean_database
-@pytest.mark.standalone
-def test_put_recommendations_when_expired_in_seen(app):
-    # given
-    now = datetime.utcnow()
-    fifteen_min_ago = now - timedelta(minutes=15)
-    user = create_user(email='weird.bug@email.com', password='P@55w0rd')
-    offerer = create_offerer()
-    venue = create_venue(offerer)
-    offer1 = create_thing_offer(venue, thumb_count=1)
-    stock1 = create_stock_from_offer(offer1, price=0)
-    recommendation_offer1 = create_recommendation(offer1, user, valid_until_date=fifteen_min_ago)
-    PcObject.check_and_save(stock1, recommendation_offer1)
-    auth_request = req_with_auth(user.email, user.clearTextPassword)
-
-    data = {'seenRecommendationIds': []}
-    # when
-    response = auth_request.put(RECOMMENDATION_URL + '?offerId=%s' % humanize(offer1.id), json=data)
-
-    # then
-    assert response.status_code == 200
-    response_json = response.json()
-    assert len(response_json) == 1
-    recommendation_ids = set(map(lambda x: x['id'], response_json))
-    assert humanize(recommendation_offer1.id) not in recommendation_ids
