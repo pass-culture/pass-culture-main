@@ -82,16 +82,15 @@ def test_create_booking_should_not_work_if_too_many_bookings(app):
     offerer = create_offerer('987654321', 'Test address', 'Test city', '93000', 'Test name')
     venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
     too_many_bookings_stock = create_stock_with_thing_offer(offerer=Offerer(), venue=venue, thing_offer=None, available=2)
-    PcObject.check_and_save(too_many_bookings_stock)
 
     user = create_user(email='test@email.com', password='mdppsswd')
 
     deposit = create_deposit(user, datetime.utcnow(), amount=50)
 
     recommendation = create_recommendation(offer=too_many_bookings_stock.offer, user=user)
-    booking = create_booking(deposit, user, too_many_bookings_stock, venue, quantity=2)
+    booking = create_booking(user, too_many_bookings_stock, venue, quantity=2)
 
-    PcObject.check_and_save(booking, recommendation, user)
+    PcObject.check_and_save(booking, recommendation, user, deposit)
 
     booking_json = {
         'stockId': humanize(too_many_bookings_stock.id),
