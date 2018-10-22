@@ -225,7 +225,7 @@ def test_get_profile_should_work_only_when_logged_in():
 
 @pytest.mark.standalone
 @clean_database
-def test_get_profile_should_return_the_users_profile_without_password_hash(app):
+def test_get_profile_should_return_the_users_profile_without_password_hash_and_password_reset_infos(app):
     user = create_user(public_name='Toto', departement_code='93', email='toto@btmx.fr', password='toto12345678')
     PcObject.check_and_save(user)
     r = req_with_auth(email='toto@btmx.fr', password='toto12345678') \
@@ -234,6 +234,8 @@ def test_get_profile_should_return_the_users_profile_without_password_hash(app):
     assert r.status_code == 200
     assert user_json['email'] == 'toto@btmx.fr'
     assert 'password' not in user_json
+    assert 'resetPasswordToken' not in user_json
+    assert 'resetPasswordTokenValidityLimit' not in user_json
 
 
 @pytest.mark.standalone
