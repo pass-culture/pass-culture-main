@@ -12,7 +12,7 @@ const youngUser =
       }
     : {
         email: 'pctest.cafe@btmx.fr',
-        password: 'pctestcafe',
+        password: 'pctestcafeP0$',
         publicName: 'Public Name',
       }
 

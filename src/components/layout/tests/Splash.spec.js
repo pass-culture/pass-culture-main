@@ -11,13 +11,23 @@ const mockStore = configureStore(middlewares)
 describe('src | components | layout | Splash', () => {
   describe('snapshot', () => {
     it('should match snapshot', () => {
+      // given
       const initialState = {}
       const store = mockStore(initialState)
+      const props = {
+        closeTimeout: 1000,
+        dispatch: jest.fn(),
+        isBetaPage: true,
+      }
+
+      // when
       const wrapper = shallow(
-        <Provider store={store}>
+        <Provider store={store} {...props}>
           <Splash />
         </Provider>
       )
+
+      // then
       expect(wrapper).toBeDefined()
       expect(wrapper).toMatchSnapshot()
     })
