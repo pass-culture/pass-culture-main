@@ -23,7 +23,7 @@ from utils.mailing import \
 from utils.rest import expect_json_data, \
     login_or_api_key_required
 from validation.offerers import check_offerer_is_validated
-from validation.users import check_allowed_changes_for_user, check_contact_ok
+from validation.users import check_allowed_changes_for_user, check_valid_signup
 
 
 def is_pro_signup(json_user):
@@ -129,9 +129,10 @@ def signout():
 @app.route("/users/signup", methods=["POST"])
 def signup():
     objects_to_save = []
-    contact_ok = request.json.get('contact_ok')
     email = request.json.get('email')
-    check_contact_ok(contact_ok)
+    password = request.json.get('password')
+    check_valid_signup(request)
+    check_password_strength('password', password)
     do_pro_signup = is_pro_signup(request.json)
     need_for_authorisation_check = email is not None and not do_pro_signup and not IS_INTEGRATION
 
