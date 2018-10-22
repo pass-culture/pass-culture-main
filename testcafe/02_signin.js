@@ -1,3 +1,9 @@
+/**
+ *
+ * Lancer les tests en local
+ * ./node_modules/.bin/testcafe chrome ./testcafe/02_signin.js  --env=local
+ *
+ */
 import { Selector } from 'testcafe'
 
 import { ROOT_PATH } from '../src/utils/config'
@@ -62,11 +68,18 @@ test("J'ai un identifiant invalide, je vois un messages d'erreur et je reste sur
     .eql('/connexion')
 })
 
-test("J'ai un mot de passe invalide, envoi avant à l'API, je vois un message d'erreur et je reste sur la page /connection", async t => {
+test("J'ai un mot de passe vide, envoi avant à l'API, je vois un message d'erreur et je reste sur la page /connection", async t => {
   await t
+    // saisi du mot de passe
+    .typeText(userPassword, userFromSandboxDB.password)
+    // puis on l'efface
+    // - prevent testcafe de warn sur une valeur vide
+    // TODO -> trouver une solution pour Blue le password input
+    // faire plus propre
+    .selectText(userPassword)
+    .pressKey('delete')
     .typeText(userIdentifier, userFromSandboxDB.email)
-    .typeText(userPassword, 'Pa$$word42')
-    .click(signInButton)
+    // .click(signInButton)
     .wait(1000)
 
   const location = await t.eval(() => window.location)
@@ -74,9 +87,7 @@ test("J'ai un mot de passe invalide, envoi avant à l'API, je vois un message d'
     .expect(passwordError.count)
     .gte(1)
     .expect(passwordError.nth(0).innerText)
-    .eql(
-      'Le mot de passe doit contenir au minimum 12 caractères, un chiffre, une majuscule, une minuscule et un caractère spécial parmi _-&?~#|^@=+.$,<>%*!:;'
-    )
+    .eql('Ce champs est requis.')
     .expect(location.pathname)
     .eql('/connexion')
 })

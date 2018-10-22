@@ -4,6 +4,15 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import { EmailField, PasswordField } from '../../forms/inputs'
 
+import { isEmpty } from '../../../utils/strings'
+
+const DEFAULT_REQUIRED_ERROR = 'Ce champs est requis.'
+
+const validateRequiredField = value => {
+  if (value && !isEmpty(value)) return undefined
+  return DEFAULT_REQUIRED_ERROR
+}
+
 const FormInputs = () => (
   <div>
     <input type="hidden" name="name" value="user" />
@@ -16,8 +25,9 @@ const FormInputs = () => (
       placeholder="Identifiant (email)"
     />
     <PasswordField
+      // NOTE on ne teste pas la force du password au signin
+      required={validateRequiredField}
       id="user-password"
-      required
       className="mb36"
       name="password"
       label="Mot de passe"
