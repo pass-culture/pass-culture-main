@@ -255,24 +255,23 @@ class SearchPage extends PureComponent {
                 </button>
               </div>
             </div>
+            <div
+              id="search-filter-menu-toggle-button"
+              className={`flex-0 text-center flex-rows flex-center pb12 ${filtersToggleButtonClass}`}
+            >
+              <button
+                type="button"
+                className="no-border no-background no-outline "
+                onClick={this.onClickOpenCloseFilterDiv(withFilter)}
+              >
+                <Icon
+                  svg={`ico-${withFilter ? 'chevron-up' : isfilterIconActive}`}
+                />
+              </button>
+            </div>
           </div>
         </form>
         {/* ************************* BOUTON OPEN CLOSE FILTER ************************* */}
-
-        <div
-          id="search-filter-menu-toggle-button"
-          className={`flex-0 text-center flex-rows flex-center pb12 ${filtersToggleButtonClass}`}
-        >
-          <button
-            type="button"
-            className="no-border no-background no-outline "
-            onClick={this.onClickOpenCloseFilterDiv(withFilter)}
-          >
-            <Icon
-              svg={`ico-${withFilter ? 'chevron-up' : isfilterIconActive}`}
-            />
-          </button>
-        </div>
 
         <SearchFilter isVisible={withFilter} pagination={pagination} />
 
