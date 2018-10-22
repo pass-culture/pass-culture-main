@@ -97,7 +97,7 @@ Booking.trig_ddl = """
         RETURN 
                 (SELECT COALESCE(SUM(amount), 0) FROM deposit WHERE "userId"=user_id)
                 -
-                (SELECT COALESCE(SUM(amount * quantity), 0) FROM booking WHERE "userId"=user_id);
+                (SELECT COALESCE(SUM(amount * quantity), 0) FROM booking WHERE "userId"=user_id AND NOT "isCancelled");
     END; $$
     LANGUAGE plpgsql;
 
@@ -106,7 +106,7 @@ Booking.trig_ddl = """
     BEGIN
       IF EXISTS (SELECT "available" FROM stock WHERE id=NEW."stockId" AND "available" IS NOT NULL)
          AND ((SELECT "available" FROM stock WHERE id=NEW."stockId")
-              < (SELECT COUNT(*) FROM booking WHERE "stockId"=NEW."stockId" AND NOT "isCancelled")) THEN
+              < (SELECT SUM(quantity) FROM booking WHERE "stockId"=NEW."stockId" AND NOT "isCancelled")) THEN
           RAISE EXCEPTION 'tooManyBookings'
                 USING HINT = 'Number of bookings cannot exceed "stock.available"';
       END IF;
