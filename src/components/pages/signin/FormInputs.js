@@ -2,16 +2,8 @@
   react/jsx-one-expression-per-line: 0 */
 import React from 'react'
 import { Link } from 'react-router-dom'
+import { validateRequiredField } from '../../forms/validators'
 import { EmailField, PasswordField } from '../../forms/inputs'
-
-import { isEmpty } from '../../../utils/strings'
-
-const DEFAULT_REQUIRED_ERROR = 'Ce champs est requis.'
-
-const validateRequiredField = value => {
-  if (value && !isEmpty(value)) return undefined
-  return DEFAULT_REQUIRED_ERROR
-}
 
 const FormInputs = () => (
   <div>

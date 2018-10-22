@@ -68,7 +68,7 @@ test("J'ai un identifiant invalide, je vois un messages d'erreur et je reste sur
     .eql('/connexion')
 })
 
-test("J'ai un mot de passe vide, envoi avant à l'API, je vois un message d'erreur et je reste sur la page /connection", async t => {
+test("J'ai un mot de passe vide, avant envoi à l'API, je vois un message d'erreur et je reste sur la page /connection", async t => {
   await t
     // saisi du mot de passe
     .typeText(userPassword, userFromSandboxDB.password)
