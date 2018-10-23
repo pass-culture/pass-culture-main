@@ -3,6 +3,14 @@
   background-color: $primary;
 }
 
+.pc-background-green {
+  background-color: $ribbon-green;
+}
+
+.pc-background-yellow {
+  background-color: $ribbon-yellow;
+}
+
 .pc-theme-purple {
   @extend .is-white-text;
 

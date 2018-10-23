@@ -10,38 +10,39 @@ import Dotdotdot from 'react-dotdotdot'
 import { Link } from 'react-router-dom'
 
 import Thumb from '../../layout/Thumb'
+import Ribbon from '../../layout/Ribbon'
 import { getQueryURL } from '../../../helpers'
 import { THUMBS_URL } from '../../../utils/config'
 import { getTimezone } from '../../../utils/timezone'
 import { selectRecommendation } from '../../../selectors'
 
-const MyBookingItem = ({ booking, recommendation }) => {
-  const token = get(booking, 'token')
-  const offerId = get(booking, 'stock.resolvedOffer.id')
-  const mediationId = get(recommendation, 'mediationId')
-  const date = get(booking, 'stock.eventOccurrence.beginningDatetime')
-  const departementCode = get(
-    booking,
-    'stock.resolvedOffer.venue.departementCode'
+// TODO A tester
+const getDateString = (date, tz) =>
+  date &&
+  capitalize(
+    moment(date)
+      .tz(tz)
+      .format('dddd DD/MM/YYYY à H:mm')
   )
-  const tz = getTimezone(departementCode)
-  const dateString =
-    date &&
-    capitalize(
-      moment(date)
-        .tz(tz)
-        .format('dddd DD/MM/YYYY à H:mm')
-    )
 
-  const name = get(booking, 'stock.resolvedOffer.eventOrThing.name')
+const MyBookingItem = ({
+  completedUrl,
+  date,
+  dateString,
+  isCancelled,
+  isEvent,
+  mediationId,
+  name,
+  offerId,
+  token,
+}) => {
+  const cssclass = (isEvent && 'event') || 'thing'
   const queryURL = getQueryURL({ mediationId, offerId })
   const linkURL = `/decouverte/${queryURL}?to=verso`
   const thumbUrl = `${THUMBS_URL}/mediations/${mediationId}`
-  const isEvent = (get(recommendation, 'offer.eventId') && true) || false
-  const cssclass = (isEvent && 'event') || 'thing'
-  const completedUrl = get(recommendation, 'completedUrl')
   return (
     <li className={`booking-item mb16 ${cssclass}`}>
+      {isCancelled && <Ribbon />}
       <Link to={linkURL}>
         <Thumb src={thumbUrl} />
         <div className="infos">
@@ -62,17 +63,58 @@ const MyBookingItem = ({ booking, recommendation }) => {
 }
 
 MyBookingItem.defaultProps = {
-  booking: null,
-  recommendation: null,
+  completedUrl: null,
+  date: null,
+  dateString: null,
+  isCancelled: false,
+  isEvent: false,
+  mediationId: null,
+  name: null,
+  offerId: null,
+  token: null,
 }
 
 MyBookingItem.propTypes = {
-  booking: PropTypes.object,
-  recommendation: PropTypes.object,
+  completedUrl: PropTypes.string,
+  date: PropTypes.string,
+  dateString: PropTypes.string,
+  isCancelled: PropTypes.bool,
+  isEvent: PropTypes.bool,
+  mediationId: PropTypes.string,
+  name: PropTypes.string,
+  offerId: PropTypes.string,
+  token: PropTypes.string,
 }
 
 export default connect((state, ownProps) => {
-  const { recommendationId } = ownProps.booking
+  const { booking } = ownProps || {}
+  const { isCancelled, recommendationId, stock, token } = booking
+  const offerId = get(stock, 'resolvedOffer.id')
+  const name = get(stock, 'resolvedOffer.eventOrThing.name')
+  const date = get(stock, 'eventOccurrence.beginningDatetime')
+  const departementCode = get(stock, 'resolvedOffer.venue.departementCode')
+  const tz = getTimezone(departementCode)
+  const dateString = getDateString(date, tz)
+
+  // recommendation
   const recommendation = selectRecommendation(state, recommendationId)
-  return { recommendation }
+  const { completedUrl, mediationId } = recommendation
+  // NOTE -> completedUrl peut il servir à faire la diff
+  // entre `thing` et `event` ?
+  // const isEvent = Boolean(completedUrl)
+  const isEvent = (get(recommendation, 'offer.eventId') && true) || false
+
+  // injected
+  return {
+    completedUrl,
+    date,
+    dateString,
+    isCancelled,
+    isEvent,
+    mediationId,
+    name,
+    offerId,
+    recommendation,
+    token,
+  }
 })(MyBookingItem)

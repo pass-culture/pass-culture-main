@@ -1,0 +1,55 @@
+.ribbon {
+  @extend .is-clipped;
+  @extend .is-absolute;
+
+  z-index: 1;
+  top: 0;
+  width: 75px;
+  height: 75px;
+}
+
+.ribbon span {
+  @extend .fs12;
+  @extend .is-bold;
+  @extend .is-block;
+  @extend .text-center;
+  @extend .is-absolute;
+  @extend .is-uppercase;
+  @extend .is-black-text;
+
+  top: 19px;
+  width: 100px;
+  line-height: 20px;
+}
+
+.ribbon-left {
+  left: 0;
+}
+
+.ribbon-right {
+  right: 0;
+}
+
+.ribbon-left span {
+  left: -21px;
+  transform: rotate(-45deg);
+  -webkit-transform: rotate(-45deg);
+}
+
+.ribbon-right span {
+  right: -21px;
+  transform: rotate(45deg);
+  -webkit-transform: rotate(45deg);
+}
+
+.ribbon-today span {
+  @extend .pc-background-green;
+}
+
+.ribbon-tomorrow span {
+  @extend .pc-background-yellow;
+}
+
+.ribbon-cancelled span {
+  @extend .pc-background-red;
+}
