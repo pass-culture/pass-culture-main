@@ -176,7 +176,7 @@ def make_offerer_driven_cancellation_email_for_offerer(booking):
     if booking_is_on_event:
         date_in_tz = _get_event_datetime(booking.stock)
         stock_date_time = format_datetime(date_in_tz)
-    email_html = render_template('mails/offerer_recap_email_after_offerer_action.html',
+    email_html = render_template('mails/offerer_recap_email_after_offerer_cancellation.html',
                                  is_final=False,
                                  booking_is_on_event=booking_is_on_event,
                                  user_name=user_name,
