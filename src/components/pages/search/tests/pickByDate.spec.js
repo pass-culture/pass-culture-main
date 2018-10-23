@@ -17,7 +17,6 @@ describe('src | components | pages | search | PickByDate', () => {
         size: '',
         value: '',
       }
-
       // when
       const wrapper = shallow(<PickByDate {...props} />)
 

@@ -4,7 +4,6 @@ import filterIconByState, {
   getRecommendationDateString,
   INITIAL_FILTER_PARAMS,
   isSearchFiltersAdded,
-  searchResultsTitle,
   translateBrowserUrlToApiUrl,
 } from '../utils'
 
@@ -44,7 +43,7 @@ describe('src | components | pages | search | utils', () => {
       // then
       expect(result).toEqual('du Jeudi 25/10/2018 au Vendredi 26/10/2018')
     })
-    it.only('should render date is there is a date range for Cayenne Timezone', () => {
+    it('should render date is there is a date range for Cayenne Timezone', () => {
       // given
       const recommendation = {
         id: 'AEWP9',
@@ -241,86 +240,6 @@ describe('src | components | pages | search | utils', () => {
       expect(getFirstChangingKey(INITIAL_FILTER_PARAMS, nextObject)).toEqual(
         'jours'
       )
-    })
-  })
-
-  describe('searchResultsTitle', () => {
-    describe('without navigation mode', () => {
-      const keywords = 'fake word'
-      const queryParams = {
-        categories: null,
-        date: null,
-        days: null,
-        distance: null,
-        jours: null,
-        latitude: null,
-        longitude: null,
-        [`mots-cles`]: null,
-        page: '2',
-        types: null,
-      }
-      const withPagination = false
-      it('should return the title corresponding to search result when there is no item', () => {
-        // given
-
-        const items = []
-
-        expect(
-          searchResultsTitle(keywords, items, queryParams, withPagination)
-        ).toEqual('"fake word" : 0 résultat')
-      })
-
-      it('should return the title corresponding to search result when there is one item', () => {
-        // given
-        const items = [{}]
-
-        expect(
-          searchResultsTitle(keywords, items, queryParams, withPagination)
-        ).toEqual('"fake word" : 0 résultat')
-      })
-
-      it('should return the title corresponding to search result when there is many items', () => {
-        // given
-        const items = [{}, {}]
-
-        expect(
-          searchResultsTitle(keywords, items, queryParams, withPagination)
-        ).toEqual('"fake word" : 2 résultats')
-      })
-    })
-
-    describe('with navigation mode', () => {
-      const keywords = 'fake word'
-      const queryParams = {
-        categories: null,
-        date: null,
-        days: null,
-        distance: null,
-        jours: null,
-        latitude: null,
-        longitude: null,
-        [`mots-cles`]: null,
-        page: '2',
-        types: null,
-      }
-      const withPagination = true
-      it('should return the title corresponding to search result when there is no item', () => {
-        // given
-        const items = []
-
-        expect(
-          searchResultsTitle(keywords, items, queryParams, withPagination)
-        ).toEqual("Il n'y a pas d'offres dans cette catégorie pour le moment.")
-      })
-
-      it('should return the title corresponding to search result when there items', () => {
-        // given
-        const items = [{}]
-
-        expect(
-          searchResultsTitle(keywords, items, queryParams, withPagination)
-        ).toEqual('')
-      })
     })
   })
 

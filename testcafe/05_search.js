@@ -12,9 +12,9 @@ const searchTypeCheckbox = Selector('#search-type-checkbox').withText('Lire')
 // const searchResults = Selector('#search-results')
 const resultsTitle = Selector('#results-title')
 
-fixture('O5_01 Recherche | Je ne suis pas connecté·e').page(
-  `${ROOT_PATH}recherche`
-)
+fixture
+  .skip('O5_01 Recherche | Je ne suis pas connecté·e')
+  .page(`${ROOT_PATH}recherche`)
 
 test('Je suis redirigé vers la page /connexion', async t => {
   await t
@@ -25,7 +25,7 @@ fixture('O5_02 Recherche | Après connexion').beforeEach(async t => {
   await t.useRole(regularUser).navigateTo(`${ROOT_PATH}recherche/`)
 })
 
-test.skip('Je peux accéder à la page /recherche', async t => {
+test('Je peux accéder à la page /recherche', async t => {
   await t
   await t.expect(getPageUrl()).contains('/recherche', { timeout: 5000 })
 })
@@ -119,3 +119,6 @@ test('Je clique sur la vignette Lire et je suis redirigé vers la page de résul
 // Le bouton submit search keyword est désactivé si rien n'est écrit
 
 // Après une navigation par type, si on ouvre le filtre puis quand clique sur le bouton back, le filtre se referme est la recherche est réinitialisée.
+
+// ****** SEARCH RESULTS ********* //
+// Tronquer le titre dans le résultat de recherche...
