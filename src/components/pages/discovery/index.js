@@ -45,7 +45,11 @@ class DiscoveryPage extends React.PureComponent {
   }
 
   handleRequestFail = () => {
-    this.setState({ haserror: true, isloading: true })
+    this.setState({ haserror: true, isloading: true }, () => {
+      // Fixes #136
+      const { history } = this.props
+      history.replace('/connexion')
+    })
   }
 
   handleRequestSuccess = (state, action) => {
