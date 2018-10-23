@@ -8,10 +8,10 @@ export const offererUser = {
 }
 
 export const adminUser = {
-  email: 'pctest.admin@btmx.fr',
+  email: 'pctest.admin.1@btmx.fr',
   firstName: 'Test',
   lastName: 'Admin',
-  password: 'PCtestadmin.75001',
+  password: 'pctest.Admin.1',
   publicName: 'LE GRAND REX PARIS',
   siren: '507633576',
 }
