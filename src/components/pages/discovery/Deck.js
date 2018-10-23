@@ -9,13 +9,13 @@ import { compose, bindActionCreators } from 'redux'
 import withSizes from 'react-sizes'
 
 import Card from './Card'
-import DeckNavigation from './deck/DeckNavigation'
-import { flip, flipUnflippable, unFlip } from '../reducers/verso'
-import currentRecommendationSelector from '../selectors/currentRecommendation'
-import nextRecommendationSelector from '../selectors/nextRecommendation'
-import previousRecommendationSelector from '../selectors/previousRecommendation'
-import recommendationsSelector from '../selectors/recommendations'
-import { PREVIOUS_NEXT_LIMIT } from '../utils/deck'
+import DeckNavigation from './DeckNavigation'
+import { flip, flipUnflippable, unFlip } from '../../../reducers/verso'
+import currentRecommendationSelector from '../../../selectors/currentRecommendation'
+import nextRecommendationSelector from '../../../selectors/nextRecommendation'
+import previousRecommendationSelector from '../../../selectors/previousRecommendation'
+import recommendationsSelector from '../../../selectors/recommendations'
+import { PREVIOUS_NEXT_LIMIT } from '../../../utils/deck'
 
 class Deck extends Component {
   constructor(props) {

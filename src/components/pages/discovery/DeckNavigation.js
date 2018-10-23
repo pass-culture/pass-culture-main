@@ -5,14 +5,14 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 
-import Price from '../Price'
-import Finishable from '../layout/Finishable'
-import { getHeaderColor } from '../../utils/colors'
+import Price from '../../Price'
+import Finishable from '../../layout/Finishable'
+import { getHeaderColor } from '../../../utils/colors'
 import {
   getPriceRangeFromStocks,
   isRecommendationFinished,
-} from '../../helpers'
-import { ROOT_PATH } from '../../utils/config'
+} from '../../../helpers'
+import { ROOT_PATH } from '../../../utils/config'
 
 class DeckNavigation extends React.PureComponent {
   renderPreviousButton = () => {

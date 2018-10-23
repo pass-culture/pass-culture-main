@@ -2,8 +2,8 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 
-import recommendationsSelector from '../../selectors/recommendations'
-import { PREVIOUS_NEXT_LIMIT } from '../../utils/deck'
+import recommendationsSelector from '../../../selectors/recommendations'
+import { PREVIOUS_NEXT_LIMIT } from '../../../utils/deck'
 
 const DeckDebugger = ({
   nextLimit,
