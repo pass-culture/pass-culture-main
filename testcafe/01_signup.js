@@ -1,7 +1,7 @@
 import { Selector } from 'testcafe'
 
 import { ROOT_PATH } from '../src/utils/config'
-import { offererUser } from './helpers/users'
+import { offererUser, offererUser2 } from './helpers/users'
 
 const contactOkInput = Selector('#user-contact_ok')
 const contactOkInputError = Selector('#user-contact_ok-error')
@@ -73,3 +73,28 @@ test.skip('E-mail déjà présent dans la base et mot de passe invalide', async 
   // TODO Mot de passe invalide en attente correction API
   // await t.expect(passwordInputError.innerText).eql(" Vous devez saisir au moins 8 caractères.\n")
 })
+
+fixture`01_03 SignupPage | Création d'un compte pour rattachement à une structure existante`
+  .page`${ROOT_PATH + 'inscription'}`
+
+test('Je créé un compte, je suis redirigé·e vers la page /structures', async t => {
+  await t
+    .typeText(publicNameInput, offererUser2.publicName)
+    .typeText(emailInput, offererUser2.email)
+    .typeText(passwordInput, offererUser2.password)
+    .typeText(lastNameInput, offererUser2.lastName)
+    .typeText(firstNameInput, offererUser2.firstName)
+    .typeText(sirenInput, offererUser2.siren)
+
+    .expect(signUpButton.hasAttribute('disabled'))
+    .ok()
+    .click(contactOkInput)
+    .click(newsletterOkInput)
+
+  await t.click(signUpButton)
+
+  const location = await t.eval(() => window.location)
+  await t.expect(location.pathname).eql('/structures')
+})
+
+test('Je demande le rattachement à une structure existante', async t => {})
