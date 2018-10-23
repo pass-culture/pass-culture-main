@@ -1,10 +1,22 @@
 ### Contremarques [/booking/token]
 
-Ceci décrit l'API utilisable par les partenaires techniques de Pass Culture qui souhaitent valider des contremarques.
-
 **Statut actuel : protype, pour implémentations pilotes**
 
-#### Fonctionnement des API
+#### Principe de l'API contremarque
+
+Ceci décrit l'API utilisable par les partenaires techniques de Pass Culture qui souhaitent valider des contremarques.
+
+Le parcours utilisateur pour souscrire à une offre en passant par le pass Culture est le suivant :
++ L'utilisateur réserve l'offre sur l'application pass Culture. 
++ Cette réservation déclenche les actions suivantes :
+  + Le compte pass Culture de l'utilisateur est décredité du montant de votre offre
+  + Il reçoit en contrepartie un code contremarque
+  + Dans le cas d'une offre en ligne, l'utilisateur reçoit par ailleur un lien pour accéder à l'offre
++ L’utilisateur se rend ensuite sur ce lien, ce qui permet à l'acteur ayant proposé l'offre de prendre la main sur la suite de la gestion de la relation. 
+
+Afin de vérifier que l’utilisateur vient bien du pass Culture et a bien reservé l'offre en question sur l'application, il suffit alors de lui demander d’indiquer le code contremarque. L'API décrite ci-dessous permet de vérifier que ce code contremarque est bien valable et correspond bien à l'offre. 
+
+#### Utilisation de l'API contremarque
 
 Pour l'environnement de production, les API sont disponibles à l'URL suivante : https://backend.passculture.beta.gouv.fr
 
