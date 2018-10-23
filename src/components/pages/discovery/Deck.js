@@ -22,13 +22,6 @@ class Deck extends Component {
     super(props)
     this.currentReadRecommendationId = null
     this.state = { refreshKey: 0 }
-    this.onStop = this.onStop.bind(this)
-    this.handleFlip = this.handleFlip.bind(this)
-    this.handleGoNext = this.handleGoNext.bind(this)
-    this.handleUnFlip = this.handleUnFlip.bind(this)
-    this.handleGoPrevious = this.handleGoPrevious.bind(this)
-    this.handleSetDateRead = this.handleSetDateRead.bind(this)
-    this.handleRefreshedData = this.handleRefreshedData.bind(this)
     const actions = { flip, flipUnflippable, requestData, unFlip }
     const { dispatch } = props
     this.actions = bindActionCreators(actions, dispatch)
@@ -66,7 +59,7 @@ class Deck extends Component {
     if (this.noDataTimeout) clearTimeout(this.noDataTimeout)
   }
 
-  onStop(e, data) {
+  onStop = (e, data) => {
     const {
       width,
       height,
@@ -136,7 +129,8 @@ class Deck extends Component {
     }))
   }
 
-  handleSetDateRead(prevProps) {
+  handleSetDateRead = prevProps => {
+    console.log('handleSetDateRead handleSetDateRead handleSetDateRead')
     const { currentRecommendation, isFlipped, readTimeout } = this.props
     const { isRead } = this.state
 
@@ -191,19 +185,19 @@ class Deck extends Component {
     }
   }
 
-  handleFlip() {
+  handleFlip = () => {
     const { isFlipDisabled } = this.props
     if (isFlipDisabled) return
     this.actions.flip()
   }
 
-  handleUnFlip() {
+  handleUnFlip = () => {
     const { unFlippable } = this.props
     if (unFlippable) return
     this.actions.unFlip()
   }
 
-  handleUrlFlip(history, previousHistory = false) {
+  handleUrlFlip = (history, previousHistory = false) => {
     const isNewUrl =
       !previousHistory ||
       (previousHistory && history.location.key !== previousHistory.location.key)
