@@ -76,7 +76,7 @@ def check_password_strength(field_name, field_value):
     at_least_one_lowercase = '(?=.*?[a-z])'
     at_least_one_digit = '(?=.*?[0-9])'
     min_length = '.{12,}'
-    at_least_one_special_char = '(?=.*?[#~|=+><?!@$%^&*_-])'
+    at_least_one_special_char = '(?=.*?[#~|=;:,+><?!@$%^&*_.-])'
 
     regex = '^' \
             + at_least_one_uppercase \
