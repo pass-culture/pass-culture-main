@@ -1,6 +1,7 @@
 /* eslint
   react/jsx-one-expression-per-line: 0 */
 import React from 'react'
+import { withLogin } from 'pass-culture-shared'
 import { Scrollbars } from 'react-custom-scrollbars'
 
 import { ROOT_PATH } from '../../utils/config'
@@ -22,4 +23,4 @@ const FavoritesPage = () => {
   )
 }
 
-export default FavoritesPage
+export default withLogin({ failRedirect: '/connexion' })(FavoritesPage)

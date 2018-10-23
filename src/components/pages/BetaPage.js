@@ -3,6 +3,8 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 
+import { withLogin } from 'pass-culture-shared'
+
 const BetaPage = () => (
   <div id="beta-page" className="page pc-gradient flex-rows">
     <main role="main" className="pc-main padded flex-rows flex-center flex-0">
@@ -37,4 +39,4 @@ const BetaPage = () => (
   </div>
 )
 
-export default BetaPage
+export default withLogin({ successRedirect: '/decouverte' })(BetaPage)
