@@ -255,6 +255,7 @@ class SearchPage extends PureComponent {
                 </button>
               </div>
             </div>
+            {/* ************************* BOUTON OPEN CLOSE FILTER ************************* */}
             <div
               id="search-filter-menu-toggle-button"
               className={`flex-0 text-center flex-rows flex-center pb12 ${filtersToggleButtonClass}`}
@@ -271,7 +272,6 @@ class SearchPage extends PureComponent {
             </div>
           </div>
         </form>
-        {/* ************************* BOUTON OPEN CLOSE FILTER ************************* */}
 
         <SearchFilter isVisible={withFilter} pagination={pagination} />
 
