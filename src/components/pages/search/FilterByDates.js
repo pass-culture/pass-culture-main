@@ -3,26 +3,10 @@ import moment from 'moment'
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 
-const checkboxes = [
-  {
-    label: 'Tout de suite !',
-    value: '0-1',
-  },
-  {
-    label: 'Entre 1 et 5 jours',
-    value: '1-5',
-  },
-  {
-    label: 'Plus de 5 jours',
-    // will the pass culture live for ever?
-    // guess that 273 years are enough
-    value: '5-100000',
-  },
-  {
-    label: 'DATE PICKER TO DO',
-    value: 'date-picker',
-  },
-]
+import DatePicker from 'react-datepicker'
+import { Icon } from 'pass-culture-shared'
+
+import { TODAY_DATE, DAYS_CHECKBOXES } from './utils'
 
 class FilterByDates extends PureComponent {
   onChange = day => {
@@ -33,6 +17,7 @@ class FilterByDates extends PureComponent {
 
     // WE ADD THE DATE AT THE FIRST DAYS SEGMENTS CLICKED
     // WE REMOVE THE DATE AT THE LAST DAYS SEGMENTS CLICKED
+
     let callback
     if (!get(days, 'length')) {
       const date = moment(moment.now()).toISOString()
@@ -40,6 +25,7 @@ class FilterByDates extends PureComponent {
     } else if (isAlreadyIncluded && days.split(',').length === 1) {
       callback = () => filterActions.change({ date: null })
     }
+
     if (isAlreadyIncluded) {
       filterActions.remove('jours', day, callback)
       return
@@ -48,10 +34,18 @@ class FilterByDates extends PureComponent {
     filterActions.add('jours', day, callback)
   }
 
+  onPickedDateChange = date => {
+    const { filterActions } = this.props
+    const formatedDate = date.toISOString()
+    filterActions.change({ date: formatedDate, jours: '1-5' })
+  }
+
   render() {
     const { filterState, title } = this.props
-
     const days = decodeURI(filterState.query.jours || '')
+    // const queriedDate = filterState.query.date
+    //   ? moment(decodeURI(filterState.query.date))
+    //   : 'Par date...'
 
     return (
       <div id="filter-by-dates" className="pt18">
@@ -60,9 +54,33 @@ class FilterByDates extends PureComponent {
         </h2>
         {/* FIXME: le scroll sous ios est pas terrible
         du fait que le input soit cliquable */}
+
+        {/* ********** DATE PICKER ********** */}
+        <div className="input is-small date-picker">
+          <span>
+            <DatePicker
+              dateFormat="DD/MM/YYYY"
+              id="pick-by-date-filter"
+              minDate={TODAY_DATE}
+              onChange={this.onPickedDateChange}
+              popperPlacement="bottom-start"
+              // selected={queriedDate}
+              placeholderText="Par date..."
+            />
+          </span>
+          <span className="icon">
+            <Icon
+              alt="Choisissez une date dans le calendrier"
+              className="input-icon"
+              svg="dropdown-disclosure-down"
+            />
+          </span>
+        </div>
+        {/* ********** END DATE PICKER ********** */}
+
         <div className="pc-scroll-horizontal is-relative is-full-width pb18">
           <div className="pc-list flex-columns pl18 pr18">
-            {checkboxes.map(({ label, value }) => (
+            {DAYS_CHECKBOXES.map(({ label, value }) => (
               <label
                 key={value}
                 className="item flex-columns items-center py5 pl7 pr22"

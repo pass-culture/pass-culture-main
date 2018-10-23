@@ -122,3 +122,6 @@ test('Je clique sur la vignette Lire et je suis redirigé vers la page de résul
 
 // ****** SEARCH RESULTS ********* //
 // Tronquer le titre dans le résultat de recherche...
+
+// ****** DATE PICKER ********* //
+// Quand il choisit une date, les autres sélecteurs de date (Moins de 5 jours, etc) ne peuvent pas être cochés (et sont donc décochés s'ils l'étaient).
