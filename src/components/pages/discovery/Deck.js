@@ -5,7 +5,7 @@ import PropTypes from 'prop-types'
 import Draggable from 'react-draggable'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { compose, bindActionCreators } from 'redux'
+import { compose } from 'redux'
 import withSizes from 'react-sizes'
 
 import Card from './Card'
@@ -22,9 +22,6 @@ class Deck extends Component {
     super(props)
     this.currentReadRecommendationId = null
     this.state = { refreshKey: 0 }
-    const actions = { flip, flipUnflippable, requestData, unFlip }
-    const { dispatch } = props
-    this.actions = bindActionCreators(actions, dispatch)
   }
 
   componentDidMount() {
@@ -54,7 +51,8 @@ class Deck extends Component {
 
   componentWillUnmount() {
     Logger.log('Deck ---> componentWillUnmount')
-    this.actions.unFlip()
+    const { dispatch } = this.props
+    dispatch(unFlip())
     if (this.readTimeout) clearTimeout(this.readTimeout)
     if (this.noDataTimeout) clearTimeout(this.noDataTimeout)
   }
@@ -130,8 +128,12 @@ class Deck extends Component {
   }
 
   handleSetDateRead = prevProps => {
-    console.log('handleSetDateRead handleSetDateRead handleSetDateRead')
-    const { currentRecommendation, isFlipped, readTimeout } = this.props
+    const {
+      currentRecommendation,
+      dispatch,
+      isFlipped,
+      readTimeout,
+    } = this.props
     const { isRead } = this.state
 
     const isSameReco =
@@ -162,14 +164,16 @@ class Deck extends Component {
       this.currentReadRecommendationId = currentRecommendation.id
       this.readTimeout = setTimeout(() => {
         if (currentRecommendation && !currentRecommendation.dateRead) {
-          this.actions.requestData(
-            'PATCH',
-            `recommendations/${currentRecommendation.id}`,
-            {
-              body: {
-                dateRead: moment().toISOString(),
-              },
-            }
+          dispatch(
+            requestData(
+              'PATCH',
+              `recommendations/${currentRecommendation.id}`,
+              {
+                body: {
+                  dateRead: moment().toISOString(),
+                },
+              }
+            )
           )
           // this.setState({ isRead: true })
           clearTimeout(this.readTimeout)
@@ -186,23 +190,24 @@ class Deck extends Component {
   }
 
   handleFlip = () => {
-    const { isFlipDisabled } = this.props
+    const { dispatch, isFlipDisabled } = this.props
     if (isFlipDisabled) return
-    this.actions.flip()
+    dispatch(flip())
   }
 
   handleUnFlip = () => {
-    const { unFlippable } = this.props
+    const { dispatch, unFlippable } = this.props
     if (unFlippable) return
-    this.actions.unFlip()
+    dispatch(unFlip())
   }
 
   handleUrlFlip = (history, previousHistory = false) => {
+    const { dispatch } = this.props
     const isNewUrl =
       !previousHistory ||
       (previousHistory && history.location.key !== previousHistory.location.key)
     if (isNewUrl && history.location.search.indexOf('to=verso') > 0) {
-      this.actions.flipUnflippable()
+      dispatch(flipUnflippable())
     }
   }
 
