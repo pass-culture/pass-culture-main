@@ -58,7 +58,8 @@ def test_change_password_raises_and_error_if_old_password_is_the_same_as_the_new
     ':_v4l1d_P455sw0rd_:',
     ';_v4l1d_P455sw0rd_;',
     '._v4l1d_P455sw0rd_.',
-    ',_v4l1d_P455sw0rd_,'
+    ',_v4l1d_P455sw0rd_,',
+    '.v4l1d.P455sw0rd.,'
 ])
 def test_valid_passwords(password):
     try:
