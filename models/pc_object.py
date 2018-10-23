@@ -120,9 +120,10 @@ class PcObject():
                 if callable(value):
                     value = value()
                 if value is not None:
+                    is_list_of_pc_objects = isinstance(value, list) and all([isinstance(v, PcObject) for v in value])
                     if isinstance(value, InstrumentedList) \
                             or value.__class__.__name__ == 'AppenderBaseQuery' \
-                            or isinstance(value, list):
+                            or is_list_of_pc_objects:
                         if refine is None:
                             final_value = value
                         else:

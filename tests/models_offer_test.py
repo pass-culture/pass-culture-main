@@ -1,7 +1,6 @@
 from datetime import datetime, timedelta
 
 import pytest
-from freezegun import freeze_time
 
 from models import Offer, Thing, Event, PcObject, ApiErrors, EventOccurrence
 from tests.conftest import clean_database
@@ -80,19 +79,18 @@ def test_offer_error_when_thing_is_digital_but_venue_not_virtual(app):
         PcObject.check_and_save(offer)
 
     # Then
-    assert errors.value.errors['venue'] == ['Une offre numérique doit obligatoirement être associée au lieu "Offre en ligne"']
+    assert errors.value.errors['venue'] == [
+        'Une offre numérique doit obligatoirement être associée au lieu "Offre en ligne"']
 
 
-@freeze_time('2018-09-01 10:10:10')
-def test_offer_as_dict_returns_dateRange_in_ISO_8601():
+def test_offer_as_dict_returns_dateRange_in_ISO_8601(app):
     # Given
     eventOccurrence = EventOccurrence()
-    eventOccurrence.beginningDatetime = now
-    eventOccurrence.endDatetime = now + timedelta(hours=3)
+    eventOccurrence.beginningDatetime = datetime(2018, 10, 22, 10, 10, 10)
+    eventOccurrence.endDatetime = datetime(2018, 10, 22, 13, 10, 10)
     offer = Offer()
     offer.eventOccurrences = [eventOccurrence]
     # When
-    offer_dict = offer._asdict()
+    offer_dict = offer._asdict(include=["dateRange"])
     # Then
-    print(offer_dict)
-    assert offer_dict['ateRange'] == ['2018-09-01T10:10:10Z', '2018-09-01T10:13:10Z']
+    assert offer_dict['dateRange'] == ['2018-10-22T10:10:10Z', '2018-10-22T13:10:10Z']
