@@ -11,7 +11,7 @@ export const offererUser2 = {
   email: 'pctest2.cafe@btmx.fr',
   firstName: 'Test2',
   lastName: 'Café',
-  password: 'pctestcafe2',
+  password: 'PCtestcafe.34000',
   publicName: 'THEATRE NATIONAL DE CHAILLOT',
   siren: '692039514',
 }
