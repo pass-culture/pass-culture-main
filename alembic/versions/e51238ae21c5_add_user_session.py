@@ -21,7 +21,7 @@ def upgrade():
         'user_session',
         sa.Column('id', sa.BigInteger, primary_key=True, autoincrement=True),
         sa.Column('uuid', UUID(), unique=True, nullable=False),
-        sa.Column('userId', sa.BigInteger, unique=True, nullable=False)
+        sa.Column('userId', sa.BigInteger, nullable=False)
     )
 
 

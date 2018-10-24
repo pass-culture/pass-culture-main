@@ -52,4 +52,5 @@ def stamp_session(user):
 def discard_session():
     session_uuid = session.get('session_uuid')
     user_id = session.get('user_id')
+    session.clear()
     delete_user_session(user_id, session_uuid)
