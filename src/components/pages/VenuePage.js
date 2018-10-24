@@ -197,6 +197,7 @@ class VenuePage extends Component {
                   label="SIRET (si applicable)"
                   name="siret"
                   readOnly={isSiretReadOnly}
+                  required={!this.props.formComment}
                   renderInfo={() =>
                     !isSiretReadOnly && (
                       <span
@@ -211,7 +212,6 @@ class VenuePage extends Component {
                   }
                   type="siret"
                 />
-
                 <Field
                   isExpanded
                   label="Nom"
@@ -241,6 +241,7 @@ class VenuePage extends Component {
                   name="comment"
                   readOnly={formSire}
                   type="textarea"
+                  required={!this.props.formSiret}
                 />
               </div>
             </div>
@@ -358,6 +359,8 @@ function mapStateToProps(state, ownProps) {
     formLatitude: get(state, 'form.venue.latitude'),
     formLongitude: get(state, 'form.venue.longitude'),
     formSire: get(state, `form.venue.sire`),
+    formSiret: get(state, 'form.venue.siret'),
+    formComment: get(state, 'form.venue.comment'),
     name: get(state, `form.venue.name`),
     offerer: offererSelector(state, offererId),
     user: state.user,

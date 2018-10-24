@@ -23,6 +23,7 @@ const offererButton = Selector("a[href^='/structures/']").withText(
   'THEATRE NATIONAL DE CHAILLOT'
 )
 const siretInput = Selector('#venue-siret')
+const commentInput = Selector('#venue-comment')
 const offerersNavbarAnchor = Selector("a.navbar-item[href='/structures']")
 const siretInputError = Selector('#venue-siret-error')
 const submitButton = Selector('button.button.is-primary') //créer un lieu
@@ -110,6 +111,33 @@ test('Une entrée avec cet identifiant existe déjà', async t => {
     .click(closeAnchor)
     .expect(notificationError.exists)
     .notOk()
+})
+
+test('Il est obligatoire de saisir Le code SIRET OU le commentaire', async t => {
+  await t
+    .expect(siretInput.hasAttribute('required'))
+    .ok('SIRET doit être requis par défaut')
+    .expect(commentInput.hasAttribute('required'))
+    .ok('Comment doit être requis par défaut')
+
+    .typeText(siretInput, '123')
+    .expect(siretInput.hasAttribute('required'))
+    .ok('SIRET doit rester requis même saisi')
+    .expect(commentInput.hasAttribute('required'))
+    .notOk('Comment ne devrait plus être requis quand SIRET est saisie')
+
+    .selectText(siretInput)
+    .pressKey('delete')
+    .expect(siretInput.hasAttribute('required'))
+    .ok('SIRET doit être requis par défaut')
+    .expect(commentInput.hasAttribute('required'))
+    .ok('Comment doit être requis à nouveau si SIRET est effacé')
+
+    .typeText(commentInput, 'lorem ipsum dolor sit amet')
+    .expect(commentInput.hasAttribute('required'))
+    .ok('Comment doit rester requis même saisi')
+    .expect(siretInput.hasAttribute('required'))
+    .notOk('SIRET ne devrait plus être requis quand Comment est saisie')
 })
 
 test('Le code SIRET doit correspondre à un établissement de votre structure', async t => {
