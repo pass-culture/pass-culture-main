@@ -12,8 +12,8 @@ export const offererUser2 = {
   firstName: 'Test2',
   lastName: 'Café',
   password: 'PCtestcafe.34000',
-  publicName: 'THEATRE NATIONAL DE CHAILLOT',
-  siren: '692039514',
+  publicName: 'LE GRAND REX PARIS',
+  siren: '507633576',
 }
 
 export const adminUser = {
