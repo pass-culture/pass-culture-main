@@ -7,6 +7,15 @@ export const offererUser = {
   siren: '692039514',
 }
 
+export const offererUser2 = {
+  email: 'pctest2.cafe@btmx.fr',
+  firstName: 'Test2',
+  lastName: 'Café',
+  password: 'PCtestcafe.34000',
+  publicName: 'LE GRAND REX PARIS',
+  siren: '507633576',
+}
+
 export const adminUser = {
   email: 'pctest.admin.1@btmx.fr',
   firstName: 'Test',
