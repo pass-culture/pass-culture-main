@@ -83,6 +83,7 @@ class GeoInput extends Component {
   }
 
   updatePosition = () => {
+    const { onMergeForm } = this.props
     const { lat, lng } = this.refmarker.current.leafletElement.getLatLng()
     this.setState({
       marker: {
@@ -90,29 +91,33 @@ class GeoInput extends Component {
         longitude: lng,
       },
     })
-    this.props.onChange({
+    onMergeForm({
       latitude: lat,
       longitude: lng,
     })
   }
 
-  onTextChange = e => {
-    const { name, onChange: onFieldChange } = this.props
-    const value = e.target.value
+  onTextChange = event => {
+    const { name, onMergeForm } = this.props
+    const value = event.target.value
     this.setState({ value })
     this.onDebouncedFetchSuggestions(value)
-    onFieldChange({
-      address: null,
-      city: null,
-      geo: null,
-      latitude: null,
-      longitude: null,
-      [name]: value,
-      postalCode: null,
-    })
+    onMergeForm(
+      {
+        address: null,
+        city: null,
+        geo: null,
+        latitude: null,
+        longitude: null,
+        [name]: value,
+        postalCode: null,
+      },
+      { event }
+    )
   }
 
   onSelect = (value, item) => {
+    const { onMergeForm } = this.props
     if (item.placeholder) return
     this.setState({
       value,
@@ -126,8 +131,7 @@ class GeoInput extends Component {
         longitude: item.longitude,
       },
     })
-
-    this.props.onChange(item)
+    onMergeForm(item)
   }
 
   fetchSuggestions = value => {

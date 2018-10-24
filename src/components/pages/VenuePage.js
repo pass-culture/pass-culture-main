@@ -11,7 +11,7 @@ import {
   SubmitButton,
   withLogin,
 } from 'pass-culture-shared'
-import React, { Component } from 'react'
+import React, { Component, Fragment } from 'react'
 import { connect } from 'react-redux'
 import { NavLink, withRouter } from 'react-router-dom'
 import { compose } from 'redux'
@@ -136,6 +136,12 @@ class VenuePage extends Component {
     const { isNew, isReadOnly } = this.state
 
     const savedVenueId = get(venuePatch, 'id')
+    // TODO: offerer should provide a offerer.userRight
+    // to determine if it can edit iban stuff
+    // let s make false for now
+    const hasAlreadyRibUploaded =
+      get(venuePatch, 'iban') && get(venuePatch, 'thumbCount')
+    const isRibEditable = !isReadOnly && false
     const isSiretReadOnly = get(venuePatch, 'siret')
     const isSiretSkipping = !venueId && name && !formSire
     const isReadOnlyFromGeoOrSiren = formGeo || formSire
@@ -180,11 +186,12 @@ class VenuePage extends Component {
             action={`/venues/${savedVenueId || ''}`}
             handleSuccess={this.handleSuccess}
             name="venue"
+            normalizer={venueNormalizer}
             patch={venuePatch}
             readOnly={isReadOnly}>
             <Field type="hidden" name="managingOffererId" />
             <div className="section">
-              <h2 className="main-list-title">
+              <h2 className="main-list-title is-relative">
                 IDENTIFIANTS
                 <span className="is-pulled-right is-size-7 has-text-grey">
                   Les champs marqués d'un{' '}
@@ -245,6 +252,49 @@ class VenuePage extends Component {
                 />
               </div>
             </div>
+
+            <div className="section">
+              <h2 className="main-list-title">
+                INFORMATIONS BANCAIRES
+                <span className="is-pulled-right is-size-7 has-text-grey">
+                  {isRibEditable ? (
+                    <Fragment>
+                      Les champs marqués d'un{' '}
+                      <span className="required-legend"> * </span> sont
+                      obligatoires
+                    </Fragment>
+                  ) : (
+                    "Vous avez besoin d'être administrateur de la structure pour editer le rib et l'iban."
+                  )}
+                </span>
+              </h2>
+              <div className="field-group">
+                <Field
+                  label="BIC"
+                  name="bic"
+                  readOnly={!isRibEditable}
+                  type="bic"
+                />
+                <Field
+                  isExpanded
+                  label="IBAN"
+                  name="iban"
+                  readOnly={!isRibEditable}
+                  type="iban"
+                />
+                {false && (
+                  <Field
+                    isExpanded
+                    label="Justificatif"
+                    name="rib"
+                    readOnly={isReadOnly || !isRibEditable}
+                    uploaded={hasAlreadyRibUploaded}
+                    type="file"
+                  />
+                )}
+              </div>
+            </div>
+
             <div className="section">
               <h2 className="main-list-title">ADRESSE</h2>
               <div className="field-group">

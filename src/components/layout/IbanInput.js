@@ -5,12 +5,13 @@ import { isValidIBAN, friendlyFormatIBAN } from 'ibantools'
 
 class IbanInput extends PureComponent {
   onChange = event => {
+    const { dispatch, onChange: onFieldChange } = this.props
     event.persist()
     const value = removeWhitespaces(event.target.value)
-    this.props.onChange(value, { event })
+    onFieldChange(value, { event })
 
     if (!isValidIBAN(value)) {
-      this.props.dispatch(mergeErrors('offerer', { iban: ['IBAN invalide'] }))
+      dispatch(mergeErrors('offerer', { iban: ['IBAN invalide'] }))
     }
   }
 
