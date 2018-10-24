@@ -5,7 +5,7 @@ import { compose } from 'redux'
 import { withRouter, matchPath } from 'react-router-dom'
 
 import routes from './utils/routes'
-import MainMenu from './components/MainMenu'
+import MainMenu from './components/menu'
 import Debug from './components/layout/Debug'
 import Splash from './components/layout/Splash'
 import Overlay from './components/layout/Overlay'

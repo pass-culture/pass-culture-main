@@ -6,14 +6,13 @@ import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { Transition } from 'react-transition-group'
 import { withRouter } from 'react-router-dom'
-// import { Scrollbars } from 'react-custom-scrollbars'
 
-import routes from '../utils/routes'
-import MenuItem from './menu/MenuItem'
-import MenuHeader from './menu/MenuHeader'
-import MenuSignoutButton from './menu/MenuSignoutButton'
-import { toggleMainMenu } from '../reducers/menu'
-import { getMainMenuItems } from '../utils/routes-utils'
+import routes from '../../utils/routes'
+import MenuItem from './MenuItem'
+import MenuHeader from './MenuHeader'
+import MenuSignoutButton from './MenuSignoutButton'
+import { toggleMainMenu } from '../../reducers/menu'
+import { getMainMenuItems } from '../../utils/routes-utils'
 
 const transitionDelay = 250
 const transitionDuration = 250
