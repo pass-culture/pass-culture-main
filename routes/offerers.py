@@ -24,13 +24,24 @@ from utils.rest import ensure_current_user_has_rights, \
 from utils.search import get_keywords_filter
 from validation.offerers import check_valid_edition, parse_boolean_param_validated
 
+def resolve_offerer_with_filtered_current_user_offerer(offerer, options):
+    if not current_user.is_authenticated:
+        return offerer
+    offerer['users'] = [user_offerer for user_offerer in offerer['users'] if user_offerer['userId'] == current_user.id]
+    return offerer
+
+def get_dict_offerer(offerer):
+    return offerer._asdict(
+        include=OFFERER_INCLUDES,
+        resolve=resolve_offerer_with_filtered_current_user_offerer
+    )
 
 @app.route('/offerers', methods=['GET'])
 @login_required
 def list_offerers():
     only_validated_offerers = parse_boolean_param_validated(request)
     query = Offerer.query
-    
+
     if not current_user.isAdmin:
         if only_validated_offerers:
             query = filter_query_where_user_is_user_offerer_and_is_validated(query, current_user)
@@ -47,6 +58,7 @@ def list_offerers():
                                 order_by=Offerer.name,
                                 page=request.args.get('page'),
                                 paginate=10,
+                                resolve=resolve_offerer_with_filtered_current_user_offerer,
                                 query=query)
 
 
@@ -55,7 +67,7 @@ def list_offerers():
 def get_offerer(id):
     ensure_current_user_has_rights(RightsType.editor, dehumanize(id))
     offerer = load_or_404(Offerer, id)
-    return jsonify(offerer._asdict(include=OFFERER_INCLUDES)), 200
+    return jsonify(get_dict_offerer(offerer)), 200
 
 
 @app.route('/offerers/<id>/bookings', methods=['GET'])
@@ -97,7 +109,7 @@ def create_offerer():
             maybe_send_offerer_validation_email(offerer, user_offerer, app.mailjet_client.send.create)
         except MailServiceException as e:
             app.logger.error('Mail service failure', e)
-    return jsonify(offerer._asdict(include=OFFERER_INCLUDES)), 201
+    return jsonify(get_dict_offerer(offerer)), 201
 
 
 @app.route('/offerers/<offererId>', methods=['PATCH'])
@@ -112,7 +124,7 @@ def patch_offerer(offererId):
     recommendations = find_all_recommendations_for_offerer(offerer)
     invalidate_recommendations_if_deactivating_object(data, recommendations)
     PcObject.check_and_save(offerer)
-    return jsonify(offerer._asdict(include=OFFERER_INCLUDES)), 200
+    return jsonify(get_dict_offerer(offerer)), 200
 
 
 def _generate_orderby_criterium(order, order_by_key):

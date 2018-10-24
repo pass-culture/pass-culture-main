@@ -74,7 +74,7 @@ class Offerer(PcObject,
         for venue in self.managedVenues:
             n_offers += venue.nOffers
         return n_offers
-
+        
 
 Offerer.__ts_vector__ = create_tsvector(
     cast(coalesce(Offerer.name, ''), TEXT),
