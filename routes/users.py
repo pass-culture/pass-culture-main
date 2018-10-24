@@ -1,7 +1,6 @@
 """users routes"""
-import uuid
 
-from flask import current_app as app, jsonify, request, session
+from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required, logout_user, login_user
 
 from connectors.google_spreadsheet import get_authorized_emails_and_dept_codes
@@ -14,12 +13,12 @@ from models import ApiErrors, Deposit, Offerer, PcObject, User
 from models.user_offerer import RightsType
 from models.venue import create_digital_venue
 from repository.user_offerer_queries import count_user_offerers_by_offerer
-from repository.user_queries import find_user_by_email, find_user_by_reset_password_token, register_user_session, \
-    delete_user_session
+from repository.user_queries import find_user_by_email, find_user_by_reset_password_token
 from utils import logger
 from utils.config import ILE_DE_FRANCE_DEPT_CODES, IS_INTEGRATION
 from utils.credentials import get_user_with_credentials
 from utils.includes import USER_INCLUDES
+from utils.login_manager import mark_session, discard_session
 from utils.mailing import \
     subscribe_newsletter, MailServiceException
 from utils.rest import expect_json_data, \
@@ -116,20 +115,17 @@ def signin():
     identifier = json.get("identifier")
     password = json.get("password")
     user = get_user_with_credentials(identifier, password)
+    login_user(user, remember=True)
+    mark_session(user)
     user_dict = user._asdict(include=USER_INCLUDES)
     user_dict['expenses'] = get_expenses(user)
-    session_uuid = uuid.uuid4()
-    session['session_uuid'] = session_uuid
-    register_user_session(user.id, session_uuid)
     return jsonify(user_dict), 200
 
 
 @app.route("/users/signout", methods=["GET"])
 @login_required
 def signout():
-    session_uuid = session.get('session_uuid')
-    user_id = session.get('user_id')
-    delete_user_session(user_id, session_uuid)
+    discard_session()
     logout_user()
     return jsonify({"global": "Deconnecté"})
 
@@ -185,6 +181,7 @@ def signup():
         subscribe_newsletter(new_user)
 
     login_user(new_user)
+    mark_session(new_user)
 
     return jsonify(new_user._asdict(include=USER_INCLUDES)), 201
 

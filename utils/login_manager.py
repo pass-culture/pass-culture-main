@@ -1,10 +1,12 @@
 """ login_manager """
+import uuid
+
 from flask import current_app as app, jsonify, session
-from flask_login import LoginManager
+from flask_login import LoginManager, login_user
 
 from models.api_errors import ApiErrors
 from models.user import User
-from repository.user_queries import existing_user_session
+from repository.user_queries import existing_user_session, register_user_session, delete_user_session
 from utils.credentials import get_user_with_credentials
 
 app.login_manager = LoginManager()
@@ -28,6 +30,7 @@ def get_user_with_request(request):
     if not auth:
         return None
     user = get_user_with_credentials(auth.username, auth.password)
+    login_user(user, remember=True)
     return user
 
 
@@ -36,3 +39,15 @@ def send_401():
     e = ApiErrors()
     e.addError('global', 'Authentification nécessaire')
     return jsonify(e.errors), 401
+
+
+def mark_session(user):
+    session_uuid = uuid.uuid4()
+    session['session_uuid'] = session_uuid
+    register_user_session(user.id, session_uuid)
+
+
+def discard_session():
+    session_uuid = session.get('session_uuid')
+    user_id = session.get('user_id')
+    delete_user_session(user_id, session_uuid)
