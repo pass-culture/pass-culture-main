@@ -65,12 +65,13 @@ class Booking extends React.PureComponent {
 
   onFormSubmit = formValues => {
     const onSubmittingStateChanged = () => {
-      // console.log('BookingCard.onFormSubmit => formValues', formValues)
-      // setTimeout(this.handleRequestSuccess, 3000)
       this.actions.requestData('POST', 'bookings', {
         body: { ...formValues },
         handleFail: this.handleRequestFail,
-        handleSuccess: this.handleRequestSuccess,
+        // après la mise à jour du booking pour un user
+        // on cherche à recupérer la nouvelle valeur du wallet
+        // il faut alors une nouvelle requête pour l'update du store redux
+        handleSuccess: this.updateUserFromStore,
         name: 'booking',
       })
     }
@@ -78,9 +79,19 @@ class Booking extends React.PureComponent {
     this.setState({ isSubmitting: true }, onSubmittingStateChanged)
   }
 
-  handleRequestSuccess = (state, action) => {
+  updateUserFromStore = (state, action) => {
+    const bookedPayload = action.data
+    this.actions.requestData('PATCH', 'users/current', {
+      body: {},
+      handleFail: this.handleRequestFail,
+      handleSuccess: this.handleRequestSuccess(bookedPayload),
+      key: 'user',
+    })
+  }
+
+  handleRequestSuccess = bookedPayload => () => {
     const nextState = {
-      bookedPayload: action.data,
+      bookedPayload,
       isErrored: false,
       isSubmitting: false,
     }

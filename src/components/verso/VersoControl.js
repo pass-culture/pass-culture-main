@@ -9,7 +9,6 @@ import { compose, bindActionCreators } from 'redux'
 
 import ShareButton from '../share/ShareButton'
 import VersoBookingButton from './VersoBookingButton'
-import { getShareURL } from '../../helpers'
 import currentRecommendationSelector from '../../selectors/currentRecommendation'
 
 class VersoControl extends React.PureComponent {
@@ -30,25 +29,21 @@ class VersoControl extends React.PureComponent {
 
   onClickFavorite = () => {
     const { isFavorite, recommendationId } = this.props
-    const method = 'PATCH'
     const url = `currentRecommendations/${recommendationId}`
-    const opts = {
+    this.actions.requestData('PATCH', url, {
       body: { isFavorite: !isFavorite },
       key: 'currentRecommendations',
-    }
-    this.actions.requestData(method, url, opts)
+    })
   }
 
   render() {
-    const { isFavorite, location, recommendation, user, wallet } = this.props
-
-    const shareURL = getShareURL(location, user)
-    const shareTitle = recommendation.offer.eventOrThing.name
+    const { isFavorite, wallet } = this.props
+    const walletValue = wallet || '--'
     return (
       <ul className="verso-control">
         <li>
           <small className="pass-label">Mon Pass</small>
-          <span className="pass-value">{wallet}€</span>
+          <span className="pass-value">{walletValue}€</span>
         </li>
         <li>
           <button
@@ -64,7 +59,7 @@ class VersoControl extends React.PureComponent {
           </button>
         </li>
         <li>
-          <ShareButton shareURL={shareURL} shareTitle={shareTitle} />
+          <ShareButton />
         </li>
         <li>
           <VersoBookingButton />
@@ -76,7 +71,6 @@ class VersoControl extends React.PureComponent {
 
 VersoControl.defaultProps = {
   isFavorite: false,
-  recommendation: null,
   recommendationId: null,
   wallet: null,
 }
@@ -84,17 +78,13 @@ VersoControl.defaultProps = {
 VersoControl.propTypes = {
   dispatch: PropTypes.func.isRequired,
   isFavorite: PropTypes.bool,
-  location: PropTypes.object.isRequired,
-  recommendation: PropTypes.object,
   recommendationId: PropTypes.string,
-  user: PropTypes.object.isRequired,
   wallet: PropTypes.number,
 }
 
 const mapStateToProps = (state, ownProps) => {
   const { user } = state
   const { mediationId, offerId } = ownProps.match.params
-  const { wallet_balance: wallet } = user
   const recommendation = currentRecommendationSelector(
     state,
     offerId,
@@ -102,10 +92,8 @@ const mapStateToProps = (state, ownProps) => {
   )
   return {
     isFavorite: recommendation && recommendation.isFavorite,
-    recommendation,
-    recommendationId: recommendation.id,
-    user,
-    wallet,
+    recommendationId: recommendation && recommendation.id,
+    wallet: (user && user.wallet_balance) || null,
   }
 }
 
