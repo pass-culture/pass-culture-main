@@ -19,6 +19,7 @@ depends_on = None
 def upgrade():
     op.create_table(
         'user_session',
+        sa.Column('id', sa.BigInteger, primary_key=True, autoincrement=True),
         sa.Column('uuid', UUID(), unique=True, nullable=False),
         sa.Column('userId', sa.BigInteger, unique=True, nullable=False)
     )

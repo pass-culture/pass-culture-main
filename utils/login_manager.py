@@ -31,6 +31,7 @@ def get_user_with_request(request):
         return None
     user = get_user_with_credentials(auth.username, auth.password)
     login_user(user, remember=True)
+    stamp_session(user)
     return user
 
 
@@ -41,9 +42,10 @@ def send_401():
     return jsonify(e.errors), 401
 
 
-def mark_session(user):
+def stamp_session(user):
     session_uuid = uuid.uuid4()
     session['session_uuid'] = session_uuid
+    session['user_id'] = user.id
     register_user_session(user.id, session_uuid)
 
 

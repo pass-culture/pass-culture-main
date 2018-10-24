@@ -18,7 +18,7 @@ from utils import logger
 from utils.config import ILE_DE_FRANCE_DEPT_CODES, IS_INTEGRATION
 from utils.credentials import get_user_with_credentials
 from utils.includes import USER_INCLUDES
-from utils.login_manager import mark_session, discard_session
+from utils.login_manager import stamp_session, discard_session
 from utils.mailing import \
     subscribe_newsletter, MailServiceException
 from utils.rest import expect_json_data, \
@@ -116,7 +116,7 @@ def signin():
     password = json.get("password")
     user = get_user_with_credentials(identifier, password)
     login_user(user, remember=True)
-    mark_session(user)
+    stamp_session(user)
     user_dict = user._asdict(include=USER_INCLUDES)
     user_dict['expenses'] = get_expenses(user)
     return jsonify(user_dict), 200
@@ -181,7 +181,7 @@ def signup():
         subscribe_newsletter(new_user)
 
     login_user(new_user)
-    mark_session(new_user)
+    stamp_session(new_user)
 
     return jsonify(new_user._asdict(include=USER_INCLUDES)), 201
 

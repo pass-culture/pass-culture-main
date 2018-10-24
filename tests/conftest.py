@@ -8,7 +8,7 @@ from mailjet_rest import Client
 
 from local_providers.install import install_local_providers
 from models import User, Deposit, Booking, Mediation, Recommendation, UserOfferer, Offerer, Venue, VenueProvider, Offer, \
-    EventOccurrence, Stock, Thing, Event
+    EventOccurrence, Stock, Thing, Event, UserSession
 from models.activity import load_activity
 from models.db import db
 from models.install import install_models
@@ -88,7 +88,7 @@ def clean_database(f):
         Deposit.query.delete()
         User.query.delete()
         Activity.query.delete()
-
+        UserSession.query.delete()
         return f(*args, **kwargs)
 
     return decorated_function
