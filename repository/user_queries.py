@@ -38,24 +38,3 @@ def find_users_stats_per_department(time_intervall):
     else:
         return db.session.query(User.departementCode, func.count(distinct(User.id))).filter(
             User.canBookFreeOffers == 'true').group_by(User.departementCode).order_by(User.departementCode).all()
-
-
-def register_user_session(user_id: int, session_uuid: UUID):
-    session = UserSession()
-    session.userId = user_id
-    session.uuid = session_uuid
-    PcObject.check_and_save(session)
-
-
-def delete_user_session(user_id: int, session_uuid: UUID):
-    session = UserSession.query \
-        .filter_by(userId=user_id, uuid=session_uuid) \
-        .first()
-    PcObject.delete(session)
-
-
-def existing_user_session(user_id: int, session_uuid: UUID):
-    session = UserSession.query \
-        .filter_by(userId=user_id, uuid=session_uuid) \
-        .first()
-    return session is not None
