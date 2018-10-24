@@ -6,13 +6,12 @@ from sqlalchemy import BigInteger, CheckConstraint, Column, DateTime, desc, Fore
 from sqlalchemy.orm import relationship
 
 from models import DeactivableMixin, EventOccurrence
-from models.venue import Venue
-from models import DeactivableMixin, EventOccurrence
 from models.db import Model
 from models.pc_object import PcObject
 from models.providable_mixin import ProvidableMixin
 from models.stock import Stock
 from models.venue import Venue
+from utils.date import DateTimes
 
 
 class Offer(PcObject,
@@ -73,11 +72,11 @@ class Offer(PcObject,
     @property
     def dateRange(self):
         if self.thing or not self.eventOccurrences:
-            return tuple()
+            return DateTimes()
 
         start = min([occurrence.beginningDatetime for occurrence in self.eventOccurrences])
         end = max([occurrence.endDatetime for occurrence in self.eventOccurrences])
-        return (start, end)
+        return DateTimes(start, end)
 
     @property
     def eventOrThing(self):

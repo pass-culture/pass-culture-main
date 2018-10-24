@@ -21,7 +21,7 @@ from sqlalchemy.orm.collections import InstrumentedList
 from models.api_errors import ApiErrors
 from models.db import db
 from models.soft_deletable_mixin import SoftDeletableMixin
-from utils.date import match_format
+from utils.date import match_format, DateTimes
 from utils.human_ids import dehumanize, humanize
 from utils.logger import logger
 
@@ -38,7 +38,7 @@ def serialize(value, **options):
     if isinstance(value, Enum):
         return value.name
     elif isinstance(value, datetime):
-        return value.isoformat() + "Z"
+        return format_into_ISO_8601(value)
     elif isinstance(value, DateTimeRange):
         return {
             'start': value.lower,
@@ -50,8 +50,15 @@ def serialize(value, **options):
         return list(map(lambda d: {'start': d.lower,
                                    'end': d.upper},
                         value))
+    elif isinstance(value, DateTimes):
+        return [format_into_ISO_8601(v) for v in value.datetimes]
+
     else:
         return value
+
+
+def format_into_ISO_8601(value):
+    return value.isoformat() + "Z"
 
 
 class PcObject():
