@@ -44,6 +44,7 @@ class VenuePage extends Component {
     const isNew = venueId === 'nouveau'
     const isReadOnly = !isNew && !isEdit
     return {
+      isEdit,
       isNew,
       isReadOnly,
     }
@@ -133,7 +134,7 @@ class VenuePage extends Component {
       offerer,
       venuePatch,
     } = this.props
-    const { isNew, isReadOnly } = this.state
+    const { isEdit, isNew, isReadOnly } = this.state
 
     const savedVenueId = get(venuePatch, 'id')
     // TODO: offerer should provide a offerer.userRight
@@ -144,11 +145,14 @@ class VenuePage extends Component {
     const isRibEditable = !isReadOnly && false
     const isSiretReadOnly = get(venuePatch, 'siret')
     const isSiretSkipping = !venueId && name && !formSire
-    const isReadOnlyFromGeoOrSiren = formGeo || formSire
+    const isFieldReadOnlyBecauseFrozenFromSiret =
+      isReadOnly || formSire || (isEdit && get(venuePatch, 'siret'))
+    const isReadOnlyFromGeoOrSiren =
+      formGeo || isFieldReadOnlyBecauseFrozenFromSiret
     const isLatitudeReadOnlyFromGeoOrSiren =
-      formGeo || (formSire && formLatitude)
+      formGeo || (isFieldReadOnlyBecauseFrozenFromSiret && formLatitude)
     const isLongitudeReadOnlyFromGeoOrSiren =
-      formGeo || (formSire && formLongitude)
+      formGeo || (isFieldReadOnlyBecauseFrozenFromSiret && formLongitude)
 
     return (
       <Main
@@ -205,42 +209,63 @@ class VenuePage extends Component {
                   name="siret"
                   readOnly={isSiretReadOnly}
                   required={!this.props.formComment}
-                  renderInfo={() =>
-                    !isSiretReadOnly && (
-                      <span
-                        className="button"
-                        data-place="bottom"
-                        data-tip="<div><p>Saisissez ici le SIRET du lieu lié à votre structure pour retrouver ses informations automatiquement.</p>
+                  renderInfo={() => {
+                    if (isReadOnly) {
+                      return
+                    }
+                    if (isFieldReadOnlyBecauseFrozenFromSiret) {
+                      return (
+                        <span
+                          className="button"
+                          data-place="bottom"
+                          data-tip="<p>Il n'est pas possible de modifier le nom, l'addresse et la géolocalisation du lieu quand un siret est rentré.</p>"
+                          data-type="info">
+                          <Icon svg="picto-info" />
+                        </span>
+                      )
+                    }
+                    return (
+                      !isSiretReadOnly && (
+                        <span
+                          className="button"
+                          data-place="bottom"
+                          data-tip="<div><p>Saisissez ici le SIRET du lieu lié à votre structure pour retrouver ses informations automatiquement.</p>
 <p>Si les informations ne correspondent pas au SIRET saisi, <a href='mailto:pass@culture.gouv.fr?subject=Question%20SIRET'> contactez notre équipe</a>.</p></div>"
-                        data-type="info">
-                        <Icon svg="picto-info" />
-                      </span>
+                          data-type="info">
+                          <Icon svg="picto-info" />
+                        </span>
+                      )
                     )
-                  }
+                  }}
                   type="siret"
                 />
                 <Field
                   isExpanded
                   label="Nom"
                   name="name"
-                  readOnly={formSire}
+                  readOnly={isFieldReadOnlyBecauseFrozenFromSiret}
                   required
                 />
                 <Field
                   label="E-mail"
                   name="bookingEmail"
                   required
-                  renderInfo={() =>
-                    !isSiretReadOnly && (
-                      <span
-                        className="button"
-                        data-tip="<p>Cette adresse recevra les e-mails de notification de réservation (sauf si une autre adresse différente est saisie lors de la création d'une offre)</p>"
-                        data-place="bottom"
-                        data-type="info">
-                        <Icon svg="picto-info" />
-                      </span>
+                  renderInfo={() => {
+                    if (isReadOnly) {
+                      return
+                    }
+                    return (
+                      !isSiretReadOnly && (
+                        <span
+                          className="button"
+                          data-tip="<p>Cette adresse recevra les e-mails de notification de réservation (sauf si une autre adresse différente est saisie lors de la création d'une offre)</p>"
+                          data-place="bottom"
+                          data-type="info">
+                          <Icon svg="picto-info" />
+                        </span>
+                      )
                     )
-                  }
+                  }}
                   type="email"
                 />
                 <Field
@@ -304,7 +329,7 @@ class VenuePage extends Component {
                   latitude={formLatitude}
                   longitude={formLongitude}
                   name="address"
-                  readOnly={formSire}
+                  readOnly={isFieldReadOnlyBecauseFrozenFromSiret}
                   required
                   type="geo"
                   withMap
