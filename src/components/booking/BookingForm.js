@@ -4,7 +4,7 @@ import React from 'react'
 import moment from 'moment'
 import PropTypes from 'prop-types'
 
-import withForm from '../forms/withForm'
+import withBookingForm from './withBookingForm'
 import { isSameDayInEachTimezone, getPrice } from '../../helpers'
 import { CalendarField, HiddenField, SelectField } from '../forms/inputs'
 
@@ -140,5 +140,5 @@ const calculator = [
   },
 ]
 
-const BookingForm = withForm(BookingFormComponent, validator, calculator)
+const BookingForm = withBookingForm(BookingFormComponent, validator, calculator)
 export default BookingForm

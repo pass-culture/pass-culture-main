@@ -7,7 +7,7 @@ import { Form as FinalForm, FormSpy } from 'react-final-form'
 
 // React Final Form Validator
 // github.com/final-form/react-final-form#synchronous-record-level-validation
-const withForm = (WrappedComponent, validator, calculator) => {
+const withBookingForm = (WrappedComponent, validator, calculator) => {
   const decorators = [
     // React Final Form Calculator
     // github.com/final-form/react-final-form#calculated-fields
@@ -25,7 +25,7 @@ const withForm = (WrappedComponent, validator, calculator) => {
     values: true,
   }
 
-  class EditForm extends React.PureComponent {
+  class BookingFormWrapper extends React.PureComponent {
     render() {
       const {
         formId,
@@ -70,14 +70,14 @@ const withForm = (WrappedComponent, validator, calculator) => {
     }
   }
 
-  EditForm.defaultProps = {
+  BookingFormWrapper.defaultProps = {
     children: null,
     className: null,
     initialValues: null,
     onMutation: null,
   }
 
-  EditForm.propTypes = {
+  BookingFormWrapper.propTypes = {
     children: PropTypes.node,
     className: PropTypes.string,
     formId: PropTypes.string.isRequired,
@@ -86,7 +86,7 @@ const withForm = (WrappedComponent, validator, calculator) => {
     onSubmit: PropTypes.func.isRequired,
   }
 
-  return EditForm
+  return BookingFormWrapper
 }
 
-export default withForm
+export default withBookingForm
