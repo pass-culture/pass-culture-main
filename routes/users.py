@@ -1,6 +1,7 @@
 """users routes"""
+import uuid
 
-from flask import current_app as app, jsonify, request
+from flask import current_app as app, jsonify, request, session
 from flask_login import current_user, login_required, logout_user, login_user
 
 from connectors.google_spreadsheet import get_authorized_emails_and_dept_codes
@@ -13,7 +14,8 @@ from models import ApiErrors, Deposit, Offerer, PcObject, User
 from models.user_offerer import RightsType
 from models.venue import create_digital_venue
 from repository.user_offerer_queries import count_user_offerers_by_offerer
-from repository.user_queries import find_user_by_email, find_user_by_reset_password_token
+from repository.user_queries import find_user_by_email, find_user_by_reset_password_token, register_user_session, \
+    delete_user_session
 from utils import logger
 from utils.config import ILE_DE_FRANCE_DEPT_CODES, IS_INTEGRATION
 from utils.credentials import get_user_with_credentials
@@ -116,12 +118,18 @@ def signin():
     user = get_user_with_credentials(identifier, password)
     user_dict = user._asdict(include=USER_INCLUDES)
     user_dict['expenses'] = get_expenses(user)
+    session_uuid = uuid.uuid4()
+    session['session_uuid'] = session_uuid
+    register_user_session(user.id, session_uuid)
     return jsonify(user_dict), 200
 
 
 @app.route("/users/signout", methods=["GET"])
 @login_required
 def signout():
+    session_uuid = session.get('session_uuid')
+    user_id = session.get('user_id')
+    delete_user_session(user_id, session_uuid)
     logout_user()
     return jsonify({"global": "Deconnecté"})
 
