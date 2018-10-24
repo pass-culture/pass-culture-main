@@ -1,0 +1,806 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`src | components | pages | search | BookingSuccess snapshot should match snapshot 1`] = `
+ShallowWrapper {
+  Symbol(enzyme.__root__): [Circular],
+  Symbol(enzyme.__unrendered__): <BookingSuccess
+    data={Object {}}
+    isEvent={true}
+  />,
+  Symbol(enzyme.__renderer__): Object {
+    "batchedUpdates": [Function],
+    "getNode": [Function],
+    "render": [Function],
+    "simulateError": [Function],
+    "simulateEvent": [Function],
+    "unmount": [Function],
+  },
+  Symbol(enzyme.__node__): Object {
+    "instance": null,
+    "key": undefined,
+    "nodeType": "host",
+    "props": Object {
+      "children": Array [
+        <h3
+          className="fs22"
+        >
+          <span
+            className="is-block mb12"
+            style={
+              Object {
+                "color": "#27AE60",
+                "fontSize": "4.5rem",
+              }
+            }
+          >
+            <Icon
+              type="check-circle"
+            />
+          </span>
+          <span
+            className="is-block mb36"
+          >
+            Votre réservation est validée.
+          </span>
+        </h3>,
+        <p>
+          <span
+            className="is-block"
+          >
+            
+             ont été déduits de votre pass.
+          </span>
+          <span
+            className="is-block"
+          >
+            Présentez le code suivant sur place:
+          </span>
+        </p>,
+        <p
+          className="my28"
+        >
+          <b
+            className="is-block is-size-1"
+          />
+        </p>,
+        <p>
+          <React.Fragment>
+            <span
+              className="is-block"
+            >
+              Retrouvez ce code et les détails de l'offre dans
+            </span>
+            <span
+              className="is-block"
+            >
+              la rubrique
+              <Link
+                replace={false}
+                to="/reservations"
+              >
+                <b
+                  className="is-primary-text"
+                >
+                   Mes Réservations 
+                </b>
+              </Link>
+              de votre compte
+            </span>
+          </React.Fragment>
+        </p>,
+      ],
+      "className": "booked text-center event",
+    },
+    "ref": null,
+    "rendered": Array [
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": Array [
+            <span
+              className="is-block mb12"
+              style={
+                Object {
+                  "color": "#27AE60",
+                  "fontSize": "4.5rem",
+                }
+              }
+            >
+              <Icon
+                type="check-circle"
+              />
+            </span>,
+            <span
+              className="is-block mb36"
+            >
+              Votre réservation est validée.
+            </span>,
+          ],
+          "className": "fs22",
+        },
+        "ref": null,
+        "rendered": Array [
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": <Icon
+                type="check-circle"
+              />,
+              "className": "is-block mb12",
+              "style": Object {
+                "color": "#27AE60",
+                "fontSize": "4.5rem",
+              },
+            },
+            "ref": null,
+            "rendered": Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "function",
+              "props": Object {
+                "type": "check-circle",
+              },
+              "ref": null,
+              "rendered": null,
+              "type": [Function],
+            },
+            "type": "span",
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": Array [
+                "Votre réservation est validée.",
+                false,
+              ],
+              "className": "is-block mb36",
+            },
+            "ref": null,
+            "rendered": Array [
+              "Votre réservation est validée.",
+              false,
+            ],
+            "type": "span",
+          },
+        ],
+        "type": "h3",
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": Array [
+            <span
+              className="is-block"
+            >
+              
+               ont été déduits de votre pass.
+            </span>,
+            <span
+              className="is-block"
+            >
+              Présentez le code suivant sur place:
+            </span>,
+          ],
+        },
+        "ref": null,
+        "rendered": Array [
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": Array [
+                "",
+                " ont été déduits de votre pass.",
+              ],
+              "className": "is-block",
+            },
+            "ref": null,
+            "rendered": Array [
+              "",
+              " ont été déduits de votre pass.",
+            ],
+            "type": "span",
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": "Présentez le code suivant sur place:",
+              "className": "is-block",
+            },
+            "ref": null,
+            "rendered": "Présentez le code suivant sur place:",
+            "type": "span",
+          },
+        ],
+        "type": "p",
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": Array [
+            <b
+              className="is-block is-size-1"
+            />,
+            undefined,
+          ],
+          "className": "my28",
+        },
+        "ref": null,
+        "rendered": Array [
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": undefined,
+              "className": "is-block is-size-1",
+            },
+            "ref": null,
+            "rendered": null,
+            "type": "b",
+          },
+          undefined,
+        ],
+        "type": "p",
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": Array [
+            <React.Fragment>
+              <span
+                className="is-block"
+              >
+                Retrouvez ce code et les détails de l'offre dans
+              </span>
+              <span
+                className="is-block"
+              >
+                la rubrique
+                <Link
+                  replace={false}
+                  to="/reservations"
+                >
+                  <b
+                    className="is-primary-text"
+                  >
+                     Mes Réservations 
+                  </b>
+                </Link>
+                de votre compte
+              </span>
+            </React.Fragment>,
+            undefined,
+          ],
+        },
+        "ref": null,
+        "rendered": Array [
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "function",
+            "props": Object {
+              "children": Array [
+                <span
+                  className="is-block"
+                >
+                  Retrouvez ce code et les détails de l'offre dans
+                </span>,
+                <span
+                  className="is-block"
+                >
+                  la rubrique
+                  <Link
+                    replace={false}
+                    to="/reservations"
+                  >
+                    <b
+                      className="is-primary-text"
+                    >
+                       Mes Réservations 
+                    </b>
+                  </Link>
+                  de votre compte
+                </span>,
+              ],
+            },
+            "ref": null,
+            "rendered": Array [
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": "Retrouvez ce code et les détails de l'offre dans",
+                  "className": "is-block",
+                },
+                "ref": null,
+                "rendered": "Retrouvez ce code et les détails de l'offre dans",
+                "type": "span",
+              },
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": Array [
+                    "la rubrique",
+                    <Link
+                      replace={false}
+                      to="/reservations"
+                    >
+                      <b
+                        className="is-primary-text"
+                      >
+                         Mes Réservations 
+                      </b>
+                    </Link>,
+                    "de votre compte",
+                  ],
+                  "className": "is-block",
+                },
+                "ref": null,
+                "rendered": Array [
+                  "la rubrique",
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "class",
+                    "props": Object {
+                      "children": <b
+                        className="is-primary-text"
+                      >
+                         Mes Réservations 
+                      </b>,
+                      "replace": false,
+                      "to": "/reservations",
+                    },
+                    "ref": null,
+                    "rendered": Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "host",
+                      "props": Object {
+                        "children": " Mes Réservations ",
+                        "className": "is-primary-text",
+                      },
+                      "ref": null,
+                      "rendered": " Mes Réservations ",
+                      "type": "b",
+                    },
+                    "type": [Function],
+                  },
+                  "de votre compte",
+                ],
+                "type": "span",
+              },
+            ],
+            "type": Symbol(react.fragment),
+          },
+          undefined,
+        ],
+        "type": "p",
+      },
+    ],
+    "type": "div",
+  },
+  Symbol(enzyme.__nodes__): Array [
+    Object {
+      "instance": null,
+      "key": undefined,
+      "nodeType": "host",
+      "props": Object {
+        "children": Array [
+          <h3
+            className="fs22"
+          >
+            <span
+              className="is-block mb12"
+              style={
+                Object {
+                  "color": "#27AE60",
+                  "fontSize": "4.5rem",
+                }
+              }
+            >
+              <Icon
+                type="check-circle"
+              />
+            </span>
+            <span
+              className="is-block mb36"
+            >
+              Votre réservation est validée.
+            </span>
+          </h3>,
+          <p>
+            <span
+              className="is-block"
+            >
+              
+               ont été déduits de votre pass.
+            </span>
+            <span
+              className="is-block"
+            >
+              Présentez le code suivant sur place:
+            </span>
+          </p>,
+          <p
+            className="my28"
+          >
+            <b
+              className="is-block is-size-1"
+            />
+          </p>,
+          <p>
+            <React.Fragment>
+              <span
+                className="is-block"
+              >
+                Retrouvez ce code et les détails de l'offre dans
+              </span>
+              <span
+                className="is-block"
+              >
+                la rubrique
+                <Link
+                  replace={false}
+                  to="/reservations"
+                >
+                  <b
+                    className="is-primary-text"
+                  >
+                     Mes Réservations 
+                  </b>
+                </Link>
+                de votre compte
+              </span>
+            </React.Fragment>
+          </p>,
+        ],
+        "className": "booked text-center event",
+      },
+      "ref": null,
+      "rendered": Array [
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": Array [
+              <span
+                className="is-block mb12"
+                style={
+                  Object {
+                    "color": "#27AE60",
+                    "fontSize": "4.5rem",
+                  }
+                }
+              >
+                <Icon
+                  type="check-circle"
+                />
+              </span>,
+              <span
+                className="is-block mb36"
+              >
+                Votre réservation est validée.
+              </span>,
+            ],
+            "className": "fs22",
+          },
+          "ref": null,
+          "rendered": Array [
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": <Icon
+                  type="check-circle"
+                />,
+                "className": "is-block mb12",
+                "style": Object {
+                  "color": "#27AE60",
+                  "fontSize": "4.5rem",
+                },
+              },
+              "ref": null,
+              "rendered": Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "function",
+                "props": Object {
+                  "type": "check-circle",
+                },
+                "ref": null,
+                "rendered": null,
+                "type": [Function],
+              },
+              "type": "span",
+            },
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": Array [
+                  "Votre réservation est validée.",
+                  false,
+                ],
+                "className": "is-block mb36",
+              },
+              "ref": null,
+              "rendered": Array [
+                "Votre réservation est validée.",
+                false,
+              ],
+              "type": "span",
+            },
+          ],
+          "type": "h3",
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": Array [
+              <span
+                className="is-block"
+              >
+                
+                 ont été déduits de votre pass.
+              </span>,
+              <span
+                className="is-block"
+              >
+                Présentez le code suivant sur place:
+              </span>,
+            ],
+          },
+          "ref": null,
+          "rendered": Array [
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": Array [
+                  "",
+                  " ont été déduits de votre pass.",
+                ],
+                "className": "is-block",
+              },
+              "ref": null,
+              "rendered": Array [
+                "",
+                " ont été déduits de votre pass.",
+              ],
+              "type": "span",
+            },
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": "Présentez le code suivant sur place:",
+                "className": "is-block",
+              },
+              "ref": null,
+              "rendered": "Présentez le code suivant sur place:",
+              "type": "span",
+            },
+          ],
+          "type": "p",
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": Array [
+              <b
+                className="is-block is-size-1"
+              />,
+              undefined,
+            ],
+            "className": "my28",
+          },
+          "ref": null,
+          "rendered": Array [
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": undefined,
+                "className": "is-block is-size-1",
+              },
+              "ref": null,
+              "rendered": null,
+              "type": "b",
+            },
+            undefined,
+          ],
+          "type": "p",
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": Array [
+              <React.Fragment>
+                <span
+                  className="is-block"
+                >
+                  Retrouvez ce code et les détails de l'offre dans
+                </span>
+                <span
+                  className="is-block"
+                >
+                  la rubrique
+                  <Link
+                    replace={false}
+                    to="/reservations"
+                  >
+                    <b
+                      className="is-primary-text"
+                    >
+                       Mes Réservations 
+                    </b>
+                  </Link>
+                  de votre compte
+                </span>
+              </React.Fragment>,
+              undefined,
+            ],
+          },
+          "ref": null,
+          "rendered": Array [
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "function",
+              "props": Object {
+                "children": Array [
+                  <span
+                    className="is-block"
+                  >
+                    Retrouvez ce code et les détails de l'offre dans
+                  </span>,
+                  <span
+                    className="is-block"
+                  >
+                    la rubrique
+                    <Link
+                      replace={false}
+                      to="/reservations"
+                    >
+                      <b
+                        className="is-primary-text"
+                      >
+                         Mes Réservations 
+                      </b>
+                    </Link>
+                    de votre compte
+                  </span>,
+                ],
+              },
+              "ref": null,
+              "rendered": Array [
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": "Retrouvez ce code et les détails de l'offre dans",
+                    "className": "is-block",
+                  },
+                  "ref": null,
+                  "rendered": "Retrouvez ce code et les détails de l'offre dans",
+                  "type": "span",
+                },
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": Array [
+                      "la rubrique",
+                      <Link
+                        replace={false}
+                        to="/reservations"
+                      >
+                        <b
+                          className="is-primary-text"
+                        >
+                           Mes Réservations 
+                        </b>
+                      </Link>,
+                      "de votre compte",
+                    ],
+                    "className": "is-block",
+                  },
+                  "ref": null,
+                  "rendered": Array [
+                    "la rubrique",
+                    Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "class",
+                      "props": Object {
+                        "children": <b
+                          className="is-primary-text"
+                        >
+                           Mes Réservations 
+                        </b>,
+                        "replace": false,
+                        "to": "/reservations",
+                      },
+                      "ref": null,
+                      "rendered": Object {
+                        "instance": null,
+                        "key": undefined,
+                        "nodeType": "host",
+                        "props": Object {
+                          "children": " Mes Réservations ",
+                          "className": "is-primary-text",
+                        },
+                        "ref": null,
+                        "rendered": " Mes Réservations ",
+                        "type": "b",
+                      },
+                      "type": [Function],
+                    },
+                    "de votre compte",
+                  ],
+                  "type": "span",
+                },
+              ],
+              "type": Symbol(react.fragment),
+            },
+            undefined,
+          ],
+          "type": "p",
+        },
+      ],
+      "type": "div",
+    },
+  ],
+  Symbol(enzyme.__options__): Object {
+    "adapter": ReactSixteenAdapter {
+      "options": Object {
+        "enableComponentDidUpdateOnSetState": true,
+        "lifecycles": Object {
+          "componentDidUpdate": Object {
+            "onSetState": true,
+          },
+          "getDerivedStateFromProps": true,
+          "getSnapshotBeforeUpdate": true,
+          "setState": Object {
+            "skipsComponentDidUpdateOnNullish": true,
+          },
+        },
+      },
+    },
+  },
+}
+`;

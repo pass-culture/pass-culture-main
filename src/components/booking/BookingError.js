@@ -4,16 +4,12 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Icon } from 'pass-culture-shared'
 
+import flattenErrors from './utils'
+
 // NOTE: hack pour contourner le no-array-index-key
 // !!! BAD PRACTICE mais permise ici car ce n'est pas un affiche critique
 // lire plus -> https://reactjs.org/docs/lists-and-keys.html#keys
 const getArrayIndex = index => `error_${index}`
-
-const flattenErrors = (acc, err) => {
-  let value = err
-  if (Array.isArray(err)) value = Array.prototype.concat.apply([], err)
-  return acc.concat(value)
-}
 
 const BookingError = ({ errors }) => {
   // NOTE: 404, 500 -> donne un array
