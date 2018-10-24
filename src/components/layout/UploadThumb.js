@@ -155,7 +155,7 @@ class UploadThumb extends Component {
                 <input
                   className="zoom level-left"
                   type="range"
-                  min="1"
+                  min="0.1"
                   max="3"
                   step="0.01"
                   value={zoom}
