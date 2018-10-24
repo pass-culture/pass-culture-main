@@ -12,9 +12,9 @@ def test_json_encoder(app):
 
     obj = {
         'text': "foo",
-        'right': RightsType.editor
+        'rights': RightsType.editor
     }
 
     json_string = EnumJSONEncoder().encode(obj)
 
-    assert json_string == '{"text": "foo", "right": "RightsType.editor"}'
+    assert json_string == '{"text": "foo", "rights": "RightsType.editor"}'
