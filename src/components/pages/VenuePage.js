@@ -20,6 +20,7 @@ import HeroSection from '../layout/HeroSection'
 import Main from '../layout/Main'
 import VenueProvidersManager from '../managers/VenueProvidersManager'
 import offererSelector from '../../selectors/offerer'
+import selectUserOffererByOffererIdAndUserIdAndRightsType from '../../selectors/selectUserOffererByOffererIdAndUserIdAndRightsType'
 import selectVenuePatchByVenueIdByOffererId from '../../selectors/selectVenuePatchByVenueIdByOffererId'
 import { offererNormalizer, venueNormalizer } from '../../utils/normalizers'
 
@@ -69,7 +70,6 @@ class VenuePage extends Component {
             })
           },
           handleFail,
-          key: 'offerers',
           normalizer: offererNormalizer,
         })
       )
@@ -123,6 +123,7 @@ class VenuePage extends Component {
 
   render() {
     const {
+      adminUserOfferer,
       formGeo,
       formLatitude,
       formLongitude,
@@ -137,12 +138,10 @@ class VenuePage extends Component {
     const { isEdit, isNew, isReadOnly } = this.state
 
     const savedVenueId = get(venuePatch, 'id')
-    // TODO: offerer should provide a offerer.userRight
-    // to determine if it can edit iban stuff
-    // let s make false for now
+
     const hasAlreadyRibUploaded =
       get(venuePatch, 'iban') && get(venuePatch, 'thumbCount')
-    const isRibEditable = !isReadOnly && false
+    const areBankInfosReadOnly = isReadOnly || !adminUserOfferer
     const isSiretReadOnly = get(venuePatch, 'siret')
     const isSiretSkipping = !venueId && name && !formSire
     const isFieldReadOnlyBecauseFrozenFromSiret =
@@ -268,13 +267,15 @@ class VenuePage extends Component {
                   }}
                   type="email"
                 />
-                <Field
-                  label="Commentaire (si pas de SIRET)"
-                  name="comment"
-                  readOnly={formSire}
-                  type="textarea"
-                  required={!this.props.formSiret}
-                />
+                {(isNew || (isEdit && !isSiretReadOnly)) && (
+                  <Field
+                    label="Commentaire (si pas de SIRET)"
+                    name="comment"
+                    readOnly={formSire}
+                    type="textarea"
+                    required={!this.props.formSiret}
+                  />
+                )}
               </div>
             </div>
 
@@ -282,29 +283,22 @@ class VenuePage extends Component {
               <h2 className="main-list-title">
                 INFORMATIONS BANCAIRES
                 <span className="is-pulled-right is-size-7 has-text-grey">
-                  {isRibEditable ? (
-                    <Fragment>
-                      Les champs marqués d'un{' '}
-                      <span className="required-legend"> * </span> sont
-                      obligatoires
-                    </Fragment>
-                  ) : (
-                    "Vous avez besoin d'être administrateur de la structure pour editer le rib et l'iban."
-                  )}
+                  {!adminUserOfferer &&
+                    "Vous avez besoin d'être administrateur de la structure pour editer ces informations."}
                 </span>
               </h2>
               <div className="field-group">
                 <Field
                   label="BIC"
                   name="bic"
-                  readOnly={!isRibEditable}
+                  readOnly={areBankInfosReadOnly}
                   type="bic"
                 />
                 <Field
                   isExpanded
                   label="IBAN"
                   name="iban"
-                  readOnly={!isRibEditable}
+                  readOnly={areBankInfosReadOnly}
                   type="iban"
                 />
                 {false && (
@@ -312,7 +306,7 @@ class VenuePage extends Component {
                     isExpanded
                     label="Justificatif"
                     name="rib"
-                    readOnly={isReadOnly || !isRibEditable}
+                    readOnly={isReadOnly || areBankInfosReadOnly}
                     uploaded={hasAlreadyRibUploaded}
                     type="file"
                   />
@@ -429,7 +423,14 @@ class VenuePage extends Component {
 
 function mapStateToProps(state, ownProps) {
   const { offererId, venueId } = ownProps.match.params
+  const { id: userId } = state.user || {}
   return {
+    adminUserOfferer: selectUserOffererByOffererIdAndUserIdAndRightsType(
+      state,
+      offererId,
+      userId,
+      'admin'
+    ),
     formGeo: get(state, 'form.venue.geo'),
     formLatitude: get(state, 'form.venue.latitude'),
     formLongitude: get(state, 'form.venue.longitude'),

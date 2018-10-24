@@ -18,8 +18,21 @@ import HeroSection from '../layout/HeroSection'
 import VenueItem from '../items/VenueItem'
 import Main from '../layout/Main'
 import offererSelector from '../../selectors/offerer'
+import selectUserOffererByOffererIdAndUserIdAndRightsType from '../../selectors/selectUserOffererByOffererIdAndUserIdAndRightsType'
 import selectPhysicalVenuesByOffererId from '../../selectors/selectPhysicalVenuesByOffererId'
 import { offererNormalizer } from '../../utils/normalizers'
+
+const VENUE_PATCH_KEYS = ['bic', 'iban', 'rib']
+
+const formatVenuePatch = patch => {
+  const formPatch = {}
+  VENUE_PATCH_KEYS.forEach(key => {
+    if (patch[key]) {
+      formPatch[key] = patch[key]
+    }
+  })
+  return formPatch
+}
 
 class OffererPage extends Component {
   constructor() {
@@ -91,10 +104,11 @@ class OffererPage extends Component {
   }
 
   render() {
-    const { offerer, sirenName, venues } = this.props
+    const { adminUserOfferer, offerer, sirenName, venues } = this.props
     const { isNew, isReadOnly } = this.state
     const { id } = offerer || {}
     const areSirenFieldsVisible = get(offerer, 'id') || sirenName
+    const areBankInfosReadOnly = isReadOnly || !adminUserOfferer
 
     const $newControl = (
       <div
@@ -117,11 +131,13 @@ class OffererPage extends Component {
       <Fragment>
         <div className="control">
           {isReadOnly ? (
-            <NavLink
-              className="button is-secondary is-medium"
-              to={`/structures/${id}?modifie`}>
-              Modifier la structure
-            </NavLink>
+            adminUserOfferer && (
+              <NavLink
+                className="button is-secondary is-medium"
+                to={`/structures/${id}?modifie`}>
+                Modifier les informations
+              </NavLink>
+            )
           ) : (
             <div
               className="field is-grouped is-grouped-centered"
@@ -173,60 +189,80 @@ class OffererPage extends Component {
         </HeroSection>
 
         <Form
+          action={`/offerers/${get(offerer, 'id') || ''}`}
           name="offerer"
           className="section"
-          action={`/offerers/${get(offerer, 'id') || ''}`}
+          formatPatch={formatVenuePatch}
           handleSuccess={this.handleSuccess}
           patch={offerer}
           readOnly={isReadOnly}>
-          <div className="field-group">
-            <Field
-              disabling={() => !sirenName}
-              label="SIREN"
-              name="siren"
-              readOnly={get(offerer, 'id')}
-              required
-              type="siren"
-            />
-            <Field
-              className={classnames({ 'is-invisible': !areSirenFieldsVisible })}
-              isExpanded
-              label="Désignation"
-              name="name"
-              readOnly
-              required
-            />
-            <Field
-              className={classnames({ 'is-invisible': !areSirenFieldsVisible })}
-              isExpanded
-              label="Siège social"
-              name="address"
-              readOnly
-              required
-            />
-            <Field
-              className={classnames({
-                'is-invisible': !areSirenFieldsVisible,
-              })}
-              isExpanded
-              label="BIC"
-              name="bic"
-              type="bic"
-              required
-            />
-            <Field
-              className={classnames({
-                'is-invisible': !areSirenFieldsVisible,
-              })}
-              isExpanded
-              label="IBAN"
-              name="iban"
-              type="iban"
-              required
-            />
+          <div className="section">
+            <div className="field-group">
+              <Field
+                disabling={() => !sirenName}
+                label="SIREN"
+                name="siren"
+                readOnly={get(offerer, 'id')}
+                required
+                type="siren"
+              />
+              <Field
+                className={classnames({
+                  'is-invisible': !areSirenFieldsVisible,
+                })}
+                isExpanded
+                label="Désignation"
+                name="name"
+                readOnly
+                required
+              />
+              <Field
+                className={classnames({
+                  'is-invisible': !areSirenFieldsVisible,
+                })}
+                isExpanded
+                label="Siège social"
+                name="address"
+                readOnly
+                required
+              />
+            </div>
           </div>
-
-          {isNew ? $newControl : $editControl}
+          <div className="section">
+            <h2 className="main-list-title">
+              INFORMATIONS BANCAIRES
+              <span className="is-pulled-right is-size-7 has-text-grey">
+                {isReadOnly &&
+                  !adminUserOfferer &&
+                  "Vous avez besoin d'être administrateur de la structure pour editer ces informations."}
+              </span>
+            </h2>
+            <div className="field-group">
+              <Field
+                className={classnames({
+                  'is-invisible': !areSirenFieldsVisible,
+                })}
+                isExpanded
+                label="BIC"
+                name="bic"
+                type="bic"
+                required
+                readOnly={areBankInfosReadOnly}
+              />
+              <Field
+                className={classnames({
+                  'is-invisible': !areSirenFieldsVisible,
+                })}
+                isExpanded
+                label="IBAN"
+                name="iban"
+                type="iban"
+                required
+                readOnly={areBankInfosReadOnly}
+              />
+            </div>
+            {isNew ? $newControl : $editControl}
+          </div>
         </Form>
       </Main>
     )
@@ -235,11 +271,18 @@ class OffererPage extends Component {
 
 function mapStateToProps(state, ownProps) {
   const offererId = ownProps.match.params.offererId
+  const { id: userId } = state.user || {}
   return {
+    adminUserOfferer: selectUserOffererByOffererIdAndUserIdAndRightsType(
+      state,
+      offererId,
+      userId,
+      'admin'
+    ),
     offerer: offererSelector(state, offererId),
-    venues: selectPhysicalVenuesByOffererId(state, offererId),
-    user: state.user,
     sirenName: get(state, 'form.offerer.name'),
+    user: state.user,
+    venues: selectPhysicalVenuesByOffererId(state, offererId),
   }
 }
 
