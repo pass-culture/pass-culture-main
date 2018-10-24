@@ -35,6 +35,30 @@ def test_get_offerers_should_work_only_when_logged_in():
 
 @pytest.mark.standalone
 @clean_database
+def test_get_offerer_should_return_only_user_offerers_from_current_user(app):
+    # given
+    user = create_user(password='p@55sw0rd')
+    user_2 = create_user(password='p@55sw0rd')
+    offerer1 = create_offerer(siren='123456781', name='offreur C')
+    user_offerer1 = create_user_offerer(user, offerer1, validation_token='AZE123')
+    user_offerer2 = create_user_offerer(user, offerer1, validation_token='AZE123')
+    PcObject.check_and_save(user_offerer1, user_offerer2)
+
+    # assert
+    assert len(offerer1.users) == 2
+
+    # when
+    auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
+    url = API_URL + '/offerers/' + offerer.id
+    response = auth_request.get(url)
+
+    # then
+    assert response.status_code == 200
+    assert len(response.json()[0]['users']) == 1
+    assert response.json()[0]['users'][0]['userId'] == dehumanize(user.id)
+
+@pytest.mark.standalone
+@clean_database
 def test_get_offerers_should_return_a_list_of_offerers_sorted_alphabetically(app):
     # given
     offerer1 = create_offerer(siren='123456781', name='offreur C')
