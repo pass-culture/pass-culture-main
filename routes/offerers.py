@@ -13,7 +13,7 @@ from repository.booking_queries import find_offerer_bookings
 from repository.offerer_queries import find_all_recommendations_for_offerer
 from repository.user_offerer_queries import filter_query_where_user_is_user_offerer_and_is_not_validated
 from repository.user_offerer_queries import filter_query_where_user_is_user_offerer_and_is_validated
-from utils.human_ids import dehumanize
+from utils.human_ids import dehumanize, humanize
 from utils.includes import PRO_BOOKING_INCLUDES, OFFERER_INCLUDES, NOT_VALIDATED_OFFERER_INCLUDES
 from utils.mailing import MailServiceException
 from utils.rest import ensure_current_user_has_rights, \
@@ -27,7 +27,12 @@ from validation.offerers import check_valid_edition, parse_boolean_param_validat
 def resolve_offerer_with_filtered_current_user_offerer(offerer, options):
     if not current_user.is_authenticated:
         return offerer
-    offerer['users'] = [user_offerer for user_offerer in offerer['users'] if user_offerer['userId'] == current_user.id]
+    humanized_current_user_id = humanize(current_user.id)
+    offerer['UserOfferers'] = [
+        user_offerer for user_offerer in offerer['UserOfferers']
+        if user_offerer['userId'] == humanized_current_user_id
+    ]
+    print("offerer['UserOfferers']", offerer['UserOfferers'])
     return offerer
 
 def get_dict_offerer(offerer):

@@ -9,7 +9,7 @@ OFFERER_INCLUDES = [
     },
     "nOffers",
     "isValidated",
-    "users"
+    "UserOfferers"
 ]
 
 NOT_VALIDATED_OFFERER_INCLUDES = [
