@@ -8,6 +8,6 @@ from models.pc_object import PcObject
 
 
 class UserSession(PcObject, Model):
-    userId = Column(BigInteger, unique=True, nullable=False)
+    userId = Column(BigInteger, nullable=False)
 
     uuid = Column(UUID(as_uuid=True), unique=True, nullable=False)
