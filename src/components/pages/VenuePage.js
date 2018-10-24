@@ -138,10 +138,10 @@ class VenuePage extends Component {
     const savedVenueId = get(venuePatch, 'id')
     // TODO: offerer should provide a offerer.userRight
     // to determine if it can edit iban stuff
-    // let s make true for now
+    // let s make false for now
     const hasAlreadyRibUploaded =
       get(venuePatch, 'iban') && get(venuePatch, 'thumbCount')
-    const isRibEditable = !isReadOnly && true
+    const isRibEditable = !isReadOnly && false
     const isSiretReadOnly = get(venuePatch, 'siret')
     const isSiretSkipping = !venueId && name && !formSire
     const isReadOnlyFromGeoOrSiren = formGeo || formSire
@@ -282,14 +282,16 @@ class VenuePage extends Component {
                   readOnly={!isRibEditable}
                   type="iban"
                 />
-                <Field
-                  isExpanded
-                  label="Justificatif"
-                  name="rib"
-                  readOnly={isReadOnly || !isRibEditable}
-                  uploaded={hasAlreadyRibUploaded}
-                  type="file"
-                />
+                {false && (
+                  <Field
+                    isExpanded
+                    label="Justificatif"
+                    name="rib"
+                    readOnly={isReadOnly || !isRibEditable}
+                    uploaded={hasAlreadyRibUploaded}
+                    type="file"
+                  />
+                )}
               </div>
             </div>
 
