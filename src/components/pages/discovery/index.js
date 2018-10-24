@@ -14,7 +14,7 @@ import { Route } from 'react-router-dom'
 
 import Deck from './Deck'
 import Loader from '../../layout/Loader'
-import Booking from '../../Booking'
+import Booking from '../../booking'
 import Main from '../../layout/Main'
 import Footer from '../../layout/Footer'
 import { getQueryParams } from '../../../helpers'

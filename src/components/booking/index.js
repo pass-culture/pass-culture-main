@@ -8,15 +8,14 @@ import { bindActionCreators } from 'redux'
 import { requestData } from 'pass-culture-shared'
 import { Transition } from 'react-transition-group'
 
-import { ROOT_PATH } from '../utils/config'
-import { externalSubmitForm } from './forms/utils'
-import BookingForm from './booking/BookingForm'
-import BookingError from './booking/BookingError'
-import BookingLoader from './booking/BookingLoader'
-import BookingSuccess from './booking/BookingSuccess'
-// import BookingUserUndefined from './BookingUserUndefined'
-import { selectBookables } from '../selectors/selectBookables'
-import currentRecommendationSelector from '../selectors/currentRecommendation'
+import { ROOT_PATH } from '../../utils/config'
+import { externalSubmitForm } from '../forms/utils'
+import BookingForm from './BookingForm'
+import BookingError from './BookingError'
+import BookingLoader from './BookingLoader'
+import BookingSuccess from './BookingSuccess'
+import { selectBookables } from '../../selectors/selectBookables'
+import currentRecommendationSelector from '../../selectors/currentRecommendation'
 
 const duration = 250
 
@@ -183,7 +182,6 @@ class Booking extends React.PureComponent {
                 {isErrored && <BookingError {...isErrored} />}
                 {showForm && (
                   <React.Fragment>
-                    {/* <BookingUserUndefined show={userConnected} /> */}
                     <BookingForm
                       formId={this.formId}
                       disabled={userConnected}
