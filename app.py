@@ -8,11 +8,16 @@ from local_providers.install import install_local_providers
 from models.db import db
 from models.install import install_models
 from utils.config import IS_DEV
+from utils.json_encoder import EnumJSONEncoder
 import utils.logger
-from utils.mailing import get_contact, subscribe_newsletter, MAILJET_API_KEY, MAILJET_API_SECRET
+from utils.mailing import get_contact,\
+                          MAILJET_API_KEY,\
+                          MAILJET_API_SECRET,\
+                          subscribe_newsletter
 
 app = Flask(__name__, static_url_path='/static')
 app.secret_key = os.environ.get('FLASK_SECRET', '+%+3Q23!zbc+!Dd@')
+app.json_encoder = EnumJSONEncoder
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
