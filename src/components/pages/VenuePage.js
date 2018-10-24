@@ -148,6 +148,7 @@ class VenuePage extends Component {
       isReadOnly || formSire || (isEdit && get(venuePatch, 'siret'))
     const isReadOnlyFromGeoOrSiren =
       formGeo || isFieldReadOnlyBecauseFrozenFromSiret
+
     const isLatitudeReadOnlyFromGeoOrSiren =
       formGeo || (isFieldReadOnlyBecauseFrozenFromSiret && formLatitude)
     const isLongitudeReadOnlyFromGeoOrSiren =
@@ -196,10 +197,13 @@ class VenuePage extends Component {
             <div className="section">
               <h2 className="main-list-title is-relative">
                 IDENTIFIANTS
-                <span className="is-pulled-right is-size-7 has-text-grey">
-                  Les champs marqués d'un{' '}
-                  <span className="required-legend"> * </span> sont obligatoires
-                </span>
+                {!isReadOnly && (
+                  <span className="is-pulled-right is-size-7 has-text-grey">
+                    Les champs marqués d'un{' '}
+                    <span className="required-legend"> * </span> sont
+                    obligatoires
+                  </span>
+                )}
               </h2>
               <div className="field-group">
                 <Field
