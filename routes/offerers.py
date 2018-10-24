@@ -32,7 +32,6 @@ def resolve_offerer_with_filtered_current_user_offerer(offerer, options):
         user_offerer for user_offerer in offerer['UserOfferers']
         if user_offerer['userId'] == humanized_current_user_id
     ]
-    print("offerer['UserOfferers']", offerer['UserOfferers'])
     return offerer
 
 def get_dict_offerer(offerer):
