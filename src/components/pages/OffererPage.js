@@ -95,7 +95,6 @@ class OffererPage extends Component {
     const { isNew, isReadOnly } = this.state
     const { id } = offerer || {}
     const areSirenFieldsVisible = get(offerer, 'id') || sirenName
-    const hasOffererName = get(offerer, 'name') || sirenName
 
     const $newControl = (
       <div
@@ -205,30 +204,26 @@ class OffererPage extends Component {
               readOnly
               required
             />
-            {false && (
-              <Field
-                className={classnames({
-                  'is-invisible': !areSirenFieldsVisible,
-                })}
-                isExpanded
-                label="BIC"
-                name="bic"
-                type="bic"
-                required
-              />
-            )}
-            {false && (
-              <Field
-                className={classnames({
-                  'is-invisible': !areSirenFieldsVisible,
-                })}
-                isExpanded
-                label="IBAN"
-                name="iban"
-                type="iban"
-                required
-              />
-            )}
+            <Field
+              className={classnames({
+                'is-invisible': !areSirenFieldsVisible,
+              })}
+              isExpanded
+              label="BIC"
+              name="bic"
+              type="bic"
+              required
+            />
+            <Field
+              className={classnames({
+                'is-invisible': !areSirenFieldsVisible,
+              })}
+              isExpanded
+              label="IBAN"
+              name="iban"
+              type="iban"
+              required
+            />
           </div>
 
           {isNew ? $newControl : $editControl}
