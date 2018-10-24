@@ -7,6 +7,14 @@ from dateutil import tz
 from utils.string_processing import parse_timedelta
 
 
+class DateTimes:
+    def __init__(self, *datetimes):
+        self.datetimes = list(datetimes)
+
+    def __eq__(self, other):
+        return self.datetimes == other.datetimes
+
+
 def match_format(value: str, format: str):
     try:
         datetime.strptime(value, format)

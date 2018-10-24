@@ -11,6 +11,7 @@ from models.pc_object import PcObject
 from models.providable_mixin import ProvidableMixin
 from models.stock import Stock
 from models.venue import Venue
+from utils.date import DateTimes
 
 
 class Offer(PcObject,
@@ -71,11 +72,11 @@ class Offer(PcObject,
     @property
     def dateRange(self):
         if self.thing or not self.eventOccurrences:
-            return []
+            return DateTimes()
 
         start = min([occurrence.beginningDatetime for occurrence in self.eventOccurrences])
         end = max([occurrence.endDatetime for occurrence in self.eventOccurrences])
-        return [start, end]
+        return DateTimes(start, end)
 
     @property
     def eventOrThing(self):

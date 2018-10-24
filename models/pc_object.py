@@ -21,7 +21,7 @@ from sqlalchemy.orm.collections import InstrumentedList
 from models.api_errors import ApiErrors
 from models.db import db
 from models.soft_deletable_mixin import SoftDeletableMixin
-from utils.date import match_format
+from utils.date import match_format, DateTimes
 from utils.human_ids import dehumanize, humanize
 from utils.logger import logger
 
@@ -35,7 +35,6 @@ class DeletedRecordException(Exception):
 
 
 def serialize(value, **options):
-    is_not_empty_list = isinstance(value, list) and len(value) > 0
     if isinstance(value, Enum):
         return value.name
     elif isinstance(value, datetime):
@@ -45,13 +44,15 @@ def serialize(value, **options):
             'start': value.lower,
             'end': value.upper
         }
-    elif is_not_empty_list \
+    elif isinstance(value, list) \
+            and len(value) > 0 \
             and isinstance(value[0], DateTimeRange):
         return list(map(lambda d: {'start': d.lower,
                                    'end': d.upper},
                         value))
-    elif is_not_empty_list and all([isinstance(v, datetime) for v in value]):
-        return list(map(format_into_ISO_8601, value))
+    elif isinstance(value, DateTimes):
+        return [format_into_ISO_8601(v) for v in value.datetimes]
+
     else:
         return value
 
@@ -85,8 +86,8 @@ class PcObject():
             if key == 'id' or key.endswith('Id'):
                 result[key] = humanize(value)
                 if options \
-                        and 'dehumanize' in options \
-                        and options['dehumanize']:
+                    and 'dehumanize' in options \
+                    and options['dehumanize']:
                     result['dehumanized' + key[0].capitalize() + key[1:]] = value
             elif key == 'validationToken':
                 continue
@@ -120,10 +121,9 @@ class PcObject():
                 if callable(value):
                     value = value()
                 if value is not None:
-                    is_list_of_pc_objects = isinstance(value, list) and all([isinstance(v, PcObject) for v in value])
                     if isinstance(value, InstrumentedList) \
                             or value.__class__.__name__ == 'AppenderBaseQuery' \
-                            or is_list_of_pc_objects:
+                            or isinstance(value, list):
                         if refine is None:
                             final_value = value
                         else:
@@ -285,6 +285,7 @@ class PcObject():
                     setattr(self, key, datetime_value)
                 else:
                     setattr(self, key, value)
+
 
     @staticmethod
     def check_and_save(*objects):

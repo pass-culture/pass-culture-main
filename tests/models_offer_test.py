@@ -4,6 +4,7 @@ import pytest
 
 from models import Offer, Thing, Event, PcObject, ApiErrors, EventOccurrence
 from tests.conftest import clean_database
+from utils.date import DateTimes
 from utils.test_utils import create_event_occurrence, create_thing, create_thing_offer, create_offerer, create_venue
 
 now = datetime.utcnow()
@@ -21,7 +22,7 @@ def test_date_range_is_empty_if_offer_is_on_a_thing():
     offer.eventOccurrences = []
 
     # then
-    assert offer.dateRange == []
+    assert offer.dateRange == DateTimes()
 
 
 @pytest.mark.standalone
@@ -34,7 +35,7 @@ def test_date_range_matches_the_occurrence_if_only_one_occurrence():
     ]
 
     # then
-    assert offer.dateRange == [two_days_ago, five_days_from_now]
+    assert offer.dateRange == DateTimes(two_days_ago, five_days_from_now)
 
 
 @pytest.mark.standalone
@@ -50,7 +51,8 @@ def test_date_range_starts_at_first_beginning_date_time_and_ends_at_last_end_dat
     ]
 
     # then
-    assert offer.dateRange == [four_days_ago, ten_days_from_now]
+    assert offer.dateRange == DateTimes(four_days_ago, ten_days_from_now)
+    assert offer.dateRange.datetimes == [four_days_ago, ten_days_from_now]
 
 
 @pytest.mark.standalone
@@ -61,7 +63,7 @@ def test_date_range_is_empty_if_event_has_no_event_occurrences():
     offer.eventOccurrences = []
 
     # then
-    assert offer.dateRange == []
+    assert offer.dateRange == DateTimes()
 
 
 @clean_database
@@ -83,6 +85,7 @@ def test_offer_error_when_thing_is_digital_but_venue_not_virtual(app):
         'Une offre numérique doit obligatoirement être associée au lieu "Offre en ligne"']
 
 
+@pytest.mark.standalone
 def test_offer_as_dict_returns_dateRange_in_ISO_8601(app):
     # Given
     eventOccurrence = EventOccurrence()
