@@ -17,8 +17,8 @@ import Loader from '../../layout/Loader'
 import Booking from '../../Booking'
 import Main from '../../layout/Main'
 import Footer from '../../layout/Footer'
-// import { getQueryParams } from '../../../helpers'
-// import { recommendationNormalizer } from '../../../utils/normalizers'
+import { getQueryParams } from '../../../helpers'
+import { recommendationNormalizer } from '../../../utils/normalizers'
 
 const noop = () => {}
 
@@ -78,22 +78,19 @@ class DiscoveryPage extends React.PureComponent {
   }
 
   handleDataRequest = () => {
-    // const { match } = this.props
+    const { match } = this.props
     this.setState({ isloading: true })
     // recupere les arguments depuis l'URL
     // l'API renvoi cette première carte avant les autres recommendations
-    // const query = getQueryParams(match)
-    // const serviceuri = `recommendations?${query}`
-    setTimeout(() => {
-      this.handleRequestFail()
-    }, 5000)
-    // this.actions.requestData('PUT', serviceuri, {
-    //   handleFail: this.handleRequestFail,
-    //   handleSuccess: this.handleRequestSuccess,
-    //   // replace all the recommendations by the new ones ? as we want
-    //   // isMergingArray: false,
-    //   normalizer: recommendationNormalizer,
-    // })
+    const query = getQueryParams(match)
+    const serviceuri = `recommendations?${query}`
+    this.actions.requestData('PUT', serviceuri, {
+      handleFail: this.handleRequestFail,
+      handleSuccess: this.handleRequestSuccess,
+      // replace all the recommendations by the new ones ? as we want
+      // isMergingArray: false,
+      normalizer: recommendationNormalizer,
+    })
   }
 
   render() {
