@@ -19,6 +19,7 @@ time_interval.end = datetime(2018, 2, 2, 5, 15, 25, 222000)
 now = datetime.utcnow()
 
 
+@pytest.mark.standalone
 def assert_is_in_ISO_8601_format(date_text):
     try:
         format_string = '%Y-%m-%dT%H:%M:%S.%fZ'
@@ -29,6 +30,7 @@ def assert_is_in_ISO_8601_format(date_text):
         assert False, 'La date doit être au format ISO 8601 %Y-%m-%dT%H:%M:%S.%fZ'
 
 
+@pytest.mark.standalone
 def test_populate_from_dict_deserializes_datetimes():
     # given
     raw_data = {'start': '2018-03-03T15:25:35.123Z', 'end': '2018-04-04T20:10:30.456Z'}
@@ -41,6 +43,7 @@ def test_populate_from_dict_deserializes_datetimes():
     assert time_interval.end == datetime(2018, 4, 4, 20, 10, 30, 456000)
 
 
+@pytest.mark.standalone
 def test_populate_from_dict_deserializes_datetimes_without_milliseconds():
     # given
     raw_data = {'start': '2018-03-03T15:25:35', 'end': '2018-04-04T20:10:30'}
@@ -53,6 +56,7 @@ def test_populate_from_dict_deserializes_datetimes_without_milliseconds():
     assert time_interval.end == datetime(2018, 4, 4, 20, 10, 30)
 
 
+@pytest.mark.standalone
 def test_populate_from_dict_deserializes_datetimes_without_milliseconds_with_trailing_z():
     # given
     raw_data = {'start': '2018-03-03T15:25:35Z', 'end': '2018-04-04T20:10:30Z'}
@@ -65,6 +69,7 @@ def test_populate_from_dict_deserializes_datetimes_without_milliseconds_with_tra
     assert time_interval.end == datetime(2018, 4, 4, 20, 10, 30)
 
 
+@pytest.mark.standalone
 def test_populate_from_dict_raises_type_error_if_raw_date_is_invalid():
     # given
     raw_data = {'start': '2018-03-03T15:25:35.123Z', 'end': 'abcdef'}
@@ -74,6 +79,7 @@ def test_populate_from_dict_raises_type_error_if_raw_date_is_invalid():
         time_interval.populateFromDict(raw_data)
 
 
+@pytest.mark.standalone
 def test_serialize_on_datetime_list_returns_string_with_date_in_ISO_8601_list():
     # Given
     eventOccurrence = EventOccurrence()
