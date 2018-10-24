@@ -28,8 +28,8 @@ def read_thumb():
         if len(filename_parts) < 2 \
            or filename_parts[1].lower() not in ALLOWED_EXTENSIONS:
             api_errors = ApiErrors()
-            api_errors.addError('thumb', "Ce format d'image n'est pas autorisé")
-            return jsonify(api_errors.errors), 400
+            api_errors.addError('thumb', "Cet image manque d'une extension (.png, .jpg...) ou son format n'est pas autorisé")
+            raise api_errors
         return thumb.read()
 
     if 'thumbUrl' in request.form:
