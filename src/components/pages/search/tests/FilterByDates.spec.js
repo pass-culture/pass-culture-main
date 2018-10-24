@@ -41,7 +41,7 @@ describe('src | components | pages | search | FilterByDates', () => {
 
     describe('onPickedDateChange', () => {
       describe('when a date is picked', () => {
-        it('should update component state', () => {
+        it('should call change function with good parameters', () => {
           // given
           const props = {
             filterActions: {
@@ -72,11 +72,59 @@ describe('src | components | pages | search | FilterByDates', () => {
           wrapper.instance().onPickedDateChange(pickedDate)
           const expected = {
             date: pickedDate.toISOString(),
-            jours: '1-5',
+            jours: '0-1',
           }
 
-          // thenTODAY_DATE
+          // then
           expect(filterActionsChange).toHaveBeenCalledWith(expected)
+        })
+        it('should uncheck days checkboxes ', () => {
+          // TODO
+        })
+      })
+    })
+
+    describe('onChange', () => {
+      describe('when a day is checked', () => {
+        describe('day has already been checked', () => {
+          it.skip('should call change function with good parameters', () => {
+            // given
+            const props = {
+              filterActions: {
+                add: filterActionsAdd,
+                change: filterActionsChange,
+                remove: filterActionsRemove,
+                replace: filterActionsReplace,
+              },
+              filterState: {
+                isNew: false,
+                query: {
+                  categories: null,
+                  date: '2018-10-24T09:15:55.098Z',
+                  distance: null,
+                  jours: '0-1',
+                  latitude: null,
+                  longitude: null,
+                  'mots-cles': null,
+                  orderBy: 'offer.id+desc',
+                },
+              },
+              title: 'Fake title',
+            }
+            const day = '0-1'
+
+            // when
+            const wrapper = shallow(<FilterByDates {...props} />)
+            wrapper.instance().onChange(day)
+            const callback = () => {}
+            // FXME Callback inside...
+            // then
+            expect(filterActionsRemove).toHaveBeenCalledWith(
+              'jours',
+              day,
+              callback
+            )
+          })
         })
       })
     })

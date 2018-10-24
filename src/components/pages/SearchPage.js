@@ -94,6 +94,7 @@ class SearchPage extends PureComponent {
       {
         categories: null,
         date: null,
+        jours: null,
         'mots-cles': null,
       },
       {

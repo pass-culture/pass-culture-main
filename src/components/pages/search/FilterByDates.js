@@ -30,22 +30,20 @@ class FilterByDates extends PureComponent {
       filterActions.remove('jours', day, callback)
       return
     }
-
     filterActions.add('jours', day, callback)
   }
 
   onPickedDateChange = date => {
     const { filterActions } = this.props
     const formatedDate = date.toISOString()
-    filterActions.change({ date: formatedDate, jours: '1-5' })
+    filterActions.change({ date: formatedDate, jours: '0-1' })
   }
 
   render() {
     const { filterState, title } = this.props
     const days = decodeURI(filterState.query.jours || '')
-    // const queriedDate = filterState.query.date
-    //   ? moment(decodeURI(filterState.query.date))
-    //   : 'Par date...'
+    const queriedDate =
+      filterState.query.date && moment(decodeURI(filterState.query.date))
 
     return (
       <div id="filter-by-dates" className="pt18">
@@ -64,7 +62,7 @@ class FilterByDates extends PureComponent {
               minDate={TODAY_DATE}
               onChange={this.onPickedDateChange}
               popperPlacement="bottom-start"
-              // selected={queriedDate}
+              selected={queriedDate}
               placeholderText="Par date..."
             />
           </span>
@@ -80,24 +78,30 @@ class FilterByDates extends PureComponent {
 
         <div className="pc-scroll-horizontal is-relative is-full-width pb18">
           <div className="pc-list flex-columns pl18 pr18">
-            {DAYS_CHECKBOXES.map(({ label, value }) => (
-              <label
-                key={value}
-                className="item flex-columns items-center py5 pl7 pr22"
-              >
-                <span className="flex-0 field field-checkbox">
-                  <input
-                    type="checkbox"
-                    className="input no-background"
-                    checked={days.includes(value)}
-                    onChange={() => this.onChange(value)}
-                  />
-                </span>
-                <span className="fs19 flex-1" style={{ whiteSpace: 'pre' }}>
-                  {label}
-                </span>
-              </label>
-            ))}
+            {DAYS_CHECKBOXES.map(({ label, value }) => {
+              const checked =
+                value === '0-1'
+                  ? queriedDate === TODAY_DATE
+                  : days.includes(value)
+              return (
+                <label
+                  key={value}
+                  className="item flex-columns items-center py5 pl7 pr22"
+                >
+                  <span className="flex-0 field field-checkbox">
+                    <input
+                      type="checkbox"
+                      className="input no-background"
+                      checked={checked}
+                      onChange={() => this.onChange(value)}
+                    />
+                  </span>
+                  <span className="fs19 flex-1" style={{ whiteSpace: 'pre' }}>
+                    {label}
+                  </span>
+                </label>
+              )
+            })}
           </div>
         </div>
         <hr className="dotted-bottom-primary" />
