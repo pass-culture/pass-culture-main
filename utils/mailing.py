@@ -48,20 +48,20 @@ def make_batch_cancellation_email(bookings, cancellation_case):
 
 
 def make_final_recap_email_for_stock_with_event(stock):
+    booking_is_on_event = stock.eventOccurrence is not None
     venue = stock.resolvedOffer.venue
     date_in_tz = _get_event_datetime(stock)
     formatted_datetime = format_datetime(date_in_tz)
     email_subject = '[Réservations] Récapitulatif pour {} le {}'.format(stock.eventOccurrence.offer.event.name,
                                                                         formatted_datetime)
     stock_bookings = find_all_ongoing_bookings_by_stock(stock)
-    email_html = render_template('mails/offerer_final_recap_email.html',
+    email_html = render_template('mails/offerer_recap_email.html',
+                                 is_final=True,
+                                 booking_is_on_event=booking_is_on_event,
                                  number_of_bookings=len(stock_bookings),
                                  stock_name=stock.eventOccurrence.offer.event.name,
                                  stock_date_time=formatted_datetime,
-                                 venue_name=venue.name,
-                                 venue_address=venue.address,
-                                 venue_postal_code=venue.postalCode,
-                                 venue_city=venue.city,
+                                 venue=venue,
                                  stock_bookings=stock_bookings)
 
     return {
@@ -77,28 +77,24 @@ def make_offerer_booking_recap_email_after_user_action(booking, is_cancellation=
     user = booking.user
     stock_bookings = find_all_ongoing_bookings_by_stock(booking.stock)
     stock_name = booking.stock.resolvedOffer.eventOrThing.name
+    booking_is_on_event = booking.stock.eventOccurrence is not None
 
-    if booking.stock.eventOccurrence is None:
-        email_subject = '[Réservations] Nouvelle réservation pour {}'.format(stock_name)
-        formatted_datetime = None
-    else:
+    if booking_is_on_event:
         date_in_tz = _get_event_datetime(booking.stock)
         formatted_datetime = format_datetime(date_in_tz)
         email_subject = '[Réservations] Nouvelle réservation pour {} - {}'.format(stock_name,
                                                                                   formatted_datetime)
-
-    if is_cancellation:
-        template_name = 'mails/offerer_cancellation_by_user_email.html'
     else:
-        template_name = 'mails/offerer_booking_recap_email.html'
-    email_html = render_template(template_name,
+        email_subject = '[Réservations] Nouvelle réservation pour {}'.format(stock_name)
+        formatted_datetime = None
+    email_html = render_template('mails/offerer_recap_email_after_user_action.html',
+                                 is_final=False,
+                                 is_cancellation=is_cancellation,
+                                 booking_is_on_event=booking_is_on_event,
                                  number_of_bookings=len(stock_bookings),
                                  stock_name=stock_name,
                                  stock_date_time=formatted_datetime,
-                                 venue_name=venue.name,
-                                 venue_address=venue.address,
-                                 venue_postal_code=venue.postalCode,
-                                 venue_city=venue.city,
+                                 venue=venue,
                                  stock_bookings=stock_bookings,
                                  user_name=user.publicName,
                                  user_email=user.email)
@@ -136,11 +132,28 @@ def write_object_validation_email(offerer, user_offerer, get_by_siren=api_entrep
 
 
 def make_offerer_driven_cancellation_email_for_user(booking):
-    is_event = booking.stock.resolvedOffer.event
-    if is_event:
-        email_html, email_subject = _generate_offerer_driven_cancellation_email_for_user_event(booking)
-    else:
-        email_html, email_subject = _generate_offerer_driven_cancellation_email_for_user_thing(booking)
+    offer_name = booking.stock.resolvedOffer.eventOrThing.name
+    offerer_name = booking.stock.resolvedOffer.venue.managingOfferer.name
+    booking_value = booking.amount * booking.quantity
+    user_public_name = booking.user.publicName
+    booking_is_on_event = booking.stock.eventOccurrence is not None
+    formatted_datetime = None
+    commande_ou_reservation = 'réservation' if booking_is_on_event else 'commande'
+    if booking_is_on_event:
+        date_in_tz = _get_event_datetime(booking.stock)
+        formatted_datetime = format_datetime(date_in_tz)
+
+    email_html = render_template('mails/user_cancellation_by_offerer_email.html',
+                                 booking_is_on_event=booking_is_on_event,
+                                 user_public_name=user_public_name,
+                                 offer_name=offer_name,
+                                 event_date=formatted_datetime,
+                                 offerer_name=offerer_name,
+                                 booking_value=booking_value
+                                 )
+
+    email_subject = 'Votre {} pour {}, proposé par {} a été annulée par l\'offreur'.format(commande_ou_reservation,
+                                                                                           offer_name, offerer_name)
 
     return {
         'FromName': 'Pass Culture',
@@ -159,20 +172,20 @@ def make_offerer_driven_cancellation_email_for_offerer(booking):
                                                                                                      venue.name)
     ongoing_stock_bookings = find_all_ongoing_bookings_by_stock(booking.stock)
     stock_date_time = None
-    if booking.stock.eventOccurrence:
+    booking_is_on_event = booking.stock.eventOccurrence is not None
+    if booking_is_on_event:
         date_in_tz = _get_event_datetime(booking.stock)
         stock_date_time = format_datetime(date_in_tz)
-    email_html = render_template('mails/offerer_recap_email_after_offerer_action.html',
+    email_html = render_template('mails/offerer_recap_email_after_offerer_cancellation.html',
+                                 is_final=False,
+                                 booking_is_on_event=booking_is_on_event,
                                  user_name=user_name,
                                  user_email=user_email,
                                  stock_date_time=stock_date_time,
                                  number_of_bookings=len(ongoing_stock_bookings),
                                  stock_bookings=ongoing_stock_bookings,
                                  stock_name=stock_name,
-                                 venue_name=venue.name,
-                                 venue_address=venue.address,
-                                 venue_postal_code=venue.postalCode,
-                                 venue_city=venue.city
+                                 venue=venue,
                                  )
     return {
         'FromName': 'Pass Culture',
@@ -180,41 +193,6 @@ def make_offerer_driven_cancellation_email_for_offerer(booking):
         'Subject': email_subject,
         'Html-part': email_html,
     }
-
-
-def _generate_offerer_driven_cancellation_email_for_user_thing(booking):
-    offer_name = booking.stock.resolvedOffer.eventOrThing.name
-    offerer_name = booking.stock.resolvedOffer.venue.managingOfferer.name
-    booking_value = booking.amount * booking.quantity
-    user_public_name = booking.user.publicName
-    email_html = render_template('mails/user_cancellation_by_offerer_email_thing.html',
-                                 user_public_name=user_public_name,
-                                 offer_name=offer_name,
-                                 offerer_name=offerer_name,
-                                 booking_value=booking_value
-                                 )
-    email_subject = 'Votre commande pour {}, proposé par {} a été annulée par l\'offreur'.format(offer_name,
-                                                                                                 offerer_name)
-    return email_html, email_subject
-
-
-def _generate_offerer_driven_cancellation_email_for_user_event(booking):
-    offer_name = booking.stock.resolvedOffer.eventOrThing.name
-    offerer_name = booking.stock.resolvedOffer.venue.managingOfferer.name
-    booking_value = booking.amount * booking.quantity
-    user_public_name = booking.user.publicName
-    date_in_tz = _get_event_datetime(booking.stock)
-    formatted_datetime = format_datetime(date_in_tz)
-    email_html = render_template('mails/user_cancellation_by_offerer_email_event.html',
-                                 user_public_name=user_public_name,
-                                 offer_name=offer_name,
-                                 event_date=formatted_datetime,
-                                 offerer_name=offerer_name,
-                                 booking_value=booking_value
-                                 )
-    email_subject = 'Votre réservation pour {}, proposé par {} a été annulée par l\'offreur'.format(offer_name,
-                                                                                                    offerer_name)
-    return email_html, email_subject
 
 
 def make_user_booking_recap_email(booking, is_cancellation=False):
@@ -334,14 +312,15 @@ def _generate_reservation_email_html_subject(booking):
     user = booking.user
     venue = stock.resolvedOffer.venue
     stock_description = _get_stock_description(stock)
-    if stock.eventOccurrence == None:
+    booking_is_on_event = stock.eventOccurrence == None
+    if booking_is_on_event:
         email_subject = 'Confirmation de votre commande pour {}'.format(stock_description)
         email_html = render_template('mails/user_confirmation_email_thing.html',
                                      user_public_name=user.publicName,
                                      booking_token=booking.token,
                                      thing_name=stock.resolvedOffer.thing.name,
                                      thing_reference=stock.resolvedOffer.thing.idAtProviders,
-                                     venue_name=venue.name)
+                                     venue=venue)
     else:
         date_in_tz = _get_event_datetime(stock)
         formatted_date_time = format_datetime(date_in_tz)
@@ -351,10 +330,7 @@ def _generate_reservation_email_html_subject(booking):
                                      booking_token=booking.token,
                                      event_occurrence_name=stock.eventOccurrence.offer.event.name,
                                      formatted_date_time=formatted_date_time,
-                                     venue_name=venue.name,
-                                     venue_address=venue.address,
-                                     venue_postalCode=venue.postalCode,
-                                     venue_city=venue.city
+                                     venue=venue
                                      )
 
     return email_html, email_subject
@@ -368,14 +344,14 @@ def _generate_user_driven_cancellation_email_for_user(user, stock):
                                      user_public_name=user.publicName,
                                      thing_name=stock.resolvedOffer.thing.name,
                                      thing_reference=stock.resolvedOffer.thing.idAtProviders,
-                                     venue_name=venue.name)
+                                     venue=venue)
     else:
         date_in_tz = _get_event_datetime(stock)
         formatted_date_time = format_datetime(date_in_tz)
         email_html = render_template('mails/user_cancellation_email_event.html',
                                      user_public_name=user.publicName,
                                      event_occurrence_name=stock.eventOccurrence.offer.event.name,
-                                     venue_name=venue.name,
+                                     venue=venue,
                                      formatted_date_time=formatted_date_time)
         email_subject = 'Annulation de votre réservation pour {} le {}'.format(
             stock.eventOccurrence.offer.event.name,

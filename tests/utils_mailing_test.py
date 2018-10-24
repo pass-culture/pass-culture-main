@@ -1,6 +1,7 @@
+import re
 import base64
 import secrets
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -20,6 +21,21 @@ from utils.test_utils import create_stock_with_event_offer, create_stock_with_th
     create_offerer, create_venue, create_thing_offer, create_event_offer, create_stock_from_offer, \
     create_stock_from_event_occurrence, create_event_occurrence, create_thing, create_mocked_bookings
 
+SUBJECT_USER_EVENT_BOOKING_CONFIRMATION_EMAIL = \
+    'Confirmation de votre réservation pour Mains, sorts et papiers le 20 juillet 2019 à 14:00'
+
+SUBJECT_USER_THING_BOOKING_CONFIRMATION_EMAIL = \
+    'Confirmation de votre commande pour Test Book'
+
+SUBJECT_USER_BOOKING_THING_CANCELLATION_EMAIL = \
+    'Annulation de votre commande pour Test Book'
+
+SUBJECT_USER_BOOKING_EVENT_CANCELLATION_EMAIL = \
+    'Annulation de votre réservation pour Mains, sorts et papiers le 20 juillet 2019 à 14:00'
+
+SUBJECT_OFFERER_BOOKING_CONFIRMATION_EMAIL = \
+    '[Réservations] Nouvelle réservation pour Mains, sorts et papiers - 20 juillet 2019 à 14:00'
+
 
 def get_mocked_response_status_200(entity):
     response = MagicMock(status_code=200, text='')
@@ -27,159 +43,64 @@ def get_mocked_response_status_200(entity):
     return response
 
 
-SUBJECT_USER_EVENT_BOOKING_CONFIRMATION_EMAIL = \
-    'Confirmation de votre réservation pour Mains, sorts et papiers le 20 juillet 2019 à 14:00'
-
-HTML_USER_BOOKING_EVENT_CONFIRMATION_EMAIL = \
-    '''<html>
-    <body>
-        <p id="mail-greeting">Bonjour Test,</p>
-
-        <div id="mail-content">
-            Nous vous confirmons votre réservation pour Mains, sorts et papiers le 20 juillet 2019 à 14:00, proposé par Test offerer (Adresse : 123 rue test, 93000 Test city). Votre code de réservation est le 56789.
-        </div>
-
-        <p id="mail-salutation">
-            Cordialement,
-            <br>L\'équipe pass Culture
-        </p>
-
-    </body>
-</html>'''
-
-SUBJECT_USER_THING_BOOKING_CONFIRMATION_EMAIL = \
-    'Confirmation de votre commande pour Test Book'
-
-HTML_USER_BOOKING_THING_CONFIRMATION_EMAIL = '<html><body>' + \
-                                             '<p id="mail-greeting">Bonjour Test,</p>' + \
-                                             '<div id="mail-content">Nous vous confirmons votre commande pour Test Book (Ref: 12345),' + \
-                                             ' proposé par Test offerer.' + \
-                                             ' Votre code de réservation est le 56789.</div>' + \
-                                             '<p id="mail-salutation">Cordialement,' + \
-                                             '<br>L\'équipe pass Culture</p>' + \
-                                             '</body></html>'
-
-SUBJECT_USER_BOOKING_THING_CANCELLATION_EMAIL = \
-    'Annulation de votre commande pour Test Book'
-
-HTML_USER_BOOKING_THING_CANCELLATION_EMAIL = '<html><body>' + \
-                                             '<p id="mail-greeting">Bonjour Test,</p>' + \
-                                             '<div id="mail-content">Votre commande pour Test Book (Ref: 12345), ' + \
-                                             'proposé par Test offerer ' + \
-                                             'a bien été annulée.</div>' + \
-                                             '<p id="mail-salutation">Cordialement,' + \
-                                             '<br>L\'équipe pass Culture</p>' + \
-                                             '</body></html>'
-
-SUBJECT_USER_BOOKING_EVENT_CANCELLATION_EMAIL = \
-    'Annulation de votre réservation pour Mains, sorts et papiers le 20 juillet 2019 à 14:00'
-
-HTML_USER_BOOKING_EVENT_CANCELLATION_EMAIL = '<html><body>' + \
-                                             '<p id="mail-greeting">Bonjour Test,</p>' + \
-                                             '<div id="mail-content">Votre réservation pour Mains, sorts et papiers, ' + \
-                                             'proposé par Test offerer ' + \
-                                             'le 20 juillet 2019 à 14:00, ' + \
-                                             'a bien été annulée.</div>' + \
-                                             '<p id="mail-salutation">Cordialement,' + \
-                                             '<br>L\'équipe pass Culture</p>' + \
-                                             '</body></html>'
-
-SUBJECT_OFFERER_BOOKING_CONFIRMATION_EMAIL = \
-    '[Réservations] Nouvelle réservation pour Mains, sorts et papiers - 20 juillet 2019 à 14:00'
-HTML_OFFERER_BOOKING_CONFIRMATION_EMAIL = \
-    '<html><body>' + \
-    '<p id="mail-greeting">Cher partenaire pass Culture,</p>' + \
-    '<p id="action"><strong>Test</strong> (test@email.com) vient de faire une nouvelle réservation.</p>' + \
-    '<p id="recap">Voici le récapitulatif des réservations à ce jour :' + \
-    '<br/>' + \
-    '(total 1) pour Mains, sorts et papiers' + \
-    '<br/>' + \
-    'le 20 juillet 2019 à 14:00,' + \
-    '<br/>' + \
-    'proposé par Test offerer (Adresse : 123 rue test, 93000 Test city).</p>' + \
-    '<table id="recap-table"><tr><th>Nom ou pseudo</th><th>Email</th><th>Code réservation</th></tr>' + \
-    '<tr><td>Test</td><td>test@email.com</td><td>56789</td></tr></table>' + \
-    '</body></html>'
-
-
 @mocked_mail
 @clean_database
 @pytest.mark.standalone
-def test_make_user_booking_event_recap_email_should_have_standard_subject(app):
-    # Given
-    venue = create_venue(None, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
-    stock = create_stock_with_event_offer(offerer=None, venue=venue)
-    user = create_user('Test', departement_code='93', email='test@email.com', can_book_free_offers=True)
-    booking = create_booking(user, stock, venue, None)
-
-    # When
-    recap_email = make_user_booking_recap_email(booking, is_cancellation=False)
-
-    # Then
-    assert recap_email['Subject'] == SUBJECT_USER_EVENT_BOOKING_CONFIRMATION_EMAIL
-
-
-@mocked_mail
-@clean_database
-@pytest.mark.standalone
-def test_make_user_booking_event_recap_email_should_have_standard_body(app):
+def test_make_user_booking_event_recap_email_should_have_standard_subject_and_body(app):
     # Given
     venue = create_venue(None, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
     stock = create_stock_with_event_offer(offerer=None, venue=venue)
     user = create_user('Test', departement_code='93', email='test@email.com', can_book_free_offers=True)
     booking = create_booking(user, stock, venue, None)
     booking.token = '56789'
-    expected_email_soup = BeautifulSoup(HTML_USER_BOOKING_EVENT_CONFIRMATION_EMAIL, 'html.parser')
 
     # When
     recap_email = make_user_booking_recap_email(booking, is_cancellation=False)
 
     # Then
-    recap_email_soup = BeautifulSoup(recap_email['Html-part'], 'html.parser')
-    assert recap_email_soup.prettify() == expected_email_soup.prettify()
+    email_html = remove_whitespaces(recap_email['Html-part'])
+    recap_email_soup = BeautifulSoup(email_html, 'html.parser')
+    assert recap_email['Subject'] == SUBJECT_USER_EVENT_BOOKING_CONFIRMATION_EMAIL
+    assert 'Bonjour Test,' in recap_email_soup.find("p", {"id": 'mail-greeting'}).text
+    assert 'Nous vous confirmons votre réservation pour Mains, sorts et papiers' in recap_email_soup.find("div", {
+        "id": 'mail-content'}).text
+    assert 'le 20 juillet 2019 à 14:00' in recap_email_soup.find("div", {"id": 'mail-content'}).text
+    assert 'proposé par Test offerer' in recap_email_soup.find("div", {"id": 'mail-content'}).text
+    assert '(Adresse : 123 rue test, 93000 Test city).' in recap_email_soup.find("div", {"id": 'mail-content'}).text
+    assert 'Votre code de réservation est le 56789.' in recap_email_soup.find("div", {"id": 'mail-content'}).text
+    assert 'Cordialement,' in recap_email_soup.find("p", {"id": 'mail-salutation'}).text
+    assert 'L\'équipe pass Culture' in recap_email_soup.find("p", {"id": 'mail-salutation'}).text
 
 
 @mocked_mail
 @clean_database
 @pytest.mark.standalone
-def test_make_user_booking_event_recap_email_should_have_standard_subject_cancellation(app):
-    # Given
-    venue = create_venue(None, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
-    stock = create_stock_with_event_offer(offerer=None, venue=venue)
-    user = create_user('Test', departement_code='93', email='test@email.com', can_book_free_offers=True)
-    booking = create_booking(user, stock, venue, None)
-
-    # When
-    recap_email = make_user_booking_recap_email(booking, is_cancellation=True)
-
-    # Then
-    assert recap_email['Subject'] == SUBJECT_USER_BOOKING_EVENT_CANCELLATION_EMAIL
-
-
-@mocked_mail
-@clean_database
-@pytest.mark.standalone
-def test_make_user_booking_event_recap_email_should_have_standard_body_cancellation(app):
+def test_make_user_booking_event_recap_email_should_have_standard_cancellation_body_and_subject(app):
     # Given
     venue = create_venue(None, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
     stock = create_stock_with_event_offer(offerer=None,
                                           venue=venue)
     user = create_user('Test', departement_code='93', email='test@email.com', can_book_free_offers=True)
     booking = create_booking(user, stock, venue, None)
-    expected_email_soup = BeautifulSoup(HTML_USER_BOOKING_EVENT_CANCELLATION_EMAIL, 'html.parser')
 
     # When
     recap_email = make_user_booking_recap_email(booking, is_cancellation=True)
 
     # Then
-    recap_email_soup = BeautifulSoup(recap_email['Html-part'], 'html.parser')
-    assert recap_email_soup.prettify() == expected_email_soup.prettify()
+    email_html = remove_whitespaces(recap_email['Html-part'])
+    recap_email_soup = BeautifulSoup(email_html, 'html.parser')
+    mail_content = recap_email_soup.find('div', {"id": 'mail-content'}).text
+    assert 'Votre réservation pour Mains, sorts et papiers,' in mail_content
+    assert 'proposé par Test offerer' in mail_content
+    assert 'le 20 juillet 2019 à 14:00,' in mail_content
+    assert 'a bien été annulée.' in mail_content
+    assert recap_email['Subject'] == SUBJECT_USER_BOOKING_EVENT_CANCELLATION_EMAIL
 
 
 @mocked_mail
 @clean_database
 @pytest.mark.standalone
-def test_maker_user_booking_thing_recap_email_should_have_standard_body(app):
+def test_maker_user_booking_thing_recap_email_should_have_standard_body_and_subject(app):
     # Given
     venue = create_venue(None, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
     thing_offer = create_thing_offer(venue=None)
@@ -188,39 +109,23 @@ def test_maker_user_booking_thing_recap_email_should_have_standard_body(app):
     user = create_user('Test', departement_code='93', email='test@email.com', can_book_free_offers=True)
     booking = create_booking(user, stock, venue, None)
     booking.token = '56789'
-    expected_email_soup = BeautifulSoup(HTML_USER_BOOKING_THING_CONFIRMATION_EMAIL, 'html.parser')
 
     # When
     recap_email = make_user_booking_recap_email(booking, is_cancellation=False)
 
     # Then
-    recap_email_soup = BeautifulSoup(recap_email['Html-part'], 'html.parser')
-    assert recap_email_soup.prettify() == expected_email_soup.prettify()
-
-
-@mocked_mail
-@clean_database
-@pytest.mark.standalone
-def test_maker_user_booking_thing_recap_email_should_have_standard_subject(app):
-    # Given
-    venue = create_venue(None, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
-    thing_offer = create_thing_offer(venue=None)
-    stock = create_stock_with_thing_offer(offerer=None, venue=venue, thing_offer=thing_offer)
-    stock.offer.thing.idAtProviders = '12345'
-    user = create_user('Test', departement_code='93', email='test@email.com', can_book_free_offers=True)
-    booking = create_booking(user, stock, venue, None)
-
-    # When
-    recap_email = make_user_booking_recap_email(booking, is_cancellation=False)
-
-    # Then
+    email_html = remove_whitespaces(recap_email['Html-part'])
+    recap_email_soup = BeautifulSoup(email_html, 'html.parser')
+    mail_content = recap_email_soup.find("div", {"id": 'mail-content'}).text
+    assert 'Nous vous confirmons votre commande pour Test Book (Ref: 12345),' in mail_content
+    assert 'proposé par Test offerer.' in mail_content
     assert recap_email['Subject'] == SUBJECT_USER_THING_BOOKING_CONFIRMATION_EMAIL
 
 
 @mocked_mail
 @clean_database
 @pytest.mark.standalone
-def test_make_user_booking_thing_recap_email_should_have_standard_subject_cancellation(app):
+def test_make_user_booking_thing_recap_email_should_have_standard_cancellation_body_and_subject(app):
     # Given
     venue = create_venue(None, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
     thing_offer = create_thing_offer(venue=None)
@@ -233,28 +138,10 @@ def test_make_user_booking_thing_recap_email_should_have_standard_subject_cancel
     recap_email = make_user_booking_recap_email(booking, is_cancellation=True)
 
     # Then
+    html_email = remove_whitespaces(recap_email['Html-part'])
+    recap_email_soup = BeautifulSoup(html_email, 'html.parser')
+    assert 'Votre commande pour Test Book (Ref: 12345),' in recap_email_soup.find("div", {"id": 'mail-content'}).text
     assert recap_email['Subject'] == SUBJECT_USER_BOOKING_THING_CANCELLATION_EMAIL
-
-
-@mocked_mail
-@clean_database
-@pytest.mark.standalone
-def test_make_user_booking_thing_recap_email_should_have_standard_body_cancellation(app):
-    # Given
-    venue = create_venue(None, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
-    thing_offer = create_thing_offer(venue=None)
-    stock = create_stock_with_thing_offer(offerer=None, venue=venue, thing_offer=thing_offer)
-    stock.offer.thing.idAtProviders = '12345'
-    user = create_user('Test', departement_code='93', email='test@email.com', can_book_free_offers=True)
-    booking = create_booking(user, stock, venue, None)
-    expected_email_soup = BeautifulSoup(HTML_USER_BOOKING_THING_CANCELLATION_EMAIL, 'html.parser')
-
-    # When
-    recap_email = make_user_booking_recap_email(booking, is_cancellation=True)
-
-    # Then
-    recap_email_soup = BeautifulSoup(recap_email['Html-part'], 'html.parser')
-    assert recap_email_soup.prettify() == expected_email_soup.prettify()
 
 
 @mocked_mail
@@ -268,33 +155,28 @@ def test_booking_recap_email_html_should_have_place_and_structure(app):
     user = create_user('Test', departement_code='93', email='test@email.com', can_book_free_offers=True)
     booking = create_booking(user, stock, venue, None)
     booking.token = '56789'
-    expected_email_soup = BeautifulSoup(HTML_OFFERER_BOOKING_CONFIRMATION_EMAIL, 'html.parser')
 
     # When
     with patch('utils.mailing.find_all_ongoing_bookings_by_stock', return_value=[booking]):
         recap_email = make_offerer_booking_recap_email_after_user_action(booking)
 
     # Then
-    recap_email_soup = BeautifulSoup(recap_email['Html-part'], 'html.parser')
-    assert recap_email_soup.prettify() == expected_email_soup.prettify()
-
-
-@mocked_mail
-@clean_database
-@pytest.mark.standalone
-def test_booking_recap_email_subject_should_have_defined_structure(app):
-    # Given
-    venue = create_venue(None, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
-    stock = create_stock_with_event_offer(offerer=None,
-                                          venue=venue)
-    user = create_user('Test', departement_code='93', email='test@email.com', can_book_free_offers=True)
-    booking = create_booking(user, stock, venue, None)
-
-    # When
-    with patch('utils.mailing.find_all_ongoing_bookings_by_stock', return_value=[booking]):
-        recap_email = make_offerer_booking_recap_email_after_user_action(booking)
-
-    # Then
+    email_html = remove_whitespaces(recap_email['Html-part'])
+    recap_email_soup = BeautifulSoup(email_html, 'html.parser')
+    assert 'Cher partenaire pass Culture,' in recap_email_soup.find('p', {'id': 'mail-greeting'}).text
+    assert 'Test (test@email.com) vient de faire une nouvelle réservation.' in recap_email_soup.find('p', {
+        'id': 'action'}).text
+    assert 'Voici le récapitulatif des réservations à ce jour :' in recap_email_soup.find('p', {'id': 'recap'}).text
+    assert '(total 1) pour Mains, sorts et papiers' in recap_email_soup.find('p', {'id': 'recap'}).text
+    assert 'le 20 juillet 2019 à 14:00,' in recap_email_soup.find('p', {'id': 'recap'}).text
+    assert 'proposé par Test offerer (Adresse : 123 rue test, 93000 Test city).' in recap_email_soup.find('p', {
+        'id': 'recap'}).text
+    assert 'Nom ou pseudo' in recap_email_soup.find('table', {'id': 'recap-table'}).text
+    assert 'Email' in recap_email_soup.find('table', {'id': 'recap-table'}).text
+    assert 'Code réservation' in recap_email_soup.find('table', {'id': 'recap-table'}).text
+    assert 'Test' in recap_email_soup.find('table', {'id': 'recap-table'}).text
+    assert 'test@email.com' in recap_email_soup.find('table', {'id': 'recap-table'}).text
+    assert '56789' in recap_email_soup.find('table', {'id': 'recap-table'}).text
     assert recap_email['Subject'] == SUBJECT_OFFERER_BOOKING_CONFIRMATION_EMAIL
 
 
@@ -312,12 +194,6 @@ def test_booking_recap_email_html_should_not_have_cancelled_or_used_bookings(app
 
     user2 = create_user('Test2', departement_code='93', email='test@email.com', can_book_free_offers=True)
     booking2 = create_booking(user2, stock)
-
-    user_cancelled = create_user('Cancelled')
-    cancelled_booking = create_booking(user_cancelled, stock, is_cancelled=True)
-
-    user_used = create_user('Used')
-    used_booking = create_booking(user_used, stock, is_used=True)
 
     ongoing_bookings = [booking1, booking2]
 
@@ -337,7 +213,7 @@ def test_booking_recap_email_html_should_not_have_cancelled_or_used_bookings(app
 @mocked_mail
 @clean_database
 @pytest.mark.standalone
-def test_offerer_recap_email_subject_past_offer_without_booking(app):
+def test_offerer_recap_email_past_offer_without_booking(app):
     # Given
     expected_subject = '[Réservations] Récapitulatif pour Mains, sorts et papiers le 20 juillet 2017 à 14:00'
     venue = create_venue(None, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
@@ -350,44 +226,12 @@ def test_offerer_recap_email_subject_past_offer_without_booking(app):
         recap_email = make_final_recap_email_for_stock_with_event(stock)
 
     # Then
+    mail_html = remove_whitespaces(recap_email['Html-part'])
+    recap_email_soup = BeautifulSoup(mail_html, 'html.parser')
     assert recap_email['Subject'] == expected_subject
-
-
-@mocked_mail
-@clean_database
-@pytest.mark.standalone
-def test_offerer_recap_email_past_offer_without_booking(app):
-    # Given
-    expected_html = '''
-        <html>
-            <body>
-                <p id="mail-greeting">Cher partenaire pass Culture,</p>
-                <p id="recap">
-                    Voici le récapitulatif final des réservations :
-                    <br/>
-                    (total 0) pour Mains, sorts et papiers
-                    <br/>
-                    le 20 juillet 2017 à 14:00,
-                    <br/>
-                    proposé par Test offerer (Adresse : 123 rue test, 93000 Test city).
-                </p>
-                <p>Aucune réservation</p>
-            </body>
-        </html>
-        '''
-    expected_html_soup = BeautifulSoup(expected_html, 'html.parser')
-    venue = create_venue(None, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
-    stock = create_stock_with_event_offer(offerer=None,
-                                          venue=venue,
-                                          beginning_datetime_future=False)
-
-    # When
-    with patch('utils.mailing.find_all_ongoing_bookings_by_stock', return_value=[]):
-        recap_email = make_final_recap_email_for_stock_with_event(stock)
-
-    # Then
-    recap_email_soup = BeautifulSoup(recap_email['Html-part'], 'html.parser')
-    assert expected_html_soup.prettify() == recap_email_soup.prettify()
+    assert 'Voici le récapitulatif final des réservations :' in recap_email_soup.find("p", {"id": 'recap'}).text
+    assert '(total 0) pour Mains, sorts et papiers' in recap_email_soup.find("p", {"id": 'recap'}).text
+    assert 'Aucune réservation' in recap_email_soup.find("p", {"id": 'no-recap'}).text
 
 
 @mocked_mail
@@ -395,34 +239,6 @@ def test_offerer_recap_email_past_offer_without_booking(app):
 @pytest.mark.standalone
 def test_offerer_recap_email_past_offer_with_booking(app):
     # Given
-    expected_html = '''
-        <html>
-            <body>
-                <p id="mail-greeting">Cher partenaire pass Culture,</p>
-                <p id="recap">
-                    Voici le récapitulatif final des réservations :
-                    <br/>
-                    (total 1) pour Mains, sorts et papiers
-                    <br/>
-                    le 20 juillet 2017 à 14:00,
-                    <br/>
-                    proposé par Test offerer (Adresse : 123 rue test, 93000 Test city).
-                </p>
-                <table id="recap-table">
-                    <tr>
-                        <th>Nom ou pseudo</th>
-                        <th>Email</th>
-                        <th>Code réservation</th>
-                    </tr>
-                    <tr>
-                        <td>Test</td>
-                        <td>test@email.com</td>
-                        <td>56789</td>
-                    </tr>
-                </table>
-            </body>
-        </html>'''
-    expected_html_soup = BeautifulSoup(expected_html, 'html.parser')
     venue = create_venue(None, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
     stock = create_stock_with_event_offer(offerer=None,
                                           venue=venue,
@@ -437,8 +253,17 @@ def test_offerer_recap_email_past_offer_with_booking(app):
         recap_email = make_final_recap_email_for_stock_with_event(stock)
 
     # Then
-    recap_email_soup = BeautifulSoup(recap_email['Html-part'], 'html.parser')
-    assert recap_email_soup.prettify() == expected_html_soup.prettify()
+    email_html = remove_whitespaces(recap_email['Html-part'])
+    recap_email_soup = BeautifulSoup(email_html, 'html.parser')
+    recap_html = recap_email_soup.find('p', {'id': 'recap'}).text
+    assert 'Voici le récapitulatif final des réservations :' in recap_html
+    assert '(total 1) pour Mains, sorts et papiers' in recap_html
+    assert 'le 20 juillet 2017 à 14:00,' in recap_html
+    assert 'proposé par Test offerer (Adresse : 123 rue test, 93000 Test city).' in recap_html
+    recap_table_html = recap_email_soup.find('table', {'id': 'recap-table'}).text
+    assert 'Test' in recap_table_html
+    assert 'test@email.com' in recap_table_html
+    assert '56789' in recap_table_html
 
 
 @mocked_mail
@@ -455,12 +280,6 @@ def test_offerer_recap_email_does_not_send_cancelled_or_used_booking(app):
 
     user2 = create_user('Test2', departement_code='93', email='test@email.com', can_book_free_offers=True)
     booking2 = create_booking(user2, stock)
-
-    user_cancelled = create_user('Cancelled')
-    cancelled_booking = create_booking(user_cancelled, stock, is_cancelled=True)
-
-    user_used = create_user('Used')
-    used_booking = create_booking(user_used, stock, is_used=True)
 
     ongoing_bookings = [booking1, booking2]
 
@@ -482,40 +301,6 @@ def test_offerer_recap_email_does_not_send_cancelled_or_used_booking(app):
 @pytest.mark.standalone
 def test_offerer_recap_email_future_offer_when_new_booking_with_old_booking(app):
     # Given
-    expected_html = '''
-        <html>
-            <body>
-                <p id="mail-greeting">Cher partenaire pass Culture,</p>
-                <p id="action"><strong>Test 2</strong> (other_test@email.com) vient de faire une nouvelle réservation.</p>
-                <p id="recap">
-                    Voici le récapitulatif des réservations à ce jour :
-                    <br/>
-                    (total 2) pour Mains, sorts et papiers
-                    <br/>
-                    le 20 juillet 2019 à 14:00,
-                    <br/>
-                    proposé par Test offerer (Adresse : 123 rue test, 93000 Test city).
-                </p>
-                <table id= "recap-table">
-                    <tr>
-                        <th>Nom ou pseudo</th>
-                        <th>Email</th>
-                        <th>Code réservation</th>
-                    </tr>
-                    <tr>
-                        <td>Test</td>
-                        <td>test@email.com</td>
-                        <td>56789</td>
-                    </tr>
-                    <tr>
-                        <td>Test 2</td>
-                        <td>other_test@email.com</td>
-                        <td>67890</td>
-                    </tr>
-                </table>
-            </body>
-        </html>'''
-    expected_html_soup = BeautifulSoup(expected_html, 'html.parser')
     venue = create_venue(None, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
     stock = create_stock_with_event_offer(offerer=None,
                                           venue=venue,
@@ -534,47 +319,28 @@ def test_offerer_recap_email_future_offer_when_new_booking_with_old_booking(app)
         recap_email = make_offerer_booking_recap_email_after_user_action(booking_2)
 
     # Then
-    recap_email_soup = BeautifulSoup(recap_email['Html-part'], 'html.parser')
-    assert recap_email_soup.prettify() == expected_html_soup.prettify()
+    email_html = remove_whitespaces(recap_email['Html-part'])
+    recap_email_soup = BeautifulSoup(email_html, 'html.parser')
+    action_html = recap_email_soup.find('p', {'id': 'action'}).text
+    recap_table_html = recap_email_soup.find('table', {'id': 'recap-table'}).text
+    recap_html = recap_email_soup.find('p', {'id': 'recap'}).text
+    assert 'Test 2 (other_test@email.com) vient de faire une nouvelle réservation.' in action_html
+    assert '(total 2) pour Mains, sorts et papiers' in recap_html
+    assert 'Test' in recap_table_html
+    assert 'Test 2' in recap_table_html
+    assert 'test@email.com' in recap_table_html
+    assert 'other_test@email.com' in recap_table_html
+    assert '56789' in recap_table_html
+    assert '67890' in recap_table_html
 
 
 @mocked_mail
 @clean_database
 @pytest.mark.standalone
-def test_offerer_booking_recap_email_book(app):
+def test_offerer_booking_recap_email_thing_offer(app):
     # Given
-    expected_html = '''
-    <html>
-        <body>
-            <p id="mail-greeting">Cher partenaire pass Culture,</p>
-            <p id="action"><strong>Test</strong> (test@email.com) vient de faire une nouvelle réservation.</p>
-            <p id="recap">
-            Voici le récapitulatif des réservations à ce jour :
-            <br/>
-            (total 1) pour Test Book,
-            <br/>
-            proposé par Test offerer (Adresse : 123 rue test, 93000 Test city).
-            </p>
-            <table id="recap-table">
-                <tr>
-                    <th>Nom ou pseudo</th>
-                    <th>Email</th>
-                    <th>Code réservation</th>
-                </tr> 
-                 
-                <tr>
-                    <td>Test</td>
-                    <td>test@email.com</td>
-                    <td>56789</td>
-                </tr>
-                 
-            </table>
- 
-        </body>
-    </html>'''
     venue = create_venue(None, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
     thing_offer = create_thing_offer(venue=None)
-    expected_html_soup = BeautifulSoup(expected_html, 'html.parser')
     stock = create_stock_with_thing_offer(offerer=None, venue=venue, thing_offer=thing_offer)
     user = create_user('Test', departement_code='93', email='test@email.com', can_book_free_offers=True)
     booking = create_booking(user, stock, venue, None)
@@ -585,8 +351,17 @@ def test_offerer_booking_recap_email_book(app):
         recap_email = make_offerer_booking_recap_email_after_user_action(booking)
 
     # Then
-    recap_email_soup = BeautifulSoup(recap_email['Html-part'], 'html.parser')
-    assert recap_email_soup.prettify() == expected_html_soup.prettify()
+
+    email_html = remove_whitespaces(recap_email['Html-part'])
+    recap_email_soup = BeautifulSoup(email_html, 'html.parser')
+    recap_html = recap_email_soup.find("p", {"id": 'recap'})
+    action_html = recap_email_soup.find("p", {"id": 'action'}).text
+    assert 'Test (test@email.com) vient de faire une nouvelle réservation' in action_html
+    assert 'pour Test Book,' in action_html
+    assert 'proposé par Test offerer (Adresse : 123 rue test, 93000 Test city).' in action_html
+    assert recap_html is None
+    action_table_html = recap_email_soup.find("table", {"id": 'recap-table'})
+    assert action_table_html is None
 
 
 @mocked_mail
@@ -731,58 +506,42 @@ def test_make_reset_password_email_generates_an_html_email_with_a_reset_link(app
                0].text.strip() == 'Le lien est valable 24h. Au delà de ce délai, vous devrez demander une nouvelle réinitialisation.'
 
 
+@freeze_time('2018-10-15 09:21:34')
 @clean_database
 @pytest.mark.standalone
-def test_make_offerer_booking_user_cancellation_email(app):
+def test_make_offerer_booking_user_cancellation_email_for_physical_venue(app):
     # Given
     offerer = create_offerer()
     venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
-    thing_offer = create_thing_offer(venue)
-    stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=0)
+    event_offer = create_event_offer(venue, event_name='Test Event')
+    now = datetime.utcnow() + timedelta()
+    event_occurrence = create_event_occurrence(event_offer, beginning_datetime=now)
+    stock = create_stock_from_event_occurrence(event_occurrence, price=0)
     user_1 = create_user('Test1', departement_code='93', email='test1@email.com')
     user_2 = create_user('Test2', departement_code='93', email='test2@email.com')
     booking_1 = create_booking(user_1, stock, venue)
     booking_2 = create_booking(user_2, stock, venue)
     booking_2.isCancelled = True
     PcObject.check_and_save(booking_1, booking_2)
-    expected_html = '''
-        <html>
-            <body>
-                <p id="mail-greeting">Cher partenaire pass Culture,</p>
-                <p id="action"><strong>Test2</strong> (test2@email.com) vient d'annuler sa réservation.</p>
-                <p id="recap">
-                Voici le récapitulatif des réservations à ce jour :
-                <br/>
-                (total 1) pour Test Book,
-                <br/>
-                proposé par Test offerer (Adresse : 123 rue test, 93000 Test city).
-                </p>
-                <table id="recap-table">
-                    <tr>
-                        <th>Nom ou pseudo</th>
-                        <th>Email</th>
-                        <th>Code réservation</th>
-                    </tr> 
-
-                    <tr>
-                        <td>Test1</td>
-                        <td>test1@email.com</td>
-                        <td>{token}</td>
-                    </tr>
-
-                </table>
-
-            </body>
-        </html>'''.format(token=booking_1.token)
-    expected_html_soup = BeautifulSoup(expected_html, 'html.parser')
 
     # When
     with patch('utils.mailing.find_all_ongoing_bookings_by_stock', return_value=[booking_1]):
         recap_email = make_offerer_booking_recap_email_after_user_action(booking_2, is_cancellation=True)
 
     # Then
-    recap_email_soup = BeautifulSoup(recap_email['Html-part'], 'html.parser')
-    assert recap_email_soup.prettify() == expected_html_soup.prettify()
+    email_html = remove_whitespaces(recap_email['Html-part'])
+    parsed_email = BeautifulSoup(email_html, 'html.parser')
+    assert "<strong>Test2</strong> (test2@email.com) vient d'annuler sa réservation." in str(
+        parsed_email.find("p", {"id": "action"}))
+    assert "Voici le récapitulatif des réservations à ce jour :" in str(parsed_email.find("p", {"id": "recap"}))
+    assert "(total 1) pour Test Event" in str(parsed_email.find("p", {"id": "recap"}))
+    assert "le 15 octobre 2018 à 11:21," in str(parsed_email.find("p", {"id": "recap"}))
+    assert "proposé par Test offerer (Adresse : 123 rue test, 93000 Test city)." in str(
+        parsed_email.find("p", {"id": "recap"}))
+    assert "<td>Test1</td>" in str(parsed_email.find("table", {"id": "recap-table"}))
+    assert "<td>Test2</td>" not in str(parsed_email.find("table", {"id": "recap-table"}))
+    assert "<td>test1@email.com</td>" in str(parsed_email.find("table", {"id": "recap-table"}))
+    assert "<td>{token}</td>".format(token=booking_1.token) in str(parsed_email.find("table", {"id": "recap-table"}))
 
 
 @clean_database
@@ -805,8 +564,6 @@ def test_make_offerer_driven_cancellation_email_for_user_event(app):
 
     # Then
     email_html = BeautifulSoup(email['Html-part'], 'html.parser')
-    print(email_html.find("div", {"id": "mail-content"}))
-    print(type(email_html.find("div", {"id": "mail-content"})))
     mail_content = str(email_html.find("div", {"id": "mail-content"}))
     assert 'réservation' in mail_content
     assert 'pour Mains, sorts et papiers' in mail_content
@@ -835,8 +592,6 @@ def test_make_offerer_driven_cancellation_email_for_user_thing(app):
 
     # Then
     email_html = BeautifulSoup(email['Html-part'], 'html.parser')
-    print(email_html.find("div", {"id": "mail-content"}))
-    print(type(email_html.find("div", {"id": "mail-content"})))
     mail_content = str(email_html.find("div", {"id": "mail-content"}))
     assert 'commande' in mail_content
     assert 'pour Test Book' in mail_content
@@ -909,18 +664,17 @@ def test_make_offerer_driven_cancellation_email_for_offerer_thing_and_already_ex
     # Then
     email_html = BeautifulSoup(email['Html-part'], 'html.parser')
     html_action = str(email_html.find("p", {"id": "action"}))
-    html_recap = str(email_html.find("p", {"id": "recap"}))
-    html_recap_table = str(email_html.find("table", {"id": "recap-table"}))
+    html_recap = email_html.find("p", {"id": "recap"})
+    html_recap_table = email_html.find("table", {"id": "recap-table"})
     assert 'Vous venez d\'annuler' in html_action
     assert 'John Doe' in html_action
     assert 'john@doe.fr' in html_action
-    assert 'pour Le récit de voyage' in html_recap
-    assert 'proposé par La petite librairie' in html_recap
-    assert '1 rue de la Libération' in html_recap
-    assert 'Montreuil' in html_recap
-    assert '93100' in html_recap
-    assert '<td>James Bond</td>' in html_recap_table
-    assert '<td>John Doe</td>' not in html_recap_table
+    assert 'pour Le récit de voyage' in html_recap.text
+    assert 'proposé par La petite librairie' in html_recap.text
+    assert '1 rue de la Libération' in html_recap.text
+    assert 'Montreuil' in html_recap.text
+    assert '93100' in html_recap.text
+    assert html_recap_table is None
     assert email[
                'Subject'] == 'Confirmation de votre annulation de réservation pour Le récit de voyage, proposé par La petite librairie'
 
@@ -938,7 +692,6 @@ def test_make_validation_confirmation_email_offerer_user_offerer_admin(app):
     # Then
     email_html = BeautifulSoup(email['Html-part'], 'html.parser')
     html_validation_details = str(email_html.find('p', {'id': 'validation-details'}))
-    print(email)
     assert 'Votre structure "Le Théâtre SAS"' in html_validation_details
     assert 'L\'utilisateur admin@letheatresas.com' in html_validation_details
     assert 'en tant qu\'administrateur' in html_validation_details
@@ -959,7 +712,6 @@ def test_make_validation_confirmation_email_offerer_user_offerer_editor(app):
     # Then
     email_html = BeautifulSoup(email['Html-part'], 'html.parser')
     html_validation_details = str(email_html.find('p', {'id': 'validation-details'}))
-    print(email)
     assert 'Votre structure "Le Théâtre SAS"' in html_validation_details
     assert 'L\'utilisateur editor@letheatresas.com' in html_validation_details
     assert 'en tant qu\'éditeur' in html_validation_details
@@ -980,7 +732,6 @@ def test_make_validation_confirmation_email_user_offerer_editor(app):
     # Then
     email_html = BeautifulSoup(email['Html-part'], 'html.parser')
     html_validation_details = str(email_html.find('p', {'id': 'validation-details'}))
-    print(email)
     assert 'Votre structure "Le Théâtre SAS"' not in html_validation_details
     assert 'L\'utilisateur editor@letheatresas.com a été validé' in html_validation_details
     assert 'en tant qu\'éditeur' in html_validation_details
@@ -1013,9 +764,10 @@ def test_make_make_batch_cancellation_email_for_case_event_occurrence(app):
     # When
     email = make_batch_cancellation_email(bookings, cancellation_case='event_occurrence')
     # Then
-    email_html = BeautifulSoup(email['Html-part'], 'html.parser')
-    html_action = str(email_html.find('p', {'id': 'action'}))
-    html_recap = str(email_html.find('table', {'id': 'recap-table'}))
+    email_html = remove_whitespaces(email['Html-part'])
+    parsed_email = BeautifulSoup(email_html, 'html.parser')
+    html_action = str(parsed_email.find('p', {'id': 'action'}))
+    html_recap = str(parsed_email.find('table', {'id': 'recap-table'}))
     assert 'Suite à votre suppression de date' in html_action
     assert 'Le récit de voyage' in html_action
     assert 'automatiquement annulées' in html_action
@@ -1036,9 +788,10 @@ def test_make_make_batch_cancellation_email_for_case_stock(app):
     # When
     email = make_batch_cancellation_email(bookings, cancellation_case='stock')
     # Then
-    email_html = BeautifulSoup(email['Html-part'], 'html.parser')
-    html_action = str(email_html.find('p', {'id': 'action'}))
-    html_recap = str(email_html.find('table', {'id': 'recap-table'}))
+    email_html = remove_whitespaces(email['Html-part'])
+    parsed_email = BeautifulSoup(email_html, 'html.parser')
+    html_action = str(parsed_email.find('p', {'id': 'action'}))
+    html_recap = str(parsed_email.find('table', {'id': 'recap-table'}))
     assert 'Suite à votre suppression de stock' in html_action
     assert 'Le récit de voyage' in html_action
     assert 'automatiquement annulées' in html_action
@@ -1049,6 +802,55 @@ def test_make_make_batch_cancellation_email_for_case_stock(app):
     assert email['FromEmail'] == 'passculture@beta.gouv.fr'
     assert email['FromName'] == 'pass Culture pro'
     assert email['Subject'] == 'Annulation de réservations pour Le récit de voyage'
+
+
+@clean_database
+@pytest.mark.standalone
+def test_make_offerer_booking_user_cancellation_email_when_virtual_venue_does_not_show_address(app):
+    # Given
+    offerer = create_offerer()
+    venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', is_virtual=True, siret=None)
+    thing_offer = create_thing_offer(venue)
+    stock = create_stock_from_offer(thing_offer, price=0)
+    user_1 = create_user('Test1', departement_code='93', email='test1@email.com')
+    user_2 = create_user('Test2', departement_code='93', email='test2@email.com')
+    booking_1 = create_booking(user_1, stock, venue)
+    booking_2 = create_booking(user_2, stock, venue)
+    booking_2.isCancelled = True
+    PcObject.check_and_save(booking_1, booking_2)
+
+    # When
+    with patch('utils.mailing.find_all_ongoing_bookings_by_stock', return_value=[booking_1]):
+        recap_email = make_offerer_booking_recap_email_after_user_action(booking_2, is_cancellation=True)
+
+        # Then
+        email_html = BeautifulSoup(recap_email['Html-part'], 'html.parser')
+    assert 'offre numérique proposée par Test offerer' in str(email_html.find('p', {'id': 'action'}))
+    assert '(Adresse:' not in str(email_html.find('p', {'id': 'action'}))
+
+
+@clean_database
+@pytest.mark.standalone
+def test_make_offerer_booking_user_cancellation_does_not_have_recap_information(app):
+    # Given
+    offerer = create_offerer()
+    venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', is_virtual=True, siret=None)
+    thing_offer = create_thing_offer(venue)
+    stock = create_stock_from_offer(thing_offer, price=0)
+    user_1 = create_user('Test1', departement_code='93', email='test1@email.com')
+    user_2 = create_user('Test2', departement_code='93', email='test2@email.com')
+    booking_1 = create_booking(user_1, stock, venue)
+    booking_2 = create_booking(user_2, stock, venue)
+    booking_2.isCancelled = True
+    PcObject.check_and_save(booking_1, booking_2)
+
+    # When
+    with patch('utils.mailing.find_all_ongoing_bookings_by_stock', return_value=[booking_1]):
+        recap_email = make_offerer_booking_recap_email_after_user_action(booking_2, is_cancellation=True)
+
+    # Then
+    email_html = BeautifulSoup(recap_email['Html-part'], 'html.parser')
+    assert email_html.find('table', {'id': 'recap-table'}) is None
 
 
 @freeze_time('2018-10-15 09:21:34')
@@ -1071,3 +873,9 @@ def test_make_payment_transaction_email():
                                      "Base64Content": b'PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48RG9j'
                                                       b'dW1lbnQgeG1sbnM9InVybjppc286c3RkOmlzbzoyMDAyMjp0ZWNoOnhz'
                                                       b'ZDpwYWluLjAwMS4wMDEuMDMiPjwvRG9jdW1lbnQ+'}]
+
+
+def remove_whitespaces(text):
+    text = re.sub('\n\s+', ' ', text)
+    text = re.sub('\n', '', text)
+    return text

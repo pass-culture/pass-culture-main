@@ -11,6 +11,7 @@ flask_cors==3.0.6
 flask-login==0.4.1
 flask_sqlalchemy==2.3.2
 flask_script==2.0.6
+freezegun==0.3.11
 geoip2==2.9.0
 gspread==3.0.1
 gunicorn==19.9.0

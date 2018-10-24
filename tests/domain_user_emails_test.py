@@ -8,10 +8,7 @@ from domain.user_emails import send_user_driven_cancellation_email_to_user, \
     send_booking_confirmation_email_to_user, send_booking_recap_emails, send_final_booking_recap_email, \
     send_validation_confirmation_email, send_batch_cancellation_emails_to_users, \
     send_batch_cancellation_email_to_offerer
-from models import Offerer, UserOfferer, User, RightsType, Booking
-from tests.utils_mailing_test import HTML_USER_BOOKING_EVENT_CONFIRMATION_EMAIL, \
-    SUBJECT_USER_EVENT_BOOKING_CONFIRMATION_EMAIL
-from utils.config import IS_PROD, ENV
+from models import Offerer, UserOfferer, User, RightsType
 from utils.mailing import MailServiceException
 from utils.test_utils import create_user, create_booking, create_stock_with_event_offer, create_offerer, create_venue, \
     create_thing_offer, create_stock_with_thing_offer, create_mocked_bookings
@@ -289,23 +286,6 @@ def test_send_booking_confirmation_email_to_user_should_call_mailjet_send_create
     user = create_user('Test', departement_code='93', email='test@email.com', can_book_free_offers=True)
     booking = create_booking(user, stock, venue, None)
     booking.token = '56789'
-    mail_html = HTML_USER_BOOKING_EVENT_CONFIRMATION_EMAIL
-
-    if IS_PROD:
-        recipients = 'test@email.com'
-    else:
-        beginning_email = \
-            '<p>This is a test (ENV={}). In production, email would have been sent to : test@email.com</p>'.format(ENV)
-        recipients = 'passculture-dev@beta.gouv.fr'
-        mail_html = beginning_email + mail_html
-
-    expected_email = {
-        "FromName": 'Pass Culture',
-        'FromEmail': 'passculture-dev@beta.gouv.fr',
-        'To': recipients,
-        'Subject': SUBJECT_USER_EVENT_BOOKING_CONFIRMATION_EMAIL,
-        'Html-part': mail_html
-    }
 
     mocked_send_create_email = Mock()
     return_value = Mock()
@@ -316,7 +296,13 @@ def test_send_booking_confirmation_email_to_user_should_call_mailjet_send_create
     send_booking_confirmation_email_to_user(booking, mocked_send_create_email)
 
     # Then
-    mocked_send_create_email.assert_called_once_with(data=expected_email)
+    mocked_send_create_email.assert_called_once()
+    called_with_args = mocked_send_create_email.call_args[1]['data']
+    assert 'This is a test (ENV=development). In production, email would have been sent to : test@email.com' in called_with_args[
+        'Html-part']
+    assert called_with_args['To'] == 'passculture-dev@beta.gouv.fr'
+    assert called_with_args['FromName'] == 'Pass Culture'
+    assert called_with_args['FromEmail'] == 'passculture-dev@beta.gouv.fr'
 
 
 @pytest.mark.standalone
@@ -512,8 +498,8 @@ def test_send_validation_confirmation_email_when_status_code_400(app):
 
     with patch('domain.user_emails.feature_send_mail_to_users_enabled', return_value=True), patch(
             'domain.user_emails.make_validation_confirmation_email', return_value={'Html-part': ''}), patch(
-            'domain.user_emails.find_all_admin_offerer_emails', return_value=['test@email.com']), pytest.raises(
-            MailServiceException):
+        'domain.user_emails.find_all_admin_offerer_emails', return_value=['test@email.com']), pytest.raises(
+        MailServiceException):
         # When
         send_validation_confirmation_email(user_offerer, offerer, mocked_send_create_email)
 
@@ -532,9 +518,9 @@ def test_send_cancellation_emails_to_users_calls_send_offerer_driven_cancellatio
     # When
     with patch(
             'domain.user_emails.send_offerer_driven_cancellation_email_to_user') as send_cancellation_email_one_user, patch(
-            'domain.user_emails.make_offerer_driven_cancellation_email_for_user',
-            return_value={'Html-part': ''}), patch('domain.user_emails.feature_send_mail_to_users_enabled',
-                                                   return_value=True):
+        'domain.user_emails.make_offerer_driven_cancellation_email_for_user',
+        return_value={'Html-part': ''}), patch('domain.user_emails.feature_send_mail_to_users_enabled',
+                                               return_value=True):
         send_batch_cancellation_emails_to_users(bookings, mocked_send_create_email)
 
     # Then
@@ -606,9 +592,10 @@ def test_send_batch_cancellation_email_to_offerer_email_status_code_500():
     mocked_send_create_email.return_value = return_value
 
     # When
-    with pytest.raises(MailServiceException), patch('domain.user_emails.feature_send_mail_to_users_enabled', return_value=True), patch(
-            'domain.user_emails.make_batch_cancellation_email',
-            return_value={'Html-part': ''}):
+    with pytest.raises(MailServiceException), patch('domain.user_emails.feature_send_mail_to_users_enabled',
+                                                    return_value=True), patch(
+        'domain.user_emails.make_batch_cancellation_email',
+        return_value={'Html-part': ''}):
         # When
         send_batch_cancellation_email_to_offerer(bookings, 'stock', mocked_send_create_email)
 
