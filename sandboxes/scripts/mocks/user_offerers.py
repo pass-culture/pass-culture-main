@@ -3,7 +3,7 @@ user_offerer_mocks = [
     {
         "userEmail": "pctest.pro.1@btmx.fr",
         "offererName": "LE GRAND REX PARIS",
-        "rights": "editor"
+        "rights": "admin"
     },
     {
         "userEmail": "pctest.pro.1@btmx.fr",
