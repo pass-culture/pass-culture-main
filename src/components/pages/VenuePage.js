@@ -189,7 +189,7 @@ class VenuePage extends Component {
             normalizer={venueNormalizer}
             patch={venuePatch}
             readOnly={isReadOnly}>
-            <Field type="hidden" name="managingOffererId" />
+            {isNew && <Field type="hidden" name="managingOffererId" />}
             <div className="section">
               <h2 className="main-list-title is-relative">
                 IDENTIFIANTS
