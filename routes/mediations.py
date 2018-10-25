@@ -34,13 +34,13 @@ def create_mediation():
     new_mediation.offererId = offerer_id
 
     # DO THE READ BEFORE SAVING IN CASE WHERE THE THUMB FILE IS WRONG !
-    thumb = read_thumb()
+    thumb = read_thumb(files=request.files, form=request.form)
 
     # SAVE
     PcObject.check_and_save(new_mediation)
 
     try:
-        new_mediation.save_thumb(thumb, 0, crop=get_crop())
+        new_mediation.save_thumb(thumb, 0, crop=get_crop(request.form))
     except ValueError as e:
         logger.error(e)
         api_errors.addError('thumbUrl', "L'adresse saisie n'est pas valide")
