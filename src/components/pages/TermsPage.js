@@ -4,7 +4,11 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import ReactMarkdown from 'react-markdown'
 
-import { ROOT_PATH, APP_VERSION } from '../../utils/config'
+import {
+  APP_VERSION,
+  LAST_DEPLOYED_COMMIT,
+  ROOT_PATH,
+} from '../../utils/config'
 import PageHeader from '../layout/PageHeader'
 import NavigationFooter from '../layout/NavigationFooter'
 
@@ -22,7 +26,7 @@ class TermsPage extends React.PureComponent {
 
   render() {
     const { source } = this.state
-    const { appversion } = this.props
+    const { appversion, lastDeployedCommit } = this.props
     const backgroundImage = `url('${ROOT_PATH}/mosaic-k.png')`
     return (
       <div id="terms-page" className="page is-relative flex-rows">
@@ -32,7 +36,7 @@ class TermsPage extends React.PureComponent {
             <div className="padded content" style={{ backgroundImage }}>
               <ReactMarkdown source={source} />
               <div className="mt16">
-                <p className="text-right">{`Pass Culture v.${appversion}`}</p>
+                <p className="text-right">{`Pass Culture v.${appversion} - ${lastDeployedCommit}`}</p>
               </div>
             </div>
           </div>
@@ -45,12 +49,15 @@ class TermsPage extends React.PureComponent {
 
 TermsPage.defaultProps = {
   appversion: APP_VERSION,
+  lastDeployedCommit: LAST_DEPLOYED_COMMIT,
 }
 
 TermsPage.propTypes = {
-  // pass `appversion` from props
-  // only for enzyme snapshots tests
+  // NOTE -> `appversion` et `lastDeployedCommit`
+  // sont passés dans les props pour les tests jests/enzyme
+  // `lastDeployedCommit` est rempli au build par le script PC
   appversion: PropTypes.string,
+  lastDeployedCommit: PropTypes.string,
 }
 
 export default TermsPage

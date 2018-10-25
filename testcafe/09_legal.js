@@ -19,3 +19,4 @@ test("Je peux cliquer sur l'icône menu qui se trouve en bas de page", async t =
 // Lorsque je clique sur la flêche retour j'arrive sur la page http://localhost:3000/decouverte/tuto/AE
 
 // Je peux voir le numéro de version de l'app Pass Culture version v0.4.0
+// Je peux voir le numéro du dernier commit déployé sur les serveurs distants
