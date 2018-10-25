@@ -73,6 +73,8 @@ class VenuePage extends Component {
           normalizer: offererNormalizer,
         })
       )
+
+      dispatch(requestData('GET', `userOfferers/${offererId}`))
     } else {
       return handleSuccess()
     }

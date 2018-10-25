@@ -22,11 +22,25 @@ import selectUserOffererByOffererIdAndUserIdAndRightsType from '../../selectors/
 import selectPhysicalVenuesByOffererId from '../../selectors/selectPhysicalVenuesByOffererId'
 import { offererNormalizer } from '../../utils/normalizers'
 
-const VENUE_PATCH_KEYS = ['bic', 'iban', 'rib']
+const OFFERER_NEW_PATCH_KEYS = [
+  'address',
+  'city',
+  'name',
+  'siren',
+  'postalCode',
+]
+const OFFERER_EDIT_PATCH_KEYS = ['bic', 'iban', 'rib']
 
-const formatVenuePatch = patch => {
+const formatOffererPatch = (patch, config) => {
+  const { isEdit, isNew } = config || {}
   const formPatch = {}
-  VENUE_PATCH_KEYS.forEach(key => {
+  let patchKeys
+  if (isNew) {
+    patchKeys = OFFERER_NEW_PATCH_KEYS
+  } else if (isEdit) {
+    patchKeys = OFFERER_EDIT_PATCH_KEYS
+  }
+  patchKeys.forEach(key => {
     if (patch[key]) {
       formPatch[key] = patch[key]
     }
@@ -75,6 +89,9 @@ class OffererPage extends Component {
           normalizer: offererNormalizer,
         })
       )
+
+      dispatch(requestData('GET', `userOfferers/${offererId}`))
+
       return
     }
 
@@ -105,7 +122,7 @@ class OffererPage extends Component {
 
   render() {
     const { adminUserOfferer, offerer, sirenName, venues } = this.props
-    const { isNew, isReadOnly } = this.state
+    const { isEdit, isNew, isReadOnly } = this.state
     const { id } = offerer || {}
     const areSirenFieldsVisible = get(offerer, 'id') || sirenName
     const areBankInfosReadOnly = isReadOnly || !adminUserOfferer
@@ -192,7 +209,7 @@ class OffererPage extends Component {
           action={`/offerers/${get(offerer, 'id') || ''}`}
           name="offerer"
           className="section"
-          formatPatch={formatVenuePatch}
+          formatPatch={patch => formatOffererPatch(patch, { isNew, isEdit })}
           handleSuccess={this.handleSuccess}
           patch={offerer}
           readOnly={isReadOnly}>
@@ -246,7 +263,6 @@ class OffererPage extends Component {
                 label="BIC"
                 name="bic"
                 type="bic"
-                required
                 readOnly={areBankInfosReadOnly}
               />
               <Field
@@ -257,7 +273,6 @@ class OffererPage extends Component {
                 label="IBAN"
                 name="iban"
                 type="iban"
-                required
                 readOnly={areBankInfosReadOnly}
               />
             </div>

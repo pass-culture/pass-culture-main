@@ -11,6 +11,7 @@ const data = createData({
   stocks: [],
   things: [],
   types: [],
+  userOfferers: [],
   venues: [],
   venueProviders: [],
 })

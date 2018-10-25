@@ -1,21 +1,18 @@
 import createCachedSelector from 're-reselect'
 
-import { selectOffererById } from './offerer'
-
 function mapArgsToKey(state, offererId, userId, right) {
   return `${offererId || ''}/${userId || ''}/${right || ''}`
 }
 
 export const selectUserOffererByOffererIdAndUserIdAndRightsType = createCachedSelector(
-  selectOffererById,
+  state => state.data.userOfferers,
+  (state, offererId) => offererId,
   (state, offererId, userId) => userId,
   (state, offererId, userId, rightsType) => rightsType,
-  (offerer, userId, rightsType) => {
-    if (!offerer) {
-      return
-    }
-    return offerer.UserOfferers.find(
+  (userOfferers, offererId, userId, rightsType) => {
+    return userOfferers.find(
       userOfferer =>
+        userOfferer.offererId === offererId &&
         userOfferer.userId === userId &&
         userOfferer.rights === `RightsType.${rightsType}`
     )
