@@ -11,9 +11,10 @@ import { compose } from 'redux'
 import { NavLink } from 'react-router-dom'
 
 import OffererItem from './offerers/OffererItem'
+import PendingOffererItem from './offerers/PendingOffererItem'
 import HeroSection from '../layout/HeroSection'
 import Main from '../layout/Main'
-import offerersSelector from '../../selectors/offerers'
+import offerersSelector, { getPendingOfferers } from '../../selectors/offerers'
 import { offererNormalizer } from '../../utils/normalizers'
 import { mapApiToWindow, windowToApiQuery } from '../../utils/pagination'
 
@@ -42,6 +43,16 @@ class OfferersPage extends Component {
         normalizer: offererNormalizer,
       })
     )
+
+    dispatch(
+      requestData('GET', 'offerers?validated=false', {
+        handleSuccess: (state, action) => {
+          handleSuccess(state, action)
+        },
+        handleFail,
+        key: 'pendingOfferer',
+      })
+    )
   }
 
   onSubmit = event => {
@@ -57,7 +68,7 @@ class OfferersPage extends Component {
   }
 
   render() {
-    const { offerers, pagination } = this.props
+    const { pendingOfferers, offerers, pagination } = this.props
 
     const { search } = pagination.apiQuery || {}
 
@@ -102,6 +113,14 @@ class OfferersPage extends Component {
           </div>
         </form>
 
+        {pendingOfferers.length > 0 && (
+          <ul id="pending-offerer-list" className="main-list offerers-list">
+            {pendingOfferers.map(o => (
+              <PendingOffererItem key={o.siren} offerer={o} />
+            ))}
+          </ul>
+        )}
+
         <InfiniteScroller
           className="main-list offerers-list"
           handleLoadMore={(handleSuccess, handleFail) => {
@@ -123,6 +142,7 @@ class OfferersPage extends Component {
 
 function mapStateToProps(state, ownProps) {
   return {
+    pendingOfferers: getPendingOfferers(state),
     offerers: offerersSelector(state),
   }
 }
