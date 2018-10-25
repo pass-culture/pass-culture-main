@@ -168,10 +168,10 @@ def test_get_offerers_should_return_all_info_of_all_offerers_if_current_user_is_
     # then
     assert response.status_code == 200
     assert list(response.json()[0].keys()) == [
-        'address', 'bic', 'city', 'dateCreated', 'dateModifiedAtLastProvider',
+        'UserOfferers', 'address', 'bic', 'city', 'dateCreated', 'dateModifiedAtLastProvider',
         'firstThumbDominantColor', 'iban', 'id', 'idAtProviders', 'isActive',
         'isValidated', 'lastProviderId', 'managedVenues', 'modelName', 'nOffers',
-        'name', 'postalCode', 'siren', 'thumbCount'
+        'name', 'postalCode', 'siren', 'thumbCount' 
     ]
 
 
@@ -264,8 +264,9 @@ def test_get_offerers_should_return_all_info_of_validated_offerers_if_param_vali
     # then
     assert response.status_code == 200
     assert len(response.json()) == 2
+    print()
     assert list(response.json()[0].keys()) == [
-        'address', 'bic', 'city', 'dateCreated', 'dateModifiedAtLastProvider',
+        'UserOfferers', 'address', 'bic', 'city', 'dateCreated', 'dateModifiedAtLastProvider',
         'firstThumbDominantColor', 'iban', 'id', 'idAtProviders', 'isActive',
         'isValidated', 'lastProviderId', 'managedVenues', 'modelName', 'nOffers',
         'name', 'postalCode', 'siren', 'thumbCount'
