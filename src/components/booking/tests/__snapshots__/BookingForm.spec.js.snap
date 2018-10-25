@@ -3,7 +3,7 @@
 exports[`src | components | pages | search | BookingForm snapshot should match snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
-  Symbol(enzyme.__unrendered__): <EditForm
+  Symbol(enzyme.__unrendered__): <BookingFormWrapper
     className={null}
     errors={Object {}}
     initialValues={null}
