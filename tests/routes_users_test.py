@@ -453,7 +453,7 @@ def test_pro_signup_throws_409_if_offerer_not_validated(app):
     r_signup = req.post(API_URL + '/users/signup',
                         json=data, headers={'origin': 'http://localhost:3000'})
     assert r_signup.status_code == 409
-    assert r_signup.json()['offerer'] == [
+    assert r_signup.json()['siren'] == [
         'Vous ne pouvez pas créer un deuxième compte pour une structure non validée par le pass Culture']
 
 

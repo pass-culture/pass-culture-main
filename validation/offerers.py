@@ -29,6 +29,6 @@ def parse_boolean_param_validated(request):
 def check_offerer_is_validated(offerer):
     if offerer.validationToken:
         error = ConflictError()
-        error.addError('offerer',
+        error.addError('siren',
                        'Vous ne pouvez pas créer un deuxième compte pour une structure non validée par le pass Culture')
         raise error
