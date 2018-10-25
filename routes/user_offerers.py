@@ -1,9 +1,19 @@
 """ user offerers """
 from flask import current_app as app, jsonify, request
-from flask_login import login_required
+from flask_login import current_user, login_required
 
 from models.pc_object import PcObject
 from models.user_offerer import UserOfferer
+from utils.human_ids import dehumanize
+
+@app.route('/userOfferers/<offererId>', methods=['GET'])
+@login_required
+def get_user_offerer(offererId):
+    user_offerer = UserOfferer.query.filter_by(
+        user=current_user,
+        offererId=dehumanize(offererId)
+    )
+    return jsonify(user_offerer), 201
 
 
 @app.route('/userOfferers', methods=['POST'])

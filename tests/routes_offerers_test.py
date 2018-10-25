@@ -12,17 +12,20 @@ from models.pc_object import serialize
 from tests.conftest import clean_database
 from utils.human_ids import dehumanize, humanize
 from utils.test_utils import API_URL, \
-    create_booking, \
-    create_deposit, \
-    create_offerer, \
-    create_stock_with_event_offer, \
-    create_stock_with_thing_offer, \
-    create_user, \
-    create_user_offerer, \
-    create_venue, \
-    req, \
-    req_with_auth, create_stock_from_offer, create_thing_offer, create_event_offer, create_recommendation
-
+                             create_booking, \
+                             create_deposit, \
+                             create_event_offer, \
+                             create_offerer, \
+                             create_recommendation, \
+                             create_stock_from_offer, \
+                             create_stock_with_event_offer, \
+                             create_stock_with_thing_offer, \
+                             create_thing_offer, \
+                             create_user, \
+                             create_user_offerer, \
+                             create_venue, \
+                             req, \
+                             req_with_auth
 
 @pytest.mark.standalone
 def test_get_offerers_should_work_only_when_logged_in():
@@ -31,7 +34,6 @@ def test_get_offerers_should_work_only_when_logged_in():
 
     # then
     assert response.status_code == 401
-
 
 @pytest.mark.standalone
 @clean_database
