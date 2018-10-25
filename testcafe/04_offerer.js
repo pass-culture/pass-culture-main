@@ -54,8 +54,6 @@ test('Je ne peux pas ajouter de nouvelle structure ayant un siren déjà existan
 
     // input
     .typeText(sirenInput, '692 039 514')
-    .typeText(ibanInput, 'FR7630004000031234567890143')
-    .typeText(bicInput, 'BNPAFRPP')
 
   // submit
   await t.click(submitButton)
