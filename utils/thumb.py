@@ -22,7 +22,6 @@ def has_thumb(files, form):
 def read_thumb(files=None, form=None):
     if 'thumb' in files:
         thumb = files['thumb']
-        #print('thumb', thumb)
         filename_parts = thumb.filename.rsplit('.', 1)
         if len(filename_parts) < 2 \
            or filename_parts[1].lower() not in ALLOWED_EXTENSIONS:
