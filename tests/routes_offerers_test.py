@@ -242,7 +242,6 @@ def test_get_offerers_should_return_all_info_of_validated_offerers_if_param_vali
     # then
     assert response.status_code == 200
     assert len(response.json()) == 2
-    print()
     assert list(response.json()[0].keys()) == [
         'address', 'bic', 'city', 'dateCreated', 'dateModifiedAtLastProvider',
         'firstThumbDominantColor', 'iban', 'id', 'idAtProviders', 'isActive',
