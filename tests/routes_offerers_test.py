@@ -32,30 +32,30 @@ def test_get_offerers_should_work_only_when_logged_in():
     # then
     assert response.status_code == 401
 
-
 @pytest.mark.standalone
 @clean_database
 def test_get_offerer_should_return_only_user_offerers_from_current_user(app):
     # given
-    user = create_user(password='p@55sw0rd')
-    user_2 = create_user(password='p@55sw0rd')
-    offerer1 = create_offerer(siren='123456781', name='offreur C')
-    user_offerer1 = create_user_offerer(user, offerer1, validation_token='AZE123')
-    user_offerer2 = create_user_offerer(user, offerer1, validation_token='AZE123')
+    user1 = create_user(email='patrick.fiori@test.com', password='p@55sw0rd')
+    user2 = create_user(email='celine.dion@test.com', password='p@56sw0rd')
+    offerer = create_offerer(siren='123456781')
+    user_offerer1 = create_user_offerer(user1, offerer)
+    user_offerer2 = create_user_offerer(user2, offerer)
     PcObject.check_and_save(user_offerer1, user_offerer2)
 
     # assert
-    assert len(offerer1.users) == 2
+    assert len(offerer.UserOfferers) == 2
 
     # when
-    auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
-    url = API_URL + '/offerers/' + offerer.id
+    auth_request = req_with_auth(email=user1.email, password='p@55sw0rd')
+    url = API_URL + '/offerers/' + humanize(offerer.id)
     response = auth_request.get(url)
 
     # then
+    offerer_dict = response.json()
     assert response.status_code == 200
-    assert len(response.json()[0]['users']) == 1
-    assert response.json()[0]['users'][0]['userId'] == dehumanize(user.id)
+    assert len(offerer_dict['UserOfferers']) == 1
+    assert offerer_dict['UserOfferers'][0]['userId'] == humanize(user1.id)
 
 @pytest.mark.standalone
 @clean_database
