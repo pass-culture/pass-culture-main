@@ -20,7 +20,7 @@ from utils.thumb import has_thumb, get_crop, read_thumb
 def create_mediation():
     api_errors = ApiErrors()
 
-    if not has_thumb():
+    if not has_thumb(files=request.files, form=request.form):
         api_errors.addError('thumb', "Vous devez fournir une image d'accroche")
         return jsonify(api_errors.errors), 400
 
@@ -32,10 +32,15 @@ def create_mediation():
     new_mediation.offerId = dehumanize(request.form['offerId'])
     new_mediation.credit = request.form.get('credit')
     new_mediation.offererId = offerer_id
+
+    # DO THE READ BEFORE SAVING IN CASE WHERE THE THUMB FILE IS WRONG !
+    thumb = read_thumb(files=request.files, form=request.form)
+
+    # SAVE
     PcObject.check_and_save(new_mediation)
 
     try:
-        new_mediation.save_thumb(read_thumb(), 0, crop=get_crop())
+        new_mediation.save_thumb(thumb, 0, crop=get_crop(request.form))
     except ValueError as e:
         logger.error(e)
         api_errors.addError('thumbUrl', "L'adresse saisie n'est pas valide")
