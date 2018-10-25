@@ -1,6 +1,9 @@
+import uuid
+from uuid import UUID
+
 from sqlalchemy import func, distinct
 
-from models import User
+from models import User, UserSession, PcObject
 from models.db import db
 
 
@@ -34,4 +37,4 @@ def find_users_stats_per_department(time_intervall):
             .all()
     else:
         return db.session.query(User.departementCode, func.count(distinct(User.id))).filter(
-            User.canBookFreeOffers == 'true').group_by(User.departementCode).order_by( User.departementCode).all()
+            User.canBookFreeOffers == 'true').group_by(User.departementCode).order_by(User.departementCode).all()

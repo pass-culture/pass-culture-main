@@ -1,4 +1,5 @@
 import pytest
+from flask import session
 
 from models import PcObject
 from models.db import db
@@ -99,7 +100,6 @@ def test_create_venue_returns_201_with_the_newly_created_venue(app):
     user_offerer = create_user_offerer(user, offerer)
     PcObject.check_and_save(user_offerer)
     auth_request = req_with_auth(email=user.email, password=user.clearTextPassword)
-
     venue_data = {
         'name': 'Ma venue',
         'siret': '30255917810045',

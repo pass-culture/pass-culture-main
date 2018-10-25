@@ -23,6 +23,7 @@ from models.thing import Thing
 from models.user import User
 from models.user_offerer import RightsType
 from models.user_offerer import UserOfferer
+from models.user_session import UserSession
 from models.venue import Venue
 from models.venue_provider import VenueProvider
 from models.versioned_mixin import VersionedMixin
@@ -58,5 +59,6 @@ __all__ = (
     'ThingType',
     'UserOfferer',
     'User',
+    'UserSession',
     'Venue'
 )
