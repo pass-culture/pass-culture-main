@@ -163,7 +163,7 @@ elif [[ "$CMD" == "deploy-frontend-webapp" ]] || [[ "$CMD" == "deploy-frontend-p
   if [[ "$?" -gt "0" ]]; then
     GIT_VERSION="$GIT_VERSION*"
   fi
-  sed -i -e "s/##VERSION##/"$GIT_VERSION"/" build/$JSPATH;
+  sed -i -e "s/##LAST_DEPLOYED_COMMIT##/"$GIT_VERSION"/" build/$JSPATH;
 
   netlify deploy -e "$ENV"
 
