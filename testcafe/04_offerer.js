@@ -75,8 +75,6 @@ test('Je rentre une nouvelle structure via son siren', async t => {
 
     // input
     .typeText(sirenInput, '492 475 033')
-    .typeText(ibanInput, 'FR7630004000031234567890143')
-    .typeText(bicInput, 'BNPAFRPP')
 
   // check other completed fields
   await t.expect(nameInput.value).eql('NASKA PROD')
