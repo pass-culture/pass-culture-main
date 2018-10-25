@@ -46,9 +46,7 @@ test('Lorsque je clique sur la flêche suivante, je vois la page suivante du tut
 })
 
 test('Lorsque je clique sur la flêche vers le haut, je vois le verso de la recommendation et je peux la fermer', async t => {
-  await t
-    .navigateTo(ROOT_PATH + 'decouverte/tuto/A9') // eslint-disable-line
-    .wait(1000)
+  await t.navigateTo(`${ROOT_PATH}decouverte/tuto/A9`).wait(1000)
   await t
     .expect(clueDiv.visible)
     .ok()
@@ -65,7 +63,7 @@ fixture
   .skip('O3_03 Découverte | Après connexion | Recommandations')
   .beforeEach(async t => {
     await t.useRole(regularUser)
-    await t.navigateTo(ROOT_PATH + 'decouverte/AH7Q/AU#AM') // eslint-disable-line
+    await t.navigateTo(`${ROOT_PATH}decouverte/AH7Q/AU#AM`)
     // TODO
   })
 
