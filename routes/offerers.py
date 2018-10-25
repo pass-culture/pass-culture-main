@@ -28,10 +28,11 @@ def resolve_offerer_with_filtered_current_user_offerer(offerer, options):
     if not current_user.is_authenticated:
         return offerer
     humanized_current_user_id = humanize(current_user.id)
-    offerer['UserOfferers'] = [
-        user_offerer for user_offerer in offerer['UserOfferers']
-        if user_offerer['userId'] == humanized_current_user_id
-    ]
+    if 'UserOfferers' in offerer:
+        offerer['UserOfferers'] = [
+            user_offerer for user_offerer in offerer['UserOfferers']
+            if user_offerer['userId'] == humanized_current_user_id
+        ]
     return offerer
 
 def get_dict_offerer(offerer):
