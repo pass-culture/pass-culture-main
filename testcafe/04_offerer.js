@@ -88,28 +88,6 @@ test('Je rentre une nouvelle structure via son siren', async t => {
   await t.expect(location.pathname).eql('/structures')
 })
 
-test('Je rentre une nouvelle structure via son siren', async t => {
-  // navigation
-  let location = await t.eval(() => window.location)
-  await t
-    .expect(location.pathname)
-    .eql('/structures/nouveau')
-
-    // input
-    .typeText(sirenInput, '492 475 033')
-
-  // check other completed fields
-  await t.expect(nameInput.value).eql('NASKA PROD')
-  await t.expect(adressInput.value).eql('167 QUAI DE VALMY')
-
-  // submit
-  await t.click(submitButton)
-
-  // check location success change
-  location = await t.eval(() => window.location)
-  await t.expect(location.pathname).eql('/structures')
-})
-
 test.skip('J edit une structure pour lui ajouter ses coordonnées bancaires car je suis admin', async t => {
   // navigation
   let location = await t.eval(() => window.location)
