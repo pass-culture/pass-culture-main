@@ -57,7 +57,6 @@ class MediationPage extends Component {
     !offer &&
       dispatch(
         requestData('GET', `offers/${offerId}`, {
-          key: 'offers',
           normalizer: offerNormalizer,
         })
       )
@@ -66,13 +65,26 @@ class MediationPage extends Component {
         requestData('GET', `mediations/${mediationId}`, {
           handleSuccess,
           handleFail,
-          key: 'mediations',
           normalizer: mediationNormalizer,
         })
       )
       return
     }
     handleSuccess()
+  }
+
+  handleFailData = (state, action) => {
+    const { dispatch, history, offer } = this.props
+
+    this.setState({ isLoading: false }, () => {
+      history.push(`/offres/${offer.id}`)
+      dispatch(
+        showNotification({
+          text: get(action, 'errors.thumb[0]'),
+          type: 'fail',
+        })
+      )
+    })
   }
 
   handleSuccessData = (state, action) => {
@@ -198,6 +210,7 @@ class MediationPage extends Component {
         {
           body,
           encode: 'multipart/form-data',
+          handleFail: this.handleFailData,
           handleSuccess: this.handleSuccessData,
           key: 'mediations',
         }

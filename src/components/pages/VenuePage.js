@@ -11,7 +11,7 @@ import {
   SubmitButton,
   withLogin,
 } from 'pass-culture-shared'
-import React, { Component, Fragment } from 'react'
+import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { NavLink, withRouter } from 'react-router-dom'
 import { compose } from 'redux'
@@ -20,6 +20,7 @@ import HeroSection from '../layout/HeroSection'
 import Main from '../layout/Main'
 import VenueProvidersManager from '../managers/VenueProvidersManager'
 import offererSelector from '../../selectors/offerer'
+import selectUserOffererByOffererIdAndUserIdAndRightsType from '../../selectors/selectUserOffererByOffererIdAndUserIdAndRightsType'
 import selectVenuePatchByVenueIdByOffererId from '../../selectors/selectVenuePatchByVenueIdByOffererId'
 import { offererNormalizer, venueNormalizer } from '../../utils/normalizers'
 
@@ -44,6 +45,7 @@ class VenuePage extends Component {
     const isNew = venueId === 'nouveau'
     const isReadOnly = !isNew && !isEdit
     return {
+      isEdit,
       isNew,
       isReadOnly,
     }
@@ -68,10 +70,11 @@ class VenuePage extends Component {
             })
           },
           handleFail,
-          key: 'offerers',
           normalizer: offererNormalizer,
         })
       )
+
+      dispatch(requestData('GET', `userOfferers/${offererId}`))
     } else {
       return handleSuccess()
     }
@@ -122,6 +125,7 @@ class VenuePage extends Component {
 
   render() {
     const {
+      adminUserOfferer,
       formGeo,
       formLatitude,
       formLongitude,
@@ -133,22 +137,24 @@ class VenuePage extends Component {
       offerer,
       venuePatch,
     } = this.props
-    const { isNew, isReadOnly } = this.state
+    const { isEdit, isNew, isReadOnly } = this.state
 
     const savedVenueId = get(venuePatch, 'id')
-    // TODO: offerer should provide a offerer.userRight
-    // to determine if it can edit iban stuff
-    // let s make false for now
+
     const hasAlreadyRibUploaded =
       get(venuePatch, 'iban') && get(venuePatch, 'thumbCount')
-    const isRibEditable = !isReadOnly && false
+    const areBankInfosReadOnly = isReadOnly || !adminUserOfferer
     const isSiretReadOnly = get(venuePatch, 'siret')
     const isSiretSkipping = !venueId && name && !formSire
-    const isReadOnlyFromGeoOrSiren = formGeo || formSire
+    const isFieldReadOnlyBecauseFrozenFromSiret =
+      isReadOnly || formSire || (isEdit && get(venuePatch, 'siret'))
+    const isReadOnlyFromGeoOrSiren =
+      formGeo || isFieldReadOnlyBecauseFrozenFromSiret
+
     const isLatitudeReadOnlyFromGeoOrSiren =
-      formGeo || (formSire && formLatitude)
+      formGeo || (isFieldReadOnlyBecauseFrozenFromSiret && formLatitude)
     const isLongitudeReadOnlyFromGeoOrSiren =
-      formGeo || (formSire && formLongitude)
+      formGeo || (isFieldReadOnlyBecauseFrozenFromSiret && formLongitude)
 
     return (
       <Main
@@ -193,10 +199,13 @@ class VenuePage extends Component {
             <div className="section">
               <h2 className="main-list-title is-relative">
                 IDENTIFIANTS
-                <span className="is-pulled-right is-size-7 has-text-grey">
-                  Les champs marqués d'un{' '}
-                  <span className="required-legend"> * </span> sont obligatoires
-                </span>
+                {!isReadOnly && (
+                  <span className="is-pulled-right is-size-7 has-text-grey">
+                    Les champs marqués d'un{' '}
+                    <span className="required-legend"> * </span> sont
+                    obligatoires
+                  </span>
+                )}
               </h2>
               <div className="field-group">
                 <Field
@@ -205,51 +214,74 @@ class VenuePage extends Component {
                   name="siret"
                   readOnly={isSiretReadOnly}
                   required={!this.props.formComment}
-                  renderInfo={() =>
-                    !isSiretReadOnly && (
-                      <span
-                        className="button"
-                        data-place="bottom"
-                        data-tip="<div><p>Saisissez ici le SIRET du lieu lié à votre structure pour retrouver ses informations automatiquement.</p>
+                  renderInfo={() => {
+                    if (isReadOnly) {
+                      return
+                    }
+                    if (isFieldReadOnlyBecauseFrozenFromSiret) {
+                      return (
+                        <span
+                          className="button"
+                          data-place="bottom"
+                          data-tip="<p>Il n'est pas possible de modifier le nom, l'addresse et la géolocalisation du lieu quand un siret est rentré.</p>"
+                          data-type="info">
+                          <Icon svg="picto-info" />
+                        </span>
+                      )
+                    }
+                    return (
+                      !isSiretReadOnly && (
+                        <span
+                          className="button"
+                          data-place="bottom"
+                          data-tip="<div><p>Saisissez ici le SIRET du lieu lié à votre structure pour retrouver ses informations automatiquement.</p>
 <p>Si les informations ne correspondent pas au SIRET saisi, <a href='mailto:pass@culture.gouv.fr?subject=Question%20SIRET'> contactez notre équipe</a>.</p></div>"
-                        data-type="info">
-                        <Icon svg="picto-info" />
-                      </span>
+                          data-type="info">
+                          <Icon svg="picto-info" />
+                        </span>
+                      )
                     )
-                  }
+                  }}
                   type="siret"
                 />
                 <Field
                   isExpanded
                   label="Nom"
                   name="name"
-                  readOnly={formSire}
+                  readOnly={isFieldReadOnlyBecauseFrozenFromSiret}
                   required
                 />
                 <Field
                   label="E-mail"
                   name="bookingEmail"
                   required
-                  renderInfo={() =>
-                    !isSiretReadOnly && (
-                      <span
-                        className="button"
-                        data-tip="<p>Cette adresse recevra les e-mails de notification de réservation (sauf si une autre adresse différente est saisie lors de la création d'une offre)</p>"
-                        data-place="bottom"
-                        data-type="info">
-                        <Icon svg="picto-info" />
-                      </span>
+                  renderInfo={() => {
+                    if (isReadOnly) {
+                      return
+                    }
+                    return (
+                      !isSiretReadOnly && (
+                        <span
+                          className="button"
+                          data-tip="<p>Cette adresse recevra les e-mails de notification de réservation (sauf si une autre adresse différente est saisie lors de la création d'une offre)</p>"
+                          data-place="bottom"
+                          data-type="info">
+                          <Icon svg="picto-info" />
+                        </span>
+                      )
                     )
-                  }
+                  }}
                   type="email"
                 />
-                <Field
-                  label="Commentaire (si pas de SIRET)"
-                  name="comment"
-                  readOnly={formSire}
-                  type="textarea"
-                  required={!this.props.formSiret}
-                />
+                {(isNew || (isEdit && !isSiretReadOnly)) && (
+                  <Field
+                    label="Commentaire (si pas de SIRET)"
+                    name="comment"
+                    readOnly={formSire}
+                    type="textarea"
+                    required={!this.props.formSiret}
+                  />
+                )}
               </div>
             </div>
 
@@ -257,29 +289,22 @@ class VenuePage extends Component {
               <h2 className="main-list-title">
                 INFORMATIONS BANCAIRES
                 <span className="is-pulled-right is-size-7 has-text-grey">
-                  {isRibEditable ? (
-                    <Fragment>
-                      Les champs marqués d'un{' '}
-                      <span className="required-legend"> * </span> sont
-                      obligatoires
-                    </Fragment>
-                  ) : (
-                    "Vous avez besoin d'être administrateur de la structure pour editer le rib et l'iban."
-                  )}
+                  {!adminUserOfferer &&
+                    "Vous avez besoin d'être administrateur de la structure pour editer ces informations."}
                 </span>
               </h2>
               <div className="field-group">
                 <Field
                   label="BIC"
                   name="bic"
-                  readOnly={!isRibEditable}
+                  readOnly={areBankInfosReadOnly}
                   type="bic"
                 />
                 <Field
                   isExpanded
                   label="IBAN"
                   name="iban"
-                  readOnly={!isRibEditable}
+                  readOnly={areBankInfosReadOnly}
                   type="iban"
                 />
                 {false && (
@@ -287,7 +312,7 @@ class VenuePage extends Component {
                     isExpanded
                     label="Justificatif"
                     name="rib"
-                    readOnly={isReadOnly || !isRibEditable}
+                    readOnly={isReadOnly || areBankInfosReadOnly}
                     uploaded={hasAlreadyRibUploaded}
                     type="file"
                   />
@@ -304,7 +329,7 @@ class VenuePage extends Component {
                   latitude={formLatitude}
                   longitude={formLongitude}
                   name="address"
-                  readOnly={formSire}
+                  readOnly={isFieldReadOnlyBecauseFrozenFromSiret}
                   required
                   type="geo"
                   withMap
@@ -404,7 +429,14 @@ class VenuePage extends Component {
 
 function mapStateToProps(state, ownProps) {
   const { offererId, venueId } = ownProps.match.params
+  const { id: userId } = state.user || {}
   return {
+    adminUserOfferer: selectUserOffererByOffererIdAndUserIdAndRightsType(
+      state,
+      offererId,
+      userId,
+      'admin'
+    ),
     formGeo: get(state, 'form.venue.geo'),
     formLatitude: get(state, 'form.venue.latitude'),
     formLongitude: get(state, 'form.venue.longitude'),
