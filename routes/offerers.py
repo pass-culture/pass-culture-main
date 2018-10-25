@@ -1,5 +1,4 @@
 """ offerers """
-from datetime import datetime
 
 from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
@@ -24,22 +23,8 @@ from utils.rest import ensure_current_user_has_rights, \
 from utils.search import get_keywords_filter
 from validation.offerers import check_valid_edition, parse_boolean_param_validated
 
-def resolve_offerer_with_filtered_current_user_offerer(offerer, options):
-    if not current_user.is_authenticated:
-        return offerer
-    humanized_current_user_id = humanize(current_user.id)
-    if 'UserOfferers' in offerer:
-        offerer['UserOfferers'] = [
-            user_offerer for user_offerer in offerer['UserOfferers']
-            if user_offerer['userId'] == humanized_current_user_id
-        ]
-    return offerer
-
 def get_dict_offerer(offerer):
-    return offerer._asdict(
-        include=OFFERER_INCLUDES,
-        resolve=resolve_offerer_with_filtered_current_user_offerer
-    )
+    return offerer._asdict(include=OFFERER_INCLUDES)
 
 @app.route('/offerers', methods=['GET'])
 @login_required
@@ -63,7 +48,6 @@ def list_offerers():
                                 order_by=Offerer.name,
                                 page=request.args.get('page'),
                                 paginate=10,
-                                resolve=resolve_offerer_with_filtered_current_user_offerer,
                                 query=query)
 
 

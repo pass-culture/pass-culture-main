@@ -12,17 +12,20 @@ from models.pc_object import serialize
 from tests.conftest import clean_database
 from utils.human_ids import dehumanize, humanize
 from utils.test_utils import API_URL, \
-    create_booking, \
-    create_deposit, \
-    create_offerer, \
-    create_stock_with_event_offer, \
-    create_stock_with_thing_offer, \
-    create_user, \
-    create_user_offerer, \
-    create_venue, \
-    req, \
-    req_with_auth, create_stock_from_offer, create_thing_offer, create_event_offer, create_recommendation
-
+                             create_booking, \
+                             create_deposit, \
+                             create_event_offer, \
+                             create_offerer, \
+                             create_recommendation, \
+                             create_stock_from_offer, \
+                             create_stock_with_event_offer, \
+                             create_stock_with_thing_offer, \
+                             create_thing_offer, \
+                             create_user, \
+                             create_user_offerer, \
+                             create_venue, \
+                             req, \
+                             req_with_auth
 
 @pytest.mark.standalone
 def test_get_offerers_should_work_only_when_logged_in():
@@ -31,31 +34,6 @@ def test_get_offerers_should_work_only_when_logged_in():
 
     # then
     assert response.status_code == 401
-
-@pytest.mark.standalone
-@clean_database
-def test_get_offerer_should_return_only_user_offerers_from_current_user(app):
-    # given
-    user1 = create_user(email='patrick.fiori@test.com', password='p@55sw0rd')
-    user2 = create_user(email='celine.dion@test.com', password='p@56sw0rd')
-    offerer = create_offerer(siren='123456781')
-    user_offerer1 = create_user_offerer(user1, offerer)
-    user_offerer2 = create_user_offerer(user2, offerer)
-    PcObject.check_and_save(user_offerer1, user_offerer2)
-
-    # assert
-    assert len(offerer.UserOfferers) == 2
-
-    # when
-    auth_request = req_with_auth(email=user1.email, password='p@55sw0rd')
-    url = API_URL + '/offerers/' + humanize(offerer.id)
-    response = auth_request.get(url)
-
-    # then
-    offerer_dict = response.json()
-    assert response.status_code == 200
-    assert len(offerer_dict['UserOfferers']) == 1
-    assert offerer_dict['UserOfferers'][0]['userId'] == humanize(user1.id)
 
 @pytest.mark.standalone
 @clean_database
@@ -168,10 +146,10 @@ def test_get_offerers_should_return_all_info_of_all_offerers_if_current_user_is_
     # then
     assert response.status_code == 200
     assert list(response.json()[0].keys()) == [
-        'UserOfferers', 'address', 'bic', 'city', 'dateCreated', 'dateModifiedAtLastProvider',
+        'address', 'bic', 'city', 'dateCreated', 'dateModifiedAtLastProvider',
         'firstThumbDominantColor', 'iban', 'id', 'idAtProviders', 'isActive',
         'isValidated', 'lastProviderId', 'managedVenues', 'modelName', 'nOffers',
-        'name', 'postalCode', 'siren', 'thumbCount' 
+        'name', 'postalCode', 'siren', 'thumbCount'
     ]
 
 
@@ -266,7 +244,7 @@ def test_get_offerers_should_return_all_info_of_validated_offerers_if_param_vali
     assert len(response.json()) == 2
     print()
     assert list(response.json()[0].keys()) == [
-        'UserOfferers', 'address', 'bic', 'city', 'dateCreated', 'dateModifiedAtLastProvider',
+        'address', 'bic', 'city', 'dateCreated', 'dateModifiedAtLastProvider',
         'firstThumbDominantColor', 'iban', 'id', 'idAtProviders', 'isActive',
         'isValidated', 'lastProviderId', 'managedVenues', 'modelName', 'nOffers',
         'name', 'postalCode', 'siren', 'thumbCount'
