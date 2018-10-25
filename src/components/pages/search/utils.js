@@ -21,6 +21,25 @@ export const INITIAL_FILTER_PARAMS = {
   longitude: null,
 }
 
+export const TODAY_DATE = moment()
+
+export const DAYS_CHECKBOXES = [
+  {
+    label: 'Tout de suite !',
+    value: '0-1',
+  },
+  {
+    label: 'Entre 1 et 5 jours',
+    value: '1-5',
+  },
+  {
+    label: 'Plus de 5 jours',
+    // will the pass culture live for ever?
+    // guess that 273 years are enough
+    value: '5-100000',
+  },
+]
+
 export const isSearchFiltersAdded = (initialParams, filterParams) =>
   Object.keys(initialParams).every(
     key =>

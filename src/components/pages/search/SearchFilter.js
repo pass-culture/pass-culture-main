@@ -36,6 +36,7 @@ class SearchFilter extends Component {
       add: this.handleQueryAdd,
       change: this.handleQueryChange,
       remove: this.handleQueryRemove,
+      replace: this.handleQueryReplace,
     }
   }
 
@@ -78,6 +79,7 @@ class SearchFilter extends Component {
   handleQueryChange = (newValue, callback) => {
     const { pagination } = this.props
     const { query } = this.state
+
     const nextFilterParams = Object.assign({}, query, newValue)
     const isNew = getFirstChangingKey(pagination.windowQuery, newValue)
 
@@ -134,6 +136,7 @@ class SearchFilter extends Component {
               <FilterByDates
                 filterActions={this.filterActions}
                 filterState={this.state}
+                pagination={this.pagination}
                 title="QUAND"
               />
               <FilterByDistance

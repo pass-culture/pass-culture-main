@@ -93,6 +93,8 @@ class SearchPage extends PureComponent {
     pagination.change(
       {
         categories: null,
+        date: null,
+        jours: null,
         'mots-cles': null,
       },
       {

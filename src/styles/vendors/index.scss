@@ -5,8 +5,11 @@
 @import '~bulma/sass/grid/_all';
 @import '~bulma/sass/layout/_all';
 
+
 // overrides
 @import './bulma-with-overrides.scss';
+
+@import '~react-datepicker/src/stylesheets/datepicker';
 
 // quick fix Bulma removed from shared
 // .list {
