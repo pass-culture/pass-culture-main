@@ -20,7 +20,7 @@ from utils.thumb import has_thumb, get_crop, read_thumb
 def create_mediation():
     api_errors = ApiErrors()
 
-    if not has_thumb():
+    if not has_thumb(files=request.files, form=request.form):
         api_errors.addError('thumb', "Vous devez fournir une image d'accroche")
         return jsonify(api_errors.errors), 400
 
