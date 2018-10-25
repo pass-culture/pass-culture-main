@@ -6,31 +6,32 @@ import { Link } from 'react-router-dom'
 
 import { FormFooterObject } from '../../../types'
 
-const renderSubmitButton = obj => (
+const renderSubmitButton = cancel => (
   <button
     id="signin-submit-button"
     type="submit"
-    disabled={obj.disabled}
-    className={`flex-1  ${obj.className || ''}`}
+    disabled={cancel.disabled}
+    className={`flex-1  ${cancel.className || ''}`}
   >
-    <span className="is-block">{obj.label}</span>
+    <span className="is-block">{cancel.label}</span>
   </button>
 )
 
-const renderLinkButton = obj => (
+const renderLinkButton = submit => (
   <Link
     id="signin-signup-button"
-    to={obj.url}
-    disabled={obj.disabled}
-    className={`flex-1  ${obj.className || ''}`}
+    to={submit.url}
+    disabled={submit.disabled}
+    className={`flex-1  ${submit.className || ''}`}
   >
-    <span className="is-block">{obj.label}</span>
+    <span className="is-block">{submit.label}</span>
   </Link>
 )
 
 class FormFooter extends React.PureComponent {
   render() {
     const { cancel, className, submit } = this.props
+
     return (
       <footer
         className={`pc-final-form-footer dotted-top-2x-white py7 flex-0 flex-columns text-center items-center fs20 ${className}`}
