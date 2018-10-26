@@ -1,5 +1,4 @@
-import { Icon } from 'pass-culture-shared'
-import React, { Fragment } from 'react'
+import React from 'react'
 import { formatSiren } from '../../../utils/string'
 
 const PendingOffererItem = ({ offerer }) => (
