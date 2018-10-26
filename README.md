@@ -76,20 +76,6 @@ Si vous voulez juste enlever les recommandations et bookings crées en dev par v
 ./pc reset-reco-db
 ```
 
-### Dump Prod To Staging
-
-ssh to the prod server
-```bash
-cd ~/pass-culture-main && ./pc dump-prod-db-to-staging
-```
-
-Then connect to the staging server:
-```bash
-cd ~/pass-culture-main
-cat "../dumps_prod/2018_<TBD>_<TBD>.pgdump" docker exec -i docker ps | grep postgres | cut -d" " -f 1 pg_restore -d pass_culture -U pass_culture -c -vvvv
-./pc update-db
-./pc sandbox --name=webapp
-```
 
 ### Migrate
 
@@ -119,6 +105,149 @@ Exemple d'une commande test en dev sur chrome pour un fichier test particulier:
 ```bash
 ./pc test-cafe-pro -b chrome:headless -f signup.js
 ```
+
+
+
+## Deploy
+
+### FRONTEND WEB
+
+Pour déployer une nouvelle version web, par exemple en staging:
+**(Attention de ne pas déployer sur la prod sans authorisation !)**
+```bash
+rm -rf node_modules
+yarn install
+yarn version
+./pc -e staging deploy-frontend-webapp
+```
+Et pour pro sur staging, il suffit de remplacer la dernière commande par celle-ci:
+
+```bash
+./pc -e staging deploy-frontend-pro
+```
+
+### BACKEND
+
+Pour déployer une nouvelle version de l'API, par exemple en staging:
+**(Attention de ne pas déployer sur la prod sans authorisation !)**
+```bash
+git checkout master
+git pull -r
+git tag 'v.X.Y.Z'
+./pc -e staging deploy-backend
+```
+
+## Administration
+
+### Connexion à la base postgreSQL d'un environnement
+
+Par exemple, pour l'environnement staging :
+
+```bash
+./pc -e staging psql
+```
+
+### Connexion à en ligne de commande python à un environnement
+
+Par exemple, pour l'environnement staging :
+
+```bash
+./pc -e staging python
+```
+
+### Gestion des objects storage OVH
+
+Pour toutes les commandes suivantes, vous devez disposer des secrets de connexion.
+
+
+Pour lister le contenu d'un conteneur sépcific :
+
+```bash
+./pc list_content --container=storage-pc-staging
+```
+
+Pour savoir si une image existe au sein d'un conteneur :
+
+```bash
+./pc does_file_exist --container=storage-pc-staging --file="thumbs/venues/SM"
+```
+
+Pour supprimer une image au sein d'un conteneur :
+
+```bash
+./pc delete_file --container=storage-pc-staging --file="thumbs/venues/SM"
+```
+
+Pour faire un backup de tous les fichiers du conteneur de production vers un dossier local :
+
+```bash
+./pc backup_prod_object_storage --container=storage-pc --folder="~/backup-images-prod"
+```
+
+Pour copier tous les fichiers du conteneur de production vers le conteneur d'un autre environnement :
+
+```bash
+./pc copy_prod_container_content_to_dest_container --container=storage-pc-staging
+```
+
+
+## Gestion OVH
+
+#### CREDENTIALS
+
+Vérifier déjà que l'un des admins (comme @arnoo) a enregistré votre adresse ip FIXE (comment savoir son adress ip? http://www.whatsmyip.org/)
+
+#### Se connecter à la machine OVH
+
+```bash
+./pc -e production ssh
+```
+
+### Dump Prod To Staging
+
+ssh to the prod server
+```bash
+cd ~/pass-culture-main && ./pc dump-prod-db-to-staging
+```
+
+Then connect to the staging server:
+```bash
+cd ~/pass-culture-main
+cat "../dumps_prod/2018_<TBD>_<TBD>.pgdump" docker exec -i docker ps | grep postgres | cut -d" " -f 1 pg_restore -d pass_culture -U pass_culture -c -vvvv
+./pc update-db
+./pc sandbox --name=webapp
+```
+
+
+### Updater le dossier private
+
+Renseigner la variable d'environnement PC_GPG_PRIVATE.
+Puis lancer la commande suivante :
+
+```bash
+./pc install-private
+```
+
+#### Updater la db
+Une fois connecté:
+```
+cd /home/deploy/pass-culture-main/ && pc update-db
+```
+
+#### Note pour une premiere configuration HTTPS (pour un premier build)
+
+Pour obtenir un certificat et le mettre dans le nginx (remplacer <domaine> par le domaine souhaité, qui doit pointer vers la machine hébergeant les docker)
+```bash
+docker run -it --rm -v ~/pass-culture-main/certs:/etc/letsencrypt -v ~/pass-culture-main/certs-data:/data/letsencrypt deliverous/certbot certonly --verbose --webroot --webroot-path=/data/letsencrypt -d <domaine>
+```
+
+Puis mettre dans le crontab pour le renouvellement :
+```bash
+docker run -it --rm -v ~/pass-culture-main/certs:/etc/letsencrypt -v ~/pass-culture-main/certs-data:/data/letsencrypt deliverous/certbot renew --verbose --webroot --webroot-path=/data/letsencrypt
+```
+
+
+## Version mobile (outdated)
 
 ### Emuler avec Cordova
 
@@ -174,81 +303,9 @@ Ensuite il faut lancer l'application configurée avec ces tunnels:
 
 Vous pourrez alors utiliser l'url ngrok webapp pour dans votre navigateur android.
 
-
-## Deploy
-
-### FRONTEND WEB
-
-Pour déployer une nouvelle version web, par exemple en staging:
-**(Attention de ne pas déployer sur la prod sans authorisation !)**
-```bash
-./pc -e staging deploy-frontend
-```
-
-### FRONTEND MOBILE
+### Déployer le FRONTEND MOBILE
 
 Pour déployer une nouvelle version phonegap (par default c'est en staging)
 ```bash
 ./pc build-pg
-```
-
-### BACKEND
-
-#### CREDENTIALS
-
-Vérifier déjà que l'un des admins (comme @arnoo) a enregistré votre adresse ip FIXE (comment savoir son adress ip? http://www.whatsmyip.org/)
-
-#### Se connecter à la machine
-
-```bash
-./pc -e staging ssh
-```
-
-#### Accéder aux runs
-
-Une fois connecté:
-
-```bash
-screen -ls
-```
-
-Pour savoir le screen où se passe le serveur. Et alors:
-```bash
-screen -r <id session>
-```
-
-Dans ce screen, vous pouvez faire un contrôle d pour killer le process, puis n'importe quelle commande pc pour relancer les processes.
-
-#### Updater le code
-
-Une fois connecté:
-```bash
-cd /home/deploy/pass-culture-main/ && pc update-code
-```
-
-### Updater le dossier private
-
-Renseigner la variable d'environnement PC_GPG_PRIVATE.
-Puis lancer la commande suivante :
-
-```bash
-./pc install-private
-```
-
-#### Updater la db
-Une fois connecté:
-```
-cd /home/deploy/pass-culture-main/ && pc update-db
-```
-
-#### Note pour une premiere configuration HTTPS (pour un premier build)
-
-Pour obtenir un certificat et le mettre dans le nginx (remplacer <domaine> par le domaine souhaité, qui doit pointer vers la machine hébergeant les docker)
-```bash
-docker run -it --rm -v ~/pass-culture-main/certs:/etc/letsencrypt -v ~/pass-culture-main/certs-data:/data/letsencrypt deliverous/certbot certonly --verbose --webroot --webroot-path=/data/letsencrypt -d <domaine>
-```
-
-Puis mettre dans le crontab pour le renouvellement :
-```bash
-docker run -it --rm -v ~/pass-culture-main/certs:/etc/letsencrypt -v ~/pass-culture-main/certs-data:/data/letsencrypt deliverous/certbot renew --verbose --webroot --webroot-path=/data/letsencrypt
 ```
