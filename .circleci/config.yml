@@ -28,7 +28,7 @@ jobs:
             export PATH=$NVM_BIN:$PATH
             cd ~/pass-culture-main/webapp
             yarn install
-            yarn test
+            yarn test:unit
       - run:
           name: Install dockerize
           command: |
@@ -72,7 +72,7 @@ jobs:
             export NVM_BIN=/usr/bin/nodejs
             export PATH=$NVM_BIN:$PATH
             cd ~/pass-culture-main/webapp
-            yarn testcafe
+            yarn test:cafe
 
   deploy:
     docker:

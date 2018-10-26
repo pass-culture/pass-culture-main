@@ -132,6 +132,7 @@
   },
   "scripts": {
     "analyze": "source-map-explorer build/static/js/main.*",
+    "prebuild": "yarn fontello",
     "build": "node scripts/build.js",
     "fontello": "./scripts/fontello.sh",
     "ngrok": "ngrok start -config=./ngrok.yml --all",
@@ -140,9 +141,8 @@
     "precommit": "./scripts/precommit.sh",
     "prettier": "$(yarn bin)/prettier --write 'src/**/*.js'",
     "start": "node scripts/start.js",
-    "testcafe": "testcafe 'chrome:headless' testcafe",
-    "test": "jest --env=jsdom",
-    "spec": "jest --env=jsdom --watchAll",
+    "test:cafe": "testcafe 'chrome:headless' testcafe",
+    "test:unit": "jest --env=jsdom",
     "symlink-shared": "if [ -d \"../shared\" ]; then cd node_modules && rm -rf pass-culture-shared && ln -sf ../../shared pass-culture-shared && cd ../../shared && yarn run compile; fi"
   }
 }
