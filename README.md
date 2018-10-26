@@ -20,31 +20,53 @@ Les variables disponibles pour l'application sont décrites dans le fichier `src
 
 ## Tests
 
-#### Jest Specs
+#### Tests Unitaires (Jest/Enzyme)
+
+Lancer tous les tests
+```bash
+yarn test:unit
+# Lancer les tests unitaires en local en mode rafraichissement auto
+# yarn test:unit --watchAll
+```
 
 Lancer un seul fichier en mode watch
-```
+```bash
 ./node_modules/.bin/jest --env=jsdom ./path/to/file.spec.js --watch
 ```
 
-#### Testcafe
+#### Tests Fonctionnels (Testcafe)
+
+Lancer tous les tests
+```bash
+yarn test:cafe
+```
 
 Lancer un seul fichier en ligne de commande depuis un environnement local
-```
+```bash
 ./node_modules/.bin/testcafe chrome ./testcafe/02_signin.js --env=local
 ```
 
 ## Upgrade de la version
 
+La commande `yarn version` va créée un nouveau commit de version, un nouveau tag et la version sera mise à jour sur la page Mentions Légales
 ```bash
 yarn version
-# yarn version --new-version 0.2.1
+# yarn version --new-version x.x.x
 ```
 
-## Update de la font icon
+## Font Icons (Fontello)
+
+#### Ajout d'icones
 
 - Ouvrir le site [Fontello.com](https://fontello.com)
 - Glisser/Déposer le fichier `public/static/fontello/config.json` dans la page du navigateur
 - Ajouter une/des icônes
 - Cliquer sur `Download webfont (n)`
 - Remplacer et committer le fichier `public/static/fontello/config.json`
+
+#### Mise à jour
+
+La commande ci-dessous permet de mettre à jour le dossier dans `public/static/fontello` avec la dernière configuration à jour
+```bash
+yarn fontello
+```
