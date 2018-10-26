@@ -32,6 +32,7 @@ yarn test:unit
 Lancer un seul fichier en mode watch
 ```bash
 ./node_modules/.bin/jest --env=jsdom ./path/to/file.spec.js --watch
+# yarn test:unit ./path/to/file.spec.js --watch
 ```
 
 #### Tests Fonctionnels (Testcafe)
