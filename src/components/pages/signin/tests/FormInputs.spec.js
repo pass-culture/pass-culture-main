@@ -1,16 +1,16 @@
 import React from 'react'
 import { shallow } from 'enzyme'
 
-import FormHeader from '../FormHeader'
+import FormInputs from '../FormInputs'
 
-describe('src | components | pages | signin | FormHeader', () => {
+describe('src | components | pages | signin | FormInputs', () => {
   describe('snapshot', () => {
     it('should match snapshot', () => {
       // given
       const props = {}
 
       // when
-      const wrapper = shallow(<FormHeader {...props} />)
+      const wrapper = shallow(<FormInputs {...props} />)
 
       // then
       expect(wrapper).toBeDefined()
