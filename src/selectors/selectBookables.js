@@ -8,9 +8,6 @@ import createCachedSelector from 're-reselect'
 import { pipe } from '../utils/functionnals'
 import { filterAvailableStocks } from '../helpers/filterAvailableStocks'
 
-// eslint-disable-next-line
-const { assert } = require('chai')
-
 const MODIFIER_STRING_ID = 'selectBookables'
 
 // ajoute une 'id' dans l'objet pour indiquer
