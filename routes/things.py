@@ -11,6 +11,7 @@ from utils.rest import expect_json_data, \
     load_or_404, \
     login_or_api_key_required, \
     handle_rest_get_list
+from validation.url import is_url_safe
 
 
 @app.route('/things/<ofType>:<identifier>', methods=['GET'])
@@ -40,6 +41,7 @@ def post_thing():
     offer.venueId = dehumanize(request.json['venueId'])
     offer.thing = thing
     if thing.url:
+        is_url_safe(thing.url)
         thing.isNational = True
     PcObject.check_and_save(thing, offer)
     return jsonify(thing._asdict(
@@ -55,6 +57,7 @@ def post_thing():
 def patch_thing(id):
     thing = load_or_404(Thing, id)
     thing.populateFromDict(request.json)
+    is_url_safe(thing.url)
     PcObject.check_and_save(thing)
     return jsonify(
         thing._asdict(
