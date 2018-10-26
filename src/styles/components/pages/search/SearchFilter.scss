@@ -143,3 +143,22 @@
   height: 1.1875em;
   border-radius: 0;
 }
+
+.react-datepicker {
+  border: green;
+  background-color: yellow;
+
+}
+
+div.react-datepicker-popper.search-by-dates {
+  background-color: green;
+  z-index: 12000;
+  overflow: visible;
+  border: red;
+
+  input {
+    width: 100px;
+    background-color: none;
+    border: 1px solid green;
+  }
+}

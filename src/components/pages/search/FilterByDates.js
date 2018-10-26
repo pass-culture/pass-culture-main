@@ -51,30 +51,7 @@ class FilterByDates extends PureComponent {
           {title}
         </h2>
         {/* FIXME: le scroll sous ios est pas terrible
-        du fait que le input soit cliquable */}
-
-        {/* ********** DATE PICKER ********** */}
-        <div className="input is-small date-picker">
-          <span>
-            <DatePicker
-              dateFormat="DD/MM/YYYY"
-              id="pick-by-date-filter"
-              minDate={TODAY_DATE}
-              onChange={this.onPickedDateChange}
-              popperPlacement="bottom-start"
-              selected={queriedDate}
-              placeholderText="Par date..."
-            />
-          </span>
-          <span className="icon">
-            <Icon
-              alt="Choisissez une date dans le calendrier"
-              className="input-icon"
-              svg="dropdown-disclosure-down"
-            />
-          </span>
-        </div>
-        {/* ********** END DATE PICKER ********** */}
+          du fait que le input soit cliquable */}
 
         <div className="pc-scroll-horizontal is-relative is-full-width pb18">
           <div className="pc-list flex-columns pl18 pr18">
@@ -102,7 +79,47 @@ class FilterByDates extends PureComponent {
                 </label>
               )
             })}
+
+            {/* ********** DATE PICKER ********** */}
+            <div className="ml17 pr22">
+              <div className="input date-picker py5 pl7 ">
+                <span>
+                  <DatePicker
+                    dateFormat="DD/MM/YYYY"
+                    locale="fr"
+                    id="pick-by-date-filter"
+                    isClearable
+                    minDate={TODAY_DATE}
+                    onChange={this.onPickedDateChange}
+                    // popperPlacement="bottom-start"
+                    selected={queriedDate}
+                    placeholderText="Par date..."
+                    popperPlacement="top-end"
+                    popperClassName="search-by-dates"
+                    popperModifiers={{
+                      offset: {
+                        enabled: true,
+                        offset: '5px, 10px',
+                      },
+                      preventOverflow: {
+                        boundariesElement: 'viewport',
+                        enabled: true,
+                        escapeWithReference: false, // force popper to stay in viewport (even when input is scrolled out of view)
+                      },
+                    }}
+                  />
+                </span>
+                <span className="icon">
+                  <Icon
+                    alt="Choisissez une date dans le calendrier"
+                    className="input-icon"
+                    svg="dropdown-disclosure-down"
+                  />
+                </span>
+              </div>
+            </div>
           </div>
+          {/* ********** END DATE PICKER ********** */}
         </div>
         <hr className="dotted-bottom-primary" />
       </div>
