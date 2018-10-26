@@ -4,7 +4,11 @@ exports[`src | components | pages | TermsPage snapshot should match snapshot 1`]
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <TermsPage
+<<<<<<< HEAD
     appversion="0.7.1"
+=======
+    appversion="0.7.0"
+>>>>>>> add mock and test for bookables selector
     dispatch={[MockFunction]}
     lastDeployedCommit="##LAST_DEPLOYED_COMMIT##"
   />,
@@ -64,7 +68,11 @@ ShallowWrapper {
                 <p
                   className="text-right"
                 >
+<<<<<<< HEAD
                   Pass Culture v.0.7.1 - ##LAST_DEPLOYED_COMMIT##
+=======
+                  Pass Culture v.0.7.0
+>>>>>>> add mock and test for bookables selector
                 </p>
               </div>
             </div>
@@ -131,7 +139,11 @@ ShallowWrapper {
                 <p
                   className="text-right"
                 >
+<<<<<<< HEAD
                   Pass Culture v.0.7.1 - ##LAST_DEPLOYED_COMMIT##
+=======
+                  Pass Culture v.0.7.0
+>>>>>>> add mock and test for bookables selector
                 </p>
               </div>
             </div>
@@ -170,7 +182,11 @@ ShallowWrapper {
                 <p
                   className="text-right"
                 >
+<<<<<<< HEAD
                   Pass Culture v.0.7.1 - ##LAST_DEPLOYED_COMMIT##
+=======
+                  Pass Culture v.0.7.0
+>>>>>>> add mock and test for bookables selector
                 </p>
               </div>
             </div>,
@@ -200,7 +216,11 @@ ShallowWrapper {
                   <p
                     className="text-right"
                   >
+<<<<<<< HEAD
                     Pass Culture v.0.7.1 - ##LAST_DEPLOYED_COMMIT##
+=======
+                    Pass Culture v.0.7.0
+>>>>>>> add mock and test for bookables selector
                   </p>
                 </div>,
               ],
@@ -238,7 +258,11 @@ ShallowWrapper {
                   "children": <p
                     className="text-right"
                   >
+<<<<<<< HEAD
                     Pass Culture v.0.7.1 - ##LAST_DEPLOYED_COMMIT##
+=======
+                    Pass Culture v.0.7.0
+>>>>>>> add mock and test for bookables selector
                   </p>,
                   "className": "mt16",
                 },
@@ -248,11 +272,19 @@ ShallowWrapper {
                   "key": undefined,
                   "nodeType": "host",
                   "props": Object {
+<<<<<<< HEAD
                     "children": "Pass Culture v.0.7.1 - ##LAST_DEPLOYED_COMMIT##",
                     "className": "text-right",
                   },
                   "ref": null,
                   "rendered": "Pass Culture v.0.7.1 - ##LAST_DEPLOYED_COMMIT##",
+=======
+                    "children": "Pass Culture v.0.7.0",
+                    "className": "text-right",
+                  },
+                  "ref": null,
+                  "rendered": "Pass Culture v.0.7.0",
+>>>>>>> add mock and test for bookables selector
                   "type": "p",
                 },
                 "type": "div",
@@ -328,7 +360,11 @@ ShallowWrapper {
                   <p
                     className="text-right"
                   >
+<<<<<<< HEAD
                     Pass Culture v.0.7.1 - ##LAST_DEPLOYED_COMMIT##
+=======
+                    Pass Culture v.0.7.0
+>>>>>>> add mock and test for bookables selector
                   </p>
                 </div>
               </div>
@@ -395,7 +431,11 @@ ShallowWrapper {
                   <p
                     className="text-right"
                   >
+<<<<<<< HEAD
                     Pass Culture v.0.7.1 - ##LAST_DEPLOYED_COMMIT##
+=======
+                    Pass Culture v.0.7.0
+>>>>>>> add mock and test for bookables selector
                   </p>
                 </div>
               </div>
@@ -434,7 +474,11 @@ ShallowWrapper {
                   <p
                     className="text-right"
                   >
+<<<<<<< HEAD
                     Pass Culture v.0.7.1 - ##LAST_DEPLOYED_COMMIT##
+=======
+                    Pass Culture v.0.7.0
+>>>>>>> add mock and test for bookables selector
                   </p>
                 </div>
               </div>,
@@ -464,7 +508,11 @@ ShallowWrapper {
                     <p
                       className="text-right"
                     >
+<<<<<<< HEAD
                       Pass Culture v.0.7.1 - ##LAST_DEPLOYED_COMMIT##
+=======
+                      Pass Culture v.0.7.0
+>>>>>>> add mock and test for bookables selector
                     </p>
                   </div>,
                 ],
@@ -502,7 +550,11 @@ ShallowWrapper {
                     "children": <p
                       className="text-right"
                     >
+<<<<<<< HEAD
                       Pass Culture v.0.7.1 - ##LAST_DEPLOYED_COMMIT##
+=======
+                      Pass Culture v.0.7.0
+>>>>>>> add mock and test for bookables selector
                     </p>,
                     "className": "mt16",
                   },
@@ -512,11 +564,19 @@ ShallowWrapper {
                     "key": undefined,
                     "nodeType": "host",
                     "props": Object {
+<<<<<<< HEAD
                       "children": "Pass Culture v.0.7.1 - ##LAST_DEPLOYED_COMMIT##",
                       "className": "text-right",
                     },
                     "ref": null,
                     "rendered": "Pass Culture v.0.7.1 - ##LAST_DEPLOYED_COMMIT##",
+=======
+                      "children": "Pass Culture v.0.7.0",
+                      "className": "text-right",
+                    },
+                    "ref": null,
+                    "rendered": "Pass Culture v.0.7.0",
+>>>>>>> add mock and test for bookables selector
                     "type": "p",
                   },
                   "type": "div",
