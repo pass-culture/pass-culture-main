@@ -1,6 +1,6 @@
 /* eslint no-console: 0, max-nested-callbacks: 0 */
-// TEST COMMAND
-// ./node_modules/.bin/jest --env=jsdom ./path/to/file --watch
+
+// ./node_modules/.bin/jest --env=jsdom ./path/to/file.spec.js --watch
 import MyHelper from './my/helper/relative/path'
 
 describe('path | to | my | helper', function() {
@@ -10,6 +10,6 @@ describe('path | to | my | helper', function() {
     const value = { prop: 'prop' }
     const expected = { prop: 'prop' }
     const result = MyHelper(value)
-    expect(expected).toStrictEqual(result)
+    expect(result).toStrictEqual(expected)
   })
 })

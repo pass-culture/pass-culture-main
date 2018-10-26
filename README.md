@@ -18,7 +18,16 @@ yarn
 A la racine de webapp créer un fichier `env.local`<br>
 Les variables disponibles pour l'application sont décrites dans le fichier `src/utils/config.js`
 
-## TestCafé
+## Tests
+
+#### Jest Specs
+
+Lancer un seul fichier en mode watch
+```
+./node_modules/.bin/jest --env=jsdom ./path/to/file.spec.js --watch
+```
+
+#### Testcafe
 
 Lancer un seul fichier en ligne de commande depuis un environnement local
 ```

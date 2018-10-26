@@ -9,8 +9,7 @@ import { Link, withRouter } from 'react-router-dom'
 
 import Price from '../Price'
 import Finishable from '../layout/Finishable'
-
-import { isRecommendationFinished } from '../../helpers'
+import { isRecommendationFinished, parseOnlineOfferURL } from '../../helpers'
 import { selectBookings } from '../../selectors/selectBookings'
 import currentRecommendation from '../../selectors/currentRecommendation'
 
@@ -34,7 +33,8 @@ class VersoBookingButton extends React.PureComponent {
 
   renderOnlineButton = () => {
     const { booking } = this.props
-    const onlineOfferUrl = get(booking, 'completedUrl')
+    let onlineOfferUrl = get(booking, 'completedUrl')
+    onlineOfferUrl = parseOnlineOfferURL(onlineOfferUrl)
     return (
       <a
         href={`${onlineOfferUrl}`}

@@ -6,13 +6,14 @@ import get from 'lodash.get'
 import PropTypes from 'prop-types'
 import { Link } from 'react-router-dom'
 
-import { getPrice } from '../../helpers'
+import { getPrice, parseOnlineOfferURL } from '../../helpers'
 
 const BookingSuccess = ({ isEvent, data }) => {
   const token = get(data, 'token')
   let price = get(data, 'stock.price')
   price = getPrice(price)
-  const completedUrl = get(data, 'completedUrl')
+  let onlineOfferUrl = get(data, 'completedUrl')
+  onlineOfferUrl = parseOnlineOfferURL(onlineOfferUrl)
   // juste pour du debug
   const cssclass = (isEvent && 'event') || 'thing'
   return (
@@ -39,17 +40,17 @@ const BookingSuccess = ({ isEvent, data }) => {
       </h3>
       <p>
         <span className="is-block">{price} ont été déduits de votre pass.</span>
-        {!completedUrl && (
+        {!onlineOfferUrl && (
           <span className="is-block">Présentez le code suivant sur place:</span>
         )}
       </p>
       {/* <!-- CODE / LIEN --> */}
       <p className="my28">
-        {!completedUrl && <b className="is-block is-size-1">{token}</b>}
-        {completedUrl && (
+        {!onlineOfferUrl && <b className="is-block is-size-1">{token}</b>}
+        {onlineOfferUrl && (
           <a
             className="is-primary-text is-primary-border px12 py8"
-            href={completedUrl}
+            href={onlineOfferUrl}
             rel="noopener noreferrer"
             target="_blank"
           >
@@ -58,7 +59,7 @@ const BookingSuccess = ({ isEvent, data }) => {
         )}
       </p>
       <p>
-        {!completedUrl && (
+        {!onlineOfferUrl && (
           <React.Fragment>
             <span className="is-block">
               Retrouvez ce code et les détails de l&apos;offre dans
@@ -72,7 +73,7 @@ const BookingSuccess = ({ isEvent, data }) => {
             </span>
           </React.Fragment>
         )}
-        {completedUrl && (
+        {onlineOfferUrl && (
           <React.Fragment>
             <span className="is-block">
               Retrouvez l&apos;adresse Internet et les détails de
