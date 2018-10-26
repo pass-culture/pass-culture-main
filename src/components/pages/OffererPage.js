@@ -32,14 +32,14 @@ const OFFERER_NEW_PATCH_KEYS = [
 const OFFERER_EDIT_PATCH_KEYS = ['bic', 'iban', 'rib']
 
 const formatOffererPatch = (patch, config) => {
-  const { isEdit, isNew } = config || {}
+  const { isNew } = config || {}
   const formPatch = {}
-  let patchKeys
+
+  let patchKeys = OFFERER_EDIT_PATCH_KEYS
   if (isNew) {
     patchKeys = OFFERER_NEW_PATCH_KEYS
-  } else if (isEdit) {
-    patchKeys = OFFERER_EDIT_PATCH_KEYS
   }
+
   patchKeys.forEach(key => {
     if (patch[key]) {
       formPatch[key] = patch[key]
@@ -64,10 +64,12 @@ class OffererPage extends Component {
         params: { offererId },
       },
     } = nextProps
+
     const isEdit = search.includes('modifie')
     const isNew = offererId === 'nouveau'
     const isReadOnly = !isNew && !isEdit
     return {
+      isEdit,
       isNew,
       isReadOnly,
     }
