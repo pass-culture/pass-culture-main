@@ -14,3 +14,4 @@ fixture('08_01 Booking Card').page(`${ROOT_PATH}connexion`)
 // J'ouvre la popup de réservation
 // Le calendrier ne s'affiche pas, Si il s'agit d'une offre physique
 // Le calendrier s'affiche, Si il ne s'agit pas d'une offre physique
+// 25-10_18 Une offre a été réservée, je n'y suis pas allé, l'offre n'est plus disponible. Actuellement, elle apparaît encore dans mes réservations.

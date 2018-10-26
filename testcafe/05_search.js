@@ -10,9 +10,9 @@ const keywordsSearchButton = Selector('#keywords-search-button')
 const searchTypeCheckbox = Selector('#search-type-checkbox').withText('Lire')
 const resultsTitle = Selector('#results-title')
 
-fixture
-  .skip('O5_01 Recherche | Je ne suis pas connecté·e')
-  .page(`${ROOT_PATH}recherche`)
+fixture('O5_01 Recherche | Je ne suis pas connecté·e').page(
+  `${ROOT_PATH}recherche`
+)
 
 test('Je suis redirigé vers la page /connexion', async t => {
   await t
@@ -23,7 +23,7 @@ fixture.skip('O5_02 Recherche | Après connexion').beforeEach(async t => {
   await t.useRole(regularUser).navigateTo(`${ROOT_PATH}recherche/`)
 })
 
-test('Je peux accéder à la page /recherche', async t => {
+test('Je peux accéder à la page de  /recherche', async t => {
   await t
     .wait(1000)
     .expect(getPageUrl())
@@ -39,7 +39,7 @@ test('Je peux accéder à la page /recherche', async t => {
 // ------------------------ RECHERCHE PAR MOTS-CLES
 
 // ------------------------ NO RESULTS
-fixture.skip('O5_03 Recherche | Recherche textuelle').beforeEach(async t => {
+fixture.skip('O5_02 Recherche | Recherche textuelle').beforeEach(async t => {
   await t.useRole(regularUser).navigateTo(`${ROOT_PATH}recherche/categories`)
 })
 
@@ -70,7 +70,7 @@ test("Je fais une recherche par mots-clés et j'ai des résultats", async t => {
 
 // Si j'ai des résultats, je vois les vignettes
 
-// Si je clique sur l'offre d'une des vignettes, je suis redirigée vers la page découverte de cette offre
+// Si je clique sur l'offre d'une des vignettes, je suis redirigée vers la page découverte de cette offre...
 
 // Si j'ai des résultats : la page de résultats s'affiche, je ne vois pas le filtre par type sous le formulaire de recherche textuelle
 
