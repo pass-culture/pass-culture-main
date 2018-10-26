@@ -1,7 +1,9 @@
 """ app """
 import os
-from flask_cors import CORS
+
 from flask import Flask
+from flask_cors import CORS
+from flask_login import LoginManager
 from mailjet_rest import Client
 
 from local_providers.install import install_local_providers
@@ -9,19 +11,27 @@ from models.db import db
 from models.install import install_models
 from utils.config import IS_DEV
 from utils.json_encoder import EnumJSONEncoder
-import utils.logger
-from utils.mailing import get_contact,\
-                          MAILJET_API_KEY,\
-                          MAILJET_API_SECRET,\
-                          subscribe_newsletter
+from utils.mailing import get_contact, \
+    MAILJET_API_KEY, \
+    MAILJET_API_SECRET, \
+    subscribe_newsletter
 
 app = Flask(__name__, static_url_path='/static')
+login_manager = LoginManager()
+
 app.secret_key = os.environ.get('FLASK_SECRET', '+%+3Q23!zbc+!Dd@')
 app.json_encoder = EnumJSONEncoder
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db.init_app(app)
+app.config['SESSION_COOKIE_HTTPONLY'] = True
+app.config['SESSION_COOKIE_SECURE'] = False if IS_DEV else True
+app.config['REMEMBER_COOKIE_DURATION'] = 90 * 24 * 3600
+app.config['PERMANENT_SESSION_LIFETIME'] = 90 * 24 * 3600
+app.config['REMEMBER_COOKIE_HTTPONLY'] = True
+app.config['REMEMBER_COOKIE_SECURE'] = True
 
+db.init_app(app)
+login_manager.init_app(app)
 cors = CORS(app,
     resources={r"/*": {"origins": "*"}},
     supports_credentials=True
