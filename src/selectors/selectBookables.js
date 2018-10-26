@@ -67,6 +67,7 @@ export const sortByDate = () => items =>
   items.sort((a, b) => {
     const datea = a.beginningDatetime
     const dateb = b.beginningDatetime
+    if (!datea || !dateb) return 0
     if (datea.isAfter(dateb)) return 1
     if (datea.isAfter(dateb)) return -1
     return 0
@@ -77,6 +78,7 @@ export const selectBookables = createCachedSelector(
   (state, recommendation) => recommendation,
   (bookings, recommendation) => {
     let stocks = get(recommendation, 'offer.stocks')
+    // stocks = [stocks[0]]
     // NOTE -> prevents state to be mutated
     stocks = (stocks && cloneDeep(stocks)) || null
     if (!stocks || !stocks.length) return []
