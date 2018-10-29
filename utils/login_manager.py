@@ -12,11 +12,14 @@ from utils.credentials import get_user_with_credentials
 app.login_manager = LoginManager()
 app.login_manager.init_app(app)
 
-app.config['REMEMBER_COOKIE_DURATION'] = 365 * 24 * 3600
+app.config['REMEMBER_COOKIE_DURATION'] = 90 * 24 * 3600
+app.config['PERMANENT_SESSION_LIFETIME'] = 90 * 24 * 3600
 
 
 @app.login_manager.user_loader
 def get_user_with_id(user_id):
+    session.permanent = True
+
     session_uuid = session.get('session_uuid')
     if existing_user_session(user_id, session_uuid):
         return User.query.get(user_id)
