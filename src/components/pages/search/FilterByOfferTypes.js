@@ -52,7 +52,7 @@ class FilterByOfferTypes extends PureComponent {
                     <input
                       type="checkbox"
                       id="offer-type-picture-checked"
-                      checked={ischecked}
+                      defaultChecked={ischecked}
                     />
                   )}
                 </label>
