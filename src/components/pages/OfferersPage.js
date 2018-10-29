@@ -20,7 +20,7 @@ import { mapApiToWindow, windowToApiQuery } from '../../utils/pagination'
 
 class OfferersPage extends Component {
   handleDataRequest = (handleSuccess, handleFail) => {
-    const { dispatch, pagination, search } = this.props
+    const { user, dispatch, pagination, search } = this.props
     const { apiQueryString, page, goToNextPage } = pagination
 
     // BECAUSE THE INFINITE SCROLLER CALLS ONCE THIS FUNCTION
@@ -44,15 +44,17 @@ class OfferersPage extends Component {
       })
     )
 
-    dispatch(
-      requestData('GET', 'offerers?validated=false', {
-        handleSuccess: (state, action) => {
-          handleSuccess(state, action)
-        },
-        handleFail,
-        key: 'pendingOfferer',
-      })
-    )
+    if (!user.isAdmin) {
+      dispatch(
+        requestData('GET', 'offerers?validated=false', {
+          handleSuccess: (state, action) => {
+            handleSuccess(state, action)
+          },
+          handleFail,
+          key: 'pendingOfferer',
+        })
+      )
+    }
   }
 
   onSubmit = event => {
@@ -144,6 +146,7 @@ function mapStateToProps(state, ownProps) {
   return {
     pendingOfferers: getPendingOfferers(state),
     offerers: offerersSelector(state),
+    user: state.user,
   }
 }
 
