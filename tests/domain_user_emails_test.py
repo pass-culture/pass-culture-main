@@ -7,7 +7,8 @@ from domain.user_emails import send_user_driven_cancellation_email_to_user, \
     send_offerer_driven_cancellation_email_to_offerer, \
     send_booking_confirmation_email_to_user, send_booking_recap_emails, send_final_booking_recap_email, \
     send_validation_confirmation_email, send_batch_cancellation_emails_to_users, \
-    send_batch_cancellation_email_to_offerer, send_venue_validation_confirmation_email
+    send_batch_cancellation_email_to_offerer, send_user_validation_email, send_venue_validation_confirmation_email
+
 from models import Offerer, UserOfferer, User, RightsType
 from utils.mailing import MailServiceException
 from utils.test_utils import create_user, create_booking, create_stock_with_event_offer, create_offerer, create_venue, \
@@ -284,8 +285,9 @@ def test_send_booking_confirmation_email_to_user_should_call_mailjet_send_create
     # Then
     mocked_send_create_email.assert_called_once()
     called_with_args = mocked_send_create_email.call_args[1]['data']
-    assert 'This is a test (ENV=development). In production, email would have been sent to : test@email.com' in called_with_args[
-        'Html-part']
+    assert 'This is a test (ENV=development). In production, email would have been sent to : test@email.com' in \
+           called_with_args[
+               'Html-part']
     assert called_with_args['To'] == 'passculture-dev@beta.gouv.fr'
     assert called_with_args['FromName'] == 'Pass Culture'
     assert called_with_args['FromEmail'] == 'passculture-dev@beta.gouv.fr'
@@ -651,7 +653,7 @@ def test_send_venue_validation_confirmation_email(app):
 
 
 @pytest.mark.standalone
-def test_send_validation_confirmation_email_when_status_code_400(app):
+def test_send_venue_validation_confirmation_email_when_status_code_400(app):
     # Given
     offerer = create_offerer()
     venue = create_venue(offerer)
@@ -668,3 +670,41 @@ def test_send_validation_confirmation_email_when_status_code_400(app):
         send_venue_validation_confirmation_email(venue, mocked_send_create_email)
 
 
+@pytest.mark.standalone
+def test_send_user_validation_email_when_send_create_status_code_200():
+    # Given
+    user = create_user()
+    user.generate_validation_token()
+    mocked_send_create_email = Mock()
+    return_value = Mock()
+    return_value.status_code = 200
+    mocked_send_create_email.return_value = return_value
+
+    # When
+    with patch('domain.user_emails.make_user_validation_email', return_value={'Html-part': ''}) as make_email, patch(
+            'domain.user_emails.feature_send_mail_to_users_enabled', return_value=True):
+        send_user_validation_email(user, mocked_send_create_email, True)
+    # Then
+    mocked_send_create_email.assert_called_once()
+    make_email.assert_called_once()
+    mocked_send_create_email.call_args[1]['To'] = user.email
+
+
+@pytest.mark.standalone
+def test_send_user_validation_email_when_send_create_status_code_400():
+    # Given
+    user = create_user()
+    user.generate_validation_token()
+    mocked_send_create_email = Mock()
+    return_value = Mock()
+    return_value.status_code = 400
+    mocked_send_create_email.return_value = return_value
+
+    # When
+    with pytest.raises(MailServiceException), patch('domain.user_emails.make_user_validation_email',
+                                                    return_value={'Html-part': ''}) as make_email, patch(
+            'domain.user_emails.feature_send_mail_to_users_enabled', return_value=True):
+        send_user_validation_email(user, mocked_send_create_email, True)
+    # Then
+    mocked_send_create_email.assert_called_once()
+    make_email.assert_called_once()

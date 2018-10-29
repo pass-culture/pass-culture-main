@@ -1,5 +1,5 @@
-import re
 import base64
+import re
 import secrets
 from datetime import datetime, timezone, timedelta
 from unittest.mock import MagicMock, patch
@@ -15,8 +15,9 @@ from utils.mailing import make_user_booking_recap_email, \
     write_object_validation_email, make_offerer_driven_cancellation_email_for_user, \
     make_reset_password_email, \
     make_offerer_driven_cancellation_email_for_offerer, make_validation_confirmation_email, \
-    make_batch_cancellation_email, make_payment_transaction_email, make_venue_validation_email, \
-    make_venue_validation_confirmation_email
+    make_venue_validation_email, \
+    make_venue_validation_confirmation_email, \
+    make_batch_cancellation_email, make_payment_transaction_email, make_user_validation_email
 from utils.test_utils import create_stock_with_event_offer, create_stock_with_thing_offer, \
     create_user, create_booking, MOCKED_SIREN_ENTREPRISES_API_RETURN, create_user_offerer, \
     create_offerer, create_venue, create_thing_offer, create_event_offer, create_stock_from_offer, \
@@ -874,6 +875,48 @@ def test_make_payment_transaction_email():
                                      "Base64Content": b'PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48RG9j'
                                                       b'dW1lbnQgeG1sbnM9InVybjppc286c3RkOmlzbzoyMDAyMjp0ZWNoOnhz'
                                                       b'ZDpwYWluLjAwMS4wMDEuMDMiPjwvRG9jdW1lbnQ+'}]
+
+
+@pytest.mark.standalone
+def test_make_webapp_user_validation_email_includes_validation_url_with_token_and_user_email(app):
+    # Given
+    user = create_user(email="test@email.com")
+    user.generate_validation_token()
+
+    # When
+    with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True):
+        email = make_user_validation_email(user, is_webapp=True)
+    # Then
+    email_html = BeautifulSoup(email['Html-part'], 'html.parser')
+    mail_content = email_html.find("div", {"id": 'mail-content'}).text
+    assert 'Bonjour {},'.format(user.publicName) in email_html.find("p", {"id": 'mail-greeting'}).text
+    assert "Vous venez de créer un compte pass Culture avec votre adresse test@email.com." in mail_content
+    assert 'localhost/validate?modelNames=User&token={}'.format(user.validationToken) in \
+           email_html.find('a', href=True)['href']
+    assert 'Pour pouvoir vous connecter à l\'application, veuillez cliquer ici' in mail_content
+    assert email['To'] == user.email
+    assert email['FromName'] == 'pass Culture'
+    assert email['Subject'] == 'Validation de votre adresse email pour le pass Culture'
+    assert email['FromEmail'] == 'passculture@beta.gouv.fr'
+
+
+@pytest.mark.standalone
+def test_make_pro_user_validation_email_includes_validation_url_with_token_and_user_email(app):
+    # Given
+    user = create_user(email="test@email.com")
+    user.generate_validation_token()
+
+    # When
+    email = make_user_validation_email(user, is_webapp=False)
+    # Then
+    email_html = BeautifulSoup(email['Html-part'], 'html.parser')
+    mail_content = email_html.find("div", {"id": 'mail-content'}).text
+    assert 'Cher partenaire pass Culture,'.format(user.publicName) in email_html.find("p", {"id": 'mail-greeting'}).text
+    assert "Vous venez de créer un compte pass Culture pro avec votre adresse test@email.com." in mail_content
+    assert 'localhost/validate?modelNames=User&token={}'.format(user.validationToken) in \
+           email_html.find('a', href=True)['href']
+    assert 'Pour pouvoir vous connecter à l\'application, veuillez cliquer ici' in mail_content
+    assert email['FromName'] == 'pass Culture pro'
 
 
 def remove_whitespaces(text):

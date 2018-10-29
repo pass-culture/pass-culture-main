@@ -8,7 +8,7 @@ from domain.admin_emails import maybe_send_offerer_validation_email
 from domain.expenses import get_expenses
 from domain.password import validate_reset_request, check_reset_token_validity, validate_new_password_request, \
     check_password_strength, check_new_password_validity, generate_reset_token, validate_change_password_request
-from domain.user_emails import send_reset_password_email
+from domain.user_emails import send_reset_password_email, send_user_validation_email
 from models import ApiErrors, Deposit, Offerer, PcObject, User
 from models.user_offerer import RightsType
 from models.venue import create_digital_venue
@@ -130,15 +130,14 @@ def signout():
     return jsonify({"global": "Deconnecté"})
 
 
-@app.route("/users/signup", methods=["POST"])
-def signup():
+@app.route("/users/signup-webapp", methods=["POST"])
+def signup_webapp():
     objects_to_save = []
     email = request.json.get('email')
     password = request.json.get('password')
     check_valid_signup(request)
     check_password_strength('password', password)
-    do_pro_signup = is_pro_signup(request.json)
-    need_for_authorisation_check = email is not None and not do_pro_signup and not IS_INTEGRATION
+    need_for_authorisation_check = email is not None and not IS_INTEGRATION
 
     new_user = User(from_dict=request.json)
     if need_for_authorisation_check:
@@ -146,42 +145,62 @@ def signup():
         departement_code = _get_departement_code_when_authorized_or_error(authorized_emails, departement_codes)
         new_user.departementCode = departement_code
 
-    # we don't validate users yet
-    # new_user.generate_validation_token()
-    if do_pro_signup:
-        existing_offerer = Offerer.query.filter_by(siren=request.json['siren']).first()
-        if existing_offerer is None:
-            offerer = _generate_offerer(request.json)
-            user_offerer = offerer.give_rights(new_user, RightsType.admin)
-            # Don't validate the first user / offerer link so that the user can immediately start loading stocks
-            digital_venue = create_digital_venue(offerer)
-            objects_to_save.extend([digital_venue, offerer])
-        else:
-            check_offerer_is_validated(existing_offerer)
-            user_offerer = _generate_user_offerer_when_existing_offerer(new_user, existing_offerer)
-            offerer = existing_offerer
-        objects_to_save.append(user_offerer)
-        new_user.canBookFreeOffers = False
-        new_user = _set_offerer_departement_code(new_user, offerer)
-    else:
-        if IS_INTEGRATION:
-            objects_to_save.append(_create_initial_deposit(new_user))
+    if IS_INTEGRATION:
+        objects_to_save.append(_create_initial_deposit(new_user))
 
+    new_user.generate_validation_token()
     objects_to_save.append(new_user)
 
     PcObject.check_and_save(*objects_to_save)
-
-    if do_pro_signup:
-        try:
-            maybe_send_offerer_validation_email(offerer, user_offerer, app.mailjet_client.send.create)
-        except MailServiceException as e:
-            app.logger.error('Mail service failure', e)
+    try:
+        send_user_validation_email(new_user, app.mailjet_client.send.create, is_webapp=True)
+    except MailServiceException as e:
+        app.logger.error('Mail service failure', e)
 
     if request.json.get('contact_ok'):
         subscribe_newsletter(new_user)
 
-    login_user(new_user)
-    stamp_session(new_user)
+    return jsonify(new_user._asdict(include=USER_INCLUDES)), 201
+
+
+
+@app.route("/users/signup-pro", methods=["POST"])
+def signup_pro():
+    objects_to_save = []
+    password = request.json.get('password')
+    check_valid_signup(request)
+    check_password_strength('password', password)
+    new_user = User(from_dict=request.json)
+
+    existing_offerer = Offerer.query.filter_by(siren=request.json['siren']).first()
+    if existing_offerer is None:
+        offerer = _generate_offerer(request.json)
+        user_offerer = offerer.give_rights(new_user, RightsType.admin)
+        # Don't validate the first user_offerer link so that the user can immediately start loading stocks
+        digital_venue = create_digital_venue(offerer)
+        objects_to_save.extend([digital_venue, offerer])
+    else:
+        check_offerer_is_validated(existing_offerer)
+        user_offerer = _generate_user_offerer_when_existing_offerer(new_user, existing_offerer)
+        offerer = existing_offerer
+    objects_to_save.append(user_offerer)
+    new_user.canBookFreeOffers = False
+    new_user = _set_offerer_departement_code(new_user, offerer)
+
+
+    new_user.generate_validation_token()
+    objects_to_save.append(new_user)
+
+    PcObject.check_and_save(*objects_to_save)
+
+    try:
+        maybe_send_offerer_validation_email(offerer, user_offerer, app.mailjet_client.send.create)
+        send_user_validation_email(new_user, app.mailjet_client.send.create, is_webapp=False)
+    except MailServiceException as e:
+        app.logger.error('Mail service failure', e)
+
+    if request.json.get('contact_ok'):
+        subscribe_newsletter(new_user)
 
     return jsonify(new_user._asdict(include=USER_INCLUDES)), 201
 

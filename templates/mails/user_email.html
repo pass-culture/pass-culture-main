@@ -1,6 +1,6 @@
 <html>
     <body>
-        <p id="mail-greeting">Bonjour {{ user_public_name }},</p>
+        <p id="mail-greeting">Bonjour {{ user.publicName }},</p>
 
         <div id="mail-content">
             {% block mail_content %}{% endblock %}

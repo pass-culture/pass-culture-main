@@ -112,7 +112,7 @@ def write_object_validation_email(offerer, user_offerer, get_by_siren=api_entrep
     vars_obj_user.pop('clearTextPassword', None)
     api_entreprise = get_by_siren(offerer).json()
 
-    email_html = render_template('mails/validation_email.html',
+    email_html = render_template('mails/internal_validation_email.html',
                                  user_offerer=user_offerer,
                                  user_vars=pformat(vars_obj_user),
                                  offerer=offerer,
@@ -135,7 +135,6 @@ def make_offerer_driven_cancellation_email_for_user(booking):
     offer_name = booking.stock.resolvedOffer.eventOrThing.name
     offerer_name = booking.stock.resolvedOffer.venue.managingOfferer.name
     booking_value = booking.amount * booking.quantity
-    user_public_name = booking.user.publicName
     booking_is_on_event = booking.stock.eventOccurrence is not None
     formatted_datetime = None
     commande_ou_reservation = 'réservation' if booking_is_on_event else 'commande'
@@ -145,7 +144,7 @@ def make_offerer_driven_cancellation_email_for_user(booking):
 
     email_html = render_template('mails/user_cancellation_by_offerer_email.html',
                                  booking_is_on_event=booking_is_on_event,
-                                 user_public_name=user_public_name,
+                                 user=booking.user,
                                  offer_name=offer_name,
                                  event_date=formatted_datetime,
                                  offerer_name=offerer_name,
@@ -215,8 +214,7 @@ def make_user_booking_recap_email(booking, is_cancellation=False):
 def make_reset_password_email(user, app_origin_url):
     email_html = render_template(
         'mails/user_reset_password_email.html',
-        user_public_name=user.publicName,
-        token=user.resetPasswordToken,
+        user=user,
         app_origin_url=app_origin_url
     )
 
@@ -239,7 +237,7 @@ def make_validation_confirmation_email(user_offerer, offerer):
         else:
             user_offerer_rights = 'éditeur'
     email_html = render_template(
-        'mails/validation_confirmation_email.html',
+        'mails/user_offerer_and_offerer_validation_confirmation_email.html',
         user_offerer_email=user_offerer_email,
         offerer=offerer,
         user_offerer_rights=user_offerer_rights
@@ -267,6 +265,21 @@ def make_venue_validation_email(venue):
         'Subject': '{} - rattachement de lieu pro à valider : {}'.format(venue.departementCode, venue.name),
         'Html-part': html
     }
+
+
+def make_user_validation_email(user, is_webapp):
+    if is_webapp:
+        template = 'mails/webapp_user_validation_email.html'
+        from_name = 'pass Culture'
+    else:
+        template = 'mails/pro_user_validation_email.html'
+        from_name = 'pass Culture pro'
+    email_html = render_template(template, user=user, api_url=API_URL)
+    return {'Html-part': email_html,
+            'To': user.email,
+            'Subject': 'Validation de votre adresse email pour le pass Culture',
+            'FromName': from_name,
+            'FromEmail': 'passculture@beta.gouv.fr' if feature_send_mail_to_users_enabled() else 'passculture-dev@beta.gouv.fr'}
 
 
 def get_contact(user):
@@ -311,17 +324,18 @@ def make_payment_transaction_email(xml: str) -> dict:
         'From': {"Email": "passculture@beta.gouv.fr",
                  "Name": "pass Culture Pro"},
         'To': [{"Email": "passculture-dev@beta.gouv.fr",
-              "Name": "Compta pass Culture"}],
+                "Name": "Compta pass Culture"}],
         'Subject': "Virements pass Culture Pro - {}".format(datetime.strftime(now, "%Y-%m-%d")),
         'Attachments': [{"ContentType": "text/xml",
-                          "Filename": "transaction_banque_de_france_{}.xml".format(datetime.strftime(now, "%Y%m%d")),
-                          "Base64Content": xml_b64encode}]}
+                         "Filename": "transaction_banque_de_france_{}.xml".format(datetime.strftime(now, "%Y%m%d")),
+                         "Base64Content": xml_b64encode}]}
 
 
 def make_venue_validation_confirmation_email(venue):
     html = render_template('mails/venue_validation_confirmation_email.html', venue=venue)
     return {
-        'Subject': 'Validation du rattachement du lieu "{}" à votre structure "{}"'.format(venue.name, venue.managingOfferer.name),
+        'Subject': 'Validation du rattachement du lieu "{}" à votre structure "{}"'.format(venue.name,
+                                                                                           venue.managingOfferer.name),
         'FromEmail': "passculture@beta.gouv.fr",
         'FromName': "pass Culture pro",
         'Html-part': html
@@ -337,7 +351,7 @@ def _generate_reservation_email_html_subject(booking):
     if booking_is_on_event:
         email_subject = 'Confirmation de votre commande pour {}'.format(stock_description)
         email_html = render_template('mails/user_confirmation_email_thing.html',
-                                     user_public_name=user.publicName,
+                                     user=user,
                                      booking_token=booking.token,
                                      thing_name=stock.resolvedOffer.thing.name,
                                      thing_reference=stock.resolvedOffer.thing.idAtProviders,
@@ -347,7 +361,7 @@ def _generate_reservation_email_html_subject(booking):
         formatted_date_time = format_datetime(date_in_tz)
         email_subject = 'Confirmation de votre réservation pour {}'.format(stock_description)
         email_html = render_template('mails/user_confirmation_email_event.html',
-                                     user_public_name=user.publicName,
+                                     user=user,
                                      booking_token=booking.token,
                                      event_occurrence_name=stock.eventOccurrence.offer.event.name,
                                      formatted_date_time=formatted_date_time,
@@ -362,7 +376,7 @@ def _generate_user_driven_cancellation_email_for_user(user, stock):
     if stock.eventOccurrence == None:
         email_subject = 'Annulation de votre commande pour {}'.format(stock.resolvedOffer.thing.name)
         email_html = render_template('mails/user_cancellation_email_thing.html',
-                                     user_public_name=user.publicName,
+                                     user=user,
                                      thing_name=stock.resolvedOffer.thing.name,
                                      thing_reference=stock.resolvedOffer.thing.idAtProviders,
                                      venue=venue)
@@ -370,7 +384,7 @@ def _generate_user_driven_cancellation_email_for_user(user, stock):
         date_in_tz = _get_event_datetime(stock)
         formatted_date_time = format_datetime(date_in_tz)
         email_html = render_template('mails/user_cancellation_email_event.html',
-                                     user_public_name=user.publicName,
+                                     user=user,
                                      event_occurrence_name=stock.eventOccurrence.offer.event.name,
                                      venue=venue,
                                      formatted_date_time=formatted_date_time)
