@@ -128,9 +128,36 @@
   .search-picture span {
     @extend .px5;
     @extend .py3;
-    // @extend .fs16;
 
     background: rgba($black, 0.75);
+  }
+
+  .icon-container {
+    top: rem(-6px);
+    right: rem(-6px);
+  }
+
+  .icon-container > .icon-container-inner {
+    @extend .is-block;
+    @extend .text-center;
+    @extend .pc-background-red;
+
+    width: rem(18px);
+    height: rem(18px);
+    border-radius: 50%;
+  }
+
+  .icon-ico-check {
+    @extend .is-absolute;
+
+    top: -2px;
+    left: 2px;
+  }
+
+  .icon-ico-check::before {
+    @extend .fs14;
+    @extend .no-margin;
+    @extend .is-white-text;
   }
 }
 
@@ -147,7 +174,6 @@
 .react-datepicker {
   border: green;
   background-color: yellow;
-
 }
 
 div.react-datepicker-popper.search-by-dates {

@@ -32,13 +32,14 @@ class FilterByOfferTypes extends PureComponent {
           {title}
         </h2>
         <div className="pc-scroll-horizontal is-relative is-full-width">
-          <div className="pc-list flex-columns pl18 pr18">
+          <div className="pc-list flex-columns pl18 pr18 pt7">
             {typeSublabels.map(typeSublabel => {
               const ischecked = typesValue.includes(typeSublabel)
+              const className = ischecked ? 'checked' : ''
               return (
                 <label
                   key={typeSublabel}
-                  className={`item p3 ${ischecked ? 'checked' : ''}`}
+                  className={`item p3 is-relative ${className}`}
                 >
                   <SearchPicture searchType={typeSublabel} />
                   <input
@@ -49,11 +50,11 @@ class FilterByOfferTypes extends PureComponent {
                     type="checkbox"
                   />
                   {ischecked && (
-                    <input
-                      type="checkbox"
-                      id="offer-type-picture-checked"
-                      defaultChecked={ischecked}
-                    />
+                    <span className="icon-container is-absolute">
+                      <span className="icon-container-inner is-relative">
+                        <i className="icon-ico-check" />
+                      </span>
+                    </span>
                   )}
                 </label>
               )
