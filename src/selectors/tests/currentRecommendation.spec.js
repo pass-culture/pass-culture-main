@@ -1,5 +1,5 @@
 import currentRecommendationSelector from '../currentRecommendation'
-import state from '../../mocks/redux_state'
+import state from '../../mocks/reduxState'
 
 describe('currentRecommendationSelector', () => {
   let offerId

@@ -1,5 +1,5 @@
 import { selectRecommendation } from '../recommendation'
-import state from '../../mocks/redux_state'
+import state from '../../mocks/reduxState'
 
 describe('selectRecommendation', () => {
   describe('when the recommendationId exists', () => {
