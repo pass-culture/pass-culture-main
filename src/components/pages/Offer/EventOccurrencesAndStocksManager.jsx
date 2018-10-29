@@ -182,49 +182,51 @@ class EventOccurrencesAndStocksManager extends Component {
   }
 }
 
+function mapStateToProps(state, ownProps) {
+  const search = selectApiSearch(state, ownProps.location.search)
+  const { eventOccurrenceIdOrNew, stockIdOrNew } = search || {}
+
+  const isEditing = eventOccurrenceIdOrNew || stockIdOrNew
+  const isNew =
+    eventOccurrenceIdOrNew === 'nouvelle' ||
+    (!eventOccurrenceIdOrNew && stockIdOrNew === 'nouveau')
+
+  const offerId = ownProps.match.params.offerId
+  const offer = offerSelector(state, offerId)
+
+  const eventId = get(offer, 'eventId')
+  const event = eventSelector(state, eventId)
+  const eventOccurrences = eventOccurrencesSelector(
+    state,
+    ownProps.match.params.offerId
+  )
+
+  const thingId = get(offer, 'thingId')
+  const thing = thingSelector(state, thingId)
+
+  const stocks = stocksSelector(state, offerId, event && eventOccurrences)
+
+  const errors = eventOccurrenceAndStocksErrorsSelector(
+    state,
+    eventOccurrenceIdOrNew,
+    stockIdOrNew
+  )
+
+  return {
+    errors,
+    event,
+    eventOccurrenceIdOrNew,
+    eventOccurrences,
+    isEditing,
+    isNew,
+    offer,
+    provider: providerSelector(state, get(event, 'lastProviderId')),
+    stocks,
+    thing,
+  }
+}
+
 export default compose(
   withRouter,
-  connect((state, ownProps) => {
-    const search = selectApiSearch(state, ownProps.location.search)
-    const { eventOccurrenceIdOrNew, stockIdOrNew } = search || {}
-
-    const isEditing = eventOccurrenceIdOrNew || stockIdOrNew
-    const isNew =
-      eventOccurrenceIdOrNew === 'nouvelle' ||
-      (!eventOccurrenceIdOrNew && stockIdOrNew === 'nouveau')
-
-    const offerId = ownProps.match.params.offerId
-    const offer = offerSelector(state, offerId)
-
-    const eventId = get(offer, 'eventId')
-    const event = eventSelector(state, eventId)
-    const eventOccurrences = eventOccurrencesSelector(
-      state,
-      ownProps.match.params.offerId
-    )
-
-    const thingId = get(offer, 'thingId')
-    const thing = thingSelector(state, thingId)
-
-    const stocks = stocksSelector(state, offerId, event && eventOccurrences)
-
-    const errors = eventOccurrenceAndStocksErrorsSelector(
-      state,
-      eventOccurrenceIdOrNew,
-      stockIdOrNew
-    )
-
-    return {
-      errors,
-      event,
-      eventOccurrenceIdOrNew,
-      eventOccurrences,
-      isEditing,
-      isNew,
-      offer,
-      provider: providerSelector(state, get(event, 'lastProviderId')),
-      stocks,
-      thing,
-    }
-  })
+  connect(mapStateToProps)
 )(EventOccurrencesAndStocksManager)

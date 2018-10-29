@@ -12,9 +12,12 @@ const App = ({ modalOpen, children }) => {
   )
 }
 
+function mapStateToProps(state) {
+  return {
+    modalOpen: state.modal.isActive,
+  }
+}
 export default compose(
   withRouter,
-  connect(state => ({
-    modalOpen: state.modal.isActive,
-  }))
+  connect(mapStateToProps)
 )(App)
