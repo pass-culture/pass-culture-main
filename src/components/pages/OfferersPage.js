@@ -51,7 +51,7 @@ class OfferersPage extends Component {
             handleSuccess(state, action)
           },
           handleFail,
-          key: 'pendingOfferer',
+          key: 'pendingOfferers',
         })
       )
     }
