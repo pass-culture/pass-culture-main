@@ -30,7 +30,7 @@ L'utilisation des deux API de vérification de validité et de validation d'une 
 + Parameters
 
   + token (string) - le code de réservation
-  + email (string) - correspond à l'email de la personne qui tente d'utiliser la contremarque pour obtenir une offre
+  + email (string) - url-encodé. Correspond à l'email de la personne qui tente d'utiliser la contremarque pour obtenir une offre
   + offerId (optional, string) - identifiant de l'offre supposée correspondre à la réservation
 
 + Request (application/json)
@@ -61,7 +61,7 @@ Valide une contremarque (et la transaction associée). Le partenaire doit rensei
 
 + Parameters
   + token (string) - le code de réservation
-  + email (string) - correspond à l'email de la personne qui tente d'utiliser la contremarque pour obtenir une offre
+  + email (string) - url-encodé. Correspond à l'email de la personne qui tente d'utiliser la contremarque pour obtenir une offre
   + offer_id (string) - identifiant de l'offre supposée correspondre à la réservation
 
 + Request (application/json)
