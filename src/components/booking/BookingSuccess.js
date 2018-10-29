@@ -6,14 +6,13 @@ import get from 'lodash.get'
 import PropTypes from 'prop-types'
 import { Link } from 'react-router-dom'
 
-import { getPrice, parseOnlineOfferURL } from '../../helpers'
+import { getPrice } from '../../helpers'
 
 const BookingSuccess = ({ isEvent, data }) => {
   const token = get(data, 'token')
   let price = get(data, 'stock.price')
   price = getPrice(price)
-  let onlineOfferUrl = get(data, 'completedUrl')
-  onlineOfferUrl = parseOnlineOfferURL(onlineOfferUrl)
+  const onlineOfferUrl = get(data, 'completedUrl')
   // juste pour du debug
   const cssclass = (isEvent && 'event') || 'thing'
   return (
