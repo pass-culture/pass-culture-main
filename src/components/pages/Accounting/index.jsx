@@ -13,14 +13,17 @@ import { compose } from 'redux'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 
-import BookingItem from './accounting/BookingItem'
-import HeroSection from '../layout/HeroSection'
-import Main from '../layout/Main'
-import bookingsSelector from '../../selectors/bookings'
-import offererSelector from '../../selectors/offerer'
-import offerersSelector from '../../selectors/offerers'
-import { bookingNormalizer, offererNormalizer } from '../../utils/normalizers'
-import { mapApiToWindow, windowToApiQuery } from '../../utils/pagination'
+import BookingItem from './BookingItem'
+import HeroSection from '../../layout/HeroSection'
+import Main from '../../layout/Main'
+import bookingsSelector from '../../../selectors/bookings'
+import offererSelector from '../../../selectors/offerer'
+import offerersSelector from '../../../selectors/offerers'
+import {
+  bookingNormalizer,
+  offererNormalizer,
+} from '../../../utils/normalizers'
+import { mapApiToWindow, windowToApiQuery } from '../../../utils/pagination'
 
 const TableSortableTh = ({ field, label, sort, action, style }) => (
   <th style={style}>
@@ -45,7 +48,7 @@ TableSortableTh.propTypes = {
   style: PropTypes.object,
 }
 
-class AccoutingPage extends Component {
+class Accouting extends Component {
   onSubmit = event => {
     const { pagination } = this.props
 
@@ -291,4 +294,4 @@ export default compose(
     windowToApiQuery,
   }),
   connect(mapStateToProps)
-)(AccoutingPage)
+)(Accouting)

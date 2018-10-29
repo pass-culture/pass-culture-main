@@ -1,7 +1,7 @@
 import { Field, Form } from 'pass-culture-shared'
 import React from 'react'
 
-import { THUMBS_URL } from '../../utils/config'
+import { THUMBS_URL } from '../../../utils/config'
 
 const MediationItem = ({ mediation }) => {
   const { id, isActive } = mediation || {}

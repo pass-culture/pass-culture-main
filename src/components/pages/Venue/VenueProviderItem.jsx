@@ -6,8 +6,8 @@ import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
 
-import eventsSelector from '../../selectors/events'
-import thingsSelector from '../../selectors/things'
+import eventsSelector from '../../../selectors/events'
+import thingsSelector from '../../../selectors/things'
 
 class VenueProviderItem extends Component {
   onDeactivateClick = () => {

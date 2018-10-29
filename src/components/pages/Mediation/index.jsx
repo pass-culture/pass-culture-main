@@ -6,16 +6,19 @@ import { connect } from 'react-redux'
 import { NavLink, withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 
-import HeroSection from '../layout/HeroSection'
-import Main from '../layout/Main'
-import UploadThumb from '../layout/UploadThumb'
-import mediationSelector from '../../selectors/mediation'
-import offerSelector from '../../selectors/offer'
-import offererSelector from '../../selectors/offerer'
-import venueSelector from '../../selectors/venue'
-import { mediationNormalizer, offerNormalizer } from '../../utils/normalizers'
+import HeroSection from '../../layout/HeroSection'
+import Main from '../../layout/Main'
+import UploadThumb from '../../layout/UploadThumb'
+import mediationSelector from '../../../selectors/mediation'
+import offerSelector from '../../../selectors/offer'
+import offererSelector from '../../../selectors/offerer'
+import venueSelector from '../../../selectors/venue'
+import {
+  mediationNormalizer,
+  offerNormalizer,
+} from '../../../utils/normalizers'
 
-class MediationPage extends Component {
+class Mediation extends Component {
   constructor() {
     super()
     this.state = {
@@ -396,4 +399,4 @@ export default compose(
   withLogin({ failRedirect: '/connexion' }),
   withRouter,
   connect(mapStateToProps)
-)(MediationPage)
+)(Mediation)

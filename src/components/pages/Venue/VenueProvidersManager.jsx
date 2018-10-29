@@ -14,11 +14,11 @@ import { withRouter } from 'react-router'
 import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
 
-import VenueProviderItem from '../items/VenueProviderItem'
-import providerSelector from '../../selectors/provider'
-import providersSelector from '../../selectors/providers'
-import venueProviderSelector from '../../selectors/venueProvider'
-import venueProvidersSelector from '../../selectors/venueProviders'
+import VenueProviderItem from './VenueProviderItem'
+import providerSelector from '../../../selectors/provider'
+import providersSelector from '../../../selectors/providers'
+import venueProviderSelector from '../../../selectors/venueProvider'
+import venueProvidersSelector from '../../../selectors/venueProviders'
 
 class ProviderManager extends Component {
   constructor() {

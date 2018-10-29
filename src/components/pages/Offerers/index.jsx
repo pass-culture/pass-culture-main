@@ -10,15 +10,17 @@ import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { NavLink } from 'react-router-dom'
 
-import OffererItem from './offerers/OffererItem'
-import PendingOffererItem from './offerers/PendingOffererItem'
-import HeroSection from '../layout/HeroSection'
-import Main from '../layout/Main'
-import offerersSelector, { getPendingOfferers } from '../../selectors/offerers'
-import { offererNormalizer } from '../../utils/normalizers'
-import { mapApiToWindow, windowToApiQuery } from '../../utils/pagination'
+import OffererItem from './OffererItem'
+import PendingOffererItem from './PendingOffererItem'
+import HeroSection from '../../layout/HeroSection'
+import Main from '../../layout/Main'
+import offerersSelector, {
+  getPendingOfferers,
+} from '../../../selectors/offerers'
+import { offererNormalizer } from '../../../utils/normalizers'
+import { mapApiToWindow, windowToApiQuery } from '../../../utils/pagination'
 
-class OfferersPage extends Component {
+class Offerers extends Component {
   handleDataRequest = (handleSuccess, handleFail) => {
     const { user, dispatch, pagination, search } = this.props
     const { apiQueryString, page, goToNextPage } = pagination
@@ -160,4 +162,4 @@ export default compose(
     windowToApiQuery,
   }),
   connect(mapStateToProps)
-)(OfferersPage)
+)(Offerers)

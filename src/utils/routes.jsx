@@ -1,20 +1,20 @@
 import React from 'react'
 import { Redirect } from 'react-router'
 
-import AccoutingPage from '../components/pages/AccountingPage'
-import DeskPage from '../components/pages/DeskPage'
-import HomePage from '../components/pages/HomePage'
-import MediationPage from '../components/pages/MediationPage'
-import OffersPage from '../components/pages/OffersPage'
-import OfferPage from '../components/pages/OfferPage'
-import OffererPage from '../components/pages/OffererPage'
-import OfferersPage from '../components/pages/OfferersPage'
-import ProfilePage from '../components/pages/ProfilePage'
-import SigninPage from '../components/pages/SigninPage'
-import SignupPage from '../components/pages/SignupPage'
-import TermsPage from '../components/pages/TermsPage'
-import VenuePage from '../components/pages/VenuePage'
-import LostPasswordPage from '../components/pages/LostPasswordPage'
+import Accouting from '../components/pages/Accounting'
+import Desk from '../components/pages/Desk'
+import Home from '../components/pages/Home'
+import Mediation from '../components/pages/Mediation'
+import Offers from '../components/pages/Offers'
+import Offer from '../components/pages/Offer'
+import Offerer from '../components/pages/Offerer'
+import Offerers from '../components/pages/Offerers'
+import Profile from '../components/pages/Profile'
+import Signin from '../components/pages/Signin'
+import Signup from '../components/pages/Signup'
+import Terms from '../components/pages/Terms'
+import Venue from '../components/pages/Venue'
+import LostPassword from '../components/pages/LostPassword'
 
 // NOTE: routes are sorted by PATH alphabetical order
 const routes = [
@@ -23,92 +23,92 @@ const routes = [
     render: () => <Redirect to="/connexion" />,
   },
   {
-    component: HomePage,
+    component: Home,
     path: '/accueil',
     title: 'Accueil',
   },
   {
-    component: AccoutingPage,
+    component: Accouting,
     path: '/comptabilite',
     title: 'Comptabilité',
   },
   {
-    component: SigninPage,
+    component: Signin,
     path: '/connexion',
     title: 'Connexion',
   },
   {
-    component: DeskPage,
+    component: Desk,
     path: '/guichet',
     title: 'Guichet',
   },
   {
-    component: SignupPage,
+    component: Signup,
     path: '/inscription',
     title: 'Inscription',
   },
   {
-    component: TermsPage,
+    component: Terms,
     path: '/mentions-legales',
     title: 'Mentions Légales',
   },
   {
-    component: LostPasswordPage,
+    component: LostPassword,
     path: '/mot-de-passe-perdu',
     title: 'Mot de passe perdu',
   },
   {
-    component: OfferersPage,
+    component: Offerers,
     path: '/structures',
     title: 'Structures',
   },
   {
-    component: OffererPage,
+    component: Offerer,
     path: '/structures/:offererId',
     title: 'Structure',
   },
   {
-    component: VenuePage,
+    component: Venue,
     path: '/structures/:offererId/lieux/:venueId',
     title: 'Lieu',
   },
   {
-    component: VenuePage,
+    component: Venue,
     path: '/structures/:offererId/lieux/:venueId/fournisseurs/:venueProviderId',
     title: 'Lieu',
   },
   {
-    component: OffersPage,
+    component: Offers,
     path: '/structures/:offererId/lieux/:venueId/offres',
     title: 'Offres',
   },
   {
-    component: OffersPage,
+    component: Offers,
     path: '/offres',
     title: 'Offres',
   },
   {
-    component: OfferPage,
+    component: Offer,
     path: '/offres/:offerId',
     title: 'Offre',
   },
   {
-    component: MediationPage,
+    component: Mediation,
     path: '/offres/:offerId/accroches/:mediationId',
     title: 'Accroche',
   },
   {
-    component: OfferPage,
+    component: Offer,
     path: '/structures/:offererId/offres/:offerId',
     title: 'Offres',
   },
   {
-    component: OfferPage,
+    component: Offer,
     path: '/structures/:offererId/lieux/:venueId/offres/:offerId',
     title: 'Offres',
   },
   {
-    component: ProfilePage,
+    component: Profile,
     path: '/profil',
     title: 'Profil',
   },
