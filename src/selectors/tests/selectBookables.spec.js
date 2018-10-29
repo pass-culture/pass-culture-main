@@ -4,7 +4,7 @@ import { addModifierString, humanizeBeginningDate } from '../selectBookables'
 
 describe('src | selectors| selectBookables', () => {
   describe('addModifierString', () => {
-    it("ajoute une propriété nommée __modifiers__ aux objects d'un array", () => {
+    it('Add property named __modifiers__ to array of objects', () => {
       let value = []
       let expected = []
       let result = addModifierString()(value)
@@ -16,7 +16,7 @@ describe('src | selectors| selectBookables', () => {
     })
   })
   describe('humanizeBeginningDate', () => {
-    it('transforme une date timezone en date lisible par un user, ajoute une propriété', () => {
+    it('transform a date to an human readable one', () => {
       const dateString = '2018-11-02T19:30:24Z'
       const dateMoment = moment('2018-11-02T19:30:24Z')
       const dateFomated = 'Friday 02/11/2018 à 20:30'
@@ -58,8 +58,8 @@ describe('src | selectors| selectBookables', () => {
       expect(result).toStrictEqual(expected)
     })
   })
-  // describe('mapStockToBookable', () => {})
-  // describe('markAsReserved', () => {})
-  // describe('sortByDate', () => {})
-  // describe('selectBookables', () => {})
+  xdescribe('mapStockToBookable', () => {})
+  xdescribe('markAsReserved', () => {})
+  xdescribe('sortByDate', () => {})
+  xdescribe('selectBookables', () => {})
 })

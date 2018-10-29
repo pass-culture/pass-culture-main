@@ -36,7 +36,6 @@ export const mapStockToBookable = timezone => items =>
 
 export const humanizeBeginningDate = () => items => {
   const format = 'dddd DD/MM/YYYY à HH:mm'
-  // ajoute une date pré-formatée lisible par l'user
   return items.map(obj => {
     let date = obj.beginningDatetime || null
     const ismoment = date && moment.isMoment(date)
@@ -53,7 +52,6 @@ export const humanizeBeginningDate = () => items => {
 
 export const markAsReserved = bookings => {
   const bookingsStockIds = bookings.map(({ stockId }) => stockId)
-  // ajoute une information si l'utilisateur a déjà réservé cette offre
   return items =>
     items.map(obj => {
       const isReserved = (bookingsStockIds || []).includes(obj.id)
@@ -64,7 +62,6 @@ export const markAsReserved = bookings => {
 }
 
 export const sortByDate = () => items =>
-  // trie par ordre ASC les résultats
   items.sort((a, b) => {
     const datea = a.beginningDatetime
     const dateb = b.beginningDatetime
@@ -93,9 +90,6 @@ export const selectBookables = createCachedSelector(
       sortByDate()
     )(stocks)
   }
-)(
-  // cached key
-  (state, recommendation, match) => match.url
-)
+)((state, recommendation, match) => match.url)
 
 export default selectBookables
