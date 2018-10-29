@@ -8,8 +8,6 @@ const getPageUrl = ClientFunction(() => window.location.href.toString())
 const searchInput = Selector('#keywords')
 const keywordsSearchButton = Selector('#keywords-search-button')
 const searchTypeCheckbox = Selector('#search-type-checkbox').withText('Lire')
-// const refreshKeywordsButton = Selector('#refresh-keywords-button')
-// const searchResults = Selector('#search-results')
 const resultsTitle = Selector('#results-title')
 
 fixture
@@ -18,7 +16,7 @@ fixture
 
 test('Je suis redirigé vers la page /connexion', async t => {
   await t
-  await t.expect(getPageUrl()).contains('/connexion', { timeout: 5000 })
+  await t.expect(getPageUrl()).contains('/connexion', { timeout: 500 })
 })
 
 fixture('O5_02 Recherche | Après connexion').beforeEach(async t => {
@@ -27,7 +25,9 @@ fixture('O5_02 Recherche | Après connexion').beforeEach(async t => {
 
 test('Je peux accéder à la page /recherche', async t => {
   await t
-  await t.expect(getPageUrl()).contains('/recherche', { timeout: 5000 })
+    .wait(1000)
+    .expect(getPageUrl())
+    .contains('/recherche', { timeout: 5000 })
 })
 
 // HEADER
@@ -39,7 +39,7 @@ test('Je peux accéder à la page /recherche', async t => {
 // ------------------------ RECHERCHE PAR MOTS-CLES
 
 // ------------------------ NO RESULTS
-fixture.skip('O5_02 Recherche | Recherche textuelle').beforeEach(async t => {
+fixture.skip('O5_03 Recherche | Recherche textuelle').beforeEach(async t => {
   await t.useRole(regularUser).navigateTo(`${ROOT_PATH}recherche/categories`)
 })
 

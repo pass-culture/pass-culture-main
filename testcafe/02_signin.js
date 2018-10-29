@@ -1,13 +1,9 @@
-/**
- *
- * Lancer les tests en local
- * ./node_modules/.bin/testcafe chrome ./testcafe/02_signin.js  --env=local
- *
- */
-import { Selector } from 'testcafe'
+import { ClientFunction, Selector } from 'testcafe'
+import youngUser from './helpers/users'
 
 import { ROOT_PATH } from '../src/utils/config'
-import userFromSandboxDB from './helpers/users'
+
+const getPageUrl = ClientFunction(() => window.location.href.toString())
 
 const userId = '#user-identifier'
 const passId = '#user-password'
@@ -31,15 +27,15 @@ test('Je peux cliquer sur lien /inscription', async t => {
 
 test("Lorsque l'un des deux champs est manquant, le bouton connexion est désactivé", async t => {
   await t
-    .typeText(userIdentifier, userFromSandboxDB.email)
+    .typeText(userIdentifier, youngUser.email)
     .expect(signInButton.hasAttribute('disabled'))
     .ok()
 })
 
 test("J'ai un compte valide, je suis redirigé·e vers la page /decouverte sans erreurs", async t => {
   await t
-    .typeText(userIdentifier, userFromSandboxDB.email)
-    .typeText(userPassword, userFromSandboxDB.password)
+    .typeText(userIdentifier, youngUser.email)
+    .typeText(userPassword, youngUser.password)
     .click(signInButton)
     .wait(1000)
 
@@ -48,13 +44,13 @@ test("J'ai un compte valide, je suis redirigé·e vers la page /decouverte sans 
     .expect(identifierErrors.count)
     .eql(0)
     .expect(location.pathname)
-    .eql('/decouverte')
+  await t.expect(getPageUrl()).contains('/decouverte', { timeout: 1000 })
 })
 
 test("J'ai un identifiant invalide, je vois un messages d'erreur et je reste sur la page /connection", async t => {
   await t
     .typeText(userIdentifier, 'wrongEmail@test.com')
-    .typeText(userPassword, userFromSandboxDB.password)
+    .typeText(userPassword, youngUser.password)
     .click(signInButton)
     .wait(1000)
 
@@ -71,14 +67,14 @@ test("J'ai un identifiant invalide, je vois un messages d'erreur et je reste sur
 test("J'ai un mot de passe vide, avant envoi à l'API, je vois un message d'erreur et je reste sur la page /connection", async t => {
   await t
     // saisi du mot de passe
-    .typeText(userPassword, userFromSandboxDB.password)
+    .typeText(userPassword, youngUser.password)
     // puis on l'efface
     // - prevent testcafe de warn sur une valeur vide
     // TODO -> trouver une solution pour Blue le password input
     // faire plus propre
     .selectText(userPassword)
     .pressKey('delete')
-    .typeText(userIdentifier, userFromSandboxDB.email)
+    .typeText(userIdentifier, youngUser.email)
     // .click(signInButton)
     .wait(1000)
 
@@ -94,7 +90,7 @@ test("J'ai un mot de passe vide, avant envoi à l'API, je vois un message d'erre
 
 test("J'ai un mot de passe invalide, je vois un message d'erreur et je reste sur la page /connection", async t => {
   await t
-    .typeText(userIdentifier, userFromSandboxDB.email)
+    .typeText(userIdentifier, youngUser.email)
     .typeText(userPassword, 'Pa$$word4242')
     .click(signInButton)
     .wait(1000)
