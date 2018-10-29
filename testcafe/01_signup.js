@@ -17,6 +17,10 @@ const signInButton = Selector('.is-secondary').withText("J'ai déjà un compte")
 const signUpButton = Selector('button.button.is-primary')
 const sirenInput = Selector('#user-siren')
 const sirenInputError = Selector('#user-siren-error')
+const pendingOffererList = Selector('#pending-offerer-list')
+const firstPendingOffererName = Selector(
+  '#pending-offerer-list .list-content p span'
+)
 
 fixture`01_01 SignupPage |  Component | Je crée un compte utilisateur·ice`
   .page`${ROOT_PATH + 'inscription'}`
@@ -51,6 +55,7 @@ test('Je créé un compte, je suis redirigé·e vers la page /structures', async
 
   const location = await t.eval(() => window.location)
   await t.expect(location.pathname).eql('/structures')
+  await t.expect(pendingOffererList.exists).notOk()
 })
 
 fixture`01_02 SignupPage | Création d'un compte utilisateur | Messages d'erreur lorsque les champs ne sont pas correctement remplis`
@@ -95,6 +100,11 @@ test('Je créé un compte, je suis redirigé·e vers la page /structures', async
 
   const location = await t.eval(() => window.location)
   await t.expect(location.pathname).eql('/structures')
+  await t
+    .expect(pendingOffererList.exists)
+    .ok()
+    .expect(firstPendingOffererName.innerText)
+    .eql(offererUser2.publicName)
 })
 
 test('Je demande le rattachement à une structure existante', async t => {})
