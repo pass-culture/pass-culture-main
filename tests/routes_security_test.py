@@ -26,32 +26,6 @@ def test_a_new_user_session_is_recorded_when_signing_in(app):
 
 @clean_database
 @pytest.mark.standalone
-def test_a_new_user_session_is_recorded_when_signing_up(app):
-    # given
-    SIGN_UP = {
-        'email': 'toto@btmx.fr',
-        'firstName': 'Toto',
-        'lastName': 'Martin',
-        'postalCode': '93100',
-        'publicName': 'Toto',
-        'password': '__v4l1d_P455sw0rd__',
-        'contact_ok': 'true'
-    }
-
-    # when
-    response = req.post(
-        API_URL + '/users/signup',
-        json=SIGN_UP,
-        headers={'origin': 'http://localhost:3000'}
-    )
-    # then
-    user_id = response.json()['id']
-    session = UserSession.query.filter_by(userId=dehumanize(user_id)).first()
-    assert session is not None
-
-
-@clean_database
-@pytest.mark.standalone
 def test_an_existing_user_session_is_deleted_when_signing_out(app):
     # given
     user = create_user(email='test@mail.com', password='psswd123')
