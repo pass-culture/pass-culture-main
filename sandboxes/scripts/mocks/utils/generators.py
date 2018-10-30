@@ -14,6 +14,7 @@ def get_all_event_mocks_by_type():
         # WE JUST PARSE THE MOCK NAMES
         # WITH A COUNTER AND RESET THE COUNTER
         # TO ZERO WHEN WE REACH ITS LAST ITEM
+        mock_count += 1
         if mock_count > len(EVENT_OR_THING_MOCK_NAMES) - 1:
             mock_count = 0
 
@@ -38,6 +39,7 @@ def get_all_thing_mocks_by_type():
         # WE JUST PARSE THE MOCK NAMES
         # WITH A COUNTER AND RESET THE COUNTER
         # TO ZERO WHEN WE REACH ITS LAST ITEM
+        mock_count += 1
         if mock_count > len(EVENT_OR_THING_MOCK_NAMES) - 1:
             mock_count = 0
 
@@ -66,9 +68,10 @@ def get_all_offer_mocks_by_type():
         }
 
         # DETERMINE THE MATCHING VENUE
-        if types_by_value[event_mock['type']]['isOfflineOnly']:
+        event_type = types_by_value[event_mock['type']]
+        if event_type['offlineOnly']:
             offer_mock['venueName'] = ninety_three_venue['name']
-        elif types_by_value[event_mock['type']]['isOnlineOnly']:
+        elif event_type['onlineOnly']:
             offer_mock['venueName'] = virtual_ninety_three_venue['name']
         else:
             offer_mock['venueName'] = ninety_three_venue['name']
@@ -78,9 +81,18 @@ def get_all_offer_mocks_by_type():
     for thing_mock in thing_mocks:
         offer_mock = {
             "isActive": True,
-            "thingName": thing_mock['name'],
-            "venueName": "LE GRAND REX PARIS"
+            "thingName": thing_mock['name']
         }
+
+        # DETERMINE THE MATCHING VENUE
+        thing_type = types_by_value[thing_mock['type']]
+        if thing_type['offlineOnly']:
+            offer_mock['venueName'] = ninety_three_venue['name']
+        elif thing_type['onlineOnly']:
+            offer_mock['venueName'] = virtual_ninety_three_venue['name']
+        else:
+            offer_mock['venueName'] = ninety_three_venue['name']
+
         offer_mocks.append(thing_mock)
 
     return offer_mocks
