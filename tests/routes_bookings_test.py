@@ -1144,7 +1144,7 @@ def test_cannot_cancel_used_booking(app):
 
 @clean_database
 @pytest.mark.standalone
-def test_get_booking_by_token_when_special_character_in_email_with_url_encoding(app):
+def test_get_booking_by_token_accepts_special_characters_in_email_if_they_are_url_encoded(app):
     # Given
     user = create_user(email='user+plus@email.fr')
     user_admin = create_user(email='admin@email.fr', password='P@55w0rd')
@@ -1168,7 +1168,7 @@ def test_get_booking_by_token_when_special_character_in_email_with_url_encoding(
 
 @clean_database
 @pytest.mark.standalone
-def test_get_booking_by_token_when_special_character_in_email_without_url_encoding_raises_404(app):
+def test_get_booking_by_token_returns_404_if_special_characters_in_email_are_not_url_encoded(app):
     # Given
     user = create_user(email='user+plus@email.fr')
     user_admin = create_user(email='admin@email.fr', password='P@55w0rd')
@@ -1191,7 +1191,7 @@ def test_get_booking_by_token_when_special_character_in_email_without_url_encodi
 
 @clean_database
 @pytest.mark.standalone
-def test_patch_booking_by_token_when_special_character_in_email_with_url_encoding(app):
+def test_patch_booking_by_token_returns_204_if_special_character_in_email_with_url_encoding(app):
     # Given
     user = create_user(email='user+plus@email.fr')
     user_admin = create_user(email='admin@email.fr', password='P@55w0rd')
@@ -1215,7 +1215,7 @@ def test_patch_booking_by_token_when_special_character_in_email_with_url_encodin
 
 @clean_database
 @pytest.mark.standalone
-def test_patch_booking_by_token_when_special_character_in_email_without_url_encoding_raises_404(app):
+def test_patch_booking_by_token_returns_404_if_special_character_in_email_without_url_encoding(app):
     # Given
     user = create_user(email='user+plus@email.fr')
     user_admin = create_user(email='admin@email.fr', password='P@55w0rd')
