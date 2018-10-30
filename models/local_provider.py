@@ -14,14 +14,9 @@ from models.local_provider_event import LocalProviderEvent, LocalProviderEventTy
 from models.pc_object import PcObject
 from models.provider import Provider
 from models.thing import Thing
+from utils.date import read_json_date
 from utils.human_ids import humanize
 from utils.string_processing import inflect_engine
-
-
-def read_json_date(date):
-    if '.' not in date:
-        date = date + '.0'
-    return datetime.strptime(date, "%Y-%m-%dT%H:%M:%S.%f")
 
 
 class ProvidableInfo(object):

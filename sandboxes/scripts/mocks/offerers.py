@@ -1,5 +1,15 @@
 """ offerers """
+
+ninety_three_offerer_mock = {
+    "address": "NINETY THREE VENUE",
+    "city": "Bobigny",
+    "name": "NINETY THREE VENUE",
+    "postalCode": "93000",
+    "siren": "123456789"
+}
+
 offerer_mocks = [
+    ninety_three_offerer_mock,
     {
         "address": "1 BD POISSONNIERE",
         "city": "Paris",

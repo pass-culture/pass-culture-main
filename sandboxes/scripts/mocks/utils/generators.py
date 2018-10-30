@@ -1,8 +1,11 @@
 """ generators """
+from uuid import uuid1
 
 from domain.types import get_format_types, get_types_by_value
-from sandboxes.scripts.mocks.utils.mock_names import EVENT_OR_THING_MOCK_NAMES
-from sandboxes.scripts.mocks.venues import ninety_three_venue, virtual_ninety_three_venue
+from sandboxes.scripts.mocks.utils.mock_names import EVENT_OR_THING_MOCK_NAMES, \
+                                                     EVENT_OCCURRENCE_BEGINNING_DATETIMES
+from sandboxes.scripts.mocks.venues import ninety_three_venue,\
+                                           virtual_ninety_three_venue
 
 def get_all_event_mocks_by_type():
     event_types = [t for t in get_format_types() if t['type'] == 'Event']
@@ -53,9 +56,8 @@ def get_all_thing_mocks_by_type():
 
     return thing_mocks
 
-def get_all_offer_mocks_by_type():
+def get_all_event_offer_mocks_by_type():
     event_mocks = get_all_event_mocks_by_type()
-    thing_mocks = get_all_thing_mocks_by_type()
 
     types_by_value = get_types_by_value()
 
@@ -78,8 +80,17 @@ def get_all_offer_mocks_by_type():
 
         offer_mocks.append(offer_mock)
 
+    return offer_mocks
+
+def get_all_thing_offer_mocks_by_type():
+    thing_mocks = get_all_thing_mocks_by_type()
+
+    types_by_value = get_types_by_value()
+
+    offer_mocks = []
     for thing_mock in thing_mocks:
         offer_mock = {
+            "key": uuid.uuid1(),
             "isActive": True,
             "thingName": thing_mock['name']
         }
@@ -96,3 +107,18 @@ def get_all_offer_mocks_by_type():
         offer_mocks.append(thing_mock)
 
     return offer_mocks
+
+def get_all_offer_mocks_by_type():
+    event_offer_mocks = get_all_event_offer_mocks_by_type()
+    thing_offer_mocks = get_all_thing_mocks_by_type()
+    return event_offer_mocks + thing_offer_mocks
+
+def get_all_event_occurrence_mocks_by_type():
+    event_offer_mocks = get_all_event_offer_mocks_by_type()
+
+    for event_offer_mock in event_offer_mocks:
+        for beginning_datetime in EVENT_OCCURRENCE_BEGINNING_DATETIMES:
+            event_occurrence_mock = {
+                "beginningDatetime": beginning_datetime,
+                "offerKey": event_offer_mock['key']
+            }

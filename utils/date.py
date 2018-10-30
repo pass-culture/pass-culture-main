@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from math import floor
 
 from babel.dates import format_datetime as babel_format_datetime
@@ -14,6 +14,10 @@ class DateTimes:
     def __eq__(self, other):
         return self.datetimes == other.datetimes
 
+def read_json_date(date):
+    if '.' not in date:
+        date = date + '.0'
+    return datetime.strptime(date, "%Y-%m-%dT%H:%M:%S.%f")
 
 def match_format(value: str, format: str):
     try:
@@ -55,3 +59,8 @@ def dept_timezone_datetime_to_utc(datetimeObj, departementCode):
     to_zone = tz.gettz('UTC')
     dept_datetime = datetimeObj.replace(tzinfo=from_zone)
     return dept_datetime.astimezone(to_zone)
+
+
+def get_now_datetime_plus_an_hour_string():
+    date = datetime.utcnow() + timedelta(hours=1)
+    return read_json_date(date)

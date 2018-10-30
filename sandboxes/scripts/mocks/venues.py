@@ -1,4 +1,5 @@
 """ venue """
+from sandboxes.scripts.mocks.offerers import ninety_three_offerer_mock
 
 ninety_three_venue = {
     "address": "35 RUE DE PARIS",
@@ -8,7 +9,7 @@ ninety_three_venue = {
     "latitude": 48.89639,
     "longitude": 2.429692,
     "name": "NINETY THREE VENUE",
-    "offererName": "NINETY THREE VENUE",
+    "offererName": ninety_three_offerer_mock['name'],
     "postalCode": "93000",
 }
 
