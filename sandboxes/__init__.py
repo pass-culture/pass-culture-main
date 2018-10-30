@@ -119,7 +119,7 @@ def save_sandbox_in_db(name):
             thing = query.first()
         things_by_name[thing_mock['name']] = thing
 
-    offers = []
+    offers_by_key = {}
     for offer_mock in sandbox_module.offer_mocks:
         if 'eventName' in offer_mock:
             event_or_thing = events_by_name[offer_mock['eventName']]
@@ -145,12 +145,12 @@ def save_sandbox_in_db(name):
             pprint(vars(offer))
         else:
             offer = query.first()
-        offers.append(offer)
+        offers_by_key[offer_mock['key']] = offer
 
 
     event_occurrences = []
     for event_occurrence_mock in sandbox_module.event_occurrence_mocks:
-        offer = offers[event_occurrence_mock['offerIndex']]
+        offer = offers_by_key[event_occurrence_mock['offerKey']]
         query = EventOccurrence.query.filter_by(
             beginningDatetime=event_occurrence_mock['beginningDatetime'],
             offerId=offer.id
