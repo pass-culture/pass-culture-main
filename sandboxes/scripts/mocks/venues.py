@@ -1,5 +1,26 @@
 """ venue """
+
+ninety_three_venue = {
+    "address": "35 RUE DE PARIS",
+    "bookingEmail": "fake@email.com",
+    "city": "Bobigny",
+    "departementCode": "93",
+    "latitude": 48.89639,
+    "longitude": 2.429692,
+    "name": "NINETY THREE VENUE",
+    "offererName": "NINETY THREE VENUE",
+    "postalCode": "93000",
+}
+
+virtual_ninety_three_venue = {
+    "isVirtual": True,
+    "name": "Offre en ligne",
+    "offererName": "NINETY THREE VENUE"
+}
+
 venue_mocks = [
+    ninety_three_venue,
+    virtual_ninety_three_venue,
     {
         "address": "1 BD POISSONNIERE",
         "bookingEmail": "fake@email.com",

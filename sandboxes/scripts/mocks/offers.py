@@ -1,4 +1,6 @@
 """ offers """
+from sandboxes.scripts.mocks.utils.generators import get_all_offer_mocks_by_type
+
 offer_mocks = [
     {
         "eventName": "Rencontre avec Franck Lepage",
@@ -25,4 +27,4 @@ offer_mocks = [
         "isActive": True,
         "venueName": "THEATRE DE L ODEON"
     }
-]
+] + get_all_offer_mocks_by_type()
