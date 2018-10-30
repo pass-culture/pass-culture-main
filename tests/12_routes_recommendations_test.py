@@ -73,16 +73,6 @@ def test_put_recommendations_returns_a_list_of_recos_starting_with_two_tutos():
     assert len(list(recos_with_tutos)) == 2
 
 
-def test_put_recommendations_returns_a_list_of_48_recos():
-    # when
-    response = req_with_auth().put(RECOMMENDATION_URL, json={'seenRecommendationIds': []})
-
-    # then
-    recos = response.json()
-    assert response.status_code == 200
-    assert len(recos) == 55
-
-
 def test_put_recommendations_returns_no_duplicate_mediations_in_recos():
     # when
     response = req_with_auth().put(RECOMMENDATION_URL, json={'seenRecommendationIds': []})
@@ -131,38 +121,6 @@ def test_put_recommendations_returns_same_quantity_of_recommendations_in_differe
     recos2 = response2.json()
     assert len(recos1) == len(recos2)
     assert any([recos1[i]['id'] != recos2[i]['id'] for i in range(2, len(recos1))])
-
-
-def test_put_recommendations_returns_404_for_given_offer_and_mediation_but_different_event():
-    # when
-    response = req_with_auth().put(RECOMMENDATION_URL + '?offerId=AQ&mediationId=AE', json={})
-
-    # then
-    assert response.status_code == 404
-
-
-def test_put_recommendations_returns_404_for_unknown_offer_and_known_mediation():
-    # when
-    response = req_with_auth().put(RECOMMENDATION_URL + '?offerId=ABCDE&mediationId=AM', json={})
-
-    # then
-    assert response.status_code == 404
-
-
-def test_put_recommendations_returns_404_for_known_offer_and_unknown_mediation():
-    # when
-    response = req_with_auth().put(RECOMMENDATION_URL + '?offerId=AE&mediationId=ABCDE', json={})
-
-    # then
-    assert response.status_code == 404
-
-
-def test_put_recommendations_returns_404_for_unknown_offer_and_unknown_mediation():
-    # when
-    response = req_with_auth().put(RECOMMENDATION_URL + '?offerId=ABCDE&mediationId=ABCDE', json={})
-
-    # then
-    assert response.status_code == 404
 
 
 # def test_15_if_i_request_a_specific_reco_with_single_reco_it_should_be_single():
