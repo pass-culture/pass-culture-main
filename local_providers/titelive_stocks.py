@@ -18,22 +18,18 @@ def make_url(after_isbn_id, last_date_checked, venue_siret):
         return 'https://stock.epagine.fr/stocks/' \
            + str(venue_siret) \
            + '?after='+str(after_isbn_id) \
-           + '&modifiedSince='+str(last_date_checked)
+           # + '&modifiedSince='+str(last_date_checked)
            # + '&limit=100'
     else:
         return 'https://stock.epagine.fr/stocks/' \
                + str(venue_siret) \
-               + '?modifiedSince='+str(last_date_checked)
+               # + '?modifiedSince='+str(last_date_checked)
 
 
 def get_data(after_isbn_id, last_date_checked, is_mock, venue_siret):
-    if is_mock:
-        # TODO:
-        pass
-    else:
-        page_url = make_url(after_isbn_id, last_date_checked, venue_siret)
-        req_result = requests.get(page_url)
-        return req_result.json()
+    page_url = make_url(after_isbn_id, last_date_checked, venue_siret)
+    req_result = requests.get(page_url)
+    return req_result.json()
 
 
 def read_date(date):
@@ -63,10 +59,11 @@ class TiteLiveStocks(LocalProvider):
 
         # TODO: for test purpose
         self.siret = '77567146400110'
+        # self.siret = self.venue.siret
 
         self.is_mock = 'mock' in options and options['mock']
         self.seen_isbn = []
-        self.last_seen_isbn = 0
+        self.last_seen_isbn = ''
         self.index = -1
         self.more_pages = True
         self.data = None
@@ -83,16 +80,20 @@ class TiteLiveStocks(LocalProvider):
             self.index = 0
 
             self.data = get_data(self.last_seen_isbn,
-                                 datetime.utcfromtimestamp(1539349960),
+                                 datetime.utcfromtimestamp(1542031960),
                                  self.is_mock,
                                  # self.venueProvider.venueIdAtOfferProvider)
                                  self.siret)
 
+            if self.data is None:
+                raise StopIteration
+            #     TODO: structure probably not found
+
             # total_objects = self.data['offset']+self.data['limit']
             # TODO: why total is null from API?
-            total_objects = 200
+            total_objects = 5000
             if self.data['total'] is None:
-                total = 200
+                    total = 5000
             else:
                 total = self.data['total']
             self.more_pages = total_objects < total
@@ -102,13 +103,13 @@ class TiteLiveStocks(LocalProvider):
         self.oa_stock = self.data['stocks'][self.index]
 
         self.seen_isbn.append(str(self.oa_stock['ref']))
-        # self.last_seen_isbn = self.oa_stock['ref']
 
         thing = Thing.query.filter((Thing.type == ThingType.LIVRE_EDITION.name) &
                                    (Thing.idAtProviders == self.oa_stock['ref'])) \
             .one_or_none()
 
         offer_count = Offer.query.filter_by(thing=thing) \
+            .filter_by(venueId=self.venueId) \
             .count()
 
         if thing is None or offer_count == 0:
@@ -125,9 +126,8 @@ class TiteLiveStocks(LocalProvider):
 
     def updateObject(self, obj):
         assert obj.idAtProviders == str(self.oa_stock['ref'])
-        print("OBJ: ", obj)
         if isinstance(obj, Stock):
-            print("TOTO")
+            print("Create stock for thing: ", str(self.oa_stock['ref']))
             obj.price = int(self.oa_stock['price'])
             obj.available = int(self.oa_stock['available'])
             obj.bookingLimitDatetime = read_datetime(self.oa_stock['validUntil'])

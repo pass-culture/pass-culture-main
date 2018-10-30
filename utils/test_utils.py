@@ -343,14 +343,17 @@ def create_stock_with_thing_offer(offerer, venue, thing_offer, price=10, availab
     return stock
 
 
-def create_thing(thing_type=ThingType.LIVRE_EDITION, thing_name='Test Book', media_urls='test/urls',
+def create_thing(thing_type=ThingType.LIVRE_EDITION.name, thing_name='Test Book', media_urls='test/urls',
                  author_name='Test Author', url=None,
-                 thumb_count=1, is_national=False):
+                 thumb_count=1, is_national=False,
+                 id_at_providers=None):
     thing = Thing()
     thing.type = str(thing_type)
     thing.name = thing_name
     thing.mediaUrls = media_urls
-    thing.idAtProviders = ''.join(random.choices(string.digits, k=13))
+    if id_at_providers is None:
+        id_at_providers = ''.join(random.choices(string.digits, k=13))
+    thing.idAtProviders = id_at_providers
     thing.extraData = {'author': author_name}
     thing.url = url
     thing.thumbCount = thumb_count
@@ -392,7 +395,6 @@ def create_thing_offer(venue, thing=None, date_created=datetime.utcnow(), bookin
     offer.venue = venue
     offer.dateCreated = date_created
     offer.bookingEmail = booking_email
-    offer
     return offer
 
 

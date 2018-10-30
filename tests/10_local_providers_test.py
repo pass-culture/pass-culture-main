@@ -21,6 +21,7 @@ from models.venue_provider import VenueProvider
 from utils.config import API_ROOT_PATH
 from utils.human_ids import dehumanize
 from utils.object_storage import STORAGE_DIR
+from utils.test_utils import create_offerer, create_venue, create_thing, create_thing_offer
 
 savedCounts = {}
 
@@ -49,6 +50,7 @@ def assertEmptyDb(app):
                 assert model.query.count() == 2
             else:
                 assert model.query.count() == 0
+
 
 def assert_created_thumbs():
     assert len(glob(str(STORAGE_DIR / "thumbs" / "*"))) == 1
@@ -149,43 +151,60 @@ def test_13_titelive_thing_desc_provider(app):
 
 
 def test_14_titelive_stock_provider(app):
-    venueProvider = VenueProvider.query\
-                                 .filter_by(venueIdAtOfferProvider='2949')\
-                                 .one_or_none()
+    # given
+    offerer = create_offerer()
+    venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
+    PcObject.check_and_save(venue)
+
+    oa_provider = Provider.getByClassName('TiteLiveThings')
+    venueProvider = VenueProvider()
+    venueProvider.venue = venue
+    venueProvider.provider = oa_provider
+    venueProvider.isActive = True
+    venueProvider.venueIdAtOfferProvider = '77567146400110'
+    PcObject.check_and_save(venueProvider)
+    venueProvider = VenueProvider.query \
+        .filter_by(venueIdAtOfferProvider='77567146400110') \
+        .one_or_none()
+
+    thing = create_thing(id_at_providers='0002730757438')
+    offer = create_thing_offer(venue=venue, thing=thing)
+
+    PcObject.check_and_save(thing, offer)
+    
     assert venueProvider is not None
     provider_test(app,
                   TiteLiveStocks,
                   venueProvider,
-                  checkedObjects=388,
-                  createdObjects=370,
+                  checkedObjects=5000,
+                  createdObjects=1,
                   updatedObjects=0,
                   erroredObjects=0,
                   checkedThumbs=0,
                   createdThumbs=0,
                   updatedThumbs=0,
                   erroredThumbs=0,
-                  Offer=185,
-                  Stock=185
+                  Stock=1
                  )
 
-    venueProvider = VenueProvider.query\
-                                 .filter_by(venueIdAtOfferProvider='2921')\
-                                 .one_or_none()
-    assert venueProvider is not None
-    provider_test(app,
-                  TiteLiveStocks,
-                  venueProvider,
-                  checkedObjects=370,
-                  createdObjects=332,
-                  updatedObjects=0,
-                  erroredObjects=0,
-                  checkedThumbs=0,
-                  createdThumbs=0,
-                  updatedThumbs=0,
-                  erroredThumbs=0,
-                  Offer=166,
-                  Stock=166
-                 )
+    # venueProvider = VenueProvider.query\
+    #                              .filter_by(venueIdAtOfferProvider='2921')\
+    #                              .one_or_none()
+    # assert venueProvider is not None
+    # provider_test(app,
+    #               TiteLiveStocks,
+    #               venueProvider,
+    #               checkedObjects=370,
+    #               createdObjects=332,
+    #               updatedObjects=0,
+    #               erroredObjects=0,
+    #               checkedThumbs=0,
+    #               createdThumbs=0,
+    #               updatedThumbs=0,
+    #               erroredThumbs=0,
+    #               Offer=166,
+    #               Stock=166
+    #              )
 
 
 def test_15_spreadsheet_exp_venues_provider(app):
