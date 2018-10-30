@@ -152,7 +152,7 @@ def test_13_titelive_thing_desc_provider(app):
 
 def test_14_titelive_stock_provider(app):
     # given
-    offerer = create_offerer()
+    offerer = create_offerer(siren='987654321')
     venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
     PcObject.check_and_save(venue)
 
