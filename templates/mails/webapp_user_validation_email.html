@@ -1,5 +1,5 @@
 {% extends "mails/user_email.html" %}
 {% block mail_content %}
 Vous venez de créer un compte pass Culture avec votre adresse {{ user.email }}.
-Pour pouvoir vous connecter à l'application, veuillez <a href="{{ api_url }}/validate?modelNames=User&token={{ user.validationToken }}">cliquer ici</a>
+Pour pouvoir vous connecter à l'application, veuillez <a href="{{ api_url }}/validate/user/{{ user.validationToken }}">cliquer ici</a>
 {% endblock %}

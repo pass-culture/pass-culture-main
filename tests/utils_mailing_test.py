@@ -891,7 +891,7 @@ def test_make_webapp_user_validation_email_includes_validation_url_with_token_an
     mail_content = email_html.find("div", {"id": 'mail-content'}).text
     assert 'Bonjour {},'.format(user.publicName) in email_html.find("p", {"id": 'mail-greeting'}).text
     assert "Vous venez de créer un compte pass Culture avec votre adresse test@email.com." in mail_content
-    assert 'localhost/validate?modelNames=User&token={}'.format(user.validationToken) in \
+    assert 'localhost/validate/user/{}'.format(user.validationToken) in \
            email_html.find('a', href=True)['href']
     assert 'Pour pouvoir vous connecter à l\'application, veuillez cliquer ici' in mail_content
     assert email['To'] == user.email
@@ -913,7 +913,7 @@ def test_make_pro_user_validation_email_includes_validation_url_with_token_and_u
     mail_content = email_html.find("div", {"id": 'mail-content'}).text
     assert 'Cher partenaire pass Culture,'.format(user.publicName) in email_html.find("p", {"id": 'mail-greeting'}).text
     assert "Vous venez de créer un compte pass Culture pro avec votre adresse test@email.com." in mail_content
-    assert 'localhost/validate?modelNames=User&token={}'.format(user.validationToken) in \
+    assert 'localhost/validate/user/{}'.format(user.validationToken) in \
            email_html.find('a', href=True)['href']
     assert 'Pour pouvoir vous connecter à l\'application, veuillez cliquer ici' in mail_content
     assert email['FromName'] == 'pass Culture pro'
