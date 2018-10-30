@@ -133,34 +133,6 @@ def test_put_recommendations_returns_same_quantity_of_recommendations_in_differe
     assert any([recos1[i]['id'] != recos2[i]['id'] for i in range(2, len(recos1))])
 
 
-def test_put_recommendations_returns_a_specific_reco_first_if_requested_with_offer_and_mediation(app):
-    subtest_recos_with_params('offerId=AFQA&mediationId=AM',  # AM=3 AFQA=352
-                              expected_status=200,
-                              expected_mediation_id='AM',
-                              expected_offer_id='AFQA')
-
-
-def test_put_recommendations_returns_a_specific_reco_first_if_requested_with_only_offer_and_no_mediation():
-    subtest_recos_with_params('offerId=AFQA',
-                              expected_status=200,
-                              expected_mediation_id='AM',
-                              expected_offer_id='AFQA')
-
-
-def test_put_recommendations_returns_a_specific_reco_first_if_requested_with_no_offer_and_only_mediation():
-    subtest_recos_with_params('mediationId=AM',
-                              expected_status=200,
-                              expected_mediation_id='AM',
-                              expected_offer_id='AFQA')
-
-
-def test_put_recommendations_returns_a_specific_reco_first_if_requested_with_tuto_mediationid(app):
-    subtest_recos_with_params('mediationId=AE',
-                              expected_status=200,
-                              expected_mediation_id='AE',
-                              is_tuto=True)
-
-
 def test_put_recommendations_returns_404_for_given_offer_and_mediation_but_different_event():
     # when
     response = req_with_auth().put(RECOMMENDATION_URL + '?offerId=AQ&mediationId=AE', json={})

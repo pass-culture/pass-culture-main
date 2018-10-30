@@ -18,7 +18,7 @@ from utils.test_utils import API_URL, \
     create_user, \
     create_venue, \
     req, \
-    req_with_auth
+    req_with_auth, create_stock_with_thing_offer
 
 RECOMMENDATION_URL = API_URL + '/recommendations'
 
@@ -454,3 +454,200 @@ def test_put_recommendations_creates_new_recommendation_when_existing_ones_inval
     assert humanize(recommendation_offer2.id) not in recommendation_ids
     assert humanize(recommendation_offer3.id) not in recommendation_ids
     assert humanize(recommendation_offer4.id) not in recommendation_ids
+
+
+@clean_database
+@pytest.mark.standalone
+def test_put_recommendations_returns_two_recommendations_with_one_event_and_one_thing(app):
+    # given
+    now = datetime.utcnow()
+    four_days_from_now = now + timedelta(days=4)
+    eight_days_from_now = now + timedelta(days=8)
+    user = create_user(email='user1@user.fr', password='P@55w0rd')
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    offer_event = create_event_offer(venue, thumb_count=1, dominant_color=b'123')
+    event_occurrence = create_event_occurrence(
+        offer_event,
+        beginning_datetime=four_days_from_now,
+        end_datetime=eight_days_from_now
+    )
+    event_stock = create_stock_from_event_occurrence(event_occurrence, price=0, available=20)
+    offer_thing = create_thing_offer(venue, thumb_count=1, dominant_color=b'123')
+    stock_thing = create_stock_with_thing_offer(offerer, venue, offer_thing, price=0)
+    PcObject.check_and_save(user, event_stock, stock_thing)
+    auth_request = req_with_auth(user.email, user.clearTextPassword)
+
+    # when
+    response = auth_request.put(RECOMMENDATION_URL, json={'seenRecommendationIds': []})
+
+    # then
+    assert response.status_code == 200
+    assert len(response.json()) == 2
+
+
+@clean_database
+@pytest.mark.standalone
+def test_put_recommendations_returns_a_specific_reco_first_if_requested_with_offer_and_mediation(app):
+    # given
+    user = create_user(email='user1@user.fr', password='P@55w0rd')
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    offer_thing = create_thing_offer(venue, thumb_count=1, dominant_color=b'123')
+    stock_thing = create_stock_with_thing_offer(offerer, venue, offer_thing, price=0)
+    mediation = create_mediation(offer_thing)
+    PcObject.check_and_save(user, stock_thing, mediation)
+    auth_request = req_with_auth(user.email, user.clearTextPassword)
+
+    # when
+    response = auth_request.put(RECOMMENDATION_URL +
+                                "?offerId=" +
+                                humanize(offer_thing.id) +
+                                "&mediationId=" +
+                                humanize(mediation.id), json={'seenRecommendationIds': []})
+    # then
+    assert response.status_code == 200
+    recos = response.json()
+    assert recos[0]['mediationId'] == humanize(mediation.id)
+
+
+@clean_database
+@pytest.mark.standalone
+def test_put_recommendations_returns_a_specific_reco_first_if_requested_with_only_offer_and_no_mediation(app):
+    # given
+    user = create_user(email='user1@user.fr', password='P@55w0rd')
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    offer_thing = create_thing_offer(venue, thumb_count=1, dominant_color=b'123')
+    stock_thing = create_stock_with_thing_offer(offerer, venue, offer_thing, price=0)
+    mediation = create_mediation(offer_thing)
+    PcObject.check_and_save(user, stock_thing, mediation)
+    auth_request = req_with_auth(user.email, user.clearTextPassword)
+
+    # when
+    response = auth_request.put(RECOMMENDATION_URL +
+                                "?offerId=" +
+                                humanize(offer_thing.id), json={'seenRecommendationIds': []})
+
+    # then
+    assert response.status_code == 200
+    recos = response.json()
+    assert recos[0]['mediationId'] == humanize(mediation.id)
+
+
+@clean_database
+@pytest.mark.standalone
+def test_put_recommendations_returns_a_specific_reco_first_if_requested_with_no_offer_and_only_mediation(app):
+    # given
+    user = create_user(email='user1@user.fr', password='P@55w0rd')
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    offer_thing = create_thing_offer(venue, thumb_count=1, dominant_color=b'123')
+    stock_thing = create_stock_with_thing_offer(offerer, venue, offer_thing, price=0)
+    mediation = create_mediation(offer_thing)
+    PcObject.check_and_save(user, stock_thing, mediation)
+    auth_request = req_with_auth(user.email, user.clearTextPassword)
+
+    # when
+    response = auth_request.put(RECOMMENDATION_URL +
+                                "?mediationId=" +
+                                humanize(mediation.id), json={'seenRecommendationIds': []})
+
+    # then
+    assert response.status_code == 200
+    recos = response.json()
+    assert recos[0]['offerId'] == humanize(offer_thing.id)
+
+
+@clean_database
+@pytest.mark.standalone
+def test_put_recommendations_returns_404_for_given_offer_and_mediation_but_from_different_event(app):
+    # given
+    user = create_user(email='user1@user.fr', password='P@55w0rd')
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    offer_thing_1 = create_thing_offer(venue, thumb_count=1, dominant_color=b'123')
+    offer_thing_2 = create_thing_offer(venue, thumb_count=1, dominant_color=b'123')
+    stock_thing_1 = create_stock_with_thing_offer(offerer, venue, offer_thing_1, price=0)
+    stock_thing_2 = create_stock_with_thing_offer(offerer, venue, offer_thing_2, price=0)
+    mediation_1 = create_mediation(offer_thing_1)
+    mediation_2 = create_mediation(offer_thing_2)
+    PcObject.check_and_save(user, stock_thing_1, stock_thing_2, mediation_1, mediation_2)
+    auth_request = req_with_auth(user.email, user.clearTextPassword)
+
+    # when
+    response = auth_request.put(RECOMMENDATION_URL +
+                                "?offerId=" +
+                                humanize(offer_thing_1.id) +
+                                "?mediationId=" +
+                                humanize(mediation_2.id), json={'seenRecommendationIds': []})
+
+    # then
+    assert response.status_code == 404
+
+
+@clean_database
+@pytest.mark.standalone
+def test_put_recommendations_returns_404_for_unknown_offer_and_known_mediation(app):
+    # given
+    user = create_user(email='user1@user.fr', password='P@55w0rd')
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    offer_thing = create_thing_offer(venue, thumb_count=1, dominant_color=b'123')
+    stock_thing = create_stock_with_thing_offer(offerer, venue, offer_thing, price=0)
+    mediation = create_mediation(offer_thing)
+    PcObject.check_and_save(user, stock_thing, mediation)
+    auth_request = req_with_auth(user.email, user.clearTextPassword)
+
+    # when
+    response = auth_request.put(RECOMMENDATION_URL +
+                                "?offerId=" +
+                                "ABCDE" +
+                                "?mediationId=" +
+                                humanize(mediation.id), json={'seenRecommendationIds': []})
+
+    # then
+    assert response.status_code == 404
+
+
+@clean_database
+@pytest.mark.standalone
+def test_put_recommendations_returns_404_for_known_offer_and_unknown_mediation(app):
+    # given
+    user = create_user(email='user1@user.fr', password='P@55w0rd')
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    offer_thing = create_thing_offer(venue, thumb_count=1, dominant_color=b'123')
+    stock_thing = create_stock_with_thing_offer(offerer, venue, offer_thing, price=0)
+    mediation = create_mediation(offer_thing)
+    PcObject.check_and_save(user, stock_thing, mediation)
+    auth_request = req_with_auth(user.email, user.clearTextPassword)
+
+    # when
+    response = auth_request.put(RECOMMENDATION_URL +
+                                "?offerId=" +
+                                humanize(offer_thing.id) +
+                                "?mediationId=" +
+                                "ABCDE", json={'seenRecommendationIds': []})
+
+    # then
+    assert response.status_code == 404
+
+
+@clean_database
+@pytest.mark.standalone
+def test_put_recommendations_returns_404_for_unknown_offer_and_unknown_mediation(app):
+    # given
+    user = create_user(email='user1@user.fr', password='P@55w0rd')
+    PcObject.check_and_save(user)
+    auth_request = req_with_auth(user.email, user.clearTextPassword)
+
+    # when
+    response = auth_request.put(RECOMMENDATION_URL +
+                                "?offerId=" +
+                                "ABCDE" +
+                                "?mediationId=" +
+                                "ABCDE", json={'seenRecommendationIds': []})
+
+    # then
+    assert response.status_code == 404

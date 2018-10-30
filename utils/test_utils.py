@@ -345,7 +345,7 @@ def create_stock_with_thing_offer(offerer, venue, thing_offer, price=10, availab
 
 def create_thing(thing_type=ThingType.LIVRE_EDITION.name, thing_name='Test Book', media_urls='test/urls',
                  author_name='Test Author', url=None,
-                 thumb_count=1, is_national=False,
+                 thumb_count=1, dominant_color=None, is_national=False,
                  id_at_providers=None):
     thing = Thing()
     thing.type = str(thing_type)
@@ -359,7 +359,10 @@ def create_thing(thing_type=ThingType.LIVRE_EDITION.name, thing_name='Test Book'
     thing.thumbCount = thumb_count
     thing.isNational = is_national
     if thumb_count > 0:
-        thing.firstThumbDominantColor = b'\x00\x00\x00'
+        if dominant_color is None:
+            thing.firstThumbDominantColor = b'\x00\x00\x00'
+        else:
+            thing.firstThumbDominantColor = dominant_color
     return thing
 
 
@@ -385,13 +388,13 @@ def create_event(
 
 def create_thing_offer(venue, thing=None, date_created=datetime.utcnow(), booking_email='booking.email@test.com',
                        thing_type='Book', thing_name='Test Book', media_urls='test/urls', author_name='Test Author',
-                       thumb_count=1, url=None):
+                       thumb_count=1, dominant_color=None, url=None):
     offer = Offer()
     if thing:
         offer.thing = thing
     else:
         offer.thing = create_thing(thing_type=thing_type, thing_name=thing_name, media_urls=media_urls,
-                                   author_name=author_name, thumb_count=thumb_count, url=url)
+                                   author_name=author_name, thumb_count=thumb_count, dominant_color=dominant_color, url=url)
     offer.venue = venue
     offer.dateCreated = date_created
     offer.bookingEmail = booking_email
