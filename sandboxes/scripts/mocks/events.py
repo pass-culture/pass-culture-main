@@ -13,7 +13,6 @@ event_mocks = [
         "type": "EventType.MUSIQUE",
         "thumbCount": 1,
         "firstThumbDominantColor": b'\x00\x00\x00'
-
     },
     {
         "durationMinutes": 10,
