@@ -2,6 +2,8 @@
 import moment from 'moment'
 import { addModifierString, humanizeBeginningDate } from '../selectBookables'
 
+const format = 'dddd DD/MM/YYYY à HH:mm'
+
 describe('src | selectors| selectBookables', () => {
   describe('addModifierString', () => {
     it('Add property named __modifiers__ to array of objects', () => {
@@ -17,9 +19,9 @@ describe('src | selectors| selectBookables', () => {
   })
   describe('humanizeBeginningDate', () => {
     it('transform a date to an human readable one', () => {
-      const dateString = '2018-11-02T19:30:24Z'
-      const dateMoment = moment('2018-11-02T19:30:24Z')
-      const dateFomated = 'Friday 02/11/2018 à 20:30'
+      const dateString = new Date().toISOString()
+      const dateMoment = moment(dateString)
+      const dateExpected = dateMoment.format(format)
       let value = []
       let expected = []
       let result = addModifierString()(value)
@@ -37,12 +39,12 @@ describe('src | selectors| selectBookables', () => {
         { prop: 'prop' },
         {
           beginningDatetime: dateMoment,
-          humanBeginningDate: dateFomated,
+          humanBeginningDate: dateExpected,
           prop: 'prop',
         },
         {
           beginningDatetime: dateString,
-          humanBeginningDate: dateFomated,
+          humanBeginningDate: dateExpected,
           prop: 'prop',
         },
         {

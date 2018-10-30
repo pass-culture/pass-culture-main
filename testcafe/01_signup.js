@@ -45,6 +45,7 @@ test('Je crée un compte et je suis redirigé·e vers la page /découverte', asy
   const location = await t.eval(() => window.location)
   await t.expect(location.pathname).eql('/decouverte')
 })
+
 fixture(
   "01_02 SignupPage | Création d'un compte utilisateur | Messages d'erreur lorsque les champs ne sont pas correctement remplis"
 ).page(`${ROOT_PATH}inscription`)
@@ -60,11 +61,16 @@ test('E-mail déjà présent dans la base et mot de passe invalide', async t => 
     .click(signUpButton)
     .wait(1000)
   await t
-    .expect(userEmailError.innerText)
-    .eql('\nUn compte lié à cet email existe déjà\n\n')
-  await t
     .expect(userPasswordError.innerText)
-    .eql('\nVous devez saisir au moins 8 caractères.\n\n')
+    .eql(
+      'Le mot de passe doit faire au moins 12 caractères et contenir à minima 1 majuscule, 1 minuscule, 1 chiffre et 1 caractère spécial parmi _-&?~#|^@=+.$,<>%*!:;'
+    )
+    .typeText(userPassword, 'RTit.uioRZU.90')
+    .click(signUpButton)
+    .wait(2000)
+  await t
+    .expect(userEmailError.innerText)
+    .eql('Un compte lié à cet email existe déjà')
 })
 
 test('E-mail non autorisé', async t => {
@@ -79,5 +85,5 @@ test('E-mail non autorisé', async t => {
     .wait(1000)
   await t
     .expect(userEmailError.innerText)
-    .eql("\nAdresse non autorisée pour l'expérimentation\n\n")
+    .eql("Adresse non autorisée pour l'expérimentation")
 })
