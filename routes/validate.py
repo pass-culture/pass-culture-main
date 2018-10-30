@@ -4,9 +4,11 @@ from flask import current_app as app, jsonify, request
 import models
 from domain.user_emails import send_validation_confirmation_email, send_venue_validation_confirmation_email
 from models import ApiErrors, \
+    User, \
     PcObject, UserOfferer, Offerer, Venue
 from tests.validation_validate_test import check_validation_request, check_venue_found
 from utils.mailing import MailServiceException
+from validation.validate import check_valid_token_for_user_validation
 
 
 @app.route("/validate", methods=["GET"])
@@ -67,4 +69,13 @@ def validate_venue():
     except MailServiceException as e:
         app.logger.error('Mail service failure', e)
 
+    return "Validation effectuée", 202
+
+
+@app.route("/validate/user/<token>", methods=["GET"])
+def validate_user(token):
+    user_to_validate = User.query.filter_by(validationToken=token).first()
+    check_valid_token_for_user_validation(user_to_validate)
+    user_to_validate.validationToken = None
+    PcObject.check_and_save(user_to_validate)
     return "Validation effectuée", 202

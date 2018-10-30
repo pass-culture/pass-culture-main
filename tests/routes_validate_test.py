@@ -2,7 +2,7 @@ import secrets
 
 import pytest
 
-from models import Offerer, PcObject, Venue
+from models import Offerer, PcObject
 from models.db import db
 from tests.conftest import clean_database
 from utils.test_utils import req, create_user, req_with_auth, API_URL, create_offerer, create_user_offerer, create_venue
@@ -84,3 +84,33 @@ def test_validate_venue_with_non_existing_validation_token_returns_status_code_4
     # Then
     assert r.status_code == 404
     assert r.json()['token'] == ['Jeton inconnu']
+
+
+@clean_database
+@pytest.mark.standalone
+def test_validate_user_when_validation_token_exists_should_put_validation_token_to_none_returns_status_code_202(app):
+    # Given
+    user = create_user()
+    user.generate_validation_token()
+    PcObject.check_and_save(user)
+
+    # When
+    response = req.get(API_URL + '/validate/user/' + user.validationToken, headers={'origin': 'http://localhost:3000'})
+
+    # Then
+    assert response.status_code == 202
+    db.session.refresh(user)
+    assert user.isValidated
+
+
+@clean_database
+@pytest.mark.standalone
+def test_validate_user_when_validation_token_not_found_returns_status_code_404(app):
+    # Given
+    random_token = '0987TYGHHJMJ'
+
+    # When
+    response = req.get(API_URL + '/validate/user/' + random_token, headers={'origin': 'http://localhost:3000'})
+
+    # Then
+    assert response.status_code == 404
