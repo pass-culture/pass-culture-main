@@ -1,12 +1,12 @@
 /* eslint
   react/jsx-one-expression-per-line: 0 */
 import React from 'react'
+import { requestData, withLogin } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import { compose } from 'redux'
 import { connect } from 'react-redux'
 import { Form } from 'react-final-form'
 import { withRouter } from 'react-router-dom'
-import { requestData } from 'pass-culture-shared'
 
 import FormInputs from './FormInputs'
 import FormFooter from './FormFooter'
@@ -124,6 +124,7 @@ Signin.propTypes = {
 }
 
 export default compose(
+  withLogin({ successRedirect: '/decouverte' }),
   withRouter,
   connect()
 )(Signin)
