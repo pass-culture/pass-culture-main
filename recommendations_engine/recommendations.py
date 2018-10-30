@@ -20,7 +20,6 @@ def give_requested_recommendation_to_user(user, offer_id, mediation_id):
 
     if mediation_id or offer_id:
         recommendation = _find_recommendation(offer_id, mediation_id)
-
         if recommendation is None:
             recommendation = _create_recommendation_from_ids(user, offer_id, mediation_id=mediation_id)
             logger.info('Creating Recommendation with offer_id=%s mediation_id=%s' % (offer_id, mediation_id))
@@ -99,7 +98,14 @@ def _create_recommendation_from_ids(user, offer_id, mediation_id=None):
 def _create_recommendation(user, offer, mediation=None):
     recommendation = Recommendation()
     recommendation.user = user
-    recommendation.offer = offer
+
+    if offer:
+        recommendation.offer = offer
+    else:
+        offer = Offer.query \
+            .filter(Offer.id == mediation.offerId) \
+            .first()
+        recommendation.offer = offer
 
     if mediation:
         recommendation.mediation = mediation
