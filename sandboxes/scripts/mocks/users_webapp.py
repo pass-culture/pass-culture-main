@@ -1,4 +1,4 @@
 """ users webapp """
-from sandboxes.scripts.mocks.users_light import user_mocks as light_user_mocks
+from sandboxes.scripts.mocks.users_light import USER_MOCKS as LIGHT_USER_MOCKS
 
-user_mocks = light_user_mocks
+USER_MOCKS = LIGHT_USER_MOCKS

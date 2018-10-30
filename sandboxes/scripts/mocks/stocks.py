@@ -1,41 +1,44 @@
 """ stocks """
-stock_mocks = [
+STOCK_MOCKS = []
+
+SCRATCH_STOCK_MOCKS = [
     {
         "available": 10,
-        "eventOccurrenceIndex": 0,
+        "eventOccurrenceKey": "d33ee240-dc59-11e8-a29f-0242ac130000",
         "price": 10
     },
     {
         "available": 15,
-        "eventOccurrenceIndex": 1,
+        "eventOccurrenceKey": "d33ee240-dc59-11e8-a29f-0242ac130000",
         "price": 15
     },
 
     {
         "available": 100,
-        "eventOccurrenceIndex": 2,
+        "eventOccurrenceKey": "d33ee240-dc59-11e8-a29f-0242ac130001",
         "price": 10
     },
     {
         "available": 100,
-        "eventOccurrenceIndex": 3,
+        "eventOccurrenceKey": "d33ee240-dc59-11e8-a29f-0242ac130001",
         "price": 10
     },
     {
         "available": 90,
-        "eventOccurrenceIndex": 4,
+        "eventOccurrenceKey": "d33ee240-dc59-11e8-a29f-0242ac130001",
         "price": 15
     },
 
     {
         "available": 50,
-        "eventOccurrenceIndex": 5,
+        "eventOccurrenceKey": "d33ee240-dc59-11e8-a29f-0242ac130002",
         "price": 50
     },
 
     {
         "available": 50,
-        "offerIndex": 3,
+        "offerKey": 'd33ee240-dc59-11e8-a29f-0242ac130003',
         "price": 50
     }
 ]
+STOCK_MOCKS += SCRATCH_STOCK_MOCKS

@@ -1,6 +1,8 @@
 """ users light """
 
-admin_user_mock = {
+USER_MOCKS = []
+
+ADMIN_USER_MOCK = {
     "canBookFreeOffers": False,
     "departementCode": "93",
     "email": "pctest.admin.1@btmx.fr",
@@ -11,8 +13,9 @@ admin_user_mock = {
     "postalCode": "93100",
     "publicName": "PC Test Admin 1",
 }
+USER_MOCKS += [ADMIN_USER_MOCK]
 
-user_mocks = [
+SCRATCH_USER_MOCKS = [
     {
         "email": "pctest.jeune.93@btmx.fr",
         "departementCode": "93",
@@ -48,6 +51,6 @@ user_mocks = [
         "password": "pctest.Pro.2",
         "postalCode": "93100",
         "publicName": "PC Test Pro 2",
-    },
-    admin_user_mock
+    }
 ]
+USER_MOCKS += SCRATCH_USER_MOCKS

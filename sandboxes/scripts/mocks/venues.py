@@ -1,7 +1,9 @@
 """ venue """
-from sandboxes.scripts.mocks.offerers import ninety_three_offerer_mock
+from sandboxes.scripts.mocks.offerers import NINETY_THREE_OFFERER_MOCK
 
-ninety_three_venue = {
+VENUE_MOCKS = []
+
+NINETY_THREE_VENUE_MOCK = {
     "address": "35 RUE DE PARIS",
     "bookingEmail": "fake@email.com",
     "comment": "Pas de siret car je suis un mock.",
@@ -11,20 +13,23 @@ ninety_three_venue = {
     "longitude": 2.429692,
     "key": 'd33ee240-dc59-11e8-a29f-0242ac130000',
     "name": "NINETY THREE VENUE",
-    "offererName": ninety_three_offerer_mock['name'],
+    "offererName": NINETY_THREE_OFFERER_MOCK['name'],
     "postalCode": "93000",
 }
 
-virtual_ninety_three_venue = {
+VIRTUAL_NINETY_THREE_VENUE_MOCK = {
     "isVirtual": True,
     "key": 'd33ee240-dc59-11e8-a29f-0242ac130001',
     "name": "Offre en ligne",
-    "offererName": ninety_three_offerer_mock['name']
+    "offererName": NINETY_THREE_OFFERER_MOCK['name']
 }
 
-venue_mocks = [
-    ninety_three_venue,
-    virtual_ninety_three_venue,
+VENUE_MOCKS += [
+    NINETY_THREE_VENUE_MOCK,
+    VIRTUAL_NINETY_THREE_VENUE_MOCK,
+]
+
+SCRATCH_MOCKS = [
     {
         "address": "1 BD POISSONNIERE",
         "bookingEmail": "fake@email.com",
@@ -70,3 +75,5 @@ venue_mocks = [
         "offererName": "THEATRE DU SOLEIL"
     }
 ]
+
+VENUE_MOCKS += SCRATCH_MOCKS

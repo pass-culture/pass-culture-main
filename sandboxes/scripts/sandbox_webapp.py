@@ -1,28 +1,28 @@
-""" sandbox webapp """
-from sandboxes.scripts.mocks.bookings import booking_mocks
-from sandboxes.scripts.mocks.deposits import deposit_mocks
-from sandboxes.scripts.mocks.events import event_mocks
-from sandboxes.scripts.mocks.event_occurrences import event_occurrence_mocks
-from sandboxes.scripts.mocks.offers import offer_mocks
-from sandboxes.scripts.mocks.offerers import offerer_mocks
-from sandboxes.scripts.mocks.recommendations import recommendation_mocks
-from sandboxes.scripts.mocks.stocks import stock_mocks
-from sandboxes.scripts.mocks.things import thing_mocks
-from sandboxes.scripts.mocks.user_offerers import user_offerer_mocks
-from sandboxes.scripts.mocks.users_webapp import user_mocks
-from sandboxes.scripts.mocks.venues import venue_mocks
+""" sandbox light """
+from sandboxes.scripts.mocks.bookings import BOOKING_MOCKS
+from sandboxes.scripts.mocks.deposits import DEPOSIT_MOCKS
+from sandboxes.scripts.mocks.events import EVENT_MOCKS
+from sandboxes.scripts.mocks.event_occurrences import EVENT_OCCURRENCE_MOCKS
+from sandboxes.scripts.mocks.offers import OFFER_MOCKS
+from sandboxes.scripts.mocks.offerers import OFFERER_MOCKS
+from sandboxes.scripts.mocks.recommendations import RECOMMENDATION_MOCKS
+from sandboxes.scripts.mocks.stocks import STOCK_MOCKS
+from sandboxes.scripts.mocks.things import THING_MOCKS
+from sandboxes.scripts.mocks.user_offerers import USER_OFFERER_MOCKS
+from sandboxes.scripts.mocks.users_webapp import USER_MOCKS
+from sandboxes.scripts.mocks.venues import VENUE_MOCKS
 
 __all__ = (
-    "booking_mocks",
-    "deposit_mocks",
-    "event_mocks",
-    "event_occurrence_mocks",
-    "offer_mocks",
-    "offerer_mocks",
-    "recommendation_mocks",
-    "stock_mocks",
-    "thing_mocks",
-    "user_offerer_mocks",
-    "user_mocks",
-    "venue_mocks"
+    "BOOKING_MOCKS",
+    "DEPOSIT_MOCKS",
+    "EVENT_MOCKS",
+    "EVENT_OCCURRENCE_MOCKS",
+    "OFFER_MOCKS",
+    "OFFERER_MOCKS",
+    "RECOMMENDATION_MOCKS",
+    "STOCK_MOCKS",
+    "THING_MOCKS",
+    "USER_OFFERER_MOCKS",
+    "USER_MOCKS",
+    "VENUE_MOCKS"
 )

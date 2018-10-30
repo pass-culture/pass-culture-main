@@ -1,15 +1,17 @@
 """ offerers """
 
-ninety_three_offerer_mock = {
+OFFERER_MOCKS = []
+
+NINETY_THREE_OFFERER_MOCK = {
     "address": "NINETY THREE VENUE",
     "city": "Bobigny",
     "name": "NINETY THREE VENUE",
     "postalCode": "93000",
     "siren": "123456789"
 }
+OFFERER_MOCKS += [NINETY_THREE_OFFERER_MOCK]
 
-offerer_mocks = [
-    ninety_three_offerer_mock,
+SCRATCH_OFFERER_MOCKS = [
     {
         "address": "1 BD POISSONNIERE",
         "city": "Paris",
@@ -32,3 +34,4 @@ offerer_mocks = [
         "siren": "784340093"
     }
 ]
+OFFERER_MOCKS += SCRATCH_OFFERER_MOCKS

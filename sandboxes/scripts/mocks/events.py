@@ -1,7 +1,12 @@
 """ events """
-from sandboxes.scripts.mocks import get_all_event_mocks_by_type
+from sandboxes.scripts.mocks import get_all_typed_event_mocks
 
-event_mocks = [
+EVENT_MOCKS = []
+
+ALL_TYPED_EVENT_MOCKS = get_all_typed_event_mocks()
+EVENT_MOCKS += ALL_TYPED_EVENT_MOCKS
+
+SCRATCH_EVENT_MOCKS = [
     {
         "durationMinutes": 60,
         "name": "Rencontre avec Franck Lepage",
@@ -23,4 +28,5 @@ event_mocks = [
         "thumbCount": 1,
         "firstThumbDominantColor": b'\x00\x00\x00'
     }
-] + get_all_event_mocks_by_type()
+]
+EVENT_MOCKS += SCRATCH_EVENT_MOCKS

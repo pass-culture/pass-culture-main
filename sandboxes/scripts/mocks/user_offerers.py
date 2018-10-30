@@ -1,5 +1,7 @@
 """ user offerers """
-user_offerer_mocks = [
+USER_OFFERER_MOCKS = []
+
+SCRATCH_USER_OFFERER_MOCKS = [
     {
         "userEmail": "pctest.pro.1@btmx.fr",
         "offererName": "LE GRAND REX PARIS",
@@ -16,3 +18,4 @@ user_offerer_mocks = [
         "rights": "editor"
     }
 ]
+USER_OFFERER_MOCKS += SCRATCH_USER_OFFERER_MOCKS

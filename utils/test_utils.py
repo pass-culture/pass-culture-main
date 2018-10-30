@@ -29,7 +29,7 @@ from models.stock import Stock
 from models.thing import Thing
 from models.user import User
 from models.venue import Venue
-from sandboxes.scripts.mocks.users_light import admin_user_mock
+from sandboxes.scripts.mocks.users_light import ADMIN_USER_MOCK
 from utils.object_storage import STORAGE_DIR
 from utils.token import random_token
 
@@ -183,7 +183,7 @@ def req_with_auth(email=None, password=None, headers={'origin': 'http://localhos
     request = req.Session()
     request.headers = headers
     if email is None:
-        request.auth = (admin_user_mock['email'], admin_user_mock['password'])
+        request.auth = (ADMIN_USER_MOCK['email'], ADMIN_USER_MOCK['password'])
     elif password is not None:
         request.auth = (email, password)
     return request

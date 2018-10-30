@@ -28,7 +28,7 @@ def save_sandbox_in_db(name):
     sandbox_module = sys.modules[function_name]
 
     offerers_by_name = {}
-    for offerer_mock in sandbox_module.offerer_mocks:
+    for offerer_mock in sandbox_module.OFFERER_MOCKS:
         query = Offerer.query.filter_by(name=offerer_mock['name'])
         if query.count() == 0:
             offerer = Offerer(from_dict=offerer_mock)
@@ -39,7 +39,7 @@ def save_sandbox_in_db(name):
         offerers_by_name[offerer_mock['name']] = offerer
 
     users_by_email = {}
-    for (user_index, user_mock) in enumerate(sandbox_module.user_mocks):
+    for (user_index, user_mock) in enumerate(sandbox_module.USER_MOCKS):
         query = User.query.filter_by(email=user_mock['email'])
         if query.count() == 0:
             user = User(from_dict=user_mock)
@@ -61,7 +61,7 @@ def save_sandbox_in_db(name):
             user = query.first()
         users_by_email[user_mock['email']] = user
 
-    for user_offerer_mock in sandbox_module.user_offerer_mocks:
+    for user_offerer_mock in sandbox_module.USER_OFFERER_MOCKS:
         user = users_by_email[user_offerer_mock['userEmail']]
         offerer = offerers_by_name[user_offerer_mock['offererName']]
 
@@ -77,7 +77,7 @@ def save_sandbox_in_db(name):
             print("CREATED user_offerer")
 
     venues_by_key = {}
-    for venue_mock in sandbox_module.venue_mocks:
+    for venue_mock in sandbox_module.VENUE_MOCKS:
         offerer = offerers_by_name[venue_mock['offererName']]
         query = Venue.query.filter_by(
             managingOffererId=offerer.id,
@@ -95,7 +95,7 @@ def save_sandbox_in_db(name):
     db.session.flush()
 
     events_by_name = {}
-    for event_mock in sandbox_module.event_mocks:
+    for event_mock in sandbox_module.EVENT_MOCKS:
         query = Event.query.filter_by(name=event_mock['name'])
         if query.count() == 0:
             event = Event(from_dict=event_mock)
@@ -106,7 +106,7 @@ def save_sandbox_in_db(name):
         events_by_name[event_mock['name']] = event
 
     things_by_name = {}
-    for thing_mock in sandbox_module.thing_mocks:
+    for thing_mock in sandbox_module.THING_MOCKS:
         query = Thing.query.filter_by(name=thing_mock['name'])
         if query.count() == 0:
             thing = Thing(from_dict=thing_mock)
@@ -117,10 +117,7 @@ def save_sandbox_in_db(name):
         things_by_name[thing_mock['name']] = thing
 
     offers_by_key = {}
-    for offer_mock in sandbox_module.offer_mocks:
-
-        print('OFFER_MOCK', offer_mock)
-
+    for offer_mock in sandbox_module.OFFER_MOCKS:
         if 'eventName' in offer_mock:
             event_or_thing = events_by_name[offer_mock['eventName']]
             is_event = True
@@ -140,18 +137,15 @@ def save_sandbox_in_db(name):
             else:
                 offer.thing = event_or_thing
             offer.venue = venue
-            print('venue', venue)
-            print('offer', offer)
-            print('offer', offer.thing)
             PcObject.check_and_save(offer)
-            print("CREATED offer")
+            print("CREATED offer " + str(offer))
         else:
             offer = query.first()
         offers_by_key[offer_mock['key']] = offer
 
 
-    event_occurrences = []
-    for event_occurrence_mock in sandbox_module.event_occurrence_mocks:
+    event_occurrences_by_key = {}
+    for event_occurrence_mock in sandbox_module.EVENT_OCCURRENCE_MOCKS:
         offer = offers_by_key[event_occurrence_mock['offerKey']]
         query = EventOccurrence.query.filter_by(
             beginningDatetime=event_occurrence_mock['beginningDatetime'],
@@ -163,16 +157,16 @@ def save_sandbox_in_db(name):
             if event_occurrence.endDatetime is None:
                 event_occurrence.endDatetime = event_occurrence.beginningDatetime + timedelta(hours=1)
             PcObject.check_and_save(event_occurrence)
-            print("CREATED event_occurrence")
+            print("CREATED event_occurrence " + str(event_occurrence))
         else:
             event_occurrence = query.first()
-        event_occurrences.append(event_occurrence)
+        event_occurrences_by_key[event_occurrence_mock['key']] = event_occurrence
 
     stocks = []
-    for stock_mock in sandbox_module.stock_mocks:
+    for stock_mock in sandbox_module.STOCK_MOCKS:
 
-        if 'eventOccurrenceIndex' in stock_mock:
-            event_occurrence = event_occurrences[stock_mock['eventOccurrenceIndex']]
+        if 'eventOccurrenceKey' in stock_mock:
+            event_occurrence = event_occurrences_by_key[stock_mock['eventOccurrenceKey']]
             query = Stock.queryNotSoftDeleted().filter_by(eventOccurrenceId=event_occurrence.id)
         else:
             offer = offers_by_key[stock_mock['offerKey']]
@@ -185,26 +179,26 @@ def save_sandbox_in_db(name):
             else:
                 stock.offer = offer
             PcObject.check_and_save(stock)
-            print("CREATED stock")
+            print("CREATED stock " + str(stock))
         else:
             stock = query.first()
         stocks.append(stock)
 
     deposits = []
-    for deposit_mock in sandbox_module.deposit_mocks:
+    for deposit_mock in sandbox_module.DEPOSIT_MOCKS:
         user = User.query.filter_by(email=deposit_mock['userEmail']).one()
         query = Deposit.query.filter_by(userId=user.id)
         if query.count() == 0:
             deposit = Deposit(from_dict=deposit_mock)
             deposit.user = user
             PcObject.check_and_save(deposit)
-            print("CREATED deposit")
+            print("CREATED deposit " + str(deposit))
         else:
             deposit = query.first()
         deposits.append(deposit)
 
     bookings = []
-    for booking_mock in sandbox_module.booking_mocks:
+    for booking_mock in sandbox_module.BOOKING_MOCKS:
         stock = stocks[booking_mock['stockIndex']]
         user = User.query.filter_by(email=booking_mock['userEmail']).one()
         query = Booking.query.filter_by(stockId=stock.id, userId=user.id, token=booking_mock['token'])
@@ -214,7 +208,7 @@ def save_sandbox_in_db(name):
             booking.user = user
             booking.amount = stock.price
             PcObject.check_and_save(booking)
-            print("CREATED booking")
+            print("CREATED booking " + str(booking))
         else:
             booking = query.first()
         bookings.append(booking)

@@ -1,5 +1,5 @@
 """ bookings """
-booking_mocks = [
+BOOKING_MOCKS = [
     {
         "stockIndex": 0,
         "token": "2ALYY5",

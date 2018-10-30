@@ -1,5 +1,5 @@
 """ recommendations """
-recommendation_mocks = {
+RECOMMENDATION_MOCKS = {
     "offers": {
         "0": {
             "title": "Soirée un Auteur, un Compositeur",

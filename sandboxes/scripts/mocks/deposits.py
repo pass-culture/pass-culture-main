@@ -1,5 +1,5 @@
 """ deposits """
-deposit_mocks = [
+DEPOSIT_MOCKS = [
     {
         "amount": 500,
         "source": "public",

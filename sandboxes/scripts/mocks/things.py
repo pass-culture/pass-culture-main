@@ -1,7 +1,12 @@
 """ things """
-from sandboxes.scripts.mocks import get_all_thing_mocks_by_type
+from sandboxes.scripts.mocks import get_all_typed_thing_mocks
 
-thing_mocks = [
+THING_MOCKS = []
+
+ALL_TYPED_THING_MOCKS = get_all_typed_thing_mocks()
+THING_MOCKS += ALL_TYPED_THING_MOCKS
+
+SCRATCH_THING_MOCKS = [
     {
         "name": "Ravage",
         "type": "ThingType.LIVRE_EDITION"
@@ -10,4 +15,5 @@ thing_mocks = [
         "name": "Le Monde Diplomatique",
         "type": "ThingType.PRESSE_ABO"
     },
-] + get_all_thing_mocks_by_type()
+]
+THING_MOCKS += SCRATCH_THING_MOCKS

@@ -20,7 +20,7 @@ def read_json_date(date):
     return datetime.strptime(date, "%Y-%m-%dT%H:%M:%S.%f")
 
 def strftime(date):
-    return date.strftime("%Y-%m-%dT%H:%M:%S.%f")
+    return date.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
 
 def match_format(value: str, format: str):
     try:
