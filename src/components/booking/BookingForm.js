@@ -31,8 +31,6 @@ const onCalendarUpdates = (selection, name, allvalues) => {
   if (!userChosen || !issingle) return resetObj
   return {
     price: userChosen[0].price,
-    // NOTE -> pas de gestion de stock
-    quantity: 1,
     stockId: userChosen[0].id,
     time: userChosen[0].id,
   }
@@ -45,8 +43,6 @@ const onTimeUpdates = (selection, name, formValues) => {
   const booked = bookables.filter(o => o.id === selection)
   return {
     price: booked[0].price,
-    // NOTE -> pas de gestion de stock
-    quantity: 1,
     stockId: booked[0].id,
   }
 }
@@ -83,7 +79,6 @@ class BookingFormComponent extends React.PureComponent {
       <React.Fragment>
         <HiddenField name="price" />
         <HiddenField name="stockId" />
-        <HiddenField name="quantity" />
         {isEvent && (
           <CalendarField
             name="date"

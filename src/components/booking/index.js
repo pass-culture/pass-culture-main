@@ -66,7 +66,9 @@ class Booking extends React.PureComponent {
   onFormSubmit = formValues => {
     const onSubmittingStateChanged = () => {
       this.actions.requestData('POST', 'bookings', {
-        body: { ...formValues },
+        // NOTE -> pas de gestion de stock
+        // valeur des quantites a 1 par defaut pour les besoins API
+        body: { ...formValues, quantity: 1 },
         handleFail: this.handleRequestFail,
         // après la mise à jour du booking pour un user
         // on cherche à recupérer la nouvelle valeur du wallet
@@ -160,7 +162,6 @@ class Booking extends React.PureComponent {
       bookables,
       date: null,
       price: get(defaultBookable, 'price'),
-      quantity: 1,
       recommendationId: recommendation.id,
       stockId: get(defaultBookable, 'id'),
     }
