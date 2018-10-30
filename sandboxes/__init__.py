@@ -20,7 +20,7 @@ from models import Booking,\
                    UserOfferer,\
                    Venue
 from sandboxes.scripts import sandbox_webapp, sandbox_light
-from sandboxes.utils import store_public_object_from_sandbox_assets
+#from sandboxes.utils import store_public_object_from_sandbox_assets
 
 def save_sandbox_in_db(name):
     function_name = "sandboxes.scripts.sandbox_" + name
