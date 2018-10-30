@@ -824,6 +824,50 @@ def test_get_booking_by_token_when_not_logged_in_and_give_right_email_and_offer_
 
 @clean_database
 @pytest.mark.standalone
+def test_get_booking_by_token_when_not_logged_in_and_give_right_email_and_offer_id_thing_but_already_validated_token(app):
+    # Given
+    user = create_user(email='user@email.fr')
+    admin_user = create_user(email='admin@email.fr', password='P@55w0rd')
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    stock = create_stock_with_thing_offer(offerer, venue, thing_offer=None, price=0)
+    booking = create_booking(user, stock, venue=venue, is_used=True)
+
+    PcObject.check_and_save(admin_user, booking)
+    url = API_URL + '/bookings/token/{}?email={}&offer_id={}'.format(booking.token, 'user@email.fr',
+                                                                     humanize(stock.offerId))
+
+    # When
+    response = req.get(url, headers={'origin': 'http://localhost:3000'})
+    # Then
+    assert response.status_code == 410
+    assert response.json()['booking'] == ['Cette réservation a déjà été validée']
+
+
+@clean_database
+@pytest.mark.standalone
+def test_get_booking_by_token_when_not_logged_in_and_give_right_email_and_offer_id_thing_but_already_validated_token(app):
+    # Given
+    user = create_user(email='user@email.fr')
+    admin_user = create_user(email='admin@email.fr', password='P@55w0rd')
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    stock = create_stock_with_thing_offer(offerer, venue, thing_offer=None, price=0)
+    booking = create_booking(user, stock, venue=venue, is_cancelled=True)
+
+    PcObject.check_and_save(admin_user, booking)
+    url = API_URL + '/bookings/token/{}?email={}&offer_id={}'.format(booking.token, 'user@email.fr',
+                                                                     humanize(stock.offerId))
+
+    # When
+    response = req.get(url, headers={'origin': 'http://localhost:3000'})
+    # Then
+    assert response.status_code == 410
+    response.json()['booking'] == ['Cette réservation a été annulée']
+
+
+@clean_database
+@pytest.mark.standalone
 def test_validate_get_booking_by_token_when_not_logged_in_and_give_right_email_and_wrong_offer(app):
     # Given
     user = create_user(email='user@email.fr')
