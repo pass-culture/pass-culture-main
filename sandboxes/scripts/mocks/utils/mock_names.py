@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from sandboxes.scripts.mocks import read_json_date
+from utils.date import strftime
 
 EVENT_OR_THING_MOCK_NAMES = [
     "Anaconda",
@@ -11,7 +11,7 @@ EVENT_OR_THING_MOCK_NAMES = [
 ]
 
 EVENT_OCCURRENCE_BEGINNING_DATETIMES = [
-    read_json_date(datetime.utcnow() + timedelta(hours=1)),
-    read_json_date(datetime.utcnow() + timedelta(days=2)),
-    read_json_date(datetime.utcnow() + timedelta(days=15))
+    strftime(datetime.utcnow() + timedelta(hours=1)),
+    strftime(datetime.utcnow() + timedelta(days=2)),
+    strftime(datetime.utcnow() + timedelta(days=15))
 ]

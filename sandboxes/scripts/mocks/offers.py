@@ -1,36 +1,41 @@
 """ offers """
 from sandboxes.scripts.mocks.utils.generators import get_all_offer_mocks_by_type
-from uuid import UUID
 
 offer_mocks = [
     {
         "eventName": "Rencontre avec Franck Lepage",
         "isActive": True,
-        "key": UUID('d33ee240-dc59-11e8-a29f-0242ac130000'),
-        "venueName": "LE GRAND REX PARIS"
+        "key": 'd33ee240-dc59-11e8-a29f-0242ac130000',
+        "venueKey": 'd33ee240-dc59-11e8-a29f-0242ac130002' # LE GRAND REX PARIS
     },
     {
         "eventName": "Rencontre avec Franck Lepage",
         "isActive": True,
-        "key": UUID('d33ee240-dc59-11e8-a29f-0242ac130001'),
-        "venueName": "LE GRAND REX PARIS"
+        "key": 'd33ee240-dc59-11e8-a29f-0242ac130001',
+        "venueKey": 'd33ee240-dc59-11e8-a29f-0242ac130002' # LE GRAND REX PARIS
     },
     {
         "eventName": "Concert de Gael Faye",
         "isActive": True,
-        "key": UUID('d33ee240-dc59-11e8-a29f-0242ac130002'),
-        "venueName": "THEATRE DE L ODEON"
+        "key": 'd33ee240-dc59-11e8-a29f-0242ac130002',
+        "venueKey": "d33ee240-dc59-11e8-a29f-0242ac130004" # THEATRE DE L ODEON
     },
     {
         "eventName": "PNL chante Marx",
         "isActive": True,
-        "key": UUID('d33ee240-dc59-11e8-a29f-0242ac130003'),
-        "venueName": "THEATRE DE L ODEON"
+        "key": 'd33ee240-dc59-11e8-a29f-0242ac130003',
+        "venueKey": "d33ee240-dc59-11e8-a29f-0242ac130004" # THEATRE DE L ODEON
     },
     {
-        "thingName": "Ravage",
         "isActive": True,
-        "key": UUID('d33ee240-dc59-11e8-a29f-0242ac130004'),
-        "venueName": "THEATRE DE L ODEON"
+        "key": 'd33ee240-dc59-11e8-a29f-0242ac130004',
+        "thingName": "Ravage",
+        "venueKey": "d33ee240-dc59-11e8-a29f-0242ac130004" # THEATRE DE L ODEON
+    },
+    {
+        "isActive": True,
+        "key": 'd33ee240-dc59-11e8-a29f-0242ac130005',
+        "thingName": "Le Monde Diplomatique",
+        "venueKey": "d33ee240-dc59-11e8-a29f-0242ac130005" # THEATRE DE L ODEON (OL)
     }
 ] + get_all_offer_mocks_by_type()

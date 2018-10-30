@@ -19,6 +19,9 @@ def read_json_date(date):
         date = date + '.0'
     return datetime.strptime(date, "%Y-%m-%dT%H:%M:%S.%f")
 
+def strftime(date):
+    return date.strftime("%Y-%m-%dT%H:%M:%S.%f")
+
 def match_format(value: str, format: str):
     try:
         datetime.strptime(value, format)
@@ -63,4 +66,4 @@ def dept_timezone_datetime_to_utc(datetimeObj, departementCode):
 
 def get_now_datetime_plus_an_hour_string():
     date = datetime.utcnow() + timedelta(hours=1)
-    return read_json_date(date)
+    return strftime(date)
