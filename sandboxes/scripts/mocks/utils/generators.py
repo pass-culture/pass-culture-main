@@ -121,3 +121,33 @@ def get_all_typed_event_occurrence_mocks(all_typed_event_offer_mocks):
             event_occurrence_mocks.append(event_occurrence_mock)
 
     return event_occurrence_mocks
+
+def get_all_typed_event_stock_mocks(all_typed_event_occurrence_mocks):
+
+    stock_mocks = []
+    for event_occurrence_mock in all_typed_event_occurrence_mocks:
+        stock_mock = {
+            "available": 10,
+            "eventOccurrenceKey": event_occurrence_mock['key'],
+            "key": str(uuid1()),
+            "price": 10
+        }
+
+        stock_mocks.append(stock_mock)
+
+    return stock_mocks
+
+def get_all_typed_thing_stock_mocks(all_typed_thing_offer_mocks):
+
+    stock_mocks = []
+    for thing_offer_mock in all_typed_thing_offer_mocks:
+        stock_mock = {
+            "available": 10,
+            "offerKey": thing_offer_mock['key'],
+            "key": str(uuid1()),
+            "price": 10
+        }
+
+        stock_mocks.append(stock_mock)
+
+    return stock_mocks

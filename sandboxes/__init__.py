@@ -162,7 +162,7 @@ def save_sandbox_in_db(name):
             event_occurrence = query.first()
         event_occurrences_by_key[event_occurrence_mock['key']] = event_occurrence
 
-    stocks = []
+    stocks_by_key = {}
     for stock_mock in sandbox_module.STOCK_MOCKS:
 
         if 'eventOccurrenceKey' in stock_mock:
@@ -174,7 +174,7 @@ def save_sandbox_in_db(name):
 
         if query.count() == 0:
             stock = Stock(from_dict=stock_mock)
-            if 'eventOccurrenceIndex' in stock_mock:
+            if 'eventOccurrenceKey' in stock_mock:
                 stock.eventOccurrence = event_occurrence
             else:
                 stock.offer = offer
@@ -182,7 +182,7 @@ def save_sandbox_in_db(name):
             print("CREATED stock " + str(stock))
         else:
             stock = query.first()
-        stocks.append(stock)
+        stocks_by_key[stock_mock['key']] = stock
 
     deposits = []
     for deposit_mock in sandbox_module.DEPOSIT_MOCKS:
@@ -197,11 +197,15 @@ def save_sandbox_in_db(name):
             deposit = query.first()
         deposits.append(deposit)
 
-    bookings = []
+    bookings_by_key = {}
     for booking_mock in sandbox_module.BOOKING_MOCKS:
-        stock = stocks[booking_mock['stockIndex']]
+        stock = stocks_by_key[booking_mock['stockKey']]
         user = User.query.filter_by(email=booking_mock['userEmail']).one()
-        query = Booking.query.filter_by(stockId=stock.id, userId=user.id, token=booking_mock['token'])
+        query = Booking.query.filter_by(
+            stockId=stock.id,
+            userId=user.id,
+            token=booking_mock['token']
+        )
         if query.count() == 0:
             booking = Booking(from_dict=booking_mock)
             booking.stock = stock
@@ -211,4 +215,4 @@ def save_sandbox_in_db(name):
             print("CREATED booking " + str(booking))
         else:
             booking = query.first()
-        bookings.append(booking)
+        bookings_by_key[booking_mock['key']] = booking

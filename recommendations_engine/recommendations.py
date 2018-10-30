@@ -41,7 +41,8 @@ def create_recommendations_for_discovery(limit=3, user=None, coords=None):
         tuto_mediations[to.tutoIndex] = to
 
     inserted_tuto_mediations = 0
-    for (index, offer) in enumerate(get_offers_for_recommendations_discovery(limit, user=user, coords=coords)):
+    offers = get_offers_for_recommendations_discovery(limit, user=user, coords=coords)
+    for (index, offer) in enumerate(offers):
 
         while recommendation_count + index + inserted_tuto_mediations \
                 in tuto_mediations:
