@@ -67,7 +67,7 @@ test('E-mail déjà présent dans la base et mot de passe invalide', async t => 
     )
     .typeText(userPassword, 'RTit.uioRZU.90')
     .click(signUpButton)
-    .wait(1000)
+    .wait(2000)
   await t
     .expect(userEmailError.innerText)
     .eql('Un compte lié à cet email existe déjà')
