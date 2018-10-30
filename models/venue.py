@@ -143,10 +143,10 @@ def before_insert(mapper, connect, self):
     _check_if_existing_virtual_venue(self)
     _fill_department_code_from_postal_code(self)
 
-
 @listens_for(Venue, 'before_update')
 def before_update(mapper, connect, self):
-    _check_if_existing_virtual_venue(self)
+    # TODO: do we need _check_if_existing_virtual_venue here??
+    #_check_if_existing_virtual_venue(self)
     _fill_department_code_from_postal_code(self)
 
 
