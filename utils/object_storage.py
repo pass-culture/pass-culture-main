@@ -1,11 +1,9 @@
 import os
 from datetime import datetime
 from pathlib import Path, PurePath
-from utils.config import IS_DEV
-
-from utils.human_ids import humanize
-
 import swiftclient
+
+from utils.config import IS_DEV
 
 
 def swift_con():

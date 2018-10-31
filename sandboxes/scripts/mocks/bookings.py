@@ -2,12 +2,14 @@
 BOOKING_MOCKS = [
     {
         "key": "d33ee240-dc59-11e8-a29f-0242ac130000",
+        "recommendationKey": "d33ee240-dc59-11e8-a29f-0242ac130000",
         "stockKey": "d33ee240-dc59-11e8-a29f-0242ac130000",
         "token": "2ALYY5",
         "userEmail": "pctest.jeune.93@btmx.fr"
     },
     {
         "key": "d33ee240-dc59-11e8-a29f-0242ac130001",
+        "recommendationKey": "d33ee240-dc59-11e8-a29f-0242ac130000",
         "stockKey": "d33ee240-dc59-11e8-a29f-0242ac130000",
         "token": "2AEVY3",
         "userEmail": "pctest.jeune.93@btmx.fr"
@@ -16,6 +18,7 @@ BOOKING_MOCKS = [
 
     {
         "key": "d33ee240-dc59-11e8-a29f-0242ac130003",
+        "recommendationKey": "",
         "stockKey": "d33ee240-dc59-11e8-a29f-0242ac130001",
         "token": "1BLZZ5",
         "userEmail": "pctest.jeune.93@btmx.fr"

@@ -20,7 +20,8 @@ from models import Booking,\
                    User,\
                    UserOfferer,\
                    Venue
-from sandboxes.scripts import sandbox_webapp, sandbox_light
+from sandboxes.scripts.mocks import *
+from sandboxes.scripts import sandbox_light, sandbox_webapp
 from sandboxes.utils import store_public_object_from_sandbox_assets
 
 def save_sandbox_in_db(name):
@@ -238,30 +239,6 @@ def save_sandbox_in_db(name):
             print('--ALREADY HERE-- deposit' + str(deposit))
         deposits.append(deposit)
 
-    bookings_count = str(len(sandbox_module.BOOKING_MOCKS))
-    print("BOOKING MOCKS " + bookings_count)
-    bookings_by_key = {}
-    for (booking_index, booking_mock) in enumerate(sandbox_module.BOOKING_MOCKS):
-        print("LOOK booking " + booking_mock['stockKey'] + " " + str(booking_index) + "/" + bookings_count)
-        stock = stocks_by_key[booking_mock['stockKey']]
-        user = User.query.filter_by(email=booking_mock['userEmail']).one()
-        query = Booking.query.filter_by(
-            stockId=stock.id,
-            userId=user.id,
-            token=booking_mock['token']
-        )
-        if query.count() == 0:
-            booking = Booking(from_dict=booking_mock)
-            booking.stock = stock
-            booking.user = user
-            booking.amount = stock.price
-            PcObject.check_and_save(booking)
-            print("CREATED booking " + str(booking))
-        else:
-            booking = query.first()
-            print('--ALREADY HERE-- booking' + str(booking))
-        bookings_by_key[booking_mock['key']] = booking
-
     mediations_count = str(len(sandbox_module.MEDIATION_MOCKS))
     print("MEDIATION MOCKS " + mediations_count)
     mediations_by_key = {}
@@ -295,3 +272,49 @@ def save_sandbox_in_db(name):
             thumb_name = mediation_mock['thumbName']
         store_public_object_from_sandbox_assets("thumbs", mediation, thumb_name)
         mediations_by_key[mediation_mock['key']] = mediation
+
+    recommendations_count = str(len(sandbox_module.RECOMMENDATION_MOCKS))
+    print("RECOMMENDATION MOCKS " + recommendations_count)
+    recommendations_by_key = {}
+    for (recommendation_index, recommendation_mock) in enumerate(sandbox_module.RECOMMENDATION_MOCKS):
+        print("LOOK recommendation " + recommendation_mock['mediationKey'] + " " + str(recommendation_index) + "/" + recommendations_count)
+        mediation = mediations_by_key[recommendation_mock['mediationKey']]
+        user = User.query.filter_by(email=recommendation_mock['userEmail']).one()
+        query = Mediation.query.filter_by(
+            mediationId=stock.id,
+            userId=user.id,
+        )
+        if query.count() == 0:
+            recommendation = Recommendation(from_dict=recommendation_mock)
+            recommendation.mediation = mediation
+            recommendation.user = user
+            PcObject.check_and_save(recommendation)
+            print("CREATED recommendation " + str(recommendation))
+        else:
+            recommendation = query.first()
+            print('--ALREADY HERE-- recommendation' + str(recommendation))
+        recommendations_by_key[recommendation_mock['key']] = recommendation
+
+    bookings_count = str(len(sandbox_module.BOOKING_MOCKS))
+    print("BOOKING MOCKS " + bookings_count)
+    bookings_by_key = {}
+    for (booking_index, booking_mock) in enumerate(sandbox_module.BOOKING_MOCKS):
+        print("LOOK booking " + booking_mock['stockKey'] + " " + str(booking_index) + "/" + bookings_count)
+        stock = stocks_by_key[booking_mock['stockKey']]
+        user = User.query.filter_by(email=booking_mock['userEmail']).one()
+        query = Booking.query.filter_by(
+            stockId=stock.id,
+            userId=user.id,
+            token=booking_mock['token']
+        )
+        if query.count() == 0:
+            booking = Booking(from_dict=booking_mock)
+            booking.stock = stock
+            booking.user = user
+            booking.amount = stock.price
+            PcObject.check_and_save(booking)
+            print("CREATED booking " + str(booking))
+        else:
+            booking = query.first()
+            print('--ALREADY HERE-- booking' + str(booking))
+        bookings_by_key[booking_mock['key']] = booking
