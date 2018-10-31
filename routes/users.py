@@ -146,14 +146,11 @@ def signup():
         departement_code = _get_departement_code_when_authorized_or_error(authorized_emails, departement_codes)
         new_user.departementCode = departement_code
 
-    # we don't validate users yet
-    # new_user.generate_validation_token()
     if do_pro_signup:
         existing_offerer = Offerer.query.filter_by(siren=request.json['siren']).first()
         if existing_offerer is None:
             offerer = _generate_offerer(request.json)
             user_offerer = offerer.give_rights(new_user, RightsType.admin)
-            # Don't validate the first user / offerer link so that the user can immediately start loading stocks
             digital_venue = create_digital_venue(offerer)
             objects_to_save.extend([digital_venue, offerer])
         else:
@@ -227,16 +224,15 @@ def signup_pro():
     new_user = User(from_dict=request.json)
 
     existing_offerer = Offerer.query.filter_by(siren=request.json['siren']).first()
-    if existing_offerer is None:
-        offerer = _generate_offerer(request.json)
-        user_offerer = offerer.give_rights(new_user, RightsType.admin)
-        # Don't validate the first user_offerer link so that the user can immediately start loading stocks
-        digital_venue = create_digital_venue(offerer)
-        objects_to_save.extend([digital_venue, offerer])
-    else:
+    if existing_offerer:
         check_offerer_is_validated(existing_offerer)
         user_offerer = _generate_user_offerer_when_existing_offerer(new_user, existing_offerer)
         offerer = existing_offerer
+    else:
+        offerer = _generate_offerer(request.json)
+        user_offerer = offerer.give_rights(new_user, RightsType.admin)
+        digital_venue = create_digital_venue(offerer)
+        objects_to_save.extend([digital_venue, offerer])
     objects_to_save.append(user_offerer)
     new_user.canBookFreeOffers = False
     new_user = _set_offerer_departement_code(new_user, offerer)
