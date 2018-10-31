@@ -12,6 +12,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.sql.expression import cast
 from sqlalchemy.sql.functions import coalesce
 
+from models.needs_validation_mixin import NeedsValidationMixin
 from models.db import Model
 from models.has_address_mixin import HasAddressMixin
 from models.has_bank_information_mixin import HasBankInformationMixin
@@ -47,6 +48,7 @@ class Venue(PcObject,
             ProvidableMixin,
             VersionedMixin,
             HasBankInformationMixin,
+            NeedsValidationMixin,
             Model):
     id = Column(BigInteger, primary_key=True)
 

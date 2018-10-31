@@ -1,7 +1,7 @@
 import pytest
 from flask import session
 
-from models import PcObject
+from models import PcObject, Venue
 from models.db import db
 from tests.conftest import clean_database
 from utils.human_ids import humanize
@@ -233,3 +233,63 @@ def test_patch_change_managing_offerer_id_status_400(app):
     # Then
     assert response.status_code == 400
     assert response.json()['managingOffererId'] == ['Vous ne pouvez pas changer la structure d\'un lieu']
+
+
+@clean_database
+@pytest.mark.standalone
+def test_post_venues_without_siret_and_with_comment_returns_status_code_201_and_creates_not_validated_venue(app):
+    # Given
+    offerer = create_offerer()
+    user = create_user()
+    user_offerer = create_user_offerer(user, offerer, is_admin=True)
+    PcObject.check_and_save(user_offerer)
+    venue_data = {
+        'name': 'Ma venue',
+        'comment': 'Je ne mets pas de SIRET pour une bonne raison',
+        'address': '75 Rue Charles Fourier, 75013 Paris',
+        'postalCode': '75200',
+        'bookingEmail': 'toto@btmx.fr',
+        'city': 'Paris',
+        'managingOffererId': humanize(offerer.id),
+        'latitude': 48.82387,
+        'longitude': 2.35284
+    }
+    auth_request = req_with_auth(email=user.email, password=user.clearTextPassword)
+
+    # when
+    response = auth_request.post(API_URL + '/venues/', json=venue_data)
+
+    # Then
+    assert response.status_code == 201
+    venue = Venue.query.first()
+    assert not venue.isValidated
+
+
+@clean_database
+@pytest.mark.standalone
+def test_post_venues_with_siret_returns_status_code_201_and_creates_validated_venue(app):
+    # Given
+    offerer = create_offerer()
+    user = create_user()
+    user_offerer = create_user_offerer(user, offerer, is_admin=True)
+    PcObject.check_and_save(user_offerer)
+    venue_data = {
+        'name': 'Ma venue',
+        'siret': offerer.siren + '12345',
+        'address': '75 Rue Charles Fourier, 75013 Paris',
+        'postalCode': '75200',
+        'bookingEmail': 'toto@btmx.fr',
+        'city': 'Paris',
+        'managingOffererId': humanize(offerer.id),
+        'latitude': 48.82387,
+        'longitude': 2.35284
+    }
+    auth_request = req_with_auth(email=user.email, password=user.clearTextPassword)
+
+    # when
+    response = auth_request.post(API_URL + '/venues/', json=venue_data)
+
+    # Then
+    assert response.status_code == 201
+    venue = Venue.query.first()
+    assert venue.isValidated
