@@ -5,7 +5,7 @@ from sandboxes.scripts.mocks.offerers import ALL_OFFERER_MOCKS
 VENUE_MOCKS = []
 
 ALL_VENUE_MOCKS = get_all_venue_mocks(ALL_OFFERER_MOCKS)
-VENUE_MOCKS += VENUE_MOCKS
+VENUE_MOCKS += ALL_VENUE_MOCKS
 
 SCRATCH_MOCKS = [
     {

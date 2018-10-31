@@ -7,8 +7,14 @@ from sandboxes.scripts.mocks.utils.generators import get_all_typed_event_offer_m
 
 OFFER_MOCKS = []
 
-ALL_TYPED_EVENT_OFFER_MOCKS = get_all_typed_event_offer_mocks(ALL_TYPED_EVENT_MOCKS, ALL_VENUE_MOCKS)
-ALL_TYPED_THING_OFFER_MOCKS = get_all_typed_thing_offer_mocks(ALL_TYPED_THING_MOCKS, ALL_VENUE_MOCKS)
+ALL_TYPED_EVENT_OFFER_MOCKS = get_all_typed_event_offer_mocks(
+    ALL_TYPED_EVENT_MOCKS,
+    ALL_VENUE_MOCKS
+)
+ALL_TYPED_THING_OFFER_MOCKS = get_all_typed_thing_offer_mocks(
+    ALL_TYPED_THING_MOCKS,
+    ALL_VENUE_MOCKS
+)
 ALL_TYPED_OFFER_MOCKS = ALL_TYPED_EVENT_OFFER_MOCKS + ALL_TYPED_THING_OFFER_MOCKS
 OFFER_MOCKS += ALL_TYPED_OFFER_MOCKS
 

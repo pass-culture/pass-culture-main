@@ -57,6 +57,7 @@ def get_all_venue_mocks(all_offerer_mocks):
             "address": offerer_mock['address'],
             "bookingEmail": "fake@email.com",
             "city": offerer_mock['city'],
+            "comment": "Pas de siret car je suis un mock.",
             "latitude": offerer_mock['latitude'],
             "longitude": offerer_mock['longitude'],
             "key": str(uuid1()),

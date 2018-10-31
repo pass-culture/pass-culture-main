@@ -7,7 +7,6 @@ import json
 from pprint import pprint
 import sys
 
-from models.db import db
 from models.pc_object import PcObject
 from models import Booking,\
                    Deposit,\
@@ -91,8 +90,6 @@ def save_sandbox_in_db(name):
         else:
             venue = query.first()
         venues_by_key[venue_mock['key']] = venue
-
-    db.session.flush()
 
     events_by_name = {}
     for event_mock in sandbox_module.EVENT_MOCKS:
