@@ -1,5 +1,6 @@
 {% extends "mails/user_email.html" %}
 {% block mail_content %}
-Vous venez de créer un compte pass Culture avec votre adresse {{ user.email }}.
-Pour pouvoir vous connecter à l'application, veuillez <a href="{{ api_url }}/validate/user/{{ user.validationToken }}">cliquer ici</a>
+    Vous venez de créer un compte pass Culture avec votre adresse {{ user.email }}.
+    Vous pouvez valider votre adresse email en suivant ce lien : <br>
+    <a href="{{ api_url }}/validate/user/{{ user.validationToken }}">{{ api_url }}/validate/user/{{ user.validationToken }}</a>
 {% endblock %}

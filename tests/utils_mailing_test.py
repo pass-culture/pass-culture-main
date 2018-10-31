@@ -877,46 +877,50 @@ def test_make_payment_transaction_email():
                                                       b'ZDpwYWluLjAwMS4wMDEuMDMiPjwvRG9jdW1lbnQ+'}]
 
 
-@pytest.mark.standalone
-def test_make_webapp_user_validation_email_includes_validation_url_with_token_and_user_email(app):
-    # Given
-    user = create_user(email="test@email.com")
-    user.generate_validation_token()
+class UserValidationEmailsTest:
+    @pytest.mark.standalone
+    def test_make_webapp_user_validation_email_includes_validation_url_with_token_and_user_email(self, app):
+        # Given
+        user = create_user(email="test@email.com")
+        user.generate_validation_token()
 
-    # When
-    with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True):
-        email = make_user_validation_email(user, is_webapp=True)
-    # Then
-    email_html = BeautifulSoup(email['Html-part'], 'html.parser')
-    mail_content = email_html.find("div", {"id": 'mail-content'}).text
-    assert 'Bonjour {},'.format(user.publicName) in email_html.find("p", {"id": 'mail-greeting'}).text
-    assert "Vous venez de créer un compte pass Culture avec votre adresse test@email.com." in mail_content
-    assert 'localhost/validate/user/{}'.format(user.validationToken) in \
-           email_html.find('a', href=True)['href']
-    assert 'Pour pouvoir vous connecter à l\'application, veuillez cliquer ici' in mail_content
-    assert email['To'] == user.email
-    assert email['FromName'] == 'pass Culture'
-    assert email['Subject'] == 'Validation de votre adresse email pour le pass Culture'
-    assert email['FromEmail'] == 'passculture@beta.gouv.fr'
+        # When
+        with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True):
+            email = make_user_validation_email(user, is_webapp=True)
+        # Then
+        email_html = BeautifulSoup(email['Html-part'], 'html.parser')
+        mail_content = email_html.find("div", {"id": 'mail-content'}).text
+        assert 'Bonjour {},'.format(user.publicName) in email_html.find("p", {"id": 'mail-greeting'}).text
+        assert "Vous venez de créer un compte pass Culture avec votre adresse test@email.com." in mail_content
+        assert 'localhost/validate/user/{}'.format(user.validationToken) in \
+               email_html.find('a', href=True)['href']
+        assert 'Vous pouvez valider votre adresse email en suivant ce lien :' in mail_content
+        assert 'localhost/validate/user/{}'.format(user.validationToken) in mail_content
+        assert email['To'] == user.email
+        assert email['FromName'] == 'pass Culture'
+        assert email['Subject'] == 'Validation de votre adresse email pour le pass Culture'
+        assert email['FromEmail'] == 'passculture@beta.gouv.fr'
 
 
-@pytest.mark.standalone
-def test_make_pro_user_validation_email_includes_validation_url_with_token_and_user_email(app):
-    # Given
-    user = create_user(email="test@email.com")
-    user.generate_validation_token()
+    @pytest.mark.standalone
+    def test_make_pro_user_validation_email_includes_validation_url_with_token_and_user_email(self, app):
+        # Given
+        user = create_user(email="test@email.com")
+        user.generate_validation_token()
 
-    # When
-    email = make_user_validation_email(user, is_webapp=False)
-    # Then
-    email_html = BeautifulSoup(email['Html-part'], 'html.parser')
-    mail_content = email_html.find("div", {"id": 'mail-content'}).text
-    assert 'Cher partenaire pass Culture,'.format(user.publicName) in email_html.find("p", {"id": 'mail-greeting'}).text
-    assert "Vous venez de créer un compte pass Culture pro avec votre adresse test@email.com." in mail_content
-    assert 'localhost/validate/user/{}'.format(user.validationToken) in \
-           email_html.find('a', href=True)['href']
-    assert 'Pour pouvoir vous connecter à l\'application, veuillez cliquer ici' in mail_content
-    assert email['FromName'] == 'pass Culture pro'
+        # When
+        email = make_user_validation_email(user, is_webapp=False)
+        # Then
+        email_html = BeautifulSoup(email['Html-part'], 'html.parser')
+        mail_content = email_html.find("div", {"id": 'mail-content'}).text
+        assert 'Cher partenaire pass Culture,'.format(user.publicName) in email_html.find("p", {"id": 'mail-greeting'}).text
+        assert "Vous venez de créer un compte pass Culture pro avec votre adresse test@email.com." in mail_content
+
+        assert 'localhost/validate/user/{}'.format(user.validationToken) in \
+               email_html.find('a', href=True)['href']
+        assert 'Vous pouvez valider votre adresse email en suivant ce lien :' in mail_content
+        assert 'localhost/validate/user/{}'.format(user.validationToken) in mail_content
+        assert email['FromName'] == 'pass Culture pro'
 
 
 def remove_whitespaces(text):

@@ -3,7 +3,8 @@
         <p id="mail-greeting">Cher partenaire pass Culture,</p>
         <div id="mail-content">
             Vous venez de créer un compte pass Culture pro avec votre adresse {{ user.email }}.
-            Pour pouvoir vous connecter à l'application, veuillez <a href="{{ api_url }}/validate/user/{{ user.validationToken }}">cliquer ici</a>
+            Vous pouvez valider votre adresse email en suivant ce lien : <br>
+            <a href="{{ api_url }}/validate/user/{{ user.validationToken }}">{{ api_url }}/validate/user/{{ user.validationToken }}</a>
         </div>
     </body>
 </html>
