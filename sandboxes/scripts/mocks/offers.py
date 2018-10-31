@@ -1,13 +1,14 @@
 """ offers """
 from sandboxes.scripts.mocks.events import ALL_TYPED_EVENT_MOCKS
 from sandboxes.scripts.mocks.things import ALL_TYPED_THING_MOCKS
+from sandboxes.scripts.mocks.venues import ALL_VENUE_MOCKS
 from sandboxes.scripts.mocks.utils.generators import get_all_typed_event_offer_mocks, \
                                                      get_all_typed_thing_offer_mocks
 
 OFFER_MOCKS = []
 
-ALL_TYPED_EVENT_OFFER_MOCKS = get_all_typed_event_offer_mocks(ALL_TYPED_EVENT_MOCKS)
-ALL_TYPED_THING_OFFER_MOCKS = get_all_typed_thing_offer_mocks(ALL_TYPED_THING_MOCKS)
+ALL_TYPED_EVENT_OFFER_MOCKS = get_all_typed_event_offer_mocks(ALL_TYPED_EVENT_MOCKS, ALL_VENUE_MOCKS)
+ALL_TYPED_THING_OFFER_MOCKS = get_all_typed_thing_offer_mocks(ALL_TYPED_THING_MOCKS, ALL_VENUE_MOCKS)
 ALL_TYPED_OFFER_MOCKS = ALL_TYPED_EVENT_OFFER_MOCKS + ALL_TYPED_THING_OFFER_MOCKS
 OFFER_MOCKS += ALL_TYPED_OFFER_MOCKS
 

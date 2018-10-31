@@ -1,11 +1,80 @@
 """ generators """
 from uuid import uuid1
+import numpy
+import requests
 
 from domain.types import get_format_types, get_types_by_value
 from sandboxes.scripts.mocks.utils.mock_names import EVENT_OR_THING_MOCK_NAMES, \
-                                                     EVENT_OCCURRENCE_BEGINNING_DATETIMES
-from sandboxes.scripts.mocks.venues import NINETY_THREE_VENUE_MOCK,\
-                                           VIRTUAL_NINETY_THREE_VENUE_MOCK
+                                                     EVENT_OCCURRENCE_BEGINNING_DATETIMES, \
+                                                     PLACES
+
+def get_all_offerer_mocks(geo_interval=0.1, geo_number=4):
+
+    siren = 123456789
+
+    offerer_mocks = []
+    for place in PLACES:
+        longitudes = numpy.linspace(
+            place['longitude'] - geo_interval,
+            place['longitude'] + geo_interval,
+            geo_number
+        )
+        for longitude in longitudes :
+            latitudes = numpy.linspace(
+                place['latitude'] - geo_interval,
+                place['latitude'] + geo_interval,
+                geo_number
+            )
+            for latitude in latitudes:
+                url = 'https://api-adresse.data.gouv.fr/reverse/?lon='+str(longitude)+'&lat='+str(latitude)
+                result = requests.get(url)
+                obj = result.json()
+                if 'features' in obj and obj['features']:
+                    feature = obj['features'][0]
+                    coordinates = feature['geometry']['coordinates']
+                    properties = feature['properties']
+                    offerer_mock = {
+                        "address": properties['name'].upper(),
+                        "city": properties['city'],
+                        "key": str(uuid1()),
+                        "latitude": coordinates[1],
+                        "longitude": coordinates[0],
+                        "name": "STRUCTURE " + str(siren),
+                        "postalCode": properties['postcode'],
+                        "siren": str(siren)
+                    }
+                siren -= 1
+
+                offerer_mocks.append(offerer_mock)
+
+    return offerer_mocks
+
+def get_all_venue_mocks(all_offerer_mocks):
+
+    venue_mocks = []
+    for offerer_mock in all_offerer_mocks:
+        venue_mock = {
+            "address": offerer_mock['address'],
+            "bookingEmail": "fake@email.com",
+            "city": offerer_mock['city'],
+            "latitude": offerer_mock['latitude'],
+            "longitude": offerer_mock['longitude'],
+            "key": str(uuid1()),
+            "name": "LIEU " + str(offerer_mock['siren']),
+            "offererName": offerer_mock['name'],
+            "postalCode": offerer_mock['postalCode']
+        }
+        venue_mocks.append(venue_mock)
+
+        virtual_venue_mock = {
+            "isVirtual": True,
+            "key": str(uuid1()),
+            "name": "Offre en ligne",
+            "offererName": offerer_mock['name']
+        }
+        venue_mocks.append(virtual_venue_mock)
+
+    return venue_mocks
 
 def get_all_typed_event_mocks():
     event_types = [t for t in get_format_types() if t['type'] == 'Event']
@@ -56,54 +125,68 @@ def get_all_typed_thing_mocks():
 
     return thing_mocks
 
-def get_all_typed_event_offer_mocks(all_typed_event_mocks):
+def get_all_typed_event_offer_mocks(all_typed_event_mocks, all_venue_mocks):
 
     types_by_value = get_types_by_value()
 
     offer_mocks = []
-    for event_mock in all_typed_event_mocks:
 
-        offer_mock = {
-            "key": str(uuid1()),
-            "eventName": event_mock['name'],
-            "isActive": True,
-        }
+    for venue_mock in all_venue_mocks:
+        virtual_venue_mock = [
+            vm for vm in all_venue_mocks
+            if venue_mock['offererName'] == vm['offererName'] and 'isVirtual' in vm and vm['isVirtual'] == True
+        ][0]
 
-        # DETERMINE THE MATCHING VENUE
-        event_type = types_by_value[event_mock['type']]
-        if event_type['offlineOnly']:
-            offer_mock['venueKey'] = NINETY_THREE_VENUE_MOCK['key']
-        elif event_type['onlineOnly']:
-            offer_mock['venueKey'] = VIRTUAL_NINETY_THREE_VENUE_MOCK['key']
-        else:
-            offer_mock['venueKey'] = NINETY_THREE_VENUE_MOCK['key']
+        for event_mock in all_typed_event_mocks:
 
-        offer_mocks.append(offer_mock)
+            offer_mock = {
+                "key": str(uuid1()),
+                "eventName": event_mock['name'],
+                "isActive": True,
+            }
+
+            # DETERMINE THE MATCHING VENUE
+            event_type = types_by_value[event_mock['type']]
+            if event_type['offlineOnly']:
+                offer_mock['venueKey'] = venue_mock['key']
+            elif event_type['onlineOnly']:
+                offer_mock['venueKey'] = virtual_venue_mock['key']
+            else:
+                offer_mock['venueKey'] = venue_mock['key']
+
+            offer_mocks.append(offer_mock)
 
     return offer_mocks
 
-def get_all_typed_thing_offer_mocks(all_typed_thing_mocks):
+def get_all_typed_thing_offer_mocks(all_typed_thing_mocks, all_venue_mocks):
 
     types_by_value = get_types_by_value()
 
     offer_mocks = []
-    for thing_mock in all_typed_thing_mocks:
-        offer_mock = {
-            "key": str(uuid1()),
-            "isActive": True,
-            "thingName": thing_mock['name']
-        }
 
-        # DETERMINE THE MATCHING VENUE
-        thing_type = types_by_value[thing_mock['type']]
-        if thing_type['offlineOnly']:
-            offer_mock['venueKey'] = NINETY_THREE_VENUE_MOCK['key']
-        elif thing_type['onlineOnly']:
-            offer_mock['venueKey'] = VIRTUAL_NINETY_THREE_VENUE_MOCK['key']
-        else:
-            offer_mock['venueKey'] = NINETY_THREE_VENUE_MOCK['key']
+    for venue_mock in all_venue_mocks:
+        virtual_venue_mock = [
+            vm for vm in all_venue_mocks
+            if venue_mock['offererName'] == vm['offererName'] and 'isVirtual' in vm and vm['isVirtual'] == True
+        ][0]
 
-        offer_mocks.append(offer_mock)
+        for thing_mock in all_typed_thing_mocks:
+            offer_mock = {
+                "key": str(uuid1()),
+                "isActive": True,
+                "thingName": thing_mock['name']
+            }
+
+            # DETERMINE THE MATCHING VENUE
+            thing_type = types_by_value[thing_mock['type']]
+            if thing_type['offlineOnly']:
+                offer_mock['venueKey'] = venue_mock['key']
+            elif thing_type['onlineOnly']:
+                offer_mock['venueKey'] = virtual_venue_mock['key']
+            else:
+                offer_mock['venueKey'] = venue_mock['key']
+
+            offer_mocks.append(offer_mock)
 
     return offer_mocks
 

@@ -1,33 +1,11 @@
 """ venue """
-from sandboxes.scripts.mocks.offerers import NINETY_THREE_OFFERER_MOCK
+from sandboxes.scripts.mocks.utils.generators import get_all_venue_mocks
+from sandboxes.scripts.mocks.offerers import ALL_OFFERER_MOCKS
 
 VENUE_MOCKS = []
 
-NINETY_THREE_VENUE_MOCK = {
-    "address": "35 RUE DE PARIS",
-    "bookingEmail": "fake@email.com",
-    "comment": "Pas de siret car je suis un mock.",
-    "city": "Bobigny",
-    "departementCode": "93",
-    "latitude": 48.89639,
-    "longitude": 2.429692,
-    "key": 'd33ee240-dc59-11e8-a29f-0242ac130000',
-    "name": "NINETY THREE VENUE",
-    "offererName": NINETY_THREE_OFFERER_MOCK['name'],
-    "postalCode": "93000",
-}
-
-VIRTUAL_NINETY_THREE_VENUE_MOCK = {
-    "isVirtual": True,
-    "key": 'd33ee240-dc59-11e8-a29f-0242ac130001',
-    "name": "Offre en ligne",
-    "offererName": NINETY_THREE_OFFERER_MOCK['name']
-}
-
-VENUE_MOCKS += [
-    NINETY_THREE_VENUE_MOCK,
-    VIRTUAL_NINETY_THREE_VENUE_MOCK,
-]
+ALL_VENUE_MOCKS = get_all_venue_mocks(ALL_OFFERER_MOCKS)
+VENUE_MOCKS += VENUE_MOCKS
 
 SCRATCH_MOCKS = [
     {

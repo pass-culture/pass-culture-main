@@ -1,15 +1,10 @@
 """ offerers """
+from sandboxes.scripts.mocks.utils.generators import get_all_offerer_mocks
 
 OFFERER_MOCKS = []
 
-NINETY_THREE_OFFERER_MOCK = {
-    "address": "NINETY THREE VENUE",
-    "city": "Bobigny",
-    "name": "NINETY THREE VENUE",
-    "postalCode": "93000",
-    "siren": "123456789"
-}
-OFFERER_MOCKS += [NINETY_THREE_OFFERER_MOCK]
+ALL_OFFERER_MOCKS = get_all_offerer_mocks()
+OFFERER_MOCKS += ALL_OFFERER_MOCKS
 
 SCRATCH_OFFERER_MOCKS = [
     {
