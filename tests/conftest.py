@@ -89,6 +89,7 @@ def clean_database(f):
         User.query.delete()
         Activity.query.delete()
         UserSession.query.delete()
+        db.session.commit()
         return f(*args, **kwargs)
 
     return decorated_function

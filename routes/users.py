@@ -186,23 +186,21 @@ def signup():
     return jsonify(new_user._asdict(include=USER_INCLUDES)), 201
 
 
-@app.route("/users/signup-webapp", methods=["POST"])
+@app.route("/users/signup/webapp", methods=["POST"])
 def signup_webapp():
     objects_to_save = []
-    email = request.json.get('email')
     password = request.json.get('password')
     check_valid_signup(request)
     check_password_strength('password', password)
-    need_for_authorisation_check = email is not None and not IS_INTEGRATION
 
     new_user = User(from_dict=request.json)
-    if need_for_authorisation_check:
-        authorized_emails, departement_codes = get_authorized_emails_and_dept_codes()
-        departement_code = _get_departement_code_when_authorized_or_error(authorized_emails, departement_codes)
-        new_user.departementCode = departement_code
 
     if IS_INTEGRATION:
         objects_to_save.append(_create_initial_deposit(new_user))
+    else:
+        authorized_emails, departement_codes = get_authorized_emails_and_dept_codes()
+        departement_code = _get_departement_code_when_authorized_or_error(authorized_emails, departement_codes)
+        new_user.departementCode = departement_code
 
     new_user.generate_validation_token()
     objects_to_save.append(new_user)
@@ -220,7 +218,7 @@ def signup_webapp():
 
 
 
-@app.route("/users/signup-pro", methods=["POST"])
+@app.route("/users/signup/pro", methods=["POST"])
 def signup_pro():
     objects_to_save = []
     password = request.json.get('password')

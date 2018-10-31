@@ -39,189 +39,507 @@ BASE_DATA_PRO = {
     'name': 'Crédit Coopératif'
 }
 
+@pytest.mark.standalone
+class WebappSignupTest:
+    @clean_database
+    def test_signup_without_email_should_return_status_code_400_and_email_in_error(self, app):
+        # Given
+        data = BASE_DATA.copy()
+        del (data['email'])
 
-def assert_webapp_signup_error(data, err_field):
-    r_signup = req.post(API_URL + '/users/signup-webapp',
-                        json=data, headers={'origin': 'h:''http://localhost:3000'})
-    assert r_signup.status_code == 400
-    error = r_signup.json()
-    assert err_field in error
+        # When
+        r_signup = req.post(API_URL + '/users/signup/webapp',
+                            json=data, headers={'origin': 'http://localhost:3000'})
+
+        # Then
+        assert r_signup.status_code == 400
+        error = r_signup.json()
+        assert 'email' in error
+
+    @clean_database
+    def test_signup_with_invalid_email_should_return_status_code_400_and_email_in_error(self, app):
+        # Given
+        data = BASE_DATA.copy()
+        data['email'] = 'toto'
+
+        # When
+        r_signup = req.post(API_URL + '/users/signup/webapp',
+                            json=data, headers={'origin': 'http://localhost:3000'})
+
+        # Then
+        assert r_signup.status_code == 400
+        error = r_signup.json()
+        assert 'email' in error
+
+    @clean_database
+    def test_signup_with_same_email_returns_status_code_400_and_email_in_error(self, app):
+        req.post(API_URL + '/users/signup/webapp',
+                 json=BASE_DATA, headers={'origin': 'http://localhost:3000'})
+
+        # When
+        r_signup = req.post(API_URL + '/users/signup/webapp',
+                            json=BASE_DATA, headers={'origin': 'http://localhost:3000'})
+
+        # Then
+        assert r_signup.status_code == 400
+        error = r_signup.json()
+        assert 'email' in error
+
+    @clean_database
+    def test_signup_without_publicName_should_return_status_code_400_and_public_name_in_error(self, app):
+        # Given
+        data = BASE_DATA.copy()
+        del (data['publicName'])
+
+        # When
+        r_signup = req.post(API_URL + '/users/signup/webapp',
+                            json=data, headers={'origin': 'http://localhost:3000'})
+
+        # Then
+        assert r_signup.status_code == 400
+        error = r_signup.json()
+        assert 'publicName' in error
+
+    @clean_database
+    def test_signup_with_publicName_too_short_returns_status_code_400_and_public_name_in_error(self, app):
+        # Given
+        data = BASE_DATA.copy()
+        data['publicName'] = 't'
+
+        # When
+        r_signup = req.post(API_URL + '/users/signup/webapp',
+                            json=data, headers={'origin': 'http://localhost:3000'})
+
+        # Then
+        assert r_signup.status_code == 400
+        error = r_signup.json()
+        assert 'publicName' in error
+
+    @clean_database
+    def test_signup_with_publicName_too_long_returns_status_code_400_and_public_name_in_error(self, app):
+        # Given
+        data = BASE_DATA.copy()
+        data['publicName'] = 'x' * 32
+
+        # When
+        r_signup = req.post(API_URL + '/users/signup/webapp',
+                            json=data, headers={'origin': 'http://localhost:3000'})
+
+        # Then
+        assert r_signup.status_code == 400
+        error = r_signup.json()
+        assert 'publicName' in error
+
+    @clean_database
+    def test_signup_without_password_returns_status_code_400_and_password_in_error(self, app):
+        # Given
+        data = BASE_DATA.copy()
+        del (data['password'])
+
+        # When
+        r_signup = req.post(API_URL + '/users/signup/webapp',
+                            json=data, headers={'origin': 'http://localhost:3000'})
+
+        # Then
+        assert r_signup.status_code == 400
+        error = r_signup.json()
+        assert 'password' in error
+
+    @clean_database
+    def test_signup_with_invalid_password_returns_status_code_400_and_and_password_in_error(self, app):
+        # Given
+        data = BASE_DATA.copy()
+        data['password'] = 'weakpassword'
+
+        # When
+        r_signup = req.post(API_URL + '/users/signup/webapp',
+                            json=data, headers={'origin': 'http://localhost:3000'})
+
+        # Then
+        assert r_signup.status_code == 400
+        response = r_signup.json()
+        assert response['password'] == [
+            'Le mot de passe doit faire au moins 12 caractères et contenir à minima '
+            '1 majuscule, 1 minuscule, 1 chiffre et 1 caractère spécial parmi _-&?~#|^@=+.$,<>%*!:;'
+        ]
+
+    @clean_database
+    def test_signup_without_contact_ok_returns_400_and_contact_ok_in_error(self, app):
+        data = BASE_DATA.copy()
+        del (data['contact_ok'])
+
+        # When
+        r_signup = req.post(API_URL + '/users/signup/webapp',
+                            json=data, headers={'origin': 'http://localhost:3000'})
+
+        # Then
+        assert r_signup.status_code == 400
+        error = r_signup.json()
+        assert 'contact_ok' in error
+
+    @clean_database
+    def test_signup_with_invalid_contact_ok_returns_status_code_400_and_contact_ok_in_error(self, app):
+        data = BASE_DATA.copy()
+        data['contact_ok'] = 't'
+
+        # When
+        r_signup = req.post(API_URL + '/users/signup/webapp',
+                            json=data, headers={'origin': 'http://localhost:3000'})
+
+        # Then
+        assert r_signup.status_code == 400
+        error = r_signup.json()
+        assert 'contact_ok' in error
+
+    @clean_database
+    def test_signup_successful_returns_status_code_201_and_does_not_log_user_in(self, app):
+        data = BASE_DATA.copy()
+        r_signup = req.post(API_URL + '/users/signup/webapp',
+                            json=data, headers={'origin': 'http://localhost:3000'})
+        assert r_signup.status_code == 201
+        assert 'Set-Cookie' not in r_signup.headers
+
+    @clean_database
+    @patch('connectors.google_spreadsheet.get_authorized_emails_and_dept_codes')
+    def test_signup_when_user_not_in_exp_spreadsheet_returns_status_code_400_and_email_in_error(self,get_authorized_emails_and_dept_codes, app):
+        # Given
+        get_authorized_emails_and_dept_codes.return_value = (['toto@email.com', 'other@email.com'], ['93', '93'])
+        data = BASE_DATA.copy()
+        data['email'] = 'unknown@unknown.com'
+
+        # When
+        r_signup = req.post(API_URL + '/users/signup/webapp',
+                            json=data, headers={'origin': 'http://localhost:3000'})
+
+        # Then
+        assert r_signup.status_code == 400
+        error = r_signup.json()
+        assert 'email' in error
+
+
+@pytest.mark.standalone
+class ProSignupTest:
+    @clean_database
+    def test_signup_without_email_should_return_status_code_400_and_email_in_error(self, app):
+        # Given
+        data = BASE_DATA_PRO.copy()
+        del (data['email'])
+
+        # When
+        r_signup = req.post(API_URL + '/users/signup/pro',
+                            json=data, headers={'origin': 'http://localhost:3000'})
+
+        # Then
+        assert r_signup.status_code == 400
+        error = r_signup.json()
+        assert 'email' in error
+
+    @clean_database
+    def test_signup_with_invalid_email_should_return_status_code_400_and_email_in_error(self, app):
+        # Given
+        data = BASE_DATA_PRO.copy()
+        data['email'] = 'toto'
+
+        # When
+        r_signup = req.post(API_URL + '/users/signup/pro',
+                            json=data, headers={'origin': 'http://localhost:3000'})
+
+        # Then
+        assert r_signup.status_code == 400
+        error = r_signup.json()
+        assert 'email' in error
+
+    @clean_database
+    def test_signup_with_same_email_returns_status_code_400_and_email_in_error(self, app):
+        data = BASE_DATA_PRO.copy()
+        req.post(API_URL + '/users/signup/pro',
+                 json=data, headers={'origin': 'http://localhost:3000'})
+
+        # When
+        data['siren'] = '123456789'
+        r_signup = req.post(API_URL + '/users/signup/pro',
+                            json=data, headers={'origin': 'http://localhost:3000'})
+
+        # Then
+        assert r_signup.status_code == 400
+        error = r_signup.json()
+        assert 'email' in error
+
+    @clean_database
+    def test_signup_without_publicName_should_return_status_code_400_and_public_name_in_error(self, app):
+        # Given
+        data = BASE_DATA_PRO.copy()
+        del (data['publicName'])
+
+        # When
+        r_signup = req.post(API_URL + '/users/signup/pro',
+                            json=data, headers={'origin': 'http://localhost:3000'})
+
+        # Then
+        assert r_signup.status_code == 400
+        error = r_signup.json()
+        assert 'publicName' in error
+
+    @clean_database
+    def test_signup_with_publicName_too_short_returns_status_code_400_and_public_name_in_error(self, app):
+        # Given
+        data = BASE_DATA_PRO.copy()
+        data['publicName'] = 't'
+
+        # When
+        r_signup = req.post(API_URL + '/users/signup/pro',
+                            json=data, headers={'origin': 'http://localhost:3000'})
+
+        # Then
+        assert r_signup.status_code == 400
+        error = r_signup.json()
+        assert 'publicName' in error
+
+    @clean_database
+    def test_signup_with_publicName_too_long_returns_status_code_400_and_public_name_in_error(self, app):
+        # Given
+        data = BASE_DATA_PRO.copy()
+        data['publicName'] = 'x' * 32
+
+        # When
+        r_signup = req.post(API_URL + '/users/signup/pro',
+                            json=data, headers={'origin': 'http://localhost:3000'})
+
+        # Then
+        assert r_signup.status_code == 400
+        error = r_signup.json()
+        assert 'publicName' in error
+
+    @clean_database
+    def test_signup_without_password_returns_status_code_400_and_password_in_error(self, app):
+        # Given
+        data = BASE_DATA_PRO.copy()
+        del (data['password'])
+
+        # When
+        r_signup = req.post(API_URL + '/users/signup/pro',
+                            json=data, headers={'origin': 'http://localhost:3000'})
+
+        # Then
+        assert r_signup.status_code == 400
+        error = r_signup.json()
+        assert 'password' in error
+
+    @clean_database
+    def test_signup_with_invalid_password_returns_status_code_400_and_and_password_in_error(self, app):
+        # Given
+        data = BASE_DATA_PRO.copy()
+        data['password'] = 'weakpassword'
+
+        # When
+        r_signup = req.post(API_URL + '/users/signup/pro',
+                            json=data, headers={'origin': 'http://localhost:3000'})
+
+        # Then
+        assert r_signup.status_code == 400
+        response = r_signup.json()
+        assert response['password'] == [
+            'Le mot de passe doit faire au moins 12 caractères et contenir à minima '
+            '1 majuscule, 1 minuscule, 1 chiffre et 1 caractère spécial parmi _-&?~#|^@=+.$,<>%*!:;'
+        ]
+
+
+    @clean_database
+    def test_signup_without_contact_ok_returns_status_code_400_and_contact_ok_in_error(self, app):
+        data = BASE_DATA_PRO.copy()
+        del (data['contact_ok'])
+
+        # When
+        r_signup = req.post(API_URL + '/users/signup/pro',
+                            json=data, headers={'origin': 'http://localhost:3000'})
+
+        # Then
+        assert r_signup.status_code == 400
+        error = r_signup.json()
+        assert 'contact_ok' in error
+
+    @clean_database
+    def test_signup_with_invalid_contact_ok_returns_status_code_400_and_contact_ok_in_error(self, app):
+        data = BASE_DATA_PRO.copy()
+        data['contact_ok'] = 't'
+
+        # When
+        r_signup = req.post(API_URL + '/users/signup/pro',
+                            json=data, headers={'origin': 'http://localhost:3000'})
+
+        # Then
+        assert r_signup.status_code == 400
+        error = r_signup.json()
+        assert 'contact_ok' in error
+
+    @clean_database
+    def test_signup_successful_returns_status_code_201_and_does_not_log_user_in(self, app):
+        data = BASE_DATA_PRO.copy()
+        r_signup = req.post(API_URL + '/users/signup/pro',
+                            json=data, headers={'origin': 'http://localhost:3000'})
+        assert r_signup.status_code == 201
+        assert 'Set-Cookie' not in r_signup.headers
+
+    @clean_database
+    def test_signup_without_offerer_name_returns_status_code_400_and_name_in_error(self, app):
+        # Given
+        data = BASE_DATA_PRO.copy()
+        del (data['name'])
+
+        # When
+        r_signup = req.post(API_URL + '/users/signup/pro',
+                            json=data, headers={'origin': 'http://localhost:3000'})
+
+        # Then
+        assert r_signup.status_code == 400
+        error = r_signup.json()
+        assert 'name' in error
+
+    @clean_database
+    def test_signup_without_offerer_address_returns_status_code_400_and_adress_in_error(self, app):
+        data = BASE_DATA_PRO.copy()
+        del (data['address'])
+
+        # When
+        r_signup = req.post(API_URL + '/users/signup/pro',
+                            json=data, headers={'origin': 'http://localhost:3000'})
+
+        # Then
+        assert r_signup.status_code == 400
+        error = r_signup.json()
+        assert 'address' in error
+
+    @clean_database
+    def test_signup_without_offerer_city_returns_status_code_400_and_city_in_error(self, app):
+        data = BASE_DATA_PRO.copy()
+        del (data['city'])
+
+        # When
+        r_signup = req.post(API_URL + '/users/signup/pro',
+                            json=data, headers={'origin': 'http://localhost:3000'})
+
+        # Then
+        assert r_signup.status_code == 400
+        error = r_signup.json()
+        assert 'city' in error
+
+    @clean_database
+    def test_signup_without_offerer_postal_code_returns_status_code_400_and_postal_code_in_error(self, app):
+        data = BASE_DATA_PRO.copy()
+        del (data['postalCode'])
+
+        # When
+        r_signup = req.post(API_URL + '/users/signup/pro',
+                            json=data, headers={'origin': 'http://localhost:3000'})
+
+        # Then
+        assert r_signup.status_code == 400
+        error = r_signup.json()
+        assert 'postalCode' in error
+
+    @clean_database
+    def test_signup_with_invalid_offerer_postal_code_returns_status_code_400_and_postal_code_in_error(self, app):
+        data = BASE_DATA_PRO.copy()
+        data['postalCode'] = '111'
+
+        # When
+        r_signup = req.post(API_URL + '/users/signup/pro',
+                            json=data, headers={'origin': 'http://localhost:3000'})
+
+        # Then
+        assert r_signup.status_code == 400
+        error = r_signup.json()
+        assert 'postalCode' in error
+
+    @clean_database
+    def test_pro_signup_when_successful_returns_status_code_201_creates_user_offerer_digital_venue_and_userOfferer_and_not_log_user_in(self, app):
+        data_pro = BASE_DATA_PRO.copy()
+        r_signup = req.post(API_URL + '/users/signup/pro',
+                            json=data_pro, headers={'origin': 'http://localhost:3000'})
+        assert r_signup.status_code == 201
+        assert 'Set-Cookie' not in r_signup.headers
+        user = User.query \
+            .filter_by(email='toto_pro@btmx.fr') \
+            .first()
+        assert user is not None
+        offerer = Offerer.query \
+            .filter_by(siren='349974931') \
+            .first()
+        assert offerer is not None
+        assert offerer.validationToken is not None
+        assert len(offerer.managedVenues) == 1
+        assert offerer.managedVenues[0].isVirtual
+        user_offerer = UserOfferer.query \
+            .filter_by(user=user,
+                       offerer=offerer) \
+            .first()
+        assert user_offerer is not None
+        assert user_offerer.validationToken is None
+        assert user_offerer.rights == RightsType.admin
+
+    @clean_database
+    def test_pro_signup_when_existing_offerer_returns_status_code_201_creates_editor_user_offerer_and_does_not_log_in(self, app):
+        json_offerer = {
+            "name": "Test Offerer",
+            "siren": "349974931",
+            "address": "Test adresse",
+            "postalCode": "75000",
+            "city": "Paris"
+        }
+        offerer = Offerer(from_dict=json_offerer)
+        user = create_user(public_name='bobby', email='bobby@test.com')
+        user_offerer = create_user_offerer(user, offerer, is_admin=True)
+        PcObject.check_and_save(offerer, user_offerer)
+
+        data = BASE_DATA_PRO.copy()
+        r_signup = req.post(API_URL + '/users/signup/pro',
+                            json=data, headers={'origin': 'http://localhost:3000'})
+        assert r_signup.status_code == 201
+        assert 'Set-Cookie' not in r_signup.headers
+        user = User.query \
+            .filter_by(email='toto_pro@btmx.fr') \
+            .first()
+        assert user is not None
+        offerer = Offerer.query \
+            .filter_by(siren='349974931') \
+            .first()
+        assert offerer is not None
+        user_offerer = UserOfferer.query \
+            .filter_by(user=user,
+                       offerer=offerer) \
+            .first()
+        assert user_offerer is not None
+        assert user_offerer.validationToken is not None
+        assert user_offerer.rights == RightsType.editor
+
+    @clean_database
+    def test_pro_signup_when_offerer_not_validated_returns_409_and_siren_in_error(self, app):
+        json_offerer = {
+            "name": "Test Offerer",
+            "siren": BASE_DATA_PRO['siren'],
+            "address": "Test adresse",
+            "postalCode": "75000",
+            "city": "Paris"
+        }
+        offerer = Offerer(from_dict=json_offerer)
+        offerer.generate_validation_token()
+        user = create_user(public_name='bobby', email='bobby@test.com')
+        user_offerer = create_user_offerer(user, offerer, is_admin=True)
+        PcObject.check_and_save(offerer, user_offerer)
+
+        data = BASE_DATA_PRO.copy()
+        r_signup = req.post(API_URL + '/users/signup/pro',
+                            json=data, headers={'origin': 'http://localhost:3000'})
+        assert r_signup.status_code == 409
+        assert r_signup.json()['siren'] == [
+            'Vous ne pouvez pas créer un deuxième compte pour une structure non validée par le pass Culture']
+
+
 
 
 @pytest.mark.standalone
 @clean_database
-def test_signup_webapp_should_not_work_without_email(app):
-    # Given
-    data = BASE_DATA.copy()
-    del (data['email'])
-
-    # When
-    r_signup = req.post(API_URL + '/users/signup-webapp',
-                        json=data, headers={'origin': 'http://localhost:3000'})
-
-    # Then
-    assert r_signup.status_code == 400
-    error = r_signup.json()
-    assert 'email' in error
-
-
-@pytest.mark.standalone
-@clean_database
-def test_signup_webapp_should_not_work_with_invalid_email(app):
-    # Given
-    data = BASE_DATA.copy()
-    data['email'] = 'toto'
-
-    # When
-    r_signup = req.post(API_URL + '/users/signup-webapp',
-                        json=data, headers={'origin': 'http://localhost:3000'})
-
-    # Then
-    assert r_signup.status_code == 400
-    error = r_signup.json()
-    assert 'email' in error
-
-
-@pytest.mark.standalone
-def test_signup_webapp_should_not_work_without_publicName():
-    # Given
-    data = BASE_DATA.copy()
-    del (data['publicName'])
-
-    # When
-    r_signup = req.post(API_URL + '/users/signup-webapp',
-                        json=data, headers={'origin': 'http://localhost:3000'})
-
-    # Then
-    assert r_signup.status_code == 400
-    error = r_signup.json()
-    assert 'publicName' in error
-
-
-@pytest.mark.standalone
-def test_signup_webapp_should_not_work_with_publicName_too_short():
-    # Given
-    data = BASE_DATA.copy()
-    data['publicName'] = 't'
-
-    # When
-    r_signup = req.post(API_URL + '/users/signup-webapp',
-                        json=data, headers={'origin': 'http://localhost:3000'})
-
-    # Then
-    assert r_signup.status_code == 400
-    error = r_signup.json()
-    assert 'publicName' in error
-
-
-@pytest.mark.standalone
-def test_signup_webapp_should_not_work_with_publicName_too_long():
-    # Given
-    data = BASE_DATA.copy()
-    data['publicName'] = 'x' * 32
-
-    # When
-    r_signup = req.post(API_URL + '/users/signup-webapp',
-                        json=data, headers={'origin': 'http://localhost:3000'})
-
-    # Then
-    assert r_signup.status_code == 400
-    error = r_signup.json()
-    assert 'publicName' in error
-
-
-@pytest.mark.standalone
-def test_signup_webapp_should_not_work_without_password():
-    # Given
-    data = BASE_DATA.copy()
-    del (data['password'])
-
-    # When
-    r_signup = req.post(API_URL + '/users/signup-webapp',
-                        json=data, headers={'origin': 'http://localhost:3000'})
-
-    # Then
-    assert r_signup.status_code == 400
-    error = r_signup.json()
-    assert 'password' in error
-
-
-@pytest.mark.standalone
-def test_signup_webapp_should_not_work_with_invalid_password():
-    # Given
-    data = BASE_DATA.copy()
-    data['password'] = 'weakpassword'
-
-    # When
-    r_signup = req.post(API_URL + '/users/signup-webapp',
-                        json=data, headers={'origin': 'http://localhost:3000'})
-
-    # Then
-    assert r_signup.status_code == 400
-    response = r_signup.json()
-    assert response['password'] == [
-        'Le mot de passe doit faire au moins 12 caractères et contenir à minima '
-        '1 majuscule, 1 minuscule, 1 chiffre et 1 caractère spécial parmi _-&?~#|^@=+.$,<>%*!:;'
-    ]
-
-
-@pytest.mark.standalone
-def test_signup_webapp_should_not_work_without_contact_ok():
-    data = BASE_DATA.copy()
-    del (data['contact_ok'])
-
-    # When
-    r_signup = req.post(API_URL + '/users/signup-webapp',
-                        json=data, headers={'origin': 'http://localhost:3000'})
-
-    # Then
-    assert r_signup.status_code == 400
-    error = r_signup.json()
-    assert 'contact_ok' in error
-
-
-@pytest.mark.standalone
-def test_signup_webapp_should_not_work_with_invalid_contact_ok():
-    data = BASE_DATA.copy()
-    data['contact_ok'] = 't'
-
-    # When
-    r_signup = req.post(API_URL + '/users/signup-webapp',
-                        json=data, headers={'origin': 'http://localhost:3000'})
-
-    # Then
-    assert r_signup.status_code == 400
-    error = r_signup.json()
-    assert 'contact_ok' in error
-
-
-@pytest.mark.standalone
-@clean_database
-def test_signup_webapp_is_successful_and_does_not_log_user_in(app):
-    r_signup = req.post(API_URL + '/users/signup-webapp',
-                        json=BASE_DATA, headers={'origin': 'http://localhost:3000'})
-    assert r_signup.status_code == 201
-    assert 'Set-Cookie' not in r_signup.headers
-
-
-@pytest.mark.standalone
-@clean_database
-def test_signup_webapp_should_not_work_again_with_same_email(app):
-    req.post(API_URL + '/users/signup-webapp',
-             json=BASE_DATA, headers={'origin': 'http://localhost:3000'})
-
-    # When
-    r_signup = req.post(API_URL + '/users/signup-webapp',
-                        json=BASE_DATA, headers={'origin': 'http://localhost:3000'})
-
-    # Then
-    assert r_signup.status_code == 400
-    error = r_signup.json()
-    assert 'email' in error
-
-
-@pytest.mark.standalone
-def test_get_profile_should_work_only_when_logged_in():
+def test_get_profile_should_work_only_when_logged_in(app):
     r = req.get(API_URL + '/users/current', headers={'origin': 'http://localhost:3000'})
     assert r.status_code == 401
 
@@ -259,202 +577,6 @@ def test_signin_should_return_the_signed_in_user_with_his_expenses(app):
         'digital': {'actual': 0, 'max': 200},
         'physical': {'actual': 0, 'max': 100}
     }
-
-
-@pytest.mark.standalone
-@clean_database
-@patch('connectors.google_spreadsheet.get_authorized_emails_and_dept_codes')
-def test_signup_webapp_should_not_work_for_user_not_in_exp_spreadsheet(get_authorized_emails_and_dept_codes, app):
-    # Given
-    get_authorized_emails_and_dept_codes.return_value = (['toto@email.com', 'other@email.com'], ['93', '93'])
-    data = BASE_DATA.copy()
-    data['email'] = 'unknown@unknown.com'
-
-    # When
-    r_signup = req.post(API_URL + '/users/signup-webapp',
-                        json=data, headers={'origin': 'http://localhost:3000'})
-
-    # Then
-    assert r_signup.status_code == 400
-    error = r_signup.json()
-    assert 'email' in error
-
-
-# TODO
-# def test_19_pro_signup_should_not_work_with_invalid_siren():
-#    data = BASE_DATA_PRO.copy()
-#    data['siren'] = '123456789'
-#    assert_signup_error(data, 'siren')
-
-
-@pytest.mark.standalone
-@clean_database
-def test_pro_signup_should_not_work_without_offerer_name(app):
-    # Given
-    data = BASE_DATA_PRO.copy()
-    del (data['name'])
-
-    # When
-    r_signup = req.post(API_URL + '/users/signup-pro',
-                        json=data, headers={'origin': 'http://localhost:3000'})
-
-    # Then
-    assert r_signup.status_code == 400
-    error = r_signup.json()
-    assert 'name' in error
-
-
-@clean_database
-@pytest.mark.standalone
-def test_pro_signup_should_not_work_without_offerer_address(app):
-    data = BASE_DATA_PRO.copy()
-    del (data['address'])
-
-    # When
-    r_signup = req.post(API_URL + '/users/signup-pro',
-                        json=data, headers={'origin': 'http://localhost:3000'})
-
-    # Then
-    assert r_signup.status_code == 400
-    error = r_signup.json()
-    assert 'address' in error
-
-
-@clean_database
-@pytest.mark.standalone
-def test_pro_signup_should_not_work_without_offerer_city(app):
-    data = BASE_DATA_PRO.copy()
-    del (data['city'])
-
-    # When
-    r_signup = req.post(API_URL + '/users/signup-pro',
-                        json=data, headers={'origin': 'http://localhost:3000'})
-
-    # Then
-    assert r_signup.status_code == 400
-    error = r_signup.json()
-    assert 'city' in error
-
-
-@clean_database
-@pytest.mark.standalone
-def test_pro_signup_should_not_work_without_offerer_postal_code(app):
-    data = BASE_DATA_PRO.copy()
-    del (data['postalCode'])
-
-    # When
-    r_signup = req.post(API_URL + '/users/signup-pro',
-                        json=data, headers={'origin': 'http://localhost:3000'})
-
-    # Then
-    assert r_signup.status_code == 400
-    error = r_signup.json()
-    assert 'postalCode' in error
-
-
-@clean_database
-@pytest.mark.standalone
-def test_pro_signup_should_not_work_with_invalid_offerer_postal_code(app):
-    data = BASE_DATA_PRO.copy()
-    data['postalCode'] = '111'
-
-    # When
-    r_signup = req.post(API_URL + '/users/signup-pro',
-                        json=data, headers={'origin': 'http://localhost:3000'})
-
-    # Then
-    assert r_signup.status_code == 400
-    error = r_signup.json()
-    assert 'postalCode' in error
-
-
-@pytest.mark.standalone
-@clean_database
-def test_pro_signup_should_create_user_offerer_digital_venue_and_userOfferer_and_not_log_user_in(app):
-    r_signup = req.post(API_URL + '/users/signup-pro',
-                        json=BASE_DATA_PRO, headers={'origin': 'http://localhost:3000'})
-    assert r_signup.status_code == 201
-    assert 'Set-Cookie' not in r_signup.headers
-    user = User.query \
-        .filter_by(email='toto_pro@btmx.fr') \
-        .first()
-    assert user is not None
-    offerer = Offerer.query \
-        .filter_by(siren='349974931') \
-        .first()
-    assert offerer is not None
-    assert offerer.validationToken is not None
-    assert len(offerer.managedVenues) == 1
-    assert offerer.managedVenues[0].isVirtual
-    user_offerer = UserOfferer.query \
-        .filter_by(user=user,
-                   offerer=offerer) \
-        .first()
-    assert user_offerer is not None
-    assert user_offerer.validationToken is None
-    assert user_offerer.rights == RightsType.admin
-
-
-@clean_database
-@pytest.mark.standalone
-def test_pro_signup_when_existing_offerer_should_returns_status_201_creates_editos_user_offerer_and_does_not_log_in(app):
-    "should create user and userOfferer"
-    json_offerer = {
-        "name": "Test Offerer",
-        "siren": "349974931",
-        "address": "Test adresse",
-        "postalCode": "75000",
-        "city": "Paris"
-    }
-    offerer = Offerer(from_dict=json_offerer)
-    user = create_user(public_name='bobby', email='bobby@test.com')
-    user_offerer = create_user_offerer(user, offerer, is_admin=True)
-    PcObject.check_and_save(offerer, user_offerer)
-
-    data = BASE_DATA_PRO.copy()
-    r_signup = req.post(API_URL + '/users/signup-pro',
-                        json=data, headers={'origin': 'http://localhost:3000'})
-    assert r_signup.status_code == 201
-    assert 'Set-Cookie' not in r_signup.headers
-    user = User.query \
-        .filter_by(email='toto_pro@btmx.fr') \
-        .first()
-    assert user is not None
-    offerer = Offerer.query \
-        .filter_by(siren='349974931') \
-        .first()
-    assert offerer is not None
-    user_offerer = UserOfferer.query \
-        .filter_by(user=user,
-                   offerer=offerer) \
-        .first()
-    assert user_offerer is not None
-    assert user_offerer.validationToken is not None
-    assert user_offerer.rights == RightsType.editor
-
-
-@clean_database
-@pytest.mark.standalone
-def test_pro_signup_throws_409_if_offerer_not_validated(app):
-    json_offerer = {
-        "name": "Test Offerer",
-        "siren": BASE_DATA_PRO['siren'],
-        "address": "Test adresse",
-        "postalCode": "75000",
-        "city": "Paris"
-    }
-    offerer = Offerer(from_dict=json_offerer)
-    offerer.generate_validation_token()
-    user = create_user(public_name='bobby', email='bobby@test.com')
-    user_offerer = create_user_offerer(user, offerer, is_admin=True)
-    PcObject.check_and_save(offerer, user_offerer)
-
-    data = BASE_DATA_PRO.copy()
-    r_signup = req.post(API_URL + '/users/signup-pro',
-                        json=data, headers={'origin': 'http://localhost:3000'})
-    assert r_signup.status_code == 409
-    assert r_signup.json()['siren'] == [
-        'Vous ne pouvez pas créer un deuxième compte pour une structure non validée par le pass Culture']
 
 
 @clean_database
@@ -504,7 +626,7 @@ def test_pro_signup_when_existing_offerer_but_no_user_offerer_and_does_not_signi
     PcObject.check_and_save(offerer)
 
     data = BASE_DATA_PRO.copy()
-    r_signup = req.post(API_URL + '/users/signup-pro',
+    r_signup = req.post(API_URL + '/users/signup/pro',
                         json=data, headers={'origin': 'http://localhost:3000'})
     assert r_signup.status_code == 201
     assert 'Set-Cookie' not in r_signup.headers
@@ -582,7 +704,7 @@ def test_user_with_isAdmin_true_and_canBookFreeOffers_raises_error(app):
     }
 
     # When
-    r_signup = req.post(API_URL + '/users/signup-webapp',
+    r_signup = req.post(API_URL + '/users/signup/webapp',
                         json=user_json, headers={'origin': 'http://localhost:3000'})
 
     # Then
@@ -1026,7 +1148,7 @@ def test_post_signup_webapp_create_user_with_validation_token(app):
     # Given
     user_data = BASE_DATA
     # When
-    response = requests.post(API_URL + '/users/signup-webapp', json=user_data, headers={'origin': 'http://localhost:3000'})
+    response = requests.post(API_URL + '/users/signup/webapp', json=user_data, headers={'origin': 'http://localhost:3000'})
     # Then
     created_user = User.query.filter_by(email=user_data['email']).first()
     assert 'validationToken' not in response.json()
