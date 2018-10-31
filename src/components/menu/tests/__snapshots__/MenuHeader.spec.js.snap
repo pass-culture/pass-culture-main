@@ -1,0 +1,485 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`src | components | menu | MenuHeader snapshot should match snapshot 1`] = `
+ShallowWrapper {
+  Symbol(enzyme.__root__): [Circular],
+  Symbol(enzyme.__unrendered__): <MenuHeader
+    user={true}
+  />,
+  Symbol(enzyme.__renderer__): Object {
+    "batchedUpdates": [Function],
+    "getNode": [Function],
+    "render": [Function],
+    "simulateError": [Function],
+    "simulateEvent": [Function],
+    "unmount": [Function],
+  },
+  Symbol(enzyme.__node__): Object {
+    "instance": null,
+    "key": undefined,
+    "nodeType": "host",
+    "props": Object {
+      "children": Array [
+        <div
+          className="column-profile text-center"
+        >
+          <p
+            id="main-menu-header-avatar"
+          >
+            <img
+              alt=""
+              className="mb3"
+              src="http://localhost/icons/avatar-default-w-XL.svg"
+            />
+          </p>
+          <p
+            className="is-clipped text-ellipsis px5"
+            id="main-menu-header-username"
+          >
+            <span />
+          </p>
+        </div>,
+        <div
+          className="column-account flex-center flex-rows text-center"
+        >
+          <p
+            className="fs30"
+          >
+            <span>
+              Mon Pass
+            </span>
+          </p>
+          <p
+            className="fs52 is-normal"
+            id="main-menu-header-wallet-value"
+            style={
+              Object {
+                "lineHeight": "42px",
+              }
+            }
+          >
+            <span>
+              undefined€
+            </span>
+          </p>
+        </div>,
+      ],
+      "className": "flex-columns is-relative py16 fs18",
+      "id": "main-menu-header",
+    },
+    "ref": null,
+    "rendered": Array [
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": Array [
+            <p
+              id="main-menu-header-avatar"
+            >
+              <img
+                alt=""
+                className="mb3"
+                src="http://localhost/icons/avatar-default-w-XL.svg"
+              />
+            </p>,
+            <p
+              className="is-clipped text-ellipsis px5"
+              id="main-menu-header-username"
+            >
+              <span />
+            </p>,
+          ],
+          "className": "column-profile text-center",
+        },
+        "ref": null,
+        "rendered": Array [
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": <img
+                alt=""
+                className="mb3"
+                src="http://localhost/icons/avatar-default-w-XL.svg"
+              />,
+              "id": "main-menu-header-avatar",
+            },
+            "ref": null,
+            "rendered": Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "alt": "",
+                "className": "mb3",
+                "src": "http://localhost/icons/avatar-default-w-XL.svg",
+              },
+              "ref": null,
+              "rendered": null,
+              "type": "img",
+            },
+            "type": "p",
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": <span />,
+              "className": "is-clipped text-ellipsis px5",
+              "id": "main-menu-header-username",
+            },
+            "ref": null,
+            "rendered": Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": undefined,
+              },
+              "ref": null,
+              "rendered": null,
+              "type": "span",
+            },
+            "type": "p",
+          },
+        ],
+        "type": "div",
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": Array [
+            <p
+              className="fs30"
+            >
+              <span>
+                Mon Pass
+              </span>
+            </p>,
+            <p
+              className="fs52 is-normal"
+              id="main-menu-header-wallet-value"
+              style={
+                Object {
+                  "lineHeight": "42px",
+                }
+              }
+            >
+              <span>
+                undefined€
+              </span>
+            </p>,
+          ],
+          "className": "column-account flex-center flex-rows text-center",
+        },
+        "ref": null,
+        "rendered": Array [
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": <span>
+                Mon Pass
+              </span>,
+              "className": "fs30",
+            },
+            "ref": null,
+            "rendered": Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": "Mon Pass",
+              },
+              "ref": null,
+              "rendered": "Mon Pass",
+              "type": "span",
+            },
+            "type": "p",
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": <span>
+                undefined€
+              </span>,
+              "className": "fs52 is-normal",
+              "id": "main-menu-header-wallet-value",
+              "style": Object {
+                "lineHeight": "42px",
+              },
+            },
+            "ref": null,
+            "rendered": Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": "undefined€",
+              },
+              "ref": null,
+              "rendered": "undefined€",
+              "type": "span",
+            },
+            "type": "p",
+          },
+        ],
+        "type": "div",
+      },
+    ],
+    "type": "div",
+  },
+  Symbol(enzyme.__nodes__): Array [
+    Object {
+      "instance": null,
+      "key": undefined,
+      "nodeType": "host",
+      "props": Object {
+        "children": Array [
+          <div
+            className="column-profile text-center"
+          >
+            <p
+              id="main-menu-header-avatar"
+            >
+              <img
+                alt=""
+                className="mb3"
+                src="http://localhost/icons/avatar-default-w-XL.svg"
+              />
+            </p>
+            <p
+              className="is-clipped text-ellipsis px5"
+              id="main-menu-header-username"
+            >
+              <span />
+            </p>
+          </div>,
+          <div
+            className="column-account flex-center flex-rows text-center"
+          >
+            <p
+              className="fs30"
+            >
+              <span>
+                Mon Pass
+              </span>
+            </p>
+            <p
+              className="fs52 is-normal"
+              id="main-menu-header-wallet-value"
+              style={
+                Object {
+                  "lineHeight": "42px",
+                }
+              }
+            >
+              <span>
+                undefined€
+              </span>
+            </p>
+          </div>,
+        ],
+        "className": "flex-columns is-relative py16 fs18",
+        "id": "main-menu-header",
+      },
+      "ref": null,
+      "rendered": Array [
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": Array [
+              <p
+                id="main-menu-header-avatar"
+              >
+                <img
+                  alt=""
+                  className="mb3"
+                  src="http://localhost/icons/avatar-default-w-XL.svg"
+                />
+              </p>,
+              <p
+                className="is-clipped text-ellipsis px5"
+                id="main-menu-header-username"
+              >
+                <span />
+              </p>,
+            ],
+            "className": "column-profile text-center",
+          },
+          "ref": null,
+          "rendered": Array [
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": <img
+                  alt=""
+                  className="mb3"
+                  src="http://localhost/icons/avatar-default-w-XL.svg"
+                />,
+                "id": "main-menu-header-avatar",
+              },
+              "ref": null,
+              "rendered": Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "alt": "",
+                  "className": "mb3",
+                  "src": "http://localhost/icons/avatar-default-w-XL.svg",
+                },
+                "ref": null,
+                "rendered": null,
+                "type": "img",
+              },
+              "type": "p",
+            },
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": <span />,
+                "className": "is-clipped text-ellipsis px5",
+                "id": "main-menu-header-username",
+              },
+              "ref": null,
+              "rendered": Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": undefined,
+                },
+                "ref": null,
+                "rendered": null,
+                "type": "span",
+              },
+              "type": "p",
+            },
+          ],
+          "type": "div",
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": Array [
+              <p
+                className="fs30"
+              >
+                <span>
+                  Mon Pass
+                </span>
+              </p>,
+              <p
+                className="fs52 is-normal"
+                id="main-menu-header-wallet-value"
+                style={
+                  Object {
+                    "lineHeight": "42px",
+                  }
+                }
+              >
+                <span>
+                  undefined€
+                </span>
+              </p>,
+            ],
+            "className": "column-account flex-center flex-rows text-center",
+          },
+          "ref": null,
+          "rendered": Array [
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": <span>
+                  Mon Pass
+                </span>,
+                "className": "fs30",
+              },
+              "ref": null,
+              "rendered": Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": "Mon Pass",
+                },
+                "ref": null,
+                "rendered": "Mon Pass",
+                "type": "span",
+              },
+              "type": "p",
+            },
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": <span>
+                  undefined€
+                </span>,
+                "className": "fs52 is-normal",
+                "id": "main-menu-header-wallet-value",
+                "style": Object {
+                  "lineHeight": "42px",
+                },
+              },
+              "ref": null,
+              "rendered": Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": "undefined€",
+                },
+                "ref": null,
+                "rendered": "undefined€",
+                "type": "span",
+              },
+              "type": "p",
+            },
+          ],
+          "type": "div",
+        },
+      ],
+      "type": "div",
+    },
+  ],
+  Symbol(enzyme.__options__): Object {
+    "adapter": ReactSixteenAdapter {
+      "options": Object {
+        "enableComponentDidUpdateOnSetState": true,
+        "lifecycles": Object {
+          "componentDidUpdate": Object {
+            "onSetState": true,
+          },
+          "getDerivedStateFromProps": true,
+          "getSnapshotBeforeUpdate": true,
+          "setState": Object {
+            "skipsComponentDidUpdateOnNullish": true,
+          },
+        },
+      },
+    },
+  },
+}
+`;
