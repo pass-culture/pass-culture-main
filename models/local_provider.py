@@ -116,6 +116,14 @@ class LocalProvider(Iterator):
                   .order_by(LocalProviderEvent.date.desc())\
                   .first()
 
+    def latestSyncStartEvent(self):
+        return LocalProviderEvent \
+            .query \
+            .filter((LocalProviderEvent.provider == self.dbObject) &
+                    (LocalProviderEvent.type == LocalProviderEventType.SyncStart)) \
+            .order_by(LocalProviderEvent.date.desc()) \
+            .first()
+
     def handleThumb(self, obj):
         if not hasattr(obj, 'thumbCount'):
             return
@@ -225,7 +233,6 @@ class LocalProvider(Iterator):
         sys.stdout.write("Updating "
                          + inflect_engine.plural(self.objectType.__name__)
                          + " from provider " + self.name)
-        print("AH bah voilà")
         self.logEvent(LocalProviderEventType.SyncStart)
         if self.venueProvider is not None:
             print(" for venue " + self.venueProvider.venue.name

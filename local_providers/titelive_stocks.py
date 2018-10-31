@@ -18,15 +18,15 @@ def make_url(after_isbn_id, last_date_checked, venue_siret):
         return 'https://stock.epagine.fr/stocks/' \
            + str(venue_siret) \
            + '?after='+str(after_isbn_id) \
-           # + '&modifiedSince='+str(last_date_checked)
+           + '&modifiedSince='+str(last_date_checked)
            # + '&limit=100'
     else:
         return 'https://stock.epagine.fr/stocks/' \
                + str(venue_siret) \
-               # + '?modifiedSince='+str(last_date_checked)
+               + '?modifiedSince='+str(last_date_checked)
 
 
-def get_data(after_isbn_id, last_date_checked, is_mock, venue_siret):
+def get_data(after_isbn_id, last_date_checked, venue_siret):
     page_url = make_url(after_isbn_id, last_date_checked, venue_siret)
     req_result = requests.get(page_url)
     return req_result.json()
@@ -56,12 +56,23 @@ class TiteLiveStocks(LocalProvider):
             .first()
         assert self.venue is not None
         self.venueId = self.venueProvider.venueId
+        self.venue_has_offer = False
 
-        # TODO: for test purpose
-        self.siret = '77567146400110'
-        # self.siret = self.venue.siret
+        offer_count = Offer.query \
+            .filter_by(venueId=self.venueId) \
+            .filter(Offer.thing is not None) \
+            .count()
+
+        print("Offer count: ", str(offer_count))
+        if offer_count > 0:
+            self.venue_has_offer = True
 
         self.is_mock = 'mock' in options and options['mock']
+        latest_local_provider_event = self.latestSyncStartEvent()
+        if latest_local_provider_event is None:
+            self.last_ws_requests = datetime.utcfromtimestamp(0).timestamp() * 1000
+        else:
+            self.last_ws_requests = latest_local_provider_event.date.timestamp() * 1000
         self.seen_isbn = []
         self.last_seen_isbn = ''
         self.index = -1
@@ -69,6 +80,9 @@ class TiteLiveStocks(LocalProvider):
         self.data = None
 
     def __next__(self):
+        if not self.venue_has_offer:
+            raise StopIteration
+
         self.index = self.index + 1
 
         if self.data is None \
@@ -80,29 +94,23 @@ class TiteLiveStocks(LocalProvider):
             self.index = 0
 
             self.data = get_data(self.last_seen_isbn,
-                                 datetime.utcfromtimestamp(1542031960),
-                                 self.is_mock,
-                                 # self.venueProvider.venueIdAtOfferProvider)
-                                 self.siret)
+                                 self.last_ws_requests,
+                                 self.venueProvider.venueIdAtOfferProvider)
 
+            # Structure probably not found
             if self.data is None:
                 raise StopIteration
-            #     TODO: structure probably not found
 
-            # total_objects = self.data['offset']+self.data['limit']
-            # TODO: why total is null from API?
-            total_objects = 5000
-            if self.data['total'] is None:
-                    total = 5000
-            else:
-                total = self.data['total']
-            self.more_pages = total_objects < total
+            print("LEN", len(self.data['stocks']))
+            if len(self.data['stocks']) < 5000:
+                self.more_pages = False
 
         # print("LEN", len(self.data['stocks']))
         # print("INDEX", self.index)
         self.oa_stock = self.data['stocks'][self.index]
 
         self.seen_isbn.append(str(self.oa_stock['ref']))
+        self.last_seen_isbn = str(self.oa_stock['ref'])
 
         thing = Thing.query.filter((Thing.type == ThingType.LIVRE_EDITION.name) &
                                    (Thing.idAtProviders == self.oa_stock['ref'])) \
