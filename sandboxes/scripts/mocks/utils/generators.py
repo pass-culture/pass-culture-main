@@ -43,9 +43,8 @@ def get_all_offerer_mocks(geo_interval=0.1, geo_number=4):
                         "postalCode": properties['postcode'],
                         "siren": str(siren)
                     }
-                siren -= 1
-
-                offerer_mocks.append(offerer_mock)
+                    siren -= 1
+                    offerer_mocks.append(offerer_mock)
 
     return offerer_mocks
 
@@ -95,7 +94,7 @@ def get_all_typed_event_mocks():
             "durationMinutes": 60,
             "firstThumbDominantColor": b'\x00\x00\x00',
             "key": str(uuid1()),
-            "name": EVENT_OR_THING_MOCK_NAMES[mock_count],
+            "name": event_type['value'] + " " + EVENT_OR_THING_MOCK_NAMES[mock_count],
             "type": event_type['value'],
             "thumbCount": 1
         }
@@ -120,7 +119,7 @@ def get_all_typed_thing_mocks():
         thing_mock = {
             "firstThumbDominantColor": b'\x00\x00\x00',
             "key": str(uuid1()),
-            "name": EVENT_OR_THING_MOCK_NAMES[mock_count],
+            "name": thing_type['value'] + " " + EVENT_OR_THING_MOCK_NAMES[mock_count],
             "type": thing_type['value'],
             "thumbCount": 1
         }
@@ -246,7 +245,7 @@ def get_all_typed_thing_stock_mocks(all_typed_thing_offer_mocks):
 
     return stock_mocks
 
-def get_all_types_event_mediation_mocks(all_typed_event_offer_mocks):
+def get_all_typed_event_mediation_mocks(all_typed_event_offer_mocks):
 
     mediation_mocks = []
     for event_offer_mock in all_typed_event_offer_mocks:
@@ -259,7 +258,7 @@ def get_all_types_event_mediation_mocks(all_typed_event_offer_mocks):
 
     return mediation_mocks
 
-def get_all_types_thing_mediation_mocks(all_typed_thing_offer_mocks):
+def get_all_typed_thing_mediation_mocks(all_typed_thing_offer_mocks):
 
     mediation_mocks = []
     for thing_offer_mock in all_typed_thing_offer_mocks:
