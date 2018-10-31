@@ -217,7 +217,7 @@ def test_get_venue_should_when_current_user_doesnt_have_rights_status_code_403(a
 
 @clean_database
 @pytest.mark.standalone
-def test_patch_change_managing_offerer_id_status_400(app):
+def test_patch_venues_on_managing_offerer_id_returns_status_code_400_and_managing_offerer_id_in_error(app):
     # Given
     offerer = create_offerer(siren='123456789')
     other_offerer = create_offerer(siren='987654321')
@@ -233,6 +233,30 @@ def test_patch_change_managing_offerer_id_status_400(app):
     # Then
     assert response.status_code == 400
     assert response.json()['managingOffererId'] == ['Vous ne pouvez pas changer la structure d\'un lieu']
+
+
+@clean_database
+@pytest.mark.standalone
+def test_patch_venues_on_siret_returns_status_code_400_and_siret_in_error(app):
+    # Given
+    offerer = create_offerer()
+    user = create_user()
+    user_offerer = create_user_offerer(user, offerer, is_admin=True)
+    siret = offerer.siren + '11111'
+    venue = create_venue(offerer, siret=siret)
+    PcObject.check_and_save(user_offerer, venue)
+    venue_data = {
+        'siret': offerer.siren + '12345',
+    }
+    auth_request = req_with_auth(email=user.email, password=user.clearTextPassword)
+
+    # when
+    response = auth_request.patch(API_URL + '/venues/%s' % humanize(venue.id), json=venue_data)
+
+    # Then
+    print(response.json())
+    assert response.status_code == 400
+    assert response.json()['siret'] == ['Vous ne pouvez pas modifier le siret d\'un lieu']
 
 
 @clean_database

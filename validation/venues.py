@@ -19,11 +19,18 @@ def validate_coordinates(raw_latitude, raw_longitude):
         raise api_errors
 
 
-def check_valid_edition(managing_offerer_id):
+def check_valid_edition(request):
+    managing_offerer_id = request.json.get('managingOffererId')
+    siret = request.json.get('siret')
     if managing_offerer_id:
         errors = ApiErrors()
         errors.addError('managingOffererId', 'Vous ne pouvez pas changer la structure d\'un lieu')
         raise errors
+    if siret:
+        errors = ApiErrors()
+        errors.addError('siret', 'Vous ne pouvez pas modifier le siret d\'un lieu')
+        raise errors
+
 
 
 def _validate_longitude(api_errors, raw_longitude):

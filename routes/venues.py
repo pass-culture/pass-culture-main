@@ -40,8 +40,7 @@ def create_venue():
 @login_required
 @expect_json_data
 def edit_venue(venueId):
-    managing_offerer_id = request.json.get('managingOffererId')
-    check_valid_edition(managing_offerer_id)
+    check_valid_edition(request)
     venue = load_or_404(Venue, venueId)
     validate_coordinates(request.json.get('latitude', None), request.json.get('longitude', None))
     ensure_current_user_has_rights(RightsType.editor, venue.managingOffererId)
