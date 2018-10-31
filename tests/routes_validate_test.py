@@ -114,3 +114,4 @@ def test_validate_user_when_validation_token_not_found_returns_status_code_404(a
 
     # Then
     assert response.status_code == 404
+    assert response.json()['global'] == ['Ce lien est invalide']

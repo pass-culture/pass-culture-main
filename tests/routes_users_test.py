@@ -1166,7 +1166,6 @@ def test_post_signin_should_not_work_if_user_not_validated(app):
     # When
     response = requests.post(API_URL + '/users/signin', json=data, headers={'origin': 'http://localhost:3000'})
     # Then
-    print(response.json())
     assert response.status_code == 401
     assert response.json()['identifier'] == ['Ce compte n\'est pas validé.']
 
