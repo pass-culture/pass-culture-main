@@ -95,7 +95,6 @@ def create_booking():
 @app.route('/bookings/<booking_id>', methods=['PATCH'])
 @login_required
 def patch_booking(booking_id):
-
     is_cancelled = request.json.get('isCancelled')
 
     if is_cancelled is not True:
@@ -104,7 +103,7 @@ def patch_booking(booking_id):
             'isCancelled',
             "Vous pouvez seulement changer l'état isCancelled à vrai"
         )
-        raise(api_errors)
+        raise api_errors
 
     booking = booking_queries.find_by_id(dehumanize(booking_id))
 
@@ -121,7 +120,7 @@ def patch_booking(booking_id):
 
     try:
         send_cancellation_emails_to_user_and_offerer(booking, is_offerer_cancellation, is_user_cancellation,
-                                                    app.mailjet_client.send.create)
+                                                     app.mailjet_client.send.create)
     except MailServiceException as e:
         app.logger.error('Mail service failure', e)
 
@@ -136,26 +135,14 @@ def get_booking_by_token(token):
     check_user_is_logged_in_or_email_is_provided(current_user, email)
 
     booking = booking_queries.find_by(token, email, offer_id)
+    check_booking_is_usable(booking)
 
-    offer_name = booking.stock.resolvedOffer.eventOrThing.name
-    date = None
-    if booking.stock.eventOccurrence:
-        date = serialize(booking.stock.eventOccurrence.beginningDatetime)
     offerer_id = booking.stock.resolvedOffer.venue.managingOffererId
-    venue_departement_code = booking.stock.resolvedOffer.venue.departementCode
 
     current_user_can_validate_bookings = current_user.is_authenticated and current_user.hasRights(RightsType.editor,
                                                                                                   offerer_id)
     if current_user_can_validate_bookings:
-        response = {
-            'bookingId': humanize(booking.id),
-            'date': date,
-            'email': booking.user.email,
-            'isUsed': booking.isUsed,
-            'offerName': offer_name,
-            'userName': booking.user.publicName,
-            'venueDepartementCode': venue_departement_code
-        }
+        response = _create_response_to_get_booking_by_token(booking)
         return jsonify(response), 200
     return '', 204
 
@@ -175,3 +162,21 @@ def patch_booking_by_token(token):
     booking.isUsed = True
     PcObject.check_and_save(booking)
     return '', 204
+
+
+def _create_response_to_get_booking_by_token(booking):
+    offer_name = booking.stock.resolvedOffer.eventOrThing.name
+    date = None
+    if booking.stock.eventOccurrence:
+        date = serialize(booking.stock.eventOccurrence.beginningDatetime)
+    venue_departement_code = booking.stock.resolvedOffer.venue.departementCode
+    response = {
+        'bookingId': humanize(booking.id),
+        'date': date,
+        'email': booking.user.email,
+        'isUsed': booking.isUsed,
+        'offerName': offer_name,
+        'userName': booking.user.publicName,
+        'venueDepartementCode': venue_departement_code
+    }
+    return response
