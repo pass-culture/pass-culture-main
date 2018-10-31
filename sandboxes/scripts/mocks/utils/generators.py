@@ -8,7 +8,7 @@ from sandboxes.scripts.mocks.utils.mock_names import EVENT_OR_THING_MOCK_NAMES, 
                                                      EVENT_OCCURRENCE_BEGINNING_DATETIMES, \
                                                      PLACES
 
-def get_all_offerer_mocks(geo_interval=0.1, geo_number=4):
+def get_all_offerer_mocks(geo_interval=0.1, geo_number=2):
 
     siren = 123456789
 

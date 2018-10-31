@@ -204,7 +204,7 @@ def save_sandbox_in_db(name):
             event_occurrence = event_occurrences_by_key[stock_mock['eventOccurrenceKey']]
             query = Stock.queryNotSoftDeleted().filter_by(eventOccurrenceId=event_occurrence.id)
         else:
-            print("LOOK stock " + stock_mock['offerKey'] + " " + str(stock_index))
+            print("LOOK stock " + stock_mock['offerKey'] + " " + str(stock_index) + "/" + stocks_count)
             offer = offers_by_key[stock_mock['offerKey']]
             query = Stock.queryNotSoftDeleted().filter_by(offerId=offer.id)
 

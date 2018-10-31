@@ -1,11 +1,11 @@
 """ event_occurrences """
-from sandboxes.scripts.mocks.offers import ALL_TYPED_OFFER_MOCKS
+from sandboxes.scripts.mocks.offers import ALL_TYPED_EVENT_OFFER_MOCKS
 from sandboxes.scripts.mocks.utils.generators import get_all_typed_event_occurrence_mocks
 from utils.date import get_now_datetime_plus_an_hour_string
 
 EVENT_OCCURRENCE_MOCKS = []
 
-ALL_TYPED_EVENT_OCCURRENCE_MOCKS = get_all_typed_event_occurrence_mocks(ALL_TYPED_OFFER_MOCKS)
+ALL_TYPED_EVENT_OCCURRENCE_MOCKS = get_all_typed_event_occurrence_mocks(ALL_TYPED_EVENT_OFFER_MOCKS)
 EVENT_OCCURRENCE_MOCKS += ALL_TYPED_EVENT_OCCURRENCE_MOCKS
 
 SCRATCH_EVENT_OCCURRENCE_MOCKS = [
