@@ -3,17 +3,17 @@ import random
 import string
 from datetime import datetime, timedelta, timezone
 from unittest.mock import Mock
+
 import requests as req
 from postgresql_audit.flask import versioning_manager
 
-from models import Deposit,\
-                   EventType,\
-                   Mediation,\
-                   Recommendation,\
-                   RightsType,\
-                   Thing,\
-                   ThingType,\
-                   UserOfferer
+from models import Deposit, \
+    EventType, \
+    Mediation, \
+    Recommendation, \
+    RightsType, \
+    ThingType, \
+    UserOfferer
 from models.booking import Booking
 from models.event import Event
 from models.event_occurrence import EventOccurrence
@@ -25,7 +25,15 @@ from models.stock import Stock
 from models.user import User
 from models.venue import Venue
 from sandboxes.scripts.mocks.users_light import admin_user_mock
+from utils.object_storage import STORAGE_DIR
 from utils.token import random_token
+from inspect import isclass
+from glob import glob
+import models
+from models.pc_object import PcObject
+from models.thing import Thing
+
+savedCounts = {}
 
 API_URL = "http://localhost:5000"
 MOCKED_SIREN_ENTREPRISES_API_RETURN = {
@@ -598,3 +606,52 @@ def create_payment(booking, offerer, amount, author='test author', recipient='re
     payment.reimbursementRule = reimbursement_rule
     payment.id = idx
     return payment
+
+
+def saveCounts(app):
+    for modelName in models.__all__:
+        model = getattr(models, modelName)
+        if isclass(model) \
+                and issubclass(model, PcObject) \
+                and modelName != "PcObject":
+            savedCounts[modelName] = model.query.count()
+
+
+def assertCreatedCounts(app, **counts):
+    for modelName in counts:
+        model = getattr(models, modelName)
+        assert model.query.count() - savedCounts[modelName] \
+               == counts[modelName]
+
+
+def assertEmptyDb(app):
+    for modelName in models.__all__:
+        model = getattr(models, modelName)
+        if isinstance(model, PcObject):
+            if modelName == 'Mediation':
+                assert model.query.count() == 2
+            else:
+                assert model.query.count() == 0
+
+
+def assert_created_thumbs():
+    assert len(glob(str(STORAGE_DIR / "thumbs" / "*"))) == 1
+
+
+def provider_test(app, provider, venueProvider, **counts):
+    providerObj = provider(venueProvider, mock=True)
+    providerObj.dbObject.isActive = True
+    PcObject.check_and_save(providerObj.dbObject)
+    saveCounts(app)
+    providerObj.updateObjects()
+    for countName in ['updatedObjects',
+                      'createdObjects',
+                      'checkedObjects',
+                      'erroredObjects',
+                      'createdThumbs',
+                      'updatedThumbs',
+                      'checkedThumbs',
+                      'erroredThumbs']:
+        assert getattr(providerObj, countName) == counts[countName]
+        del counts[countName]
+    assertCreatedCounts(app, **counts)

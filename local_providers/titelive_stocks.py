@@ -92,7 +92,7 @@ class TiteLiveStocks(LocalProvider):
                 raise StopIteration
 
             self.index = 0
-
+            
             self.data = get_data(self.last_seen_isbn,
                                  self.last_ws_requests,
                                  self.venueProvider.venueIdAtOfferProvider)
