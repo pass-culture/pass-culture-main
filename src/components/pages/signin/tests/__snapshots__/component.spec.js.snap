@@ -1,9 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | pages | signin | index snapshot should match snapshot 1`] = `
+exports[`src | components | pages | signin | component snapshot should match snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
-  Symbol(enzyme.__unrendered__): <withRouter(Connect(_withLogin))
+  Symbol(enzyme.__unrendered__): <Signin
     dispatch={[MockFunction]}
     history={Object {}}
   />,
@@ -18,25 +18,57 @@ ShallowWrapper {
   Symbol(enzyme.__node__): Object {
     "instance": null,
     "key": undefined,
-    "nodeType": "class",
+    "nodeType": "host",
     "props": Object {
-      "children": [Function],
+      "children": <ReactFinalForm
+        onSubmit={[Function]}
+        render={[Function]}
+      />,
+      "className": "page pc-gradient is-relative",
+      "id": "sign-in-page",
     },
     "ref": null,
-    "rendered": [Function],
-    "type": [Function],
+    "rendered": Object {
+      "instance": null,
+      "key": undefined,
+      "nodeType": "class",
+      "props": Object {
+        "onSubmit": [Function],
+        "render": [Function],
+      },
+      "ref": null,
+      "rendered": null,
+      "type": [Function],
+    },
+    "type": "div",
   },
   Symbol(enzyme.__nodes__): Array [
     Object {
       "instance": null,
       "key": undefined,
-      "nodeType": "class",
+      "nodeType": "host",
       "props": Object {
-        "children": [Function],
+        "children": <ReactFinalForm
+          onSubmit={[Function]}
+          render={[Function]}
+        />,
+        "className": "page pc-gradient is-relative",
+        "id": "sign-in-page",
       },
       "ref": null,
-      "rendered": [Function],
-      "type": [Function],
+      "rendered": Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "class",
+        "props": Object {
+          "onSubmit": [Function],
+          "render": [Function],
+        },
+        "ref": null,
+        "rendered": null,
+        "type": [Function],
+      },
+      "type": "div",
     },
   ],
   Symbol(enzyme.__options__): Object {
