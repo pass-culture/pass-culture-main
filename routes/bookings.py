@@ -103,7 +103,7 @@ def patch_booking(booking_id):
             'isCancelled',
             "Vous pouvez seulement changer l'état isCancelled à vrai"
         )
-        raise (api_errors)
+        raise api_errors
 
     booking = booking_queries.find_by_id(dehumanize(booking_id))
 

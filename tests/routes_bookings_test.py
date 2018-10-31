@@ -846,7 +846,7 @@ def test_get_booking_by_token_when_not_logged_in_and_give_right_email_and_offer_
 
 @clean_database
 @pytest.mark.standalone
-def test_get_booking_by_token_when_not_logged_in_and_give_right_email_and_offer_id_thing_but_already_validated_token(app):
+def test_get_booking_by_token_when_not_logged_in_and_give_right_email_and_offer_id_thing_but_cancelled_booking(app):
     # Given
     user = create_user(email='user@email.fr')
     admin_user = create_user(email='admin@email.fr', password='P@55w0rd')
