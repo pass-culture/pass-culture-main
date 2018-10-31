@@ -4,17 +4,17 @@ USER_OFFERER_MOCKS = []
 SCRATCH_USER_OFFERER_MOCKS = [
     {
         "userEmail": "pctest.pro.1@btmx.fr",
-        "offererName": "LE GRAND REX PARIS",
+        "offererKey": "d33ee240-dc59-11e8-a29f-0242ac130000", # LE GRAND REX PARIS,
         "rights": "admin"
     },
     {
         "userEmail": "pctest.pro.1@btmx.fr",
-        "offererName": "THEATRE DE L ODEON",
+        "offererKey": "d33ee240-dc59-11e8-a29f-0242ac130001", # THEATRE DE L ODEON,
         "rights": "editor"
     },
     {
         "userEmail": "pctest.pro.2@btmx.fr",
-        "offererName": "THEATRE DU SOLEIL",
+        "offererKey": "d33ee240-dc59-11e8-a29f-0242ac130002", # THEATRE DU SOLEIL,
         "rights": "editor"
     }
 ]

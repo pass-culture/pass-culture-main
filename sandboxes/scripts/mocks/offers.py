@@ -20,39 +20,39 @@ OFFER_MOCKS += ALL_TYPED_OFFER_MOCKS
 
 SCRATCH_OFFER_MOCKS = [
     {
-        "eventName": "Rencontre avec Franck Lepage",
+        "eventKey": "d33ee240-dc59-11e8-a29f-0242ac130000", # Rencontre avec Franck Lepage
         "isActive": True,
-        "key": 'd33ee240-dc59-11e8-a29f-0242ac130000',
-        "venueKey": 'd33ee240-dc59-11e8-a29f-0242ac130002' # LE GRAND REX PARIS
+        "key": "d33ee240-dc59-11e8-a29f-0242ac130000",
+        "venueKey": "d33ee240-dc59-11e8-a29f-0242ac130002" # LE GRAND REX PARIS
     },
     {
-        "eventName": "Rencontre avec Franck Lepage",
+        "eventKey": "d33ee240-dc59-11e8-a29f-0242ac130000", # Rencontre avec Franck Lepage
         "isActive": True,
-        "key": 'd33ee240-dc59-11e8-a29f-0242ac130001',
-        "venueKey": 'd33ee240-dc59-11e8-a29f-0242ac130002' # LE GRAND REX PARIS
+        "key": "d33ee240-dc59-11e8-a29f-0242ac130001",
+        "venueKey": "d33ee240-dc59-11e8-a29f-0242ac130002" # LE GRAND REX PARIS
     },
     {
-        "eventName": "Concert de Gael Faye",
+        "eventKey": "d33ee240-dc59-11e8-a29f-0242ac130001", # Concert de Gael Faye
         "isActive": True,
-        "key": 'd33ee240-dc59-11e8-a29f-0242ac130002',
+        "key": "d33ee240-dc59-11e8-a29f-0242ac130002",
         "venueKey": "d33ee240-dc59-11e8-a29f-0242ac130004" # THEATRE DE L ODEON
     },
     {
-        "eventName": "PNL chante Marx",
+        "eventKey": "d33ee240-dc59-11e8-a29f-0242ac130002", # PNL chante Marx
         "isActive": True,
-        "key": 'd33ee240-dc59-11e8-a29f-0242ac130003',
-        "venueKey": "d33ee240-dc59-11e8-a29f-0242ac130004" # THEATRE DE L ODEON
-    },
-    {
-        "isActive": True,
-        "key": 'd33ee240-dc59-11e8-a29f-0242ac130004',
-        "thingName": "Ravage",
+        "key": "d33ee240-dc59-11e8-a29f-0242ac130003",
         "venueKey": "d33ee240-dc59-11e8-a29f-0242ac130004" # THEATRE DE L ODEON
     },
     {
         "isActive": True,
-        "key": 'd33ee240-dc59-11e8-a29f-0242ac130005',
-        "thingName": "Le Monde Diplomatique",
+        "key": "d33ee240-dc59-11e8-a29f-0242ac130004",
+        "thingKey": "d33ee240-dc59-11e8-a29f-0242ac130000", # Ravage,
+        "venueKey": "d33ee240-dc59-11e8-a29f-0242ac130004" # THEATRE DE L ODEON
+    },
+    {
+        "isActive": True,
+        "key": "d33ee240-dc59-11e8-a29f-0242ac130005",
+        "thingKey": "d33ee240-dc59-11e8-a29f-0242ac130001", # Le Monde Diplomatique
         "venueKey": "d33ee240-dc59-11e8-a29f-0242ac130005" # THEATRE DE L ODEON (OL)
     }
 ]

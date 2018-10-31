@@ -62,7 +62,7 @@ def get_all_venue_mocks(all_offerer_mocks):
             "longitude": offerer_mock['longitude'],
             "key": str(uuid1()),
             "name": "LIEU " + str(offerer_mock['siren']),
-            "offererName": offerer_mock['name'],
+            "offererKey": offerer_mock['key'],
             "postalCode": offerer_mock['postalCode']
         }
         venue_mocks.append(venue_mock)
@@ -71,7 +71,7 @@ def get_all_venue_mocks(all_offerer_mocks):
             "isVirtual": True,
             "key": str(uuid1()),
             "name": "Offre en ligne",
-            "offererName": offerer_mock['name']
+            "offererKey": offerer_mock['key']
         }
         venue_mocks.append(virtual_venue_mock)
 
@@ -94,6 +94,7 @@ def get_all_typed_event_mocks():
         event_mock = {
             "durationMinutes": 60,
             "firstThumbDominantColor": b'\x00\x00\x00',
+            "key": str(uuid1()),
             "name": EVENT_OR_THING_MOCK_NAMES[mock_count],
             "type": event_type['value'],
             "thumbCount": 1
@@ -118,6 +119,7 @@ def get_all_typed_thing_mocks():
 
         thing_mock = {
             "firstThumbDominantColor": b'\x00\x00\x00',
+            "key": str(uuid1()),
             "name": EVENT_OR_THING_MOCK_NAMES[mock_count],
             "type": thing_type['value'],
             "thumbCount": 1
@@ -133,16 +135,20 @@ def get_all_typed_event_offer_mocks(all_typed_event_mocks, all_venue_mocks):
     offer_mocks = []
 
     for venue_mock in all_venue_mocks:
+
+        if 'isVirtual' in venue_mock and venue_mock['isVirtual']:
+            continue
+
         virtual_venue_mock = [
             vm for vm in all_venue_mocks
-            if venue_mock['offererName'] == vm['offererName'] and 'isVirtual' in vm and vm['isVirtual'] == True
+            if venue_mock['offererKey'] == vm['offererKey'] and 'isVirtual' in vm and vm['isVirtual'] == True
         ][0]
 
         for event_mock in all_typed_event_mocks:
 
             offer_mock = {
                 "key": str(uuid1()),
-                "eventName": event_mock['name'],
+                "eventKey": event_mock['key'],
                 "isActive": True,
             }
 
@@ -166,16 +172,20 @@ def get_all_typed_thing_offer_mocks(all_typed_thing_mocks, all_venue_mocks):
     offer_mocks = []
 
     for venue_mock in all_venue_mocks:
+
+        if 'isVirtual' in venue_mock and venue_mock['isVirtual']:
+            continue
+
         virtual_venue_mock = [
             vm for vm in all_venue_mocks
-            if venue_mock['offererName'] == vm['offererName'] and 'isVirtual' in vm and vm['isVirtual'] == True
+            if venue_mock['offererKey'] == vm['offererKey'] and 'isVirtual' in vm and vm['isVirtual'] == True
         ][0]
 
         for thing_mock in all_typed_thing_mocks:
             offer_mock = {
                 "key": str(uuid1()),
                 "isActive": True,
-                "thingName": thing_mock['name']
+                "thingKey": thing_mock['key']
             }
 
             # DETERMINE THE MATCHING VENUE
@@ -235,3 +245,29 @@ def get_all_typed_thing_stock_mocks(all_typed_thing_offer_mocks):
         stock_mocks.append(stock_mock)
 
     return stock_mocks
+
+def get_all_types_event_mediation_mocks(all_typed_event_offer_mocks):
+
+    mediation_mocks = []
+    for event_offer_mock in all_typed_event_offer_mocks:
+        mediation_mock = {
+            "offerKey": event_offer_mock['key'],
+            "key": str(uuid1()),
+        }
+
+        mediation_mocks.append(mediation_mock)
+
+    return mediation_mocks
+
+def get_all_types_thing_mediation_mocks(all_typed_thing_offer_mocks):
+
+    mediation_mocks = []
+    for thing_offer_mock in all_typed_thing_offer_mocks:
+        mediation_mock = {
+            "offerKey": thing_offer_mock['key'],
+            "key": str(uuid1()),
+        }
+
+        mediation_mocks.append(mediation_mock)
+
+    return mediation_mocks
