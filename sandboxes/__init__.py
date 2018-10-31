@@ -178,7 +178,7 @@ def save_sandbox_in_db(name):
     print("EVENT OCCURRENCE MOCKS " + event_occurrences_count)
     event_occurrences_by_key = {}
     for (event_occurrence_index, event_occurrence_mock) in enumerate(sandbox_module.EVENT_OCCURRENCE_MOCKS):
-        print("LOOK event occurrence " + event_occurrence_mock['offerKey'] + " " + str(event_occurrence_index) + "/" + event_occurrences_count)
+        print("LOOK event occurrence " + offers_by_key[event_occurrence_mock['offerKey']].eventOrThing.name + " " + event_occurrence_mock['beginningDatetime'] + " " + str(event_occurrence_index) + "/" + event_occurrences_count)
         offer = offers_by_key[event_occurrence_mock['offerKey']]
         query = EventOccurrence.query.filter_by(
             beginningDatetime=event_occurrence_mock['beginningDatetime'],
@@ -193,7 +193,7 @@ def save_sandbox_in_db(name):
             print("CREATED event_occurrence " + str(event_occurrence))
         else:
             event_occurrence = query.first()
-            print('--ALREADY HERE-- event occurrence' + str(event_occurrence))
+            print('--ALREADY HERE-- event occurrence ' + str(event_occurrence))
         event_occurrences_by_key[event_occurrence_mock['key']] = event_occurrence
 
     stocks_count = str(len(sandbox_module.STOCK_MOCKS))
@@ -201,11 +201,11 @@ def save_sandbox_in_db(name):
     stocks_by_key = {}
     for (stock_index,stock_mock) in enumerate(sandbox_module.STOCK_MOCKS):
         if 'eventOccurrenceKey' in stock_mock:
-            print("LOOK stock " + stock_mock['eventOccurrenceKey'] + " " + str(stock_index) + "/" + stocks_count)
+            print("LOOK stock " + event_occurrences_by_key[stock_mock['eventOccurrenceKey']].offer.event.name + str(stock_index) + "/" + stocks_count)
             event_occurrence = event_occurrences_by_key[stock_mock['eventOccurrenceKey']]
             query = Stock.queryNotSoftDeleted().filter_by(eventOccurrenceId=event_occurrence.id)
         else:
-            print("LOOK stock " + stock_mock['offerKey'] + " " + str(stock_index) + "/" + stocks_count)
+            print("LOOK stock " + offers_by_key[stock_mock['offerKey']].thing.name + " " + str(stock_index) + "/" + stocks_count)
             offer = offers_by_key[stock_mock['offerKey']]
             query = Stock.queryNotSoftDeleted().filter_by(offerId=offer.id)
 

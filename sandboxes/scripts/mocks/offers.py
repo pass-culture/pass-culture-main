@@ -26,32 +26,26 @@ SCRATCH_OFFER_MOCKS = [
         "venueKey": "d33ee240-dc59-11e8-a29f-0242ac130002" # LE GRAND REX PARIS
     },
     {
-        "eventKey": "d33ee240-dc59-11e8-a29f-0242ac130000", # Rencontre avec Franck Lepage
-        "isActive": True,
-        "key": "d33ee240-dc59-11e8-a29f-0242ac130001",
-        "venueKey": "d33ee240-dc59-11e8-a29f-0242ac130002" # LE GRAND REX PARIS
-    },
-    {
         "eventKey": "d33ee240-dc59-11e8-a29f-0242ac130001", # Concert de Gael Faye
         "isActive": True,
-        "key": "d33ee240-dc59-11e8-a29f-0242ac130002",
+        "key": "d33ee240-dc59-11e8-a29f-0242ac130001",
         "venueKey": "d33ee240-dc59-11e8-a29f-0242ac130004" # THEATRE DE L ODEON
     },
     {
         "eventKey": "d33ee240-dc59-11e8-a29f-0242ac130002", # PNL chante Marx
         "isActive": True,
-        "key": "d33ee240-dc59-11e8-a29f-0242ac130003",
+        "key": "d33ee240-dc59-11e8-a29f-0242ac130002",
         "venueKey": "d33ee240-dc59-11e8-a29f-0242ac130004" # THEATRE DE L ODEON
     },
     {
         "isActive": True,
-        "key": "d33ee240-dc59-11e8-a29f-0242ac130004",
+        "key": "d33ee240-dc59-11e8-a29f-0242ac130003",
         "thingKey": "d33ee240-dc59-11e8-a29f-0242ac130000", # Ravage,
         "venueKey": "d33ee240-dc59-11e8-a29f-0242ac130004" # THEATRE DE L ODEON
     },
     {
         "isActive": True,
-        "key": "d33ee240-dc59-11e8-a29f-0242ac130005",
+        "key": "d33ee240-dc59-11e8-a29f-0242ac130004",
         "thingKey": "d33ee240-dc59-11e8-a29f-0242ac130001", # Le Monde Diplomatique
         "venueKey": "d33ee240-dc59-11e8-a29f-0242ac130005" # THEATRE DE L ODEON (OL)
     }

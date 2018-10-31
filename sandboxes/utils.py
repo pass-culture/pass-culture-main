@@ -31,7 +31,11 @@ def store_public_object_from_sandbox_assets(folder, obj, thumb_id, index=0):
                                 mimes_by_folder[folder])
     """
 
+
+    os.makedirs(STORAGE_DIR / folder / collection_name, exist_ok=True)
     os.symlink(thumb_path, STORAGE_DIR / folder / collection_name / str(thumb_id))
+
+    obj.firstThumbDominantColor = b'\x00\x00\x00'
     obj.thumbCount += 1
 
     PcObject.check_and_save(obj)

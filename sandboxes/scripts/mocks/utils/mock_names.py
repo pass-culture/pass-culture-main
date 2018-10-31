@@ -1,5 +1,5 @@
-from datetime import datetime, timedelta
-from utils.date import strftime
+from datetime import datetime, time, timedelta
+from utils.date import today, strftime
 
 EVENT_OR_THING_MOCK_NAMES = [
     "Anaconda",
@@ -11,9 +11,9 @@ EVENT_OR_THING_MOCK_NAMES = [
 ]
 
 EVENT_OCCURRENCE_BEGINNING_DATETIMES = [
-    strftime(datetime.utcnow() + timedelta(hours=1)),
-    strftime(datetime.utcnow() + timedelta(days=2)),
-    strftime(datetime.utcnow() + timedelta(days=15))
+    strftime(today),
+    strftime(today + timedelta(days=2)),
+    strftime(today + timedelta(days=15))
 ]
 
 PLACES = [

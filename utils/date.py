@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, time, timedelta
 from math import floor
 
 from babel.dates import format_datetime as babel_format_datetime
@@ -63,7 +63,4 @@ def dept_timezone_datetime_to_utc(datetimeObj, departementCode):
     dept_datetime = datetimeObj.replace(tzinfo=from_zone)
     return dept_datetime.astimezone(to_zone)
 
-
-def get_now_datetime_plus_an_hour_string():
-    date = datetime.utcnow() + timedelta(hours=1)
-    return strftime(date)
+today = datetime.combine(datetime.utcnow(), time(hour=20))
