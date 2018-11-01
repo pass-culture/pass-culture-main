@@ -40,12 +40,21 @@ def local_path(bucket, id):
     return local_dir(bucket, id) / PurePath(id).name
 
 
-def store_public_object(bucket, id, blob, content_type):
+def store_public_object(bucket, id, blob, content_type, symlink_path=None):
+
     os.makedirs(local_dir(bucket, id), exist_ok=True)
-    newFile = open(local_path(bucket, id), "wb")
-    newFile.write(blob)
-    newTypeFile = open(str(local_path(bucket, id))+".type", "w")
+
+    file_local_path = local_path(bucket, id)
+
+    newTypeFile = open(str(file_local_path)+".type", "w")
     newTypeFile.write(content_type)
+
+    if symlink_path:
+        os.symlink(symlink_path, file_local_path)
+        return
+
+    newFile = open(file_local_path, "wb")
+    newFile.write(blob)
 
     # TODO: once the migration is fully done to scalingo, we can remove the second part of the condition
     if not IS_DEV and "OVH_BUCKET_NAME" in os.environ:

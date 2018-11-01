@@ -36,7 +36,15 @@ class HasThumbMixin(object):
                                      + humanize(self.id)\
                                      + (('_' + str(index)) if index > 0 else '')
 
-    def save_thumb(self, thumb, index, image_type=None, dominant_color=None, no_convert=False, crop=None):
+    def save_thumb(self,
+        thumb,
+        index,
+        image_type=None,
+        dominant_color=None,
+        no_convert=False,
+        crop=None,
+        symlink_path=None
+    ):
         if isinstance(thumb, str):
             if not thumb[0:4] == 'http':
                 raise ValueError('Invalid thumb URL for object %s : %s' % (str(self), thumb))
@@ -50,9 +58,11 @@ class HasThumbMixin(object):
                 raise ValueError('Error downloading thumb for object %s from url %s (status_code : %s)'
                                  % (str(self), thumb, str(thumb_response.status_code)))
 
-        thumb_bytes = io.BytesIO(thumb)
-        img = Image.open(thumb_bytes)
+        if not no_convert or dominant_color is None:
+            thumb_bytes = io.BytesIO(thumb)
+
         if not no_convert:
+            img = Image.open(thumb_bytes)
             img = img.convert('RGB')
             if crop is not None:
                 img = img.crop((img.size[0]*crop[0],
@@ -73,6 +83,7 @@ class HasThumbMixin(object):
                      optimize=True,
                      progressive=True)
             thumb = thumb_bytes.getvalue()
+
         if index == 0:
             if dominant_color is None:
                 color_thief = ColorThief(thumb_bytes)
@@ -81,9 +92,12 @@ class HasThumbMixin(object):
                 print("Warning: could not determine dominant_color for thumb")
                 self.firstThumbDominantColor = b'\x00\x00\x00'
             self.firstThumbDominantColor = dominant_color
+
         store_public_object("thumbs",
                             self.thumb_storage_id(index),
                             thumb,
-                            "image/" + (image_type or "jpeg"))
+                            "image/" + (image_type or "jpeg"),
+                            symlink_path=symlink_path)
         self.thumbCount = max(index+1, self.thumbCount or 0)
+
         PcObject.check_and_save(self)
