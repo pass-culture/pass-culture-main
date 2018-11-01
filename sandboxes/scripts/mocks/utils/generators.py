@@ -250,8 +250,8 @@ def get_all_typed_event_mediation_mocks(all_typed_event_offer_mocks):
     mediation_mocks = []
     for event_offer_mock in all_typed_event_offer_mocks:
         mediation_mock = {
-            "offerKey": event_offer_mock['key'],
             "key": str(uuid1()),
+            "offerKey": event_offer_mock['key'],
         }
 
         mediation_mocks.append(mediation_mock)
@@ -263,8 +263,8 @@ def get_all_typed_thing_mediation_mocks(all_typed_thing_offer_mocks):
     mediation_mocks = []
     for thing_offer_mock in all_typed_thing_offer_mocks:
         mediation_mock = {
-            "offerKey": thing_offer_mock['key'],
             "key": str(uuid1()),
+            "offerKey": thing_offer_mock['key'],
         }
 
         mediation_mocks.append(mediation_mock)

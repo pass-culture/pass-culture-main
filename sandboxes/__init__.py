@@ -280,7 +280,7 @@ def save_sandbox_in_db(name):
         print("LOOK recommendation " + recommendation_mock['mediationKey'] + " " + str(recommendation_index) + "/" + recommendations_count)
         mediation = mediations_by_key[recommendation_mock['mediationKey']]
         user = User.query.filter_by(email=recommendation_mock['userEmail']).one()
-        query = Mediation.query.filter_by(
+        query = Recommendation.query.filter_by(
             mediationId=stock.id,
             userId=user.id,
         )
