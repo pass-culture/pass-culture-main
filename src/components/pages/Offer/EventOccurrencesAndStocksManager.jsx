@@ -7,16 +7,16 @@ import { withRouter } from 'react-router'
 import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
 
-import EventOccurrenceAndStockItem from '../items/EventOccurrenceAndStockItem'
-import HeroSection from '../layout/HeroSection'
-import eventSelector from '../../selectors/event'
-import eventOccurrencesSelector from '../../selectors/eventOccurrences'
-import eventOccurrenceAndStocksErrorsSelector from '../../selectors/eventOccurrenceAndStockErrors'
-import offerSelector from '../../selectors/offer'
-import thingSelector from '../../selectors/thing'
-import providerSelector from '../../selectors/provider'
-import selectApiSearch from '../../selectors/selectApiSearch'
-import stocksSelector from '../../selectors/stocks'
+import EventOccurrenceAndStockItem from './EventOccurrenceAndStockItem'
+import HeroSection from '../../layout/HeroSection'
+import eventSelector from '../../../selectors/event'
+import eventOccurrencesSelector from '../../../selectors/eventOccurrences'
+import eventOccurrenceAndStocksErrorsSelector from '../../../selectors/eventOccurrenceAndStockErrors'
+import offerSelector from '../../../selectors/offer'
+import thingSelector from '../../../selectors/thing'
+import providerSelector from '../../../selectors/provider'
+import selectApiSearch from '../../../selectors/selectApiSearch'
+import stocksSelector from '../../../selectors/stocks'
 
 class EventOccurrencesAndStocksManager extends Component {
   onCloseClick = e => {
@@ -182,49 +182,51 @@ class EventOccurrencesAndStocksManager extends Component {
   }
 }
 
+function mapStateToProps(state, ownProps) {
+  const search = selectApiSearch(state, ownProps.location.search)
+  const { eventOccurrenceIdOrNew, stockIdOrNew } = search || {}
+
+  const isEditing = eventOccurrenceIdOrNew || stockIdOrNew
+  const isNew =
+    eventOccurrenceIdOrNew === 'nouvelle' ||
+    (!eventOccurrenceIdOrNew && stockIdOrNew === 'nouveau')
+
+  const offerId = ownProps.match.params.offerId
+  const offer = offerSelector(state, offerId)
+
+  const eventId = get(offer, 'eventId')
+  const event = eventSelector(state, eventId)
+  const eventOccurrences = eventOccurrencesSelector(
+    state,
+    ownProps.match.params.offerId
+  )
+
+  const thingId = get(offer, 'thingId')
+  const thing = thingSelector(state, thingId)
+
+  const stocks = stocksSelector(state, offerId, event && eventOccurrences)
+
+  const errors = eventOccurrenceAndStocksErrorsSelector(
+    state,
+    eventOccurrenceIdOrNew,
+    stockIdOrNew
+  )
+
+  return {
+    errors,
+    event,
+    eventOccurrenceIdOrNew,
+    eventOccurrences,
+    isEditing,
+    isNew,
+    offer,
+    provider: providerSelector(state, get(event, 'lastProviderId')),
+    stocks,
+    thing,
+  }
+}
+
 export default compose(
   withRouter,
-  connect((state, ownProps) => {
-    const search = selectApiSearch(state, ownProps.location.search)
-    const { eventOccurrenceIdOrNew, stockIdOrNew } = search || {}
-
-    const isEditing = eventOccurrenceIdOrNew || stockIdOrNew
-    const isNew =
-      eventOccurrenceIdOrNew === 'nouvelle' ||
-      (!eventOccurrenceIdOrNew && stockIdOrNew === 'nouveau')
-
-    const offerId = ownProps.match.params.offerId
-    const offer = offerSelector(state, offerId)
-
-    const eventId = get(offer, 'eventId')
-    const event = eventSelector(state, eventId)
-    const eventOccurrences = eventOccurrencesSelector(
-      state,
-      ownProps.match.params.offerId
-    )
-
-    const thingId = get(offer, 'thingId')
-    const thing = thingSelector(state, thingId)
-
-    const stocks = stocksSelector(state, offerId, event && eventOccurrences)
-
-    const errors = eventOccurrenceAndStocksErrorsSelector(
-      state,
-      eventOccurrenceIdOrNew,
-      stockIdOrNew
-    )
-
-    return {
-      errors,
-      event,
-      eventOccurrenceIdOrNew,
-      eventOccurrences,
-      isEditing,
-      isNew,
-      offer,
-      provider: providerSelector(state, get(event, 'lastProviderId')),
-      stocks,
-      thing,
-    }
-  })
+  connect(mapStateToProps)
 )(EventOccurrencesAndStocksManager)

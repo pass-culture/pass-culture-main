@@ -13,14 +13,14 @@ import { connect } from 'react-redux'
 import { NavLink, withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 
-import OfferItem from './offers/OfferItem'
-import HeroSection from '../layout/HeroSection'
-import Main from '../layout/Main'
-import offersSelector from '../../selectors/offers'
-import offererSelector from '../../selectors/offerer'
-import venueSelector from '../../selectors/venue'
-import { offerNormalizer } from '../../utils/normalizers'
-import { mapApiToWindow, windowToApiQuery } from '../../utils/pagination'
+import OfferItem from './OfferItem'
+import HeroSection from '../../layout/HeroSection'
+import Main from '../../layout/Main'
+import offersSelector from '../../../selectors/offers'
+import offererSelector from '../../../selectors/offerer'
+import venueSelector from '../../../selectors/venue'
+import { offerNormalizer } from '../../../utils/normalizers'
+import { mapApiToWindow, windowToApiQuery } from '../../../utils/pagination'
 
 class OffersPage extends Component {
   handleDataRequest = (handleSuccess = () => {}, handleFail = () => {}) => {

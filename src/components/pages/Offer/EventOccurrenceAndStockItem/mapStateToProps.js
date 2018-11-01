@@ -1,13 +1,13 @@
 import get from 'lodash.get'
-import eventSelector from '../../../selectors/event'
-import eventOccurrencePatchSelector from '../../../selectors/eventOccurrencePatch'
-import eventOccurrencesSelector from '../../../selectors/eventOccurrences'
-import offerSelector from '../../../selectors/offer'
-import selectApiSearch from '../../../selectors/selectApiSearch'
-import stockSelector from '../../../selectors/stock'
-import stockPatchSelector from '../../../selectors/stockPatch'
-import timezoneSelector from '../../../selectors/timezone'
-import venueSelector from '../../../selectors/venue'
+import eventSelector from '../../../../selectors/event'
+import eventOccurrencePatchSelector from '../../../../selectors/eventOccurrencePatch'
+import eventOccurrencesSelector from '../../../../selectors/eventOccurrences'
+import offerSelector from '../../../../selectors/offer'
+import selectApiSearch from '../../../../selectors/selectApiSearch'
+import stockSelector from '../../../../selectors/stock'
+import stockPatchSelector from '../../../../selectors/stockPatch'
+import timezoneSelector from '../../../../selectors/timezone'
+import venueSelector from '../../../../selectors/venue'
 
 export default function mapStateToProps(state, ownProps) {
   const search = selectApiSearch(state, ownProps.location.search)

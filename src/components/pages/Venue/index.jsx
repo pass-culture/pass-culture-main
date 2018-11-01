@@ -16,13 +16,13 @@ import { connect } from 'react-redux'
 import { NavLink, withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 
-import HeroSection from '../layout/HeroSection'
-import Main from '../layout/Main'
-import VenueProvidersManager from '../managers/VenueProvidersManager'
-import offererSelector from '../../selectors/offerer'
-import selectUserOffererByOffererIdAndUserIdAndRightsType from '../../selectors/selectUserOffererByOffererIdAndUserIdAndRightsType'
-import selectVenuePatchByVenueIdByOffererId from '../../selectors/selectVenuePatchByVenueIdByOffererId'
-import { offererNormalizer, venueNormalizer } from '../../utils/normalizers'
+import HeroSection from '../../layout/HeroSection'
+import Main from '../../layout/Main'
+import VenueProvidersManager from './VenueProvidersManager'
+import offererSelector from '../../../selectors/offerer'
+import selectUserOffererByOffererIdAndUserIdAndRightsType from '../../../selectors/selectUserOffererByOffererIdAndUserIdAndRightsType'
+import selectVenuePatchByVenueIdByOffererId from '../../../selectors/selectVenuePatchByVenueIdByOffererId'
+import { offererNormalizer, venueNormalizer } from '../../../utils/normalizers'
 
 class VenuePage extends Component {
   constructor() {

@@ -62,9 +62,13 @@ const ProfilePage = ({ user }) => {
   )
 }
 
+function mapStateToProps(state) {
+  return {
+    user: state.user,
+  }
+}
+
 export default compose(
   withLogin({ failRedirect: '/connexion' }),
-  connect(state => ({
-    user: state.user,
-  }))
+  connect(mapStateToProps)
 )(ProfilePage)

@@ -14,11 +14,11 @@ import { withRouter } from 'react-router'
 import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
 
-import VenueProviderItem from '../items/VenueProviderItem'
-import providerSelector from '../../selectors/provider'
-import providersSelector from '../../selectors/providers'
-import venueProviderSelector from '../../selectors/venueProvider'
-import venueProvidersSelector from '../../selectors/venueProviders'
+import VenueProviderItem from './VenueProviderItem'
+import providerSelector from '../../../selectors/provider'
+import providersSelector from '../../../selectors/providers'
+import venueProviderSelector from '../../../selectors/venueProvider'
+import venueProvidersSelector from '../../../selectors/venueProviders'
 
 class ProviderManager extends Component {
   constructor() {
@@ -215,32 +215,36 @@ class ProviderManager extends Component {
   }
 }
 
+function mapStateToProps(state, ownProps) {
+  const providers = providersSelector(state)
+
+  const formPatch = get(state, 'form.venueProvider')
+
+  let provider
+  if (providers.length === 1) {
+    provider = providers[0]
+  } else {
+    const providerId = get(formPatch, 'providerId')
+    provider = providerSelector(state, providerId)
+  }
+
+  const venueId = get(ownProps, 'venue.id')
+
+  return {
+    provider,
+    providers,
+    user: state.user,
+    venueProvider: venueProviderSelector(state, venueId),
+    venueProviders: venueProvidersSelector(state, venueId),
+  }
+}
+
+const mapDispatchToProps = { mergeForm, requestData }
+
 export default compose(
   withRouter,
   connect(
-    (state, ownProps) => {
-      const providers = providersSelector(state)
-
-      const formPatch = get(state, 'form.venueProvider')
-
-      let provider
-      if (providers.length === 1) {
-        provider = providers[0]
-      } else {
-        const providerId = get(formPatch, 'providerId')
-        provider = providerSelector(state, providerId)
-      }
-
-      const venueId = get(ownProps, 'venue.id')
-
-      return {
-        provider,
-        providers,
-        user: state.user,
-        venueProvider: venueProviderSelector(state, venueId),
-        venueProviders: venueProvidersSelector(state, venueId),
-      }
-    },
-    { mergeForm, requestData }
+    mapStateToProps,
+    mapDispatchToProps
   )
 )(ProviderManager)

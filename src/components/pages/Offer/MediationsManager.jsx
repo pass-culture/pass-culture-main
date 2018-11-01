@@ -6,9 +6,9 @@ import { withRouter } from 'react-router'
 import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
 
-import MediationItem from '../items/MediationItem'
-import mediationsSelector from '../../selectors/mediations'
-import offerSelector from '../../selectors/offer'
+import MediationItem from './MediationItem'
+import mediationsSelector from '../../../selectors/mediations'
+import offerSelector from '../../../selectors/offer'
 
 class MediationManager extends Component {
   componentDidMount() {

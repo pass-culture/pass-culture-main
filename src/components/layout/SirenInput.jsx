@@ -52,6 +52,10 @@ class SirenInput extends Component {
   }
 }
 
-export default connect((state, ownProps) => ({
-  fetchedName: get(state, `form.${ownProps.formName}.name`),
-}))(SirenInput)
+function mapStateToProps(state, ownProps) {
+  return {
+    fetchedName: get(state, `form.${ownProps.formName}.name`),
+  }
+}
+
+export default connect(mapStateToProps)(SirenInput)

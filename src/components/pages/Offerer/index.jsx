@@ -14,13 +14,13 @@ import { connect } from 'react-redux'
 import { NavLink, withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 
-import HeroSection from '../layout/HeroSection'
-import VenueItem from '../items/VenueItem'
-import Main from '../layout/Main'
-import offererSelector from '../../selectors/offerer'
-import selectUserOffererByOffererIdAndUserIdAndRightsType from '../../selectors/selectUserOffererByOffererIdAndUserIdAndRightsType'
-import selectPhysicalVenuesByOffererId from '../../selectors/selectPhysicalVenuesByOffererId'
-import { offererNormalizer } from '../../utils/normalizers'
+import HeroSection from '../../layout/HeroSection'
+import VenueItem from './VenueItem'
+import Main from '../../layout/Main'
+import offererSelector from '../../../selectors/offerer'
+import selectUserOffererByOffererIdAndUserIdAndRightsType from '../../../selectors/selectUserOffererByOffererIdAndUserIdAndRightsType'
+import selectPhysicalVenuesByOffererId from '../../../selectors/selectPhysicalVenuesByOffererId'
+import { offererNormalizer } from '../../../utils/normalizers'
 
 const OFFERER_NEW_PATCH_KEYS = [
   'address',
