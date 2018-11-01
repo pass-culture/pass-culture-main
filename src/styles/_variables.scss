@@ -1,5 +1,3 @@
-@import '~bulma/sass/utilities/initial-variables';
-
 // Responsive breakpoints
 $gap: 64px;
 $tablet: 769px;
@@ -59,7 +57,7 @@ $button-disabled-opacity: 0.3;
 
 // Spacing
 $section-padding: 0 0 1rem 0;
-$page-padding: rem(12px); // 0.75rem;
+$page-padding: 0.75rem;
 $footer-height-padding: 1rem;
 
 $header-height: 3.5rem;
@@ -68,3 +66,35 @@ $footer-height: 3.5rem;
 // Misc
 $box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
 $box-shadow-hover: 0 0 10px rgba(0, 0, 0, 0.4);
+
+// Mixins
+$rem-baseline: 16px !default;
+$rem-fallback: true !default; // always force callback
+$rem-px-only: false !default;
+
+// Helpers
+$flexSpaces: (0, 1, 2, 3, 4, 5, 6, 7);
+$marginPaddingIntSizes: (
+  0,
+  2,
+  3,
+  5,
+  6,
+  7,
+  8,
+  12,
+  16,
+  18,
+  20,
+  22,
+  24,
+  28,
+  30,
+  32,
+  36,
+  40,
+  48,
+  56,
+  60
+);
+$textIntSizes: (12, 13, 14, 15, 16, 18, 19, 20, 22, 30, 32, 36, 48, 52, 60, 80);

@@ -1,14 +1,5 @@
 @import '_borders.scss';
 @import '_text.scss';
-// gestion des padding et des margin
-// le `p` pour la padding
-// le `m` pour la margin
-// le `x/y` pour des margin/padding horizontaux/verticaux
-// le `t/r/b/l` pour les 4 positions top, right, bottom, left
-@import '_margin-padding.scss';
-// tous les fichiers contenant des no-*
-// .no-background, .no-padding...
-@import '_negates.scss';
 // .float-left, .clearfix...
 @import '_floats.scss';
 // .pc-horizontal-scroll, .scroll-x, .no-scroll-x...

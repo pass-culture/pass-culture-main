@@ -1,21 +1,34 @@
-$red: #EB0055;
 $black: #000000;
-$white: #FFFFFF;
+$black-bis:    hsl(0, 0%, 7%) !default;
+$black-ter:    hsl(0, 0%, 14%) !default;
+$blue-light: rgba(132, 146, 166, 0.94);
+$blue: #0076FF;
+$cyan:         hsl(204, 86%, 53%) !default;
 $green: #27AE60;
-
-$ribbon-green: #78FB59;
-$ribbon-yellow: #FFF46D;
-
-$primary: $red;
-$grey-dark: #404040;
-$grey: #757575;
-$grey-light: #DAE1E3;
 $grey-lighter: #EDF1F2;
-
+$grey-light: #DAE1E3;
+$grey: #757575;
+$grey-dark: #404040;
+$grey-darker:  #4A4A4A !default;
+$orange:       hsl(14, 100%, 53%) !default;
+$purple:       hsl(271, 100%, 71%) !default;
 $purple-red: #BD10E0;
 $purple-blue: #320096;
+$red: #EB0055;
+$turquoise:    hsl(171, 100%, 41%) !default;
+$violet: #BD10E0;
+$white: #FFFFFF;
+$white-ter:    hsl(0, 0%, 96%) !default;
+$white-bis:    hsl(0, 0%, 98%) !default;
+$white:        hsl(0, 0%, 100%) !default;
+$yellow:       hsl(48, 100%, 67%) !default;
+
+$primary: $red;
 
 $jauge-blue: rgba(0, 210, 230, 1);
 $jauge-green: rgba(176, 222, 0, 1);
 $jauge-pink: rgba(255, 92, 214, 1);
 $jauge-orange: rgba(255, 151, 0, 1);
+
+$ribbon-green: #78FB59;
+$ribbon-yellow: #FFF46D;

@@ -4,11 +4,8 @@
 @import '~bulma/sass/components/_all';
 @import '~bulma/sass/grid/_all';
 @import '~bulma/sass/layout/_all';
-
-
-// overrides
 @import './bulma-with-overrides.scss';
-
+@import '~pass-culture-shared/styles/index.scss';
 @import '~react-datepicker/src/stylesheets/datepicker';
 
 // quick fix Bulma removed from shared
