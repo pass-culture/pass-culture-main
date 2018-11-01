@@ -1,7 +1,6 @@
 import { Selector } from 'testcafe'
 
 import { regularOfferer } from './helpers/roles'
-import { ROOT_PATH } from '../src/utils/config'
 
 const cancelAnchor = Selector('button.button').withText('Annuler')
 const createOfferAnchor = Selector("a[href^='/offres/nouveau']")
@@ -19,8 +18,6 @@ const offererOption = Selector('option').withText(
 )
 const offerersNavbarLink = Selector("a.navbar-item[href='/structures']")
 const priceInput = Selector('#stock-price')
-const stockBookingLimitDatetimeInput = Selector('#stock-bookingLimitDatetime')
-const scheduleCloseButton = Selector('button.button').withText('Fermer')
 const scheduleSubmitButton = Selector('button.button.submitStep')
 const venueAnchor = Selector("a[href^='/structures/']").withText(
   'THEATRE NATIONAL DE CHAILLOT'
