@@ -7344,10 +7344,11 @@ pascalcase@^0.1.1:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/pascalcase/-/pascalcase-0.1.1.tgz#b363e55e8006ca6fe21784d2db22bd15d7917f14"
 
-pass-culture-shared@^0.0.67:
-  version "0.0.67"
-  resolved "https://registry.yarnpkg.com/pass-culture-shared/-/pass-culture-shared-0.0.67.tgz#d9165bec364c61347e96f3b7741c0f325fa988ae"
+pass-culture-shared@0.0.76:
+  version "0.0.76"
+  resolved "https://registry.yarnpkg.com/pass-culture-shared/-/pass-culture-shared-0.0.76.tgz#81830f039ea087a811896fdd554dbfcae21ee53d"
   dependencies:
+    classnames "2.2.5"
     lodash.get "^4.4.2"
     lodash.merge "^4.6.1"
     lodash.set "^4.3.2"
