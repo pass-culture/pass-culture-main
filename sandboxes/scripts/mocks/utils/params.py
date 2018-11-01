@@ -1,4 +1,6 @@
-from datetime import datetime, time, timedelta
+""" mock names """
+from datetime import timedelta
+
 from utils.date import today, strftime
 
 EVENT_OR_THING_MOCK_NAMES = [

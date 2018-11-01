@@ -4,9 +4,9 @@ import numpy
 import requests
 
 from domain.types import get_format_types, get_types_by_value
-from sandboxes.scripts.mocks.utils.mock_names import EVENT_OR_THING_MOCK_NAMES, \
-                                                     EVENT_OCCURRENCE_BEGINNING_DATETIMES, \
-                                                     PLACES
+from sandboxes.scripts.mocks.utils.params import EVENT_OR_THING_MOCK_NAMES, \
+                                                 EVENT_OCCURRENCE_BEGINNING_DATETIMES, \
+                                                 PLACES
 
 def get_all_offerer_mocks(geo_interval=0.1, geo_number=2):
 
