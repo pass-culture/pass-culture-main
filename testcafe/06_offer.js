@@ -57,6 +57,8 @@ test('Lorsque je clique sur le bouton annuler une offre sur la page des offres, 
 
 const typeInput = Selector('#offer-type')
 const typeOption = Selector('option').withText('Conférence — Débat — Dédicace')
+const venueInput = Selector('#offer-venueId')
+const venueOption = Selector('#offer-venueId option')
 const durationMinutesInput = Selector('#offer-durationMinutes')
 const descriptionInput = Selector('#offer-description')
 const submitButton = Selector('button.button.is-primary').withText(
@@ -70,6 +72,9 @@ test('Je peux créer une offre événement', async t => {
   await t.useRole(regularOfferer).click(createOfferAnchor)
   await t.typeText(nameInput, 'Rencontre avec Franck Lepage')
   await t.click(typeInput).click(typeOption)
+  await t
+    .click(venueInput)
+    .click(venueOption.withText('THEATRE NATIONAL DE CHAILLOT'))
   await t.click(offererInput).click(offererOption)
   await t.typeText(durationMinutesInput, '120')
   await t.typeText(
