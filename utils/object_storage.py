@@ -49,7 +49,7 @@ def store_public_object(bucket, id, blob, content_type, symlink_path=None):
     newTypeFile = open(str(file_local_path)+".type", "w")
     newTypeFile.write(content_type)
 
-    if symlink_path and not os.is_file(file_local_path):
+    if symlink_path and not os.path.isfile(file_local_path):
         os.symlink(symlink_path, file_local_path, exist_ok=True)
         return
 
