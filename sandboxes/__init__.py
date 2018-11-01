@@ -23,37 +23,38 @@ from models import Booking,\
 from sandboxes.scripts.mocks import *
 from sandboxes.scripts import sandbox_light, sandbox_webapp
 from sandboxes.utils import store_public_object_from_sandbox_assets
+from utils.logger import logger
 
 def save_sandbox_in_db(name):
     function_name = "sandboxes.scripts.sandbox_" + name
     sandbox_module = sys.modules[function_name]
 
     offerers_count = str(len(sandbox_module.OFFERER_MOCKS))
-    print("OFFERER MOCKS " + offerers_count)
+    logger.info("OFFERER MOCKS " + offerers_count)
     offerers_by_key = {}
     for (offerer_index, offerer_mock) in enumerate(sandbox_module.OFFERER_MOCKS):
-        print("LOOK offerer " + offerer_mock['name'] + " " + str(offerer_index) + "/" + offerers_count)
+        logger.info("LOOK offerer " + offerer_mock['name'] + " " + str(offerer_index) + "/" + offerers_count)
         query = Offerer.query.filter_by(name=offerer_mock['name'])
         if query.count() == 0:
             offerer = Offerer(from_dict=offerer_mock)
             PcObject.check_and_save(offerer)
-            print("CREATED offerer " + str(offerer) + " " + offerer_mock['name'])
+            logger.info("CREATED offerer " + str(offerer) + " " + offerer_mock['name'])
         else:
             offerer = query.first()
-            print('--ALREADY HERE-- offerer' + str(offerer))
+            logger.info('--ALREADY HERE-- offerer' + str(offerer))
         offerers_by_key[offerer_mock['key']] = offerer
 
     users_count = str(len(sandbox_module.USER_MOCKS))
-    print("USER MOCKS " + users_count)
+    logger.info("USER MOCKS " + users_count)
     users_by_email = {}
     for (user_index, user_mock) in enumerate(sandbox_module.USER_MOCKS):
-        print("LOOK user " + user_mock['email'] + " " + str(user_index) + "/" + users_count)
+        logger.info("LOOK user " + user_mock['email'] + " " + str(user_index) + "/" + users_count)
         query = User.query.filter_by(email=user_mock['email'])
         if query.count() == 0:
             user = User(from_dict=user_mock)
             user.validationToken = None
             PcObject.check_and_save(user)
-            print("CREATED user " + str(user) + " " + user_mock['email'])
+            logger.info("CREATED user " + str(user) + " " + user_mock['email'])
             if 'isAdmin' in user_mock and user_mock['isAdmin']:
                 # un acteur culturel qui peut jouer à rajouter des offres partout
                 # TODO: a terme, le flag isAdmin lui donne tous les droits sans
@@ -67,13 +68,13 @@ def save_sandbox_in_db(name):
             store_public_object_from_sandbox_assets("thumbs", user, user_index)
         else:
             user = query.first()
-            print('--ALREADY HERE-- user' + str(user))
+            logger.info('--ALREADY HERE-- user' + str(user))
         users_by_email[user_mock['email']] = user
 
     user_offerers_count = str(len(sandbox_module.USER_OFFERER_MOCKS))
-    print("USER OFFERER MOCKS " + user_offerers_count)
+    logger.info("USER OFFERER MOCKS " + user_offerers_count)
     for (user_offerer_index, user_offerer_mock) in enumerate(sandbox_module.USER_OFFERER_MOCKS):
-        print("LOOK user_offerer " + user_offerer_mock['userEmail'] + user_offerer_mock['offererKey'] + " " + str(user_offerer_index) + "/" + user_offerers_count)
+        logger.info("LOOK user_offerer " + user_offerer_mock['userEmail'] + user_offerer_mock['offererKey'] + " " + str(user_offerer_index) + "/" + user_offerers_count)
 
         user = users_by_email[user_offerer_mock['userEmail']]
         offerer = offerers_by_key[user_offerer_mock['offererKey']]
@@ -87,16 +88,16 @@ def save_sandbox_in_db(name):
             user_offerer.user = user
             user_offerer.offerer = offerer
             PcObject.check_and_save(user_offerer)
-            print("CREATED user_offerer" + str(user_offerer))
+            logger.info("CREATED user_offerer" + str(user_offerer))
         else:
             user_offerer = query.first()
-            print('--ALREADY HERE-- user_offerer' + str(user_offerer))
+            logger.info('--ALREADY HERE-- user_offerer' + str(user_offerer))
 
     venues_count = str(len(sandbox_module.VENUE_MOCKS))
-    print("VENUE MOCKS " + venues_count)
+    logger.info("VENUE MOCKS " + venues_count)
     venues_by_key = {}
     for (venue_index, venue_mock) in enumerate(sandbox_module.VENUE_MOCKS):
-        print("LOOK venue " + venue_mock['offererKey'] + " " + venue_mock['name'] + " " + str(venue_index) + "/" + venues_count)
+        logger.info("LOOK venue " + venue_mock['offererKey'] + " " + venue_mock['name'] + " " + str(venue_index) + "/" + venues_count)
         offerer = offerers_by_key[venue_mock['offererKey']]
         query = Venue.query.filter_by(
             managingOffererId=offerer.id,
@@ -106,53 +107,53 @@ def save_sandbox_in_db(name):
             venue = Venue(from_dict=venue_mock)
             venue.managingOfferer = offerers_by_key[venue_mock['offererKey']]
             PcObject.check_and_save(venue)
-            print("CREATED venue " + venue_mock['offererKey'] + " " + venue_mock['name'])
+            logger.info("CREATED venue " + venue_mock['offererKey'] + " " + venue_mock['name'])
         else:
             venue = query.first()
-            print('--ALREADY HERE-- venue' + str(venue))
+            logger.info('--ALREADY HERE-- venue' + str(venue))
         venues_by_key[venue_mock['key']] = venue
 
     events_count = str(len(sandbox_module.EVENT_MOCKS))
-    print("EVENT MOCKS " + events_count)
+    logger.info("EVENT MOCKS " + events_count)
     events_by_key = {}
     for (event_index,event_mock) in enumerate(sandbox_module.EVENT_MOCKS):
-        print("LOOK event " + event_mock['name'] + " " + str(event_index) + "/" + events_count)
+        logger.info("LOOK event " + event_mock['name'] + " " + str(event_index) + "/" + events_count)
         query = Event.query.filter_by(name=event_mock['name'])
         if query.count() == 0:
             event = Event(from_dict=event_mock)
             PcObject.check_and_save(event)
-            print("CREATED event " + str(event) + " " + event_mock['name'])
+            logger.info("CREATED event " + str(event) + " " + event_mock['name'])
         else:
             event = query.first()
-            print('--ALREADY HERE-- event' + str(event))
+            logger.info('--ALREADY HERE-- event' + str(event))
         events_by_key[event_mock['key']] = event
 
     things_count = str(len(sandbox_module.THING_MOCKS))
-    print("THING MOCKS " + things_count)
+    logger.info("THING MOCKS " + things_count)
     things_by_key = {}
     for (thing_index, thing_mock) in enumerate(sandbox_module.THING_MOCKS):
-        print("LOOK thing " + thing_mock['name'] + " " + str(thing_index) + "/" + things_count)
+        logger.info("LOOK thing " + thing_mock['name'] + " " + str(thing_index) + "/" + things_count)
         query = Thing.query.filter_by(name=thing_mock['name'])
         if query.count() == 0:
             thing = Thing(from_dict=thing_mock)
             PcObject.check_and_save(thing)
-            print("CREATED thing " + str(thing) + " " + thing_mock['name'])
+            logger.info("CREATED thing " + str(thing) + " " + thing_mock['name'])
         else:
             thing = query.first()
-            print('--ALREADY HERE-- thing' + str(thing))
+            logger.info('--ALREADY HERE-- thing' + str(thing))
         things_by_key[thing_mock['key']] = thing
 
     offers_count = str(len(sandbox_module.OFFER_MOCKS))
-    print("OFFER MOCKS " + offers_count)
+    logger.info("OFFER MOCKS " + offers_count)
     offers_by_key = {}
     for (offer_index, offer_mock) in enumerate(sandbox_module.OFFER_MOCKS):
         if 'eventKey' in offer_mock:
-            print("LOOK offer " + events_by_key[offer_mock['eventKey']].name + " " + venues_by_key[offer_mock['venueKey']].name+ " " + str(offer_index) + "/" + offers_count)
+            logger.info("LOOK offer " + events_by_key[offer_mock['eventKey']].name + " " + venues_by_key[offer_mock['venueKey']].name+ " " + str(offer_index) + "/" + offers_count)
             event_or_thing = events_by_key[offer_mock['eventKey']]
             is_event = True
             query = Offer.query.filter_by(eventId=event_or_thing.id)
         else:
-            print("LOOK offer " + things_by_key[offer_mock['thingKey']].name + " " + venues_by_key[offer_mock['venueKey']].name+ " " + str(offer_index) + "/" + offers_count)
+            logger.info("LOOK offer " + things_by_key[offer_mock['thingKey']].name + " " + venues_by_key[offer_mock['venueKey']].name+ " " + str(offer_index) + "/" + offers_count)
             event_or_thing = things_by_key[offer_mock['thingKey']]
             is_event = False
             query = Offer.query.filter_by(thingId=event_or_thing.id)
@@ -168,17 +169,17 @@ def save_sandbox_in_db(name):
                 offer.thing = event_or_thing
             offer.venue = venue
             PcObject.check_and_save(offer)
-            print("CREATED offer " + str(offer))
+            logger.info("CREATED offer " + str(offer))
         else:
             offer = query.first()
-            print('--ALREADY HERE-- offer' + str(offer))
+            logger.info('--ALREADY HERE-- offer' + str(offer))
         offers_by_key[offer_mock['key']] = offer
 
     event_occurrences_count = str(len(sandbox_module.EVENT_OCCURRENCE_MOCKS))
-    print("EVENT OCCURRENCE MOCKS " + event_occurrences_count)
+    logger.info("EVENT OCCURRENCE MOCKS " + event_occurrences_count)
     event_occurrences_by_key = {}
     for (event_occurrence_index, event_occurrence_mock) in enumerate(sandbox_module.EVENT_OCCURRENCE_MOCKS):
-        print("LOOK event occurrence " + offers_by_key[event_occurrence_mock['offerKey']].eventOrThing.name + " " + event_occurrence_mock['beginningDatetime'] + " " + str(event_occurrence_index) + "/" + event_occurrences_count)
+        logger.info("LOOK event occurrence " + offers_by_key[event_occurrence_mock['offerKey']].eventOrThing.name + " " + event_occurrence_mock['beginningDatetime'] + " " + str(event_occurrence_index) + "/" + event_occurrences_count)
         offer = offers_by_key[event_occurrence_mock['offerKey']]
         query = EventOccurrence.query.filter_by(
             beginningDatetime=event_occurrence_mock['beginningDatetime'],
@@ -190,22 +191,22 @@ def save_sandbox_in_db(name):
             if event_occurrence.endDatetime is None:
                 event_occurrence.endDatetime = event_occurrence.beginningDatetime + timedelta(hours=1)
             PcObject.check_and_save(event_occurrence)
-            print("CREATED event_occurrence " + str(event_occurrence))
+            logger.info("CREATED event_occurrence " + str(event_occurrence))
         else:
             event_occurrence = query.first()
-            print('--ALREADY HERE-- event occurrence ' + str(event_occurrence))
+            logger.info('--ALREADY HERE-- event occurrence ' + str(event_occurrence))
         event_occurrences_by_key[event_occurrence_mock['key']] = event_occurrence
 
     stocks_count = str(len(sandbox_module.STOCK_MOCKS))
-    print("STOCK MOCKS " + stocks_count)
+    logger.info("STOCK MOCKS " + stocks_count)
     stocks_by_key = {}
     for (stock_index,stock_mock) in enumerate(sandbox_module.STOCK_MOCKS):
         if 'eventOccurrenceKey' in stock_mock:
-            print("LOOK stock " + event_occurrences_by_key[stock_mock['eventOccurrenceKey']].offer.event.name + str(stock_index) + "/" + stocks_count)
+            logger.info("LOOK stock " + event_occurrences_by_key[stock_mock['eventOccurrenceKey']].offer.event.name + str(stock_index) + "/" + stocks_count)
             event_occurrence = event_occurrences_by_key[stock_mock['eventOccurrenceKey']]
             query = Stock.queryNotSoftDeleted().filter_by(eventOccurrenceId=event_occurrence.id)
         else:
-            print("LOOK stock " + offers_by_key[stock_mock['offerKey']].thing.name + " " + str(stock_index) + "/" + stocks_count)
+            logger.info("LOOK stock " + offers_by_key[stock_mock['offerKey']].thing.name + " " + str(stock_index) + "/" + stocks_count)
             offer = offers_by_key[stock_mock['offerKey']]
             query = Stock.queryNotSoftDeleted().filter_by(offerId=offer.id)
 
@@ -216,34 +217,34 @@ def save_sandbox_in_db(name):
             else:
                 stock.offer = offer
             PcObject.check_and_save(stock)
-            print("CREATED stock " + str(stock))
+            logger.info("CREATED stock " + str(stock))
         else:
             stock = query.first()
-            print('--ALREADY HERE-- stock' + str(stock))
+            logger.info('--ALREADY HERE-- stock' + str(stock))
         stocks_by_key[stock_mock['key']] = stock
 
     deposits_count = str(len(sandbox_module.DEPOSIT_MOCKS))
-    print("DEPOSIT MOCKS " + deposits_count)
+    logger.info("DEPOSIT MOCKS " + deposits_count)
     deposits = []
     for (deposit_index,deposit_mock) in enumerate(sandbox_module.DEPOSIT_MOCKS):
-        print("LOOK deposit " + deposit_mock['userEmail'] + " " + str(deposit_index) + "/" + deposits_count)
+        logger.info("LOOK deposit " + deposit_mock['userEmail'] + " " + str(deposit_index) + "/" + deposits_count)
         user = User.query.filter_by(email=deposit_mock['userEmail']).one()
         query = Deposit.query.filter_by(userId=user.id)
         if query.count() == 0:
             deposit = Deposit(from_dict=deposit_mock)
             deposit.user = user
             PcObject.check_and_save(deposit)
-            print("CREATED deposit " + str(deposit))
+            logger.info("CREATED deposit " + str(deposit))
         else:
             deposit = query.first()
-            print('--ALREADY HERE-- deposit' + str(deposit))
+            logger.info('--ALREADY HERE-- deposit' + str(deposit))
         deposits.append(deposit)
 
     mediations_count = str(len(sandbox_module.MEDIATION_MOCKS))
-    print("MEDIATION MOCKS " + mediations_count)
+    logger.info("MEDIATION MOCKS " + mediations_count)
     mediations_by_key = {}
     for (mediation_index, mediation_mock) in enumerate(sandbox_module.MEDIATION_MOCKS):
-        print("LOOK mediation " + mediation_mock['offerKey'] + " " + str(mediation_index) + "/" + mediations_count)
+        logger.info("LOOK mediation " + mediation_mock['offerKey'] + " " + str(mediation_index) + "/" + mediations_count)
         offer = offers_by_key[mediation_mock['offerKey']]
         query = Mediation.query.filter_by(
             offerId=offer.id
@@ -252,10 +253,10 @@ def save_sandbox_in_db(name):
             mediation = Mediation(from_dict=mediation_mock)
             mediation.offer = offer
             PcObject.check_and_save(mediation)
-            print("CREATED mediation " + str(mediation))
+            logger.info("CREATED mediation " + str(mediation))
         else:
             mediation = query.first()
-            print('--ALREADY HERE-- mediation' + str(mediation))
+            logger.info('--ALREADY HERE-- mediation' + str(mediation))
 
         if 'thumbName' not in mediation_mock:
             if offer.event:
@@ -274,10 +275,10 @@ def save_sandbox_in_db(name):
         mediations_by_key[mediation_mock['key']] = mediation
 
     recommendations_count = str(len(sandbox_module.RECOMMENDATION_MOCKS))
-    print("RECOMMENDATION MOCKS " + recommendations_count)
+    logger.info("RECOMMENDATION MOCKS " + recommendations_count)
     recommendations_by_key = {}
     for (recommendation_index, recommendation_mock) in enumerate(sandbox_module.RECOMMENDATION_MOCKS):
-        print("LOOK recommendation " + recommendation_mock['mediationKey'] + " " + str(recommendation_index) + "/" + recommendations_count)
+        logger.info("LOOK recommendation " + recommendation_mock['mediationKey'] + " " + str(recommendation_index) + "/" + recommendations_count)
         mediation = mediations_by_key[recommendation_mock['mediationKey']]
         user = User.query.filter_by(email=recommendation_mock['userEmail']).one()
         query = Recommendation.query.filter_by(
@@ -289,17 +290,17 @@ def save_sandbox_in_db(name):
             recommendation.mediation = mediation
             recommendation.user = user
             PcObject.check_and_save(recommendation)
-            print("CREATED recommendation " + str(recommendation))
+            logger.info("CREATED recommendation " + str(recommendation))
         else:
             recommendation = query.first()
-            print('--ALREADY HERE-- recommendation' + str(recommendation))
+            logger.info('--ALREADY HERE-- recommendation' + str(recommendation))
         recommendations_by_key[recommendation_mock['key']] = recommendation
 
     bookings_count = str(len(sandbox_module.BOOKING_MOCKS))
-    print("BOOKING MOCKS " + bookings_count)
+    logger.info("BOOKING MOCKS " + bookings_count)
     bookings_by_key = {}
     for (booking_index, booking_mock) in enumerate(sandbox_module.BOOKING_MOCKS):
-        print("LOOK booking " + booking_mock['stockKey'] + " " + str(booking_index) + "/" + bookings_count)
+        logger.info("LOOK booking " + booking_mock['stockKey'] + " " + str(booking_index) + "/" + bookings_count)
         stock = stocks_by_key[booking_mock['stockKey']]
         user = User.query.filter_by(email=booking_mock['userEmail']).one()
         query = Booking.query.filter_by(
@@ -313,8 +314,8 @@ def save_sandbox_in_db(name):
             booking.user = user
             booking.amount = stock.price
             PcObject.check_and_save(booking)
-            print("CREATED booking " + str(booking))
+            logger.info("CREATED booking " + str(booking))
         else:
             booking = query.first()
-            print('--ALREADY HERE-- booking' + str(booking))
+            logger.info('--ALREADY HERE-- booking' + str(booking))
         bookings_by_key[booking_mock['key']] = booking
