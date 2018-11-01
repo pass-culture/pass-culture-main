@@ -132,5 +132,28 @@ $rem-fallback: true !default; // always force callback
 $rem-px-only: false !default;
 
 // Helpers
-
-$intSizes: (0, 3, 5, 7, 8, 12, 16, 18, 20, 22, 24, 28, 30, 32, 36, 40, 48, 60);
+$flexSpaces: (0, 1, 2, 3, 4, 5, 6, 7);
+$marginPaddingIntSizes: (
+  0,
+  2,
+  3,
+  5,
+  6,
+  7,
+  8,
+  12,
+  16,
+  18,
+  20,
+  22,
+  24,
+  28,
+  30,
+  32,
+  36,
+  40,
+  48,
+  56,
+  60
+);
+$textIntSizes: (12, 13, 14, 15, 16, 18, 19, 20, 22, 30, 32, 36, 48, 52, 60, 80);
