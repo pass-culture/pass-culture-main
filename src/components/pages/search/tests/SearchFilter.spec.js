@@ -35,7 +35,7 @@ describe('src | components | pages | search | SearchFilter', () => {
     })
   })
 
-  describe('functions ', () => {
+  describe('functions', () => {
     describe('constructor', () => {
       it.skip('should initilize state with functions', () => {
         // given

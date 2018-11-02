@@ -20,10 +20,9 @@ describe('src | components | pages | signin | component', () => {
       expect(wrapper).toMatchSnapshot()
     })
   })
-
   describe('functions', () => {
     describe('constructor', () => {
-      it('should initialize state with functions', () => {
+      it('should initialize state correctly', () => {
         // given
         const props = {
           dispatch: jest.fn(),
@@ -32,11 +31,13 @@ describe('src | components | pages | signin | component', () => {
 
         // when
         const wrapper = shallow(<Signin {...props} />)
+        const expected = { isloading: false }
 
         // then
-        expect(wrapper.state()).toEqual({ isloading: false })
+        expect(wrapper.state()).toEqual(expected)
       })
     })
+
     describe('onFormSubmit', () => {
       // given
       const props = {
@@ -46,14 +47,16 @@ describe('src | components | pages | signin | component', () => {
 
       // when
       const wrapper = shallow(<Signin {...props} />)
-      wrapper.instance().onFormSubmit('formValues')
-      // const expected = 'some thing'
+      // const submit = wrapper.find('Form')
+      console.log('wrapper', wrapper)
 
-      // then
+      const formValue = {}
+      wrapper.instance().onFormSubmit(formValue)
 
-      // expected
-      // state qui change
-      // request Data
+      // https://redux.js.org/recipes/writingtests
+      console.log('state', wrapper.state())
+
+      // expect(wrapper.children.props().onSubmit()).toHaveBeenCalledWith('totot')
     })
   })
 })

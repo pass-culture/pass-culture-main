@@ -9,6 +9,8 @@ import FormInputs from './FormInputs'
 import FormFooter from './FormFooter'
 import FormHeader from './FormHeader'
 
+import { parseSubmitErrors } from '../../forms/utils'
+
 const cancelButtonOptions = {
   className: 'is-white-text',
   label: 'Créer un compte',
@@ -20,15 +22,6 @@ const submitButtonOptions = {
   label: 'Connexion',
 }
 
-const parseSubmitErrors = errors =>
-  Object.keys(errors).reduce((acc, key) => {
-    // FIXME -> test avec un array d'erreurs
-    // a deplacer dans un tests unitaires
-    // const err = errors[key].concat('toto')
-    const err = errors[key]
-    return { ...acc, [key]: err }
-  }, {})
-
 class Signin extends React.PureComponent {
   constructor(props) {
     super(props)
@@ -38,6 +31,7 @@ class Signin extends React.PureComponent {
   handleRequestFail = formResolver => (state, action) => {
     // on retourne les erreurs API au formulaire
     const nextstate = { isloading: false }
+
     const errors = parseSubmitErrors(action.errors)
     this.setState(nextstate, () => formResolver(errors))
   }
@@ -53,6 +47,7 @@ class Signin extends React.PureComponent {
   }
 
   onFormSubmit = formValues => {
+    console.log('form Values', formValues)
     const routeMethod = 'POST'
     const routePath = 'users/signin'
     const { dispatch } = this.props
