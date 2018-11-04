@@ -7458,9 +7458,9 @@ pascalcase@^0.1.1:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/pascalcase/-/pascalcase-0.1.1.tgz#b363e55e8006ca6fe21784d2db22bd15d7917f14"
 
-pass-culture-shared@0.0.85:
-  version "0.0.85"
-  resolved "https://registry.yarnpkg.com/pass-culture-shared/-/pass-culture-shared-0.0.85.tgz#559fc500409db75507d32716e02043d7e7b615c8"
+pass-culture-shared@0.0.86:
+  version "0.0.86"
+  resolved "https://registry.yarnpkg.com/pass-culture-shared/-/pass-culture-shared-0.0.86.tgz#0979e25da2f031b00a53c054dac02ba92b269c94"
   dependencies:
     classnames "2.2.5"
     eslint "^5.8.0"
