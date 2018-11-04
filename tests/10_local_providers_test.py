@@ -1,6 +1,4 @@
 """ local providers test """
-import subprocess
-
 from sqlalchemy import func
 
 from local_providers import OpenAgendaEvents, \
@@ -15,10 +13,13 @@ from models.pc_object import PcObject
 from models.provider import Provider
 from models.thing import Thing
 from models.venue_provider import VenueProvider
-from utils.config import API_ROOT_PATH
+from sandboxes import save_sandbox_in_db
 from utils.human_ids import dehumanize
-from utils.test_utils import assertEmptyDb, \
-    assert_created_thumbs, provider_test, assertCreatedCounts, saveCounts
+from utils.test_utils import assertCreatedCounts, \
+                             assert_created_thumbs,\
+                             assertEmptyDb, \
+                             provider_test, \
+                             saveCounts
 
 savedCounts = {}
 
@@ -167,11 +168,5 @@ def test_17_openagenda_events_provider(app):
 
 def test_99_init(app):
     saveCounts(app)
-    result = subprocess.run('PYTHONPATH="." python scripts/pc.py sandbox --name=light',
-                            stdout=subprocess.PIPE,
-                            stderr=subprocess.PIPE,
-                            shell=True,
-                            cwd=API_ROOT_PATH)
-    print(result.stdout)
-    print(result.stderr)
+    save_sandbox_in_db('light')
     assertCreatedCounts(app, User=5)
