@@ -8,6 +8,7 @@ describe('src | reducers | data  ', () => {
       bookings: [],
       recommendations: [],
       types: [],
+      users: [],
     }
 
     // when
