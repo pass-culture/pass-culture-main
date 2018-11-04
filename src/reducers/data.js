@@ -5,6 +5,7 @@ const data = createData({
   bookings: [],
   recommendations: [],
   types: [],
+  users: [],
 })
 
 export default data
