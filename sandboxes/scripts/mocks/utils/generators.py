@@ -10,7 +10,7 @@ from sandboxes.scripts.mocks.utils.params import EVENT_OR_THING_MOCK_NAMES, \
 
 def get_all_offerer_mocks(geo_interval=0.1, geo_number=2):
 
-    siren = 123456789
+    siren = 999999999
 
     offerer_mocks = []
     for place in PLACES:
@@ -43,7 +43,7 @@ def get_all_offerer_mocks(geo_interval=0.1, geo_number=2):
                         "postalCode": properties['postcode'],
                         "siren": str(siren)
                     }
-                    siren -= 1
+                    siren = siren - 1
                     offerer_mocks.append(offerer_mock)
 
     return offerer_mocks
