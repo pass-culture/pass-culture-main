@@ -494,11 +494,13 @@ def create_venue(
     venue.bic = bic
     venue.longitude = longitude
     venue.latitude = latitude
-
+    venue.siret = siret
+    """
     if not is_virtual:
         venue.siret = siret
     elif siret is not None:
         logger.warning("You try to create a venue with both siret and isVirtual. We just did not take in account the siret then.")
+    """
 
     venue.comment = comment
     venue.id = idx

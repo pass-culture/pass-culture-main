@@ -63,6 +63,7 @@ class Offer(PcObject,
         if self.venue:
             venue = self.venue
         else:
+            print('self.venueId', self.venueId)
             venue = Venue.query.get(self.venueId)
         if thing and thing.url and not venue.isVirtual:
             api_errors.addError('venue',
