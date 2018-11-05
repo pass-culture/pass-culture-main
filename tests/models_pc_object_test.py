@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 import pytest
 from sqlalchemy import Column, DateTime
 
-from models import PcObject, Offer, EventOccurrence
+from models import PcObject, Offer, EventOccurrence, User
 from models.db import Model
 from models.pc_object import serialize
 
@@ -92,3 +92,25 @@ def test_serialize_on_datetime_list_returns_string_with_date_in_ISO_8601_list():
     # Then
     for datetime in serialized_list:
         assert_is_in_ISO_8601_format(datetime)
+
+
+@pytest.mark.standalone
+def test_user_has_his__stripped_of_whitespace_when_populating_from_dict():
+    # given
+    user_data = {
+        'email': '   test@example.com',
+        'firstName': 'John   ',
+        'lastName': None,
+        'postalCode': '   93100   ',
+        'publicName': ''
+    }
+
+    # when
+    user = User(from_dict=user_data)
+
+    # then
+    assert user.email == 'test@example.com'
+    assert user.firstName == 'John'
+    assert user.lastName == None
+    assert user.postalCode == '93100'
+    assert user.publicName == ''

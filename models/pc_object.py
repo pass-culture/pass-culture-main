@@ -284,7 +284,7 @@ class PcObject():
                     datetime_value = self._deserialize_datetime(key, value)
                     setattr(self, key, datetime_value)
                 else:
-                    setattr(self, key, value)
+                    setattr(self, key, value.strip() if value else value)
 
 
     @staticmethod
