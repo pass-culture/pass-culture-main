@@ -66,3 +66,4 @@ def invalid_id_for_dehumanize_error(error):
 def conflict_error(error):
     app.logger.error('409 %s' % str(error))
     return jsonify(error.errors), 409
+

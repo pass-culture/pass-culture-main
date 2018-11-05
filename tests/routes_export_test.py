@@ -74,7 +74,8 @@ def test_get_users_per_department_returns_bad_request_if_no_token_provided(app):
     # then
     assert response.status_code == 400
 
-
+@pytest.mark.standalone
+@clean_database
 def test_export_model_returns_400_when_given_model_is_unknown(app):
     # given
     user = create_user(password='p@55sw0rd')
@@ -87,3 +88,32 @@ def test_export_model_returns_400_when_given_model_is_unknown(app):
     # then
     assert response.status_code == 400
     assert response.json()['global'] == ['Classe inconnue : RandomStuff']
+
+@pytest.mark.standalone
+@clean_database
+def test_check_user_is_admin_returns_403_when_user_is_not_admin(app):
+    #given
+    user = create_user(password='p@55sw0rd', is_admin=False)
+    PcObject.check_and_save(user)
+    auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
+
+    #when
+    response = auth_request.get(API_URL + '/exports/pending_validations')
+
+    #then
+    assert response.status_code == 403
+
+
+@pytest.mark.standalone
+@clean_database
+def test_check_user_is_admin_returns_200_when_user_is_admin(app):
+    #given
+    user = create_user(password='p@55sw0rd', is_admin=True, can_book_free_offers=False)
+    PcObject.check_and_save(user)
+    auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
+
+    #when
+    response = auth_request.get(API_URL + '/exports/pending_validations')
+
+    #then
+    assert response.status_code == 200

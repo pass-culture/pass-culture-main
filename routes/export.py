@@ -6,6 +6,7 @@ from inspect import isclass
 from io import BytesIO, StringIO
 
 from flask import current_app as app, jsonify, request, send_file
+from flask_login import current_user, login_required
 from postgresql_audit.flask import versioning_manager
 
 import models
@@ -22,6 +23,8 @@ from repository.offerer_queries import find_offerers_in_date_range_for_given_dep
 from repository.recommendation_queries import find_recommendations_in_date_range_for_given_departement
 from repository.user_queries import find_users_by_department_and_date_range, find_users_stats_per_department
 from repository.venue_queries import count_venues_by_departement
+from validation.exports import check_user_is_admin
+
 
 Activity = versioning_manager.activity_cls
 
@@ -249,6 +252,17 @@ def get_all_offerers_with_venue():
     result = find_all_offerers_with_venue()
     file_name = 'export_%s_offerers_with_venue_venue.csv' % datetime.utcnow().strftime('%y_%m_%d')
     headers = ['Offerer_id', 'Offerer_name', 'Venue_id', 'Venue_name', 'Venue_bookingEmail', 'Venue_postalCode', 'Venue_isVirtual']
+    return _make_csv_response(file_name, headers, result)
+
+
+@app.route('/exports/pending_validations', methods=['GET'])
+@login_required
+def get_pending_validations():
+    check_user_is_admin(current_user)
+    
+    file_name = 'export_%s_TEEEEEEEST.csv' % datetime.utcnow().strftime('%y_%m_%d')
+    result = ['0','1','2','3','4']
+    headers = ['coucou','je', 'travaille']
     return _make_csv_response(file_name, headers, result)
 
 
