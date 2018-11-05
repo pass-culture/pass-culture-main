@@ -14,7 +14,7 @@ def create_or_find_recommendation(recommendation_mock, mediation=None, user=None
         userId=user.id,
     ).first()
 
-    if query.count() == 0:
+    if recommendation is None:
         recommendation = Recommendation(from_dict=recommendation_mock)
         recommendation.mediation = mediation
         recommendation.user = user

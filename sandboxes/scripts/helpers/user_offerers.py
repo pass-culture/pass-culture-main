@@ -13,7 +13,7 @@ def create_or_find_user_offerer(user_offerer_mock, user=None, offerer=None, stor
         offererId=offerer.id
     ).first()
 
-    if query.count() == 0:
+    if user_offerer is None:
         user_offerer = UserOfferer(from_dict=user_offerer_mock)
         user_offerer.offerer = offerer
         user_offerer.user = user

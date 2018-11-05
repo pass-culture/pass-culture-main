@@ -7,7 +7,7 @@ def create_or_find_mediation(mediation_mock, offer=None, store=None):
     if offer is None:
         offer = store['offers_by_key'][mediation_mock['offerKey']]
 
-    mediation = Mediation.query.filter_by(offerId=offer.id)
+    mediation = Mediation.query.filter_by(offerId=offer.id).first()
     if mediation is None:
         mediation = Mediation(from_dict=mediation_mock)
         mediation.offer = offer

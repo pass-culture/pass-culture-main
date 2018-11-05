@@ -3,9 +3,7 @@ from models.pc_object import PcObject
 from utils.logger import logger
 
 def create_or_find_thing(thing_mock):
-    thing = Thing.query.filter_by(
-        name=thing_mock['name']
-    )
+    thing = Thing.query.filter_by(name=thing_mock['name']).first()
 
     if thing is None:
         thing = Thing(from_dict=thing_mock)

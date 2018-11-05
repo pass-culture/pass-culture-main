@@ -2,15 +2,15 @@ from models import Offer
 from models.pc_object import PcObject
 from utils.logger import logger
 
-def create_or_find_offer(offer_mock, event=None, thing=None, store=None):
+def create_or_find_offer(offer_mock, event_or_thing=None, store=None):
 
     if 'eventKey' in offer_mock:
-        if event is None:
+        if event_or_thing is None:
             event_or_thing = store['events_by_key'][offer_mock['eventKey']]
         is_event = True
         query = Offer.query.filter_by(eventId=event_or_thing.id)
     else:
-        if thing is None:
+        if event_or_thing is None:
             event_or_thing = store['things_by_key'][offer_mock['thingKey']]
         is_event = False
         query = Offer.query.filter_by(thingId=event_or_thing.id)
@@ -27,8 +27,8 @@ def create_or_find_offer(offer_mock, event=None, thing=None, store=None):
         offer.venue = venue
         PcObject.check_and_save(offer)
         logger.info("created offer " + str(offer))
-
-    logger.info('--already here-- offer' + str(offer))
+    else:
+        logger.info('--already here-- offer' + str(offer))
 
     return offer
 
