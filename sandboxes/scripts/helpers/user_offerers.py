@@ -2,11 +2,14 @@ from models import UserOfferer
 from models.pc_object import PcObject
 from utils.logger import logger
 
-def create_or_find_user_offerer(user_offerer_mock, store=None):
+def create_or_find_user_offerer(user_offerer_mock, user=None, offerer=None, store=None):
     if store is None:
         store = {}
-    user = store['users_by_key'][user_offerer_mock['userKey']]
-    offerer = store['offerers_by_key'][user_offerer_mock['offererKey']]
+
+    if user is None:
+        user = store['users_by_key'][user_offerer_mock['userKey']]
+    if offerer is None:
+        offerer = store['offerers_by_key'][user_offerer_mock['offererKey']]
 
     query = UserOfferer.query.filter_by(
         userId=user.id,
@@ -28,9 +31,12 @@ def create_or_find_user_offerer(user_offerer_mock, store=None):
 def create_or_find_user_offerers(*user_offerer_mocks, store=None):
     if store is None:
         store = {}
+
     user_offerers_count = str(len(user_offerer_mocks))
     logger.info("user_offerer mocks " + user_offerers_count)
+
     store['user_offerers_by_key'] = {}
+
     for (user_offerer_index, user_offerer_mock) in enumerate(user_offerer_mocks):
         logger.info("look user_offerer " + store['users_by_key'][user_offerer_mock['userKey']].email + " " + store['offerers_by_key'][user_offerer_mock['offererKey']].name + str(user_offerer_index) + "/" + user_offerers_count)
         user_offerer = create_or_find_user_offerer(user_offerer_mock, store=store)

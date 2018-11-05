@@ -4,11 +4,13 @@ from models import EventOccurrence
 from models.pc_object import PcObject
 from utils.logger import logger
 
-def create_or_find_event_occurrence(event_occurrence_mock, store=None):
+def create_or_find_event_occurrence(event_occurrence_mock, offer=None, store=None):
     if store is None:
         store = {}
 
-    offer = store['offers_by_key'][event_occurrence_mock['offerKey']]
+    if offer is None:
+        offer = store['offers_by_key'][event_occurrence_mock['offerKey']]
+
     query = EventOccurrence.query.filter_by(
         beginningDatetime=event_occurrence_mock['beginningDatetime'],
         offerId=offer.id
@@ -24,14 +26,18 @@ def create_or_find_event_occurrence(event_occurrence_mock, store=None):
     else:
         event_occurrence = query.first()
         logger.info('--already here-- event occurrence ' + str(event_occurrence))
+
     return event_occurrence
 
 def create_or_find_event_occurrences(*event_occurrence_mocks, store=None):
     if store is None:
         store = {}
+
     event_occurrences_count = str(len(event_occurrence_mocks))
     logger.info("event_occurrence mocks " + event_occurrences_count)
+
     store['event_occurrences_by_key'] = {}
+
     for (event_occurrence_index, event_occurrence_mock) in enumerate(event_occurrence_mocks):
         logger.info("look event_occurrence " + store['offers_by_key'][event_occurrence_mock['offerKey']].event.name + " " + " " + str(event_occurrence_index) + "/" + event_occurrences_count)
         event_occurrence = create_or_find_event_occurrence(event_occurrence_mock, store=store)

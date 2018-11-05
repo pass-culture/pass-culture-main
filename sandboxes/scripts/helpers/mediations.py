@@ -3,10 +3,10 @@ from models.pc_object import PcObject
 from sandboxes.utils import store_public_object_from_sandbox_assets
 from utils.logger import logger
 
-def create_or_find_mediation(mediation_mock, store=None):
-    if store is None:
-        store = {}
-    offer = store['offers_by_key'][mediation_mock['offerKey']]
+def create_or_find_mediation(mediation_mock, offer=None, store=None):
+    if offer is None:
+        offer = store['offers_by_key'][mediation_mock['offerKey']]
+
     query = Mediation.query.filter_by(offerId=offer.id)
     if query.count() == 0:
         mediation = Mediation(from_dict=mediation_mock)
@@ -26,6 +26,7 @@ def create_or_find_mediation(mediation_mock, store=None):
             thumb_name = thing.type
     else:
         thumb_name = mediation_mock['thumbName']
+        
     store_public_object_from_sandbox_assets("thumbs", mediation, thumb_name)
 
     return mediation
