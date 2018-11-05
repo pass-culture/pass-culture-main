@@ -9,13 +9,13 @@ def create_or_find_booking(booking_mock, stock=None, user=None, store=None):
     if user is None:
         user = store['users_by_key'][booking_mock['userKey']]
 
-    query = Booking.query.filter_by(
+    booking = Booking.query.filter_by(
         stockId=stock.id,
         userId=user.id,
         token=booking_mock['token']
-    )
+    ).first()
 
-    if query.count() == 0:
+    if booking is None:
         booking = Booking(from_dict=booking_mock)
         booking.stock = stock
         booking.user = user
@@ -23,10 +23,10 @@ def create_or_find_booking(booking_mock, stock=None, user=None, store=None):
         PcObject.check_and_save(booking)
         logger.info("created booking " + str(booking))
     else:
-        booking = query.first()
         logger.info('--already here-- booking' + str(booking))
 
     return booking
+
 
 def create_or_find_bookings(*booking_mocks, store=None):
     if store is None:

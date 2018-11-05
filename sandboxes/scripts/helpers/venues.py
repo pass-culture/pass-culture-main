@@ -6,18 +6,17 @@ def create_or_find_venue(venue_mock, offerer=None, store=None):
     if offerer is None:
         offerer = store['offerers_by_key'][venue_mock['offererKey']]
 
-    query = Venue.query.filter_by(
+    venue = Venue.query.filter_by(
         managingOffererId=offerer.id,
         name=venue_mock['name']
-    )
+    ).first()
 
-    if query.count() == 0:
+    if venue is None:
         venue = Venue(from_dict=venue_mock)
         venue.managingOfferer = store['offerers_by_key'][venue_mock['offererKey']]
         PcObject.check_and_save(venue)
         logger.info("created venue " + venue_mock['offererKey'] + " " + venue_mock['name'])
     else:
-        venue = query.first()
         logger.info('--already here-- venue' + str(venue))
 
     return venue

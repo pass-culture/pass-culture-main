@@ -3,15 +3,14 @@ from models.pc_object import PcObject
 from utils.logger import logger
 
 def create_or_find_event(event_mock):
-    query = Event.query.filter_by(name=event_mock['name'])
+    event = Event.query.filter_by(name=event_mock['name']).first()
 
-    if query.count() == 0:
+    if event is None:
         event = Event(from_dict=event_mock)
         PcObject.check_and_save(event)
         logger.info("created event " + str(event))
-    else:
-        event = query.first()
-        logger.info('--already here-- event' + str(event))
+
+    logger.info('--already here-- event' + str(event))
 
     return event
 

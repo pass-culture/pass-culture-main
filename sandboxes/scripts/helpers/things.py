@@ -3,16 +3,15 @@ from models.pc_object import PcObject
 from utils.logger import logger
 
 def create_or_find_thing(thing_mock):
-    query = Thing.query.filter_by(
+    thing = Thing.query.filter_by(
         name=thing_mock['name']
     )
 
-    if query.count() == 0:
+    if thing is None:
         thing = Thing(from_dict=thing_mock)
         PcObject.check_and_save(thing)
         logger.info("created thing " + str(thing) + " " + thing_mock['name'])
     else:
-        thing = query.first()
         logger.info('--already here-- thing' + str(thing))
 
     return thing

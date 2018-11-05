@@ -3,14 +3,13 @@ from models.pc_object import PcObject
 from utils.logger import logger
 
 def create_or_find_offerer(offerer_mock):
-    query = Offerer.query.filter_by(name=offerer_mock['name'])
+    offerer = Offerer.query.filter_by(name=offerer_mock['name']).first()
 
-    if query.count() == 0:
+    if offerer is None:
         offerer = Offerer(from_dict=offerer_mock)
         PcObject.check_and_save(offerer)
         logger.info("created offerer"  + str(offerer) + " " + offerer_mock['key'])
     else:
-        offerer = query.first()
         logger.info('--aleady here-- offerer' + str(offerer))
 
     return offerer

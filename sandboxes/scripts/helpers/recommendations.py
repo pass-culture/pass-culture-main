@@ -9,10 +9,10 @@ def create_or_find_recommendation(recommendation_mock, mediation=None, user=None
     if user is None:
         user = store['users_by_key'][recommendation_mock['userKey']]
 
-    query = Recommendation.query.filter_by(
+    recommendation = Recommendation.query.filter_by(
         mediationId=mediation.id,
         userId=user.id,
-    )
+    ).first()
 
     if query.count() == 0:
         recommendation = Recommendation(from_dict=recommendation_mock)
@@ -21,7 +21,6 @@ def create_or_find_recommendation(recommendation_mock, mediation=None, user=None
         PcObject.check_and_save(recommendation)
         logger.info("created recommendation " + str(recommendation))
     else:
-        recommendation = query.first()
         logger.info('--already here-- recommendation' + str(recommendation))
 
     return recommendation

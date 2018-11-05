@@ -7,14 +7,13 @@ def create_or_find_mediation(mediation_mock, offer=None, store=None):
     if offer is None:
         offer = store['offers_by_key'][mediation_mock['offerKey']]
 
-    query = Mediation.query.filter_by(offerId=offer.id)
-    if query.count() == 0:
+    mediation = Mediation.query.filter_by(offerId=offer.id)
+    if mediation is None:
         mediation = Mediation(from_dict=mediation_mock)
         mediation.offer = offer
         PcObject.check_and_save(mediation)
         logger.info("created mediation " + str(mediation))
     else:
-        mediation = query.first()
         logger.info('--already here-- mediation' + str(mediation))
 
     if 'thumbName' not in mediation_mock:
@@ -26,7 +25,7 @@ def create_or_find_mediation(mediation_mock, offer=None, store=None):
             thumb_name = thing.type
     else:
         thumb_name = mediation_mock['thumbName']
-        
+
     store_public_object_from_sandbox_assets("thumbs", mediation, thumb_name)
 
     return mediation

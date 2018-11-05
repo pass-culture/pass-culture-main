@@ -12,7 +12,9 @@ def create_or_find_stock(stock_mock, event_occurrence=None, offer=None, store=No
             offer = store['offers_by_key'][stock_mock['offerKey']]
         query = Stock.queryNotSoftDeleted().filter_by(offerId=offer.id)
 
-    if query.count() == 0:
+    stock = query.first()
+
+    if stock is None:
         stock = Stock(from_dict=stock_mock)
         if 'eventOccurrenceKey' in stock_mock:
             stock.eventOccurrence = event_occurrence
@@ -21,7 +23,6 @@ def create_or_find_stock(stock_mock, event_occurrence=None, offer=None, store=No
         PcObject.check_and_save(stock)
         logger.info("created stock " + str(stock))
     else:
-        stock = query.first()
         logger.info('--already here-- stock' + str(stock))
 
     return stock

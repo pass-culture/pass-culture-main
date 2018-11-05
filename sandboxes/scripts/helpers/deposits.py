@@ -7,15 +7,14 @@ def create_or_find_deposit(deposit_mock, user=None, store=None):
     if user is None:
         user = store['users_by_key'][deposit_mock['userKey']]
 
-    query = Deposit.query.filter_by(userId=user.id)
+    deposit = Deposit.query.filter_by(userId=user.id).first()
 
-    if query.count() == 0:
+    if deposit is None:
         deposit = Deposit(from_dict=deposit_mock)
         deposit.user = user
         PcObject.check_and_save(deposit)
         logger.info("created deposit " + str(deposit))
     else:
-        deposit = query.first()
         logger.info('--already here-- deposit' + str(deposit))
 
     return deposit

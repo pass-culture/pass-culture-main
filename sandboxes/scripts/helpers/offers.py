@@ -3,6 +3,7 @@ from models.pc_object import PcObject
 from utils.logger import logger
 
 def create_or_find_offer(offer_mock, event=None, thing=None, store=None):
+
     if 'eventKey' in offer_mock:
         if event is None:
             event_or_thing = store['events_by_key'][offer_mock['eventKey']]
@@ -13,11 +14,11 @@ def create_or_find_offer(offer_mock, event=None, thing=None, store=None):
             event_or_thing = store['things_by_key'][offer_mock['thingKey']]
         is_event = False
         query = Offer.query.filter_by(thingId=event_or_thing.id)
-
     venue = store['venues_by_key'][offer_mock['venueKey']]
-    query = query.filter_by(venueId=venue.id)
 
-    if query.count() == 0:
+    offer = query.filter_by(venueId=venue.id).first()
+
+    if offer is None:
         offer = Offer(from_dict=offer_mock)
         if is_event:
             offer.event = event_or_thing
@@ -26,9 +27,9 @@ def create_or_find_offer(offer_mock, event=None, thing=None, store=None):
         offer.venue = venue
         PcObject.check_and_save(offer)
         logger.info("created offer " + str(offer))
-    else:
-        offer = query.first()
-        logger.info('--already here-- offer' + str(offer))
+
+    logger.info('--already here-- offer' + str(offer))
+
     return offer
 
 def create_or_find_offers(*offer_mocks, store=None):

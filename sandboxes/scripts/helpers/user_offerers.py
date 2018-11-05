@@ -3,18 +3,15 @@ from models.pc_object import PcObject
 from utils.logger import logger
 
 def create_or_find_user_offerer(user_offerer_mock, user=None, offerer=None, store=None):
-    if store is None:
-        store = {}
-
     if user is None:
         user = store['users_by_key'][user_offerer_mock['userKey']]
     if offerer is None:
         offerer = store['offerers_by_key'][user_offerer_mock['offererKey']]
 
-    query = UserOfferer.query.filter_by(
+    user_offerer = UserOfferer.query.filter_by(
         userId=user.id,
         offererId=offerer.id
-    )
+    ).first()
 
     if query.count() == 0:
         user_offerer = UserOfferer(from_dict=user_offerer_mock)
@@ -23,7 +20,6 @@ def create_or_find_user_offerer(user_offerer_mock, user=None, offerer=None, stor
         PcObject.check_and_save(user_offerer)
         logger.info("created user_offerer"  + str(user_offerer))
     else:
-        user_offerer = query.first()
         logger.info('--aleady here-- user_offerer' + str(user_offerer))
 
     return user_offerer

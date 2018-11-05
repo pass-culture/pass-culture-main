@@ -11,12 +11,12 @@ def create_or_find_event_occurrence(event_occurrence_mock, offer=None, store=Non
     if offer is None:
         offer = store['offers_by_key'][event_occurrence_mock['offerKey']]
 
-    query = EventOccurrence.query.filter_by(
+    event_occurrence = EventOccurrence.query.filter_by(
         beginningDatetime=event_occurrence_mock['beginningDatetime'],
         offerId=offer.id
-    )
+    ).first()
 
-    if query.count() == 0:
+    if event_occurrence is None:
         event_occurrence = EventOccurrence(from_dict=event_occurrence_mock)
         event_occurrence.offer = offer
         if event_occurrence.endDatetime is None:
@@ -24,7 +24,6 @@ def create_or_find_event_occurrence(event_occurrence_mock, offer=None, store=Non
         PcObject.check_and_save(event_occurrence)
         logger.info("created event_occurrence " + str(event_occurrence))
     else:
-        event_occurrence = query.first()
         logger.info('--already here-- event occurrence ' + str(event_occurrence))
 
     return event_occurrence

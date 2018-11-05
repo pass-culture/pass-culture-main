@@ -4,9 +4,9 @@ from sandboxes.utils import store_public_object_from_sandbox_assets
 from utils.logger import logger
 
 def create_or_find_user(user_mock):
-    query = User.query.filter_by(email=user_mock['email'])
+    user = User.query.filter_by(email=user_mock['email']).first()
 
-    if query.count() == 0:
+    if user is None:
         user = User(from_dict=user_mock)
         PcObject.check_and_save(user)
         logger.info("created user"  + str(user) + " " + user_mock['email'])
