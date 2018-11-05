@@ -13,7 +13,7 @@ mimes_by_folder = {
     "zips": "application/zip"
 }
 
-def store_public_object_from_sandbox_assets(folder, obj, thumb_id, index=0, is_symlink=False):
+def store_public_object_from_sandbox_assets(folder, obj, thumb_id, index=0):
     dir_path = Path(os.path.dirname(os.path.realpath(__file__)))
     collection_name = inflect_engine.plural(obj.__class__.__name__.lower())
     thumb_path = dir_path\
@@ -22,7 +22,13 @@ def store_public_object_from_sandbox_assets(folder, obj, thumb_id, index=0, is_s
 
     with open(thumb_path, mode='rb') as file:
         if folder == "thumbs":
-            obj.save_thumb(file.read(), index, dominant_color=b'\x00\x00\x00', no_convert=True, symlink_path=thumb_path)
+            obj.save_thumb(
+                file.read(),
+                index,
+                dominant_color=b'\x00\x00\x00',
+                no_convert=True,
+                symlink_path=thumb_path
+            )
         else:
             store_public_object(folder,
                                 collection_name + '/' + humanize(obj.id),
