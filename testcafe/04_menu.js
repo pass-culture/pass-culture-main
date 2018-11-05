@@ -1,14 +1,18 @@
 import { Selector } from 'testcafe'
 
 import regularUser from './helpers/roles'
+import { ROOT_PATH } from '../src/utils/config'
 
-const footer = Selector('.footer').filterVisible()
-const rectoDivProfileButton = footer.find('button.profile-button')
+const menuButton = Selector('#open-menu-button')
 const mainMenu = Selector('#main-menu')
 
 fixture`04_01 Menu - Affichage de la modale`.beforeEach(async t => {
-  await t.useRole(regularUser).wait(5000)
-  await t.click(rectoDivProfileButton.nth(1)).wait(500)
+  await t
+    .useRole(regularUser)
+    .navigateTo(`${ROOT_PATH}mentions-legales/`)
+    .wait(500)
+    .click(menuButton)
+    .wait(500)
 })
 
 test("Lorsque je clique sur l'icône profil, la modale s'affiche", async t => {
@@ -38,8 +42,12 @@ test('Je vois le montant de mon pass dans le header', async t => {
 })
 
 fixture`04_02 Modale Menu - Liens vers pages`.beforeEach(async t => {
-  await t.useRole(regularUser).wait(5000)
-  await t.click(rectoDivProfileButton.nth(1)).wait(500)
+  await t
+    .useRole(regularUser)
+    .navigateTo(`${ROOT_PATH}mentions-legales/`)
+    .wait(500)
+    .click(menuButton)
+    .wait(500)
 })
 
 test('Menu | Liens | Les offres', async t => {
@@ -120,7 +128,7 @@ test('Menu | Liens | Mentions légales', async t => {
     .click(menuMentionsLegales)
     .wait(200)
   const location = await t.eval(() => window.location)
-  await t.expect(location.pathname).eql('/mentions-legales')
+  await t.expect(location.pathname).eql('/mentions-legales/')
 })
 
 test('Menu | Liens | Déconnexion', async t => {
