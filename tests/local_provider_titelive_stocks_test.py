@@ -25,7 +25,7 @@ def check_titelive_epagine_is_down():
 @pytest.mark.standalone
 @clean_database
 @patch('local_providers.titelive_stocks.get_data')
-def test_titelive_stock_provider(get_data, app):
+def test_titelive_stock_provider_create_2_stocks_for_a_specific_book(get_data, app):
     # mock
     get_data.return_value = {
         'total': 'null',
@@ -84,7 +84,7 @@ def test_titelive_stock_provider(get_data, app):
 @pytest.mark.standalone
 @clean_database
 @pytest.mark.skipif(check_titelive_epagine_is_down(), reason="Titelive Epagine API is down")
-def test_titelive_stock_provider_siret_is_not_present(app):
+def test_titelive_stock_provider_create_nothing_if_siret_is_not_in_titelive_database(app):
     # given
     offerer = create_offerer(siren='987654321')
     venue = create_venue(offerer, name='Librairie Titelive', siret='12345678912345')
