@@ -84,6 +84,8 @@ class Booking(PcObject,
         url = offer.eventOrThing.url
         if url is None:
             return None
+        if not url.startswith('http'):
+            url = "http://" + url
         return url.replace('{token}', self.token)\
                   .replace('{offerId}', humanize(offer.id))\
                   .replace('{email}', self.user.email)

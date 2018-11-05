@@ -1312,3 +1312,25 @@ def test_post_booking_on_stock_with_non_validated_venue_returns_status_code_400_
     assert r_create.status_code == 400
     assert r_create.json()['stockId'] == [
         'Vous ne pouvez pas encore réserver cette offre, son lieu est en attente de validation']
+
+
+@clean_database
+@pytest.mark.standalone
+def test_get_booking_with_url_has_completed_url(app):
+    # Given
+    user = create_user(email='user+plus@email.fr')
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    offer = create_thing_offer(venue, url='https://host/path/{token}?offerId={offerId}&email={email}')
+    stock = create_stock_with_thing_offer(offerer=offerer, venue=venue, thing_offer=offer, price=0)
+    booking = create_booking(user, stock, venue=venue, token='ABCDEF')
+
+    PcObject.check_and_save(booking)
+
+    # When
+    response = req_with_auth(user.email, 'totallysafepsswd').get(API_URL + '/bookings/' + humanize(booking.id))
+
+    # Then
+    assert response.status_code == 200
+    response_json = response.json()
+    assert response_json['completedUrl'] == 'https://host/path/ABCDEF?offerId=%s&email=user+plus@email.fr' % humanize(offer.id)
