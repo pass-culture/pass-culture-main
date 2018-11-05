@@ -6,6 +6,23 @@
   background: tansparent;
 }
 
+/* ------------------------------------
+
+ Errors
+
+------------------------------------ */
+
+.pc-final-form-errors .pc-error-message + .pc-error-message {
+  // si on a plusieurs erreurs pour un seul champ
+  @extend .pt5;
+}
+
+/* ------------------------------------
+
+ Footer
+
+------------------------------------ */
+
 .pc-final-form-footer {
   height: $footer-height;
   min-height: $footer-height;
@@ -18,8 +35,15 @@
   @extend .no-background;
 }
 
+/* ------------------------------------
+
+ Elements
+
+------------------------------------ */
+
 .pc-final-form-text,
-.pc-final-form-password {
+.pc-final-form-password,
+.pc-final-form-datepicker {
   // par ordre d'architecture HTML
   .pc-final-form-label {
     @extend .pb7;
@@ -57,29 +81,24 @@
   }
 }
 
+/* ------------------------------------
+
+ Elements/Datepicker
+
+------------------------------------ */
+
+/* ------------------------------------
+
+ Elements/Password
+
+------------------------------------ */
+
 .pc-final-form-password .pc-final-form-input {
   border-radius: 0;
 }
 
-.pc-final-form-errors .pc-error-message + .pc-error-message {
-  // si on a plusieurs erreurs pour un seul champ
-  @extend .pt5;
-}
+/* ------------------------------------
 
-// Style des Select pour la page recherche
-.pc-selectbox {
-  @extend .no-outline;
-  @extend .no-background;
+ Elements/Select
 
-  border-radius: 17px;
-  border: 1px solid $primary;
-  width: 250px;
-  height: 35px;
-  min-width: 250px;
-  min-height: 35px;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  background-repeat: no-repeat;
-  background-position: 212px 12px;
-  background-image: url('/icons/dropdown-disclosure-down.svg');
-}
+------------------------------------ */

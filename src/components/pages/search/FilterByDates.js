@@ -1,23 +1,17 @@
 import get from 'lodash.get'
 import moment from 'moment'
 import PropTypes from 'prop-types'
-import ReactDOM from 'react-dom'
 import React, { PureComponent } from 'react'
 
-import { Icon } from 'pass-culture-shared'
+// import { Icon } from 'pass-culture-shared'
 
 import { TODAY_DATE, DAYS_CHECKBOXES } from './utils'
 import { DatePickerField } from '../../forms/inputs'
 
-const popperContainer = ({ current }) => ({ children }) => {
-  if (!current) return null
-  return ReactDOM.createPortal(children, current)
-}
-
 class FilterByDates extends PureComponent {
   constructor(props) {
     super(props)
-    this.popperRef = React.createRef()
+    this.datepickerPopper = React.createRef()
   }
 
   onChange = day => {
@@ -46,7 +40,7 @@ class FilterByDates extends PureComponent {
 
   onPickedDateChange = date => {
     const { filterActions } = this.props
-    const formatedDate = date.toISOString()
+    const formatedDate = (date && date.toISOString()) || null
     filterActions.change({ date: formatedDate, jours: '0-1' })
   }
 
@@ -64,7 +58,7 @@ class FilterByDates extends PureComponent {
         {/* FIXME: le scroll sous ios est pas terrible
           du fait que le input soit cliquable */}
         <div className="pc-scroll-horizontal is-relative is-full-width pb18">
-          <div className="pc-list flex-columns pl18 pr18">
+          <div className="pc-list flex-columns">
             {DAYS_CHECKBOXES.map(({ label, value }) => {
               const checked =
                 value === '0-1'
@@ -89,33 +83,27 @@ class FilterByDates extends PureComponent {
                 </label>
               )
             })}
-
             {/* ********** DATE PICKER ********** */}
-            <div className="ml17 pr22">
-              <div className="input date-picker py5 pl7 ">
-                <span>
-                  <DatePickerField
-                    id="pick-by-date-filter"
-                    selected={queriedDate}
-                    onChange={this.onPickedDateChange}
-                    minDate={TODAY_DATE}
-                    container={popperContainer(this.popperRef)}
-                  />
-                </span>
-                <span className="icon">
+            <DatePickerField
+              name="pick-by-date-filter"
+              className="item fs19 py5 pl7 pr22"
+              minDate={TODAY_DATE}
+              selectedDate={queriedDate}
+              onChange={this.onPickedDateChange}
+              refPopper={this.datepickerPopper}
+            />
+            {/* <span className="icon">
                   <Icon
                     alt="Choisissez une date dans le calendrier"
                     className="input-icon"
                     svg="dropdown-disclosure-down"
                   />
-                </span>
-              </div>
-            </div>
+                </span> */}
+            {/* ********** END DATE PICKER ********** */}
           </div>
-          {/* ********** END DATE PICKER ********** */}
         </div>
-        <div id="popper-container-toto" ref={this.popperRef} />
         <hr className="dotted-bottom-primary" />
+        <div id="popper-container-toto" ref={this.datepickerPopper} />
       </div>
     )
   }

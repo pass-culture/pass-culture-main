@@ -62,10 +62,6 @@
 
 ------------------------------------------------ */
 
-#filter-by-dates .pc-scroll-horizontal {
-  overflow-x: scroll;
-}
-
 #filter-by-dates h2 {
   margin-bottom: rem(12px);
 }
@@ -85,6 +81,18 @@
   .field .input {
     margin-right: 7px;
   }
+
+  /* ----- datepicker ----- */
+  .pc-final-form-inner {
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+  }
+
+  .pc-final-form-datepicker-input {
+    color: $black;
+    background: transparent;
+  }
 }
 
 /* ------------------------------------------------
@@ -93,9 +101,21 @@
 
 ------------------------------------------------ */
 
-#filter-by-distance {
-  // .pc-selectbox
-  // Voir le fichier global/forms.scss pour le style de la selectbox
+#filter-by-distance .pc-selectbox {
+  @extend .no-outline;
+  @extend .no-background;
+
+  border-radius: 17px;
+  border: 1px solid $primary;
+  width: 250px;
+  height: 35px;
+  min-width: 250px;
+  min-height: 35px;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-repeat: no-repeat;
+  background-position: 212px 12px;
+  background-image: url('/icons/dropdown-disclosure-down.svg');
 }
 
 /* ------------------------------------------------
@@ -171,6 +191,7 @@
   border-radius: 0;
 }
 
+/*
 .react-datepicker {
   border: green;
   background-color: yellow;
@@ -188,3 +209,4 @@ div.react-datepicker-popper.search-by-dates {
     border: 1px solid green;
   }
 }
+*/

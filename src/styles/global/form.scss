@@ -50,7 +50,7 @@ textarea.textarea {
 
       &:active,
       &:checked {
-        &:after {
+        &::after {
           content: '';
           background-repeat: no-repeat;
           background-image: url(/icons/checkbox-check.svg);
@@ -147,7 +147,7 @@ textarea.textarea {
       width: 100%;
 
       .select.readonly {
-        &:after {
+        &::after {
           display: none !important;
         }
 
@@ -194,7 +194,7 @@ textarea.textarea {
   }
 
   .required:not(.readOnly) {
-    &:after {
+    &::after {
       content: ' *';
       color: $violet;
       display: inline;

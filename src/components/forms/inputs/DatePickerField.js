@@ -1,65 +1,106 @@
+/* eslint
+  react/jsx-one-expression-per-line: 0 */
 import React from 'react'
+import ReactDOM from 'react-dom'
 import PropTypes from 'prop-types'
 import DatePicker from 'react-datepicker'
 
+const DatePickerCustomInput = React.forwardRef((props, ref) => (
+  <input
+    {...props}
+    readOnly
+    ref={ref}
+    className="pc-final-form-datepicker-input"
+  />
+))
+
+const buildPopperContainer = ({ current }) => ({ children }) => {
+  if (!current) return null
+  return ReactDOM.createPortal(children, current)
+}
+
 const DatePickerField = ({
+  className,
   clearable,
-  container,
-  format,
+  dateFormat,
   id,
+  label,
   locale,
-  minDate,
-  placeholderText,
+  name,
+  placeholder,
   onChange,
   selected,
-}) => (
-  <DatePicker
-    id={id}
-    locale={locale}
-    dateFormat={format}
-    isClearable={clearable}
-    minDate={minDate}
-    onChange={onChange}
-    // popperPlacement="bottom-start"
-    selected={selected}
-    placeholderText={placeholderText}
-    popperContainer={container}
-    popperPlacement="top-end"
-    popperClassName="search-by-dates"
-    popperModifiers={{
-      offset: {
-        enabled: true,
-        offset: '5px, 10px',
-      },
-      preventOverflow: {
-        boundariesElement: 'viewport',
-        enabled: true,
-        escapeWithReference: false, // force popper to stay in viewport (even when input is scrolled out of view)
-      },
-    }}
-  />
-)
+  refPopper,
+  required,
+  // Availables Props
+  // github.com/Hacker0x01/react-datepicker/blob/master/docs/datepicker.md
+  ...rest
+}) => {
+  const moreprops = { ...rest }
+  if (refPopper) moreprops.popperContainer = buildPopperContainer(refPopper)
+  return (
+    <div className={`${className}`}>
+      <label htmlFor={id || name} className="pc-final-form-datepicker">
+        {label && (
+          <span className="pc-final-form-label">
+            <span>{label}</span>
+            {required && <span className="pc-final-form-asterisk">*</span>}
+          </span>
+        )}
+        <span className="pc-final-form-inner">
+          <DatePicker
+            id={id || name}
+            locale={locale}
+            onChange={onChange}
+            dateFormat={dateFormat}
+            isClearable={clearable}
+            placeholderText={placeholder}
+            customInput={<DatePickerCustomInput />}
+            {...moreprops}
+            // popperModifiers={{
+            //   offset: {
+            //     enabled: true,
+            //     offset: '5px, 10px',
+            //   },
+            //   preventOverflow: {
+            //     boundariesElement: 'viewport',
+            //     enabled: true,
+            //     escapeWithReference: false, // force popper to stay in viewport (even when input is scrolled out of view)
+            //   },
+            // }}
+          />
+        </span>
+      </label>
+    </div>
+  )
+}
 
 DatePickerField.defaultProps = {
+  className: '',
   clearable: true,
-  container: null,
-  format: 'DD/MM/YYYY',
+  dateFormat: 'DD/MM/YYYY',
+  icon: null,
+  id: null,
+  label: null,
   locale: 'fr',
-  minDate: null,
-  placeholderText: 'Par date...',
-  selected: null,
+  placeholder: 'Par date...',
+  refPopper: null,
+  required: false,
 }
 
 DatePickerField.propTypes = {
+  className: PropTypes.string,
   clearable: PropTypes.bool,
-  container: PropTypes.func,
-  format: PropTypes.string,
-  id: PropTypes.string.isRequired,
+  dateFormat: PropTypes.string,
+  icon: PropTypes.string,
+  id: PropTypes.string,
+  label: PropTypes.string,
   locale: PropTypes.string,
-  minDate: PropTypes.object,
+  name: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,
-  placeholderText: PropTypes.string,
-  selected: PropTypes.object,
+  placeholder: PropTypes.string,
+  refPopper: PropTypes.object,
+  required: PropTypes.bool,
 }
 
 export default DatePickerField
