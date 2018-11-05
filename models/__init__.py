@@ -53,6 +53,7 @@ __all__ = (
     'LocalProviderEvent',
     'LocalProvider',
     'Offer',
+    'Payment',
     'Provider',
     'Recommendation',
     'RightsType',
