@@ -150,7 +150,8 @@ def signup():
         existing_offerer = Offerer.query.filter_by(siren=request.json['siren']).first()
         if existing_offerer is None:
             offerer = _generate_offerer(request.json)
-            user_offerer = offerer.give_rights(new_user, RightsType.admin)
+            user_offerer = offerer.give_rights(new_user, RightsType.editor)
+            # Don't validate the first user / offerer link so that the user can immediately start loading stocks
             digital_venue = create_digital_venue(offerer)
             objects_to_save.extend([digital_venue, offerer])
         else:
@@ -230,7 +231,7 @@ def signup_pro():
         offerer = existing_offerer
     else:
         offerer = _generate_offerer(request.json)
-        user_offerer = offerer.give_rights(new_user, RightsType.admin)
+        user_offerer = offerer.give_rights(new_user, RightsType.editor)
         digital_venue = create_digital_venue(offerer)
         objects_to_save.extend([digital_venue, offerer])
     objects_to_save.append(user_offerer)
@@ -256,9 +257,7 @@ def signup_pro():
 
 
 def _generate_user_offerer_when_existing_offerer(new_user, offerer):
-    new_user_offerer_rights = RightsType.editor if count_user_offerers_by_offerer(offerer) > 0 \
-        else RightsType.admin
-    user_offerer = offerer.give_rights(new_user, new_user_offerer_rights)
+    user_offerer = offerer.give_rights(new_user, RightsType.editor)
     if not IS_INTEGRATION:
         user_offerer.generate_validation_token()
     return user_offerer

@@ -475,7 +475,7 @@ class ProSignupTest:
             .first()
         assert user_offerer is not None
         assert user_offerer.validationToken is None
-        assert user_offerer.rights == RightsType.admin
+        assert user_offerer.rights == RightsType.editor
 
     @clean_database
     def test_pro_signup_when_existing_offerer_returns_status_code_201_creates_editor_user_offerer_and_does_not_log_in(self, app):
@@ -488,7 +488,7 @@ class ProSignupTest:
         }
         offerer = Offerer(from_dict=json_offerer)
         user = create_user(public_name='bobby', email='bobby@test.com')
-        user_offerer = create_user_offerer(user, offerer, is_admin=True)
+        user_offerer = create_user_offerer(user, offerer, is_admin=False)
         PcObject.check_and_save(offerer, user_offerer)
 
         data = BASE_DATA_PRO.copy()
@@ -524,7 +524,7 @@ class ProSignupTest:
         offerer = Offerer(from_dict=json_offerer)
         offerer.generate_validation_token()
         user = create_user(public_name='bobby', email='bobby@test.com')
-        user_offerer = create_user_offerer(user, offerer, is_admin=True)
+        user_offerer = create_user_offerer(user, offerer, is_admin=False)
         PcObject.check_and_save(offerer, user_offerer)
 
         data = BASE_DATA_PRO.copy()
@@ -644,7 +644,7 @@ def test_pro_signup_when_existing_offerer_but_no_user_offerer_and_does_not_signi
         .first()
     assert user_offerer is not None
     assert user_offerer.validationToken is not None
-    assert user_offerer.rights == RightsType.admin
+    assert user_offerer.rights == RightsType.editor
 
 
 @clean_database
