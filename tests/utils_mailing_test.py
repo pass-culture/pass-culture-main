@@ -15,7 +15,7 @@ from utils.mailing import make_user_booking_recap_email, \
     write_object_validation_email, make_offerer_driven_cancellation_email_for_user, \
     make_reset_password_email, \
     make_offerer_driven_cancellation_email_for_offerer, make_validation_confirmation_email, \
-    make_batch_cancellation_email, make_payment_transaction_email
+    make_batch_cancellation_email, make_payment_transaction_email, make_venue_validation_email
 from utils.test_utils import create_stock_with_event_offer, create_stock_with_thing_offer, \
     create_user, create_booking, MOCKED_SIREN_ENTREPRISES_API_RETURN, create_user_offerer, \
     create_offerer, create_venue, create_thing_offer, create_event_offer, create_stock_from_offer, \
@@ -879,3 +879,30 @@ def remove_whitespaces(text):
     text = re.sub('\n\s+', ' ', text)
     text = re.sub('\n', '', text)
     return text
+
+
+@pytest.mark.standalone
+def test_make_venue_validation_email(app):
+    # Given
+    offerer = create_offerer(name='La Structure', siren='123456789')
+    venue = create_venue(offerer, name='Le Lieu', comment='Ceci est mon commentaire')
+    venue.generate_validation_token()
+
+    # When
+    email = make_venue_validation_email(venue)
+
+    # Then
+    assert email["FromEmail"] == "passculture@beta.gouv.fr"
+    assert email["FromName"] == "pass Culture"
+    assert email["To"] == "passculture@beta.gouv.fr"
+    assert email["Subject"] == "{} - rattachement de lieu pro à valider : {}".format(venue.departementCode, venue.name)
+    email_html = remove_whitespaces(email['Html-part'])
+    parsed_email = BeautifulSoup(email_html, 'html.parser')
+    html_validation = str(parsed_email.find('p', {'id': 'validation'}))
+    html_validation_link = str(parsed_email.find('a', {'id': 'validation-link'}))
+    assert 'La structure "La Structure" (SIREN : 123456789)' in html_validation
+    assert 'a rattaché le lieu suivant sans renseigner de SIRET' in html_validation
+    assert 'Nom : "Le Lieu"' in html_validation
+    assert 'Commentaire de la structure : "Ceci est mon commentaire"' in html_validation
+    assert 'localhost/validate/venue?token={}'.format(venue.validationToken) in html_validation
+    assert 'localhost/validate/venue?token={}'.format(venue.validationToken) in html_validation_link

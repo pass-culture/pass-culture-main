@@ -258,6 +258,17 @@ def make_validation_confirmation_email(user_offerer, offerer):
     }
 
 
+def make_venue_validation_email(venue):
+    html = render_template('mails/venue_validation_email.html', venue=venue, api_url=API_URL)
+    return {
+        'FromEmail': 'passculture@beta.gouv.fr',
+        'FromName': 'pass Culture',
+        'To': 'passculture@beta.gouv.fr',
+        'Subject': '{} - rattachement de lieu pro à valider : {}'.format(venue.departementCode, venue.name),
+        'Html-part': html
+    }
+
+
 def get_contact(user):
     return app.mailjet_client.contact.get(user.email).json()['Data'][0]
 

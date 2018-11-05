@@ -1,0 +1,12 @@
+<html>
+    <body>
+        <h1>Lieu à valider</h1>
+        <p id="validation">
+            La structure "{{ venue.managingOfferer.name }}" (SIREN : {{ venue.managingOfferer.siren }}) a rattaché le lieu suivant sans renseigner de SIRET :
+        <br> Nom : "{{ venue.name }}"
+        <br> Commentaire de la structure : "{{ venue.comment }}"
+            Pour valider ce rattachement, cliquez sur le lien suivant :
+            <a href="{{ api_url }}/validate/venue?token={{ venue.validationToken }}" id="validation-link">{ api_url }}/validate/venue?token={{ venue.validationToken }}</a>
+        </p>
+    </body>
+</html>
