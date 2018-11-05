@@ -77,7 +77,7 @@ def test_create_digital_offer_success(app):
         url=url
     )
     offerer = create_offerer()
-    virtual_venue = create_venue(offerer, is_virtual=True)
+    virtual_venue = create_venue(offerer, is_virtual=True, siret=None)
     PcObject.check_and_save(virtual_venue)
 
     offer = create_thing_offer(virtual_venue, digital_thing)

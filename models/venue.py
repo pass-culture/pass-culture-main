@@ -148,7 +148,6 @@ def before_update(mapper, connect, self):
     _check_if_existing_virtual_venue(self)
     _fill_department_code_from_postal_code(self)
 
-"""
 def _check_if_existing_virtual_venue(self):
     if self.isVirtual:
         already_existing_virtual_venue = Venue.query \
@@ -159,15 +158,6 @@ def _check_if_existing_virtual_venue(self):
         if already_existing_virtual_venue is not None:
             if already_existing_virtual_venue.id != self.id:
                 raise TooManyVirtualVenuesException()
-"""
-
-def _check_if_existing_virtual_venue(self):
-    if self.isVirtual:
-        virtual_venues_count = Venue.query \
-            .filter_by(managingOffererId=self.managingOffererId, isVirtual=True) \
-            .count()
-        if virtual_venues_count == 1:
-            raise TooManyVirtualVenuesException()
 
 def _fill_department_code_from_postal_code(self):
     if not self.isVirtual:

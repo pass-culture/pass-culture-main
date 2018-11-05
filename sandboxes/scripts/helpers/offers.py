@@ -24,9 +24,7 @@ def create_or_find_offer(offer_mock, event_or_thing=None, store=None):
             offer.event = event_or_thing
         else:
             offer.thing = event_or_thing
-        # TODO: waiting for venue  update trigger
-        # offer.venue = venue
-        offer.venueId = venue.id
+        offer.venue = venue
         PcObject.check_and_save(offer)
         logger.info("created offer " + str(offer))
     else:
