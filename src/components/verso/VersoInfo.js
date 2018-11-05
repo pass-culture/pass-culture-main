@@ -162,6 +162,7 @@ const mapStateToProps = (state, ownProps) => {
     offerId,
     mediationId
   )
+
   const bookables = selectBookables(state, recommendation, match)
   const isFinished = isRecommendationFinished(recommendation, offerId)
   return {
