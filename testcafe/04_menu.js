@@ -4,149 +4,135 @@ import regularUser from './helpers/roles'
 
 const footer = Selector('.footer').filterVisible()
 const rectoDivProfileButton = footer.find('button.profile-button')
-const mainMenu = Selector('.main-menu')
-// const profilePic = Selector('.modal').find('profile-pic')
-const closeButton = Selector('.close')
-const menuList = Selector('div.menu ul li a')
-// const header = Selector('header')
-const offres = menuList.nth(0)
-const reservations = menuList.nth(1)
-const favoris = menuList.nth(2)
-const profil = menuList.nth(4)
-const mentions = menuList.nth(5)
-const contact = menuList.nth(6)
-const deconnexion = menuList.nth(7)
+const mainMenu = Selector('#main-menu')
 
-// const menuButton = Selector('.profile-button')
-
-const profilLink = Selector('.navlink').withText('Mon Profil')
-
-fixture.skip`04_01 Modale Menu`.beforeEach(async t => {
+fixture`04_01 Menu - Affichage de la modale`.beforeEach(async t => {
   await t.useRole(regularUser)
-})
-
-test("Lorsque je clique sur l'icône menu, la modale s'affiche", async t => {
-  await t
-    // .useRole(regularUser)
-    // .click(menuButton)
-    .expect(mainMenu.visible)
-
-  // .wait(500)
-  // .expect(mainMenu.count).eql(1)
+  await t.click(rectoDivProfileButton.nth(1)).wait(500)
 })
 
 test("Lorsque je clique sur l'icône profil, la modale s'affiche", async t => {
-  await t.click(rectoDivProfileButton.nth(1))
   await t
     .expect(mainMenu.visible)
-    .expect(mainMenu.count)
-    .toEq(1)
     .ok()
-    .expect(mainMenu.hasClass('active'))
+    .expect(mainMenu.hasClass('entered'))
     .ok()
-
-    // Header
-
-    // Close Modal
-    .click(closeButton)
-    .wait(200)
-  await t
-    .expect(mainMenu.visible)
-    .notOk()
-    .expect(mainMenu.hasClass('active'))
-    .notOk()
 })
 
-test.skip('Menu | Les offres', async t => {
-  await t
-    .click(rectoDivProfileButton.nth(1))
+test('Lorsque je clique sur la croix, la modale se referme', async t => {
+  const closeButton = Selector('#main-menu-close-button')
 
-    .expect(offres.innerText)
-    .eql('Les offres')
-    .click(offres)
+  await t
+    .wait(500)
+    .click(closeButton)
+    .wait(500)
+  await t.expect(mainMenu.hasClass('exited')).ok()
+})
+
+test('Je vois mon avatar dans le header', async t => {
+  await t.expect(Selector('#main-menu-header-avatar')).ok()
+})
+
+test('Je vois le montant de mon pass dans le header', async t => {
+  await t.expect(Selector('#main-menu-header-wallet-value')).ok()
+})
+
+fixture`04_02 Modale Menu - Liens vers pages`.beforeEach(async t => {
+  await t.useRole(regularUser)
+  await t.click(rectoDivProfileButton.nth(1)).wait(500)
+})
+
+test('Menu | Liens | Les offres', async t => {
+  const menuOffres = Selector('.navlink').withText('Les offres')
+  await t
+
+    .expect(menuOffres)
+    .ok()
+    .click(menuOffres)
     .wait(200)
   const location = await t.eval(() => window.location)
   await t.expect(location.pathname).contains('decouverte')
 })
 
-test.skip('Menu | Mes réservations', async t => {
+test('Menu | Liens | Recherche', async t => {
+  const menuRecherche = Selector('.navlink').withText('Recherche')
   await t
-    .click(rectoDivProfileButton.nth(1))
 
-    .expect(reservations.innerText)
-    .eql('Mes réservations')
-    .click(reservations)
+    .expect(menuRecherche)
+    .ok()
+    .expect(menuRecherche.hasAttribute('disabled'))
+    .ok()
+  // .click(menuRecherche)
+  // .wait(200)
+  // const location = await t.eval(() => window.location)
+  // await t.expect(location.pathname).eql('/recherche')
+})
+
+test('Menu | Liens | Mes réservations', async t => {
+  const menuReservartions = Selector('.navlink').withText('Mes Réservations')
+  await t
+
+    .expect(menuReservartions)
+    .ok()
+    .click(menuReservartions)
     .wait(200)
   const location = await t.eval(() => window.location)
   await t.expect(location.pathname).eql('/reservations')
 })
 
-test.skip('Menu | Mes préférés', async t => {
-  await t
-    .click(rectoDivProfileButton.nth(1))
+test('Menu | Liens | Mes préférés', async t => {
+  const menuFavoris = Selector('.navlink').withText('Mes Préférés')
 
-    .expect(favoris.innerText)
-    .eql('Mes préférés')
-    .click(favoris)
-    .wait(200)
-  const location = await t.eval(() => window.location)
-  await t.expect(location.pathname).eql('/favoris')
-})
-
-test('Menu | Mon profil', async t => {
   await t
-    .expect(profilLink.count)
-    .eql(1)
-    .expect(profilLink.innerText)
-    .eql('\nMon Profil\n')
-    .expect(profil.hasAttribute('disabled'))
+    .expect(menuFavoris)
     .ok()
-
-  // .click(profilLink)
+    .expect(menuFavoris.hasAttribute('disabled'))
+    .ok()
+  // .click(menuFavoris)
   // .wait(200)
   // const location = await t.eval(() => window.location)
-  // await t.expect(location.pathname).eql('/profil')
+  // await t.expect(location.pathname).eql('/favoris')
 })
 
-test.skip('Menu | Mentions légales', async t => {
+test('Menu | Liens | Mon profil', async t => {
+  const menuProfil = Selector('.navlink').withText('Mon Profil')
   await t
-    .click(rectoDivProfileButton.nth(1))
 
-    .expect(mentions.innerText)
-    .eql('Mentions légales')
-    .click(mentions)
+    .expect(menuProfil)
+    .ok()
+    .click(menuProfil)
+    .wait(200)
+  const location = await t.eval(() => window.location)
+  await t.expect(location.pathname).eql('/profil')
+})
+
+test('Menu | Liens | Nous contacter', async t => {
+  const menuContact = Selector('.navlink').withText('Nous contacter')
+  await t.expect(menuContact).ok()
+})
+
+test('Menu | Liens | Mentions légales', async t => {
+  const menuMentionsLegales = Selector('.navlink').withText('Mentions Légales')
+  await t
+
+    .expect(menuMentionsLegales)
+    .ok()
+    .click(menuMentionsLegales)
     .wait(200)
   const location = await t.eval(() => window.location)
   await t.expect(location.pathname).eql('/mentions-legales')
 })
 
-test.skip('Menu | Nous contacter', async t => {
-  await t
-    .click(rectoDivProfileButton.nth(1))
-    .expect(contact.innerText)
-    .eql('Nous contacter')
-})
+test('Menu | Liens | Déconnexion', async t => {
+  const menuDeconnexion = Selector('#main-menu-logout-button').withText(
+    'Déconnexion'
+  )
 
-test.skip('Menu | Déconnexion', async t => {
   await t
-    .click(rectoDivProfileButton.nth(1))
-
-    .expect(deconnexion.innerText)
-    .eql('Déconnexion')
-    .click(deconnexion)
+    .expect(menuDeconnexion)
+    .ok()
+    .click(menuDeconnexion)
     .wait(1000)
   const location = await t.eval(() => window.location)
   await t.expect(location.pathname).eql('/connexion')
-})
-
-test.skip('Menu | Recherche', async t => {
-  await t
-    .click(rectoDivProfileButton.nth(1))
-
-    .expect(deconnexion.innerText)
-    .eql('Recherche')
-    .click(deconnexion)
-    .wait(1000)
-  const location = await t.eval(() => window.location)
-  await t.expect(location.pathname).eql('/recherche')
 })
