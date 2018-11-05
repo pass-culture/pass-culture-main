@@ -8,7 +8,7 @@ import FavoritesPage from '../components/pages/FavoritesPage'
 import ForgotPasswordPage from '../components/pages/ForgotPasswordPage'
 import ProfilePage from '../components/pages/ProfilePage'
 import SearchPage from '../components/pages/SearchPage'
-import Signin from '../components/pages/signin'
+import { Signin } from '../components/pages/signin'
 import SignupPage from '../components/pages/SignupPage'
 import TermsPage from '../components/pages/TermsPage'
 

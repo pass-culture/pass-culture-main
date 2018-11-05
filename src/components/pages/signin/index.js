@@ -8,10 +8,12 @@ import { withRouter } from 'react-router-dom'
 
 import { withLogin } from 'pass-culture-shared'
 
-import component from './component'
+import SigninContent from './SigninContent'
 
-export default compose(
+export const Signin = compose(
   withLogin({ successRedirect: '/decouverte' }),
   withRouter,
   connect()
-)(component)
+)(SigninContent)
+
+export default Signin

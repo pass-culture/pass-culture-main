@@ -1,7 +1,7 @@
 import React from 'react'
 import { shallow } from 'enzyme'
 
-import Signin from '../component'
+import Signin from '../SigninContent'
 
 const dispatchMock = jest.fn()
 
