@@ -4,7 +4,8 @@ from flask import current_app as app, jsonify, request
 import models
 from domain.user_emails import send_validation_confirmation_email
 from models import ApiErrors, \
-    PcObject, UserOfferer, Offerer
+    PcObject, UserOfferer, Offerer, Venue
+from tests.validation_validate_test import check_validation_request, check_venue_found
 from utils.mailing import MailServiceException
 
 
@@ -12,10 +13,7 @@ from utils.mailing import MailServiceException
 def validate():
     token = request.args.get('token')
 
-    if token is None:
-        e = ApiErrors()
-        e.addError('token', 'Vous devez fournir un jeton de validation')
-        return jsonify(e.errors), 400
+    check_validation_request(token)
 
     model_names = request.args.get('modelNames')
 
@@ -52,4 +50,15 @@ def validate():
         send_validation_confirmation_email(user_offerer, offerer, app.mailjet_client.send.create)
     except MailServiceException as e:
         app.logger.error('Mail service failure', e)
+    return "Validation effectuée", 202
+
+
+@app.route("/validate/venue/", methods=["GET"])
+def validate_venue():
+    token = request.args.get('token')
+    check_validation_request(token)
+    venue = Venue.query.filter_by(validationToken=token).first()
+    check_venue_found(venue)
+    venue.validationToken = None
+    PcObject.check_and_save(venue)
     return "Validation effectuée", 202

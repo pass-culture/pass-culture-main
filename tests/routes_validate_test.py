@@ -2,9 +2,10 @@ import secrets
 
 import pytest
 
-from models import Offerer, PcObject
+from models import Offerer, PcObject, Venue
+from models.db import db
 from tests.conftest import clean_database
-from utils.test_utils import req, create_user, req_with_auth, API_URL, create_offerer, create_user_offerer
+from utils.test_utils import req, create_user, req_with_auth, API_URL, create_offerer, create_user_offerer, create_venue
 
 
 @clean_database
@@ -41,3 +42,45 @@ def test_validate_offerer(app):
         .filter_by(id=offerer_id) \
         .first()
     assert offerer.isValidated
+
+
+@clean_database
+@pytest.mark.standalone
+def test_validate_venue_with_right_validation_token_sets_validation_token_to_none(app):
+    # Given
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    venue.generate_validation_token()
+    PcObject.check_and_save(venue)
+
+    token = venue.validationToken
+
+    # When
+    r = req.get('{}/validate/venue?token={}'.format(API_URL, token), headers={'origin': 'http://localhost:3000'})
+
+    # Then
+    assert r.status_code == 202
+    db.session.refresh(venue)
+    assert venue.isValidated
+
+
+@clean_database
+@pytest.mark.standalone
+def test_validate_venue_with_no_validation_token_returns_status_code_400_and_token_in_error(app):
+    # When
+    r = req.get('{}/validate/venue'.format(API_URL), headers={'origin': 'http://localhost:3000'})
+
+    # Then
+    assert r.status_code == 400
+    assert r.json()['token'] == ['Vous devez fournir un jeton de validation']
+
+
+@clean_database
+@pytest.mark.standalone
+def test_validate_venue_with_non_existing_validation_token_returns_status_code_404_and_token_in_error(app):
+    # When
+    r = req.get('{}/validate/venue?token={}'.format(API_URL, '12345'), headers={'origin': 'http://localhost:3000'})
+
+    # Then
+    assert r.status_code == 404
+    assert r.json()['token'] == ['Jeton inconnu']
