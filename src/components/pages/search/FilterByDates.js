@@ -1,14 +1,25 @@
 import get from 'lodash.get'
 import moment from 'moment'
 import PropTypes from 'prop-types'
+import ReactDOM from 'react-dom'
 import React, { PureComponent } from 'react'
 
-import DatePicker from 'react-datepicker'
 import { Icon } from 'pass-culture-shared'
 
 import { TODAY_DATE, DAYS_CHECKBOXES } from './utils'
+import { DatePickerField } from '../../forms/inputs'
+
+const popperContainer = ({ current }) => ({ children }) => {
+  if (!current) return null
+  return ReactDOM.createPortal(children, current)
+}
 
 class FilterByDates extends PureComponent {
+  constructor(props) {
+    super(props)
+    this.popperRef = React.createRef()
+  }
+
   onChange = day => {
     const { filterActions, filterState } = this.props
 
@@ -52,7 +63,6 @@ class FilterByDates extends PureComponent {
         </h2>
         {/* FIXME: le scroll sous ios est pas terrible
           du fait que le input soit cliquable */}
-
         <div className="pc-scroll-horizontal is-relative is-full-width pb18">
           <div className="pc-list flex-columns pl18 pr18">
             {DAYS_CHECKBOXES.map(({ label, value }) => {
@@ -84,29 +94,12 @@ class FilterByDates extends PureComponent {
             <div className="ml17 pr22">
               <div className="input date-picker py5 pl7 ">
                 <span>
-                  <DatePicker
-                    dateFormat="DD/MM/YYYY"
-                    locale="fr"
+                  <DatePickerField
                     id="pick-by-date-filter"
-                    isClearable
-                    minDate={TODAY_DATE}
-                    onChange={this.onPickedDateChange}
-                    // popperPlacement="bottom-start"
                     selected={queriedDate}
-                    placeholderText="Par date..."
-                    popperPlacement="top-end"
-                    popperClassName="search-by-dates"
-                    popperModifiers={{
-                      offset: {
-                        enabled: true,
-                        offset: '5px, 10px',
-                      },
-                      preventOverflow: {
-                        boundariesElement: 'viewport',
-                        enabled: true,
-                        escapeWithReference: false, // force popper to stay in viewport (even when input is scrolled out of view)
-                      },
-                    }}
+                    onChange={this.onPickedDateChange}
+                    minDate={TODAY_DATE}
+                    container={popperContainer(this.popperRef)}
                   />
                 </span>
                 <span className="icon">
@@ -121,6 +114,7 @@ class FilterByDates extends PureComponent {
           </div>
           {/* ********** END DATE PICKER ********** */}
         </div>
+        <div id="popper-container-toto" ref={this.popperRef} />
         <hr className="dotted-bottom-primary" />
       </div>
     )
