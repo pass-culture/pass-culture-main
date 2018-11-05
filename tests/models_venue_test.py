@@ -40,7 +40,7 @@ def test_offerer_not_isVirtual_cannot_have_null_address(app):
 @pytest.mark.standalone
 def test_offerer_cannot_create_a_second_virtual_venue(app):
     # Given
-    offerer = create_offerer('123456789', '1 rue Test', 'Test city', '93000', 'Test offerer')
+    offerer = create_offerer('132547698', '1 rue Test', 'Test city', '93000', 'Test offerer')
     PcObject.check_and_save(offerer)
 
     venue = create_venue(offerer, name='Venue_name', booking_email='booking@email.com', address=None, postal_code=None,
@@ -59,14 +59,14 @@ def test_offerer_cannot_create_a_second_virtual_venue(app):
 @pytest.mark.standalone
 def test_offerer_cannot_update_a_second_venue_to_be_virtual(app):
     # Given
-    offerer = create_offerer('123456789', '1 rue Test', 'Test city', '93000', 'Test offerer')
+    offerer = create_offerer('132547698', '1 rue Test', 'Test city', '93000', 'Test offerer')
     PcObject.check_and_save(offerer)
 
     venue = create_venue(offerer, address=None, postal_code=None, city=None, departement_code=None, is_virtual=True,
                          siret=None)
     PcObject.check_and_save(venue)
 
-    new_venue = create_venue(offerer, is_virtual=False, siret='12345678998765')
+    new_venue = create_venue(offerer, is_virtual=False, siret='13254769898765')
     PcObject.check_and_save(new_venue)
 
     # When
