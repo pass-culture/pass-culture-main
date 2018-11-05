@@ -103,7 +103,10 @@ def get_all_typed_event_mocks():
     return event_mocks
 
 def get_all_typed_thing_mocks():
-    thing_types = [t for t in get_format_types() if t['type'] == 'Thing']
+
+    types_by_value = get_types_by_value()
+
+    thing_types = [t for t in types_by_value.values() if t['type'] == 'Thing']
 
     thing_mocks = []
     mock_count = -1
@@ -120,9 +123,16 @@ def get_all_typed_thing_mocks():
             "firstThumbDominantColor": b'\x00\x00\x00',
             "key": str(uuid1()),
             "name": thing_type['value'] + " " + EVENT_OR_THING_MOCK_NAMES[mock_count],
+            "thumbCount": 1,
             "type": thing_type['value'],
-            "thumbCount": 1
         }
+
+        # DETERMINE THE MATCHING VENUE
+        thing_type = types_by_value[thing_mock['type']]
+        if thing_type['onlineOnly']:
+            thing_mock['isNational'] = True
+            thing_mock['url'] = 'https://ilestencoretemps.fr/'
+
         thing_mocks.append(thing_mock)
 
     return thing_mocks

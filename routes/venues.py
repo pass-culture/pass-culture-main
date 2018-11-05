@@ -10,9 +10,8 @@ from repository.venue_queries import save_venue
 from utils.includes import VENUE_INCLUDES
 from utils.mailing import MailServiceException
 from utils.rest import ensure_current_user_has_rights, \
-    expect_json_data, \
-    load_or_404, \
-    handle_rest_get_list
+                       expect_json_data, \
+                       load_or_404
 from validation.venues import validate_coordinates, check_valid_edition
 
 

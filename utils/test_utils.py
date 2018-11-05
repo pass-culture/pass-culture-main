@@ -5,31 +5,31 @@ from datetime import datetime, timedelta, timezone
 from glob import glob
 from inspect import isclass
 from unittest.mock import Mock
-
 import requests as req
 from postgresql_audit.flask import versioning_manager
 
-import models
-from models import Deposit, \
-    EventType, \
-    Mediation, \
-    Recommendation, \
-    RightsType, \
-    ThingType, \
-    UserOfferer
-from models.booking import Booking
-from models.event import Event
-from models.event_occurrence import EventOccurrence
-from models.offer import Offer
-from models.offerer import Offerer
-from models.payment import Payment
-from models.payment_status import PaymentStatus, TransactionStatus
 from models.pc_object import PcObject
-from models.stock import Stock
-from models.thing import Thing
-from models.user import User
-from models.venue import Venue
+from models import Booking, \
+                   Deposit, \
+                   Event, \
+                   EventOccurrence, \
+                   EventType, \
+                   Mediation, \
+                   Offer, \
+                   Offerer, \
+                   Payment, \
+                   Recommendation, \
+                   RightsType, \
+                   Stock, \
+                   Thing, \
+                   ThingType, \
+                   User, \
+                   UserOfferer, \
+                   Venue
+import models
+from models.payment_status import PaymentStatus, TransactionStatus
 from sandboxes.scripts.mocks.users_light import ADMIN_USER_MOCK
+from utils.logger import logger
 from utils.object_storage import STORAGE_DIR
 from utils.token import random_token
 
@@ -494,7 +494,12 @@ def create_venue(
     venue.bic = bic
     venue.longitude = longitude
     venue.latitude = latitude
-    venue.siret = siret
+
+    if not is_virtual:
+        venue.siret = siret
+    elif siret is not None:
+        logger.warning("You try to create a venue with both siret and isVirtual. We just did not take in account the siret then.")
+
     venue.comment = comment
     venue.id = idx
     return venue

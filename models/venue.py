@@ -145,18 +145,22 @@ def before_insert(mapper, connect, self):
 
 @listens_for(Venue, 'before_update')
 def before_update(mapper, connect, self):
-    # TODO: do we need _check_if_existing_virtual_venue here??
-    #_check_if_existing_virtual_venue(self)
+    _check_if_existing_virtual_venue(self)
     _fill_department_code_from_postal_code(self)
 
 
 def _check_if_existing_virtual_venue(self):
     if self.isVirtual:
-        virtual_venues_count = Venue.query \
-            .filter_by(managingOffererId=self.managingOffererId, isVirtual=True) \
-            .count()
+        virtual_venues_query = Venue.query \
+                                    .filter_by(
+                                        managingOffererId=self.managingOffererId,
+                                        isVirtual=True
+                                    )
+        virtual_venues_count = virtual_venues_query.count()
         if virtual_venues_count == 1:
-            raise TooManyVirtualVenuesException()
+            already_existing_virtual_venue = virtual_venues_query.first()
+            if already_existing_virtual_venue.id != self.id:
+                raise TooManyVirtualVenuesException()
 
 
 def _fill_department_code_from_postal_code(self):

@@ -68,6 +68,28 @@ def test_date_range_is_empty_if_event_has_no_event_occurrences():
 
 @clean_database
 @pytest.mark.standalone
+def test_create_digital_offer_success(app):
+    # Given
+    url='http://mygame.fr/offre'
+    digital_thing = create_thing(
+        thing_type='ThingType.JEUX_VIDEO',
+        is_national=True,
+        url=url
+    )
+    offerer = create_offerer()
+    virtual_venue = create_venue(offerer, is_virtual=True)
+    PcObject.check_and_save(virtual_venue)
+
+    offer = create_thing_offer(virtual_venue, digital_thing)
+
+    # When
+    PcObject.check_and_save(digital_thing, offer)
+
+    # Then
+    assert offer.thing.url == url
+
+@clean_database
+@pytest.mark.standalone
 def test_offer_error_when_thing_is_digital_but_venue_not_virtual(app):
     # Given
     digital_thing = create_thing(thing_type='ThingType.JEUX_VIDEO', url='http://mygame.fr/offre')

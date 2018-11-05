@@ -59,14 +59,15 @@ def test_offerer_cannot_create_a_second_virtual_venue(app):
 @pytest.mark.standalone
 def test_offerer_cannot_update_a_second_venue_to_be_virtual(app):
     # Given
-    offerer = create_offerer('132547698', '1 rue Test', 'Test city', '93000', 'Test offerer')
+    siren = '132547698'
+    offerer = create_offerer(siren, '1 rue Test', 'Test city', '93000', 'Test offerer')
     PcObject.check_and_save(offerer)
 
     venue = create_venue(offerer, address=None, postal_code=None, city=None, departement_code=None, is_virtual=True,
                          siret=None)
     PcObject.check_and_save(venue)
 
-    new_venue = create_venue(offerer, is_virtual=False, siret='13254769898765')
+    new_venue = create_venue(offerer, is_virtual=False, siret=siren + '98765')
     PcObject.check_and_save(new_venue)
 
     # When
@@ -75,6 +76,7 @@ def test_offerer_cannot_update_a_second_venue_to_be_virtual(app):
     new_venue.address = None
     new_venue.city = None
     new_venue.departementCode = None
+    new_venue.siret = None
 
     # Then
     with pytest.raises(TooManyVirtualVenuesException):
