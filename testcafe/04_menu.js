@@ -7,7 +7,7 @@ const rectoDivProfileButton = footer.find('button.profile-button')
 const mainMenu = Selector('#main-menu')
 
 fixture`04_01 Menu - Affichage de la modale`.beforeEach(async t => {
-  await t.useRole(regularUser)
+  await t.useRole(regularUser).wait(5000)
   await t.click(rectoDivProfileButton.nth(1)).wait(500)
 })
 
@@ -38,7 +38,7 @@ test('Je vois le montant de mon pass dans le header', async t => {
 })
 
 fixture`04_02 Modale Menu - Liens vers pages`.beforeEach(async t => {
-  await t.useRole(regularUser)
+  await t.useRole(regularUser).wait(5000)
   await t.click(rectoDivProfileButton.nth(1)).wait(500)
 })
 

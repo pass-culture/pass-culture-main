@@ -15,7 +15,7 @@ const regularUser = Role(
       .wait(500)
       .click(signInButton)
       .wait(500)
-    await t.expect(getPageUrl()).contains('/decouverte', { timeout: 5000 })
+    await t.expect(getPageUrl()).contains('/decouverte', { timeout: 1000 })
   },
   {
     preserveUrl: true,
