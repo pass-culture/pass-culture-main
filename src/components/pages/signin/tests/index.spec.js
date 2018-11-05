@@ -1,19 +1,16 @@
 import React from 'react'
 import { shallow } from 'enzyme'
 
-import Signin from '../index'
+import Index from '../index'
 
-describe('src | components | pages | signin | index', () => {
+describe('src | components | pages | signin | Index', () => {
   describe('snapshot', () => {
     it('should match snapshot', () => {
       // given
-      const props = {
-        dispatch: jest.fn(),
-        history: {},
-      }
+      const props = {}
 
       // when
-      const wrapper = shallow(<Signin {...props} />)
+      const wrapper = shallow(<Index {...props} />)
 
       // then
       expect(wrapper).toBeDefined()
