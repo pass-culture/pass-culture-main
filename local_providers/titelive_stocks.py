@@ -2,10 +2,8 @@ import requests
 from datetime import datetime
 
 from models.local_provider import LocalProvider, ProvidableInfo
-from models.offer import Offer
 from models.stock import Stock
-from models.thing import Thing
-from repository import venue_queries, offer_queries, thing_queries
+from repository import venue_queries, offer_queries, thing_queries, local_provider_event_queries
 from utils.logger import logger
 
 DATE_FORMAT = "%d/%m/%Y"
@@ -14,11 +12,10 @@ URL_TITELIVE_WEBSERVICE_STOCKS = "https://stock.epagine.fr/stocks/"
 NB_DATA_LIMIT_PER_REQUEST = 5000
 
 
-def make_url(after_isbn_id, last_date_checked, venue_siret):
-    if after_isbn_id:
-        #    TODO: limit is not working for now + '&limit=100'
+def make_url(last_seen_isbn, last_date_checked, venue_siret):
+    if last_seen_isbn:
         return 'https://stock.epagine.fr/stocks/%s?after=%s&modifiedSince=%s' \
-           % (venue_siret, after_isbn_id, last_date_checked)
+           % (venue_siret, last_seen_isbn, last_date_checked)
     else:
         return 'https://stock.epagine.fr/stocks/%s?modifiedSince=%s' \
                % (venue_siret, last_date_checked)
@@ -59,7 +56,7 @@ class TiteLiveStocks(LocalProvider):
         if offer_count > 0:
             self.venue_has_offer = True
 
-        latest_local_provider_event = self.latestSyncStartEvent()
+        latest_local_provider_event = local_provider_event_queries.get_latest_sync_start_event(self.dbObject)
         if latest_local_provider_event is None:
             self.last_ws_requests = datetime.utcfromtimestamp(0).timestamp() * 1000
         else:

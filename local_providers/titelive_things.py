@@ -7,6 +7,7 @@ from models.local_provider import LocalProvider, ProvidableInfo
 from models.local_provider_event import LocalProviderEventType
 from models.thing import Thing, BookFormat
 from models import ThingType
+from repository import local_provider_event_queries
 from utils.string_processing import trim_with_elipsis
 
 import ftplib
