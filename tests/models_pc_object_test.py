@@ -95,7 +95,7 @@ def test_serialize_on_datetime_list_returns_string_with_date_in_ISO_8601_list():
 
 
 @pytest.mark.standalone
-def test_user_has_his__stripped_of_whitespace_when_populating_from_dict():
+def test_user_string_fields_are_stripped_of_whitespace_when_populating_from_dict():
     # given
     user_data = {
         'email': '   test@example.com',

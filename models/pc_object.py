@@ -14,7 +14,7 @@ from sqlalchemy import CHAR, \
     Float, \
     Integer, \
     Numeric, \
-    String, DateTime
+    String, DateTime, VARCHAR, TEXT
 from sqlalchemy.exc import DataError, IntegrityError
 from sqlalchemy.orm.collections import InstrumentedList
 
@@ -283,8 +283,10 @@ class PcObject():
                 elif isinstance(value, str) and isinstance(col.type, DateTime):
                     datetime_value = self._deserialize_datetime(key, value)
                     setattr(self, key, datetime_value)
-                else:
+                elif isinstance(value, str) and (isinstance(col.type, VARCHAR) or isinstance(col.type, TEXT)):
                     setattr(self, key, value.strip() if value else value)
+                else:
+                    setattr(self, key, value)
 
 
     @staticmethod
