@@ -1,8 +1,18 @@
 /* eslint no-console: 0, max-nested-callbacks: 0 */
 import { getReactRoutes, getMainMenuItems } from '../routes-utils'
 
+import routes from '../routes'
+
+import SearchPage from '../../components/pages/SearchPage'
+import MyBookingsPage from '../../components/pages/MyBookingsPage'
+import DiscoveryPage from '../../components/pages/discovery'
+import FavoritesPage from '../../components/pages/FavoritesPage'
+
+import ProfilePage from '../../components/pages/ProfilePage'
+import TermsPage from '../../components/pages/TermsPage'
+
 describe('getReactRoutes', () => {
-  it('filtre les routes pour react-router', () => {
+  it('filter routes pour react-router', () => {
     const values = [
       { path: '/' },
       { path: '/toto' },
@@ -11,7 +21,7 @@ describe('getReactRoutes', () => {
       { exact: false, path: '/toto/:vars?/:vars2?/:vars3?' },
       { href: 'maitlo:mail.cool' },
     ]
-    const results = getReactRoutes(values)
+    const result = getReactRoutes(values)
     const expected = [
       { exact: true, path: '/' },
       { exact: true, path: '/toto' },
@@ -20,12 +30,12 @@ describe('getReactRoutes', () => {
       { exact: false, path: '/toto/:vars?/:vars2?/:vars3?' },
       null,
     ]
-    expect(results).toStrictEqual(expected)
+    expect(result).toStrictEqual(expected)
   })
 })
 
 describe('getMainMenuItems', () => {
-  it('filtre les routes pour react-router', () => {
+  it('filter routes for react-router', () => {
     const values = [
       { path: '/' },
       { icon: '/' },
@@ -37,7 +47,7 @@ describe('getMainMenuItems', () => {
       { href: 'mailto:mail.cool' },
       { href: 'mailto:mail.cool', icon: 'toto' },
     ]
-    const results = getMainMenuItems(values)
+    const result = getMainMenuItems(values)
     const expected = [
       null,
       null,
@@ -49,6 +59,70 @@ describe('getMainMenuItems', () => {
       null,
       { href: 'mailto:mail.cool', icon: 'toto' },
     ]
-    expect(results).toStrictEqual(expected)
+    expect(result).toStrictEqual(expected)
+  })
+
+  it('should filter routes from webapp', () => {
+    // when
+    const result = getMainMenuItems(routes)
+    const expected = [
+      null,
+      null,
+      null,
+      null,
+      null,
+      {
+        component: DiscoveryPage,
+        disabled: false,
+        icon: 'offres-w',
+        path: '/decouverte',
+        title: 'Les offres',
+      },
+      {
+        component: SearchPage,
+        disabled: true,
+        icon: 'search-w',
+        path: '/recherche',
+        title: 'Recherche',
+      },
+      {
+        component: MyBookingsPage,
+        disabled: false,
+        icon: 'calendar-w',
+        path: '/reservations',
+        title: 'Mes Réservations',
+      },
+      {
+        component: FavoritesPage,
+        disabled: true,
+        icon: 'like-w',
+        path: '/favoris',
+        title: 'Mes Préférés',
+      },
+      {
+        component: ProfilePage,
+        disabled: false,
+        icon: 'user-w',
+        path: '/profil',
+        title: 'Mon Profil',
+      },
+
+      {
+        disabled: false,
+        href: 'mailto:pass@culture.gouv.fr',
+        icon: 'mail-w',
+        title: 'Nous contacter',
+      },
+      {
+        component: TermsPage,
+        disabled: false,
+        icon: 'txt-w',
+        path: '/mentions-legales',
+        title: 'Mentions Légales',
+      },
+    ]
+
+    // then
+    expect(result).toEqual(expected)
   })
 })
