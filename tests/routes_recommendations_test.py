@@ -651,3 +651,51 @@ def test_put_recommendations_returns_404_for_unknown_offer_and_unknown_mediation
 
     # then
     assert response.status_code == 404
+
+
+@pytest.mark.standalone
+@clean_database
+def test_put_recommendations_does_not_create_recommendations_for_offers_from_non_validated_venues(app):
+    # Given
+    offerer = create_offerer()
+    venue_not_validated = create_venue(offerer, siret=None, comment='random reason')
+    venue_not_validated.generate_validation_token()
+    venue_validated = create_venue(offerer, siret=None, comment='random reason')
+    offer_venue_not_validated = create_thing_offer(venue_not_validated, thumb_count=1)
+    offer_venue_validated = create_thing_offer(venue_validated, thumb_count=1)
+    stock_venue_not_validated = create_stock_from_offer(offer_venue_not_validated)
+    stock_venue_validated = create_stock_from_offer(offer_venue_validated)
+    user = create_user(email='test@email.com', password='P@55w0rd')
+    PcObject.check_and_save(stock_venue_not_validated, stock_venue_validated, user)
+    auth_request = req_with_auth(user.email, user.clearTextPassword)
+    data = {'seenRecommendationIds': []}
+    # when
+    response = auth_request.put(RECOMMENDATION_URL, json=data)
+
+    # Then
+    assert response.status_code == 200
+    recommendations = response.json()
+    venue_ids = set(map(lambda x: x['offer']['venue']['id'], recommendations))
+    assert humanize(venue_validated.id) in venue_ids
+    assert humanize(venue_not_validated.id) not in venue_ids
+
+
+@clean_database
+@pytest.mark.standalone
+def test_put_recommendations_does_not_return_requested_recommendation_for_offer_with_not_validated_venue(app):
+    # given
+    user = create_user(email='weird.bug@email.com', password='P@55w0rd')
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    venue.generate_validation_token()
+    offer1 = create_thing_offer(venue, thumb_count=1)
+    stock1 = create_stock_from_offer(offer1, price=0)
+    PcObject.check_and_save(user, stock1)
+    auth_request = req_with_auth(user.email, user.clearTextPassword)
+
+    data = {'seenRecommendationIds': []}
+    # when
+    response = auth_request.put(RECOMMENDATION_URL + '?offerId=%s' % humanize(offer1.id), json=data)
+
+    # then
+    assert response.status_code == 404

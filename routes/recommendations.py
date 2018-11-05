@@ -12,7 +12,7 @@ from recommendations_engine import create_recommendations_for_discovery, \
                                    create_recommendations_for_search, \
                                    get_recommendation_search_params, \
                                    give_requested_recommendation_to_user, \
-                                   RecommendationNotFoundException
+                                   OfferNotFoundException
 from repository.booking_queries import find_bookings_from_recommendation
 from repository.recommendation_queries import count_read_recommendations_for_user, \
                                               find_all_unread_recommendations, \
@@ -64,7 +64,7 @@ def put_recommendations():
 
     try:
         requested_recommendation = give_requested_recommendation_to_user(current_user, offer_id, mediation_id)
-    except RecommendationNotFoundException:
+    except OfferNotFoundException:
         return "Offer or mediation not found", 404
 
     logger.info('(special) requested_recommendation %s' % (requested_recommendation,))
