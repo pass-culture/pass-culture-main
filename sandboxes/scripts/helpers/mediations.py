@@ -33,9 +33,12 @@ def create_or_find_mediation(mediation_mock, offer=None, store=None):
 def create_or_find_mediations(*mediation_mocks, store=None):
     if store is None:
         store = {}
+
     mediations_count = str(len(mediation_mocks))
     logger.info("mediation mocks " + mediations_count)
+
     store['mediations_by_key'] = {}
+
     for (mediation_index, mediation_mock) in enumerate(mediation_mocks):
         logger.info("look mediation " + mediation_mock['offerKey'] + " " + str(mediation_index) + "/" + mediations_count)
         mediation = create_or_find_mediation(mediation_mock, store=store)
