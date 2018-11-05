@@ -3,12 +3,14 @@ import { shallow } from 'enzyme'
 
 import Signin from '../component'
 
+const dispatchMock = jest.fn()
+
 describe('src | components | pages | signin | component', () => {
   describe('snapshot', () => {
     it('should match snapshot', () => {
       // given
       const props = {
-        dispatch: jest.fn(),
+        dispatch: dispatchMock,
         history: {},
       }
 
@@ -25,7 +27,7 @@ describe('src | components | pages | signin | component', () => {
       it('should initialize state correctly', () => {
         // given
         const props = {
-          dispatch: jest.fn(),
+          dispatch: dispatchMock,
           history: {},
         }
 
@@ -39,24 +41,42 @@ describe('src | components | pages | signin | component', () => {
     })
 
     describe('onFormSubmit', () => {
-      // given
-      const props = {
-        dispatch: jest.fn(),
-        history: {},
-      }
+      describe('with succes', () => {
+        it('should call data reducer', () => {
+          // given
+          const props = {
+            dispatch: dispatchMock,
+            history: {},
+          }
+          const formValues = {
+            identifier: 'name@email.com',
+            password: 'SomePassWord',
+          }
 
-      // when
-      const wrapper = shallow(<Signin {...props} />)
-      // const submit = wrapper.find('Form')
-      console.log('wrapper', wrapper)
+          // when
+          const wrapper = shallow(<Signin {...props} />)
+          wrapper.instance().handleRequestFail = jest.fn()
+          wrapper.instance().handleRequestSuccess = jest.fn()
 
-      const formValue = {}
-      wrapper.instance().onFormSubmit(formValue)
+          wrapper.instance().onFormSubmit(formValues)
 
-      // https://redux.js.org/recipes/writingtests
-      console.log('state', wrapper.state())
-
-      // expect(wrapper.children.props().onSubmit()).toHaveBeenCalledWith('totot')
+          const data = {
+            config: {
+              body: formValues,
+              handleFail: undefined,
+              handleSuccess: undefined,
+            },
+            method: 'POST',
+            path: 'users/signin',
+            type: 'REQUEST_DATA_POST_USERS/SIGNIN',
+          }
+          // then
+          expect(dispatchMock).toHaveBeenCalledWith(data)
+        })
+      })
+      describe('with fail', () => {
+        // TODO
+      })
     })
   })
 })

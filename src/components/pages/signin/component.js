@@ -47,7 +47,6 @@ class Signin extends React.PureComponent {
   }
 
   onFormSubmit = formValues => {
-    console.log('form Values', formValues)
     const routeMethod = 'POST'
     const routePath = 'users/signin'
     const { dispatch } = this.props
