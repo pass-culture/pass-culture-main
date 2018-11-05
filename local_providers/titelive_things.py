@@ -18,6 +18,7 @@ DATE_REGEXP = re.compile('Quotidien(\d+).tit')
 FTP_TITELIVE = ftplib.FTP(os.environ.get("FTP_TITELIVE_URI"))
 FOLDER_NAME_TITELIVE = 'livre3_11'
 
+
 def read_date(date):
     return datetime.strptime(date, DATE_FORMAT)
 
@@ -46,10 +47,9 @@ class TiteLiveThings(LocalProvider):
 
     def __init__(self, venueProvider, **options):
         super().__init__(venueProvider, **options)
-        self.is_mock = False
+        self.is_mock = 'mock' in options and options['mock']
 
-        if 'mock' in options and options['mock']:
-            self.is_mock = True
+        if self.is_mock:
             data_root_path = Path(os.path.dirname(os.path.realpath(__file__)))\
                             / '..' / 'sandboxes' / 'providers' / 'titelive_works'
             data_thing_paths = data_root_path / FOLDER_NAME_TITELIVE
@@ -57,33 +57,29 @@ class TiteLiveThings(LocalProvider):
             if not os.path.isdir(data_root_path):
                 raise ValueError('File not found : '+str(data_root_path)
                                  + '\nDid you run "pc ftp_mirrors" ?')
-        else:
-            if "FTP_TITELIVE_USER" in os.environ:
-                FTP_TITELIVE_USER = os.environ.get("FTP_TITELIVE_USER")
-                FTP_TITELIVE_PWD = os.environ.get("FTP_TITELIVE_PWD")
-                FTP_TITELIVE.login(FTP_TITELIVE_USER, FTP_TITELIVE_PWD)
-                data_root_path = ''
-                data_thing_paths = data_root_path + FOLDER_NAME_TITELIVE
-
-                files_list = FTP_TITELIVE.nlst(data_thing_paths)
-
-                files_list_final = [file_name for file_name in files_list if DATE_REGEXP.search(str(file_name))]
-
-                all_thing_files = sorted(files_list_final)
-            else:
-                raise ValueError('Information de connexion non spécifiée.')
-
-        if self.is_mock:
             ordered_thing_files = all_thing_files
         else:
+            if not "FTP_TITELIVE_USER" in os.environ \
+                    or not "FTP_TITELIVE_PWD" in os.environ:
+                raise ValueError('Information de connexion non spécifiée.')
+
+            ftp_titelive_user = os.environ.get("FTP_TITELIVE_USER")
+            ftp_titelive_pwd = os.environ.get("FTP_TITELIVE_PWD")
+            FTP_TITELIVE.login(ftp_titelive_user, ftp_titelive_pwd)
+            data_root_path = ''
+            data_thing_paths = data_root_path + FOLDER_NAME_TITELIVE
+
+            files_list = FTP_TITELIVE.nlst(data_thing_paths)
+            files_list_final = [file_name for file_name in files_list if DATE_REGEXP.search(str(file_name))]
+            all_thing_files = sorted(files_list_final)
             today = datetime.utcnow().day
             # Titelive 'Quotidien' files stay on the server only for about
             # 26 days. A file with today's date can therefore only be from
             # today, and should always be imported last
             ordered_thing_files = list(filter(lambda f: file_date(f) > today,
-                                              all_thing_files))\
-                                 + list(filter(lambda f: file_date(f) <= today,
-                                               all_thing_files))
+                                              all_thing_files)) \
+                                  + list(filter(lambda f: file_date(f) <= today,
+                                                all_thing_files))
 
         latest_sync_part_end_event = self.latestSyncPartEndEvent()
 
@@ -102,7 +98,7 @@ class TiteLiveThings(LocalProvider):
         if self.thing_file:
             self.logEvent(LocalProviderEventType.SyncPartEnd, file_date(self.thing_file))
         self.thing_file = self.thing_files.__next__()
-        print("  Importing things from file "+str(self.thing_file))
+        print("  Importing things from file %s" % self.thing_file)
         self.logEvent(LocalProviderEventType.SyncPartStart, file_date(self.thing_file))
         if self.is_mock:
             with open(self.thing_file, 'r', encoding='iso-8859-1') as f:
@@ -112,13 +108,10 @@ class TiteLiveThings(LocalProvider):
             data_wrapper = TextIOWrapper(
                 data_file,
                 encoding='iso-8859-1',
-                # errors=None,         #  defalut
-                # newline=None,        #  defalut
                 line_buffering=True,
-                # write_through=False  #  defalut
             )
 
-            file_path = 'RETR '+ 'livre3_11/' + str(self.thing_file)
+            file_path = 'RETR '+ FOLDER_NAME_TITELIVE + '/' + str(self.thing_file)
             FTP_TITELIVE.retrbinary(file_path, data_file.write)
             data_wrapper.seek(0, 0)
             self.data_lines = iter(data_wrapper.readlines())
