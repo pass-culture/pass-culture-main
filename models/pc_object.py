@@ -86,8 +86,8 @@ class PcObject():
             if key == 'id' or key.endswith('Id'):
                 result[key] = humanize(value)
                 if options \
-                    and 'dehumanize' in options \
-                    and options['dehumanize']:
+                        and 'dehumanize' in options \
+                        and options['dehumanize']:
                     result['dehumanized' + key[0].capitalize() + key[1:]] = value
             elif key == 'validationToken':
                 continue
@@ -283,9 +283,10 @@ class PcObject():
                 elif isinstance(value, str) and isinstance(col.type, DateTime):
                     datetime_value = self._deserialize_datetime(key, value)
                     setattr(self, key, datetime_value)
+                elif isinstance(value, str) and isinstance(col.type, String):
+                    setattr(self, key, value.strip() if value else value)
                 else:
                     setattr(self, key, value)
-
 
     @staticmethod
     def check_and_save(*objects):
