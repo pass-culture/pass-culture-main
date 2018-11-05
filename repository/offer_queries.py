@@ -235,3 +235,9 @@ def get_offer_for_venue_id_and_specific_thing(venue_id, thing):
         .filter_by(thing=thing) \
         .one_or_none()
     return offer
+
+
+def find_offer_by_id(offer_id):
+    return Offer.query \
+        .filter(Offer.id == offer_id) \
+        .first()
