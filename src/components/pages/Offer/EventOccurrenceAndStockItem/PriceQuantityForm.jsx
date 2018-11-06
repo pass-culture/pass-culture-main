@@ -1,13 +1,17 @@
 import React, { Component, Fragment } from 'react'
 import { NavLink } from 'react-router-dom'
-
 import get from 'lodash.get'
-import { Field, Form, SubmitButton } from 'pass-culture-shared'
+import ReactTooltip from 'react-tooltip'
+import { Field, Form, SubmitButton, Icon } from 'pass-culture-shared'
 
 class PriceQuantityForm extends Component {
   handleOfferSuccessData = (state, action) => {
     const { history, offer } = this.props
     history.push(`/offres/${get(offer, 'id')}?gestion`)
+  }
+
+  componentDidUpdate() {
+    ReactTooltip.rebuild()
   }
 
   render() {
@@ -61,8 +65,26 @@ class PriceQuantityForm extends Component {
               type="date"
             />
           </td>
-          <td title="Laissez vide si pas de limite">
-            <Field name="available" title="Places disponibles" type="number" />
+          <td className="tooltiped">
+            <Field
+              name="available"
+              title="Places disponibles"
+              type="number"
+              placeholder="Illimité"
+              renderInfo={() => {
+                if (!isStockReadOnly) {
+                  return (
+                    <span
+                      className="button tooltip"
+                      data-place="bottom"
+                      data-tip="<p>Laissez ce champ vide pour un nombre de places illimité.</p>"
+                      data-type="info">
+                      <Icon svg="picto-info" />
+                    </span>
+                  )
+                }
+              }}
+            />
           </td>
           {!isStockReadOnly && (
             <Fragment>
