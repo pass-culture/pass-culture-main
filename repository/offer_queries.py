@@ -179,7 +179,7 @@ def get_offers_for_recommendations_search(
         offers = offer_query.paginate(page, per_page=10, error_out=False) \
             .items
     else:
-        offers = query.all()
+        offers = offer_query.all()
 
     return offers
 
