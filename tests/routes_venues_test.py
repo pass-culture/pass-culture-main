@@ -10,7 +10,7 @@ from utils.test_utils import API_URL, req_with_auth, create_venue, create_offere
 
 @clean_database
 @pytest.mark.standalone
-def test_modify_venue_returns_200_and_apply_modifications_on_venue(app):
+def test_patch_venue_returns_200_and_is_validated_but_no_validation_token_and_apply_modifications_on_venue(app):
     # given
     offerer = create_offerer()
     user = create_user(email='user.pro@test.com')
@@ -26,14 +26,14 @@ def test_modify_venue_returns_200_and_apply_modifications_on_venue(app):
     assert response.status_code == 200
     db.session.refresh(venue)
     assert venue.name == 'Ma librairie'
-
-
-# TODO: check venue modification with missing items
+    json = response.json()
+    assert json['isValidated'] == True
+    assert 'validationToken' not in json
 
 
 @clean_database
 @pytest.mark.standalone
-def test_modify_venue_with_bad_siret_returns_bad_request_with_custom_error_message(app):
+def test_patch_venue_with_bad_siret_returns_bad_request_with_custom_error_message(app):
     # given
     offerer = create_offerer()
     user = create_user(email='user.pro@test.com')
@@ -52,7 +52,7 @@ def test_modify_venue_with_bad_siret_returns_bad_request_with_custom_error_messa
 
 @clean_database
 @pytest.mark.standalone
-def test_modify_venue_with_is_virtual_returns_400_if_a_virtual_venue_already_exist_for_an_offerer(app):
+def test_patch_venue_with_is_virtual_returns_400_if_a_virtual_venue_already_exist_for_an_offerer(app):
     # given
     offerer = create_offerer()
     user = create_user(email='user.pro@test.com')
@@ -72,7 +72,7 @@ def test_modify_venue_with_is_virtual_returns_400_if_a_virtual_venue_already_exi
 
 @clean_database
 @pytest.mark.standalone
-def test_modify_venue_with_is_virtual_returns_400_if_a_virtual_venue_already_exist_for_an_offerer(app):
+def test_patch_venue_with_is_virtual_returns_400_if_a_virtual_venue_already_exist_for_an_offerer(app):
     # given
     offerer = create_offerer()
     user = create_user(email='user.pro@test.com')
@@ -93,7 +93,7 @@ def test_modify_venue_with_is_virtual_returns_400_if_a_virtual_venue_already_exi
 
 @clean_database
 @pytest.mark.standalone
-def test_create_venue_returns_201_with_the_newly_created_venue(app):
+def test_post_venue_returns_201_with_the_newly_created_venue_and_is_validated_but_no_validation_token(app):
     # given
     offerer = create_offerer(siren='302559178')
     user = create_user(email='user.pro@test.com')
@@ -126,6 +126,8 @@ def test_create_venue_returns_201_with_the_newly_created_venue(app):
 
     for (key, value) in venue_data.items():
         assert created_venue_data[key] == venue_data[key]
+    assert created_venue_data['isValidated'] == True
+    assert 'validationToken' not in created_venue_data
 
     # TODO: check thumb presence
     # TODO: check offerer linked to venue at creation
@@ -133,7 +135,7 @@ def test_create_venue_returns_201_with_the_newly_created_venue(app):
 
 @clean_database
 @pytest.mark.standalone
-def test_create_venue_returns_400_if_a_virtual_venue_already_exist_for_an_offerer(app):
+def test_post_venue_returns_400_if_a_virtual_venue_already_exist_for_an_offerer(app):
     # given
     offerer = create_offerer(siren='302559178')
     user = create_user(email='user.pro@test.com')
@@ -166,7 +168,7 @@ def test_create_venue_returns_400_if_a_virtual_venue_already_exist_for_an_offere
 
 @clean_database
 @pytest.mark.standalone
-def test_create_venue_returns_400_if_given_latitude_and_longitudes_are_invalid(app):
+def test_post_venue_returns_400_if_given_latitude_and_longitudes_are_invalid(app):
     # given
     offerer = create_offerer(siren='302559178')
     user = create_user(email='user.pro@test.com')
@@ -261,7 +263,7 @@ def test_patch_venues_on_siret_returns_status_code_400_and_siret_in_error(app):
 
 @clean_database
 @pytest.mark.standalone
-def test_post_venues_without_siret_and_with_comment_returns_status_code_201_and_creates_not_validated_venue(app):
+def test_post_venues_without_siret_and_with_comment_returns_status_code_201_and_is_validated_in_json_and_creates_not_validated_venue(app):
     # Given
     offerer = create_offerer()
     user = create_user()
@@ -287,11 +289,14 @@ def test_post_venues_without_siret_and_with_comment_returns_status_code_201_and_
     assert response.status_code == 201
     venue = Venue.query.first()
     assert not venue.isValidated
+    json = response.json()
+    assert json['isValidated'] == False
+    assert 'validationToken' not in json
 
 
 @clean_database
 @pytest.mark.standalone
-def test_post_venues_with_siret_returns_status_code_201_and_creates_validated_venue(app):
+def test_post_venues_with_siret_returns_status_code_201_and_is_validated_in_json_and_creates_validated_venue(app):
     # Given
     offerer = create_offerer()
     user = create_user()
@@ -317,3 +322,6 @@ def test_post_venues_with_siret_returns_status_code_201_and_creates_validated_ve
     assert response.status_code == 201
     venue = Venue.query.first()
     assert venue.isValidated
+    json = response.json()
+    assert json['isValidated'] == True
+    assert 'validationToken' not in json
