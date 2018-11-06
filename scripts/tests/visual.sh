@@ -14,7 +14,7 @@
 # `./node_modules/.bin/testcafe [...options] --force`
 
 
-function executeCommand () {
+function executeCommand() {
   BROWSER='chrome:headless'
   OUTPUT_PATH=testcafe/screenshots
   SCRIPT_FILE=scripts/tests/screenshots-compare.js
