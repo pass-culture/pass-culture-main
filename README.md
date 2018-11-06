@@ -22,8 +22,6 @@ Les variables disponibles pour l'application sont décrites dans le fichier `src
 
 #### Tests Unitaires (Jest/Enzyme)
 
-Pour ajouter un test visuel, voir le fichier `testcafe/visuals.json`
-
 Lancer tous les tests
 ```bash
 yarn test:unit
@@ -36,8 +34,6 @@ Lancer un seul fichier en mode watch
 ./node_modules/.bin/jest --env=jsdom ./path/to/file.spec.js --watch
 # yarn test:unit ./path/to/file.spec.js --watch
 ```
-
-
 
 #### Tests Fonctionnels (Testcafe)
 
@@ -52,6 +48,8 @@ Lancer un seul fichier en ligne de commande depuis un environnement local
 ```
 
 #### Tests Visuels (Testcafe/RessembleJS)
+
+Pour ajouter un test visuel, voir le fichier `testcafe/visuals.json`
 
 Lancer tous les tests
 ```bash
