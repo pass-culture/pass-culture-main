@@ -10,7 +10,7 @@ def create_or_find_recommendation(recommendation_mock, mediation=None, user=None
     if user is None:
         user = User.query.get(dehumanize(recommendation_mock['userId']))
 
-    logger.info("look recommendation " + str(mediation) + " " + user.email)
+    logger.info("look recommendation " + str(mediation) + " " + user.email + " " + recommendation_mock.get('id'))
 
     recommendation = Recommendation.query.filter_by(
         mediationId=mediation.id,

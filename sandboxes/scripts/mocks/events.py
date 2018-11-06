@@ -1,16 +1,13 @@
 """ events """
 from sandboxes.scripts.mocks import get_all_typed_event_mocks
-from utils.human_ids import humanize
+from utils.human_ids import dehumanize, humanize
 
 EVENT_MOCKS = []
-
-ALL_TYPED_EVENT_MOCKS = get_all_typed_event_mocks()
-EVENT_MOCKS += ALL_TYPED_EVENT_MOCKS
 
 SCRATCH_EVENT_MOCKS = [
     {
         "durationMinutes": 60,
-        "id": humanize(0),
+        "id": humanize(1),
         "name": "Rencontre avec Franck Lepage",
         "type": "EventType.CONFERENCE_DEBAT_DEDICACE",
         "thumbCount": 1,
@@ -18,7 +15,7 @@ SCRATCH_EVENT_MOCKS = [
     },
     {
         "durationMinutes": 120,
-        "id": humanize(1),
+        "id": humanize(2),
         "name": "Concert de Gael Faye",
         "type": "EventType.MUSIQUE",
         "thumbCount": 1,
@@ -26,7 +23,7 @@ SCRATCH_EVENT_MOCKS = [
     },
     {
         "durationMinutes": 10,
-        "id": humanize(2),
+        "id": humanize(3),
         "name": "PNL chante Marx",
         "type": "EventType.MUSIQUE",
         "thumbCount": 1,
@@ -34,3 +31,9 @@ SCRATCH_EVENT_MOCKS = [
     }
 ]
 EVENT_MOCKS += SCRATCH_EVENT_MOCKS
+
+
+ALL_TYPED_EVENT_MOCKS = get_all_typed_event_mocks(
+    starting_id=dehumanize(EVENT_MOCKS[-1]['id']) + 1
+)
+EVENT_MOCKS += ALL_TYPED_EVENT_MOCKS

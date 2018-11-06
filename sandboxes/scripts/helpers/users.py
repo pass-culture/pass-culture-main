@@ -7,7 +7,7 @@ from utils.logger import logger
 def create_or_find_user(user_mock):
     user = User.query.filter_by(email=user_mock['email']).first()
 
-    logger.info('look user ' + user_mock['email'])
+    logger.info('look user ' + user_mock['email'] + " " + user_mock.get('id'))
 
     if user is None:
         user = User(from_dict=user_mock)

@@ -7,7 +7,7 @@ def create_or_find_venue(venue_mock, offerer=None):
     if offerer is None:
         offerer = Offerer.query.get(dehumanize(venue_mock['offererId']))
 
-    logger.info("look venue " + venue_mock['name'])
+    logger.info("look venue " + venue_mock['name'] + " " + venue_mock.get('id'))
 
     venue = Venue.query.filter_by(
         managingOffererId=offerer.id,

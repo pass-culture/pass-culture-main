@@ -17,7 +17,7 @@ def create_or_find_offer(offer_mock, event_or_thing=None):
         query = Offer.query.filter_by(thingId=event_or_thing.id)
     venue = Venue.query.get(dehumanize(offer_mock['venueId']))
 
-    logger.info("look offer " + offer_mock.get('id') + " " + event_or_thing.name + " " + venue.name)
+    logger.info("look offer " + event_or_thing.name + " " + venue.name + " " + offer_mock.get('id'))
 
     offer = query.filter_by(venueId=venue.id).first()
 

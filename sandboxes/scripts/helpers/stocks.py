@@ -8,11 +8,11 @@ def create_or_find_stock(stock_mock, event_occurrence=None, offer=None):
         if event_occurrence is None:
             event_occurrence = EventOccurrence.query.get(dehumanize(stock_mock['eventOccurrenceId']))
             query = Stock.queryNotSoftDeleted().filter_by(eventOccurrenceId=event_occurrence.id)
-            logger.info("look stock " + event_occurrence.offer.eventOrThing.name)
+            logger.info("look stock " + event_occurrence.offer.eventOrThing.name + " " + stock_mock.get('id'))
     else:
         if offer is None:
             offer = Offer.query.get(dehumanize(stock_mock['offerId']))
-            logger.info("look stock " + offer.eventOrThing.name)
+            logger.info("look stock " + offer.eventOrThing.name + " " + stock_mock.get('id'))
         query = Stock.queryNotSoftDeleted().filter_by(offerId=offer.id)
 
     stock = query.first()

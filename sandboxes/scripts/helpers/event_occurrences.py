@@ -9,7 +9,7 @@ def create_or_find_event_occurrence(event_occurrence_mock, offer=None):
     if offer is None:
         offer = Offer.query.get(dehumanize(event_occurrence_mock['offerId']))
 
-    logger.info("look event_occurrence")
+    logger.info("look event_occurrence" + " " + event_occurrence_mock.get('id'))
 
     event_occurrence = EventOccurrence.query.filter_by(
         beginningDatetime=event_occurrence_mock['beginningDatetime'],

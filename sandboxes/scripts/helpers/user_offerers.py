@@ -9,7 +9,7 @@ def create_or_find_user_offerer(user_offerer_mock, user=None, offerer=None):
     if offerer is None:
         offerer = Offerer.query.get(dehumanize(user_offerer_mock['offererId']))
 
-    logger.info("create or find user_offerer " + user.email + " " + offerer.name)
+    logger.info("create or find user_offerer " + user.email + " " + offerer.name + " " + user_offerer_mock.get('id'))
 
     user_offerer = UserOfferer.query.filter_by(
         userId=user.id,

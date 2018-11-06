@@ -8,7 +8,7 @@ def create_or_find_deposit(deposit_mock, user=None):
     if user is None:
         user = User.query.get(dehumanize(deposit_mock['userId']))
 
-    logger.info("look deposit " + user.email)
+    logger.info("look deposit " + user.email + " " + deposit_mock.get('id'))
 
     deposit = Deposit.query.filter_by(userId=user.id).first()
 

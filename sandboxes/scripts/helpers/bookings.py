@@ -10,7 +10,7 @@ def create_or_find_booking(booking_mock, stock=None, user=None):
     if user is None:
         user = User.query.get(dehumanize(booking_mock['userId']))
 
-    logger.info("look booking " + str(stock) + " " + user.email)
+    logger.info("look booking " + str(stock) + " " + user.email + " " + booking_mock.get('id'))
 
     booking = Booking.query.filter_by(
         stockId=stock.id,

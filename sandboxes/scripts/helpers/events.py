@@ -6,7 +6,7 @@ from utils.logger import logger
 def create_or_find_event(event_mock):
     event = Event.query.filter_by(name=event_mock['name']).first()
 
-    logger.info("look event " + event_mock['name'])
+    logger.info("look event " + event_mock['name'] + " " + event_mock.get('id'))
 
     if event is None:
         event = Event(from_dict=event_mock)

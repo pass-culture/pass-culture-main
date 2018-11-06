@@ -5,18 +5,6 @@ from pprint import pprint
 import sys
 
 from models.pc_object import PcObject
-from models import Booking,\
-                   Deposit,\
-                   EventOccurrence,\
-                   Event,\
-                   Mediation,\
-                   Offer,\
-                   Offerer,\
-                   Stock,\
-                   Thing,\
-                   User,\
-                   UserOfferer,\
-                   Venue
 from sandboxes.scripts.helpers import create_or_find_bookings,\
                                       create_or_find_deposits,\
                                       create_or_find_event_occurrences,\
