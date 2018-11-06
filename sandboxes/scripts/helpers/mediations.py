@@ -10,7 +10,11 @@ def create_or_find_mediation(mediation_mock, offer=None, store=None):
 
     logger.info("look mediation " + mediation_mock.get('id'))
 
-    mediation = Mediation.query.filter_by(offerId=offer.id).first()
+    if 'id' in mediation_mock:
+        mediation = Mediation.query.get(dehumanize(mediation_mock['id']))
+    else:
+        mediation = Mediation.query.filter_by(offerId=offer.id).first()
+
     if mediation is None:
         mediation = Mediation(from_dict=mediation_mock)
         mediation.offer = offer

@@ -4,9 +4,12 @@ from utils.human_ids import dehumanize
 from utils.logger import logger
 
 def create_or_find_thing(thing_mock):
-    thing = Thing.query.filter_by(name=thing_mock['name']).first()
-
     logger.info("look thing " + thing_mock['name'] + " " + thing_mock.get('id'))
+
+    if 'id' in thing_mock:
+        thing = Thing.query.get(dehumanize(thing_mock['id']))
+    else:
+        thing = Thing.query.filter_by(name=thing_mock['name']).first()
 
     if thing is None:
         thing = Thing(from_dict=thing_mock)

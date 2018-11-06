@@ -15,7 +15,10 @@ def create_or_find_stock(stock_mock, event_occurrence=None, offer=None):
             logger.info("look stock " + offer.eventOrThing.name + " " + stock_mock.get('id'))
         query = Stock.queryNotSoftDeleted().filter_by(offerId=offer.id)
 
-    stock = query.first()
+    if 'id' in stock_mock:
+        stock = Stock.query.get(dehumanize(stock_mock['id']))
+    else:
+        stock = query.first()
 
     if stock is None:
         stock = Stock(from_dict=stock_mock)

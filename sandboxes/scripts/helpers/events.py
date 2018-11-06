@@ -4,9 +4,12 @@ from utils.human_ids import dehumanize
 from utils.logger import logger
 
 def create_or_find_event(event_mock):
-    event = Event.query.filter_by(name=event_mock['name']).first()
-
     logger.info("look event " + event_mock['name'] + " " + event_mock.get('id'))
+
+    if 'id' in event_mock:
+        event = Event.query.get(dehumanize(event_mock['id']))
+    else:
+        event = Event.query.filter_by(name=event_mock['name']).first()
 
     if event is None:
         event = Event(from_dict=event_mock)

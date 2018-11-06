@@ -19,7 +19,10 @@ def create_or_find_offer(offer_mock, event_or_thing=None):
 
     logger.info("look offer " + event_or_thing.name + " " + venue.name + " " + offer_mock.get('id'))
 
-    offer = query.filter_by(venueId=venue.id).first()
+    if 'id' in offer_mock:
+        offer = Offer.query.get(dehumanize(offer_mock['id']))
+    else:
+        offer = query.filter_by(venueId=venue.id).first()
 
     if offer is None:
         offer = Offer(from_dict=offer_mock)

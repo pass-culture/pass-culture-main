@@ -12,11 +12,14 @@ def create_or_find_booking(booking_mock, stock=None, user=None):
 
     logger.info("look booking " + str(stock) + " " + user.email + " " + booking_mock.get('id'))
 
-    booking = Booking.query.filter_by(
-        stockId=stock.id,
-        userId=user.id,
-        token=booking_mock['token']
-    ).first()
+    if 'id' in booking_mock:
+        booking = Booking.query.get(dehumanize(booking_mock['id']))
+    else:
+        booking = Booking.query.filter_by(
+            stockId=stock.id,
+            userId=user.id,
+            token=booking_mock['token']
+        ).first()
 
     if booking is None:
         booking = Booking(from_dict=booking_mock)

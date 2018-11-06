@@ -5,7 +5,10 @@ from utils.logger import logger
 
 
 def create_or_find_offerer(offerer_mock):
-    offerer = Offerer.query.filter_by(name=offerer_mock['name']).first()
+    if 'id' in offerer_mock:
+        offerer = Offerer.query.get(dehumanize(offerer_mock['id']))
+    else:
+        offerer = Offerer.query.filter_by(name=offerer_mock['name']).first()
 
     logger.info("look offerer " + offerer_mock['name'] + " " + offerer_mock.get('id'))
 

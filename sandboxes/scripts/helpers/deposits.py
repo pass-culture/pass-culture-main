@@ -10,7 +10,10 @@ def create_or_find_deposit(deposit_mock, user=None):
 
     logger.info("look deposit " + user.email + " " + deposit_mock.get('id'))
 
-    deposit = Deposit.query.filter_by(userId=user.id).first()
+    if 'id' in deposit_mock:
+        deposit = Deposit.query.get(dehumanize(deposit_mock['id']))
+    else:
+        deposit = Deposit.query.filter_by(userId=user.id).first()
 
     if deposit is None:
         deposit = Deposit(from_dict=deposit_mock)

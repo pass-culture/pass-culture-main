@@ -11,10 +11,13 @@ def create_or_find_event_occurrence(event_occurrence_mock, offer=None):
 
     logger.info("look event_occurrence" + " " + event_occurrence_mock.get('id'))
 
-    event_occurrence = EventOccurrence.query.filter_by(
-        beginningDatetime=event_occurrence_mock['beginningDatetime'],
-        offerId=offer.id
-    ).first()
+    if 'id' in event_occurrence_mock:
+        event_occurrence = EventOccurrence.query.get(dehumanize(event_occurrence_mock['id']))
+    else:
+        event_occurrence = EventOccurrence.query.filter_by(
+            beginningDatetime=event_occurrence_mock['beginningDatetime'],
+            offerId=offer.id
+        ).first()
 
     if event_occurrence is None:
         event_occurrence = EventOccurrence(from_dict=event_occurrence_mock)

@@ -9,10 +9,13 @@ def create_or_find_venue(venue_mock, offerer=None):
 
     logger.info("look venue " + venue_mock['name'] + " " + venue_mock.get('id'))
 
-    venue = Venue.query.filter_by(
-        managingOffererId=offerer.id,
-        name=venue_mock['name']
-    ).first()
+    if 'id' in venue_mock:
+        venue = Venue.query.get(dehumanize(venue_mock['id']))
+    else:
+        venue = Venue.query.filter_by(
+            managingOffererId=offerer.id,
+            name=venue_mock['name']
+        ).first()
 
     if venue is None:
         venue = Venue(from_dict=venue_mock)

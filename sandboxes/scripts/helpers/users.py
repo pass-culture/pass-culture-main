@@ -5,9 +5,12 @@ from utils.human_ids import dehumanize
 from utils.logger import logger
 
 def create_or_find_user(user_mock):
-    user = User.query.filter_by(email=user_mock['email']).first()
-
     logger.info('look user ' + user_mock['email'] + " " + user_mock.get('id'))
+
+    if 'id' in user_mock:
+        user = User.query.get(dehumanize(user_mock['id']))
+    else:
+        user = User.query.filter_by(email=user_mock['email']).first()
 
     if user is None:
         user = User(from_dict=user_mock)

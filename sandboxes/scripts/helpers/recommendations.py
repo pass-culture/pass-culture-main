@@ -12,10 +12,13 @@ def create_or_find_recommendation(recommendation_mock, mediation=None, user=None
 
     logger.info("look recommendation " + str(mediation) + " " + user.email + " " + recommendation_mock.get('id'))
 
-    recommendation = Recommendation.query.filter_by(
-        mediationId=mediation.id,
-        userId=user.id,
-    ).first()
+    if 'id' in recommendation_mock:
+        recommendation = Recommendation.query.get(dehumanize(recommendation_mock['id']))
+    else:
+        recommendation = Recommendation.query.filter_by(
+            mediationId=mediation.id,
+            userId=user.id,
+        ).first()
 
     if recommendation is None:
         recommendation = Recommendation(from_dict=recommendation_mock)
