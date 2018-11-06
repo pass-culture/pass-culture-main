@@ -41,6 +41,18 @@
             input[type='time'] {
               padding-left: 1rem;
             }
+            input[readonly]::placeholder {
+              color: $black;
+            }
+            input[readonly]::-webkit-input-placeholder{
+              color: $black;
+            }
+            input[readonly]::-moz-placeholder {
+              color: $black;
+            }
+            input[readonly]:-moz-placeholder {
+              color: $black;
+            }
           }
         }
       }

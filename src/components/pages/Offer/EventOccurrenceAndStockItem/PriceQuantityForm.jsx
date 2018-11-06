@@ -62,7 +62,12 @@ class PriceQuantityForm extends Component {
             />
           </td>
           <td title="Laissez vide si pas de limite">
-            <Field name="available" title="Places disponibles" type="number" />
+            <Field
+              name="available"
+              title="Places disponibles"
+              type="number"
+              placeholder="Illimité"
+            />
           </td>
           {!isStockReadOnly && (
             <Fragment>
