@@ -13,22 +13,18 @@
 # Utiliser directement la ligne de commande testcafe
 # `./node_modules/.bin/testcafe [...options] --force`
 
-
-function executeCommand() {
-  BROWSER='chrome:headless'
-  OUTPUT_PATH=testcafe/screenshots
-  SCRIPT_FILE=scripts/tests/screenshots-compare.js
-  ./node_modules/.bin/testcafe $BROWSER $SCRIPT_FILE -s $OUTPUT_PATH $1
-}
+BROWSER='chrome:headless'
+OUTPUT_PATH=testcafe/screenshots
+SCRIPT_FILE=scripts/tests/screenshots-compare.js
 
 # while test $# -gt 0; do
 case "$1" in
   -f|--force)
-    executeCommand --force
+    ./node_modules/.bin/testcafe $BROWSER $SCRIPT_FILE -s $OUTPUT_PATH --force
     exit 0
     ;;
   *)
-    executeCommand
+    ./node_modules/.bin/testcafe $BROWSER $SCRIPT_FILE -s $OUTPUT_PATH
     exit 0
     ;;
 esac
