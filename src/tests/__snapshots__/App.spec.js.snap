@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | share | ShareButton snapshot should match snapshot 1`] = `
+exports[`src | components | App snapshot should match snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <Provider
@@ -15,8 +15,8 @@ ShallowWrapper {
       }
     }
   >
-    <withRouter(Connect(ShareButton))
-      dispatch={[MockFunction]}
+    <withRouter(App)
+      location={Object {}}
     />
   </Provider>,
   Symbol(enzyme.__renderer__): Object {
@@ -32,7 +32,7 @@ ShallowWrapper {
     "key": undefined,
     "nodeType": "function",
     "props": Object {
-      "dispatch": [MockFunction],
+      "location": Object {},
     },
     "ref": null,
     "rendered": null,
@@ -44,7 +44,7 @@ ShallowWrapper {
       "key": undefined,
       "nodeType": "function",
       "props": Object {
-        "dispatch": [MockFunction],
+        "location": Object {},
       },
       "ref": null,
       "rendered": null,
