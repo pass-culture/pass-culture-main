@@ -1,12 +1,12 @@
 import pytest
 
-from domain.types import get_format_types, get_type_values_from_sublabels
+from domain.types import get_formatted_types, get_type_values_from_sublabels
 
 
 @pytest.mark.standalone
-def test_get_format_types():
+def test_get_formatted_types():
     # given
-    types = get_format_types()
+    types = get_formatted_types()
 
     # then
     assert types[0]['label'] == 'Cinéma (Projections, Séances, Évènements)'

@@ -1,13 +1,15 @@
 """ types """
 from models.offer_type import EventType, ThingType
 
+
 def _format_type(t, model_name):
     result = t.value
     result['value'] = str(t)
     result['type'] = model_name
     return result
 
-def get_format_types():
+
+def get_formatted_types():
     event_format_types = [_format_type(et, 'Event') for et in EventType]
     thing_format_types = [_format_type(tt, 'Thing') for tt in ThingType]
 

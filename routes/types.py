@@ -1,8 +1,9 @@
 """types"""
 from flask import current_app as app, jsonify
 
-from domain.types import get_format_types
+from domain.types import get_formatted_types
+
 
 @app.route('/types', methods=['GET'])
 def list_types():
-    return jsonify(get_format_types()), 200
+    return jsonify(get_formatted_types()), 200
