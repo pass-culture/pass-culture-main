@@ -15,7 +15,8 @@ from utils.mailing import make_user_booking_recap_email, \
     write_object_validation_email, make_offerer_driven_cancellation_email_for_user, \
     make_reset_password_email, \
     make_offerer_driven_cancellation_email_for_offerer, make_validation_confirmation_email, \
-    make_batch_cancellation_email, make_payment_transaction_email, make_venue_validation_email
+    make_batch_cancellation_email, make_payment_transaction_email, make_venue_validation_email, \
+    make_venue_validation_confirmation_email
 from utils.test_utils import create_stock_with_event_offer, create_stock_with_thing_offer, \
     create_user, create_booking, MOCKED_SIREN_ENTREPRISES_API_RETURN, create_user_offerer, \
     create_offerer, create_venue, create_thing_offer, create_event_offer, create_stock_from_offer, \
@@ -906,3 +907,28 @@ def test_make_venue_validation_email(app):
     assert 'Commentaire de la structure : "Ceci est mon commentaire"' in html_validation
     assert 'localhost/validate/venue?token={}'.format(venue.validationToken) in html_validation
     assert 'localhost/validate/venue?token={}'.format(venue.validationToken) in html_validation_link
+
+
+@pytest.mark.standalone
+def test_make_venue_validation_confirmation_email(app):
+    # Given
+    offerer = create_offerer(name='La Structure', siren='123456789')
+    venue = create_venue(offerer, name='Le Lieu', comment='Ceci est mon commentaire')
+
+    # When
+    email = make_venue_validation_confirmation_email(venue)
+
+    # Then
+    assert email['Subject'] == 'Validation du rattachement du lieu "Le Lieu" à votre structure "La Structure"'
+    assert email["FromEmail"] == "passculture@beta.gouv.fr"
+    assert email["FromName"] == "pass Culture pro"
+    email_html = remove_whitespaces(email['Html-part'])
+    parsed_email = BeautifulSoup(email_html, 'html.parser')
+    html_validation = str(parsed_email.find('p', {'id': 'validation-details'}))
+    html_greeting = str(parsed_email.find('p', {'id': 'mail-greeting'}))
+    html_salutation = str(parsed_email.find('p', {'id': 'mail-salutation'}))
+    assert 'Cher partenaire pass Culture,' in html_greeting
+    assert 'Le rattachement du lieu "Le Lieu"' in html_validation
+    assert 'à votre structure "La Structure"' in html_validation
+    assert 'Cordialement,' in html_salutation
+    assert 'L\'équipe pass Culture' in html_salutation

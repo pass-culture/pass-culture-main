@@ -318,6 +318,16 @@ def make_payment_transaction_email(xml: str) -> dict:
                           "Base64Content": xml_b64encode}]}
 
 
+def make_venue_validation_confirmation_email(venue):
+    html = render_template('mails/venue_validation_confirmation_email.html', venue=venue)
+    return {
+        'Subject': 'Validation du rattachement du lieu "{}" à votre structure "{}"'.format(venue.name, venue.managingOfferer.name),
+        'FromEmail': "passculture@beta.gouv.fr",
+        'FromName': "pass Culture pro",
+        'Html-part': html
+    }
+
+
 def _generate_reservation_email_html_subject(booking):
     stock = booking.stock
     user = booking.user
