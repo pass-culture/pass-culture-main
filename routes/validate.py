@@ -61,4 +61,5 @@ def validate_venue():
     check_venue_found(venue)
     venue.validationToken = None
     PcObject.check_and_save(venue)
+
     return "Validation effectuée", 202
