@@ -4,13 +4,12 @@ from sandboxes.scripts.mocks.offers import ALL_TYPED_EVENT_OFFER_MOCKS,\
                                            ALL_TYPED_THING_OFFER_MOCKS
 from sandboxes.scripts.mocks import get_all_typed_event_mediation_mocks,\
                                     get_all_typed_thing_mediation_mocks
-from sandboxes.utils import get_last_stored_id_of_model
 from utils.human_ids import dehumanize, humanize
 
 MEDIATION_MOCKS = []
 
-# NEED TO BE AT LEAST GREATER THEN 1 (because of tuto mediations)
-LAST_STORED_MEDIATION_ID = get_last_stored_id_of_model(Mediation)
+# NEED TO BE AT LEAST GREATER THAN 2 (because of tuto mediations)
+LAST_STORED_MEDIATION_ID = 3
 
 SCRATCH_MEDIATION_MOCKS = [
     {
