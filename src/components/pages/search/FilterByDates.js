@@ -83,7 +83,6 @@ class FilterByDates extends PureComponent {
                 </label>
               )
             })}
-            {/* ********** DATE PICKER ********** */}
             <DatePickerField
               name="pick-by-date-filter"
               className="item fs19 py5 pl7 pr22"
@@ -92,18 +91,13 @@ class FilterByDates extends PureComponent {
               onChange={this.onPickedDateChange}
               refPopper={this.datepickerPopper}
             />
-            {/* <span className="icon">
-                  <Icon
-                    alt="Choisissez une date dans le calendrier"
-                    className="input-icon"
-                    svg="dropdown-disclosure-down"
-                  />
-                </span> */}
-            {/* ********** END DATE PICKER ********** */}
           </div>
         </div>
         <hr className="dotted-bottom-primary" />
-        <div id="popper-container-toto" ref={this.datepickerPopper} />
+        <div
+          id="filter-by-dates-datepicker-popper-container"
+          ref={this.datepickerPopper}
+        />
       </div>
     )
   }

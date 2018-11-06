@@ -47,7 +47,7 @@ const DatePickerField = ({
             {required && <span className="pc-final-form-asterisk">*</span>}
           </span>
         )}
-        <span className="pc-final-form-inner">
+        <div className="pc-final-form-inner">
           <DatePicker
             id={id || name}
             locale={locale}
@@ -56,24 +56,21 @@ const DatePickerField = ({
             isClearable={clearable}
             placeholderText={placeholder}
             customInput={<DatePickerCustomInput />}
+            todayButton={"Aujourd'hui"}
             {...moreprops}
-            // popperModifiers={{
-            //   offset: {
-            //     enabled: true,
-            //     offset: '5px, 10px',
-            //   },
-            //   preventOverflow: {
-            //     boundariesElement: 'viewport',
-            //     enabled: true,
-            //     escapeWithReference: false, // force popper to stay in viewport (even when input is scrolled out of view)
-            //   },
-            // }}
           />
-        </span>
+        </div>
       </label>
     </div>
   )
 }
+/* <span className="icon">
+    <Icon
+      alt="Choisissez une date dans le calendrier"
+      className="input-icon"
+      svg="dropdown-disclosure-down"
+    />
+  </span> */
 
 DatePickerField.defaultProps = {
   className: '',

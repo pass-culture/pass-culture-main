@@ -191,22 +191,19 @@
   border-radius: 0;
 }
 
-/*
-.react-datepicker {
-  border: green;
-  background-color: yellow;
-}
+/* ------------------------------------------------
 
-div.react-datepicker-popper.search-by-dates {
-  background-color: green;
-  z-index: 12000;
-  overflow: visible;
-  border: red;
+ Section des filtres par types d'offres
 
-  input {
-    width: 100px;
-    background-color: none;
-    border: 1px solid green;
+------------------------------------------------ */
+
+#filter-by-dates-datepicker-popper-container {
+  @extend .is-absolute;
+
+  top: 8px;
+  left: -120px;
+
+  .react-datepicker__triangle {
+    left: 130px;
   }
 }
-*/
