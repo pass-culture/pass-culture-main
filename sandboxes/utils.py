@@ -2,6 +2,7 @@
 import os
 from pathlib import Path
 
+from models.db import db
 from models.pc_object import PcObject
 from utils.human_ids import humanize
 from utils.object_storage import store_public_object
@@ -14,9 +15,9 @@ mimes_by_folder = {
 }
 
 def get_last_stored_id_of_model(model):
-    ids = [o.id for o in model.query.all()]
+    ids = db.session.query(model.id).all()
     if ids:
-        return max(ids)
+        return max(ids)[0]
     return 0
 
 def store_public_object_from_sandbox_assets(folder, obj, thumb_id, index=0):
