@@ -206,4 +206,17 @@
   .react-datepicker__triangle {
     left: 130px;
   }
+
+  .react-datepicker__day--keyboard-selected {
+    background-color: $primary;
+  }
+
+  .react-datepicker__day--selected {
+    background-color: $primary;
+  }
+
+}
+
+button.react-datepicker__close-icon::after {
+  background-color: $primary;
 }

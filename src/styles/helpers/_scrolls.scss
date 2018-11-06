@@ -24,5 +24,6 @@
   @extend .scroll-x;
   @extend .no-scroll-y;
   @extend .is-absolute;
-  @extend .is-full-width;
+  margin-left: rem(18px);
+  margin-right: rem(18px);
 }

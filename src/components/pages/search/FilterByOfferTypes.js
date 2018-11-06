@@ -31,8 +31,8 @@ class FilterByOfferTypes extends PureComponent {
         <h2 className="fs15 is-italic is-medium is-uppercase text-center mb12">
           {title}
         </h2>
-        <div className="pc-scroll-horizontal is-relative is-full-width">
-          <div className="pc-list flex-columns pl18 pr18 pt7">
+        <div className="pc-scroll-horizontal is-relative">
+          <div className="pc-list flex-columns pt7">
             {typeSublabels.map(typeSublabel => {
               const ischecked = typesValue.includes(typeSublabel)
               const className = ischecked ? 'checked' : ''
