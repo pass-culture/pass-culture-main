@@ -54,7 +54,16 @@
               color: $black;
             }
           }
+        td.tooltiped {
+          white-space: nowrap;
+          span.tooltip {
+            background-color: transparent;
+            padding: 0;
+            margin: -4px 0 0 2px;
+            z-index:9999999999999999999;
+          }
         }
+      }
       }
 
       thead {
