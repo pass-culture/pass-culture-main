@@ -49,7 +49,7 @@ class TiteLiveThingThumbs(LocalProvider):
         print(data_thumbs_path)
 
         all_zips = list(sorted(data_thumbs_path.glob('livres_tl*.zip')))
-        latest_sync_part_end_event = local_provider_event_queries.get_latest_sync_part_end_event(self.dbObject)
+        latest_sync_part_end_event = local_provider_event_queries.find_latest_sync_part_end_event(self.dbObject)
 
         if latest_sync_part_end_event is None:
             self.zips = iter(all_zips)

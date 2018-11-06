@@ -21,8 +21,8 @@ def make_url(last_seen_isbn, last_date_checked, venue_siret):
                % (venue_siret, last_date_checked)
 
 
-def get_data(after_isbn_id, last_date_checked, venue_siret):
-    page_url = make_url(after_isbn_id, last_date_checked, venue_siret)
+def get_data(last_seen_isbn, last_date_checked, venue_siret):
+    page_url = make_url(last_seen_isbn, last_date_checked, venue_siret)
     req_result = requests.get(page_url)
     return req_result.json()
 
@@ -50,13 +50,13 @@ class TiteLiveStocks(LocalProvider):
         self.venue = venue_queries.find_by_id(self.venueId)
         assert self.venue is not None
         self.venue_has_offer = False
-        offer_count = offer_queries.count_offers_for_things_only_for_venue_id(self.venueId)
+        offer_count = offer_queries.count_offers_for_things_only_by_venue_id(self.venueId)
 
         print("Offer count: ", str(offer_count))
         if offer_count > 0:
             self.venue_has_offer = True
 
-        latest_local_provider_event = local_provider_event_queries.get_latest_sync_start_event(self.dbObject)
+        latest_local_provider_event = local_provider_event_queries.find_latest_sync_start_event(self.dbObject)
         if latest_local_provider_event is None:
             self.last_ws_requests = datetime.utcfromtimestamp(0).timestamp() * 1000
         else:
@@ -96,7 +96,7 @@ class TiteLiveStocks(LocalProvider):
         self.last_seen_isbn = str(self.titelive_stock['ref'])
 
         thing = thing_queries.find_thing_by_isbn_only_for_type_book(self.titelive_stock['ref'])
-        self.offer = offer_queries.get_offer_for_venue_id_and_specific_thing(self.venueId, thing)
+        self.offer = offer_queries.find_offer_for_venue_id_and_specific_thing(self.venueId, thing)
 
         if thing is None or self.offer is None:
             return None

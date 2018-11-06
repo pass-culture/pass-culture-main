@@ -36,6 +36,38 @@ def file_date(filename):
     return int(match.group(1))
 
 
+def get_ordered_thing_files_from_sandbox_files():
+    data_root_path = Path(os.path.dirname(os.path.realpath(__file__))) \
+                     / '..' / 'sandboxes' / 'providers' / 'titelive_works'
+    data_thing_paths = data_root_path / FOLDER_NAME_TITELIVE
+    all_thing_files = sorted(data_thing_paths.glob('Quotidien*.tit'))
+    if not os.path.isdir(data_root_path):
+        raise ValueError('File not found : '+str(data_root_path)
+                         + '\nDid you run "pc ftp_mirrors" ?')
+    return all_thing_files
+
+
+def get_ordered_thing_files_from_titelive_ftp():
+    ftp_titelive_user = os.environ.get("FTP_TITELIVE_USER")
+    ftp_titelive_pwd = os.environ.get("FTP_TITELIVE_PWD")
+    FTP_TITELIVE.login(ftp_titelive_user, ftp_titelive_pwd)
+    data_root_path = ''
+    data_thing_paths = data_root_path + FOLDER_NAME_TITELIVE
+
+    files_list = FTP_TITELIVE.nlst(data_thing_paths)
+
+    files_list_final = [file_name for file_name in files_list if DATE_REGEXP.search(str(file_name))]
+
+    all_thing_files = sorted(files_list_final)
+    today = datetime.utcnow().day
+    # Titelive 'Quotidien' files stay on the server only for about
+    # 26 days. A file with today's date can therefore only be from
+    # today, and should always be imported last
+    return list(filter(lambda f: file_date(f) > today,
+                                      all_thing_files)) \
+                          + list(filter(lambda f: file_date(f) <= today,
+                                        all_thing_files))
+
 class TiteLiveThings(LocalProvider):
 
     help = ""
@@ -51,38 +83,15 @@ class TiteLiveThings(LocalProvider):
         self.is_mock = 'mock' in options and options['mock']
 
         if self.is_mock:
-            data_root_path = Path(os.path.dirname(os.path.realpath(__file__)))\
-                            / '..' / 'sandboxes' / 'providers' / 'titelive_works'
-            data_thing_paths = data_root_path / FOLDER_NAME_TITELIVE
-            all_thing_files = sorted(data_thing_paths.glob('Quotidien*.tit'))
-            if not os.path.isdir(data_root_path):
-                raise ValueError('File not found : '+str(data_root_path)
-                                 + '\nDid you run "pc ftp_mirrors" ?')
-            ordered_thing_files = all_thing_files
+            ordered_thing_files = get_ordered_thing_files_from_sandbox_files()
         else:
             if not "FTP_TITELIVE_USER" in os.environ \
-                    or not "FTP_TITELIVE_PWD" in os.environ:
+                or not "FTP_TITELIVE_PWD" in os.environ:
                 raise ValueError('Information de connexion non spécifiée.')
 
-            ftp_titelive_user = os.environ.get("FTP_TITELIVE_USER")
-            ftp_titelive_pwd = os.environ.get("FTP_TITELIVE_PWD")
-            FTP_TITELIVE.login(ftp_titelive_user, ftp_titelive_pwd)
-            data_root_path = ''
-            data_thing_paths = data_root_path + FOLDER_NAME_TITELIVE
+            ordered_thing_files = get_ordered_thing_files_from_titelive_ftp()
 
-            files_list = FTP_TITELIVE.nlst(data_thing_paths)
-            files_list_final = [file_name for file_name in files_list if DATE_REGEXP.search(str(file_name))]
-            all_thing_files = sorted(files_list_final)
-            today = datetime.utcnow().day
-            # Titelive 'Quotidien' files stay on the server only for about
-            # 26 days. A file with today's date can therefore only be from
-            # today, and should always be imported last
-            ordered_thing_files = list(filter(lambda f: file_date(f) > today,
-                                              all_thing_files)) \
-                                  + list(filter(lambda f: file_date(f) <= today,
-                                                all_thing_files))
-
-        latest_sync_part_end_event = self.latestSyncPartEndEvent()
+        latest_sync_part_end_event = local_provider_event_queries.find_latest_sync_part_end_event(self.dbObject)
 
         if latest_sync_part_end_event is None:
             self.thing_files = iter(ordered_thing_files)

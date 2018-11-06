@@ -221,7 +221,7 @@ def _filter_out_offers_on_soft_deleted_stocks_and_inactive_offers():
     return join_on_stocks.union_all(join_on_event_occurrences)
 
 
-def count_offers_for_things_only_for_venue_id(venue_id):
+def count_offers_for_things_only_by_venue_id(venue_id):
     offer_count = Offer.query \
         .filter_by(venueId=venue_id) \
         .filter(Offer.thing is not None) \
@@ -229,7 +229,7 @@ def count_offers_for_things_only_for_venue_id(venue_id):
     return offer_count
 
 
-def get_offer_for_venue_id_and_specific_thing(venue_id, thing):
+def find_offer_for_venue_id_and_specific_thing(venue_id, thing):
     offer = Offer.query \
         .filter_by(venueId=venue_id) \
         .filter_by(thing=thing) \
