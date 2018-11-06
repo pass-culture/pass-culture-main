@@ -249,7 +249,7 @@ def find_activation_offers(departement_code: str) -> List[Offer]:
 
     query = _filter_bookable_offers(query)
 
-    return query.all()
+    return query
 
 
 def _filter_bookable_offers(query):

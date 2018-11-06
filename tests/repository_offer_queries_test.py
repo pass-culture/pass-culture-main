@@ -181,7 +181,7 @@ def test_find_activation_offers_returns_activation_offers_in_given_departement(a
     PcObject.check_and_save(stock1, stock2, stock3)
 
     # when
-    offers = find_activation_offers('34')
+    offers = find_activation_offers('34').all()
 
     # then
     assert len(offers) == 1
@@ -205,7 +205,7 @@ def test_find_activation_offers_returns_activation_offers_if_offer_is_national(a
     PcObject.check_and_save(stock1, stock2, stock3, stock4)
 
     # when
-    offers = find_activation_offers('34')
+    offers = find_activation_offers('34').all()
 
     # then
     assert len(offers) == 3
@@ -228,7 +228,7 @@ def test_find_activation_offers_returns_activation_offers_in_all_ile_de_france_i
     PcObject.check_and_save(stock1, stock2, stock3)
 
     # when
-    offers = find_activation_offers('93')
+    offers = find_activation_offers('93').all()
 
     # then
     assert len(offers) == 2
@@ -253,7 +253,7 @@ def test_find_activation_offers_returns_activation_offers_with_available_stocks(
     PcObject.check_and_save(stock1, stock2, stock3, booking, offer4)
 
     # when
-    offers = find_activation_offers('93')
+    offers = find_activation_offers('93').all()
 
     # then
     assert len(offers) == 1
@@ -279,7 +279,7 @@ def test_find_activation_offers_returns_activation_offers_with_future_booking_li
     PcObject.check_and_save(stock1, stock2, stock3)
 
     # when
-    offers = find_activation_offers('93')
+    offers = find_activation_offers('93').all()
 
     # then
     assert len(offers) == 2
