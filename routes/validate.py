@@ -2,7 +2,7 @@
 from flask import current_app as app, jsonify, request
 
 import models
-from domain.user_emails import send_validation_confirmation_email
+from domain.user_emails import send_validation_confirmation_email, send_venue_validation_confirmation_email
 from models import ApiErrors, \
     PcObject, UserOfferer, Offerer, Venue
 from tests.validation_validate_test import check_validation_request, check_venue_found
@@ -61,5 +61,10 @@ def validate_venue():
     check_venue_found(venue)
     venue.validationToken = None
     PcObject.check_and_save(venue)
+
+    try:
+        send_venue_validation_confirmation_email(venue, app.mailjet_client.send.create)
+    except MailServiceException as e:
+        app.logger.error('Mail service failure', e)
 
     return "Validation effectuée", 202

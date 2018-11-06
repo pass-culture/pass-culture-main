@@ -7,7 +7,7 @@ from domain.user_emails import send_user_driven_cancellation_email_to_user, \
     send_offerer_driven_cancellation_email_to_offerer, \
     send_booking_confirmation_email_to_user, send_booking_recap_emails, send_final_booking_recap_email, \
     send_validation_confirmation_email, send_batch_cancellation_emails_to_users, \
-    send_batch_cancellation_email_to_offerer
+    send_batch_cancellation_email_to_offerer, send_venue_validation_confirmation_email
 from models import Offerer, UserOfferer, User, RightsType
 from utils.mailing import MailServiceException
 from utils.test_utils import create_user, create_booking, create_stock_with_event_offer, create_offerer, create_venue, \
@@ -646,3 +646,50 @@ def test_send_batch_cancellation_email_to_offerer_no_venue_email():
     # Then
     mocked_send_create_email.assert_not_called()
     mocked_send_create_email.reset_mock()
+
+
+@pytest.mark.standalone
+def test_send_venue_validation_confirmation_email(app):
+    # Given
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    mocked_send_create_email = Mock()
+    return_value = Mock()
+    return_value.status_code = 200
+    mocked_send_create_email.return_value = return_value
+
+    with patch('domain.user_emails.feature_send_mail_to_users_enabled', return_value=True), patch(
+            'domain.user_emails.make_venue_validation_confirmation_email',
+            return_value={'Html-part': ''}) as make_cancellation_email, patch(
+        'domain.user_emails.find_all_admin_offerer_emails', return_value=['admin1@email.com', 'admin2@email.com']):
+        # When
+        send_venue_validation_confirmation_email(venue, mocked_send_create_email)
+
+    # Then
+    make_cancellation_email.assert_called_once_with(venue)
+
+    mocked_send_create_email.assert_called_once()
+    args = mocked_send_create_email.call_args
+    assert args[1]['data']['To'] == 'admin1@email.com, admin2@email.com'
+    mocked_send_create_email.reset_mock()
+    make_cancellation_email.reset_mock()
+
+
+@pytest.mark.standalone
+def test_send_validation_confirmation_email_when_status_code_400(app):
+    # Given
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    mocked_send_create_email = Mock()
+    return_value = Mock()
+    return_value.status_code = 400
+    mocked_send_create_email.return_value = return_value
+
+    with patch('domain.user_emails.feature_send_mail_to_users_enabled', return_value=True), patch(
+            'domain.user_emails.make_venue_validation_confirmation_email', return_value={'Html-part': ''}), patch(
+        'domain.user_emails.find_all_admin_offerer_emails', return_value=['test@email.com']), pytest.raises(
+        MailServiceException):
+        # When
+        send_venue_validation_confirmation_email(venue, mocked_send_create_email)
+
+
