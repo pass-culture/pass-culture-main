@@ -32,7 +32,7 @@ const DatePickerField = ({
   selected,
   refPopper,
   required,
-  // Availables Props
+  // NOTE -> Autres props du react-datepicker passées en option
   // github.com/Hacker0x01/react-datepicker/blob/master/docs/datepicker.md
   ...rest
 }) => {

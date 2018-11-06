@@ -36,6 +36,7 @@
   .react-datepicker__day {
     @extend .fs16;
 
+    border-radius: 50%;
     width: rem(36px);
     height: rem(36px);
     line-height: rem(36px);
