@@ -29,15 +29,16 @@ const DatePickerField = ({
   name,
   placeholder,
   onChange,
-  selected,
-  refPopper,
+  popperRefContainer,
   required,
   // NOTE -> Autres props du react-datepicker passées en option
   // github.com/Hacker0x01/react-datepicker/blob/master/docs/datepicker.md
   ...rest
 }) => {
   const moreprops = { ...rest }
-  if (refPopper) moreprops.popperContainer = buildPopperContainer(refPopper)
+  if (popperRefContainer) {
+    moreprops.popperContainer = buildPopperContainer(popperRefContainer)
+  }
   return (
     <div className={`${className}`}>
       <label htmlFor={id || name} className="pc-final-form-datepicker">
@@ -81,7 +82,7 @@ DatePickerField.defaultProps = {
   label: null,
   locale: 'fr',
   placeholder: 'Par date...',
-  refPopper: null,
+  popperRefContainer: null,
   required: false,
 }
 
@@ -96,7 +97,7 @@ DatePickerField.propTypes = {
   name: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,
   placeholder: PropTypes.string,
-  refPopper: PropTypes.object,
+  popperRefContainer: PropTypes.object,
   required: PropTypes.bool,
 }
 
