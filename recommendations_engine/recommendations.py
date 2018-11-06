@@ -94,7 +94,7 @@ def _find_recommendation(offer_id, mediation_id):
 def _create_recommendation_from_ids(user, offer_id, mediation_id=None):
     mediation = Mediation.query.filter_by(id=mediation_id).first()
     offer = find_searchable_offer(offer_id)
-    if not offer:
+    if offer_id and not offer:
         raise OfferNotFoundException
     return _create_recommendation(user, offer, mediation=mediation)
 
