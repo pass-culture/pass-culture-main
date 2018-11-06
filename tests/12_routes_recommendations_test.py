@@ -82,7 +82,7 @@ def test_put_recommendations_returns_a_list_of_a_certain_number_of_recos():
     # then
     recos = response.json()
     assert response.status_code == 200
-    assert len(recos) == 82
+    assert len(recos) == 56
 
 
 >>>>>>> changed assertion reco
