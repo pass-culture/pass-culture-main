@@ -1,19 +1,30 @@
-import os
-import re
+import requests
 from datetime import datetime
-from pathlib import Path
-from zipfile import ZipFile
-import pandas as pd
 
-from models import ThingType
 from models.local_provider import LocalProvider, ProvidableInfo
-from models.offer import Offer
 from models.stock import Stock
-from models.thing import Thing
-from models.venue import Venue
+from repository import venue_queries, offer_queries, thing_queries, local_provider_event_queries
+from utils.logger import logger
 
 DATE_FORMAT = "%d/%m/%Y"
-DATETIME_FORMAT = "%d/%m/%Y %H:%M:%S"
+DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+URL_TITELIVE_WEBSERVICE_STOCKS = "https://stock.epagine.fr/stocks/"
+NB_DATA_LIMIT_PER_REQUEST = 5000
+
+
+def make_url(last_seen_isbn, last_date_checked, venue_siret):
+    if last_seen_isbn:
+        return 'https://stock.epagine.fr/stocks/%s?after=%s&modifiedSince=%s' \
+           % (venue_siret, last_seen_isbn, last_date_checked)
+    else:
+        return 'https://stock.epagine.fr/stocks/%s?modifiedSince=%s' \
+               % (venue_siret, last_date_checked)
+
+
+def get_data(last_seen_isbn, last_date_checked, venue_siret):
+    page_url = make_url(last_seen_isbn, last_date_checked, venue_siret)
+    req_result = requests.get(page_url)
+    return req_result.json()
 
 
 def read_date(date):
@@ -22,6 +33,7 @@ def read_date(date):
 
 def read_datetime(date):
     return datetime.strptime(date, DATETIME_FORMAT)
+
 
 class TiteLiveStocks(LocalProvider):
 
@@ -34,108 +46,76 @@ class TiteLiveStocks(LocalProvider):
 
     def __init__(self, venueProvider, **options):
         super().__init__(venueProvider, **options)
-        if 'mock' in options and options['mock']:
-            data_root_path = Path(os.path.dirname(os.path.realpath(__file__)))\
-                            / '..' / 'sandboxes' / 'providers' / 'titelive_stocks'
-        else:
-            data_root_path = Path(os.path.dirname(os.path.realpath(__file__)))\
-                            / '..' / 'ftp_mirrors' / 'titelive_stocks'
-        if not os.path.isdir(data_root_path):
-            raise ValueError('File not found : '+str(data_root_path)
-                             + '\nDid you run "pc ftp_mirrors" ?')
-        self.zip = ZipFile(str(data_root_path / 'StockGroupes.zip'))
-        self.stock_files = iter(filter(lambda i: i.filename.startswith('association'), self.zip.infolist()))
+        self.venueId = self.venueProvider.venueId
+        self.venue = venue_queries.find_by_id(self.venueId)
+        assert self.venue is not None
+        self.venue_has_offer = False
+        offer_count = offer_queries.count_offers_for_things_only_by_venue_id(self.venueId)
 
-        self.data_lines = None
-        with open(data_root_path / "Date_export.txt", "r") as f:
-            infos = f.readline()
-        date_regexp = re.compile('EXTRACTION DU (.*)')
-        match = date_regexp.search(infos)
-        if match:
-            self.dateModified = datetime.strptime(match.group(1), "%d/%m/%Y %H:%M")
-        else:
-            raise ValueError('Invalid Date_export.txt file format in titelive_stocks')
+        print("Offer count: ", str(offer_count))
+        if offer_count > 0:
+            self.venue_has_offer = True
 
-    def open_next_file(self):
-        f = self.stock_files.__next__()
-        print("  Importing from file "+str(f.filename))
-        lines = pd.read_csv(self.zip.open(f),
-                            header=None,
-                            delimiter=";",
-                            encoding='iso-8859-1')\
-                  .values
-        self.data_lines = iter(lines)
+        latest_local_provider_event = local_provider_event_queries.find_latest_sync_start_event(self.dbObject)
+        if latest_local_provider_event is None:
+            self.last_ws_requests = datetime.utcfromtimestamp(0).timestamp() * 1000
+        else:
+            self.last_ws_requests = latest_local_provider_event.date.timestamp() * 1000
+        self.last_seen_isbn = ''
+        self.index = -1
+        self.more_pages = True
+        self.data = None
+        self.offer = None
 
     def __next__(self):
+        if not self.venue_has_offer:
+            raise StopIteration
 
-        if self.data_lines is None:
-            self.open_next_file()
+        self.index = self.index + 1
 
-        isRightVenue = False
-        while not isRightVenue:
-            try:
-                line = self.data_lines.__next__()
-            except StopIteration:
-                self.open_next_file()
-                line = self.data_lines.__next__()
-            isRightVenue = str(line[1]) == self.venueProvider.venueIdAtOfferProvider
+        if self.data is None \
+                or len(self.data['stocks']) <= self.index:
 
-        thing = Thing.query.filter((Thing.type == ThingType.LIVRE_EDITION.name) &
-                                   (Thing.idAtProviders == str(line[2])))\
-                           .one_or_none()
+            if not self.more_pages:
+                raise StopIteration
 
-        if thing is None:
-            print("   No such thing : Book:"+str(line[2]))
+            self.index = 0
+
+            self.data = get_data(self.last_seen_isbn,
+                                 self.last_ws_requests,
+                                 self.venueProvider.venueIdAtOfferProvider)
+
+            if 'status' in self.data \
+                    and self.data['status'] == 404:
+                raise StopIteration
+
+            if len(self.data['stocks']) < NB_DATA_LIMIT_PER_REQUEST:
+                self.more_pages = False
+
+        self.titelive_stock = self.data['stocks'][self.index]
+        self.last_seen_isbn = str(self.titelive_stock['ref'])
+
+        thing = thing_queries.find_thing_by_isbn_only_for_type_book(self.titelive_stock['ref'])
+        self.offer = offer_queries.find_offer_for_venue_id_and_specific_thing(self.venueId, thing)
+
+        if thing is None or self.offer is None:
             return None
-        self.thing = thing
-
-        self.venue = Venue.query\
-                                    .filter_by(idAtProviders=str(line[1]))\
-                                    .one_or_none()
-
-        if self.venue is None:
-            print("   No such venue : "+str(line[1]))
-            return None
-        self.thing = thing
-
-        if 'prix_livre' not in thing.extraData:
-            print("   No extraData['prix_livre'] for Book:"+str(line[2]))
-            return None
-
-        if not thing.extraData['prix_livre']\
-                    .replace('.', '', 1)\
-                    .isdigit():
-            print("   extraData['prix_livre'] is not a floating point number"
-                  + " for Book:"+str(line[2]))
-            return None
-
-        self.price = thing.extraData['prix_livre']
-
-        p_info_offer = ProvidableInfo()
-        p_info_offer.type = Offer
-        self.idAtProviders = str(line[1])+':'+str(line[2])
-        p_info_offer.idAtProviders = self.idAtProviders
-        p_info_offer.dateModifiedAtProvider = self.dateModified
 
         p_info_stock = ProvidableInfo()
         p_info_stock.type = Stock
-        self.idAtProviders = str(line[1])+':'+str(line[2])
-        p_info_stock.idAtProviders = self.idAtProviders
-        p_info_stock.dateModifiedAtProvider = self.dateModified
+        p_info_stock.idAtProviders = str(self.titelive_stock['ref'])
+        p_info_stock.dateModifiedAtProvider = datetime.utcnow()
 
-        return p_info_offer, p_info_stock
+        return p_info_stock
 
     def updateObject(self, obj):
-        assert obj.idAtProviders == self.idAtProviders
+        assert obj.idAtProviders == str(self.titelive_stock['ref'])
         if isinstance(obj, Stock):
-            obj.offer = self.providables[0]
-            obj.offererId = self.venue.managingOffererId
-            obj.price = self.price
-        else:
-            obj.thing = self.thing
-            obj.venue = self.venue
+            logger.info("Create stock for thing: %s" % self.titelive_stock['ref'])
+            obj.price = int(self.titelive_stock['price'])
+            obj.available = int(self.titelive_stock['available'])
+            obj.bookingLimitDatetime = read_datetime(self.titelive_stock['validUntil'])
+            obj.offer = self.offer
 
-
-    def getDeactivatedObjectIds(self):
-        #TODO
-        return []
+    def updateObjects(self, limit=None):
+        super().updateObjects(limit)

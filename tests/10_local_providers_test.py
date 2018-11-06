@@ -1,18 +1,15 @@
 """ local providers test """
 import subprocess
-from inspect import isclass
-from glob import glob
+
 from sqlalchemy import func
 
-from local_providers import OpenAgendaEvents,\
-                            SpreadsheetExpStocks,\
-                            SpreadsheetExpVenues,\
-                            TiteLiveThingDescriptions,\
-                            TiteLiveThingThumbs,\
-                            TiteLiveThings,\
-                            TiteLiveStocks,\
-                            TiteLiveVenues
-import models
+from local_providers import OpenAgendaEvents, \
+    SpreadsheetExpStocks, \
+    SpreadsheetExpVenues, \
+    TiteLiveThingDescriptions, \
+    TiteLiveThingThumbs, \
+    TiteLiveThings, \
+    TiteLiveVenues
 from models.db import db
 from models.pc_object import PcObject
 from models.provider import Provider
@@ -20,57 +17,10 @@ from models.thing import Thing
 from models.venue_provider import VenueProvider
 from utils.config import API_ROOT_PATH
 from utils.human_ids import dehumanize
-from utils.object_storage import STORAGE_DIR
+from utils.test_utils import assertEmptyDb, \
+    assert_created_thumbs, provider_test, assertCreatedCounts, saveCounts
 
 savedCounts = {}
-
-
-def saveCounts(app):
-    for modelName in models.__all__:
-        model = getattr(models, modelName)
-        if isclass(model)\
-           and issubclass(model, PcObject)\
-           and modelName != "PcObject":
-            savedCounts[modelName] = model.query.count()
-
-
-def assertCreatedCounts(app, **counts):
-    for modelName in counts:
-        model = getattr(models, modelName)
-        assert model.query.count() - savedCounts[modelName]\
-               == counts[modelName]
-
-
-def assertEmptyDb(app):
-    for modelName in models.__all__:
-        model = getattr(models, modelName)
-        if isinstance(model, PcObject):
-            if modelName == 'Mediation':
-                assert model.query.count() == 2
-            else:
-                assert model.query.count() == 0
-
-def assert_created_thumbs():
-    assert len(glob(str(STORAGE_DIR / "thumbs" / "*"))) == 1
-
-
-def provider_test(app, provider, venueProvider, **counts):
-    providerObj = provider(venueProvider, mock=True)
-    providerObj.dbObject.isActive = True
-    PcObject.check_and_save(providerObj.dbObject)
-    saveCounts(app)
-    providerObj.updateObjects()
-    for countName in ['updatedObjects',
-                      'createdObjects',
-                      'checkedObjects',
-                      'erroredObjects',
-                      'createdThumbs',
-                      'updatedThumbs',
-                      'checkedThumbs',
-                      'erroredThumbs']:
-        assert getattr(providerObj, countName) == counts[countName]
-        del counts[countName]
-    assertCreatedCounts(app, **counts)
 
 
 def test_10_titelive_venues_provider(app):
@@ -145,46 +95,6 @@ def test_13_titelive_thing_desc_provider(app):
                   updatedThumbs=0,
                   erroredThumbs=0,
                   Thing=0
-                 )
-
-
-def test_14_titelive_stock_provider(app):
-    venueProvider = VenueProvider.query\
-                                 .filter_by(venueIdAtOfferProvider='2949')\
-                                 .one_or_none()
-    assert venueProvider is not None
-    provider_test(app,
-                  TiteLiveStocks,
-                  venueProvider,
-                  checkedObjects=388,
-                  createdObjects=370,
-                  updatedObjects=0,
-                  erroredObjects=0,
-                  checkedThumbs=0,
-                  createdThumbs=0,
-                  updatedThumbs=0,
-                  erroredThumbs=0,
-                  Offer=185,
-                  Stock=185
-                 )
-
-    venueProvider = VenueProvider.query\
-                                 .filter_by(venueIdAtOfferProvider='2921')\
-                                 .one_or_none()
-    assert venueProvider is not None
-    provider_test(app,
-                  TiteLiveStocks,
-                  venueProvider,
-                  checkedObjects=370,
-                  createdObjects=332,
-                  updatedObjects=0,
-                  erroredObjects=0,
-                  checkedThumbs=0,
-                  createdThumbs=0,
-                  updatedThumbs=0,
-                  erroredThumbs=0,
-                  Offer=166,
-                  Stock=166
                  )
 
 

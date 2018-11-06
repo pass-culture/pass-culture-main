@@ -3,17 +3,17 @@ import random
 import string
 from datetime import datetime, timedelta, timezone
 from unittest.mock import Mock
+
 import requests as req
 from postgresql_audit.flask import versioning_manager
 
-from models import Deposit,\
-                   EventType,\
-                   Mediation,\
-                   Recommendation,\
-                   RightsType,\
-                   Thing,\
-                   ThingType,\
-                   UserOfferer
+from models import Deposit, \
+    EventType, \
+    Mediation, \
+    Recommendation, \
+    RightsType, \
+    ThingType, \
+    UserOfferer
 from models.booking import Booking
 from models.event import Event
 from models.event_occurrence import EventOccurrence
@@ -25,7 +25,15 @@ from models.stock import Stock
 from models.user import User
 from models.venue import Venue
 from sandboxes.scripts.mocks.users_light import admin_user_mock
+from utils.object_storage import STORAGE_DIR
 from utils.token import random_token
+from inspect import isclass
+from glob import glob
+import models
+from models.pc_object import PcObject
+from models.thing import Thing
+
+savedCounts = {}
 
 API_URL = "http://localhost:5000"
 MOCKED_SIREN_ENTREPRISES_API_RETURN = {
@@ -343,20 +351,26 @@ def create_stock_with_thing_offer(offerer, venue, thing_offer, price=10, availab
     return stock
 
 
-def create_thing(thing_type=ThingType.LIVRE_EDITION, thing_name='Test Book', media_urls='test/urls',
+def create_thing(thing_type=ThingType.LIVRE_EDITION.name, thing_name='Test Book', media_urls='test/urls',
                  author_name='Test Author', url=None,
-                 thumb_count=1, is_national=False):
+                 thumb_count=1, dominant_color=None, is_national=False,
+                 id_at_providers=None):
     thing = Thing()
     thing.type = str(thing_type)
     thing.name = thing_name
     thing.mediaUrls = media_urls
-    thing.idAtProviders = ''.join(random.choices(string.digits, k=13))
+    if id_at_providers is None:
+        id_at_providers = ''.join(random.choices(string.digits, k=13))
+    thing.idAtProviders = id_at_providers
     thing.extraData = {'author': author_name}
     thing.url = url
     thing.thumbCount = thumb_count
     thing.isNational = is_national
     if thumb_count > 0:
-        thing.firstThumbDominantColor = b'\x00\x00\x00'
+        if dominant_color is None:
+            thing.firstThumbDominantColor = b'\x00\x00\x00'
+        else:
+            thing.firstThumbDominantColor = dominant_color
     return thing
 
 
@@ -382,17 +396,16 @@ def create_event(
 
 def create_thing_offer(venue, thing=None, date_created=datetime.utcnow(), booking_email='booking.email@test.com',
                        thing_type='Book', thing_name='Test Book', media_urls='test/urls', author_name='Test Author',
-                       thumb_count=1, url=None):
+                       thumb_count=1, dominant_color=None, url=None):
     offer = Offer()
     if thing:
         offer.thing = thing
     else:
         offer.thing = create_thing(thing_type=thing_type, thing_name=thing_name, media_urls=media_urls,
-                                   author_name=author_name, thumb_count=thumb_count, url=url)
+                                   author_name=author_name, thumb_count=thumb_count, dominant_color=dominant_color, url=url)
     offer.venue = venue
     offer.dateCreated = date_created
     offer.bookingEmail = booking_email
-    offer
     return offer
 
 
@@ -593,3 +606,52 @@ def create_payment(booking, offerer, amount, author='test author', recipient='re
     payment.reimbursementRule = reimbursement_rule
     payment.id = idx
     return payment
+
+
+def saveCounts(app):
+    for modelName in models.__all__:
+        model = getattr(models, modelName)
+        if isclass(model) \
+                and issubclass(model, PcObject) \
+                and modelName != "PcObject":
+            savedCounts[modelName] = model.query.count()
+
+
+def assertCreatedCounts(app, **counts):
+    for modelName in counts:
+        model = getattr(models, modelName)
+        assert model.query.count() - savedCounts[modelName] \
+               == counts[modelName]
+
+
+def assertEmptyDb(app):
+    for modelName in models.__all__:
+        model = getattr(models, modelName)
+        if isinstance(model, PcObject):
+            if modelName == 'Mediation':
+                assert model.query.count() == 2
+            else:
+                assert model.query.count() == 0
+
+
+def assert_created_thumbs():
+    assert len(glob(str(STORAGE_DIR / "thumbs" / "*"))) == 1
+
+
+def provider_test(app, provider, venueProvider, **counts):
+    providerObj = provider(venueProvider, mock=True)
+    providerObj.dbObject.isActive = True
+    PcObject.check_and_save(providerObj.dbObject)
+    saveCounts(app)
+    providerObj.updateObjects()
+    for countName in ['updatedObjects',
+                      'createdObjects',
+                      'checkedObjects',
+                      'erroredObjects',
+                      'createdThumbs',
+                      'updatedThumbs',
+                      'checkedThumbs',
+                      'erroredThumbs']:
+        assert getattr(providerObj, countName) == counts[countName]
+        del counts[countName]
+    assertCreatedCounts(app, **counts)

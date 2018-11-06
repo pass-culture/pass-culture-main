@@ -6,6 +6,7 @@ from sqlalchemy import func
 from domain.types import get_type_values_from_sublabels
 from models import ApiErrors, Recommendation, Offer, Mediation, PcObject
 from recommendations_engine import get_offers_for_recommendations_discovery
+from repository import offer_queries
 from repository.offer_queries import get_offers_for_recommendations_search
 from repository.recommendation_queries import find_recommendations_for_user_matching_offers_and_search
 from utils.logger import logger
@@ -20,7 +21,6 @@ def give_requested_recommendation_to_user(user, offer_id, mediation_id):
 
     if mediation_id or offer_id:
         recommendation = _find_recommendation(offer_id, mediation_id)
-
         if recommendation is None:
             recommendation = _create_recommendation_from_ids(user, offer_id, mediation_id=mediation_id)
             logger.info('Creating Recommendation with offer_id=%s mediation_id=%s' % (offer_id, mediation_id))
@@ -99,7 +99,12 @@ def _create_recommendation_from_ids(user, offer_id, mediation_id=None):
 def _create_recommendation(user, offer, mediation=None):
     recommendation = Recommendation()
     recommendation.user = user
-    recommendation.offer = offer
+
+    if offer:
+        recommendation.offer = offer
+    else:
+        offer = offer_queries.find_offer_by_id(mediation.offerId)
+        recommendation.offer = offer
 
     if mediation:
         recommendation.mediation = mediation

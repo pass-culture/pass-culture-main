@@ -7,6 +7,7 @@ from flask import current_app as app
 import local_providers
 import models
 from models import db, Event, Offerer, Stock, Thing, Venue, VenueProvider
+from models.db import db
 
 
 def do_update(provider, limit):
@@ -36,13 +37,11 @@ def do_update(provider, limit):
 @app.manager.option('-w',
                     '--venueProvider',
                     help='Limit update to this venueProvider')
-
-@app.manager.option('-t',
-                    '--type',
-                    help='Sync only this type of object'
+@app.manager.option('-o',
+                    '--objectType',
+                    help='Sync only this objectType of object'
                          + ' (stock, thing or venue)')
-
-def update_providables(provider, venue, venueProvider, limit, type, mock=False):
+def update_providables(provider, venue, venueProvider, limit, objectType, mock=False):
 
     if venueProvider is not None:
         venueProviderObj = VenueProvider.query\
@@ -61,9 +60,9 @@ def update_providables(provider, venue, venueProvider, limit, type, mock=False):
                         Thing,
                         Stock]
     if not venue:
-        if type:
-            model = getattr(models, type.capitalize())
-        for providable_type in [model] if type else PROVIDABLE_TYPES:
+        if objectType:
+            model = getattr(models, objectType.capitalize())
+        for providable_type in [model] if objectType else PROVIDABLE_TYPES:
             for provider_name in local_providers.__all__:
                 if provider and provider_name != provider:
                     print("Provider " + provider_name + " does not match provider"
@@ -79,9 +78,9 @@ def update_providables(provider, venue, venueProvider, limit, type, mock=False):
     venueProviderObjs = venueProviderQuery.filter_by(id=int(venue))\
                   if venue\
                   else venueProviderQuery.all()
-    if type:
-        model = getattr(models, type.capitalize())
-    for providable_type in [model] if type else PROVIDABLE_TYPES:
+    if objectType:
+        model = getattr(models, objectType.capitalize())
+    for providable_type in [model] if objectType else PROVIDABLE_TYPES:
         for venueProviderObj in venueProviderObjs:
             db.session.add(venueProviderObj)
             provider_name = venueProviderObj.provider.localClass

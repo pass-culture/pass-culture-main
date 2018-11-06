@@ -132,7 +132,6 @@ class OpenAgendaEvents(LocalProvider):
                                 if 'fr' in self.oa_event['description']\
                                 else self.oa_event['description']['en']
             obj.durationMinutes = self.duration
-            # obj.extraData['tags'] = list(map(lambda t: t['slug'], self.oa_event['tags']))
         elif isinstance(obj, EventOccurrence):
             index = len(self.providables)-3
             oa_timing = self.oa_event['timings'][index]
@@ -145,11 +144,6 @@ class OpenAgendaEvents(LocalProvider):
         else:
             raise ValueError('Unexpected object class in updateObject: '
                              + obj.__class__.__name__)
-
-
-        # TODO
-        # for access in oa_event['accessibility']:
-        #     event.accessibility = event.accessibility
 
     def getObjectThumbDates(self, obj):
         if not isinstance(obj, Event):

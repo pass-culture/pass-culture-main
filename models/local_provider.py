@@ -107,14 +107,6 @@ class LocalProvider(Iterator):
         else:
             return read_json_date(latest_activity.changed_data['dateModifiedAtLastProvider'])
 
-    def latestSyncPartEndEvent(self):
-        return LocalProviderEvent\
-                  .query\
-                  .filter((LocalProviderEvent.provider == self.dbObject) &
-                          (LocalProviderEvent.type == LocalProviderEventType.SyncPartEnd) &
-                          (LocalProviderEvent.date > datetime.utcnow() - timedelta(days=25)))\
-                  .order_by(LocalProviderEvent.date.desc())\
-                  .first()
 
     def handleThumb(self, obj):
         if not hasattr(obj, 'thumbCount'):
@@ -196,9 +188,9 @@ class LocalProvider(Iterator):
                 obj.venue = self.venueProvider.venue
             PcObject.check_and_save(obj)
         except Exception as e:
-            self.logEvent(LocalProviderEventType.SyncError, e.__class__.__name__)
             print('ERROR during updateObject: '
                   + e.__class__.__name__+' '+str(e))
+            self.logEvent(LocalProviderEventType.SyncError, e.__class__.__name__)
             self.erroredObjects += 1
             traceback.print_tb(e.__traceback__)
             pprint(vars(e))

@@ -7,6 +7,7 @@ from zipfile import ZipFile
 from models.local_provider import LocalProvider, ProvidableInfo
 from models.local_provider_event import LocalProviderEventType
 from models.thing import Thing
+from repository import local_provider_event_queries
 
 DATE_FORMAT = "%y%m%d"
 DATE_REGEXP = re.compile('Resume(\d{6}).zip')
@@ -52,7 +53,7 @@ class TiteLiveThingDescriptions(LocalProvider):
         data_thumbs_path = data_root_path / 'ResumesLivres'
 
         all_zips = list(sorted(data_thumbs_path.glob('Resume*.zip')))
-        latest_sync_part_end_event = self.latestSyncPartEndEvent()
+        latest_sync_part_end_event = local_provider_event_queries.find_latest_sync_part_end_event(self.dbObject)
 
         if latest_sync_part_end_event is None:
             self.zips = iter(all_zips)
