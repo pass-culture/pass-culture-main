@@ -171,8 +171,8 @@ def test_99_init(app):
     from utils.logger import logger
     from sandboxes import save_sandbox_in_db
     with app.app_context():
-        # logger_info = logger.info
-        # logger.info = lambda o: None
+        logger_info = logger.info
+        logger.info = lambda o: None
         save_sandbox_in_db('light')
-        # logger.info = logger_info
+        logger.info = logger_info
         assertCreatedCounts(app, User=5)

@@ -134,7 +134,6 @@ def get_all_typed_event_mocks(starting_id=None):
             "id": humanize(incremented_id),
             "name": event_type['value'] + " " + EVENT_OR_THING_MOCK_NAMES[mock_count],
             "type": event_type['value'],
-            "thumbCount": 1
         }
 
         incremented_id += 1
@@ -169,7 +168,6 @@ def get_all_typed_thing_mocks(starting_id=None):
             "firstThumbDominantColor": b'\x00\x00\x00',
             "id": humanize(incremented_id),
             "name": thing_type['value'] + " " + EVENT_OR_THING_MOCK_NAMES[mock_count],
-            "thumbCount": 1,
             "type": thing_type['value'],
         }
 
@@ -370,7 +368,7 @@ def get_all_typed_thing_mediation_mocks(all_typed_thing_offer_mocks, starting_id
     for thing_offer_mock in all_typed_thing_offer_mocks:
         mediation_mock = {
             "id": humanize(incremented_id),
-            "offerId": thing_offer_mock['id'],
+            "offerId": thing_offer_mock['id']
         }
 
         incremented_id += 1
