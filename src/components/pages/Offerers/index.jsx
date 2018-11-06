@@ -10,16 +10,19 @@ import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { NavLink } from 'react-router-dom'
 
-import OffererItem from './offerers/OffererItem'
-import HeroSection from '../layout/HeroSection'
-import Main from '../layout/Main'
-import offerersSelector from '../../selectors/offerers'
-import { offererNormalizer } from '../../utils/normalizers'
-import { mapApiToWindow, windowToApiQuery } from '../../utils/pagination'
+import OffererItem from './OffererItem'
+import PendingOffererItem from './PendingOffererItem'
+import HeroSection from '../../layout/HeroSection'
+import Main from '../../layout/Main'
+import offerersSelector, {
+  getPendingOfferers,
+} from '../../../selectors/offerers'
+import { offererNormalizer } from '../../../utils/normalizers'
+import { mapApiToWindow, windowToApiQuery } from '../../../utils/pagination'
 
-class OfferersPage extends Component {
+class Offerers extends Component {
   handleDataRequest = (handleSuccess, handleFail) => {
-    const { dispatch, pagination, search } = this.props
+    const { user, dispatch, pagination, search } = this.props
     const { apiQueryString, page, goToNextPage } = pagination
 
     // BECAUSE THE INFINITE SCROLLER CALLS ONCE THIS FUNCTION
@@ -42,6 +45,18 @@ class OfferersPage extends Component {
         normalizer: offererNormalizer,
       })
     )
+
+    if (!user.isAdmin) {
+      dispatch(
+        requestData('GET', 'offerers?validated=false', {
+          handleSuccess: (state, action) => {
+            handleSuccess(state, action)
+          },
+          handleFail,
+          key: 'pendingOfferers',
+        })
+      )
+    }
   }
 
   onSubmit = event => {
@@ -57,7 +72,7 @@ class OfferersPage extends Component {
   }
 
   render() {
-    const { offerers, pagination } = this.props
+    const { pendingOfferers, offerers, pagination } = this.props
 
     const { search } = pagination.apiQuery || {}
 
@@ -102,6 +117,14 @@ class OfferersPage extends Component {
           </div>
         </form>
 
+        {pendingOfferers.length > 0 && (
+          <ul id="pending-offerer-list" className="main-list offerers-list">
+            {pendingOfferers.map(o => (
+              <PendingOffererItem key={o.siren} offerer={o} />
+            ))}
+          </ul>
+        )}
+
         <InfiniteScroller
           className="main-list offerers-list"
           handleLoadMore={(handleSuccess, handleFail) => {
@@ -123,7 +146,9 @@ class OfferersPage extends Component {
 
 function mapStateToProps(state, ownProps) {
   return {
+    pendingOfferers: getPendingOfferers(state),
     offerers: offerersSelector(state),
+    user: state.user,
   }
 }
 
@@ -137,4 +162,4 @@ export default compose(
     windowToApiQuery,
   }),
   connect(mapStateToProps)
-)(OfferersPage)
+)(Offerers)

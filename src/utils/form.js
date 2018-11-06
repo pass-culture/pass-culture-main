@@ -1,17 +1,17 @@
 import get from 'lodash.get'
 import { Block, Form } from 'pass-culture-shared'
 
-import GeoInput from '../components/layout/GeoInput'
-import SirenInput from '../components/layout/SirenInput'
 import BicInput from '../components/layout/BicInput'
+import GeoInput from '../components/layout/GeoInput'
 import IbanInput from '../components/layout/IbanInput'
+import SirenInput from '../components/layout/SirenInput'
 
 Object.assign(Form.inputsByType, {
+  bic: BicInput,
+  iban: IbanInput,
   geo: GeoInput,
   siren: SirenInput,
   siret: SirenInput,
-  bic: BicInput,
-  iban: IbanInput,
 })
 
 Object.assign(Form.defaultProps, {

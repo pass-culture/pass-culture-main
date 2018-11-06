@@ -23,12 +23,32 @@ const offererButton = Selector("a[href^='/structures/']").withText(
   'THEATRE NATIONAL DE CHAILLOT'
 )
 const siretInput = Selector('#venue-siret')
+const commentInput = Selector('#venue-comment')
 const offerersNavbarAnchor = Selector("a.navbar-item[href='/structures']")
 const siretInputError = Selector('#venue-siret-error')
 const submitButton = Selector('button.button.is-primary') //créer un lieu
 const updateAnchor = Selector('a.button.is-secondary') //modifier un lieu
 const venueAnchor = Selector('#a-theatre-national-de-chaillot')
 const venueMarker = Selector('img.leaflet-marker-icon')
+
+async function endCreation(t) {
+  // create venue
+  await t.click(submitButton)
+  const location = await t.eval(() => window.location)
+  await t
+    .expect(location.pathname)
+    .match(/\/structures\/([A-Z0-9]*)\/lieux\/([A-Z0-9]*)$/)
+    .expect(notificationSuccess.innerText)
+    .contains(
+      'Lieu créé. Vous pouvez maintenant y créer une offre, ou en importer automatiquement.\n\nOK'
+    )
+
+  // close notification div
+  await t
+    .click(closeAnchor)
+    .expect(notificationError.exists)
+    .notOk()
+}
 
 fixture`05_01 VenuePage | Créer un nouveau lieu avec succès`
 test('Je rentre une nouveau lieu via son siret avec succès', async t => {
@@ -57,22 +77,7 @@ test('Je rentre une nouveau lieu via son siret avec succès', async t => {
   await t.expect(longitudeInput.value).eql('2.338438')
   await t.expect(venueMarker.getAttribute('alt')).eql('48.765134-2.338438')
 
-  // create venue
-  await t.click(submitButton)
-  const location = await t.eval(() => window.location)
-  await t
-    .expect(location.pathname)
-    .match(/\/structures\/([A-Z0-9]*)\/lieux\/([A-Z0-9]*)$/)
-    .expect(notificationSuccess.innerText)
-    .contains(
-      'Lieu créé. Vous pouvez maintenant y créer une offre, ou en importer automatiquement.\n\nOK'
-    )
-
-  // close notification div
-  await t
-    .click(closeAnchor)
-    .expect(notificationError.exists)
-    .notOk()
+  await endCreation(t)
 })
 
 fixture`05_02 VenuePage | Je ne peux pas créer de lieu, j'ai des erreurs`.beforeEach(
@@ -110,6 +115,33 @@ test('Une entrée avec cet identifiant existe déjà', async t => {
     .click(closeAnchor)
     .expect(notificationError.exists)
     .notOk()
+})
+
+test('Il est obligatoire de saisir Le code SIRET OU le commentaire', async t => {
+  await t
+    .expect(siretInput.hasAttribute('required'))
+    .ok('SIRET doit être requis par défaut')
+    .expect(commentInput.hasAttribute('required'))
+    .ok('Comment doit être requis par défaut')
+
+    .typeText(siretInput, '123')
+    .expect(siretInput.hasAttribute('required'))
+    .ok('SIRET doit rester requis même saisi')
+    .expect(commentInput.hasAttribute('required'))
+    .notOk('Comment ne devrait plus être requis quand SIRET est saisie')
+
+    .selectText(siretInput)
+    .pressKey('delete')
+    .expect(siretInput.hasAttribute('required'))
+    .ok('SIRET doit être requis par défaut')
+    .expect(commentInput.hasAttribute('required'))
+    .ok('Comment doit être requis à nouveau si SIRET est effacé')
+
+    .typeText(commentInput, 'lorem ipsum dolor sit amet')
+    .expect(commentInput.hasAttribute('required'))
+    .ok('Comment doit rester requis même saisi')
+    .expect(siretInput.hasAttribute('required'))
+    .notOk('SIRET ne devrait plus être requis quand Comment est saisie')
 })
 
 test('Le code SIRET doit correspondre à un établissement de votre structure', async t => {
@@ -163,4 +195,37 @@ test('Je peux modifier le lieu', async t => {
   // Submit button should disapear
   // update
   await t.click(updateAnchor)
+})
+
+const addressInput = Selector('#venue-address')
+const addressSuggestion = Selector('.geo-input .menu .item')
+fixture`05_04 VenuePage | Créer un nouveau lieu sans SIRET`
+test('Je rentre une nouveau lieu sans siret avec succès', async t => {
+  await t.useRole(regularOfferer)
+  // navigation
+  await t
+    .click(navbarAnchor)
+    .click(offerersNavbarAnchor)
+    .click(offererButton)
+    .click(newVenueAnchor)
+
+  await t
+    .typeText(nameInput, 'Lieu sans SIRET')
+    .typeText(commentInput, 'Test sans SIRET')
+    .typeText(addressInput, '1 place du trocadéro')
+    .expect(addressSuggestion.innerText)
+    .eql('1 Place du Trocadero et du 11 Novembre 75016 Paris')
+
+    .click(addressSuggestion)
+
+    .expect(postalCodeInput.value)
+    .eql('75016')
+    .expect(cityInput.value)
+    .eql('Paris')
+    .expect(latitudeInput.value)
+    .eql('48.862923')
+    .expect(longitudeInput.value)
+    .eql('2.287896')
+
+  await endCreation(t)
 })

@@ -4,10 +4,9 @@ import { Icon, pluralize, requestData } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
-import { compose } from 'redux'
 
-import eventsSelector from '../../selectors/events'
-import thingsSelector from '../../selectors/things'
+import eventsSelector from '../../../selectors/events'
+import thingsSelector from '../../../selectors/things'
 
 class VenueProviderItem extends Component {
   onDeactivateClick = () => {
@@ -76,12 +75,16 @@ class VenueProviderItem extends Component {
   }
 }
 
-export default compose(
-  connect(
-    (state, ownProps) => ({
-      events: eventsSelector(state, ownProps.venueProvider.providerId),
-      things: thingsSelector(state, ownProps.venueProvider.providerId),
-    }),
-    { requestData }
-  )
+function mapStateToProps(state, ownProps) {
+  return {
+    events: eventsSelector(state, ownProps.venueProvider.providerId),
+    things: thingsSelector(state, ownProps.venueProvider.providerId),
+  }
+}
+
+const mapDispatchToProps = { requestData }
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
 )(VenueProviderItem)

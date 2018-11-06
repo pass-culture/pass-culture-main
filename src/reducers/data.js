@@ -7,10 +7,13 @@ const data = createData({
   mediations: [],
   offers: [],
   offerers: [],
+  pendingOfferers: [],
   providers: [],
   stocks: [],
   things: [],
   types: [],
+  users: [],
+  userOfferers: [],
   venues: [],
   venueProviders: [],
 })

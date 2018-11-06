@@ -79,7 +79,7 @@ DeskState.propTypes = {
   booking: PropTypes.object,
 }
 
-class DeskPage extends Component {
+class Desk extends Component {
   constructor(props) {
     super(props)
 
@@ -260,4 +260,4 @@ class DeskPage extends Component {
   }
 }
 
-export default withLogin({ failRedirect: '/connexion' })(connect()(DeskPage))
+export default withLogin({ failRedirect: '/connexion' })(connect()(Desk))

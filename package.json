@@ -1,6 +1,6 @@
 {
   "name": "pass-culture-pro",
-  "version": "0.3.1",
+  "version": "0.3.3",
   "private": true,
   "dependencies": {
     "archiver": "^2.1.1",
@@ -50,7 +50,7 @@
     "node-env-file": "^0.1.8",
     "node-sass": "^4.9.0",
     "object-assign": "4.1.1",
-    "pass-culture-shared": "0.0.67",
+    "pass-culture-shared": "0.0.86",
     "postcss-flexbugs-fixes": "3.2.0",
     "postcss-loader": "2.0.8",
     "promise": "8.0.1",
@@ -100,8 +100,13 @@
     "lint-staged": "^7.0.4",
     "prettier": "^1.14.3",
     "prettier-eslint": "^8.8.2",
+    "prettier-stylelint": "^0.4.2",
     "pretty-quick": "^1.6.0",
-    "react-test-renderer": "^16.4.1"
+    "react-test-renderer": "^16.4.1",
+    "stylelint": "^9.4.0",
+    "stylelint-config-standard": "^18.2.0",
+    "stylelint-order": "^0.8.1",
+    "stylelint-scss": "^3.2.0"
   },
   "scripts": {
     "build": "node scripts/build.js",

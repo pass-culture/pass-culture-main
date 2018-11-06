@@ -6,16 +6,19 @@ import { connect } from 'react-redux'
 import { NavLink, withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 
-import HeroSection from '../layout/HeroSection'
-import Main from '../layout/Main'
-import UploadThumb from '../layout/UploadThumb'
-import mediationSelector from '../../selectors/mediation'
-import offerSelector from '../../selectors/offer'
-import offererSelector from '../../selectors/offerer'
-import venueSelector from '../../selectors/venue'
-import { mediationNormalizer, offerNormalizer } from '../../utils/normalizers'
+import HeroSection from '../../layout/HeroSection'
+import Main from '../../layout/Main'
+import UploadThumb from '../../layout/UploadThumb'
+import mediationSelector from '../../../selectors/mediation'
+import offerSelector from '../../../selectors/offer'
+import offererSelector from '../../../selectors/offerer'
+import venueSelector from '../../../selectors/venue'
+import {
+  mediationNormalizer,
+  offerNormalizer,
+} from '../../../utils/normalizers'
 
-class MediationPage extends Component {
+class Mediation extends Component {
   constructor() {
     super()
     this.state = {
@@ -57,7 +60,6 @@ class MediationPage extends Component {
     !offer &&
       dispatch(
         requestData('GET', `offers/${offerId}`, {
-          key: 'offers',
           normalizer: offerNormalizer,
         })
       )
@@ -66,13 +68,26 @@ class MediationPage extends Component {
         requestData('GET', `mediations/${mediationId}`, {
           handleSuccess,
           handleFail,
-          key: 'mediations',
           normalizer: mediationNormalizer,
         })
       )
       return
     }
     handleSuccess()
+  }
+
+  handleFailData = (state, action) => {
+    const { dispatch, history, offer } = this.props
+
+    this.setState({ isLoading: false }, () => {
+      history.push(`/offres/${offer.id}`)
+      dispatch(
+        showNotification({
+          text: get(action, 'errors.thumb[0]'),
+          type: 'fail',
+        })
+      )
+    })
   }
 
   handleSuccessData = (state, action) => {
@@ -198,6 +213,7 @@ class MediationPage extends Component {
         {
           body,
           encode: 'multipart/form-data',
+          handleFail: this.handleFailData,
           handleSuccess: this.handleSuccessData,
           key: 'mediations',
         }
@@ -383,4 +399,4 @@ export default compose(
   withLogin({ failRedirect: '/connexion' }),
   withRouter,
   connect(mapStateToProps)
-)(MediationPage)
+)(Mediation)

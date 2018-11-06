@@ -187,7 +187,7 @@ BookingItem.propTypes = {
   booking: PropTypes.object.isRequired,
 }
 
-export default connect((state, ownProps) => {
+function mapStateToProps(state, ownProps) {
   const stock = selectStockById(state, ownProps.booking.stockId)
   const eventOccurrence = selectEventOccurrenceById(
     state,
@@ -213,4 +213,6 @@ export default connect((state, ownProps) => {
     venue,
     user,
   }
-})(BookingItem)
+}
+
+export default connect(mapStateToProps)(BookingItem)

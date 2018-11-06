@@ -7,7 +7,7 @@ import { formatSiren } from '../../utils/string'
 
 class SirenInput extends Component {
   onChange = event => {
-    const { type } = this.props
+    const { onChange: onFieldChange, type } = this.props
 
     event.persist()
 
@@ -19,7 +19,7 @@ class SirenInput extends Component {
       value = value.slice(0, Math.min(9, value.length))
     }
 
-    this.props.onChange(value, {
+    onFieldChange(value, {
       event,
       isSagaCalling: true,
     })
@@ -52,6 +52,10 @@ class SirenInput extends Component {
   }
 }
 
-export default connect((state, ownProps) => ({
-  fetchedName: get(state, `form.${ownProps.formName}.name`),
-}))(SirenInput)
+function mapStateToProps(state, ownProps) {
+  return {
+    fetchedName: get(state, `form.${ownProps.formName}.name`),
+  }
+}
+
+export default connect(mapStateToProps)(SirenInput)

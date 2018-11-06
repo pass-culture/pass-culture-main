@@ -1,6 +1,5 @@
-@import '~bulma/sass/utilities/initial-variables';
-
 // Responsive breakpoints
+
 $gap: 12px;
 $tablet: 769px;
 $desktop: 1000px + (2 * $gap); // 1088px
@@ -8,16 +7,34 @@ $widescreen: $desktop;
 $fullhd: $desktop;
 
 // Colors
-$red: #EB0055;
-$violet: #bd10e0;
-$green: #b8e986;
+
+$black: hsl(0, 0%, 4%) !default;
+$black-bis:    hsl(0, 0%, 7%) !default;
+$black-ter:    hsl(0, 0%, 14%) !default;
+$blue-light: rgba(132, 146, 166, 0.94);
 $blue: #0076ff;
+$cyan:         hsl(204, 86%,  53%) !default;
+$green: #b8e986;
+$grey-lighter: #f7f7f7;
 $grey-light: #dae1e3;
 $grey: #757575;
+$grey-dark: #dcdddc;
+$grey-darker:  #4a4a4a !default;
+$grey-light: #dae1e3;
+$orange:       hsl(14,  100%, 53%) !default;
+$purple:       hsl(271, 100%, 71%) !default;
+$red: #EB0055;
+$turquoise:    hsl(171, 100%, 41%) !default;
+$violet: #bd10e0;
+$white-ter:    hsl(0, 0%, 96%) !default;
+$white-bis:    hsl(0, 0%, 98%) !default;
+$white:        hsl(0, 0%, 100%) !default;
+$yellow:       hsl(48,  100%, 67%) !default;
 
 $primary: $red;
 
 // Texts
+
 $text: $black;
 $link: $text;
 $title-color: inherit;
@@ -27,6 +44,8 @@ $success: $green;
 $input-color: $text;
 
 // Typography
+
+$family-monospace: monospace !default;
 $family-sans-serif: 'Barlow', 'Helvetica Neue', Arial, sans-serif;
 
 $weight-light: 300;
@@ -41,6 +60,7 @@ $title-line-height: $body-line-height;
 $subtitle-line-height: 1.2em;
 
 // Sizes
+
 $size-xlarge: 2.5rem; // 40px
 $size-large: 2rem; // 32px
 $size-medium: 1.25rem; // 20px
@@ -56,6 +76,7 @@ $size-6: 1rem;
 $size-7: 0.75rem;
 
 // Forms
+
 $control-height: 2.25em; // !! Not a bulma variable !!
 $control-border-width: 2px;
 $control-radius: $control-height/2;
@@ -70,6 +91,7 @@ $input-shadow: none;
 $label-weight: $weight-normal;
 
 // Buttons
+
 $button-border-color: $grey-light;
 $button-padding-vertical: 0.1em;
 $button-padding-horizontal: 0.75em;
@@ -80,6 +102,7 @@ $radius-medium: 1rem;
 $button-disabled-opacity: 0.3;
 
 // Spacing
+
 $section-padding: 1rem 0;
 $page-padding: 4rem;
 $footer-height-padding: 1rem;
@@ -89,20 +112,48 @@ $header-display-height: 9.375rem; // 150px
 $footer-height: 3.5rem;
 
 // Header
+
 $navbar-dropdown-border-top: 1px dotted $red;
 $navbar-dropdown-radius: 0;
 
 // Misc
+
 $box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
 $box-shadow-hover: 0 0 10px rgba(0, 0, 0, 0.4);
 
 // Notifications
+
 $notification-padding: 0.75rem;
 
 // Mixins
+
 $rem-baseline: 16px !default;
 $rem-fallback: true !default; // always force callback
 $rem-px-only: false !default;
 
 // Helpers
-$intSizes: (0, 3, 5, 7, 8, 12, 16, 18, 20, 22, 24, 28, 30, 32, 36, 40, 48, 60);
+$flexSpaces: (0, 1, 2, 3, 4, 5, 6, 7);
+$marginPaddingIntSizes: (
+  0,
+  2,
+  3,
+  5,
+  6,
+  7,
+  8,
+  12,
+  16,
+  18,
+  20,
+  22,
+  24,
+  28,
+  30,
+  32,
+  36,
+  40,
+  48,
+  56,
+  60
+);
+$textIntSizes: (12, 13, 14, 15, 16, 18, 19, 20, 22, 30, 32, 36, 48, 52, 60, 80);

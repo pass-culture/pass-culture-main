@@ -1,7 +1,6 @@
 import { Selector } from 'testcafe'
 
 import { regularOfferer } from './helpers/roles'
-import { ROOT_PATH } from '../src/utils/config'
 
 const cancelAnchor = Selector('button.button').withText('Annuler')
 const createOfferAnchor = Selector("a[href^='/offres/nouveau']")
@@ -56,6 +55,8 @@ test('Lorsque je clique sur le bouton annuler une offre sur la page des offres, 
 })
 
 const typeInput = Selector('#offer-type')
+const venueInput = Selector('#offer-venueId')
+const venueOption = Selector('#offer-venueId option')
 const typeOption = Selector('#offer-type option')
 const musicTypeInput = Selector('#offer-musicType')
 const musicTypeOption = Selector('#offer-musicType option')
@@ -76,6 +77,8 @@ test('Je peux créer une offre événement', async t => {
   await t
     .click(typeInput)
     .click(typeOption.withText('Conférence — Débat — Dédicace'))
+    .click(venueInput)
+    .click(venueOption.withText('THEATRE NATIONAL DE CHAILLOT'))
   await t.click(offererInput).click(offererOption)
   await t.typeText(durationMinutesInput, '120')
   await t.typeText(

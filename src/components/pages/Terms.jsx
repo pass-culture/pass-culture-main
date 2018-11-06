@@ -1,7 +1,11 @@
 import React, { Component } from 'react'
 import ReactMarkdown from 'react-markdown'
 
+import PropTypes from 'prop-types'
+
 import Main from '../layout/Main'
+
+import { LAST_DEPLOYED_COMMIT } from '../../utils/config'
 
 // TODO: import this from other file
 const mardownContent = `
@@ -50,6 +54,7 @@ feugiat orci ut diam ullamcorper consequat.
 
 class TermsPage extends Component {
   render() {
+    const { lastDeployedCommit } = this.props
     return (
       <Main name="terms" noHeader backButton>
         <header>
@@ -57,10 +62,22 @@ class TermsPage extends Component {
         </header>
         <div className="content">
           <ReactMarkdown source={mardownContent} />
+          <div className="mt16">
+            <p className="text-right">{`Pass Culture - ${lastDeployedCommit}`}</p>
+          </div>
         </div>
       </Main>
     )
   }
+}
+
+TermsPage.defaultProps = {
+  lastDeployedCommit: LAST_DEPLOYED_COMMIT,
+}
+TermsPage.propTypes = {
+  // NOTE -> `lastDeployedCommit`
+  // `lastDeployedCommit` est rempli au build par le script PC
+  lastDeployedCommit: PropTypes.string,
 }
 
 export default TermsPage
