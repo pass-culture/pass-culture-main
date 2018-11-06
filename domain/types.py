@@ -2,18 +2,15 @@
 from models.offer_type import EventType, ThingType
 
 
-def _format_type(t, model_name):
-    result = t.value
-    result['value'] = str(t)
-    result['type'] = model_name
-    return result
+def get_formatted_types(as_admin=False):
+    event_format_types = [_format_type(type, 'Event') for type in EventType]
+    thing_format_types = [_format_type(type, 'Thing') for type in ThingType]
+    all_types = event_format_types + thing_format_types
 
+    if not as_admin:
+        all_types = [t for t in all_types if 'ACTIVATION' not in t['value']]
 
-def get_formatted_types():
-    event_format_types = [_format_type(et, 'Event') for et in EventType]
-    thing_format_types = [_format_type(tt, 'Thing') for tt in ThingType]
-
-    return event_format_types + thing_format_types
+    return all_types
 
 
 def get_type_values_from_sublabels(sublabels):
@@ -21,3 +18,10 @@ def get_type_values_from_sublabels(sublabels):
     thing_type_values = [str(tt) for tt in ThingType if tt.value['sublabel'] in sublabels]
 
     return event_type_values + thing_type_values
+
+
+def _format_type(type, model_name):
+    result = type.value
+    result['value'] = str(type)
+    result['type'] = model_name
+    return result
