@@ -60,6 +60,14 @@ jobs:
             yarn start
           background: true
       - run:
+          name: Running Visuals Tests
+          command: |
+            export PATH=${PATH:44}
+            export NVM_BIN=/usr/bin/nodejs
+            export PATH=$NVM_BIN:$PATH
+            cd ~/pass-culture-main/webapp
+            yarn test:visual
+      - run:
           name: Running Test Backend (Local Providers)
           command: |
             cd pass-culture-main
