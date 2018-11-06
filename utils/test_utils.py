@@ -2,11 +2,14 @@
 import random
 import string
 from datetime import datetime, timedelta, timezone
+from glob import glob
+from inspect import isclass
 from unittest.mock import Mock
 
 import requests as req
 from postgresql_audit.flask import versioning_manager
 
+import models
 from models import Deposit, \
     EventType, \
     Mediation, \
@@ -21,17 +24,14 @@ from models.offer import Offer
 from models.offerer import Offerer
 from models.payment import Payment
 from models.payment_status import PaymentStatus, TransactionStatus
+from models.pc_object import PcObject
 from models.stock import Stock
+from models.thing import Thing
 from models.user import User
 from models.venue import Venue
 from sandboxes.scripts.mocks.users_light import admin_user_mock
 from utils.object_storage import STORAGE_DIR
 from utils.token import random_token
-from inspect import isclass
-from glob import glob
-import models
-from models.pc_object import PcObject
-from models.thing import Thing
 
 savedCounts = {}
 
@@ -320,19 +320,21 @@ def create_stock_from_event_occurrence(event_occurrence, price=10, available=10,
     return stock
 
 
-def create_stock_from_offer(offer, price=10, available=10, soft_deleted=False):
+def create_stock_from_offer(offer, price=10, available=10, soft_deleted=False, booking_limit_datetime=None):
     stock = Stock()
     stock.offer = offer
     stock.price = price
     stock.available = available
     stock.isSoftDeleted = soft_deleted
+    stock.bookingLimitDatetime = booking_limit_datetime
     return stock
 
 
-def create_stock(price=10, available=10):
+def create_stock(price=10, available=10, booking_limit_datetime=None):
     stock = Stock()
     stock.price = price
     stock.available = available
+    stock.bookingLimitDatetime = booking_limit_datetime
     return stock
 
 
@@ -351,7 +353,7 @@ def create_stock_with_thing_offer(offerer, venue, thing_offer, price=10, availab
     return stock
 
 
-def create_thing(thing_type=ThingType.LIVRE_EDITION.name, thing_name='Test Book', media_urls='test/urls',
+def create_thing(thing_type=ThingType.LIVRE_EDITION.name, thing_name='Test Book', media_urls=['test/urls'],
                  author_name='Test Author', url=None,
                  thumb_count=1, dominant_color=None, is_national=False,
                  id_at_providers=None):
@@ -395,14 +397,16 @@ def create_event(
 
 
 def create_thing_offer(venue, thing=None, date_created=datetime.utcnow(), booking_email='booking.email@test.com',
-                       thing_type='Book', thing_name='Test Book', media_urls='test/urls', author_name='Test Author',
-                       thumb_count=1, dominant_color=None, url=None):
+                       thing_type=ThingType.AUDIOVISUEL.name, thing_name='Test Book', media_urls=['test/urls'],
+                       author_name='Test Author',
+                       thumb_count=1, dominant_color=None, url=None, is_national=False):
     offer = Offer()
     if thing:
         offer.thing = thing
     else:
         offer.thing = create_thing(thing_type=thing_type, thing_name=thing_name, media_urls=media_urls,
-                                   author_name=author_name, thumb_count=thumb_count, dominant_color=dominant_color, url=url)
+                                   author_name=author_name, thumb_count=thumb_count, dominant_color=dominant_color,
+                                   url=url, is_national=is_national)
     offer.venue = venue
     offer.dateCreated = date_created
     offer.bookingEmail = booking_email
@@ -411,11 +415,11 @@ def create_thing_offer(venue, thing=None, date_created=datetime.utcnow(), bookin
 
 def create_event_offer(venue, event=None, event_name='Test event', duration_minutes=60, date_created=datetime.utcnow(),
                        booking_email='booking.email@test.com', thumb_count=0, dominant_color=None,
-                       event_type=EventType.SPECTACLE_VIVANT):
+                       event_type=EventType.SPECTACLE_VIVANT, is_national=False):
     offer = Offer()
     if event is None:
         event = create_event(event_name=event_name, duration_minutes=duration_minutes, thumb_count=thumb_count,
-                             dominant_color=dominant_color, type=event_type)
+                             dominant_color=dominant_color, type=event_type, is_national=is_national)
     offer.event = event
     offer.venue = venue
     offer.dateCreated = date_created

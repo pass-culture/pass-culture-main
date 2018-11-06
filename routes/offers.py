@@ -46,6 +46,12 @@ def list_offers():
                                 order_by='offer.id desc')
 
 
+@app.route('/offers/activation', methods=['GET'])
+@login_required
+def list_activation_offers():
+    pass
+
+
 @app.route('/offers/<id>', methods=['GET'])
 @login_required
 def get_offer(id):
