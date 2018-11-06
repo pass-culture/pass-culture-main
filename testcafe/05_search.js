@@ -19,7 +19,7 @@ test('Je suis redirigé vers la page /connexion', async t => {
   await t.expect(getPageUrl()).contains('/connexion', { timeout: 500 })
 })
 
-fixture('O5_02 Recherche | Après connexion').beforeEach(async t => {
+fixture.skip('O5_02 Recherche | Après connexion').beforeEach(async t => {
   await t.useRole(regularUser).navigateTo(`${ROOT_PATH}recherche/`)
 })
 
