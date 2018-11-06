@@ -51,6 +51,8 @@ if [[ "$ENV" == "production" ]]; then
 	API_HOST=api.passculture.beta.gouv.fr
 elif [[ "$ENV" == "staging" ]]; then
 	API_HOST=api.passculture-staging.beta.gouv.fr
+elif [[ "$ENV" == "demo" ]]; then
+	API_HOST=api.passculture-demo.beta.gouv.fr
 fi
 
 if [[ "$1" == "" ]]; then
@@ -67,6 +69,8 @@ elif [[ "$ENV" == "staging" ]]; then
 	SCALINGO_APP=pass-culture-api-staging
 elif [[ "$ENV" == "testing" ]]; then
 	SCALINGO_APP=pass-culture-api-dev
+elif [[ "$ENV" == "demo" ]]; then
+	SCALINGO_APP=pass-culture-api-demo
 fi
 
 if [[ "$CMD" == "alembic" ]]; then
@@ -81,8 +85,8 @@ elif [[ "$CMD" == "bash" ]]; then
 	RUN='docker exec -it `docker ps | grep flask | cut -d" " -f 1` bash'
 elif [[ "$CMD" == "deploy-backend" ]]; then
   cd "$ROOT_PATH/api"
-  if [[ ! "$ENV" == 'production' ]] && [[ ! "$ENV" == 'staging' ]]; then
-     echo "Can only deploy-backend in staging and production"
+  if [[ ! "$ENV" == 'production' ]] && [[ ! "$ENV" == 'staging' ]] && [[ ! "$ENV" == 'demo' ]]; then
+     echo "Can only deploy-backend in staging, demo and production"
      exit
   fi
   commit_to_deploy=`git log -n 1 --pretty=format:%H`
