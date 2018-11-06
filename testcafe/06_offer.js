@@ -1,7 +1,6 @@
 import { Selector } from 'testcafe'
 
 import { regularOfferer } from './helpers/roles'
-import { ROOT_PATH } from '../src/utils/config'
 
 const cancelAnchor = Selector('button.button').withText('Annuler')
 const createOfferAnchor = Selector("a[href^='/offres/nouveau']")
@@ -56,9 +55,13 @@ test('Lorsque je clique sur le bouton annuler une offre sur la page des offres, 
 })
 
 const typeInput = Selector('#offer-type')
-const typeOption = Selector('option').withText('Conférence — Débat — Dédicace')
 const venueInput = Selector('#offer-venueId')
 const venueOption = Selector('#offer-venueId option')
+const typeOption = Selector('#offer-type option')
+const musicTypeInput = Selector('#offer-musicType')
+const musicTypeOption = Selector('#offer-musicType option')
+const musicSubTypeInput = Selector('#offer-musicSubType')
+const musicSubTypeOption = Selector('#offer-musicSubType option')
 const durationMinutesInput = Selector('#offer-durationMinutes')
 const descriptionInput = Selector('#offer-description')
 const submitButton = Selector('button.button.is-primary').withText(
@@ -71,8 +74,9 @@ fixture`06_02 OfferPage | Créer une nouvelle offre événement`
 test('Je peux créer une offre événement', async t => {
   await t.useRole(regularOfferer).click(createOfferAnchor)
   await t.typeText(nameInput, 'Rencontre avec Franck Lepage')
-  await t.click(typeInput).click(typeOption)
   await t
+    .click(typeInput)
+    .click(typeOption.withText('Conférence — Débat — Dédicace'))
     .click(venueInput)
     .click(venueOption.withText('THEATRE NATIONAL DE CHAILLOT'))
   await t.click(offererInput).click(offererOption)
@@ -163,6 +167,48 @@ test('Je peux créer une offre événement', async t => {
   await t.expect(location.search)
          .eql('')
   */
+})
+
+fixture`06_02 OfferPage | Créer une nouvelle offre avec type et sous-type`
+
+test('Je peux créer une offre avec type et sous-type', async t => {
+  await t
+    .useRole(regularOfferer)
+    .click(createOfferAnchor)
+    .typeText(nameInput, 'Concert de PNL Unplugged')
+    .click(typeInput)
+    .click(typeOption.withText('Musique (Concerts, Festivals)'))
+    .click(musicTypeInput)
+    .click(musicTypeOption.withText('Hip-Hop/Rap'))
+    .click(musicSubTypeInput)
+    .click(musicSubTypeOption.withText('Rap Alternatif'))
+    .click(venueInput)
+    .click(venueOption.withText('THEATRE NATIONAL DE CHAILLOT'))
+    .click(offererInput)
+    .click(offererOption)
+    .typeText(durationMinutesInput, '90')
+    .typeText(
+      descriptionInput,
+      'Venez re découvrir PNL en accoustique, sans auto-tune'
+    )
+    .click(submitButton)
+
+  let location = await t.eval(() => window.location)
+
+  await t
+    .expect(location.pathname)
+    .match(/\/offres\/([A-Z0-9]*)$/)
+    .expect(location.search)
+    .eql('?gestion')
+
+    .click(closeInput)
+
+    .expect(musicTypeOption.withText('Hip-Hop/Rap').exists)
+    .ok()
+    .expect(musicTypeOption.withText('Hip-Hop/Rap').selected)
+    .ok()
+    .expect(musicSubTypeOption.withText('Rap Alternatif').selected)
+    .ok()
 })
 
 const structuresLink = Selector("a[href='/structures']").withText('Structures')
