@@ -15,31 +15,63 @@ fixture('O5_01 Recherche | Je ne suis pas connecté·e').page(
 )
 
 test('Je suis redirigé vers la page /connexion', async t => {
-  await t
   await t.expect(getPageUrl()).contains('/connexion', { timeout: 500 })
 })
 
-fixture.skip('O5_02 Recherche | Après connexion').beforeEach(async t => {
+fixture(
+  "O5_02 Recherche | Je me suis connecté·e | J'arrive sur la page de recherche | Header"
+).beforeEach(async t => {
   await t.useRole(regularUser).navigateTo(`${ROOT_PATH}recherche/`)
 })
 
-test('Je peux accéder à la page de  /recherche', async t => {
+// header
+test('Je peux accéder à la page de /recherche', async t => {
   await t
     .wait(1000)
     .expect(getPageUrl())
     .contains('/recherche', { timeout: 5000 })
 })
 
-// HEADER
-// TODO Je ne peux pas cliquer sur le bouton 'BACK' .back-button (je ne le vois pas)
+test('Lorsque je clique sur la croix, je reviens à la page des offres', async t => {
+  const closeButton = Selector('#search-close-button')
+
+  await t
+    .click(closeButton)
+    .wait(500)
+    .expect(getPageUrl())
+    .contains('/decouverte', { timeout: 5000 })
+})
+
+test('Je vois le titre de la page', async t => {
+  await t.expect(Selector('h1').withText('Recherche')).ok()
+})
+
+test('Je ne vois pas le bouton retour', async t => {
+  await t
+  await t.expect(Selector('.back-button').exists).notOk()
+})
+
+test("Je vois le bouton retour lorsque j'ai un résultat de recherche", async t => {
+  const pictureButton = Selector('#button-nav-by-offer-type')
+  await t.expect(pictureButton.count).eql(7)
+  await t.click(pictureButton.nth(0)).wait(2000)
+  await t.expect(getPageUrl()).contains('categories')
+  await t.expect(Selector('.back-button').exists).ok()
+})
 
 // FOOTER
 // Si je clique sur le menu, je ne peux pas cliquer sur Recherche
 
+fixture
+  .skip('O5_03 Recherche | Je cherche des offres par catégories et navigue')
+  .beforeEach(async t => {
+    await t.useRole(regularUser).navigateTo(`${ROOT_PATH}recherche/`)
+  })
+
 // ------------------------ RECHERCHE PAR MOTS-CLES
 
 // ------------------------ NO RESULTS
-fixture.skip('O5_02 Recherche | Recherche textuelle').beforeEach(async t => {
+fixture.skip('O5_04 Recherche | Recherche textuelle').beforeEach(async t => {
   await t.useRole(regularUser).navigateTo(`${ROOT_PATH}recherche/categories`)
 })
 

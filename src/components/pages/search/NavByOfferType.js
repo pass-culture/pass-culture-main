@@ -11,6 +11,7 @@ const NavByOfferType = ({ pagination, title, typeSublabels }) => (
     <div className="pc-list flex-columns wrap-2">
       {typeSublabels.map(typeSublabel => (
         <button
+          id="button-nav-by-offer-type"
           key={typeSublabel}
           onClick={() =>
             pagination.change(
