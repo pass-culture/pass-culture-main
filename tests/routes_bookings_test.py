@@ -1310,6 +1310,5 @@ def test_post_booking_on_stock_with_non_validated_venue_returns_status_code_400_
 
     # Then
     assert r_create.status_code == 400
-    print(r_create.json())
     assert r_create.json()['stockId'] == [
         'Vous ne pouvez pas encore réserver cette offre, son lieu est en attente de validation']

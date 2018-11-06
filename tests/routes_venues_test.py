@@ -254,7 +254,6 @@ def test_patch_venues_on_siret_returns_status_code_400_and_siret_in_error(app):
     response = auth_request.patch(API_URL + '/venues/%s' % humanize(venue.id), json=venue_data)
 
     # Then
-    print(response.json())
     assert response.status_code == 400
     assert response.json()['siret'] == ['Vous ne pouvez pas modifier le siret d\'un lieu']
 
