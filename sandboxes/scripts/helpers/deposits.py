@@ -1,17 +1,22 @@
-from models import Deposit
+from models import Deposit, User
 from models.pc_object import PcObject
+from utils.human_ids import dehumanize
 from utils.logger import logger
 
 
-def create_or_find_deposit(deposit_mock, user=None, store=None):
+def create_or_find_deposit(deposit_mock, user=None):
     if user is None:
-        user = store['users_by_key'][deposit_mock['userKey']]
+        user = User.query.get(dehumanize(deposit_mock['userId']))
+
+    logger.info("look deposit " + user.email)
 
     deposit = Deposit.query.filter_by(userId=user.id).first()
 
     if deposit is None:
         deposit = Deposit(from_dict=deposit_mock)
         deposit.user = user
+        if 'id' in deposit_mock:
+            deposit.id = dehumanize(deposit_mock['id'])
         PcObject.check_and_save(deposit)
         logger.info("created deposit " + str(deposit))
     else:
@@ -19,16 +24,14 @@ def create_or_find_deposit(deposit_mock, user=None, store=None):
 
     return deposit
 
-def create_or_find_deposits(*deposit_mocks, store=None):
-    if store is None:
-        store = {}
-
+def create_or_find_deposits(*deposit_mocks):
     deposits_count = str(len(deposit_mocks))
     logger.info("deposit mocks " + deposits_count)
 
-    store['deposits_by_key'] = {}
-
+    deposits = []
     for (deposit_index, deposit_mock) in enumerate(deposit_mocks):
-        logger.info("look deposit " + store['users_by_key'][deposit_mock['userKey']].email + " " + str(deposit_index) + "/" + deposits_count)
-        deposit = create_or_find_deposit(deposit_mock, store=store)
-        store['deposits_by_key'][deposit_mock['key']] = deposit
+        logger.info(str(deposit_index) + "/" + deposits_count)
+        deposit = create_or_find_deposit(deposit_mock)
+        deposits.append(deposit)
+
+    return deposits

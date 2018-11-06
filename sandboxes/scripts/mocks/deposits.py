@@ -1,9 +1,11 @@
 """ deposits """
+from utils.human_ids import humanize
+
 DEPOSIT_MOCKS = [
     {
         "amount": 500,
-        "key": "d33ee240-dc59-11e8-a29f-0242ac130000",
+        "id": humanize(0),
         "source": "public",
-        "userKey": "d33ee240-dc59-11e8-a29f-0242ac130001"
+        "userId": humanize(999) #pctest.jeune.93@btmx.fr
     }
 ]

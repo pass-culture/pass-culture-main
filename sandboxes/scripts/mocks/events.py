@@ -1,5 +1,6 @@
 """ events """
 from sandboxes.scripts.mocks import get_all_typed_event_mocks
+from utils.human_ids import humanize
 
 EVENT_MOCKS = []
 
@@ -9,7 +10,7 @@ EVENT_MOCKS += ALL_TYPED_EVENT_MOCKS
 SCRATCH_EVENT_MOCKS = [
     {
         "durationMinutes": 60,
-        "key": "d33ee240-dc59-11e8-a29f-0242ac130000",
+        "id": humanize(0),
         "name": "Rencontre avec Franck Lepage",
         "type": "EventType.CONFERENCE_DEBAT_DEDICACE",
         "thumbCount": 1,
@@ -17,7 +18,7 @@ SCRATCH_EVENT_MOCKS = [
     },
     {
         "durationMinutes": 120,
-        "key": "d33ee240-dc59-11e8-a29f-0242ac130001",
+        "id": humanize(1),
         "name": "Concert de Gael Faye",
         "type": "EventType.MUSIQUE",
         "thumbCount": 1,
@@ -25,7 +26,7 @@ SCRATCH_EVENT_MOCKS = [
     },
     {
         "durationMinutes": 10,
-        "key": "d33ee240-dc59-11e8-a29f-0242ac130002",
+        "id": humanize(2),
         "name": "PNL chante Marx",
         "type": "EventType.MUSIQUE",
         "thumbCount": 1,

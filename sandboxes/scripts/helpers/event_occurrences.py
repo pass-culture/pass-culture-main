@@ -1,15 +1,15 @@
 from datetime import timedelta
 
-from models import EventOccurrence
+from models import EventOccurrence, Offer
 from models.pc_object import PcObject
+from utils.human_ids import dehumanize
 from utils.logger import logger
 
-def create_or_find_event_occurrence(event_occurrence_mock, offer=None, store=None):
-    if store is None:
-        store = {}
-
+def create_or_find_event_occurrence(event_occurrence_mock, offer=None):
     if offer is None:
-        offer = store['offers_by_key'][event_occurrence_mock['offerKey']]
+        offer = Offer.query.get(dehumanize(event_occurrence_mock['offerId']))
+
+    logger.info("look event_occurrence")
 
     event_occurrence = EventOccurrence.query.filter_by(
         beginningDatetime=event_occurrence_mock['beginningDatetime'],
@@ -21,6 +21,8 @@ def create_or_find_event_occurrence(event_occurrence_mock, offer=None, store=Non
         event_occurrence.offer = offer
         if event_occurrence.endDatetime is None:
             event_occurrence.endDatetime = event_occurrence.beginningDatetime + timedelta(hours=1)
+        if 'id' in event_occurrence_mock:
+            event_occurrence.id = dehumanize(event_occurrence_mock['id'])
         PcObject.check_and_save(event_occurrence)
         logger.info("created event_occurrence " + str(event_occurrence))
     else:
@@ -28,16 +30,14 @@ def create_or_find_event_occurrence(event_occurrence_mock, offer=None, store=Non
 
     return event_occurrence
 
-def create_or_find_event_occurrences(*event_occurrence_mocks, store=None):
-    if store is None:
-        store = {}
-
+def create_or_find_event_occurrences(*event_occurrence_mocks):
     event_occurrences_count = str(len(event_occurrence_mocks))
-    logger.info("event_occurrence mocks " + event_occurrences_count)
+    logger.info("event_occurrence mocks " + str(event_occurrences_count))
 
-    store['event_occurrences_by_key'] = {}
-
+    event_occurrences = []
     for (event_occurrence_index, event_occurrence_mock) in enumerate(event_occurrence_mocks):
-        logger.info("look event_occurrence " + store['offers_by_key'][event_occurrence_mock['offerKey']].event.name + " " + " " + str(event_occurrence_index) + "/" + event_occurrences_count)
-        event_occurrence = create_or_find_event_occurrence(event_occurrence_mock, store=store)
-        store['event_occurrences_by_key'][event_occurrence_mock['key']] = event_occurrence
+        logger.info(str(event_occurrence_index) + "/" + event_occurrences_count)
+        event_occurrence = create_or_find_event_occurrence(event_occurrence_mock)
+        event_occurrences.append(event_occurrence)
+
+    return event_occurrences

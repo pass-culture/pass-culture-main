@@ -4,6 +4,7 @@ from sandboxes.scripts.mocks.things import ALL_TYPED_THING_MOCKS
 from sandboxes.scripts.mocks.venues import ALL_VENUE_MOCKS
 from sandboxes.scripts.mocks.utils.generators import get_all_typed_event_offer_mocks, \
                                                      get_all_typed_thing_offer_mocks
+from utils.human_ids import humanize
 
 OFFER_MOCKS = []
 
@@ -20,34 +21,34 @@ OFFER_MOCKS += ALL_TYPED_OFFER_MOCKS
 
 SCRATCH_OFFER_MOCKS = [
     {
-        "eventKey": "d33ee240-dc59-11e8-a29f-0242ac130000", # Rencontre avec Franck Lepage
+        "eventId": humanize(0), # Rencontre avec Franck Lepage
+        "id": humanize(0),
         "isActive": True,
-        "key": "d33ee240-dc59-11e8-a29f-0242ac130000",
-        "venueKey": "d33ee240-dc59-11e8-a29f-0242ac130002" # LE GRAND REX PARIS
+        "venueId": humanize(0) # LE GRAND REX PARIS
     },
     {
-        "eventKey": "d33ee240-dc59-11e8-a29f-0242ac130001", # Concert de Gael Faye
+        "eventId": humanize(1), # Concert de Gael Faye
+        "id": humanize(1),
         "isActive": True,
-        "key": "d33ee240-dc59-11e8-a29f-0242ac130001",
-        "venueKey": "d33ee240-dc59-11e8-a29f-0242ac130004" # THEATRE DE L ODEON
+        "venueId": humanize(2) # THEATRE DE L ODEON
     },
     {
-        "eventKey": "d33ee240-dc59-11e8-a29f-0242ac130002", # PNL chante Marx
+        "eventId": humanize(2), # PNL chante Marx
+        "id": humanize(2),
         "isActive": True,
-        "key": "d33ee240-dc59-11e8-a29f-0242ac130002",
-        "venueKey": "d33ee240-dc59-11e8-a29f-0242ac130004" # THEATRE DE L ODEON
+        "venueId": humanize(2) # THEATRE DE L ODEON
     },
     {
+        "id": humanize(3),
         "isActive": True,
-        "key": "d33ee240-dc59-11e8-a29f-0242ac130003",
-        "thingKey": "d33ee240-dc59-11e8-a29f-0242ac130000", # Ravage,
-        "venueKey": "d33ee240-dc59-11e8-a29f-0242ac130004" # THEATRE DE L ODEON
+        "thingId": humanize(0), # Ravage
+        "venueId": humanize(2) # THEATRE DE L ODEON
     },
     {
+        "id": humanize(4),
         "isActive": True,
-        "key": "d33ee240-dc59-11e8-a29f-0242ac130004",
-        "thingKey": "d33ee240-dc59-11e8-a29f-0242ac130001", # Le Monde Diplomatique
-        "venueKey": "d33ee240-dc59-11e8-a29f-0242ac130005" # THEATRE DE L ODEON (OL)
+        "thingId": humanize(1), # Le Monde Diplomatique
+        "venueId": humanize(3) # THEATRE DE L ODEON (OL)
     }
 ]
 OFFER_MOCKS += SCRATCH_OFFER_MOCKS

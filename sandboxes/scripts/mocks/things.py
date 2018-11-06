@@ -1,5 +1,6 @@
 """ things """
 from sandboxes.scripts.mocks import get_all_typed_thing_mocks
+from utils.human_ids import humanize
 
 THING_MOCKS = []
 
@@ -8,12 +9,12 @@ THING_MOCKS += ALL_TYPED_THING_MOCKS
 
 SCRATCH_THING_MOCKS = [
     {
-        "key": "d33ee240-dc59-11e8-a29f-0242ac130000",
+        "id": humanize(0),
         "name": "Ravage",
         "type": "ThingType.LIVRE_EDITION"
     },
     {
-        "key": "d33ee240-dc59-11e8-a29f-0242ac130001",
+        "id": humanize(1),
         "name": "Le Monde Diplomatique",
         "type": "ThingType.PRESSE_ABO"
     },

@@ -1,25 +1,30 @@
-from models import Stock
+from models import EventOccurrence, Offer, Stock
 from models.pc_object import PcObject
+from utils.human_ids import dehumanize
 from utils.logger import logger
 
-def create_or_find_stock(stock_mock, event_occurrence=None, offer=None, store=None):
-    if 'eventOccurrenceKey' in stock_mock:
+def create_or_find_stock(stock_mock, event_occurrence=None, offer=None):
+    if 'eventOccurrenceId' in stock_mock:
         if event_occurrence is None:
-            event_occurrence = store['event_occurrences_by_key'][stock_mock['eventOccurrenceKey']]
+            event_occurrence = EventOccurrence.query.get(dehumanize(stock_mock['eventOccurrenceId']))
             query = Stock.queryNotSoftDeleted().filter_by(eventOccurrenceId=event_occurrence.id)
+            logger.info("look stock " + event_occurrence.offer.eventOrThing.name)
     else:
         if offer is None:
-            offer = store['offers_by_key'][stock_mock['offerKey']]
+            offer = Offer.query.get(dehumanize(stock_mock['offerId']))
+            logger.info("look stock " + offer.eventOrThing.name)
         query = Stock.queryNotSoftDeleted().filter_by(offerId=offer.id)
 
     stock = query.first()
 
     if stock is None:
         stock = Stock(from_dict=stock_mock)
-        if 'eventOccurrenceKey' in stock_mock:
+        if 'eventOccurrenceId' in stock_mock:
             stock.eventOccurrence = event_occurrence
         else:
             stock.offer = offer
+        if 'id' in stock_mock:
+            stock.id = dehumanize(stock_mock['id'])
         PcObject.check_and_save(stock)
         logger.info("created stock " + str(stock))
     else:
@@ -27,19 +32,14 @@ def create_or_find_stock(stock_mock, event_occurrence=None, offer=None, store=No
 
     return stock
 
-def create_or_find_stocks(*stock_mocks, store=None):
-    if store is None:
-        store = {}
-
+def create_or_find_stocks(*stock_mocks):
     stocks_count = str(len(stock_mocks))
     logger.info("stock mocks " + stocks_count)
 
-    store['stocks_by_key'] = {}
-
+    stocks = []
     for (stock_index, stock_mock) in enumerate(stock_mocks):
-        if 'eventOccurrenceKey' in stock_mock:
-            logger.info("look stock " + store['event_occurrences_by_key'][stock_mock['eventOccurrenceKey']].offer.event.name + str(stock_index) + "/" + stocks_count)
-        else:
-            logger.info("look stock " + store['offers_by_key'][stock_mock['offerKey']].thing.name + " " + str(stock_index) + "/" + stocks_count)
-        stock = create_or_find_stock(stock_mock, store=store)
-        store['stocks_by_key'][stock_mock['key']] = stock
+        logger.info(str(stock_index) + "/" + stocks_count)
+        stock = create_or_find_stock(stock_mock)
+        stocks.append(stock)
+
+    return stocks

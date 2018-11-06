@@ -1,5 +1,4 @@
 """ generators """
-from uuid import uuid1
 import numpy
 import requests
 
@@ -7,9 +6,11 @@ from domain.types import get_format_types, get_types_by_value
 from sandboxes.scripts.mocks.utils.params import EVENT_OR_THING_MOCK_NAMES, \
                                                  EVENT_OCCURRENCE_BEGINNING_DATETIMES, \
                                                  PLACES
+from utils.human_ids import humanize
 
 def get_all_offerer_mocks(geo_interval=0.1, geo_number=2):
 
+    dehumanized_id = 10000
     siren = 999999999
 
     offerer_mocks = []
@@ -36,19 +37,24 @@ def get_all_offerer_mocks(geo_interval=0.1, geo_number=2):
                     offerer_mock = {
                         "address": properties['name'].upper(),
                         "city": properties['city'],
-                        "key": str(uuid1()),
+                        "id": humanize(dehumanized_id),
                         "latitude": coordinates[1],
                         "longitude": coordinates[0],
                         "name": "STRUCTURE " + str(siren),
                         "postalCode": properties['postcode'],
                         "siren": str(siren)
                     }
+
+                    dehumanized_id += 1
                     siren = siren - 1
+
                     offerer_mocks.append(offerer_mock)
 
     return offerer_mocks
 
 def get_all_venue_mocks(all_offerer_mocks):
+
+    dehumanized_id = 10000
 
     venue_mocks = []
     for offerer_mock in all_offerer_mocks:
@@ -57,26 +63,35 @@ def get_all_venue_mocks(all_offerer_mocks):
             "bookingEmail": "fake@email.com",
             "city": offerer_mock['city'],
             "comment": "Pas de siret car je suis un mock.",
+            "id": humanize(dehumanized_id),
             "latitude": offerer_mock['latitude'],
             "longitude": offerer_mock['longitude'],
-            "key": str(uuid1()),
             "name": "LIEU " + str(offerer_mock['siren']),
-            "offererKey": offerer_mock['key'],
+            "offererId": offerer_mock['id'],
             "postalCode": offerer_mock['postalCode']
         }
+
+        dehumanized_id += 1
+
         venue_mocks.append(venue_mock)
 
         virtual_venue_mock = {
+            "id": humanize(dehumanized_id),
             "isVirtual": True,
-            "key": str(uuid1()),
             "name": "Offre en ligne",
-            "offererKey": offerer_mock['key']
+            "offererId": offerer_mock['id']
         }
+
+        dehumanized_id += 1
+
         venue_mocks.append(virtual_venue_mock)
 
     return venue_mocks
 
 def get_all_typed_event_mocks():
+
+    dehumanized_id = 10000
+
     event_types = [t for t in get_format_types() if t['type'] == 'Event']
 
     event_mocks = []
@@ -93,16 +108,21 @@ def get_all_typed_event_mocks():
         event_mock = {
             "durationMinutes": 60,
             "firstThumbDominantColor": b'\x00\x00\x00',
-            "key": str(uuid1()),
+            "id": humanize(dehumanized_id),
             "name": event_type['value'] + " " + EVENT_OR_THING_MOCK_NAMES[mock_count],
             "type": event_type['value'],
             "thumbCount": 1
         }
+
+        dehumanized_id += 1
+
         event_mocks.append(event_mock)
 
     return event_mocks
 
 def get_all_typed_thing_mocks():
+
+    dehumanized_id = 10000
 
     types_by_value = get_types_by_value()
 
@@ -121,11 +141,13 @@ def get_all_typed_thing_mocks():
 
         thing_mock = {
             "firstThumbDominantColor": b'\x00\x00\x00',
-            "key": str(uuid1()),
+            "id": humanize(dehumanized_id),
             "name": thing_type['value'] + " " + EVENT_OR_THING_MOCK_NAMES[mock_count],
             "thumbCount": 1,
             "type": thing_type['value'],
         }
+
+        dehumanized_id += 1
 
         # DETERMINE THE MATCHING VENUE
         thing_type = types_by_value[thing_mock['type']]
@@ -139,6 +161,8 @@ def get_all_typed_thing_mocks():
 
 def get_all_typed_event_offer_mocks(all_typed_event_mocks, all_venue_mocks):
 
+    dehumanized_id = 10000
+
     types_by_value = get_types_by_value()
 
     offer_mocks = []
@@ -150,25 +174,27 @@ def get_all_typed_event_offer_mocks(all_typed_event_mocks, all_venue_mocks):
 
         virtual_venue_mock = [
             vm for vm in all_venue_mocks
-            if venue_mock['offererKey'] == vm['offererKey'] and 'isVirtual' in vm and vm['isVirtual'] == True
+            if venue_mock['offererId'] == vm['offererId'] and 'isVirtual' in vm and vm['isVirtual'] == True
         ][0]
 
         for event_mock in all_typed_event_mocks:
 
             offer_mock = {
-                "key": str(uuid1()),
-                "eventKey": event_mock['key'],
+                "eventId": event_mock['id'],
+                "id": humanize(dehumanized_id),
                 "isActive": True,
             }
 
             # DETERMINE THE MATCHING VENUE
             event_type = types_by_value[event_mock['type']]
             if event_type['offlineOnly']:
-                offer_mock['venueKey'] = venue_mock['key']
+                offer_mock['venueId'] = venue_mock['id']
             elif event_type['onlineOnly']:
-                offer_mock['venueKey'] = virtual_venue_mock['key']
+                offer_mock['venueId'] = virtual_venue_mock['id']
             else:
-                offer_mock['venueKey'] = venue_mock['key']
+                offer_mock['venueId'] = venue_mock['id']
+
+            dehumanized_id += 1
 
             offer_mocks.append(offer_mock)
 
@@ -176,6 +202,8 @@ def get_all_typed_event_offer_mocks(all_typed_event_mocks, all_venue_mocks):
 
 def get_all_typed_thing_offer_mocks(all_typed_thing_mocks, all_venue_mocks):
 
+    dehumanized_id = 20000
+
     types_by_value = get_types_by_value()
 
     offer_mocks = []
@@ -187,24 +215,26 @@ def get_all_typed_thing_offer_mocks(all_typed_thing_mocks, all_venue_mocks):
 
         virtual_venue_mock = [
             vm for vm in all_venue_mocks
-            if venue_mock['offererKey'] == vm['offererKey'] and 'isVirtual' in vm and vm['isVirtual'] == True
+            if venue_mock['offererId'] == vm['offererId'] and 'isVirtual' in vm and vm['isVirtual'] == True
         ][0]
 
         for thing_mock in all_typed_thing_mocks:
             offer_mock = {
-                "key": str(uuid1()),
+                "id": humanize(dehumanized_id),
                 "isActive": True,
-                "thingKey": thing_mock['key']
+                "thingId": thing_mock['id']
             }
 
             # DETERMINE THE MATCHING VENUE
             thing_type = types_by_value[thing_mock['type']]
             if thing_type['offlineOnly']:
-                offer_mock['venueKey'] = venue_mock['key']
+                offer_mock['venueId'] = venue_mock['id']
             elif thing_type['onlineOnly']:
-                offer_mock['venueKey'] = virtual_venue_mock['key']
+                offer_mock['venueId'] = virtual_venue_mock['id']
             else:
-                offer_mock['venueKey'] = venue_mock['key']
+                offer_mock['venueId'] = venue_mock['id']
+
+            dehumanized_id += 1
 
             offer_mocks.append(offer_mock)
 
@@ -212,14 +242,18 @@ def get_all_typed_thing_offer_mocks(all_typed_thing_mocks, all_venue_mocks):
 
 def get_all_typed_event_occurrence_mocks(all_typed_event_offer_mocks):
 
+    dehumanized_id = 10000
+
     event_occurrence_mocks = []
     for event_offer_mock in all_typed_event_offer_mocks:
         for beginning_datetime in EVENT_OCCURRENCE_BEGINNING_DATETIMES:
             event_occurrence_mock = {
                 "beginningDatetime": beginning_datetime,
-                "key": str(uuid1()),
-                "offerKey": event_offer_mock['key']
+                "id": humanize(dehumanized_id),
+                "offerId": event_offer_mock['id']
             }
+
+            dehumanized_id += 1
 
             event_occurrence_mocks.append(event_occurrence_mock)
 
@@ -227,14 +261,19 @@ def get_all_typed_event_occurrence_mocks(all_typed_event_offer_mocks):
 
 def get_all_typed_event_stock_mocks(all_typed_event_occurrence_mocks):
 
+    dehumanized_id = 10000
+
     stock_mocks = []
     for event_occurrence_mock in all_typed_event_occurrence_mocks:
+
         stock_mock = {
             "available": 10,
-            "eventOccurrenceKey": event_occurrence_mock['key'],
-            "key": str(uuid1()),
+            "eventOccurrenceId": event_occurrence_mock['id'],
+            "id": humanize(dehumanized_id),
             "price": 10
         }
+
+        dehumanized_id += 1
 
         stock_mocks.append(stock_mock)
 
@@ -242,14 +281,18 @@ def get_all_typed_event_stock_mocks(all_typed_event_occurrence_mocks):
 
 def get_all_typed_thing_stock_mocks(all_typed_thing_offer_mocks):
 
+    dehumanized_id = 20000
+
     stock_mocks = []
     for thing_offer_mock in all_typed_thing_offer_mocks:
         stock_mock = {
             "available": 10,
-            "offerKey": thing_offer_mock['key'],
-            "key": str(uuid1()),
+            "id": humanize(dehumanized_id),
+            "offerId": thing_offer_mock['id'],
             "price": 10
         }
+
+        dehumanized_id += 1
 
         stock_mocks.append(stock_mock)
 
@@ -257,12 +300,16 @@ def get_all_typed_thing_stock_mocks(all_typed_thing_offer_mocks):
 
 def get_all_typed_event_mediation_mocks(all_typed_event_offer_mocks):
 
+    dehumanized_id = 10000
+
     mediation_mocks = []
     for event_offer_mock in all_typed_event_offer_mocks:
         mediation_mock = {
-            "key": str(uuid1()),
-            "offerKey": event_offer_mock['key'],
+            "id": humanize(dehumanized_id),
+            "offerId": event_offer_mock['id'],
         }
+
+        dehumanized_id += 1
 
         mediation_mocks.append(mediation_mock)
 
@@ -270,12 +317,16 @@ def get_all_typed_event_mediation_mocks(all_typed_event_offer_mocks):
 
 def get_all_typed_thing_mediation_mocks(all_typed_thing_offer_mocks):
 
+    dehumanized_id = 20000
+
     mediation_mocks = []
     for thing_offer_mock in all_typed_thing_offer_mocks:
         mediation_mock = {
-            "key": str(uuid1()),
-            "offerKey": thing_offer_mock['key'],
+            "id": humanize(dehumanized_id),
+            "offerId": thing_offer_mock['id'],
         }
+
+        dehumanized_id += 1
 
         mediation_mocks.append(mediation_mock)
 

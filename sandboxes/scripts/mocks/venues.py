@@ -1,6 +1,7 @@
 """ venue """
 from sandboxes.scripts.mocks.utils.generators import get_all_venue_mocks
 from sandboxes.scripts.mocks.offerers import ALL_OFFERER_MOCKS
+from utils.human_ids import humanize
 
 VENUE_MOCKS = []
 
@@ -15,42 +16,42 @@ SCRATCH_MOCKS = [
         "departementCode": "75",
         "latitude": 48.870665,
         "longitude": 2.3478,
-        "key": 'd33ee240-dc59-11e8-a29f-0242ac130002',
+        "id": humanize(0),
         "name": "LE GRAND REX PARIS",
-        "offererKey": "d33ee240-dc59-11e8-a29f-0242ac130000", # LE GRAND REX PARIS,
+        "offererId": humanize(1000), # LE GRAND REX PARIS,
         "postalCode": "75002",
         "siret": "50763357600016"
     },
     {
         "isVirtual": True,
-        "key": 'd33ee240-dc59-11e8-a29f-0242ac130003',
+        "id": humanize(1),
         "name": "Offre en ligne",
-        "offererKey": "d33ee240-dc59-11e8-a29f-0242ac130000" # LE GRAND REX PARIS
+        "offererId": humanize(1000) # LE GRAND REX PARIS
     },
     {
         "address": "6 rue Grolee",
         "bookingEmail": "fake2@email.com",
         "city": "Lyon",
         "departementCode": "69",
-        "key": 'd33ee240-dc59-11e8-a29f-0242ac130004',
+        "id": humanize(2),
         "latitude": 45.762606,
         "longitude": 4.836694,
         "name": "THEATRE DE L ODEON",
-        "offererKey": "d33ee240-dc59-11e8-a29f-0242ac130001", # "THEATRE DE L ODEON"
+        "offererId": humanize(999), # "THEATRE DE L ODEON"
         "postalCode": "69002",
         "siret": "75050570300025"
     },
     {
         "isVirtual": True,
-        "key": 'd33ee240-dc59-11e8-a29f-0242ac130005',
+        "id": humanize(3),
         "name": "Offre en ligne",
-        "offererKey": "d33ee240-dc59-11e8-a29f-0242ac130001" # "THEATRE DE L ODEON"
+        "offererId": humanize(999) # "THEATRE DE L ODEON"
     },
     {
         "isVirtual": True,
-        "key": 'd33ee240-dc59-11e8-a29f-0242ac130006',
+        "id": humanize(4),
         "name": "Offre en ligne",
-        "offererKey": "d33ee240-dc59-11e8-a29f-0242ac130002" # "THEATRE DU SOLEIL"
+        "offererId": humanize(999) # "THEATRE DU SOLEIL"
     }
 ]
 

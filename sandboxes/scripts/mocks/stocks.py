@@ -3,6 +3,7 @@ from sandboxes.scripts.mocks.event_occurrences import ALL_TYPED_EVENT_OCCURRENCE
 from sandboxes.scripts.mocks.offers import ALL_TYPED_THING_OFFER_MOCKS
 from sandboxes.scripts.mocks.utils.generators import get_all_typed_event_stock_mocks, \
                                                      get_all_typed_thing_stock_mocks
+from utils.human_ids import humanize
 
 STOCK_MOCKS = []
 
@@ -14,48 +15,48 @@ STOCK_MOCKS += ALL_TYPED_STOCK_MOCKS
 SCRATCH_STOCK_MOCKS = [
     {
         "available": 10,
-        "eventOccurrenceKey": "d33ee240-dc59-11e8-a29f-0242ac130000", # Rencontre avec Franck Lepage  LE GRAND REX PARIS 20h
-        "key": "d33ee240-dc59-11e8-a29f-0242ac130000",
+        "eventOccurrenceId": humanize(0), # Rencontre avec Franck Lepage  LE GRAND REX PARIS 20h
+        "id": humanize(0),
         "price": 10
     },
     {
         "available": 15,
-        "eventOccurrenceKey": "d33ee240-dc59-11e8-a29f-0242ac130000", # Rencontre avec Franck Lepage  LE GRAND REX PARIS 20h
-        "key": "d33ee240-dc59-11e8-a29f-0242ac130001",
+        "eventOccurrenceId": humanize(0), # Rencontre avec Franck Lepage  LE GRAND REX PARIS 20h
+        "id": humanize(1),
         "price": 15
     },
 
     {
         "available": 100,
-        "eventOccurrenceKey": "d33ee240-dc59-11e8-a29f-0242ac130001", # Rencontre avec Franck Lepage  LE GRAND REX PARIS 20h + 1D
-        "key": "d33ee240-dc59-11e8-a29f-0242ac130002",
+        "eventOccurrenceId": humanize(1), # Rencontre avec Franck Lepage  LE GRAND REX PARIS 20h + 1D
+        "id": humanize(3),
         "price": 10
     },
     {
         "available": 90,
-        "eventOccurrenceKey": "d33ee240-dc59-11e8-a29f-0242ac130001", # Rencontre avec Franck Lepage  LE GRAND REX PARIS 20h + 1D
-        "key": "d33ee240-dc59-11e8-a29f-0242ac130004",
+        "eventOccurrenceId": humanize(1), # Rencontre avec Franck Lepage  LE GRAND REX PARIS 20h + 1D
+        "id": humanize(4),
         "price": 15
     },
 
     {
         "available": 50,
-        "eventOccurrenceKey": "d33ee240-dc59-11e8-a29f-0242ac130002", # Concert de Gael Faye THEATRE DE L ODEON 20h
-        "key": "d33ee240-dc59-11e8-a29f-0242ac130005",
+        "eventOccurrenceId": humanize(2), # Concert de Gael Faye THEATRE DE L ODEON 20h
+        "id": humanize(5),
         "price": 50
     },
 
     {
         "available": 50,
-        "eventOccurrenceKey": 'd33ee240-dc59-11e8-a29f-0242ac130003', # PNL chante Marx THEATRE DE L ODEON 20h
-        "key": "d33ee240-dc59-11e8-a29f-0242ac130006",
+        "eventOccurrenceId": humanize(3), # PNL chante Marx THEATRE DE L ODEON 20h
+        "id": humanize(6),
         "price": 50
     },
 
     {
         "available": 50,
-        "offerKey": 'd33ee240-dc59-11e8-a29f-0242ac130003', # Ravage THEATRE DE L ODEON
-        "key": "d33ee240-dc59-11e8-a29f-0242ac130007",
+        "offerId": humanize(3), # Ravage THEATRE DE L ODEON
+        "id": humanize(7),
         "price": 50
     }
 ]
