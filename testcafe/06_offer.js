@@ -182,6 +182,8 @@ test('Je peux créer une offre avec type et sous-type', async t => {
     .click(musicTypeOption.withText('Hip-Hop/Rap'))
     .click(musicSubTypeInput)
     .click(musicSubTypeOption.withText('Rap Alternatif'))
+    .click(venueInput)
+    .click(venueOption.withText('THEATRE NATIONAL DE CHAILLOT'))
     .click(offererInput)
     .click(offererOption)
     .typeText(durationMinutesInput, '90')
