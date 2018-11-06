@@ -228,7 +228,8 @@ def test_patch_venues_on_managing_offerer_id_returns_status_code_400_and_managin
     auth_request = req_with_auth(email=user.email, password=user.clearTextPassword)
 
     # When
-    response = auth_request.patch(API_URL + '/venues/%s' % humanize(venue.id), json={'managingOffererId': humanize(other_offerer.id)})
+    response = auth_request.patch(API_URL + '/venues/%s' % humanize(venue.id),
+                                  json={'managingOffererId': humanize(other_offerer.id)})
 
     # Then
     assert response.status_code == 400
