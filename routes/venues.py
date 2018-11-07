@@ -36,7 +36,7 @@ def create_venue():
         venue.generate_validation_token()
     save_venue(venue)
 
-    if not siret:
+    if not venue.isValidated:
         try:
             send_venue_validation_email(venue, app.mailjet_client.send.create)
         except MailServiceException as e:

@@ -129,9 +129,6 @@ def test_post_venue_returns_201_with_the_newly_created_venue_and_is_validated_bu
     assert created_venue_data['isValidated'] == True
     assert 'validationToken' not in created_venue_data
 
-    # TODO: check thumb presence
-    # TODO: check offerer linked to venue at creation
-
 
 @clean_database
 @pytest.mark.standalone

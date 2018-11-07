@@ -35,8 +35,6 @@ def test_send_user_driven_cancellation_email_to_user_when_feature_send_mail_to_u
     mocked_send_create_email.assert_called_once()
     args = mocked_send_create_email.call_args
     assert args[1]['data']['To'] == 'user@email.fr'
-    mocked_send_create_email.reset_mock()
-    make_user_recap_email.reset_mock()
 
 
 @pytest.mark.standalone
@@ -61,8 +59,6 @@ def test_send_user_driven_cancellation_email_to_user_when_feature_send_mail_to_u
     args = mocked_send_create_email.call_args
     assert args[1]['data']['To'] == 'passculture-dev@beta.gouv.fr'
     assert 'This is a test' in args[1]['data']['Html-part']
-    mocked_send_create_email.reset_mock()
-    make_user_recap_email.reset_mock()
 
 
 @pytest.mark.standalone
@@ -109,8 +105,6 @@ def test_send_user_driven_cancellation_email_to_offerer_when_feature_send_mail_t
     mocked_send_create_email.assert_called_once()
     args = mocked_send_create_email.call_args
     assert args[1]['data']['To'] == 'booking@email.fr'
-    mocked_send_create_email.reset_mock()
-    make_offerer_recap_email.reset_mock()
 
 
 @pytest.mark.standalone
@@ -138,8 +132,6 @@ def test_send_user_driven_cancellation_email_to_offerer_when_feature_send_mail_t
     args = mocked_send_create_email.call_args
     assert args[1]['data']['To'] == 'passculture-dev@beta.gouv.fr'
     assert 'This is a test' in args[1]['data']['Html-part']
-    mocked_send_create_email.reset_mock()
-    make_offerer_recap_email.reset_mock()
 
 
 @pytest.mark.standalone
@@ -183,8 +175,6 @@ def test_send_offerer_driven_cancellation_email_to_user_when_feature_send_mail_t
     mocked_send_create_email.assert_called_once()
     args = mocked_send_create_email.call_args
     assert args[1]['data']['To'] == 'user@email.fr'
-    mocked_send_create_email.reset_mock()
-    make_cancellation_email.reset_mock()
 
 
 @pytest.mark.standalone
@@ -229,8 +219,6 @@ def test_send_offerer_driven_cancellation_email_to_offerer_when_booking_email(ap
     mocked_send_create_email.assert_called_once()
     args = mocked_send_create_email.call_args
     assert args[1]['data']['To'] == 'booking@email.fr'
-    mocked_send_create_email.reset_mock()
-    make_cancellation_email.reset_mock()
 
 
 @pytest.mark.standalone
@@ -256,8 +244,6 @@ def test_send_offerer_driven_cancellation_email_to_offerer_when_no_booking_email
         # Then
         make_cancellation_email.assert_not_called()
     mocked_send_create_email.assert_not_called()
-    mocked_send_create_email.reset_mock()
-    make_cancellation_email.reset_mock()
 
 
 @pytest.mark.standalone
@@ -481,8 +467,6 @@ def test_send_validation_confirmation_email(app):
     mocked_send_create_email.assert_called_once()
     args = mocked_send_create_email.call_args
     assert args[1]['data']['To'] == 'admin1@email.com, admin2@email.com'
-    mocked_send_create_email.reset_mock()
-    make_cancellation_email.reset_mock()
 
 
 @pytest.mark.standalone
@@ -550,8 +534,6 @@ def test_send_batch_cancellation_email_to_offerer():
     mocked_send_create_email.assert_called_once()
     args = mocked_send_create_email.call_args
     assert args[1]['data']['To'] == 'offerer@email.com'
-    mocked_send_create_email.reset_mock()
-    make_cancellation_email.reset_mock()
 
 
 @pytest.mark.standalone
@@ -577,8 +559,6 @@ def test_send_batch_cancellation_email_to_offerer_event_occurrence_case():
     mocked_send_create_email.assert_called_once()
     args = mocked_send_create_email.call_args
     assert args[1]['data']['To'] == 'offerer@email.com'
-    mocked_send_create_email.reset_mock()
-    make_cancellation_email.reset_mock()
 
 
 @pytest.mark.standalone
@@ -622,8 +602,6 @@ def test_send_batch_cancellation_email_to_offerer_feature_send_mail_to_users_ena
     args = mocked_send_create_email.call_args
     assert args[1]['data']['To'] == 'passculture-dev@beta.gouv.fr'
     assert 'This is a test' in args[1]['data']['Html-part']
-    mocked_send_create_email.reset_mock()
-    make_cancellation_email.reset_mock()
 
 
 @pytest.mark.standalone
@@ -645,7 +623,6 @@ def test_send_batch_cancellation_email_to_offerer_no_venue_email():
 
     # Then
     mocked_send_create_email.assert_not_called()
-    mocked_send_create_email.reset_mock()
 
 
 @pytest.mark.standalone
@@ -671,8 +648,6 @@ def test_send_venue_validation_confirmation_email(app):
     mocked_send_create_email.assert_called_once()
     args = mocked_send_create_email.call_args
     assert args[1]['data']['To'] == 'admin1@email.com, admin2@email.com'
-    mocked_send_create_email.reset_mock()
-    make_cancellation_email.reset_mock()
 
 
 @pytest.mark.standalone

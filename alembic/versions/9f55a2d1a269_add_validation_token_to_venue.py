@@ -1,4 +1,4 @@
-"""empty message
+"""add validation token column to model venue
 
 Revision ID: 9f55a2d1a269
 Revises: e51238ae21c5
