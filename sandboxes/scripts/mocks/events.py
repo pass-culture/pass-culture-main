@@ -1,5 +1,5 @@
 """ events """
-from sandboxes.scripts.mocks import get_all_typed_event_mocks
+from sandboxes.scripts.utils.generators import get_all_typed_event_mocks
 from utils.human_ids import dehumanize, humanize
 
 EVENT_MOCKS = []

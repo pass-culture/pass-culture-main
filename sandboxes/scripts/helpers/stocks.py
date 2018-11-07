@@ -3,16 +3,14 @@ from models.pc_object import PcObject
 from utils.human_ids import dehumanize
 from utils.logger import logger
 
-def create_or_find_stock(stock_mock, event_occurrence=None, offer=None):
+def create_or_find_stock(stock_mock):
     if 'eventOccurrenceId' in stock_mock:
-        if event_occurrence is None:
-            event_occurrence = EventOccurrence.query.get(dehumanize(stock_mock['eventOccurrenceId']))
-            query = Stock.queryNotSoftDeleted().filter_by(eventOccurrenceId=event_occurrence.id)
-            logger.info("look stock " + event_occurrence.offer.eventOrThing.name + " " + stock_mock.get('id'))
+        event_occurrence = EventOccurrence.query.get(dehumanize(stock_mock['eventOccurrenceId']))
+        query = Stock.queryNotSoftDeleted().filter_by(eventOccurrenceId=event_occurrence.id)
+        logger.info("look stock " + event_occurrence.offer.eventOrThing.name + " " + stock_mock.get('id'))
     else:
-        if offer is None:
-            offer = Offer.query.get(dehumanize(stock_mock['offerId']))
-            logger.info("look stock " + offer.eventOrThing.name + " " + stock_mock.get('id'))
+        offer = Offer.query.get(dehumanize(stock_mock['offerId']))
+        logger.info("look stock " + offer.eventOrThing.name + " " + stock_mock.get('id'))
         query = Stock.queryNotSoftDeleted().filter_by(offerId=offer.id)
 
     if 'id' in stock_mock:
@@ -34,15 +32,3 @@ def create_or_find_stock(stock_mock, event_occurrence=None, offer=None):
         logger.info('--already here-- stock' + str(stock))
 
     return stock
-
-def create_or_find_stocks(*stock_mocks):
-    stocks_count = str(len(stock_mocks))
-    logger.info("stock mocks " + stocks_count)
-
-    stocks = []
-    for (stock_index, stock_mock) in enumerate(stock_mocks):
-        logger.info(str(stock_index) + "/" + stocks_count)
-        stock = create_or_find_stock(stock_mock)
-        stocks.append(stock)
-
-    return stocks

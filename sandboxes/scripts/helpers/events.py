@@ -21,15 +21,3 @@ def create_or_find_event(event_mock):
     logger.info('--already here-- event' + str(event))
 
     return event
-
-def create_or_find_events(*event_mocks):
-    events_count = str(len(event_mocks))
-    logger.info("event mocks " + events_count)
-
-    events = []
-    for (event_index, event_mock) in enumerate(event_mocks):
-        logger.info(str(event_index) + "/" + events_count)
-        event = create_or_find_event(event_mock)
-        events.append(event)
-
-    return events

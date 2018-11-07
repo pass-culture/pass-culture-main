@@ -1,12 +1,11 @@
 from models import Event, Thing, Mediation, Offer
 from models.pc_object import PcObject
-from sandboxes.utils import store_public_object_from_sandbox_assets
+from sandboxes.scripts.utils.storage_utils import store_public_object_from_sandbox_assets
 from utils.human_ids import dehumanize
 from utils.logger import logger
 
-def create_or_find_mediation(mediation_mock, offer=None, store=None):
-    if offer is None:
-        offer = Offer.query.get(dehumanize(mediation_mock['offerId']))
+def create_or_find_mediation(mediation_mock):
+    offer = Offer.query.get(dehumanize(mediation_mock['offerId']))
 
     logger.info("look mediation " + mediation_mock.get('id'))
 
@@ -36,15 +35,3 @@ def create_or_find_mediation(mediation_mock, offer=None, store=None):
         logger.info('--already here-- mediation' + str(mediation))
 
     return mediation
-
-def create_or_find_mediations(*mediation_mocks):
-    mediations_count = str(len(mediation_mocks))
-    logger.info("mediation mocks " + mediations_count)
-
-    mediations = []
-    for (mediation_index, mediation_mock) in enumerate(mediation_mocks):
-        logger.info(str(mediation_index) + "/" + mediations_count)
-        mediation = create_or_find_mediation(mediation_mock)
-        mediations.append(mediation)
-
-    return mediations

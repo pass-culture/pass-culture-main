@@ -3,16 +3,13 @@ from models.pc_object import PcObject
 from utils.human_ids import dehumanize
 from utils.logger import logger
 
-def create_or_find_offer(offer_mock, event_or_thing=None):
-
+def create_or_find_offer(offer_mock):
     if 'eventId' in offer_mock:
-        if event_or_thing is None:
-            event_or_thing = Event.query.get(dehumanize(offer_mock['eventId']))
+        event_or_thing = Event.query.get(dehumanize(offer_mock['eventId']))
         is_event = True
         query = Offer.query.filter_by(eventId=event_or_thing.id)
     else:
-        if event_or_thing is None:
-            event_or_thing = Thing.query.get(dehumanize(offer_mock['thingId']))
+        event_or_thing = Thing.query.get(dehumanize(offer_mock['thingId']))
         is_event = False
         query = Offer.query.filter_by(thingId=event_or_thing.id)
     venue = Venue.query.get(dehumanize(offer_mock['venueId']))
@@ -39,15 +36,3 @@ def create_or_find_offer(offer_mock, event_or_thing=None):
         logger.info('--already here-- offer' + str(offer))
 
     return offer
-
-def create_or_find_offers(*offer_mocks):
-    offers_count = str(len(offer_mocks))
-    logger.info("offer mocks " + offers_count)
-
-    offers = []
-    for (offer_index, offer_mock) in enumerate(offer_mocks):
-        logger.info(str(offer_index) + "/" + offers_count)
-        offer = create_or_find_offer(offer_mock)
-        offers.append(offer)
-
-    return offers

@@ -24,7 +24,7 @@ def store_public_object_from_sandbox_assets(folder, obj, thumb_id, index=0):
     dir_path = Path(os.path.dirname(os.path.realpath(__file__)))
     collection_name = inflect_engine.plural(obj.__class__.__name__.lower())
     thumb_path = dir_path\
-                 / folder / collection_name\
+                 / '..' / '..' / folder / collection_name\
                  / str(thumb_id)
 
     with open(thumb_path, mode='rb') as file:

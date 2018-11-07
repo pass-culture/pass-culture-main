@@ -1,6 +1,6 @@
 from models import User
 from models.pc_object import PcObject
-from sandboxes.utils import store_public_object_from_sandbox_assets
+from sandboxes.scripts.utils.storage_utils import store_public_object_from_sandbox_assets
 from utils.human_ids import dehumanize
 from utils.logger import logger
 
@@ -24,15 +24,3 @@ def create_or_find_user(user_mock):
         logger.info('--aleady here-- user' + str(user))
 
     return user
-
-def create_or_find_users(*user_mocks):
-    users_count = str(len(user_mocks))
-    logger.info("user mocks " + users_count)
-
-    users = []
-    for (user_index, user_mock) in enumerate(user_mocks):
-        logger.info(str(user_index) + "/" + users_count)
-        user = create_or_find_user(user_mock)
-        users.append(user)
-
-    return users

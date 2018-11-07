@@ -2,7 +2,7 @@
 from sandboxes.scripts.mocks.events import ALL_TYPED_EVENT_MOCKS
 from sandboxes.scripts.mocks.things import ALL_TYPED_THING_MOCKS
 from sandboxes.scripts.mocks.venues import ALL_VENUE_MOCKS
-from sandboxes.scripts.mocks.utils.generators import get_all_typed_event_offer_mocks, \
+from sandboxes.scripts.utils.generators import get_all_typed_event_offer_mocks, \
                                                      get_all_typed_thing_offer_mocks
 from utils.human_ids import dehumanize, humanize
 

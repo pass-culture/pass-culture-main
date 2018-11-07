@@ -1,5 +1,5 @@
 """ venue """
-from sandboxes.scripts.mocks.utils.generators import get_all_venue_mocks
+from sandboxes.scripts.utils.generators import get_all_venue_mocks
 from sandboxes.scripts.mocks.offerers import ALL_OFFERER_MOCKS
 from utils.human_ids import dehumanize, humanize
 

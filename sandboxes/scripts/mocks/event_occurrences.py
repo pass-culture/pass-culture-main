@@ -2,7 +2,7 @@
 from datetime import timedelta
 
 from sandboxes.scripts.mocks.offers import ALL_TYPED_EVENT_OFFER_MOCKS
-from sandboxes.scripts.mocks.utils.generators import get_all_typed_event_occurrence_mocks
+from sandboxes.scripts.utils.generators import get_all_typed_event_occurrence_mocks
 from utils.date import today, strftime
 from utils.human_ids import dehumanize, humanize
 

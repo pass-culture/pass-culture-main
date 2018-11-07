@@ -1,5 +1,5 @@
 """ offerers """
-from sandboxes.scripts.mocks.utils.generators import get_all_offerer_mocks
+from sandboxes.scripts.utils.generators import get_all_offerer_mocks
 from utils.human_ids import dehumanize, humanize
 
 OFFERER_MOCKS = []

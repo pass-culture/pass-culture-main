@@ -1,5 +1,5 @@
 """ things """
-from sandboxes.scripts.mocks import get_all_typed_thing_mocks
+from sandboxes.scripts.utils.generators import get_all_typed_thing_mocks
 from utils.human_ids import dehumanize, humanize
 
 THING_MOCKS = []

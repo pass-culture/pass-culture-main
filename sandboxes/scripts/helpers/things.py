@@ -21,15 +21,3 @@ def create_or_find_thing(thing_mock):
         logger.info('--already here-- thing ' + str(thing))
 
     return thing
-
-def create_or_find_things(*thing_mocks):
-    things_count = str(len(thing_mocks))
-    logger.info("thing mocks " + things_count)
-
-    things = []
-    for (thing_index, thing_mock) in enumerate(thing_mocks):
-        logger.info(str(thing_index) + "/" + things_count)
-        thing = create_or_find_thing(thing_mock)
-        things.append(thing)
-
-    return things

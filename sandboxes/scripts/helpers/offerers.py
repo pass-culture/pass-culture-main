@@ -22,15 +22,3 @@ def create_or_find_offerer(offerer_mock):
         logger.info('--aleady here-- offerer' + str(offerer))
 
     return offerer
-
-def create_or_find_offerers(*offerer_mocks):
-    offerers_count = str(len(offerer_mocks))
-    logger.info("offerer mocks " + offerers_count)
-
-    offerers = []
-    for (offerer_index, offerer_mock) in enumerate(offerer_mocks):
-        logger.info(str(offerer_index) + "/" + offerers_count)
-        offerer = create_or_find_offerer(offerer_mock)
-        offerers.append(offerer)
-
-    return offerers

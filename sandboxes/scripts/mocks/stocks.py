@@ -1,7 +1,7 @@
 """ stocks """
 from sandboxes.scripts.mocks.event_occurrences import ALL_TYPED_EVENT_OCCURRENCE_MOCKS
 from sandboxes.scripts.mocks.offers import ALL_TYPED_THING_OFFER_MOCKS
-from sandboxes.scripts.mocks.utils.generators import get_all_typed_event_stock_mocks, \
+from sandboxes.scripts.utils.generators import get_all_typed_event_stock_mocks, \
                                                      get_all_typed_thing_stock_mocks
 from utils.human_ids import dehumanize, humanize
 

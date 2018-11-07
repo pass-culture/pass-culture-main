@@ -4,11 +4,9 @@ from utils.human_ids import dehumanize
 from utils.logger import logger
 
 
-def create_or_find_booking(booking_mock, stock=None, user=None):
-    if stock is None:
-        stock = Stock.query.get(dehumanize(booking_mock['stockId']))
-    if user is None:
-        user = User.query.get(dehumanize(booking_mock['userId']))
+def create_or_find_booking(booking_mock):
+    stock = Stock.query.get(dehumanize(booking_mock['stockId']))
+    user = User.query.get(dehumanize(booking_mock['userId']))
 
     logger.info("look booking " + str(stock) + " " + user.email + " " + booking_mock.get('id'))
 
@@ -34,17 +32,3 @@ def create_or_find_booking(booking_mock, stock=None, user=None):
         logger.info('--already here-- booking' + str(booking))
 
     return booking
-
-
-def create_or_find_bookings(*booking_mocks):
-
-    bookings_count = str(len(booking_mocks))
-    logger.info("booking mocks " + bookings_count)
-
-    bookings = []
-    for (booking_index, booking_mock) in enumerate(booking_mocks):
-        logger.info(str(booking_index) + "/" + bookings_count)
-        booking = create_or_find_booking(booking_mock)
-        bookings.append(booking)
-
-    return bookings

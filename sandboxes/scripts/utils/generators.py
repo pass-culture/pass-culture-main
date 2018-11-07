@@ -3,23 +3,18 @@ import numpy
 import requests
 
 from domain.types import get_format_types, get_types_by_value
-from models import Booking,\
-                   Deposit,\
-                   EventOccurrence,\
+from models import EventOccurrence,\
                    Event,\
                    Mediation,\
                    Offer,\
                    Offerer,\
-                   Recommendation,\
                    Stock,\
                    Thing,\
-                   User,\
-                   UserOfferer,\
                    Venue
-from sandboxes.scripts.mocks.utils.params import EVENT_OR_THING_MOCK_NAMES, \
-                                                 EVENT_OCCURRENCE_BEGINNING_DATETIMES, \
-                                                 PLACES
-from sandboxes.utils import get_last_stored_id_of_model
+from sandboxes.scripts.utils.params import EVENT_OR_THING_MOCK_NAMES, \
+                                           EVENT_OCCURRENCE_BEGINNING_DATETIMES, \
+                                           PLACES
+from sandboxes.scripts.utils.storage_utils import get_last_stored_id_of_model
 from utils.human_ids import humanize
 
 def get_all_offerer_mocks(geo_interval=0.1, geo_number=2, starting_id=None, starting_siren=222222222):

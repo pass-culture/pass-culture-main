@@ -3,9 +3,8 @@ from models.pc_object import PcObject
 from utils.human_ids import dehumanize
 from utils.logger import logger
 
-def create_or_find_venue(venue_mock, offerer=None):
-    if offerer is None:
-        offerer = Offerer.query.get(dehumanize(venue_mock['offererId']))
+def create_or_find_venue(venue_mock):
+    offerer = Offerer.query.get(dehumanize(venue_mock['offererId']))
 
     logger.info("look venue " + venue_mock['name'] + " " + venue_mock.get('id'))
 
@@ -28,15 +27,3 @@ def create_or_find_venue(venue_mock, offerer=None):
         logger.info('--already here-- venue ' + str(venue))
 
     return venue
-
-def create_or_find_venues(*venue_mocks):
-    venues_count = str(len(venue_mocks))
-    logger.info("venue mocks " + venues_count)
-
-    venues = []
-    for (venue_index, venue_mock) in enumerate(venue_mocks):
-        logger.info(str(venue_index) + "/" + venues_count)
-        venue = create_or_find_venue(venue_mock)
-        venues.append(venue)
-
-    return venues
