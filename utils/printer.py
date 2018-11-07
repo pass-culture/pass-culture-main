@@ -6,7 +6,8 @@ from decimal import Decimal
 
 import models
 from utils import includes
-from utils.string_processing import get_camel_string, inflect_engine
+from utils.inflect_engine import inflect_engine
+from utils.string_processing import get_camel_string
 
 
 def listify (query, include, resolve=None, **kwargs):

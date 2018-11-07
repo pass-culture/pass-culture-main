@@ -6,9 +6,9 @@ from flask_login import current_user, login_required
 import models
 from models import RightsType
 from utils.human_ids import dehumanize
+from utils.inflect_engine import inflect_engine
 from utils.object_storage import local_path
 from utils.rest import ensure_current_user_has_rights
-from utils.string_processing import inflect_engine
 
 print('LOCAL DEV MODE: Using disk based object storage')
 

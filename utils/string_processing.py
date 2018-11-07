@@ -2,8 +2,6 @@
 import re
 from datetime import datetime, timedelta
 from operator import itemgetter
-
-import inflect
 from dateparser import parse
 from nltk import edit_distance
 from psycopg2.extras import DateTimeRange
@@ -13,7 +11,6 @@ SCHEDULE_FORMAT = "%H:%M:%S.%f"
 DATE_FORMAT = DAY_FORMAT + "T" + SCHEDULE_FORMAT + "Z"
 
 from_to_regex = re.compile(r'(\d+)\sau\s(\d+)\s(.*)\s(\d{4})')
-inflect_engine = inflect.engine()
 
 schedules = [
     {

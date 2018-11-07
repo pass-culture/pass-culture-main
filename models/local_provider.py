@@ -16,7 +16,7 @@ from models.provider import Provider
 from models.thing import Thing
 from utils.date import read_json_date
 from utils.human_ids import humanize
-from utils.string_processing import inflect_engine
+from utils.inflect_engine import inflect_engine
 
 
 class ProvidableInfo(object):

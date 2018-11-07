@@ -8,10 +8,10 @@ from sqlalchemy import Binary, CheckConstraint, Column, Integer
 
 from models.pc_object import PcObject
 from utils.human_ids import humanize
+from utils.inflect_engine import inflect_engine
 from utils.object_storage import delete_public_object, \
     get_public_object_date, \
     store_public_object
-from utils.string_processing import inflect_engine
 
 IDEAL_THUMB_WIDTH = 600
 
