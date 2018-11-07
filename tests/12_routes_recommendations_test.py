@@ -67,9 +67,13 @@ def test_put_recommendations_returns_a_list_of_recos_starting_with_two_tutos():
 
     # then
     recos = response.json()
+    print("recos[0]", recos[0])
     assert recos[0]['mediation']['tutoIndex'] == 0
     assert recos[1]['mediation']['tutoIndex'] == 1
-    recos_with_tutos = filter(lambda reco: 'mediation' in reco and reco['mediation']['tutoIndex'] is not None, recos)
+    recos_with_tutos = [
+        reco for reco in recos
+        if 'mediation' in reco and reco['mediation']['tutoIndex'] is not None
+    ]
     assert len(list(recos_with_tutos)) == 2
 
 
