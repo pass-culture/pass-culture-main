@@ -24,7 +24,7 @@ from validation.bookings import check_booking_is_usable, \
     check_offer_is_active, \
     check_stock_booking_limit_date, \
     check_user_is_logged_in_or_email_is_provided, check_email_and_offer_id_for_anonymous_user, \
-    check_booking_is_cancellable
+    check_booking_is_cancellable, check_stock_venue_is_validated
 
 
 @app.route('/bookings', methods=['GET'])
@@ -58,10 +58,10 @@ def create_booking():
         check_existing_stock(stock)
         check_not_soft_deleted_stock(stock)
 
-        managing_offerer = stock.resolvedOffer.venue.managingOfferer
         check_can_book_free_offer(stock, current_user)
-        check_offer_is_active(stock, managing_offerer)
+        check_offer_is_active(stock)
         check_stock_booking_limit_date(stock)
+        check_stock_venue_is_validated(stock)
     except ApiErrors as api_errors:
         return jsonify(api_errors.errors), 400
 

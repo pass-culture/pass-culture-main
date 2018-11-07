@@ -4,10 +4,10 @@ from unittest.mock import Mock
 import pytest
 
 from domain.user_emails import send_reset_password_email
-from domain.admin_emails import maybe_send_offerer_validation_email
+from domain.admin_emails import maybe_send_offerer_validation_email, send_venue_validation_email
 from utils.mailing import MailServiceException
 from utils.test_utils import create_offerer, create_user, \
-    create_user_offerer
+    create_user_offerer, create_venue
 
 
 @pytest.mark.standalone
@@ -92,3 +92,41 @@ def test_maybe_send_offerer_validation_email_raises_exception_if_status_code_400
     # When
     with pytest.raises(MailServiceException):
         maybe_send_offerer_validation_email(offerer, user_offerer, mocked_send_create_email)
+
+
+
+@pytest.mark.standalone
+def test_send_venue_validation_email_when_mailjet_status_code_200_calls_send_create_email_and_returns_nothing(app):
+    # Given
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+
+    mocked_send_create_email = Mock()
+    return_value = Mock()
+    return_value.status_code = 200
+    mocked_send_create_email.return_value = return_value
+
+    # When
+    try:
+        send_venue_validation_email(venue, mocked_send_create_email)
+    except MailServiceException:
+        assert False
+
+    # Then
+    mocked_send_create_email.assert_called_once()
+
+
+@pytest.mark.standalone
+def test_send_venue_validation_email_when_mailjet_status_code_400_raises_MailServiceException(app):
+    # Given
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+
+    mocked_send_create_email = Mock()
+    return_value = Mock()
+    return_value.status_code = 400
+    mocked_send_create_email.return_value = return_value
+
+    # When
+    with pytest.raises(MailServiceException):
+        send_venue_validation_email(venue,mocked_send_create_email)

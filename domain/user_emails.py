@@ -7,7 +7,8 @@ from utils.logger import logger
 from utils.mailing import make_user_booking_recap_email, \
     make_offerer_booking_recap_email_after_user_action, make_offerer_driven_cancellation_email_for_user, \
     make_offerer_driven_cancellation_email_for_offerer, make_final_recap_email_for_stock_with_event, \
-    check_if_email_sent, make_reset_password_email, make_validation_confirmation_email, make_batch_cancellation_email
+    check_if_email_sent, make_reset_password_email, make_validation_confirmation_email, make_batch_cancellation_email, \
+    make_venue_validation_confirmation_email
 
 
 def send_final_booking_recap_email(stock, send_create_email):
@@ -126,6 +127,14 @@ def send_cancellation_emails_to_user_and_offerer(booking, is_offerer_cancellatio
     if is_offerer_cancellation:
         send_offerer_driven_cancellation_email_to_user(booking, send_create_email)
         send_offerer_driven_cancellation_email_to_offerer(booking, send_create_email)
+
+
+def send_venue_validation_confirmation_email(venue, send_create_email):
+    recipients = find_all_admin_offerer_emails(venue.managingOffererId)
+    email = make_venue_validation_confirmation_email(venue)
+    email['Html-part'], email['To'] = _edit_email_html_part_and_recipients(email['Html-part'], recipients)
+    mail_result = send_create_email(data=email)
+    check_if_email_sent(mail_result)
 
 
 def _get_offerer_id(offerer, user_offerer):

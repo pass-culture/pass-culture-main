@@ -82,7 +82,8 @@ def test_create_booking_should_work_before_limit_date(app):
 def test_create_booking_should_not_work_if_too_many_bookings(app):
     offerer = create_offerer('987654321', 'Test address', 'Test city', '93000', 'Test name')
     venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
-    too_many_bookings_stock = create_stock_with_thing_offer(offerer=Offerer(), venue=venue, thing_offer=None, available=2)
+    too_many_bookings_stock = create_stock_with_thing_offer(offerer=Offerer(), venue=venue, thing_offer=None,
+                                                            available=2)
 
     user = create_user(email='test@email.com', password='mdppsswd')
 
@@ -497,6 +498,7 @@ def test_create_booking_returns_bad_request_if_offerer_is_inactive(app):
     assert response.status_code == 400
     assert error_message['stockId'] == ["Cette offre a été retirée. Elle n'est plus valable."]
 
+
 @clean_database
 @pytest.mark.standalone
 def test_create_booking_returns_bad_request_if_stock_is_soft_deleted(app):
@@ -549,6 +551,7 @@ def test_create_booking_returns_bad_request_if_null_quantity_is_given(app):
     assert response.status_code == 400
     assert error_message['quantity'] == ['Vous devez préciser une quantité pour la réservation']
 
+
 @clean_database
 @pytest.mark.standalone
 def test_patch_booking_returns_400_when_it_is_not_is_cancelled_true_key(app):
@@ -561,12 +564,13 @@ def test_patch_booking_returns_400_when_it_is_not_is_cancelled_true_key(app):
 
     # When
     response = req_with_auth(user.email, user.clearTextPassword) \
-        .patch(API_URL + '/bookings/' + humanize(booking.id), json={ "quantity": 3 })
+        .patch(API_URL + '/bookings/' + humanize(booking.id), json={"quantity": 3})
 
     # Then
     assert response.status_code == 400
     db.session.refresh(booking)
     assert booking.quantity == 1
+
 
 @clean_database
 @pytest.mark.standalone
@@ -581,12 +585,13 @@ def test_patch_booking_returns_400_when_is_cancelled_false_key(app):
 
     # When
     response = req_with_auth(user.email, user.clearTextPassword) \
-        .patch(API_URL + '/bookings/' + humanize(booking.id), json={ "isCancelled": False })
+        .patch(API_URL + '/bookings/' + humanize(booking.id), json={"isCancelled": False})
 
     # Then
     assert response.status_code == 400
     db.session.refresh(booking)
     assert booking.isCancelled
+
 
 @clean_database
 @pytest.mark.standalone
@@ -600,7 +605,7 @@ def test_cancel_booking_returns_200_and_effectively_marks_the_booking_as_cancell
 
     # When
     response = req_with_auth(user.email, user.clearTextPassword) \
-        .patch(API_URL + '/bookings/' + humanize(booking.id), json={ "isCancelled": True })
+        .patch(API_URL + '/bookings/' + humanize(booking.id), json={"isCancelled": True})
 
     # Then
     assert response.status_code == 200
@@ -617,7 +622,7 @@ def test_cancel_booking_returns_404_if_booking_does_not_exist(app):
 
     # When
     response = req_with_auth(user.email, user.clearTextPassword) \
-        .patch(API_URL + '/bookings/AX', json={ "isCancelled": True })
+        .patch(API_URL + '/bookings/AX', json={"isCancelled": True})
 
     # Then
     assert response.status_code == 404
@@ -824,7 +829,8 @@ def test_get_booking_by_token_when_not_logged_in_and_give_right_email_and_offer_
 
 @clean_database
 @pytest.mark.standalone
-def test_get_booking_by_token_when_not_logged_in_and_give_right_email_and_offer_id_thing_but_already_validated_token(app):
+def test_get_booking_by_token_when_not_logged_in_and_give_right_email_and_offer_id_thing_but_already_validated_token(
+        app):
     # Given
     user = create_user(email='user@email.fr')
     admin_user = create_user(email='admin@email.fr', password='P@55w0rd')
@@ -1278,3 +1284,31 @@ def test_patch_booking_by_token_returns_404_if_special_character_in_email_withou
     response = req_with_auth('admin@email.fr', 'P@55w0rd').patch(url)
     # Then
     assert response.status_code == 404
+
+
+@clean_database
+@pytest.mark.standalone
+def test_post_booking_on_stock_with_non_validated_venue_returns_status_code_400_and_stock_id_in_error(app):
+    # Given
+    user = create_user(email='test@email.com', password='testpsswd')
+    deposit = create_deposit(user, datetime.utcnow())
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    venue.generate_validation_token()
+    thing_offer = create_thing_offer(venue)
+    stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=10)
+    PcObject.check_and_save(stock, user, deposit)
+
+    booking_json = {
+        'stockId': humanize(stock.id),
+        'recommendationId': None,
+        'quantity': 1
+    }
+
+    # When
+    r_create = req_with_auth(user.email, user.clearTextPassword).post(API_URL + '/bookings', json=booking_json)
+
+    # Then
+    assert r_create.status_code == 400
+    assert r_create.json()['stockId'] == [
+        'Vous ne pouvez pas encore réserver cette offre, son lieu est en attente de validation']

@@ -258,6 +258,17 @@ def make_validation_confirmation_email(user_offerer, offerer):
     }
 
 
+def make_venue_validation_email(venue):
+    html = render_template('mails/venue_validation_email.html', venue=venue, api_url=API_URL)
+    return {
+        'FromEmail': 'passculture@beta.gouv.fr',
+        'FromName': 'pass Culture',
+        'To': 'passculture@beta.gouv.fr',
+        'Subject': '{} - rattachement de lieu pro à valider : {}'.format(venue.departementCode, venue.name),
+        'Html-part': html
+    }
+
+
 def get_contact(user):
     return app.mailjet_client.contact.get(user.email).json()['Data'][0]
 
@@ -305,6 +316,16 @@ def make_payment_transaction_email(xml: str) -> dict:
         'Attachments': [{"ContentType": "text/xml",
                           "Filename": "transaction_banque_de_france_{}.xml".format(datetime.strftime(now, "%Y%m%d")),
                           "Base64Content": xml_b64encode}]}
+
+
+def make_venue_validation_confirmation_email(venue):
+    html = render_template('mails/venue_validation_confirmation_email.html', venue=venue)
+    return {
+        'Subject': 'Validation du rattachement du lieu "{}" à votre structure "{}"'.format(venue.name, venue.managingOfferer.name),
+        'FromEmail': "passculture@beta.gouv.fr",
+        'FromName': "pass Culture pro",
+        'Html-part': html
+    }
 
 
 def _generate_reservation_email_html_subject(booking):

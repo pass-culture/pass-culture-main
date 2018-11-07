@@ -78,6 +78,7 @@ def get_active_offers_by_type(offer_type, user=None, departement_codes=None, off
         query = query.join(Stock, and_(Offer.id == Stock.offerId))
     query = query.filter(Stock.isSoftDeleted == False)
     query = query.join(Venue, and_(Offer.venueId == Venue.id))
+    query = query.filter(Venue.validationToken == None)
     query = query.join(Offerer)
     if offer_type == Event:
         query = query.join(Event, and_(Offer.eventId == Event.id))
@@ -128,7 +129,7 @@ def get_offers_for_recommendations_search(
     # NOTE: filter_out_offers_on_soft_deleted_stocks filter then
     # the offer with event that has NO event occurrence
     # Do we exactly want this ?
-    offer_query = _filter_out_offers_on_soft_deleted_stocks_and_inactive_offers()
+    offer_query = _filter_recommendable_offers()
 
     # NOTE: which order of the filters is the best for minimal time computation ?
     # Question à 500 patates.
@@ -208,7 +209,11 @@ def find_by_venue_id_or_offerer_id_and_search_terms_offers_where_user_has_rights
     return query
 
 
-def _filter_out_offers_on_soft_deleted_stocks_and_inactive_offers():
+def find_searchable_offer(offer_id):
+    return Offer.query.filter_by(id=offer_id).join(Venue).filter(Venue.validationToken==None).first()
+
+
+def _filter_recommendable_offers():
     join_on_stocks = Offer.query.filter_by(isActive=True) \
         .join(Stock) \
         .filter_by(isSoftDeleted=False)

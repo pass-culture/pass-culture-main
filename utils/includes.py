@@ -90,7 +90,8 @@ OFFER_INCLUDES = [
                     "nOffers",
                     "isValidated"
                 ]
-            }
+            },
+            "isValidated"
         ]
     }
 ]
@@ -164,6 +165,7 @@ USER_INCLUDES = [
 ]
 
 VENUE_INCLUDES = [
+    'isValidated',
     {
         "key": "eventOccurrences",
         "sub_joins": ["event"]
