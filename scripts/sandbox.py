@@ -4,7 +4,7 @@ from pprint import pprint
 import traceback
 from flask import current_app as app
 
-from sandboxes import save_sandbox_in_db
+from sandboxes.scripts.utils.save_sandbox import save_sandbox
 
 
 @app.manager.option('-n',
@@ -13,7 +13,7 @@ from sandboxes import save_sandbox_in_db
                     default="classic")
 def sandbox(name):
     try:
-        save_sandbox_in_db(name)
+        save_sandbox(name)
     except Exception as e:
         print('ERROR: ' + str(e))
         traceback.print_tb(e.__traceback__)

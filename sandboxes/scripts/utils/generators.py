@@ -205,6 +205,7 @@ def get_all_typed_event_offer_mocks(all_typed_event_mocks, all_venue_mocks, star
                 "eventId": event_mock['id'],
                 "id": humanize(incremented_id),
                 "isActive": True,
+                "type": event_mock['type']
             }
 
             # DETERMINE THE MATCHING VENUE
@@ -247,7 +248,8 @@ def get_all_typed_thing_offer_mocks(all_typed_thing_mocks, all_venue_mocks, star
             offer_mock = {
                 "id": humanize(incremented_id),
                 "isActive": True,
-                "thingId": thing_mock['id']
+                "thingId": thing_mock['id'],
+                "type": thing_mock['type']
             }
 
             # DETERMINE THE MATCHING VENUE
@@ -344,6 +346,7 @@ def get_all_typed_event_mediation_mocks(all_typed_event_offer_mocks, starting_id
         mediation_mock = {
             "id": humanize(incremented_id),
             "offerId": event_offer_mock['id'],
+            "thumbName": event_offer_mock['type']
         }
 
         incremented_id += 1
@@ -363,7 +366,8 @@ def get_all_typed_thing_mediation_mocks(all_typed_thing_offer_mocks, starting_id
     for thing_offer_mock in all_typed_thing_offer_mocks:
         mediation_mock = {
             "id": humanize(incremented_id),
-            "offerId": thing_offer_mock['id']
+            "offerId": thing_offer_mock['id'],
+            "thumbName": thing_offer_mock['type']
         }
 
         incremented_id += 1
