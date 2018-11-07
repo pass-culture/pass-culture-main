@@ -1,4 +1,4 @@
-""" mock names """
+""" params """
 from datetime import timedelta
 
 from utils.date import today

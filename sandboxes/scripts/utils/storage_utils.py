@@ -1,4 +1,4 @@
-""" mock """
+""" storage utils """
 import os
 from pathlib import Path
 

@@ -2,12 +2,12 @@
 from sqlalchemy import func
 
 from local_providers import OpenAgendaEvents, \
-    SpreadsheetExpStocks, \
-    SpreadsheetExpVenues, \
-    TiteLiveThingDescriptions, \
-    TiteLiveThingThumbs, \
-    TiteLiveThings, \
-    TiteLiveVenues
+                            SpreadsheetExpStocks, \
+                            SpreadsheetExpVenues, \
+                            TiteLiveThingDescriptions, \
+                            TiteLiveThingThumbs, \
+                            TiteLiveThings, \
+                            TiteLiveVenues
 from models.db import db
 from models.pc_object import PcObject
 from models.provider import Provider
@@ -15,6 +15,7 @@ from models.thing import Thing
 from models.venue_provider import VenueProvider
 from sandboxes.scripts.utils.save_sandbox import save_sandbox
 from utils.human_ids import dehumanize
+from utils.logger import logger
 from utils.test_utils import assertCreatedCounts, \
                              assert_created_thumbs,\
                              assertEmptyDb, \
@@ -168,11 +169,9 @@ def test_17_openagenda_events_provider(app):
 
 def test_99_init(app):
     saveCounts(app)
-    from utils.logger import logger
-    from sandboxes import save_sandbox_in_db
     with app.app_context():
         logger_info = logger.info
         logger.info = lambda o: None
-        save_sandbox_in_db('light')
+        save_sandbox('light')
         logger.info = logger_info
         assertCreatedCounts(app, User=5)
