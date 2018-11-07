@@ -6,6 +6,8 @@ from dateparser import parse
 from nltk import edit_distance
 from psycopg2.extras import DateTimeRange
 
+from utils.inflect_engine import inflect_engine
+
 DAY_FORMAT = "%Y-%m-%d"
 SCHEDULE_FORMAT = "%H:%M:%S.%f"
 DATE_FORMAT = DAY_FORMAT + "T" + SCHEDULE_FORMAT + "Z"
@@ -27,6 +29,9 @@ schedules = [
     }
 ]
 
+def get_collection_name(obj):
+    print('obj', obj, obj.__class__.__name__)
+    return inflect_engine.plural(obj.__class__.__name__.lower())
 
 def dashify(name):
     s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)

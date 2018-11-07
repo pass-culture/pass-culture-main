@@ -1,4 +1,5 @@
 """ generators """
+from datetime import timedelta
 import numpy
 import requests
 
@@ -15,6 +16,7 @@ from sandboxes.scripts.utils.params import EVENT_OR_THING_MOCK_NAMES, \
                                            EVENT_OCCURRENCE_BEGINNING_DATETIMES, \
                                            PLACES
 from sandboxes.scripts.utils.storage_utils import get_last_stored_id_of_model
+from utils.date import strftime
 from utils.human_ids import humanize
 
 def get_all_offerer_mocks(geo_interval=0.1, geo_number=2, starting_id=None, starting_siren=222222222):
@@ -81,8 +83,8 @@ def get_all_venue_mocks(all_offerer_mocks, starting_id=None):
             "id": humanize(incremented_id),
             "latitude": offerer_mock['latitude'],
             "longitude": offerer_mock['longitude'],
+            "managingOffererId": offerer_mock['id'],
             "name": "LIEU " + str(offerer_mock['siren']),
-            "offererId": offerer_mock['id'],
             "postalCode": offerer_mock['postalCode']
         }
 
@@ -93,8 +95,8 @@ def get_all_venue_mocks(all_offerer_mocks, starting_id=None):
         virtual_venue_mock = {
             "id": humanize(incremented_id),
             "isVirtual": True,
+            "managingOffererId": offerer_mock['id'],
             "name": "Offre en ligne",
-            "offererId": offerer_mock['id']
         }
 
         incremented_id += 1
@@ -196,7 +198,7 @@ def get_all_typed_event_offer_mocks(all_typed_event_mocks, all_venue_mocks, star
 
         virtual_venue_mock = [
             vm for vm in all_venue_mocks
-            if venue_mock['offererId'] == vm['offererId'] and 'isVirtual' in vm and vm['isVirtual'] == True
+            if venue_mock['managingOffererId'] == vm['managingOffererId'] and 'isVirtual' in vm and vm['isVirtual'] == True
         ][0]
 
         for event_mock in all_typed_event_mocks:
@@ -241,7 +243,7 @@ def get_all_typed_thing_offer_mocks(all_typed_thing_mocks, all_venue_mocks, star
 
         virtual_venue_mock = [
             vm for vm in all_venue_mocks
-            if venue_mock['offererId'] == vm['offererId'] and 'isVirtual' in vm and vm['isVirtual'] == True
+            if venue_mock['managingOffererId'] == vm['managingOffererId'] and 'isVirtual' in vm and vm['isVirtual'] == True
         ][0]
 
         for thing_mock in all_typed_thing_mocks:
@@ -278,7 +280,8 @@ def get_all_typed_event_occurrence_mocks(all_typed_event_offer_mocks, starting_i
     for event_offer_mock in all_typed_event_offer_mocks:
         for beginning_datetime in EVENT_OCCURRENCE_BEGINNING_DATETIMES:
             event_occurrence_mock = {
-                "beginningDatetime": beginning_datetime,
+                "beginningDatetime": strftime(beginning_datetime),
+                "endDatetime": strftime(beginning_datetime + timedelta(hours=1)),
                 "id": humanize(incremented_id),
                 "offerId": event_offer_mock['id']
             }

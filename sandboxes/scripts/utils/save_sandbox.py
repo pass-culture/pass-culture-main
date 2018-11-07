@@ -1,79 +1,72 @@
 """ save sandbox """
-import json
-from pprint import pprint
-import sys
-
-from models.pc_object import PcObject
-from sandboxes.scripts.helpers import create_or_find_booking,\
-                                      create_or_find_deposit,\
-                                      create_or_find_event_occurrence,\
-                                      create_or_find_event,\
-                                      create_or_find_mediation,\
-                                      create_or_find_objects, \
-                                      create_or_find_offerer,\
-                                      create_or_find_offer,\
-                                      create_or_find_recommendation,\
-                                      create_or_find_stock,\
-                                      create_or_find_thing,\
-                                      create_or_find_user_offerer,\
-                                      create_or_find_user,\
-                                      create_or_find_venue
-from sandboxes.scripts.mocks import *
-from sandboxes.scripts import sandbox_light, sandbox_webapp
-from utils.logger import logger
+from models import Booking,\
+                   Deposit,\
+                   EventOccurrence,\
+                   Event,\
+                   Mediation,\
+                   Offerer,\
+                   Offer,\
+                   Recommendation,\
+                   Stock,\
+                   Thing,\
+                   UserOfferer,\
+                   User,\
+                   Venue
+from sandboxes.scripts.utils.creators import create_or_find_objects
+from sandboxes import scripts
 
 def save_sandbox(name):
-    function_name = "sandboxes.scripts.sandbox_" + name
-    sandbox_module = sys.modules[function_name]
+    script_name = "sandbox_" + name
+    sandbox_module = getattr(scripts, script_name)
     create_or_find_objects(
-        *sandbox_module.OFFERER_MOCKS,
-        create_or_find_object=create_or_find_offerer
+        Offerer,
+        *sandbox_module.OFFERER_MOCKS
     )
     create_or_find_objects(
-        *sandbox_module.USER_MOCKS,
-        create_or_find_object=create_or_find_user
+        User,
+        *sandbox_module.USER_MOCKS
     )
     create_or_find_objects(
-        *sandbox_module.USER_OFFERER_MOCKS,
-        create_or_find_object=create_or_find_user_offerer
+        UserOfferer,
+        *sandbox_module.USER_OFFERER_MOCKS
     )
     create_or_find_objects(
-        *sandbox_module.VENUE_MOCKS,
-        create_or_find_object=create_or_find_venue
+        Venue,
+        *sandbox_module.VENUE_MOCKS
     )
     create_or_find_objects(
-        *sandbox_module.EVENT_MOCKS,
-        create_or_find_object=create_or_find_event
+        Event,
+        *sandbox_module.EVENT_MOCKS
     )
     create_or_find_objects(
-        *sandbox_module.THING_MOCKS,
-        create_or_find_object=create_or_find_thing
+        Thing,
+        *sandbox_module.THING_MOCKS
     )
     create_or_find_objects(
-        *sandbox_module.OFFER_MOCKS,
-        create_or_find_object=create_or_find_offer
+        Offer,
+        *sandbox_module.OFFER_MOCKS
     )
     create_or_find_objects(
-        *sandbox_module.EVENT_OCCURRENCE_MOCKS,
-        create_or_find_object=create_or_find_event_occurrence
+        EventOccurrence,
+        *sandbox_module.EVENT_OCCURRENCE_MOCKS
     )
     create_or_find_objects(
-        *sandbox_module.STOCK_MOCKS,
-        create_or_find_object=create_or_find_stock
+        Stock,
+        *sandbox_module.STOCK_MOCKS
     )
     create_or_find_objects(
-        *sandbox_module.DEPOSIT_MOCKS,
-        create_or_find_object=create_or_find_deposit
+        Deposit,
+        *sandbox_module.DEPOSIT_MOCKS
     )
     create_or_find_objects(
-        *sandbox_module.MEDIATION_MOCKS,
-        create_or_find_object=create_or_find_mediation
+        Mediation,
+        *sandbox_module.MEDIATION_MOCKS
     )
     create_or_find_objects(
-        *sandbox_module.RECOMMENDATION_MOCKS,
-        create_or_find_object=create_or_find_recommendation
+        Recommendation,
+        *sandbox_module.RECOMMENDATION_MOCKS
     )
     create_or_find_objects(
-        *sandbox_module.BOOKING_MOCKS,
-        create_or_find_object=create_or_find_booking
+        Booking,
+        *sandbox_module.BOOKING_MOCKS
     )

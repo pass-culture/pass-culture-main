@@ -5,10 +5,10 @@ from pathlib import Path
 from models.db import db
 from models.pc_object import PcObject
 from utils.human_ids import humanize
-from utils.inflect_engine import inflect_engine
 from utils.object_storage import store_public_object
+from utils.string_processing import get_collection_name
 
-mimes_by_folder = {
+MIMES_BY_FOLDER = {
     "spreadsheets": "application/CSV",
     "thumbs": "image/jpeg",
     "zips": "application/zip"
@@ -22,7 +22,7 @@ def get_last_stored_id_of_model(model):
 
 def store_public_object_from_sandbox_assets(folder, obj, thumb_id, index=0):
     dir_path = Path(os.path.dirname(os.path.realpath(__file__)))
-    collection_name = inflect_engine.plural(obj.__class__.__name__.lower())
+    collection_name = get_collection_name(obj)
     thumb_path = dir_path\
                  / '..' / '..' / folder / collection_name\
                  / str(thumb_id)
@@ -40,7 +40,7 @@ def store_public_object_from_sandbox_assets(folder, obj, thumb_id, index=0):
             store_public_object(folder,
                                 collection_name + '/' + humanize(obj.id),
                                 file.read(),
-                                mimes_by_folder[folder],
+                                MIMES_BY_FOLDER[folder],
                                 symlink_path=thumb_path)
 
     PcObject.check_and_save(obj)

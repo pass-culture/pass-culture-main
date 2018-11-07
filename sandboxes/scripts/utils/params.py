@@ -1,7 +1,7 @@
 """ mock names """
 from datetime import timedelta
 
-from utils.date import today, strftime
+from utils.date import today
 
 EVENT_OR_THING_MOCK_NAMES = [
     "Anaconda",
@@ -13,9 +13,9 @@ EVENT_OR_THING_MOCK_NAMES = [
 ]
 
 EVENT_OCCURRENCE_BEGINNING_DATETIMES = [
-    strftime(today),
-    strftime(today + timedelta(days=2)),
-    strftime(today + timedelta(days=15))
+    today,
+    today + timedelta(days=2),
+    today + timedelta(days=15)
 ]
 
 PLACES = [

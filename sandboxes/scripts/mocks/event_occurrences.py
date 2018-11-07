@@ -11,21 +11,25 @@ EVENT_OCCURRENCE_MOCKS = []
 SCRATCH_EVENT_OCCURRENCE_MOCKS = [
     {
         "beginningDatetime": strftime(today),
+        "endDatetime": strftime(today + timedelta(hours=1)),
         "id": humanize(1),
         "offerId": humanize(1) # Rencontre avec Franck Lepage  LE GRAND REX PARIS
     },
     {
         "beginningDatetime": strftime(today + timedelta(days=1)),
+        "endDatetime": strftime(today + timedelta(days=1, hours=1)),
         "id": humanize(2),
         "offerId": humanize(1) # Rencontre avec Franck Lepage  LE GRAND REX PARIS
     },
     {
         "beginningDatetime": strftime(today),
+        "endDatetime": strftime(today + timedelta(hours=2)),
         "id": humanize(3),
         "offerId": humanize(2) # Concert de Gael Faye THEATRE DE L ODEON
     },
     {
         "beginningDatetime": strftime(today),
+        "endDatetime": strftime(today + timedelta(hours=3)),
         "id": humanize(4),
         "offerId": humanize(3) # PNL chante Marx THEATRE DE L ODEON
     }
