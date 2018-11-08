@@ -29,7 +29,6 @@ from models import Booking, \
 import models
 from models.payment_status import PaymentStatus, TransactionStatus
 from sandboxes.scripts.mocks.users_light import ADMIN_USER_MOCK
-from utils.logger import logger
 from utils.object_storage import STORAGE_DIR
 from utils.token import random_token
 
@@ -495,13 +494,6 @@ def create_venue(
     venue.longitude = longitude
     venue.latitude = latitude
     venue.siret = siret
-    """
-    if not is_virtual:
-        venue.siret = siret
-    elif siret is not None:
-        logger.warning("You try to create a venue with both siret and isVirtual. We just did not take in account the siret then.")
-    """
-
     venue.comment = comment
     venue.id = idx
     return venue

@@ -12,10 +12,14 @@ from models import Booking,\
                    UserOfferer,\
                    User,\
                    Venue
+from models.auto_increment import make_auto_increment_id_clamped_to_last_inserted_object
 from sandboxes.scripts.utils.creators import create_or_find_objects
 from sandboxes import scripts
 
 def save_sandbox(name):
+
+    make_auto_increment_id_clamped_to_last_inserted_object()
+
     script_name = "sandbox_" + name
     sandbox_module = getattr(scripts, script_name)
     create_or_find_objects(

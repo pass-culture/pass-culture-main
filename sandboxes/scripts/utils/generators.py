@@ -12,10 +12,10 @@ from models import EventOccurrence,\
                    Stock,\
                    Thing,\
                    Venue
+from models.auto_increment import get_last_stored_id_of_model
 from sandboxes.scripts.utils.params import EVENT_OR_THING_MOCK_NAMES, \
                                            EVENT_OCCURRENCE_BEGINNING_DATETIMES, \
                                            PLACES
-from sandboxes.scripts.utils.storage_utils import get_last_stored_id_of_model
 from utils.date import strftime
 from utils.human_ids import humanize
 

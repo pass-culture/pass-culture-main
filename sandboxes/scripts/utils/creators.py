@@ -1,19 +1,31 @@
 """ creators """
+from models.auto_increment import get_last_stored_id_of_model
 from models.pc_object import PcObject
 from sandboxes.scripts.utils.storage_utils import store_public_object_from_sandbox_assets
-from utils.human_ids import dehumanize
+from utils.human_ids import dehumanize, humanize
 from utils.logger import logger
 
 def create_or_find_object(model, mock):
-    logger.info("look " + model.__name__ + " " + mock.get('id'))
+    logger.info("look " + model.__name__ + " " + str(mock.get('id')))
 
-    obj = model.query.filter_by(id=dehumanize(mock['id'])).first()
+    obj = None
+    if 'id' in mock:
+        obj = model.query.filter_by(id=dehumanize(mock['id'])).first()
 
     if obj is None:
+
         obj = model(from_dict=mock)
+
         if 'id' in mock:
             obj.id = dehumanize(mock['id'])
+
         PcObject.check_and_save(obj)
+
+        # PLEASE PAY ATTENTION WE HERE MUTATE
+        # THE MOCK BECAUSE THAT IS THE ONLY TO REFIND IT
+        # IF MOCK WAS GIVEN WITHOUT ID (AND SOMETIMES YOU )
+        mock['id'] = humanize(obj.id)
+
         if 'thumbName' in mock:
             store_public_object_from_sandbox_assets(
                 "thumbs",
