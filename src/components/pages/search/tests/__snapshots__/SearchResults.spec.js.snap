@@ -45,7 +45,6 @@ ShallowWrapper {
         </h2>,
         <InfiniteScroller
           Tag="ul"
-          className={null}
           handleLoadMore={[MockFunction]}
           loadScrollRatio={0.9}
           renderErrors={[Function]}
@@ -85,7 +84,6 @@ ShallowWrapper {
         "props": Object {
           "Tag": "ul",
           "children": Array [],
-          "className": null,
           "handleLoadMore": [MockFunction],
           "loadScrollRatio": 0.9,
           "renderErrors": [Function],
@@ -120,7 +118,6 @@ ShallowWrapper {
           </h2>,
           <InfiniteScroller
             Tag="ul"
-            className={null}
             handleLoadMore={[MockFunction]}
             loadScrollRatio={0.9}
             renderErrors={[Function]}
@@ -160,7 +157,6 @@ ShallowWrapper {
           "props": Object {
             "Tag": "ul",
             "children": Array [],
-            "className": null,
             "handleLoadMore": [MockFunction],
             "loadScrollRatio": 0.9,
             "renderErrors": [Function],
