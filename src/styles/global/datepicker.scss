@@ -7,11 +7,16 @@
 
 .react-datepicker__header {
   @extend .dotted-bottom-primary;
+  // @extend .no-margin;
+  @extend .fs22;
+  @extend .no-padding;
 
   border-bottom: 0;
   background-color: $white;
 
   .react-datepicker__current-month {
+    @extend .mt7;
+    @extend .mb16;
     @extend .fs18;
     @extend .is-normal;
     @extend .is-capitalized;
@@ -41,18 +46,24 @@
     height: rem(36px);
     line-height: rem(36px);
   }
+
+  .react-datepicker__day--selected,
+  .react-datepicker__day--keyboard-selected {
+    background-color: $primary;
+  }
 }
 
 /* ----- TODAY ----- */
 
 .react-datepicker__today-button {
-  @extend .py12;
   @extend .fs16;
   @extend .is-normal;
   @extend .no-border;
   @extend .dotted-top-primary;
 
+  border-top: 0;
   color: $primary;
+  padding: rem(12px 0);
   background-color: transparent;
 }
 
@@ -61,6 +72,8 @@
 .react-datepicker-popper .react-datepicker__triangle {
   border-bottom-color: $white !important;
 }
+
+/* ----- POPUP ----- */
 
 .react-datepicker-popper[data-placement^='top'],
 .react-datepicker-popper[data-placement^='bottom'] {
@@ -72,7 +85,70 @@
 }
 
 .react-datepicker-popper[data-placement^='bottom'] {
+  margin-top: rem(10px);
+
   .react-datepicker__triangle::before {
     top: -3px;
   }
+}
+
+/* ----- NAVIGATION GAUCHE/DROITE ----- */
+
+.react-datepicker__navigation--next,
+.react-datepicker__navigation--previous {
+  border: 0;
+  text-indent: inherit;
+
+  /* overrides */
+  $size: 30px;
+
+  width: rem($size);
+  max-width: rem($size);
+  height: rem($size);
+  max-height: rem($size);
+  line-height: rem($size);
+
+  &::before {
+    font-size: rem($size);
+    line-height: rem($size);
+  }
+}
+
+.react-datepicker__navigation--next::before {
+  content: '\55';
+}
+
+.react-datepicker__navigation--previous::before {
+  content: '\ea';
+}
+
+/* ----- CLEAR ICON ----- */
+
+.react-datepicker__close-icon {
+  $size: 24px;
+
+  top: 7px;
+  right: 8px;
+  width: rem($size);
+  height: rem($size);
+  border-radius: 50%;
+  background-color: $primary;
+
+  &::after {
+    margin: 0;
+    top: -3px;
+    left: -2px;
+    padding: 0;
+    content: '\72';
+    font-size: rem(30px);
+    background-color: transparent;
+  }
+}
+
+/* ----- WITH ICONS ----- */
+
+.react-datepicker__close-icon::after,
+.react-datepicker__navigation--next::before,
+.react-datepicker__navigation--previous::before {
+  @extend .inherits-from-fontello-icon;
 }

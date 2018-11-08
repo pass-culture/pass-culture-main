@@ -1,4 +1,3 @@
-export { default as CalendarField } from './CalendarField'
 export { default as DatePickerField } from './DatePickerField'
 export { default as EmailField } from './EmailField'
 export { default as HiddenField } from './HiddenField'

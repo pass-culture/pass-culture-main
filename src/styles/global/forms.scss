@@ -44,7 +44,7 @@
 .pc-final-form-text,
 .pc-final-form-password,
 .pc-final-form-datepicker {
-  // par ordre d'architecture HTML
+  // rangés par ordre d'architecture HTML
   .pc-final-form-label {
     @extend .pb7;
     @extend .fs16;
@@ -81,24 +81,37 @@
   }
 }
 
-/* ------------------------------------
+/* ------------------------------------------------
 
- Elements/Datepicker
+ PASSWORD
 
------------------------------------- */
-
-/* ------------------------------------
-
- Elements/Password
-
------------------------------------- */
+------------------------------------------------ */
 
 .pc-final-form-password .pc-final-form-input {
   border-radius: 0;
 }
 
-/* ------------------------------------
+/* ------------------------------------------------
 
- Elements/Select
+ INPUT CALENDRIER
+ div encadrant le champs input
+ permettant d'afficher l'icone lorsqu'une date n'est pas selectionnee
 
------------------------------------- */
+------------------------------------------------ */
+
+.react-datepicker__input-container_wrapper::after {
+  @extend .inherits-from-fontello-icon;
+  $size: rem(30px);
+
+  content: '\6b';
+  top: 3px;
+  right: 6px;
+  color: $primary;
+  position: absolute;
+  font-size: rem(30px);
+}
+
+.react-datepicker__input-container_wrapper.selected::after {
+  display: none;
+  visibility: hidden;
+}

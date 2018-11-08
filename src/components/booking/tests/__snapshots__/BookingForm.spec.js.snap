@@ -3,11 +3,14 @@
 exports[`src | components | pages | search | BookingForm snapshot should match snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
-  Symbol(enzyme.__unrendered__): <BookingFormWrapper
-    className={null}
-    errors={Object {}}
+  Symbol(enzyme.__unrendered__): <BookingForm
+    className=""
+    disabled={false}
+    formId="super-form-id"
     initialValues={null}
-    onMutation={null}
+    isEvent={false}
+    onMutation={[Function]}
+    onSubmit={[Function]}
   />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
@@ -26,7 +29,7 @@ ShallowWrapper {
         [Function],
       ],
       "initialValues": Object {},
-      "onSubmit": undefined,
+      "onSubmit": [Function],
       "render": [Function],
       "validate": null,
     },
@@ -44,7 +47,7 @@ ShallowWrapper {
           [Function],
         ],
         "initialValues": Object {},
-        "onSubmit": undefined,
+        "onSubmit": [Function],
         "render": [Function],
         "validate": null,
       },

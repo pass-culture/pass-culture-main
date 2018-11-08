@@ -1,3 +1,12 @@
+/*
+
+ Fichier CSS de la page permettant à l'user
+ de réserver une offre
+
+ Ne pas confondre avec la page my-booking qui permet à l'user
+ de visualiser les offres qu'il a réservé@
+
+*/
 #booking-card {
   z-index: $zindex-booking-card;
   color: $black;
@@ -19,10 +28,6 @@
 }
 
 #booking-card .form-footer {
-  // <----- FIXME
-  // .page.with-footer footer
-  // le flow-direction est defini par la classe css
-  // et donc on ne peut pas donner comme tag <footer>
   height: 3.5rem;
   max-height: 3.5rem;
   min-height: 3.5rem;
@@ -45,5 +50,39 @@
   .views-container {
     overflow-y: auto;
     padding: 36px 12px;
+  }
+}
+
+/* ------------------------------------------------
+
+ Avant retro-compatibilité avec le search
+
+------------------------------------------------ */
+
+#booking-card {
+  .pc-final-form-label {
+    @extend .fs22;
+  }
+
+  .pc-final-form-datepicker-input {
+    @extend .py7;
+    @extend .px18;
+    @extend .fs20;
+    @extend .flex-1;
+    @extend .is-bold;
+    @extend .is-block;
+    @extend .no-border;
+    @extend .no-outline;
+    @extend .text-center;
+
+    color: $black !important;
+  }
+
+  .react-datepicker-popper {
+    margin-top: rem(15px);
+  }
+
+  .react-datepicker__triangle {
+    left: 50%;
   }
 }

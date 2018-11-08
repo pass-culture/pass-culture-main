@@ -13,11 +13,13 @@ import { externalSubmitForm } from '../forms/utils'
 import BookingForm from './BookingForm'
 import BookingError from './BookingError'
 import BookingLoader from './BookingLoader'
+import BookingHeader from './BookingHeader'
 import BookingSuccess from './BookingSuccess'
 import { selectBookables } from '../../selectors/selectBookables'
 import currentRecommendationSelector from '../../selectors/currentRecommendation'
 
 const duration = 250
+const backgroundImage = `url('${ROOT_PATH}/mosaic-k.png')`
 
 const defaultStyle = {
   top: '100%',
@@ -165,7 +167,6 @@ class Booking extends React.PureComponent {
       recommendationId: recommendation.id,
       stockId: get(defaultBookable, 'id'),
     }
-    const backgroundImage = `url('${ROOT_PATH}/mosaic-k.png')`
     return (
       <Transition in={mounted} timeout={0}>
         {state => (
@@ -174,14 +175,7 @@ class Booking extends React.PureComponent {
             className="is-overlay is-clipped flex-rows"
             style={{ ...defaultStyle, ...transitionStyles[state] }}
           >
-            <header className="flex-0">
-              <h1 className="title">
-                <span>{get(recommendation, 'offer.eventOrThing.name')}</span>
-              </h1>
-              <h2 className="subtitle">
-                <span>{get(recommendation, 'offer.venue.name')}</span>
-              </h2>
-            </header>
+            <BookingHeader recommendation={recommendation} />
             <div
               className="main flex-1 items-center is-clipped is-relative"
               style={{ backgroundImage }}
@@ -193,19 +187,16 @@ class Booking extends React.PureComponent {
                 )}
                 {isErrored && <BookingError {...isErrored} />}
                 {showForm && (
-                  <React.Fragment>
-                    <BookingForm
-                      formId={this.formId}
-                      disabled={userConnected}
-                      isEvent={isEvent}
-                      onSubmit={this.onFormSubmit}
-                      recommendation={recommendation}
-                      onMutation={this.onFormMutation}
-                      initialValues={formInitialValues}
-                      onValidation={this.onFormValidation}
-                      className="flex-rows items-center"
-                    />
-                  </React.Fragment>
+                  <BookingForm
+                    className="flex-rows items-center"
+                    isEvent={isEvent}
+                    formId={this.formId}
+                    disabled={userConnected}
+                    onSubmit={this.onFormSubmit}
+                    onMutation={this.onFormMutation}
+                    initialValues={formInitialValues}
+                    onValidation={this.onFormValidation}
+                  />
                 )}
               </div>
             </div>

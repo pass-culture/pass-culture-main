@@ -89,9 +89,8 @@ class FilterByDates extends PureComponent {
             })}
             <DatePickerField
               name="pick-by-date-filter"
-              className="item fs19 py5 pl7 pr22"
+              className="item fs19 py5 px7"
               minDate={TODAY_DATE}
-              // selected={queriedDate}
               selected={pickedDate}
               onChange={this.onPickedDateChange}
               popperRefContainer={this.datepickerPopper}

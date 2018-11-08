@@ -4,7 +4,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Icon } from 'pass-culture-shared'
 
-import flattenErrors from './utils'
+import { flattenErrors } from './utils'
 
 // NOTE: hack pour contourner le no-array-index-key
 // !!! BAD PRACTICE mais permise ici car ce n'est pas un affiche critique

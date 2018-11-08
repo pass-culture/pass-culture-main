@@ -8,6 +8,15 @@
 @import '~pass-culture-shared/styles/index.scss';
 @import '~react-datepicker/src/stylesheets/datepicker';
 
+.inherits-from-fontello-icon {
+  speak: none;
+  font-style: normal;
+  display: inline-block;
+  font-family: 'pass_culture-icon_font', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
 // quick fix Bulma removed from shared
 // .list {
 //   background-color: inherit;
@@ -18,4 +27,3 @@
 /* antd | https://ant.design/docs/react/introduce */
 @import './antd-base.scss';
 @import './antd-select.scss';
-@import './antd-calendar.scss';

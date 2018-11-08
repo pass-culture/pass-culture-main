@@ -3,137 +3,134 @@
 import React from 'react'
 import moment from 'moment'
 import PropTypes from 'prop-types'
+import createDecorator from 'final-form-calculate'
+import { Field, Form as FinalForm, FormSpy } from 'react-final-form'
 
-import withBookingForm from './withBookingForm'
-import { isSameDayInEachTimezone, getPrice } from '../../helpers'
-import { CalendarField, HiddenField, SelectField } from '../forms/inputs'
+import {
+  getCalendarProvider,
+  parseHoursByStockId,
+  onCalendarUpdates,
+  onTimeUpdates,
+} from './utils'
+import { DatePickerField, HiddenField, SelectField } from '../forms/inputs'
 
-/**
- * Calcule les valeurs du form
- * En fonction de la date selectionnée par l'user
- *
- * NOTE -> Howto implement calculator: https://codesandbox.io/s/oq52p6v96y
- * FIXME -> hot-reload cause console.error
- */
-const onCalendarUpdates = (selection, name, allvalues) => {
-  if (!selection) return allvalues
-  const resetObj = { price: null, stockId: null, time: null }
-  if (!selection.date) return resetObj
-  // iteration sur l'array bookables
-  // recupere tous les events pour la selection par l'user
-  const { bookables } = allvalues
-  const userChosen = bookables.filter(o =>
-    // l'offer est OK si elle est le même jour
-    // que la date selectionnee par l'user dans le calendrier
-    isSameDayInEachTimezone(selection.date, o.beginningDatetime)
-  )
-  const issingle = userChosen && userChosen.length === 1
-  if (!userChosen || !issingle) return resetObj
-  return {
-    price: userChosen[0].price,
-    stockId: userChosen[0].id,
-    time: userChosen[0].id,
-  }
+const spySubscriptions = {
+  // complete list of subscriptions
+  // https://github.com/final-form/final-form#formstate
+  errors: true,
+  invalid: true,
+  pristine: true,
+  values: true,
 }
 
-const onTimeUpdates = (selection, name, formValues) => {
-  const resetObj = {}
-  if (!selection || formValues.stockId) return resetObj
-  const { bookables } = formValues
-  const booked = bookables.filter(o => o.id === selection)
-  return {
-    price: booked[0].price,
-    stockId: booked[0].id,
-  }
-}
+/* -------- form calculators --------  */
+const decorators = [
+  createDecorator(
+    { field: 'date', updates: onCalendarUpdates },
+    { field: 'time', updates: onTimeUpdates }
+  ),
+]
 
-class BookingFormComponent extends React.PureComponent {
-  getCalendarProvider = () => {
-    const { formValues } = this.props
-    const results = formValues.bookables.map(o => o.beginningDatetime)
-    return results
-  }
+const datepickerPopper = React.createRef()
 
-  parseHoursByStockId = () => {
-    const { formValues } = this.props
-    const { date, bookables } = formValues
-    if (!date || !date.date) return []
-    return bookables
-      .filter(o => isSameDayInEachTimezone(date.date, o.beginningDatetime))
-      .map(obj => {
-        // parse les infos d'une offre
-        // pour être affichée dans la selectbox
-        const time = obj.beginningDatetime.format('HH:mm')
-        const devised = getPrice(obj.price)
-        const label = `${time} - ${devised}`
-        return { id: obj.id, label }
-      })
-  }
+const BookingForm = ({
+  className,
+  isEvent,
+  formId,
+  disabled,
+  initialValues,
+  onMutation,
+  onSubmit,
+}) => (
+  <FinalForm
+    validate={null}
+    onSubmit={onSubmit}
+    decorators={decorators}
+    initialValues={initialValues || {}}
+    render={({ form, values, handleSubmit }) => {
+      const { stockId, price } = values
+      const calendarDates = getCalendarProvider(values)
+      const hoursAndPrices = parseHoursByStockId(values)
+      return (
+        <React.Fragment>
+          <FormSpy onChange={onMutation} subscription={spySubscriptions} />
+          <form
+            id={formId}
+            disabled={disabled}
+            className={className}
+            onSubmit={handleSubmit}
+          >
+            <HiddenField name="price" />
+            <HiddenField name="stockId" />
+            {isEvent && (
+              <React.Fragment>
+                <Field
+                  name="date"
+                  render={({ input }) => {
+                    const selectedValue =
+                      (input.value && input.value.date) || null
+                    const dateFormat = 'DD MMMM YYYY'
+                    return (
+                      <DatePickerField
+                        hideToday
+                        name="date"
+                        className="text-center mb36"
+                        selected={selectedValue}
+                        provider={calendarDates}
+                        dateFormat={dateFormat}
+                        popperPlacement="bottom"
+                        label="Choisissez une date"
+                        popperRefContainer={datepickerPopper}
+                        placeholder={moment().format(dateFormat)}
+                        onChange={date => {
+                          // legacy ancien calendrier
+                          input.onChange({ date })
+                        }}
+                      />
+                    )
+                  }}
+                />
+                <div id="datepicker-popper-container" ref={datepickerPopper} />
+                {hoursAndPrices && (
+                  <SelectField
+                    name="time"
+                    provider={hoursAndPrices}
+                    placeholder="Heure et prix"
+                    label="Choisissez une heure"
+                    className="text-center"
+                  />
+                )}
+              </React.Fragment>
+            )}
+            {stockId && (
+              <p className="text-center fs22">
+                <span className="is-block">
+                  Vous êtes sur le point de réserver
+                </span>
+                <span className="is-block">cette offre pour {price}€</span>
+              </p>
+            )}
+          </form>
+        </React.Fragment>
+      )
+    }}
+  />
+)
 
-  render() {
-    const { isEvent, formValues } = this.props
-    const { stockId, price } = formValues
-    const calendarDates = this.getCalendarProvider()
-    const hoursAndPrices = this.parseHoursByStockId()
-    return (
-      <React.Fragment>
-        <HiddenField name="price" />
-        <HiddenField name="stockId" />
-        {isEvent && (
-          <CalendarField
-            name="date"
-            help="This is help"
-            provider={calendarDates}
-            label="Choisissez une date"
-            className="text-center"
-            placeholder={moment().format('DD MMMM YYYY')}
-          />
-        )}
-        {isEvent &&
-          hoursAndPrices && (
-            <SelectField
-              name="time"
-              provider={hoursAndPrices}
-              placeholder="Heure et prix"
-              label="Choisissez une heure"
-              className="text-center"
-            />
-          )}
-        {stockId && (
-          <p className="text-center">
-            <span className="is-block">Vous êtes sur le point de réserver</span>
-            <span className="is-block">cette offre pour {price}€</span>
-          </p>
-        )}
-      </React.Fragment>
-    )
-  }
-}
-
-BookingFormComponent.defaultProps = {
-  formValues: null,
+BookingForm.defaultProps = {
+  className: '',
+  initialValues: null,
   isEvent: false,
 }
 
-BookingFormComponent.propTypes = {
-  formValues: PropTypes.object,
+BookingForm.propTypes = {
+  className: PropTypes.string,
+  disabled: PropTypes.bool.isRequired,
+  formId: PropTypes.string.isRequired,
+  initialValues: PropTypes.object,
   isEvent: PropTypes.bool,
+  onMutation: PropTypes.func.isRequired,
+  onSubmit: PropTypes.func.isRequired,
 }
 
-/* -------- form validators --------  */
-const validator = null
-
-/* -------- form calculators --------  */
-const calculator = [
-  {
-    field: 'date',
-    updates: onCalendarUpdates,
-  },
-  {
-    field: 'time',
-    updates: onTimeUpdates,
-  },
-]
-
-const BookingForm = withBookingForm(BookingFormComponent, validator, calculator)
 export default BookingForm

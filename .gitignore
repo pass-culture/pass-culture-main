@@ -40,6 +40,7 @@ netlifyctl-*
 docker-compose.yml
 env_file
 ngrok.yml
+tmp
 temp
 
 # Fontello Icon Fonts
