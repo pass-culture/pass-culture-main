@@ -113,7 +113,6 @@ jobs: # a collection of steps
             export NVM_BIN=/usr/bin/nodejs
             export PATH=$NVM_BIN:$PATH
             cd ~/pass-culture-main/webapp
-            export WEBAPP_PROD_VERSION=5f57f1c
             git checkout production
             yarn install
             yarn start
@@ -125,8 +124,8 @@ jobs: # a collection of steps
             export NVM_BIN=/usr/bin/nodejs
             export PATH=$NVM_BIN:$PATH
             cd ~/pass-culture-main/pro
-            export PRO_PROD_VERSION=c2bd039
             git checkout production
+            dockerize -wait http://localhost:3000 -timeout 3m -wait-retry-interval 5s
             yarn install
             yarn start
           background: true
