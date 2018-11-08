@@ -1,14 +1,16 @@
 """events"""
 import binascii
 from flask import current_app as app, jsonify, request
+from flask_login import current_user
 
-from models import ApiErrors, Event, Offer, PcObject, Venue
+from models import ApiErrors, Event, Offer, PcObject, Venue, EventType
+from models.api_errors import ForbiddenError
 from utils.human_ids import dehumanize
 from utils.includes import EVENT_INCLUDES
 from utils.rest import expect_json_data, \
     load_or_404, \
     login_or_api_key_required
-from validation.events import check_has_venue_id
+from validation.events import check_has_venue_id, check_user_can_create_activation_event
 
 
 @app.route('/events/<id>', methods=['GET'])
@@ -27,6 +29,8 @@ def post_event():
     venue_id = request.json.get('venueId')
     event = Event()
     event.populateFromDict(request.json)
+    check_user_can_create_activation_event(current_user, event)
+
     offer = Offer()
     check_has_venue_id(venue_id)
     api_errors = ApiErrors()

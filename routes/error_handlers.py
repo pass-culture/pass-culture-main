@@ -4,7 +4,7 @@ import traceback
 import simplejson as json
 from flask import current_app as app, jsonify, request
 
-from models.api_errors import ApiErrors, ResourceGoneError, ConflictError, ResourceNotFound
+from models.api_errors import ApiErrors, ResourceGoneError, ConflictError, ResourceNotFound, ForbiddenError
 from routes.before_request import InvalidOriginHeader
 from utils.human_ids import NonDehumanizableId
 
@@ -13,6 +13,12 @@ from utils.human_ids import NonDehumanizableId
 def restize_api_errors(e):
     app.logger.error(json.dumps(e.errors))
     return jsonify(e.errors), e.status_code or 400
+
+
+@app.errorhandler(ForbiddenError)
+def restize_forbidden_error(e):
+    app.logger.error(json.dumps(e.errors))
+    return jsonify(e.errors), 403
 
 
 @app.errorhandler(ResourceGoneError)
