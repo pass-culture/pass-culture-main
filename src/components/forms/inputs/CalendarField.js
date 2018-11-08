@@ -12,7 +12,7 @@ import { isSameDayInEachTimezone } from '../../../helpers'
 // We use format so that each date is converted to a day in its own timezone
 const momentIsSameDay = (a, b) => a && b && isSameDayInEachTimezone(a, b)
 
-export class CalendarField extends React.PureComponent {
+class CalendarField extends React.PureComponent {
   constructor(props) {
     super(props)
     this.popupContainer = null

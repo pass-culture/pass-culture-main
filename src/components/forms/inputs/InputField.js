@@ -7,7 +7,7 @@ import { Field } from 'react-final-form'
 import { FormError } from '../FormError'
 import { validateRequiredField } from '../validators'
 
-export const InputField = ({
+const InputField = ({
   autoComplete,
   className,
   disabled,

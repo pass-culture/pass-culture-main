@@ -10,7 +10,7 @@ const filterOption = (input, option) => {
   return child.toLowerCase().indexOf(input.toLowerCase()) >= 0
 }
 
-export class SelectField extends React.PureComponent {
+class SelectField extends React.PureComponent {
   constructor(props) {
     super(props)
     this.popupContainer = null

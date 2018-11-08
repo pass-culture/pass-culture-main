@@ -14,7 +14,7 @@ const validateRequiredField = value => {
   return DEFAULT_REQUIRED_ERROR
 }
 
-export const EmailField = ({
+const EmailField = ({
   autoComplete,
   className,
   disabled,

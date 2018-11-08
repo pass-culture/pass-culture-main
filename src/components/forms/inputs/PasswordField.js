@@ -7,7 +7,7 @@ import { Field } from 'react-final-form'
 import { FormError } from '../FormError'
 import { validatePasswordField } from '../validators'
 
-export class PasswordField extends React.PureComponent {
+class PasswordField extends React.PureComponent {
   constructor(props) {
     super(props)
     this.state = { hidden: true }

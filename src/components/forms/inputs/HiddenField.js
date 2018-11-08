@@ -6,7 +6,7 @@ import { FormError } from '../FormError'
 
 const noop = () => {}
 
-export const HiddenField = ({ name, validator }) => (
+const HiddenField = ({ name, validator }) => (
   <Field
     name={name}
     validate={validator}

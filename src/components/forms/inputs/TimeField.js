@@ -5,7 +5,7 @@ import { Field } from 'react-final-form'
 
 import { renderLabel } from '../utils'
 
-export class TimeField extends React.PureComponent {
+class TimeField extends React.PureComponent {
   constructor(props) {
     super(props)
     this.container = null
