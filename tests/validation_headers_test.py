@@ -153,7 +153,7 @@ def test_is_valid_header_when_not_staging_not_dev_and_header_is_pro_passculture_
     assert is_valid_header
 
 
-def test_check_origin_header_validity_for_endpoint_validate_venue_is_True_for_random_origin():
+def test_any_origin_header_is_valid_on_endpoint_validate_venue():
     # Given
     header_origin = 'http://random.url.fr'
     endpoint = 'validate_venue'
