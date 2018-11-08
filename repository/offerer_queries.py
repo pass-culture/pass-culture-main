@@ -15,8 +15,10 @@ def get_by_event_occurrence_id(event_occurrence_id):
 
 
 def find_all_admin_offerer_emails(offerer_id):
-    return [result.email for result in Offerer.query.filter_by(id=offerer_id).join(UserOfferer).filter_by(rights=RightsType.admin).filter_by(validationToken=None).join(
-        User).with_entities(User.email)]
+    return [result.email for result in
+            Offerer.query.filter_by(id=offerer_id).join(UserOfferer).filter_by(rights=RightsType.admin).filter_by(
+                validationToken=None).join(
+                User).with_entities(User.email)]
 
 
 def find_offerers_in_date_range_for_given_departement(date_max, date_min, department):
@@ -61,7 +63,8 @@ def find_all_recommendations_for_offerer(offerer):
 
 
 def find_all_offerers_with_managing_user_information():
-    query = db.session.query(Offerer.id, Offerer.name, Offerer.siren, Offerer.postalCode, Offerer.city, User.firstName, User.lastName, User.email, User.phoneNumber, User.postalCode) \
+    query = db.session.query(Offerer.id, Offerer.name, Offerer.siren, Offerer.postalCode, Offerer.city, User.firstName,
+                             User.lastName, User.email, User.phoneNumber, User.postalCode) \
         .join(UserOfferer) \
         .join(User)
 
@@ -70,7 +73,9 @@ def find_all_offerers_with_managing_user_information():
 
 
 def find_all_offerers_with_managing_user_information_and_venue():
-    query = db.session.query(Offerer.id, Offerer.name, Offerer.siren, Offerer.postalCode, Offerer.city, Venue.name, Venue.bookingEmail, Venue.postalCode,  User.firstName, User.lastName, User.email, User.phoneNumber, User.postalCode) \
+    query = db.session.query(Offerer.id, Offerer.name, Offerer.siren, Offerer.postalCode, Offerer.city, Venue.name,
+                             Venue.bookingEmail, Venue.postalCode, User.firstName, User.lastName, User.email,
+                             User.phoneNumber, User.postalCode) \
         .join(UserOfferer) \
         .join(User) \
         .join(Venue)
@@ -80,7 +85,9 @@ def find_all_offerers_with_managing_user_information_and_venue():
 
 
 def find_all_offerers_with_managing_user_information_and_not_virtual_venue():
-    query = db.session.query(Offerer.id, Offerer.name, Offerer.siren, Offerer.postalCode, Offerer.city, Venue.name, Venue.bookingEmail, Venue.postalCode,  User.firstName, User.lastName, User.email, User.phoneNumber, User.postalCode) \
+    query = db.session.query(Offerer.id, Offerer.name, Offerer.siren, Offerer.postalCode, Offerer.city, Venue.name,
+                             Venue.bookingEmail, Venue.postalCode, User.firstName, User.lastName, User.email,
+                             User.phoneNumber, User.postalCode) \
         .join(UserOfferer) \
         .join(User) \
         .join(Venue)
@@ -90,7 +97,8 @@ def find_all_offerers_with_managing_user_information_and_not_virtual_venue():
 
 
 def find_all_offerers_with_venue():
-    query = db.session.query(Offerer.id, Offerer.name, Venue.id, Venue.name, Venue.bookingEmail, Venue.postalCode, Venue.isVirtual) \
+    query = db.session.query(Offerer.id, Offerer.name, Venue.id, Venue.name, Venue.bookingEmail, Venue.postalCode,
+                             Venue.isVirtual) \
         .join(Venue)
 
     result = query.order_by(Offerer.name, Venue.name, Venue.id).all()
@@ -101,4 +109,7 @@ def find_all_pending_validation():
     return Offerer.query.join(UserOfferer) \
         .filter(or_(UserOfferer.validationToken != None, Offerer.validationToken != None)) \
         .order_by(Offerer.id).all()
-        
+
+
+def find_first_by_user_offerer_id(user_offerer_id):
+    return Offerer.query.join(UserOfferer).filter_by(id=user_offerer_id).first()

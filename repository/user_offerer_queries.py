@@ -27,3 +27,7 @@ def count_user_offerers_by_offerer(offerer):
     return UserOfferer.query \
         .filter_by(offerer=offerer) \
         .count()
+
+
+def find_first_by_user_id(user_id):
+    return UserOfferer.query.filter_by(userId=user_id).first()

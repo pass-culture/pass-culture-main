@@ -4,8 +4,9 @@ import pytest
 
 from models import PcObject
 from repository.offerer_queries import find_all_admin_offerer_emails, find_all_offerers_with_managing_user_information, \
-     find_all_offerers_with_managing_user_information_and_venue, find_all_offerers_with_managing_user_information_and_not_virtual_venue, \
-     find_all_offerers_with_venue, find_all_pending_validation
+    find_all_offerers_with_managing_user_information_and_venue, \
+    find_all_offerers_with_managing_user_information_and_not_virtual_venue, \
+    find_all_offerers_with_venue, find_all_pending_validation, find_first_by_user_offerer_id
 from tests.conftest import clean_database
 from utils.test_utils import create_user, create_offerer, create_user_offerer, create_venue
 
@@ -35,13 +36,14 @@ def test_find_all_admin_offerer_emails(app):
     assert set(emails) == {'admin1@offerer.com', 'admin2@offerer.com'}
     assert type(emails) == list
 
+
 @pytest.mark.standalone
 @clean_database
 def test_find_all_offerers_with_managing_user_information(app):
-    #given
+    # given
     user_admin1 = create_user(email='admin1@offerer.com')
     user_admin2 = create_user(email='admin2@offerer.com')
-    user_editor1 =  create_user(email='editor1@offerer.com')
+    user_editor1 = create_user(email='editor1@offerer.com')
     offerer1 = create_offerer(name='offerer1')
     offerer2 = create_offerer(name='offerer2', siren='789456123')
     user_offerer1 = create_user_offerer(user_admin1, offerer1, is_admin=True)
@@ -49,24 +51,25 @@ def test_find_all_offerers_with_managing_user_information(app):
     user_offerer3 = create_user_offerer(user_admin1, offerer2, is_admin=True)
     user_offerer4 = create_user_offerer(user_admin2, offerer2, is_admin=True)
     PcObject.check_and_save(user_admin1, user_admin2, user_editor1, offerer1, offerer2,
-       user_offerer1, user_offerer2, user_offerer3, user_offerer4)
+                            user_offerer1, user_offerer2, user_offerer3, user_offerer4)
 
-    #when
+    # when
     offerers = find_all_offerers_with_managing_user_information()
 
-    #then
+    # then
     assert len(offerers) == 4
     assert len(offerers[0]) == 10
     assert offerer1.siren in offerers[1].siren
     assert user_admin2.email in offerers[3].email
 
+
 @pytest.mark.standalone
 @clean_database
 def test_find_all_offerers_with_managing_user_information_and_venue(app):
-    #given
+    # given
     user_admin1 = create_user(email='admin1@offerer.com')
     user_admin2 = create_user(email='admin2@offerer.com')
-    user_editor1 =  create_user(email='editor1@offerer.com')
+    user_editor1 = create_user(email='editor1@offerer.com')
     offerer1 = create_offerer(name='offerer1')
     offerer2 = create_offerer(name='offerer2', siren='789456123')
     venue1 = create_venue(offerer1, siret='123456789abcde')
@@ -76,13 +79,13 @@ def test_find_all_offerers_with_managing_user_information_and_venue(app):
     user_offerer2 = create_user_offerer(user_editor1, offerer1, is_admin=False)
     user_offerer3 = create_user_offerer(user_admin1, offerer2, is_admin=True)
     user_offerer4 = create_user_offerer(user_admin2, offerer2, is_admin=True)
-    PcObject.check_and_save(venue1, venue2, venue3,  user_offerer1, user_offerer2, user_offerer3,
-       user_offerer4)
+    PcObject.check_and_save(venue1, venue2, venue3, user_offerer1, user_offerer2, user_offerer3,
+                            user_offerer4)
 
-    #when
+    # when
     offerers = find_all_offerers_with_managing_user_information_and_venue()
 
-    #then
+    # then
     assert len(offerers) == 6
     assert len(offerers[0]) == 13
     assert offerer1.city in offerers[0].city
@@ -93,7 +96,7 @@ def test_find_all_offerers_with_managing_user_information_and_venue(app):
 @pytest.mark.standalone
 @clean_database
 def test_find_all_offerers_with_managing_user_information_and_not_virtual_venue(app):
-    #given
+    # given
     user_admin1 = create_user(email='admin1@offerer.com')
     user_admin2 = create_user(email='admin2@offerer.com')
     offerer1 = create_offerer(name='offerer1')
@@ -106,10 +109,10 @@ def test_find_all_offerers_with_managing_user_information_and_not_virtual_venue(
     user_offerer4 = create_user_offerer(user_admin2, offerer2, is_admin=True)
     PcObject.check_and_save(venue1, venue2, venue3, user_offerer1, user_offerer3, user_offerer4)
 
-    #when
+    # when
     offerers = find_all_offerers_with_managing_user_information_and_not_virtual_venue()
 
-    #then
+    # then
     assert len(offerers) == 2
     assert len(offerers[0]) == 13
     assert user_admin1.email in offerers[0].email
@@ -120,7 +123,7 @@ def test_find_all_offerers_with_managing_user_information_and_not_virtual_venue(
 @pytest.mark.standalone
 @clean_database
 def test_find_all_offerers_with_venue(app):
-    #given
+    # given
     offerer1 = create_offerer(name='offerer1')
     offerer2 = create_offerer(name='offerer2', siren='789456123')
     venue1 = create_venue(offerer1, is_virtual=True, siret=None)
@@ -128,21 +131,21 @@ def test_find_all_offerers_with_venue(app):
     venue3 = create_venue(offerer2, is_virtual=False)
     PcObject.check_and_save(offerer1, offerer2, venue1, venue2, venue3)
 
-    #when
+    # when
     offerers = find_all_offerers_with_venue()
 
-    #then
+    # then
     assert len(offerers) == 3
     assert len(offerers[0]) == 7
     assert offerer1.id == offerers[0][0]
     assert venue2.bookingEmail in offerers[1].bookingEmail
     assert venue1.bookingEmail in offerers[0].bookingEmail
-    
+
 
 @pytest.mark.standalone
 @clean_database
 def test_get_all_pending_offerers_with_user_offerer(app):
-    #given
+    # given
     offerer1 = create_offerer(name='offerer1', validation_token="a_token")
     offerer2 = create_offerer(name='offerer2', siren='789456123', validation_token="some_token")
     offerer3 = create_offerer(name='offerer3', siren='789456124')
@@ -159,10 +162,10 @@ def test_get_all_pending_offerers_with_user_offerer(app):
 
     PcObject.check_and_save(user_offerer1, user_offerer2, user_offerer3, user_offerer4)
 
-    #when
+    # when
     offerers = find_all_pending_validation()
 
-    #then
+    # then
     assert len(offerers) == 3
     assert offerers[0].validationToken == offerer1.validationToken
     assert offerers[0].UserOfferers[0].validationToken == user_offerer1.validationToken
@@ -172,4 +175,22 @@ def test_get_all_pending_offerers_with_user_offerer(app):
     assert offerers[2].UserOfferers[0].validationToken == user_offerer3.validationToken
     assert offerers[2].UserOfferers[1].validationToken == user_offerer5.validationToken
     assert offerer4 not in offerers
-    
+
+
+@pytest.mark.standalone
+@clean_database
+def test_find_first_by_user_offerer_id_returns_one_offerer(app):
+    # given
+    user = create_user()
+    offerer1 = create_offerer(name='offerer1', siren='123456789')
+    offerer2 = create_offerer(name='offerer2', siren='789456123')
+    offerer3 = create_offerer(name='offerer2', siren='987654321')
+    user_offerer1 = create_user_offerer(user, offerer1)
+    user_offerer2 = create_user_offerer(user, offerer2)
+    PcObject.check_and_save(user_offerer1, user_offerer2, offerer3)
+
+    # when
+    offerer = find_first_by_user_offerer_id(user_offerer1.id)
+
+    # then
+    assert offerer == offerer1

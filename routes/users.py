@@ -215,7 +215,6 @@ def signup_webapp():
     return jsonify(new_user._asdict(include=USER_INCLUDES)), 201
 
 
-
 @app.route("/users/signup/pro", methods=["POST"])
 def signup_pro():
     objects_to_save = []
@@ -238,14 +237,12 @@ def signup_pro():
     new_user.canBookFreeOffers = False
     new_user = _set_offerer_departement_code(new_user, offerer)
 
-
     new_user.generate_validation_token()
     objects_to_save.append(new_user)
 
     PcObject.check_and_save(*objects_to_save)
 
     try:
-        maybe_send_offerer_validation_email(offerer, user_offerer, app.mailjet_client.send.create)
         send_user_validation_email(new_user, app.mailjet_client.send.create, is_webapp=False)
     except MailServiceException as e:
         app.logger.error('Mail service failure', e)

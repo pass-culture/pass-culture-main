@@ -2,10 +2,12 @@
 from flask import current_app as app, jsonify, request
 
 import models
+from domain.admin_emails import maybe_send_offerer_validation_email
 from domain.user_emails import send_validation_confirmation_email, send_venue_validation_confirmation_email
 from models import ApiErrors, \
     User, \
     PcObject, UserOfferer, Offerer, Venue
+from repository import user_offerer_queries, offerer_queries
 from tests.validation_validate_test import check_validation_request, check_venue_found
 from utils.mailing import MailServiceException
 from validation.validate import check_valid_token_for_user_validation
@@ -78,4 +80,12 @@ def validate_user(token):
     check_valid_token_for_user_validation(user_to_validate)
     user_to_validate.validationToken = None
     PcObject.check_and_save(user_to_validate)
-    return "Validation effectuée", 202
+    user_offerer = user_offerer_queries.find_first_by_user_id(user_to_validate.id)
+    if len(user_offerer) > 0:
+        offerer = offerer_queries.find_first_by_user_offerer_id(user_offerer.id)
+        try:
+            maybe_send_offerer_validation_email(offerer, user_offerer, app.mailjet_client.send.create)
+        except MailServiceException as e:
+            app.logger.error('Mail service failure', e)
+
+    return "", 202
