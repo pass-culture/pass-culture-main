@@ -81,7 +81,7 @@ def validate_user(token):
     user_to_validate.validationToken = None
     PcObject.check_and_save(user_to_validate)
     user_offerer = user_offerer_queries.find_first_by_user_id(user_to_validate.id)
-    if len(user_offerer) > 0:
+    if user_offerer:
         offerer = offerer_queries.find_first_by_user_offerer_id(user_offerer.id)
         try:
             maybe_send_offerer_validation_email(offerer, user_offerer, app.mailjet_client.send.create)
