@@ -150,7 +150,7 @@ jobs: # a collection of steps
             export NVM_BIN=/usr/bin/nodejs
             export PATH=$NVM_BIN:$PATH
             cd ~/pass-culture-main/webapp
-            yarn testcafe
+            yarn test:cafe
 
 workflows:
   version: 2
