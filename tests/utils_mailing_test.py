@@ -899,12 +899,12 @@ def test_make_venue_validation_email(app):
     assert email["Subject"] == "{} - rattachement de lieu pro à valider : {}".format(venue.departementCode, venue.name)
     email_html = remove_whitespaces(email['Html-part'])
     parsed_email = BeautifulSoup(email_html, 'html.parser')
-    html_validation = str(parsed_email.find('p', {'id': 'validation'}))
-    html_validation_link = str(parsed_email.find('a', {'id': 'validation-link'}))
+    html_validation = parsed_email.find('p', {'id': 'validation'}).text
+    html_validation_link = parsed_email.find('a', {'id': 'validation-link'}).text
     assert 'La structure "La Structure" (SIREN : 123456789)' in html_validation
     assert 'a rattaché le lieu suivant sans renseigner de SIRET' in html_validation
     assert 'Nom : "Le Lieu"' in html_validation
-    assert 'Commentaire de la structure : "Ceci est mon commentaire"' in html_validation
+    assert 'Commentaire de la structure : "Ceci est mon commentaire".' in html_validation
     assert 'localhost/validate/venue?token={}'.format(venue.validationToken) in html_validation
     assert 'localhost/validate/venue?token={}'.format(venue.validationToken) in html_validation_link
 
