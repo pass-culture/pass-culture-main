@@ -15,7 +15,7 @@ from utils.test_utils import create_event, \
     create_thing, \
     create_thing_offer, \
     create_offerer, \
-    create_venue, create_user, create_stock_from_offer, create_mediation, create_booking
+    create_venue, create_user, create_stock_from_offer, create_mediation, create_stock_with_thing_offer, create_booking
 
 
 @pytest.mark.standalone
@@ -52,7 +52,7 @@ def test_departement_or_national_offers_with_national_event_returns_national_eve
 
 @pytest.mark.standalone
 @clean_database
-def test_type_search(app):
+def test_get_offers_for_recommendations_search_by_type(app):
     # Given
     type_label = str(EventType['CONFERENCE_DEBAT_DEDICACE'])
     other_type_label = str(EventType['MUSIQUE'])
@@ -104,13 +104,50 @@ def test_type_search(app):
 
     PcObject.check_and_save(conference_stock, concert_stock)
 
+    # When
     offers = get_offers_for_recommendations_search(
         type_values=[
             type_label
         ],
     )
 
+    # Then
     assert conference_offer in offers
+    assert concert_offer not in offers
+
+def create_event_stock_and_offer_for_date(venue, date) :
+    event = create_event()
+    offer = create_event_offer(venue, event)
+    event_occurrence = create_event_occurrence(offer, beginning_datetime=date, end_datetime=date+timedelta(hours=1))
+    stock = create_stock_from_event_occurrence(event_occurrence)
+    return stock
+
+@pytest.mark.standalone
+@clean_database
+def test_get_offers_for_recommendations_search_by_datetime(app):
+    # Given
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+
+    ok_stock = create_event_stock_and_offer_for_date(venue, datetime(2018, 1, 6, 12, 30))
+    ko_stock_before = create_event_stock_and_offer_for_date(venue, datetime(2018, 1, 1, 12, 30))
+    ko_stock_after = create_event_stock_and_offer_for_date(venue, datetime(2018, 1, 10, 12, 30))
+    ok_stock_thing = create_stock_with_thing_offer(offerer, venue, None)
+
+    PcObject.check_and_save(ok_stock, ko_stock_before, ko_stock_after)
+
+    # When
+    search_result_offers = get_offers_for_recommendations_search(
+        days_intervals=[
+            [ datetime(2018, 1, 6, 12, 0), datetime(2018, 1, 6, 13, 0) ]
+        ],
+    )
+
+    # Then
+    assert ok_stock.resolvedOffer in search_result_offers
+    assert ok_stock_thing.resolvedOffer in search_result_offers
+    assert ko_stock_before.resolvedOffer not in search_result_offers
+    assert ko_stock_after.resolvedOffer not in search_result_offers
 
 
 @clean_database

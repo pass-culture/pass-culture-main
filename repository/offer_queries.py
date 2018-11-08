@@ -69,7 +69,6 @@ def get_active_offers_by_type(offer_type, user=None, departement_codes=None, off
         query = query.join(Stock, and_(EventOccurrence.id == Stock.eventOccurrenceId))
     else:
         query = query.join(Stock, and_(Offer.id == Stock.offerId))
-    query = query.filter(Stock.isSoftDeleted == False)
     query = query.join(Venue, and_(Offer.venueId == Venue.id))
     query = query.filter(Venue.validationToken == None)
     query = query.join(Offerer)
@@ -111,6 +110,10 @@ def find_offers_in_date_range_for_given_venue_departement(date_max, date_min, de
     return result
 
 
+def _date_interval_to_filter(date_interval):
+    return ((EventOccurrence.beginningDatetime >= date_interval[0]) & \
+            (EventOccurrence.beginningDatetime <= date_interval[1]))
+
 def get_offers_for_recommendations_search(
         page=1,
         keywords=None,
@@ -119,13 +122,11 @@ def get_offers_for_recommendations_search(
         longitude=None,
         max_distance=None,
         days_intervals=None):
+
     # NOTE: filter_out_offers_on_soft_deleted_stocks filter then
     # the offer with event that has NO event occurrence
     # Do we exactly want this ?
     offer_query = _filter_recommendable_offers()
-
-    # NOTE: which order of the filters is the best for minimal time computation ?
-    # Question à 500 patates.
 
     if max_distance is not None and latitude is not None and longitude is not None:
         distance_instrument = get_sql_geo_distance_in_kilometers(
@@ -138,17 +139,10 @@ def get_offers_for_recommendations_search(
             .filter(distance_instrument < max_distance)
 
     if days_intervals is not None:
-        for days in days_intervals:
-            date_offer_query = offer_query.from_self() \
-                .join(Stock) \
-                .outerjoin(EventOccurrence) \
-                .filter(
-                (
-                        (Stock.bookingLimitDatetime >= days[0]) & \
-                        (Stock.bookingLimitDatetime <= days[1])
-                )
-            )
-            offer_query = offer_query.union_all(date_offer_query)
+        event_beginningdate_in_interval_filter = or_(*map(_date_interval_to_filter, days_intervals))
+        offer_query = offer_query.reset_joinpoint() \
+            .outerjoin(EventOccurrence)\
+            .filter(event_beginningdate_in_interval_filter | (Offer.thing != None))
 
     if keywords is not None:
         offer_query = offer_query.from_self() \
