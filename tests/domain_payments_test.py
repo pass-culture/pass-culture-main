@@ -164,7 +164,7 @@ def test_generate_transaction_file_has_custom_message_id_in_group_header(app):
     ]
 
     # When
-    xml = generate_transaction_file(payments, 'BD12AZERTY123456', 'AZERTY9Q666', MESSAGE_ID)
+    xml = generate_transaction_file(payments, 'BD12AZERTY123456', 'AZERTY9Q666', MESSAGE_ID, '0000')
 
     # Then
     assert find_node('//ns:GrpHdr/ns:MsgId', xml) == MESSAGE_ID, \
@@ -189,7 +189,7 @@ def test_generate_transaction_file_has_creation_datetime_in_group_header(app):
     ]
 
     # When
-    xml = generate_transaction_file(payments, 'BD12AZERTY123456', 'AZERTY9Q666', MESSAGE_ID)
+    xml = generate_transaction_file(payments, 'BD12AZERTY123456', 'AZERTY9Q666', MESSAGE_ID, '0000')
 
     # Then
     assert find_node('//ns:GrpHdr/ns:CreDtTm', xml) == '2018-10-15T09:21:34', \
@@ -213,7 +213,7 @@ def test_generate_transaction_file_has_initiating_party_in_group_header(app):
     ]
 
     # When
-    xml = generate_transaction_file(payments, 'BD12AZERTY123456', 'AZERTY9Q666', MESSAGE_ID)
+    xml = generate_transaction_file(payments, 'BD12AZERTY123456', 'AZERTY9Q666', MESSAGE_ID, '0000')
 
     # Then
     assert find_node('//ns:GrpHdr/ns:InitgPty/ns:Nm', xml) == 'pass Culture', \
@@ -240,7 +240,7 @@ def test_generate_transaction_file_has_control_sum_in_group_header(app):
     ]
 
     # When
-    xml = generate_transaction_file(payments, 'BD12AZERTY123456', 'AZERTY9Q666', MESSAGE_ID)
+    xml = generate_transaction_file(payments, 'BD12AZERTY123456', 'AZERTY9Q666', MESSAGE_ID, '0000')
 
     # Then
     assert find_node('//ns:GrpHdr/ns:CtrlSum', xml) == '30', \
@@ -271,7 +271,7 @@ def test_generate_transaction_file_has_number_of_transactions_in_group_header(ap
     ]
 
     # When
-    xml = generate_transaction_file(payments, 'BD12AZERTY123456', 'AZERTY9Q666', MESSAGE_ID)
+    xml = generate_transaction_file(payments, 'BD12AZERTY123456', 'AZERTY9Q666', MESSAGE_ID, '0000')
 
     # Then
     assert find_node('//ns:GrpHdr/ns:NbOfTxs', xml) == '2', \
@@ -290,7 +290,7 @@ def test_generate_transaction_file_has_payment_info_id_in_payment_info(app):
     payments = [create_payment(booking1, offerer1, Decimal(10), idx=7)]
 
     # When
-    xml = generate_transaction_file(payments, 'BD12AZERTY123456', 'AZERTY9Q666', MESSAGE_ID)
+    xml = generate_transaction_file(payments, 'BD12AZERTY123456', 'AZERTY9Q666', MESSAGE_ID, '0000')
 
     # Then
     assert find_node('//ns:PmtInf/ns:PmtInfId', xml) == MESSAGE_ID, \
@@ -321,7 +321,7 @@ def test_generate_transaction_file_has_number_of_transactions_in_payment_info(ap
     ]
 
     # When
-    xml = generate_transaction_file(payments, 'BD12AZERTY123456', 'AZERTY9Q666', MESSAGE_ID)
+    xml = generate_transaction_file(payments, 'BD12AZERTY123456', 'AZERTY9Q666', MESSAGE_ID, '0000')
 
     # Then
     assert find_node('//ns:PmtInf/ns:NbOfTxs', xml) == '2', \
@@ -348,7 +348,7 @@ def test_generate_transaction_file_has_control_sum_in_payment_info(app):
     ]
 
     # When
-    xml = generate_transaction_file(payments, 'BD12AZERTY123456', 'AZERTY9Q666', MESSAGE_ID)
+    xml = generate_transaction_file(payments, 'BD12AZERTY123456', 'AZERTY9Q666', MESSAGE_ID, '0000')
 
     # Then
     assert find_node('//ns:PmtInf/ns:CtrlSum', xml) == '30', \
@@ -367,7 +367,7 @@ def test_generate_transaction_file_has_payment_method_in_payment_info(app):
     payments = [create_payment(booking, offerer, Decimal(10), idx=7)]
 
     # When
-    xml = generate_transaction_file(payments, 'BD12AZERTY123456', 'AZERTY9Q666', MESSAGE_ID)
+    xml = generate_transaction_file(payments, 'BD12AZERTY123456', 'AZERTY9Q666', MESSAGE_ID, '0000')
 
     # Then
     assert find_node('//ns:PmtInf/ns:PmtMtd', xml) == 'TRF', \
@@ -386,7 +386,7 @@ def test_generate_transaction_file_has_service_level_in_payment_info(app):
     payments = [create_payment(booking, offerer, Decimal(10), idx=7)]
 
     # When
-    xml = generate_transaction_file(payments, 'BD12AZERTY123456', 'AZERTY9Q666', MESSAGE_ID)
+    xml = generate_transaction_file(payments, 'BD12AZERTY123456', 'AZERTY9Q666', MESSAGE_ID, '0000')
 
     # Then
     assert find_node('//ns:PmtInf/ns:PmtTpInf/ns:SvcLvl/ns:Cd', xml) == 'SEPA', \
@@ -405,7 +405,7 @@ def test_generate_transaction_file_has_category_purpose_in_payment_info(app):
     payments = [create_payment(booking, offerer, Decimal(10), idx=7)]
 
     # When
-    xml = generate_transaction_file(payments, 'BD12AZERTY123456', 'AZERTY9Q666', MESSAGE_ID)
+    xml = generate_transaction_file(payments, 'BD12AZERTY123456', 'AZERTY9Q666', MESSAGE_ID, '0000')
 
     # Then
     assert find_node('//ns:PmtInf/ns:PmtTpInf/ns:CtgyPurp/ns:Cd', xml) == 'GOVT', \
@@ -424,7 +424,7 @@ def test_generate_transaction_file_has_banque_de_france_bic_in_debtor_agent(app)
     payments = [create_payment(booking, offerer, Decimal(10), idx=7)]
 
     # When
-    xml = generate_transaction_file(payments, 'BD12AZERTY123456', 'AZERTY9Q666', MESSAGE_ID)
+    xml = generate_transaction_file(payments, 'BD12AZERTY123456', 'AZERTY9Q666', MESSAGE_ID, '0000')
 
     # Then
     assert find_node('//ns:PmtInf/ns:DbtrAgt/ns:FinInstnId/ns:BIC', xml) == 'AZERTY9Q666'
@@ -442,7 +442,7 @@ def test_generate_transaction_file_has_banque_de_france_iban_in_debtor_account(a
     payments = [create_payment(booking, offerer, Decimal(10), idx=7)]
 
     # When
-    xml = generate_transaction_file(payments, 'BD12AZERTY123456', 'AZERTY9Q666', MESSAGE_ID)
+    xml = generate_transaction_file(payments, 'BD12AZERTY123456', 'AZERTY9Q666', MESSAGE_ID, '0000')
 
     # Then
     assert find_node('//ns:PmtInf/ns:DbtrAcct/ns:Id/ns:IBAN', xml) == 'BD12AZERTY123456'
@@ -460,7 +460,7 @@ def test_generate_transaction_file_has_debtor_name_in_payment_info(app):
     payments = [create_payment(booking, offerer, Decimal(10), idx=7)]
 
     # When
-    xml = generate_transaction_file(payments, 'BD12AZERTY123456', 'AZERTY9Q666', MESSAGE_ID)
+    xml = generate_transaction_file(payments, 'BD12AZERTY123456', 'AZERTY9Q666', MESSAGE_ID, '0000')
 
     # Then
     assert find_node('//ns:PmtInf/ns:Dbtr/ns:Nm', xml) == 'pass Culture', \
@@ -480,7 +480,7 @@ def test_generate_transaction_file_has_requested_execution_datetime_in_payment_i
     payments = [create_payment(booking, offerer, Decimal(10), idx=7)]
 
     # When
-    xml = generate_transaction_file(payments, 'BD12AZERTY123456', 'AZERTY9Q666', MESSAGE_ID)
+    xml = generate_transaction_file(payments, 'BD12AZERTY123456', 'AZERTY9Q666', MESSAGE_ID, '0000')
 
     # Then
     assert find_node('//ns:PmtInf/ns:ReqdExctnDt', xml) == '2018-10-22', \
@@ -499,7 +499,7 @@ def test_generate_transaction_file_has_charge_bearer_in_payment_info(app):
     payments = [create_payment(booking, offerer, Decimal(10), idx=7)]
 
     # When
-    xml = generate_transaction_file(payments, 'BD12AZERTY123456', 'AZERTY9Q666', MESSAGE_ID)
+    xml = generate_transaction_file(payments, 'BD12AZERTY123456', 'AZERTY9Q666', MESSAGE_ID, '0000')
 
     # Then
     assert find_node('//ns:PmtInf/ns:ChrgBr', xml) == 'SLEV', \
@@ -530,7 +530,7 @@ def test_generate_transaction_file_has_iban_in_credit_transfer_transaction_info(
     ]
 
     # When
-    xml = generate_transaction_file(payments, 'BD12AZERTY123456', 'AZERTY9Q666', MESSAGE_ID)
+    xml = generate_transaction_file(payments, 'BD12AZERTY123456', 'AZERTY9Q666', MESSAGE_ID, '0000')
 
     # Then
     assert find_all_nodes('//ns:PmtInf/ns:CdtTrfTxInf/ns:CdtrAcct/ns:Id/ns:IBAN', xml)[0] == 'CF13QSDFGH456789'
@@ -561,7 +561,7 @@ def test_generate_transaction_file_has_bic_in_credit_transfer_transaction_info(a
     ]
 
     # When
-    xml = generate_transaction_file(payments, 'BD12AZERTY123456', 'AZERTY9Q666', MESSAGE_ID)
+    xml = generate_transaction_file(payments, 'BD12AZERTY123456', 'AZERTY9Q666', MESSAGE_ID, '0000')
 
     # Then
     assert find_all_nodes('//ns:PmtInf/ns:CdtTrfTxInf/ns:CdtrAgt/ns:FinInstnId/ns:BIC', xml)[0] == 'QSDFGH8Z555'
@@ -590,7 +590,7 @@ def test_generate_transaction_file_has_amount_in_credit_transfer_transaction_inf
     ]
 
     # When
-    xml = generate_transaction_file(payments, 'BD12AZERTY123456', 'AZERTY9Q666', MESSAGE_ID)
+    xml = generate_transaction_file(payments, 'BD12AZERTY123456', 'AZERTY9Q666', MESSAGE_ID, '0000')
 
     # Then
     nodes_amount = find_all_nodes('//ns:PmtInf/ns:CdtTrfTxInf/ns:Amt/ns:InstdAmt', xml)
@@ -621,12 +621,31 @@ def test_generate_transaction_file_has_hexadecimal_uuids_as_end_to_end_ids_in_tr
     ]
 
     # When
-    xml = generate_transaction_file(payments, 'BD12AZERTY123456', 'AZERTY9Q666', MESSAGE_ID)
+    xml = generate_transaction_file(payments, 'BD12AZERTY123456', 'AZERTY9Q666', MESSAGE_ID, '0000')
 
     # Then
     nodes_id = find_all_nodes('//ns:PmtInf/ns:CdtTrfTxInf/ns:PmtId/ns:EndToEndId', xml)
     assert nodes_id[0] == uuid1.hex
     assert nodes_id[1] == uuid2.hex
+
+
+@pytest.mark.standalone
+def test_generate_transaction_file_has_initiating_party_id_in_payment_info(app):
+    # Given
+    offerer = create_offerer(iban='CF13QSDFGH456789', bic='QSDFGH8Z555', idx=1)
+    user = create_user()
+    venue = create_venue(offerer, idx=4)
+    stock = create_stock_from_offer(create_thing_offer(venue))
+    booking = create_booking(user, stock)
+
+    payments = [create_payment(booking, offerer, Decimal(10), idx=7)]
+
+    # When
+    xml = generate_transaction_file(payments, 'BD12AZERTY123456', 'AZERTY9Q666', MESSAGE_ID, '0000')
+
+    # Then
+    assert find_node('//ns:InitgPty/ns:Id/ns:OrgId/ns:Othr/ns:Id', xml) == '0000', \
+        'The initiating party id should be 0000"'
 
 
 @pytest.mark.standalone
@@ -646,7 +665,7 @@ def test_generate_transaction_file_has_initiating_party_in_group_header(app):
     ]
 
     # When
-    xml = generate_transaction_file(payments, 'BD12AZERTY123456', 'AZERTY9Q666', MESSAGE_ID)
+    xml = generate_transaction_file(payments, 'BD12AZERTY123456', 'AZERTY9Q666', MESSAGE_ID, '0000')
 
     # Then
     assert find_node('//ns:PmtInf/ns:CdtTrfTxInf/ns:UltmtDbtr/ns:Nm', xml) == 'pass Culture', \
@@ -674,7 +693,7 @@ def test_validate_transaction_file_does_not_raise_an_exception_when_generated_xm
         create_payment(booking3, offerer2, Decimal(20), idx=9)
     ]
 
-    xml = generate_transaction_file(payments, 'BD12AZERTY123456', 'AZERTY9Q666', MESSAGE_ID)
+    xml = generate_transaction_file(payments, 'BD12AZERTY123456', 'AZERTY9Q666', MESSAGE_ID, '0000')
 
     # when
     try:

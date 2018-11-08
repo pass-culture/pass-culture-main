@@ -8,6 +8,13 @@
             <CtrlSum>{{ total_amount }}</CtrlSum>
             <InitgPty>
                 <Nm>pass Culture</Nm>
+				<Id>
+					<OrgId>
+						<Othr>
+							<Id>{{ initiating_party_id }}</Id>
+						</Othr>
+					</OrgId>
+				</Id>
             </InitgPty>
         </GrpHdr>
         <PmtInf>

@@ -17,14 +17,15 @@ from repository.booking_queries import find_final_offerer_bookings
 from utils.logger import logger
 from utils.mailing import MailServiceException
 
-iban = os.environ.get('PASS_CULTURE_IBAN')
-bic = os.environ.get('PASS_CULTURE_BIC')
+PASS_CULTURE_IBAN = os.environ.get('PASS_CULTURE_IBAN')
+PASS_CULTURE_BIC = os.environ.get('PASS_CULTURE_BIC')
+PASS_CULTURE_BDF_ID = os.environ.get('PASS_CULTURE_BDF_ID')
 
 
 def generate_and_send_payments():
     try:
         payments = do_generate_payments()
-        do_send_payments(payments, iban, bic)
+        do_send_payments(payments, PASS_CULTURE_IBAN, PASS_CULTURE_BIC, PASS_CULTURE_BDF_ID)
     except Exception as e:
         print('ERROR: ' + str(e))
         traceback.print_tb(e.__traceback__)
@@ -53,13 +54,14 @@ def do_generate_payments():
     return all_payments
 
 
-def do_send_payments(payments: List[Payment], pass_culture_iban: str, pass_culture_bic: str) -> None:
-    if not pass_culture_iban or not pass_culture_bic:
-        logger.error('Missing PASS_CULTURE_IBAN[%s] or PASS_CULTURE_BIC[%s] in environment variables' % (
-            pass_culture_iban, pass_culture_bic))
+def do_send_payments(payments: List[Payment], pass_culture_iban: str, pass_culture_bic: str,
+                     pass_culture_bdf_id: str) -> None:
+    if not pass_culture_iban or not pass_culture_bic or not pass_culture_bdf_id:
+        logger.error('Missing PASS_CULTURE_IBAN[%s], PASS_CULTURE_BIC[%s] or PASS_CULTURE_BDF_ID[%s] in environment variables' % (
+            pass_culture_iban, pass_culture_bic, pass_culture_bdf_id))
     else:
         message_id = 'passCulture-SCT-%s' % datetime.strftime(datetime.utcnow(), "%Y%m%d-%H%M%S")
-        file = generate_transaction_file(payments, pass_culture_iban, pass_culture_bic, message_id)
+        file = generate_transaction_file(payments, pass_culture_iban, pass_culture_bic, message_id, pass_culture_bdf_id)
         validate_transaction_file(file)
         try:
             send_payment_transaction_email(file, app.mailjet_client.send.create)
