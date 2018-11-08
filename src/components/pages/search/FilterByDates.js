@@ -3,8 +3,6 @@ import moment from 'moment'
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 
-// import { Icon } from 'pass-culture-shared'
-
 import { TODAY_DATE, DAYS_CHECKBOXES } from './utils'
 import { DatePickerField } from '../../forms/inputs'
 
@@ -12,9 +10,13 @@ class FilterByDates extends PureComponent {
   constructor(props) {
     super(props)
     this.datepickerPopper = React.createRef()
+    this.state = {
+      pickedDate: null,
+    }
   }
 
   onChange = day => {
+    this.setState({ pickedDate: null })
     const { filterActions, filterState } = this.props
 
     const days = decodeURI(filterState.query.jours || '')
@@ -42,13 +44,15 @@ class FilterByDates extends PureComponent {
     const { filterActions } = this.props
     const formatedDate = (date && date.toISOString()) || null
     filterActions.change({ date: formatedDate, jours: '0-1' })
+
+    this.setState({ pickedDate: date })
   }
 
   render() {
     const { filterState, title } = this.props
     const days = decodeURI(filterState.query.jours || '')
-    const queriedDate =
-      filterState.query.date && moment(decodeURI(filterState.query.date))
+
+    const { pickedDate } = this.state
 
     return (
       <div id="filter-by-dates" className="pt18">
@@ -61,8 +65,8 @@ class FilterByDates extends PureComponent {
           <div className="pc-list flex-columns">
             {DAYS_CHECKBOXES.map(({ label, value }) => {
               const checked =
-                value === '0-1'
-                  ? queriedDate === TODAY_DATE
+                pickedDate !== null && value === '0-1'
+                  ? false
                   : days.includes(value)
               return (
                 <label
@@ -87,7 +91,8 @@ class FilterByDates extends PureComponent {
               name="pick-by-date-filter"
               className="item fs19 py5 pl7 pr22"
               minDate={TODAY_DATE}
-              selected={queriedDate}
+              // selected={queriedDate}
+              selected={pickedDate}
               onChange={this.onPickedDateChange}
               popperRefContainer={this.datepickerPopper}
             />
