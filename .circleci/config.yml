@@ -144,6 +144,12 @@ jobs: # a collection of steps
             cd ~/pass-culture-main/pro
             yarn testcafe
       - run:
+          name: Reset all data
+          command: |
+            cd ~/pass-culture-main
+            ./pc reset-all-db
+            ./pc sandbox --name=webapp
+      - run:
           name: Running tests Webapp
           command: |
             export PATH=${PATH:44}
