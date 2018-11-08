@@ -2,10 +2,10 @@
 version: 2
 jobs: # a collection of steps
   build: # runs not using Workflows must have a `build` job as entry point
-    working_directory: ~/pass-culture-api-ci # directory where steps will run
-    docker: # run the steps with Docker
-      - image: circleci/python:3.6.1 # ...with this image as the primary container; this is where all `steps` will run
-        environment: # environment variables for database
+    working_directory: ~/pass-culture-api-ci
+    docker:
+      - image: circleci/python:3.7.0 # ...with this image as the primary container; this is where all `steps` will run        environment:
+        environment:
           POSTGRES_USER: pass_culture_user
           POSTGRES_PASSWORD: pass_culture_pass
           POSTGRES_DB: pass_culture
@@ -13,8 +13,8 @@ jobs: # a collection of steps
           MAILJET_API_KEY: $MAILJET_API_KEY
           MAILJET_API_SECRET: $MAILJET_API_SECRET
           EXPORT_TOKEN: $EXPORT_TOKEN
-      - image: circleci/postgres:9.6.2 # database image for service container available at `localhost:<port>`
-        environment: # environment variables for database
+      - image: circleci/postgres:9.6.2
+        environment:
           POSTGRES_USER: pass_culture_user
           POSTGRES_PASSWORD: pass_culture_pass
           POSTGRES_DB: pass_culture
