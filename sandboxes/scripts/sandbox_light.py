@@ -1,14 +1,7 @@
 """ sandbox light """
-from sandboxes.scripts.mocks.bookings import *
-from sandboxes.scripts.mocks.deposits import *
-from sandboxes.scripts.mocks.events import *
-from sandboxes.scripts.mocks.event_occurrences import *
-from sandboxes.scripts.mocks.mediations import *
-from sandboxes.scripts.mocks.offers import *
-from sandboxes.scripts.mocks.offerers import *
-from sandboxes.scripts.mocks.recommendations import *
-from sandboxes.scripts.mocks.stocks import *
-from sandboxes.scripts.mocks.things import *
-from sandboxes.scripts.mocks.user_offerers import *
-from sandboxes.scripts.mocks.users_light import *
-from sandboxes.scripts.mocks.venues import *
+from sandboxes.scripts.creators import create_scratch_offerers, \
+                                       create_scratch_users
+
+def save_sandbox():
+    create_scratch_users()
+    create_scratch_offerers()

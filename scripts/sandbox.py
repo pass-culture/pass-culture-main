@@ -4,7 +4,7 @@ from pprint import pprint
 import traceback
 from flask import current_app as app
 
-from sandboxes.scripts.utils.save_sandbox import save_sandbox
+from sandboxes.scripts.save_sandbox import save_sandbox
 
 
 @app.manager.option('-n',

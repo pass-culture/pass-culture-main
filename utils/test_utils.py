@@ -28,12 +28,13 @@ from models import Booking, \
                    Venue
 import models
 from models.payment_status import PaymentStatus, TransactionStatus
-from sandboxes.scripts.mocks.users_light import ADMIN_USER_MOCK
 from utils.object_storage import STORAGE_DIR
 from utils.token import random_token
 
 savedCounts = {}
 
+USER_TEST_ADMIN_EMAIL="pctest.admin.1@btmx.fr"
+USER_TEST_ADMIN_PASSWORD="pctest.Admin.1"
 API_URL = "http://localhost:5000"
 MOCKED_SIREN_ENTREPRISES_API_RETURN = {
     'numero_tva_intra': 'FR60732075312',
@@ -182,7 +183,7 @@ def req_with_auth(email=None, password=None, headers={'origin': 'http://localhos
     request = req.Session()
     request.headers = headers
     if email is None:
-        request.auth = (ADMIN_USER_MOCK['email'], ADMIN_USER_MOCK['password'])
+        request.auth = (USER_TEST_ADMIN_EMAIL, USER_TEST_ADMIN_PASSWORD)
     elif password is not None:
         request.auth = (email, password)
     return request

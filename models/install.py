@@ -26,7 +26,7 @@ def install_models():
     db.engine.execute("CREATE INDEX IF NOT EXISTS idx_activity_objid ON activity(cast(changed_data->>'id' AS INT));")
     db.session.commit()
 
-    if IS_DEV:
-        make_auto_increment_id_clamped_to_last_inserted_object()
+    #if IS_DEV:
+    #    make_auto_increment_id_clamped_to_last_inserted_object()
 
     upsertTutoMediations()
