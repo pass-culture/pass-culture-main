@@ -16,7 +16,14 @@ ShallowWrapper {
     }
   >
     <FilterByDates
-      filterActions={Object {}}
+      filterActions={
+        Object {
+          "add": [MockFunction],
+          "change": [MockFunction],
+          "remove": [MockFunction],
+          "replace": [MockFunction],
+        }
+      }
       filterState={Object {}}
       title="Fake title"
     />
@@ -34,7 +41,12 @@ ShallowWrapper {
     "key": undefined,
     "nodeType": "class",
     "props": Object {
-      "filterActions": Object {},
+      "filterActions": Object {
+        "add": [MockFunction],
+        "change": [MockFunction],
+        "remove": [MockFunction],
+        "replace": [MockFunction],
+      },
       "filterState": Object {},
       "title": "Fake title",
     },
@@ -48,7 +60,12 @@ ShallowWrapper {
       "key": undefined,
       "nodeType": "class",
       "props": Object {
-        "filterActions": Object {},
+        "filterActions": Object {
+          "add": [MockFunction],
+          "change": [MockFunction],
+          "remove": [MockFunction],
+          "replace": [MockFunction],
+        },
         "filterState": Object {},
         "title": "Fake title",
       },

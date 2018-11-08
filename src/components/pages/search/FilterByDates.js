@@ -19,24 +19,38 @@ class FilterByDates extends PureComponent {
     this.setState({ pickedDate: null })
     const { filterActions, filterState } = this.props
 
-    const days = decodeURI(filterState.query.jours || '')
-    const isAlreadyIncluded = days.includes(day)
+    const daysInUrlParams = decodeURI(filterState.query.jours || '')
+
+    const isdayAlreadyChecked = daysInUrlParams.includes(day)
 
     // WE ADD THE DATE AT THE FIRST DAYS SEGMENTS CLICKED
     // WE REMOVE THE DATE AT THE LAST DAYS SEGMENTS CLICKED
 
     let callback
-    if (!get(days, 'length')) {
+
+    if (!get(daysInUrlParams, 'length')) {
+      console.log(
+        '%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% NO DAYS LENGHTS  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%',
+        !get(daysInUrlParams, 'length')
+      )
+
       const date = moment(moment.now()).toISOString()
       callback = () => filterActions.change({ date })
-    } else if (isAlreadyIncluded && days.split(',').length === 1) {
+      // Change valeur de callBack
+    } else if (isdayAlreadyChecked && daysInUrlParams.split(',').length === 1) {
+      console.log('%%%%%% OTHER CASE%%%%%%%%%%%%%%%%')
       callback = () => filterActions.change({ date: null })
+      // Change valeur de callBack
     }
 
-    if (isAlreadyIncluded) {
+    if (isdayAlreadyChecked) {
+      console.log('||||||||| isAlreadyIncluded ||||||||||')
+
       filterActions.remove('jours', day, callback)
       return
     }
+
+    console.log('||||||||| ELSE CASE ||||||||||')
     filterActions.add('jours', day, callback)
   }
 

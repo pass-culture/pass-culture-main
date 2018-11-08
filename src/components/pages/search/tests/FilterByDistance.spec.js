@@ -33,4 +33,18 @@ describe('src | components | pages | search | FilterByDistance', () => {
       expect(wrapper).toMatchSnapshot()
     })
   })
+
+  describe('functions', () => {
+    describe('onChange', () => {
+      describe('///////////// TODO TODO', () => {
+        describe('///////////// TODO TODO', () => {
+          it('should call change function with good parameters', () => {
+            // given
+            // when
+            // then
+          })
+        })
+      })
+    })
+  })
 })
