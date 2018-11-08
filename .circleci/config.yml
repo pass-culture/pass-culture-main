@@ -2,19 +2,19 @@
 version: 2
 jobs: # a collection of steps
   build: # runs not using Workflows must have a `build` job as entry point
-    working_directory: ~/pass-culture-api-ci
-    docker:
-      - image: circleci/python:3.7.0 # ...with this image as the primary container; this is where all `steps` will run
-        environment:
-              POSTGRES_USER: pass_culture_user
-              POSTGRES_PASSWORD: pass_culture_pass
-              POSTGRES_DB: pass_culture
-              DATABASE_URL: postgresql://pass_culture_user:pass_culture_pass@localhost:5432/pass_culture
-              MAILJET_API_KEY: $MAILJET_API_KEY
-              MAILJET_API_SECRET: $MAILJET_API_SECRET
-              EXPORT_TOKEN: $EXPORT_TOKEN
-      - image: circleci/postgres:9.6.2
-        environment:
+    working_directory: ~/pass-culture-api-ci # directory where steps will run
+    docker: # run the steps with Docker
+      - image: circleci/python:3.6.1 # ...with this image as the primary container; this is where all `steps` will run
+        environment: # environment variables for database
+          POSTGRES_USER: pass_culture_user
+          POSTGRES_PASSWORD: pass_culture_pass
+          POSTGRES_DB: pass_culture
+          DATABASE_URL: postgresql://pass_culture_user:pass_culture_pass@localhost:5432/pass_culture
+          MAILJET_API_KEY: $MAILJET_API_KEY
+          MAILJET_API_SECRET: $MAILJET_API_SECRET
+          EXPORT_TOKEN: $EXPORT_TOKEN
+      - image: circleci/postgres:9.6.2 # database image for service container available at `localhost:<port>`
+        environment: # environment variables for database
           POSTGRES_USER: pass_culture_user
           POSTGRES_PASSWORD: pass_culture_pass
           POSTGRES_DB: pass_culture
@@ -46,8 +46,6 @@ jobs: # a collection of steps
             . venv/bin/activate
             pytest tests
 
-<<<<<<< f8cf91c34960294b77139b9406549160608b3fc0
-<<<<<<< 99f56d88c249029c868f5e85106a136cc45ab360
   check-dependencies:
     working_directory: ~/pass-culture-api-ci # directory where steps will run
     docker: # run the steps with Docker
@@ -96,7 +94,6 @@ jobs: # a collection of steps
             rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
           environment:
             DOCKERIZE_VERSION: v0.6.1
-            # TODO: replace gpg with ./pc install-private (after merge PR)
       - run:
           name: Running API server
           command: |
@@ -109,7 +106,6 @@ jobs: # a collection of steps
             cd ~/pass-culture-main
             ./pc start-backend
           background: true
-      # TODO: replace export WEBAPP_PROD_VERSION=$(curl -s https://app.passculture.beta.gouv.fr/git_version.txt)
       - run:
           name: Run Frontend Webapp (Prod version)
           command: |
@@ -118,11 +114,10 @@ jobs: # a collection of steps
             export PATH=$NVM_BIN:$PATH
             cd ~/pass-culture-main/webapp
             export WEBAPP_PROD_VERSION=5f57f1c
-            git checkout $WEBAPP_PROD_VERSION
+            git checkout production
             yarn install
             yarn start
           background: true
-      # TODO: replace export PRO_PROD_VERSION=$(curl -s https://pro.passculture.beta.gouv.fr/git_version.txt)
       - run:
           name: Run Frontend Pro (Prod version)
           command: |
@@ -131,17 +126,16 @@ jobs: # a collection of steps
             export PATH=$NVM_BIN:$PATH
             cd ~/pass-culture-main/pro
             export PRO_PROD_VERSION=c2bd039
-            git checkout $PRO_PROD_VERSION
-            dockerize -wait http://localhost:3000 -timeout 5m -wait-retry-interval 5s
+            git checkout production
             yarn install
             yarn start
           background: true
       - run:
-          name: Running Test Backend (Local Providers)
+          name: Running Sandbox
           command: |
             cd pass-culture-main
             dockerize -wait http://localhost/health -timeout 5m -wait-retry-interval 5s
-            ./pc test-backend tests/10_local_providers_test.py
+            ./pc sandbox --name=webapp
       - run:
           name: Running tests Pro
           command: |
