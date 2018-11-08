@@ -4,7 +4,7 @@ jobs: # a collection of steps
   build: # runs not using Workflows must have a `build` job as entry point
     working_directory: ~/pass-culture-api-ci
     docker:
-      - image: circleci/python:3.7.0 # ...with this image as the primary container; this is where all `steps` will run        environment:
+      - image: circleci/python:3.6.6 # ...with this image as the primary container; this is where all `steps` will run        environment:
         environment:
           POSTGRES_USER: pass_culture_user
           POSTGRES_PASSWORD: pass_culture_pass
@@ -66,7 +66,7 @@ jobs: # a collection of steps
           command:
             ./scripts/check-pip-dependencies.sh
             
-  integration-tests:
+  functional-tests:
     machine:
       image: circleci/classic:latest
     working_directory: ~/
@@ -163,7 +163,7 @@ workflows:
   commit:
     jobs:
       - build
-      - integration-tests:
+      - functional-tests:
           filters:
             branches:
               only:
