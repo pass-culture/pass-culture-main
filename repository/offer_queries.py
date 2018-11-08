@@ -45,15 +45,6 @@ def bookable_offers(query, offer_type):
     return query
 
 
-def _filter_bookable_offers(query):
-    return query.filter((Stock.isSoftDeleted == False)
-                        & ((Stock.bookingLimitDatetime == None)
-                           | (Stock.bookingLimitDatetime > datetime.utcnow()))
-                        & ((Stock.available == None) |
-                           (Stock.available > Booking.query.filter(Booking.stockId == Stock.id)
-                            .statement.with_only_columns([func.coalesce(func.sum(Booking.quantity), 0)]))))
-
-
 def with_active_and_validated_offerer(query):
     query = query.filter((Offerer.isActive == True)
                          & (Offerer.validationToken == None))
@@ -212,7 +203,7 @@ def find_by_venue_id_or_offerer_id_and_search_terms_offers_where_user_has_rights
 
 
 def find_searchable_offer(offer_id):
-    return Offer.query.filter_by(id=offer_id).join(Venue).filter(Venue.validationToken==None).first()
+    return Offer.query.filter_by(id=offer_id).join(Venue).filter(Venue.validationToken == None).first()
 
 
 def _filter_recommendable_offers():
