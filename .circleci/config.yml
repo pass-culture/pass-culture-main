@@ -162,16 +162,12 @@ workflows:
   version: 2
   commit:
     jobs:
-      - build:
-          filters:
-            branches:
-              ignore:
-                - testcafe-staging
+      - build
       - integration-tests:
           filters:
             branches:
               only:
-                - testcafe-staging
+                - staging
   schedule:
     triggers: #use the triggers key to indicate a scheduled build
       - schedule:
