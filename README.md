@@ -126,6 +126,29 @@ Et pour pro sur staging, il suffit de remplacer la dernière commande par celle-
 ./pc -e staging deploy-frontend-pro
 ```
 
+#### Publier shared sur npm
+
+Pour publier une version de pass-culture-shared sur npm
+
+```bash
+cd shared
+npm adduser
+yarn install
+npm publish
+```
+
+Puis sur webapp et/ou pro, mettre à jour la version de pass-culture-shared dans le fichier `package.json` :
+
+```bash
+yarn add pass-culture-shared@x.x.x 
+git add package.json yarn.lock
+```
+
+avec `x.x.x` nouvelle version déployée sur shared.
+
+
+
+
 ### BACKEND
 
 Pour déployer une nouvelle version de l'API, par exemple en staging:
@@ -245,6 +268,12 @@ Puis mettre dans le crontab pour le renouvellement :
 ```bash
 docker run -it --rm -v ~/pass-culture-main/certs:/etc/letsencrypt -v ~/pass-culture-main/certs-data:/data/letsencrypt deliverous/certbot renew --verbose --webroot --webroot-path=/data/letsencrypt
 ```
+
+
+
+
+
+
 
 
 ## Version mobile (outdated)
