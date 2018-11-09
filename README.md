@@ -126,6 +126,9 @@ Et pour pro sur staging, il suffit de remplacer la dernière commande par celle-
 ./pc -e staging deploy-frontend-pro
 ```
 
+Lors du yarn version, vous devrez respecter le semantic versionning : vN.x.0
+N est le numéro de l'itération et x un autoincrément qui démarre à 0 et est changé en cas de hotfix en cours d'itération.
+
 #### Publier shared sur npm
 
 Pour publier une version de pass-culture-shared sur npm
@@ -133,6 +136,7 @@ Pour publier une version de pass-culture-shared sur npm
 ```bash
 cd shared
 npm adduser
+yarn version
 yarn install
 npm publish
 ```
@@ -147,18 +151,18 @@ git add package.json yarn.lock
 avec `x.x.x` nouvelle version déployée sur shared.
 
 
-
-
 ### BACKEND
 
 Pour déployer une nouvelle version de l'API, par exemple en staging:
-**(Attention de ne pas déployer sur la prod sans authorisation !)**
+**(Attention de ne pas déployer sur la prod sans autorisation !)**
 ```bash
 git checkout master
 git pull -r
-git tag 'v.X.Y.Z'
+git tag 'vN.x'
 ./pc -e staging deploy-backend
 ```
+
+où N est le numéro de l'itération et x un autoincrément qui démarre à 0 et est changé en cas de hotfix en cours d'itération.
 
 ## Administration
 
