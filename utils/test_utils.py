@@ -410,7 +410,8 @@ def create_thing_offer(venue, thing=None, date_created=datetime.utcnow(), bookin
     offer.venue = venue
     offer.dateCreated = date_created
     offer.bookingEmail = booking_email
-    offer.idAtProviders = "%s@%s" % (offer.thing.idAtProviders, venue.siret)
+    if venue is not None:
+        offer.idAtProviders = "%s@%s" % (offer.thing.idAtProviders, venue.siret)
     return offer
 
 
