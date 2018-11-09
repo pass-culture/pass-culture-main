@@ -75,7 +75,7 @@ def test_post_event_returns_403_when_creating_a_new_activation_event_as_an_offer
     PcObject.check_and_save(user_offerer, venue)
 
     json = {
-        'name': 'La pièce de théâtre',
+        'name': "Offre d'activation",
         'durationMinutes': 60,
         'venueId': humanize(venue.id),
         'type': str(EventType.ACTIVATION)
@@ -100,7 +100,7 @@ def test_post_event_returns_403_when_creating_a_new_activation_event_as_an_offer
     PcObject.check_and_save(user_offerer, venue)
 
     json = {
-        'name': 'La pièce de théâtre',
+        'name': "Offre d'activation",
         'durationMinutes': 60,
         'venueId': humanize(venue.id),
         'type': str(EventType.ACTIVATION)
@@ -120,12 +120,11 @@ def test_post_event_returns_201_when_creating_a_new_activation_event_as_a_global
     # Given
     user = create_user(email='test@email.com', password='P@55w0rd', can_book_free_offers=False, is_admin=True)
     offerer = create_offerer()
-    user_offerer = create_user_offerer(user, offerer, is_admin=False)
     venue = create_venue(offerer)
-    PcObject.check_and_save(user_offerer, venue)
+    PcObject.check_and_save(user, venue)
 
     json = {
-        'name': 'La pièce de théâtre',
+        'name': "Offre d'activation",
         'durationMinutes': 60,
         'venueId': humanize(venue.id),
         'type': str(EventType.ACTIVATION)
