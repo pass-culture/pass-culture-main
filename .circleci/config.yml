@@ -49,7 +49,7 @@ jobs: # a collection of steps
   check-dependencies:
     working_directory: ~/pass-culture-api-ci # directory where steps will run
     docker: # run the steps with Docker
-      - image: circleci/python:3.7.0
+      - image: circleci/python:3.6.6
     steps: # a collection of executable commands
       - checkout # special step to check out source code to the working directory
       - restore_cache: # restores saved dependency cache if the Branch key template or requirements.txt files have not changed since the previous run
