@@ -1,6 +1,7 @@
 from datetime import datetime
+from typing import List
 
-from sqlalchemy import func, and_
+from sqlalchemy import func, and_, or_
 
 from models import Booking, \
     Event, \
@@ -9,10 +10,11 @@ from models import Booking, \
     Stock, \
     Offerer, \
     Recommendation, \
-    Venue
+    Venue, ThingType, EventType
 from models import Thing
 from models.db import db
 from repository.user_offerer_queries import filter_query_where_user_is_user_offerer_and_is_validated
+from utils.config import ILE_DE_FRANCE_DEPT_CODES
 from utils.distance import get_sql_geo_distance_in_kilometers
 from utils.logger import logger
 from utils.search import get_keywords_filter
@@ -41,15 +43,6 @@ def bookable_offers(query, offer_type):
     query = _filter_bookable_offers(query)
     logger.debug(lambda: '(reco) bookable .count ' + str(query.count()))
     return query
-
-
-def _filter_bookable_offers(query):
-    return query.filter((Stock.isSoftDeleted == False)
-                        & ((Stock.bookingLimitDatetime == None)
-                           | (Stock.bookingLimitDatetime > datetime.utcnow()))
-                        & ((Stock.available == None) |
-                           (Stock.available > Booking.query.filter(Booking.stockId == Stock.id)
-                            .statement.with_only_columns([func.coalesce(func.sum(Booking.quantity), 0)]))))
 
 
 def with_active_and_validated_offerer(query):
@@ -179,7 +172,7 @@ def get_offers_for_recommendations_search(
         offers = offer_query.paginate(page, per_page=10, error_out=False) \
             .items
     else:
-        offers = query.all()
+        offers = offer_query.all()
 
     return offers
 
@@ -210,7 +203,7 @@ def find_by_venue_id_or_offerer_id_and_search_terms_offers_where_user_has_rights
 
 
 def find_searchable_offer(offer_id):
-    return Offer.query.filter_by(id=offer_id).join(Venue).filter(Venue.validationToken==None).first()
+    return Offer.query.filter_by(id=offer_id).join(Venue).filter(Venue.validationToken == None).first()
 
 
 def _filter_recommendable_offers():
@@ -224,6 +217,39 @@ def _filter_recommendable_offers():
         .filter_by(isSoftDeleted=False)
 
     return join_on_stocks.union_all(join_on_event_occurrences)
+
+
+def find_activation_offers(departement_code: str) -> List[Offer]:
+    departement_codes = ILE_DE_FRANCE_DEPT_CODES if departement_code == '93' else [departement_code]
+    match_department_or_is_national = or_(Venue.departementCode.in_(departement_codes), Event.isNational == True,
+                                          Thing.isNational == True)
+    is_activation_offer = or_(Event.type == str(EventType.ACTIVATION), Thing.type == str(ThingType.ACTIVATION))
+
+    join_on_stock = and_(or_(Offer.id == Stock.offerId, Stock.eventOccurrenceId == EventOccurrence.id))
+    join_on_event_occurrence = and_(Offer.id == EventOccurrence.offerId)
+    join_on_event = and_(Event.id == Offer.eventId)
+
+    query = Offer.query \
+        .outerjoin(Thing) \
+        .outerjoin(Event, join_on_event) \
+        .outerjoin(EventOccurrence, join_on_event_occurrence) \
+        .join(Venue) \
+        .join(Stock, join_on_stock) \
+        .filter(is_activation_offer) \
+        .filter(match_department_or_is_national)
+
+    query = _filter_bookable_offers(query)
+
+    return query
+
+
+def _filter_bookable_offers(query):
+    return query.filter((Stock.isSoftDeleted == False)
+                        & ((Stock.bookingLimitDatetime == None)
+                           | (Stock.bookingLimitDatetime > datetime.utcnow()))
+                        & ((Stock.available == None) |
+                           (Stock.available > Booking.query.filter(Booking.stockId == Stock.id)
+                            .statement.with_only_columns([func.coalesce(func.sum(Booking.quantity), 0)]))))
 
 
 def count_offers_for_things_only_by_venue_id(venue_id):

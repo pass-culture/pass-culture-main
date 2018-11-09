@@ -75,3 +75,7 @@ class ConflictError(ApiErrors):
 
 class ResourceNotFound(ApiErrors):
     pass
+
+
+class ForbiddenError(ApiErrors):
+    pass

@@ -1,7 +1,10 @@
 """ things """
 import simplejson as json
 from flask import current_app as app, jsonify, request
+from flask_login import current_user
 
+from models import ThingType
+from models.api_errors import ForbiddenError
 from models.offer import Offer
 from models.pc_object import PcObject
 from models.thing import Thing
@@ -11,6 +14,7 @@ from utils.rest import expect_json_data, \
     load_or_404, \
     login_or_api_key_required, \
     handle_rest_get_list
+from validation.things import check_user_can_create_activation_thing
 from validation.url import is_url_safe
 
 
@@ -37,6 +41,7 @@ def list_things():
 def post_thing():
     thing = Thing()
     thing.populateFromDict(request.json)
+    check_user_can_create_activation_thing(current_user, thing)
     offer = Offer()
     offer.venueId = dehumanize(request.json['venueId'])
     offer.thing = thing

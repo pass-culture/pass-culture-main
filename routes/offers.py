@@ -1,23 +1,24 @@
 """offers"""
 
 from datetime import datetime
+
 from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
 
 from domain.offers import check_digital_offer_consistency, InconsistentOffer
-from models import ApiErrors, Offer, PcObject, Recommendation,\
-                   RightsType, Venue
+from models import ApiErrors, Offer, PcObject, Recommendation, \
+    RightsType, Venue
 from models.db import db
 from repository import venue_queries
-from repository.offer_queries import find_by_venue_id_or_offerer_id_and_search_terms_offers_where_user_has_rights
+from repository.offer_queries import find_by_venue_id_or_offerer_id_and_search_terms_offers_where_user_has_rights, \
+    find_activation_offers
 from utils.human_ids import dehumanize
 from utils.includes import OFFER_INCLUDES
 from utils.rest import ensure_current_user_has_rights, \
-                       expect_json_data, \
-                       handle_rest_get_list, \
-                       load_or_404
+    expect_json_data, \
+    handle_rest_get_list, \
+    load_or_404
 from validation.offers import check_venue_exists_when_requested, check_user_has_rights_for_query
-from utils.search import get_keywords_filter
 
 
 @app.route('/offers', methods=['GET'])
@@ -44,6 +45,19 @@ def list_offers():
                                 page=request.args.get('page'),
                                 paginate=10,
                                 order_by='offer.id desc')
+
+
+@app.route('/offers/activation', methods=['GET'])
+@login_required
+def list_activation_offers():
+    departement_code = current_user.departementCode
+    query = find_activation_offers(departement_code)
+
+    return handle_rest_get_list(
+        Offer,
+        include=OFFER_INCLUDES,
+        query=query
+    )
 
 
 @app.route('/offers/<id>', methods=['GET'])
@@ -86,10 +100,10 @@ def update_offer(offer_id):
         newProps['isActive'] = request.json['isActive']
     offer.populateFromDict(newProps)
     PcObject.check_and_save(offer)
-    if 'isActive' in request.json\
-       and not newProps['isActive']:
+    if 'isActive' in request.json \
+            and not newProps['isActive']:
         Recommendation.query.filter((Recommendation.offerId == offer.id)
-                                    & (Recommendation.validUntilDate > datetime.utcnow()))\
-                            .update({'validUntilDate': datetime.utcnow()})
+                                    & (Recommendation.validUntilDate > datetime.utcnow())) \
+            .update({'validUntilDate': datetime.utcnow()})
         db.session.commit()
     return jsonify(offer._asdict()), 200
