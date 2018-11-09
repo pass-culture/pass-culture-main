@@ -5,7 +5,7 @@ from models import Offer
 from models.db import db
 from models.local_provider import LocalProvider, ProvidableInfo
 from models.stock import Stock
-from repository import thing_queries, local_provider_event_queries
+from repository import thing_queries, local_provider_event_queries, venue_queries
 from utils.logger import logger
 
 DATE_FORMAT = "%d/%m/%Y"
@@ -48,7 +48,8 @@ class TiteLiveStocks(LocalProvider):
 
     def __init__(self, venueProvider, **options):
         super().__init__(venueProvider, **options)
-        self.venue = self.venueProvider.venue
+        self.venueId = self.venueProvider.venueId
+        self.venue = venue_queries.find_by_id(self.venueId)
         assert self.venue is not None
 
         latest_local_provider_event = local_provider_event_queries.find_latest_sync_start_event(self.dbObject)
@@ -91,9 +92,6 @@ class TiteLiveStocks(LocalProvider):
 
         if self.thing is None:
             return self.__next__()
-
-        # Refresh data before using it
-        db.session.add(self.venue)
 
         p_info_stock = ProvidableInfo()
         p_info_stock.type = Stock
