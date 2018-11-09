@@ -79,11 +79,7 @@ jobs: # a collection of steps
             rm -rf shared
             git clone https://github.com/betagouv/pass-culture-browser.git webapp
             git clone https://github.com/betagouv/pass-culture-pro.git pro
-            curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
-            curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
-            echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
-            sudo apt-get update
-            sudo apt-get install -y nodejs yarn google-chrome-stable realpath
+            ./install_ci_lib.sh
       - checkout:
           path: ~/pass-culture-main/api
       - run:
