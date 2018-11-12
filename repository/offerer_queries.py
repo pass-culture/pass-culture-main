@@ -97,6 +97,8 @@ def find_all_offerers_with_venue():
     return result
 
 
-def find_all_pending_validations():
-    return Offerer.query.join(UserOfferer).filter(or_(UserOfferer.validationToken != None, Offerer.validationToken != None)).order_by(Offerer.id).all()
-
+def find_all_pending_validation():
+    return Offerer.query.join(UserOfferer) \
+        .filter(or_(UserOfferer.validationToken != None, Offerer.validationToken != None)) \
+        .order_by(Offerer.id).all()
+        

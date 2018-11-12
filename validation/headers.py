@@ -47,7 +47,8 @@ def _get_endpoint_exceptions():
         'get_bookings_per_date_per_departement', 'get_offers_per_date_per_department', 'get_offerers_per_date_per_departement',
         'get_venue_per_department', 'get_tracked_activity_from_id', 'get_offerers_users_offers_bookings', 'get_recommendations', 
         'validate', 'validate_venue', 'get_all_offerers_with_managing_user_information', 'get_all_offerers_with_managing_user_information_and_venue',
-        'get_all_offerers_with_managing_user_information_and_not_virtual_venue', 'get_all_offerers_with_venue']
+        'get_all_offerers_with_managing_user_information_and_not_virtual_venue',
+        'get_all_offerers_with_venue', 'get_pending_validation' ]
 
 
 def _get_origin_header_whitelist_for_non_dev_environments(api_url):

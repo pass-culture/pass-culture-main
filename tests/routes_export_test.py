@@ -6,7 +6,8 @@ import requests
 
 from models import PcObject
 from tests.conftest import clean_database
-from utils.test_utils import API_URL, create_user, req_with_auth
+from utils.test_utils import API_URL, create_user, req_with_auth, create_user_offerer, \
+    create_offerer
 
 TOKEN = os.environ.get('EXPORT_TOKEN')
 
@@ -98,7 +99,7 @@ def test_check_user_is_admin_returns_403_when_user_is_not_admin(app):
     auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
 
     #when
-    response = auth_request.get(API_URL + '/exports/pending_validations')
+    response = auth_request.get(API_URL + '/exports/pending_validation')
 
     #then
     assert response.status_code == 403
@@ -113,7 +114,24 @@ def test_check_user_is_admin_returns_200_when_user_is_admin(app):
     auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
 
     #when
-    response = auth_request.get(API_URL + '/exports/pending_validations')
+    response = auth_request.get(API_URL + '/exports/pending_validation')
 
     #then
     assert response.status_code == 200
+
+
+@pytest.mark.standalone
+@clean_database
+def test_check_user_is_admin_returns_403_when_user_is_structure_admin_but_not_admin(app):
+    #given
+    user = create_user(password='p@55sw0rd', is_admin=False, can_book_free_offers=False)
+    offerer = create_offerer()
+    user_offerer = create_user_offerer(user, offerer, is_admin=True)
+    PcObject.check_and_save(user)
+    auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
+
+    #when
+    response = auth_request.get(API_URL + '/exports/pending_validation')
+
+    #then
+    assert response.status_code == 403

@@ -16,10 +16,7 @@ from repository import activity_queries
 from repository.booking_queries import find_bookings_stats_per_department, \
     find_bookings_in_date_range_for_given_user_or_venue_departement
 from repository.offer_queries import find_offers_in_date_range_for_given_venue_departement
-from repository.offerer_queries import find_offerers_in_date_range_for_given_departement, \
-    find_offerers_with_user_venues_and_bookings_by_departement, find_all_offerers_with_managing_user_information, \
-    find_all_offerers_with_managing_user_information_and_venue, find_all_offerers_with_venue, \
-    find_all_offerers_with_managing_user_information_and_not_virtual_venue, find_all_pending_validations
+from repository import offerer_queries
 from repository.recommendation_queries import find_recommendations_in_date_range_for_given_departement
 from repository.user_queries import find_users_by_department_and_date_range, find_users_stats_per_department
 from repository.venue_queries import count_venues_by_departement
@@ -134,9 +131,9 @@ def get_bookings_per_date_per_departement():
                                                                              event_date_max, event_date_min,
                                                                              user_department, venue_department)
     file_name = 'export_%s_bookings.csv' % datetime.utcnow().strftime('%y_%m_%d')
-    headers = ['User_id', 'User_departementCode', 'Booking_id', 'Booking_issued_at', 'EventOccurrence_id',
-               'EventOccurrence_beginningDatetime', 'Venue_departementCode', 'Offerer_id', 'Offerer_name', 'Event_id',
-               'Event_name', 'Activity_id']
+    headers = ['User_id', 'User_departementCode', 'Booking_id', 'Booking_issued_at',
+               'EventOccurrence_id', 'EventOccurrence_beginningDatetime', 'Venue_departementCode',
+               'Offerer_id', 'Offerer_name', 'Event_id', 'Event_name', 'Activity_id']
     return _make_csv_response(file_name, headers, result)
 
 
@@ -160,7 +157,8 @@ def get_offerers_per_date_per_departement():
     date_max = request.args.get('date_max')
     department = request.args.get('department')
 
-    result = find_offerers_in_date_range_for_given_departement(date_max, date_min, department)
+    result = offerer_queries.find_offerers_in_date_range_for_given_departement(date_max, date_min,
+       department)
 
     file_name = 'export_%s_offerers.csv' % datetime.utcnow().strftime('%y_%m_%d')
     headers = ['Offerer_id', 'Offerer_name', 'dateCreated', 'departement_code']
@@ -196,10 +194,11 @@ def get_offerers_users_offers_bookings():
     _check_token()
     department = request.args.get('department')
 
-    result = find_offerers_with_user_venues_and_bookings_by_departement(department)
+    result = offerer_queries.find_offerers_with_user_venues_and_bookings_by_departement(department)
     file_name = 'export_%s_offerers_users_offers_bookings.csv' % datetime.utcnow().strftime('%y_%m_%d')
-    headers = ['Offerer_name', 'UserOfferer_id', 'User_email', 'User_dateCreated', 'Venue_departementCode',
-               'Offer_dateCreated', 'Event_name', 'Activity_issued_at', 'Booking_dateCreated']
+    headers = ['Offerer_name', 'UserOfferer_id', 'User_email', 'User_dateCreated',
+               'Venue_departementCode','Offer_dateCreated', 'Event_name', 'Activity_issued_at',
+               'Booking_dateCreated']
     return _make_csv_response(file_name, headers, result)
 
 
@@ -221,9 +220,11 @@ def get_recommendations():
 def get_all_offerers_with_managing_user_information():
     _check_token()
 
-    result = find_all_offerers_with_managing_user_information()
+    result = offerer_queries.find_all_offerers_with_managing_user_information()
     file_name = 'export_%s_offerer_siren.csv' % datetime.utcnow().strftime('%y_%m_%d')
-    headers = ['Offerer_id', 'Offerer_name', 'Offerer_siren','Offerer_postalCode', 'Offerer_city','User_firstName', 'User_lastName', 'User_email', 'User_phoneNumber', 'User.postalCode']
+    headers = ['Offerer_id', 'Offerer_name', 'Offerer_siren','Offerer_postalCode',
+               'Offerer_city','User_firstName', 'User_lastName', 'User_email', 'User_phoneNumber',
+               'User.postalCode']
     return _make_csv_response(file_name, headers, result)
 
 
@@ -231,9 +232,11 @@ def get_all_offerers_with_managing_user_information():
 def get_all_offerers_with_managing_user_information_and_venue():
     _check_token()
 
-    result = find_all_offerers_with_managing_user_information_and_venue()
+    result = offerer_queries.find_all_offerers_with_managing_user_information_and_venue()
     file_name = 'export_%s_offerers_siren_with_venue.csv' % datetime.utcnow().strftime('%y_%m_%d')
-    headers = ['Offerer_id', 'Offerer_name', 'Offerer_siren', 'Offerer_postalCode', 'Offerer_city', 'Venue_name', 'Venue.bookingEmail', 'Venue_postalCode', 'User_firstName', 'User_lastName', 'User_email', 'User_phoneNumber', 'User.postalCode']
+    headers = ['Offerer_id', 'Offerer_name', 'Offerer_siren', 'Offerer_postalCode', 'Offerer_city',
+               'Venue_name', 'Venue.bookingEmail', 'Venue_postalCode', 'User_firstName',
+               'User_lastName', 'User_email', 'User_phoneNumber', 'User.postalCode']
     return _make_csv_response(file_name, headers, result)
 
 
@@ -241,9 +244,11 @@ def get_all_offerers_with_managing_user_information_and_venue():
 def get_all_offerers_with_managing_user_information_and_not_virtual_venue():
     _check_token()
 
-    result = find_all_offerers_with_managing_user_information_and_not_virtual_venue()
+    result = offerer_queries.find_all_offerers_with_managing_user_information_and_not_virtual_venue()
     file_name = 'export_%s_offerers_siren_with_not_virtual_venue.csv' % datetime.utcnow().strftime('%y_%m_%d')
-    headers = ['Offerer_id', 'Offerer_name', 'Offerer_siren', 'Offerer_postalCode', 'Offerer_city', 'Venue_name', 'Venue.bookingEmail', 'Venue_postalCode', 'User_firstName', 'User_lastName', 'User_email', 'User_phoneNumber', 'User.postalCode']
+    headers = ['Offerer_id', 'Offerer_name', 'Offerer_siren', 'Offerer_postalCode', 'Offerer_city',
+               'Venue_name', 'Venue.bookingEmail', 'Venue_postalCode', 'User_firstName',
+               'User_lastName', 'User_email', 'User_phoneNumber', 'User.postalCode'] 
     return _make_csv_response(file_name, headers, result)
 
 
@@ -251,18 +256,19 @@ def get_all_offerers_with_managing_user_information_and_not_virtual_venue():
 def get_all_offerers_with_venue():
     _check_token()
 
-    result = find_all_offerers_with_venue()
+    result = offerer_queries.find_all_offerers_with_venue()
     file_name = 'export_%s_offerers_with_venue_venue.csv' % datetime.utcnow().strftime('%y_%m_%d')
-    headers = ['Offerer_id', 'Offerer_name', 'Venue_id', 'Venue_name', 'Venue_bookingEmail', 'Venue_postalCode', 'Venue_isVirtual']
+    headers = ['Offerer_id', 'Offerer_name', 'Venue_id', 'Venue_name', 'Venue_bookingEmail',
+               'Venue_postalCode', 'Venue_isVirtual'] 
     return _make_csv_response(file_name, headers, result)
 
 
-@app.route('/exports/pending_validations', methods=['GET'])
+@app.route('/exports/pending_validation', methods=['GET'])
 @login_required
-def get_pending_validations():
+def get_pending_validation():
     check_user_is_admin(current_user)
     result = []    
-    offerers = find_all_pending_validations()
+    offerers = offerer_queries.find_all_pending_validation()
 
     for o in offerers:
         result.append(o._asdict(include=PENDING_VALIDATIONS_OFFERERS_INCLUDES))
@@ -322,3 +328,4 @@ def _check_int(checked_int):
         return checked_int
     except:
         return 0
+        
