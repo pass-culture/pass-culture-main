@@ -17,8 +17,8 @@ def create_grid_event_offers(events_by_name, venues_by_name):
         if venue.isVirtual:
             continue
 
-        virtual_venue_mock = [
-            vm for vm in venues
+        virtual_venue = [
+            v for v in venues
             if venue.managingOffererId == v.managingOffererId
             and v.isVirtual
         ][0]
@@ -26,20 +26,22 @@ def create_grid_event_offers(events_by_name, venues_by_name):
         for event in events_by_name.values():
 
             # DETERMINE THE MATCHING VENUE
-            event_type = types_by_value[event_mock['type']]
+            event_type = types_by_value[event.type]
             if event_type['offlineOnly']:
-                thing_venue = venue
+                event_venue = venue
             elif event_type['onlineOnly']:
-                thing_venue = virtual_venue
+                event_venue = virtual_venue
             else:
-                thing_venue = venue
+                event_venue = venue
 
-            offer_mock = create_event_offer(thing_venue,
+            name = event.name + '/' + event_venue.name
+            event_offers_by_name[name] = create_event_offer(
+                event_venue,
                 event=event,
                 is_active=True,
-                type=event.type
+                event_type=event.type
             )
 
     PcObject.check_and_save(*event_offers_by_name.values())
 
-    return offer_mocks
+    return event_offers_by_name

@@ -4,6 +4,7 @@ from utils.logger import logger
 from utils.test_utils import create_thing_offer
 
 def create_grid_thing_offers(things_by_name, venues_by_name):
+    logger.info('create_grid_thing_offers')
 
     types_by_value = get_types_by_value()
 
@@ -18,7 +19,7 @@ def create_grid_thing_offers(things_by_name, venues_by_name):
 
         virtual_venue = [
             v for v in venues
-            if v.managingOffererId == venune.managingOffererId
+            if venue.managingOffererId == v.managingOffererId
             and v.isVirtual
         ][0]
 
@@ -33,10 +34,13 @@ def create_grid_thing_offers(things_by_name, venues_by_name):
             else:
                 thing_venue = venue
 
-            offer = create_thing_offer(thing_venue,
-                                       is_active=True,
-                                       thing=thing,
-                                       type=thing.type)
+            name = thing.name + '/' + thing_venue.name
+            thing_offers_by_name[name] = create_thing_offer(
+                thing_venue,
+                is_active=True,
+                thing=thing,
+                thing_type=thing.type
+            )
 
     PcObject.check_and_save(*thing_offers_by_name.values())
 

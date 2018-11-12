@@ -30,7 +30,6 @@ schedules = [
 ]
 
 def get_collection_name(obj):
-    print('obj', obj, obj.__class__.__name__)
     return inflect_engine.plural(obj.__class__.__name__.lower())
 
 def dashify(name):

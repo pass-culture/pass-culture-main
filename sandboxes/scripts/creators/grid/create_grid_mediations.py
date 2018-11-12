@@ -5,10 +5,11 @@ from utils.test_utils import create_mediation
 
 def create_grid_mediations(offers_by_name):
     logger.info('create_grid_mediations')
+    
     mediations_by_name = {}
 
-    for offer in offers_by_name.values():
-        mediation = create_mediation(offer)
+    for (offer_name, offer) in offers_by_name.items():
+        mediations_by_name[offer_name] = create_mediation(offer)
 
     PcObject.check_and_save(*mediations_by_name.values())
 

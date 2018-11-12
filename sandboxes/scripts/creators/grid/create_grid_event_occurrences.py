@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from models.pc_object import PcObject
 from sandboxes.scripts.utils.params import EVENT_OCCURRENCE_BEGINNING_DATETIMES
 from utils.date import strftime
@@ -9,13 +11,13 @@ def create_grid_event_occurrences(event_offers_by_name):
 
     event_occurrences_by_name = {}
 
-    for event_offer_mock in event_offers_by_name.values():
+    for event_offer in event_offers_by_name.values():
         for beginning_datetime in EVENT_OCCURRENCE_BEGINNING_DATETIMES:
-            name = offer.eventOrThing.name + " " + offer.venue.name + " " + strftime(beginning_datetime)
-            event_occurrence_by_name[name] = create_event_occurrence(
+            name = event_offer.eventOrThing.name + " " + event_offer.venue.name + " " + strftime(beginning_datetime)
+            event_occurrences_by_name[name] = create_event_occurrence(
                 beginning_datetime=strftime(beginning_datetime),
-                endDatetime=strftime(beginning_datetime + timedelta(hours=1)),
-                offer=event_offer_mock
+                end_datetime=strftime(beginning_datetime + timedelta(hours=1)),
+                offer=event_offer
             )
 
     PcObject.check_and_save(*event_occurrences_by_name.values())

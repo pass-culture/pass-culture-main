@@ -1,3 +1,5 @@
+import re
+
 from models.pc_object import PcObject
 from utils.logger import logger
 from utils.test_utils import create_venue
@@ -8,16 +10,18 @@ def create_grid_venues(offerers_by_name):
     venue_by_name = {}
     for offerer in offerers_by_name.values():
         name = "LIEU " + str(offerer.siren)
+        geoloc_match = re.match(r'(.*)lat\:(.*) lon\:(.*)', offerer.address)
         venue_by_name[name] = create_venue(
             offerer,
             address=offerer.address,
             booking_email="fake@email.com",
             city=offerer.city,
             comment="Pas de siret car je suis un mock.",
-            latitude=offerer.address.split('lat:')[1],
-            longitude=offerer.address.split('lon:')[1],
+            latitude=float(geoloc_match.group(2)),
+            longitude=float(geoloc_match.group(3)),
             name=name,
-            postal_code=offerer.postalCode
+            postal_code=offerer.postalCode,
+            siret=None
         )
 
         digital_name = name + " Offre en ligne"

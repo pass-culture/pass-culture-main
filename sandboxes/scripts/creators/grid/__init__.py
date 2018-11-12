@@ -23,7 +23,7 @@ def save_grid_sandbox():
         grid_venues_by_name
     )
 
-    grid_thing_offers_by_name = create_grid_event_offers(
+    grid_thing_offers_by_name = create_grid_thing_offers(
         grid_things_by_name,
         grid_venues_by_name
     )
@@ -35,7 +35,7 @@ def save_grid_sandbox():
 
     grid_event_occurrences_by_name = create_grid_event_occurrences(grid_event_offers_by_name)
 
-    create_grid_event_stocks(grid_event_offers_by_name)
+    create_grid_event_stocks(grid_event_occurrences_by_name)
 
     create_grid_thing_stocks(grid_thing_offers_by_name)
 

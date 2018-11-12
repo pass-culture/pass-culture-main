@@ -6,16 +6,17 @@ def create_grid_event_stocks(event_occurrences_by_name):
     logger.info('create_grid_event_stocks')
 
     event_stocks_by_name = {}
-    for event_occurrence_mock in event_occurrences_by_name.values():
 
+    for (event_occurrence_name, event_occurrence) in event_occurrences_by_name.items():
+        available = 10
+        price = 10
+        name = event_occurrence_name + "/" + str(available) + "/" + str(price)
+        event_stocks_by_name[name] = create_stock_from_event_occurrence(
+            event_occurrence,
+            available=available,
+            price=price
+        )
 
-        stock_mock = {
-            "available": 10,
-            "eventOccurrenceId": event_occurrence_mock['id'],
-            "id": humanize(incremented_id),
-            "price": 10
-        }
-
-    PcObject.check_and_save(*event_stocks_by_name)
+    PcObject.check_and_save(*event_stocks_by_name.values())
 
     return event_stocks_by_name
