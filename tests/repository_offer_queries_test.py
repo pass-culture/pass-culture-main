@@ -54,16 +54,16 @@ def test_departement_or_national_offers_with_national_event_returns_national_eve
 @clean_database
 def test_get_offers_for_recommendations_search_by_type(app):
     # Given
-    type_label = str(EventType['CONFERENCE_DEBAT_DEDICACE'])
-    other_type_label = str(EventType['MUSIQUE'])
+    type_label = str(EventType.CONFERENCE_DEBAT_DEDICACE)
+    other_type_label = str(EventType.MUSIQUE)
 
     conference_event = create_event(
         'Rencontre avec Franck Lepage',
-        type=type_label
+        event_type=type_label
     )
     concert_event = create_event(
         'Concert de Gael Faye',
-        type=other_type_label
+        event_type=other_type_label
     )
 
     offerer = create_offerer(
@@ -89,8 +89,8 @@ def test_get_offers_for_recommendations_search_by_type(app):
         siret="50763357600016"
     )
 
-    conference_offer = create_event_offer(venue, conference_event)
-    concert_offer = create_event_offer(venue, concert_event)
+    conference_offer = create_event_offer(venue, conference_event, is_active=True)
+    concert_offer = create_event_offer(venue, concert_event, is_active=True)
 
     conference_event_occurrence = create_event_occurrence(
         conference_offer

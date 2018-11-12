@@ -356,10 +356,17 @@ def create_stock_with_thing_offer(offerer, venue, thing_offer, price=10, availab
     return stock
 
 
-def create_thing(thing_type=ThingType.LIVRE_EDITION.name, thing_name='Test Book', media_urls=['test/urls'],
-                 author_name='Test Author', url=None,
-                 thumb_count=1, dominant_color=None, is_national=False,
-                 id_at_providers=None):
+def create_thing(
+    thing_name='Test Book',
+    thing_type=str(ThingType.LIVRE_EDITION),
+    media_urls=['test/urls'],
+    author_name='Test Author',
+    url=None,
+    thumb_count=1,
+    dominant_color=None,
+    is_national=False,
+    id_at_providers=None
+):
     thing = Thing()
     thing.type = str(thing_type)
     thing.name = thing_name
@@ -380,19 +387,19 @@ def create_thing(thing_type=ThingType.LIVRE_EDITION.name, thing_name='Test Book'
 
 
 def create_event(
-        event_name='Test event',
-        duration_minutes=60,
-        thumb_count=0,
-        dominant_color=None,
-        is_national=False,
-        type=EventType.SPECTACLE_VIVANT
+    event_name='Test event',
+    event_type=str(EventType.SPECTACLE_VIVANT),
+    duration_minutes=60,
+    thumb_count=0,
+    dominant_color=None,
+    is_national=False
 ):
     event = Event()
     event.name = event_name
     event.durationMinutes = duration_minutes
     event.thumbCount = thumb_count
     event.isNational = is_national
-    event.type = str(type)
+    event.type = str(event_type)
     event.firstThumbDominantColor = dominant_color
     if event.thumbCount > 0 and not dominant_color:
         event.firstThumbDominantColor = b'\x00\x00\x00'
@@ -400,7 +407,7 @@ def create_event(
 
 
 def create_thing_offer(venue, thing=None, date_created=datetime.utcnow(), booking_email='booking.email@test.com',
-                       thing_type=ThingType.AUDIOVISUEL.name, thing_name='Test Book', media_urls=['test/urls'], author_name='Test Author',
+                       thing_type=str(ThingType.AUDIOVISUEL), thing_name='Test Book', media_urls=['test/urls'], author_name='Test Author',
                        thumb_count=1, dominant_color=None, url=None, is_active=False, is_national=False):
     offer = Offer()
     if thing:
@@ -425,8 +432,14 @@ def create_event_offer(venue, event=None, event_name='Test event', duration_minu
                        event_type=EventType.SPECTACLE_VIVANT, is_active=False, is_national=False):
     offer = Offer()
     if event is None:
-        event = create_event(event_name=event_name, duration_minutes=duration_minutes, thumb_count=thumb_count,
-                             dominant_color=dominant_color, type=event_type, is_national=is_national)
+        event = create_event(
+            event_type=event_type,
+            event_name=event_name,
+            duration_minutes=duration_minutes,
+            thumb_count=thumb_count,
+            dominant_color=dominant_color,
+            is_national=is_national
+        )
     offer.event = event
     offer.venue = venue
     offer.dateCreated = date_created

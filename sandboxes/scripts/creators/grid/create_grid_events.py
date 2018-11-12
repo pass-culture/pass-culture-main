@@ -24,8 +24,8 @@ def create_grid_events():
         name = event_type['value'] + " " + EVENT_OR_THING_MOCK_NAMES[mock_count]
         events_by_name[name] = create_event(
             event_name=name,
-            duration_minutes=60,
-            type=event_type['value'],
+            event_type=event_type['value'],
+            duration_minutes=60
         )
 
     PcObject.check_and_save(*events_by_name.values())
