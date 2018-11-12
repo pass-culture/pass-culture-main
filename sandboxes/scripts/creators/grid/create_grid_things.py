@@ -1,4 +1,4 @@
-from domain.types import get_types_by_value
+from domain.types import get_formatted_types_by_value
 from models.pc_object import PcObject
 from utils.logger import logger
 from utils.test_utils import create_thing
@@ -9,7 +9,7 @@ def create_grid_things():
 
     things_by_name = {}
 
-    types_by_value = get_types_by_value()
+    types_by_value = get_formatted_types_by_value()
 
     thing_types = [t for t in types_by_value.values() if t['type'] == 'Thing']
 

@@ -1,4 +1,4 @@
-from domain.types import get_format_types
+from domain.types import get_formatted_types
 from models.pc_object import PcObject
 from sandboxes.scripts.utils.params import EVENT_OR_THING_MOCK_NAMES
 from utils.logger import logger
@@ -9,7 +9,7 @@ def create_grid_events():
 
     events_by_name = {}
 
-    event_types = [t for t in get_format_types() if t['type'] == 'Event']
+    event_types = [t for t in get_formatted_types() if t['type'] == 'Event']
 
     mock_count = -1
     for event_type in event_types:

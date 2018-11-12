@@ -1,4 +1,4 @@
-from domain.types import get_types_by_value
+from domain.types import get_formatted_types_by_value
 from models.pc_object import PcObject
 from utils.logger import logger
 from utils.test_utils import create_event_offer
@@ -6,7 +6,7 @@ from utils.test_utils import create_event_offer
 def create_grid_event_offers(events_by_name, venues_by_name):
     logger.info('create_grid_event_offers')
 
-    types_by_value = get_types_by_value()
+    types_by_value = get_formatted_types_by_value()
 
     event_offers_by_name = {}
 

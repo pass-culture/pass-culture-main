@@ -13,7 +13,7 @@ from models.pc_object import PcObject
 from models.provider import Provider
 from models.thing import Thing
 from models.venue_provider import VenueProvider
-from sandboxes.scripts.utils.save_sandbox import save_sandbox
+from sandboxes.scripts.save_sandbox import save_sandbox
 from utils.human_ids import dehumanize
 from utils.logger import logger
 from utils.test_utils import assertCreatedCounts, \
