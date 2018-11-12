@@ -37,7 +37,6 @@ def create_grid_thing_offers(things_by_name, venues_by_name):
             name = thing.name + '/' + thing_venue.name
             thing_offers_by_name[name] = create_thing_offer(
                 thing_venue,
-                is_active=True,
                 thing=thing,
                 thing_type=thing.type
             )

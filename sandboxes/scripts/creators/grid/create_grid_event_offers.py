@@ -38,7 +38,6 @@ def create_grid_event_offers(events_by_name, venues_by_name):
             event_offers_by_name[name] = create_event_offer(
                 event_venue,
                 event=event,
-                is_active=True,
                 event_type=event.type
             )
 

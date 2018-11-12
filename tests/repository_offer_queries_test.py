@@ -89,8 +89,8 @@ def test_get_offers_for_recommendations_search_by_type(app):
         siret="50763357600016"
     )
 
-    conference_offer = create_event_offer(venue, conference_event, is_active=True)
-    concert_offer = create_event_offer(venue, concert_event, is_active=True)
+    conference_offer = create_event_offer(venue, conference_event)
+    concert_offer = create_event_offer(venue, concert_event)
 
     conference_event_occurrence = create_event_occurrence(
         conference_offer

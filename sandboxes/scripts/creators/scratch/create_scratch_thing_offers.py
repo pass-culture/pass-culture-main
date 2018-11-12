@@ -9,13 +9,11 @@ def create_scratch_thing_offers(things_by_name, venues_by_name):
 
     thing_offers_by_name['Ravage / THEATRE DE L ODEON'] = create_thing_offer(
         venues_by_name['THEATRE DE L ODEON'],
-        is_active=True,
         thing=things_by_name['Ravage']
     )
 
     thing_offers_by_name['Le Monde Diplomatique / THEATRE DE L ODEON (ON)'] = create_thing_offer(
         venues_by_name['THEATRE DE L ODEON (ON)'],
-        is_active=True,
         thing=things_by_name['Le Monde Diplomatique']
     )
 

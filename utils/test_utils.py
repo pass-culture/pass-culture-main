@@ -408,7 +408,7 @@ def create_event(
 
 def create_thing_offer(venue, thing=None, date_created=datetime.utcnow(), booking_email='booking.email@test.com',
                        thing_type=str(ThingType.AUDIOVISUEL), thing_name='Test Book', media_urls=['test/urls'], author_name='Test Author',
-                       thumb_count=1, dominant_color=None, url=None, is_active=False, is_national=False):
+                       thumb_count=1, dominant_color=None, url=None, is_national=False, is_active=False):
     offer = Offer()
     if thing:
         offer.thing = thing
@@ -423,13 +423,12 @@ def create_thing_offer(venue, thing=None, date_created=datetime.utcnow(), bookin
 
     if venue is not None:
         offer.idAtProviders = "%s@%s" % (offer.thing.idAtProviders, venue.siret)
-
     return offer
 
 
 def create_event_offer(venue, event=None, event_name='Test event', duration_minutes=60, date_created=datetime.utcnow(),
                        booking_email='booking.email@test.com', thumb_count=0, dominant_color=None,
-                       event_type=EventType.SPECTACLE_VIVANT, is_active=False, is_national=False):
+                       event_type=str(EventType.SPECTACLE_VIVANT), is_national=False, is_active=False):
     offer = Offer()
     if event is None:
         event = create_event(
@@ -563,14 +562,13 @@ def create_event_occurrence(
 
 
 def create_mediation(offer, author=None, date_created=datetime.utcnow(), front_text='Some front text',
-                     back_text='Some back test', is_active=True):
+                     back_text='Some back test'):
     mediation = Mediation()
     mediation.offer = offer
     mediation.dateCreated = date_created
     mediation.frontText = front_text
     mediation.backText = back_text
     mediation.author = author
-    mediation.isActive = is_active
     return mediation
 
 
