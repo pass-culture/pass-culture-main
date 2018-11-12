@@ -1,4 +1,4 @@
-from models.offer_types import ThingType
+from models.offer_type import ThingType
 from models.pc_object import PcObject
 from utils.logger import logger
 from utils.test_utils import create_thing

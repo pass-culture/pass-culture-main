@@ -1,5 +1,5 @@
 from models.pc_object import PcObject
-from models.offer_types import EventType
+from models.offer_type import EventType
 from utils.logger import logger
 from utils.test_utils import create_event
 
