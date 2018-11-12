@@ -3,10 +3,8 @@ from sqlalchemy import orm
 from sqlalchemy.exc import ProgrammingError
 from postgresql_audit.flask import versioning_manager
 
-from models.auto_increment import make_auto_increment_id_clamped_to_last_inserted_object
 from models.db import db, Model
 from models.mediation import upsertTutoMediations
-from utils.config import IS_DEV
 
 def install_models():
 
@@ -25,8 +23,5 @@ def install_models():
     db.create_all()
     db.engine.execute("CREATE INDEX IF NOT EXISTS idx_activity_objid ON activity(cast(changed_data->>'id' AS INT));")
     db.session.commit()
-
-    #if IS_DEV:
-    #    make_auto_increment_id_clamped_to_last_inserted_object()
 
     upsertTutoMediations()
