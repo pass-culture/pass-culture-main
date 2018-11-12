@@ -40,7 +40,7 @@ def test_titelive_stock_provider_create_1_stock_and_1_offer(get_data, app):
         ]
     }
     # given
-    offerer = create_offerer(siren='987654321')
+    offerer = create_offerer(siren='775671464')
     venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
     PcObject.check_and_save(venue)
 
@@ -109,7 +109,7 @@ def test_titelive_stock_provider_create_1_stock_and_udpate_1_offer(get_data, app
         .one_or_none()
 
     thing = create_thing(id_at_providers='0002730757438')
-    offer = create_thing_offer(venue=venue, thing=thing)
+    offer = create_thing_offer(venue, thing=thing)
 
     PcObject.check_and_save(thing, offer)
 
@@ -204,7 +204,9 @@ def test_titelive_stock_provider_create_nothing_if_siret_is_not_in_titelive_data
     venueProvider.provider = oa_provider
     venueProvider.isActive = True
     venueProvider.venueIdAtOfferProvider = '12345678912345'
+
     PcObject.check_and_save(venueProvider)
+
     venueProvider = VenueProvider.query \
         .filter_by(venueIdAtOfferProvider='12345678912345') \
         .one_or_none()

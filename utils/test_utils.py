@@ -667,6 +667,7 @@ def provider_test(app, provider, venueProvider, **counts):
     PcObject.check_and_save(providerObj.dbObject)
     saveCounts(app)
     providerObj.updateObjects()
+
     for countName in ['updatedObjects',
                       'createdObjects',
                       'checkedObjects',

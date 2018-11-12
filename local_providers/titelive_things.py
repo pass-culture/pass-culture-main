@@ -196,9 +196,9 @@ class TiteLiveThings(LocalProvider):
         if tl_type == 'A':   # AUTRE SUPPORT
             return None
         elif tl_type == 'BD':  # BANDE DESSINEE
-            self.thing_type = ThingType.LIVRE_EDITION.name
+            self.thing_type = str(ThingType.LIVRE_EDITION)
         elif tl_type == 'BL':  # BEAUX LIVRES
-            self.thing_type = ThingType.LIVRE_EDITION.name
+            self.thing_type = str(ThingType.LIVRE_EDITION)
             self.extraData['bookFormat'] = BookFormat.Hardcover.value
         elif tl_type == 'C':   # CARTE & PLAN
             #self.thing_type = ThingType.Map
@@ -220,13 +220,13 @@ class TiteLiveThings(LocalProvider):
         elif tl_type == 'K7':  # CASSETTE AUDIO VIDEO
             return None
         elif tl_type == 'LA':  # LIVRE ANCIEN
-            self.thing_type = ThingType.LIVRE_EDITION.name
+            self.thing_type = str(ThingType.LIVRE_EDITION)
         elif tl_type == 'LC':  # LIVRE + CASSETTE
             return None
         elif tl_type == 'LD':  # LIVRE + CD AUDIO
             return None
         elif tl_type == 'LE':  # LIVRE NUMERIQUE
-            self.thing_type = ThingType.LIVRE_EDITION.name
+            self.thing_type = str(ThingType.LIVRE_EDITION)
             self.extraData['bookFormat'] = BookFormat.EBook.value
         elif tl_type == 'LR':  # LIVRE + CD-ROM
             return None
@@ -239,7 +239,7 @@ class TiteLiveThings(LocalProvider):
         elif tl_type == 'O':   # OBJET
             return None
         elif tl_type == 'P':   # POCHE
-            self.thing_type = ThingType.LIVRE_EDITION.name
+            self.thing_type = str(ThingType.LIVRE_EDITION)
             self.extraData['bookFormat'] = BookFormat.Paperback.value
         elif tl_type == 'PC':  # PAPETERIE COLORIAGE
             return None
@@ -249,7 +249,7 @@ class TiteLiveThings(LocalProvider):
             return None
         elif tl_type == 'T'\
              or tl_type == 'TL':   # TL  Le support TL correspond au format par défaut (c'est-à-dire sans indication précise de l'éditeur)
-            self.thing_type = ThingType.LIVRE_EDITION.name  # (hopefully)
+            self.thing_type = str(ThingType.LIVRE_EDITION)  # (hopefully)
         elif tl_type == 'TR':  # TRANSPARENTS
             return None
         else:
