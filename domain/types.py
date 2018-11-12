@@ -27,6 +27,6 @@ def get_type_values_from_sublabels(sublabels):
 
 def _format_type(type_obj, model_name):
     result = type_obj.value
-    result['value'] = str(type)
+    result['value'] = str(type_obj)
     result['type'] = model_name
     return result
