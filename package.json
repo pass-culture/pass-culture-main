@@ -44,7 +44,7 @@
     "react": "^0.14||^15.5.4||^16.1.1",
     "react-copy-to-clipboard": "^5.0.1",
     "react-custom-scrollbars": "^4.2.1",
-    "react-datepicker": "^1.6.0",
+    "react-datepicker": "1.8.0",
     "react-dev-utils": "^4.2.1",
     "react-dom": "^0.14||^15.5.4||^16.1.1",
     "react-dotdotdot": "^1.2.3",
