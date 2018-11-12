@@ -19,13 +19,13 @@ from utils.mailing import MailServiceException
 
 PASS_CULTURE_IBAN = os.environ.get('PASS_CULTURE_IBAN')
 PASS_CULTURE_BIC = os.environ.get('PASS_CULTURE_BIC')
-PASS_CULTURE_BDF_ID = os.environ.get('PASS_CULTURE_BDF_ID')
+PASS_CULTURE_REMITTANCE_CODE = os.environ.get('PASS_CULTURE_REMITTANCE_CODE')
 
 
 def generate_and_send_payments():
     try:
         payments = do_generate_payments()
-        do_send_payments(payments, PASS_CULTURE_IBAN, PASS_CULTURE_BIC, PASS_CULTURE_BDF_ID)
+        do_send_payments(payments, PASS_CULTURE_IBAN, PASS_CULTURE_BIC, PASS_CULTURE_REMITTANCE_CODE)
     except Exception as e:
         print('ERROR: ' + str(e))
         traceback.print_tb(e.__traceback__)
@@ -55,13 +55,13 @@ def do_generate_payments():
 
 
 def do_send_payments(payments: List[Payment], pass_culture_iban: str, pass_culture_bic: str,
-                     pass_culture_bdf_id: str) -> None:
-    if not pass_culture_iban or not pass_culture_bic or not pass_culture_bdf_id:
-        logger.error('Missing PASS_CULTURE_IBAN[%s], PASS_CULTURE_BIC[%s] or PASS_CULTURE_BDF_ID[%s] in environment variables' % (
-            pass_culture_iban, pass_culture_bic, pass_culture_bdf_id))
+                     pass_culture_remittance_code: str) -> None:
+    if not pass_culture_iban or not pass_culture_bic or not pass_culture_remittance_code:
+        logger.error('Missing PASS_CULTURE_IBAN[%s], PASS_CULTURE_BIC[%s] or PASS_CULTURE_REMITTANCE_CODE[%s] in environment variables' % (
+            pass_culture_iban, pass_culture_bic, pass_culture_remittance_code))
     else:
         message_id = 'passCulture-SCT-%s' % datetime.strftime(datetime.utcnow(), "%Y%m%d-%H%M%S")
-        file = generate_transaction_file(payments, pass_culture_iban, pass_culture_bic, message_id, pass_culture_bdf_id)
+        file = generate_transaction_file(payments, pass_culture_iban, pass_culture_bic, message_id, pass_culture_remittance_code)
         validate_transaction_file(file)
         try:
             send_payment_transaction_email(file, app.mailjet_client.send.create)

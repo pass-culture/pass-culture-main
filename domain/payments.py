@@ -57,7 +57,8 @@ def filter_out_already_paid_for_bookings(booking_reimbursements: List[BookingRei
     return list(filter(lambda x: not x.booking.payments, booking_reimbursements))
 
 
-def generate_transaction_file(payments: List[Payment], pass_culture_iban: str, pass_culture_bic: str, message_id: str, initiating_party_id: str) -> str:
+def generate_transaction_file(payments: List[Payment], pass_culture_iban: str, pass_culture_bic: str, message_id: str,
+                              remittance_code: str) -> str:
     transactions = _group_payments_into_transactions(payments, message_id)
     total_amount = sum([transaction.amount for transaction in transactions])
     now = datetime.utcnow()
@@ -72,7 +73,7 @@ def generate_transaction_file(payments: List[Payment], pass_culture_iban: str, p
         total_amount=total_amount,
         pass_culture_iban=pass_culture_iban,
         pass_culture_bic=pass_culture_bic,
-        initiating_party_id=initiating_party_id
+        initiating_party_id=remittance_code
     )
 
 
@@ -87,7 +88,7 @@ def validate_transaction_file(transaction_file: str):
     xsd_schema.assertValid(xml_doc)
 
 
-def _group_payments_into_transactions(payments: List[Payment],  message_id: str) -> List[Transaction]:
+def _group_payments_into_transactions(payments: List[Payment], message_id: str) -> List[Transaction]:
     payments_with_iban = sorted(filter(lambda x: x.iban, payments), key=lambda x: (x.iban, x.bic))
     payments_by_iban = itertools.groupby(payments_with_iban, lambda x: (x.iban, x.bic))
 
