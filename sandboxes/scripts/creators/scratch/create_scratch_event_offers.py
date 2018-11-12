@@ -3,6 +3,7 @@ from utils.logger import logger
 from utils.test_utils import create_event_offer
 
 def create_scratch_event_offers(events_by_name, venues_by_name):
+    logger.info("create_scratch_event_offers")
 
     event_offers_by_name = {}
 
@@ -23,5 +24,7 @@ def create_scratch_event_offers(events_by_name, venues_by_name):
         is_active=True,
         venue=venues_by_name['THEATRE DE L ODEON']
     )
+
+    PcObject.check_and_save(*event_offers_by_name.values())
 
     return event_offers_by_name

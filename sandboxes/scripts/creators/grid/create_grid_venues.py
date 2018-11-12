@@ -25,6 +25,7 @@ def create_grid_venues(offerers_by_name):
             offerer,
             is_virtual=True,
             name=name,
+            siret=None
         )
 
     PcObject.check_and_save(*venue_by_name.values())

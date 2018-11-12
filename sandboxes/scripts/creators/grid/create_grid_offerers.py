@@ -54,6 +54,6 @@ def create_grid_offerers(geo_interval=0.1,
 
                     incremented_siren += 1
 
-                    PcObject.check_and_save(*offerers_by_name.values())
+    PcObject.check_and_save(*offerers_by_name.values())
 
     return offerers_by_name

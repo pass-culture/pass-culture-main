@@ -5,11 +5,11 @@ from utils.test_utils import create_user,\
                              USER_TEST_ADMIN_PASSWORD
 
 def create_scratch_users():
-    logger.info('create_scratch_offerers')
+    logger.info('create_scratch_users')
 
     users_by_name = {}
 
-    users_by_name['admin_1'] = create_user(
+    users_by_name['admin 1'] = create_user(
         can_book_free_offers=False,
         departement_code="93",
         email=USER_TEST_ADMIN_EMAIL,
@@ -21,7 +21,7 @@ def create_scratch_users():
         public_name="PC Test Admin 1"
     )
 
-    users_by_name['jeune_93'] = create_user(
+    users_by_name['jeune 93'] = create_user(
         departement_code="93",
         email="pctest.jeune.93@btmx.fr",
         first_name="PC Test",
@@ -31,7 +31,7 @@ def create_scratch_users():
         public_name="PC Test Jeune 93"
     )
 
-    users_by_name['jeune_34'] = create_user(
+    users_by_name['jeune 34'] = create_user(
         departement_code="34",
         email="pctest.jeune.34@btmx.fr",
         first_name="PC Test",
@@ -41,7 +41,7 @@ def create_scratch_users():
         public_name="PC Test Jeune 34"
     )
 
-    users_by_name['pro_1'] = create_user(
+    users_by_name['pro 1'] = create_user(
         departement_code="93",
         email="pctest.pro.1@btmx.fr",
         first_name="PC Test",
@@ -51,7 +51,7 @@ def create_scratch_users():
         public_name="PC Test Pro 1"
     )
 
-    users_by_name['pro_2'] = create_user(
+    users_by_name['pro 2'] = create_user(
         departement_code="93",
         first_name="PC Test",
         last_name="Pro 2",

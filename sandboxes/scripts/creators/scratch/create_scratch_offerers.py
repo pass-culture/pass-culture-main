@@ -7,7 +7,7 @@ def create_scratch_offerers():
 
     offerers_by_name = {}
 
-    offerers_by_name['le_grand_rex_paris'] = create_offerer(
+    offerers_by_name['LE GRAND REX PARIS'] = create_offerer(
         address="1 BD POISSONNIERE",
         city="Paris",
         name="LE GRAND REX PARIS",
@@ -15,7 +15,7 @@ def create_scratch_offerers():
         siren="507633576"
     )
 
-    offerers_by_name['theatre_de_l_odeon'] = create_offerer(
+    offerers_by_name['THEATRE DE L ODEON'] = create_offerer(
         address="6 RUE GROLEE",
         city="Lyon",
         name="THEATRE DE L ODEON",
@@ -23,7 +23,7 @@ def create_scratch_offerers():
         siren="750505703"
     )
 
-    offerers_by_name['theatre_du_soleil'] = create_offerer(
+    offerers_by_name['THEATRE DU SOLEIL'] = create_offerer(
         address="LIEU DIT CARTOUCHERIE",
         city="Paris 12",
         name="THEATRE DU SOLEIL",

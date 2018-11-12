@@ -1,5 +1,5 @@
 """ sandbox light """
-from sandboxes.scripts.creators import create_scratch_offerers, \
+from sandboxes.scripts.creators.scratch import create_scratch_offerers, \
                                        create_scratch_users
 
 def save_sandbox():

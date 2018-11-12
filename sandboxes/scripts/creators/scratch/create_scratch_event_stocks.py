@@ -3,6 +3,7 @@ from utils.logger import logger
 from utils.test_utils import create_stock_from_event_occurrence
 
 def create_scratch_event_stocks(event_occurrences_by_name):
+    logger.info("create_scratch_event_stocks")
 
     event_stocks_by_name = {}
 
@@ -41,5 +42,7 @@ def create_scratch_event_stocks(event_occurrences_by_name):
         event_occurrence=event_occurrences_by_name['PNL chante Marx / THEATRE DE L ODEON / 0 / 20h'],
         price=50
     )
+
+    PcObject.check_and_save(*event_stocks_by_name.values())
 
     return event_stocks_by_name

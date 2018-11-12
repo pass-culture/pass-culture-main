@@ -24,4 +24,6 @@ def create_scratch_bookings(recommendations_by_name, stocks_by_name, users_by_na
         user=users_by_name['jeune_93']
     )
 
+    PcObject.check_and_save(*bookings_by_name.values())
+
     return bookings_by_name

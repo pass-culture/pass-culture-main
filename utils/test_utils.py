@@ -397,9 +397,8 @@ def create_event(
 
 
 def create_thing_offer(venue, thing=None, date_created=datetime.utcnow(), booking_email='booking.email@test.com',
-                       thing_type=ThingType.AUDIOVISUEL.name, thing_name='Test Book', media_urls=['test/urls'],
-                       author_name='Test Author',
-                       thumb_count=1, dominant_color=None, url=None, is_national=False):
+                       thing_type=ThingType.AUDIOVISUEL.name, thing_name='Test Book', media_urls=['test/urls'], author_name='Test Author',
+                       thumb_count=1, dominant_color=None, url=None, is_active=False):
     offer = Offer()
     if thing:
         offer.thing = thing
@@ -410,14 +409,17 @@ def create_thing_offer(venue, thing=None, date_created=datetime.utcnow(), bookin
     offer.venue = venue
     offer.dateCreated = date_created
     offer.bookingEmail = booking_email
+    offer.isActive = is_active
+
     if venue is not None:
         offer.idAtProviders = "%s@%s" % (offer.thing.idAtProviders, venue.siret)
+
     return offer
 
 
 def create_event_offer(venue, event=None, event_name='Test event', duration_minutes=60, date_created=datetime.utcnow(),
                        booking_email='booking.email@test.com', thumb_count=0, dominant_color=None,
-                       event_type=EventType.SPECTACLE_VIVANT, is_national=False):
+                       event_type=EventType.SPECTACLE_VIVANT, is_active=False, is_national=False):
     offer = Offer()
     if event is None:
         event = create_event(event_name=event_name, duration_minutes=duration_minutes, thumb_count=thumb_count,
@@ -426,6 +428,7 @@ def create_event_offer(venue, event=None, event_name='Test event', duration_minu
     offer.venue = venue
     offer.dateCreated = date_created
     offer.bookingEmail = booking_email
+    offer.isActive = is_active
     return offer
 
 

@@ -3,7 +3,8 @@ from sandboxes.scripts.utils.storage_utils import store_public_object_from_sandb
 from utils.logger import logger
 from utils.test_utils import create_mediation
 
-def create_grid_event_stocks(offers_by_name):
+def create_grid_mediations(offers_by_name):
+    logger.info('create_grid_mediations')
     mediations_by_name = {}
 
     for offer in offers_by_name.values():

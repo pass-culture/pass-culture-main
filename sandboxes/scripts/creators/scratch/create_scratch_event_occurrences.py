@@ -10,28 +10,30 @@ def create_scratch_event_occurrences(offers_by_name):
 
     event_occurrences_by_name = {}
 
-    event_occurrences_by_name['Rencontre avec Franck Lepage / LE GRAND REX PARIS / 0'] = create_event_occurrence(
+    event_occurrences_by_name['Rencontre avec Franck Lepage / LE GRAND REX PARIS / 0 / 20h'] = create_event_occurrence(
         beginning_datetime=strftime(today),
         end_datetime=strftime(today + timedelta(hours=1)),
         offer=offers_by_name['Rencontre avec Franck Lepage / LE GRAND REX PARIS']
     )
 
-    event_occurrences_by_name['Rencontre avec Franck Lepage / LE GRAND REX PARIS / 1'] = create_event_occurrence(
+    event_occurrences_by_name['Rencontre avec Franck Lepage / LE GRAND REX PARIS / 1 / 20h'] = create_event_occurrence(
         beginning_datetime=strftime(today + timedelta(days=1)),
         end_datetime=strftime(today + timedelta(days=1, hours=1)),
         offer=offers_by_name['Rencontre avec Franck Lepage / LE GRAND REX PARIS']
     )
 
-    event_occurrences_by_name['Concert de Gael / Faye THEATRE DE L ODEON / 0'] = create_event_occurrence(
+    event_occurrences_by_name['Concert de Gael Faye / THEATRE DE L ODEON / 0 / 20h'] = create_event_occurrence(
         beginning_datetime=strftime(today),
         end_datetime=strftime(today + timedelta(hours=2)),
-        offer=offers_by_name['Concert de Gael / Faye THEATRE DE L ODEON']
+        offer=offers_by_name['Concert de Gael Faye / THEATRE DE L ODEON']
     )
 
-    event_occurrences_by_name['PNL chante Marx / THEATRE DE L ODEON / 0'] = create_event_occurrence(
+    event_occurrences_by_name['PNL chante Marx / THEATRE DE L ODEON / 0 / 20h'] = create_event_occurrence(
         beginning_datetime=strftime(today),
         end_datetime=strftime(today + timedelta(hours=3)),
         offer=offers_by_name['PNL chante Marx / THEATRE DE L ODEON']
     )
+
+    PcObject.check_and_save(*event_occurrences_by_name.values())
 
     return event_occurrences_by_name
