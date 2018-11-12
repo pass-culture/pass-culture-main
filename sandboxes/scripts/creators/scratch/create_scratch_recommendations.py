@@ -11,7 +11,7 @@ def create_scratch_recommendations(mediations_by_name, offers_by_name, users_by_
         mediation=mediations_by_name['Rencontre avec Franck Lepage / LE GRAND REX PARIS'],
         offer=offers_by_name['Rencontre avec Franck Lepage / LE GRAND REX PARIS'],
         user=users_by_name['jeune 93']
-    ),
+    )
 
     recommendations_by_name['Ravage / THEATRE DE L ODEON / jeune 93'] = create_recommendation(
         mediation=mediations_by_name['Ravage / THEATRE DE L ODEON'],

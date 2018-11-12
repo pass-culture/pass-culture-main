@@ -8,9 +8,9 @@ def create_scratch_deposits(users_by_name):
     deposits_by_name = {}
 
     deposits_by_name['jeune 93 / public / 500'] = create_deposit(
-        amount=500,
-        source="public",
-        user=users_by_name['jeune 93']
+        users_by_name['jeune 93'],
+        None,
+        amount=500
     )
 
     PcObject.check_and_save(*deposits_by_name.values())

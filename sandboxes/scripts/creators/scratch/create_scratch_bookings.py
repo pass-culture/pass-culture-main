@@ -7,21 +7,19 @@ def create_scratch_bookings(recommendations_by_name, stocks_by_name, users_by_na
 
     bookings_by_name = {}
 
-    bookings_by_name['Rencontre avec Franck Lepage / LE GRAND REX PARIS / 20 / jeune 93 / '] = create_booking(
-        amount=1,
+    stock = stocks_by_name['Rencontre avec Franck Lepage / LE GRAND REX PARIS / 0 / 20h / 10 / 10']
+    bookings_by_name['Rencontre avec Franck Lepage / LE GRAND REX PARIS / 20h / 10 / 10 / jeune 93'] = create_booking(
+        users_by_name['jeune 93'],
         recommendation=recommendations_by_name['Rencontre avec Franck Lepage / LE GRAND REX PARIS / jeune 93'],
-        stock=stocks_by_name['Rencontre avec Franck Lepage / LE GRAND REX PARIS / 20'],
-        token="2ALYY5",
-        user=users_by_name['jeune_93']
-    ),
+        stock=stock,
+        token="2ALYY5"
+    )
 
-
-    bookings_by_name['ravage / THEATRE DE L ODEON / 20 / jeune 93'] = create_booking(
-        amount=1,
-        recommendation=recommendations_by_name['ravage / THEATRE DE L ODEON / 20'],
-        stock=stocks_by_name['rencontre_avec_franck_lepage_le_grand_rex_paris_20'],
-        token="2AEVY3",
-        user=users_by_name['jeune_93']
+    stock = stocks_by_name['Ravage / THEATRE DE L ODEON / 50 / 50']
+    bookings_by_name['Ravage / THEATRE DE L ODEON / 50 / 50 / jeune 93'] = create_booking(
+        users_by_name['jeune 93'],
+        recommendation=recommendations_by_name['Ravage / THEATRE DE L ODEON / jeune 93'],
+        token="2AEVY3"
     )
 
     PcObject.check_and_save(*bookings_by_name.values())
