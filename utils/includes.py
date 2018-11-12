@@ -9,6 +9,7 @@ OFFERER_INCLUDES = [
     },
     "nOffers",
     "isValidated"
+    "-validationToken"
 ]
 
 NOT_VALIDATED_OFFERER_INCLUDES = [
@@ -27,6 +28,7 @@ NOT_VALIDATED_OFFERER_INCLUDES = [
     "-lastProviderId",
     "-postalCode",
     "-thumbCount"
+    "-validationToken"
 ]
 
 EVENT_OCCURRENCE_INCLUDES = [
@@ -157,6 +159,7 @@ PRO_BOOKING_INCLUDES = [
 ]
 
 USER_INCLUDES = [
+    '-validationToken',
     '-password',
     '-resetPasswordToken',
     '-resetPasswordTokenValidityLimit',
@@ -187,3 +190,30 @@ VENUE_INCLUDES = [
 VENUE_PROVIDER_INCLUDES = [
     "provider"
 ]
+
+
+PENDING_VALIDATIONS_OFFERERS_INCLUDES = [
+
+    "validationToken",
+    "-firstThumbDominantColor",
+    "-thumbcount",
+    {
+        "key": "UserOfferers",
+        "sub_joins": [{
+            "key": "user",
+            "resolve": (lambda element, filters: {
+                'email': element['email'],
+                'publicName': element['publicName'],
+                'dateCreated': element['dateCreated'],
+                'departementCode': element['departementCode'],
+                'canBookFreeOffers': element['canBookFreeOffers'],
+                'isAdmin': element['isAdmin'],
+                'firstName': element['firstName'],
+                'lastName': element['lastName'],
+                'postalCode': element['postalCode'], 
+                'phoneNumber': element['phoneNumber']
+            })
+        }]
+    }
+]
+

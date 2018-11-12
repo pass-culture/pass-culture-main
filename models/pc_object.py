@@ -89,8 +89,6 @@ class PcObject():
                         and 'dehumanize' in options \
                         and options['dehumanize']:
                     result['dehumanized' + key[0].capitalize() + key[1:]] = value
-            elif key == 'validationToken':
-                continue
             elif key == 'firstThumbDominantColor' and value:
                 result[key] = list(value)
             else:

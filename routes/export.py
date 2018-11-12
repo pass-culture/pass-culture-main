@@ -19,11 +19,13 @@ from repository.offer_queries import find_offers_in_date_range_for_given_venue_d
 from repository.offerer_queries import find_offerers_in_date_range_for_given_departement, \
     find_offerers_with_user_venues_and_bookings_by_departement, find_all_offerers_with_managing_user_information, \
     find_all_offerers_with_managing_user_information_and_venue, find_all_offerers_with_venue, \
-    find_all_offerers_with_managing_user_information_and_not_virtual_venue
+    find_all_offerers_with_managing_user_information_and_not_virtual_venue, find_all_pending_validations
 from repository.recommendation_queries import find_recommendations_in_date_range_for_given_departement
 from repository.user_queries import find_users_by_department_and_date_range, find_users_stats_per_department
 from repository.venue_queries import count_venues_by_departement
 from validation.exports import check_user_is_admin
+
+from utils.includes import PENDING_VALIDATIONS_OFFERERS_INCLUDES 
 
 
 Activity = versioning_manager.activity_cls
@@ -259,11 +261,13 @@ def get_all_offerers_with_venue():
 @login_required
 def get_pending_validations():
     check_user_is_admin(current_user)
-    
-    file_name = 'export_%s_TEEEEEEEST.csv' % datetime.utcnow().strftime('%y_%m_%d')
-    result = ['0','1','2','3','4']
-    headers = ['coucou','je', 'travaille']
-    return _make_csv_response(file_name, headers, result)
+    result = []    
+    offerers = find_all_pending_validations()
+
+    for o in offerers:
+        result.append(o._asdict(include=PENDING_VALIDATIONS_OFFERERS_INCLUDES))
+
+    return jsonify(result)
 
 
 def _make_csv_response(file_name, headers, result):

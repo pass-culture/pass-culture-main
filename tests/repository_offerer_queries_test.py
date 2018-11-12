@@ -4,10 +4,12 @@ import pytest
 
 from models import PcObject
 from repository.offerer_queries import find_all_admin_offerer_emails, find_all_offerers_with_managing_user_information, \
-     find_all_offerers_with_managing_user_information_and_venue, find_all_offerers_with_managing_user_information_and_not_virtual_venue, find_all_offerers_with_venue
+     find_all_offerers_with_managing_user_information_and_venue, find_all_offerers_with_managing_user_information_and_not_virtual_venue, \
+     find_all_offerers_with_venue, find_all_pending_validations
 from tests.conftest import clean_database
 from utils.test_utils import create_user, create_offerer, create_user_offerer, create_venue
 
+from pprint import pprint
 
 @pytest.mark.standalone
 @clean_database
@@ -135,3 +137,38 @@ def test_find_all_offerers_with_venue(app):
     assert venue2.bookingEmail in offerers[1].bookingEmail
     assert venue1.bookingEmail in offerers[0].bookingEmail
     
+
+@pytest.mark.standalone
+@clean_database
+def test_get_all_pending_offerers_with_user_offerer(app):
+    #given
+    offerer1 = create_offerer(name='offerer1', validation_token="a_token")
+    offerer2 = create_offerer(name='offerer2', siren='789456123', validation_token="some_token")
+    offerer3 = create_offerer(name='offerer3', siren='789456124')
+    offerer4 = create_offerer(name='offerer4', siren='789456125')
+    user1 = create_user(email='1@offerer.com')
+    user2 = create_user(email='2@offerer.com')
+    user3 = create_user(email='3@offerer.com')
+    user4 = create_user(email='4@offerer.com')
+    user5 = create_user(email='5@offerer.com')
+    userOfferer1 = create_user_offerer(user1, offerer1, validation_token="nice_token")
+    userOfferer2 = create_user_offerer(user2, offerer2)
+    userOfferer3 = create_user_offerer(user3, offerer3, validation_token="another_token")
+    userOfferer4 = create_user_offerer(user4, offerer4)
+    userOfferer5 = create_user_offerer(user3, offerer3, validation_token="what_a_token")
+
+    PcObject.check_and_save(offerer1, offerer2, offerer3, offerer4, user1, user2, user3, user4, userOfferer1, userOfferer2, userOfferer3, userOfferer4)
+
+    #when
+    offerers = find_all_pending_validations()
+
+    #then
+    assert len(offerers) == 3
+    assert offerers[0].validationToken == offerer1.validationToken
+    assert offerers[0].UserOfferers[0].validationToken == userOfferer1.validationToken
+    assert offerers[1].validationToken == offerer2.validationToken
+    assert offerers[1].UserOfferers[0].validationToken == None
+    assert offerers[2].validationToken == None
+    assert offerers[2].UserOfferers[0].validationToken == userOfferer3.validationToken
+    assert offerers[2].UserOfferers[1].validationToken == userOfferer5.validationToken
+    assert offerer4 not in offerers

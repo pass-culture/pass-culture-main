@@ -1,4 +1,4 @@
-from sqlalchemy import func
+from sqlalchemy import func, or_
 
 from models import Offerer, Venue, Offer, EventOccurrence, UserOfferer, User, Event, Booking, Stock, Recommendation
 from models import RightsType
@@ -95,3 +95,8 @@ def find_all_offerers_with_venue():
 
     result = query.order_by(Offerer.name, Venue.name, Venue.id).all()
     return result
+
+
+def find_all_pending_validations():
+    return Offerer.query.join(UserOfferer).filter(or_(UserOfferer.validationToken != None, Offerer.validationToken != None)).order_by(Offerer.id).all()
+
