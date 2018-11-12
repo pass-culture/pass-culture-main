@@ -401,7 +401,7 @@ def create_event(
 
 def create_thing_offer(venue, thing=None, date_created=datetime.utcnow(), booking_email='booking.email@test.com',
                        thing_type=ThingType.AUDIOVISUEL.name, thing_name='Test Book', media_urls=['test/urls'], author_name='Test Author',
-                       thumb_count=1, dominant_color=None, url=None, is_active=False):
+                       thumb_count=1, dominant_color=None, url=None, is_active=False, is_national=False):
     offer = Offer()
     if thing:
         offer.thing = thing
