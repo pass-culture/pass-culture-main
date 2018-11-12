@@ -8,7 +8,7 @@ OFFERER_INCLUDES = [
         ]
     },
     "nOffers",
-    "isValidated"
+    "isValidated",
     "-validationToken"
 ]
 
@@ -27,7 +27,7 @@ NOT_VALIDATED_OFFERER_INCLUDES = [
     "-isActive",
     "-lastProviderId",
     "-postalCode",
-    "-thumbCount"
+    "-thumbCount",
     "-validationToken"
 ]
 
@@ -169,6 +169,7 @@ USER_INCLUDES = [
 
 VENUE_INCLUDES = [
     'isValidated',
+    "-validationToken",
     {
         "key": "eventOccurrences",
         "sub_joins": ["event"]
@@ -188,7 +189,8 @@ VENUE_INCLUDES = [
 ]
 
 VENUE_PROVIDER_INCLUDES = [
-    "provider"
+    "provider",
+    "-validationToken"
 ]
 
 
