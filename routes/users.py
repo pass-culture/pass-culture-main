@@ -247,8 +247,7 @@ def signup_pro():
     except MailServiceException as e:
         app.logger.error('Mail service failure', e)
 
-    if request.json.get('contact_ok'):
-        subscribe_newsletter(new_user)
+    subscribe_newsletter(new_user)
 
     return jsonify(new_user._asdict(include=USER_INCLUDES)), 201
 
