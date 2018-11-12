@@ -126,7 +126,7 @@ Et pour pro sur staging, il suffit de remplacer la dernière commande par celle-
 ./pc -e staging deploy-frontend-pro
 ```
 
-Lors du yarn version, vous devrez respecter le semantic versionning : vN.x.0
+Lors du yarn version, vous devrez respecter le semantic versionning (https://semver.org/) : vN.x.0
 N est le numéro de l'itération et x un autoincrément qui démarre à 0 et est changé en cas de hotfix en cours d'itération.
 
 #### Publier shared sur npm
@@ -277,10 +277,7 @@ docker run -it --rm -v ~/pass-culture-main/certs:/etc/letsencrypt -v ~/pass-cult
 
 
 
-
-
-
-## Version mobile (outdated)
+## Version mobile (outdated, but can be useful someday)
 
 ### Emuler avec Cordova
 
