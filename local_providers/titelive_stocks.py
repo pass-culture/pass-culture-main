@@ -93,6 +93,9 @@ class TiteLiveStocks(LocalProvider):
         if self.thing is None:
             return self.__next__()
 
+        # Refresh data before using it
+        db.session.add(self.venue)
+
         p_info_stock = ProvidableInfo()
         p_info_stock.type = Stock
         p_info_stock.idAtProviders = "%s@%s" % (self.titelive_stock['ref'], self.venue.siret)
