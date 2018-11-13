@@ -10,7 +10,7 @@ def create_industrial_thing_stocks(thing_offers_by_name):
     for (thing_offer_name, thing_offer) in thing_offers_by_name.items():
         available = 10
         price = 10
-        name = thing_offer_name + "/" + str(available) + "/" + str(price)
+        name = thing_offer_name + " / " + str(available) + " / " + str(price)
         thing_stocks_by_name[name] = create_stock_from_offer(
             thing_offer,
             available=available,

@@ -31,7 +31,7 @@ def create_industrial_thing_offers(
             else:
                 thing_venue = venue
 
-            name = thing.name + '/' + thing_venue.name
+            name = thing.name + ' / ' + thing_venue.name
             thing_offers_by_name[name] = create_thing_offer(
                 thing_venue,
                 thing=thing,

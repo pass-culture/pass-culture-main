@@ -21,7 +21,7 @@ def create_industrial_events():
         if mock_count > len(EVENT_OR_THING_MOCK_NAMES) - 1:
             mock_count = 0
 
-        name = event_type['value'] + " " + EVENT_OR_THING_MOCK_NAMES[mock_count]
+        name = event_type['value'] + " / " + EVENT_OR_THING_MOCK_NAMES[mock_count]
         events_by_name[name] = create_event(
             event_name=name,
             event_type=event_type['value'],

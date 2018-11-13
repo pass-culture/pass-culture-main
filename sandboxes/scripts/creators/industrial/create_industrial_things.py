@@ -23,8 +23,7 @@ def create_industrial_things():
         if mock_count > len(EVENT_OR_THING_MOCK_NAMES) - 1:
             mock_count = 0
 
-        name = thing_type['value'] + " " + EVENT_OR_THING_MOCK_NAMES[mock_count]
-
+        name = thing_type['value'] + " / " + EVENT_OR_THING_MOCK_NAMES[mock_count]
         things_by_name[name] = create_thing(
             is_national=True
             if types_by_value[thing_type['value']]['onlineOnly']

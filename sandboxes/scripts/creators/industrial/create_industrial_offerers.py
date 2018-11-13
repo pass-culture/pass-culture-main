@@ -1,7 +1,7 @@
 import numpy
-import requests
 
 from models.pc_object import PcObject
+from sandboxes.scripts.utils.ban import get_closest_location_info_with_lat_lon
 from utils.logger import logger
 from utils.test_utils import create_offerer
 
@@ -15,9 +15,11 @@ PLACES = [
     }
 ]
 
-def create_industrial_offerers(geo_interval=0.1,
-                         geo_number=2,
-                         starting_siren=222222222):
+def create_industrial_offerers(
+        lat_lon_radius=0.1,
+        number_of_different_lat_lon_points=2,
+        starting_siren=222222222
+):
     logger.info('create_industrial_offerers')
 
     incremented_siren = starting_siren
@@ -25,34 +27,36 @@ def create_industrial_offerers(geo_interval=0.1,
     offerers_by_name = {}
     for place in PLACES:
         longitudes = numpy.linspace(
-            place['longitude'] - geo_interval,
-            place['longitude'] + geo_interval,
-            geo_number
+            place['longitude'] - lat_lon_radius,
+            place['longitude'] + lat_lon_radius,
+            number_of_different_lat_lon_points
         )
         for longitude in longitudes :
             latitudes = numpy.linspace(
-                place['latitude'] - geo_interval,
-                place['latitude'] + geo_interval,
-                geo_number
+                place['latitude'] - lat_lon_radius,
+                place['latitude'] + lat_lon_radius,
+                number_of_different_lat_lon_points
             )
             for latitude in latitudes:
-                url = 'https://api-adresse.data.gouv.fr/reverse/?lon='+str(longitude)+'&lat='+str(latitude)
-                result = requests.get(url)
-                obj = result.json()
-                if 'features' in obj and obj['features']:
-                    feature = obj['features'][0]
-                    coordinates = feature['geometry']['coordinates']
-                    properties = feature['properties']
-                    name = "STRUCTURE " + str(incremented_siren)
-                    offerers_by_name[name] = create_offerer(
-                        address=properties['name'].upper() + "lat:" + str(coordinates[1]) + " lon:" + str(coordinates[0]),
-                        city=properties['city'],
-                        name=name,
-                        postal_code=properties['postcode'],
-                        siren=str(incremented_siren)
-                    )
 
-                    incremented_siren += 1
+                closest_location = get_closest_location_info_with_lat_lon(latitude, longitude)
+
+                if closest_location is None:
+                    continue
+
+                name = "STRUCTURE " + str(incremented_siren)
+                name += " lat:" + str(closest_location['latitude']) + \
+                        " lon:" + str(closest_location['longitude'])
+
+                offerers_by_name[name] = create_offerer(
+                    address=closest_location['address'].upper(),
+                    city=closest_location['city'],
+                    name=name,
+                    postal_code=closest_location['postalCode'],
+                    siren=str(incremented_siren)
+                )
+
+                incremented_siren += 1
 
     PcObject.check_and_save(*offerers_by_name.values())
 

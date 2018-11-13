@@ -13,7 +13,7 @@ def create_industrial_event_occurrences(event_offers_by_name):
 
     for event_offer in event_offers_by_name.values():
         for beginning_datetime in EVENT_OCCURRENCE_BEGINNING_DATETIMES:
-            name = event_offer.eventOrThing.name + " " + event_offer.venue.name + " " + strftime(beginning_datetime)
+            name = event_offer.eventOrThing.name + " / " + event_offer.venue.name + " / " + strftime(beginning_datetime)
             event_occurrences_by_name[name] = create_event_occurrence(
                 beginning_datetime=strftime(beginning_datetime),
                 end_datetime=strftime(beginning_datetime + timedelta(hours=1)),

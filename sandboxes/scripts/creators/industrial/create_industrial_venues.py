@@ -10,7 +10,7 @@ def create_industrial_venues(offerers_by_name):
     venue_by_name = {}
     for (offerer_name, offerer) in offerers_by_name.items():
         name = offerer_name
-        geoloc_match = re.match(r'(.*)lat\:(.*) lon\:(.*)', offerer.address)
+        geoloc_match = re.match(r'(.*)lat\:(.*) lon\:(.*)', offerer_name)
         venue_by_name[name] = create_venue(
             offerer,
             address=offerer.address,
