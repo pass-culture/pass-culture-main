@@ -19,31 +19,31 @@ Mais spécialement, en plus pour macosx:
 
 Enfin pour tout le monde:
 ```bash
-./pc install
+pc install
 ```
 Le script `pc` sera automatiquement lié dans votre dossier `/usr/local/bin`
 
 ### Init
 Pour verifier les tests et obtenir une db minimale:
 ```bash
-./pc test-backend
+pc test-backend
 ```
 
 ### Démarrage
 
 Pour lancer l'API:
 ```bash
-./pc start-backend
+pc start-backend
 ```
 
 Pour lancer l'appli Web:
 ```bash
-./pc start-webapp
+pc start-webapp
 ```
 
 Pour lancer le portail pro:
 ```bash
-./pc start-pro
+pc start-pro
 ```
 
 
@@ -54,26 +54,26 @@ Pour lancer le portail pro:
 
 Pour reconstruire l'image docker sans cache
 ```bash
-./pc rebuild-backend
+pc rebuild-backend
 ```
 
 ### Restart
 
 Pour effacer la base de données complétement, et relancer tous les containers:
 ```bash
-./pc restart-backend
+pc restart-backend
 ```
 
 ### Reset
 
 Si vos serveurs de dev tournent, et que vous souhaitez juste effacer les tables de la db:
 ```bash
-./pc reset-sandbox-db
+pc reset-sandbox-db
 ```
 
 Si vous voulez juste enlever les recommandations et bookings crées en dev par votre navigation:
 ```bash
-./pc reset-reco-db
+pc reset-reco-db
 ```
 
 
@@ -81,29 +81,29 @@ Si vous voulez juste enlever les recommandations et bookings crées en dev par v
 
 Vous pouvez passer toutes les cli classiques d'alembic comme ceci:
 ```bash
-./pc alembic upgrade
+pc alembic upgrade
 ```
 
 ### Test
 
 Pour tester les apis du backend:
 ```bash
-./pc test-backend
+pc test-backend
 ```
 
 Pour tester les apis du frontend:
 ```bash
-./pc test-frontend
+pc test-frontend
 ```
 
 Pour tester la navigation du site web
 ```bash
-./pc -e production test-cafe-webapp -b firefox
+pc -e production test-cafe-webapp -b firefox
 ```
 
 Exemple d'une commande test en dev sur chrome pour un fichier test particulier:
 ```bash
-./pc test-cafe-pro -b chrome:headless -f signup.js
+pc test-cafe-pro -b chrome:headless -f signup.js
 ```
 
 
@@ -115,19 +115,29 @@ Exemple d'une commande test en dev sur chrome pour un fichier test particulier:
 Pour déployer une nouvelle version web, par exemple en staging:
 **(Attention de ne pas déployer sur la prod sans authorisation !)**
 ```bash
-rm -rf node_modules
+git checkout [branch_to_deploy]
+rm -rf node_modules build
 yarn install
 yarn version
-./pc -e staging deploy-frontend-webapp
+pc -e staging deploy-frontend-webapp
 ```
 Et pour pro sur staging, il suffit de remplacer la dernière commande par celle-ci:
 
 ```bash
-./pc -e staging deploy-frontend-pro
+pc -e staging deploy-frontend-pro
 ```
 
 Lors du yarn version, vous devrez respecter le semantic versionning (https://semver.org/) : vN.x.0
 N est le numéro de l'itération et x un autoincrément qui démarre à 0 et est changé en cas de hotfix en cours d'itération.
+
+Pour déployer en production ensuite :
+
+```bash
+git checkout [branch_to_deploy]
+rm -rf node_modules build
+yarn install
+pc -e production deploy-frontend-webapp
+```
 
 #### Publier shared sur npm
 
@@ -155,14 +165,26 @@ avec `x.x.x` nouvelle version déployée sur shared.
 
 Pour déployer une nouvelle version de l'API, par exemple en staging:
 **(Attention de ne pas déployer sur la prod sans autorisation !)**
+
 ```bash
-git checkout master
+git checkout [branch_to_deploy]
 git pull -r
 git tag 'vN.x'
-./pc -e staging deploy-backend
+git push origin tag
+pc -e staging deploy-backend
 ```
 
 où N est le numéro de l'itération et x un autoincrément qui démarre à 0 et est changé en cas de hotfix en cours d'itération.
+
+Ensuite pour mettre en production ce qui a été déployé sur l'environnement staging :
+
+```bash
+git checkout staging
+git pull -r
+pc -e production deploy-backend
+```
+
+
 
 ## Administration
 
@@ -171,7 +193,7 @@ où N est le numéro de l'itération et x un autoincrément qui démarre à 0 et
 Par exemple, pour l'environnement staging :
 
 ```bash
-./pc -e staging psql
+pc -e staging psql
 ```
 
 ### Connexion à en ligne de commande python à un environnement
@@ -179,7 +201,7 @@ Par exemple, pour l'environnement staging :
 Par exemple, pour l'environnement staging :
 
 ```bash
-./pc -e staging python
+pc -e staging python
 ```
 
 ### Gestion des objects storage OVH
@@ -190,31 +212,31 @@ Pour toutes les commandes suivantes, vous devez disposer des secrets de connexio
 Pour lister le contenu d'un conteneur sépcific :
 
 ```bash
-./pc list_content --container=storage-pc-staging
+pc list_content --container=storage-pc-staging
 ```
 
 Pour savoir si une image existe au sein d'un conteneur :
 
 ```bash
-./pc does_file_exist --container=storage-pc-staging --file="thumbs/venues/SM"
+pc does_file_exist --container=storage-pc-staging --file="thumbs/venues/SM"
 ```
 
 Pour supprimer une image au sein d'un conteneur :
 
 ```bash
-./pc delete_file --container=storage-pc-staging --file="thumbs/venues/SM"
+pc delete_file --container=storage-pc-staging --file="thumbs/venues/SM"
 ```
 
 Pour faire un backup de tous les fichiers du conteneur de production vers un dossier local :
 
 ```bash
-./pc backup_prod_object_storage --container=storage-pc --folder="~/backup-images-prod"
+pc backup_prod_object_storage --container=storage-pc --folder="~/backup-images-prod"
 ```
 
 Pour copier tous les fichiers du conteneur de production vers le conteneur d'un autre environnement :
 
 ```bash
-./pc copy_prod_container_content_to_dest_container --container=storage-pc-staging
+pc copy_prod_container_content_to_dest_container --container=storage-pc-staging
 ```
 
 
@@ -227,22 +249,22 @@ Vérifier déjà que l'un des admins (comme @arnoo) a enregistré votre adresse 
 #### Se connecter à la machine OVH
 
 ```bash
-./pc -e production ssh
+pc -e production ssh
 ```
 
 ### Dump Prod To Staging
 
 ssh to the prod server
 ```bash
-cd ~/pass-culture-main && ./pc dump-prod-db-to-staging
+cd ~/pass-culture-main && pc dump-prod-db-to-staging
 ```
 
 Then connect to the staging server:
 ```bash
 cd ~/pass-culture-main
 cat "../dumps_prod/2018_<TBD>_<TBD>.pgdump" docker exec -i docker ps | grep postgres | cut -d" " -f 1 pg_restore -d pass_culture -U pass_culture -c -vvvv
-./pc update-db
-./pc sandbox --name=webapp
+pc update-db
+pc sandbox --name=webapp
 ```
 
 
@@ -252,7 +274,7 @@ Renseigner la variable d'environnement PC_GPG_PRIVATE.
 Puis lancer la commande suivante :
 
 ```bash
-./pc install-private
+pc install-private
 ```
 
 #### Updater la db
@@ -328,7 +350,7 @@ cd webapp/ && yarn run ngrok
 
 Ensuite il faut lancer l'application configurée avec ces tunnels:
 ```bash
-./pc start-browser-webapp -t
+pc start-browser-webapp -t
 ```
 
 Vous pourrez alors utiliser l'url ngrok webapp pour dans votre navigateur android.
@@ -337,5 +359,5 @@ Vous pourrez alors utiliser l'url ngrok webapp pour dans votre navigateur androi
 
 Pour déployer une nouvelle version phonegap (par default c'est en staging)
 ```bash
-./pc build-pg
+pc build-pg
 ```
