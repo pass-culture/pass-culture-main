@@ -95,7 +95,9 @@ def test_create_mediation_with_thumb_file(app):
             'offerId': humanize(offer.id),
             'offererId': humanize(offerer.id)
         }
-        files = {'thumb': ('FranckLepage', thumb_file)}
+        # WE NEED TO GIVE AN EXTENSION TO THE FILE
+        # IF WE WANT TO MAKE THE TEST PASS
+        files = {'thumb': ('FranckLepage.jpg', thumb_file)}
 
         # when
         response = auth_request.post(API_URL + '/mediations', data=data, files=files)
