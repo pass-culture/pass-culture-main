@@ -652,7 +652,7 @@ def test_send_venue_validation_confirmation_email(app):
 
 
 @pytest.mark.standalone
-def test_send_venue_validation_confirmation_email_when_feature_send_mail_to_users_disabled_has_pass_culutre_dev_as_recipient(
+def test_send_venue_validation_confirmation_email_has_pass_culutre_dev_as_recipient_in_dev_environment(
         app):
     # Given
     offerer = create_offerer()

@@ -118,7 +118,7 @@ def test_send_venue_validation_email_when_mailjet_status_code_200_calls_send_cre
 
 
 @pytest.mark.standalone
-def test_send_venue_validation_email_when_feature_send_mail_to_users_disabled_has_pass_culture_dev_as_recipient(app):
+def test_send_venue_validation_email_has_pass_culture_dev_as_recipient_in_dev_environment(app):
     # Given
     offerer = create_offerer()
     venue = create_venue(offerer)
@@ -132,11 +132,11 @@ def test_send_venue_validation_email_when_feature_send_mail_to_users_disabled_ha
     with patch('domain.user_emails.feature_send_mail_to_users_enabled', return_value=False):
         send_venue_validation_email(venue, mocked_send_create_email)
 
+    # Then
     mocked_send_create_email.assert_called_once()
     args = mocked_send_create_email.call_args
     assert args[1]['data']['To'] == 'passculture-dev@beta.gouv.fr'
 
-    # Then
 
 
 @pytest.mark.standalone
