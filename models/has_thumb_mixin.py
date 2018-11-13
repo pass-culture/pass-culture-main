@@ -36,15 +36,15 @@ class HasThumbMixin(object):
                                      + humanize(self.id)\
                                      + (('_' + str(index)) if index > 0 else '')
 
-    def save_thumb(self,
+    def save_thumb(
+        self,
         thumb,
         index,
         image_type=None,
         dominant_color=None,
         no_convert=False,
         crop=None,
-        symlink_path=None
-    ):
+        symlink_path=None):
         if isinstance(thumb, str):
             if not thumb[0:4] == 'http':
                 raise ValueError('Invalid thumb URL for object %s : %s' % (str(self), thumb))
@@ -58,10 +58,9 @@ class HasThumbMixin(object):
                 raise ValueError('Error downloading thumb for object %s from url %s (status_code : %s)'
                                  % (str(self), thumb, str(thumb_response.status_code)))
 
-        if not no_convert or dominant_color is None:
-            thumb_bytes = io.BytesIO(thumb)
-
+        thumb_bytes = None
         if not no_convert:
+            thumb_bytes = io.BytesIO(thumb)
             img = Image.open(thumb_bytes)
             img = img.convert('RGB')
             if crop is not None:
@@ -86,6 +85,8 @@ class HasThumbMixin(object):
 
         if index == 0:
             if dominant_color is None:
+                if thumb_bytes is None:
+                    thumb_bytes = io.BytesIO(thumb)
                 color_thief = ColorThief(thumb_bytes)
                 dominant_color = bytearray(color_thief.get_color(quality=1))
             if dominant_color is None:
