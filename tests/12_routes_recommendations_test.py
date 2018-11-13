@@ -76,7 +76,7 @@ def test_put_recommendations_returns_a_list_of_recos_starting_with_two_tutos():
     assert len(list(recos_with_tutos)) == 2
 
 
-def test_put_recommendations_returns_a_list_of_a_certain_number_of_recos():
+def test_put_recommendations_returns_a_list_of_some_recos():
     # when
     response = req_with_auth().put(RECOMMENDATION_URL, json={'seenRecommendationIds': []})
 
