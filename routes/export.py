@@ -22,7 +22,7 @@ from repository.user_queries import find_users_by_department_and_date_range, fin
 from repository.venue_queries import count_venues_by_departement
 from validation.exports import check_user_is_admin
 
-from utils.includes import NOT_VALIDATED_OFFERER_INCLUDES
+from utils.includes import OFFERER_INCLUDES_FOR_ADMIN
 
 
 Activity = versioning_manager.activity_cls

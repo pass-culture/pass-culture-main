@@ -193,7 +193,7 @@ VENUE_PROVIDER_INCLUDES = [
 ]
 
 
-NOT_VALIDATED_OFFERER_INCLUDES = [
+OFFERER_INCLUDES_FOR_ADMIN = [
 
     "validationToken",
     "-firstThumbDominantColor",
