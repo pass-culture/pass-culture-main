@@ -61,10 +61,10 @@ def do_local_backup_prod_container(prod_container_name, dest_folder_name):
             pass
         else:
             obj_tuple = prod_conn.get_object(prod_container_name, data['name'])
-            destination_file = Path(os.path.dirname(os.path.realpath(__file__))) \
+            destination_path = Path(os.path.dirname(os.path.realpath(__file__))) \
                                / '..' / 'static' / dest_folder_name / data['name']
-            with open(destination_file, 'wb') as file:
-                file.write(obj_tuple[1])
+            with open(destination_path, 'wb') as destination_file:
+                destination_file.write(obj_tuple[1])
             print("Object [" + data['name'] + "] retrieved")
 
     return 0

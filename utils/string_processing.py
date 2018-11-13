@@ -29,7 +29,7 @@ schedules = [
     }
 ]
 
-def get_collection_name(obj):
+def get_model_plural_name(obj):
     return inflect_engine.plural(obj.__class__.__name__.lower())
 
 def dashify(name):

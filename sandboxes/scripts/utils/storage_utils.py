@@ -5,7 +5,7 @@ from pathlib import Path
 from models.pc_object import PcObject
 from utils.human_ids import humanize
 from utils.object_storage import store_public_object
-from utils.string_processing import get_collection_name
+from utils.string_processing import get_model_plural_name
 
 MIMES_BY_FOLDER = {
     "spreadsheets": "application/CSV",
@@ -15,15 +15,15 @@ MIMES_BY_FOLDER = {
 
 def store_public_object_from_sandbox_assets(folder, obj, thumb_id, index=0):
     dir_path = Path(os.path.dirname(os.path.realpath(__file__)))
-    collection_name = get_collection_name(obj)
+    collection_name = get_model_plural_name(obj)
     thumb_path = dir_path\
                  / '..' / '..' / folder / collection_name\
                  / str(thumb_id)
 
-    with open(thumb_path, mode='rb') as file:
+    with open(thumb_path, mode='rb') as thumb_file:
         if folder == "thumbs":
             obj.save_thumb(
-                file.read(),
+                thumb_file.read(),
                 index,
                 dominant_color=b'\x00\x00\x00',
                 no_convert=True,
@@ -32,7 +32,7 @@ def store_public_object_from_sandbox_assets(folder, obj, thumb_id, index=0):
         else:
             store_public_object(folder,
                                 collection_name + '/' + humanize(obj.id),
-                                file.read(),
+                                thumb_file.read(),
                                 MIMES_BY_FOLDER[folder],
                                 symlink_path=thumb_path)
 
