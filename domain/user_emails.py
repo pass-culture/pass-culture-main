@@ -21,7 +21,7 @@ def send_final_booking_recap_email(stock, send_create_email):
     if stock.resolvedOffer.bookingEmail:
         recipients.append(stock.resolvedOffer.bookingEmail)
 
-    email['Html-part'], email['To'] = _edit_email_html_part_and_recipients(email['Html-part'], recipients)
+    email['Html-part'], email['To'] = edit_email_html_part_and_recipients(email['Html-part'], recipients)
 
     mail_result = send_create_email(data=email)
     check_if_email_sent(mail_result)
@@ -36,7 +36,7 @@ def send_booking_recap_emails(booking, send_create_email):
     if booking.stock.resolvedOffer.bookingEmail:
         recipients.append(booking.stock.resolvedOffer.bookingEmail)
 
-    email['Html-part'], email['To'] = _edit_email_html_part_and_recipients(email['Html-part'], recipients)
+    email['Html-part'], email['To'] = edit_email_html_part_and_recipients(email['Html-part'], recipients)
 
     mail_result = send_create_email(data=email)
     check_if_email_sent(mail_result)
@@ -46,7 +46,7 @@ def send_booking_confirmation_email_to_user(booking, send_create_email, is_cance
     email = make_user_booking_recap_email(booking, is_cancellation)
     recipients = [booking.user.email]
 
-    email['Html-part'], email['To'] = _edit_email_html_part_and_recipients(email['Html-part'], recipients)
+    email['Html-part'], email['To'] = edit_email_html_part_and_recipients(email['Html-part'], recipients)
 
     mail_result = send_create_email(data=email)
     check_if_email_sent(mail_result)
@@ -56,7 +56,7 @@ def send_user_driven_cancellation_email_to_user(booking, send_create_email):
     email = make_user_booking_recap_email(booking, is_cancellation=True)
     recipients = [booking.user.email]
 
-    email['Html-part'], email['To'] = _edit_email_html_part_and_recipients(email['Html-part'], recipients)
+    email['Html-part'], email['To'] = edit_email_html_part_and_recipients(email['Html-part'], recipients)
 
     mail_result = send_create_email(data=email)
     check_if_email_sent(mail_result)
@@ -65,7 +65,7 @@ def send_user_driven_cancellation_email_to_user(booking, send_create_email):
 def send_user_driven_cancellation_email_to_offerer(booking, send_create_email):
     email = make_offerer_booking_recap_email_after_user_action(booking, is_cancellation=True)
     recipients = [booking.stock.resolvedOffer.venue.bookingEmail]
-    email['Html-part'], email['To'] = _edit_email_html_part_and_recipients(email['Html-part'], recipients)
+    email['Html-part'], email['To'] = edit_email_html_part_and_recipients(email['Html-part'], recipients)
     mail_result = send_create_email(data=email)
     check_if_email_sent(mail_result)
 
@@ -73,7 +73,7 @@ def send_user_driven_cancellation_email_to_offerer(booking, send_create_email):
 def send_offerer_driven_cancellation_email_to_user(booking, send_create_email):
     email = make_offerer_driven_cancellation_email_for_user(booking)
     recipients = [booking.user.email]
-    email['Html-part'], email['To'] = _edit_email_html_part_and_recipients(email['Html-part'], recipients)
+    email['Html-part'], email['To'] = edit_email_html_part_and_recipients(email['Html-part'], recipients)
     mail_result = send_create_email(data=email)
     check_if_email_sent(mail_result)
 
@@ -83,7 +83,7 @@ def send_offerer_driven_cancellation_email_to_offerer(booking, send_create_email
     if offerer_email:
         recipients = [offerer_email]
         email = make_offerer_driven_cancellation_email_for_offerer(booking)
-        email['Html-part'], email['To'] = _edit_email_html_part_and_recipients(email['Html-part'], recipients)
+        email['Html-part'], email['To'] = edit_email_html_part_and_recipients(email['Html-part'], recipients)
         mail_result = send_create_email(data=email)
         check_if_email_sent(mail_result)
 
@@ -98,7 +98,7 @@ def send_validation_confirmation_email(user_offerer, offerer, send_create_email)
     offerer_id = _get_offerer_id(offerer, user_offerer)
     recipients = find_all_emails_of_user_offerers_admins(offerer_id)
     email = make_validation_confirmation_email(user_offerer, offerer)
-    email['Html-part'], email['To'] = _edit_email_html_part_and_recipients(email['Html-part'], recipients)
+    email['Html-part'], email['To'] = edit_email_html_part_and_recipients(email['Html-part'], recipients)
     mail_result = send_create_email(data=email)
     check_if_email_sent(mail_result)
 
@@ -114,7 +114,7 @@ def send_batch_cancellation_email_to_offerer(bookings, cancellation_case, send_c
     if offerer_email:
         recipients = [offerer_email]
         email = make_batch_cancellation_email(bookings, cancellation_case)
-        email['Html-part'], email['To'] = _edit_email_html_part_and_recipients(email['Html-part'], recipients)
+        email['Html-part'], email['To'] = edit_email_html_part_and_recipients(email['Html-part'], recipients)
         mail_result = send_create_email(data=email)
         check_if_email_sent(mail_result)
 
@@ -132,7 +132,7 @@ def send_cancellation_emails_to_user_and_offerer(booking, is_offerer_cancellatio
 def send_venue_validation_confirmation_email(venue, send_create_email):
     recipients = find_all_emails_of_user_offerers_admins(venue.managingOffererId)
     email = make_venue_validation_confirmation_email(venue)
-    email['Html-part'], email['To'] = _edit_email_html_part_and_recipients(email['Html-part'], recipients)
+    email['Html-part'], email['To'] = edit_email_html_part_and_recipients(email['Html-part'], recipients)
     mail_result = send_create_email(data=email)
     check_if_email_sent(mail_result)
 
@@ -151,7 +151,7 @@ def _get_offerer_id(offerer, user_offerer):
     return offerer_id
 
 
-def _edit_email_html_part_and_recipients(email_html_part, recipients):
+def edit_email_html_part_and_recipients(email_html_part, recipients):
     if feature_send_mail_to_users_enabled():
         email_to = ", ".join(recipients)
     else:

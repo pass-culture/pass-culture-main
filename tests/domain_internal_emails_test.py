@@ -1,10 +1,10 @@
 import secrets
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 
 import pytest
 
-from domain.user_emails import send_reset_password_email
 from domain.admin_emails import maybe_send_offerer_validation_email, send_venue_validation_email
+from domain.user_emails import send_reset_password_email
 from utils.mailing import MailServiceException
 from utils.test_utils import create_offerer, create_user, \
     create_user_offerer, create_venue
@@ -52,7 +52,8 @@ def test_maybe_send_offerer_validation_email_does_not_send_email_if_all_validate
     offerer = create_offerer(siren='732075312', address='122 AVENUE DE FRANCE', city='Paris', postal_code='75013',
                              name='Accenture', validation_token=None)
 
-    user = create_user(public_name='Test', departement_code='75', email='user@accenture.com', can_book_free_offers=False,
+    user = create_user(public_name='Test', departement_code='75', email='user@accenture.com',
+                       can_book_free_offers=False,
                        validation_token=None)
 
     user_offerer = create_user_offerer(user, offerer, validation_token=None)
@@ -66,9 +67,9 @@ def test_maybe_send_offerer_validation_email_does_not_send_email_if_all_validate
     try:
         maybe_send_offerer_validation_email(offerer, user_offerer, mocked_send_create_email)
     except MailServiceException as e:
-        app.logger.error('Mail service failure', e) 
+        app.logger.error('Mail service failure', e)
 
-    # Then
+        # Then
     assert not mocked_send_create_email.called
 
 
@@ -79,7 +80,8 @@ def test_maybe_send_offerer_validation_email_raises_exception_if_status_code_400
     offerer = create_offerer(siren='732075312', address='122 AVENUE DE FRANCE', city='Paris', postal_code='75013',
                              name='Accenture', validation_token=validation_token)
 
-    user = create_user(public_name='Test', departement_code='75', email='user@accenture.com', can_book_free_offers=False,
+    user = create_user(public_name='Test', departement_code='75', email='user@accenture.com',
+                       can_book_free_offers=False,
                        validation_token=validation_token)
 
     user_offerer = create_user_offerer(user, offerer, validation_token)
@@ -92,7 +94,6 @@ def test_maybe_send_offerer_validation_email_raises_exception_if_status_code_400
     # When
     with pytest.raises(MailServiceException):
         maybe_send_offerer_validation_email(offerer, user_offerer, mocked_send_create_email)
-
 
 
 @pytest.mark.standalone
@@ -117,6 +118,28 @@ def test_send_venue_validation_email_when_mailjet_status_code_200_calls_send_cre
 
 
 @pytest.mark.standalone
+def test_send_venue_validation_email_when_feature_send_mail_to_users_disabled_has_pass_culture_dev_as_recipient(app):
+    # Given
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+
+    mocked_send_create_email = Mock()
+    return_value = Mock()
+    return_value.status_code = 200
+    mocked_send_create_email.return_value = return_value
+
+    # When
+    with patch('domain.user_emails.feature_send_mail_to_users_enabled', return_value=False):
+        send_venue_validation_email(venue, mocked_send_create_email)
+
+    mocked_send_create_email.assert_called_once()
+    args = mocked_send_create_email.call_args
+    assert args[1]['data']['To'] == 'passculture-dev@beta.gouv.fr'
+
+    # Then
+
+
+@pytest.mark.standalone
 def test_send_venue_validation_email_when_mailjet_status_code_400_raises_MailServiceException(app):
     # Given
     offerer = create_offerer()
@@ -129,4 +152,4 @@ def test_send_venue_validation_email_when_mailjet_status_code_400_raises_MailSer
 
     # When
     with pytest.raises(MailServiceException):
-        send_venue_validation_email(venue,mocked_send_create_email)
+        send_venue_validation_email(venue, mocked_send_create_email)
