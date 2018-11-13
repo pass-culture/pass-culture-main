@@ -21,10 +21,10 @@ def listify (query, include, resolve=None, **kwargs):
 
 # helpful
 """ magic call like get('stocks', Stock.price > 10, lambda obj: obj['id']) """
-def get(collection_name, filter = None, resolve = None, **kwargs):
+def get(plural_model_name, filter = None, resolve = None, **kwargs):
     if resolve is None:
         resolve = lambda obj: obj
-    model_name = get_camel_string(inflect_engine.singular_noun(collection_name, 1))
+    model_name = get_camel_string(inflect_engine.singular_noun(plural_model_name, 1))
     model = getattr(models, model_name[0].upper() + model_name[1:])
     query = model.query.filter() if filter is None else model.query.filter(filter)
     include = getattr(includes, model_name[0].upper() + model_name[1:] + '_INCLUDES')

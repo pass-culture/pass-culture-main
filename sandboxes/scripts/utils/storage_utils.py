@@ -15,9 +15,9 @@ MIMES_BY_FOLDER = {
 
 def store_public_object_from_sandbox_assets(folder, obj, thumb_id, index=0):
     dir_path = Path(os.path.dirname(os.path.realpath(__file__)))
-    collection_name = get_model_plural_name(obj)
+    plural_model_name = get_model_plural_name(obj)
     thumb_path = dir_path\
-                 / '..' / '..' / folder / collection_name\
+                 / '..' / '..' / folder / plural_model_name\
                  / str(thumb_id)
 
     with open(thumb_path, mode='rb') as thumb_file:
@@ -31,7 +31,7 @@ def store_public_object_from_sandbox_assets(folder, obj, thumb_id, index=0):
             )
         else:
             store_public_object(folder,
-                                collection_name + '/' + humanize(obj.id),
+                                plural_model_name + '/' + humanize(obj.id),
                                 thumb_file.read(),
                                 MIMES_BY_FOLDER[folder],
                                 symlink_path=thumb_path)

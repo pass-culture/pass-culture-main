@@ -14,14 +14,14 @@ def get_source(mediation, stock):
            mediation.get('thing')
 
 def get_thumb_url(mediation, source, stock):
-    source_collection_name = (stock.get('eventOccurrence') and 'events') or\
+    source_plural_model_name = (stock.get('eventOccurrence') and 'events') or\
         (stock.get('thing') and 'things') or\
         (mediation.get('event') and 'events') or\
         (mediation.get('thing') and 'things') or ''
     if mediation and mediation.get('thumbCount') > 0:
         return '/mediations/'+ mediation['id']
     elif source and source.get('thumbCount') > 0:
-        return source_collection_name + '/' + source['id']
+        return source_plural_model_name + '/' + source['id']
 
 def get_venue(stock, source):
     return stock.get('eventOccurrence', {'venue': None}).get('venue') or\
