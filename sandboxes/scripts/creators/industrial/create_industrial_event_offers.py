@@ -21,8 +21,7 @@ def create_industrial_event_offers(
         virtual_venue = venues_by_name[offerer_name + " (Offre en ligne)"]
 
         for event in events_by_name.values():
-
-            # DETERMINE THE MATCHING VENUE
+            
             event_type = types_by_value[event.type]
             if event_type['offlineOnly']:
                 event_venue = venue
