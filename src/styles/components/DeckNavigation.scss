@@ -6,6 +6,15 @@
   bottom: 0;
   position: absolute;
 
+
+  #dragButton {
+    width: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    padding-top: 38px;
+  }
+
   .controls {
     height: 100%;
     padding: 0 12px;
@@ -24,6 +33,13 @@
   .controls button.after,
   .controls button.before {
     margin-bottom: 25px;
+  }
+
+
+
+  .button.after img, .button.before img {
+    position: relative;
+    z-index: $zindex-navigation-arrows;
   }
 
   .controls button.after {

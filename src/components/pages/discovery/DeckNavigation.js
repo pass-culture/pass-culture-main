@@ -106,7 +106,7 @@ class DeckNavigation extends React.PureComponent {
                 onStop={this.onStop}
                 axis="y"
               >
-                <div>
+                <div id="dragButton">
                   <button
                     type="button"
                     onClick={flipHandler}
