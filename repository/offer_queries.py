@@ -82,9 +82,8 @@ def get_active_offers_by_type(offer_type, user=None, departement_codes=None, off
 
     if offer_id is not None:
         query = query.filter(Offer.id == offer_id)
-    count = query.count()
-    logger.debug(lambda: '(reco) all ' + str(offer_type) + '.count ' + str(count))
-    logger.info('(reco) all ' + offer_type.__name__ + ' (%i)', count)
+    logger.debug(lambda: '(reco) all ' + str(offer_type) + '.count ' + str(query.count()))
+    logger.info('(reco) all ' + offer_type.__name__ + ' (%i)', query.count())
 
     query = departement_or_national_offers(query, offer_type, departement_codes)
     query = bookable_offers(query, offer_type)
