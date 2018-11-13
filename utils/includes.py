@@ -189,12 +189,11 @@ VENUE_INCLUDES = [
 ]
 
 VENUE_PROVIDER_INCLUDES = [
-    "provider",
-    "-validationToken"
+    "provider"
 ]
 
 
-PENDING_VALIDATIONS_OFFERERS_INCLUDES = [
+NOT_VALIDATED_OFFERER_INCLUDES = [
 
     "validationToken",
     "-firstThumbDominantColor",
@@ -218,4 +217,3 @@ PENDING_VALIDATIONS_OFFERERS_INCLUDES = [
         }]
     }
 ]
-

@@ -76,8 +76,8 @@ def test_find_all_offerers_with_managing_user_information_and_venue(app):
     user_offerer2 = create_user_offerer(user_editor1, offerer1, is_admin=False)
     user_offerer3 = create_user_offerer(user_admin1, offerer2, is_admin=True)
     user_offerer4 = create_user_offerer(user_admin2, offerer2, is_admin=True)
-    PcObject.check_and_save(user_admin1, user_admin2, user_editor1, offerer1, offerer2, venue1,
-       venue2, venue3,  user_offerer1, user_offerer2, user_offerer3, user_offerer4)
+    PcObject.check_and_save(venue1, venue2, venue3,  user_offerer1, user_offerer2, user_offerer3,
+       user_offerer4)
 
     #when
     offerers = find_all_offerers_with_managing_user_information_and_venue()
@@ -104,8 +104,7 @@ def test_find_all_offerers_with_managing_user_information_and_not_virtual_venue(
     user_offerer1 = create_user_offerer(user_admin1, offerer1, is_admin=True)
     user_offerer3 = create_user_offerer(user_admin1, offerer2, is_admin=True)
     user_offerer4 = create_user_offerer(user_admin2, offerer2, is_admin=True)
-    PcObject.check_and_save(user_admin1, user_admin2, offerer1, offerer2, venue1, venue2, venue3,
-       user_offerer1, user_offerer3, user_offerer4)
+    PcObject.check_and_save(venue1, venue2, venue3, user_offerer1, user_offerer3, user_offerer4)
 
     #when
     offerers = find_all_offerers_with_managing_user_information_and_not_virtual_venue()

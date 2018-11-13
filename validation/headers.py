@@ -58,3 +58,4 @@ def _get_origin_header_whitelist_for_non_dev_environments(api_url):
         valid_urls.append(url.replace('backend', 'pro'))
         valid_urls.append(url.replace('backend', 'app'))
     return valid_urls
+    

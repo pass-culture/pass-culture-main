@@ -22,7 +22,7 @@ from repository.user_queries import find_users_by_department_and_date_range, fin
 from repository.venue_queries import count_venues_by_departement
 from validation.exports import check_user_is_admin
 
-from utils.includes import PENDING_VALIDATIONS_OFFERERS_INCLUDES 
+from utils.includes import NOT_VALIDATED_OFFERER_INCLUDES
 
 
 Activity = versioning_manager.activity_cls
@@ -271,7 +271,7 @@ def get_pending_validation():
     offerers = offerer_queries.find_all_pending_validation()
 
     for o in offerers:
-        result.append(o._asdict(include=PENDING_VALIDATIONS_OFFERERS_INCLUDES))
+        result.append(o._asdict(include=NOT_VALIDATED_OFFERER_INCLUDES))
 
     return jsonify(result)
 

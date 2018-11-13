@@ -135,3 +135,4 @@ def test_check_user_is_admin_returns_403_when_user_is_structure_admin_but_not_ad
 
     #then
     assert response.status_code == 403
+    
