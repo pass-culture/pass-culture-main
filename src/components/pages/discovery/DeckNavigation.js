@@ -4,6 +4,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
+import Draggable from 'react-draggable'
 
 import Price from '../../Price'
 import Finishable from '../../layout/Finishable'
@@ -14,7 +15,39 @@ import {
 } from '../../../helpers'
 import { ROOT_PATH } from '../../../utils/config'
 
+const toRectoDraggableBounds = {
+  bottom: 0,
+  left: 0,
+  right: 0,
+  top: 0,
+}
+
+function getPageY(event) {
+  if (event instanceof TouchEvent) {
+    const lastTouchIndex = event.changedTouches.length - 1
+    return event.changedTouches[lastTouchIndex].pageY
+  }
+
+  return event.pageY
+}
+
 class DeckNavigation extends React.PureComponent {
+  onStop = event => {
+    const { flipHandler, height, verticalSlideRatio } = this.props
+    const shiftedDistance = height - getPageY(event)
+
+    const thresholdDistance = height * verticalSlideRatio
+    if (shiftedDistance > thresholdDistance) {
+      // DON T KNOW YET HOW TO DO OTHERWISE:
+      // IF IT IS CALLED DIRECTLY
+      // THEN on unmount time of the component
+      // one of the drag event handler will still complain
+      // to want to do a setState while the component is now
+      // unmounted...
+      setTimeout(() => flipHandler())
+    }
+  }
+
   renderPreviousButton = () => {
     const { handleGoPrevious } = this.props
     return (
@@ -68,28 +101,36 @@ class DeckNavigation extends React.PureComponent {
           {/* flip button */}
           {(flipHandler && (
             <div className="flex-rows">
-              <button
-                type="button"
-                onClick={flipHandler}
-                onDragLeave={flipHandler}
-                className="button to-recto"
+              <Draggable
+                bounds={toRectoDraggableBounds}
+                onStop={this.onStop}
+                axis="y"
               >
-                <Icon svg="ico-slideup-w" alt="Plus d'infos" />
-              </button>
-              <div
-                className="clue"
-                style={{ transition: `opacity ${transitionTimeout}ms` }}
-              >
-                <Finishable finished={isFinished}>
-                  <Price value={priceRange} />
-                  <div className="separator">
-                    {offer ? '\u00B7' : ' '}
+                <div>
+                  <button
+                    type="button"
+                    onClick={flipHandler}
+                    onDragLeave={flipHandler}
+                    className="button to-recto"
+                  >
+                    <Icon svg="ico-slideup-w" alt="Plus d'infos" />
+                  </button>
+                  <div
+                    className="clue"
+                    style={{ transition: `opacity ${transitionTimeout}ms` }}
+                  >
+                    <Finishable finished={isFinished}>
+                      <Price value={priceRange} />
+                      <div className="separator">
+                        {offer ? '\u00B7' : ' '}
+                      </div>
+                      <div>
+                        {distanceClue}
+                      </div>
+                    </Finishable>
                   </div>
-                  <div>
-                    {distanceClue}
-                  </div>
-                </Finishable>
-              </div>
+                </div>
+              </Draggable>
             </div>
           )) || <span />}
           {/* next button */}
@@ -108,6 +149,7 @@ DeckNavigation.defaultProps = {
   isFinished: null,
   recommendation: null,
   transitionTimeout: 250,
+  verticalSlideRatio: 0.3,
 }
 
 DeckNavigation.propTypes = {
@@ -115,9 +157,11 @@ DeckNavigation.propTypes = {
   handleGoNext: PropTypes.func,
   handleGoPrevious: PropTypes.func,
   headerColor: PropTypes.string,
+  height: PropTypes.number.isRequired,
   isFinished: PropTypes.bool,
   recommendation: PropTypes.object,
   transitionTimeout: PropTypes.number,
+  verticalSlideRatio: PropTypes.number,
 }
 
 export default compose(

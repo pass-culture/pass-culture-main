@@ -257,6 +257,7 @@ class Deck extends Component {
   render() {
     const {
       currentRecommendation,
+      height,
       nextRecommendation,
       isFlipDisabled,
       isFlipped,
@@ -288,6 +289,7 @@ class Deck extends Component {
             handleGoPrevious={
               (previousRecommendation && this.handleGoPrevious) || null
             }
+            height={height}
           />
         )}
       </div>
