@@ -271,7 +271,7 @@ def get_pending_validation():
     offerers = offerer_queries.find_all_pending_validation()
 
     for o in offerers:
-        result.append(o._asdict(include=NOT_VALIDATED_OFFERER_INCLUDES))
+        result.append(o._asdict(include=OFFERER_INCLUDES_FOR_ADMIN))
 
     return jsonify(result)
 
