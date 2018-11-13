@@ -65,7 +65,7 @@ class EventType(SearchableType):
         'description': "Suivre un géant de 12 mètres dans la ville ? Rire aux éclats devant un stand up ? Rêver le temps d’un opéra ou d’un spectacle de danse ? Assister à une pièce de théâtre, ou se laisser conter une histoire ?"
     }
     ACTIVATION = {
-        'label': 'Activation du pass Culture',
+        'label': 'Activation événementielle du pass Culture',
         'offlineOnly': True,
         'onlineOnly': False,
         'sublabel': 'Activation',
@@ -150,11 +150,4 @@ class ThingType(SearchableType):
         'onlineOnly': True,
         'sublabel': "Lire",
         'description': "S’abonner à un quotidien d’actualité ? À un hebdomadaire humoristique ? À un mensuel dédié à la nature ? Acheter une BD ou un manga ? Ou tout simplement ce livre dont tout le monde parle ?"
-    }
-    ACTIVATION = {
-        'label': 'Activation du pass Culture',
-        'offlineOnly': True,
-        'onlineOnly': False,
-        'sublabel': 'Activation',
-        'description': 'Activez votre pass Culture grâce à cette offre',
     }
