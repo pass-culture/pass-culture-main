@@ -67,7 +67,6 @@ def test_put_recommendations_returns_a_list_of_recos_starting_with_two_tutos():
 
     # then
     recos = response.json()
-    print("recos[0]", recos[0])
     assert recos[0]['mediation']['tutoIndex'] == 0
     assert recos[1]['mediation']['tutoIndex'] == 1
     recos_with_tutos = [
