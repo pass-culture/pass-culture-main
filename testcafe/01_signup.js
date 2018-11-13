@@ -63,14 +63,14 @@ test('E-mail déjà présent dans la base et mot de passe invalide', async t => 
   await t
     .expect(userPasswordError.innerText)
     .eql(
-      'Le mot de passe doit faire au moins 12 caractères et contenir à minima 1 majuscule, 1 minuscule, 1 chiffre et 1 caractère spécial parmi _-&?~#|^@=+.$,<>%*!:;'
+      '\nLe mot de passe doit faire au moins 12 caractères et contenir à minima 1 majuscule, 1 minuscule, 1 chiffre et 1 caractère spécial parmi _-&?~#|^@=+.$,<>%*!:;\n\n'
     )
     .typeText(userPassword, 'RTit.uioRZU.90')
     .click(signUpButton)
     .wait(2000)
   await t
     .expect(userEmailError.innerText)
-    .eql('Un compte lié à cet email existe déjà')
+    .eql('\nUn compte lié à cet email existe déjà\n\n')
 })
 
 test('E-mail non autorisé', async t => {
@@ -85,5 +85,5 @@ test('E-mail non autorisé', async t => {
     .wait(1000)
   await t
     .expect(userEmailError.innerText)
-    .eql("Adresse non autorisée pour l'expérimentation")
+    .eql("\nAdresse non autorisée pour l'expérimentation\n\n")
 })
