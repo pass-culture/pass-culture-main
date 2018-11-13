@@ -5,7 +5,7 @@ import React from 'react'
 import { Transition } from 'react-transition-group'
 
 import { closeSharePopin } from '../../reducers/share'
-import MailToLink from '../layout/MailToLink'
+import MailToLink from './MailToLink'
 import CopyToClipboardButton from './CopyToClipboardButton'
 
 const transitionDelay = 500
@@ -35,7 +35,9 @@ class SharePopinContent extends React.PureComponent {
     dispatch(closeSharePopin())
   }
 
-  onCopyHandler = status => this.setState({ iscopied: status })
+  onCopyHandler = status => {
+    this.setState({ iscopied: status })
+  }
 
   renderCloseButton = () => (
     <button

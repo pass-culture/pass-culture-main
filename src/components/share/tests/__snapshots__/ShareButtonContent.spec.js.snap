@@ -1,0 +1,102 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`src | components | share | ShareButtonContent snapshot should match snapshot 1`] = `
+ShallowWrapper {
+  Symbol(enzyme.__root__): [Circular],
+  Symbol(enzyme.__unrendered__): <ShareButtonContent
+    dispatch={[MockFunction]}
+    text="Comment souhaitez-vous partager cette offre ?"
+    title="Fake title"
+    url="http://www.fake-url.com"
+  />,
+  Symbol(enzyme.__renderer__): Object {
+    "batchedUpdates": [Function],
+    "getNode": [Function],
+    "render": [Function],
+    "simulateError": [Function],
+    "simulateEvent": [Function],
+    "unmount": [Function],
+  },
+  Symbol(enzyme.__node__): Object {
+    "instance": null,
+    "key": undefined,
+    "nodeType": "host",
+    "props": Object {
+      "children": <span
+        aria-hidden={true}
+        className="icon-legacy-share"
+        title="Partager cette offre"
+      />,
+      "className": "button is-secondary fs32",
+      "disabled": false,
+      "onClick": [Function],
+      "type": "button",
+    },
+    "ref": null,
+    "rendered": Object {
+      "instance": null,
+      "key": undefined,
+      "nodeType": "host",
+      "props": Object {
+        "aria-hidden": true,
+        "className": "icon-legacy-share",
+        "title": "Partager cette offre",
+      },
+      "ref": null,
+      "rendered": null,
+      "type": "span",
+    },
+    "type": "button",
+  },
+  Symbol(enzyme.__nodes__): Array [
+    Object {
+      "instance": null,
+      "key": undefined,
+      "nodeType": "host",
+      "props": Object {
+        "children": <span
+          aria-hidden={true}
+          className="icon-legacy-share"
+          title="Partager cette offre"
+        />,
+        "className": "button is-secondary fs32",
+        "disabled": false,
+        "onClick": [Function],
+        "type": "button",
+      },
+      "ref": null,
+      "rendered": Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "aria-hidden": true,
+          "className": "icon-legacy-share",
+          "title": "Partager cette offre",
+        },
+        "ref": null,
+        "rendered": null,
+        "type": "span",
+      },
+      "type": "button",
+    },
+  ],
+  Symbol(enzyme.__options__): Object {
+    "adapter": ReactSixteenAdapter {
+      "options": Object {
+        "enableComponentDidUpdateOnSetState": true,
+        "lifecycles": Object {
+          "componentDidUpdate": Object {
+            "onSetState": true,
+          },
+          "getDerivedStateFromProps": true,
+          "getSnapshotBeforeUpdate": true,
+          "setState": Object {
+            "skipsComponentDidUpdateOnNullish": true,
+          },
+        },
+      },
+    },
+  },
+}
+`;

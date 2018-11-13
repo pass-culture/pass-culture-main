@@ -3,7 +3,7 @@ import { Provider } from 'react-redux'
 import React from 'react'
 import { shallow } from 'enzyme'
 
-import SharePopin from '../SharePopin'
+import { SharePopin } from '../SharePopin'
 
 const middlewares = []
 const mockStore = configureStore(middlewares)

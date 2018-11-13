@@ -1,15 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import queryString from 'query-string'
 
-const createMailToLink = (email, headers) => {
-  let link = `mailto:${email}`
-  if (headers) {
-    const params = queryString.stringify(headers)
-    link = `${link}?${params}`
-  }
-  return link
-}
+import createMailToLink from './utils'
 
 class MailToLink extends React.PureComponent {
   handleClick = event => {
