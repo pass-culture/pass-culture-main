@@ -14,13 +14,6 @@ def get_by_event_occurrence_id(event_occurrence_id):
     return Offerer.query.join(Venue).join(Offer).join(EventOccurrence).filter_by(id=event_occurrence_id).first()
 
 
-def find_all_admin_offerer_emails(offerer_id):
-    return [result.email for result in
-            Offerer.query.filter_by(id=offerer_id).join(UserOfferer).filter_by(rights=RightsType.admin).filter_by(
-                validationToken=None).join(
-                User).with_entities(User.email)]
-
-
 def find_offerers_in_date_range_for_given_departement(date_max, date_min, department):
     Activity = load_activity()
     query = db.session.query(func.distinct(Offerer.id), Offerer.name, Activity.issued_at, Venue.departementCode) \

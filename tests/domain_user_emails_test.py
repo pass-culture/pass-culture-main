@@ -459,7 +459,7 @@ def test_send_validation_confirmation_email(app):
     with patch('domain.user_emails.feature_send_mail_to_users_enabled', return_value=True), patch(
             'domain.user_emails.make_validation_confirmation_email',
             return_value={'Html-part': ''}) as make_cancellation_email, patch(
-        'domain.user_emails.find_all_admin_offerer_emails', return_value=['admin1@email.com', 'admin2@email.com']):
+        'domain.user_emails.find_all_emails_of_user_offerers_admins', return_value=['admin1@email.com', 'admin2@email.com']):
         # When
         send_validation_confirmation_email(user_offerer, offerer, mocked_send_create_email)
 
@@ -484,7 +484,7 @@ def test_send_validation_confirmation_email_when_status_code_400(app):
 
     with patch('domain.user_emails.feature_send_mail_to_users_enabled', return_value=True), patch(
             'domain.user_emails.make_validation_confirmation_email', return_value={'Html-part': ''}), patch(
-        'domain.user_emails.find_all_admin_offerer_emails', return_value=['test@email.com']), pytest.raises(
+        'domain.user_emails.find_all_emails_of_user_offerers_admins', return_value=['test@email.com']), pytest.raises(
         MailServiceException):
         # When
         send_validation_confirmation_email(user_offerer, offerer, mocked_send_create_email)
@@ -640,7 +640,7 @@ def test_send_venue_validation_confirmation_email(app):
     with patch('domain.user_emails.feature_send_mail_to_users_enabled', return_value=True), patch(
             'domain.user_emails.make_venue_validation_confirmation_email',
             return_value={'Html-part': ''}) as make_cancellation_email, patch(
-        'domain.user_emails.find_all_admin_offerer_emails', return_value=['admin1@email.com', 'admin2@email.com']):
+        'domain.user_emails.find_all_emails_of_user_offerers_admins', return_value=['admin1@email.com', 'admin2@email.com']):
         # When
         send_venue_validation_confirmation_email(venue, mocked_send_create_email)
 
@@ -664,7 +664,7 @@ def test_send_venue_validation_confirmation_email_when_status_code_400(app):
 
     with patch('domain.user_emails.feature_send_mail_to_users_enabled', return_value=True), patch(
             'domain.user_emails.make_venue_validation_confirmation_email', return_value={'Html-part': ''}), patch(
-        'domain.user_emails.find_all_admin_offerer_emails', return_value=['test@email.com']), pytest.raises(
+        'domain.user_emails.find_all_emails_of_user_offerers_admins', return_value=['test@email.com']), pytest.raises(
         MailServiceException):
         # When
         send_venue_validation_confirmation_email(venue, mocked_send_create_email)

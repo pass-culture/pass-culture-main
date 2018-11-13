@@ -1,6 +1,6 @@
 from repository.booking_queries import find_all_ongoing_bookings_by_stock
 from repository.features import feature_send_mail_to_users_enabled
-from repository.offerer_queries import find_all_admin_offerer_emails
+from repository.user_queries import find_all_emails_of_user_offerers_admins
 from repository.stock_queries import set_booking_recap_sent_and_save
 from utils.config import ENV
 from utils.logger import logger
@@ -96,7 +96,7 @@ def send_reset_password_email(user, send_create_email, app_origin_url):
 
 def send_validation_confirmation_email(user_offerer, offerer, send_create_email):
     offerer_id = _get_offerer_id(offerer, user_offerer)
-    recipients = find_all_admin_offerer_emails(offerer_id)
+    recipients = find_all_emails_of_user_offerers_admins(offerer_id)
     email = make_validation_confirmation_email(user_offerer, offerer)
     email['Html-part'], email['To'] = _edit_email_html_part_and_recipients(email['Html-part'], recipients)
     mail_result = send_create_email(data=email)
@@ -130,7 +130,7 @@ def send_cancellation_emails_to_user_and_offerer(booking, is_offerer_cancellatio
 
 
 def send_venue_validation_confirmation_email(venue, send_create_email):
-    recipients = find_all_admin_offerer_emails(venue.managingOffererId)
+    recipients = find_all_emails_of_user_offerers_admins(venue.managingOffererId)
     email = make_venue_validation_confirmation_email(venue)
     email['Html-part'], email['To'] = _edit_email_html_part_and_recipients(email['Html-part'], recipients)
     mail_result = send_create_email(data=email)

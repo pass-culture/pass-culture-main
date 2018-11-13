@@ -3,17 +3,18 @@ import secrets
 import pytest
 
 from models import PcObject
-from repository.offerer_queries import find_all_admin_offerer_emails, find_all_offerers_with_managing_user_information, \
+from repository.offerer_queries import find_all_offerers_with_managing_user_information, \
     find_all_offerers_with_managing_user_information_and_venue, \
     find_all_offerers_with_managing_user_information_and_not_virtual_venue, \
-    find_all_offerers_with_venue, find_all_pending_validation, find_first_by_user_offerer_id
+    find_all_offerers_with_venue, find_first_by_user_offerer_id, find_all_pending_validation
 from tests.conftest import clean_database
 from utils.test_utils import create_user, create_offerer, create_user_offerer, create_venue
 
 
 @pytest.mark.standalone
 @clean_database
-def test_find_all_admin_offerer_emails(app):
+def test_find_all_emails_of_user_offerers_admins_returns_list_of_user_emails_having_user_offerer_with_admin_rights_on_offerer(
+        app):
     # Given
     offerer = create_offerer()
     user_admin1 = create_user(email='admin1@offerer.com')
@@ -30,7 +31,7 @@ def test_find_all_admin_offerer_emails(app):
                             user_offerer_editor)
 
     # When
-    emails = find_all_admin_offerer_emails(offerer.id)
+    emails = find_all_emails_of_user_offerers_admins(offerer.id)
 
     # Then
     assert set(emails) == {'admin1@offerer.com', 'admin2@offerer.com'}
@@ -179,7 +180,7 @@ def test_get_all_pending_offerers_with_user_offerer(app):
 
 @pytest.mark.standalone
 @clean_database
-def test_find_first_by_user_offerer_id_returns_one_offerer(app):
+def test_find_first_by_user_offerer_id_returns_the_first_offerer_that_was_created(app):
     # given
     user = create_user()
     offerer1 = create_offerer(name='offerer1', siren='123456789')
@@ -193,4 +194,4 @@ def test_find_first_by_user_offerer_id_returns_one_offerer(app):
     offerer = find_first_by_user_offerer_id(user_offerer1.id)
 
     # then
-    assert offerer == offerer1
+    assert offerer.id == offerer1.id

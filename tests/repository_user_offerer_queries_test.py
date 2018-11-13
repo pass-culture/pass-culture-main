@@ -39,4 +39,4 @@ def test_find_first_by_user_id_should_return_one_user_offerers_with_user_id(app)
 
     # Then
     assert type(first_user_offerer) == UserOfferer
-    assert first_user_offerer == user_offerer1 or first_user_offerer == user_offerer2
+    assert first_user_offerer.id == user_offerer1.id
