@@ -19,11 +19,16 @@ def create_handmade_mediations(offers_by_name):
 
     PcObject.check_and_save(*mediations_by_name.values())
 
-    for mediation in mediations_by_name.values():
-        store_public_object_from_sandbox_assets(
-            "thumbs",
-            mediation,
-            mediation.offer.eventOrThing.type
-        )
+    store_public_object_from_sandbox_assets(
+        "thumbs",
+        mediations_by_name['Rencontre avec Franck Lepage / LE GRAND REX PARIS'],
+        "FranckLepage"
+    )
+
+    store_public_object_from_sandbox_assets(
+        "thumbs",
+        mediations_by_name['Ravage / THEATRE DE L ODEON'],
+        "Ravage"
+    )
 
     return mediations_by_name

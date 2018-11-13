@@ -19,6 +19,7 @@ def create_handmade_bookings(recommendations_by_name, stocks_by_name, users_by_n
     bookings_by_name['Ravage / THEATRE DE L ODEON / 50 / 50 / jeune 93'] = create_booking(
         users_by_name['jeune 93'],
         recommendation=recommendations_by_name['Ravage / THEATRE DE L ODEON / jeune 93'],
+        stock=stock,
         token="2AEVY3"
     )
 
