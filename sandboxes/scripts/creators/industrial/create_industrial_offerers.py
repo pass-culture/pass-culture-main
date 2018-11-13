@@ -44,9 +44,11 @@ def create_industrial_offerers(
                 if closest_location is None:
                     continue
 
-                name = "STRUCTURE " + str(incremented_siren)
-                name += " lat:" + str(closest_location['latitude']) + \
-                        " lon:" + str(closest_location['longitude'])
+                name = 'STRUCTURE {} lat:{} lon:{}'.format(
+                    incremented_siren,
+                    closest_location['latitude'],
+                    closest_location['longitude']
+                )
 
                 offerers_by_name[name] = create_offerer(
                     address=closest_location['address'].upper(),
