@@ -217,8 +217,6 @@ def find_activation_offers(departement_code: str) -> List[Offer]:
     departement_codes = ILE_DE_FRANCE_DEPT_CODES if departement_code == '93' else [departement_code]
     match_department_or_is_national = or_(Venue.departementCode.in_(departement_codes), Event.isNational == True,
                                           Thing.isNational == True)
-    is_activation_offer = or_(Event.type == str(EventType.ACTIVATION), Thing.type == str(ThingType.ACTIVATION))
-
     join_on_stock = and_(or_(Offer.id == Stock.offerId, Stock.eventOccurrenceId == EventOccurrence.id))
     join_on_event_occurrence = and_(Offer.id == EventOccurrence.offerId)
     join_on_event = and_(Event.id == Offer.eventId)
@@ -229,7 +227,7 @@ def find_activation_offers(departement_code: str) -> List[Offer]:
         .outerjoin(EventOccurrence, join_on_event_occurrence) \
         .join(Venue) \
         .join(Stock, join_on_stock) \
-        .filter(is_activation_offer) \
+        .filter(Event.type == str(EventType.ACTIVATION)) \
         .filter(match_department_or_is_national)
 
     query = _filter_bookable_offers(query)

@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 
 import pytest
 
-from models import PcObject, Venue, ThingType, EventType
+from models import PcObject, Venue, EventType
 from models.db import db
 from tests.conftest import clean_database
 from utils.human_ids import dehumanize, humanize
@@ -328,7 +328,7 @@ def test_patch_offer_returns_404_if_offer_does_not_exist(app):
 
 @clean_database
 @pytest.mark.standalone
-def test_list_activation_offers_returns_offers_including_event_or_thing(app):
+def test_list_activation_offers_returns_offers_of_expected_type(app):
     # given
     user = create_user(password='p@55sw0rd')
     PcObject.check_and_save(user)
@@ -340,8 +340,8 @@ def test_list_activation_offers_returns_offers_including_event_or_thing(app):
     venue1 = create_venue(offerer, siret=offerer.siren + '12345', postal_code='93000', departement_code='93')
     venue2 = create_venue(offerer, siret=offerer.siren + '67890', postal_code='93000', departement_code='93')
     venue3 = create_venue(offerer, siret=offerer.siren + '54321', postal_code='93000', departement_code='93')
-    offer1 = create_thing_offer(venue1, thing_type=ThingType.ACTIVATION)
-    offer2 = create_thing_offer(venue2, thing_type=ThingType.ACTIVATION)
+    offer1 = create_event_offer(venue1, event_type=EventType.ACTIVATION)
+    offer2 = create_event_offer(venue2, event_type=EventType.ACTIVATION)
     offer3 = create_event_offer(venue3, event_type=EventType.ACTIVATION)
     stock1 = create_stock_from_offer(offer1, price=0, booking_limit_datetime=five_days_ago)
     stock2 = create_stock_from_offer(offer2, price=0, booking_limit_datetime=next_week)
@@ -353,9 +353,7 @@ def test_list_activation_offers_returns_offers_including_event_or_thing(app):
 
     # then
     json = response.json()
-    thing_ids = map(lambda x: x['thingId'], json)
     event_ids = map(lambda x: x['eventId'], json)
     assert len(json) == 2
     assert response.status_code == 200
-    assert humanize(offer2.thingId) in thing_ids
     assert humanize(offer3.eventId) in event_ids
