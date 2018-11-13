@@ -15,7 +15,7 @@ ShallowWrapper {
       }
     }
   >
-    <Connect(SharePopin)
+    <Connect(SharePopinContent)
       dispatch={[MockFunction]}
       options={true}
       visible={true}

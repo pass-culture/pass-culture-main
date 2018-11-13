@@ -15,7 +15,7 @@ ShallowWrapper {
       }
     }
   >
-    <withRouter(Connect(ShareButton))
+    <withRouter(Connect(ShareButtonContent))
       dispatch={[MockFunction]}
     />
   </Provider>,
