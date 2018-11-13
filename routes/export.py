@@ -273,7 +273,7 @@ def get_pending_validation():
     for o in offerers:
         result.append(o._asdict(include=OFFERER_INCLUDES_FOR_ADMIN))
 
-    return jsonify(result)
+    return jsonify(result), 200
 
 
 def _make_csv_response(file_name, headers, result):

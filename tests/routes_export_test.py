@@ -127,7 +127,7 @@ def test_check_user_is_admin_returns_403_when_user_is_structure_admin_but_not_ad
     user = create_user(password='p@55sw0rd', is_admin=False, can_book_free_offers=False)
     offerer = create_offerer()
     user_offerer = create_user_offerer(user, offerer, is_admin=True)
-    PcObject.check_and_save(user)
+    PcObject.check_and_save(user_offerer)
     auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
 
     #when
@@ -135,4 +135,25 @@ def test_check_user_is_admin_returns_403_when_user_is_structure_admin_but_not_ad
 
     #then
     assert response.status_code == 403
-    
+
+
+@pytest.mark.standalone
+@clean_database
+def test_check_pending_validation_return_200_and_validation_token(app):
+    #given
+    user = create_user(password='p@55sw0rd', is_admin=True, can_book_free_offers=False)
+    user_pro = create_user(password='p@55sw0rd', email='user0@test.com', is_admin=False,
+       can_book_free_offers=False)
+    offerer = create_offerer(validation_token="first_token")
+    user_offerer = create_user_offerer(user_pro, offerer, is_admin=True, validation_token="a_token")
+
+    PcObject.check_and_save(user_offerer,user)
+    auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
+
+    #when
+    response = auth_request.get(API_URL + '/exports/pending_validation')
+
+    #then
+    assert response.status_code == 200
+    assert response.json()[0]["validationToken"] == "first_token"
+    assert response.json()[0]["UserOfferers"][0]["validationToken"] == "a_token"
