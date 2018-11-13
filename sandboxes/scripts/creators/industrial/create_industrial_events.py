@@ -1,15 +1,15 @@
-from domain.types import get_formatted_types
+from domain.types import get_formatted_event_or_thing_types
 from models.pc_object import PcObject
 from sandboxes.scripts.utils.params import EVENT_OR_THING_MOCK_NAMES
 from utils.logger import logger
 from utils.test_utils import create_event
 
-def create_grid_events():
-    logger.info('create_grid_events')
+def create_industrial_events():
+    logger.info('create_industrial_events')
 
     events_by_name = {}
 
-    event_types = [t for t in get_formatted_types() if t['type'] == 'Event']
+    event_types = [t for t in get_formatted_event_or_thing_types() if t['type'] == 'Event']
 
     mock_count = -1
     for event_type in event_types:

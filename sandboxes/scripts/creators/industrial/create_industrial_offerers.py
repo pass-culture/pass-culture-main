@@ -15,10 +15,10 @@ PLACES = [
     }
 ]
 
-def create_grid_offerers(geo_interval=0.1,
+def create_industrial_offerers(geo_interval=0.1,
                          geo_number=2,
                          starting_siren=222222222):
-    logger.info('create_grid_offerers')
+    logger.info('create_industrial_offerers')
 
     incremented_siren = starting_siren
 

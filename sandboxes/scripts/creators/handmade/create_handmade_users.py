@@ -4,8 +4,8 @@ from utils.test_utils import create_user,\
                              USER_TEST_ADMIN_EMAIL,\
                              USER_TEST_ADMIN_PASSWORD
 
-def create_scratch_users():
-    logger.info('create_scratch_users')
+def create_handmade_users():
+    logger.info('create_handmade_users')
 
     users_by_name = {}
 

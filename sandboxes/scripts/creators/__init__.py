@@ -1,2 +1,1 @@
-from sandboxes.scripts.creators import grid
-from sandboxes.scripts.creators import scratch
+from sandboxes.scripts.creators import handmade, industrial

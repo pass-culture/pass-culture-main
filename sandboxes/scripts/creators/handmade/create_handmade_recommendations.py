@@ -2,8 +2,8 @@ from models.pc_object import PcObject
 from utils.logger import logger
 from utils.test_utils import create_recommendation
 
-def create_scratch_recommendations(mediations_by_name, offers_by_name, users_by_name):
-    logger.info('create_scratch_recommendations')
+def create_handmade_recommendations(mediations_by_name, offers_by_name, users_by_name):
+    logger.info('create_handmade_recommendations')
 
     recommendations_by_name = {}
 

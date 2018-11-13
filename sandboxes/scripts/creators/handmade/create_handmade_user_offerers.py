@@ -2,8 +2,8 @@ from models.pc_object import PcObject
 from utils.logger import logger
 from utils.test_utils import create_user_offerer
 
-def create_scratch_user_offerers(users_by_name, offerers_by_name):
-    logger.info('create_scratch_user_offerers')
+def create_handmade_user_offerers(users_by_name, offerers_by_name):
+    logger.info('create_handmade_user_offerers')
 
     user_offerers_by_name = {}
 

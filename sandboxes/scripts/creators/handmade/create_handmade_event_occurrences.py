@@ -5,8 +5,8 @@ from utils.date import today, strftime
 from utils.logger import logger
 from utils.test_utils import create_event_occurrence
 
-def create_scratch_event_occurrences(offers_by_name):
-    logger.info('create_scratch_event_occurrences')
+def create_handmade_event_occurrences(offers_by_name):
+    logger.info('create_handmade_event_occurrences')
 
     event_occurrences_by_name = {}
 

@@ -1,12 +1,12 @@
 import pytest
 
-from domain.types import get_formatted_types, get_type_values_from_sublabels
+from domain.types import get_formatted_event_or_thing_types, get_event_or_thing_type_values_from_sublabels
 
 
 @pytest.mark.standalone
-def test_get_formatted_types_returns_all_types_except_activations_if_user_is_not_admin():
+def test_get_formatted_event_or_thing_types_returns_all_types_except_activations_if_user_is_not_admin():
     # when
-    types = get_formatted_types(as_admin=False)
+    types = get_formatted_event_or_thing_types(as_admin=False)
 
     # then
     assert types[0] == {
@@ -24,7 +24,7 @@ def test_get_formatted_types_returns_all_types_except_activations_if_user_is_not
 
 
 @pytest.mark.standalone
-def test_get_formatted_types_returns_all_types_including_activations_if_user_is_admin():
+def test_get_formatted_event_or_thing_types_returns_all_types_including_activations_if_user_is_admin():
     # given
     activation_event = {
         'offlineOnly': True,
@@ -37,7 +37,7 @@ def test_get_formatted_types_returns_all_types_including_activations_if_user_is_
     }
 
     # when
-    types = get_formatted_types(as_admin=True)
+    types = get_formatted_event_or_thing_types(as_admin=True)
 
     # then
     assert activation_event in types
@@ -45,9 +45,9 @@ def test_get_formatted_types_returns_all_types_including_activations_if_user_is_
 
 
 @pytest.mark.standalone
-def test_get_type_values_from_sublabels():
+def test_get_event_or_thing_type_values_from_sublabels():
     # given
-    type_values = get_type_values_from_sublabels('Rencontrer')
+    type_values = get_event_or_thing_type_values_from_sublabels('Rencontrer')
 
     # then
     assert type_values[0] == 'EventType.CONFERENCE_DEBAT_DEDICACE'

@@ -2,8 +2,8 @@ from models.pc_object import PcObject
 from utils.logger import logger
 from utils.test_utils import create_event_offer
 
-def create_scratch_event_offers(events_by_name, venues_by_name):
-    logger.info("create_scratch_event_offers")
+def create_handmade_event_offers(events_by_name, venues_by_name):
+    logger.info("create_handmade_event_offers")
 
     event_offers_by_name = {}
 

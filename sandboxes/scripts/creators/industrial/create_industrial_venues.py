@@ -4,12 +4,12 @@ from models.pc_object import PcObject
 from utils.logger import logger
 from utils.test_utils import create_venue
 
-def create_grid_venues(offerers_by_name):
-    logger.info('create_grid_venues')
+def create_industrial_venues(offerers_by_name):
+    logger.info('create_industrial_venues')
 
     venue_by_name = {}
-    for offerer in offerers_by_name.values():
-        name = "LIEU " + str(offerer.siren)
+    for (offerer_name, offerer) in offerers_by_name.items():
+        name = offerer_name
         geoloc_match = re.match(r'(.*)lat\:(.*) lon\:(.*)', offerer.address)
         venue_by_name[name] = create_venue(
             offerer,
@@ -24,7 +24,7 @@ def create_grid_venues(offerers_by_name):
             siret=None
         )
 
-        digital_name = name + " Offre en ligne"
+        digital_name = name + " (Offre en ligne)"
         venue_by_name[digital_name] = create_venue(
             offerer,
             is_virtual=True,

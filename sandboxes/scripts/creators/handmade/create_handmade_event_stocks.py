@@ -2,8 +2,8 @@ from models.pc_object import PcObject
 from utils.logger import logger
 from utils.test_utils import create_stock_from_event_occurrence
 
-def create_scratch_event_stocks(event_occurrences_by_name):
-    logger.info("create_scratch_event_stocks")
+def create_handmade_event_stocks(event_occurrences_by_name):
+    logger.info("create_handmade_event_stocks")
 
     event_stocks_by_name = {}
 

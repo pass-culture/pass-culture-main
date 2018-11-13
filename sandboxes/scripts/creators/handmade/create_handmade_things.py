@@ -3,8 +3,8 @@ from models.pc_object import PcObject
 from utils.logger import logger
 from utils.test_utils import create_thing
 
-def create_scratch_things():
-    logger.info('create_scratch_things')
+def create_handmade_things():
+    logger.info('create_handmade_things')
 
     things_by_name = {}
 

@@ -2,8 +2,8 @@ from models.pc_object import PcObject
 from utils.logger import logger
 from utils.test_utils import create_booking
 
-def create_scratch_bookings(recommendations_by_name, stocks_by_name, users_by_name):
-    logger.info('create_scratch_bookings')
+def create_handmade_bookings(recommendations_by_name, stocks_by_name, users_by_name):
+    logger.info('create_handmade_bookings')
 
     bookings_by_name = {}
 

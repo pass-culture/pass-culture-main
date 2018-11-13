@@ -3,8 +3,8 @@ from models.offer_type import EventType
 from utils.logger import logger
 from utils.test_utils import create_event
 
-def create_scratch_events():
-    logger.info("create_scratch_events")
+def create_handmade_events():
+    logger.info("create_handmade_events")
 
     events_by_name = {}
 

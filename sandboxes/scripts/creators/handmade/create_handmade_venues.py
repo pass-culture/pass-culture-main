@@ -2,8 +2,8 @@ from models.pc_object import PcObject
 from utils.logger import logger
 from utils.test_utils import create_venue
 
-def create_scratch_venues(offerers_by_name):
-    logger.info('create_scratch_venues')
+def create_handmade_venues(offerers_by_name):
+    logger.info('create_handmade_venues')
 
     venues_by_name = {}
 
@@ -22,7 +22,7 @@ def create_scratch_venues(offerers_by_name):
     )
 
     digital_name = name + " Offre en ligne"
-    venues_by_name['LE GRAND REX PARIS (ON)'] = create_venue(
+    venues_by_name['LE GRAND REX PARIS (Offre en ligne)'] = create_venue(
         offerer,
         is_virtual=True,
         name=digital_name,
@@ -44,7 +44,7 @@ def create_scratch_venues(offerers_by_name):
     )
 
     digital_name = name + " Offre en ligne"
-    venues_by_name['THEATRE DE L ODEON (ON)'] = create_venue(
+    venues_by_name['THEATRE DE L ODEON (Offre en ligne)'] = create_venue(
         offerer,
         is_virtual=True,
         name=digital_name,
@@ -54,7 +54,7 @@ def create_scratch_venues(offerers_by_name):
     offerer = offerers_by_name["THEATRE DU SOLEIL"]
     name = "LIEU " + str(offerer.siren)
     digital_name = name + " Offre en ligne"
-    venues_by_name['THEATRE DU SOLEIL (ON)'] = create_venue(
+    venues_by_name['THEATRE DU SOLEIL (Offre en ligne)'] = create_venue(
         offerer,
         is_virtual=True,
         name=digital_name,

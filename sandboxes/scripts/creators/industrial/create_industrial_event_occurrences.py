@@ -6,8 +6,8 @@ from utils.date import strftime
 from utils.logger import logger
 from utils.test_utils import create_event_occurrence
 
-def create_grid_event_occurrences(event_offers_by_name):
-    logger.info('create_grid_event_occurrences')
+def create_industrial_event_occurrences(event_offers_by_name):
+    logger.info('create_industrial_event_occurrences')
 
     event_occurrences_by_name = {}
 
