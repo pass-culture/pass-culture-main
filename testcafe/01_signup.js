@@ -1,7 +1,9 @@
-import { Selector } from 'testcafe'
+import { ClientFunction, Selector } from 'testcafe'
 
 import { ROOT_PATH } from '../src/utils/config'
 import youngUser from './helpers/users'
+
+const getPageUrl = ClientFunction(() => window.location.href.toString())
 
 const userContactOk = Selector('#user-contact_ok')
 const userEmail = Selector('#user-email')
@@ -42,8 +44,7 @@ test('Je crée un compte et je suis redirigé·e vers la page /découverte', asy
     .click(signUpButton)
     .wait(1000)
 
-  const location = await t.eval(() => window.location)
-  await t.expect(location.pathname).eql('/decouverte')
+  await t.expect(getPageUrl()).contains('/decouverte', { timeout: 2000 })
 })
 
 fixture(
