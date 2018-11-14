@@ -37,35 +37,47 @@ describe('src | components | pages | SearchPage', () => {
       expect(wrapper).toMatchSnapshot()
     })
   })
+  describe.skip('mapStateToProps', () => {
+    it('should update props values ', () => {
+      // given
+      const initialState = {
+        data: {
+          types: [
+            {
+              description:
+                'Action, science-fiction, documentaire ou comédie sentimentale ? En salle, en plein air ou bien au chaud chez soi ? Et si c’était plutôt cette exposition qui allait faire son cinéma ?',
+              id: 0,
+              label: 'Cinéma (Projections, Séances, Évènements)',
+              offlineOnly: true,
+              onlineOnly: false,
+              sublabel: 'Regarder',
+              type: 'Event',
+              value: 'EventType.CINEMA',
+            },
+          ],
+        },
+      }
+      const store = mockStore(initialState)
+      const props = {
+        dispatch: jest.fn(),
+        history: {},
+        location: {},
+        match: {},
+        pagination: {},
+        recommendations: [],
+        search: {},
+        typeSublabels: [],
+      }
 
-  describe('functions', () => {
-    describe('constructor', () => {
-      it('should initialize state with functions', () => {
-        // given
-        const initialState = {}
-        const store = mockStore(initialState)
-        const props = {
-          dispatch: jest.fn(),
-          history: {},
-          location: {},
-          match: {},
-          pagination: {},
-          recommendations: [],
-          search: {},
-          typeSublabels: [],
-        }
+      // when
+      const wrapper = shallow(
+        <Provider store={store}>
+          <SearchPage {...props} />
+        </Provider>
+      )
 
-        // when
-        shallow(
-          <Provider store={store}>
-            <SearchPage {...props} />
-          </Provider>
-        )
-        // then
-        // FAUX POSITIF car ne demande pas des props qui sont required pourtant... Le snapshot n'est pas bon non plus
-      })
+      // then
+      expect(wrapper.props().typeSublabels).toEqual()
     })
   })
 })
-
-// Titre de la page selon s'il y a des recommendations ou pas.
