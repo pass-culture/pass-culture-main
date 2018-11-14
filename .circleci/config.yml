@@ -82,51 +82,8 @@ jobs:
             cd ~/pass-culture-main/webapp
             yarn test:cafe
 
-  deploy:
-    docker:
-      # specify the version you desire here
-      - image: circleci/node:8.11.4-browsers
-    working_directory: ~/repo
-    steps:
-      - checkout
-      # Download and cache dependencies
-      - restore_cache:
-          keys:
-          - v1.0-dependencies-{{ checksum "package.json" }}
-          # fallback to using the latest cache if no exact match is found
-          - v1.0-dependencies-
-      - run:
-          name: Install dependencies
-          command: |
-            yarn install
-            sudo npm install -g netlify-cli@1.2.3
-      - save_cache:
-          paths:
-            - node_modules
-          key: v1.0-dependencies-{{ checksum "package.json" }}
-      - run:
-          name: Build package to deploy
-          # TODO: remove export CI, when no warning found during yarn build
-          command: |
-            export API_URL=$BUILD_API_URL
-            export NODE_ENV=$BUILD_NODE_ENV
-            export THUMBS_URL=$BUILD_THUMBS_URL
-            export CI=false
-            yarn build
-      #- run:
-      #    name: Deploy to Netlify
-      #    command:
-      #      netlify deploy -e testing -t "$NETLIFY_ACCESS_TOKEN" -p ./build
-
 workflows:
   version: 2
   commit:
     jobs:
       - build
-      - deploy:
-          requires:
-            - build
-          filters:
-            branches:
-              only:
-                - master

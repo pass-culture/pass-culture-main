@@ -135,7 +135,7 @@
   "scripts": {
     "analyze": "source-map-explorer build/static/js/main.*",
     "prebuild": "yarn fontello",
-    "build": "node scripts/build.js",
+    "build": "node scripts/build.js && ./scripts/build_redirects.sh",
     "fontello": "./scripts/fontello.sh",
     "ngrok": "ngrok start -config=./ngrok.yml --all",
     "pgbuild": "yarn build && node scripts/pgbuild.js",
