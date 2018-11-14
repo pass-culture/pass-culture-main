@@ -328,7 +328,7 @@ def test_patch_offer_returns_404_if_offer_does_not_exist(app):
 
 @clean_database
 @pytest.mark.standalone
-def test_list_activation_offers_returns_offers_of_expected_type(app):
+def test_list_activation_offers_returns_offers_of_event_type(app):
     # given
     user = create_user(password='p@55sw0rd')
     PcObject.check_and_save(user)
