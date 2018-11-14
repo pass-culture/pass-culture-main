@@ -88,7 +88,8 @@ def send_offerer_driven_cancellation_email_to_offerer(booking, send_create_email
 
 def send_reset_password_email(user, send_create_email, app_origin_url):
     email = make_reset_password_email(user, app_origin_url)
-    email['Html-part'], email['To'] = edit_email_html_part_and_recipients(email['Html-part'], email['To'])
+    recipients =  [user.email]
+    email['Html-part'], email['To'] = edit_email_html_part_and_recipients(email['Html-part'], recipients)
     mail_result = send_create_email(data=email)
     check_if_email_sent(mail_result)
 

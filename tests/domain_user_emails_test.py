@@ -757,7 +757,7 @@ def test_send_reset_password_email_sends_a_reset_password_email_to_the_recipient
     args = mocked_send_create_email.call_args
     data = args[1]['data']
     assert data['FromName'] == 'Pass Culture'
-    assert data['FromEmail'] == 'passculture-dev@beta.gouv.fr'
+    assert data['FromEmail'] == 'passculture@beta.gouv.fr'
     assert data['Subject'] == 'Réinitialisation de votre mot de passe'
     assert data['To'] == 'bobby@test.com'
 

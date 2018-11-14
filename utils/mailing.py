@@ -219,10 +219,9 @@ def make_reset_password_email(user, app_origin_url):
 
     return {
         'FromName': 'Pass Culture',
-        'FromEmail': 'passculture@beta.gouv.fr' if feature_send_mail_to_users_enabled() else 'passculture-dev@beta.gouv.fr',
+        'FromEmail': 'passculture@beta.gouv.fr',
         'Subject': 'Réinitialisation de votre mot de passe',
         'Html-part': email_html,
-        'To': [user.email]
     }
 
 
@@ -341,12 +340,11 @@ def make_venue_validation_confirmation_email(venue):
 
 
 def edit_email_html_part_and_recipients(email_html_part, recipients):
+    recipients_string = ", ".join(recipients)
     if feature_send_mail_to_users_enabled():
-        email_to = ", ".join(recipients)
+        email_to = recipients_string
     else:
-        email_html_part = ('<p>This is a test (ENV=%s). In production, email would have been sent to : ' % ENV) \
-                          + ", ".join(recipients) \
-                          + '</p>' + email_html_part
+        email_html_part = '<p>This is a test (ENV={environment}). In production, email would have been sent to : {recipients}</p>{html_part}'.format(environment=ENV, recipients=recipients_string, html_part=email_html_part)
         email_to = 'passculture-dev@beta.gouv.fr'
     return email_html_part, email_to
 
