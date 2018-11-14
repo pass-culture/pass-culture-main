@@ -25,7 +25,7 @@ def test_send_user_driven_cancellation_email_to_user_when_feature_send_mail_to_u
     return_value.status_code = 200
     mocked_send_create_email.return_value = return_value
 
-    with patch('domain.user_emails.feature_send_mail_to_users_enabled', return_value=True), patch(
+    with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True), patch(
             'domain.user_emails.make_user_booking_recap_email',
             return_value={'Html-part': ''}) as make_user_recap_email:
         # When
@@ -48,7 +48,7 @@ def test_send_user_driven_cancellation_email_to_user_when_feature_send_mail_to_u
     return_value.status_code = 200
     mocked_send_create_email.return_value = return_value
 
-    with patch('domain.user_emails.feature_send_mail_to_users_enabled', return_value=False), patch(
+    with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=False), patch(
             'domain.user_emails.make_user_booking_recap_email',
             return_value={'Html-part': ''}) as make_user_recap_email:
         # When
@@ -76,7 +76,7 @@ def test_send_user_driven_cancellation_email_to_user_when_status_code_400(app):
     mocked_send_create_email.return_value = return_value
 
     # When
-    with patch('domain.user_emails.feature_send_mail_to_users_enabled', return_value=False), patch(
+    with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=False), patch(
             'domain.user_emails.make_offerer_booking_recap_email_after_user_action',
             return_value={'Html-part': ''}), pytest.raises(MailServiceException):
         send_user_driven_cancellation_email_to_user(booking, mocked_send_create_email)
@@ -95,7 +95,7 @@ def test_send_user_driven_cancellation_email_to_offerer_when_feature_send_mail_t
     return_value.status_code = 200
     mocked_send_create_email.return_value = return_value
 
-    with patch('domain.user_emails.feature_send_mail_to_users_enabled', return_value=True), patch(
+    with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True), patch(
             'domain.user_emails.make_offerer_booking_recap_email_after_user_action',
             return_value={'Html-part': ''}) as make_offerer_recap_email:
         # When
@@ -121,7 +121,7 @@ def test_send_user_driven_cancellation_email_to_offerer_when_feature_send_mail_t
     return_value.status_code = 200
     mocked_send_create_email.return_value = return_value
 
-    with patch('domain.user_emails.feature_send_mail_to_users_enabled', return_value=False), patch(
+    with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=False), patch(
             'domain.user_emails.make_offerer_booking_recap_email_after_user_action',
             return_value={'Html-part': ''}) as make_offerer_recap_email:
         # When
@@ -149,7 +149,7 @@ def test_send_user_driven_cancellation_email_to_offerer_when_status_code_400(app
     mocked_send_create_email.return_value = return_value
 
     # When
-    with patch('domain.user_emails.feature_send_mail_to_users_enabled', return_value=False), patch(
+    with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=False), patch(
             'domain.user_emails.make_offerer_booking_recap_email_after_user_action',
             return_value={'Html-part': ''}), pytest.raises(MailServiceException):
         send_user_driven_cancellation_email_to_offerer(booking, mocked_send_create_email)
@@ -165,7 +165,7 @@ def test_send_offerer_driven_cancellation_email_to_user_when_feature_send_mail_t
     return_value.status_code = 200
     mocked_send_create_email.return_value = return_value
 
-    with patch('domain.user_emails.feature_send_mail_to_users_enabled', return_value=True), patch(
+    with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True), patch(
             'domain.user_emails.make_offerer_driven_cancellation_email_for_user',
             return_value={'Html-part': ''}) as make_cancellation_email:
         # When
@@ -189,7 +189,7 @@ def test_send_offerer_driven_cancellation_email_to_user_when_status_code_400(app
     mocked_send_create_email.return_value = return_value
 
     # When
-    with patch('domain.user_emails.feature_send_mail_to_users_enabled', return_value=True), patch(
+    with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True), patch(
             'domain.user_emails.make_offerer_driven_cancellation_email_for_user',
             return_value={'Html-part': ''}), pytest.raises(MailServiceException):
         send_offerer_driven_cancellation_email_to_user(booking, mocked_send_create_email)
@@ -209,7 +209,7 @@ def test_send_offerer_driven_cancellation_email_to_offerer_when_booking_email(ap
     return_value.status_code = 200
     mocked_send_create_email.return_value = return_value
 
-    with patch('domain.user_emails.feature_send_mail_to_users_enabled', return_value=True), patch(
+    with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True), patch(
             'domain.user_emails.make_offerer_driven_cancellation_email_for_offerer',
             return_value={'Html-part': ''}) as make_cancellation_email:
         # When
@@ -236,7 +236,7 @@ def test_send_offerer_driven_cancellation_email_to_offerer_when_no_booking_email
     return_value.status_code = 200
     mocked_send_create_email.return_value = return_value
 
-    with patch('domain.user_emails.feature_send_mail_to_users_enabled', return_value=True), patch(
+    with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True), patch(
             'domain.user_emails.make_offerer_driven_cancellation_email_for_offerer',
             return_value={'Html-part': ''}) as make_cancellation_email:
         # When
@@ -258,7 +258,7 @@ def test_send_offerer_driven_cancellation_email_to_offerer_when_status_code_400(
     mocked_send_create_email.return_value = return_value
 
     # When
-    with patch('domain.user_emails.feature_send_mail_to_users_enabled', return_value=True), patch(
+    with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True), patch(
             'domain.user_emails.make_offerer_driven_cancellation_email_for_offerer',
             return_value={'Html-part': ''}), pytest.raises(MailServiceException):
         send_offerer_driven_cancellation_email_to_offerer(booking, mocked_send_create_email)
@@ -307,7 +307,7 @@ def test_send_booking_recap_emails_does_not_send_email_to_offer_booking_email_if
     return_value.status_code = 200
     mocked_send_create_email.return_value = return_value
 
-    with patch('domain.user_emails.feature_send_mail_to_users_enabled') as send_mail_to_users:
+    with patch('utils.mailing.feature_send_mail_to_users_enabled') as send_mail_to_users:
         send_mail_to_users.return_value = False
         # when
         send_booking_recap_emails(booking, mocked_send_create_email)
@@ -332,7 +332,7 @@ def test_send_booking_recap_emails_sends_email_to_offer_booking_email_if_feature
     return_value.status_code = 200
     mocked_send_create_email.return_value = return_value
 
-    with patch('domain.user_emails.feature_send_mail_to_users_enabled') as send_mail_to_users:
+    with patch('utils.mailing.feature_send_mail_to_users_enabled') as send_mail_to_users:
         send_mail_to_users.return_value = True
         # when
         send_booking_recap_emails(booking, mocked_send_create_email)
@@ -359,7 +359,7 @@ def test_send_booking_recap_emails_email_sends_email_only_to_passculture_if_feat
     return_value.status_code = 200
     mocked_send_create_email.return_value = return_value
 
-    with patch('domain.user_emails.feature_send_mail_to_users_enabled') as send_mail_to_users:
+    with patch('utils.mailing.feature_send_mail_to_users_enabled') as send_mail_to_users:
         send_mail_to_users.return_value = True
         # when
         send_booking_recap_emails(booking, mocked_send_create_email)
@@ -381,7 +381,7 @@ def test_send_final_booking_recap_email_does_not_send_email_to_offer_booking_ema
     return_value.status_code = 200
     mocked_send_create_email.return_value = return_value
 
-    with patch('domain.user_emails.feature_send_mail_to_users_enabled') as send_mail_to_users, patch(
+    with patch('utils.mailing.feature_send_mail_to_users_enabled') as send_mail_to_users, patch(
             'domain.user_emails.set_booking_recap_sent_and_save') as set_booking_recap_sent_and_save:
         send_mail_to_users.return_value = False
         # when
@@ -405,7 +405,7 @@ def test_send_final_booking_recap_email_sends_email_to_offer_booking_email_if_fe
     return_value.status_code = 200
     mocked_send_create_email.return_value = return_value
 
-    with patch('domain.user_emails.feature_send_mail_to_users_enabled') as send_mail_to_users, patch(
+    with patch('utils.mailing.feature_send_mail_to_users_enabled') as send_mail_to_users, patch(
             'domain.user_emails.set_booking_recap_sent_and_save') as set_booking_recap_sent_and_save:
         send_mail_to_users.return_value = True
         # when
@@ -431,7 +431,7 @@ def test_send_final_booking_recap_email_sends_email_only_to_passculture_if_featu
     return_value.status_code = 200
     mocked_send_create_email.return_value = return_value
 
-    with patch('domain.user_emails.feature_send_mail_to_users_enabled') as send_mail_to_users, patch(
+    with patch('utils.mailing.feature_send_mail_to_users_enabled') as send_mail_to_users, patch(
             'domain.user_emails.set_booking_recap_sent_and_save') as set_booking_recap_sent_and_save:
         send_mail_to_users.return_value = True
         # when
@@ -456,7 +456,7 @@ def test_send_validation_confirmation_email(app):
     return_value.status_code = 200
     mocked_send_create_email.return_value = return_value
 
-    with patch('domain.user_emails.feature_send_mail_to_users_enabled', return_value=True), patch(
+    with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True), patch(
             'domain.user_emails.make_validation_confirmation_email',
             return_value={'Html-part': ''}) as make_cancellation_email, patch(
         'domain.user_emails.find_all_emails_of_user_offerers_admins',
@@ -483,7 +483,7 @@ def test_send_validation_confirmation_email_when_status_code_400(app):
     return_value.status_code = 400
     mocked_send_create_email.return_value = return_value
 
-    with patch('domain.user_emails.feature_send_mail_to_users_enabled', return_value=True), patch(
+    with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True), patch(
             'domain.user_emails.make_validation_confirmation_email', return_value={'Html-part': ''}), patch(
         'domain.user_emails.find_all_emails_of_user_offerers_admins', return_value=['test@email.com']), pytest.raises(
         MailServiceException):
@@ -506,7 +506,7 @@ def test_send_cancellation_emails_to_users_calls_send_offerer_driven_cancellatio
     with patch(
             'domain.user_emails.send_offerer_driven_cancellation_email_to_user') as send_cancellation_email_one_user, patch(
         'domain.user_emails.make_offerer_driven_cancellation_email_for_user',
-        return_value={'Html-part': ''}), patch('domain.user_emails.feature_send_mail_to_users_enabled',
+        return_value={'Html-part': ''}), patch('utils.mailing.feature_send_mail_to_users_enabled',
                                                return_value=True):
         send_batch_cancellation_emails_to_users(bookings, mocked_send_create_email)
 
@@ -525,7 +525,7 @@ def test_send_batch_cancellation_email_to_offerer():
     mocked_send_create_email.return_value = return_value
 
     # When
-    with patch('domain.user_emails.feature_send_mail_to_users_enabled', return_value=True), patch(
+    with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True), patch(
             'domain.user_emails.make_batch_cancellation_email',
             return_value={'Html-part': ''}) as make_cancellation_email:
         # When
@@ -550,7 +550,7 @@ def test_send_batch_cancellation_email_to_offerer_event_occurrence_case():
     mocked_send_create_email.return_value = return_value
 
     # When
-    with patch('domain.user_emails.feature_send_mail_to_users_enabled', return_value=True), patch(
+    with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True), patch(
             'domain.user_emails.make_batch_cancellation_email',
             return_value={'Html-part': ''}) as make_cancellation_email:
         # When
@@ -575,7 +575,7 @@ def test_send_batch_cancellation_email_to_offerer_email_status_code_500():
     mocked_send_create_email.return_value = return_value
 
     # When
-    with pytest.raises(MailServiceException), patch('domain.user_emails.feature_send_mail_to_users_enabled',
+    with pytest.raises(MailServiceException), patch('utils.mailing.feature_send_mail_to_users_enabled',
                                                     return_value=True), patch(
         'domain.user_emails.make_batch_cancellation_email',
         return_value={'Html-part': ''}):
@@ -594,7 +594,7 @@ def test_send_batch_cancellation_email_to_offerer_feature_send_mail_to_users_ena
     mocked_send_create_email.return_value = return_value
 
     # When
-    with patch('domain.user_emails.feature_send_mail_to_users_enabled', return_value=False), patch(
+    with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=False), patch(
             'domain.user_emails.make_batch_cancellation_email',
             return_value={'Html-part': ''}) as make_cancellation_email:
         # When
@@ -618,7 +618,7 @@ def test_send_batch_cancellation_email_to_offerer_no_venue_email():
     mocked_send_create_email.return_value = return_value
 
     # When
-    with patch('domain.user_emails.feature_send_mail_to_users_enabled', return_value=True), patch(
+    with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True), patch(
             'domain.user_emails.make_batch_cancellation_email',
             return_value={'Html-part': ''}):
         # When
@@ -638,7 +638,7 @@ def test_send_venue_validation_confirmation_email(app):
     return_value.status_code = 200
     mocked_send_create_email.return_value = return_value
 
-    with patch('domain.user_emails.feature_send_mail_to_users_enabled', return_value=True), patch(
+    with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True), patch(
             'domain.user_emails.make_venue_validation_confirmation_email',
             return_value={'Html-part': ''}) as make_cancellation_email, patch(
         'domain.user_emails.find_all_emails_of_user_offerers_admins',
@@ -665,7 +665,7 @@ def test_send_venue_validation_confirmation_email_has_pass_culutre_dev_as_recipi
     return_value.status_code = 200
     mocked_send_create_email.return_value = return_value
 
-    with patch('domain.user_emails.feature_send_mail_to_users_enabled', return_value=False), patch(
+    with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=False), patch(
             'domain.user_emails.make_venue_validation_confirmation_email',
             return_value={'Html-part': ''}) as make_cancellation_email, patch(
         'domain.user_emails.find_all_emails_of_user_offerers_admins',
@@ -691,7 +691,7 @@ def test_send_venue_validation_confirmation_email_when_status_code_400(app):
     return_value.status_code = 400
     mocked_send_create_email.return_value = return_value
 
-    with patch('domain.user_emails.feature_send_mail_to_users_enabled', return_value=True), patch(
+    with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True), patch(
             'domain.user_emails.make_venue_validation_confirmation_email', return_value={'Html-part': ''}), patch(
         'domain.user_emails.find_all_emails_of_user_offerers_admins', return_value=['test@email.com']), pytest.raises(
         MailServiceException):
@@ -711,7 +711,7 @@ def test_send_user_validation_email_when_send_create_status_code_200():
 
     # When
     with patch('domain.user_emails.make_user_validation_email', return_value={'Html-part': ''}) as make_email, patch(
-            'domain.user_emails.feature_send_mail_to_users_enabled', return_value=True):
+            'utils.mailing.feature_send_mail_to_users_enabled', return_value=True):
         send_user_validation_email(user, mocked_send_create_email, True)
     # Then
     mocked_send_create_email.assert_called_once()
@@ -732,7 +732,7 @@ def test_send_user_validation_email_when_send_create_status_code_400():
     # When
     with pytest.raises(MailServiceException), patch('domain.user_emails.make_user_validation_email',
                                                     return_value={'Html-part': ''}) as make_email, patch(
-        'domain.user_emails.feature_send_mail_to_users_enabled', return_value=True):
+        'utils.mailing.feature_send_mail_to_users_enabled', return_value=True):
         send_user_validation_email(user, mocked_send_create_email, True)
     # Then
     mocked_send_create_email.assert_called_once()
@@ -749,7 +749,7 @@ def test_send_reset_password_email_sends_a_reset_password_email_to_the_recipient
     mocked_send_create_email.return_value = return_value
 
     # when
-    with patch('domain.user_emails.feature_send_mail_to_users_enabled', return_value=True):
+    with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True):
         send_reset_password_email(user, mocked_send_create_email, 'localhost')
 
     # then
@@ -772,7 +772,7 @@ def test_send_reset_password_email_sends_a_reset_password_email_to_the_pass_cult
     mocked_send_create_email.return_value = return_value
 
     # when
-    with patch('domain.user_emails.feature_send_mail_to_users_enabled', return_value=False):
+    with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=False):
         send_reset_password_email(user, mocked_send_create_email, 'localhost')
 
     # then

@@ -28,7 +28,7 @@ def test_maybe_send_offerer_validation_email_sends_email_to_pass_culture_when_ob
     mocked_send_create_email.return_value = return_value
 
     # When
-    with patch('domain.user_emails.feature_send_mail_to_users_enabled', return_value=True):
+    with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True):
         maybe_send_offerer_validation_email(offerer, user_offerer, mocked_send_create_email)
 
     # Then
@@ -58,7 +58,7 @@ def test_maybe_send_offerer_validation_email_sends_email_to_pass_culture_dev_whe
     mocked_send_create_email.return_value = return_value
 
     # When
-    with patch('domain.user_emails.feature_send_mail_to_users_enabled', return_value=False):
+    with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=False):
         maybe_send_offerer_validation_email(offerer, user_offerer, mocked_send_create_email)
 
     # Then
@@ -131,7 +131,7 @@ def test_send_venue_validation_email_when_mailjet_status_code_200_sends_email_to
     mocked_send_create_email.return_value = return_value
 
     # When
-    with patch('domain.user_emails.feature_send_mail_to_users_enabled', return_value=True):
+    with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True):
         send_venue_validation_email(venue, mocked_send_create_email)
 
     # Then
@@ -154,7 +154,7 @@ def test_send_venue_validation_email_has_pass_culture_dev_as_recipient_when_send
     mocked_send_create_email.return_value = return_value
 
     # When
-    with patch('domain.user_emails.feature_send_mail_to_users_enabled', return_value=False):
+    with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=False):
         send_venue_validation_email(venue, mocked_send_create_email)
 
     # Then
