@@ -2,8 +2,8 @@ import { Field, Form, SubmitButton } from 'pass-culture-shared'
 import React from 'react'
 import { NavLink, Link } from 'react-router-dom'
 
-import Logo from '../layout/Logo'
-import Main from '../layout/Main'
+import Logo from 'components/layout/Logo'
+import Main from 'components/layout/Main'
 
 const SigninPage = ({ errors }) => {
   return (
