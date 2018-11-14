@@ -19,10 +19,22 @@ describe('src | components | pages | SearchPageContentContent', () => {
         history: {},
         location: {},
         match: {},
-        pagination: {},
+        pagination: {
+          windowQuery: {
+            categories: null,
+            date: null,
+            distance: null,
+            jours: null,
+            latitude: null,
+            longitude: null,
+            'mots-cles': 'Fake',
+            orderBy: 'offer.id+desc',
+          },
+        },
         recommendations: [],
         search: {},
         typeSublabels: [],
+        typeSublabelsAndDescription: [],
       }
 
       // when
@@ -37,32 +49,63 @@ describe('src | components | pages | SearchPageContentContent', () => {
       expect(wrapper).toMatchSnapshot()
     })
   })
+  //
+  // describe.skip('render', () => {
+  //   // given
+  //   const initialState = REDUX_STATE
+  //   const store = mockStore(initialState)
+  //   const wrapper = shallow(<SearchPageContent store={store} />)
+  //
+  // })
 
   describe('functions', () => {
     describe('constructor', () => {
-      it('should initialize state with functions', () => {
+      it('should initialize state correctly', () => {
         // given
-        const initialState = {}
-        const store = mockStore(initialState)
         const props = {
           dispatch: jest.fn(),
           history: {},
-          location: {},
-          match: {},
-          pagination: {},
+          location: {
+            hash: '',
+            key: 'lxn6vp',
+            pathname: '/recherche',
+            search: '?orderBy=offer.id+desc',
+            state: undefined,
+          },
+          match: {
+            params: {
+              categorie: undefined,
+              view: undefined,
+            },
+          },
+          pagination: {
+            windowQuery: {
+              categories: null,
+              date: null,
+              distance: null,
+              jours: null,
+              latitude: null,
+              longitude: null,
+              'mots-cles': 'Fake',
+              orderBy: 'offer.id+desc',
+            },
+          },
           recommendations: [],
           search: {},
           typeSublabels: [],
+          typeSublabelsAndDescription: [],
         }
 
         // when
-        shallow(
-          <Provider store={store}>
-            <SearchPageContent {...props} />
-          </Provider>
-        )
+        const wrapper = shallow(<SearchPageContent {...props} />)
+        const expected = {
+          keywordsKey: 0,
+          keywordsValue: 'Fake',
+          withFilter: false,
+        }
+
         // then
-        // FAUX POSITIF car ne demande pas des props qui sont required pourtant... Le snapshot n'est pas bon non plus
+        expect(wrapper.state()).toEqual(expected)
       })
     })
     describe('handleDataRequest', () => {

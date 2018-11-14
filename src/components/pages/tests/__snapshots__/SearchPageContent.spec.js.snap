@@ -20,10 +20,24 @@ ShallowWrapper {
       history={Object {}}
       location={Object {}}
       match={Object {}}
-      pagination={Object {}}
+      pagination={
+        Object {
+          "windowQuery": Object {
+            "categories": null,
+            "date": null,
+            "distance": null,
+            "jours": null,
+            "latitude": null,
+            "longitude": null,
+            "mots-cles": "Fake",
+            "orderBy": "offer.id+desc",
+          },
+        }
+      }
       recommendations={Array []}
       search={Object {}}
       typeSublabels={Array []}
+      typeSublabelsAndDescription={Array []}
     />
   </Provider>,
   Symbol(enzyme.__renderer__): Object {
@@ -43,10 +57,22 @@ ShallowWrapper {
       "history": Object {},
       "location": Object {},
       "match": Object {},
-      "pagination": Object {},
+      "pagination": Object {
+        "windowQuery": Object {
+          "categories": null,
+          "date": null,
+          "distance": null,
+          "jours": null,
+          "latitude": null,
+          "longitude": null,
+          "mots-cles": "Fake",
+          "orderBy": "offer.id+desc",
+        },
+      },
       "recommendations": Array [],
       "search": Object {},
       "typeSublabels": Array [],
+      "typeSublabelsAndDescription": Array [],
     },
     "ref": null,
     "rendered": null,
@@ -62,10 +88,22 @@ ShallowWrapper {
         "history": Object {},
         "location": Object {},
         "match": Object {},
-        "pagination": Object {},
+        "pagination": Object {
+          "windowQuery": Object {
+            "categories": null,
+            "date": null,
+            "distance": null,
+            "jours": null,
+            "latitude": null,
+            "longitude": null,
+            "mots-cles": "Fake",
+            "orderBy": "offer.id+desc",
+          },
+        },
         "recommendations": Array [],
         "search": Object {},
         "typeSublabels": Array [],
+        "typeSublabelsAndDescription": Array [],
       },
       "ref": null,
       "rendered": null,

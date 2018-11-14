@@ -15,16 +15,7 @@ ShallowWrapper {
       }
     }
   >
-    <withRouter(Connect(_withLogin))
-      dispatch={[MockFunction]}
-      history={Object {}}
-      location={Object {}}
-      match={Object {}}
-      pagination={Object {}}
-      recommendations={Array []}
-      search={Object {}}
-      typeSublabels={Array []}
-    />
+    <withRouter(Connect(_withLogin)) />
   </Provider>,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
@@ -38,16 +29,7 @@ ShallowWrapper {
     "instance": null,
     "key": undefined,
     "nodeType": "function",
-    "props": Object {
-      "dispatch": [MockFunction],
-      "history": Object {},
-      "location": Object {},
-      "match": Object {},
-      "pagination": Object {},
-      "recommendations": Array [],
-      "search": Object {},
-      "typeSublabels": Array [],
-    },
+    "props": Object {},
     "ref": null,
     "rendered": null,
     "type": [Function],
@@ -57,16 +39,7 @@ ShallowWrapper {
       "instance": null,
       "key": undefined,
       "nodeType": "function",
-      "props": Object {
-        "dispatch": [MockFunction],
-        "history": Object {},
-        "location": Object {},
-        "match": Object {},
-        "pagination": Object {},
-        "recommendations": Array [],
-        "search": Object {},
-        "typeSublabels": Array [],
-      },
+      "props": Object {},
       "ref": null,
       "rendered": null,
       "type": [Function],

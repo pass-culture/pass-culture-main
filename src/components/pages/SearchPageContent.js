@@ -21,6 +21,8 @@ import Main from '../layout/Main'
 class SearchPageContent extends PureComponent {
   constructor(props) {
     super(props)
+    console.log('>>>>> IN CONSTRUCTOR Pagination', props.pagination.windowQuery)
+    console.log('>>>>> IN CONSTRUCTOR match', props.match.params)
     this.state = {
       keywordsKey: 0,
       keywordsValue: get(props, `pagination.windowQuery.mots-cles`),
@@ -151,13 +153,25 @@ class SearchPageContent extends PureComponent {
       typeSublabelsAndDescription,
     } = this.props
 
+    console.log('>>>>> IN CONSTRUCTOR Pagination', pagination.windowQuery)
+    console.log('>>>>> IN CONSTRUCTOR match', match.params)
+    console.log('>>>>> IN CONSTRUCTOR location', location)
+
     const { keywordsKey, keywordsValue, withFilter } = this.state
 
     const { windowQuery } = pagination
 
     // ************************* HELPERS ****************************
+    // FIX ME
+    // match: {
+    //   params: {
+    //     categorie: undefined,
+    //     view: undefined
+    //   }
+    // },
+    // Cannot read property 'mots-cles' of undefined
     const onResultPage = match.params.view === 'resultats'
-    const keywords = windowQuery['mots-cles']
+    const keywords = get(windowQuery, `mots-cles`)
 
     const backButton = onResultPage && {
       onClick: () =>

@@ -3,6 +3,8 @@ import { Provider } from 'react-redux'
 import React from 'react'
 import { shallow } from 'enzyme'
 
+import REDUX_STATE from '../../../mocks/reduxState'
+
 import SearchPage from '../SearchPage'
 
 const middlewares = []
@@ -12,23 +14,13 @@ describe('src | components | pages | SearchPage', () => {
   describe('snapshot', () => {
     it('should match snapshot', () => {
       // given
-      const initialState = {}
+      const initialState = REDUX_STATE
       const store = mockStore(initialState)
-      const props = {
-        dispatch: jest.fn(),
-        history: {},
-        location: {},
-        match: {},
-        pagination: {},
-        recommendations: [],
-        search: {},
-        typeSublabels: [],
-      }
 
       // when
       const wrapper = shallow(
         <Provider store={store}>
-          <SearchPage {...props} />
+          <SearchPage />
         </Provider>
       )
 
@@ -37,47 +29,21 @@ describe('src | components | pages | SearchPage', () => {
       expect(wrapper).toMatchSnapshot()
     })
   })
-  describe.skip('mapStateToProps', () => {
-    it('should update props values ', () => {
+  describe('mapStateToProps', () => {
+    it('should update props values', () => {
       // given
-      const initialState = {
-        data: {
-          types: [
-            {
-              description:
-                'Action, science-fiction, documentaire ou comédie sentimentale ? En salle, en plein air ou bien au chaud chez soi ? Et si c’était plutôt cette exposition qui allait faire son cinéma ?',
-              id: 0,
-              label: 'Cinéma (Projections, Séances, Évènements)',
-              offlineOnly: true,
-              onlineOnly: false,
-              sublabel: 'Regarder',
-              type: 'Event',
-              value: 'EventType.CINEMA',
-            },
-          ],
-        },
-      }
+      const initialState = REDUX_STATE
+
       const store = mockStore(initialState)
-      const props = {
-        dispatch: jest.fn(),
-        history: {},
-        location: {},
-        match: {},
-        pagination: {},
-        recommendations: [],
-        search: {},
-        typeSublabels: [],
-      }
 
-      // when
-      const wrapper = shallow(
-        <Provider store={store}>
-          <SearchPage {...props} />
-        </Provider>
-      )
+      const wrapper = shallow(<SearchPage store={store} />)
 
-      // then
-      expect(wrapper.props().typeSublabels).toEqual()
+      console.log('wrapper.props().children()', wrapper.props().children())
+      // FIXME
+      // export mapStateToProps
+      // problem with withRouter
+      // search for SearchPageContent props .dive() inside wrapper doesn't work
+      // put a spy on mapStateToProps
     })
   })
 })
