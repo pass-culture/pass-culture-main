@@ -9,7 +9,7 @@ import MainMenu from './components/menu'
 import Debug from './components/layout/Debug'
 import Splash from './components/layout/Splash'
 import Overlay from './components/layout/Overlay'
-import SharePopin from './components/share/SharePopin'
+import { SharePopin } from './components/share/SharePopin'
 import { getReactRoutes } from './utils/routes-utils'
 import { ROOT_PATH, IS_DEV, PROJECT_NAME } from './utils/config'
 

@@ -7,7 +7,7 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import { compose, bindActionCreators } from 'redux'
 
-import ShareButton from '../share/ShareButton'
+import { ShareButton } from '../share/ShareButton'
 import VersoBookingButton from './VersoBookingButton'
 import currentRecommendationSelector from '../../selectors/currentRecommendation'
 
