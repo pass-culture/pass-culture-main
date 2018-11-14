@@ -119,6 +119,7 @@ def _date_interval_to_filter(date_interval):
     return ((EventOccurrence.beginningDatetime >= date_interval[0]) & \
             (EventOccurrence.beginningDatetime <= date_interval[1]))
 
+
 def get_offers_for_recommendations_search(
         page=1,
         keywords=None,
@@ -127,7 +128,6 @@ def get_offers_for_recommendations_search(
         longitude=None,
         max_distance=None,
         days_intervals=None):
-
     # NOTE: filter_out_offers_on_soft_deleted_stocks filter then
     # the offer with event that has NO event occurrence
     # Do we exactly want this ?
@@ -146,7 +146,7 @@ def get_offers_for_recommendations_search(
     if days_intervals is not None:
         event_beginningdate_in_interval_filter = or_(*map(_date_interval_to_filter, days_intervals))
         offer_query = offer_query.reset_joinpoint() \
-            .outerjoin(EventOccurrence)\
+            .outerjoin(EventOccurrence) \
             .filter(event_beginningdate_in_interval_filter | (Offer.thing != None))
 
     if keywords is not None:

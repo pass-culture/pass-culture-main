@@ -65,7 +65,8 @@ def test_get_keywords_filter_returns_all_offers_with_event_or_thing_or_venue_con
 @pytest.mark.standalone
 @clean_database
 @pytest.mark.skip
-def test_get_keywords_filter_with_an_returns_all_offers_having_rencontre_and_bataclan_or_paris_in_event_thing_or_venue(app):
+def test_get_keywords_filter_with_an_returns_all_offers_having_rencontre_and_bataclan_or_paris_in_event_thing_or_venue(
+        app):
     # given
     event1 = create_event(event_name='Rencontre avec Jacques Martin')
     event2 = create_event(event_name='Concert de contrebasse')
@@ -90,7 +91,8 @@ def test_get_keywords_filter_with_an_returns_all_offers_having_rencontre_and_bat
 
 @pytest.mark.standalone
 @clean_database
-def test_get_keywords_filter_with_partial_search_returns_all_offers_with_event_or_thing_or_venue_containing_keywords(app):
+def test_get_keywords_filter_with_partial_search_returns_all_offers_with_event_or_thing_or_venue_containing_keywords(
+        app):
     # given
     event1 = create_event(event_name='Rencontre avec Jacques Martin')
     event2 = create_event(event_name='Concert de contrebasse')
@@ -118,7 +120,8 @@ def test_get_keywords_filter_with_partial_search_returns_all_offers_with_event_o
 
 @pytest.mark.standalone
 @clean_database
-def test_get_keywords_filter_with_partial_search_returns_all_offers_with_event_or_thing_or_venue_containing_keywords(app):
+def test_get_keywords_filter_with_partial_search_returns_all_offers_with_event_or_thing_or_venue_containing_keywords(
+        app):
     # given
     event1 = create_event(event_name='Rencontre avec Jacques Martin')
     event2 = create_event(event_name='Concert de contrebasse')

@@ -23,8 +23,10 @@ from utils.rest import ensure_current_user_has_rights, \
     login_or_api_key_required
 from validation.offerers import check_valid_edition, parse_boolean_param_validated
 
+
 def get_dict_offerer(offerer):
     return offerer._asdict(include=OFFERER_INCLUDES)
+
 
 @app.route('/offerers', methods=['GET'])
 @login_required
