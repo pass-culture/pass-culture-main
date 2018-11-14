@@ -1,3 +1,4 @@
+// ./node_modules/.bin/jest --env=jsdom ./path/to/file.spec.js --watch
 import React from 'react'
 import { shallow } from 'enzyme'
 

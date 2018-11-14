@@ -9,10 +9,6 @@ moment.locale('fr-fr')
 
 const NODE_ENV = process.env.NODE_ENV || 'development'
 export const APP_VERSION = version
-// NOTE -> le script PC remplace
-// la valeur de `LAST_DEPLOYED_COMMIT`
-// par le numéro de commit qui a été deployé
-export const LAST_DEPLOYED_COMMIT = '##LAST_DEPLOYED_COMMIT##'
 export const USE_REDUX_PERSIST = false
 export const PERSIST_STORE_KEY = 'app-passculture'
 export const PROJECT_NAME = 'Pass Culture'

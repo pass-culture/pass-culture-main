@@ -4,13 +4,12 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import ReactMarkdown from 'react-markdown'
 
-import {
-  APP_VERSION,
-  LAST_DEPLOYED_COMMIT,
-  ROOT_PATH,
-} from '../../utils/config'
+import { APP_VERSION, ROOT_PATH } from '../../utils/config'
 import PageHeader from '../layout/PageHeader'
 import NavigationFooter from '../layout/NavigationFooter'
+
+const backgroundImage = `url('${ROOT_PATH}/mosaic-k.png')`
+const mentionsLegalesFile = `${ROOT_PATH}/MentionsLegalesPass.md`
 
 class TermsPage extends React.PureComponent {
   constructor(props) {
@@ -19,15 +18,14 @@ class TermsPage extends React.PureComponent {
   }
 
   async componentDidMount() {
-    const result = await fetch(`${ROOT_PATH}/MentionsLegalesPass.md`)
+    const result = await fetch(mentionsLegalesFile)
     const source = await result.text()
     this.setState({ source })
   }
 
   render() {
     const { source } = this.state
-    const { appversion, lastDeployedCommit } = this.props
-    const backgroundImage = `url('${ROOT_PATH}/mosaic-k.png')`
+    const { appversion } = this.props
     return (
       <div id="terms-page" className="page is-relative flex-rows">
         <PageHeader useClose theme="red" title="Mentions légales" />
@@ -36,7 +34,9 @@ class TermsPage extends React.PureComponent {
             <div className="padded content" style={{ backgroundImage }}>
               <ReactMarkdown source={source} />
               <div className="mt16">
-                <p className="text-right">{`Pass Culture v.${appversion} - ${lastDeployedCommit}`}</p>
+                <p id="terms-page-appversion" className="text-right">
+                  {`Pass Culture v.${appversion}`}
+                </p>
               </div>
             </div>
           </div>
@@ -49,15 +49,12 @@ class TermsPage extends React.PureComponent {
 
 TermsPage.defaultProps = {
   appversion: APP_VERSION,
-  lastDeployedCommit: LAST_DEPLOYED_COMMIT,
 }
 
 TermsPage.propTypes = {
-  // NOTE -> `appversion` et `lastDeployedCommit`
-  // sont passés dans les props pour les tests jests/enzyme
-  // `lastDeployedCommit` est rempli au build par le script PC
+  // NOTE -> `appversion`
+  // est passé dans les props pour les tests jests/enzyme
   appversion: PropTypes.string,
-  lastDeployedCommit: PropTypes.string,
 }
 
 export default TermsPage
