@@ -21,7 +21,7 @@ from models.offerer import Offerer
 from models.pc_object import PcObject
 from models.providable_mixin import ProvidableMixin
 from models.versioned_mixin import VersionedMixin
-from utils.search import create_tsvector
+from domain.search import create_tsvector
 
 CONSTRAINT_CHECK_IS_VIRTUAL_XOR_HAS_ADDRESS = """
 (

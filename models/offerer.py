@@ -1,13 +1,12 @@
 """ offerer """
 from datetime import datetime
 
-from schwifty import IBAN, BIC
 from sqlalchemy import BigInteger, \
     Column, \
     DateTime, \
     Index, \
     String, \
-    TEXT, CheckConstraint
+    TEXT
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.expression import cast
 from sqlalchemy.sql.functions import coalesce
@@ -22,8 +21,7 @@ from models.needs_validation_mixin import NeedsValidationMixin
 from models.pc_object import PcObject
 from models.providable_mixin import ProvidableMixin
 from models.user_offerer import UserOfferer
-from repository.bic_queries import check_bic_is_known
-from utils.search import create_tsvector
+from domain.search import create_tsvector
 
 
 class Offerer(PcObject,

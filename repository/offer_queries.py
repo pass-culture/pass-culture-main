@@ -10,14 +10,14 @@ from models import Booking, \
     Stock, \
     Offerer, \
     Recommendation, \
-    Venue, ThingType, EventType
+    Venue, EventType
 from models import Thing
 from models.db import db
+from repository.search_queries import get_keywords_filter
 from repository.user_offerer_queries import filter_query_where_user_is_user_offerer_and_is_validated
 from utils.config import ILE_DE_FRANCE_DEPT_CODES
 from utils.distance import get_sql_geo_distance_in_kilometers
 from utils.logger import logger
-from utils.search import get_keywords_filter
 
 
 def departement_or_national_offers(query, offer_type, departement_codes):

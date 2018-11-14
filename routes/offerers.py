@@ -10,9 +10,10 @@ from models import Offerer, PcObject, RightsType
 from models.venue import create_digital_venue
 from repository.booking_queries import find_offerer_bookings
 from repository.offerer_queries import find_all_recommendations_for_offerer
+from repository.search_queries import get_keywords_filter
 from repository.user_offerer_queries import filter_query_where_user_is_user_offerer_and_is_not_validated
 from repository.user_offerer_queries import filter_query_where_user_is_user_offerer_and_is_validated
-from utils.human_ids import dehumanize, humanize
+from utils.human_ids import dehumanize
 from utils.includes import PRO_BOOKING_INCLUDES, OFFERER_INCLUDES, NOT_VALIDATED_OFFERER_INCLUDES
 from utils.mailing import MailServiceException
 from utils.rest import ensure_current_user_has_rights, \
@@ -20,7 +21,6 @@ from utils.rest import ensure_current_user_has_rights, \
     handle_rest_get_list, \
     load_or_404, \
     login_or_api_key_required
-from utils.search import get_keywords_filter
 from validation.offerers import check_valid_edition, parse_boolean_param_validated
 
 def get_dict_offerer(offerer):

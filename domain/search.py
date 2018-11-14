@@ -1,6 +1,6 @@
 """ search """
 from sqlalchemy import func
-from sqlalchemy.sql.expression import and_, or_
+from sqlalchemy.sql.expression import or_
 
 AND = '_and_'
 LANGUAGE = 'french'
@@ -15,7 +15,8 @@ def create_tsvector(*args):
 
 
 def get_ts_query(token):
-    return token.strip().replace(SPACE, ' | ')
+    ts_query = token.strip().replace(SPACE, ':* | ')
+    return ts_query + ':*'
 
 
 def get_ts_queries(search):
@@ -36,9 +37,5 @@ def create_get_search_queries(*models):
                 for model in models
             ]
         )
+
     return get_search_queries
-
-
-def get_keywords_filter(models, keywords):
-    ts_queries = get_ts_queries(keywords)
-    return and_(*map(create_get_search_queries(*models), ts_queries))

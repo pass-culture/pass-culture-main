@@ -19,7 +19,7 @@ from models.extra_data_mixin import ExtraDataMixin
 from models.has_thumb_mixin import HasThumbMixin
 from models.pc_object import PcObject
 from models.providable_mixin import ProvidableMixin
-from utils.search import create_tsvector
+from domain.search import create_tsvector
 
 
 class Accessibility(Enum):

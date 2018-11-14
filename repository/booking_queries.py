@@ -18,8 +18,8 @@ from models import ApiErrors, \
     Venue, Offerer
 from models.api_errors import ResourceNotFound
 from models.db import db
+from repository.search_queries import get_keywords_filter
 from utils.rest import query_with_order_by
-from utils.search import get_keywords_filter
 
 
 def find_all_by_user_id(user_id):
