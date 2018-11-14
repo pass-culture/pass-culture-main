@@ -1,7 +1,7 @@
 from repository.booking_queries import find_all_ongoing_bookings_by_stock
 from repository.features import feature_send_mail_to_users_enabled
-from repository.user_queries import find_all_emails_of_user_offerers_admins
 from repository.stock_queries import set_booking_recap_sent_and_save
+from repository.user_queries import find_all_emails_of_user_offerers_admins
 from utils.config import ENV
 from utils.logger import logger
 from utils.mailing import make_user_booking_recap_email, \
@@ -90,6 +90,7 @@ def send_offerer_driven_cancellation_email_to_offerer(booking, send_create_email
 
 def send_reset_password_email(user, send_create_email, app_origin_url):
     email = make_reset_password_email(user, app_origin_url)
+    email['Html-part'], email['To'] = edit_email_html_part_and_recipients(email['Html-part'], email['To'])
     mail_result = send_create_email(data=email)
     check_if_email_sent(mail_result)
 

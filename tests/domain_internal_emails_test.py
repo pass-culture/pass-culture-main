@@ -4,46 +4,69 @@ from unittest.mock import Mock, patch
 import pytest
 
 from domain.admin_emails import maybe_send_offerer_validation_email, send_venue_validation_email
-from domain.user_emails import send_reset_password_email
 from utils.mailing import MailServiceException
 from utils.test_utils import create_offerer, create_user, \
     create_user_offerer, create_venue
 
 
 @pytest.mark.standalone
-def test_send_reset_password_email_sends_a_reset_password_email_to_the_recipient(app):
-    # given
-    user = create_user(public_name='bobby', email='bobby@test.com', reset_password_token='AZ45KNB99H')
+def test_maybe_send_offerer_validation_email_sends_email_to_pass_culture_when_objects_to_validate_and_send_email_enabled(
+        app):
+    # Given
+    offerer = create_offerer(siren='732075312', address='122 AVENUE DE FRANCE', city='Paris', postal_code='75013',
+                             name='Accenture', validation_token='12345')
+
+    user = create_user(public_name='Test', departement_code='75', email='user@accenture.com',
+                       can_book_free_offers=False,
+                       validation_token='98765')
+
+    user_offerer = create_user_offerer(user, offerer, validation_token=None)
+
     mocked_send_create_email = Mock()
     return_value = Mock()
     return_value.status_code = 200
     mocked_send_create_email.return_value = return_value
 
-    # when
-    send_reset_password_email(user, mocked_send_create_email, 'localhost')
+    # When
+    with patch('domain.user_emails.feature_send_mail_to_users_enabled', return_value=True):
+        maybe_send_offerer_validation_email(offerer, user_offerer, mocked_send_create_email)
 
-    # then
+    # Then
     mocked_send_create_email.assert_called_once()
     args = mocked_send_create_email.call_args
-    data = args[1]['data']
-    assert data['FromName'] == 'Pass Culture'
-    assert data['FromEmail'] == 'passculture-dev@beta.gouv.fr'
-    assert data['Subject'] == 'Réinitialisation de votre mot de passe'
-    assert data['To'] == 'bobby@test.com'
+    email = args[1]['data']
+    assert email['To'] == 'passculture@beta.gouv.fr'
+    assert 'This is a test' not in email['Html-part']
 
 
 @pytest.mark.standalone
-def test_send_reset_password_email_raises_an_exception_if_mailjet_failed(app):
-    # given
-    user = create_user(public_name='bobby', email='bobby@test.com', reset_password_token='AZ45KNB99H')
+def test_maybe_send_offerer_validation_email_sends_email_to_pass_culture_dev_when_objects_to_validate_and_send_email_disabled(
+        app):
+    # Given
+    offerer = create_offerer(siren='732075312', address='122 AVENUE DE FRANCE', city='Paris', postal_code='75013',
+                             name='Accenture', validation_token='12345')
+
+    user = create_user(public_name='Test', departement_code='75', email='user@accenture.com',
+                       can_book_free_offers=False,
+                       validation_token='98765')
+
+    user_offerer = create_user_offerer(user, offerer, validation_token=None)
+
     mocked_send_create_email = Mock()
     return_value = Mock()
-    return_value.status_code = 400
+    return_value.status_code = 200
     mocked_send_create_email.return_value = return_value
 
-    # when
-    with pytest.raises(MailServiceException):
-        send_reset_password_email(user, mocked_send_create_email, 'localhost')
+    # When
+    with patch('domain.user_emails.feature_send_mail_to_users_enabled', return_value=False):
+        maybe_send_offerer_validation_email(offerer, user_offerer, mocked_send_create_email)
+
+    # Then
+    mocked_send_create_email.assert_called_once()
+    args = mocked_send_create_email.call_args
+    email = args[1]['data']
+    assert email['To'] == 'passculture-dev@beta.gouv.fr'
+    assert 'This is a test' in email['Html-part']
 
 
 @pytest.mark.standalone
@@ -69,7 +92,7 @@ def test_maybe_send_offerer_validation_email_does_not_send_email_if_all_validate
     except MailServiceException as e:
         app.logger.error('Mail service failure', e)
 
-        # Then
+    # Then
     assert not mocked_send_create_email.called
 
 
@@ -97,7 +120,7 @@ def test_maybe_send_offerer_validation_email_raises_exception_if_status_code_400
 
 
 @pytest.mark.standalone
-def test_send_venue_validation_email_when_mailjet_status_code_200_calls_send_create_email_and_returns_nothing(app):
+def test_send_venue_validation_email_when_mailjet_status_code_200_sends_email_to_pass_culture(app):
     # Given
     offerer = create_offerer()
     venue = create_venue(offerer)
@@ -108,17 +131,19 @@ def test_send_venue_validation_email_when_mailjet_status_code_200_calls_send_cre
     mocked_send_create_email.return_value = return_value
 
     # When
-    try:
+    with patch('domain.user_emails.feature_send_mail_to_users_enabled', return_value=True):
         send_venue_validation_email(venue, mocked_send_create_email)
-    except MailServiceException:
-        assert False
 
     # Then
     mocked_send_create_email.assert_called_once()
+    args = mocked_send_create_email.call_args
+    email = args[1]['data']
+    assert email['To'] == 'passculture@beta.gouv.fr'
+    assert 'This is a test' not in email['Html-part']
 
 
 @pytest.mark.standalone
-def test_send_venue_validation_email_has_pass_culture_dev_as_recipient_in_dev_environment(app):
+def test_send_venue_validation_email_has_pass_culture_dev_as_recipient_when_send_email_disabled(app):
     # Given
     offerer = create_offerer()
     venue = create_venue(offerer)
@@ -135,8 +160,9 @@ def test_send_venue_validation_email_has_pass_culture_dev_as_recipient_in_dev_en
     # Then
     mocked_send_create_email.assert_called_once()
     args = mocked_send_create_email.call_args
-    assert args[1]['data']['To'] == 'passculture-dev@beta.gouv.fr'
-
+    email = args[1]['data']
+    assert email['To'] == 'passculture-dev@beta.gouv.fr'
+    assert 'This is a test' in email['Html-part']
 
 
 @pytest.mark.standalone

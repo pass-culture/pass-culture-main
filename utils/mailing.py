@@ -126,8 +126,7 @@ def write_object_validation_email(offerer, user_offerer, get_by_siren=api_entrep
         'FromEmail': 'passculture@beta.gouv.fr',
         'Subject': "%s - inscription / rattachement PRO à valider : %s" % (
             user_offerer.user.departementCode, offerer.name),
-        'Html-part': email_html,
-        'To': 'passculture@beta.gouv.fr' if feature_send_mail_to_users_enabled() else 'passculture-dev@beta.gouv.fr'
+        'Html-part': email_html
     }
 
 
@@ -223,7 +222,7 @@ def make_reset_password_email(user, app_origin_url):
         'FromEmail': 'passculture@beta.gouv.fr' if feature_send_mail_to_users_enabled() else 'passculture-dev@beta.gouv.fr',
         'Subject': 'Réinitialisation de votre mot de passe',
         'Html-part': email_html,
-        'To': user.email
+        'To': [user.email]
     }
 
 
@@ -261,7 +260,6 @@ def make_venue_validation_email(venue):
     return {
         'FromEmail': 'passculture@beta.gouv.fr',
         'FromName': 'pass Culture',
-        'To': 'passculture@beta.gouv.fr',
         'Subject': '{} - rattachement de lieu pro à valider : {}'.format(venue.departementCode, venue.name),
         'Html-part': html
     }
@@ -323,8 +321,6 @@ def make_payment_transaction_email(xml: str) -> dict:
     return {
         'From': {"Email": "passculture@beta.gouv.fr",
                  "Name": "pass Culture Pro"},
-        'To': [{"Email": "passculture-dev@beta.gouv.fr",
-                "Name": "Compta pass Culture"}],
         'Subject': "Virements pass Culture Pro - {}".format(datetime.strftime(now, "%Y-%m-%d")),
         'Attachments': [{"ContentType": "text/xml",
                          "Filename": "transaction_banque_de_france_{}.xml".format(datetime.strftime(now, "%Y%m%d")),
