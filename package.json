@@ -109,7 +109,7 @@
     "stylelint-scss": "^3.2.0"
   },
   "scripts": {
-    "build": "node scripts/build.js",
+    "build": "node scripts/build.js && ./scripts/build_redirects.sh",
     "test": "node scripts/jesttest.js --env=jsdom",
     "testcafe": "testcafe 'chrome:headless' testcafe",
     "precommit": "pretty-quick --staged",
