@@ -92,10 +92,6 @@ jobs:
             export THUMBS_URL=$BUILD_THUMBS_URL
             export CI=false
             yarn build
-      #- run:
-      #    name: Deploy to Netlify
-      #    command:
-      #      netlify deploy -e testing -t "$NETLIFY_ACCESS_TOKEN" -p ./build
 
 workflows:
   version: 2
