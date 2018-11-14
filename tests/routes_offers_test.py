@@ -356,4 +356,5 @@ def test_list_activation_offers_returns_offers_of_event_type(app):
     event_ids = map(lambda x: x['eventId'], json)
     assert len(json) == 2
     assert response.status_code == 200
+    assert humanize(offer2.eventId) in event_ids
     assert humanize(offer3.eventId) in event_ids
