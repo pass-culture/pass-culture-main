@@ -867,9 +867,8 @@ def test_make_payment_transaction_email():
     # Then
     assert email["From"] == {"Email": "passculture@beta.gouv.fr",
                              "Name": "pass Culture Pro"}
-    assert email["To"] == [{"Email": "passculture-dev@beta.gouv.fr",
-                            "Name": "Compta pass Culture"}]
     assert email["Subject"] == "Virements pass Culture Pro - 2018-10-15"
+    assert email["Html-part"] == ""
     assert email["Attachments"] == [{"ContentType": "text/xml",
                                      "Filename": "transaction_banque_de_france_20181015.xml",
                                      "Base64Content": b'PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48RG9j'
@@ -942,7 +941,6 @@ def test_make_venue_validation_email(app):
     # Then
     assert email["FromEmail"] == "passculture@beta.gouv.fr"
     assert email["FromName"] == "pass Culture"
-    assert email["To"] == "passculture@beta.gouv.fr"
     assert email["Subject"] == "{} - rattachement de lieu pro à valider : {}".format(venue.departementCode, venue.name)
     email_html = remove_whitespaces(email['Html-part'])
     parsed_email = BeautifulSoup(email_html, 'html.parser')

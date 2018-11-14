@@ -1,6 +1,5 @@
-from domain.user_emails import edit_email_html_part_and_recipients
 from utils.mailing import write_object_validation_email, check_if_email_sent, make_payment_transaction_email, \
-    make_venue_validation_email
+    make_venue_validation_email, edit_email_html_part_and_recipients
 
 
 def send_dev_email(subject, html_text, send_create_email):

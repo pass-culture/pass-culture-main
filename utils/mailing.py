@@ -11,7 +11,7 @@ from models import RightsType
 from repository.booking_queries import find_all_ongoing_bookings_by_stock
 from repository.features import feature_send_mail_to_users_enabled
 from repository.user_offerer_queries import find_user_offerer_email
-from utils.config import API_URL
+from utils.config import API_URL, ENV
 from utils.date import format_datetime, utc_datetime_to_dept_timezone
 
 MAILJET_API_KEY = os.environ.get('MAILJET_API_KEY')
@@ -324,7 +324,9 @@ def make_payment_transaction_email(xml: str) -> dict:
         'Subject': "Virements pass Culture Pro - {}".format(datetime.strftime(now, "%Y-%m-%d")),
         'Attachments': [{"ContentType": "text/xml",
                          "Filename": "transaction_banque_de_france_{}.xml".format(datetime.strftime(now, "%Y%m%d")),
-                         "Base64Content": xml_b64encode}]}
+                         "Base64Content": xml_b64encode}],
+        'Html-part': ""
+    }
 
 
 def make_venue_validation_confirmation_email(venue):
@@ -336,6 +338,17 @@ def make_venue_validation_confirmation_email(venue):
         'FromName': "pass Culture pro",
         'Html-part': html
     }
+
+
+def edit_email_html_part_and_recipients(email_html_part, recipients):
+    if feature_send_mail_to_users_enabled():
+        email_to = ", ".join(recipients)
+    else:
+        email_html_part = ('<p>This is a test (ENV=%s). In production, email would have been sent to : ' % ENV) \
+                          + ", ".join(recipients) \
+                          + '</p>' + email_html_part
+        email_to = 'passculture-dev@beta.gouv.fr'
+    return email_html_part, email_to
 
 
 def _generate_reservation_email_html_subject(booking):

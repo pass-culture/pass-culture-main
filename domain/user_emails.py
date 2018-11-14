@@ -1,14 +1,12 @@
 from repository.booking_queries import find_all_ongoing_bookings_by_stock
-from repository.features import feature_send_mail_to_users_enabled
 from repository.stock_queries import set_booking_recap_sent_and_save
 from repository.user_queries import find_all_emails_of_user_offerers_admins
-from utils.config import ENV
 from utils.logger import logger
 from utils.mailing import make_user_booking_recap_email, \
     make_offerer_booking_recap_email_after_user_action, make_offerer_driven_cancellation_email_for_user, \
     make_offerer_driven_cancellation_email_for_offerer, make_final_recap_email_for_stock_with_event, \
     check_if_email_sent, make_reset_password_email, make_validation_confirmation_email, make_batch_cancellation_email, \
-    make_user_validation_email, make_venue_validation_confirmation_email
+    make_user_validation_email, make_venue_validation_confirmation_email, edit_email_html_part_and_recipients
 
 
 def send_final_booking_recap_email(stock, send_create_email):
@@ -150,14 +148,3 @@ def _get_offerer_id(offerer, user_offerer):
     else:
         offerer_id = offerer.id
     return offerer_id
-
-
-def edit_email_html_part_and_recipients(email_html_part, recipients):
-    if feature_send_mail_to_users_enabled():
-        email_to = ", ".join(recipients)
-    else:
-        email_html_part = ('<p>This is a test (ENV=%s). In production, email would have been sent to : ' % ENV) \
-                          + ", ".join(recipients) \
-                          + '</p>' + email_html_part
-        email_to = 'passculture-dev@beta.gouv.fr'
-    return email_html_part, email_to
