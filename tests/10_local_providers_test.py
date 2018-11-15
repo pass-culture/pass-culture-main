@@ -174,4 +174,4 @@ def test_99_init(app):
         logger.info = lambda o: None
         save_sandbox('light')
         logger.info = logger_info
-        assertCreatedCounts(app, User=5)
+        assertCreatedCounts(app, User=7)

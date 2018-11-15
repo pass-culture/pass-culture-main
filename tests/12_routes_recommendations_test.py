@@ -83,7 +83,7 @@ def test_put_recommendations_returns_a_list_of_some_recos():
     # then
     recos = response.json()
     assert response.status_code == 200
-    assert len(recos) == 9
+    assert len(recos) == 10
 
 def test_put_recommendations_returns_no_duplicate_mediations_in_recos():
     # when
