@@ -25,5 +25,12 @@ PLACES = [
         "latitude": 48.9204903,
         "longitude": 2.4877456,
         "postalCode": "93600",
+    },
+    {
+        "address": "2 ROUTE DE L EST",
+        "city": "Matoury",
+        "latitude": -52.3613077,
+        "longitude": 4.8059657,
+        "postalCode": "97351"
     }
 ]

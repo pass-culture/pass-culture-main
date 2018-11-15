@@ -41,6 +41,16 @@ def create_handmade_users():
         public_name="PC Test Jeune 34"
     )
 
+    users_by_name['jeune 973'] = create_user(
+        departement_code="973",
+        email="pctest.jeune.973@btmx.fr",
+        first_name="PC Test",
+        last_name="Jeune 973",
+        password="pctest.Jeune.973",
+        postal_code="97351",
+        public_name="PC Test Jeune 973"
+    )
+
     users_by_name['pro 1'] = create_user(
         departement_code="93",
         email="pctest.pro.1@btmx.fr",
@@ -59,6 +69,16 @@ def create_handmade_users():
         password="pctest.Pro.2",
         postal_code="93100",
         public_name="PC Test Pro 2"
+    )
+
+    users_by_name['pro 3'] = create_user(
+        departement_code="973",
+        first_name="PC Test",
+        last_name="Pro 3",
+        email="pctest.pro.3@btmx.fr",
+        password="pctest.Pro.3",
+        postal_code="97351",
+        public_name="PC Test Pro 3"
     )
 
     PcObject.check_and_save(*users_by_name.values())
