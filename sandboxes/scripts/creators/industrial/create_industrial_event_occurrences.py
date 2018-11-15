@@ -23,7 +23,7 @@ def create_industrial_event_occurrences(event_offers_by_name):
             # BECAUSE OTHERWISE TODAY EVENTS ARE ALREADY FINISHED
             # IN THEIR TZ
             if beginning_datetime == today \
-                and event_offer.venue.managingOfferer.departementCode == "97":
+                and event_offer.venue.postalCode[:-3] == "97":
                 beginning_datetime = beginning_datetime + timedelta(days=1)
 
             event_occurrences_by_name[name] = create_event_occurrence(
