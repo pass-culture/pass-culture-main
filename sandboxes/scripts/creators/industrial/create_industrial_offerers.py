@@ -3,6 +3,16 @@ from sandboxes.scripts.utils.ban import get_locations_from_postal_code
 from utils.logger import logger
 from utils.test_utils import create_offerer
 
+MOCK_NAMES = [
+    "Atelier Herbert Marcuse",
+    "Club Dorothy",
+    "Scope La Brique",
+    "Les Perruches Swing",
+    "Michel et son accordéon",
+    "La librairie quantique",
+    "Folie des anachorète"
+]
+
 def create_industrial_offerers(
     locations,
     starting_siren=222222222
@@ -13,9 +23,19 @@ def create_industrial_offerers(
 
     offerers_by_name = {}
 
+    mock_index = -1
+
     for location in locations:
 
-        name = 'STRUCTURE {} lat:{} lon:{}'.format(
+        # WE JUST PARSE THE MOCK NAMES
+        # WITH A COUNTER AND RESET THE COUNTER
+        # TO ZERO WHEN WE REACH ITS LAST ITEM
+        if mock_index == len(MOCK_NAMES) - 1:
+            mock_index = 0
+        else:
+            mock_index += 1
+
+        name = '{} lat:{} lon:{}'.format(
             incremented_siren,
             location['latitude'],
             location['longitude']
@@ -24,7 +44,7 @@ def create_industrial_offerers(
         offerers_by_name[name] = create_offerer(
             address=location['address'].upper(),
             city=location['city'],
-            name=name,
+            name=MOCK_NAMES[mock_index],
             postal_code=location['postalCode'],
             siren=str(incremented_siren)
         )

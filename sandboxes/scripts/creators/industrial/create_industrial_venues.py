@@ -9,9 +9,8 @@ def create_industrial_venues(offerers_by_name):
 
     venue_by_name = {}
     for (offerer_name, offerer) in offerers_by_name.items():
-        name = offerer_name
         geoloc_match = re.match(r'(.*)lat\:(.*) lon\:(.*)', offerer_name)
-        venue_by_name[name] = create_venue(
+        venue_by_name[offerer_name] = create_venue(
             offerer,
             address=offerer.address,
             booking_email="fake@email.com",
@@ -19,16 +18,15 @@ def create_industrial_venues(offerers_by_name):
             comment="Pas de siret car je suis un mock.",
             latitude=float(geoloc_match.group(2)),
             longitude=float(geoloc_match.group(3)),
-            name=name,
+            name=offerer.name,
             postal_code=offerer.postalCode,
             siret=None
         )
 
-        digital_name = name + " (Offre en ligne)"
-        venue_by_name[digital_name] = create_venue(
+        venue_by_name["{} (Offre en ligne)".format(offerer_name)] = create_venue(
             offerer,
             is_virtual=True,
-            name=name,
+            name="{} (Offre en ligne)".format(offerer.name),
             siret=None
         )
 
