@@ -83,13 +83,15 @@ def get_active_offers_by_type(offer_type, user=None, departement_codes=None, off
     if offer_id is not None:
         query = query.filter(Offer.id == offer_id)
     logger.debug(lambda: '(reco) all ' + str(offer_type) + '.count ' + str(query.count()))
-    logger.info('(reco) all ' + offer_type.__name__ + ' (%i)', query.count())
 
     query = departement_or_national_offers(query, offer_type, departement_codes)
+    logger.info('(reco) departement or national ' + offer_type.__name__ + ' (%i) in ' + str(departement_codes), query.count())
     query = bookable_offers(query, offer_type)
     query = with_active_and_validated_offerer(query)
+    logger.info('(reco) active and validated ' + offer_type.__name__ + ' (%i)', query.count())
     query = not_currently_recommended_offers(query, user)
     query = query.distinct(offer_type.id)
+    logger.info('(reco) distinct ' + offer_type.__name__ + ' (%i)', query.count())
     return query.all()
 
 
