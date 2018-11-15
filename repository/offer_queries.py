@@ -87,6 +87,7 @@ def get_active_offers_by_type(offer_type, user=None, departement_codes=None, off
     query = departement_or_national_offers(query, offer_type, departement_codes)
     logger.info('(reco) departement or national ' + offer_type.__name__ + ' (%i) in ' + str(departement_codes), query.count())
     query = bookable_offers(query, offer_type)
+    logger.info('(reco) bookable_offers ' + offer_type.__name__ + ' (%i)', query.count())
     query = with_active_and_validated_offerer(query)
     logger.info('(reco) active and validated ' + offer_type.__name__ + ' (%i)', query.count())
     query = not_currently_recommended_offers(query, user)
