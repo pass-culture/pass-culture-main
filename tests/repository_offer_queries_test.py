@@ -185,6 +185,7 @@ def test_get_offers_for_recommendations_search_with_partial_keyword_returns_offe
     print(offers)
     assert len(offers) == 2
     assert event1_offer in offers
+    assert thing_offer in offers
 
 
 @clean_database
