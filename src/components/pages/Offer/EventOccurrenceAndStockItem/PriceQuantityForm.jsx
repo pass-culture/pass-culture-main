@@ -55,6 +55,7 @@ class PriceQuantityForm extends Component {
               step="0.01"
               min="0"
               title="Prix"
+              className="input is-small input-number"
             />
           </td>
           <td title="Laissez vide si pas de limite">
@@ -71,11 +72,12 @@ class PriceQuantityForm extends Component {
               title="Places disponibles"
               type="number"
               placeholder="Illimité"
+              className="input is-small input-number"
               renderInfo={() => {
                 if (!isStockReadOnly) {
                   return (
                     <span
-                      className="button tooltip"
+                      className="button tooltip qty-info"
                       data-place="bottom"
                       data-tip="<p>Laissez ce champ vide pour un nombre de places illimité.</p>"
                       data-type="info">

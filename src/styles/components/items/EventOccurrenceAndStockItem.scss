@@ -6,6 +6,10 @@
     .input {
       min-width: 75px;
 
+      &.input-number {
+        width: 77px;
+      }
+
       &.date-picker {
         min-width: 100px;
       }
@@ -17,6 +21,11 @@
       &[type='time'] {
         margin-left: 0.75rem;
       }
+    }
+
+
+    .qty-info img{
+      margin-left: 6px;
     }
   }
 
