@@ -41,14 +41,14 @@ def create_handmade_users():
         public_name="PC Test Jeune 34"
     )
 
-    users_by_name['jeune 973'] = create_user(
-        departement_code="973",
-        email="pctest.jeune.973@btmx.fr",
+    users_by_name['jeune 97'] = create_user(
+        departement_code="97",
+        email="pctest.jeune.97@btmx.fr",
         first_name="PC Test",
-        last_name="Jeune 973",
-        password="pctest.Jeune.973",
+        last_name="Jeune 97",
+        password="pctest.Jeune.97",
         postal_code="97351",
-        public_name="PC Test Jeune 973"
+        public_name="PC Test Jeune 97"
     )
 
     users_by_name['pro 1'] = create_user(
@@ -72,7 +72,7 @@ def create_handmade_users():
     )
 
     users_by_name['pro 3'] = create_user(
-        departement_code="973",
+        departement_code="97",
         first_name="PC Test",
         last_name="Pro 3",
         email="pctest.pro.3@btmx.fr",
