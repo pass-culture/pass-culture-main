@@ -1,3 +1,4 @@
+from sandboxes.scripts.creators.industrial.create_industrial_deposits import *
 from sandboxes.scripts.creators.industrial.create_industrial_events import *
 from sandboxes.scripts.creators.industrial.create_industrial_event_occurrences import *
 from sandboxes.scripts.creators.industrial.create_industrial_event_offers import *
@@ -8,9 +9,21 @@ from sandboxes.scripts.creators.industrial.create_industrial_thing_stocks import
 from sandboxes.scripts.creators.industrial.create_industrial_things import *
 from sandboxes.scripts.creators.industrial.create_industrial_offerers import *
 from sandboxes.scripts.creators.industrial.create_industrial_venues import *
+from sandboxes.scripts.creators.industrial.create_industrial_user_offerers import *
+from sandboxes.scripts.creators.industrial.create_industrial_users import *
+
+from sandboxes.scripts.utils.locations import create_locations_from_places, PLACES
 
 def save_industrial_sandbox():
-    offerers_by_name = create_industrial_offerers()
+
+    offerer_locations = create_locations_from_places(PLACES, max_location_per_place=2)
+    offerers_by_name = create_industrial_offerers(offerer_locations)
+
+    users_by_name = create_industrial_users()
+
+    create_industrial_deposits(users_by_name)
+
+    create_industrial_user_offerers(users_by_name, offerers_by_name)
 
     venues_by_name = create_industrial_venues(offerers_by_name)
 

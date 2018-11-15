@@ -1,10 +1,15 @@
 from datetime import timedelta
 
 from models.pc_object import PcObject
-from sandboxes.scripts.utils.params import EVENT_OCCURRENCE_BEGINNING_DATETIMES
 from utils.date import strftime, today
 from utils.logger import logger
 from utils.test_utils import create_event_occurrence
+
+EVENT_OCCURRENCE_BEGINNING_DATETIMES = [
+    today,
+    today + timedelta(days=2),
+    today + timedelta(days=15)
+]
 
 def create_industrial_event_occurrences(event_offers_by_name):
     logger.info('create_industrial_event_occurrences')
