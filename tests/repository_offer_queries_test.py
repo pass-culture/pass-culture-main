@@ -150,6 +150,43 @@ def test_get_offers_for_recommendations_search_by_datetime(app):
     assert ko_stock_after.resolvedOffer not in search_result_offers
 
 
+@pytest.mark.standalone
+@clean_database
+def test_get_offers_for_recommendations_search_with_partial_keyword_returns_offer_with_event_or_thing_name_matching(
+        app):
+    # Given
+
+    event1 = create_event('Rencontre avec Franck Lepage')
+    event2 = create_event('Concert de Gael Faye')
+    thing = create_thing('Rencontre avec soi-même')
+
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+
+    event1_offer = create_event_offer(venue, event1)
+    event2_offer = create_event_offer(venue, event2)
+    thing_offer = create_thing_offer(venue, thing)
+
+    event1_event_occurrence = create_event_occurrence(
+        event1_offer
+    )
+    event2_event_occurrence = create_event_occurrence(
+        event2_offer
+    )
+
+    event1_stock = create_stock_from_event_occurrence(event1_event_occurrence)
+    event2_stock = create_stock_from_event_occurrence(event2_event_occurrence)
+    thing_stock = create_stock_from_offer(thing_offer)
+
+    PcObject.check_and_save(event1_stock, event2_stock, thing_stock)
+
+    offers = get_offers_for_recommendations_search( keywords='Rencon')
+
+    print(offers)
+    assert len(offers) == 2
+    assert event1_offer in offers
+
+
 @clean_database
 @pytest.mark.standalone
 def test_get_active_offers_by_type_when_departement_code_00(app):

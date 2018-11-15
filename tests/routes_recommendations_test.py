@@ -97,6 +97,31 @@ def test_get_recommendations_returns_one_recommendation_found_from_search_ignori
 
 @clean_database
 @pytest.mark.standalone
+def test_get_recommendations_returns_one_recommendation_found_from_partial_search(app):
+    # given
+    search = "keywords=rencon"
+    user = create_user(email='test@email.com', password='P@55w0rd')
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    offer = create_event_offer(venue, event_name='Rencontres avec des auteurs')
+    event_occurrence = create_event_occurrence(offer)
+    stock = create_stock_from_event_occurrence(event_occurrence)
+    recommendation = create_recommendation(offer, user, search=search)
+    stock = create_stock_from_offer(offer)
+    PcObject.check_and_save(stock, recommendation)
+    auth_request = req_with_auth(user.email, user.clearTextPassword)
+
+    # when
+    response = auth_request.get(RECOMMENDATION_URL + '?%s' % search)
+
+    # then
+    recommendations = response.json()
+    assert 'Rencontres' in recommendations[0]['offer']['eventOrThing']['name']
+    assert recommendations[0]['search'] == 'keywords=rencon'
+
+
+@clean_database
+@pytest.mark.standalone
 def test_get_recommendations_does_not_return_recommendations_of_offers_with_soft_deleted_stocks(app):
     # given
     search = 'keywords=rencontres'
