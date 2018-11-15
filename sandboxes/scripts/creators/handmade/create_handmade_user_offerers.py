@@ -20,6 +20,10 @@ def create_handmade_user_offerers(users_by_name, offerers_by_name):
         offerer=offerers_by_name['THEATRE DU SOLEIL'],
         user=users_by_name['pro 1']
     )
+    user_offerers_by_name['pro 3 / KWATA'] = create_user_offerer(
+        offerer=offerers_by_name['KWATA'],
+        user=users_by_name['pro 3']
+    )
 
     PcObject.check_and_save(*user_offerers_by_name.values())
 

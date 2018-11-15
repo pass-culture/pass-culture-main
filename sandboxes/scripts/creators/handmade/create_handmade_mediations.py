@@ -12,9 +12,12 @@ def create_handmade_mediations(offers_by_name):
         offers_by_name['Rencontre avec Franck Lepage / LE GRAND REX PARIS']
     )
 
-
     mediations_by_name['Ravage / THEATRE DE L ODEON'] = create_mediation(
         offers_by_name['Ravage / THEATRE DE L ODEON']
+    )
+
+    mediations_by_name['Le temps des cerises en mode mixolydien / KWATA'] = create_mediation(
+        offers_by_name['Le temps des cerises en mode mixolydien / KWATA']
     )
 
     PcObject.check_and_save(*mediations_by_name.values())
@@ -29,6 +32,12 @@ def create_handmade_mediations(offers_by_name):
         "thumbs",
         mediations_by_name['Ravage / THEATRE DE L ODEON'],
         "Ravage"
+    )
+
+    store_public_object_from_sandbox_assets(
+        "thumbs",
+        mediations_by_name['Le temps des cerises en mode mixolydien / KWATA'],
+        "LeTempsDesCerises"
     )
 
     return mediations_by_name

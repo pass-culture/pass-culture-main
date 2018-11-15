@@ -8,16 +8,33 @@ def create_handmade_events():
 
     events_by_name = {}
 
-    events_by_name["Rencontre avec Franck Lepage"] = create_event(event_name="Rencontre avec Franck Lepage",
-                                                                  event_type=EventType.CONFERENCE_DEBAT_DEDICACE,
-                                                                  duration_minutes=60)
+    name = "Rencontre avec Franck Lepage"
+    events_by_name[name] = create_event(
+        duration_minutes=60,
+        event_name=name,
+        event_type=str(EventType.CONFERENCE_DEBAT_DEDICACE)
+    )
 
-    events_by_name["Concert de Gael Faye"] = create_event(event_name="Concert de Gael Faye",
-                                                          event_type=EventType.MUSIQUE, duration_minutes=120)
+    name = "Concert de Gael Faye"
+    events_by_name[name] = create_event(
+        duration_minutes=120,
+        event_name=name,
+        event_type=str(EventType.MUSIQUE)
+    )
 
+    name = "PNL chante Marx"
+    events_by_name[name] = create_event(
+        duration_minutes=10,
+        event_name=name,
+        event_type=str(EventType.MUSIQUE)
+    )
 
-    events_by_name["PNL chante Marx"] = create_event(event_name="PNL chante Marx", event_type=EventType.MUSIQUE,
-                                                     duration_minutes=10)
+    name = "Le temps des cerises en mode mixolydien"
+    events_by_name[name] = create_event(
+        duration_minutes=55,
+        event_name=name,
+        event_type=str(EventType.MUSIQUE)
+    )
 
     PcObject.check_and_save(*events_by_name.values())
 

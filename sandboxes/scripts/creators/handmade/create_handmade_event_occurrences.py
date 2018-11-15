@@ -34,6 +34,12 @@ def create_handmade_event_occurrences(offers_by_name):
         offer=offers_by_name['PNL chante Marx / THEATRE DE L ODEON']
     )
 
+    event_occurrences_by_name['Le temps des cerises en mode mixolydien / KWATA / 0 / 20h'] = create_event_occurrence(
+        beginning_datetime=strftime(today),
+        end_datetime=strftime(today + timedelta(hours=3)),
+        offer=offers_by_name['Le temps des cerises en mode mixolydien / KWATA']
+    )
+
     PcObject.check_and_save(*event_occurrences_by_name.values())
 
     return event_occurrences_by_name

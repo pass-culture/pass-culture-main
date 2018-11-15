@@ -22,6 +22,11 @@ def create_handmade_event_offers(events_by_name, venues_by_name):
         venue=venues_by_name['THEATRE DE L ODEON']
     )
 
+    event_offers_by_name["Le temps des cerises en mode mixolydien / KWATA"] = create_event_offer(
+        event=events_by_name['Le temps des cerises en mode mixolydien'],
+        venue=venues_by_name['KWATA']
+    )
+
     PcObject.check_and_save(*event_offers_by_name.values())
 
     return event_offers_by_name

@@ -31,6 +31,14 @@ def create_handmade_offerers():
         siren="784340093"
     )
 
+    offerers_by_name['KWATA'] = create_offerer(
+        address="16 AVENUE PASTEUR",
+        city="Cayenne",
+        name="KWATA",
+        postal_code="97335",
+        siren="399244474"
+    )
+
     PcObject.check_and_save(*offerers_by_name.values())
 
     return offerers_by_name

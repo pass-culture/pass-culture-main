@@ -43,6 +43,12 @@ def create_handmade_event_stocks(event_occurrences_by_name):
         price=50
     )
 
+    event_stocks_by_name['Le temps des cerises en mode mixolydien / KWATA / 0 / 20h / 50 / 50'] = create_stock_from_event_occurrence(
+        available=50,
+        event_occurrence=event_occurrences_by_name['Le temps des cerises en mode mixolydien / KWATA / 0 / 20h'],
+        price=50
+    )
+
     PcObject.check_and_save(*event_stocks_by_name.values())
 
     return event_stocks_by_name
