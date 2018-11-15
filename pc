@@ -32,6 +32,14 @@ function ensure_remote {
   fi
 }
 
+current_branch=$(git symbolic-ref -q HEAD)
+current_branch=${current_branch##refs/heads/}
+
+function exit_restoring_branch {
+  git checkout "$current_branch"
+  exit
+}
+
 if [[ $# -gt 2 ]] && [[ "$1" == "-e" ]]; then
   ENV=$2
   shift 2
@@ -71,6 +79,8 @@ elif [[ "$ENV" == "testing" ]]; then
 	SCALINGO_APP=pass-culture-api-dev
 elif [[ "$ENV" == "demo" ]]; then
 	SCALINGO_APP=pass-culture-api-demo
+elif [[ "$ENV" == "integration" ]]; then
+	SCALINGO_APP=pass-culture-api-integration
 fi
 
 if [[ "$CMD" == "alembic" ]]; then
@@ -85,18 +95,15 @@ elif [[ "$CMD" == "bash" ]]; then
 	RUN='docker exec -it `docker ps | grep flask | cut -d" " -f 1` bash'
 elif [[ "$CMD" == "deploy-backend" ]]; then
   cd "$ROOT_PATH/api"
-  if [[ ! "$ENV" == 'production' ]] && [[ ! "$ENV" == 'staging' ]] && [[ ! "$ENV" == 'demo' ]]; then
-     echo "Can only deploy-backend in staging, demo and production"
+  if [[ ! "$ENV" == 'production' ]] \
+        && [[ ! "$ENV" == 'staging' ]] \
+        && [[ ! "$ENV" == 'demo' ]] \
+        && [[ ! "$ENV" == 'integration' ]]; then
+     echo "Can only deploy-backend in staging, demo, integration and production"
      exit
   fi
   commit_to_deploy=`git log -n 1 --pretty=format:%H`
-  current_branch=$(git symbolic-ref -q HEAD)
-  current_branch=${current_branch##refs/heads/}
-  function exit_restoring_branch
-    {
-    git checkout "$current_branch"
-    exit
-    }
+
   git fetch
   git checkout master
   git pull || exit_restoring_branch
@@ -137,37 +144,23 @@ elif [[ "$CMD" == "deploy-frontend-webapp" ]] || [[ "$CMD" == "deploy-frontend-p
 	fi
   cd $APP_PATH
 
+  commit_to_deploy=`git log -n 1 --pretty=format:%H`
+
+  if [[ "$ENV" == "production" ]]; then
+    staging_commit=`git log -n 1 --pretty=format:%H staging`
+    if [[ "$staging_commit" != "$commit_to_deploy" ]]; then
+      echo "ERROR: Can only deploy in production commits that are also deployed in staging"
+      exit_restoring_branch
+    fi
+  fi
+
   (set -a; source "$APP_PATH/node_modules/pass-culture-shared/config/run_envs/$ENV" && yarn build) || exit
-
-  # Add generic redirects for netlify which work with everything routed to
-  # index.htm and relative paths to main.js and main.css for phonegap
-  JSPATH=`grep -o '\./static/js/main\.[a-z0-9]*\.js' build/index.html`
-  JSHASH=`echo "$JSPATH" | cut -d\. -f 3`
-  CSSPATH=`grep -o '\./static/css/main\.[a-z0-9]*\.css' build/index.html`
-  CSSHASH=`echo "$CSSPATH" | cut -d\. -f 3`
-
-  echo "/:path1/main.$JSHASH.js /$JSPATH 301" > build/_redirects
-  echo "/:path1/:path2/main.$JSHASH.js /$JSPATH 301" >> build/_redirects
-  echo "/:path1/:path2/:path3/main.$JSHASH.js /$JSPATH 301" >> build/_redirects
-  echo "/:path1/:path2/:path3/:path4/main.$JSHASH.js /$JSPATH 301" >> build/_redirects
-  echo "/:path1/:path2/:path3/:path4/:path5/main.$JSHASH.js /$JSPATH 301" >> build/_redirects
-  echo "/:path1/:path2/:path3/:path4/:path5/:path6/main.$JSHASH.js /$JSPATH 301" >> build/_redirects
-
-  echo "/:path1/main.$CSSHASH.css /$CSSPATH 301" >> build/_redirects
-  echo "/:path1/:path2/main.$CSSHASH.css /$CSSPATH 301" >> build/_redirects
-  echo "/:path1/:path2/:path3/main.$CSSHASH.css /$CSSPATH 301" >> build/_redirects
-  echo "/:path1/:path2/:path3/:path4/main.$CSSHASH.css /$CSSPATH 301" >> build/_redirects
-  echo "/:path1/:path2/:path3/:path4/:path5/main.$CSSHASH.css /$CSSPATH 301" >> build/_redirects
-  echo "/:path1/:path2/:path3/:path4/:path5/:path6/main.$CSSHASH.css /$CSSPATH 301" >> build/_redirects
-
-  cat "public/_redirects" >> build/_redirects
 
   GIT_VERSION=`git log -n 1 --pretty=format:%h`
   git diff-index HEAD --quiet --exit-code
   if [[ "$?" -gt "0" ]]; then
     GIT_VERSION="$GIT_VERSION*"
   fi
-  sed -i -e "s/##LAST_DEPLOYED_COMMIT##/"$GIT_VERSION"/" build/$JSPATH;
 
   netlify deploy -e "$ENV"
 
