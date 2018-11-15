@@ -2,19 +2,77 @@
 
 set -o nounset
 
+#  Helper that describes all functionalities
+# =============================================
+
+if [[ $# -eq 0 ]] || [[ "$1" == "-h" ]]; then
+    echo "$(basename "$0") [-h] [-e env -b backend c] -- program to deal with Pass Culture ecosystem
+where:
+    -h  show this help text
+    -e  specify environment to target (default: development)
+    -b  specify backend to connect with local app (default: localhost)
+    c   command that you want to run"
+    exit 0
+fi
+
+
+# =============================================
+# Get script parameters
+# =============================================
+
+if [[ $# -gt 2 ]] && [[ "$1" == "-e" ]]; then
+  ENV=$2
+  shift 2
+else
+  ENV=${ENV:-'development'}
+fi
+
+if [[ $# -gt 2 ]] && [[ "$1" == "-b" ]]; then
+  BACKEND=$2
+  shift 2
+else
+  BACKEND=${BACKEND:-'localhost'}
+fi
+
+CMD="$1"
+
+# TODO: why ?
+shift
+
+
+
+# =============================================
+# Set variables for env
+# =============================================
+
+if [[ "$ENV" == "production" ]]; then
+	SCALINGO_APP=pass-culture-api
+elif [[ "$ENV" == "staging" ]]; then
+	SCALINGO_APP=pass-culture-api-staging
+elif [[ "$ENV" == "testing" ]]; then
+	SCALINGO_APP=pass-culture-api-dev
+elif [[ "$ENV" == "demo" ]]; then
+	SCALINGO_APP=pass-culture-api-demo
+elif [[ "$ENV" == "integration" ]]; then
+	SCALINGO_APP=pass-culture-api-integration
+fi
+
+# =============================================
+# Utilities functions
+# =============================================
 PRG="$BASH_SOURCE"
 
 while [ -h "$PRG" ] ; do
-	ls=`ls -ld "$PRG"`
-	link=`expr "$ls" : '.*-> \(.*\)$'`
+	ls=$(ls -ld "$PRG")
+	link=$(expr "$ls" : '.*-> \(.*\)$')
 	if expr "$link" : '/.*' > /dev/null; then
 		PRG="$link"
 	else
-		PRG=`dirname "$PRG"`"/$link"
+		PRG=$(dirname "$PRG")"/$link"
 	fi
 done
 
-ROOT_PATH=$(realpath $(dirname "$PRG"))
+ROOT_PATH=$(realpath "$(dirname "$PRG")")
 
 function confirm {
  read -p "$1 (y/n) : " -n 1 -r
@@ -35,66 +93,165 @@ function ensure_remote {
 current_branch=$(git symbolic-ref -q HEAD)
 current_branch=${current_branch##refs/heads/}
 
+commit_to_deploy=$(git log -n 1 --pretty=format:%H)
+
 function exit_restoring_branch {
   git checkout "$current_branch"
   exit
 }
 
-if [[ $# -gt 2 ]] && [[ "$1" == "-e" ]]; then
-  ENV=$2
-  shift 2
-else
-  ENV=${ENV:-'development'}
-fi
+# =============================================
+# Local commands : use Docker
+# =============================================
 
-if [[ $# -gt 2 ]] && [[ "$1" == "-b" ]]; then
-  BACKEND=$2
-  shift 2
-else
-  BACKEND=${BACKEND:-'localhost'}
-fi
-
-API_HOST='localhost:80'
-if [[ "$ENV" == "production" ]]; then
-	API_HOST=api.passculture.beta.gouv.fr
-elif [[ "$ENV" == "staging" ]]; then
-	API_HOST=api.passculture-staging.beta.gouv.fr
-elif [[ "$ENV" == "demo" ]]; then
-	API_HOST=api.passculture-demo.beta.gouv.fr
-fi
-
-if [[ "$1" == "" ]]; then
-  echo "Usage : pc <command> [arguments]"
-  exit
-fi
-
-CMD="$1"
-shift
-
-if [[ "$ENV" == "production" ]]; then
-	SCALINGO_APP=pass-culture-api
-elif [[ "$ENV" == "staging" ]]; then
-	SCALINGO_APP=pass-culture-api-staging
-elif [[ "$ENV" == "testing" ]]; then
-	SCALINGO_APP=pass-culture-api-dev
-elif [[ "$ENV" == "demo" ]]; then
-	SCALINGO_APP=pass-culture-api-demo
-elif [[ "$ENV" == "integration" ]]; then
-	SCALINGO_APP=pass-culture-api-integration
-fi
-
+# Run alembic migration
+# Need to specify what alembic command you want to execute
+# Example: ./pc alembic upgrade HEAD
 if [[ "$CMD" == "alembic" ]]; then
   RUN='docker exec `docker ps | grep flask | cut -d" " -f 1` bash -c "cd /opt/services/flaskapp/src && PYTHONPATH=. alembic '"$*"'"'
-elif [[ "$CMD" == "build-pg" ]]; then
-	if [[ "$ENV" == "production" ]]; then
-		RUN='cd $ROOT_PATH/webapp && source ./env_file && yarn pgbuild-prod'
-	else
-		RUN='cd $ROOT_PATH/webapp && source ./env_file && yarn pgbuild'
-	fi
+
+# Connect to API container
 elif [[ "$CMD" == "bash" ]]; then
-	RUN='docker exec -it `docker ps | grep flask | cut -d" " -f 1` bash'
+  RUN='docker exec -it `docker ps | grep flask | cut -d" " -f 1` bash'
+
+# TODO: en prod ?
+elif [[ "$CMD" == "diff-schema" ]]; then
+  docker exec "$(docker ps | grep postgres | cut -d" " -f 1)" pg_dump -d pass_culture -U pass_culture -s > /tmp/pc_schema_local
+  RUN_PROD='ssh deploy@api.passculture.beta.gouv.fr docker exec `docker ps | grep postgres | cut -d" " -f 1` pg_dump -d pass_culture -U pass_culture -s'
+  echo "$RUN_PROD" | ssh deploy@api.passculture.beta.gouv.fr bash > /tmp/pc_schema_prod
+  diff /tmp/pc_schema_prod /tmp/pc_schema_local
+  exit
+
+# Dump pass_culture database into pgdump file
+elif [[ "$CMD" == "dump-db" ]]; then
+  RUN='mkdir -p "$ROOT_PATH/db_dumps";
+       docker exec `docker ps | grep postgres | cut -d" " -f 1` pg_dump -d pass_culture -U pass_culture -F c > "$ROOT_PATH"/db_dumps/`date +%Y%m%d_%H%M%S`.pgdump'
+
+# TODO: à refaire
+elif [[ "$CMD" == "dump-prod-db-to-staging" ]]; then
+  RUN='docker exec `docker ps | grep postgres | cut -d" " -f 1` pg_dump -d pass_culture -U pass_culture -F c | ssh api.passculture-staging.beta.gouv.fr "cat > ~/dumps_prod/`date +%Y%m%d_%H%M%S`.pgdump"'
+
+# Force docker-compose to build the docker images
+elif [[ "$CMD" == "rebuild-backend" ]]; then
+  RUN='docker-compose build --no-cache;
+			 sudo rm -rf $ROOT_PATH/api/static/object_store_data;
+       sudo rm -rf $ROOT_PATH/api/postgres_data'
+
+# Execute request from specified file
+elif [[ "$CMD" == "psql-file" ]]; then
+  COLUMNS=${COLUMNS:-''};
+  RUN='docker exec -t `docker ps | grep postgres | cut -d" " -f 1` bash -c "COLUMNS=\"'$COLUMNS'\" psql -U pass_culture pass_culture -f $1"'
+
+# Restart API after removing the database and files
+elif [[ "$CMD" == "restart-backend" ]]; then
+  RUN='sudo rm -rf $ROOT_PATH/api/static/object_store_data;
+       sudo rm -rf $ROOT_PATH/api/postgres_data;
+       cd $ROOT_PATH && docker-compose up --force-recreate'
+
+# Clear all data in postgresql database
+elif [[ "$CMD" == "reset-all-db" ]]; then
+  RUN='docker exec -it `docker ps | grep flask | cut -d" " -f 1` bash -c "rm -rf /opt/services/flaskapp/src/static/object_store_data/*";
+       docker exec -it `docker ps | grep postgres | cut -d" " -f 1` bash -c "psql -U pass_culture pass_culture -c \"TRUNCATE \\\"user\\\",booking,offerer,event,mediation,offer,provider,recommendation,user_offerer,venue,thing RESTART IDENTITY CASCADE;\""'
+
+# Remove all booking & reco from database
+elif [[ "$CMD" == "reset-reco-db" ]]; then
+  RUN='docker exec -it `docker ps | grep postgres | cut -d" " -f 1` bash -c "psql -U pass_culture pass_culture -c \"TRUNCATE booking,recommendation RESTART IDENTITY;\""'
+
+# Remove all booking, reco & user_offerer from database
+elif [[ "$CMD" == "reset-users-db" ]]; then
+  RUN='docker exec -it `docker ps | grep postgres | cut -d" " -f 1` bash -c "psql -U pass_culture pass_culture -c \"TRUNCATE \\\"user\\\",booking,recommendation,user_offerer RESTART IDENTITY CASCADE;\""'
+
+# Delete all local images
+elif [[ "$CMD" == "reset-all-storage" ]]; then
+  RUN='sudo rm -rf $ROOT_PATH/flask/static/object_store_data;'
+
+# Restore a postgresql database from file
+elif [[ "$CMD" == "restore-db" ]]; then
+  echo "Warning : RUN reset-all-db before running this !"
+  if [[ $# == 0 ]]; then
+    echo "Usage : pc restore-db <backup_file> [arguments]"
+    exit
+  fi
+  backup_file="$1"
+  RUN='cat "'$backup_file'" | docker exec -i `docker ps | grep postgres | cut -d" " -f 1` pg_restore -d pass_culture -U pass_culture -c'
+
+# TODO:
+elif [[ "$CMD" == "set-backend" ]]; then
+  RUN='cd "$ROOT_PATH";
+			 ./pc update-mocks;
+			 ./pc update_providables -m -p SpreadsheetExpVenues;
+			 ./pc update_providables -m -p SpreadsheetExpOffers;
+			 ./pc sandbox;
+			'
+# Start API server with database and nginx server
+elif [[ "$CMD" == "start-backend" ]]; then
+  RUN='cd $ROOT_PATH && docker-compose up'
+
+# Start webapp or pro application
+elif [[ "$CMD" == "start-webapp" ]] || [[ "$CMD" == "start-pro" ]]; then
+  if [[ "$CMD" == "start-webapp" ]]; then
+    RUN='cd $ROOT_PATH/webapp'
+  else
+    RUN='cd $ROOT_PATH/pro'
+  fi
+  if [[ "$BACKEND" == "testing" ]]; then
+    RUN="$RUN"' && export THUMBS_URL=https://storage.gra3.cloud.ovh.net/v1/AUTH_810600e32fdc4cb49a8d15332b68d2cc/storage-pc/thumbs && export API_URL=https://backend.passculture-testing.beta.gouv.fr'
+  elif [[ "$BACKEND" == "ngrok" ]]; then
+    RUN="$RUN"' && NGROK_API_URL='$(node "$ROOT_PATH"/webapp/scripts/ngrok.js)
+  elif [[ "$BACKEND" != "localhost" ]]; then
+    echo "Can only set backend as localhost or testing for developping your front app."
+    exit
+  fi
+  RUN="$RUN"' && yarn start'
+
+# TODO:
+elif [[ "$CMD" == "shared" ]]; then
+  RUN='cd $ROOT_PATH/shared && yarn run compile;
+			 cd $ROOT_PATH/webapp/node_modules && ln -sf ../../shared pass-culture-shared;
+			 cd $ROOT_PATH/pro/node_modules && ln -sf ../../shared pass-culture-shared;'
+
+# Run tests for API
+# Need start-backend to be successful and delete all data
+elif [[ "$CMD" == "test-backend" ]]; then
+  if [[ $# == 0 ]]; then
+    confirm "Warning: your database will be wiped. Is this OK ?"
+     "$ROOT_PATH"/pc -e "$ENV" reset-all-db
+     RUN='docker exec `docker ps | grep flask | cut -d" " -f 1` bash -c "cd /opt/services/flaskapp/src/ && rm -rf static/object_store_data/thumbs/* && PYTHONPATH=. pytest --color=yes -rsx -v tests"'
+  else
+     RUN='docker exec `docker ps | grep flask | cut -d" " -f 1` bash -c "cd /opt/services/flaskapp/src/ && rm -rf static/object_store_data/thumbs/* && PYTHONPATH=. pytest --color=yes -rsx -v '"$*"'"'
+  fi
+
+# Run only local providers tests for API
+elif [[ "$CMD" == "test-backend-provider" ]]; then
+	RUN='"$ROOT_PATH"/pc test-backend tests/10_local_providers.py::test_15_spreadsheet_exp_venue_provider tests/10_local_providers.py::test_15_spreadsheet_exp_stocks_provider tests/10_local_providers.py::test_16_openagenda_events_provider'
+
+# Run functional tests for webapp or pro application
+# Need to run start-backend & start-frontend
+elif [[ "$CMD" == "test-cafe-webapp" ]] || [[ "$CMD" == "test-cafe-pro" ]]; then
+	if [[ "$CMD" == "test-cafe-webapp"  ]]; then
+		APP_PATH="$ROOT_PATH"/webapp
+		SANDBOX_NAME="webapp"
+	else
+		APP_PATH="$ROOT_PATH"/pro
+		SANDBOX_NAME="light"
+	fi
+	if [[ $# == 0 ]]; then
+		confirm "Warning: your database will be wiped. Is this OK ?"
+	 	"$ROOT_PATH"/pc -e "$ENV" reset-all-db
+		"$ROOT_PATH"/pc -e "$ENV" sandbox --name="$SANDBOX_NAME"
+		RUN='cd $APP_PATH && ./scripts/pc.js testcafe '
+	else
+  	    RUN='cd $APP_PATH && ./scripts/pc.js testcafe '"$*"
+	fi
+
+# =============================================
+# Deploy commands
+# =============================================
+
+# Deploy current version of API to specified environment
 elif [[ "$CMD" == "deploy-backend" ]]; then
-  cd "$ROOT_PATH/api"
+  ensure_remote "Deploy backend cannot be run on the local environment. Use (for example) \"pc -e staging "$CMD"\"."
+
   if [[ ! "$ENV" == 'production' ]] \
         && [[ ! "$ENV" == 'staging' ]] \
         && [[ ! "$ENV" == 'demo' ]] \
@@ -102,8 +259,8 @@ elif [[ "$CMD" == "deploy-backend" ]]; then
      echo "Can only deploy-backend in staging, demo, integration and production"
      exit
   fi
-  commit_to_deploy=`git log -n 1 --pretty=format:%H`
 
+  cd "$ROOT_PATH/api"
   git fetch
   git checkout master
   git pull || exit_restoring_branch
@@ -111,43 +268,45 @@ elif [[ "$CMD" == "deploy-backend" ]]; then
   git pull || exit_restoring_branch
   git checkout production
   git pull || exit_restoring_branch
-  if [[ `git tag -l --points-at $commit_to_deploy | wc -l` == 0 ]]; then
+  if [[ $(git tag -l --points-at $commit_to_deploy | wc -l) == 0 ]]; then
     echo "ERROR: Can only deploy tagged commits"
     exit_restoring_branch
   fi
   if [[ "$ENV" == "production" ]]; then
-    staging_commit=`git log -n 1 --pretty=format:%H staging`
+    staging_commit=$(git log -n 1 --pretty=format:%H staging)
     if [[ "$staging_commit" != "$commit_to_deploy" ]]; then
       echo "ERROR: Can only deploy in production commits that are also deployed in staging"
       exit_restoring_branch
     fi
   fi
-  git checkout $ENV
-  git merge $commit_to_deploy
-  git push origin $ENV
+  git checkout "$ENV"
+  git merge "$commit_to_deploy"
+  git push origin "$ENV"
   if [[ "$ENV" == 'production' ]]; then
      echo "/!\\ You just deployed to production. Was the version also delivered to integration ?"
   fi
   exit_restoring_branch
-elif [[ "$CMD" == "diff-schema" ]]; then
-  docker exec `docker ps | grep postgres | cut -d" " -f 1` pg_dump -d pass_culture -U pass_culture -s > /tmp/pc_schema_local
-  RUN_PROD='ssh deploy@api.passculture.beta.gouv.fr docker exec `docker ps | grep postgres | cut -d" " -f 1` pg_dump -d pass_culture -U pass_culture -s'
-  echo "$RUN_PROD" | ssh deploy@api.passculture.beta.gouv.fr bash > /tmp/pc_schema_prod
-  diff /tmp/pc_schema_prod /tmp/pc_schema_local
-  exit
+
+# Deploy current version of Webapp / Pro to specified environment
 elif [[ "$CMD" == "deploy-frontend-webapp" ]] || [[ "$CMD" == "deploy-frontend-pro" ]]; then
   ensure_remote "Deploy fontend cannot be run on the local environment. Use (for example) \"pc -e staging "$CMD"\"."
-	if [[ "$CMD" == "deploy-frontend-webapp"  ]]; then
-		APP_PATH=$ROOT_PATH/webapp
-	else
-		APP_PATH=$ROOT_PATH/pro
-	fi
-  cd $APP_PATH
 
-  commit_to_deploy=`git log -n 1 --pretty=format:%H`
+  if [[ ! "$ENV" == 'production' ]] \
+        && [[ ! "$ENV" == 'staging' ]] \
+        && [[ ! "$ENV" == 'demo' ]] \
+        && [[ ! "$ENV" == 'integration' ]]; then
+     echo "Can only deploy-backend in staging, demo, integration and production"
+     exit
+  fi
+  if [[ "$CMD" == "deploy-frontend-webapp"  ]]; then
+	APP_PATH="$ROOT_PATH"/webapp
+  else
+	APP_PATH="$ROOT_PATH"/pro
+  fi
+  cd "$APP_PATH"
 
   if [[ "$ENV" == "production" ]]; then
-    staging_commit=`git log -n 1 --pretty=format:%H staging`
+    staging_commit=$(git log -n 1 --pretty=format:%H staging)
     if [[ "$staging_commit" != "$commit_to_deploy" ]]; then
       echo "ERROR: Can only deploy in production commits that are also deployed in staging"
       exit_restoring_branch
@@ -156,7 +315,7 @@ elif [[ "$CMD" == "deploy-frontend-webapp" ]] || [[ "$CMD" == "deploy-frontend-p
 
   (set -a; source "$APP_PATH/node_modules/pass-culture-shared/config/run_envs/$ENV" && yarn build) || exit
 
-  GIT_VERSION=`git log -n 1 --pretty=format:%h`
+  GIT_VERSION=$(git log -n 1 --pretty=format:%h)
   git diff-index HEAD --quiet --exit-code
   if [[ "$?" -gt "0" ]]; then
     GIT_VERSION="$GIT_VERSION*"
@@ -167,22 +326,16 @@ elif [[ "$CMD" == "deploy-frontend-webapp" ]] || [[ "$CMD" == "deploy-frontend-p
   delivery_date=`( date --version 2>/dev/null | grep -q GNU\  && date +'%F_%H-%M-%S%N' ) || ( which gdate &>/dev/null && gdate +'%F_%H-%M-%S%N' ) || ( which python &> /dev/null && python -c 'import datetime; print datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S%f")' ) || ( date +'%F_%H-%M-%S' )`
   delivery_date=${delivery_date:0:21}
   tagname="deployed-$ENV-$delivery_date"
-  git tag $tagname
-  git push origin $tagname
+  git tag "$tagname"
+  git push origin "$tagname"
 
   exit
-elif [[ "$CMD" == "dump-db" ]]; then
-  RUN='mkdir -p "$ROOT_PATH/db_dumps";
-       docker exec `docker ps | grep postgres | cut -d" " -f 1` pg_dump -d pass_culture -U pass_culture -F c > "$ROOT_PATH"/db_dumps/`date +%Y%m%d_%H%M%S`.pgdump'
-elif [[ "$CMD" == "dump-prod-db-to-staging" ]]; then
-  RUN='docker exec `docker ps | grep postgres | cut -d" " -f 1` pg_dump -d pass_culture -U pass_culture -F c | ssh api.passculture-staging.beta.gouv.fr "cat > ~/dumps_prod/`date +%Y%m%d_%H%M%S`.pgdump"'
-elif [[ "$CMD" == "ftp_mirrors" ]]; then
-  mkdir -p "$ROOT_PATH/api/ftp_mirrors"
-  sshfs -o allow_other,idmap=user deploy@api.passculture-staging.beta.gouv.fr:/home/deploy/pass-culture-main/api/ftp_mirrors "$ROOT_PATH/api/ftp_mirrors"\
-    && echo "FTP mirrors mounted, please restart flask docker container"
-  exit
-elif [[ "$CMD" == "grep" ]]; then
-  RUN='grep --exclude-dir ftp_mirrors --exclude-dir node_modules --exclude-dir build --exclude-dir postgres_data --exclude-dir .hypothesis -r "'"$*"'" .'
+
+# =============================================
+# Initialization commands
+# =============================================
+
+# Install new local environment
 elif [[ "$CMD" == "install" ]]; then
   RUN='cd $ROOT_PATH;
 			 yarn global add concurrently;
@@ -195,43 +348,53 @@ elif [[ "$CMD" == "install" ]]; then
 			 cd $ROOT_PATH/pro && yarn;
 	   cd $ROOT_PATH && ./pc install-private;
 	         ./pc install-hooks'
+
+# Decrypt data from gpg private file
 elif [[ "$CMD" == "install-private" ]]; then
   RUN='cd $ROOT_PATH/api;
             rm -rf private;
             gpg --passphrase $PC_GPG_PRIVATE --batch --output private.tar.gz -d private.tar.gz.gpg;
             tar xf private.tar.gz;
             rm private.tar.gz'
+
+# Install local git hook for pre-push actions
 elif [[ "$CMD" == "install-hooks" ]]; then
     RUN='cd $ROOT_PATH;
             ln -s -f ../../../../hooks/pre-push .git/modules/api/hooks/pre-push'
-elif [[ "$CMD" == "install-geoip" ]]; then
-	RUN='wget http://geolite.maxmind.com/download/geoip/database/GeoLite2-City.mmdb.gz;
-	 		 gzip -df GeoLite2-City.mmdb.gz;
-			 mkdir -p $ROOT_PATH/api/geoip/;
-			 mv GeoLite2-City.mmdb $ROOT_PATH/api/geoip/'
+
+# Create symlink to use "pc" command (admin rights may be needed)
+elif [[ "$CMD" == "symlink" ]]; then
+  RUN='cd /usr/local/bin && ln -sf '"$(pwd)"'/pc pc && chmod +x pc && chmod +x '"$(pwd)"'/pc'
+
+# =============================================
+# Administration commands
+# =============================================
+
+# Display logs from API
 elif [[ "$CMD" == "logs" ]]; then
   if [[ "$ENV" == "development" ]]; then
 	docker-compose logs
 	exit
   else
 	if [[ $# -gt 0 ]]; then
-		scalingo -a $SCALINGO_APP logs $*
+		scalingo -a "$SCALINGO_APP" logs "$@"
 	else
-		scalingo -a $SCALINGO_APP logs -n 100
+		scalingo -a "$SCALINGO_APP" logs -n 100
 	fi
 	exit
   fi
-elif [[ "$CMD" == "psql-file" ]]; then
-  COLUMNS=${COLUMNS:-''};
-  RUN='docker exec -t `docker ps | grep postgres | cut -d" " -f 1` bash -c "COLUMNS=\"'$COLUMNS'\" psql -U pass_culture pass_culture -f $1"'
+
+# Connect to Postgresql database in command line
 elif [[ "$CMD" == "psql" ]]; then
 	COLUMNS=${COLUMNS:-''};
 	if [[ "$ENV" == "development" ]]; then
 		RUN='docker exec -it `docker ps | grep postgres | cut -d" " -f 1` bash -c "COLUMNS=\"'$COLUMNS'\" psql -U pass_culture pass_culture $*"'
 	else
-		scalingo -a $SCALINGO_APP pgsql-console
+		scalingo -a "$SCALINGO_APP" pgsql-console
 		exit
 	fi
+
+# Open a python prompt in the specified environment
 elif [[ "$CMD" == "python" ]]; then
     COLUMNS=${COLUMNS:-''};
 	if [[ "$ENV" == "development" ]]; then
@@ -240,121 +403,33 @@ elif [[ "$CMD" == "python" ]]; then
 		scalingo -a "$SCALINGO_APP" run "python -i scripts/interact.py"
 		exit
 	fi
-elif [[ "$CMD" == "rebuild-backend" ]]; then
-  RUN='docker-compose build --no-cache;
-			 sudo rm -rf $ROOT_PATH/api/static/object_store_data;
-       sudo rm -rf $ROOT_PATH/api/postgres_data'
-elif [[ "$CMD" == "rebuild-frontend" ]]; then
-	RUN='cd $ROOT_PATH/webapp && npm run build'
-elif [[ "$CMD" == "restart-backend" ]]; then
-  RUN='sudo rm -rf $ROOT_PATH/api/static/object_store_data;
-       sudo rm -rf $ROOT_PATH/api/postgres_data;
-       cd $ROOT_PATH && docker-compose up --force-recreate'
-elif [[ "$CMD" == "update-db" ]]; then
-	RUN='cd "$ROOT_PATH";
-			 ./pc update_providables -p SpreadsheetExpVenues;
-			 ./pc update_providables -p SpreadsheetExpOffers;'
-elif [[ "$CMD" == "update-code" ]]; then
- 	RUN='cd $ROOT_PATH;
- 			git submodule foreach bash -c "git fetch && git reset --hard && git checkout origin/master && git reset --hard";
-			git stash && git pull;
- 			cd dockerfiles/nginx/conf.d;
- 			sed -i -e "s/##FQDN##/"$API_HOST"/" flaskapp_ssl;
- 			ln -sf flaskapp_ssl flaskapp.conf;'
-elif [[ "$CMD" == "reset-sandbox-db" ]]; then
-	RUN='cd "$ROOT_PATH";
-			 ./pc reset-all-db;
-			 ./pc update_providables -p SpreadsheetExpVenues;
-			 ./pc update_providables -p SpreadsheetExpOffers;
-			 ./pc sandbox;'
-elif [[ "$CMD" == "reset-all-db" ]]; then
-  RUN='docker exec -it `docker ps | grep flask | cut -d" " -f 1` bash -c "rm -rf /opt/services/flaskapp/src/static/object_store_data/*";
-       docker exec -it `docker ps | grep postgres | cut -d" " -f 1` bash -c "psql -U pass_culture pass_culture -c \"TRUNCATE \\\"user\\\",booking,offerer,event,mediation,offer,provider,recommendation,user_offerer,venue,thing RESTART IDENTITY CASCADE;\""'
-elif [[ "$CMD" == "reset-all-storage" ]]; then
-	RUN='sudo rm -rf $ROOT_PATH/flask/static/object_store_data;'
-elif [[ "$CMD" == "reset-reco-db" ]]; then
-  RUN='docker exec -it `docker ps | grep postgres | cut -d" " -f 1` bash -c "psql -U pass_culture pass_culture -c \"TRUNCATE booking,recommendation RESTART IDENTITY;\""'
-elif [[ "$CMD" == "reset-users-db" ]]; then
-  RUN='docker exec -it `docker ps | grep postgres | cut -d" " -f 1` bash -c "psql -U pass_culture pass_culture -c \"TRUNCATE \\\"user\\\",booking,recommendation,user_offerer RESTART IDENTITY CASCADE;\""'
-elif [[ "$CMD" == "restore-db" ]]; then
-  echo "Warning : RUN reset-all-db before running this !"
-  if [[ $# == 0 ]]; then
-    echo "Usage : pc restore-db <backup_file> [arguments]"
-    exit
-  fi
-  backup_file="$1"
-  RUN='cat "'$backup_file'" | docker exec -i `docker ps | grep postgres | cut -d" " -f 1` pg_restore -d pass_culture -U pass_culture -c'
-elif [[ "$CMD" == "set-backend" ]]; then
-	RUN='cd "$ROOT_PATH";
-			 ./pc update-mocks;
-			 ./pc update_providables -m -p SpreadsheetExpVenues;
-			 ./pc update_providables -m -p SpreadsheetExpOffers;
-			 ./pc sandbox;
-			'
+
+# Connect to administration instances
 elif [[ "$CMD" == "ssh" ]]; then
 	if [[ "$ENV" == "production" ]]; then
 		ssh deploy@api.passculture.beta.gouv.fr
 	elif [[ "$ENV" == "staging" ]]; then
 		ssh deploy@api.passculture-staging.beta.gouv.fr
 	fi
-elif [[ "$CMD" == "start-backend" ]]; then
-  RUN='cd $ROOT_PATH && docker-compose up'
-elif [[ "$CMD" == "start-webapp" ]] || [[ "$CMD" == "start-pro" ]]; then
-	if [[ "$CMD" == "start-webapp" ]]; then
-		RUN='cd $ROOT_PATH/webapp'
+
+# =============================================
+# Mobile Dev commands
+# =============================================
+
+elif [[ "$CMD" == "build-pg" ]]; then
+	if [[ "$ENV" == "production" ]]; then
+		RUN='cd $ROOT_PATH/webapp && source ./env_file && yarn pgbuild-prod'
 	else
-		RUN='cd $ROOT_PATH/pro'
+		RUN='cd $ROOT_PATH/webapp && source ./env_file && yarn pgbuild'
 	fi
-	if [[ "$BACKEND" == "testing" ]]; then
-		RUN=$RUN' && export THUMBS_URL=https://storage.gra3.cloud.ovh.net/v1/AUTH_810600e32fdc4cb49a8d15332b68d2cc/storage-pc/thumbs && export API_URL=https://backend.passculture-testing.beta.gouv.fr'
-	elif [[ "$BACKEND" == "ngrok" ]]; then
-		RUN=$RUN' && NGROK_API_URL='$(node $ROOT_PATH/webapp/scripts/ngrok.js)
-	elif [[ "$BACKEND" != "localhost" ]]; then
-		echo "Can only set backend as localhost or testing for developping your front app."
-		exit
-	fi
-	RUN=$RUN' && yarn start'
 elif [[ "$CMD" == "start-ios" ]]; then
 	RUN='open /Applications/Xcode.app/Contents/Developer/Applications/Simulator.app'
-elif [[ "$CMD" == "shared" ]]; then
-	RUN='cd $ROOT_PATH/shared && yarn run compile;
-			 cd $ROOT_PATH/webapp/node_modules && ln -sf ../../shared pass-culture-shared;
-			 cd $ROOT_PATH/pro/node_modules && ln -sf ../../shared pass-culture-shared;
-			'
-elif [[ "$CMD" == "symlink" ]]; then
-  RUN='cd /usr/local/bin && ln -sf '"$(pwd)"'/pc pc && chmod +x pc && chmod +x '"$(pwd)"'/pc'
-elif [[ "$CMD" == "test-backend" ]]; then
-  if [[ $# == 0 ]]; then
-    confirm "Warning: your database will be wiped. Is this OK ?"
-     "$ROOT_PATH"/pc -e $ENV reset-all-db
-     RUN='docker exec `docker ps | grep flask | cut -d" " -f 1` bash -c "cd /opt/services/flaskapp/src/ && rm -rf static/object_store_data/thumbs/* && PYTHONPATH=. pytest --color=yes -rsx -v tests"'
-  else
-     RUN='docker exec `docker ps | grep flask | cut -d" " -f 1` bash -c "cd /opt/services/flaskapp/src/ && rm -rf static/object_store_data/thumbs/* && PYTHONPATH=. pytest --color=yes -rsx -v '"$*"'"'
-  fi
-elif [[ "$CMD" == "test-backend-provider" ]]; then
-	RUN='"$ROOT_PATH"/pc test-backend tests/10_local_providers.py::test_15_spreadsheet_exp_venue_provider tests/10_local_providers.py::test_15_spreadsheet_exp_stocks_provider tests/10_local_providers.py::test_16_openagenda_events_provider'
-elif [[ "$CMD" == "test-cafe-webapp" ]] || [[ "$CMD" == "test-cafe-pro" ]]; then
-	if [[ "$CMD" == "test-cafe-webapp"  ]]; then
-		APP_PATH=$ROOT_PATH/webapp
-		SANDBOX_NAME="webapp"
-	else
-		APP_PATH=$ROOT_PATH/pro
-		SANDBOX_NAME="light"
-	fi
-	if [[ $# == 0 ]]; then
-		confirm "Warning: your database will be wiped. Is this OK ?"
-	 	"$ROOT_PATH"/pc -e $ENV reset-all-db
-		"$ROOT_PATH"/pc -e $ENV sandbox --name="$SANDBOX_NAME"
-		RUN='cd $APP_PATH && ./scripts/pc.js testcafe '
-	else
-  	RUN='cd $APP_PATH && ./scripts/pc.js testcafe '"$*"
-	fi
-elif [[ "$CMD" == "update-mocks" ]]; then
-  RUN='cd "$ROOT_PATH";
-       cd api/mock/spreadsheet_exp;
-       wget -O Lieux.csv "https://docs.google.com/spreadsheets/d/1Lj53_cgWDyQ1BqUeVtq059nXxOULL28mDmm_3p2ldpo/gviz/tq?tqx=out:csv&sheet=Lieux";
-       wget -O Evenements.csv "https://docs.google.com/spreadsheets/d/1Lj53_cgWDyQ1BqUeVtq059nXxOULL28mDmm_3p2ldpo/gviz/tq?tqx=out:csv&sheet=Evenements"
-      '
+
+# =============================================
+# Python Scripts commands
+# =============================================
+
+# Run python scripts from api/scripts
 else
   if [[ "$ENV" == "development" ]]; then
     RUN='docker exec `docker ps | grep flask | cut -d" " -f 1` bash -c "cd /opt/services/flaskapp/src/ && PYTHONPATH=. python scripts/pc.py '"$CMD $*"'"'
@@ -364,9 +439,13 @@ else
   fi
 fi
 
+# =============================================
+# Execute command
+# =============================================
+
 if [[ $PWD == "/home/deploy/pass-culture-main" ]]; then
-	echo $RUN
-  eval $RUN
+	echo "$RUN"
+  eval "$RUN"
 else
 	if [[ "$ENV" == "production" ]]; then
 	  echo "$RUN" | ssh deploy@api.passculture.beta.gouv.fr bash
@@ -375,7 +454,7 @@ else
 	elif [[ "$ENV" == "wordpress" ]]; then
 		ssh debian@passculture.beta.gouv.fr
 	else
-		echo $RUN
-	  eval $RUN
+		echo "$RUN"
+	  eval "$RUN"
 	fi
 fi
