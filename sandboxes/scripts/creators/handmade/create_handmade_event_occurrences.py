@@ -35,8 +35,8 @@ def create_handmade_event_occurrences(offers_by_name):
     )
 
     event_occurrences_by_name['Le temps des cerises en mode mixolydien / KWATA / 0 / 20h'] = create_event_occurrence(
-        beginning_datetime=strftime(today),
-        end_datetime=strftime(today + timedelta(hours=3)),
+        beginning_datetime=strftime(today + timedelta(days=1)),
+        end_datetime=strftime(today + timedelta(days=1, hours=3)),
         offer=offers_by_name['Le temps des cerises en mode mixolydien / KWATA']
     )
 
