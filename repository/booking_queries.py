@@ -113,20 +113,6 @@ def save_booking(booking):
         raise api_errors
 
 
-def find_bookings_stats_per_department(time_intervall):
-    query = render_template('exports/find_bookings_stats_per_departement.sql', time_intervall=time_intervall)
-    return db.engine.execute(query).fetchall()
-
-
-def find_bookings_in_date_range_for_given_user_or_venue_departement(booking_date_max, booking_date_min, event_date_max,
-                                                                    event_date_min, user_department, venue_department):
-    query = render_template('exports/find_bookings_in_date_range_for_given_user_or_venue_departement.sql',
-                            booking_date_max=booking_date_max, booking_date_min=booking_date_min,
-                            event_date_max=event_date_max, event_date_min=event_date_min,
-                            user_department=user_department, venue_department=venue_department)
-    return db.engine.execute(query).fetchall()
-
-
 def find_by_id(booking_id):
     return Booking.query.filter_by(id=booking_id).first_or_404()
 

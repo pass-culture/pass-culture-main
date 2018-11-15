@@ -96,28 +96,6 @@ def get_active_offers_by_type(offer_type, user=None, departement_codes=None, off
     return query.all()
 
 
-def find_offers_in_date_range_for_given_venue_departement(date_max, date_min, department):
-    query = db.session.query(Offer.id,
-                             Event.id,
-                             Event.name,
-                             EventOccurrence.beginningDatetime,
-                             Venue.departementCode,
-                             Offerer.id,
-                             Offerer.name) \
-        .join(Event) \
-        .join(EventOccurrence) \
-        .join(Venue) \
-        .join(Offerer)
-    if department:
-        query = query.filter(Venue.departementCode == department)
-    if date_min:
-        query = query.filter(EventOccurrence.beginningDatetime >= date_min)
-    if date_max:
-        query = query.filter(EventOccurrence.beginningDatetime <= date_max)
-    result = query.order_by(EventOccurrence.beginningDatetime).all()
-    return result
-
-
 def _date_interval_to_filter(date_interval):
     return ((EventOccurrence.beginningDatetime >= date_interval[0]) & \
             (EventOccurrence.beginningDatetime <= date_interval[1]))
