@@ -7,13 +7,9 @@ from flask import Flask
 from mailjet_rest import Client
 
 from local_providers.install import install_local_providers
-from models import User, Deposit, Booking, Mediation, Recommendation, UserOfferer, Offerer, Venue, VenueProvider, Offer, \
-    EventOccurrence, Stock, Thing, Event, UserSession
-from models.activity import load_activity
 from models.db import db
+from models.delete import reset_all_db
 from models.install import install_models
-from models.payment import Payment
-from models.payment_status import PaymentStatus
 
 items_by_category = {'first': [], 'last': []}
 
@@ -69,27 +65,7 @@ def mocked_mail(f):
 def clean_database(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        """ Order of deletions matters because of foreign key constraints """
-        Activity = load_activity()
-        VenueProvider.query.delete()
-        PaymentStatus.query.delete()
-        Payment.query.delete()
-        Booking.query.delete()
-        Stock.query.delete()
-        EventOccurrence.query.delete()
-        Recommendation.query.delete()
-        Mediation.query.delete()
-        Offer.query.delete()
-        Thing.query.delete()
-        Event.query.delete()
-        Venue.query.delete()
-        UserOfferer.query.delete()
-        Offerer.query.delete()
-        Deposit.query.delete()
-        User.query.delete()
-        Activity.query.delete()
-        UserSession.query.delete()
-        db.session.commit()
+        reset_all_db()
         return f(*args, **kwargs)
 
     return decorated_function

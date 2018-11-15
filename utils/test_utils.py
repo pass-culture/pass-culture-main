@@ -358,21 +358,31 @@ def create_stock_with_thing_offer(offerer, venue, thing_offer, price=10, availab
     stock.available = available
     return stock
 
-
-def create_thing(thing_name='Test Book', thing_type=ThingType.LIVRE_EDITION, media_urls=['test/urls'],
-                 author_name='Test Author', url=None, thumb_count=1, dominant_color=None, is_national=False,
-                 id_at_providers=None, description=None):
+def create_thing(
+    thing_name='Test Book',
+    thing_type=str(ThingType.LIVRE_EDITION),
+    author_name='Test Author',
+    is_national=False,
+    id_at_providers=None,
+    media_urls=['test/urls'],
+    description=None,
+    dominant_color=None,
+    thumb_count=1,
+    url=None
+):
     thing = Thing()
     thing.type = str(thing_type)
     thing.name = thing_name
-    thing.mediaUrls = media_urls
+    thing.description = description
+    thing.extraData = {'author': author_name}
+    thing.isNational = is_national
     if id_at_providers is None:
         id_at_providers = ''.join(random.choices(string.digits, k=13))
     thing.idAtProviders = id_at_providers
-    thing.extraData = {'author': author_name}
-    thing.url = url
+    thing.mediaUrls = media_urls
     thing.thumbCount = thumb_count
-    thing.isNational = is_national
+    thing.url = url
+
     if thumb_count > 0:
         if dominant_color is None:
             thing.firstThumbDominantColor = b'\x00\x00\x00'
@@ -382,10 +392,23 @@ def create_thing(thing_name='Test Book', thing_type=ThingType.LIVRE_EDITION, med
     return thing
 
 
+<<<<<<< HEAD
 def create_event(event_name='Test event', event_type=EventType.SPECTACLE_VIVANT, duration_minutes=60,
                  thumb_count=0, dominant_color=None, is_national=False, description=None):
+=======
+def create_event(
+    event_name='Test event',
+    event_type=str(EventType.SPECTACLE_VIVANT),
+    description=None,
+    duration_minutes=60,
+    thumb_count=0,
+    dominant_color=None,
+    is_national=False
+):
+>>>>>>> added reset all db in save sandbox
     event = Event()
     event.name = event_name
+    event.description = description
     event.durationMinutes = duration_minutes
     event.thumbCount = thumb_count
     event.isNational = is_national

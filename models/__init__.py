@@ -16,6 +16,7 @@ from models.stock import Stock
 from models.offerer import Offerer
 from models.offer_type import ThingType, EventType
 from models.payment import Payment
+from models.payment_status import PaymentStatus
 from models.pc_object import PcObject
 from models.providable_mixin import ProvidableMixin
 from models.provider import Provider
@@ -54,6 +55,7 @@ __all__ = (
     'LocalProvider',
     'Offer',
     'Payment',
+    'PaymentStatus',
     'Provider',
     'Recommendation',
     'RightsType',
