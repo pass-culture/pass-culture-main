@@ -15,6 +15,6 @@ def create_handmade_thing_stocks(offers_by_name):
 
     PcObject.check_and_save(*offers_by_name.values())
 
-    logger.info('created {} offers'.format(len(offers_by_name)))
+    logger.info('created {} hing_stocks'.format(len(thing_stocks_by_name)))
 
     return thing_stocks_by_name

@@ -16,7 +16,17 @@ def test_save_industrial_sandbox(app):
         logger.info = lambda o: None
         save_sandbox('industrial')
         logger.info = logger_info
-        assertCreatedCounts(app,
+        assertCreatedCounts(
+            app,
+            Deposit=4,
+            Event=7,
+            EventOccurrence=72,
+            Mediation=48,
+            Offer=72,
             Offerer=4,
-            User=12
+            Stock=96,
+            Thing=11,
+            User=12,
+            UserOfferer=24,
+            Venue=8
         )

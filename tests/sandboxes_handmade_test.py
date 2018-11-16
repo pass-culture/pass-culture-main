@@ -16,7 +16,19 @@ def test_save_handmade_sandbox(app):
         logger.info = lambda o: None
         save_sandbox('handmade')
         logger.info = logger_info
-        assertCreatedCounts(app,
+        assertCreatedCounts(
+            app,
+            Booking=2,
+            Deposit=1,
+            Event=4,
+            EventOccurrence=5,
+            Mediation=3,
+            Offer=6,
             Offerer=4,
-            User=7
+            Recommendation=2,
+            Stock=8,
+            Thing=2,
+            User=7,
+            UserOfferer=4,
+            Venue=7
         )
