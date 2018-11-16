@@ -12,7 +12,6 @@ from domain.user_emails import send_reset_password_email, send_user_validation_e
 from models import ApiErrors, Deposit, Offerer, PcObject, User
 from models.user_offerer import RightsType
 from models.venue import create_digital_venue
-from repository.user_offerer_queries import count_user_offerers_by_offerer
 from repository.user_queries import find_user_by_email, find_user_by_reset_password_token
 from utils import logger
 from utils.config import ILE_DE_FRANCE_DEPT_CODES, IS_INTEGRATION
@@ -23,7 +22,6 @@ from utils.mailing import \
     subscribe_newsletter, MailServiceException
 from utils.rest import expect_json_data, \
     login_or_api_key_required
-from validation.offerers import check_offerer_is_validated
 from validation.users import check_allowed_changes_for_user, check_valid_signup
 
 

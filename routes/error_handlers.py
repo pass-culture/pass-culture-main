@@ -4,7 +4,7 @@ import traceback
 import simplejson as json
 from flask import current_app as app, jsonify, request
 
-from models.api_errors import ApiErrors, ResourceGoneError, ConflictError, ResourceNotFound, ForbiddenError
+from models.api_errors import ApiErrors, ResourceGoneError, ResourceNotFound, ForbiddenError
 from routes.before_request import InvalidOriginHeader
 from utils.human_ids import NonDehumanizableId
 
@@ -60,10 +60,3 @@ def invalid_id_for_dehumanize_error(error):
     api_errors.addError('global', 'La page que vous recherchez n\'existe pas')
     app.logger.error('404 %s' % str(error))
     return jsonify(api_errors.errors), 404
-
-
-@app.errorhandler(ConflictError)
-def conflict_error(error):
-    app.logger.error('409 %s' % str(error))
-    return jsonify(error.errors), 409
-

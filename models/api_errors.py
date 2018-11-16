@@ -69,10 +69,6 @@ class ResourceGoneError(ApiErrors):
     pass
 
 
-class ConflictError(ApiErrors):
-    pass
-
-
 class ResourceNotFound(ApiErrors):
     pass
 

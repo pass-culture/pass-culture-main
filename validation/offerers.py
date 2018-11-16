@@ -1,5 +1,4 @@
 from models import ApiErrors
-from models.api_errors import ConflictError
 
 
 def check_valid_edition(data):
@@ -24,11 +23,3 @@ def parse_boolean_param_validated(request):
             raise errors
 
     return only_validated_offerers
-
-
-def check_offerer_is_validated(offerer):
-    if offerer.validationToken:
-        error = ConflictError()
-        error.addError('siren',
-                       'Vous ne pouvez pas créer un deuxième compte pour une structure non validée par le pass Culture')
-        raise error
