@@ -13,7 +13,7 @@ from models.pc_object import PcObject
 from models.provider import Provider
 from models.thing import Thing
 from models.venue_provider import VenueProvider
-from sandboxes.scripts.save_sandbox import save_sandbox
+from sandboxes.scripts.creators.handmade import save_handmade_sandbox
 from utils.human_ids import dehumanize
 from utils.logger import logger
 from utils.test_utils import assertCreatedCounts, \
@@ -172,6 +172,6 @@ def test_99_init(app):
     with app.app_context():
         logger_info = logger.info
         logger.info = lambda o: None
-        save_sandbox('light')
+        save_handmade_sandbox()
         logger.info = logger_info
         assertCreatedCounts(app, User=7)
