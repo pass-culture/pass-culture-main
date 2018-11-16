@@ -51,7 +51,7 @@ class PriceQuantityForm extends Component {
               }
               name="price"
               placeholder="Gratuit"
-              type="number"
+              type={isStockReadOnly ? 'text' : 'number'}
               step="0.01"
               min="0"
               title="Prix"
@@ -70,7 +70,7 @@ class PriceQuantityForm extends Component {
             <Field
               name="available"
               title="Places disponibles"
-              type="number"
+              type={isStockReadOnly ? 'text' : 'number'}
               placeholder="Illimité"
               className="input is-small input-number"
               renderInfo={() => {
