@@ -87,4 +87,6 @@ def create_handmade_venues(offerers_by_name):
 
     PcObject.check_and_save(*venues_by_name.values())
 
+    logger.info('created {} venues'.format(len(venues_by_name)))
+
     return venues_by_name

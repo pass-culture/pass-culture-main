@@ -5,13 +5,15 @@ from utils.test_utils import create_mediation
 
 def create_industrial_mediations(offers_by_name):
     logger.info('create_industrial_mediations')
-    
+
     mediations_by_name = {}
 
     for (offer_name, offer) in offers_by_name.items():
         mediations_by_name[offer_name] = create_mediation(offer)
 
     PcObject.check_and_save(*mediations_by_name.values())
+
+    logger.info('created {} mediations'.format(len(mediations_by_name)))
 
     for mediation in mediations_by_name.values():
         store_public_object_from_sandbox_assets(

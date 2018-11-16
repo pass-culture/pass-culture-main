@@ -15,4 +15,6 @@ def create_handmade_deposits(users_by_name):
 
     PcObject.check_and_save(*deposits_by_name.values())
 
+    logger.info('created {} deposits'.format(len(deposits_by_name)))
+
     return deposits_by_name

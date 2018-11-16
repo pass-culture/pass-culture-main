@@ -53,4 +53,6 @@ def create_industrial_offerers(
 
     PcObject.check_and_save(*offerers_by_name.values())
 
+    logger.info('created {} offerers'.format(len(offerers_by_name)))
+
     return offerers_by_name

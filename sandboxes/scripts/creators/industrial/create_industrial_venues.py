@@ -32,4 +32,6 @@ def create_industrial_venues(offerers_by_name):
 
     PcObject.check_and_save(*venue_by_name.values())
 
+    logger.info('created {} venues'.format(len(venue_by_name)))
+
     return venue_by_name

@@ -21,4 +21,6 @@ def create_industrial_user_offerers(users_by_name, offerers_by_name):
 
     PcObject.check_and_save(*user_offerers_by_name.values())
 
+    logger.info('created {} user_offerers'.format(len(user_offerers_by_name)))
+
     return user_offerers_by_name

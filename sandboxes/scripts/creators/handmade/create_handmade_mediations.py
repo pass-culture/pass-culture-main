@@ -22,6 +22,8 @@ def create_handmade_mediations(offers_by_name):
 
     PcObject.check_and_save(*mediations_by_name.values())
 
+    logger.info('created {} mediations'.format(len(mediations_by_name)))
+
     store_public_object_from_sandbox_assets(
         "thumbs",
         mediations_by_name['Rencontre avec Franck Lepage / LE GRAND REX PARIS'],

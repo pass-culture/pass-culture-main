@@ -39,4 +39,6 @@ def create_industrial_event_offers(
 
     PcObject.check_and_save(*event_offers_by_name.values())
 
+    logger.info('created {} event_offers'.format(len(event_offers_by_name)))
+
     return event_offers_by_name

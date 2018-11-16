@@ -19,4 +19,6 @@ def create_industrial_event_stocks(event_occurrences_by_name):
 
     PcObject.check_and_save(*event_stocks_by_name.values())
 
+    logger.info('created {} event_stocks'.format(len(event_stocks_by_name)))
+
     return event_stocks_by_name

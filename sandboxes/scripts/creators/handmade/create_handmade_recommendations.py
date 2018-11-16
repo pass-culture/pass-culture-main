@@ -21,4 +21,6 @@ def create_handmade_recommendations(mediations_by_name, offers_by_name, users_by
 
     PcObject.check_and_save(*recommendations_by_name.values())
 
+    logger.info('created {} recommendations'.format(len(recommendations_by_name)))
+
     return recommendations_by_name

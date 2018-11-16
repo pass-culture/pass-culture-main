@@ -51,4 +51,6 @@ def create_industrial_users():
 
     PcObject.check_and_save(*users_by_name.values())
 
+    logger.info('created {} users'.format(len(users_by_name)))
+
     return users_by_name

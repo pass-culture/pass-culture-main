@@ -25,4 +25,6 @@ def create_handmade_bookings(recommendations_by_name, stocks_by_name, users_by_n
 
     PcObject.check_and_save(*bookings_by_name.values())
 
+    logger.info('created {} bookings'.format(len(bookings_by_name)))
+
     return bookings_by_name

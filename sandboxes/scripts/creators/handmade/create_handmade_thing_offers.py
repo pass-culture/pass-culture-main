@@ -19,4 +19,6 @@ def create_handmade_thing_offers(things_by_name, venues_by_name):
 
     PcObject.check_and_save(*thing_offers_by_name.values())
 
+    logger.info('created {} thing_offers'.format(len(thing_offers_by_name)))
+
     return thing_offers_by_name

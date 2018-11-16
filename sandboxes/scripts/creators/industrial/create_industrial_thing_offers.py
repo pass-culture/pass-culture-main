@@ -21,7 +21,7 @@ def create_industrial_thing_offers(
         virtual_venue = venues_by_name[offerer_name + " (Offre en ligne)"]
 
         for thing in things_by_name.values():
-            
+
             thing_type = types_by_value[thing.type]
             if thing_type['offlineOnly']:
                 thing_venue = venue
@@ -38,5 +38,7 @@ def create_industrial_thing_offers(
             )
 
     PcObject.check_and_save(*thing_offers_by_name.values())
+
+    logger.info('created {} thing_offers'.format(len(thing_offers_by_name)))
 
     return thing_offers_by_name

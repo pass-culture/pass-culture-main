@@ -38,4 +38,6 @@ def create_handmade_events():
 
     PcObject.check_and_save(*events_by_name.values())
 
+    logger.info('created {} events'.format(len(events_by_name)))
+
     return events_by_name

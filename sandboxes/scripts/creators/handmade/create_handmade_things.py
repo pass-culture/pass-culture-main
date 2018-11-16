@@ -18,4 +18,6 @@ def create_handmade_things():
 
     PcObject.check_and_save(*things_by_name.values())
 
+    logger.info('created {} things'.format(len(things_by_name)))
+
     return things_by_name
