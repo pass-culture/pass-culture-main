@@ -379,14 +379,8 @@ def create_thing(thing_name='Test Book', thing_type=str(ThingType.LIVRE_EDITION)
     return thing
 
 
-def create_event(
-    event_name='Test event',
-    event_type=str(EventType.SPECTACLE_VIVANT),
-    duration_minutes=60,
-    thumb_count=0,
-    dominant_color=None,
-    is_national=False
-):
+def create_event(event_name='Test event', event_type=str(EventType.SPECTACLE_VIVANT), duration_minutes=60,
+                 thumb_count=0, dominant_color=None, is_national=False, description=None):
     event = Event()
     event.name = event_name
     event.durationMinutes = duration_minutes
@@ -396,6 +390,7 @@ def create_event(
     event.firstThumbDominantColor = dominant_color
     if event.thumbCount > 0 and not dominant_color:
         event.firstThumbDominantColor = b'\x00\x00\x00'
+    event.description = description
     return event
 
 
@@ -424,14 +419,8 @@ def create_event_offer(venue, event=None, event_name='Test event', duration_minu
                        event_type=str(EventType.SPECTACLE_VIVANT), is_national=False, is_active=True):
     offer = Offer()
     if event is None:
-        event = create_event(
-            event_type=event_type,
-            event_name=event_name,
-            duration_minutes=duration_minutes,
-            thumb_count=thumb_count,
-            dominant_color=dominant_color,
-            is_national=is_national
-        )
+        event = create_event(event_name=event_name, event_type=event_type, duration_minutes=duration_minutes,
+                             thumb_count=thumb_count, dominant_color=dominant_color, is_national=is_national)
     offer.event = event
     offer.venue = venue
     offer.dateCreated = date_created

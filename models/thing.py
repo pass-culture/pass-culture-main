@@ -84,6 +84,7 @@ Thing.__ts_vector__ = create_tsvector(
     cast(coalesce(Thing.name, ''), TEXT),
     coalesce(Thing.extraData['author'].cast(TEXT), ''),
     coalesce(Thing.extraData['byArtist'].cast(TEXT), ''),
+    cast(coalesce(Thing.description, ''), TEXT),
 )
 
 Thing.__table_args__ = (

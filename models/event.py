@@ -81,7 +81,8 @@ class Event(PcObject,
 
 
 Event.__ts_vector__ = create_tsvector(
-    cast(coalesce(Event.name, ''), TEXT)
+    cast(coalesce(Event.name, ''), TEXT),
+    cast(coalesce(Event.description, ''), TEXT)
 )
 
 Event.__table_args__ = (

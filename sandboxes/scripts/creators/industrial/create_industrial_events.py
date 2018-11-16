@@ -22,11 +22,7 @@ def create_industrial_events():
             mock_count = 0
 
         name = event_type['value'] + " / " + EVENT_OR_THING_MOCK_NAMES[mock_count]
-        events_by_name[name] = create_event(
-            event_name=name,
-            event_type=event_type['value'],
-            duration_minutes=60
-        )
+        events_by_name[name] = create_event(event_name=name, event_type=event_type['value'], duration_minutes=60)
 
     PcObject.check_and_save(*events_by_name.values())
 

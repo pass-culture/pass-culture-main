@@ -57,14 +57,8 @@ def test_get_offers_for_recommendations_search_by_type(app):
     type_label = str(EventType.CONFERENCE_DEBAT_DEDICACE)
     other_type_label = str(EventType.MUSIQUE)
 
-    conference_event = create_event(
-        'Rencontre avec Franck Lepage',
-        event_type=type_label
-    )
-    concert_event = create_event(
-        'Concert de Gael Faye',
-        event_type=other_type_label
-    )
+    conference_event = create_event('Rencontre avec Franck Lepage', event_type=type_label)
+    concert_event = create_event('Concert de Gael Faye', event_type=other_type_label)
 
     offerer = create_offerer(
         siren='507633576',
@@ -202,9 +196,9 @@ def test_get_offers_for_recommendations_search_with_multiple_keywords_returns_of
     thing_ok_offer = create_thing_offer(venue, thing_ok)
     thing_ko_offer = create_thing_offer(venue, thing_ko)
 
-    event_event_occurrence = create_event_occurrence(event_offer)
+    event_occurrence = create_event_occurrence(event_offer)
 
-    event_stock = create_stock_from_event_occurrence(event_event_occurrence)
+    event_stock = create_stock_from_event_occurrence(event_occurrence)
     thing_ok_stock = create_stock_from_offer(thing_ok_offer)
     thing_ko_stock = create_stock_from_offer(thing_ko_offer)
 
@@ -220,25 +214,31 @@ def test_get_offers_for_recommendations_search_with_multiple_keywords_returns_of
 
 @clean_database
 @pytest.mark.standalone
-def test_get_offers_for_recommendations_search_with_multiple_keywords_returns_offers_with_any_keyword_in_name(app):
+def test_get_offers_for_recommendations_search_with_multiple_keywords_returns_offers_with_any_keyword_in_description(app):
     # Given
     thing_ok = create_thing(thing_name='Rien à voir', description='Il rencontre une personne')
     thing_ko = create_thing(thing_name='Hors sujet', description='pas de mot en commun')
+    event_ok = create_event(event_name='Pas de match', description='Océan bleu')
     offerer = create_offerer()
     venue = create_venue(offerer)
 
     thing_ok_offer = create_thing_offer(venue, thing_ok)
     thing_ko_offer = create_thing_offer(venue, thing_ko)
+    event_ok_offer = create_event_offer(venue, event_ok)
+
+    event_occurrence = create_event_occurrence(event_ok_offer)
 
     thing_ok_stock = create_stock_from_offer(thing_ok_offer)
     thing_ko_stock = create_stock_from_offer(thing_ko_offer)
+    event_ok_stock = create_stock_from_event_occurrence(event_occurrence)
 
-    PcObject.check_and_save(thing_ok_stock, thing_ko_stock)
+    PcObject.check_and_save(thing_ok_stock, thing_ko_stock, event_ok_stock)
     # When
     offers = get_offers_for_recommendations_search(keywords='rencontre sous l\'océan')
 
     # Then
     assert thing_ok_offer in offers
+    assert event_ok_offer in offers
     assert thing_ko_offer not in offers
 
 
