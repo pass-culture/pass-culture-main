@@ -79,7 +79,7 @@ jobs: # a collection of steps
             rm -rf shared
             git clone https://github.com/betagouv/pass-culture-browser.git webapp
             git clone https://github.com/betagouv/pass-culture-pro.git pro
-            ./install_ci_lib.sh
+            ./install_lib_ci.sh
       - checkout:
           path: ~/pass-culture-main/api
       - run:
