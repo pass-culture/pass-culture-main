@@ -3,43 +3,87 @@
 exports[`src | components | pages | SearchPageContentContent snapshot should match snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
-  Symbol(enzyme.__unrendered__): <Provider
-    store={
-      Object {
-        "clearActions": [Function],
-        "dispatch": [Function],
-        "getActions": [Function],
-        "getState": [Function],
-        "replaceReducer": [Function],
-        "subscribe": [Function],
+  Symbol(enzyme.__unrendered__): <SearchPageContent
+    dispatch={
+      [MockFunction] {
+        "calls": Array [
+          Array [
+            Object {
+              "config": Object {},
+              "method": "GET",
+              "path": "types",
+              "type": "REQUEST_DATA_GET_TYPES",
+            },
+          ],
+          Array [
+            Object {
+              "config": Object {
+                "handleFail": [Function],
+                "handleSuccess": [Function],
+              },
+              "method": "GET",
+              "path": "recommendations?page=1&orderBy=offer.id+desc",
+              "type": "REQUEST_DATA_GET_RECOMMENDATIONS?PAGE=1&ORDERBY=OFFER.ID+DESC",
+            },
+          ],
+        ],
+        "results": Array [
+          Object {
+            "isThrow": false,
+            "value": undefined,
+          },
+          Object {
+            "isThrow": false,
+            "value": undefined,
+          },
+        ],
       }
     }
-  >
-    <SearchPageContent
-      dispatch={[MockFunction]}
-      history={Object {}}
-      location={Object {}}
-      match={Object {}}
-      pagination={
-        Object {
-          "windowQuery": Object {
-            "categories": null,
-            "date": null,
-            "distance": null,
-            "jours": null,
-            "latitude": null,
-            "longitude": null,
-            "mots-cles": "Fake",
-            "orderBy": "offer.id+desc",
-          },
-        }
+    history={
+      Object {
+        "push": [MockFunction],
       }
-      recommendations={Array []}
-      search={Object {}}
-      typeSublabels={Array []}
-      typeSublabelsAndDescription={Array []}
-    />
-  </Provider>,
+    }
+    location={
+      Object {
+        "hash": "",
+        "key": "lxn6vp",
+        "pathname": "/recherche",
+        "search": "?orderBy=offer.id+desc",
+        "state": undefined,
+      }
+    }
+    match={
+      Object {
+        "params": Object {
+          "categorie": undefined,
+          "view": "resultats",
+        },
+      }
+    }
+    pagination={
+      Object {
+        "apiQueryString": "orderBy=offer.id+desc",
+        "change": [MockFunction],
+        "goToNextPage": [MockFunction],
+        "page": 1,
+        "windowQuery": Object {
+          "categories": null,
+          "date": null,
+          "distance": null,
+          "jours": null,
+          "latitude": null,
+          "longitude": null,
+          "mots-cles": null,
+          "orderBy": "offer.id+desc",
+        },
+      }
+    }
+    recommendations={Array []}
+    search={Object {}}
+    typeSublabels={Array []}
+    typeSublabelsAndDescription={Array []}
+  />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
     "getNode": [Function],
@@ -51,62 +95,980 @@ ShallowWrapper {
   Symbol(enzyme.__node__): Object {
     "instance": null,
     "key": undefined,
-    "nodeType": "class",
+    "nodeType": "function",
     "props": Object {
-      "dispatch": [MockFunction],
-      "history": Object {},
-      "location": Object {},
-      "match": Object {},
-      "pagination": Object {
-        "windowQuery": Object {
-          "categories": null,
-          "date": null,
-          "distance": null,
-          "jours": null,
-          "latitude": null,
-          "longitude": null,
-          "mots-cles": "Fake",
-          "orderBy": "offer.id+desc",
-        },
+      "backButton": Object {
+        "onClick": [Function],
       },
-      "recommendations": Array [],
-      "search": Object {},
-      "typeSublabels": Array [],
-      "typeSublabelsAndDescription": Array [],
+      "children": Array [
+        <form
+          onSubmit={[Function]}
+        >
+          <div
+            className="flex-columns items-start"
+          >
+            <div
+              className="field has-addons flex-columns flex-1"
+              id="search-page-keywords-field"
+            >
+              <p
+                className="control has-icons-right flex-1"
+              >
+                <input
+                  className="input search-input"
+                  defaultValue={null}
+                  id="keywords"
+                  onChange={[Function]}
+                  placeholder="Un mot-clé"
+                  type="text"
+                />
+              </p>
+              <div
+                className="control flex-0"
+              >
+                <button
+                  className="button is-rounded is-medium"
+                  disabled={true}
+                  id="keywords-search-button"
+                  type="submit"
+                >
+                  Chercher
+                </button>
+              </div>
+            </div>
+            <div
+              className="flex-0 text-center flex-rows flex-center pb12 "
+              id="search-filter-menu-toggle-button"
+            >
+              <button
+                className="no-border no-background no-outline "
+                onClick={[Function]}
+                type="button"
+              >
+                <Icon
+                  svg="ico-filter"
+                />
+              </button>
+            </div>
+          </div>
+        </form>,
+        <SearchFilter
+          isVisible={false}
+          pagination={
+            Object {
+              "apiQueryString": "orderBy=offer.id+desc",
+              "change": [MockFunction],
+              "goToNextPage": [MockFunction],
+              "page": 1,
+              "windowQuery": Object {
+                "categories": null,
+                "date": null,
+                "distance": null,
+                "jours": null,
+                "latitude": null,
+                "longitude": null,
+                "mots-cles": null,
+                "orderBy": "offer.id+desc",
+              },
+            }
+          }
+        />,
+        <Switch
+          location={
+            Object {
+              "hash": "",
+              "key": "lxn6vp",
+              "pathname": "/recherche",
+              "search": "?orderBy=offer.id+desc",
+              "state": undefined,
+            }
+          }
+        >
+          <Route
+            exact={true}
+            path="/recherche"
+            render={[Function]}
+          />
+          <Route
+            path="/recherche/resultats/:categorie"
+            render={[Function]}
+          />
+          <Route
+            path="/recherche/resultats"
+            render={[Function]}
+          />
+        </Switch>,
+      ],
+      "closeSearchButton": true,
+      "footer": [Function],
+      "handleDataRequest": [Function],
+      "header": [Function],
+      "id": "search-page",
+      "name": "search",
+      "pageTitle": "Recherche : résultats",
     },
     "ref": null,
-    "rendered": null,
+    "rendered": Array [
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": <div
+            className="flex-columns items-start"
+          >
+            <div
+              className="field has-addons flex-columns flex-1"
+              id="search-page-keywords-field"
+            >
+              <p
+                className="control has-icons-right flex-1"
+              >
+                <input
+                  className="input search-input"
+                  defaultValue={null}
+                  id="keywords"
+                  onChange={[Function]}
+                  placeholder="Un mot-clé"
+                  type="text"
+                />
+              </p>
+              <div
+                className="control flex-0"
+              >
+                <button
+                  className="button is-rounded is-medium"
+                  disabled={true}
+                  id="keywords-search-button"
+                  type="submit"
+                >
+                  Chercher
+                </button>
+              </div>
+            </div>
+            <div
+              className="flex-0 text-center flex-rows flex-center pb12 "
+              id="search-filter-menu-toggle-button"
+            >
+              <button
+                className="no-border no-background no-outline "
+                onClick={[Function]}
+                type="button"
+              >
+                <Icon
+                  svg="ico-filter"
+                />
+              </button>
+            </div>
+          </div>,
+          "onSubmit": [Function],
+        },
+        "ref": null,
+        "rendered": Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": Array [
+              <div
+                className="field has-addons flex-columns flex-1"
+                id="search-page-keywords-field"
+              >
+                <p
+                  className="control has-icons-right flex-1"
+                >
+                  <input
+                    className="input search-input"
+                    defaultValue={null}
+                    id="keywords"
+                    onChange={[Function]}
+                    placeholder="Un mot-clé"
+                    type="text"
+                  />
+                </p>
+                <div
+                  className="control flex-0"
+                >
+                  <button
+                    className="button is-rounded is-medium"
+                    disabled={true}
+                    id="keywords-search-button"
+                    type="submit"
+                  >
+                    Chercher
+                  </button>
+                </div>
+              </div>,
+              <div
+                className="flex-0 text-center flex-rows flex-center pb12 "
+                id="search-filter-menu-toggle-button"
+              >
+                <button
+                  className="no-border no-background no-outline "
+                  onClick={[Function]}
+                  type="button"
+                >
+                  <Icon
+                    svg="ico-filter"
+                  />
+                </button>
+              </div>,
+            ],
+            "className": "flex-columns items-start",
+          },
+          "ref": null,
+          "rendered": Array [
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": Array [
+                  <p
+                    className="control has-icons-right flex-1"
+                  >
+                    <input
+                      className="input search-input"
+                      defaultValue={null}
+                      id="keywords"
+                      onChange={[Function]}
+                      placeholder="Un mot-clé"
+                      type="text"
+                    />
+                  </p>,
+                  <div
+                    className="control flex-0"
+                  >
+                    <button
+                      className="button is-rounded is-medium"
+                      disabled={true}
+                      id="keywords-search-button"
+                      type="submit"
+                    >
+                      Chercher
+                    </button>
+                  </div>,
+                ],
+                "className": "field has-addons flex-columns flex-1",
+                "id": "search-page-keywords-field",
+              },
+              "ref": null,
+              "rendered": Array [
+                Object {
+                  "instance": null,
+                  "key": "0",
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": Array [
+                      <input
+                        className="input search-input"
+                        defaultValue={null}
+                        id="keywords"
+                        onChange={[Function]}
+                        placeholder="Un mot-clé"
+                        type="text"
+                      />,
+                      false,
+                    ],
+                    "className": "control has-icons-right flex-1",
+                  },
+                  "ref": null,
+                  "rendered": Array [
+                    Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "host",
+                      "props": Object {
+                        "className": "input search-input",
+                        "defaultValue": null,
+                        "id": "keywords",
+                        "onChange": [Function],
+                        "placeholder": "Un mot-clé",
+                        "type": "text",
+                      },
+                      "ref": null,
+                      "rendered": null,
+                      "type": "input",
+                    },
+                    false,
+                  ],
+                  "type": "p",
+                },
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": <button
+                      className="button is-rounded is-medium"
+                      disabled={true}
+                      id="keywords-search-button"
+                      type="submit"
+                    >
+                      Chercher
+                    </button>,
+                    "className": "control flex-0",
+                  },
+                  "ref": null,
+                  "rendered": Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "host",
+                    "props": Object {
+                      "children": "Chercher",
+                      "className": "button is-rounded is-medium",
+                      "disabled": true,
+                      "id": "keywords-search-button",
+                      "type": "submit",
+                    },
+                    "ref": null,
+                    "rendered": "Chercher",
+                    "type": "button",
+                  },
+                  "type": "div",
+                },
+              ],
+              "type": "div",
+            },
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": <button
+                  className="no-border no-background no-outline "
+                  onClick={[Function]}
+                  type="button"
+                >
+                  <Icon
+                    svg="ico-filter"
+                  />
+                </button>,
+                "className": "flex-0 text-center flex-rows flex-center pb12 ",
+                "id": "search-filter-menu-toggle-button",
+              },
+              "ref": null,
+              "rendered": Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": <Icon
+                    svg="ico-filter"
+                  />,
+                  "className": "no-border no-background no-outline ",
+                  "onClick": [Function],
+                  "type": "button",
+                },
+                "ref": null,
+                "rendered": Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "function",
+                  "props": Object {
+                    "svg": "ico-filter",
+                  },
+                  "ref": null,
+                  "rendered": null,
+                  "type": [Function],
+                },
+                "type": "button",
+              },
+              "type": "div",
+            },
+          ],
+          "type": "div",
+        },
+        "type": "form",
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "class",
+        "props": Object {
+          "isVisible": false,
+          "pagination": Object {
+            "apiQueryString": "orderBy=offer.id+desc",
+            "change": [MockFunction],
+            "goToNextPage": [MockFunction],
+            "page": 1,
+            "windowQuery": Object {
+              "categories": null,
+              "date": null,
+              "distance": null,
+              "jours": null,
+              "latitude": null,
+              "longitude": null,
+              "mots-cles": null,
+              "orderBy": "offer.id+desc",
+            },
+          },
+        },
+        "ref": null,
+        "rendered": null,
+        "type": [Function],
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "class",
+        "props": Object {
+          "children": Array [
+            <Route
+              exact={true}
+              path="/recherche"
+              render={[Function]}
+            />,
+            <Route
+              path="/recherche/resultats/:categorie"
+              render={[Function]}
+            />,
+            <Route
+              path="/recherche/resultats"
+              render={[Function]}
+            />,
+          ],
+          "location": Object {
+            "hash": "",
+            "key": "lxn6vp",
+            "pathname": "/recherche",
+            "search": "?orderBy=offer.id+desc",
+            "state": undefined,
+          },
+        },
+        "ref": null,
+        "rendered": Array [
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "class",
+            "props": Object {
+              "exact": true,
+              "path": "/recherche",
+              "render": [Function],
+            },
+            "ref": null,
+            "rendered": null,
+            "type": [Function],
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "class",
+            "props": Object {
+              "path": "/recherche/resultats/:categorie",
+              "render": [Function],
+            },
+            "ref": null,
+            "rendered": null,
+            "type": [Function],
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "class",
+            "props": Object {
+              "path": "/recherche/resultats",
+              "render": [Function],
+            },
+            "ref": null,
+            "rendered": null,
+            "type": [Function],
+          },
+        ],
+        "type": [Function],
+      },
+    ],
     "type": [Function],
   },
   Symbol(enzyme.__nodes__): Array [
     Object {
       "instance": null,
       "key": undefined,
-      "nodeType": "class",
+      "nodeType": "function",
       "props": Object {
-        "dispatch": [MockFunction],
-        "history": Object {},
-        "location": Object {},
-        "match": Object {},
-        "pagination": Object {
-          "windowQuery": Object {
-            "categories": null,
-            "date": null,
-            "distance": null,
-            "jours": null,
-            "latitude": null,
-            "longitude": null,
-            "mots-cles": "Fake",
-            "orderBy": "offer.id+desc",
-          },
+        "backButton": Object {
+          "onClick": [Function],
         },
-        "recommendations": Array [],
-        "search": Object {},
-        "typeSublabels": Array [],
-        "typeSublabelsAndDescription": Array [],
+        "children": Array [
+          <form
+            onSubmit={[Function]}
+          >
+            <div
+              className="flex-columns items-start"
+            >
+              <div
+                className="field has-addons flex-columns flex-1"
+                id="search-page-keywords-field"
+              >
+                <p
+                  className="control has-icons-right flex-1"
+                >
+                  <input
+                    className="input search-input"
+                    defaultValue={null}
+                    id="keywords"
+                    onChange={[Function]}
+                    placeholder="Un mot-clé"
+                    type="text"
+                  />
+                </p>
+                <div
+                  className="control flex-0"
+                >
+                  <button
+                    className="button is-rounded is-medium"
+                    disabled={true}
+                    id="keywords-search-button"
+                    type="submit"
+                  >
+                    Chercher
+                  </button>
+                </div>
+              </div>
+              <div
+                className="flex-0 text-center flex-rows flex-center pb12 "
+                id="search-filter-menu-toggle-button"
+              >
+                <button
+                  className="no-border no-background no-outline "
+                  onClick={[Function]}
+                  type="button"
+                >
+                  <Icon
+                    svg="ico-filter"
+                  />
+                </button>
+              </div>
+            </div>
+          </form>,
+          <SearchFilter
+            isVisible={false}
+            pagination={
+              Object {
+                "apiQueryString": "orderBy=offer.id+desc",
+                "change": [MockFunction],
+                "goToNextPage": [MockFunction],
+                "page": 1,
+                "windowQuery": Object {
+                  "categories": null,
+                  "date": null,
+                  "distance": null,
+                  "jours": null,
+                  "latitude": null,
+                  "longitude": null,
+                  "mots-cles": null,
+                  "orderBy": "offer.id+desc",
+                },
+              }
+            }
+          />,
+          <Switch
+            location={
+              Object {
+                "hash": "",
+                "key": "lxn6vp",
+                "pathname": "/recherche",
+                "search": "?orderBy=offer.id+desc",
+                "state": undefined,
+              }
+            }
+          >
+            <Route
+              exact={true}
+              path="/recherche"
+              render={[Function]}
+            />
+            <Route
+              path="/recherche/resultats/:categorie"
+              render={[Function]}
+            />
+            <Route
+              path="/recherche/resultats"
+              render={[Function]}
+            />
+          </Switch>,
+        ],
+        "closeSearchButton": true,
+        "footer": [Function],
+        "handleDataRequest": [Function],
+        "header": [Function],
+        "id": "search-page",
+        "name": "search",
+        "pageTitle": "Recherche : résultats",
       },
       "ref": null,
-      "rendered": null,
+      "rendered": Array [
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": <div
+              className="flex-columns items-start"
+            >
+              <div
+                className="field has-addons flex-columns flex-1"
+                id="search-page-keywords-field"
+              >
+                <p
+                  className="control has-icons-right flex-1"
+                >
+                  <input
+                    className="input search-input"
+                    defaultValue={null}
+                    id="keywords"
+                    onChange={[Function]}
+                    placeholder="Un mot-clé"
+                    type="text"
+                  />
+                </p>
+                <div
+                  className="control flex-0"
+                >
+                  <button
+                    className="button is-rounded is-medium"
+                    disabled={true}
+                    id="keywords-search-button"
+                    type="submit"
+                  >
+                    Chercher
+                  </button>
+                </div>
+              </div>
+              <div
+                className="flex-0 text-center flex-rows flex-center pb12 "
+                id="search-filter-menu-toggle-button"
+              >
+                <button
+                  className="no-border no-background no-outline "
+                  onClick={[Function]}
+                  type="button"
+                >
+                  <Icon
+                    svg="ico-filter"
+                  />
+                </button>
+              </div>
+            </div>,
+            "onSubmit": [Function],
+          },
+          "ref": null,
+          "rendered": Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": Array [
+                <div
+                  className="field has-addons flex-columns flex-1"
+                  id="search-page-keywords-field"
+                >
+                  <p
+                    className="control has-icons-right flex-1"
+                  >
+                    <input
+                      className="input search-input"
+                      defaultValue={null}
+                      id="keywords"
+                      onChange={[Function]}
+                      placeholder="Un mot-clé"
+                      type="text"
+                    />
+                  </p>
+                  <div
+                    className="control flex-0"
+                  >
+                    <button
+                      className="button is-rounded is-medium"
+                      disabled={true}
+                      id="keywords-search-button"
+                      type="submit"
+                    >
+                      Chercher
+                    </button>
+                  </div>
+                </div>,
+                <div
+                  className="flex-0 text-center flex-rows flex-center pb12 "
+                  id="search-filter-menu-toggle-button"
+                >
+                  <button
+                    className="no-border no-background no-outline "
+                    onClick={[Function]}
+                    type="button"
+                  >
+                    <Icon
+                      svg="ico-filter"
+                    />
+                  </button>
+                </div>,
+              ],
+              "className": "flex-columns items-start",
+            },
+            "ref": null,
+            "rendered": Array [
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": Array [
+                    <p
+                      className="control has-icons-right flex-1"
+                    >
+                      <input
+                        className="input search-input"
+                        defaultValue={null}
+                        id="keywords"
+                        onChange={[Function]}
+                        placeholder="Un mot-clé"
+                        type="text"
+                      />
+                    </p>,
+                    <div
+                      className="control flex-0"
+                    >
+                      <button
+                        className="button is-rounded is-medium"
+                        disabled={true}
+                        id="keywords-search-button"
+                        type="submit"
+                      >
+                        Chercher
+                      </button>
+                    </div>,
+                  ],
+                  "className": "field has-addons flex-columns flex-1",
+                  "id": "search-page-keywords-field",
+                },
+                "ref": null,
+                "rendered": Array [
+                  Object {
+                    "instance": null,
+                    "key": "0",
+                    "nodeType": "host",
+                    "props": Object {
+                      "children": Array [
+                        <input
+                          className="input search-input"
+                          defaultValue={null}
+                          id="keywords"
+                          onChange={[Function]}
+                          placeholder="Un mot-clé"
+                          type="text"
+                        />,
+                        false,
+                      ],
+                      "className": "control has-icons-right flex-1",
+                    },
+                    "ref": null,
+                    "rendered": Array [
+                      Object {
+                        "instance": null,
+                        "key": undefined,
+                        "nodeType": "host",
+                        "props": Object {
+                          "className": "input search-input",
+                          "defaultValue": null,
+                          "id": "keywords",
+                          "onChange": [Function],
+                          "placeholder": "Un mot-clé",
+                          "type": "text",
+                        },
+                        "ref": null,
+                        "rendered": null,
+                        "type": "input",
+                      },
+                      false,
+                    ],
+                    "type": "p",
+                  },
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "host",
+                    "props": Object {
+                      "children": <button
+                        className="button is-rounded is-medium"
+                        disabled={true}
+                        id="keywords-search-button"
+                        type="submit"
+                      >
+                        Chercher
+                      </button>,
+                      "className": "control flex-0",
+                    },
+                    "ref": null,
+                    "rendered": Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "host",
+                      "props": Object {
+                        "children": "Chercher",
+                        "className": "button is-rounded is-medium",
+                        "disabled": true,
+                        "id": "keywords-search-button",
+                        "type": "submit",
+                      },
+                      "ref": null,
+                      "rendered": "Chercher",
+                      "type": "button",
+                    },
+                    "type": "div",
+                  },
+                ],
+                "type": "div",
+              },
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": <button
+                    className="no-border no-background no-outline "
+                    onClick={[Function]}
+                    type="button"
+                  >
+                    <Icon
+                      svg="ico-filter"
+                    />
+                  </button>,
+                  "className": "flex-0 text-center flex-rows flex-center pb12 ",
+                  "id": "search-filter-menu-toggle-button",
+                },
+                "ref": null,
+                "rendered": Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": <Icon
+                      svg="ico-filter"
+                    />,
+                    "className": "no-border no-background no-outline ",
+                    "onClick": [Function],
+                    "type": "button",
+                  },
+                  "ref": null,
+                  "rendered": Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "function",
+                    "props": Object {
+                      "svg": "ico-filter",
+                    },
+                    "ref": null,
+                    "rendered": null,
+                    "type": [Function],
+                  },
+                  "type": "button",
+                },
+                "type": "div",
+              },
+            ],
+            "type": "div",
+          },
+          "type": "form",
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "class",
+          "props": Object {
+            "isVisible": false,
+            "pagination": Object {
+              "apiQueryString": "orderBy=offer.id+desc",
+              "change": [MockFunction],
+              "goToNextPage": [MockFunction],
+              "page": 1,
+              "windowQuery": Object {
+                "categories": null,
+                "date": null,
+                "distance": null,
+                "jours": null,
+                "latitude": null,
+                "longitude": null,
+                "mots-cles": null,
+                "orderBy": "offer.id+desc",
+              },
+            },
+          },
+          "ref": null,
+          "rendered": null,
+          "type": [Function],
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "class",
+          "props": Object {
+            "children": Array [
+              <Route
+                exact={true}
+                path="/recherche"
+                render={[Function]}
+              />,
+              <Route
+                path="/recherche/resultats/:categorie"
+                render={[Function]}
+              />,
+              <Route
+                path="/recherche/resultats"
+                render={[Function]}
+              />,
+            ],
+            "location": Object {
+              "hash": "",
+              "key": "lxn6vp",
+              "pathname": "/recherche",
+              "search": "?orderBy=offer.id+desc",
+              "state": undefined,
+            },
+          },
+          "ref": null,
+          "rendered": Array [
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "class",
+              "props": Object {
+                "exact": true,
+                "path": "/recherche",
+                "render": [Function],
+              },
+              "ref": null,
+              "rendered": null,
+              "type": [Function],
+            },
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "class",
+              "props": Object {
+                "path": "/recherche/resultats/:categorie",
+                "render": [Function],
+              },
+              "ref": null,
+              "rendered": null,
+              "type": [Function],
+            },
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "class",
+              "props": Object {
+                "path": "/recherche/resultats",
+                "render": [Function],
+              },
+              "ref": null,
+              "rendered": null,
+              "type": [Function],
+            },
+          ],
+          "type": [Function],
+        },
+      ],
       "type": [Function],
     },
   ],

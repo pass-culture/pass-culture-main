@@ -21,8 +21,6 @@ import Main from '../layout/Main'
 class SearchPageContent extends PureComponent {
   constructor(props) {
     super(props)
-    console.log('>>>>> IN CONSTRUCTOR Pagination', props.pagination.windowQuery)
-    console.log('>>>>> IN CONSTRUCTOR match', props.match.params)
     this.state = {
       keywordsKey: 0,
       keywordsValue: get(props, `pagination.windowQuery.mots-cles`),
@@ -97,7 +95,6 @@ class SearchPageContent extends PureComponent {
   onSubmit = event => {
     const { pagination } = this.props
     const { value } = event.target.elements.keywords
-
     event.preventDefault()
 
     this.setState({ withFilter: false })
@@ -114,9 +111,9 @@ class SearchPageContent extends PureComponent {
   }
 
   onClickOpenCloseFilterDiv = withFilter => () => {
+    console.log('>>>>>>>>>> Inside onClickOpenCloseFilterDiv ', withFilter)
     this.setState({ withFilter: !withFilter })
   }
-  // onClick={() => this.setState(prev => ({ withFilter: !prev.withFilter }))}
 
   onKeywordsChange = event => {
     this.setState({
@@ -125,6 +122,8 @@ class SearchPageContent extends PureComponent {
   }
 
   onKeywordsEraseClick = (pathname, pagination, keywordsKey) => () => {
+    console.log('>>>>>>>>>> Inside onKeywordsEraseClick ')
+
     this.setState({
       // https://stackoverflow.com/questions/37946229/how-do-i-reset-the-defaultvalue-for-a-react-input
       // WE NEED TO MAKE THE PARENT OF THE KEYWORD INPUT
@@ -153,13 +152,11 @@ class SearchPageContent extends PureComponent {
       typeSublabelsAndDescription,
     } = this.props
 
-    console.log('>>>>> IN CONSTRUCTOR Pagination', pagination.windowQuery)
-    console.log('>>>>> IN CONSTRUCTOR match', match.params)
-    console.log('>>>>> IN CONSTRUCTOR location', location)
-
     const { keywordsKey, keywordsValue, withFilter } = this.state
 
     const { windowQuery } = pagination
+
+    // console.log('PAGINATION >>>>>> ', pagination);
 
     // ************************* HELPERS ****************************
     // FIX ME
@@ -187,6 +184,8 @@ class SearchPageContent extends PureComponent {
     const filtersToggleButtonClass = (withFilter && 'filters-are-opened') || ''
 
     const isOneCharInKeywords = get(keywordsValue, 'length') > 0
+
+    // console.log('isOneCharInKeywords ----- ', isOneCharInKeywords);
 
     // ************************* DATAS **************************** //
     const searchPageTitle = onResultPage ? 'Recherche : résultats' : 'Recherche'
@@ -234,7 +233,7 @@ class SearchPageContent extends PureComponent {
                       className="no-border no-background is-red-text"
                       id="refresh-keywords-button"
                       onClick={this.onKeywordsEraseClick(
-                        '/recherche/resultats',
+                        '/recherche/',
                         pagination,
                         keywordsKey
                       )}
