@@ -19,6 +19,11 @@
     z-index: 99999;
   }
 
+
+  &.place-bottom {
+    margin-top: 4px;
+  }
+
   padding: 12px;
   width: 300px;
 }
