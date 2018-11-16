@@ -478,7 +478,7 @@ class ProSignupTest:
         assert user_offerer.rights == RightsType.editor
 
     @clean_database
-    def test_pro_signup_when_existing_offerer_returns_status_code_201_creates_editor_user_offerer_and_does_not_log_in(self, app):
+    def test_pro_signup_when_non_validated_existing_offerer_returns_status_code_201_creates_editor_user_offerer_and_does_not_log_in(self, app):
         json_offerer = {
             "name": "Test Offerer",
             "siren": "349974931",
@@ -487,6 +487,7 @@ class ProSignupTest:
             "city": "Paris"
         }
         offerer = Offerer(from_dict=json_offerer)
+        offerer.generate_validation_token()
         user = create_user(public_name='bobby', email='bobby@test.com')
         user_offerer = create_user_offerer(user, offerer, is_admin=False)
         PcObject.check_and_save(offerer, user_offerer)
@@ -511,30 +512,6 @@ class ProSignupTest:
         assert user_offerer is not None
         assert user_offerer.validationToken is not None
         assert user_offerer.rights == RightsType.editor
-
-    @clean_database
-    def test_pro_signup_when_offerer_not_validated_returns_409_and_siren_in_error(self, app):
-        json_offerer = {
-            "name": "Test Offerer",
-            "siren": BASE_DATA_PRO['siren'],
-            "address": "Test adresse",
-            "postalCode": "75000",
-            "city": "Paris"
-        }
-        offerer = Offerer(from_dict=json_offerer)
-        offerer.generate_validation_token()
-        user = create_user(public_name='bobby', email='bobby@test.com')
-        user_offerer = create_user_offerer(user, offerer, is_admin=False)
-        PcObject.check_and_save(offerer, user_offerer)
-
-        data = BASE_DATA_PRO.copy()
-        r_signup = req.post(API_URL + '/users/signup/pro',
-                            json=data, headers={'origin': 'http://localhost:3000'})
-        assert r_signup.status_code == 409
-        assert r_signup.json()['siren'] == [
-            'Vous ne pouvez pas créer un deuxième compte pour une structure non validée par le pass Culture']
-
-
 
 
 @pytest.mark.standalone

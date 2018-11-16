@@ -155,7 +155,6 @@ def signup():
             digital_venue = create_digital_venue(offerer)
             objects_to_save.extend([digital_venue, offerer])
         else:
-            check_offerer_is_validated(existing_offerer)
             user_offerer = _generate_user_offerer_when_existing_offerer(new_user, existing_offerer)
             offerer = existing_offerer
         objects_to_save.append(user_offerer)
@@ -225,7 +224,6 @@ def signup_pro():
 
     existing_offerer = Offerer.query.filter_by(siren=request.json['siren']).first()
     if existing_offerer:
-        check_offerer_is_validated(existing_offerer)
         user_offerer = _generate_user_offerer_when_existing_offerer(new_user, existing_offerer)
         offerer = existing_offerer
     else:
