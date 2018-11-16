@@ -10,7 +10,7 @@ MOCK_NAMES = [
     "Les Perruches Swing",
     "Michel et son accordéon",
     "La librairie quantique",
-    "Folie des anachorète"
+    "Folie des anachorètes"
 ]
 
 def create_industrial_offerers(
