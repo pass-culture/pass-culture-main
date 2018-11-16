@@ -52,12 +52,13 @@ def test_departement_or_national_offers_with_national_event_returns_national_eve
 
 @pytest.mark.standalone
 @clean_database
-def test_get_offers_for_recommendations_search_by_type(app):
+def test_get_offers_for_recommendations_search_by_one_event_type_returns_only_offers_on_events_of_that_type(app):
     # Given
     type_label = str(EventType.CONFERENCE_DEBAT_DEDICACE)
     other_type_label = str(EventType.MUSIQUE)
 
-    conference_event = create_event('Rencontre avec Franck Lepage', event_type=type_label)
+    conference_event1 = create_event('Rencontre avec Franck Lepage', event_type=type_label)
+    conference_event2 = create_event('Conférence ouverte', event_type=type_label)
     concert_event = create_event('Concert de Gael Faye', event_type=other_type_label)
 
     offerer = create_offerer(
@@ -83,20 +84,19 @@ def test_get_offers_for_recommendations_search_by_type(app):
         siret="50763357600016"
     )
 
-    conference_offer = create_event_offer(venue, conference_event)
+    conference_offer1 = create_event_offer(venue, conference_event1)
+    conference_offer2 = create_event_offer(venue, conference_event2)
     concert_offer = create_event_offer(venue, concert_event)
 
-    conference_event_occurrence = create_event_occurrence(
-        conference_offer
-    )
-    concert_event_occurrence = create_event_occurrence(
-        concert_offer
-    )
+    conference_event_occurrence1 = create_event_occurrence(conference_offer1)
+    conference_event_occurrence2 = create_event_occurrence(conference_offer2)
+    concert_event_occurrence = create_event_occurrence(concert_offer)
 
-    conference_stock = create_stock_from_event_occurrence(conference_event_occurrence)
+    conference_stock1 = create_stock_from_event_occurrence(conference_event_occurrence1)
+    conference_stock2 = create_stock_from_event_occurrence(conference_event_occurrence2)
     concert_stock = create_stock_from_event_occurrence(concert_event_occurrence)
 
-    PcObject.check_and_save(conference_stock, concert_stock)
+    PcObject.check_and_save(conference_stock1, conference_stock2, concert_stock)
 
     # When
     offers = get_offers_for_recommendations_search(
@@ -106,15 +106,60 @@ def test_get_offers_for_recommendations_search_by_type(app):
     )
 
     # Then
-    assert conference_offer in offers
+    assert conference_offer1 in offers
+    assert conference_offer2 in offers
     assert concert_offer not in offers
 
-def create_event_stock_and_offer_for_date(venue, date) :
+
+@pytest.mark.standalone
+@clean_database
+def test_get_offers_for_recommendations_search_by_one_thing_type_returns_only_offers_on_things_of_that_type(app):
+    # Given
+    type_label_ok = str(ThingType.JEUX_VIDEO)
+    type_label_ko = str(ThingType.LIVRE_EDITION)
+
+    thing_ok1 = create_thing(thing_type=type_label_ok)
+    thing_ok2 = create_thing(thing_type=type_label_ok)
+    thing_ko = create_thing(thing_type=type_label_ko)
+    event_ko = create_event(event_type=EventType.CINEMA)
+
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+
+    ok_offer_1 = create_thing_offer(venue, thing_ok1)
+    ok_offer_2 = create_thing_offer(venue, thing_ok2)
+    ko_offer = create_thing_offer(venue, thing_ko)
+    ko_event_offer = create_event_offer(venue, event_ko)
+
+    ko_event_occurrence = create_event_occurrence(ko_event_offer)
+
+    ok_stock1 = create_stock_from_offer(ok_offer_1)
+    ok_stock2 = create_stock_from_offer(ok_offer_2)
+    ko_stock1 = create_stock_from_offer(ko_offer)
+    ko_stock2 = create_stock_from_event_occurrence(ko_event_occurrence)
+
+    PcObject.check_and_save(ok_stock1, ok_stock2, ko_stock1, ko_stock2)
+
+    # When
+    offers = get_offers_for_recommendations_search(
+        type_values=[
+            type_label_ok
+        ],
+    )
+
+    # Then
+    assert len(offers) == 2
+    assert ok_offer_1 in offers
+    assert ok_offer_2 in offers
+
+
+def create_event_stock_and_offer_for_date(venue, date):
     event = create_event()
     offer = create_event_offer(venue, event)
-    event_occurrence = create_event_occurrence(offer, beginning_datetime=date, end_datetime=date+timedelta(hours=1))
+    event_occurrence = create_event_occurrence(offer, beginning_datetime=date, end_datetime=date + timedelta(hours=1))
     stock = create_stock_from_event_occurrence(event_occurrence)
     return stock
+
 
 @pytest.mark.standalone
 @clean_database
@@ -133,7 +178,7 @@ def test_get_offers_for_recommendations_search_by_datetime(app):
     # When
     search_result_offers = get_offers_for_recommendations_search(
         days_intervals=[
-            [ datetime(2018, 1, 6, 12, 0), datetime(2018, 1, 6, 13, 0) ]
+            [datetime(2018, 1, 6, 12, 0), datetime(2018, 1, 6, 13, 0)]
         ],
     )
 
@@ -214,7 +259,8 @@ def test_get_offers_for_recommendations_search_with_multiple_keywords_returns_of
 
 @clean_database
 @pytest.mark.standalone
-def test_get_offers_for_recommendations_search_with_multiple_keywords_returns_offers_with_any_keyword_in_description(app):
+def test_get_offers_for_recommendations_search_with_multiple_keywords_returns_offers_with_any_keyword_in_description(
+        app):
     # Given
     thing_ok = create_thing(thing_name='Rien à voir', description='Il rencontre une personne')
     thing_ko = create_thing(thing_name='Hors sujet', description='pas de mot en commun')
