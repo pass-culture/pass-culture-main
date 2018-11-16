@@ -356,17 +356,9 @@ def create_stock_with_thing_offer(offerer, venue, thing_offer, price=10, availab
     return stock
 
 
-def create_thing(
-    thing_name='Test Book',
-    thing_type=str(ThingType.LIVRE_EDITION),
-    media_urls=['test/urls'],
-    author_name='Test Author',
-    url=None,
-    thumb_count=1,
-    dominant_color=None,
-    is_national=False,
-    id_at_providers=None
-):
+def create_thing(thing_name='Test Book', thing_type=str(ThingType.LIVRE_EDITION), media_urls=['test/urls'],
+                 author_name='Test Author', url=None, thumb_count=1, dominant_color=None, is_national=False,
+                 id_at_providers=None, description=None):
     thing = Thing()
     thing.type = str(thing_type)
     thing.name = thing_name
@@ -383,6 +375,7 @@ def create_thing(
             thing.firstThumbDominantColor = b'\x00\x00\x00'
         else:
             thing.firstThumbDominantColor = dominant_color
+    thing.description = description
     return thing
 
 
@@ -413,9 +406,9 @@ def create_thing_offer(venue, thing=None, date_created=datetime.utcnow(), bookin
     if thing:
         offer.thing = thing
     else:
-        offer.thing = create_thing(thing_type=thing_type, thing_name=thing_name, media_urls=media_urls,
-                                   author_name=author_name, thumb_count=thumb_count, dominant_color=dominant_color,
-                                   url=url, is_national=is_national)
+        offer.thing = create_thing(thing_name=thing_name, thing_type=thing_type, media_urls=media_urls,
+                                   author_name=author_name, url=url, thumb_count=thumb_count,
+                                   dominant_color=dominant_color, is_national=is_national)
     offer.venue = venue
     offer.dateCreated = date_created
     offer.bookingEmail = booking_email

@@ -71,11 +71,7 @@ def test_date_range_is_empty_if_event_has_no_event_occurrences():
 def test_create_digital_offer_success(app):
     # Given
     url='http://mygame.fr/offre'
-    digital_thing = create_thing(
-        thing_type='ThingType.JEUX_VIDEO',
-        is_national=True,
-        url=url
-    )
+    digital_thing = create_thing(thing_type='ThingType.JEUX_VIDEO', url=url, is_national=True)
     offerer = create_offerer()
     virtual_venue = create_venue(offerer, is_virtual=True, siret=None)
     PcObject.check_and_save(virtual_venue)

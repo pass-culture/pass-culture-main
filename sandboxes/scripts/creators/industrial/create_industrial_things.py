@@ -24,16 +24,12 @@ def create_industrial_things():
             mock_count = 0
 
         name = thing_type['value'] + " / " + EVENT_OR_THING_MOCK_NAMES[mock_count]
-        things_by_name[name] = create_thing(
-            is_national=True
+        things_by_name[name] = create_thing(thing_name=name, thing_type=thing_type['value'],
+                                            url='https://ilestencoretemps.fr/'
+                                            if types_by_value[thing_type['value']]['onlineOnly']
+                                            else None, is_national=True
             if types_by_value[thing_type['value']]['onlineOnly']
-            else False,
-            thing_name=name,
-            thing_type=thing_type['value'],
-            url='https://ilestencoretemps.fr/'
-            if types_by_value[thing_type['value']]['onlineOnly']
-            else None
-        )
+            else False)
 
     PcObject.check_and_save(*things_by_name.values())
 
