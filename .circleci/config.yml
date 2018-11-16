@@ -63,7 +63,8 @@ jobs: # a collection of steps
 
       - run:
           name: Check outdated dependencies
-          command:
+          command: |
+            . venv/bin/activate
             ./scripts/check-pip-dependencies.sh
             
   functional-tests:
