@@ -45,7 +45,6 @@ def create_industrial_things():
 
         name = "{} / {}".format(thing_type['value'], MOCK_NAMES[mock_index])
         things_by_name[name] = create_thing(
-            is_national=True,
             author_name=MOCK_AUTHOR_NAMES[mock_index],
             description=MOCK_DESCRIPTIONS[mock_index],
             is_national=True if types_by_value[thing_type['value']]['onlineOnly'] else False,
