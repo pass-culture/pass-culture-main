@@ -23,17 +23,9 @@ def create_industrial_offerers(
 
     offerers_by_name = {}
 
-    mock_index = -1
+    for (location_index, location) in enumerate(locations):
 
-    for location in locations:
-
-        # WE JUST PARSE THE MOCK NAMES
-        # WITH A COUNTER AND RESET THE COUNTER
-        # TO ZERO WHEN WE REACH ITS LAST ITEM
-        if mock_index == len(MOCK_NAMES) - 1:
-            mock_index = 0
-        else:
-            mock_index += 1
+        mock_index = location_index % len(MOCK_NAMES)
 
         name = '{} lat:{} lon:{}'.format(
             incremented_siren,

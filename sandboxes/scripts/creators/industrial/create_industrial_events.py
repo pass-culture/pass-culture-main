@@ -28,16 +28,9 @@ def create_industrial_events():
 
     event_types = [t for t in get_formatted_event_or_thing_types() if t['type'] == 'Event']
 
-    mock_index = -1
+    for (event_index, event_type) in enumerate(event_types):
 
-    for event_type in event_types:
-
-        # WE JUST PARSE THE MOCK NAMES
-        # WITH A COUNTER AND RESET THE COUNTER
-        # TO ZERO WHEN WE REACH ITS LAST ITEM
-        mock_index += 1
-        if mock_index > len(MOCK_NAMES) - 1:
-            mock_index = 0
+        mock_index = event_index % len(MOCK_NAMES)
 
         events_by_name["{} / {}".format(event_type['value'], MOCK_NAMES[mock_index])] = create_event(
             description=MOCK_DESCRIPTIONS[mock_index],

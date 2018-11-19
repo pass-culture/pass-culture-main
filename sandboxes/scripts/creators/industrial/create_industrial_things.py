@@ -39,15 +39,9 @@ def create_industrial_things():
 
     thing_types = [t for t in types_by_value.values() if t['type'] == 'Thing']
 
-    mock_index = -1
-    for thing_type in thing_types:
+    for (thing_index, thing_type) in enumerate(thing_types):
 
-        # WE JUST PARSE THE MOCK NAMES
-        # WITH A COUNTER AND RESET THE COUNTER
-        # TO ZERO WHEN WE REACH ITS LAST ITEM
-        mock_index += 1
-        if mock_index > len(MOCK_NAMES) - 1:
-            mock_index = 0
+        mock_index = thing_index % len(MOCK_NAMES)
 
         name = "{} / {}".format(thing_type['value'], MOCK_NAMES[mock_index])
         things_by_name[name] = create_thing(
