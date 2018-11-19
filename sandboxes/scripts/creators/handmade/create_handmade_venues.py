@@ -8,8 +8,8 @@ def create_handmade_venues(offerers_by_name):
     venues_by_name = {}
 
     offerer = offerers_by_name['LE GRAND REX PARIS']
-    name = offerer.name
-    venues_by_name['LE GRAND REX PARIS'] = create_venue(
+    name = 'THEATRE LE GRAND REX PARIS'
+    venues_by_name['THEATRE LE GRAND REX PARIS'] = create_venue(
         offerer,
         address=offerer.address,
         booking_email="fake@email.com",
@@ -22,7 +22,7 @@ def create_handmade_venues(offerers_by_name):
     )
 
     offerer = offerers_by_name['LE GRAND REX PARIS']
-    name = offerer.name + " (Offre en ligne)"
+    name = "THEATRE LE GRAND REX PARIS (Offre en ligne)"
     venues_by_name[name] = create_venue(
         offerer,
         is_virtual=True,
@@ -31,7 +31,7 @@ def create_handmade_venues(offerers_by_name):
     )
 
     offerer = offerers_by_name["THEATRE DE L ODEON"]
-    name = offerer.name
+    name = "THEATRE DE L ODEON"
     venues_by_name[name] = create_venue(
         offerer,
         address=offerer.address,
@@ -45,7 +45,7 @@ def create_handmade_venues(offerers_by_name):
     )
 
     offerer = offerers_by_name["THEATRE DE L ODEON"]
-    name = offerer.name + " (Offre en ligne)"
+    name = "THEATRE DE L ODEON (Offre en ligne)"
     venues_by_name[name] = create_venue(
         offerer,
         is_virtual=True,
@@ -54,7 +54,7 @@ def create_handmade_venues(offerers_by_name):
     )
 
     offerer = offerers_by_name["THEATRE DU SOLEIL"]
-    name = offerer.name + " (Offre en ligne)"
+    name = "THEATRE DU SOLEIL (Offre en ligne)"
     venues_by_name[name] = create_venue(
         offerer,
         is_virtual=True,
@@ -63,7 +63,7 @@ def create_handmade_venues(offerers_by_name):
     )
 
     offerer = offerers_by_name["KWATA"]
-    name = offerer.name
+    name = "ASSOCIATION KWATA"
     venues_by_name[name] = create_venue(
         offerer,
         address=offerer.address,
@@ -77,7 +77,7 @@ def create_handmade_venues(offerers_by_name):
     )
 
     offerer = offerers_by_name["KWATA"]
-    name = offerer.name + " (Offre en ligne)"
+    name = "ASSOCIATION KWATA (Offre en ligne)"
     venues_by_name[name] = create_venue(
         offerer,
         is_virtual=True,

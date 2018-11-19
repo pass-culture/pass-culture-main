@@ -7,10 +7,10 @@ def create_handmade_bookings(recommendations_by_name, stocks_by_name, users_by_n
 
     bookings_by_name = {}
 
-    stock = stocks_by_name['Rencontre avec Franck Lepage / LE GRAND REX PARIS / 0 / 20h / 10 / 10']
-    bookings_by_name['Rencontre avec Franck Lepage / LE GRAND REX PARIS / 20h / 10 / 10 / jeune93 0'] = create_booking(
+    stock = stocks_by_name['Rencontre avec Franck Lepage / THEATRE LE GRAND REX PARIS / 0 / 20h / 10 / 10']
+    bookings_by_name['Rencontre avec Franck Lepage / THEATRE LE GRAND REX PARIS / 20h / 10 / 10 / jeune93 0'] = create_booking(
         users_by_name['jeune93 0'],
-        recommendation=recommendations_by_name['Rencontre avec Franck Lepage / LE GRAND REX PARIS / jeune93 0'],
+        recommendation=recommendations_by_name['Rencontre avec Franck Lepage / THEATRE LE GRAND REX PARIS / jeune93 0'],
         stock=stock,
         token="2ALYY5"
     )

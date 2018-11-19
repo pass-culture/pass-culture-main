@@ -7,9 +7,9 @@ def create_handmade_event_offers(events_by_name, venues_by_name):
 
     event_offers_by_name = {}
 
-    event_offers_by_name["Rencontre avec Franck Lepage / LE GRAND REX PARIS"] = create_event_offer(
+    event_offers_by_name["Rencontre avec Franck Lepage / THEATRE LE GRAND REX PARIS"] = create_event_offer(
         event=events_by_name["Rencontre avec Franck Lepage"],
-        venue=venues_by_name['LE GRAND REX PARIS']
+        venue=venues_by_name['THEATRE LE GRAND REX PARIS']
     )
 
     event_offers_by_name["Concert de Gael Faye / THEATRE DE L ODEON"] = create_event_offer(
@@ -22,9 +22,9 @@ def create_handmade_event_offers(events_by_name, venues_by_name):
         venue=venues_by_name['THEATRE DE L ODEON']
     )
 
-    event_offers_by_name["Le temps des cerises en mode mixolydien / KWATA"] = create_event_offer(
+    event_offers_by_name["Le temps des cerises en mode mixolydien / ASSOCIATION KWATA"] = create_event_offer(
         event=events_by_name['Le temps des cerises en mode mixolydien'],
-        venue=venues_by_name['KWATA']
+        venue=venues_by_name['ASSOCIATION KWATA']
     )
 
     PcObject.check_and_save(*event_offers_by_name.values())
