@@ -160,6 +160,7 @@ def signup():
         new_user = _set_offerer_departement_code(new_user, offerer)
     else:
         if IS_INTEGRATION:
+            new_user.departementCode = '00'
             objects_to_save.append(_create_initial_deposit(new_user))
 
     objects_to_save.append(new_user)
@@ -191,6 +192,7 @@ def signup_webapp():
     new_user = User(from_dict=request.json)
 
     if IS_INTEGRATION:
+        new_user.departementCode = '00'
         objects_to_save.append(_create_initial_deposit(new_user))
     else:
         authorized_emails, departement_codes = get_authorized_emails_and_dept_codes()
