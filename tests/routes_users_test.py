@@ -10,6 +10,7 @@ from domain.password import RESET_PASSWORD_TOKEN_LENGTH
 from models import PcObject
 from models.db import db
 from models.offerer import Offerer
+from models.pc_object import serialize
 from models.user import User
 from models.user_offerer import UserOfferer, RightsType
 from tests.conftest import clean_database
@@ -26,7 +27,7 @@ BASE_DATA = {
     'password': '__v4l1d_P455sw0rd__',
     'contact_ok': 'true',
     'phoneNumber': '0612345678',
-    'dateOfBirth': '2001-01-01',
+    'dateOfBirth': serialize(datetime(2001, 1, 1)),
 }
 
 BASE_DATA_PRO = {
@@ -215,7 +216,7 @@ class WebappSignupTest:
                                   'publicName': 'Toto',
                                   'thumbCount': 0,
                                   'wallet_balance': 0,
-                                  'dateOfBirth': '2001-01-01'}
+                                  'dateOfBirth': '2001-01-01T00:00:00Z'}
         other_expected_keys = {'id', 'dateCreated'}
 
         # When

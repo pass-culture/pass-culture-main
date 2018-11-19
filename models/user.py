@@ -42,6 +42,9 @@ class User(PcObject,
                                server_default=expression.true(),
                                default=True)
 
+    dateOfBirth = Column(DateTime,
+                         nullable=True)
+
     isAdmin = Column(Boolean,
                      CheckConstraint('("canBookFreeOffers" IS FALSE AND "isAdmin" IS TRUE)'
                                      + 'OR ("isAdmin" IS FALSE)',
