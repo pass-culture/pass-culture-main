@@ -18,7 +18,7 @@ from models import  Booking, \
                     Venue, \
                     VenueProvider
 
-def reset_all_db(*args, **kwargs):
+def clean_all_database(*args, **kwargs):
     """ Order of deletions matters because of foreign key constraints """
     Activity = load_activity()
     VenueProvider.query.delete()

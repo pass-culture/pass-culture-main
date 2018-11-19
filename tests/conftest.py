@@ -8,8 +8,8 @@ from mailjet_rest import Client
 
 from local_providers.install import install_local_providers
 from models.db import db
-from models.delete import reset_all_db
 from models.install import install_models
+from repository.clean_database import clean_all_database
 
 items_by_category = {'first': [], 'last': []}
 
@@ -65,7 +65,7 @@ def mocked_mail(f):
 def clean_database(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        reset_all_db()
+        clean_all_database()
         return f(*args, **kwargs)
 
     return decorated_function

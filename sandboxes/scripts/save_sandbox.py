@@ -1,9 +1,9 @@
 """ save sandbox """
-from models.delete import reset_all_db
+from repository.clean_database import clean_all_database
 from sandboxes import scripts
 
 def save_sandbox(name):
-    reset_all_db()
+    clean_all_database()
     script_name = "sandbox_" + name
     sandbox_module = getattr(scripts, script_name)
     sandbox_module.save_sandbox()
