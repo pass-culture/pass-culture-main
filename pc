@@ -11,6 +11,7 @@ where:
     -h  show this help text
     -e  specify environment to target (default: development)
     -b  specify backend to connect with local app (default: localhost)
+    -t  specify version you want to deploy (create tag with this name)
     c   command that you want to run"
     exit 0
 fi
@@ -32,6 +33,17 @@ if [[ $# -gt 2 ]] && [[ "$1" == "-b" ]]; then
   shift 2
 else
   BACKEND=${BACKEND:-'localhost'}
+fi
+
+if [[ $# -gt 2 ]] && [[ "$1" == "-t" ]]; then
+
+  if [[ "$2" =~ ^v[0-9]+\.[0-9]+\.[0-9]+ ]]; then
+    TAG_NAME=$2
+  else
+    echo "tag format should be semver compliant (vx.x.x)"
+  fi
+
+  shift 2
 fi
 
 CMD="$1"
@@ -238,8 +250,11 @@ elif [[ "$CMD" == "test-cafe-webapp" ]] || [[ "$CMD" == "test-cafe-pro" ]]; then
 # Deploy commands
 # =============================================
 
-# Deploy current version of API to specified environment
-elif [[ "$CMD" == "deploy-backend" ]]; then
+# Deploy current version of API/Webapp/Pro to specified environment
+elif [[ "$CMD" == "deploy-backend" ]] \
+     || [[ "$CMD" == "deploy-frontend-webapp" ]] \
+     || [[ "$CMD" == "deploy-frontend-pro" ]]; then
+
   ensure_remote "Deploy backend cannot be run on the local environment. Use (for example) \"pc -e staging "$CMD"\"."
 
   if [[ ! "$ENV" == 'production' ]] \
@@ -250,14 +265,33 @@ elif [[ "$CMD" == "deploy-backend" ]]; then
      exit
   fi
 
-  cd "$ROOT_PATH/api"
+  if [[ "$CMD" == "deploy-frontend-webapp"  ]]; then
+	APP_PATH="$ROOT_PATH"/webapp
+  elif [[ "$CMD" == "deploy-frontend-pro"  ]]; then
+    APP_PATH="$ROOT_PATH"/pro
+  else
+	APP_PATH="$ROOT_PATH"/api
+  fi
+
+  cd "$APP_PATH"
+
   git fetch
   git checkout master
   git pull || exit_restoring_branch
   git checkout staging
   git pull || exit_restoring_branch
+  git checkout demo
+  git pull || exit_restoring_branch
+  git checkout integration
+  git pull || exit_restoring_branch
   git checkout production
   git pull || exit_restoring_branch
+
+  if [[ "$TAG_NAME" ]]; then
+    git tag "$TAG_NAME"
+    git push origin "$TAG_NAME"
+  fi
+
   if [[ $(git tag -l --points-at $commit_to_deploy | wc -l) == 0 ]]; then
     echo "ERROR: Can only deploy tagged commits"
     exit_restoring_branch
@@ -270,58 +304,22 @@ elif [[ "$CMD" == "deploy-backend" ]]; then
       exit_restoring_branch
     fi
   fi
+
   git checkout "$ENV"
   git merge "$commit_to_deploy"
   git push origin "$ENV"
+
+  # TODO: until I connect the app in Netlify with Github hooks
+  if [[ "$CMD" == "deploy-frontend-webapp" ]] \
+     || [[ "$CMD" == "deploy-frontend-pro" ]]; then
+    netlify deploy -e "$ENV"
+  fi
+
   if [[ "$ENV" == 'production' ]]; then
      echo "/!\\ You just deployed to production. Was the version also delivered to integration ?"
   fi
+
   exit_restoring_branch
-
-# Deploy current version of Webapp / Pro to specified environment
-elif [[ "$CMD" == "deploy-frontend-webapp" ]] || [[ "$CMD" == "deploy-frontend-pro" ]]; then
-  ensure_remote "Deploy fontend cannot be run on the local environment. Use (for example) \"pc -e staging "$CMD"\"."
-
-  if [[ ! "$ENV" == 'production' ]] \
-        && [[ ! "$ENV" == 'staging' ]] \
-        && [[ ! "$ENV" == 'demo' ]] \
-        && [[ ! "$ENV" == 'integration' ]]; then
-     echo "Can only deploy-backend in staging, demo, integration and production"
-     exit
-  fi
-  if [[ "$CMD" == "deploy-frontend-webapp"  ]]; then
-	APP_PATH="$ROOT_PATH"/webapp
-  else
-	APP_PATH="$ROOT_PATH"/pro
-  fi
-  cd "$APP_PATH"
-
-  if [[ "$ENV" == "production" ]]; then
-    staging_commit=$(git log -n 1 --pretty=format:%H staging)
-    if [[ "$staging_commit" != "$commit_to_deploy" ]]; then
-      echo "ERROR: Can only deploy in production commits that are also deployed in staging"
-      exit_restoring_branch
-    fi
-  fi
-
-  (set -a; source "$APP_PATH/node_modules/pass-culture-shared/config/run_envs/$ENV" && yarn build) || exit
-
-  GIT_VERSION=$(git log -n 1 --pretty=format:%h)
-  git diff-index HEAD --quiet --exit-code
-  if [[ "$?" -gt "0" ]]; then
-    GIT_VERSION="$GIT_VERSION*"
-  fi
-
-  # TODO: deploy with branch
-  netlify deploy -e "$ENV"
-
-  delivery_date=`( date --version 2>/dev/null | grep -q GNU\  && date +'%F_%H-%M-%S%N' ) || ( which gdate &>/dev/null && gdate +'%F_%H-%M-%S%N' ) || ( which python &> /dev/null && python -c 'import datetime; print datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S%f")' ) || ( date +'%F_%H-%M-%S' )`
-  delivery_date=${delivery_date:0:21}
-  tagname="deployed-$ENV-$delivery_date"
-  git tag "$tagname"
-  git push origin "$tagname"
-
-  exit
 
 # =============================================
 # Initialization commands
