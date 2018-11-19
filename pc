@@ -206,7 +206,7 @@ elif [[ "$CMD" == "start-webapp" ]] || [[ "$CMD" == "start-pro" ]]; then
   fi
   RUN="$RUN"' && yarn start'
 
-# TODO:
+# Create symlink for shared folder in webapp & pro
 elif [[ "$CMD" == "shared" ]]; then
   RUN='cd $ROOT_PATH/shared && yarn run compile;
 			 cd $ROOT_PATH/webapp/node_modules && ln -sf ../../shared pass-culture-shared;
@@ -292,7 +292,7 @@ elif [[ "$CMD" == "deploy-backend" ]] \
     git push origin "$TAG_NAME"
   fi
 
-  if [[ $(git tag -l --points-at $commit_to_deploy | wc -l) == 0 ]]; then
+  if [[ $(git tag -l --points-at "$commit_to_deploy" | wc -l) == 0 ]]; then
     echo "ERROR: Can only deploy tagged commits"
     exit_restoring_branch
   fi
@@ -312,6 +312,8 @@ elif [[ "$CMD" == "deploy-backend" ]] \
   # TODO: until I connect the app in Netlify with Github hooks
   if [[ "$CMD" == "deploy-frontend-webapp" ]] \
      || [[ "$CMD" == "deploy-frontend-pro" ]]; then
+    (set -a; source "$APP_PATH/node_modules/pass-culture-shared/config/run_envs/$ENV" && yarn build) || exit
+     ./"$APP_PATH"/scripts/build_redirects.sh
     netlify deploy -e "$ENV"
   fi
 
@@ -442,9 +444,9 @@ else
 	elif [[ "$ENV" == "staging" ]]; then
 	  echo "$RUN" | ssh deploy@api.passculture-staging.beta.gouv.fr bash
 	elif [[ "$ENV" == "wordpress" ]]; then
-		ssh debian@passculture.beta.gouv.fr
+	  ssh debian@passculture.beta.gouv.fr
 	else
-		echo "$RUN"
+	  echo "$RUN"
 	  eval "$RUN"
 	fi
 fi
