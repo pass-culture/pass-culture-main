@@ -1,8 +1,10 @@
 from datetime import datetime, timedelta
+from pprint import pprint
 from unittest.mock import patch
 
 import pytest
 import requests
+from freezegun import freeze_time
 
 from domain.password import RESET_PASSWORD_TOKEN_LENGTH
 from models import PcObject
@@ -22,7 +24,9 @@ BASE_DATA = {
     'postalCode': '93100',
     'publicName': 'Toto',
     'password': '__v4l1d_P455sw0rd__',
-    'contact_ok': 'true'
+    'contact_ok': 'true',
+    'phoneNumber': '0612345678',
+    'dateOfBirth': '2001-01-01',
 }
 
 BASE_DATA_PRO = {
@@ -36,8 +40,10 @@ BASE_DATA_PRO = {
     'address': '12 boulevard de Pesaro',
     'postalCode': '92000',
     'city': 'Nanterre',
-    'name': 'Crédit Coopératif'
+    'name': 'Crédit Coopératif',
+
 }
+
 
 @pytest.mark.standalone
 class WebappSignupTest:
@@ -191,17 +197,47 @@ class WebappSignupTest:
         error = r_signup.json()
         assert 'contact_ok' in error
 
+    @freeze_time('2019-01-01 01:00:00')
     @clean_database
     def test_signup_successful_returns_status_code_201_and_does_not_log_user_in(self, app):
+        # Given
         data = BASE_DATA.copy()
+        expected_response_json = {'canBookFreeOffers': True,
+                                  'departementCode': '93',
+                                  'email': 'toto@btmx.fr',
+                                  'firstName': 'Toto',
+                                  'firstThumbDominantColor': None,
+                                  'isAdmin': False,
+                                  'lastName': 'Martin',
+                                  'modelName': 'User',
+                                  'phoneNumber': '0612345678',
+                                  'postalCode': '93100',
+                                  'publicName': 'Toto',
+                                  'thumbCount': 0,
+                                  'wallet_balance': 0,
+                                  'dateOfBirth': '2001-01-01'}
+        other_expected_keys = {'id', 'dateCreated'}
+
+        # When
         r_signup = req.post(API_URL + '/users/signup/webapp',
                             json=data, headers={'origin': 'http://localhost:3000'})
+
+        # Then
         assert r_signup.status_code == 201
         assert 'Set-Cookie' not in r_signup.headers
+        json = r_signup.json()
+        pprint(json)
+        for key, value in expected_response_json.items():
+            if key != 'dateCreated':
+                assert json[key] == value
+        for key in other_expected_keys:
+            assert key in json
 
     @clean_database
     @patch('connectors.google_spreadsheet.get_authorized_emails_and_dept_codes')
-    def test_signup_when_user_not_in_exp_spreadsheet_returns_status_code_400_and_email_in_error(self,get_authorized_emails_and_dept_codes, app):
+    def test_signup_when_user_not_in_exp_spreadsheet_returns_status_code_400_and_email_in_error(self,
+                                                                                                get_authorized_emails_and_dept_codes,
+                                                                                                app):
         # Given
         get_authorized_emails_and_dept_codes.return_value = (['toto@email.com', 'other@email.com'], ['93', '93'])
         data = BASE_DATA.copy()
@@ -343,7 +379,6 @@ class ProSignupTest:
             '1 majuscule, 1 minuscule, 1 chiffre et 1 caractère spécial parmi _-&?~#|^@=+.$,<>%*!:;'
         ]
 
-
     @clean_database
     def test_signup_without_contact_ok_returns_status_code_400_and_contact_ok_in_error(self, app):
         data = BASE_DATA_PRO.copy()
@@ -374,11 +409,42 @@ class ProSignupTest:
 
     @clean_database
     def test_signup_successful_returns_status_code_201_and_does_not_log_user_in(self, app):
+        # Given
         data = BASE_DATA_PRO.copy()
+        expected_response_json = {
+            'canBookFreeOffers': False,
+            'departementCode': '92',
+            'email': 'toto_pro@btmx.fr',
+            'firstName': 'Toto',
+            'firstThumbDominantColor': None,
+            'isAdmin': False,
+            'lastName': 'Pro',
+            'modelName': 'User',
+            'phoneNumber': None,
+            'postalCode': '92000',
+            'publicName': 'Toto Pro',
+            'thumbCount': 0,
+            'wallet_balance': 0,
+            'dateOfBirth': None
+        }
+        other_expected_keys = {'id', 'dateCreated'}
+
+        # When
         r_signup = req.post(API_URL + '/users/signup/pro',
                             json=data, headers={'origin': 'http://localhost:3000'})
+
+        # Then
         assert r_signup.status_code == 201
         assert 'Set-Cookie' not in r_signup.headers
+
+        json = r_signup.json()
+        pprint(json)
+        assert 'dateCreated' in json
+        for key, value in expected_response_json.items():
+            if key != 'dateCreated':
+                assert json[key] == value
+        for key in other_expected_keys:
+            assert key in json
 
     @clean_database
     def test_signup_without_offerer_name_returns_status_code_400_and_name_in_error(self, app):
@@ -452,7 +518,8 @@ class ProSignupTest:
         assert 'postalCode' in error
 
     @clean_database
-    def test_pro_signup_when_successful_returns_status_code_201_creates_user_offerer_digital_venue_and_userOfferer_and_not_log_user_in(self, app):
+    def test_pro_signup_when_successful_returns_status_code_201_creates_user_offerer_digital_venue_and_userOfferer_and_not_log_user_in(
+            self, app):
         data_pro = BASE_DATA_PRO.copy()
         r_signup = req.post(API_URL + '/users/signup/pro',
                             json=data_pro, headers={'origin': 'http://localhost:3000'})
@@ -478,7 +545,8 @@ class ProSignupTest:
         assert user_offerer.rights == RightsType.editor
 
     @clean_database
-    def test_pro_signup_when_existing_offerer_returns_status_code_201_creates_editor_user_offerer_and_does_not_log_in(self, app):
+    def test_pro_signup_when_existing_offerer_returns_status_code_201_creates_editor_user_offerer_and_does_not_log_in(
+            self, app):
         json_offerer = {
             "name": "Test Offerer",
             "siren": "349974931",
@@ -514,7 +582,8 @@ class ProSignupTest:
         assert user_offerer.rights == RightsType.editor
 
     @clean_database
-    def test_pro_signup_when_existing_offerer_but_no_user_offerer_returns_status_code_201_and_does_not_signin(self, app):
+    def test_pro_signup_when_existing_offerer_but_no_user_offerer_returns_status_code_201_and_does_not_signin(self,
+                                                                                                              app):
         "should create user and userOfferer"
         json_offerer = {
             "name": "Test Offerer",
@@ -548,7 +617,7 @@ class ProSignupTest:
         assert user_offerer.rights == RightsType.editor
 
     @clean_database
-    def test_signup_user_with_isAdmin_true_and_canBookFreeOffers_raises_error(app):
+    def test_signup_user_with_isAdmin_true_and_canBookFreeOffers_raises_error(self, app):
         # Given
         user_json = {
             'email': 'pctest.isAdmin.canBook@btmx.fr',
@@ -1121,7 +1190,8 @@ def test_post_signup_webapp_create_user_with_validation_token(app):
     # Given
     user_data = BASE_DATA
     # When
-    response = requests.post(API_URL + '/users/signup/webapp', json=user_data, headers={'origin': 'http://localhost:3000'})
+    response = requests.post(API_URL + '/users/signup/webapp', json=user_data,
+                             headers={'origin': 'http://localhost:3000'})
     # Then
     created_user = User.query.filter_by(email=user_data['email']).first()
     assert 'validationToken' not in response.json()
@@ -1141,5 +1211,3 @@ def test_post_signin_should_not_work_if_user_not_validated(app):
     # Then
     assert response.status_code == 401
     assert response.json()['identifier'] == ['Ce compte n\'est pas validé.']
-
-
