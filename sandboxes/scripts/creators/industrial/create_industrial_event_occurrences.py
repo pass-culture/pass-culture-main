@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 from models.pc_object import PcObject
 from utils.date import strftime, today
@@ -23,13 +23,6 @@ def create_industrial_event_occurrences(event_offers_by_name):
                 event_offer.venue.name,
                 strftime(beginning_datetime)
             )
-
-            # SPECIAL MORE DELAY FOR EVENT OCCURRENCE IN FAR AWAY TZ
-            # BECAUSE OTHERWISE TODAY EVENTS ARE ALREADY FINISHED
-            # IN THEIR TZ
-            if beginning_datetime == today \
-                and event_offer.venue.postalCode[:-3] == "97":
-                beginning_datetime = beginning_datetime + timedelta(days=1)
 
             event_occurrences_by_name[name] = create_event_occurrence(
                 beginning_datetime=strftime(beginning_datetime),

@@ -1,10 +1,12 @@
-from datetime import datetime, time, timedelta
+from datetime import datetime, time
 from math import floor
 
 from babel.dates import format_datetime as babel_format_datetime
 from dateutil import tz
 
 from utils.string_processing import parse_timedelta
+
+today = datetime.combine(datetime.utcnow(), time(hour=20))
 
 
 class DateTimes:
@@ -62,5 +64,3 @@ def dept_timezone_datetime_to_utc(datetimeObj, departementCode):
     to_zone = tz.gettz('UTC')
     dept_datetime = datetimeObj.replace(tzinfo=from_zone)
     return dept_datetime.astimezone(to_zone)
-
-today = datetime.combine(datetime.utcnow(), time(hour=20))
