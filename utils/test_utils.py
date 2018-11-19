@@ -391,21 +391,15 @@ def create_thing(
     thing.description = description
     return thing
 
-
-<<<<<<< HEAD
-def create_event(event_name='Test event', event_type=EventType.SPECTACLE_VIVANT, duration_minutes=60,
-                 thumb_count=0, dominant_color=None, is_national=False, description=None):
-=======
 def create_event(
+    description=None,
+    dominant_color=None,
+    duration_minutes=60,
     event_name='Test event',
     event_type=str(EventType.SPECTACLE_VIVANT),
-    description=None,
-    duration_minutes=60,
+    is_national=False,
     thumb_count=0,
-    dominant_color=None,
-    is_national=False
 ):
->>>>>>> added reset all db in save sandbox
     event = Event()
     event.name = event_name
     event.description = description
