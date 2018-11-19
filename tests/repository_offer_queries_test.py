@@ -54,8 +54,8 @@ def test_departement_or_national_offers_with_national_event_returns_national_eve
 @clean_database
 def test_get_offers_for_recommendations_search_by_one_event_type_returns_only_offers_on_events_of_that_type(app):
     # Given
-    type_label = str(EventType.CONFERENCE_DEBAT_DEDICACE)
-    other_type_label = str(EventType.MUSIQUE)
+    type_label = EventType.CONFERENCE_DEBAT_DEDICACE
+    other_type_label = EventType.MUSIQUE
 
     conference_event1 = create_event('Rencontre avec Franck Lepage', event_type=type_label)
     conference_event2 = create_event('Conférence ouverte', event_type=type_label)
@@ -101,7 +101,7 @@ def test_get_offers_for_recommendations_search_by_one_event_type_returns_only_of
     # When
     offers = get_offers_for_recommendations_search(
         type_values=[
-            type_label
+            str(type_label)
         ],
     )
 
@@ -115,8 +115,8 @@ def test_get_offers_for_recommendations_search_by_one_event_type_returns_only_of
 @clean_database
 def test_get_offers_for_recommendations_search_by_one_thing_type_returns_only_offers_on_things_of_that_type(app):
     # Given
-    type_label_ok = str(ThingType.JEUX_VIDEO)
-    type_label_ko = str(ThingType.LIVRE_EDITION)
+    type_label_ok = ThingType.JEUX_VIDEO
+    type_label_ko = ThingType.LIVRE_EDITION
 
     thing_ok1 = create_thing(thing_type=type_label_ok)
     thing_ok2 = create_thing(thing_type=type_label_ok)
@@ -143,7 +143,7 @@ def test_get_offers_for_recommendations_search_by_one_thing_type_returns_only_of
     # When
     offers = get_offers_for_recommendations_search(
         type_values=[
-            type_label_ok
+            str(type_label_ok)
         ],
     )
 
@@ -221,7 +221,6 @@ def test_get_offers_for_recommendations_search_with_partial_keyword_returns_offe
 
     offers = get_offers_for_recommendations_search(keywords='Rencon')
 
-    print(offers)
     assert len(offers) == 2
     assert event1_offer in offers
     assert thing_offer in offers

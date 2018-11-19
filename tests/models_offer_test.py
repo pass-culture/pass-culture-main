@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 
 import pytest
 
-from models import Offer, Thing, Event, PcObject, ApiErrors, EventOccurrence
+from models import Offer, Thing, Event, PcObject, ApiErrors, EventOccurrence, ThingType
 from tests.conftest import clean_database
 from utils.date import DateTimes
 from utils.test_utils import create_event_occurrence, create_thing, create_thing_offer, create_offerer, create_venue
@@ -71,7 +71,7 @@ def test_date_range_is_empty_if_event_has_no_event_occurrences():
 def test_create_digital_offer_success(app):
     # Given
     url='http://mygame.fr/offre'
-    digital_thing = create_thing(thing_type='ThingType.JEUX_VIDEO', url=url, is_national=True)
+    digital_thing = create_thing(thing_type=ThingType.JEUX_VIDEO, url=url, is_national=True)
     offerer = create_offerer()
     virtual_venue = create_venue(offerer, is_virtual=True, siret=None)
     PcObject.check_and_save(virtual_venue)
@@ -88,7 +88,7 @@ def test_create_digital_offer_success(app):
 @pytest.mark.standalone
 def test_offer_error_when_thing_is_digital_but_venue_not_virtual(app):
     # Given
-    digital_thing = create_thing(thing_type='ThingType.JEUX_VIDEO', url='http://mygame.fr/offre')
+    digital_thing = create_thing(thing_type=ThingType.JEUX_VIDEO, url='http://mygame.fr/offre')
     offerer = create_offerer()
     physical_venue = create_venue(offerer)
     PcObject.check_and_save(physical_venue)

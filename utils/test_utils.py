@@ -356,7 +356,7 @@ def create_stock_with_thing_offer(offerer, venue, thing_offer, price=10, availab
     return stock
 
 
-def create_thing(thing_name='Test Book', thing_type=str(ThingType.LIVRE_EDITION), media_urls=['test/urls'],
+def create_thing(thing_name='Test Book', thing_type=ThingType.LIVRE_EDITION, media_urls=['test/urls'],
                  author_name='Test Author', url=None, thumb_count=1, dominant_color=None, is_national=False,
                  id_at_providers=None, description=None):
     thing = Thing()
@@ -379,7 +379,7 @@ def create_thing(thing_name='Test Book', thing_type=str(ThingType.LIVRE_EDITION)
     return thing
 
 
-def create_event(event_name='Test event', event_type=str(EventType.SPECTACLE_VIVANT), duration_minutes=60,
+def create_event(event_name='Test event', event_type=EventType.SPECTACLE_VIVANT, duration_minutes=60,
                  thumb_count=0, dominant_color=None, is_national=False, description=None):
     event = Event()
     event.name = event_name
@@ -395,7 +395,7 @@ def create_event(event_name='Test event', event_type=str(EventType.SPECTACLE_VIV
 
 
 def create_thing_offer(venue, thing=None, date_created=datetime.utcnow(), booking_email='booking.email@test.com',
-                       thing_type=str(ThingType.AUDIOVISUEL), thing_name='Test Book', media_urls=['test/urls'], author_name='Test Author',
+                       thing_type=ThingType.AUDIOVISUEL, thing_name='Test Book', media_urls=['test/urls'], author_name='Test Author',
                        thumb_count=1, dominant_color=None, url=None, is_national=False, is_active=True):
     offer = Offer()
     if thing:
@@ -416,7 +416,7 @@ def create_thing_offer(venue, thing=None, date_created=datetime.utcnow(), bookin
 
 def create_event_offer(venue, event=None, event_name='Test event', duration_minutes=60, date_created=datetime.utcnow(),
                        booking_email='booking.email@test.com', thumb_count=0, dominant_color=None,
-                       event_type=str(EventType.SPECTACLE_VIVANT), is_national=False, is_active=True):
+                       event_type=EventType.SPECTACLE_VIVANT, is_national=False, is_active=True):
     offer = Offer()
     if event is None:
         event = create_event(event_name=event_name, event_type=event_type, duration_minutes=duration_minutes,

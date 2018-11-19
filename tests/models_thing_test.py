@@ -49,7 +49,7 @@ def test_thing_type_find_from_sub_labels_returns_several_types_given_several_sub
 @pytest.mark.standalone
 def test_thing_error_when_thing_type_is_offlineOnly_but_has_url(app):
     # Given
-    thing = create_thing(thing_type='ThingType.JEUX', url='http://mygame.fr/offre')
+    thing = create_thing(thing_type=ThingType.JEUX, url='http://mygame.fr/offre')
 
     # When
     with pytest.raises(ApiErrors) as errors:
