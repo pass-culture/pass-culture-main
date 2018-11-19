@@ -67,7 +67,7 @@ class Actions extends Component {
                 ? `stock=${get(stockPatch, 'id')}`
                 : `date=${get(eventOccurrencePatch, 'id')}`
             }`}
-            className="button is-small is-secondary">
+            className="button is-small is-secondary editStock">
             <span className="icon">
               <Icon svg="ico-pen-r" />
             </span>
@@ -76,7 +76,7 @@ class Actions extends Component {
         <td className="is-clipped">
           {!this.state.isDeleting && (
             <button
-              className="button is-small is-secondary"
+              className="button is-small is-secondary deleteStock"
               style={{ width: '100%' }}
               onClick={this.onDeleteClick}>
               <span className="icon">

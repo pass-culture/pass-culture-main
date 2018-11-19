@@ -65,7 +65,12 @@ class OccasionItem extends Component {
     const mediationsLength = get(mediations, 'length')
 
     return (
-      <li className={classnames('offer-item', { active: offer.isActive })}>
+      <li
+        className={classnames('offer-item', {
+          active: offer.isActive,
+          event,
+          thing,
+        })}>
         <Thumb alt="offre" src={thumbUrl} />
         <div className="list-content">
           <NavLink
