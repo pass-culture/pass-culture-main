@@ -4,13 +4,13 @@ from utils.logger import logger
 from utils.test_utils import create_offerer
 
 MOCK_NAMES = [
-    "Atelier Herbert Marcuse",
+    "Herbert Marcuse Entreprise",
     "Club Dorothy",
     "Scope La Brique",
-    "Les Perruches Swing",
-    "Michel et son accordéon",
-    "La librairie quantique",
-    "Folie des anachorètes"
+    "Danse Jazz Dans Tes Bottes",
+    "Michel Léon",
+    "Syndicat des librairies physiques",
+    "Maison des anachorètes"
 ]
 
 def create_industrial_offerers(
