@@ -15,7 +15,7 @@ def create_industrial_users():
     for departement_code in DEPARTEMENT_CODES:
 
         for admin_count in range(ADMINS_COUNT):
-            users_by_name['admin {} {}'.format(departement_code, admin_count)] = create_user(
+            users_by_name['admin{} {}'.format(departement_code, admin_count)] = create_user(
                 can_book_free_offers=False,
                 departement_code=str(departement_code),
                 email="pctest.admin{}.{}@btmx.fr".format(departement_code, admin_count),
@@ -28,7 +28,7 @@ def create_industrial_users():
             )
 
         for pro_count in range(PROS_COUNT):
-            users_by_name['pro {} {}'.format(departement_code, pro_count)] = create_user(
+            users_by_name['pro{} {}'.format(departement_code, pro_count)] = create_user(
                 departement_code=str(departement_code),
                 email="pctest.pro{}.{}@btmx.fr".format(departement_code, pro_count),
                 first_name="PC Test Pro",
@@ -39,7 +39,7 @@ def create_industrial_users():
             )
 
         for jeune_count in range(JEUNES_COUNT):
-            users_by_name['jeune {} {}'.format(departement_code, jeune_count)] = create_user(
+            users_by_name['jeune{} {}'.format(departement_code, jeune_count)] = create_user(
                 departement_code=str(departement_code),
                 email="pctest.jeune{}.{}@btmx.fr".format(departement_code, jeune_count),
                 first_name="PC Test Jeune",

@@ -33,8 +33,8 @@ from utils.token import random_token
 
 savedCounts = {}
 
-USER_TEST_ADMIN_EMAIL="pctest.admin.1@btmx.fr"
-USER_TEST_ADMIN_PASSWORD="pctest.Admin.1"
+USER_TEST_ADMIN_EMAIL="pctest.admin93.0@btmx.fr"
+USER_TEST_ADMIN_PASSWORD="pctest.Admin93.0"
 API_URL = "http://localhost:5000"
 MOCKED_SIREN_ENTREPRISES_API_RETURN = {
     'numero_tva_intra': 'FR60732075312',
