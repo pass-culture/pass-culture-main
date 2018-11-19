@@ -15,7 +15,7 @@ freezegun==0.3.11
 geoip2==2.9.0
 gspread==3.0.1
 gunicorn==19.9.0
-inflect==1.0.0
+inflect==2.1.0
 isbnlib==3.9.3
 luhn==0.2.0
 lxml==4.2.5
