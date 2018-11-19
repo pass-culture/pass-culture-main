@@ -103,10 +103,20 @@ test('Je peux créer une offre événement', async t => {
     .match(/\/offres\/([A-Z0-9]*)$/)
     .expect(location.search)
     .eql('?gestion')
+})
 
-  // ADD AN EVENT OCCURENCE AND A STOCK
-  await t.click(addScheduleAnchor)
-  location = await t.eval(() => window.location)
+test("Je peux créer une occurence d'événement", async t => {
+  await t.useRole(regularOfferer)
+
+  const editOfferAnchor = Selector('a.editLink:first-child')
+  const manageStockAnchor = Selector('a.manageStock')
+
+  await t
+    .click(editOfferAnchor)
+    .click(manageStockAnchor)
+    .click(addScheduleAnchor)
+
+  let location = await t.eval(() => window.location)
   await t.expect(location.search).eql('?gestion&date=nouvelle')
   await t.click(scheduleSubmitButton)
   location = await t.eval(() => window.location)
@@ -119,10 +129,20 @@ test('Je peux créer une offre événement', async t => {
   await t.click(scheduleSubmitButton)
   location = await t.eval(() => window.location)
   await t.expect(location.search).eql('?gestion')
+})
 
+test('Je peux créer une autre occurence', async t => {
   // ADD AN OTHER EVENT OCCURENCE AND A STOCK
-  await t.click(addScheduleAnchor)
-  location = await t.eval(() => window.location)
+  await t.useRole(regularOfferer)
+
+  const editOfferAnchor = Selector('a.editLink:first-child')
+  const manageStockAnchor = Selector('a.manageStock')
+
+  await t
+    .click(editOfferAnchor)
+    .click(manageStockAnchor)
+    .click(addScheduleAnchor)
+  let location = await t.eval(() => window.location)
   await t.expect(location.search).eql('?gestion&date=nouvelle')
   await t.click(scheduleSubmitButton)
   location = await t.eval(() => window.location)

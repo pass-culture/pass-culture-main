@@ -456,7 +456,7 @@ class OfferPage extends Component {
                           )}
                         </span>
                         <NavLink
-                          className="button is-primary is-outlined is-small"
+                          className="button is-primary is-outlined is-small manageStock"
                           to={`/offres/${offerId}?gestion`}>
                           <span className="icon">
                             <Icon svg="ico-calendar" />
