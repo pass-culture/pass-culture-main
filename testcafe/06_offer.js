@@ -132,7 +132,6 @@ test("Je peux créer une occurence d'événement", async t => {
 })
 
 test('Je peux créer une autre occurence', async t => {
-  // ADD AN OTHER EVENT OCCURENCE AND A STOCK
   await t.useRole(regularOfferer)
 
   const editOfferAnchor = Selector('a.editLink:first-child')
@@ -149,44 +148,44 @@ test('Je peux créer une autre occurence', async t => {
   await t
     .expect(location.search)
     .match(/\?gestion&date=([A-Z0-9]*)&stock=nouveau$/)
+})
 
-  // EDIT ONE
-  /*
-  const editScheduleAnchor = Selector(
-    "a.button[href^='/offres/A9?gestion&date=']"
+test('Je peux modifier une occurence', async t => {
+  await t.useRole(regularOfferer)
+
+  const editOfferAnchor = Selector('.event a.editLink:first-child')
+  const manageStockAnchor = Selector('a.manageStock')
+  const editScheduleAnchor = Selector('a.editStock:first-child')
+
+  await t
+    .click(editOfferAnchor)
+    .click(manageStockAnchor)
+    .click(editScheduleAnchor)
+
+  let location = await t.eval(() => window.location)
+  await t.expect(location.search).match(/\?gestion&date=([A-Z0-9]*)$/)
+
+  const beginInput = Selector('input.date')
+  const datePicker = Selector('.react-datepicker')
+  const datePickerLastDay = Selector(
+    '.react-datepicker__week:last-child .react-datepicker__day:last-child'
   )
 
-  await t.click(editScheduleAnchor)
-
-  location = await t.eval(() => window.location)
-  await t.expect(location.search)
-         .match(/\?gestion&date=([A-Z0-9]*)$/)
-
-  await t.click(scheduleSubmitButton)
-
-
-  location = await t.eval(() => window.location)
   await t
-    .expect(location.search)
-    .match(/\?gestion&date=([A-Z0-9]*)&stock=([A-Z0-9]*)$/)
+    .expect(beginInput.exists)
+    .ok()
+    .expect(datePicker.exists)
+    .notOk()
+    .click(beginInput)
+    .expect(datePicker.exists)
+    .ok()
+    .click(datePickerLastDay)
+    .expect(datePicker.exists)
+    .notOk()
+    .click(scheduleSubmitButton)
 
-  await t.typeText(availableInput, '10')
-
-
-  await t.click(scheduleSubmitButton)
-
-
-  location = await t.eval(() => window.location)
-  await t.expect(location.search)
-         .eql('?gestion')
-
-  // CLOSE
-  await t.click(scheduleCloseButton)
-
-  location = await t.eval(() => window.location)
-  await t.expect(location.search)
-         .eql('')
-  */
+  const availableInput = Selector('#stock-available')
+  await t.typeText(priceInput, '15').click(scheduleSubmitButton)
 })
 
 fixture`06_02 OfferPage | Créer une nouvelle offre avec type et sous-type`
@@ -245,10 +244,8 @@ fixture`06_03 OfferPage | Créer une nouvelle offre numérique`
 test('Je peux créer une offre numérique', async t => {
   await t
     .useRole(regularOfferer)
-    .wait(500)
     .click(navbarAnchor)
     .click(structuresLink)
-    .wait(500)
   await t.click(createVirtualOfferAnchor)
   await t.typeText(nameInput, 'Jeux vidéo abonnement de test')
   await t.click(typeInput).click(typeVideoGameOption)
