@@ -14,28 +14,32 @@ def create_industrial_thing_offers(
 
     thing_offers_by_name = {}
 
-    for offerer_name in offerers_by_name.keys():
+    for offerer in offerers_by_name.values():
 
-        venue = venues_by_name[offerer_name]
+        physical_venues = [
+            venue for venue in offerer.managedVenues
+            if not venue.isVirtual
+        ]
+        for physical_venue in physical_venues:
 
-        virtual_venue = venues_by_name[offerer_name + " (Offre en ligne)"]
+            virtual_venue = venues_by_name[physical_venue.name + " (Offre en ligne)"]
 
-        for thing in things_by_name.values():
+            for thing in things_by_name.values():
 
-            thing_type = types_by_value[thing.type]
-            if thing_type['offlineOnly']:
-                thing_venue = venue
-            elif thing_type['onlineOnly']:
-                thing_venue = virtual_venue
-            else:
-                thing_venue = venue
+                thing_type = types_by_value[thing.type]
+                if thing_type['offlineOnly']:
+                    thing_venue = physical_venue
+                elif thing_type['onlineOnly']:
+                    thing_venue = virtual_venue
+                else:
+                    thing_venue = physical_venue
 
-            name = thing.name + ' / ' + thing_venue.name
-            thing_offers_by_name[name] = create_thing_offer(
-                thing_venue,
-                thing=thing,
-                thing_type=thing.type
-            )
+                name = thing.name + ' / ' + thing_venue.name
+                thing_offers_by_name[name] = create_thing_offer(
+                    thing_venue,
+                    thing=thing,
+                    thing_type=thing.type
+                )
 
     PcObject.check_and_save(*thing_offers_by_name.values())
 
