@@ -478,7 +478,7 @@ class ProSignupTest:
         assert user_offerer.rights == RightsType.editor
 
     @clean_database
-    def test_pro_signup_when_non_validated_existing_offerer_returns_status_code_201_creates_editor_user_offerer_and_does_not_log_in(self, app):
+    def test_pro_signup_when_existing_offerer_returns_status_code_201_creates_editor_user_offerer_and_does_not_log_in(self, app):
         json_offerer = {
             "name": "Test Offerer",
             "siren": "349974931",
@@ -512,6 +512,64 @@ class ProSignupTest:
         assert user_offerer is not None
         assert user_offerer.validationToken is not None
         assert user_offerer.rights == RightsType.editor
+
+    @clean_database
+    def test_pro_signup_when_existing_offerer_but_no_user_offerer_returns_status_code_201_and_does_not_signin(self, app):
+        "should create user and userOfferer"
+        json_offerer = {
+            "name": "Test Offerer",
+            "siren": "349974931",
+            "address": "Test adresse",
+            "postalCode": "75000",
+            "city": "Paris"
+        }
+        offerer = Offerer(from_dict=json_offerer)
+        PcObject.check_and_save(offerer)
+
+        data = BASE_DATA_PRO.copy()
+        r_signup = req.post(API_URL + '/users/signup/pro',
+                            json=data, headers={'origin': 'http://localhost:3000'})
+        assert r_signup.status_code == 201
+        assert 'Set-Cookie' not in r_signup.headers
+        user = User.query \
+            .filter_by(email='toto_pro@btmx.fr') \
+            .first()
+        assert user is not None
+        offerer = Offerer.query \
+            .filter_by(siren='349974931') \
+            .first()
+        assert offerer is not None
+        user_offerer = UserOfferer.query \
+            .filter_by(user=user,
+                       offerer=offerer) \
+            .first()
+        assert user_offerer is not None
+        assert user_offerer.validationToken is not None
+        assert user_offerer.rights == RightsType.editor
+
+    @clean_database
+    def test_signup_user_with_isAdmin_true_and_canBookFreeOffers_raises_error(app):
+        # Given
+        user_json = {
+            'email': 'pctest.isAdmin.canBook@btmx.fr',
+            'publicName': 'IsAdmin CanBook',
+            'firstName': 'IsAdmin',
+            'lastName': 'CanBook',
+            'postalCode': '93100',
+            'password': '__v4l1d_P455sw0rd__',
+            'contact_ok': 'true',
+            'isAdmin': True,
+            'canBookFreeOffers': True
+        }
+
+        # When
+        r_signup = req.post(API_URL + '/users/signup/webapp',
+                            json=user_json, headers={'origin': 'http://localhost:3000'})
+
+        # Then
+        assert r_signup.status_code == 400
+        error = r_signup.json()
+        assert error == {'canBookFreeOffers': ['Admin ne peut pas booker']}
 
 
 @pytest.mark.standalone
@@ -588,42 +646,6 @@ def test_user_wallet_should_be_marked_as_activated_when_there_is_a_deposit(app):
     assert r_profile.json()['wallet_is_activated'] == True
 
 
-@pytest.mark.standalone
-@clean_database
-def test_pro_signup_when_existing_offerer_but_no_user_offerer_and_does_not_signin(app):
-    "should create user and userOfferer"
-    json_offerer = {
-        "name": "Test Offerer",
-        "siren": "349974931",
-        "address": "Test adresse",
-        "postalCode": "75000",
-        "city": "Paris"
-    }
-    offerer = Offerer(from_dict=json_offerer)
-    PcObject.check_and_save(offerer)
-
-    data = BASE_DATA_PRO.copy()
-    r_signup = req.post(API_URL + '/users/signup/pro',
-                        json=data, headers={'origin': 'http://localhost:3000'})
-    assert r_signup.status_code == 201
-    assert 'Set-Cookie' not in r_signup.headers
-    user = User.query \
-        .filter_by(email='toto_pro@btmx.fr') \
-        .first()
-    assert user is not None
-    offerer = Offerer.query \
-        .filter_by(siren='349974931') \
-        .first()
-    assert offerer is not None
-    user_offerer = UserOfferer.query \
-        .filter_by(user=user,
-                   offerer=offerer) \
-        .first()
-    assert user_offerer is not None
-    assert user_offerer.validationToken is not None
-    assert user_offerer.rights == RightsType.editor
-
-
 @clean_database
 @pytest.mark.standalone
 def test_user_should_have_its_wallet_balance(app):
@@ -662,32 +684,6 @@ def test_user_should_have_its_wallet_balance(app):
 
     # Then
     assert wallet_balance == 15
-
-
-@clean_database
-@pytest.mark.standalone
-def test_user_with_isAdmin_true_and_canBookFreeOffers_raises_error(app):
-    # Given
-    user_json = {
-        'email': 'pctest.isAdmin.canBook@btmx.fr',
-        'publicName': 'IsAdmin CanBook',
-        'firstName': 'IsAdmin',
-        'lastName': 'CanBook',
-        'postalCode': '93100',
-        'password': '__v4l1d_P455sw0rd__',
-        'contact_ok': 'true',
-        'isAdmin': True,
-        'canBookFreeOffers': True
-    }
-
-    # When
-    r_signup = req.post(API_URL + '/users/signup/webapp',
-                        json=user_json, headers={'origin': 'http://localhost:3000'})
-
-    # Then
-    assert r_signup.status_code == 400
-    error = r_signup.json()
-    assert error == {'canBookFreeOffers': ['Admin ne peut pas booker']}
 
 
 @clean_database
