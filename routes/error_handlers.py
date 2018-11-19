@@ -60,3 +60,11 @@ def invalid_id_for_dehumanize_error(error):
     api_errors.addError('global', 'La page que vous recherchez n\'existe pas')
     app.logger.error('404 %s' % str(error))
     return jsonify(api_errors.errors), 404
+
+
+@app.errorhandler(TypeError)
+def invalid_data_format(error):
+    field = error.args[2]
+    api_errors = ApiErrors()
+    api_errors.addError(field, 'Caractère interdit')
+    return jsonify(api_errors.errors), 400

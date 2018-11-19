@@ -218,6 +218,28 @@ def test_number_of_available_stocks_cannot_be_updated_below_number_of_already_ex
 
 @clean_database
 @pytest.mark.standalone
+def test_patch_stock_putting_wrong_type_on_available_returns_status_code_400_and_available_in_error(app):
+    # Given
+    user = create_user()
+    user_admin = create_user(email='email@test.com', can_book_free_offers=False, password='P@55w0rd', is_admin=True)
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    stock = create_stock_with_event_offer(offerer, venue, price=0)
+    stock.available = 1
+    booking = create_booking(user, stock, venue, recommendation=None)
+    PcObject.check_and_save(booking, user_admin)
+
+    # When
+    response = req_with_auth('email@test.com', 'P@55w0rd').patch(API_URL + '/stocks/' + humanize(stock.id),
+                                                                 json={'available': ' '})
+
+    # Then
+    assert response.status_code == 400
+    assert response.json()['available'] == ['Caractère interdit']
+
+
+@clean_database
+@pytest.mark.standalone
 def test_should_not_create_stock_if_booking_limit_datetime_after_event_occurrence(app):
     # Given
     from models.pc_object import serialize
