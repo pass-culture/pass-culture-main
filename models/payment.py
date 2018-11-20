@@ -36,6 +36,8 @@ class Payment(PcObject, Model):
 
     recipient = Column(String(140), nullable=False)
 
+    organisationRegistrationNumber = Column(String(14), nullable=False)
+
     iban = Column(String(27), nullable=True)
 
     bic = Column(String(11),

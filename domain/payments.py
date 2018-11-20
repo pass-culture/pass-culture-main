@@ -10,6 +10,7 @@ from flask import render_template
 from lxml import etree
 
 from domain.reimbursement import BookingReimbursement
+from models import Venue
 from models.payment import Payment
 from models.payment_status import TransactionStatus
 
@@ -43,6 +44,8 @@ def create_payment_for_booking(booking_reimbursement: BookingReimbursement) -> P
         payment.recipient = offerer.name
         payment.iban = offerer.iban
         payment.bic = offerer.bic
+
+    payment.organisationRegistrationNumber = _find_siret_or_siren(venue)
 
     if payment.iban:
         payment.setStatus(TransactionStatus.PENDING)
@@ -103,3 +106,13 @@ def _group_payments_into_transactions(payments: List[Payment], message_id: str) 
 
         transactions.append(Transaction(iban, bic, end_to_end_id, amount))
     return transactions
+
+
+def _find_siret_or_siren(venue: Venue) -> str:
+    if venue.iban:
+        if venue.siret:
+            return venue.siret
+        else:
+            return venue.managingOfferer.siren
+    else:
+        return venue.managingOfferer.siren

@@ -52,7 +52,13 @@ def test_create_payment_for_booking_when_iban_is_on_venue_should_take_payment_in
     booking = create_booking(user, stock=stock, quantity=1)
     booking.stock.offer = Offer()
     offerer = create_offerer(name='Test Offerer', iban='B135TGGEG532TG', bic='LAJR93')
-    booking.stock.offer.venue = create_venue(offerer, name='Test Venue', iban='KD98765RFGHZ788', bic='LOKIJU76')
+    booking.stock.offer.venue = create_venue(
+        offerer,
+        siret='12345678912345',
+        name='Test Venue',
+        iban='KD98765RFGHZ788',
+        bic='LOKIJU76'
+    )
     booking.stock.offer.venue.managingOfferer = offerer
     booking_reimbursement = BookingReimbursement(booking, ReimbursementRules.PHYSICAL_OFFERS, Decimal(10))
 
@@ -66,13 +72,73 @@ def test_create_payment_for_booking_when_iban_is_on_venue_should_take_payment_in
 
 
 @pytest.mark.standalone
-def test_create_payment_for_booking_when_no_iban_on_venue_should_take_payment_info_on_offerer():
+def test_create_payment_for_booking_when_iban_is_on_venue_should_take_venue_siret_has_registration_number_if_it_has_one():
     # given
     user = create_user()
     stock = create_stock(price=10, available=5)
     booking = create_booking(user, stock=stock, quantity=1)
     booking.stock.offer = Offer()
-    offerer = create_offerer(name='Test Offerer', iban='CF13QSDFGH456789', bic='QSDFGH8Z555')
+    offerer = create_offerer(name='Test Offerer', iban='B135TGGEG532TG', bic='LAJR93')
+    booking.stock.offer.venue = create_venue(
+        offerer,
+        siret='12345678912345',
+        name='Test Venue',
+        iban='KD98765RFGHZ788',
+        bic='LOKIJU76'
+    )
+    booking.stock.offer.venue.managingOfferer = offerer
+    booking_reimbursement = BookingReimbursement(booking, ReimbursementRules.PHYSICAL_OFFERS, Decimal(10))
+
+    # when
+    payment = create_payment_for_booking(booking_reimbursement)
+
+    # then
+    assert payment.organisationRegistrationNumber == '12345678912345'
+
+
+@pytest.mark.standalone
+def test_create_payment_for_booking_when_iban_is_on_venue_should_take_offerer_siren_has_registration_number_if_venue_has_no_siret():
+    # given
+    user = create_user()
+    stock = create_stock(price=10, available=5)
+    booking = create_booking(user, stock=stock, quantity=1)
+    booking.stock.offer = Offer()
+    offerer = create_offerer(
+        name='Test Offerer',
+        siren='123456789',
+        iban='B135TGGEG532TG',
+        bic='LAJR93'
+    )
+    booking.stock.offer.venue = create_venue(
+        offerer,
+        siret=None,
+        name='Test Venue',
+        iban='KD98765RFGHZ788',
+        bic='LOKIJU76'
+    )
+    booking.stock.offer.venue.managingOfferer = offerer
+    booking_reimbursement = BookingReimbursement(booking, ReimbursementRules.PHYSICAL_OFFERS, Decimal(10))
+
+    # when
+    payment = create_payment_for_booking(booking_reimbursement)
+
+    # then
+    assert payment.organisationRegistrationNumber == '123456789'
+
+
+@pytest.mark.standalone
+def test_create_payment_for_booking_when_no_iban_on_venue_should_take_payment_info_from_offerer():
+    # given
+    user = create_user()
+    stock = create_stock(price=10, available=5)
+    booking = create_booking(user, stock=stock, quantity=1)
+    booking.stock.offer = Offer()
+    offerer = create_offerer(
+        name='Test Offerer',
+        siren='123456789',
+        iban='CF13QSDFGH456789',
+        bic='QSDFGH8Z555'
+    )
     booking.stock.offer.venue = create_venue(offerer, name='Test Venue', iban=None, bic=None)
     booking.stock.offer.venue.managingOfferer = offerer
     booking_reimbursement = BookingReimbursement(booking, ReimbursementRules.PHYSICAL_OFFERS, Decimal(10))
@@ -84,6 +150,7 @@ def test_create_payment_for_booking_when_no_iban_on_venue_should_take_payment_in
     assert payment.iban == 'CF13QSDFGH456789'
     assert payment.bic == 'QSDFGH8Z555'
     assert payment.recipient == 'Test Offerer'
+    assert payment.organisationRegistrationNumber == '123456789'
 
 
 @pytest.mark.standalone
