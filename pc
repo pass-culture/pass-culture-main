@@ -40,7 +40,7 @@ if [[ $# -gt 2 ]] && [[ "$1" == "-t" ]]; then
   if [[ "$2" =~ ^v[0-9]+\.[0-9]+\.[0-9]+ ]]; then
     TAG_NAME=$2
   else
-    echo "tag format should be semver compliant (vx.x.x)"
+    echo "tag format should be Semantic Versioning compliant (vx.x.x)"
   fi
 
   shift 2
@@ -169,7 +169,8 @@ elif [[ "$CMD" == "reset-all-storage" ]]; then
 
 # Restore a postgresql database from file
 elif [[ "$CMD" == "restore-db" ]]; then
-  echo "Warning : RUN reset-all-db before running this !"
+  confirm "Warning: your database will be wiped. Is this OK ?"
+  "$ROOT_PATH"/pc -e "$ENV" reset-all-db
   if [[ $# == 0 ]]; then
     echo "Usage : pc restore-db <backup_file> [arguments]"
     exit
@@ -309,7 +310,6 @@ elif [[ "$CMD" == "deploy-backend" ]] \
   git merge "$commit_to_deploy"
   git push origin "$ENV"
 
-  # TODO: until I connect the app in Netlify with Github hooks
   if [[ "$CMD" == "deploy-frontend-webapp" ]] \
      || [[ "$CMD" == "deploy-frontend-pro" ]]; then
     (set -a; source "$APP_PATH/node_modules/pass-culture-shared/config/run_envs/$ENV" && yarn build) || exit
