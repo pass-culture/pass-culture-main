@@ -23,7 +23,6 @@ La commande déploiera ensuite la branche locale de votre dépôt Github.
 
 `./init_new_project.sh -n pass-culture-api-dev -r dev -d 1g -b 2 -u api.passculture-dev.beta.gouv.fr -j MAILJET_API_SECRET -k MAILJET_API_KEY -e dev`
 
-
 Ensuite, lancer le script `init_google_env.sh` afin de positionner les variables d'environnements nécessaires à la connexion
 au Google Sheet de vérification des utilisateurs.
 
@@ -46,11 +45,13 @@ Première étape, installer les paquets clients de postgresql :
 
 (Les autres versions postgresql-client > 9.5 devraient fonctionner)
 
-Le script `restore_backup.sh` permet de restaurer sur un environnement Scalingo un dump de base de données postgres.
-Le dump peut-être local avec l'option `-b` ou en récupérant un backup de production sur OVH `-o`.
+Le script `restore_prod_to_env.sh` permet de restaurer sur un environnement Scalingo un dump de base de données postgres.
+Le dump peut-être local avec l'option `-b`.
+Ce script est également exécuté sur l'environnement OVH afin de restaurer régulièrement les données sur d'autres environnements.
 Exemple d'appel du script (avec récupération de la production actuelle):
 
-`./restore_backup.sh -a pass-culture-api-dev -d $SCALINGO_POSTGRESQL_URL_STAGING -p $SCALINGO_PG_PASSWORD_STAGING -u $SCALINGO_PG_USER_STAGING -o`
+`./restore_prod_to_env.sh -a pass-culture-api-dev -b [backup_file.pgdump]`
+
 
 ## Problème avec le deploy-backend
 
