@@ -214,6 +214,86 @@ describe('src | components | pages | SearchPageContentContent', () => {
     })
   })
 
+  describe.only('onSubmit', () => {
+    // when
+    const wrapper = shallow(<SearchPageContent {...initialProps} />)
+    const event = Object.assign(jest.fn(), {
+      preventDefault: () => {},
+      target: {
+        elements: {
+          keywords: {
+            value: 'AnyWord',
+          },
+        },
+      },
+    })
+    const wrapperInstance = wrapper.instance()
+    wrapperInstance.setState({ withFilter: true })
+    describe('when keywords is an empty string', () => {
+      it('should update state with mots-clés setted to value given', () => {
+        // when
+        wrapper.find('form').simulate('submit', event)
+
+        const expected = {
+          keywordsKey: 0,
+          keywordsValue: null,
+          withFilter: false,
+        }
+
+        // then
+        expect(wrapper.state()).toEqual(expected)
+      })
+      it('should change pagination', () => {
+        // when
+        wrapper.find('form').simulate('submit', event)
+
+        const argument1 = {
+          'mots-cles': 'AnyWord',
+        }
+        const argument2 = {
+          isClearingData: true,
+          pathname: '/recherche/resultats',
+        }
+
+        // then
+        expect(paginationChangeMock).toHaveBeenCalledWith(argument1, argument2)
+        paginationChangeMock.mockClear()
+      })
+    })
+
+    describe('when keywords is an empty string', () => {
+      it('should change pagination with mots-clés setted to null', () => {
+        // given
+        const eventEmptyWord = Object.assign(jest.fn(), {
+          preventDefault: () => {},
+          target: {
+            elements: {
+              keywords: {
+                value: '',
+              },
+            },
+          },
+        })
+
+        // when
+        wrapper.find('form').simulate('submit', eventEmptyWord)
+
+        // then
+        const argument1 = {
+          'mots-cles': null,
+        }
+        const argument2 = {
+          isClearingData: false,
+          pathname: '/recherche/resultats',
+        }
+
+        // then
+        expect(paginationChangeMock).toHaveBeenCalledWith(argument1, argument2)
+        paginationChangeMock.mockClear()
+      })
+    })
+  })
+
   // Bouton recherchre avec props disabled si !isOneCharInKeywords
   // Close button // wrapper.props().closeSearchButton
   // console.log('|||||| Wrapper Props', wrapper.props().backButton);
