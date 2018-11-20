@@ -39,6 +39,8 @@ fi
 if [[ $# -gt 2 ]] && [[ "$1" == "-d" ]]; then
   POSTGRESQL_URL=$2
   shift 2
+elif [[ "$SCALINGO_POSTGRESQL_URL_PROD" =~ "postgres://" ]]; then
+  POSTGRESQL_URL="$SCALINGO_POSTGRESQL_URL_PROD"
 else
   echo "You must provide the SCALINGO_POSTGRESQL_URL you want to access."
   exit 1
@@ -48,6 +50,8 @@ fi
 if [[ $# -gt 2 ]] && [[ "$1" == "-p" ]]; then
   PG_PASSWORD=$2
   shift 2
+elif [[ ! -z "$SCALINGO_PWD_PROD" ]]; then
+  PG_PASSWORD="$SCALINGO_PWD_PROD"
 else
   echo "You must provide the SCALINGO_PG_PASSWORD for the database."
   exit 1
@@ -57,19 +61,20 @@ fi
 if [[ $# -gt 1 ]] && [[ "$1" == "-u" ]]; then
   PG_USER=$2
   shift 2
+elif [[ ! -z "$SCALINGO_USER_PROD" ]]; then
+  PG_USER="$SCALINGO_USER_PROD"
 else
   echo "You must provide the SCALINGO_PG_USER for the database."
   exit 1
 fi
 
 echo "Building tunnel to Scalingo."
-scalingo -a "$APP_NAME" db-tunnel "$POSTGRESQL_URL" &
+/usr/local/bin/scalingo -a "$APP_NAME" db-tunnel "$POSTGRESQL_URL" &
 sleep 3
 DB_TUNNEL_PID=$!
 echo "Start backup process."
 mkdir -p "$BACKUP_PATH"
 PGPASSWORD="$PG_PASSWORD" pg_dump --host 127.0.0.1 --port 10000 --username "$PG_USER" --dbname "$PG_USER" -F c > "$BACKUP_PATH"/`date +%Y%m%d_%H%M%S`.pgdump
 echo "$DB_TUNNEL_PID"
-# for some reason kill -2 does not work (network issues maybe)
-kill -9 "$DB_TUNNEL_PID"
+sudo kill -9 "$DB_TUNNEL_PID"
 echo "Database dump: success."
