@@ -109,7 +109,7 @@ def test_check_user_is_admin_returns_403_when_user_is_not_admin(app):
 @clean_database
 def test_check_user_is_admin_returns_200_when_user_is_admin(app):
     #given
-    user = create_user(password='p@55sw0rd', is_admin=True, can_book_free_offers=False)
+    user = create_user(can_book_free_offers=False, password='p@55sw0rd', is_admin=True)
     PcObject.check_and_save(user)
     auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
 
@@ -124,7 +124,7 @@ def test_check_user_is_admin_returns_200_when_user_is_admin(app):
 @clean_database
 def test_check_user_is_admin_returns_403_when_user_is_structure_admin_but_not_admin(app):
     #given
-    user = create_user(password='p@55sw0rd', is_admin=False, can_book_free_offers=False)
+    user = create_user(can_book_free_offers=False, password='p@55sw0rd', is_admin=False)
     offerer = create_offerer()
     user_offerer = create_user_offerer(user, offerer, is_admin=True)
     PcObject.check_and_save(user_offerer)
@@ -141,9 +141,8 @@ def test_check_user_is_admin_returns_403_when_user_is_structure_admin_but_not_ad
 @clean_database
 def test_check_pending_validation_return_200_and_validation_token(app):
     #given
-    user = create_user(password='p@55sw0rd', is_admin=True, can_book_free_offers=False)
-    user_pro = create_user(password='p@55sw0rd', email='user0@test.com', is_admin=False,
-       can_book_free_offers=False)
+    user = create_user(can_book_free_offers=False, password='p@55sw0rd', is_admin=True)
+    user_pro = create_user(email='user0@test.com', can_book_free_offers=False, password='p@55sw0rd', is_admin=False)
     offerer = create_offerer(validation_token="first_token")
     user_offerer = create_user_offerer(user_pro, offerer, is_admin=True, validation_token="a_token")
 

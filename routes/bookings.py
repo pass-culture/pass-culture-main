@@ -5,7 +5,7 @@ from flask_login import current_user, login_required
 from domain.expenses import get_expenses
 from domain.user_emails import send_booking_recap_emails, \
     send_booking_confirmation_email_to_user, send_cancellation_emails_to_user_and_offerer
-from models import ApiErrors, Booking, PcObject, Stock, RightsType
+from models import ApiErrors, Booking, PcObject, Stock, RightsType, EventType
 from models.pc_object import serialize
 from repository import booking_queries
 from utils.human_ids import dehumanize, humanize
@@ -167,7 +167,8 @@ def patch_booking_by_token(token):
 def _create_response_to_get_booking_by_token(booking):
     offer_name = booking.stock.resolvedOffer.eventOrThing.name
     date = None
-    if booking.stock.eventOccurrence:
+    event = booking.stock.resolvedOffer.event
+    if event:
         date = serialize(booking.stock.eventOccurrence.beginningDatetime)
     venue_departement_code = booking.stock.resolvedOffer.venue.departementCode
     response = {
@@ -177,6 +178,10 @@ def _create_response_to_get_booking_by_token(booking):
         'isUsed': booking.isUsed,
         'offerName': offer_name,
         'userName': booking.user.publicName,
-        'venueDepartementCode': venue_departement_code
+        'venueDepartementCode': venue_departement_code,
     }
+    if event and event.type == str(EventType.ACTIVATION):
+        response.update({'phoneNumber': booking.user.phoneNumber,
+                         'dateOfBirth': serialize(booking.user.dateOfBirth)})
+
     return response

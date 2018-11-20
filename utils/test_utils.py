@@ -5,36 +5,37 @@ from datetime import datetime, timedelta, timezone
 from glob import glob
 from inspect import isclass
 from unittest.mock import Mock
+
 import requests as req
 from postgresql_audit.flask import versioning_manager
 
-from models.pc_object import PcObject
-from models import Booking, \
-                   Deposit, \
-                   Event, \
-                   EventOccurrence, \
-                   EventType, \
-                   Mediation, \
-                   Offer, \
-                   Offerer, \
-                   Payment, \
-                   Recommendation, \
-                   RightsType, \
-                   Stock, \
-                   Thing, \
-                   ThingType, \
-                   User, \
-                   UserOfferer, \
-                   Venue
 import models
+from models import Booking, \
+    Deposit, \
+    Event, \
+    EventOccurrence, \
+    EventType, \
+    Mediation, \
+    Offer, \
+    Offerer, \
+    Payment, \
+    Recommendation, \
+    RightsType, \
+    Stock, \
+    Thing, \
+    ThingType, \
+    User, \
+    UserOfferer, \
+    Venue
 from models.payment_status import PaymentStatus, TransactionStatus
+from models.pc_object import PcObject
 from utils.object_storage import STORAGE_DIR
 from utils.token import random_token
 
 savedCounts = {}
 
-USER_TEST_ADMIN_EMAIL="pctest.admin93.0@btmx.fr"
-USER_TEST_ADMIN_PASSWORD="pctest.Admin93.0"
+USER_TEST_ADMIN_EMAIL = "pctest.admin93.0@btmx.fr"
+USER_TEST_ADMIN_PASSWORD = "pctest.Admin93.0"
 API_URL = "http://localhost:5000"
 MOCKED_SIREN_ENTREPRISES_API_RETURN = {
     'numero_tva_intra': 'FR60732075312',
@@ -260,7 +261,7 @@ def create_user(public_name='John Doe', first_name='John', last_name='Doe', post
                 email='john.doe@test.com', can_book_free_offers=True, password='totallysafepsswd',
                 validation_token=None, is_admin=False, reset_password_token=None,
                 reset_password_token_validity_limit=datetime.utcnow() + timedelta(hours=24),
-                date_created=datetime.utcnow()):
+                date_created=datetime.utcnow(), phone_number='0612345678', date_of_birth=datetime(2001, 1, 1)):
     user = User()
     user.publicName = public_name
     user.firstName = first_name
@@ -275,6 +276,8 @@ def create_user(public_name='John Doe', first_name='John', last_name='Doe', post
     user.resetPasswordToken = reset_password_token
     user.resetPasswordTokenValidityLimit = reset_password_token_validity_limit
     user.dateCreated = date_created
+    user.phoneNumber = phone_number
+    user.dateOfBirth = date_of_birth
     return user
 
 
@@ -358,17 +361,18 @@ def create_stock_with_thing_offer(offerer, venue, thing_offer, price=10, availab
     stock.available = available
     return stock
 
+
 def create_thing(
-    thing_name='Test Book',
-    thing_type=str(ThingType.LIVRE_EDITION),
-    author_name='Test Author',
-    is_national=False,
-    id_at_providers=None,
-    media_urls=['test/urls'],
-    description=None,
-    dominant_color=None,
-    thumb_count=1,
-    url=None
+        thing_name='Test Book',
+        thing_type=ThingType.LIVRE_EDITION,
+        author_name='Test Author',
+        is_national=False,
+        id_at_providers=None,
+        media_urls=['test/urls'],
+        description=None,
+        dominant_color=None,
+        thumb_count=1,
+        url=None
 ):
     thing = Thing()
     thing.type = str(thing_type)
@@ -391,14 +395,15 @@ def create_thing(
     thing.description = description
     return thing
 
+
 def create_event(
-    event_name='Test event',
-    event_type=str(EventType.SPECTACLE_VIVANT),
-    description=None,
-    dominant_color=None,
-    duration_minutes=60,
-    is_national=False,
-    thumb_count=0,
+        event_name='Test event',
+        event_type=EventType.SPECTACLE_VIVANT,
+        description=None,
+        dominant_color=None,
+        duration_minutes=60,
+        is_national=False,
+        thumb_count=0,
 ):
     event = Event()
     event.name = event_name
@@ -415,7 +420,8 @@ def create_event(
 
 
 def create_thing_offer(venue, thing=None, date_created=datetime.utcnow(), booking_email='booking.email@test.com',
-                       thing_type=ThingType.AUDIOVISUEL, thing_name='Test Book', media_urls=['test/urls'], author_name='Test Author',
+                       thing_type=ThingType.AUDIOVISUEL, thing_name='Test Book', media_urls=['test/urls'],
+                       author_name='Test Author',
                        thumb_count=1, dominant_color=None, url=None, is_national=False, is_active=True):
     offer = Offer()
     if thing:

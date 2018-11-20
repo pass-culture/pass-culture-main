@@ -118,7 +118,7 @@ def test_post_event_returns_403_when_creating_a_new_activation_event_as_an_offer
 @pytest.mark.standalone
 def test_post_event_returns_201_when_creating_a_new_activation_event_as_a_global_admin(app):
     # Given
-    user = create_user(email='test@email.com', password='P@55w0rd', can_book_free_offers=False, is_admin=True)
+    user = create_user(email='test@email.com', can_book_free_offers=False, password='P@55w0rd', is_admin=True)
     offerer = create_offerer()
     venue = create_venue(offerer)
     PcObject.check_and_save(user, venue)

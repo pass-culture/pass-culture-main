@@ -1151,7 +1151,7 @@ def test_patch_user_returns_200_for_allowed_changes(app):
 @clean_database
 def test_patch_user_returns_400_when_not_allowed_changes(app):
     # given
-    user = create_user(password='p@55sw0rd', is_admin=False, can_book_free_offers=True)
+    user = create_user(can_book_free_offers=True, password='p@55sw0rd', is_admin=False)
     PcObject.check_and_save(user)
 
     auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
@@ -1173,7 +1173,7 @@ def test_patch_user_returns_400_when_not_allowed_changes(app):
 @clean_database
 def test_get_current_user_returns_400_when_header_not_in_whitelist(app):
     # given
-    user = create_user(email='e@mail.com', password='p@55sw0rd', is_admin=False, can_book_free_offers=True)
+    user = create_user(email='e@mail.com', can_book_free_offers=True, password='p@55sw0rd', is_admin=False)
     PcObject.check_and_save(user)
 
     # when

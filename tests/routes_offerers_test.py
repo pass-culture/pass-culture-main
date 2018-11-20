@@ -69,7 +69,7 @@ def test_get_offerers_should_return_only_user_offerers_if_current_user_is_not_ad
     offerer3 = create_offerer(siren='123456783', name='offreur B')
     PcObject.check_and_save(offerer1, offerer3, offerer2)
 
-    user = create_user(password='p@55sw0rd', can_book_free_offers=True, is_admin=False)
+    user = create_user(can_book_free_offers=True, password='p@55sw0rd', is_admin=False)
     user.offerers = [offerer1, offerer2]
     PcObject.check_and_save(user)
     auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
@@ -91,7 +91,7 @@ def test_get_offerers_should_return_all_offerers_if_current_user_is_admin(app):
     offerer3 = create_offerer(siren='123456783', name='offreur B')
     PcObject.check_and_save(offerer1, offerer3, offerer2)
 
-    user = create_user(password='p@55sw0rd', can_book_free_offers=False, is_admin=True)
+    user = create_user(can_book_free_offers=False, password='p@55sw0rd', is_admin=True)
     user.offerers = [offerer1, offerer2]
     PcObject.check_and_save(user)
     auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
@@ -113,7 +113,7 @@ def test_get_offerers_should_return_bad_request_if_param_validated_is_not_true_o
     offerer3 = create_offerer(siren='123456783', name='offreur B')
     PcObject.check_and_save(offerer1, offerer3, offerer2)
 
-    user = create_user(password='p@55sw0rd', can_book_free_offers=False, is_admin=True)
+    user = create_user(can_book_free_offers=False, password='p@55sw0rd', is_admin=True)
     user.offerers = [offerer1, offerer2]
     PcObject.check_and_save(user)
     auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
@@ -135,7 +135,7 @@ def test_get_offerers_should_return_all_info_of_all_offerers_if_current_user_is_
     offerer3 = create_offerer(siren='123456783', name='offreur B')
     PcObject.check_and_save(offerer1, offerer3, offerer2)
 
-    user = create_user(password='p@55sw0rd', can_book_free_offers=False, is_admin=True)
+    user = create_user(can_book_free_offers=False, password='p@55sw0rd', is_admin=True)
     user.offerers = [offerer1, offerer2]
     PcObject.check_and_save(user)
     auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
@@ -318,11 +318,7 @@ def test_get_offerer_bookings_returns_bookings_with_only_public_user_info_and_no
     # given
     now = datetime.utcnow()
     user_pro = create_user(can_book_free_offers=False, password='p@55sw0rd')
-    user = create_user(
-        email='jean.aimarx@disrupflux.fr',
-        first_name='Jean',
-        last_name='Aimarx'
-    )
+    user = create_user(first_name='Jean', last_name='Aimarx', email='jean.aimarx@disrupflux.fr')
     deposit = create_deposit(user, now, amount=24000)
     offerer = create_offerer()
     user_offerer = create_user_offerer(user_pro, offerer)
@@ -354,11 +350,7 @@ def test_get_offerer_bookings_returns_bookings_with_public_user_info_and_token_w
     # given
     now = datetime.utcnow()
     user_pro = create_user(can_book_free_offers=False, password='p@55sw0rd')
-    user = create_user(
-        email='jean.aimarx@disrupflux.fr',
-        first_name='Jean',
-        last_name='Aimarx'
-    )
+    user = create_user(first_name='Jean', last_name='Aimarx', email='jean.aimarx@disrupflux.fr')
     deposit = create_deposit(user, now, amount=24000)
     offerer = create_offerer()
     user_offerer = create_user_offerer(user_pro, offerer)
@@ -611,7 +603,7 @@ def test_get_offerers_should_not_send_offerer_to_user_offerer_not_validated(app)
 @pytest.mark.standalone
 def test_post_offerers_when_admin(app):
     # Given
-    user = create_user(password='p@55sw0rd!', is_admin=True, can_book_free_offers=False)
+    user = create_user(can_book_free_offers=False, password='p@55sw0rd!', is_admin=True)
     auth_request = req_with_auth(email=user.email, password='p@55sw0rd!')
     PcObject.check_and_save(user)
 

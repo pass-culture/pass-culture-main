@@ -4,7 +4,7 @@ from urllib.parse import urlencode
 import pytest
 import requests as req
 
-from models import Offerer, PcObject
+from models import Offerer, PcObject, EventType
 from models.db import db
 from models.pc_object import serialize
 from tests.conftest import clean_database
@@ -672,14 +672,14 @@ def test_an_admin_cancelling_a_users_booking_returns_200_and_effectively_marks_t
 
 @clean_database
 @pytest.mark.standalone
-def test_get_booking_by_token_when_user_has_rights(app):
+def test_get_booking_by_token_when_user_has_rights_and_regular_offer_returns_status_code_200_user_and_booking_data(app):
     # Given
     user = create_user(public_name='John Doe', email='user@email.fr')
     admin_user = create_user(email='admin@email.fr', password='P@55w0rd')
     offerer = create_offerer()
     user_offerer = create_user_offerer(admin_user, offerer)
     venue = create_venue(offerer)
-    offer = create_event_offer(venue, event_name='Event Name')
+    offer = create_event_offer(venue, event_name='Event Name', event_type=EventType.CINEMA)
     event_occurrence = create_event_occurrence(offer)
     stock = create_stock_from_event_occurrence(event_occurrence, price=0)
     booking = create_booking(user, stock, venue=venue)
@@ -687,18 +687,55 @@ def test_get_booking_by_token_when_user_has_rights(app):
 
     PcObject.check_and_save(user_offerer, booking, event_occurrence)
 
+    expected_json = {'bookingId': humanize(booking.id),
+                     'date': serialize(booking.stock.eventOccurrence.beginningDatetime),
+                     'email': 'user@email.fr',
+                     'isUsed': False,
+                     'offerName': 'Event Name',
+                     'userName': 'John Doe',
+                     'venueDepartementCode': '93'}
+
     # When
     response = req_with_auth('admin@email.fr', 'P@55w0rd').get(API_URL + '/bookings/token/{}'.format(booking.token))
     # Then
     assert response.status_code == 200
     response_json = response.json()
-    assert response_json['email'] == 'user@email.fr'
-    assert response_json['offerName'] == 'Event Name'
-    assert response_json['date'] == date
-    assert response_json['isUsed'] == False
-    assert response_json['bookingId'] == humanize(booking.id)
-    assert response_json['userName'] == 'John Doe'
-    assert response_json['venueDepartementCode'] == venue.departementCode
+    assert response_json == expected_json
+
+
+@clean_database
+@pytest.mark.standalone
+def test_get_booking_by_token_when_activation_event_and_user_has_rights_returns_user_phone_number_and_date_of_birth(
+        app):
+    # Given
+    user = create_user(email='user@email.fr', phone_number='0698765432', date_of_birth=datetime(2001, 2, 1))
+    admin_user = create_user(email='admin@email.fr', password='P@55w0rd', is_admin=True, can_book_free_offers=False)
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    offer = create_event_offer(venue, event_name='Offre d\'activation', event_type=EventType.ACTIVATION)
+    event_occurrence = create_event_occurrence(offer)
+    stock = create_stock_from_event_occurrence(event_occurrence, price=0)
+    booking = create_booking(user, stock, venue=venue)
+
+    PcObject.check_and_save(admin_user, booking, event_occurrence)
+
+    expected_json = {'bookingId': humanize(booking.id),
+                     'date': serialize(booking.stock.eventOccurrence.beginningDatetime),
+                     'dateOfBirth': '2001-02-01T00:00:00Z',
+                     'email': 'user@email.fr',
+                     'isUsed': False,
+                     'offerName': 'Offre d\'activation',
+                     'phoneNumber': '0698765432',
+                     'userName': 'John Doe',
+                     'venueDepartementCode': '93'}
+
+    # When
+    url = API_URL + '/bookings/token/{}'.format(booking.token)
+    response = req_with_auth('admin@email.fr', 'P@55w0rd').get(url)
+    # Then
+    assert response.status_code == 200
+    response_json = response.json()
+    assert response_json == expected_json
 
 
 @clean_database
@@ -1333,4 +1370,5 @@ def test_get_booking_with_url_has_completed_url(app):
     # Then
     assert response.status_code == 200
     response_json = response.json()
-    assert response_json['completedUrl'] == 'https://host/path/ABCDEF?offerId=%s&email=user+plus@email.fr' % humanize(offer.id)
+    assert response_json['completedUrl'] == 'https://host/path/ABCDEF?offerId=%s&email=user+plus@email.fr' % humanize(
+        offer.id)
