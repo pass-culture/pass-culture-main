@@ -161,151 +161,202 @@ describe('src | components | pages | SearchPageContentContent', () => {
         expect(historyMock.push).toHaveBeenCalledWith(expected)
       })
     })
-  })
 
-  describe('onBackToSearchHome', () => {
-    describe('On results page', () => {
-      // Given
-      initialProps.match.params.view = 'resultats'
+    describe('onBackToSearchHome', () => {
+      describe('On results page', () => {
+        // Given
+        initialProps.match.params.view = 'resultats'
 
-      it('should update state', () => {
-        // when
-        const wrapper = shallow(<SearchPageContent {...initialProps} />)
-        wrapper.props().backButton.onClick()
+        it('should update state', () => {
+          // when
+          const wrapper = shallow(<SearchPageContent {...initialProps} />)
+          wrapper.props().backButton.onClick()
 
-        const expected = {
-          keywordsKey: 1,
-          keywordsValue: '',
-          withFilter: false,
-        }
+          const expected = {
+            keywordsKey: 1,
+            keywordsValue: '',
+            withFilter: false,
+          }
 
-        // then
-        expect(wrapper.state()).toEqual(expected)
+          // then
+          expect(wrapper.state()).toEqual(expected)
+        })
+        it('should change pagination', () => {
+          // when
+          const wrapper = shallow(<SearchPageContent {...initialProps} />)
+          wrapper.props().backButton.onClick()
+
+          const argument1 = {
+            categories: null,
+            date: null,
+            jours: null,
+            'mots-cles': null,
+          }
+          const argument2 = { pathname: '/recherche' }
+
+          // then
+          expect(paginationChangeMock).toHaveBeenCalledWith(
+            argument1,
+            argument2
+          )
+          paginationChangeMock.mockClear()
+        })
       })
-      it('should change pagination', () => {
-        // when
-        const wrapper = shallow(<SearchPageContent {...initialProps} />)
-        wrapper.props().backButton.onClick()
+      describe('Not on results page', () => {
+        it('should not display back button', () => {
+          // given
+          initialProps.match.params.view = ''
 
-        const argument1 = {
-          categories: null,
-          date: null,
-          jours: null,
-          'mots-cles': null,
-        }
-        const argument2 = { pathname: '/recherche' }
+          // when
+          const wrapper = shallow(<SearchPageContent {...initialProps} />)
 
-        // then
-        expect(paginationChangeMock).toHaveBeenCalledWith(argument1, argument2)
-        paginationChangeMock.mockClear()
-      })
-    })
-    describe('Not on results page', () => {
-      it('should not display back button', () => {
-        // given
-        initialProps.match.params.view = ''
-
-        // when
-        const wrapper = shallow(<SearchPageContent {...initialProps} />)
-
-        // then
-        expect(wrapper.props().backButton).toEqual(false)
-      })
-    })
-  })
-
-  describe.only('onSubmit', () => {
-    // when
-    const wrapper = shallow(<SearchPageContent {...initialProps} />)
-    const event = Object.assign(jest.fn(), {
-      preventDefault: () => {},
-      target: {
-        elements: {
-          keywords: {
-            value: 'AnyWord',
-          },
-        },
-      },
-    })
-    const wrapperInstance = wrapper.instance()
-    wrapperInstance.setState({ withFilter: true })
-    describe('when keywords is an empty string', () => {
-      it('should update state with mots-clés setted to value given', () => {
-        // when
-        wrapper.find('form').simulate('submit', event)
-
-        const expected = {
-          keywordsKey: 0,
-          keywordsValue: null,
-          withFilter: false,
-        }
-
-        // then
-        expect(wrapper.state()).toEqual(expected)
-      })
-      it('should change pagination', () => {
-        // when
-        wrapper.find('form').simulate('submit', event)
-
-        const argument1 = {
-          'mots-cles': 'AnyWord',
-        }
-        const argument2 = {
-          isClearingData: true,
-          pathname: '/recherche/resultats',
-        }
-
-        // then
-        expect(paginationChangeMock).toHaveBeenCalledWith(argument1, argument2)
-        paginationChangeMock.mockClear()
+          // then
+          expect(wrapper.props().backButton).toEqual(false)
+        })
       })
     })
 
-    describe('when keywords is an empty string', () => {
-      it('should change pagination with mots-clés setted to null', () => {
-        // given
-        const eventEmptyWord = Object.assign(jest.fn(), {
-          preventDefault: () => {},
-          target: {
-            elements: {
-              keywords: {
-                value: '',
-              },
+    describe('onSubmit', () => {
+      // when
+      const wrapper = shallow(<SearchPageContent {...initialProps} />)
+      const event = Object.assign(jest.fn(), {
+        preventDefault: () => {},
+        target: {
+          elements: {
+            keywords: {
+              value: 'AnyWord',
             },
           },
+        },
+      })
+      const wrapperInstance = wrapper.instance()
+      wrapperInstance.setState({ withFilter: true })
+      describe('when keywords is an empty string', () => {
+        it('should update state with mots-clés setted to value given', () => {
+          // when
+          wrapper.find('form').simulate('submit', event)
+
+          const expected = {
+            keywordsKey: 0,
+            keywordsValue: null,
+            withFilter: false,
+          }
+
+          // then
+          expect(wrapper.state()).toEqual(expected)
         })
+        it('should change pagination', () => {
+          // when
+          wrapper.find('form').simulate('submit', event)
 
-        // when
-        wrapper.find('form').simulate('submit', eventEmptyWord)
+          const argument1 = {
+            'mots-cles': 'AnyWord',
+          }
+          const argument2 = {
+            isClearingData: true,
+            pathname: '/recherche/resultats',
+          }
 
-        // then
-        const argument1 = {
-          'mots-cles': null,
-        }
-        const argument2 = {
-          isClearingData: false,
-          pathname: '/recherche/resultats',
-        }
+          // then
+          expect(paginationChangeMock).toHaveBeenCalledWith(
+            argument1,
+            argument2
+          )
+          paginationChangeMock.mockClear()
+        })
+      })
 
-        // then
-        expect(paginationChangeMock).toHaveBeenCalledWith(argument1, argument2)
-        paginationChangeMock.mockClear()
+      describe('when keywords is an empty string', () => {
+        it('should change pagination with mots-clés setted to null', () => {
+          // given
+          const eventEmptyWord = Object.assign(jest.fn(), {
+            preventDefault: () => {},
+            target: {
+              elements: {
+                keywords: {
+                  value: '',
+                },
+              },
+            },
+          })
+
+          // when
+          wrapper.find('form').simulate('submit', eventEmptyWord)
+
+          // then
+          const argument1 = {
+            'mots-cles': null,
+          }
+          const argument2 = {
+            isClearingData: false,
+            pathname: '/recherche/resultats',
+          }
+
+          // then
+          expect(paginationChangeMock).toHaveBeenCalledWith(
+            argument1,
+            argument2
+          )
+          paginationChangeMock.mockClear()
+        })
       })
     })
+
+    describe('onKeywordsEraseClick', () => {
+      describe('when no char has been typed', () => {
+        it('button should not appear', () => {
+          // when
+          const wrapper = shallow(<SearchPageContent {...initialProps} />)
+          const button = wrapper.find('form').find('#refresh-keywords-button')
+
+          // then
+          expect(button).not.toHaveProperty('onClick')
+        })
+      })
+
+      describe('when one char has been typed', () => {
+        const wrapper = shallow(<SearchPageContent {...initialProps} />)
+        const wrapperInstance = wrapper.instance()
+        wrapperInstance.setState({ keywordsValue: 'A' })
+
+        it('should update state', () => {
+          // when
+          const button = wrapper.find('form').find('#refresh-keywords-button')
+          button.props().onClick()
+
+          const expected = {
+            keywordsKey: 1,
+            keywordsValue: '',
+            withFilter: false,
+          }
+          // then
+          expect(wrapper.state()).toEqual(expected)
+        })
+        it('should change navigation', () => {
+          wrapperInstance.setState({ keywordsValue: 'A' })
+          const button = wrapper.find('form').find('#refresh-keywords-button')
+          button.props().onClick()
+
+          // then
+          expect(paginationChangeMock).toHaveBeenCalled()
+          paginationChangeMock.mockClear()
+        })
+      })
+    })
+
+    // Bouton recherchre avec props disabled si !isOneCharInKeywords
+    // Close button // wrapper.props().closeSearchButton
+    // console.log('|||||| Wrapper Props', wrapper.props().backButton);
+    // pageTitle={searchPageTitle}
+
+    // describe('render', () => {
+    //   describe('SearchFilter', () => {
+    //     it('should be visible', () => {
+    //
+    //     })
+    //   })
+    // })
   })
-
-  // Bouton recherchre avec props disabled si !isOneCharInKeywords
-  // Close button // wrapper.props().closeSearchButton
-  // console.log('|||||| Wrapper Props', wrapper.props().backButton);
-  // pageTitle={searchPageTitle}
-
-  // describe('render', () => {
-  //   describe('SearchFilter', () => {
-  //     it('should be visible', () => {
-  //
-  //     })
-  //   })
-  // })
 
   // Titre de la page selon s'il y a des recommendations ou pas.
 })

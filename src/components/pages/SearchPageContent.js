@@ -124,9 +124,9 @@ class SearchPageContent extends PureComponent {
     })
   }
 
-  onKeywordsEraseClick = (pathname, pagination, keywordsKey) => () => {
-    console.log('>>>>>>>>>> Inside onKeywordsEraseClick ')
-    console.log('thus', this.state)
+  onKeywordsEraseClick = () => () => {
+    const { keywordsKey } = this.state
+    const { pagination } = this.props
     this.setState({
       // https://stackoverflow.com/questions/37946229/how-do-i-reset-the-defaultvalue-for-a-react-input
       // WE NEED TO MAKE THE PARENT OF THE KEYWORD INPUT
@@ -135,14 +135,9 @@ class SearchPageContent extends PureComponent {
       keywordsKey: keywordsKey + 1,
       keywordsValue: '',
     })
-    pagination.change(
-      {
-        'mots-cles': null,
-      },
-      {
-        pathname,
-      }
-    )
+    pagination.change({
+      'mots-cles': null,
+    })
   }
 
   render() {
@@ -187,8 +182,6 @@ class SearchPageContent extends PureComponent {
     const filtersToggleButtonClass = (withFilter && 'filters-are-opened') || ''
 
     const isOneCharInKeywords = get(keywordsValue, 'length') > 0
-
-    // console.log('isOneCharInKeywords ----- ', isOneCharInKeywords);
 
     // ************************* DATAS **************************** //
     const searchPageTitle = onResultPage ? 'Recherche : résultats' : 'Recherche'
@@ -235,11 +228,7 @@ class SearchPageContent extends PureComponent {
                       type="button"
                       className="no-border no-background is-red-text"
                       id="refresh-keywords-button"
-                      onClick={this.onKeywordsEraseClick(
-                        '/recherche/',
-                        pagination,
-                        keywordsKey
-                      )}
+                      onClick={this.onKeywordsEraseClick()}
                     >
                       <span
                         aria-hidden
