@@ -344,6 +344,33 @@ describe('src | components | pages | SearchPageContentContent', () => {
       })
     })
 
+    describe('onKeywordsChange', () => {
+      // when
+      const wrapper = shallow(<SearchPageContent {...initialProps} />)
+      const event = {
+        target: {
+          value: 'Any',
+        },
+      }
+
+      const wrapperInstance = wrapper.instance()
+      wrapperInstance.setState({ withFilter: true })
+
+      it('should update state with keywords value', () => {
+        // when
+        wrapper.find('#keywords').simulate('change', event)
+
+        // then
+        const expected = {
+          keywordsKey: 0,
+          keywordsValue: 'Any',
+          withFilter: true,
+        }
+
+        // then
+        expect(wrapper.state()).toEqual(expected)
+      })
+    })
     // Bouton recherchre avec props disabled si !isOneCharInKeywords
     // Close button // wrapper.props().closeSearchButton
     // console.log('|||||| Wrapper Props', wrapper.props().backButton);

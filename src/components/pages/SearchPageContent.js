@@ -114,7 +114,6 @@ class SearchPageContent extends PureComponent {
   }
 
   onClickOpenCloseFilterDiv = withFilter => () => {
-    console.log('>>>>>>>>>> Inside onClickOpenCloseFilterDiv ', withFilter)
     this.setState({ withFilter: !withFilter })
   }
 
