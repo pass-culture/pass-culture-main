@@ -69,7 +69,10 @@ class SearchPageContent extends PureComponent {
     history.push(`${location.pathname}?page=${page}&${windowQueryString}`)
   }
 
-  onBackToSearchHome = (pathname, pagination, keywordsKey) => {
+  onBackToSearchHome = () => {
+    const { keywordsKey } = this.state
+    const { pagination } = this.props
+
     this.setState({
       // https://stackoverflow.com/questions/37946229/how-do-i-reset-the-defaultvalue-for-a-react-input
       // WE NEED TO MAKE THE PARENT OF THE KEYWORD INPUT
@@ -87,7 +90,7 @@ class SearchPageContent extends PureComponent {
         'mots-cles': null,
       },
       {
-        pathname,
+        pathname: '/recherche',
       }
     )
   }
@@ -123,7 +126,7 @@ class SearchPageContent extends PureComponent {
 
   onKeywordsEraseClick = (pathname, pagination, keywordsKey) => () => {
     console.log('>>>>>>>>>> Inside onKeywordsEraseClick ')
-
+    console.log('thus', this.state)
     this.setState({
       // https://stackoverflow.com/questions/37946229/how-do-i-reset-the-defaultvalue-for-a-react-input
       // WE NEED TO MAKE THE PARENT OF THE KEYWORD INPUT
@@ -168,11 +171,11 @@ class SearchPageContent extends PureComponent {
     // },
     // Cannot read property 'mots-cles' of undefined
     const onResultPage = match.params.view === 'resultats'
+
     const keywords = get(windowQuery, `mots-cles`)
 
     const backButton = onResultPage && {
-      onClick: () =>
-        this.onBackToSearchHome('/recherche', pagination, keywordsKey),
+      onClick: () => this.onBackToSearchHome(),
     }
 
     const filtersActive = isSearchFiltersAdded(
