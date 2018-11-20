@@ -1,3 +1,3 @@
 export * from './selectBookings'
-export * from './recommendation'
-export * from './recommendations'
+export { default as selectRecommendation } from './recommendation'
+export { default as selectRecommendations } from './recommendations'

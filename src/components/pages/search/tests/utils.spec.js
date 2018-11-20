@@ -8,7 +8,7 @@ import filterIconByState, {
 } from '../utils'
 
 import state from '../../../../mocks/global_state_2_Testing_10_10_18'
-import { selectRecommendations } from '../../../../selectors/recommendations'
+import { selectRecommendations } from '../../../../selectors'
 
 const recommendations = selectRecommendations(state)
 

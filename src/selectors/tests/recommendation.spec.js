@@ -1,4 +1,4 @@
-import { selectRecommendation } from '../recommendation'
+import selectRecommendation from '../recommendation'
 import state from '../../mocks/reduxState'
 
 describe('selectRecommendation', () => {

@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-import { getPrice } from '../helpers'
+import { getPrice } from '../../helpers'
 
 const Price = ({ value, free, className }) => {
   const price = getPrice(value, free)

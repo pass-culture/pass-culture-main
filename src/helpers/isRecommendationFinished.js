@@ -1,6 +1,6 @@
-import { filterAvailableStocks } from './filterAvailableStocks'
+import filterAvailableStocks from './filterAvailableStocks'
 
-export const isRecommendationFinished = (recommendation, offerId) => {
+const isRecommendationFinished = (recommendation, offerId = false) => {
   // if (!recommendation) return false
   const { offer } = recommendation
   const stocks = (offer && offer.stocks) || []

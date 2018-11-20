@@ -6,7 +6,7 @@ import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 import Draggable from 'react-draggable'
 
-import Price from '../../Price'
+import Price from '../../layout/Price'
 import Finishable from '../../layout/Finishable'
 import { getHeaderColor } from '../../../utils/colors'
 import {

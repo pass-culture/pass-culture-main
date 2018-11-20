@@ -7,7 +7,7 @@ import createCachedSelector from 're-reselect'
 
 import { pipe } from '../utils/functionnals'
 import { isEmpty, isString } from '../utils/strings'
-import { filterAvailableStocks } from '../helpers/filterAvailableStocks'
+import { filterAvailableStocks } from '../helpers'
 
 const MODIFIER_STRING_ID = 'selectBookables'
 

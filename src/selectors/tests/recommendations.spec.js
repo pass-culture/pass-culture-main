@@ -1,4 +1,4 @@
-import { selectRecommendations } from '../recommendations'
+import selectRecommendations from '../recommendations'
 import state2 from '../../mocks/global_state_2_Testing_10_10_18'
 
 describe('selectRecommendations', () => {

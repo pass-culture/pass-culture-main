@@ -1,6 +1,6 @@
 import createCachedSelector from 're-reselect'
 
-export const selectRecommendation = createCachedSelector(
+const selectRecommendation = createCachedSelector(
   state => state.data.recommendations,
   (state, recommendationId) => recommendationId,
   (recommendations, recommendationId) => {

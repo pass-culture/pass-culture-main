@@ -7,7 +7,7 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { Link, withRouter } from 'react-router-dom'
 
-import Price from '../Price'
+import Price from '../layout/Price'
 import Finishable from '../layout/Finishable'
 import { isRecommendationFinished } from '../../helpers'
 import { selectBookings } from '../../selectors/selectBookings'
@@ -54,10 +54,9 @@ class VersoBookingButton extends React.PureComponent {
         {booking && onlineOfferUrl && this.renderOnlineButton()}
         {booking && !onlineOfferUrl && this.renderOfflineButton()}
         {!booking && !isFinished && this.renderBookingLink()}
-        {!booking &&
-          isFinished && (
-            <Finishable finished>{this.renderBookingLink()}</Finishable>
-          )}
+        {!booking && isFinished && (
+          <Finishable finished>{this.renderBookingLink()}</Finishable>
+        )}
       </React.Fragment>
     )
   }

@@ -5,7 +5,7 @@ import Dotdotdot from 'react-dotdotdot'
 
 import SearchResultItem from '../SearchResultItem'
 import state from '../../../../mocks/global_state_1'
-import { selectRecommendations } from '../../../../selectors/recommendations'
+import { selectRecommendations } from '../../../../selectors'
 
 describe('src | components | pages | SearchResultItem', () => {
   const recommendations = selectRecommendations(state)
