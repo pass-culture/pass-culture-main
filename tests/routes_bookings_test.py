@@ -670,287 +670,310 @@ def test_an_admin_cancelling_a_users_booking_returns_200_and_effectively_marks_t
     assert booking.isCancelled
 
 
-@clean_database
 @pytest.mark.standalone
-def test_get_booking_by_token_when_user_has_rights_and_regular_offer_returns_status_code_200_user_and_booking_data(app):
-    # Given
-    user = create_user(public_name='John Doe', email='user@email.fr')
-    admin_user = create_user(email='admin@email.fr', password='P@55w0rd')
-    offerer = create_offerer()
-    user_offerer = create_user_offerer(admin_user, offerer)
-    venue = create_venue(offerer)
-    offer = create_event_offer(venue, event_name='Event Name', event_type=EventType.CINEMA)
-    event_occurrence = create_event_occurrence(offer)
-    stock = create_stock_from_event_occurrence(event_occurrence, price=0)
-    booking = create_booking(user, stock, venue=venue)
-    date = serialize(event_occurrence.beginningDatetime)
+class GetBookingByTokenTest:
+    @clean_database
+    def test_when_user_has_rights_and_regular_offer_returns_status_code_200_user_and_booking_data(self, app):
+        # Given
+        user = create_user(public_name='John Doe', email='user@email.fr')
+        admin_user = create_user(email='admin@email.fr', password='P@55w0rd')
+        offerer = create_offerer()
+        user_offerer = create_user_offerer(admin_user, offerer)
+        venue = create_venue(offerer)
+        offer = create_event_offer(venue, event_name='Event Name', event_type=EventType.CINEMA)
+        event_occurrence = create_event_occurrence(offer)
+        stock = create_stock_from_event_occurrence(event_occurrence, price=0)
+        booking = create_booking(user, stock, venue=venue)
 
-    PcObject.check_and_save(user_offerer, booking, event_occurrence)
+        PcObject.check_and_save(user_offerer, booking, event_occurrence)
 
-    expected_json = {'bookingId': humanize(booking.id),
-                     'date': serialize(booking.stock.eventOccurrence.beginningDatetime),
-                     'email': 'user@email.fr',
-                     'isUsed': False,
-                     'offerName': 'Event Name',
-                     'userName': 'John Doe',
-                     'venueDepartementCode': '93'}
+        expected_json = {'bookingId': humanize(booking.id),
+                         'date': serialize(booking.stock.eventOccurrence.beginningDatetime),
+                         'email': 'user@email.fr',
+                         'isUsed': False,
+                         'offerName': 'Event Name',
+                         'userName': 'John Doe',
+                         'venueDepartementCode': '93'}
 
-    # When
-    response = req_with_auth('admin@email.fr', 'P@55w0rd').get(API_URL + '/bookings/token/{}'.format(booking.token))
-    # Then
-    assert response.status_code == 200
-    response_json = response.json()
-    assert response_json == expected_json
+        # When
+        response = req_with_auth('admin@email.fr', 'P@55w0rd').get(API_URL + '/bookings/token/{}'.format(booking.token))
+        # Then
+        assert response.status_code == 200
+        response_json = response.json()
+        assert response_json == expected_json
 
+    @clean_database
+    def test_when_activation_event_and_user_has_rights_returns_user_and_booking_data_with_phone_number_and_date_of_birth(
+            self, app):
+        # Given
+        user = create_user(email='user@email.fr', phone_number='0698765432', date_of_birth=datetime(2001, 2, 1))
+        admin_user = create_user(email='admin@email.fr', password='P@55w0rd', is_admin=True, can_book_free_offers=False)
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_event_offer(venue, event_name='Offre d\'activation', event_type=EventType.ACTIVATION)
+        event_occurrence = create_event_occurrence(offer)
+        stock = create_stock_from_event_occurrence(event_occurrence, price=0)
+        booking = create_booking(user, stock, venue=venue)
 
-@clean_database
-@pytest.mark.standalone
-def test_get_booking_by_token_when_activation_event_and_user_has_rights_returns_user_phone_number_and_date_of_birth(
-        app):
-    # Given
-    user = create_user(email='user@email.fr', phone_number='0698765432', date_of_birth=datetime(2001, 2, 1))
-    admin_user = create_user(email='admin@email.fr', password='P@55w0rd', is_admin=True, can_book_free_offers=False)
-    offerer = create_offerer()
-    venue = create_venue(offerer)
-    offer = create_event_offer(venue, event_name='Offre d\'activation', event_type=EventType.ACTIVATION)
-    event_occurrence = create_event_occurrence(offer)
-    stock = create_stock_from_event_occurrence(event_occurrence, price=0)
-    booking = create_booking(user, stock, venue=venue)
+        PcObject.check_and_save(admin_user, booking, event_occurrence)
 
-    PcObject.check_and_save(admin_user, booking, event_occurrence)
+        expected_json = {'bookingId': humanize(booking.id),
+                         'date': serialize(booking.stock.eventOccurrence.beginningDatetime),
+                         'dateOfBirth': '2001-02-01T00:00:00Z',
+                         'email': 'user@email.fr',
+                         'isUsed': False,
+                         'offerName': 'Offre d\'activation',
+                         'phoneNumber': '0698765432',
+                         'userName': 'John Doe',
+                         'venueDepartementCode': '93'}
 
-    expected_json = {'bookingId': humanize(booking.id),
-                     'date': serialize(booking.stock.eventOccurrence.beginningDatetime),
-                     'dateOfBirth': '2001-02-01T00:00:00Z',
-                     'email': 'user@email.fr',
-                     'isUsed': False,
-                     'offerName': 'Offre d\'activation',
-                     'phoneNumber': '0698765432',
-                     'userName': 'John Doe',
-                     'venueDepartementCode': '93'}
+        # When
+        url = API_URL + '/bookings/token/{}'.format(booking.token)
+        response = req_with_auth('admin@email.fr', 'P@55w0rd').get(url)
+        # Then
+        assert response.status_code == 200
+        response_json = response.json()
+        assert response_json == expected_json
 
-    # When
-    url = API_URL + '/bookings/token/{}'.format(booking.token)
-    response = req_with_auth('admin@email.fr', 'P@55w0rd').get(url)
-    # Then
-    assert response.status_code == 200
-    response_json = response.json()
-    assert response_json == expected_json
+    @clean_database
+    def test_when_user_has_rights_and_email_with_special_characters_url_encoded_returns_status_code_200(self, app):
+        # Given
+        user = create_user(email='user+plus@email.fr')
+        user_admin = create_user(email='admin@email.fr', password='P@55w0rd')
+        offerer = create_offerer()
+        user_offerer = create_user_offerer(user_admin, offerer, is_admin=True)
+        venue = create_venue(offerer)
+        offer = create_event_offer(venue, event_name='Event Name')
+        event_occurrence = create_event_occurrence(offer)
+        stock = create_stock_from_event_occurrence(event_occurrence, price=0)
+        booking = create_booking(user, stock, venue=venue)
 
+        PcObject.check_and_save(user_offerer, booking, event_occurrence)
+        url_email = urlencode({'email': 'user+plus@email.fr'})
+        url = API_URL + '/bookings/token/{}?{}'.format(booking.token, url_email)
 
-@clean_database
-@pytest.mark.standalone
-def test_get_booking_by_token_when_user_doesnt_have_rights(app):
-    # Given
-    user = create_user(email='user@email.fr')
-    querying_user = create_user(email='querying@email.fr', password='P@55w0rd')
-    offerer = create_offerer()
-    venue = create_venue(offerer)
-    offer = create_event_offer(venue, event_name='Event Name')
-    event_occurrence = create_event_occurrence(offer)
-    stock = create_stock_from_event_occurrence(event_occurrence, price=0)
-    booking = create_booking(user, stock, venue=venue)
+        # When
+        response = req_with_auth('admin@email.fr', 'P@55w0rd').get(url)
+        # Then
+        assert response.status_code == 200
 
-    PcObject.check_and_save(querying_user, booking, event_occurrence)
+    @clean_database
+    def test_when_user_doesnt_have_rights_returns_status_code_204(self, app):
+        # Given
+        user = create_user(email='user@email.fr')
+        querying_user = create_user(email='querying@email.fr', password='P@55w0rd')
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_event_offer(venue, event_name='Event Name')
+        event_occurrence = create_event_occurrence(offer)
+        stock = create_stock_from_event_occurrence(event_occurrence, price=0)
+        booking = create_booking(user, stock, venue=venue)
 
-    # When
-    response = req_with_auth('querying@email.fr', 'P@55w0rd').get(API_URL + '/bookings/token/{}'.format(booking.token))
-    # Then
-    assert response.status_code == 204
+        PcObject.check_and_save(querying_user, booking, event_occurrence)
 
+        # When
+        response = req_with_auth('querying@email.fr', 'P@55w0rd').get(
+            API_URL + '/bookings/token/{}'.format(booking.token))
+        # Then
+        assert response.status_code == 204
 
-@clean_database
-@pytest.mark.standalone
-def test_get_booking_by_token_when_token_does_not_exist(app):
-    # Given
-    admin_user = create_user(email='admin@email.fr', password='P@55w0rd')
-    PcObject.check_and_save(admin_user)
+    @clean_database
+    def test_when_user_not_logged_in_and_gives_right_email_returns_204(self, app):
+        # Given
+        user = create_user(email='user@email.fr')
+        admin_user = create_user(email='admin@email.fr', password='P@55w0rd')
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_event_offer(venue, event_name='Event Name')
+        event_occurrence = create_event_occurrence(offer)
+        stock = create_stock_from_event_occurrence(event_occurrence, price=0)
+        booking = create_booking(user, stock, venue=venue)
 
-    # When
-    response = req_with_auth('admin@email.fr', 'P@55w0rd').get(API_URL + '/bookings/token/{}'.format('12345'))
-    # Then
-    assert response.status_code == 404
-    assert response.json()['global'] == ["Cette contremarque n'a pas été trouvée"]
+        PcObject.check_and_save(admin_user, booking, event_occurrence)
 
+        url = API_URL + '/bookings/token/{}?email={}'.format(booking.token, 'user@email.fr')
+        # When
+        response = req.get(url, headers={'origin': 'http://localhost:3000'})
+        # Then
+        assert response.status_code == 204
 
-@clean_database
-@pytest.mark.standalone
-def test_get_booking_by_token_when_not_logged_in_and_doesnt_give_email(app):
-    # Given
-    user = create_user(email='user@email.fr')
-    admin_user = create_user(email='admin@email.fr', password='P@55w0rd')
-    offerer = create_offerer()
-    venue = create_venue(offerer)
-    offer = create_event_offer(venue, event_name='Event Name')
-    event_occurrence = create_event_occurrence(offer)
-    stock = create_stock_from_event_occurrence(event_occurrence, price=0)
-    booking = create_booking(user, stock, venue=venue)
-    date = serialize(event_occurrence.beginningDatetime)
+    @clean_database
+    def test_when_user_not_logged_in_and_give_right_email_and_event_offer_id_returns_204(self, app):
+        # Given
+        user = create_user(email='user@email.fr')
+        admin_user = create_user(email='admin@email.fr', password='P@55w0rd')
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_event_offer(venue, event_name='Event Name')
+        event_occurrence = create_event_occurrence(offer)
+        stock = create_stock_from_event_occurrence(event_occurrence, price=0)
+        booking = create_booking(user, stock, venue=venue)
 
-    PcObject.check_and_save(admin_user, booking, event_occurrence)
+        PcObject.check_and_save(admin_user, booking, event_occurrence)
+        url = API_URL + '/bookings/token/{}?email={}&offer_id={}'.format(booking.token, 'user@email.fr',
+                                                                         humanize(offer.id))
 
-    url = API_URL + '/bookings/token/{}'.format(booking.token)
-    # When
-    response = req.get(url, headers={'origin': 'http://localhost:3000'})
-    # Then
-    assert response.status_code == 400
-    error_message = response.json()
-    assert error_message['email'] == [
-        'Vous devez préciser l\'email de l\'utilisateur quand vous n\'êtes pas connecté(e)']
+        # When
+        response = req.get(url, headers={'origin': 'http://localhost:3000'})
+        # Then
+        assert response.status_code == 204
 
+    @clean_database
+    def test_when_not_logged_in_and_give_right_email_and_offer_id_thing_returns_204(self, app):
+        # Given
+        user = create_user(email='user@email.fr')
+        admin_user = create_user(email='admin@email.fr', password='P@55w0rd')
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        stock = create_stock_with_thing_offer(offerer, venue, thing_offer=None, price=0)
+        booking = create_booking(user, stock, venue=venue)
 
-@clean_database
-@pytest.mark.standalone
-def test_get_booking_by_token_when_user_does_not_have_rights_in_and_give_right_email(app):
-    # Given
-    user = create_user(email='user@email.fr')
-    admin_user = create_user(email='admin@email.fr', password='P@55w0rd')
-    offerer = create_offerer()
-    venue = create_venue(offerer)
-    offer = create_event_offer(venue, event_name='Event Name')
-    event_occurrence = create_event_occurrence(offer)
-    stock = create_stock_from_event_occurrence(event_occurrence, price=0)
-    booking = create_booking(user, stock, venue=venue)
+        PcObject.check_and_save(admin_user, booking)
+        url = API_URL + '/bookings/token/{}?email={}&offer_id={}'.format(booking.token, 'user@email.fr',
+                                                                         humanize(stock.offerId))
 
-    PcObject.check_and_save(admin_user, booking, event_occurrence)
+        # When
+        response = req.get(url, headers={'origin': 'http://localhost:3000'})
+        # Then
+        assert response.status_code == 204
 
-    url = API_URL + '/bookings/token/{}?email={}'.format(booking.token, 'user@email.fr')
-    # When
-    response = req.get(url, headers={'origin': 'http://localhost:3000'})
-    # Then
-    assert response.status_code == 204
+    @clean_database
+    def test_when_token_user_has_rights_but_token_not_found_returns_status_code_404_and_global_error(self, app):
+        # Given
+        admin_user = create_user(email='admin@email.fr', password='P@55w0rd')
+        PcObject.check_and_save(admin_user)
 
+        # When
+        response = req_with_auth('admin@email.fr', 'P@55w0rd').get(API_URL + '/bookings/token/{}'.format('12345'))
+        # Then
+        assert response.status_code == 404
+        assert response.json()['global'] == ["Cette contremarque n'a pas été trouvée"]
 
-@clean_database
-@pytest.mark.standalone
-def test_get_booking_by_token_when_not_logged_in_and_give_right_email_and_offer_id(app):
-    # Given
-    user = create_user(email='user@email.fr')
-    admin_user = create_user(email='admin@email.fr', password='P@55w0rd')
-    offerer = create_offerer()
-    venue = create_venue(offerer)
-    offer = create_event_offer(venue, event_name='Event Name')
-    event_occurrence = create_event_occurrence(offer)
-    stock = create_stock_from_event_occurrence(event_occurrence, price=0)
-    booking = create_booking(user, stock, venue=venue)
+    @clean_database
+    def test_when_user_not_logged_in_and_wrong_email_returns_404_and_global_in_error(self, app):
+        # Given
+        user = create_user(email='user@email.fr')
+        admin_user = create_user(email='admin@email.fr', password='P@55w0rd')
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_event_offer(venue, event_name='Event Name')
+        event_occurrence = create_event_occurrence(offer)
+        stock = create_stock_from_event_occurrence(event_occurrence, price=0)
+        booking = create_booking(user, stock, venue=venue)
 
-    PcObject.check_and_save(admin_user, booking, event_occurrence)
-    url = API_URL + '/bookings/token/{}?email={}&offer_id={}'.format(booking.token, 'user@email.fr', humanize(offer.id))
+        PcObject.check_and_save(admin_user, booking, event_occurrence)
 
-    # When
-    response = req.get(url, headers={'origin': 'http://localhost:3000'})
-    # Then
-    assert response.status_code == 204
+        # When
+        url = API_URL + '/bookings/token/{}?email={}'.format(booking.token, 'toto@email.fr')
+        response = req_with_auth('admin@email.fr', 'P@55w0rd').get(url)
+        # Then
+        assert response.status_code == 404
+        assert response.json()['global'] == ["Cette contremarque n'a pas été trouvée"]
 
+    @clean_database
+    def test_when_user_not_logged_in_right_email_and_wrong_offer_returns_404_and_global_in_error(self, app):
+        # Given
+        user = create_user(email='user@email.fr')
+        admin_user = create_user(email='admin@email.fr', password='P@55w0rd')
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        stock = create_stock_with_thing_offer(offerer, venue, thing_offer=None, price=0)
+        booking = create_booking(user, stock, venue=venue)
 
-@clean_database
-@pytest.mark.standalone
-def test_get_booking_by_token_when_not_logged_in_and_give_right_email_and_offer_id_thing(app):
-    # Given
-    user = create_user(email='user@email.fr')
-    admin_user = create_user(email='admin@email.fr', password='P@55w0rd')
-    offerer = create_offerer()
-    venue = create_venue(offerer)
-    stock = create_stock_with_thing_offer(offerer, venue, thing_offer=None, price=0)
-    booking = create_booking(user, stock, venue=venue)
+        PcObject.check_and_save(admin_user, booking)
+        url = API_URL + '/bookings/token/{}?email={}&offer_id={}'.format(booking.token, 'user@email.fr', humanize(123))
 
-    PcObject.check_and_save(admin_user, booking)
-    url = API_URL + '/bookings/token/{}?email={}&offer_id={}'.format(booking.token, 'user@email.fr',
-                                                                     humanize(stock.offerId))
+        # When
+        response = req.get(url, headers={'origin': 'http://localhost:3000'})
+        # Then
+        assert response.status_code == 404
+        assert response.json()['global'] == ["Cette contremarque n'a pas été trouvée"]
 
-    # When
-    response = req.get(url, headers={'origin': 'http://localhost:3000'})
-    # Then
-    assert response.status_code == 204
+    @clean_database
+    def test_when_user_has_rights_and_email_with_special_characters_not_url_encoded_returns_404(self, app):
+        # Given
+        user = create_user(email='user+plus@email.fr')
+        user_admin = create_user(email='admin@email.fr', password='P@55w0rd')
+        offerer = create_offerer()
+        user_offerer = create_user_offerer(user_admin, offerer, is_admin=True)
+        venue = create_venue(offerer)
+        offer = create_event_offer(venue, event_name='Event Name')
+        event_occurrence = create_event_occurrence(offer)
+        stock = create_stock_from_event_occurrence(event_occurrence, price=0)
+        booking = create_booking(user, stock, venue=venue)
 
+        PcObject.check_and_save(user_offerer, booking, event_occurrence)
+        url = API_URL + '/bookings/token/{}?email={}'.format(booking.token, user.email)
 
-@clean_database
-@pytest.mark.standalone
-def test_get_booking_by_token_when_not_logged_in_and_give_right_email_and_offer_id_thing_but_already_validated_token(
-        app):
-    # Given
-    user = create_user(email='user@email.fr')
-    admin_user = create_user(email='admin@email.fr', password='P@55w0rd')
-    offerer = create_offerer()
-    venue = create_venue(offerer)
-    stock = create_stock_with_thing_offer(offerer, venue, thing_offer=None, price=0)
-    booking = create_booking(user, stock, venue=venue, is_used=True)
+        # When
+        response = req_with_auth('admin@email.fr', 'P@55w0rd').get(url)
+        # Then
+        assert response.status_code == 404
 
-    PcObject.check_and_save(admin_user, booking)
-    url = API_URL + '/bookings/token/{}?email={}&offer_id={}'.format(booking.token, 'user@email.fr',
-                                                                     humanize(stock.offerId))
+    @clean_database
+    def test_when_user_not_logged_in_and_doesnt_give_email_returns_400_and_email_in_error(self, app):
+        # Given
+        user = create_user(email='user@email.fr')
+        admin_user = create_user(email='admin@email.fr', password='P@55w0rd')
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_event_offer(venue, event_name='Event Name')
+        event_occurrence = create_event_occurrence(offer)
+        stock = create_stock_from_event_occurrence(event_occurrence, price=0)
+        booking = create_booking(user, stock, venue=venue)
 
-    # When
-    response = req.get(url, headers={'origin': 'http://localhost:3000'})
-    # Then
-    assert response.status_code == 410
-    assert response.json()['booking'] == ['Cette réservation a déjà été validée']
+        PcObject.check_and_save(admin_user, booking, event_occurrence)
 
+        url = API_URL + '/bookings/token/{}'.format(booking.token)
+        # When
+        response = req.get(url, headers={'origin': 'http://localhost:3000'})
+        # Then
+        assert response.status_code == 400
+        error_message = response.json()
+        assert error_message['email'] == [
+            'Vous devez préciser l\'email de l\'utilisateur quand vous n\'êtes pas connecté(e)']
 
-@clean_database
-@pytest.mark.standalone
-def test_get_booking_by_token_when_not_logged_in_and_give_right_email_and_offer_id_thing_but_cancelled_booking(app):
-    # Given
-    user = create_user(email='user@email.fr')
-    admin_user = create_user(email='admin@email.fr', password='P@55w0rd')
-    offerer = create_offerer()
-    venue = create_venue(offerer)
-    stock = create_stock_with_thing_offer(offerer, venue, thing_offer=None, price=0)
-    booking = create_booking(user, stock, venue=venue, is_cancelled=True)
+    @pytest.mark.standalone
+    def test_when_not_logged_in_give_right_email_and_offer_id_thing_but_already_validated_token_returns_410_and_booking_in_error(
+            self, app):
+        # Given
+        user = create_user(email='user@email.fr')
+        admin_user = create_user(email='admin@email.fr', password='P@55w0rd')
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        stock = create_stock_with_thing_offer(offerer, venue, thing_offer=None, price=0)
+        booking = create_booking(user, stock, venue=venue, is_used=True)
 
-    PcObject.check_and_save(admin_user, booking)
-    url = API_URL + '/bookings/token/{}?email={}&offer_id={}'.format(booking.token, 'user@email.fr',
-                                                                     humanize(stock.offerId))
+        PcObject.check_and_save(admin_user, booking)
+        url = API_URL + '/bookings/token/{}?email={}&offer_id={}'.format(booking.token, 'user@email.fr',
+                                                                         humanize(stock.offerId))
 
-    # When
-    response = req.get(url, headers={'origin': 'http://localhost:3000'})
-    # Then
-    assert response.status_code == 410
-    response.json()['booking'] == ['Cette réservation a été annulée']
+        # When
+        response = req.get(url, headers={'origin': 'http://localhost:3000'})
+        # Then
+        assert response.status_code == 410
+        assert response.json()['booking'] == ['Cette réservation a déjà été validée']
 
+    @clean_database
+    def test_when_not_logged_in_and_give_right_email_and_offer_id_thing_but_cancelled_booking_returns_410_and_booking_in_error(
+            self, app):
+        # Given
+        user = create_user(email='user@email.fr')
+        admin_user = create_user(email='admin@email.fr', password='P@55w0rd')
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        stock = create_stock_with_thing_offer(offerer, venue, thing_offer=None, price=0)
+        booking = create_booking(user, stock, venue=venue, is_cancelled=True)
 
-@clean_database
-@pytest.mark.standalone
-def test_validate_get_booking_by_token_when_not_logged_in_and_give_right_email_and_wrong_offer(app):
-    # Given
-    user = create_user(email='user@email.fr')
-    admin_user = create_user(email='admin@email.fr', password='P@55w0rd')
-    offerer = create_offerer()
-    venue = create_venue(offerer)
-    stock = create_stock_with_thing_offer(offerer, venue, thing_offer=None, price=0)
-    booking = create_booking(user, stock, venue=venue)
+        PcObject.check_and_save(admin_user, booking)
+        url = API_URL + '/bookings/token/{}?email={}&offer_id={}'.format(booking.token, 'user@email.fr',
+                                                                         humanize(stock.offerId))
 
-    PcObject.check_and_save(admin_user, booking)
-    url = API_URL + '/bookings/token/{}?email={}&offer_id={}'.format(booking.token, 'user@email.fr', humanize(123))
-
-    # When
-    response = req.get(url, headers={'origin': 'http://localhost:3000'})
-    # Then
-    assert response.status_code == 404
-    assert response.json()['global'] == ["Cette contremarque n'a pas été trouvée"]
-
-
-@clean_database
-@pytest.mark.standalone
-def test_get_booking_by_token_when_not_logged_in_but_wrong_email(app):
-    # Given
-    user = create_user(email='user@email.fr')
-    admin_user = create_user(email='admin@email.fr', password='P@55w0rd')
-    offerer = create_offerer()
-    venue = create_venue(offerer)
-    offer = create_event_offer(venue, event_name='Event Name')
-    event_occurrence = create_event_occurrence(offer)
-    stock = create_stock_from_event_occurrence(event_occurrence, price=0)
-    booking = create_booking(user, stock, venue=venue)
-
-    PcObject.check_and_save(admin_user, booking, event_occurrence)
-
-    # When
-    url = API_URL + '/bookings/token/{}?email={}'.format(booking.token, 'toto@email.fr')
-    response = req_with_auth('admin@email.fr', 'P@55w0rd').get(url)
-    # Then
-    assert response.status_code == 404
-    assert response.json()['global'] == ["Cette contremarque n'a pas été trouvée"]
+        # When
+        response = req.get(url, headers={'origin': 'http://localhost:3000'})
+        # Then
+        assert response.status_code == 410
+        assert response.json()['booking'] == ['Cette réservation a été annulée']
 
 
 @pytest.mark.standalone
@@ -1053,9 +1076,9 @@ class PatchBookingAsAnonymousUserTest:
 
 
 @pytest.mark.standalone
-class PatchBookingAsLoggedInUserTest:
+class PatchBookingByTokenAsLoggedInUserTest:
     @clean_database
-    def test_patch_booking_by_token_when_user_is_logged_in_and_has_rights(self, app):
+    def test_when_has_rights_return_204_and_is_used_is_true(self, app):
         # Given
         user = create_user()
         admin_user = create_user(email='admin@email.fr', password='P@55w0rd')
@@ -1077,9 +1100,9 @@ class PatchBookingAsLoggedInUserTest:
 
 
 @pytest.mark.standalone
-class PatchBookingAsLoggedInUserTest:
+class PatchBookingByTokenAsLoggedInUserTest:
     @clean_database
-    def test_patch_booking_by_token_with_random_header_should_work(self, app):
+    def test_valid_request_with_non_standard_header_returns_204_and_is_used_is_true(self, app):
         # Given
         user = create_user()
         admin_user = create_user(email='admin@email.fr', password='P@55w0rd')
@@ -1100,7 +1123,29 @@ class PatchBookingAsLoggedInUserTest:
         assert booking.isUsed == True
 
     @clean_database
-    def test_patch_booking_by_token_when_user_not_editor(self, app):
+    def test_valid_request_and_email_with_special_character_url_encoded_returns_204(self, app):
+        # Given
+        user = create_user(email='user+plus@email.fr')
+        user_admin = create_user(email='admin@email.fr', password='P@55w0rd')
+        offerer = create_offerer()
+        user_offerer = create_user_offerer(user_admin, offerer, is_admin=True)
+        venue = create_venue(offerer)
+        offer = create_event_offer(venue, event_name='Event Name')
+        event_occurrence = create_event_occurrence(offer)
+        stock = create_stock_from_event_occurrence(event_occurrence, price=0)
+        booking = create_booking(user, stock, venue=venue)
+
+        PcObject.check_and_save(user_offerer, booking, event_occurrence)
+        url_email = urlencode({'email': 'user+plus@email.fr'})
+        url = API_URL + '/bookings/token/{}?{}'.format(booking.token, url_email)
+
+        # When
+        response = req_with_auth('admin@email.fr', 'P@55w0rd').patch(url)
+        # Then
+        assert response.status_code == 204
+
+    @clean_database
+    def test_when_user_not_editor_and_valid_email_returns_403_global_in_error_and_is_used_is_false(self, app):
         # Given
         user = create_user()
         admin_user = create_user(email='admin@email.fr', password='P@55w0rd')
@@ -1121,7 +1166,7 @@ class PatchBookingAsLoggedInUserTest:
         assert booking.isUsed == False
 
     @clean_database
-    def test_patch_booking_by_token_when_user_not_editor_and_invalid_email(self, app):
+    def test_when_user_not_editor_and_invalid_email_returns_404_and_is_used_is_false(self, app):
         # Given
         user = create_user()
         admin_user = create_user(email='admin@email.fr', password='P@55w0rd')
@@ -1141,7 +1186,29 @@ class PatchBookingAsLoggedInUserTest:
         assert booking.isUsed == False
 
     @clean_database
-    def test_patch_booking_by_token_when_user_not_editor_and_valid_email_but_invalid_offer_id(self, app):
+    @pytest.mark.standalone
+    def test_email_with_special_character_not_url_encoded_returns_404(self, app):
+        # Given
+        user = create_user(email='user+plus@email.fr')
+        user_admin = create_user(email='admin@email.fr', password='P@55w0rd')
+        offerer = create_offerer()
+        user_offerer = create_user_offerer(user_admin, offerer, is_admin=True)
+        venue = create_venue(offerer)
+        offer = create_event_offer(venue, event_name='Event Name')
+        event_occurrence = create_event_occurrence(offer)
+        stock = create_stock_from_event_occurrence(event_occurrence, price=0)
+        booking = create_booking(user, stock, venue=venue)
+
+        PcObject.check_and_save(user_offerer, booking, event_occurrence)
+        url = API_URL + '/bookings/token/{}?email={}'.format(booking.token, user.email)
+
+        # When
+        response = req_with_auth('admin@email.fr', 'P@55w0rd').patch(url)
+        # Then
+        assert response.status_code == 404
+
+    @clean_database
+    def test_when_user_not_editor_and_valid_email_but_invalid_offer_id_returns_404_and_is_used_false(self, app):
         # Given
         user = create_user()
         admin_user = create_user(email='admin@email.fr', password='P@55w0rd')
@@ -1161,7 +1228,7 @@ class PatchBookingAsLoggedInUserTest:
         assert booking.isUsed == False
 
     @clean_database
-    def test_patch_booking_by_token_when_booking_is_cancelled(self, app):
+    def test_valid_request_when_booking_is_cancelled_returns_410_and_booking_in_error_and_is_used_is_false(self, app):
         # Given
         user = create_user()
         admin_user = create_user(email='admin@email.fr', password='P@55w0rd')
@@ -1184,7 +1251,7 @@ class PatchBookingAsLoggedInUserTest:
         assert booking.isUsed == False
 
     @clean_database
-    def test_patch_booking_by_token_when_booking_already_validated(self, app):
+    def test_valid_request_when_booking_already_validated_returns_410_and_booking_in_error_and_is_used_is_false(self, app):
         # Given
         user = create_user()
         admin_user = create_user(email='admin@email.fr', password='P@55w0rd')
@@ -1227,100 +1294,6 @@ def test_cannot_cancel_used_booking(app):
     assert response.json()['booking'] == ["Impossible d\'annuler une réservation consommée"]
     db.session.refresh(booking)
     assert not booking.isCancelled
-
-
-@clean_database
-@pytest.mark.standalone
-def test_get_booking_by_token_accepts_special_characters_in_email_if_they_are_url_encoded(app):
-    # Given
-    user = create_user(email='user+plus@email.fr')
-    user_admin = create_user(email='admin@email.fr', password='P@55w0rd')
-    offerer = create_offerer()
-    user_offerer = create_user_offerer(user_admin, offerer, is_admin=True)
-    venue = create_venue(offerer)
-    offer = create_event_offer(venue, event_name='Event Name')
-    event_occurrence = create_event_occurrence(offer)
-    stock = create_stock_from_event_occurrence(event_occurrence, price=0)
-    booking = create_booking(user, stock, venue=venue)
-
-    PcObject.check_and_save(user_offerer, booking, event_occurrence)
-    url_email = urlencode({'email': 'user+plus@email.fr'})
-    url = API_URL + '/bookings/token/{}?{}'.format(booking.token, url_email)
-
-    # When
-    response = req_with_auth('admin@email.fr', 'P@55w0rd').get(url)
-    # Then
-    assert response.status_code == 200
-
-
-@clean_database
-@pytest.mark.standalone
-def test_get_booking_by_token_returns_404_if_special_characters_in_email_are_not_url_encoded(app):
-    # Given
-    user = create_user(email='user+plus@email.fr')
-    user_admin = create_user(email='admin@email.fr', password='P@55w0rd')
-    offerer = create_offerer()
-    user_offerer = create_user_offerer(user_admin, offerer, is_admin=True)
-    venue = create_venue(offerer)
-    offer = create_event_offer(venue, event_name='Event Name')
-    event_occurrence = create_event_occurrence(offer)
-    stock = create_stock_from_event_occurrence(event_occurrence, price=0)
-    booking = create_booking(user, stock, venue=venue)
-
-    PcObject.check_and_save(user_offerer, booking, event_occurrence)
-    url = API_URL + '/bookings/token/{}?email={}'.format(booking.token, user.email)
-
-    # When
-    response = req_with_auth('admin@email.fr', 'P@55w0rd').get(url)
-    # Then
-    assert response.status_code == 404
-
-
-@clean_database
-@pytest.mark.standalone
-def test_patch_booking_by_token_returns_204_if_special_character_in_email_with_url_encoding(app):
-    # Given
-    user = create_user(email='user+plus@email.fr')
-    user_admin = create_user(email='admin@email.fr', password='P@55w0rd')
-    offerer = create_offerer()
-    user_offerer = create_user_offerer(user_admin, offerer, is_admin=True)
-    venue = create_venue(offerer)
-    offer = create_event_offer(venue, event_name='Event Name')
-    event_occurrence = create_event_occurrence(offer)
-    stock = create_stock_from_event_occurrence(event_occurrence, price=0)
-    booking = create_booking(user, stock, venue=venue)
-
-    PcObject.check_and_save(user_offerer, booking, event_occurrence)
-    url_email = urlencode({'email': 'user+plus@email.fr'})
-    url = API_URL + '/bookings/token/{}?{}'.format(booking.token, url_email)
-
-    # When
-    response = req_with_auth('admin@email.fr', 'P@55w0rd').patch(url)
-    # Then
-    assert response.status_code == 204
-
-
-@clean_database
-@pytest.mark.standalone
-def test_patch_booking_by_token_returns_404_if_special_character_in_email_without_url_encoding(app):
-    # Given
-    user = create_user(email='user+plus@email.fr')
-    user_admin = create_user(email='admin@email.fr', password='P@55w0rd')
-    offerer = create_offerer()
-    user_offerer = create_user_offerer(user_admin, offerer, is_admin=True)
-    venue = create_venue(offerer)
-    offer = create_event_offer(venue, event_name='Event Name')
-    event_occurrence = create_event_occurrence(offer)
-    stock = create_stock_from_event_occurrence(event_occurrence, price=0)
-    booking = create_booking(user, stock, venue=venue)
-
-    PcObject.check_and_save(user_offerer, booking, event_occurrence)
-    url = API_URL + '/bookings/token/{}?email={}'.format(booking.token, user.email)
-
-    # When
-    response = req_with_auth('admin@email.fr', 'P@55w0rd').patch(url)
-    # Then
-    assert response.status_code == 404
 
 
 @clean_database
