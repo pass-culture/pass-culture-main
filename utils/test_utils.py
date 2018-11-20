@@ -392,11 +392,11 @@ def create_thing(
     return thing
 
 def create_event(
+    event_name='Test event',
+    event_type=str(EventType.SPECTACLE_VIVANT),
     description=None,
     dominant_color=None,
     duration_minutes=60,
-    event_name='Test event',
-    event_type=str(EventType.SPECTACLE_VIVANT),
     is_national=False,
     thumb_count=0,
 ):

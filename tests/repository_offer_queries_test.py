@@ -38,7 +38,7 @@ def test_departement_or_national_offers_with_national_thing_returns_national_thi
 @clean_database
 def test_departement_or_national_offers_with_national_event_returns_national_event(app):
     # Given
-    event = create_event('Voir une pièce')
+    event = create_event('Voir une pièce', is_national=True)
     offerer = create_offerer()
     venue = create_venue(offerer)
     offer = create_event_offer(venue, event)
