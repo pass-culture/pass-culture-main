@@ -40,7 +40,8 @@ const SigninPage = ({ errors }) => {
                   layout="vertical"
                   name="user"
                   handleSuccessNotification={null}
-                  handleSuccessRedirect={() => '/offres'}>
+                  handleSuccessRedirect={() => '/offres'}
+                  onEnterKey={event => event.form.onSubmit()}>
                   <div className="field-group">
                     <Field
                       label="Adresse e-mail"
