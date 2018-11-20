@@ -933,7 +933,7 @@ class GetBookingByTokenTest:
         assert error_message['email'] == [
             'Vous devez préciser l\'email de l\'utilisateur quand vous n\'êtes pas connecté(e)']
 
-    @pytest.mark.standalone
+    @clean_database
     def test_when_not_logged_in_give_right_email_and_offer_id_thing_but_already_validated_token_returns_410_and_booking_in_error(
             self, app):
         # Given
