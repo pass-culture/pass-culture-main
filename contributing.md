@@ -54,3 +54,7 @@
   - Accesseurs:
     * utilisation préférentielle de lodash.get:
       exemple: get(ownProps, 'mediation.id') au lieu de ownProps.mediation && ownProps.mediation.id
+
+  - Selecteurs:
+    * on utilise des noms de la forme selectSomethingBySomecriterionAndSomeothercriterion
+    * pour les cachedSelector la fonction pour la clé de cache est nommée explicitement : mapArgsToCacheKey
