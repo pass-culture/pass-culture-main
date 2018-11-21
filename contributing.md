@@ -7,7 +7,7 @@
       1. Imports par ordre alphabétique
       2. Une ligne de séparation entre librairies externes et modules internes
       3. Ne pas utiliser les imports/exports "default" de façon à forcer à ce que tout soit nommé pareil partout et faciliter la lisibilité. Dans la plupart des cas, donc, ça revient à faire "import { fooSelector } from Bar" plutot que "import fooSelector from Bar".
-
+      4. On ne remonte pas dans la hiérarchie des dossier (pas de "../")
 
 
       ```
@@ -26,10 +26,11 @@
       import { compose } from 'redux'
 
       import OccasionItem from './OccasionItem'
-      import Icon from '../layout/Icon'
-      import { showModal } from '../../reducers/modal'
-      import { THUMBS_URL } form '../../utils/config'
+      import Icon from 'layout/Icon'
+      import { showModal } from 'components/reducers/modal'
+      import { THUMBS_URL } form 'utils/config'
       ```
+      
 
   - Nomination des variables, si possible:
     * arrays avec des pluriels, exemple : data, events
