@@ -104,7 +104,7 @@ test('Je créé un compte, je suis redirigé·e vers la page /structures', async
     .expect(pendingOffererList.exists)
     .ok()
     .expect(firstPendingOffererName.innerText)
-    .eql(offererUser1.publicName)
+    .eql(offererUser1.offererName)
 })
 
 test('Je demande le rattachement à une structure existante', async t => {})
