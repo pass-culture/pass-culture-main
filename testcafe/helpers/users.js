@@ -6,14 +6,14 @@ const environment = args.env
 const youngUser =
   environment && environment === 'local'
     ? {
-        email: 'pctest.jeune.93@btmx.fr',
-        password: 'azertyazertyP0$',
-        publicName: 'Public Name',
+        email: 'pctest.jeune93.0@btmx.fr',
+        password: 'pctest.Jeune93.0',
+        publicName: 'Pc Test Jeune93 0',
       }
     : {
-        email: 'pctest.cafe@btmx.fr',
-        password: 'pctestcafeP0$',
-        publicName: 'Public Name',
+        email: 'pctest.jeune93.cafe0@btmx.fr',
+        password: 'pctest.Jeune93.cafe0',
+        publicName: 'Pc Test Jeune93 Cafe0',
       }
 
 export default youngUser
