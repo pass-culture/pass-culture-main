@@ -1,9 +1,8 @@
-import filterIconByState, {
+import isInitialQueryWithoutFilters, {
   getDescriptionForSublabel,
   getFirstChangingKey,
   getRecommendationDateString,
   INITIAL_FILTER_PARAMS,
-  isSearchFiltersAdded,
   translateBrowserUrlToApiUrl,
 } from '../utils'
 
@@ -13,15 +12,6 @@ import { selectRecommendations } from '../../../../selectors'
 const recommendations = selectRecommendations(state)
 
 describe('src | components | pages | search | utils', () => {
-  describe('filterIconByState', () => {
-    it('should render filter icon when there is no filter added to isSearchFiltersAdded', () => {
-      expect(filterIconByState(true)).toEqual('filter')
-    })
-    it('should render filter-active icon when there is filters added to search', () => {
-      expect(filterIconByState(false)).toEqual('filter-active')
-    })
-  })
-
   describe('getRecommendationDateString', () => {
     it('should render permanent is there is no date given', () => {
       // given
@@ -196,7 +186,7 @@ describe('src | components | pages | search | utils', () => {
     })
   })
 
-  describe('isSearchFiltersAdded', () => {
+  describe('isInitialQueryWithoutFilters', () => {
     it('should return false if there is params changed with filter', () => {
       const queryParams = {
         categories: '%C3%89couter,Pratiquer',
@@ -210,9 +200,9 @@ describe('src | components | pages | search | utils', () => {
         page: '2',
         types: null,
       }
-      expect(isSearchFiltersAdded(INITIAL_FILTER_PARAMS, queryParams)).toEqual(
-        false
-      )
+      expect(
+        isInitialQueryWithoutFilters(INITIAL_FILTER_PARAMS, queryParams)
+      ).toEqual(false)
     })
 
     it('should return true if there is no params changed with filter', () => {
@@ -225,12 +215,11 @@ describe('src | components | pages | search | utils', () => {
         latitude: null,
         longitude: null,
         [`mots-cles`]: null,
-        page: '2',
-        types: null,
+        orderBy: 'offer.id+desc',
       }
-      expect(isSearchFiltersAdded(INITIAL_FILTER_PARAMS, queryParams)).toEqual(
-        true
-      )
+      expect(
+        isInitialQueryWithoutFilters(INITIAL_FILTER_PARAMS, queryParams)
+      ).toEqual(true)
     })
   })
 
@@ -282,24 +271,24 @@ describe('src | components | pages | search | utils', () => {
       expect(result).toEqual(typeSublabels[0].description)
     })
   })
-})
 
-describe('src | utils | translateBrowserUrlToApiUrl ', () => {
   describe('src | utils | translateBrowserUrlToApiUrl ', () => {
-    it('should return object with french key', () => {
-      const queryString = {
-        categories: 'Applaudir',
-        date: null,
-        jours: '1-5',
-        [`mots-cles`]: 'fake',
-      }
-      const expected = {
-        categories: 'Applaudir',
-        date: null,
-        days: '1-5',
-        keywords: 'fake',
-      }
-      expect(translateBrowserUrlToApiUrl(queryString)).toEqual(expected)
+    describe('src | utils | translateBrowserUrlToApiUrl ', () => {
+      it('should return object with french key', () => {
+        const queryString = {
+          categories: 'Applaudir',
+          date: null,
+          jours: '1-5',
+          [`mots-cles`]: 'fake',
+        }
+        const expected = {
+          categories: 'Applaudir',
+          date: null,
+          days: '1-5',
+          keywords: 'fake',
+        }
+        expect(translateBrowserUrlToApiUrl(queryString)).toEqual(expected)
+      })
     })
   })
 })

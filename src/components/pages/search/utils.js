@@ -10,8 +10,6 @@ import moment from 'moment'
 import { getTimezone } from '../../../utils/timezone'
 import { isEmpty } from '../../../utils/strings'
 
-const filterIconByState = filters => (filters ? 'filter' : 'filter-active')
-
 export const INITIAL_FILTER_PARAMS = {
   categories: null,
   date: null,
@@ -19,6 +17,7 @@ export const INITIAL_FILTER_PARAMS = {
   jours: null,
   latitude: null,
   longitude: null,
+  [`mots-cles`]: null,
 }
 
 export const TODAY_DATE = moment()
@@ -40,7 +39,7 @@ export const DAYS_CHECKBOXES = [
   },
 ]
 
-export const isSearchFiltersAdded = (initialParams, filterParams) =>
+const isInitialQueryWithoutFilters = (initialParams, filterParams) =>
   Object.keys(initialParams).every(
     key =>
       typeof filterParams[key] === 'undefined' ||
@@ -141,4 +140,4 @@ const mapWindowToApi = {
 export const translateBrowserUrlToApiUrl = windowQuery =>
   getObjectWithMappedKeys(windowQuery, mapWindowToApi)
 
-export default filterIconByState
+export default isInitialQueryWithoutFilters

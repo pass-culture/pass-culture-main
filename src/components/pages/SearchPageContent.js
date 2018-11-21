@@ -11,20 +11,20 @@ import NavByOfferType from './search/NavByOfferType'
 import NavResultsHeader from './search/NavResultsHeader'
 import SearchFilter from './search/SearchFilter'
 import SearchResults from './search/SearchResults'
-import filterIconByState, {
+import isInitialQueryWithoutFilters, {
   getDescriptionForSublabel,
   INITIAL_FILTER_PARAMS,
-  isSearchFiltersAdded,
 } from './search/utils'
+
 import Main from '../layout/Main'
 
 class SearchPageContent extends PureComponent {
   constructor(props) {
     super(props)
     this.state = {
+      isFilterVisible: false,
       keywordsKey: 0,
       keywordsValue: get(props, `pagination.windowQuery.mots-cles`),
-      withFilter: false,
     }
   }
 
@@ -32,7 +32,7 @@ class SearchPageContent extends PureComponent {
     const { dispatch, location, match, pagination, search } = this.props
     // pagination props comes from the hoc withPagination from pass-culture-shared folder
     const { apiQueryString, goToNextPage, page } = pagination
-    const { withFilter } = this.state
+    const { isFilterVisible } = this.state
 
     // BECAUSE THE INFINITE SCROLLER CALLS ONCE THIS FUNCTION
     // BUT THEN PUSH THE SEARCH TO PAGE + 1
@@ -54,7 +54,7 @@ class SearchPageContent extends PureComponent {
         handleFail,
         handleSuccess: (state, action) => {
           handleSuccess(state, action)
-          if (match.params.view === 'resultats' && !withFilter) {
+          if (match.params.view === 'resultats' && !isFilterVisible) {
             goToNextPage()
           }
         },
@@ -78,9 +78,9 @@ class SearchPageContent extends PureComponent {
       // WE NEED TO MAKE THE PARENT OF THE KEYWORD INPUT
       // DEPENDING ON THE KEYWORDS VALUE IN ORDER TO RERENDER
       // THE INPUT WITH A SYNCED DEFAULT VALUE
+      isFilterVisible: false,
       keywordsKey: keywordsKey + 1,
       keywordsValue: '',
-      withFilter: false,
     })
     pagination.change(
       {
@@ -100,7 +100,7 @@ class SearchPageContent extends PureComponent {
     const { value } = event.target.elements.keywords
     event.preventDefault()
 
-    this.setState({ withFilter: false })
+    this.setState({ isFilterVisible: false })
 
     pagination.change(
       {
@@ -113,8 +113,8 @@ class SearchPageContent extends PureComponent {
     )
   }
 
-  onClickOpenCloseFilterDiv = withFilter => () => {
-    this.setState({ withFilter: !withFilter })
+  onClickOpenCloseFilterDiv = isFilterVisible => () => {
+    this.setState({ isFilterVisible: !isFilterVisible })
   }
 
   onKeywordsChange = event => {
@@ -125,7 +125,7 @@ class SearchPageContent extends PureComponent {
 
   onKeywordsEraseClick = () => () => {
     const { keywordsKey } = this.state
-    const { pagination } = this.props
+    const { pagination, location } = this.props
     this.setState({
       // https://stackoverflow.com/questions/37946229/how-do-i-reset-the-defaultvalue-for-a-react-input
       // WE NEED TO MAKE THE PARENT OF THE KEYWORD INPUT
@@ -134,9 +134,14 @@ class SearchPageContent extends PureComponent {
       keywordsKey: keywordsKey + 1,
       keywordsValue: '',
     })
-    pagination.change({
-      'mots-cles': null,
-    })
+    pagination.change(
+      {
+        'mots-cles': null,
+      },
+      {
+        pathname: location.pathname,
+      }
+    )
   }
 
   render() {
@@ -149,40 +154,28 @@ class SearchPageContent extends PureComponent {
       typeSublabelsAndDescription,
     } = this.props
 
-    const { keywordsKey, keywordsValue, withFilter } = this.state
-
+    const { keywordsKey, keywordsValue, isFilterVisible } = this.state
     const { windowQuery } = pagination
-
-    // console.log('PAGINATION >>>>>> ', pagination);
-
-    // ************************* HELPERS ****************************
-    // FIX ME
-    // match: {
-    //   params: {
-    //     categorie: undefined,
-    //     view: undefined
-    //   }
-    // },
-    // Cannot read property 'mots-cles' of undefined
     const onResultPage = match.params.view === 'resultats'
-
     const keywords = get(windowQuery, `mots-cles`)
 
     const backButton = onResultPage && {
       onClick: () => this.onBackToSearchHome(),
     }
 
-    const filtersActive = isSearchFiltersAdded(
+    const whithoutFilters = isInitialQueryWithoutFilters(
       INITIAL_FILTER_PARAMS,
       windowQuery
     )
 
-    const isfilterIconActive = filterIconByState(filtersActive)
-    const filtersToggleButtonClass = (withFilter && 'filters-are-opened') || ''
+    const iconName = whithoutFilters ? 'filter' : 'filter-active'
+
+    const filtersToggleButtonClass =
+      (isFilterVisible && 'filters-are-opened') || ''
 
     const isOneCharInKeywords = get(keywordsValue, 'length') > 0
 
-    // ************************* DATAS **************************** //
+    // ******************** Displaying datas helpers ********************** //
     const searchPageTitle = onResultPage ? 'Recherche : résultats' : 'Recherche'
 
     let description
@@ -258,17 +251,17 @@ class SearchPageContent extends PureComponent {
               <button
                 type="button"
                 className="no-border no-background no-outline "
-                onClick={this.onClickOpenCloseFilterDiv(withFilter)}
+                onClick={this.onClickOpenCloseFilterDiv(isFilterVisible)}
               >
                 <Icon
-                  svg={`ico-${withFilter ? 'chevron-up' : isfilterIconActive}`}
+                  svg={`ico-${isFilterVisible ? 'chevron-up' : iconName}`}
                 />
               </button>
             </div>
           </div>
         </form>
 
-        <SearchFilter isVisible={withFilter} pagination={pagination} />
+        <SearchFilter isVisible={isFilterVisible} pagination={pagination} />
 
         <Switch location={location}>
           <Route

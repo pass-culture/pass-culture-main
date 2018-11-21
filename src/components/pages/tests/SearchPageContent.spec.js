@@ -1,6 +1,6 @@
 import React from 'react'
 import { shallow } from 'enzyme'
-// import { Icon } from 'pass-culture-shared'
+import { Icon } from 'pass-culture-shared'
 
 import SearchPageContent from '../SearchPageContent'
 
@@ -68,9 +68,9 @@ describe('src | components | pages | SearchPageContentContent', () => {
         // when
         const wrapper = shallow(<SearchPageContent {...initialProps} />)
         const expected = {
+          isFilterVisible: false,
           keywordsKey: 0,
           keywordsValue: 'Fake',
-          withFilter: false,
         }
 
         // then
@@ -173,9 +173,9 @@ describe('src | components | pages | SearchPageContentContent', () => {
           wrapper.props().backButton.onClick()
 
           const expected = {
+            isFilterVisible: false,
             keywordsKey: 1,
             keywordsValue: '',
-            withFilter: false,
           }
 
           // then
@@ -230,16 +230,16 @@ describe('src | components | pages | SearchPageContentContent', () => {
         },
       })
       const wrapperInstance = wrapper.instance()
-      wrapperInstance.setState({ withFilter: true })
+      wrapperInstance.setState({ isFilterVisible: true })
       describe('when keywords is an empty string', () => {
         it('should update state with mots-clés setted to value given', () => {
           // when
           wrapper.find('form').simulate('submit', event)
 
           const expected = {
+            isFilterVisible: false,
             keywordsKey: 0,
             keywordsValue: null,
-            withFilter: false,
           }
 
           // then
@@ -302,7 +302,7 @@ describe('src | components | pages | SearchPageContentContent', () => {
       })
     })
 
-    describe('onKeywordsEraseClick', () => {
+    describe('onKeywoFilterByDates.spec.jsrdsEraseClick', () => {
       describe('when no char has been typed', () => {
         it('button should not appear', () => {
           // when
@@ -325,9 +325,9 @@ describe('src | components | pages | SearchPageContentContent', () => {
           button.props().onClick()
 
           const expected = {
+            isFilterVisible: false,
             keywordsKey: 1,
             keywordsValue: '',
-            withFilter: false,
           }
           // then
           expect(wrapper.state()).toEqual(expected)
@@ -354,7 +354,7 @@ describe('src | components | pages | SearchPageContentContent', () => {
       }
 
       const wrapperInstance = wrapper.instance()
-      wrapperInstance.setState({ withFilter: true })
+      wrapperInstance.setState({ isFilterVisible: true })
 
       it('should update state with keywords value', () => {
         // when
@@ -362,15 +362,99 @@ describe('src | components | pages | SearchPageContentContent', () => {
 
         // then
         const expected = {
+          isFilterVisible: true,
           keywordsKey: 0,
           keywordsValue: 'Any',
-          withFilter: true,
         }
 
         // then
         expect(wrapper.state()).toEqual(expected)
       })
     })
+
+    describe('onClickOpenCloseFilterDiv', () => {
+      describe('When user does not click on the icon button', () => {
+        // when
+        const wrapper = shallow(<SearchPageContent {...initialProps} />)
+        const toogleIcon = wrapper
+          .find('#search-filter-menu-toggle-button')
+          .find(Icon)
+
+        it('should show ico-filter', () => {
+          expect(toogleIcon.props('svg')).toEqual({ svg: 'ico-filter' })
+        })
+        it('isFilterVisible state is false', () => {
+          const expected = {
+            isFilterVisible: false,
+            keywordsKey: 0,
+            keywordsValue: null,
+          }
+
+          // then
+          expect(toogleIcon.props('svg')).toEqual({ svg: 'ico-filter' })
+          expect(wrapper.state()).toEqual(expected)
+        })
+      })
+
+      describe('When user click on the icon button', () => {
+        // when
+        const wrapper = shallow(<SearchPageContent {...initialProps} />)
+        const toogleIcon = wrapper
+          .find('#search-filter-menu-toggle-button')
+          .find('button')
+        toogleIcon.simulate('click', false)
+
+        it('should update isFilterVisible state to true', () => {
+          const expected = {
+            isFilterVisible: true,
+            keywordsKey: 0,
+            keywordsValue: null,
+          }
+
+          // then
+          expect(wrapper.state()).toEqual(expected)
+        })
+        it('should show chevron-up icon', () => {
+          const toogleIconClicked = wrapper
+            .find('#search-filter-menu-toggle-button')
+            .find('button')
+
+          expect(toogleIconClicked.find(Icon).props('svg')).toEqual({
+            svg: 'ico-chevron-up',
+          })
+        })
+      })
+
+      describe('When there is some filters in search', () => {
+        it('should show ico-filter-active icone', () => {
+          // given
+          initialProps.pagination.windowQuery = {
+            categories: '%C3%89couter,Pratiquer',
+            date: '2018-09-25T09:38:20.576Z',
+            days: null,
+            distance: null,
+            jours: '0-1,1-5,5-100000',
+            latitude: null,
+            longitude: null,
+            [`mots-cles`]: null,
+            page: '2',
+            types: null,
+          }
+
+          // when
+          const wrapper = shallow(<SearchPageContent {...initialProps} />)
+          const toogleIcon = wrapper
+            .find('#search-filter-menu-toggle-button')
+            .find('button')
+
+          // then
+          expect(toogleIcon.find(Icon).props('svg')).toEqual({
+            svg: 'ico-filter-active',
+          })
+        })
+      })
+    })
+
     // Bouton recherchre avec props disabled si !isOneCharInKeywords
     // Close button // wrapper.props().closeSearchButton
     // console.log('|||||| Wrapper Props', wrapper.props().backButton);
