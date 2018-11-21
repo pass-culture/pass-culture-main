@@ -4,7 +4,7 @@ import traceback
 import simplejson as json
 from flask import current_app as app, jsonify, request
 
-from models.api_errors import ApiErrors, ResourceGoneError, ResourceNotFound, ForbiddenError
+from models.api_errors import ApiErrors, ResourceGoneError, ResourceNotFound, ForbiddenError, DecimalCastError
 from routes.before_request import InvalidOriginHeader
 from utils.human_ids import NonDehumanizableId
 
@@ -62,9 +62,9 @@ def invalid_id_for_dehumanize_error(error):
     return jsonify(api_errors.errors), 404
 
 
-@app.errorhandler(TypeError)
+@app.errorhandler(DecimalCastError)
 def invalid_data_format(error):
-    field = error.args[2]
     api_errors = ApiErrors()
-    api_errors.addError(field, 'Caractère interdit')
+    for field in error.errors.keys():
+        api_errors.addError(field, 'Caractère interdit')
     return jsonify(api_errors.errors), 400
