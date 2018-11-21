@@ -6,6 +6,8 @@
 
       1. Imports par ordre alphabétique
       2. Une ligne de séparation entre librairies externes et modules internes
+      3. Ne pas utiliser les imports/exports "default" de façon à forcer à ce que tout soit nommé pareil partout et faciliter la lisibilité. Dans la plupart des cas, donc, ça revient à faire "import { fooSelector } from Bar" plutot que "import fooSelector from Bar".
+
 
 
       ```
