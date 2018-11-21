@@ -1,26 +1,26 @@
-export const offererUser = {
-  email: 'pctest.cafe@btmx.fr',
-  firstName: 'Test',
-  lastName: 'Café',
-  password: 'PCtestcafe.75001',
-  publicName: 'THEATRE NATIONAL DE CHAILLOT',
+export const offererUser0 = {
+  email: 'pctest.pro93.cafe0@btmx.fr',
+  firstName: 'PC Test Pro',
+  lastName: '93 Café0',
+  password: 'pctest.Pro93.cafe0',
+  publicName: 'PC Test Pro93 Café0',
   siren: '692039514',
 }
 
-export const offererUser2 = {
-  email: 'pctest2.cafe@btmx.fr',
-  firstName: 'Test2',
-  lastName: 'Café',
-  password: 'PCtestcafe.34000',
-  publicName: 'LE GRAND REX PARIS',
+export const offererUser1 = {
+  email: 'pctest.pro93.cafe1@btmx.fr',
+  firstName: 'PC Test Pro',
+  lastName: '93 Café1',
+  password: 'pctest.Pro93.cafe1',
+  publicName: 'PC Test Pro93 Café1',
   siren: '507633576',
 }
 
-export const adminUser = {
-  email: 'pctest.admin.1@btmx.fr',
-  firstName: 'Test',
-  lastName: 'Admin',
-  password: 'pctest.Admin.1',
-  publicName: 'LE GRAND REX PARIS',
+export const adminUser0 = {
+  email: 'pctest.admin93.0@btmx.fr',
+  firstName: 'PC Test Admin',
+  lastName: '93 0',
+  password: 'pctest.Admin93.0',
+  publicName: 'PC Test Admin93 0',
   siren: '507633576',
 }

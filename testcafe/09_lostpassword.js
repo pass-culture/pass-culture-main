@@ -1,7 +1,7 @@
 import { Selector } from 'testcafe'
 
 import { ROOT_PATH } from '../src/utils/config'
-import { offererUser } from './helpers/users'
+import { offererUser0 } from './helpers/users'
 
 const inputUsersEmail = Selector('#user-email')
 const forgotPasswordLink = Selector('#lostPasswordLink')
@@ -23,7 +23,7 @@ test('Je peux cliquer sur lien mot de passe oublié', async t => {
     .expect(pageH1.innerText)
     .eql('Mot de passe égaré ?')
 
-  await t.typeText(inputUsersEmail, offererUser.email).click(sendTokenButton)
+  await t.typeText(inputUsersEmail, offererUser0.email).click(sendTokenButton)
 
   location = await t.eval(() => window.location)
   await t
