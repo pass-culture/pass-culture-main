@@ -2,20 +2,28 @@ import selectRecommendations from '../recommendations'
 import state2 from '../../mocks/global_state_2_Testing_10_10_18'
 
 describe('selectRecommendations', () => {
-  it.skip('should return an empty array if there is no recommendations', () => {
+  it('should return an empty array if there is no recommendations', () => {
+    // given
     const state = {
       data: {
         recommendations: [],
       },
       geolocation: {
-        latitude: 'latitude',
-        longitude: 'longitude',
+        latitude: 48.8637,
+        longitude: 2.3374,
+        watchId: 1,
       },
     }
-    expect(selectRecommendations(state)).toEqual([])
+
+    // when
+    const result = selectRecommendations(state)
+
+    // then
+    expect(result).toEqual([])
   })
 
   it('should return recommendations', () => {
+    // given
     const expected = {
       bookingsIds: [],
       dateCreated: '2018-10-10T14:19:27.410551Z',
@@ -144,8 +152,185 @@ describe('selectRecommendations', () => {
       userId: 'AQBA',
       validUntilDate: '2018-10-13T14:19:27.442986Z',
     }
+
+    // when
     const result = selectRecommendations(state2)
 
+    // then
     expect(result[0]).toEqual(expected)
+    expect(result.length).toEqual(46)
+  })
+
+  describe('computes rounded distances', () => {
+    describe('when recommendation and user are less than 30 meters away', () => {
+      it('should return 6 meters', () => {
+        // given
+        const state = {
+          data: {
+            recommendations: [
+              {
+                id: 'AEWPS',
+                offer: {
+                  thingId: 'BE',
+                  venue: {
+                    latitude: 48.8638,
+                    longitude: 2.3375,
+                  },
+                  venueId: 'AMLA',
+                },
+                offerId: 'AKLA',
+              },
+            ],
+          },
+          geolocation: {
+            latitude: 48.863749399999996,
+            longitude: 2.3374608,
+            watchId: 1,
+          },
+        }
+
+        // when
+        const result = selectRecommendations(state)
+
+        // then
+        expect(result[0].distance).toEqual('6 m')
+      })
+    })
+    describe('when recommendation and user are less than 100 meters away', () => {
+      it('should return 65 meters when distance is 66.79 meters', () => {
+        // given
+        const state = {
+          data: {
+            recommendations: [
+              {
+                id: 'AEWPS',
+                offer: {
+                  thingId: 'BE',
+                  venue: {
+                    latitude: 48.8643,
+                    longitude: 2.3374,
+                  },
+                  venueId: 'AMLA',
+                },
+                offerId: 'AKLA',
+              },
+            ],
+          },
+          geolocation: {
+            latitude: 48.8637,
+            longitude: 2.3374,
+            watchId: 1,
+          },
+        }
+
+        // when
+        const result = selectRecommendations(state)
+
+        // then
+        expect(result[0].distance).toEqual('65 m')
+      })
+    })
+    describe('when recommendation and user are less than 1000 meters away', () => {
+      it('should return 470 meters when distance is 473.10 meters', () => {
+        // given
+        const state = {
+          data: {
+            recommendations: [
+              {
+                id: 'AEWPS',
+                offer: {
+                  thingId: 'BE',
+                  venue: {
+                    latitude: 48.86795,
+                    longitude: 2.3374,
+                  },
+                  venueId: 'AMLA',
+                },
+                offerId: 'AKLA',
+              },
+            ],
+          },
+          geolocation: {
+            latitude: 48.8637,
+            longitude: 2.3374,
+            watchId: 1,
+          },
+        }
+
+        // when
+        const result = selectRecommendations(state)
+
+        // then
+        expect(result[0].distance).toEqual('470 m')
+      })
+    })
+    describe('when recommendation and user are less than 5000 meters away', () => {
+      it('should return 2.2 kilometers when distance is 2226.38 meters', () => {
+        // given
+        const state = {
+          data: {
+            recommendations: [
+              {
+                id: 'AEWPS',
+                offer: {
+                  thingId: 'BE',
+                  venue: {
+                    latitude: 48.8437,
+                    longitude: 2.3374,
+                  },
+                  venueId: 'AMLA',
+                },
+                offerId: 'AKLA',
+              },
+            ],
+          },
+          geolocation: {
+            latitude: 48.8637,
+            longitude: 2.3374,
+            watchId: 1,
+          },
+        }
+
+        // when
+        const result = selectRecommendations(state)
+
+        // then
+        expect(result[0].distance).toEqual('2.2 km')
+      })
+    })
+    describe('when recommendation and user are more than 5000 meters away', () => {
+      it('should return 17 kilometers when distance is 16697.92 meters', () => {
+        // given
+        const state = {
+          data: {
+            recommendations: [
+              {
+                id: 'AEWPS',
+                offer: {
+                  thingId: 'BE',
+                  venue: {
+                    latitude: 48.7137,
+                    longitude: 2.3374,
+                  },
+                  venueId: 'AMLA',
+                },
+                offerId: 'AKLA',
+              },
+            ],
+          },
+          geolocation: {
+            latitude: 48.8637,
+            longitude: 2.3374,
+            watchId: 1,
+          },
+        }
+
+        // when
+        const result = selectRecommendations(state)
+
+        // then
+        expect(result[0].distance).toEqual('17 km')
+      })
+    })
   })
 })
