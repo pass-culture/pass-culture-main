@@ -3,7 +3,7 @@ import uniqBy from 'lodash.uniqby'
 import { createSelector } from 'reselect'
 
 import { THUMBS_URL } from '../utils/config'
-import { distanceInMeters } from '../utils/geolocation'
+import { computeDistanceInMeters, humanizeDistance } from '../utils/geolocation'
 import { getTimezone } from '../utils/timezone'
 
 const selectRecommendations = createSelector(
@@ -65,28 +65,17 @@ const selectRecommendations = createSelector(
           firstThumbDominantColor = get(eventOrThing, 'firstThumbDominantColor')
         }
 
-        // distance
         let distance
         if (!latitude || !longitude || !offer || !venue) {
           distance = '-'
         } else {
-          distance = distanceInMeters(
+          const distanceInMeters = computeDistanceInMeters(
             latitude,
             longitude,
             venue.latitude,
             venue.longitude
           )
-          if (distance < 30) {
-            distance = `${Math.round(distance)} m`
-          } else if (distance < 100) {
-            distance = `${Math.round(distance / 5) * 5} m`
-          } else if (distance < 1000) {
-            distance = `${Math.round(distance / 10) * 10} m`
-          } else if (distance < 5000) {
-            distance = `${Math.round(distance / 100) / 10} km`
-          } else {
-            distance = `${Math.round(distance / 1000)} km`
-          }
+          distance = humanizeDistance(distanceInMeters)
         }
 
         // timezone
