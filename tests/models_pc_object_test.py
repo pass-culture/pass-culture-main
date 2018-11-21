@@ -1,9 +1,11 @@
 from datetime import datetime, timedelta
+from decimal import Decimal
 
 import pytest
-from sqlalchemy import Column, DateTime
+from sqlalchemy import Column, DateTime, Integer, Float
 
 from models import PcObject, Offer, EventOccurrence, User
+from models.api_errors import DecimalCastError
 from models.db import Model
 from models.pc_object import serialize
 
@@ -11,6 +13,10 @@ from models.pc_object import serialize
 class TimeInterval(PcObject, Model):
     start = Column(DateTime)
     end = Column(DateTime)
+
+class TestPcObject(PcObject, Model):
+    integer_attribute = Column(Integer, nullable=True)
+    float_attribute = Column(Float, nullable=True)
 
 
 time_interval = TimeInterval()
@@ -114,3 +120,81 @@ def test_user_string_fields_are_stripped_of_whitespace_when_populating_from_dict
     assert user.lastName == None
     assert user.postalCode == '93100'
     assert user.publicName == ''
+
+
+@pytest.mark.standalone
+def test_populate_from_dict_on_pc_object_for_sql_integer_value_with_string_raises_decimal_cast_error():
+    # Given
+    test_pc_object = TestPcObject()
+    data = {'integer_attribute': 'yolo'}
+
+    # When
+    with pytest.raises(DecimalCastError) as errors:
+        test_pc_object.populateFromDict(data)
+    assert errors.value.errors['integer_attribute'] == ["Invalid value for integer_attribute (integer): 'yolo'"]
+
+
+@pytest.mark.standalone
+def test_populate_from_dict_on_pc_object_for_sql_integer_value_with_str_12dot9_sets_attribute_to_12dot9():
+    # Given
+    test_pc_object = TestPcObject()
+    data = {'integer_attribute': '12.9'}
+
+    # When
+    test_pc_object.populateFromDict(data)
+
+    # Then
+    assert test_pc_object.integer_attribute == Decimal('12.9')
+
+
+@pytest.mark.standalone
+def test_populate_from_dict_on_pc_object_for_sql_float_value_with_str_12dot9_sets_attribute_to_12dot9():
+    # Given
+    test_pc_object = TestPcObject()
+    data = {'float_attribute': '12.9'}
+
+    # When
+    test_pc_object.populateFromDict(data)
+
+    # Then
+    assert test_pc_object.float_attribute == Decimal('12.9')
+
+
+@pytest.mark.standalone
+def test_populate_from_dict_on_pc_object_for_sql_integer_value_with_12dot9_sets_attribute_to_12dot9():
+    # Given
+    test_pc_object = TestPcObject()
+    data = {'integer_attribute': 12.9}
+
+    # When
+    test_pc_object.populateFromDict(data)
+
+    # Then
+    assert test_pc_object.integer_attribute == 12.9
+
+
+@pytest.mark.standalone
+def test_populate_from_dict_on_pc_object_for_sql_float_value_with_12dot9_sets_attribute_to_12dot9():
+    # Given
+    test_pc_object = TestPcObject()
+    data = {'float_attribute': 12.9}
+
+    # When
+    test_pc_object.populateFromDict(data)
+
+    # Then
+    assert test_pc_object.float_attribute == 12.9
+
+
+
+@pytest.mark.standalone
+def test_populate_from_dict_on_pc_object_for_sql_float_value_with_string_raises_decimal_cast_error():
+    # Given
+    test_pc_object = TestPcObject()
+    data = {'float_attribute': 'yolo'}
+
+    # When
+    with pytest.raises(DecimalCastError) as errors:
+        test_pc_object.populateFromDict(data)
+        print(test_pc_object.float_attribute)
+    assert errors.value.errors['float_attribute'] == ["Invalid value for float_attribute (float): 'yolo'"]

@@ -75,3 +75,6 @@ class ResourceNotFound(ApiErrors):
 
 class ForbiddenError(ApiErrors):
     pass
+
+class DecimalCastError(ApiErrors):
+    pass

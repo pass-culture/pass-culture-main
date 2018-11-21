@@ -18,7 +18,7 @@ from sqlalchemy import CHAR, \
 from sqlalchemy.exc import DataError, IntegrityError
 from sqlalchemy.orm.collections import InstrumentedList
 
-from models.api_errors import ApiErrors
+from models.api_errors import ApiErrors, DecimalCastError
 from models.db import db
 from models.soft_deletable_mixin import SoftDeletableMixin
 from utils.date import match_format, DateTimes
@@ -272,12 +272,16 @@ class PcObject():
                     try:
                         setattr(self, key, Decimal(value))
                     except InvalidOperation:
-                        raise TypeError('Invalid value for %s: %r' % (key, value), 'integer', key)
+                        error = DecimalCastError()
+                        error.addError(col.name, 'Invalid value for %s (integer): %r'  % (key, value))
+                        raise error
                 elif isinstance(value, str) and (isinstance(col.type, Float) or isinstance(col.type, Numeric)):
                     try:
                         setattr(self, key, Decimal(value))
                     except InvalidOperation:
-                        raise TypeError('Invalid value for %s: %r' % (key, value), 'decimal', key)
+                        error = DecimalCastError()
+                        error.addError(col.name, 'Invalid value for %s (float): %r' % (key, value))
+                        raise error
                 elif isinstance(value, str) and isinstance(col.type, DateTime):
                     datetime_value = self._deserialize_datetime(key, value)
                     setattr(self, key, datetime_value)
