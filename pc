@@ -54,14 +54,10 @@ CMD="$1"
 
 if [[ "$ENV" == "production" ]]; then
 	SCALINGO_APP=pass-culture-api
-elif [[ "$ENV" == "staging" ]]; then
-	SCALINGO_APP=pass-culture-api-staging
 elif [[ "$ENV" == "testing" ]]; then
 	SCALINGO_APP=pass-culture-api-dev
-elif [[ "$ENV" == "demo" ]]; then
-	SCALINGO_APP=pass-culture-api-demo
-elif [[ "$ENV" == "integration" ]]; then
-	SCALINGO_APP=pass-culture-api-integration
+elif [[  ! -z "$ENV" ]]; then
+	SCALINGO_APP=pass-culture-api-"$ENV"
 fi
 
 # =============================================
