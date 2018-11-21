@@ -34,7 +34,9 @@ class Payment(PcObject, Model):
 
     reimbursementRule = Column(String(200), nullable=False)
 
-    recipient = Column(String(140), nullable=False)
+    recipientName = Column(String(140), nullable=False)
+
+    recipientSiren = Column(String(9), nullable=False)
 
     organisationRegistrationNumber = Column(String(14), nullable=False)
 

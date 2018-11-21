@@ -623,15 +623,15 @@ def create_mocked_bookings(num_bookings, venue_email, name='Offer name'):
     return bookings
 
 
-def create_payment(booking, offerer, amount, author='test author', recipient='recipient',
-                   reimbursement_rule='remboursement à 100%', idx=None):
+def create_payment(booking, offerer, amount, author='test author', reimbursement_rule='remboursement à 100%', idx=None):
     payment = Payment()
     payment.booking = booking
     payment.amount = amount
     payment.author = author
     payment.iban = offerer.iban
     payment.bic = offerer.bic
-    payment.recipient = recipient
+    payment.recipientName = offerer.name
+    payment.recipientSiren = offerer.siren
     payment_status = PaymentStatus()
     payment_status.status = TransactionStatus.PENDING
     payment.statuses = [payment_status]

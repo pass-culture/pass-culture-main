@@ -10,7 +10,6 @@ from flask import render_template
 from lxml import etree
 
 from domain.reimbursement import BookingReimbursement
-from models import Venue
 from models.payment import Payment
 from models.payment_status import TransactionStatus
 
@@ -20,9 +19,12 @@ class InvalidTransactionXML(Exception):
 
 
 class Transaction:
-    def __init__(self, creditor_iban: str, creditor_bic: str, end_to_end_id: UUID, amount: Decimal):
+    def __init__(self, creditor_iban: str, creditor_bic: str, creditor_name: str, creditor_siren: str,
+                 end_to_end_id: UUID, amount: Decimal):
         self.creditor_iban = creditor_iban
         self.creditor_bic = creditor_bic
+        self.creditor_name = creditor_name
+        self.creditor_siren = creditor_siren
         self.end_to_end_id = end_to_end_id
         self.amount = amount
 
@@ -36,16 +38,15 @@ def create_payment_for_booking(booking_reimbursement: BookingReimbursement) -> P
     venue = booking_reimbursement.booking.stock.resolvedOffer.venue
 
     if venue.iban:
-        payment.recipient = venue.name
         payment.iban = venue.iban
         payment.bic = venue.bic
     else:
         offerer = venue.managingOfferer
-        payment.recipient = offerer.name
         payment.iban = offerer.iban
         payment.bic = offerer.bic
 
-    payment.organisationRegistrationNumber = _find_siret_or_siren(venue)
+    payment.recipientName = venue.managingOfferer.name
+    payment.recipientSiren = venue.managingOfferer.siren
 
     if payment.iban:
         payment.setStatus(TransactionStatus.PENDING)
@@ -104,15 +105,5 @@ def _group_payments_into_transactions(payments: List[Payment], message_id: str) 
         for payment in payments_of_iban:
             payment.setTransactionIds(message_id, end_to_end_id)
 
-        transactions.append(Transaction(iban, bic, end_to_end_id, amount))
+        transactions.append(Transaction(iban, bic, payments_of_iban[0].recipientName, payments_of_iban[0].recipientSiren, end_to_end_id, amount))
     return transactions
-
-
-def _find_siret_or_siren(venue: Venue) -> str:
-    if venue.iban:
-        if venue.siret:
-            return venue.siret
-        else:
-            return venue.managingOfferer.siren
-    else:
-        return venue.managingOfferer.siren

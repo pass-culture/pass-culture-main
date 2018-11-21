@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from decimal import Decimal
 from io import BytesIO
+from pprint import pprint
 from unittest.mock import patch
 from uuid import UUID
 
@@ -68,62 +69,6 @@ def test_create_payment_for_booking_when_iban_is_on_venue_should_take_payment_in
     # then
     assert payment.iban == 'KD98765RFGHZ788'
     assert payment.bic == 'LOKIJU76'
-    assert payment.recipient == 'Test Venue'
-
-
-@pytest.mark.standalone
-def test_create_payment_for_booking_when_iban_is_on_venue_should_take_venue_siret_has_registration_number_if_it_has_one():
-    # given
-    user = create_user()
-    stock = create_stock(price=10, available=5)
-    booking = create_booking(user, stock=stock, quantity=1)
-    booking.stock.offer = Offer()
-    offerer = create_offerer(name='Test Offerer', iban='B135TGGEG532TG', bic='LAJR93')
-    booking.stock.offer.venue = create_venue(
-        offerer,
-        siret='12345678912345',
-        name='Test Venue',
-        iban='KD98765RFGHZ788',
-        bic='LOKIJU76'
-    )
-    booking.stock.offer.venue.managingOfferer = offerer
-    booking_reimbursement = BookingReimbursement(booking, ReimbursementRules.PHYSICAL_OFFERS, Decimal(10))
-
-    # when
-    payment = create_payment_for_booking(booking_reimbursement)
-
-    # then
-    assert payment.organisationRegistrationNumber == '12345678912345'
-
-
-@pytest.mark.standalone
-def test_create_payment_for_booking_when_iban_is_on_venue_should_take_offerer_siren_has_registration_number_if_venue_has_no_siret():
-    # given
-    user = create_user()
-    stock = create_stock(price=10, available=5)
-    booking = create_booking(user, stock=stock, quantity=1)
-    booking.stock.offer = Offer()
-    offerer = create_offerer(
-        name='Test Offerer',
-        siren='123456789',
-        iban='B135TGGEG532TG',
-        bic='LAJR93'
-    )
-    booking.stock.offer.venue = create_venue(
-        offerer,
-        siret=None,
-        name='Test Venue',
-        iban='KD98765RFGHZ788',
-        bic='LOKIJU76'
-    )
-    booking.stock.offer.venue.managingOfferer = offerer
-    booking_reimbursement = BookingReimbursement(booking, ReimbursementRules.PHYSICAL_OFFERS, Decimal(10))
-
-    # when
-    payment = create_payment_for_booking(booking_reimbursement)
-
-    # then
-    assert payment.organisationRegistrationNumber == '123456789'
 
 
 @pytest.mark.standalone
@@ -149,8 +94,31 @@ def test_create_payment_for_booking_when_no_iban_on_venue_should_take_payment_in
     # then
     assert payment.iban == 'CF13QSDFGH456789'
     assert payment.bic == 'QSDFGH8Z555'
-    assert payment.recipient == 'Test Offerer'
-    assert payment.organisationRegistrationNumber == '123456789'
+
+
+@pytest.mark.standalone
+def test_create_payment_for_booking_takes_recipient_name_and_siren_from_offerer():
+    # given
+    user = create_user()
+    stock = create_stock(price=10, available=5)
+    booking = create_booking(user, stock=stock, quantity=1)
+    booking.stock.offer = Offer()
+    offerer = create_offerer(
+        name='Test Offerer',
+        siren='123456789',
+        iban='CF13QSDFGH456789',
+        bic='QSDFGH8Z555'
+    )
+    booking.stock.offer.venue = create_venue(offerer, name='Test Venue', iban=None, bic=None)
+    booking.stock.offer.venue.managingOfferer = offerer
+    booking_reimbursement = BookingReimbursement(booking, ReimbursementRules.PHYSICAL_OFFERS, Decimal(10))
+
+    # when
+    payment = create_payment_for_booking(booking_reimbursement)
+
+    # then
+    assert payment.recipientName == 'Test Offerer'
+    assert payment.recipientSiren == '123456789'
 
 
 @pytest.mark.standalone
@@ -602,6 +570,39 @@ def test_generate_transaction_file_has_iban_in_credit_transfer_transaction_info(
     # Then
     assert find_all_nodes('//ns:PmtInf/ns:CdtTrfTxInf/ns:CdtrAcct/ns:Id/ns:IBAN', xml)[0] == 'CF13QSDFGH456789'
     assert find_all_nodes('//ns:PmtInf/ns:CdtTrfTxInf/ns:CdtrAcct/ns:Id/ns:IBAN', xml)[1] == 'FR14WXCVBN123456'
+
+
+@pytest.mark.standalone
+def test_generate_transaction_file_has_recipient_name_and_siren_in_creditor_info(app):
+    # Given
+    offerer1 = create_offerer(name='first offerer', iban='CF13QSDFGH456789', bic='QSDFGH8Z555', siren='123456789', idx=1)
+    offerer2 = create_offerer(name='second offerer', iban='FR14WXCVBN123456', bic='WXCVBN7B444',siren='987654321',  idx=2)
+    offerer3 = create_offerer(name='third offerer', iban=None, bic=None, idx=3)
+    user = create_user()
+    venue1 = create_venue(offerer1, idx=4)
+    venue2 = create_venue(offerer2, idx=5)
+    venue3 = create_venue(offerer3, idx=6)
+    stock1 = create_stock_from_offer(create_thing_offer(venue1))
+    stock2 = create_stock_from_offer(create_thing_offer(venue2))
+    stock3 = create_stock_from_offer(create_thing_offer(venue3))
+    booking1 = create_booking(user, stock1)
+    booking2 = create_booking(user, stock2)
+    booking3 = create_booking(user, stock3)
+
+    payments = [
+        create_payment(booking1, offerer1, Decimal(10), idx=7),
+        create_payment(booking2, offerer2, Decimal(20), idx=8),
+        create_payment(booking3, offerer3, Decimal(20), idx=9)
+    ]
+
+    # When
+    xml = generate_transaction_file(payments, 'BD12AZERTY123456', 'AZERTY9Q666', MESSAGE_ID, '0000')
+
+    # Then
+    assert find_all_nodes('//ns:PmtInf/ns:CdtTrfTxInf/ns:Cdtr/ns:Nm', xml)[0] == 'first offerer'
+    assert find_all_nodes('//ns:PmtInf/ns:CdtTrfTxInf/ns:Cdtr/ns:Id/ns:OrgId/ns:Othr/ns:Id', xml)[0] == '123456789'
+    assert find_all_nodes('//ns:PmtInf/ns:CdtTrfTxInf/ns:Cdtr/ns:Nm', xml)[1] == 'second offerer'
+    assert find_all_nodes('//ns:PmtInf/ns:CdtTrfTxInf/ns:Cdtr/ns:Id/ns:OrgId/ns:Othr/ns:Id', xml)[1] == '987654321'
 
 
 @pytest.mark.standalone

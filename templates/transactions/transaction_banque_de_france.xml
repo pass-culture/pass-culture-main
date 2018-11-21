@@ -8,13 +8,13 @@
             <CtrlSum>{{ total_amount }}</CtrlSum>
             <InitgPty>
                 <Nm>pass Culture</Nm>
-				<Id>
-					<OrgId>
-						<Othr>
-							<Id>{{ initiating_party_id }}</Id>
-						</Othr>
-					</OrgId>
-				</Id>
+                <Id>
+                    <OrgId>
+                        <Othr>
+                            <Id>{{ initiating_party_id }}</Id>
+                        </Othr>
+                    </OrgId>
+                </Id>
             </InitgPty>
         </GrpHdr>
         <PmtInf>
@@ -61,6 +61,16 @@
                         <BIC>{{ transaction.creditor_bic }}</BIC>
                     </FinInstnId>
                 </CdtrAgt>
+                <Cdtr>
+                    <Nm>{{ transaction.creditor_name }}</Nm>
+                    <Id>
+                        <OrgId>
+                            <Othr>
+                                <Id>{{ transaction.creditor_siren }}</Id>
+                            </Othr>
+                        </OrgId>
+                    </Id>
+                </Cdtr>
                 <CdtrAcct>
                     <Id>
                         <IBAN>{{ transaction.creditor_iban }}</IBAN>
