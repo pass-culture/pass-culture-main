@@ -23,7 +23,7 @@ const toRectoDraggableBounds = {
 }
 
 function getPageY(event) {
-  if (event instanceof TouchEvent) {
+  if (window.TouchEvent && event instanceof TouchEvent) {
     const lastTouchIndex = event.changedTouches.length - 1
     return event.changedTouches[lastTouchIndex].pageY
   }
