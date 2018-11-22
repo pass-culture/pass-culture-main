@@ -57,7 +57,7 @@ const routes = [
   },
   {
     component: SearchPage,
-    disabled: true,
+    // disabled: true,
     icon: 'search-w',
     path: '/recherche/:view(resultats)?/:categorie?',
     title: 'Recherche',

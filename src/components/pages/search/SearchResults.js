@@ -1,10 +1,11 @@
 import classnames from 'classnames'
 import React from 'react'
-import { InfiniteScroller } from 'pass-culture-shared'
+import InfiniteScroll from 'react-infinite-scroller'
 import PropTypes from 'prop-types'
 
 import SearchResultItem from './SearchResultItem'
 import { searchResultsTitle } from './utils'
+import Spinner from '../../layout/Spinner'
 
 const SearchResults = ({
   items,
@@ -30,10 +31,14 @@ const SearchResults = ({
       >
         {resultTitle}
       </h2>
-      <InfiniteScroller handleLoadMore={loadMoreHandler}>
+      <InfiniteScroll
+        loadMore={loadMoreHandler}
+        loader={<Spinner />}
+        pageStart={0}
+      >
         {items &&
           items.map(o => <SearchResultItem key={o.id} recommendation={o} />)}
-      </InfiniteScroller>
+      </InfiniteScroll>
     </div>
   )
 }
