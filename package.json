@@ -52,6 +52,7 @@
     "react-final-form": "^3.6.5",
     "react-helmet": "^5.2.0",
     "react-icons": "^2.2.7",
+    "react-infinite-scroller": "^1.2.2",
     "react-markdown": "^3.4.1",
     "react-moment-proptypes": "^1.6.0",
     "react-portal": "^4.1.5",
