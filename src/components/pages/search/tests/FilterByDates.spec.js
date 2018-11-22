@@ -1,19 +1,39 @@
-import configureStore from 'redux-mock-store'
-import { Provider } from 'react-redux'
 import React from 'react'
 import { shallow } from 'enzyme'
 
 import FilterByDates from '../FilterByDates'
 import { TODAY_DATE } from '../utils'
 
-const middlewares = []
-const mockStore = configureStore(middlewares)
+const filterActionsAdd = jest.fn()
+const filterActionsChange = jest.fn()
+const filterActionsRemove = jest.fn()
+const filterActionsReplace = jest.fn()
+
+const initialProps = {
+  filterActions: {
+    add: filterActionsAdd,
+    change: filterActionsChange,
+    remove: filterActionsRemove,
+    replace: filterActionsReplace,
+  },
+  filterState: {
+    isNew: false,
+    query: {
+      categories: null,
+      date: null,
+      distance: null,
+      jours: null,
+      latitude: null,
+      longitude: null,
+      'mots-cles': null,
+      orderBy: 'offer.id+desc',
+    },
+  },
+  title: 'Fake title',
+}
 
 describe('src | components | pages | search | FilterByDates', () => {
-  const filterActionsAdd = jest.fn()
-  const filterActionsChange = jest.fn()
-  const filterActionsRemove = jest.fn()
-  const filterActionsReplace = jest.fn()
+
 
   const filterActions = {
     add: filterActionsAdd,
@@ -23,21 +43,9 @@ describe('src | components | pages | search | FilterByDates', () => {
   }
   describe('snapshot', () => {
     it('should match snapshot', () => {
-      // given
-      const initialState = {}
-      const store = mockStore(initialState)
-      const props = {
-        filterActions,
-        filterState: {},
-        title: 'Fake title',
-      }
 
       // when
-      const wrapper = shallow(
-        <Provider store={store}>
-          <FilterByDates {...props} />
-        </Provider>
-      )
+      const wrapper = shallow(<FilterByDates {...initialProps} />)
 
       // then
       expect(wrapper).toBeDefined()
@@ -45,6 +53,10 @@ describe('src | components | pages | search | FilterByDates', () => {
     })
   })
   describe('functions ', () => {
+
+    // WE ADD THE DATE AT THE FIRST DAYS SEGMENTS CLICKED
+    // WE REMOVE THE DATE AT THE LAST DAYS SEGMENTS CLICKED
+
     describe('onPickedDateChange', () => {
       describe('when a date is picked', () => {
         it('should call change function with good parameters', () => {

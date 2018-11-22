@@ -23,9 +23,6 @@ class FilterByDates extends PureComponent {
 
     const isdayAlreadyChecked = daysInUrlParams.includes(day)
 
-    // WE ADD THE DATE AT THE FIRST DAYS SEGMENTS CLICKED
-    // WE REMOVE THE DATE AT THE LAST DAYS SEGMENTS CLICKED
-
     let callback
 
     if (!get(daysInUrlParams, 'length')) {
