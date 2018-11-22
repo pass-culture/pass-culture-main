@@ -29,28 +29,18 @@ class FilterByDates extends PureComponent {
     let callback
 
     if (!get(daysInUrlParams, 'length')) {
-      console.log(
-        '%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% NO DAYS LENGHTS  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%',
-        !get(daysInUrlParams, 'length')
-      )
-
       const date = moment(moment.now()).toISOString()
       callback = () => filterActions.change({ date })
       // Change valeur de callBack
     } else if (isdayAlreadyChecked && daysInUrlParams.split(',').length === 1) {
-      console.log('%%%%%% OTHER CASE%%%%%%%%%%%%%%%%')
       callback = () => filterActions.change({ date: null })
       // Change valeur de callBack
     }
 
     if (isdayAlreadyChecked) {
-      console.log('||||||||| isAlreadyIncluded ||||||||||')
-
       filterActions.remove('jours', day, callback)
       return
     }
-
-    console.log('||||||||| ELSE CASE ||||||||||')
     filterActions.add('jours', day, callback)
   }
 

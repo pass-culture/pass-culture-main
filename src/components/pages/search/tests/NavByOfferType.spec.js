@@ -48,18 +48,4 @@ describe('src | components | pages | NavByOfferType', () => {
       expect(wrapper).toMatchSnapshot()
     })
   })
-
-  describe('functions', () => {
-    describe('onClick', () => {
-      describe('///////////// TODO TODO', () => {
-        describe('///////////// TODO TODO', () => {
-          it('should call change function with good parameters', () => {
-            // given
-            // when
-            // then
-          })
-        })
-      })
-    })
-  })
 })

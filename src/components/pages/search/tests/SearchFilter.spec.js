@@ -183,9 +183,5 @@ describe('src | components | pages | search | SearchFilter', () => {
         expect(updatedFormState).toEqual(false)
       })
     })
-
-    // handleQueryChange
-    // handleQueryAdd
-    // handleQueryRemove
   })
 })

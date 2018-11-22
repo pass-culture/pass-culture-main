@@ -6,7 +6,6 @@ const createMailToLink = (email, headers) => {
     const params = queryString.stringify(headers)
     link = `${link}?${params}`
   }
-  console.log('LINK', link)
   return link
 }
 
