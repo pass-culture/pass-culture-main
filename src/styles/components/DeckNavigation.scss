@@ -37,7 +37,7 @@
 
 
 
-  .button.after img, .button.before img {
+  .button.after, .button.before {
     position: relative;
     z-index: $zindex-navigation-arrows;
   }
