@@ -15,6 +15,7 @@ import Signup from '../components/pages/Signup'
 import Terms from '../components/pages/Terms'
 import Venue from '../components/pages/Venue'
 import LostPassword from '../components/pages/LostPassword'
+import SignupValidation from '../components/pages/SignupValidation'
 
 // NOTE: routes are sorted by PATH alphabetical order
 const routes = [
@@ -44,8 +45,13 @@ const routes = [
   },
   {
     component: Signup,
-    path: '/inscription',
+    path: '/inscription/(confirmation)?',
     title: 'Inscription',
+  },
+  {
+    component: SignupValidation,
+    path: '/inscription/validation/:token',
+    title: 'Validation de votre inscription',
   },
   {
     component: Terms,

@@ -2,14 +2,14 @@ import { Role } from 'testcafe'
 
 import { ROOT_PATH } from '../../src/utils/config'
 
-import { offererUser0, adminUser0 } from './users'
+import { validatedOffererUser, adminUser0 } from './users'
 
-export const regularOfferer = Role(
+export const validatedOffererUserRole = Role(
   ROOT_PATH + 'connexion',
   async t => {
     await t
-      .typeText('#user-identifier', offererUser0.email)
-      .typeText('#user-password', offererUser0.password)
+      .typeText('#user-identifier', validatedOffererUser.email)
+      .typeText('#user-password', validatedOffererUser.password)
 
       .click('button.button.is-primary')
 

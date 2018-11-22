@@ -1,6 +1,6 @@
 import { Selector } from 'testcafe'
 
-import { regularOfferer } from './helpers/roles'
+import { validatedOffererUserRole } from './helpers/roles'
 
 const activationMessage = Selector('#offerer-item-validation')
 const arrow = Selector('.caret a')
@@ -16,7 +16,7 @@ const subTitleHeader = Selector('h2')
 
 fixture`03_01 OfferersPage | Je me connecte pour la première fois en tant que nouvel utilisateur·ice`.beforeEach(
   async t => {
-    await t.useRole(regularOfferer)
+    await t.useRole(validatedOffererUserRole)
     // le userRole a l'option preserveUrl: true donc le test commence sur la page /offres
   }
 )
@@ -28,7 +28,7 @@ test("J'arrive sur la page /offres après m'être connecté·e", async t => {
 fixture`03_02 OfferersPage | Voir la liste de mes structures`.beforeEach(
   async t => {
     await t
-      .useRole(regularOfferer)
+      .useRole(validatedOffererUserRole)
       .click(navbarLink)
       .click(offerersNavbarLink)
   }
@@ -40,11 +40,11 @@ test("La structure qui vient d'être créée est en attente de validation", asyn
     .eql("Structure en cours de validation par l'équipe Pass Culture.")
 })
 
-test("Je peux voir les détails d'une structure (THEATRE NATIONAL DE CHAILLOT)", async t => {
+test("Je peux voir les détails d'une structure", async t => {
   await t.click(firstArrow)
   const location = await t.eval(() => window.location)
   await t.expect(location.pathname).match(/\/structures\/([A-Z0-9]*)$/)
-  await t.expect(subTitleHeader.innerText).eql('THEATRE NATIONAL DE CHAILLOT')
+  await t.expect(subTitleHeader.exists).ok()
 })
 
 test('Je peux rattacher une nouvelle structure', async t => {

@@ -1,6 +1,7 @@
 import { Selector } from 'testcafe'
 
-import { regularOfferer } from './helpers/roles'
+import { validatedOffererUserRole } from './helpers/roles'
+import { OFFERER_WITH_NO_PHYSICAL_VENUE } from './helpers/offerers'
 
 const adressInput = Selector('#venue-address')
 const backAnchor = Selector('a.back-button')
@@ -20,7 +21,7 @@ const postalCodeInput = Selector('#venue-postalCode')
 const notificationError = Selector('.notification.is-danger')
 const notificationSuccess = Selector('.notification.is-success')
 const offererButton = Selector("a[href^='/structures/']").withText(
-  'THEATRE NATIONAL DE CHAILLOT'
+  OFFERER_WITH_NO_PHYSICAL_VENUE.name
 )
 const siretInput = Selector('#venue-siret')
 const commentInput = Selector('#venue-comment')
@@ -28,7 +29,7 @@ const offerersNavbarAnchor = Selector("a.navbar-item[href='/structures']")
 const siretInputError = Selector('#venue-siret-error')
 const submitButton = Selector('button.button.is-primary') //créer un lieu
 const updateAnchor = Selector('a.button.is-secondary') //modifier un lieu
-const venueAnchor = Selector('#a-theatre-national-de-chaillot')
+const venueAnchor = Selector(OFFERER_WITH_NO_PHYSICAL_VENUE.venueAnchor)
 const venueMarker = Selector('img.leaflet-marker-icon')
 
 async function endCreation(t) {
@@ -52,7 +53,7 @@ async function endCreation(t) {
 
 fixture`05_01 VenuePage | Créer un nouveau lieu avec succès`
 test('Je rentre une nouveau lieu via son siret avec succès', async t => {
-  await t.useRole(regularOfferer)
+  await t.useRole(validatedOffererUserRole)
   // le userRole a l'option preserveUrl: true donc le test commence sur la page /offres
 
   // navigation
@@ -60,29 +61,34 @@ test('Je rentre une nouveau lieu via son siret avec succès', async t => {
     .click(navbarAnchor)
     .click(offerersNavbarAnchor)
     .click(offererButton)
-
     .click(newVenueAnchor)
 
   // input
-  // WATCH WE ENTER AN OTHER SIRET THAN THE FIRST CHAILLOT ONE '69203951400017'
-  // to be sure to have one different
-  await t.typeText(siretInput, '69203951400033')
+  await t.typeText(siretInput, OFFERER_WITH_NO_PHYSICAL_VENUE.siret)
 
   // check other completed fields
-  await t.expect(nameInput.value).eql('THEATRE NATIONAL DE CHAILLOT')
-  await t.expect(adressInput.value).eql('32 AVENUE GEORGES GUYNEMER')
-  await t.expect(postalCodeInput.value).eql('94550')
-  await t.expect(cityInput.value).eql('CHEVILLY LARUE')
-  await t.expect(latitudeInput.value).eql('48.765134')
-  await t.expect(longitudeInput.value).eql('2.338438')
-  await t.expect(venueMarker.getAttribute('alt')).eql('48.765134-2.338438')
+  await t.expect(nameInput.value).eql(OFFERER_WITH_NO_PHYSICAL_VENUE.name)
+  await t.expect(adressInput.value).eql(OFFERER_WITH_NO_PHYSICAL_VENUE.adress)
+  await t
+    .expect(postalCodeInput.value)
+    .eql(OFFERER_WITH_NO_PHYSICAL_VENUE.postalCode)
+  await t.expect(cityInput.value).eql(OFFERER_WITH_NO_PHYSICAL_VENUE.city)
+  await t
+    .expect(latitudeInput.value)
+    .eql(OFFERER_WITH_NO_PHYSICAL_VENUE.latitude)
+  await t
+    .expect(longitudeInput.value)
+    .eql(OFFERER_WITH_NO_PHYSICAL_VENUE.longitude)
+  await t
+    .expect(venueMarker.getAttribute('alt'))
+    .eql(OFFERER_WITH_NO_PHYSICAL_VENUE.venueMarker)
 
   await endCreation(t)
 })
 
 fixture`05_02 VenuePage | Je ne peux pas créer de lieu, j'ai des erreurs`.beforeEach(
   async t => {
-    await t.useRole(regularOfferer)
+    await t.useRole(validatedOffererUserRole)
 
     // navigation
     await t
@@ -96,7 +102,7 @@ fixture`05_02 VenuePage | Je ne peux pas créer de lieu, j'ai des erreurs`.befor
 
 test('Une entrée avec cet identifiant existe déjà', async t => {
   // input
-  await t.typeText(siretInput, '69203951400033')
+  await t.typeText(siretInput, OFFERER_WITH_NO_PHYSICAL_VENUE.siret)
 
   // create venue
   await t.click(submitButton)
@@ -167,14 +173,13 @@ test("Le siret n'est pas valide", async t => {
 
 fixture`05_03 VenuePage |  Component | Je suis sur la page de détail du lieu`.beforeEach(
   async t => {
-    await t.useRole(regularOfferer)
+    await t.useRole(validatedOffererUserRole)
 
     // navigation
     await t
       .click(navbarAnchor)
       .click(offerersNavbarAnchor)
       .click(offererButton)
-
       .click(venueAnchor)
   }
 )
@@ -188,7 +193,7 @@ test('Je vois les détails du lieu', async t => {
     .expect(location.pathname)
     .match(/\/structures\/([A-Z0-9]*)$/)
     .expect(venueAnchor.innerText)
-    .eql('THEATRE NATIONAL DE CHAILLOT')
+    .eql(OFFERER_WITH_NO_PHYSICAL_VENUE.name)
 })
 
 test('Je peux modifier le lieu', async t => {
@@ -201,7 +206,7 @@ const addressInput = Selector('#venue-address')
 const addressSuggestion = Selector('.geo-input .menu .item')
 fixture`05_04 VenuePage | Créer un nouveau lieu sans SIRET`
 test('Je rentre une nouveau lieu sans siret avec succès', async t => {
-  await t.useRole(regularOfferer)
+  await t.useRole(validatedOffererUserRole)
   // navigation
   await t
     .click(navbarAnchor)

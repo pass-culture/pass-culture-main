@@ -1,5 +1,5 @@
 import { Selector } from 'testcafe'
-import { regularOfferer } from './helpers/roles'
+import { validatedOffererUserRole } from './helpers/roles'
 
 async function trimed(selector, lol) {
   return await selector.innerText.then(value => value.trim())
@@ -12,7 +12,7 @@ const offerActivSwitchText = () => trimed(Selector('.offer-item .activ-switch'))
 fixture`061_01 OfferList | Lister les offres`
 
 test("Lorsque je cliques sur `Mes offres`, j'accès de à la liste des offres", async t => {
-  await t.useRole(regularOfferer).click(offerListLink)
+  await t.useRole(validatedOffererUserRole).click(offerListLink)
 
   const location = await t.eval(() => window.location)
   let value

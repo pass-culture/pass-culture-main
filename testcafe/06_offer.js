@@ -1,6 +1,7 @@
 import { Selector } from 'testcafe'
 
-import { regularOfferer } from './helpers/roles'
+import { validatedOffererUserRole } from './helpers/roles'
+import { OFFERER_WITH_PHYSICAL_VENUE } from './helpers/offerers'
 
 const cancelAnchor = Selector('button.button').withText('Annuler')
 const createOfferAnchor = Selector("a[href^='/offres/nouveau']")
@@ -10,11 +11,11 @@ const navbarAnchor = Selector(
   'a.navbar-link, span.navbar-burger'
 ).filterVisible()
 const offererAnchor = Selector("a[href^='/structures/']").withText(
-  'THEATRE NATIONAL DE CHAILLOT'
+  OFFERER_WITH_PHYSICAL_VENUE.name
 )
 const offererInput = Selector('#offer-offererId')
 const offererOption = Selector('option').withText(
-  'THEATRE NATIONAL DE CHAILLOT'
+  OFFERER_WITH_PHYSICAL_VENUE.name
 )
 const offerersNavbarLink = Selector("a.navbar-item[href='/structures']")
 const priceInput = Selector('#stock-price')
@@ -22,13 +23,13 @@ const stockBookingLimitDatetimeInput = Selector('#stock-bookingLimitDatetime')
 const scheduleCloseButton = Selector('button.button').withText('Fermer')
 const scheduleSubmitButton = Selector('button.button.submitStep')
 const venueAnchor = Selector("a[href^='/structures/']").withText(
-  'THEATRE NATIONAL DE CHAILLOT'
+  OFFERER_WITH_PHYSICAL_VENUE.venueName
 )
 
 fixture`06_01 OfferPage | Naviguer vers creer une offre`
 
 test("Lorsque je clique sur le bouton créer une offre sur la page des offres, j'accède au formulaire de création d'offre", async t => {
-  await t.useRole(regularOfferer).click(createOfferAnchor)
+  await t.useRole(validatedOffererUserRole).click(createOfferAnchor)
 
   const location = await t.eval(() => window.location)
   await t.expect(location.pathname).eql('/offres/nouveau')
@@ -36,7 +37,7 @@ test("Lorsque je clique sur le bouton créer une offre sur la page des offres, j
 
 test("Lorsque je clique sur le bouton créer une offre sur la page d'un lieu, j'accède au formulaire de création d'offre, et je peux revenir avec le bouton annuler", async t => {
   await t
-    .useRole(regularOfferer)
+    .useRole(validatedOffererUserRole)
     .click(navbarAnchor)
     .click(offerersNavbarLink)
     .click(offererAnchor)
@@ -48,7 +49,7 @@ test("Lorsque je clique sur le bouton créer une offre sur la page d'un lieu, j'
 })
 
 test('Lorsque je clique sur le bouton annuler une offre sur la page des offres, je reviens aux offres', async t => {
-  await t.useRole(regularOfferer).click(createOfferAnchor)
+  await t.useRole(validatedOffererUserRole).click(createOfferAnchor)
   await t.click(cancelAnchor)
   const location = await t.eval(() => window.location)
   await t.expect(location.pathname).eql('/offres')
@@ -72,13 +73,13 @@ const addScheduleAnchor = Selector('#add-occurrence-or-stock')
 fixture`06_02 OfferPage | Créer une nouvelle offre événement`
 
 test('Je peux créer une offre événement', async t => {
-  await t.useRole(regularOfferer).click(createOfferAnchor)
+  await t.useRole(validatedOffererUserRole).click(createOfferAnchor)
   await t.typeText(nameInput, 'Rencontre avec Franck Lepage')
   await t
     .click(typeInput)
     .click(typeOption.withText('Conférence — Débat — Dédicace'))
     .click(venueInput)
-    .click(venueOption.withText('THEATRE NATIONAL DE CHAILLOT'))
+    .click(venueOption.withText(OFFERER_WITH_PHYSICAL_VENUE.venueName))
   await t.click(offererInput).click(offererOption)
   await t.typeText(durationMinutesInput, '120')
   await t.typeText(
@@ -106,7 +107,7 @@ test('Je peux créer une offre événement', async t => {
 })
 
 test("Je peux créer une occurence d'événement", async t => {
-  await t.useRole(regularOfferer)
+  await t.useRole(validatedOffererUserRole)
 
   const editOfferAnchor = Selector('.event a.edit-link:first-child')
   const manageStockAnchor = Selector('a.manage-stock')
@@ -132,7 +133,7 @@ test("Je peux créer une occurence d'événement", async t => {
 })
 
 test('Je peux créer une autre occurence', async t => {
-  await t.useRole(regularOfferer)
+  await t.useRole(validatedOffererUserRole)
 
   const editOfferAnchor = Selector('a.edit-link:first-child')
   const manageStockAnchor = Selector('a.manage-stock')
@@ -151,7 +152,7 @@ test('Je peux créer une autre occurence', async t => {
 })
 
 test('Je peux créer une occurence en utilisant la touche Entrée', async t => {
-  await t.useRole(regularOfferer)
+  await t.useRole(validatedOffererUserRole)
 
   const editOfferAnchor = Selector('.event a.edit-link:first-child')
   const manageStockAnchor = Selector('a.manage-stock')
@@ -175,7 +176,7 @@ test('Je peux créer une occurence en utilisant la touche Entrée', async t => {
 
 test('Je peux interrompre la saisie en utilisant la touche Escape', async t => {
   // Given
-  await t.useRole(regularOfferer)
+  await t.useRole(validatedOffererUserRole)
   const editOfferAnchor = Selector('.event a.edit-link:first-child')
   const manageStockAnchor = Selector('a.manage-stock')
 
@@ -203,7 +204,7 @@ test('Je peux interrompre la saisie en utilisant la touche Escape', async t => {
 
 test('Je peux femer la fenêtre en utilisant la touche Escape', async t => {
   // Given
-  await t.useRole(regularOfferer)
+  await t.useRole(validatedOffererUserRole)
   const editOfferAnchor = Selector('.event a.edit-link:first-child')
   const manageStockAnchor = Selector('a.manage-stock')
 
@@ -223,7 +224,7 @@ test('Je peux femer la fenêtre en utilisant la touche Escape', async t => {
 })
 
 test('Je peux modifier une occurence', async t => {
-  await t.useRole(regularOfferer)
+  await t.useRole(validatedOffererUserRole)
 
   const editOfferAnchor = Selector('.event a.edit-link:first-child')
   const manageStockAnchor = Selector('a.manage-stock')
@@ -264,7 +265,7 @@ fixture`06_02 OfferPage | Créer une nouvelle offre avec type et sous-type`
 
 test('Je peux créer une offre avec type et sous-type', async t => {
   await t
-    .useRole(regularOfferer)
+    .useRole(validatedOffererUserRole)
     .click(createOfferAnchor)
     .typeText(nameInput, 'Concert de PNL Unplugged')
     .click(typeInput)
@@ -274,7 +275,7 @@ test('Je peux créer une offre avec type et sous-type', async t => {
     .click(musicSubTypeInput)
     .click(musicSubTypeOption.withText('Rap Alternatif'))
     .click(venueInput)
-    .click(venueOption.withText('THEATRE NATIONAL DE CHAILLOT'))
+    .click(venueOption.withText(OFFERER_WITH_PHYSICAL_VENUE.venueName))
     .click(offererInput)
     .click(offererOption)
     .typeText(durationMinutesInput, '90')
@@ -315,7 +316,7 @@ fixture`06_03 OfferPage | Créer une nouvelle offre numérique`
 
 test('Je peux créer une offre numérique', async t => {
   await t
-    .useRole(regularOfferer)
+    .useRole(validatedOffererUserRole)
     .click(navbarAnchor)
     .click(structuresLink)
   await t.click(createVirtualOfferAnchor)

@@ -186,4 +186,29 @@
       width: 50%;
     }
   }
+
+  .information-text {
+    display: flex;
+    align-items: flex-start;
+    flex-direction: row;
+    margin-top: 36px;
+
+    img {
+      height: 1rem;
+      margin-right: 6px;
+      margin-top: 3px;
+    }
+
+    p {
+      color: $grey-darkest;
+      font-size: 13px;
+      line-height: 16px;
+      text-align: justify;
+
+      a {
+        color: inherit;
+        text-decoration: underline;
+      }
+    }
+  }
 }

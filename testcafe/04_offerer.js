@@ -1,6 +1,7 @@
 import { Selector } from 'testcafe'
 
-import { regularOfferer } from './helpers/roles'
+import { validatedOffererUserRole } from './helpers/roles'
+import { OFFERER_WITH_NO_PHYSICAL_VENUE } from './helpers/offerers'
 
 const adressInput = Selector('input#offerer-address')
 const nameInput = Selector('input#offerer-name')
@@ -20,7 +21,7 @@ const submitButton = Selector('button.button.is-primary') //connexion
 fixture`04_01 OffererPage | Créer une nouvelle structure`.beforeEach(
   async t => {
     await t
-      .useRole(regularOfferer)
+      .useRole(validatedOffererUserRole)
       // le userRole a l'option preserveUrl: true donc le test commence sur la page /offres
       .click(navbarAnchor)
       .click(offerersNavbarLink)
@@ -53,7 +54,7 @@ test('Je ne peux pas ajouter de nouvelle structure ayant un siren déjà existan
     .eql('/structures/nouveau')
 
     // input
-    .typeText(sirenInput, '692 039 514')
+    .typeText(sirenInput, OFFERER_WITH_NO_PHYSICAL_VENUE.siren)
 
   // submit
   await t.click(submitButton)

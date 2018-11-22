@@ -1,6 +1,6 @@
 import { Selector } from 'testcafe'
 
-import { regularOfferer } from './helpers/roles'
+import { validatedOffererUserRole } from './helpers/roles'
 
 const addMediationAnchor = Selector('a.button').withText('Ajouter une accroche')
 const creditInput = Selector('#mediation-credit')
@@ -17,7 +17,7 @@ fixture`07_01 MediationPage | Naviguer vers ajouter une accroche`
 
 test("Lorsque je clique sur le bouton créer une accroche sur la page d'une offre, j'accède au formulaire de création d'une accroche", async t => {
   await t
-    .useRole(regularOfferer)
+    .useRole(validatedOffererUserRole)
     .click(editOfferAnchor)
 
     .click(addMediationAnchor)
@@ -30,7 +30,7 @@ test("Lorsque je clique sur le bouton créer une accroche sur la page d'une offr
 
 test('Je peux charger une image same origin', async t => {
   await t
-    .useRole(regularOfferer)
+    .useRole(validatedOffererUserRole)
     .click(editOfferAnchor)
 
     .click(addMediationAnchor)
@@ -45,7 +45,7 @@ test('Je peux charger une image same origin', async t => {
 
 test('Je peux charger une cors image', async t => {
   await t
-    .useRole(regularOfferer)
+    .useRole(validatedOffererUserRole)
     .click(editOfferAnchor)
 
     .click(addMediationAnchor)
@@ -63,7 +63,7 @@ test('Je peux charger une cors image', async t => {
 
 test('Je peux changer d image chargee', async t => {
   await t
-    .useRole(regularOfferer)
+    .useRole(validatedOffererUserRole)
     .click(editOfferAnchor)
 
     .click(addMediationAnchor)
@@ -85,7 +85,7 @@ test('Je peux changer d image chargee', async t => {
 
 test('Je peux creer une accroche', async t => {
   await t
-    .useRole(regularOfferer)
+    .useRole(validatedOffererUserRole)
     .click(editOfferAnchor)
 
     .click(addMediationAnchor)
