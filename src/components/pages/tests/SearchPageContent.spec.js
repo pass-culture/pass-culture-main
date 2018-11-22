@@ -60,6 +60,104 @@ describe('src | components | pages | SearchPageContentContent', () => {
     })
   })
 
+  describe('render', () => {
+    describe('SearchFilter', () => {
+      describe('When arriving on page search', () => {
+        it('should be invisible', () => {
+          // when
+          const wrapper = shallow(<SearchPageContent {...initialProps} />)
+          const searchFilterComponent = wrapper.find('SearchFilter')
+
+          // then
+          expect(searchFilterComponent.props().isVisible).toEqual(false)
+        })
+      })
+      describe('when state isFilterVisible is setted to true ', () => {
+        it('should be visible', () => {
+          // when
+          const wrapper = shallow(<SearchPageContent {...initialProps} />)
+          const wrapperInstance = wrapper.instance()
+          wrapperInstance.setState({ isFilterVisible: true })
+
+          const searchFilterComponent = wrapper.find('SearchFilter')
+
+          // then
+          expect(searchFilterComponent.props().isVisible).toEqual(true)
+        })
+      })
+
+      // Bouton recherchre avec props disabled si !isOneCharInKeywords
+      // Close button // wrapper.props().closeSearchButton
+      // console.log('|||||| Wrapper Props', wrapper.props().backButton);
+      // pageTitle={searchPageTitle}
+
+      // describe('render', () => {
+
+      //   })
+      // })
+      // Titre de la page selon s'il y a des recommendations ou pas.
+      // pageTitle={searchPageTitle}
+    })
+  })
+
+  describe('Switch Route', () => {
+    it('NavByOfferType with path="/recherche"', () => {
+      // when
+      const wrapper = shallow(<SearchPageContent {...initialProps} />)
+      const switchRouteComponent = wrapper.find('Route')
+      const NavByOfferTypeComponent = switchRouteComponent
+        .at(0)
+        .props()
+        .render()
+
+      // then
+      expect(NavByOfferTypeComponent.props.title).toEqual('PAR CATÉGORIES')
+    })
+    it('NavResultsHeader & SearchResults with path="/recherche/resultats/:categorie"', () => {
+      // given
+      initialProps.pagination.windowQueryString =
+        'categories=Jouer&orderBy=offer.id+desc'
+      initialProps.pagination.windowQuery.categories = 'Jouer'
+      initialProps.pagination.windowQuery['mots-cles'] = 'Fake'
+
+      // when
+      const wrapper = shallow(<SearchPageContent {...initialProps} />)
+      const switchRouteComponent = wrapper.find('Route')
+      const NavResultsHeaderComponent = switchRouteComponent
+        .at(1)
+        .props()
+        .render()[0]
+      const SearchResultsComponent = switchRouteComponent
+        .at(1)
+        .props()
+        .render()[1]
+
+      // then
+      expect(NavResultsHeaderComponent.props.category).toEqual('Jouer')
+      expect(SearchResultsComponent.props.keywords).toEqual('Fake')
+      expect(SearchResultsComponent.props.withNavigation).toEqual(true)
+    })
+    it('SearchResults with path="/recherche/resultats"', () => {
+      // given
+      initialProps.pagination.windowQueryString =
+        'categories=Jouer&orderBy=offer.id+desc'
+
+      // when
+      const wrapper = shallow(<SearchPageContent {...initialProps} />)
+      const switchRouteComponent = wrapper.find('Route')
+      const SearchResultsComponent = switchRouteComponent
+        .at(2)
+        .props()
+        .render()
+
+      // then
+      expect(SearchResultsComponent.props.pagination.windowQueryString).toEqual(
+        'categories=Jouer&orderBy=offer.id+desc'
+      )
+      expect(SearchResultsComponent.props.withNavigation).toEqual(false)
+    })
+  })
+
   describe('functions', () => {
     describe('constructor', () => {
       it('should initialize state correctly', () => {
@@ -454,20 +552,5 @@ describe('src | components | pages | SearchPageContentContent', () => {
         })
       })
     })
-
-    // Bouton recherchre avec props disabled si !isOneCharInKeywords
-    // Close button // wrapper.props().closeSearchButton
-    // console.log('|||||| Wrapper Props', wrapper.props().backButton);
-    // pageTitle={searchPageTitle}
-
-    // describe('render', () => {
-    //   describe('SearchFilter', () => {
-    //     it('should be visible', () => {
-    //
-    //     })
-    //   })
-    // })
   })
-
-  // Titre de la page selon s'il y a des recommendations ou pas.
 })
