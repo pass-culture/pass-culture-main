@@ -235,7 +235,7 @@ def test_patch_stock_putting_wrong_type_on_available_returns_status_code_400_and
 
     # Then
     assert response.status_code == 400
-    assert response.json()['available'] == ['Caractère interdit']
+    assert response.json()['available'] == ['Saisissez un nombre valide']
 
 
 @clean_database

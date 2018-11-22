@@ -65,6 +65,7 @@ def invalid_id_for_dehumanize_error(error):
 @app.errorhandler(DecimalCastError)
 def invalid_data_format(error):
     api_errors = ApiErrors()
+    app.logger.warning(json.dumps(error.errors))
     for field in error.errors.keys():
-        api_errors.addError(field, 'Caractère interdit')
+        api_errors.addError(field, 'Saisissez un nombre valide')
     return jsonify(api_errors.errors), 400
