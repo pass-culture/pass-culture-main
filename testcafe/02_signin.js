@@ -25,12 +25,23 @@ test("Lorsque l'un des deux champs est manquant, le bouton connexion est desacti
   await t.expect(signInButton.hasAttribute('disabled')).ok()
 })
 
-test("J'ai un compte valide, je suis redirigé·e vers la page /offres sans erreurs", async t => {
+test("J'ai un compte valide, en cliquant sur 'se connecter' je suis redirigé·e vers la page /offres sans erreurs", async t => {
   await t
     .typeText(inputUsersIdentifier, offererUser0.email)
     .typeText(inputUsersPassword, offererUser0.password)
 
     .click(signInButton)
+
+  const location = await t.eval(() => window.location)
+  await t.expect(location.pathname).eql('/offres')
+  await t.expect(pageTitle.innerText).eql('Vos offres')
+})
+
+test("J'ai un compte valide, en appuyant sur la touche 'Entrée' je suis redirigé·e vers la page /offres sans erreurs", async t => {
+  await t
+    .typeText(inputUsersIdentifier, offererUser.email)
+    .typeText(inputUsersPassword, offererUser.password)
+    .pressKey('Enter')
 
   const location = await t.eval(() => window.location)
   await t.expect(location.pathname).eql('/offres')
