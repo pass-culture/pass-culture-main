@@ -1,6 +1,5 @@
 import React from 'react'
 import { shallow } from 'enzyme'
-import { Icon } from 'pass-culture-shared'
 
 import SearchPageContent from '../SearchPageContent'
 
@@ -61,6 +60,21 @@ describe('src | components | pages | SearchPageContentContent', () => {
   })
 
   describe('render', () => {
+    describe('Main', () => {
+      describe('Home', () => {
+        const wrapper = shallow(<SearchPageContent {...initialProps} />)
+        const button = wrapper.find('button').at(0)
+        it('should render the page title', () => {
+          expect(wrapper.props().pageTitle).toEqual('Recherche')
+        })
+        it('contains a closeSearchButton', () => {
+          expect(wrapper.props().closeSearchButton).toEqual(true)
+        })
+        it('submitButton form is disabled', () => {
+          expect(button.props().disabled).toEqual(true)
+        })
+      })
+    })
     describe('SearchFilter', () => {
       describe('When arriving on page search', () => {
         it('should be invisible', () => {
@@ -86,16 +100,8 @@ describe('src | components | pages | SearchPageContentContent', () => {
         })
       })
 
-      // Bouton recherchre avec props disabled si !isOneCharInKeywords
       // Close button // wrapper.props().closeSearchButton
       // console.log('|||||| Wrapper Props', wrapper.props().backButton);
-      // pageTitle={searchPageTitle}
-
-      // describe('render', () => {
-
-      //   })
-      // })
-      // Titre de la page selon s'il y a des recommendations ou pas.
       // pageTitle={searchPageTitle}
     })
   })
@@ -487,7 +493,7 @@ describe('src | components | pages | SearchPageContentContent', () => {
         const wrapper = shallow(<SearchPageContent {...initialProps} />)
         const toogleIcon = wrapper
           .find('#search-filter-menu-toggle-button')
-          .find(Icon)
+          .find('Icon')
 
         it('should show ico-filter', () => {
           expect(toogleIcon.props('svg')).toEqual({ svg: 'ico-filter' })
@@ -528,7 +534,7 @@ describe('src | components | pages | SearchPageContentContent', () => {
             .find('#search-filter-menu-toggle-button')
             .find('button')
 
-          expect(toogleIconClicked.find(Icon).props('svg')).toEqual({
+          expect(toogleIconClicked.find('Icon').props('svg')).toEqual({
             svg: 'ico-chevron-up',
           })
         })
@@ -557,7 +563,7 @@ describe('src | components | pages | SearchPageContentContent', () => {
             .find('button')
 
           // then
-          expect(toogleIcon.find(Icon).props('svg')).toEqual({
+          expect(toogleIcon.find('Icon').props('svg')).toEqual({
             svg: 'ico-filter-active',
           })
         })
