@@ -4,10 +4,9 @@ import { compose } from 'redux'
 import { withLogin, withPagination } from 'pass-culture-shared'
 import { translateBrowserUrlToApiUrl } from './search/utils'
 
+import SearchPageContent from './SearchPageContent'
 import { selectRecommendations } from '../../selectors'
 import selectTypeSublabels, { selectTypes } from '../../selectors/selectTypes'
-
-import SearchPageContent from './SearchPageContent'
 
 const mapStateToProps = state => {
   const recommendations = selectRecommendations(state)
