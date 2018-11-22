@@ -67,7 +67,7 @@ class Actions extends Component {
                 ? `stock=${get(stockPatch, 'id')}`
                 : `date=${get(eventOccurrencePatch, 'id')}`
             }`}
-            className="button is-small is-secondary editStock">
+            className="button is-small is-secondary edit-stock">
             <span className="icon">
               <Icon svg="ico-pen-r" />
             </span>

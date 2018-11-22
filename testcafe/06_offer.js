@@ -155,7 +155,7 @@ test('Je peux modifier une occurence', async t => {
 
   const editOfferAnchor = Selector('.event a.editLink:first-child')
   const manageStockAnchor = Selector('a.manageStock')
-  const editScheduleAnchor = Selector('a.editStock:first-child')
+  const editScheduleAnchor = Selector('a.edit-stock:first-child')
 
   await t
     .click(editOfferAnchor)
