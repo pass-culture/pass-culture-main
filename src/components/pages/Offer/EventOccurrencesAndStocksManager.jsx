@@ -48,7 +48,6 @@ class EventOccurrencesAndStocksManager extends Component {
     if (!this.props.isEditing) {
       this.onCloseClick()
     } else {
-      // Could fetch ref from the included components, but it will be far more complex
       const cancelButton = document.getElementsByClassName('cancelStep')[0]
       cancelButton.click()
     }
@@ -71,12 +70,9 @@ class EventOccurrencesAndStocksManager extends Component {
   componentDidMount() {
     this.elem.focus()
     document.onkeydown = event => {
-      console.log({ key: event.key, isEditing: this.props.isEditing })
       if (event.key === 'Enter') {
-        // Enter
         this.handleEnterKey()
       } else if (event.key === 'Escape') {
-        // Escape
         this.handleEscKey()
       }
     }
