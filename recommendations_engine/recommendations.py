@@ -115,6 +115,7 @@ def _create_recommendation(user, offer, mediation=None):
     else:
         mediation = Mediation.query \
             .filter(Mediation.offer == offer) \
+            .filter(Mediation.isActive) \
             .order_by(func.random()) \
             .first()
         recommendation.mediation = mediation

@@ -1,5 +1,6 @@
 """ routes recommendations tests """
 from datetime import datetime, timedelta
+from pprint import pprint
 
 import pytest
 
@@ -724,3 +725,61 @@ def test_put_recommendations_does_not_return_requested_recommendation_for_offer_
 
     # then
     assert response.status_code == 404
+
+
+@clean_database
+@pytest.mark.standalone
+def test_put_recommendations_returns_active_mediation_only(app):
+    # given
+    user = create_user()
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    offer1 = create_thing_offer(venue, thumb_count=0)
+    stock1 = create_stock_from_offer(offer1, price=0)
+    mediation1 = create_mediation(offer1, is_active=False)
+    offer2 = create_thing_offer(venue, thumb_count=0)
+    stock2 = create_stock_from_offer(offer2, price=0)
+    mediation2 = create_mediation(offer2, is_active=False)
+    mediation3 = create_mediation(offer2, is_active=True)
+    PcObject.check_and_save(user, stock1, mediation1, stock2, mediation2, mediation3)
+    auth_request = req_with_auth(user.email, user.clearTextPassword)
+
+    data = {'seenRecommendationIds': []}
+    # when
+    response = auth_request.put(RECOMMENDATION_URL, json=data)
+
+    # then
+    assert response.status_code == 200
+    json = response.json()
+    mediation_ids = list(map(lambda x: x['mediationId'], json))
+    assert humanize(mediation3.id) in mediation_ids
+    assert humanize(mediation2.id) not in mediation_ids
+    assert humanize(mediation1.id) not in mediation_ids
+
+
+@clean_database
+@pytest.mark.standalone
+def test_put_recommendations_returns_active_mediation_for_already_existing_but_invalid_recommendations_with_inactive_mediations(app):
+    # given
+    user = create_user()
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    offer1 = create_thing_offer(venue, thumb_count=0)
+    stock1 = create_stock_from_offer(offer1, price=0)
+    inactive_mediation = create_mediation(offer1, is_active=False)
+    active_mediation = create_mediation(offer1, is_active=True)
+    invalid_recommendation = create_recommendation(offer1, user, inactive_mediation,
+                                           valid_until_date=datetime.utcnow() - timedelta(hours=2))
+    PcObject.check_and_save(user, stock1, inactive_mediation, active_mediation, invalid_recommendation)
+    auth_request = req_with_auth(user.email, user.clearTextPassword)
+
+    data = {'seenRecommendationIds': []}
+    # when
+    response = auth_request.put(RECOMMENDATION_URL, json=data)
+
+    # then
+    assert response.status_code == 200
+    json = response.json()
+    mediation_ids = list(map(lambda x: x['mediationId'], json))
+    assert humanize(active_mediation.id) in mediation_ids
+    assert humanize(inactive_mediation.id) not in mediation_ids
