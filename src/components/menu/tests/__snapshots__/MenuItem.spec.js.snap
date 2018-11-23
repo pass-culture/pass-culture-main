@@ -3,7 +3,7 @@
 exports[`src | components | menu | MenuItem snapshot should match snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
-  Symbol(enzyme.__unrendered__): <withRouter(MenuItem)
+  Symbol(enzyme.__unrendered__): <withRouter(MenuItemContent)
     item={Object {}}
     location={Object {}}
   />,
