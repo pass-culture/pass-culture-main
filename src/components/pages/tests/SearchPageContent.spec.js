@@ -61,7 +61,7 @@ describe('src | components | pages | SearchPageContent', () => {
 
   describe('render', () => {
     describe('Main', () => {
-      describe('Home', () => {
+      describe('On Home', () => {
         const wrapper = shallow(<SearchPageContent {...initialProps} />)
         const button = wrapper.find('button').at(0)
         it('should render the page title', () => {
@@ -72,6 +72,14 @@ describe('src | components | pages | SearchPageContent', () => {
         })
         it('submitButton form is disabled', () => {
           expect(button.props().disabled).toEqual(true)
+        })
+      })
+      describe('On results Page', () => {
+        // Given
+        initialProps.match.params.view = 'resultats'
+        const wrapper = shallow(<SearchPageContent {...initialProps} />)
+        it('should render the page title', () => {
+          expect(wrapper.props().pageTitle).toEqual('Recherche : résultats')
         })
       })
     })
@@ -99,10 +107,6 @@ describe('src | components | pages | SearchPageContent', () => {
           expect(searchFilterComponent.props().isVisible).toEqual(true)
         })
       })
-
-      // Close button // wrapper.props().closeSearchButton
-      // console.log('|||||| Wrapper Props', wrapper.props().backButton);
-      // pageTitle={searchPageTitle}
     })
   })
 
