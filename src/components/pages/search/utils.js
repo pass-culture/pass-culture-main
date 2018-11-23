@@ -97,9 +97,9 @@ const formatDate = (date, tz) =>
 
 export const getRecommendationDateString = offer => {
   if (offer.eventId === null) return 'permanent'
-
   const departementCode = offer.venue.departementCode
-  // TODO LINTER :  const departementCode = {...offer.venue}
+  // TODO LINTER :
+  // const departementCode = {...offer.venue}
   const tz = getTimezone(departementCode)
 
   const fromDate = offer.dateRange[0]
@@ -113,24 +113,6 @@ export const getRecommendationDateString = offer => {
 
 export const getDescriptionForSublabel = (category, data) =>
   get(find(data, ['sublabel', category]), 'description')
-
-export const handleQueryChange = (newValue, callback) => {
-  const { pagination } = this.props
-  const { query } = this.state
-
-  const nextFilterParams = Object.assign({}, query, newValue)
-  const isNew = getFirstChangingKey(pagination.windowQuery, newValue)
-
-  this.setState(
-    {
-      isNew,
-      query: nextFilterParams,
-    },
-    callback
-  )
-}
-
-// TODO SEARCH FILTER FUNCTIONS REFACTORING handleQueryChange etc
 
 const mapWindowToApi = {
   jours: 'days',
