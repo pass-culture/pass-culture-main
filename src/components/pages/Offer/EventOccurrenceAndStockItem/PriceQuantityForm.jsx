@@ -46,8 +46,8 @@ class PriceQuantityForm extends Component {
                     ? 'Gratuit'
                     : 0
                   : readOnly
-                    ? `${value}€`
-                    : value
+                  ? `${value}€`
+                  : value
               }
               name="price"
               placeholder="Gratuit"
@@ -97,7 +97,7 @@ class PriceQuantityForm extends Component {
               </td>
               <td className="is-clipped">
                 <NavLink
-                  className="button is-secondary is-small"
+                  className="button is-secondary is-small cancelStep"
                   to={`/offres/${get(offer, 'id')}?gestion`}>
                   Annuler
                 </NavLink>

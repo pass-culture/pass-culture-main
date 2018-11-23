@@ -108,7 +108,7 @@ test('Je peux créer une offre événement', async t => {
 test("Je peux créer une occurence d'événement", async t => {
   await t.useRole(regularOfferer)
 
-  const editOfferAnchor = Selector('a.editLink:first-child')
+  const editOfferAnchor = Selector('.event a.editLink:first-child')
   const manageStockAnchor = Selector('a.manage-stock')
 
   await t
@@ -134,8 +134,13 @@ test("Je peux créer une occurence d'événement", async t => {
 test('Je peux créer une autre occurence', async t => {
   await t.useRole(regularOfferer)
 
+<<<<<<< HEAD
   const editOfferAnchor = Selector('a.editLink:first-child')
   const manageStockAnchor = Selector('a.manage-stock')
+=======
+  const editOfferAnchor = Selector('.event a.editLink:first-child')
+  const manageStockAnchor = Selector('a.manageStock')
+>>>>>>> pc-119 use enter on stock form
 
   await t
     .click(editOfferAnchor)
@@ -148,6 +153,29 @@ test('Je peux créer une autre occurence', async t => {
   await t
     .expect(location.search)
     .match(/\?gestion&date=([A-Z0-9]*)&stock=nouveau$/)
+})
+
+test('Je peux créer une occurence en utilisant la touche Entrée', async t => {
+  await t.useRole(regularOfferer)
+
+  const editOfferAnchor = Selector('.event a.editLink:first-child')
+  const manageStockAnchor = Selector('a.manageStock')
+
+  await t
+    .click(editOfferAnchor)
+    .click(manageStockAnchor)
+    .pressKey('Enter')
+  let location = await t.eval(() => window.location)
+  await t.expect(location.search).eql('?gestion&date=nouvelle')
+  await t.pressKey('Enter')
+  location = await t.eval(() => window.location)
+  await t
+    .expect(location.search)
+    .match(/\?gestion&date=([A-Z0-9]*)&stock=nouveau$/)
+
+  await t.pressKey('Enter')
+  location = await t.eval(() => window.location)
+  await t.expect(location.search).match(/\?gestion$/)
 })
 
 test('Je peux modifier une occurence', async t => {
