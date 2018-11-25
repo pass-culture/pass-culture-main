@@ -63,7 +63,7 @@ class EventOccurrencesAndStocksManager extends Component {
     if (!this.props.isEditing) {
       this.onCloseClick()
     } else {
-      const cancelButton = document.getElementsByClassName('cancelStep')[0]
+      const cancelButton = document.getElementsByClassName('cancel-step')[0]
       cancelButton.click()
     }
   }

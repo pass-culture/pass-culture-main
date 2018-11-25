@@ -97,7 +97,7 @@ class PriceQuantityForm extends Component {
               </td>
               <td className="is-clipped">
                 <NavLink
-                  className="button is-secondary is-small cancelStep"
+                  className="button is-secondary is-small cancel-step"
                   to={`/offres/${get(offer, 'id')}?gestion`}>
                   Annuler
                 </NavLink>
