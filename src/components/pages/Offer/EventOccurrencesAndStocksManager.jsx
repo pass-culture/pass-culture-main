@@ -18,10 +18,24 @@ import providerSelector from '../../../selectors/provider'
 import selectApiSearch from '../../../selectors/selectApiSearch'
 import stocksSelector from '../../../selectors/stocks'
 
+export function getAddUrl(isEditing, isStockOnly, offerId, stocks, defaultUrl) {
+  if (isEditing) {
+    return defaultUrl
+  }
+
+  if (isStockOnly) {
+    if (stocks.length > 0) {
+      return `/offres/${offerId}?gestion&stock=${stocks[0].id}`
+    }
+    return `/offres/${offerId}?gestion&stock=nouveau`
+  }
+
+  return `/offres/${offerId}?gestion&date=nouvelle`
+}
+
 class EventOccurrencesAndStocksManager extends Component {
   onCloseClick = e => {
     const { dispatch, offer, history } = this.props
-    document.onkeydown = null
     dispatch(closeModal())
     history.push(`/offres/${get(offer, 'id')}`)
   }
@@ -33,7 +47,8 @@ class EventOccurrencesAndStocksManager extends Component {
       // a 'Function component' and...
       // Warning: Function components cannot be given refs. Attempts to access this ref will fail.
       document.getElementById('add-occurrence-or-stock').focus()
-      this.props.history.push(this.getAddUrl())
+      const { isEditing, isStockOnly } = this.props
+      this.props.history.push(this.getAddUrl(isEditing, isStockOnly))
     } else {
       // Could fetch ref from the included components, but it will be far more complex
       // as we would have to make the ref transit through callback props.
@@ -54,17 +69,13 @@ class EventOccurrencesAndStocksManager extends Component {
   }
 
   getAddUrl(isEditing, isStockOnly) {
-    const { location, offer } = this.props
-
-    if (isEditing) {
-      return `${location.pathname}${location.search}`
-    }
-
-    if (isStockOnly) {
-      return `/offres/${get(offer, 'id')}?gestion&stock=nouveau`
-    }
-
-    return `/offres/${get(offer, 'id')}?gestion&date=nouvelle`
+    return getAddUrl(
+      isEditing,
+      isStockOnly,
+      get(this.props.offer, 'id'),
+      this.props.stocks,
+      `${this.props.location.pathname}${this.props.location.search}`
+    )
   }
 
   componentDidMount() {
@@ -78,7 +89,7 @@ class EventOccurrencesAndStocksManager extends Component {
     }
   }
 
-  componentWillUnount() {
+  componentWillUnmount() {
     document.onkeydown = null
   }
 
@@ -89,13 +100,11 @@ class EventOccurrencesAndStocksManager extends Component {
       eventOccurrences,
       isEditing,
       isNew,
-      location,
       provider,
-      offer,
       stocks,
       thing,
+      isStockOnly,
     } = this.props
-    const isStockOnly = typeof get(thing, 'id') !== 'undefined'
 
     return (
       <div
@@ -258,6 +267,7 @@ function mapStateToProps(state, ownProps) {
     eventOccurrenceIdOrNew,
     stockIdOrNew
   )
+  const isStockOnly = typeof get(thing, 'id') !== 'undefined'
 
   return {
     errors,
@@ -270,6 +280,7 @@ function mapStateToProps(state, ownProps) {
     provider: providerSelector(state, get(event, 'lastProviderId')),
     stocks,
     thing,
+    isStockOnly,
   }
 }
 
