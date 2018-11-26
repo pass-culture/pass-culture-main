@@ -96,8 +96,6 @@ function ensure_remote {
 current_branch=$(git symbolic-ref -q HEAD)
 current_branch=${current_branch##refs/heads/}
 
-commit_to_deploy=$(git log -n 1 --pretty=format:%H)
-
 function exit_restoring_branch {
   git checkout "$current_branch"
   exit
@@ -284,10 +282,15 @@ elif [[ "$CMD" == "deploy-backend" ]] \
   git checkout production
   git pull || exit_restoring_branch
 
-  if [[ "$TAG_NAME" ]]; then
-    git tag "$TAG_NAME"
-    git push origin "$TAG_NAME"
+  if [[ "$TAG_VERSION" ]] \
+    && [[ ! -z $(git ls-remote --tags origin refs/tags/"$TAG_VERSION") ]]; then
+    git checkout "v$TAG_VERSION"
+  else
+    echo "ERROR: You need to specify an existing tag to deploy"
+    exit_restoring_branch
   fi
+
+  commit_to_deploy=$(git log -n 1 --pretty=format:%H)
 
   if [[ $(git tag -l --points-at "$commit_to_deploy" | wc -l) == 0 ]]; then
     echo "ERROR: Can only deploy tagged commits"
