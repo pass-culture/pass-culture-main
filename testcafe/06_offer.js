@@ -109,7 +109,7 @@ test("Je peux créer une occurence d'événement", async t => {
   await t.useRole(regularOfferer)
 
   const editOfferAnchor = Selector('a.editLink:first-child')
-  const manageStockAnchor = Selector('a.manageStock')
+  const manageStockAnchor = Selector('a.manage-stock')
 
   await t
     .click(editOfferAnchor)
@@ -135,7 +135,7 @@ test('Je peux créer une autre occurence', async t => {
   await t.useRole(regularOfferer)
 
   const editOfferAnchor = Selector('a.editLink:first-child')
-  const manageStockAnchor = Selector('a.manageStock')
+  const manageStockAnchor = Selector('a.manage-stock')
 
   await t
     .click(editOfferAnchor)
@@ -154,7 +154,7 @@ test('Je peux modifier une occurence', async t => {
   await t.useRole(regularOfferer)
 
   const editOfferAnchor = Selector('.event a.editLink:first-child')
-  const manageStockAnchor = Selector('a.manageStock')
+  const manageStockAnchor = Selector('a.manage-stock')
   const editScheduleAnchor = Selector('a.edit-stock:first-child')
 
   await t

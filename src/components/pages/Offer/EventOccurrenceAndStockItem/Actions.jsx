@@ -76,7 +76,7 @@ class Actions extends Component {
         <td className="is-clipped">
           {!this.state.isDeleting && (
             <button
-              className="button is-small is-secondary deleteStock"
+              className="button is-small is-secondary delete-stock"
               style={{ width: '100%' }}
               onClick={this.onDeleteClick}>
               <span className="icon">
