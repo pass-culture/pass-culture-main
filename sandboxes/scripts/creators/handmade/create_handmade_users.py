@@ -71,6 +71,17 @@ def create_handmade_users():
         public_name="PC Test Pro93 1"
     )
 
+    users_by_name['pro93 2'] = create_user(
+        departement_code="93",
+        first_name="PC Test Pro",
+        last_name="93 2",
+        email="pctest.pro93.2@btmx.fr",
+        password="pctest.Pro93.2",
+        postal_code="93100",
+        public_name="PC Test Pro93 2",
+        validation_token='AZERTY123'
+    )
+
     users_by_name['pro97 0'] = create_user(
         departement_code="97",
         first_name="PC Test Pro",

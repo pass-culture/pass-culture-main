@@ -1,6 +1,23 @@
 from sandboxes.scripts.utils.ban import get_locations_from_postal_code
 
-PLACES = [
+NOT_VALIDATED_OFFERER_PLACES = [
+    {
+        "address": "148 RUE HENRI LANGLOIS",
+        "city": "Drancy",
+        "latitude": 48.91,
+        "longitude": 2.44,
+        "postalCode": "93700",
+    },
+    {
+        "address": "1 AVENUE DE L ANSE",
+        "city": "Kourou",
+        "latitude": -52.64,
+        "longitude": 5.16,
+        "postalCode": "97310"
+    }
+]
+
+VALIDATED_OFFERER_PLACES = [
     {
         "address": "148 ROUTE DE BONDY",
         "city": "Aulnay-sous-bois",

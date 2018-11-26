@@ -24,11 +24,11 @@ def test_save_handmade_sandbox(app):
             EventOccurrence=5,
             Mediation=3,
             Offer=6,
-            Offerer=4,
+            Offerer=6,
             Recommendation=2,
             Stock=8,
             Thing=2,
-            User=7,
-            UserOfferer=4,
+            User=8,
+            UserOfferer=6,
             Venue=7
         )

@@ -712,7 +712,7 @@ def test_send_user_validation_email_when_send_create_status_code_200():
     # When
     with patch('domain.user_emails.make_user_validation_email', return_value={'Html-part': ''}) as make_email, patch(
             'utils.mailing.feature_send_mail_to_users_enabled', return_value=True):
-        send_user_validation_email(user, mocked_send_create_email, True)
+        send_user_validation_email(user, mocked_send_create_email, 'localhost-test', True)
     # Then
     mocked_send_create_email.assert_called_once()
     make_email.assert_called_once()
@@ -733,7 +733,7 @@ def test_send_user_validation_email_when_send_create_status_code_400():
     with pytest.raises(MailServiceException), patch('domain.user_emails.make_user_validation_email',
                                                     return_value={'Html-part': ''}) as make_email, patch(
         'utils.mailing.feature_send_mail_to_users_enabled', return_value=True):
-        send_user_validation_email(user, mocked_send_create_email, True)
+        send_user_validation_email(user, mocked_send_create_email, 'localhost-test', True)
     # Then
     mocked_send_create_email.assert_called_once()
     make_email.assert_called_once()

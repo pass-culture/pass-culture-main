@@ -1,3 +1,5 @@
+import secrets
+
 from models.pc_object import PcObject
 from utils.logger import logger
 from utils.test_utils import create_offerer
@@ -37,6 +39,23 @@ def create_handmade_offerers():
         name="KWATA",
         postal_code="97335",
         siren="399244474"
+    )
+
+    offerers_by_name['NOUVEAU THEATRE DE MONTREUIL'] = create_offerer(
+        address="63 RUE VICTOR HUGO",
+        city="Montreuil",
+        name="NOUVEAU THEATRE DE MONTREUIL",
+        postal_code="93100",
+        siren="323339762",
+        validation_token=secrets.token_urlsafe(20)
+    )
+
+    offerers_by_name['LA MARBRERIE'] = create_offerer(
+        address="21 RUE ALEXIS LEPERE",
+        city="Montreuil",
+        name="LA MARBRERIE",
+        postal_code="93100",
+        siren="812182491"
     )
 
     PcObject.check_and_save(*offerers_by_name.values())

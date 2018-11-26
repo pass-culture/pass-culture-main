@@ -20,6 +20,17 @@ def create_handmade_user_offerers(users_by_name, offerers_by_name):
         offerer=offerers_by_name['THEATRE DU SOLEIL'],
         user=users_by_name['pro93 0']
     )
+
+    user_offerers_by_name['pro93 0 / NOUVEAU THEATRE DE MONTREUIL'] = create_user_offerer(
+        offerer=offerers_by_name['NOUVEAU THEATRE DE MONTREUIL'],
+        user=users_by_name['pro93 0']
+    )
+
+    user_offerers_by_name['pro93 0 / LA MARBRERIE'] = create_user_offerer(
+        offerer=offerers_by_name['LA MARBRERIE'],
+        user=users_by_name['pro93 0']
+    )
+
     user_offerers_by_name['pro97 0 / KWATA'] = create_user_offerer(
         offerer=offerers_by_name['KWATA'],
         user=users_by_name['pro97 0']

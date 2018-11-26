@@ -1,5 +1,4 @@
 from models.pc_object import PcObject
-from sandboxes.scripts.utils.ban import get_locations_from_postal_code
 from utils.logger import logger
 from utils.test_utils import create_offerer
 
@@ -15,9 +14,12 @@ MOCK_NAMES = [
 
 def create_industrial_offerers(
     locations,
+    needs_validation=False,
     starting_siren=222222222
 ):
-    logger.info('create_industrial_offerers')
+    logger.info('create_industrial_offerers {}'.format(
+        'not validated' if needs_validation else 'validated'
+    ))
 
     incremented_siren = starting_siren
 
@@ -33,7 +35,7 @@ def create_industrial_offerers(
             location['longitude']
         )
 
-        offerers_by_name[name] = create_offerer(
+        offerer = create_offerer(
             address=location['address'].upper(),
             city=location['city'],
             name=MOCK_NAMES[mock_index],
@@ -41,10 +43,18 @@ def create_industrial_offerers(
             siren=str(incremented_siren)
         )
 
+        if needs_validation:
+            offerer.generate_validation_token()
+
+        offerers_by_name[name] = offerer
+
         incremented_siren += 1
 
     PcObject.check_and_save(*offerers_by_name.values())
 
-    logger.info('created {} offerers'.format(len(offerers_by_name)))
+    logger.info('created {} offerers {}'.format(
+        len(offerers_by_name),
+        'not validated' if needs_validation else 'validated'
+    ))
 
     return offerers_by_name

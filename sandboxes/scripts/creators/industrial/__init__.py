@@ -12,12 +12,35 @@ from sandboxes.scripts.creators.industrial.create_industrial_venues import *
 from sandboxes.scripts.creators.industrial.create_industrial_user_offerers import *
 from sandboxes.scripts.creators.industrial.create_industrial_users import *
 
-from sandboxes.scripts.utils.locations import create_locations_from_places, PLACES
+from sandboxes.scripts.utils.locations import create_locations_from_places, \
+                                              NOT_VALIDATED_OFFERER_PLACES, \
+                                              VALIDATED_OFFERER_PLACES
 
 def save_industrial_sandbox():
 
-    offerer_locations = create_locations_from_places(PLACES, max_location_per_place=2)
-    offerers_by_name = create_industrial_offerers(offerer_locations)
+    not_validated_offerer_locations = create_locations_from_places(
+        NOT_VALIDATED_OFFERER_PLACES,
+        max_location_per_place=1,
+    )
+    validated_offerer_locations = create_locations_from_places(
+        VALIDATED_OFFERER_PLACES,
+        max_location_per_place=2
+    )
+
+    not_validated_offerers_by_name = create_industrial_offerers(
+        not_validated_offerer_locations,
+        needs_validation=True,
+    )
+
+    validated_offerers_by_name = create_industrial_offerers(
+        validated_offerer_locations,
+        starting_siren=222222222 + len(not_validated_offerers_by_name)
+    )
+
+    offerers_by_name = dict(
+        not_validated_offerers_by_name,
+        **validated_offerers_by_name
+    )
 
     users_by_name = create_industrial_users()
 
