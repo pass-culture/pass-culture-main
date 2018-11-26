@@ -97,12 +97,11 @@ class OccasionItem extends Component {
                 <div className="recently-added" />
               </li>
             )}
-            {false &&
-              moment(createdAt).isAfter(moment().add(-1, 'days')) && (
-                <li>
-                  <div className="recently-added" />
-                </li>
-              )}
+            {false && moment(createdAt).isAfter(moment().add(-1, 'days')) && (
+              <li>
+                <div className="recently-added" />
+              </li>
+            )}
             <li
               title={
                 groupSizeMin > 0
@@ -174,7 +173,7 @@ class OccasionItem extends Component {
             <li>
               <NavLink
                 to={`/offres/${offer.id}`}
-                className="button is-secondary is-small editLink">
+                className="button is-secondary is-small edit-link">
                 <Icon svg="ico-pen-r" />
                 Modifier
               </NavLink>
