@@ -30,6 +30,9 @@ class SearchPageContent extends PureComponent {
 
   handleDataRequest = (handleSuccess = () => {}, handleFail = () => {}) => {
     const { dispatch, location, match, pagination, search } = this.props
+    const {
+      params: { view },
+    } = match
     // pagination props comes from the hoc withPagination from pass-culture-shared folder
     const { apiQueryString, goToNextPage, page } = pagination
     const { isFilterVisible } = this.state
@@ -46,6 +49,8 @@ class SearchPageContent extends PureComponent {
 
     const len = get(location, 'search.length')
     if (!len) return
+
+    if (view !== 'resultats') return
 
     const path = `recommendations?page=${page}&${apiQueryString}`
 
