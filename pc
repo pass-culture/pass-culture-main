@@ -37,10 +37,10 @@ fi
 
 if [[ $# -gt 2 ]] && [[ "$1" == "-t" ]]; then
 
-  if [[ "$2" =~ ^v[0-9]+\.[0-9]+\.[0-9]+ ]]; then
-    TAG_NAME=$2
+  if [[ "$2" =~ ^[0-9]+\.[0-9]+\.[0-9]+ ]]; then
+    TAG_VERSION=$2
   else
-    echo "tag format should be Semantic Versioning compliant (vx.x.x)"
+    echo "tag format should be Semantic Versioning compliant (x.x.x)"
   fi
 
   shift 2
@@ -253,6 +253,23 @@ elif [[ "$CMD" == "test-cafe-webapp" ]] || [[ "$CMD" == "test-cafe-pro" ]]; then
 # Deploy commands
 # =============================================
 
+# Tag commit on the current branch of API/Webapp/Pro
+elif [[ "$CMD" == "tag-version-api" ]] \
+     || [[ "$CMD" == "tag-version-webapp" ]] \
+     || [[ "$CMD" == "tag-version-pro" ]]; then
+  if [[ "$TAG_VERSION" ]]; then
+    if [[ "$CMD" == "tag-version-webapp" ]] \
+     || [[ "$CMD" == "tag-version-pro" ]]; then
+      TAG_NAME="$TAG_VERSION"
+      yarn version --new-version "$TAG_VERSION"
+      git push origin "$current_branch"
+    else
+      TAG_NAME="v$TAG_VERSION"
+      git tag "$TAG_NAME"
+    fi
+    git push origin "$TAG_NAME"
+  fi
+
 # Deploy current version of API/Webapp/Pro to specified environment
 elif [[ "$CMD" == "deploy-backend" ]] \
      || [[ "$CMD" == "deploy-frontend-webapp" ]] \
@@ -319,6 +336,7 @@ elif [[ "$CMD" == "deploy-backend" ]] \
 
   if [[ "$CMD" == "deploy-frontend-webapp" ]] \
      || [[ "$CMD" == "deploy-frontend-pro" ]]; then
+    rm -rf "$APP_PATH"/node_modules "$APP_PATH"/build && yarn install
     (set -a; source "$APP_PATH/node_modules/pass-culture-shared/config/run_envs/$ENV" && yarn build) || exit
      ./"$APP_PATH"/scripts/build_redirects.sh
     netlify deploy -e "$ENV"
