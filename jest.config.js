@@ -7,7 +7,7 @@ module.exports = {
     '!<rootDir>/build/',
   ],
 
-  setupFiles: ['<rootDir>/jest.setup.js'],
+  setupFiles: ['<rootDir>/jest-polyfill.js', '<rootDir>/jest.setup.js'],
   testEnvironment: 'node',
   testMatch: ['**/?(*.)+(spec).js?(x)'],
   testURL: 'http://localhost',

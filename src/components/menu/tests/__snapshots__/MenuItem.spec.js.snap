@@ -4,8 +4,16 @@ exports[`src | components | menu | MenuItem snapshot should match snapshot 1`] =
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <withRouter(MenuItemContent)
-    item={Object {}}
-    location={Object {}}
+    item={
+      Object {
+        "path": "/decouverte",
+      }
+    }
+    location={
+      Object {
+        "pathname": "/decouverte",
+      }
+    }
   />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
@@ -64,8 +72,16 @@ ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <MenuItemContent
     clickHandler={[MockFunction]}
-    item={Object {}}
-    location={Object {}}
+    item={
+      Object {
+        "path": "/decouverte",
+      }
+    }
+    location={
+      Object {
+        "pathname": "/decouverte",
+      }
+    }
   />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
@@ -77,7 +93,7 @@ ShallowWrapper {
   },
   Symbol(enzyme.__node__): Object {
     "instance": null,
-    "key": undefined,
+    "key": "/decouverte",
     "nodeType": "function",
     "props": Object {
       "activeClassName": "active",
@@ -98,7 +114,7 @@ ShallowWrapper {
       "className": "navlink mx12 flex-columns ",
       "disabled": undefined,
       "onClick": [MockFunction],
-      "to": undefined,
+      "to": "/decouverte",
     },
     "ref": null,
     "rendered": Object {
@@ -169,7 +185,7 @@ ShallowWrapper {
   Symbol(enzyme.__nodes__): Array [
     Object {
       "instance": null,
-      "key": undefined,
+      "key": "/decouverte",
       "nodeType": "function",
       "props": Object {
         "activeClassName": "active",
@@ -190,7 +206,7 @@ ShallowWrapper {
         "className": "navlink mx12 flex-columns ",
         "disabled": undefined,
         "onClick": [MockFunction],
-        "to": undefined,
+        "to": "/decouverte",
       },
       "ref": null,
       "rendered": Object {

@@ -21,8 +21,9 @@ const PageHeader = ({
     <h1>
       <span>{title}</span>
       {/* FIXME: a voir si géré par un switch ou des if */}
-      {useBack &&
-        !useClose && <PageBackButton disabled={isloading} theme={theme} />}
+      {useBack && !useClose && (
+        <PageBackButton disabled={isloading} theme={theme} />
+      )}
       {useClose && <PageCloseButton disabled={isloading} theme={theme} />}
       {useSubmit && (
         <PageSubmitButton

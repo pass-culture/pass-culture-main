@@ -1,16 +1,21 @@
+// jest --env=jsdom ./src/components/menu/tests/MenuItem --watch
 import React from 'react'
 import { shallow } from 'enzyme'
 
 import MenuItem, { MenuItemContent } from '../MenuItem'
+
+const routerProps = {
+  location: { pathname: '/decouverte' },
+}
 
 describe('src | components | menu | MenuItemContent', () => {
   describe('snapshot', () => {
     it('should match snapshot', () => {
       // given
       const props = {
+        ...routerProps,
         clickHandler: jest.fn(),
-        item: {},
-        location: {},
+        item: { path: '/decouverte' },
       }
 
       // when
@@ -28,8 +33,8 @@ describe('src | components | menu | MenuItem', () => {
     it('should match snapshot', () => {
       // given
       const props = {
-        item: {},
-        location: {},
+        ...routerProps,
+        item: { path: '/decouverte' },
       }
 
       // when

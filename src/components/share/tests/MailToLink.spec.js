@@ -1,17 +1,18 @@
+/* eslint
+  react/jsx-one-expression-per-line: 0 */
+// jest --env=jsdom src/components/share/tests/MailToLink --watch
 import React from 'react'
 import { shallow } from 'enzyme'
 
 import MailToLink from '../MailToLink'
 
-describe('src | components | share | MailToLink', () => {
-  const children = () => (
-    <header>
-      <h1>
-Fake children
-      </h1>
-    </header>
-  )
+const children = (
+  <header>
+    <h1>Fake children</h1>
+  </header>
+)
 
+describe('src | components | share | MailToLink', () => {
   describe('snapshot', () => {
     it('should match snapshot', () => {
       // given

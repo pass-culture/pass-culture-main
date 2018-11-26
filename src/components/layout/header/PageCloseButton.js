@@ -2,7 +2,13 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { withRouter } from 'react-router-dom'
 
-const PageCloseButton = ({ baseurl, className, disabled, history, theme }) => (
+export const RawPageCloseButton = ({
+  baseurl,
+  className,
+  disabled,
+  history,
+  theme,
+}) => (
   <span
     style={{ right: 0 }}
     className={`pc-theme-${theme} is-absolute mr12 ${className}`}
@@ -20,14 +26,14 @@ const PageCloseButton = ({ baseurl, className, disabled, history, theme }) => (
   </span>
 )
 
-PageCloseButton.defaultProps = {
+RawPageCloseButton.defaultProps = {
   baseurl: 'decouverte',
   className: '',
   disabled: false,
   theme: 'red',
 }
 
-PageCloseButton.propTypes = {
+RawPageCloseButton.propTypes = {
   baseurl: PropTypes.string,
   className: PropTypes.string,
   disabled: PropTypes.bool,
@@ -35,4 +41,4 @@ PageCloseButton.propTypes = {
   theme: PropTypes.string,
 }
 
-export default withRouter(PageCloseButton)
+export default withRouter(RawPageCloseButton)

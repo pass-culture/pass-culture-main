@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { withRouter } from 'react-router-dom'
 
-const PageBackButton = ({ className, disabled, history, theme }) => (
+export const RawPageBackButton = ({ className, disabled, history, theme }) => (
   <span
     style={{ left: 0 }}
     className={`pc-theme-${theme} is-absolute ml12 ${className}`}
@@ -20,17 +20,17 @@ const PageBackButton = ({ className, disabled, history, theme }) => (
   </span>
 )
 
-PageBackButton.defaultProps = {
+RawPageBackButton.defaultProps = {
   className: '',
   disabled: false,
   theme: 'red',
 }
 
-PageBackButton.propTypes = {
+RawPageBackButton.propTypes = {
   className: PropTypes.string,
   disabled: PropTypes.bool,
   history: PropTypes.object.isRequired,
   theme: PropTypes.string,
 }
 
-export default withRouter(PageBackButton)
+export default withRouter(RawPageBackButton)

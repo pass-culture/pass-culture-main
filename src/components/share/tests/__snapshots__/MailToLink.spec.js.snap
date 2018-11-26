@@ -10,7 +10,11 @@ ShallowWrapper {
     headers={Object {}}
     obfuscate={false}
   >
-    [Function]
+    <header>
+      <h1>
+        Fake children
+      </h1>
+    </header>
   </MailToLink>,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
@@ -25,13 +29,39 @@ ShallowWrapper {
     "key": undefined,
     "nodeType": "host",
     "props": Object {
-      "children": [Function],
+      "children": <header>
+        <h1>
+          Fake children
+        </h1>
+      </header>,
       "className": "",
       "header": Object {},
       "href": "mailto:email@fake.com?",
     },
     "ref": null,
-    "rendered": [Function],
+    "rendered": Object {
+      "instance": null,
+      "key": undefined,
+      "nodeType": "host",
+      "props": Object {
+        "children": <h1>
+          Fake children
+        </h1>,
+      },
+      "ref": null,
+      "rendered": Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": "Fake children",
+        },
+        "ref": null,
+        "rendered": "Fake children",
+        "type": "h1",
+      },
+      "type": "header",
+    },
     "type": "a",
   },
   Symbol(enzyme.__nodes__): Array [
@@ -40,13 +70,39 @@ ShallowWrapper {
       "key": undefined,
       "nodeType": "host",
       "props": Object {
-        "children": [Function],
+        "children": <header>
+          <h1>
+            Fake children
+          </h1>
+        </header>,
         "className": "",
         "header": Object {},
         "href": "mailto:email@fake.com?",
       },
       "ref": null,
-      "rendered": [Function],
+      "rendered": Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": <h1>
+            Fake children
+          </h1>,
+        },
+        "ref": null,
+        "rendered": Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": "Fake children",
+          },
+          "ref": null,
+          "rendered": "Fake children",
+          "type": "h1",
+        },
+        "type": "header",
+      },
       "type": "a",
     },
   ],

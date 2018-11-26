@@ -1,3 +1,4 @@
+// jest --env=jsdom ./src/components/layout/tests/PageHeader --watch
 import React from 'react'
 import { shallow } from 'enzyme'
 

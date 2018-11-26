@@ -30,7 +30,7 @@ ShallowWrapper {
         <span>
           fake title
         </span>
-        <withRouter(PageBackButton)
+        <withRouter(RawPageBackButton)
           disabled={false}
           theme="red"
         />
@@ -47,7 +47,7 @@ ShallowWrapper {
           <span>
             fake title
           </span>,
-          <withRouter(PageBackButton)
+          <withRouter(RawPageBackButton)
             disabled={false}
             theme="red"
           />,
@@ -97,7 +97,7 @@ ShallowWrapper {
           <span>
             fake title
           </span>
-          <withRouter(PageBackButton)
+          <withRouter(RawPageBackButton)
             disabled={false}
             theme="red"
           />
@@ -114,7 +114,7 @@ ShallowWrapper {
             <span>
               fake title
             </span>,
-            <withRouter(PageBackButton)
+            <withRouter(RawPageBackButton)
               disabled={false}
               theme="red"
             />,
