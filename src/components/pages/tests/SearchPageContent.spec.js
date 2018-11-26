@@ -198,12 +198,11 @@ describe('src | components | pages | SearchPageContent', () => {
     })
 
     describe('handleDataRequest', () => {
-      describe('When arriving for the first time on search page with page = 1', () => {
-        // when
-        const wrapper = shallow(<SearchPageContent {...initialProps} />)
-        wrapper.instance().handleDataRequest()
-
+      describe('On resultats page', () => {
         it('should first dispatch requestDataTypes when component is rendered', () => {
+          // when
+          const wrapper = shallow(<SearchPageContent {...initialProps} />)
+          wrapper.instance().handleDataRequest()
           const expectedRequestedGetTypes = {
             config: {},
             method: 'GET',
@@ -212,31 +211,12 @@ describe('src | components | pages | SearchPageContent', () => {
           }
 
           // THEN
-          expect(dispatchMock.mock.calls.length).toBe(1)
+          expect(dispatchMock.mock.calls.length).toBe(2)
           expect(dispatchMock.mock.calls[0][0]).toEqual(
             expectedRequestedGetTypes
           )
         })
       })
-
-      describe.skip('when ??? page !== 1 && search.page && page === Number(search.page) ', () => {
-        // TODO
-
-        it('should ???', () => {
-          // given
-          dispatchMock.mockClear()
-          initialProps.pagination.page = 2
-
-          // when
-          const wrapper = shallow(<SearchPageContent {...initialProps} />)
-          wrapper.instance().handleDataRequest()
-
-          // expect
-          expect(dispatchMock.mock.calls.length).toBe(2)
-        })
-      })
-
-      describe.skip('goToNextPage', () => {})
     })
 
     describe('loadMoreHandler', () => {

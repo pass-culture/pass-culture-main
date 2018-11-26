@@ -4,26 +4,7 @@ exports[`src | components | pages | SearchPageContent snapshot should match snap
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <SearchPageContent
-    dispatch={
-      [MockFunction] {
-        "calls": Array [
-          Array [
-            Object {
-              "config": Object {},
-              "method": "GET",
-              "path": "types",
-              "type": "REQUEST_DATA_GET_TYPES",
-            },
-          ],
-        ],
-        "results": Array [
-          Object {
-            "isThrow": false,
-            "value": undefined,
-          },
-        ],
-      }
-    }
+    dispatch={[MockFunction]}
     history={
       Object {
         "push": [MockFunction],
