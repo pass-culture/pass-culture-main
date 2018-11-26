@@ -1,5 +1,7 @@
 from models.api_errors import ForbiddenError
 
+
+
 def check_user_is_admin(user):
     if not user.isAdmin:
         api_errors = ForbiddenError()

@@ -611,6 +611,21 @@ def create_user_activity(user, table_name, verb, issued_at=datetime.utcnow):
     return activity
 
 
+def create_venue_activity(venue, table_name, verb, issued_at=datetime.utcnow):
+    Activity = versioning_manager.activity_cls
+    activity = Activity()
+    activity.issued_at = issued_at
+    activity.table_name = table_name
+    activity.verb = verb
+    variables = {'id': venue.id,
+                 'name': venue.name,
+                 'siret': venue.siret,
+                 'departementCode': venue.departementCode,
+                 'postalCode': venue.postalCode}
+    activity.changed_data = variables
+    return activity
+
+
 def create_mocked_bookings(num_bookings, venue_email, name='Offer name'):
     bookings = []
     for i in range(num_bookings):

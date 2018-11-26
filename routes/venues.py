@@ -6,13 +6,14 @@ from domain.admin_emails import send_venue_validation_email
 from models import ApiErrors
 from models.user_offerer import RightsType
 from models.venue import Venue
-from repository.venue_queries import save_venue
+from repository.venue_queries import save_venue, find_venues
 from utils.includes import VENUE_INCLUDES
 from utils.mailing import MailServiceException
 from utils.rest import ensure_current_user_has_rights, \
                        expect_json_data, \
                        load_or_404
-from validation.venues import validate_coordinates, check_valid_edition
+from validation.venues import validate_coordinates, check_valid_edition, check_get_venues_params
+from validation.exports import check_user_is_admin
 
 
 @app.route('/venues/<venueId>', methods=['GET'])
@@ -55,3 +56,23 @@ def edit_venue(venueId):
     venue.populateFromDict(request.json)
     save_venue(venue)
     return jsonify(venue._asdict(include=VENUE_INCLUDES)), 200
+
+
+@app.route('/venues', methods=['GET'])
+@login_required
+def get_venues():
+    check_user_is_admin(current_user)
+
+    params_keys = ['dpt', 'has_validated_offerer', 'zip_codes', 'from_date', 'to_date', 'has_siret', 'venue_type', 'has_offer']
+    params = {}
+    for key in params_keys:
+        if key == 'dpt' or key == 'zip_codes':
+            params[key] = request.args.getlist(key)    
+        else:
+            params[key] = request.args.get(key)
+
+    check_get_venues_params(params)
+    result = find_venues(dpt=params['dpt'], zip_codes=params['zip_codes'], from_date=params['from_date'], to_date=params['to_date'],
+     has_siret=params['has_siret'], venue_type=params['venue_type'], has_offer=params['has_offer'])
+
+    return jsonify(result), 200
