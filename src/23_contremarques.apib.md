@@ -37,7 +37,7 @@ L'utilisation des deux API de vérification de validité et de validation d'une 
 
     + Body {}
 
-+ Response 204 (application/json) dans le cas où le partenaire n'est pas enregistré
++ Response 204 (application/json) pour une contremarque valide
             
 + Response 404 (application/json)
 
@@ -76,7 +76,7 @@ Valide une contremarque (et la transaction associée). Le partenaire doit rensei
 
     + Body {}
 
-+ Response 204 (application/json)
++ Response 204 (application/json) pour une validation réussie
 
 + Response 400 (application/json)
 
