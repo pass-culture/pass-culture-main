@@ -77,7 +77,7 @@ def do_local_backup_prod_container(prod_container_name, dest_folder_name):
     return 0
 
 
-def do_copy_prod_container_content_to_dest_container(prod_container_name, dest_container_name):
+def do_copy_prod_container_content_to_dest_container(dest_container_name):
     if dest_container_name == 'storage-pc-staging' or dest_container_name == 'storage-pc-dev':
         conn = swift_con(dest_container_name)
     else:
@@ -85,6 +85,7 @@ def do_copy_prod_container_content_to_dest_container(prod_container_name, dest_c
         return 1
 
     prod_conn = swift_con_prod()
+    prod_container_name = "pc-storage"
 
     for data in prod_conn.get_container(prod_container_name)[1]:
         obj_tuple = prod_conn.get_object(prod_container_name, data['name'])
