@@ -48,12 +48,14 @@ class FilterByDates extends PureComponent {
     this.setState({ pickedDate: date })
   }
 
-  isDateChecked = (pickedDate, days, value) =>
-    pickedDate !== null && value === '0-1' ? false : days.includes(value)
+  isDateChecked = (pickedDate, daysInUrlParams, inputValue) =>
+    pickedDate !== null && inputValue === '0-1'
+      ? false
+      : daysInUrlParams.includes(inputValue)
 
   render() {
     const { filterState, title } = this.props
-    const days = decodeURI(filterState.query.jours || '')
+    const daysInUrlParams = decodeURI(filterState.query.jours || '')
 
     const { pickedDate } = this.state
 
@@ -67,7 +69,11 @@ class FilterByDates extends PureComponent {
         <div className="pc-scroll-horizontal is-relative pb18">
           <div className="pc-list flex-columns">
             {DAYS_CHECKBOXES.map(({ label, value }) => {
-              const checked = this.isDateChecked(pickedDate, days, value)
+              const checked = this.isDateChecked(
+                pickedDate,
+                daysInUrlParams,
+                value
+              )
               return (
                 <label
                   key={value}

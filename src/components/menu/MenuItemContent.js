@@ -58,13 +58,9 @@ class MenuItemContent extends React.PureComponent {
 
   render() {
     const { item, location } = this.props
-    // regle stricte
-    // si on est sur la page verso d'une offre
-    // aucun menu n'est actif
-    // TODO: replace with https://reacttraining.com/react-router/web/api/NavLink/location-object
-    const isverso =
+    const isOnCardVerso =
       location.search && location.search.indexOf('?to=verso') !== -1
-    const activeClass = isverso ? null : 'active'
+    const activeClass = isOnCardVerso ? null : 'active'
     const cssclass = (item.disabled && 'is-disabled') || ''
     const options = { activeClass, cssclass }
     if (item.href) return this.renderSimpleLink(options)
