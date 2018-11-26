@@ -9,16 +9,12 @@ def create_handmade_mediations(offers_by_name):
     mediations_by_name = {}
 
     mediations_by_name['Rencontre avec Franck Lepage / THEATRE LE GRAND REX PARIS'] = create_mediation(
-        offers_by_name['Rencontre avec Franck Lepage / THEATRE LE GRAND REX PARIS']
-    )
+        offers_by_name['Rencontre avec Franck Lepage / THEATRE LE GRAND REX PARIS'])
 
-    mediations_by_name['Ravage / THEATRE DE L ODEON'] = create_mediation(
-        offers_by_name['Ravage / THEATRE DE L ODEON']
-    )
+    mediations_by_name['Ravage / THEATRE DE L ODEON'] = create_mediation(offers_by_name['Ravage / THEATRE DE L ODEON'])
 
     mediations_by_name['Le temps des cerises en mode mixolydien / ASSOCIATION KWATA'] = create_mediation(
-        offers_by_name['Le temps des cerises en mode mixolydien / ASSOCIATION KWATA']
-    )
+        offers_by_name['Le temps des cerises en mode mixolydien / ASSOCIATION KWATA'])
 
     PcObject.check_and_save(*mediations_by_name.values())
 

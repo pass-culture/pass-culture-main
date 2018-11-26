@@ -1,11 +1,14 @@
+from datetime import datetime, timedelta
+
 import pytest
 
-from models import PcObject
-from repository.recommendation_queries import filter_out_recommendation_on_soft_deleted_stocks
+from models import PcObject, Recommendation
+from repository.recommendation_queries import filter_out_recommendation_on_soft_deleted_stocks, \
+    filter_unseen_valid_recommendations_for_user
 from tests.conftest import clean_database
 from utils.test_utils import create_recommendation, create_event_offer, create_offerer, \
     create_venue, create_user, create_stock_from_event_occurrence, create_event_occurrence, create_stock_from_offer, \
-    create_thing_offer
+    create_thing_offer, create_mediation
 
 
 @clean_database
@@ -39,3 +42,35 @@ def test_filter_out_recommendation_on_soft_deleted_stocks_returns_recos_with_at_
     assert recommendation1.id in recommendation_ids
     assert recommendation2.id not in recommendation_ids
     assert recommendation3.id in recommendation_ids
+    
+
+@pytest.mark.standalone
+@clean_database
+def test_filter_unseen_valid_recommendations_for_user_only_keeps_non_tuto_recommendations_that_have_not_expired(app):
+    # Given
+    now = datetime.utcnow()
+    five_minutes_ago = now - timedelta(minutes=5)
+    tomorrow = now + timedelta(days=1)
+
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    offer = create_thing_offer(venue)
+    user = create_user()
+    mediation = create_mediation(offer)
+    tuto_mediation = create_mediation(offer, tuto_index=1)
+    invalid_recommendation = create_recommendation(offer, user, mediation, valid_until_date=five_minutes_ago)
+    recommendation_with_no_validity_date = create_recommendation(offer, user, mediation, valid_until_date=None)
+    valid_recommendation = create_recommendation(offer, user, mediation, valid_until_date=tomorrow)
+    tuto_recommendation = create_recommendation(offer, user, tuto_mediation, valid_until_date=None)
+
+    PcObject.check_and_save(invalid_recommendation, valid_recommendation, recommendation_with_no_validity_date, tuto_recommendation)
+
+    query = Recommendation.query
+
+    # When
+    recommendation_query = filter_unseen_valid_recommendations_for_user(query, user, seen_recommendation_ids=[])
+    # Then
+    recommendations = recommendation_query.all()
+    assert len(recommendations) == 2
+    assert valid_recommendation in recommendations
+    assert recommendation_with_no_validity_date in recommendations

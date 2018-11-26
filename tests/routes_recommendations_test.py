@@ -1,6 +1,5 @@
 """ routes recommendations tests """
 from datetime import datetime, timedelta
-from pprint import pprint
 
 import pytest
 
@@ -759,7 +758,7 @@ def test_put_recommendations_returns_active_mediation_only(app):
 
 @clean_database
 @pytest.mark.standalone
-def test_put_recommendations_returns_active_mediation_for_already_existing_but_invalid_recommendations_with_inactive_mediations(app):
+def test_put_recommendations_returns_new_recommendation_with_active_mediation_for_already_existing_but_invalid_recommendations(app):
     # given
     user = create_user()
     offerer = create_offerer()
