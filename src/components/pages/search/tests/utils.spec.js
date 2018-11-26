@@ -281,13 +281,34 @@ describe('src | components | pages | search | utils', () => {
     let result
     let expected
     describe('with keyword search field or filter', () => {
-      // const withPagination = false // FOR CALLS
-
       describe('when there is a keywords but no filters', () => {
         describe('with a search results', () => {
-          it('should return a title for search results', () => {
+          it('should return number of results occurences with resultatS in plural and keyword searched', () => {
             // given
             items = [{}, {}, {}, {}]
+            keywords = 'keyword'
+
+            queryParams = {
+              categories: null,
+              date: null,
+              days: null,
+              distance: null,
+              jours: null,
+              latitude: null,
+              longitude: null,
+              [`mots-cles`]: 'keyword',
+            }
+
+            // when
+            result = searchResultsTitle(keywords, items, queryParams)
+            expected = '"keyword" : 4 résultats'
+
+            // then
+            expect(result).toEqual(expected)
+          })
+          it('should return number of results with resultat in singular and keyword searched', () => {
+            // given
+            items = [{}]
             keywords = 'keyword'
 
             queryParams = {
@@ -305,15 +326,15 @@ describe('src | components | pages | search | utils', () => {
 
             // when
             result = searchResultsTitle(keywords, items, queryParams)
-            expected = '"keyword" : 4 résultats'
+            expected = '"keyword" : 1 résultat'
 
             // then
             expect(result).toEqual(expected)
           })
         })
 
-        describe('without no results', () => {
-          it('should return a title for search results', () => {
+        describe('without results', () => {
+          it('should return should 0 with resultat in singular and keyword searched', () => {
             // given
             items = []
             keywords = 'keyword'
@@ -356,8 +377,6 @@ describe('src | components | pages | search | utils', () => {
               latitude: null,
               longitude: null,
               [`mots-cles`]: 'keyword',
-              page: '2',
-              types: null,
             }
 
             // when
@@ -383,8 +402,6 @@ describe('src | components | pages | search | utils', () => {
               latitude: null,
               longitude: null,
               [`mots-cles`]: 'keyword',
-              page: '2',
-              types: null,
             }
 
             // when
@@ -409,13 +426,11 @@ describe('src | components | pages | search | utils', () => {
         latitude: null,
         longitude: null,
         [`mots-cles`]: null,
-        page: '2',
-        types: null,
       }
       const withPagination = true
 
-      describe('with a search results', () => {
-        it('should return an empty string', () => {
+      describe('with results', () => {
+        it('should not return title', () => {
           // given
           items = [{}]
 

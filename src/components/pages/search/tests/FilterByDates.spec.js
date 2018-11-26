@@ -55,7 +55,7 @@ describe('src | components | pages | search | FilterByDates', () => {
     // WE ADD THE DATE AT THE FIRST DAYS SEGMENTS CLICKED
     // WE REMOVE THE DATE AT THE LAST DAYS SEGMENTS CLICKED
     describe('isDateChecked', () => {
-      it('should ckecked boxes corresponding to days filtered', () => {
+      it('should ckeck boxes corresponding to days filtered', () => {
         const wrapper = shallow(<FilterByDates {...initialProps} />)
         const pickedDate = null
         const days = '0-1, 5-10000'
@@ -116,47 +116,6 @@ describe('src | components | pages | search | FilterByDates', () => {
         })
         it('should uncheck days checkboxes ', () => {
           // TODO
-        })
-      })
-    })
-
-    describe.skip('onChange', () => {
-      describe('when a day is checked', () => {
-        describe('when no days has been checked before', () => {
-          it('should call ', () => {
-            // given
-            const props = {
-              filterActions: {
-                add: filterActionsAdd,
-                change: filterActionsChange,
-                remove: filterActionsRemove,
-                replace: filterActionsReplace,
-              },
-              filterState: {
-                isNew: false,
-                query: {
-                  categories: null,
-                  date: null,
-                  distance: null,
-                  jours: null,
-                  latitude: null,
-                  longitude: null,
-                  'mots-cles': null,
-                  orderBy: 'offer.id+desc',
-                },
-              },
-              title: 'Fake title',
-            }
-            const day = '0-1'
-            // modifier le state pour DAYS_CHECKBOXES
-            // when
-            const wrapper = shallow(<FilterByDates {...props} />)
-            wrapper.instance().onChange(day)
-
-            // then
-            expect(filterActionsChange).toHaveBeenCalledWith('TRUC MUCHE')
-            expect(filterActionsAdd).toHaveBeenCalledWith('TRUC MUCHE')
-          })
         })
       })
     })

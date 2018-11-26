@@ -61,7 +61,7 @@ describe('src | components | pages | SearchPageContent', () => {
 
   describe('render', () => {
     describe('Main', () => {
-      describe('On Home', () => {
+      describe('On search home page', () => {
         const wrapper = shallow(<SearchPageContent {...initialProps} />)
         const button = wrapper.find('button').at(0)
         it('should render the page title', () => {
@@ -94,7 +94,7 @@ describe('src | components | pages | SearchPageContent', () => {
           expect(searchFilterComponent.props().isVisible).toEqual(false)
         })
       })
-      describe('when state isFilterVisible is setted to true ', () => {
+      describe('When state isFilterVisible is setted to true ', () => {
         it('should be visible', () => {
           // when
           const wrapper = shallow(<SearchPageContent {...initialProps} />)

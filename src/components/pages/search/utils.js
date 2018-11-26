@@ -98,8 +98,6 @@ const formatDate = (date, tz) =>
 export const getRecommendationDateString = offer => {
   if (offer.eventId === null) return 'permanent'
   const departementCode = offer.venue.departementCode
-  // TODO LINTER :
-  // const departementCode = {...offer.venue}
   const tz = getTimezone(departementCode)
 
   const fromDate = offer.dateRange[0]
