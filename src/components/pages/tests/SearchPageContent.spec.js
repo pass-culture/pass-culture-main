@@ -3,7 +3,7 @@ import { shallow } from 'enzyme'
 
 import SearchPageContent from '../SearchPageContent'
 
-describe('src | components | pages | SearchPageContentContent', () => {
+describe('src | components | pages | SearchPageContent', () => {
   // Initializing Mocks
   const dispatchMock = jest.fn()
   const paginationChangeMock = jest.fn()
@@ -208,27 +208,9 @@ describe('src | components | pages | SearchPageContentContent', () => {
           }
 
           // THEN
-          expect(dispatchMock.mock.calls.length).toBe(2)
+          expect(dispatchMock.mock.calls.length).toBe(1)
           expect(dispatchMock.mock.calls[0][0]).toEqual(
             expectedRequestedGetTypes
-          )
-        })
-
-        it('should in a second time, dispatch requestData for recommendations based on apiQueryString when component is rendered', () => {
-          const expectedRequestData = {
-            config: {
-              handleFail: () => {},
-              handleSuccess: () => {},
-            },
-            method: 'GET',
-            path: 'recommendations?page=1&orderBy=offer.id+desc',
-            type: 'REQUEST_DATA_GET_RECOMMENDATIONS?PAGE=UNDEFINED&UNDEFINED',
-          }
-
-          // then
-          expect(dispatchMock.mock.calls.length).toBe(2)
-          expect(dispatchMock.mock.calls[1][0].path).toEqual(
-            expectedRequestData.path
           )
         })
       })

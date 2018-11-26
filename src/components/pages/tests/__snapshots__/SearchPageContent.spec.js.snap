@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | pages | SearchPageContentContent snapshot should match snapshot 1`] = `
+exports[`src | components | pages | SearchPageContent snapshot should match snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <SearchPageContent
@@ -15,23 +15,8 @@ ShallowWrapper {
               "type": "REQUEST_DATA_GET_TYPES",
             },
           ],
-          Array [
-            Object {
-              "config": Object {
-                "handleFail": [Function],
-                "handleSuccess": [Function],
-              },
-              "method": "GET",
-              "path": "recommendations?page=1&orderBy=offer.id+desc",
-              "type": "REQUEST_DATA_GET_RECOMMENDATIONS?PAGE=1&ORDERBY=OFFER.ID+DESC",
-            },
-          ],
         ],
         "results": Array [
-          Object {
-            "isThrow": false,
-            "value": undefined,
-          },
           Object {
             "isThrow": false,
             "value": undefined,

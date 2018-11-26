@@ -53,7 +53,6 @@ class SearchPageContent extends PureComponent {
     if (view !== 'resultats') return
 
     const path = `recommendations?page=${page}&${apiQueryString}`
-
     dispatch(
       requestData('GET', path, {
         handleFail,
