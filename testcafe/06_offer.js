@@ -134,13 +134,8 @@ test("Je peux créer une occurence d'événement", async t => {
 test('Je peux créer une autre occurence', async t => {
   await t.useRole(regularOfferer)
 
-<<<<<<< HEAD
   const editOfferAnchor = Selector('a.edit-link:first-child')
   const manageStockAnchor = Selector('a.manage-stock')
-=======
-  const editOfferAnchor = Selector('.event a.edit-link:first-child')
-  const manageStockAnchor = Selector('a.manageStock')
->>>>>>> pc-119 use enter on stock form
 
   await t
     .click(editOfferAnchor)
@@ -159,7 +154,7 @@ test('Je peux créer une occurence en utilisant la touche Entrée', async t => {
   await t.useRole(regularOfferer)
 
   const editOfferAnchor = Selector('.event a.edit-link:first-child')
-  const manageStockAnchor = Selector('a.manageStock')
+  const manageStockAnchor = Selector('a.manage-stock')
 
   await t
     .click(editOfferAnchor)
