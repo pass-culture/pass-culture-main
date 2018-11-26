@@ -4,7 +4,9 @@
         <div id="mail-content">
             Vous venez de créer un compte pass Culture pro avec votre adresse {{ user.email }}.
             Vous pouvez valider votre adresse email en suivant ce lien : <br>
-            <a href="{{ api_url }}/validate/user/{{ user.validationToken }}">{{ api_url }}/validate/user/{{ user.validationToken }}</a>
+            <a href="{{ app_origin_url }}/inscription/validation/{{ user.validationToken }}">
+                {{ app_origin_url }}/inscription/validation/{{ user.validationToken }}
+            </a>
         </div>
     </body>
 </html>

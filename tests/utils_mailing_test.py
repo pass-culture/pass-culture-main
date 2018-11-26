@@ -878,10 +878,12 @@ class UserValidationEmailsTest:
         # Given
         user = create_user(email="test@email.com")
         user.generate_validation_token()
+        app_origin_url = 'portail-pro'
 
         # When
         with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True):
-            email = make_user_validation_email(user, is_webapp=True)
+            email = make_user_validation_email(user, app_origin_url, is_webapp=True)
+
         # Then
         email_html = BeautifulSoup(email['Html-part'], 'html.parser')
         mail_content = email_html.find("div", {"id": 'mail-content'}).text
@@ -896,25 +898,27 @@ class UserValidationEmailsTest:
         assert email['Subject'] == 'Validation de votre adresse email pour le pass Culture'
         assert email['FromEmail'] == 'passculture@beta.gouv.fr'
 
-
     @pytest.mark.standalone
     def test_make_pro_user_validation_email_includes_validation_url_with_token_and_user_email(self, app):
         # Given
         user = create_user(email="test@email.com")
         user.generate_validation_token()
+        app_origin_url = 'portail-pro'
 
         # When
-        email = make_user_validation_email(user, is_webapp=False)
+        email = make_user_validation_email(user, app_origin_url, is_webapp=False)
+
         # Then
         email_html = BeautifulSoup(email['Html-part'], 'html.parser')
         mail_content = email_html.find("div", {"id": 'mail-content'}).text
-        assert 'Cher partenaire pass Culture,'.format(user.publicName) in email_html.find("p", {"id": 'mail-greeting'}).text
+        assert 'Cher partenaire pass Culture,'.format(user.publicName) in email_html.find("p",
+                                                                                          {"id": 'mail-greeting'}).text
         assert "Vous venez de créer un compte pass Culture pro avec votre adresse test@email.com." in mail_content
 
-        assert 'localhost/validate/user/{}'.format(user.validationToken) in \
+        assert 'portail-pro/inscription/validation/{}'.format(user.validationToken) in \
                email_html.find('a', href=True)['href']
         assert 'Vous pouvez valider votre adresse email en suivant ce lien :' in mail_content
-        assert 'localhost/validate/user/{}'.format(user.validationToken) in mail_content
+        assert 'portail-pro/inscription/validation/{}'.format(user.validationToken) in mail_content
         assert email['FromName'] == 'pass Culture pro'
 
 

@@ -88,4 +88,4 @@ def validate_user(token):
         except MailServiceException as e:
             app.logger.error('Mail service failure', e)
 
-    return "", 202
+    return jsonify({}), 202

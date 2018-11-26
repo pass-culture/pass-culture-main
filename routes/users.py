@@ -186,6 +186,7 @@ def signup():
 def signup_webapp():
     objects_to_save = []
     password = request.json.get('password')
+    app_origin_url = request.headers.get('origin')
     check_valid_signup(request)
     check_password_strength('password', password)
 
@@ -204,7 +205,7 @@ def signup_webapp():
 
     PcObject.check_and_save(*objects_to_save)
     try:
-        send_user_validation_email(new_user, app.mailjet_client.send.create, is_webapp=True)
+        send_user_validation_email(new_user, app.mailjet_client.send.create, app_origin_url, is_webapp=True)
     except MailServiceException as e:
         app.logger.error('Mail service failure', e)
 
@@ -218,6 +219,8 @@ def signup_webapp():
 def signup_pro():
     objects_to_save = []
     password = request.json.get('password')
+    app_origin_url = request.headers.get('origin')
+
     check_valid_signup(request)
     check_password_strength('password', password)
     new_user = User(from_dict=request.json)
@@ -241,7 +244,7 @@ def signup_pro():
     PcObject.check_and_save(*objects_to_save)
 
     try:
-        send_user_validation_email(new_user, app.mailjet_client.send.create, is_webapp=False)
+        send_user_validation_email(new_user, app.mailjet_client.send.create, app_origin_url, is_webapp=False)
     except MailServiceException as e:
         app.logger.error('Mail service failure', e)
 

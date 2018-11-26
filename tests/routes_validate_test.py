@@ -99,6 +99,7 @@ def test_validate_user_when_validation_token_exists_should_put_validation_token_
 
     # Then
     assert response.status_code == 202
+    assert response.json() == {}
     db.session.refresh(user)
     assert user.isValidated
 

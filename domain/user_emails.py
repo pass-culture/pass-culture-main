@@ -137,8 +137,8 @@ def send_venue_validation_confirmation_email(venue, send_create_email):
     check_if_email_sent(mail_result)
 
 
-def send_user_validation_email(user, send_create_email, is_webapp):
-    email = make_user_validation_email(user, is_webapp)
+def send_user_validation_email(user, send_create_email, app_origin_url, is_webapp):
+    email = make_user_validation_email(user, app_origin_url, is_webapp)
     mail_result = send_create_email(data=email)
     check_if_email_sent(mail_result)
 

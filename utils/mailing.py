@@ -264,14 +264,14 @@ def make_venue_validation_email(venue):
     }
 
 
-def make_user_validation_email(user, is_webapp):
+def make_user_validation_email(user, app_origin_url, is_webapp):
     if is_webapp:
         template = 'mails/webapp_user_validation_email.html'
         from_name = 'pass Culture'
     else:
         template = 'mails/pro_user_validation_email.html'
         from_name = 'pass Culture pro'
-    email_html = render_template(template, user=user, api_url=API_URL)
+    email_html = render_template(template, user=user, api_url=API_URL, app_origin_url=app_origin_url)
     return {'Html-part': email_html,
             'To': user.email,
             'Subject': 'Validation de votre adresse email pour le pass Culture',
