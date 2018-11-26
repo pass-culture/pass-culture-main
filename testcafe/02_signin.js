@@ -39,8 +39,8 @@ test("J'ai un compte valide, en cliquant sur 'se connecter' je suis redirigé·e
 
 test("J'ai un compte valide, en appuyant sur la touche 'Entrée' je suis redirigé·e vers la page /offres sans erreurs", async t => {
   await t
-    .typeText(inputUsersIdentifier, offererUser.email)
-    .typeText(inputUsersPassword, offererUser.password)
+    .typeText(inputUsersIdentifier, offererUser0.email)
+    .typeText(inputUsersPassword, offererUser0.password)
     .pressKey('Enter')
 
   const location = await t.eval(() => window.location)
