@@ -1,6 +1,6 @@
 """ venues """
 from flask import current_app as app, jsonify, request
-from flask_login import login_required
+from flask_login import login_required, current_user
 
 from domain.admin_emails import send_venue_validation_email
 from models import ApiErrors
@@ -63,7 +63,8 @@ def edit_venue(venueId):
 def get_venues():
     check_user_is_admin(current_user)
 
-    params_keys = ['dpt', 'has_validated_offerer', 'zip_codes', 'from_date', 'to_date', 'has_siret', 'venue_type', 'has_offer']
+    params_keys = ['dpt', 'has_validated_offerer', 'zip_codes', 'from_date', 'to_date', 'has_siret',
+    'venue_type', 'has_offer', 'is_validated']
     params = {}
     for key in params_keys:
         if key == 'dpt' or key == 'zip_codes':
@@ -73,6 +74,7 @@ def get_venues():
 
     check_get_venues_params(params)
     result = find_venues(dpt=params['dpt'], zip_codes=params['zip_codes'], from_date=params['from_date'], to_date=params['to_date'],
-     has_siret=params['has_siret'], venue_type=params['venue_type'], has_offer=params['has_offer'])
+     has_siret=params['has_siret'], venue_type=params['venue_type'], has_offer=params['has_offer'], is_validated=params['is_validated']
+     )
 
     return jsonify(result), 200

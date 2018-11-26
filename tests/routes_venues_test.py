@@ -1,6 +1,7 @@
 import pytest
 from flask import session
 
+import requests
 from models import PcObject, Venue
 from models.db import db
 from tests.conftest import clean_database
@@ -359,12 +360,13 @@ def test_get_venues_returns_200_when_user_is_admin(app):
 @clean_database
 def test_get_venues_returns_403_when_user_is_structure_admin_but_not_admin(app):
     #given
-    user = create_user(password='p@55sw0rd', is_admin=False, can_book_free_offers=False)
+    # password='p@55sw0rd', 
+    user = create_user(is_admin=False, can_book_free_offers=False)
     offerer = create_offerer()
     user_offerer = create_user_offerer(user, offerer, is_admin=True)
     venue = create_venue(offerer)
     PcObject.check_and_save(user_offerer, venue)
-    auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
+    auth_request = req_with_auth(email=user.email, password=user.clearTextPassword)
 
     #when
     response = auth_request.get(API_URL + '/venues')

@@ -58,7 +58,7 @@ def check_get_venues_params(param: {}) -> []:
         _check_dpt_list(param['dpt'])
 
     if param.get('has_validated_offerer', None):
-        _check_has_validated_offerer_input(param['has_validated_offerer'])
+        _check_has_validated_offerer_param(param['has_validated_offerer'])
 
     if param.get('zip_codes', []):
         _check_zip_codes_list(param['zip_codes'])
@@ -70,13 +70,16 @@ def check_get_venues_params(param: {}) -> []:
         _check_date_format(param['to_date'])
 
     if param.get('has_siret', None):
-        _check_has_siret_input(param['has_siret'])
+        _check_has_siret_param(param['has_siret'])
 
     if param.get('venue_type', None):
-        _check_venue_type_input(param['venue_type'])
+        _check_venue_type_param(param['venue_type'])
 
     if param.get('has_offer', None):
-        _check_has_offer_input(param['has_offer'])
+        _check_has_offer_param(param['has_offer'])
+
+    if param.get('is_validated', None):
+        _check_is_validated_param(param['is_validated'])
 
     return True
 
@@ -102,7 +105,7 @@ def _check_dpt_list(dpt_list:  []) -> bool:
 def _check_zip_codes_list(zip_codes_list:  []) -> bool:
 
     for zip_code in zip_codes_list:
-        if not re.search('^\d{5}$|^2{1}(a|b)\d{3}$', zip_code):
+        if not re.search('^\d{5}$|^2{1}(a|b|A|B)\d{3}$', zip_code):
             api_errors = ApiErrors()
             api_errors.addError('zip_codes',
                 'zip_codes de type xxxxx (5 chiffres, ex: 78140 ou 2a000)')
@@ -110,9 +113,9 @@ def _check_zip_codes_list(zip_codes_list:  []) -> bool:
     return True
 
 
-def _check_has_validated_offerer_input(has_validated_offerer: str) -> bool:
-    valid_input = ['YES', 'NO']
-    for elem in valid_input:
+def _check_has_validated_offerer_param(has_validated_offerer: str) -> bool:
+    valid_param = ['YES', 'NO']
+    for elem in valid_param:
         if has_validated_offerer == elem:
             return True
     api_errors = ApiErrors()
@@ -121,31 +124,41 @@ def _check_has_validated_offerer_input(has_validated_offerer: str) -> bool:
     raise api_errors
 
 
-def _check_venue_type_input(venue_type: str) -> bool:
-    valid_input = ['NOT_VIRTUAL', 'VIRTUAL']
-    for elem in valid_input:
+def _check_venue_type_param(venue_type: str) -> bool:
+    valid_param = ['NOT_VIRTUAL', 'VIRTUAL']
+    for elem in valid_param:
         if venue_type == elem:
             return True
     api_errors = ApiErrors()
-    api_errors.addError('venue_type', 'venue_type_input accepte NOT_VIRTUAL ou VIRTUAL')
+    api_errors.addError('venue_type', 'venue_type accepte NOT_VIRTUAL ou VIRTUAL')
     raise api_errors
 
 
-def _check_has_offer_input(has_offer: str) -> bool:
-    valid_input = ['ALL', 'VALID', 'WITHOUT', 'EXPIRED']
-    for elem in valid_input:
+def _check_has_offer_param(has_offer: str) -> bool:
+    valid_param = ['ALL', 'VALID', 'WITHOUT', 'EXPIRED']
+    for elem in valid_param:
         if has_offer == elem:
             return True
     api_errors = ApiErrors()
-    api_errors.addError('has_offer', 'has_offer_input accepte ALL ou VALID ou WITHOUT ou EXPIRED')
+    api_errors.addError('has_offer', 'has_offer accepte ALL ou VALID ou WITHOUT ou EXPIRED')
     raise api_errors
 
 
-def _check_has_siret_input(has_siret: str) -> bool:
-    valid_input = ['YES', 'NO']
-    for elem in valid_input:
+def _check_has_siret_param(has_siret: str) -> bool:
+    valid_param = ['YES', 'NO']
+    for elem in valid_param:
         if has_siret == elem:
             return True
     api_errors = ApiErrors()
-    api_errors.addError('has_siret', 'has_siret_input accepte YES ou NO')   
+    api_errors.addError('has_siret', 'has_siret accepte YES ou NO')   
+    raise api_errors
+
+
+def _check_is_validated_param(is_validated: str) -> bool:
+    valid_param = ['YES', 'NO']
+    for elem in valid_param:
+        if is_validated == elem:
+            return True
+    api_errors = ApiErrors()
+    api_errors.addError('is_validated', 'is_validated accepte YES ou NO')   
     raise api_errors

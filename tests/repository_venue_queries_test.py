@@ -195,7 +195,30 @@ def test_find_venues_has_siret_param(app):
     assert venue_virtual not in query_has_no_siret_and_not_virtual
     assert venue_with_siret not in query_has_no_siret_and_not_virtual
     assert len(query_has_siret_and_virtual) == 0
+
+
+@pytest.mark.standalone
+@clean_database
+def test_find_venues_is_validated_param(app):
+    # Given
+    offerer = create_offerer()
+    venue_not_validated = create_venue(offerer, validation_token="there is a token here")
+    venue_validated = create_venue(offerer, siret='12345678912346')
+    PcObject.check_and_save(venue_not_validated, venue_validated)
     
+    # When
+    default_query = find_venues()
+    query_only_validated = find_venues(is_validated='YES')
+    query_no_validated = find_venues(is_validated='NO')
+
+    # Then
+    assert venue_not_validated in default_query
+    assert venue_validated in default_query
+    assert venue_not_validated not in query_only_validated 
+    assert venue_validated in query_only_validated 
+    assert venue_not_validated in query_no_validated
+    assert venue_validated not in query_no_validated
+
 
 @pytest.mark.standalone
 @clean_database

@@ -7,7 +7,6 @@ from models.venue import TooManyVirtualVenuesException
 from models.activity import load_activity
 from repository.offer_queries import with_active_and_validated_offerer
 
-from pprint import pprint
 
 def save_venue(venue):
     try:
@@ -23,17 +22,16 @@ def find_by_id(venue_id):
 
 
 def find_venues(has_validated_offerer=None,
-                                              dpt=None,
-                                              zip_codes=None,
-                                              from_date=None,
-                                              to_date=None,
-                                              has_siret=None,
-                                              venue_type=None,
-                                              has_offer=None):
+                dpt=None,
+                zip_codes=None,
+                from_date=None,
+                to_date=None,
+                has_siret=None,
+                venue_type=None,
+                has_offer=None, 
+                is_validated=None):
 
     query = db.session.query(Venue) 
-
-    pprint (dpt)
 
     if venue_type:
         if venue_type == 'NOT_VIRTUAL':
@@ -78,6 +76,12 @@ def find_venues(has_validated_offerer=None,
             query = query.filter(Venue.siret == None)
         elif has_siret == 'YES':
             query = query.filter(Venue.siret != None)
+
+    if is_validated:
+        if is_validated == 'YES':
+            query = query.filter(Venue.validationToken == None)
+        elif is_validated == 'NO':
+            query = query.filter(Venue.validationToken != None)
     
     if has_offer:
         if has_offer == 'ALL':

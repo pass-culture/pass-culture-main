@@ -100,6 +100,7 @@ def test_check_get_venues_params_raises_api_error_if_not_valid_date(app):
     # then
     assert errors.value.errors['date_format'] == ['to_date ou from_date doit être de type aaaa-mm-jj']
 
+
 @pytest.mark.standalone
 def test_check_get_venues_params_raises_api_error_if_not_valid_dpt_list(app):
     # given
@@ -112,6 +113,7 @@ def test_check_get_venues_params_raises_api_error_if_not_valid_dpt_list(app):
 
     # then
     assert errors.value.errors['dpt'] == ['dpt doit être de type xx ou xxx (2 ou 3 chiffres), ou 2A, ou 2B)']
+
 
 @pytest.mark.standalone
 def test_check_get_venues_params_raises_api_error_if_not_valid_zip_codes_list(app):
@@ -127,57 +129,62 @@ def test_check_get_venues_params_raises_api_error_if_not_valid_zip_codes_list(ap
     assert errors.value.errors['zip_codes'] == \
         ['zip_codes de type xxxxx (5 chiffres, ex: 78140 ou 2a000)']
 
+
 @pytest.mark.standalone
-def test_check_get_venues_params_raises_api_error_if_not_valid_has_validated_offerer_input(app):
+def test_check_get_venues_params_raises_api_error_if_not_valid_has_validated_offerer_param(app):
     # given
-    not_valid_has_validated_offerer_input = {}
-    not_valid_has_validated_offerer_input['has_validated_offerer'] = 'oui'
+    not_valid_has_validated_offerer_param = {}
+    not_valid_has_validated_offerer_param['has_validated_offerer'] = 'oui'
 
     # when
     with pytest.raises(ApiErrors) as errors:
-        check_get_venues_params(not_valid_has_validated_offerer_input)
+        check_get_venues_params(not_valid_has_validated_offerer_param)
 
     # then
     assert errors.value.errors['has_validated_offerer'] == ['has_validated_offerer accepte YES ou NO']
 
+
 @pytest.mark.standalone
-def test_check_get_venues_params_raises_api_error_if_not_valid_has_siret_input(app):
+def test_check_get_venues_params_raises_api_error_if_not_valid_has_siret_param(app):
     # given
-    not_valid_has_siret_input = {}
-    not_valid_has_siret_input['has_siret'] = "peut-être"
+    not_valid_has_siret_param = {}
+    not_valid_has_siret_param['has_siret'] = "peut-être"
     
     # when
     with pytest.raises(ApiErrors) as errors:
-        check_get_venues_params(not_valid_has_siret_input)
+        check_get_venues_params(not_valid_has_siret_param)
 
     # then
-    assert errors.value.errors['has_siret'] == ['has_siret_input accepte YES ou NO']
+    assert errors.value.errors['has_siret'] == ['has_siret accepte YES ou NO']
+
 
 @pytest.mark.standalone
-def test_check_get_venues_params_raises_api_error_if_not_valid_venue_type_input(app):
+def test_check_get_venues_params_raises_api_error_if_not_valid_venue_type_param(app):
     # given
-    not_valid_venue_type_input = {}
-    not_valid_venue_type_input['venue_type'] = "De type moderne"
+    not_valid_venue_type_param = {}
+    not_valid_venue_type_param['venue_type'] = "De type moderne"
 
     # when
     with pytest.raises(ApiErrors) as errors:
-        check_get_venues_params(not_valid_venue_type_input)
+        check_get_venues_params(not_valid_venue_type_param)
 
     # then
-    assert errors.value.errors['venue_type'] == ['venue_type_input accepte NOT_VIRTUAL ou VIRTUAL']
+    assert errors.value.errors['venue_type'] == ['venue_type accepte NOT_VIRTUAL ou VIRTUAL']
+
 
 @pytest.mark.standalone
-def test_check_get_venues_params_raises_api_error_if_not_valid_has_offer_input(app):
+def test_check_get_venues_params_raises_api_error_if_not_valid_is_validated_param(app):
     # given
-    not_valid_has_offer_input = {}
-    not_valid_has_offer_input['has_offer'] = 'plein'
+    not_valid_is_validated_param = {}
+    not_valid_is_validated_param['is_validated'] = 'plein'
 
     # when
     with pytest.raises(ApiErrors) as errors:
-        check_get_venues_params(not_valid_has_offer_input)
+        check_get_venues_params(not_valid_is_validated_param)
 
     # then
-    assert errors.value.errors['has_offer'] == ['has_offer_input accepte ALL ou VALID ou WITHOUT ou EXPIRED']
+    assert errors.value.errors['is_validated'] == ['is_validated accepte YES ou NO']
+
 
 @pytest.mark.standalone
 def test_check_get_venues_params_does_not_raise_api_error_if_good_param(app):

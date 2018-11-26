@@ -503,6 +503,7 @@ def create_venue(
         longitude='2.4002701',
         latitude='48.8363788',
         siret='12345678912345',
+        validation_token=None,
         comment=None,
         idx=None
 ):
@@ -521,6 +522,7 @@ def create_venue(
     venue.longitude = longitude
     venue.latitude = latitude
     venue.siret = siret
+    venue.validationToken = validation_token
     venue.comment = comment
     venue.id = idx
     return venue
