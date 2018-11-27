@@ -174,19 +174,25 @@ test('Je peux créer une occurence en utilisant la touche Entrée', async t => {
 })
 
 test('Je peux interrompre la saisie en utilisant la touche Escape', async t => {
+  // Given
   await t.useRole(regularOfferer)
+  const editOfferAnchor = Selector('.event a.edit-link:first-child')
+  const manageStockAnchor = Selector('a.manage-stock')
 
-  const editOfferAnchor = Selector('.event a.editLink:first-child')
-  const manageStockAnchor = Selector('a.manageStock')
-
+  // When
   await t
     .click(editOfferAnchor)
     .click(manageStockAnchor)
     .pressKey('Enter')
+
+  // Then
   let location = await t.eval(() => window.location)
   await t.expect(location.search).eql('?gestion&date=nouvelle')
 
+  // When
   await t.pressKey('esc')
+
+  // Then
   location = await t.eval(() => window.location)
   await t
     .expect(location.search)
@@ -196,15 +202,18 @@ test('Je peux interrompre la saisie en utilisant la touche Escape', async t => {
 })
 
 test('Je peux femer la fenêtre en utilisant la touche Escape', async t => {
+  // Given
   await t.useRole(regularOfferer)
+  const editOfferAnchor = Selector('.event a.edit-link:first-child')
+  const manageStockAnchor = Selector('a.manage-stock')
 
-  const editOfferAnchor = Selector('.event a.editLink:first-child')
-  const manageStockAnchor = Selector('a.manageStock')
-
+  // When
   await t
     .click(editOfferAnchor)
     .click(manageStockAnchor)
     .pressKey('esc')
+
+  // Then
   let location = await t.eval(() => window.location)
   await t
     .expect(location.search)
