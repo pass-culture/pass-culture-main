@@ -173,6 +173,46 @@ test('Je peux créer une occurence en utilisant la touche Entrée', async t => {
   await t.expect(location.search).match(/\?gestion$/)
 })
 
+test('Je peux interrompre la saisie en utilisant la touche Escape', async t => {
+  await t.useRole(regularOfferer)
+
+  const editOfferAnchor = Selector('.event a.editLink:first-child')
+  const manageStockAnchor = Selector('a.manageStock')
+
+  await t
+    .click(editOfferAnchor)
+    .click(manageStockAnchor)
+    .pressKey('Enter')
+  let location = await t.eval(() => window.location)
+  await t.expect(location.search).eql('?gestion&date=nouvelle')
+
+  await t.pressKey('esc')
+  location = await t.eval(() => window.location)
+  await t
+    .expect(location.search)
+    .eql('?gestion')
+    .expect(location.href)
+    .match(/offres\/[A-Z0-9]+/i)
+})
+
+test('Je peux femer la fenêtre en utilisant la touche Escape', async t => {
+  await t.useRole(regularOfferer)
+
+  const editOfferAnchor = Selector('.event a.editLink:first-child')
+  const manageStockAnchor = Selector('a.manageStock')
+
+  await t
+    .click(editOfferAnchor)
+    .click(manageStockAnchor)
+    .pressKey('esc')
+  let location = await t.eval(() => window.location)
+  await t
+    .expect(location.search)
+    .eql('')
+    .expect(location.href)
+    .match(/offres\/[A-Z0-9]+/i)
+})
+
 test('Je peux modifier une occurence', async t => {
   await t.useRole(regularOfferer)
 
