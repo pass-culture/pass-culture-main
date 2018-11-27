@@ -268,32 +268,34 @@ class PcObject():
                     value = dehumanize(data.get(key))
                 else:
                     value = data.get(key)
-                if isinstance(value, str) and isinstance(col.type, Integer):
-                    try:
-                        setattr(self, key, Decimal(value))
-                    except InvalidOperation:
-                        error = DecimalCastError()
-                        error.addError(col.name, 'Invalid value for %s (integer): %r'  % (key, value))
-                        raise error
-                elif isinstance(value, str) and (isinstance(col.type, Float) or isinstance(col.type, Numeric)):
-                    try:
-                        setattr(self, key, Decimal(value))
-                    except InvalidOperation:
-                        error = DecimalCastError()
-                        error.addError(col.name, 'Invalid value for %s (float): %r' % (key, value))
-                        raise error
+                value_is_string = isinstance(value, str)
+                if value_is_string and isinstance(col.type, Integer):
+                    self._try_to_set_attribute_with_decimal_value(col, key, value, 'integer')
+                elif value_is_string and (isinstance(col.type, Float) or isinstance(col.type, Numeric)):
+                    self._try_to_set_attribute_with_decimal_value(col, key, value, 'float')
                 elif not isinstance(value, datetime) and isinstance(col.type, DateTime):
-                    try:
-                        datetime_value = self._deserialize_datetime(key, value)
-                        setattr(self, key, datetime_value)
-                    except TypeError:
-                        error = DateTimeCastError()
-                        error.addError(col.name, 'Invalid value for %s (datetime): %r' % (key, value))
-                        raise error
-                elif isinstance(value, str) and isinstance(col.type, String):
+                    self._try_to_set_attribute_with_deserialized_datetime(col, key, value)
+                elif value_is_string and isinstance(col.type, String):
                     setattr(self, key, value.strip() if value else value)
                 else:
                     setattr(self, key, value)
+
+    def _try_to_set_attribute_with_deserialized_datetime(self, col, key, value):
+        try:
+            datetime_value = self._deserialize_datetime(key, value)
+            setattr(self, key, datetime_value)
+        except TypeError:
+            error = DateTimeCastError()
+            error.addError(col.name, "Invalid value for %s (datetime): %r" % (key, value))
+            raise error
+
+    def _try_to_set_attribute_with_decimal_value(self, col, key, value, expected_format):
+        try:
+            setattr(self, key, Decimal(value))
+        except InvalidOperation:
+            error = DecimalCastError()
+            error.addError(col.name, "Invalid value for {} ({}): '{}'".format(key, expected_format, value))
+            raise error
 
     @staticmethod
     def check_and_save(*objects):
