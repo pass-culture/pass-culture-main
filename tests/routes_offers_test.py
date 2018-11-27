@@ -1,10 +1,11 @@
 """ routes offers tests """
 import secrets
 from datetime import datetime, timedelta
+from pprint import pprint
 
 import pytest
 
-from models import PcObject, Venue, EventType
+from models import PcObject, Venue, EventType, ThingType
 from models.db import db
 from tests.conftest import clean_database
 from utils.human_ids import dehumanize, humanize
@@ -353,8 +354,48 @@ def test_list_activation_offers_returns_offers_of_event_type(app):
 
     # then
     json = response.json()
-    event_ids = map(lambda x: x['eventId'], json)
+    event_ids = list(map(lambda x: x['eventId'], json))
     assert len(json) == 2
     assert response.status_code == 200
     assert humanize(offer2.eventId) in event_ids
     assert humanize(offer3.eventId) in event_ids
+
+
+@clean_database
+@pytest.mark.standalone
+def test_list_offers_returns_list_of_offers_with_thing_or_event_with_type_details(app):
+    # given
+    user = create_user(password='p@55sw0rd', is_admin=True, can_book_free_offers=False)
+    offerer = create_offerer()
+    venue = create_venue(offerer, siret=offerer.siren + '12345', postal_code='93000', departement_code='93')
+    event_offer = create_event_offer(venue, event_type=EventType.SPECTACLE_VIVANT)
+    thing_offer = create_thing_offer(venue, thing_type=ThingType.LIVRE_EDITION)
+    stock_event = create_stock_from_offer(event_offer, price=0)
+    stock_thing = create_stock_from_offer(thing_offer, price=0)
+    PcObject.check_and_save(user, stock_event, stock_thing)
+
+    expected_thing_type = {'label': "Livre — Édition",
+                           'offlineOnly': False,
+                           'onlineOnly': False,
+                           'sublabel': "Lire",
+                           'description': "S’abonner à un quotidien d’actualité ? À un hebdomadaire humoristique ? À un mensuel dédié à la nature ? Acheter une BD ou un manga ? Ou tout simplement ce livre dont tout le monde parle ?"}
+    expected_event_type = {'label': "Spectacle vivant",
+                           'offlineOnly': True,
+                           'onlineOnly': False,
+                           'sublabel': "Applaudir",
+                           'description': "Suivre un géant de 12 mètres dans la ville ? Rire aux éclats devant un stand up ? Rêver le temps d’un opéra ou d’un spectacle de danse ? Assister à une pièce de théâtre, ou se laisser conter une histoire ?"
+                           }
+
+    auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
+
+    # when
+    response = auth_request.get(API_URL + '/offers')
+
+    # then
+    json = response.json()
+    types = list(map(lambda x: x['thing']['enum_type'] if 'thing' in x else x['event']['enum_type'], json))
+    thing_or_event_keys = list(map(lambda x: x['thing'].keys() if 'thing' in x else x['event'].keys(), json))
+    assert response.status_code == 200
+    assert expected_thing_type in types
+    assert expected_event_type in types
+    assert "type" not in thing_or_event_keys
