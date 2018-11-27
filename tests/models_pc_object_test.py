@@ -5,6 +5,7 @@ import pytest
 from sqlalchemy import Column, DateTime, Integer, Float
 
 from models import PcObject, Offer, EventOccurrence, User
+from models import ThingType
 from models.api_errors import DecimalCastError, DateTimeCastError
 from models.db import Model
 from models.pc_object import serialize
@@ -103,6 +104,22 @@ def test_serialize_on_datetime_list_returns_string_with_date_in_ISO_8601_list():
     # Then
     for datetime in serialized_list:
         assert_is_in_ISO_8601_format(datetime)
+
+
+@pytest.mark.standalone
+def test_serialize_enum_returns_dict_with_enum_value():
+    # Given
+    enum = ThingType.JEUX
+
+    # When
+    serialized_enum = serialize(enum)
+
+    # Then
+    assert serialized_enum == {'label': 'Jeux (Biens physiques)',
+                               'offlineOnly': True,
+                               'onlineOnly': False,
+                               'sublabel': 'Jouer',
+                               'description': 'Résoudre l’énigme d’un jeu de piste dans votre ville ? Jouer en ligne entre amis ? Découvrir cet univers étrange avec une manette ?'}
 
 
 @pytest.mark.standalone

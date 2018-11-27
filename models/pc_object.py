@@ -1,4 +1,5 @@
 """ pc_object """
+import enum
 import re
 import traceback
 from collections import OrderedDict
@@ -6,11 +7,11 @@ from datetime import datetime
 from decimal import Decimal, InvalidOperation
 from pprint import pprint
 
+import sqlalchemy
 from psycopg2.extras import DateTimeRange
 from sqlalchemy import CHAR, \
     BigInteger, \
     Column, \
-    Enum, \
     Float, \
     Integer, \
     Numeric, \
@@ -35,8 +36,10 @@ class DeletedRecordException(Exception):
 
 
 def serialize(value, **options):
-    if isinstance(value, Enum):
+    if isinstance(value, sqlalchemy.Enum):
         return value.name
+    elif isinstance(value, enum.Enum):
+        return value.value
     elif isinstance(value, datetime):
         return format_into_ISO_8601(value)
     elif isinstance(value, DateTimeRange):
@@ -176,7 +179,7 @@ class PcObject():
             if val is None:
                 continue
             if (isinstance(col.type, String) or isinstance(col.type, CHAR)) \
-                    and not isinstance(col.type, Enum) \
+                    and not isinstance(col.type, sqlalchemy.Enum) \
                     and not isinstance(val, str):
                 api_errors.addError(key, 'doit être une chaîne de caractères')
             if (isinstance(col.type, String) or isinstance(col.type, CHAR)) \
