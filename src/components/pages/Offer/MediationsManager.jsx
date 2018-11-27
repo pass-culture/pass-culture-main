@@ -44,11 +44,11 @@ class MediationManager extends Component {
 
     return (
       <div className="box content has-text-centered">
-        <div className="section">
+        <div className="section small-text align-left">
           <p>
             <b>L'accroche permet d'afficher votre offre "à la une" de l'app</b>,
-            et la rend visuellement plus attrayante. C'est une image, une
-            citation, ou une vidéo, intrigante, percutante, séduisante... en un
+            et la rend visuellement plus attrayante. C'est une image (et bientôt
+            une phrase ou une vidéo) intrigante, percutante, séduisante... en un
             mot : accrocheuse.
           </p>
           <p>
