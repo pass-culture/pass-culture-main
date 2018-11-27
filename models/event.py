@@ -14,6 +14,7 @@ from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.sql.expression import cast, false
 from sqlalchemy.sql.functions import coalesce
 
+from models.offer_type import EventType
 from models.db import Model
 from models.extra_data_mixin import ExtraDataMixin
 from models.has_thumb_mixin import HasThumbMixin
@@ -74,6 +75,14 @@ class Event(PcObject,
                         server_default=false(),
                         default=False,
                         nullable=False)
+
+    @property
+    def enum_type(self):
+        for possible_type in list(EventType):
+            if str(possible_type) == self.type:
+                return possible_type
+        return self.type
+
 
     @property
     def isDigital(self):
