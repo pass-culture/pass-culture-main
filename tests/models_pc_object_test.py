@@ -5,7 +5,7 @@ import pytest
 from sqlalchemy import Column, DateTime, Integer, Float
 
 from models import PcObject, Offer, EventOccurrence, User
-from models.api_errors import DecimalCastError
+from models.api_errors import DecimalCastError, DateTimeCastError
 from models.db import Model
 from models.pc_object import serialize
 
@@ -14,9 +14,11 @@ class TimeInterval(PcObject, Model):
     start = Column(DateTime)
     end = Column(DateTime)
 
+
 class TestPcObject(PcObject, Model):
     integer_attribute = Column(Integer, nullable=True)
     float_attribute = Column(Float, nullable=True)
+    date_attribute = Column(DateTime, nullable=True)
 
 
 time_interval = TimeInterval()
@@ -81,8 +83,11 @@ def test_populate_from_dict_raises_type_error_if_raw_date_is_invalid():
     raw_data = {'start': '2018-03-03T15:25:35.123Z', 'end': 'abcdef'}
 
     # when
-    with pytest.raises(TypeError):
+    with pytest.raises(DateTimeCastError) as errors:
         time_interval.populateFromDict(raw_data)
+
+    # then
+    assert errors.value.errors['end'] == ["Invalid value for end (datetime): 'abcdef'"]
 
 
 @pytest.mark.standalone
@@ -186,7 +191,6 @@ def test_populate_from_dict_on_pc_object_for_sql_float_value_with_12dot9_sets_at
     assert test_pc_object.float_attribute == 12.9
 
 
-
 @pytest.mark.standalone
 def test_populate_from_dict_on_pc_object_for_sql_float_value_with_string_raises_decimal_cast_error():
     # Given
@@ -196,5 +200,18 @@ def test_populate_from_dict_on_pc_object_for_sql_float_value_with_string_raises_
     # When
     with pytest.raises(DecimalCastError) as errors:
         test_pc_object.populateFromDict(data)
-        print(test_pc_object.float_attribute)
     assert errors.value.errors['float_attribute'] == ["Invalid value for float_attribute (float): 'yolo'"]
+
+
+def test_populate_from_dict_on_pc_object_for_sql_datetime_value_in_wrong_format_returns_400_and_affected_key_in_error():
+    # Given
+    test_pc_object = TestPcObject()
+    data = {'date_attribute': {'date_attribute': None}}
+
+    # When
+    with pytest.raises(DateTimeCastError) as errors:
+        test_pc_object.populateFromDict(data)
+
+    # Then
+    assert errors.value.errors['date_attribute'] == [
+        "Invalid value for date_attribute (datetime): {'date_attribute': None}"]

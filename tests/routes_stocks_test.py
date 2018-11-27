@@ -3,7 +3,7 @@ from datetime import timedelta
 import pytest
 
 from models.db import db
-from models.pc_object import PcObject
+from models.pc_object import PcObject, serialize
 from tests.conftest import clean_database
 from utils.human_ids import humanize
 from utils.test_utils import req_with_auth, API_URL, create_user, create_offerer, create_venue, \
@@ -382,3 +382,27 @@ def test_when_deleted_stock_only_all_bookings_related_to_soft_deleted_stock_are_
     assert booking1.isCancelled == True
     assert booking2.isCancelled == False
     assert booking3.isCancelled == True
+
+
+@clean_database
+@pytest.mark.standalone
+def test_post_stock_with_dictionary_in_bookingLimitDatetime_raises_400_and_bookingLimitDatetime_in_error(app):
+    # Given
+    user = create_user(email='test@email.fr', can_book_free_offers=False, password='P@55w0rd', is_admin=True)
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    offer = create_event_offer(venue)
+    event_occurrence = create_event_occurrence(offer)
+    PcObject.check_and_save(user, event_occurrence)
+    one_hour_before_event = event_occurrence.beginningDatetime - timedelta(hours=1)
+    stock_data = {'price': 0, 'offerId': humanize(offer.id), 'eventOccurrenceId': humanize(event_occurrence.id),
+                  'bookingLimitDatetime': {'bookingLimitDatetime': serialize(one_hour_before_event)}}
+    PcObject.check_and_save(user)
+
+     # When
+    response = req_with_auth('test@email.fr', 'P@55w0rd').post(API_URL + '/stocks/', json=stock_data)
+
+     # Then
+    assert response.status_code == 400
+    r_create_json = response.json()
+    assert r_create_json["bookingLimitDatetime"] == ["Format de date invalide"]
