@@ -60,6 +60,13 @@ class Thing(PcObject,
                         nullable=False)
 
     @property
+    def enum_type(self):
+        for possible_type in list(ThingType):
+            if str(possible_type) == self.type:
+                return possible_type
+        return self.type
+
+    @property
     def isDigital(self):
         return self.url is not None and self.url != ''
 
