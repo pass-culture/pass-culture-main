@@ -25,7 +25,7 @@ def get_event_or_thing_type_values_from_sublabels(sublabels):
     return event_type_values + thing_type_values
 
 def _format_event_or_thing_type(type_obj, model_name):
-    result = type_obj.value
+    result = type_obj.value.copy()
     result['value'] = str(type_obj)
     result['type'] = model_name
     return result
