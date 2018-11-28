@@ -21,35 +21,32 @@ def find_by_id(venue_id):
     return Venue.query.filter_by(id=venue_id).first()
 
 
+from pprint import pprint
 def find_venues(has_validated_offerer=None,
                 dpt=None,
                 zip_codes=None,
                 from_date=None,
                 to_date=None,
                 has_siret=None,
-                venue_type=None,
+                is_virtual=None,
                 has_offer=None, 
                 is_validated=None):
 
     query = db.session.query(Venue) 
-
-    if venue_type:
-        if venue_type == 'NOT_VIRTUAL':
-            query = query.filter(Venue.isVirtual == False)
-        elif venue_type == 'VIRTUAL':
-            dpt = None
-            zip_codes = None
+    if is_virtual is not None:
+        if is_virtual:
             query = query.filter(Venue.isVirtual == True)
+        else:
+            query = query.filter(Venue.isVirtual == False)
 
-    if has_validated_offerer:
+    if has_validated_offerer is not None:
         query = query.join(Offerer)
-        if has_validated_offerer == 'YES':
+        if has_validated_offerer:
             query = query.filter(Offerer.validationToken == None)
-        elif has_validated_offerer == 'NO':
+        else:
             query = query.filter(Offerer.validationToken != None)
     
     if dpt:
-        zip_codes = None
         if len(dpt) == 1:
             query = query.filter(Venue.departementCode == dpt[0])
         else:
@@ -71,16 +68,17 @@ def find_venues(has_validated_offerer=None,
         if to_date:
             query = query.filter(Activity.issued_at <= to_date)
     
-    if has_siret:
-        if has_siret == 'NO':
-            query = query.filter(Venue.siret == None)
-        elif has_siret == 'YES':
+    if has_siret is not None:
+        if has_siret:
             query = query.filter(Venue.siret != None)
+        else:
+            query = query.filter(Venue.siret == None)
+            
 
-    if is_validated:
-        if is_validated == 'YES':
+    if is_validated is not None:
+        if is_validated:
             query = query.filter(Venue.validationToken == None)
-        elif is_validated == 'NO':
+        else:
             query = query.filter(Venue.validationToken != None)
     
     if has_offer:

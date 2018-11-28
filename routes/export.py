@@ -13,9 +13,12 @@ import models
 from models.api_errors import ApiErrors
 from models.pc_object import PcObject
 from repository import offerer_queries
-from validation.exports import check_user_is_admin
+from repository.venue_queries import find_venues
+from validation.exports import check_user_is_admin , check_get_venues_params
 
 from utils.includes import OFFERER_INCLUDES_FOR_ADMIN
+from utils.rest import expect_json_data
+
 
 
 Activity = versioning_manager.activity_cls
@@ -129,6 +132,34 @@ def get_pending_validation():
 
     for o in offerers:
         result.append(o._asdict(include=OFFERER_INCLUDES_FOR_ADMIN))
+
+    return jsonify(result), 200
+
+# request.json.get('latitude', None), request.json.get('longitude', None))
+@app.route('/exports/venues', methods=['POST'])
+@login_required
+@expect_json_data
+def get_venues():
+    check_user_is_admin(current_user)
+
+    params_keys = ['dpt', 'has_validated_offerer', 'zip_codes', 'from_date', 'to_date', 'has_siret',
+    'is_virtual', 'has_offer', 'is_validated']
+    params = {}
+    # for key in params_keys:
+    #     if key == 'dpt' or key == 'zip_codes':
+    #         params[key] = request.json.getlist(key)    
+    #     else:
+    #         params[key] = request.json.get(key, None)
+
+    for key in params_keys:
+        params[key] = request.json.get(key, None)
+
+
+
+    check_get_venues_params(params)
+    result = find_venues(dpt=params['dpt'], zip_codes=params['zip_codes'], from_date=params['from_date'], to_date=params['to_date'],
+     has_siret=params['has_siret'], is_virtual=params['is_virtual'], has_offer=params['has_offer'],
+     has_validated_offerer=params['has_validated_offerer'], is_validated=params['is_validated'])
 
     return jsonify(result), 200
 

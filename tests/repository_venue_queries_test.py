@@ -24,9 +24,9 @@ def test_find_venues_has_validated_offerer_param(app):
 
     # When
     default_query = find_venues()
-    query_with_valid_offerer_only = find_venues(has_validated_offerer='YES')
-    query_with_not_valid_offerer_only = find_venues(has_validated_offerer='NO')
-    query_with_not_valid_offerer_only_and_dpt = find_venues(has_validated_offerer='NO'
+    query_with_valid_offerer_only = find_venues(has_validated_offerer=True)
+    query_with_not_valid_offerer_only = find_venues(has_validated_offerer=False)
+    query_with_not_valid_offerer_only_and_dpt = find_venues(has_validated_offerer=False
         , dpt=['93'])
 
     # Then
@@ -38,6 +38,7 @@ def test_find_venues_has_validated_offerer_param(app):
     assert venue_with_offerer_not_valid in query_with_not_valid_offerer_only
     assert venue_with_offerer_valid not in query_with_not_valid_offerer_only_and_dpt    
     assert venue_with_offerer_not_valid in query_with_not_valid_offerer_only_and_dpt
+
 
 @pytest.mark.standalone
 @clean_database
@@ -55,8 +56,6 @@ def test_find_venues_dpt_param(app):
     # When
     query_with_one_elem = find_venues(dpt=['93'])
     query_with_list = find_venues(dpt=['93','67'])
-    query_with_dpt_and_zip_codes = find_venues(dpt=['93','67'],
-       zip_codes=['34000'])
     default_query = find_venues()
 
     # Then
@@ -72,9 +71,6 @@ def test_find_venues_dpt_param(app):
     assert venue_67 in query_with_list
     assert venue_34 not in query_with_list
     assert venue_virtual not in query_with_list 
-    assert venue_93 in query_with_dpt_and_zip_codes
-    assert venue_67 in query_with_dpt_and_zip_codes
-    assert venue_34 not in query_with_dpt_and_zip_codes
     
 
 @pytest.mark.standalone
@@ -136,7 +132,7 @@ def test_find_venues_date_param(app):
 
 @pytest.mark.standalone
 @clean_database
-def test_find_venues_venue_type_param(app):
+def test_find_venues_is_virtual_param(app):
     # Given
     offerer = create_offerer()
     venue_virtual = create_venue(offerer, is_virtual=True, siret=None)
@@ -145,22 +141,14 @@ def test_find_venues_venue_type_param(app):
 
     # When
     default_query = find_venues()
-    query_only_virtual = find_venues(venue_type='VIRTUAL')
-    query_not_virtual = find_venues(venue_type='NOT_VIRTUAL')
-    query_only_virtual_with_dpt = find_venues(venue_type='VIRTUAL',
-        dpt=['34'])
-    query_only_virtual_with_zip_codes = find_venues(venue_type='VIRTUAL',
-        zip_codes=['34000'])
+    query_only_virtual = find_venues(is_virtual=True)
+    query_not_virtual = find_venues(is_virtual=False)
     
     # Then
     assert venue_virtual in default_query
     assert venue_not_virtual in default_query
     assert venue_virtual in query_only_virtual 
     assert venue_not_virtual not in query_only_virtual
-    assert venue_virtual in query_only_virtual_with_dpt 
-    assert venue_not_virtual not in query_only_virtual_with_dpt
-    assert venue_virtual in query_only_virtual_with_zip_codes 
-    assert venue_not_virtual not in query_only_virtual_with_zip_codes
     assert venue_virtual not in query_not_virtual 
     assert venue_not_virtual in query_not_virtual
 
@@ -177,12 +165,12 @@ def test_find_venues_has_siret_param(app):
     
     # When
     default_query = find_venues()
-    query_only_siret = find_venues(has_siret='YES')
-    query_no_siret = find_venues(has_siret='NO')
-    query_has_no_siret_and_not_virtual = find_venues(has_siret='NO',
-       venue_type='NOT_VIRTUAL')
-    query_has_siret_and_virtual = find_venues(has_siret='YES',
-       venue_type='VIRTUAL')
+    query_only_siret = find_venues(has_siret=True)
+    query_no_siret = find_venues(has_siret=False)
+    query_has_no_siret_and_not_virtual = find_venues(has_siret=False,
+       is_virtual=False)
+    query_has_siret_and_virtual = find_venues(has_siret=True,
+       is_virtual=True)
 
     # Then
     assert venue_with_siret in default_query
@@ -208,8 +196,8 @@ def test_find_venues_is_validated_param(app):
     
     # When
     default_query = find_venues()
-    query_only_validated = find_venues(is_validated='YES')
-    query_no_validated = find_venues(is_validated='NO')
+    query_only_validated = find_venues(is_validated=True)
+    query_no_validated = find_venues(is_validated=False)
 
     # Then
     assert venue_not_validated in default_query
