@@ -148,8 +148,8 @@ const SignupPage = ({ errors, location, sirenName }) => {
                           <span className="is-bold">
                             Vous allez recevoir un lien de confirmation
                           </span>{' '}
-                          par e-mail&nbsp;: cliquez ce lien pour confirmer la
-                          création de votre compte.
+                          par e-mail&nbsp;: cliquez sur ce lien pour confirmer
+                          la création de votre compte.
                         </h2>
                       </div>
                       <div className="information-text flex-left">
