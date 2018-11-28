@@ -3,8 +3,10 @@ import moment from 'moment'
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 
-import { TODAY_DATE, DAYS_CHECKBOXES } from './utils'
+import { DAYS_CHECKBOXES } from './utils'
 import { DatePickerField } from '../../forms/inputs'
+
+const TODAY_DATE = moment().format('MMM Do YY')
 
 class FilterByDates extends PureComponent {
   constructor(props) {
@@ -19,25 +21,29 @@ class FilterByDates extends PureComponent {
     this.setState({ pickedDate: null })
     const { filterActions, filterState } = this.props
 
-    const daysInUrlParams = decodeURI(filterState.query.jours || '')
-
-    const isdayAlreadyChecked = daysInUrlParams.includes(day)
-
+    const pickedDaysInQuery = decodeURI(filterState.query.jours || '')
+    const isdayAlreadyChecked = pickedDaysInQuery.includes(day)
     let callback
-
-    if (!get(daysInUrlParams, 'length')) {
+    const pickedDaysInQueryLenght = get(pickedDaysInQuery, 'length')
+    // change callback value
+    if (pickedDaysInQueryLenght === 0) {
+      // Case 1
       const date = moment(moment.now()).toISOString()
       callback = () => filterActions.change({ date })
-      // Change valeur de callBack
-    } else if (isdayAlreadyChecked && daysInUrlParams.split(',').length === 1) {
+    } else if (
+      isdayAlreadyChecked &&
+      pickedDaysInQuery.split(',').length === 1
+    ) {
+      // Case 2
       callback = () => filterActions.change({ date: null })
-      // Change valeur de callBack
     }
 
     if (isdayAlreadyChecked) {
+      // Case 3 Callback is undefined
       filterActions.remove('jours', day, callback)
       return
     }
+    // Case 4 add days
     filterActions.add('jours', day, callback)
   }
 
@@ -48,14 +54,14 @@ class FilterByDates extends PureComponent {
     this.setState({ pickedDate: date })
   }
 
-  isDateChecked = (pickedDate, daysInUrlParams, inputValue) =>
+  isDaysChecked = (pickedDate, pickedDaysInQuery, inputValue) =>
     pickedDate !== null && inputValue === '0-1'
       ? false
-      : daysInUrlParams.includes(inputValue)
+      : pickedDaysInQuery.includes(inputValue)
 
   render() {
     const { filterState, title } = this.props
-    const daysInUrlParams = decodeURI(filterState.query.jours || '')
+    const pickedDaysInQuery = decodeURI(filterState.query.jours || '')
 
     const { pickedDate } = this.state
 
@@ -69,9 +75,9 @@ class FilterByDates extends PureComponent {
         <div className="pc-scroll-horizontal is-relative pb18">
           <div className="pc-list flex-columns">
             {DAYS_CHECKBOXES.map(({ label, value }) => {
-              const checked = this.isDateChecked(
+              const checked = this.isDaysChecked(
                 pickedDate,
-                daysInUrlParams,
+                pickedDaysInQuery,
                 value
               )
               return (
@@ -118,5 +124,4 @@ FilterByDates.propTypes = {
   filterState: PropTypes.object.isRequired,
   title: PropTypes.string.isRequired,
 }
-
 export default FilterByDates

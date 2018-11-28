@@ -20,8 +20,6 @@ export const INITIAL_FILTER_PARAMS = {
   [`mots-cles`]: null,
 }
 
-export const TODAY_DATE = moment()
-
 export const DAYS_CHECKBOXES = [
   {
     label: 'Tout de suite !',
