@@ -2,7 +2,19 @@ import selectRecommendations from '../recommendations'
 import state2 from '../../mocks/global_state_2_Testing_10_10_18'
 
 describe('selectRecommendations', () => {
-  it('should return an empty array if there is no recommendations', () => {
+  it('should return an array of object having an `uniqId` property', () => {
+    // Given
+    const state = state2
+    // When
+    const results = selectRecommendations(state)
+    // Then
+    expect(results).not.toHaveLength(0)
+    results.forEach(result => {
+      expect(result.uniqId).toBeDefined()
+    })
+  })
+
+  it('should return an empty array if there are no recommendations', () => {
     // given
     const state = {
       data: {

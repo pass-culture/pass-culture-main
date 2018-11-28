@@ -5,6 +5,7 @@ import { createSelector } from 'reselect'
 import { THUMBS_URL } from '../utils/config'
 import { computeDistanceInMeters, humanizeDistance } from '../utils/geolocation'
 import { getTimezone } from '../utils/timezone'
+import { setUniqIdOnRecommendation } from '../utils/recommendation'
 
 const selectRecommendations = createSelector(
   state => state.data.recommendations,
@@ -13,20 +14,7 @@ const selectRecommendations = createSelector(
   (recommendations, latitude, longitude) => {
     // RECOMMENDATION MUST HAVE MEDIATION AND/OR OFFER CHILDREN
     // AND THAT IS A CRITERION TO MAKE THEM UNIQ
-    let filteredRecommendations = recommendations.map(recommendation => {
-      const { mediation, offer } = recommendation
-      const { eventId, thingId } = offer || {}
-      const { tutoIndex } = mediation || {}
-      let uniqId
-      if (eventId) {
-        uniqId = `event_${eventId}`
-      } else if (thingId) {
-        uniqId = `thing_${thingId}`
-      } else if (typeof tutoIndex !== 'undefined') {
-        uniqId = `tuto_${tutoIndex}`
-      }
-      return Object.assign({ uniqId }, recommendation)
-    })
+    let filteredRecommendations = recommendations.map(setUniqIdOnRecommendation)
     filteredRecommendations = filteredRecommendations.filter(
       recommendation => recommendation.uniqId
     )
