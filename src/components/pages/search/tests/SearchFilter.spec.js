@@ -176,7 +176,6 @@ describe('src | components | pages | search | SearchFilter', () => {
 
         // THEN
         expect(paginationChangeMock).toHaveBeenCalledWith(currentQuery, {
-          isClearingData: false,
           pathname: '/recherche/resultats',
         })
 

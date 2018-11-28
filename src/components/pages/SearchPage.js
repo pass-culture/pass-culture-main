@@ -1,7 +1,7 @@
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 
-import { withLogin, withPagination } from 'pass-culture-shared'
+import { withLogin, withPaginationRouter } from 'pass-culture-shared'
 import { translateBrowserUrlToApiUrl } from './search/utils'
 
 import SearchPageContent from './SearchPageContent'
@@ -23,7 +23,7 @@ const mapStateToProps = state => {
 
 export default compose(
   withLogin({ failRedirect: '/connexion' }),
-  withPagination({
+  withPaginationRouter({
     dataKey: 'recommendations',
     defaultWindowQuery: {
       categories: null,
@@ -33,7 +33,8 @@ export default compose(
       latitude: null,
       longitude: null,
       'mots-cles': null,
-      orderBy: 'offer.id+desc',
+      orderBy: null,
+      page: null,
     },
     windowToApiQuery: translateBrowserUrlToApiUrl,
   }),

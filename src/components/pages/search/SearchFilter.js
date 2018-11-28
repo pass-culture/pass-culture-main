@@ -1,12 +1,13 @@
 import get from 'lodash.get'
+import { assignData } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
+import { connect } from 'react-redux'
 import { Transition } from 'react-transition-group'
 
 import FilterByDates from './FilterByDates'
 import FilterByDistance from './FilterByDistance'
 import FilterByOfferTypes from './FilterByOfferTypes'
-
 import { getFirstChangingKey, INITIAL_FILTER_PARAMS } from './utils'
 
 const filtersPanelHeight = 475
@@ -54,10 +55,14 @@ class SearchFilter extends Component {
   }
 
   onFilterClick = () => {
-    const { pagination } = this.props
+    const { dispatch, pagination } = this.props
     const { isNew, query } = this.state
+
+    if (isNew) {
+      dispatch(assignData({ recommendations: [] }))
+    }
+
     pagination.change(query, {
-      isClearingData: isNew,
       pathname: '/recherche/resultats',
     })
   }
@@ -178,4 +183,4 @@ SearchFilter.propTypes = {
   pagination: PropTypes.object.isRequired,
 }
 
-export default SearchFilter
+export default connect()(SearchFilter)

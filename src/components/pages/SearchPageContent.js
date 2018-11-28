@@ -3,8 +3,9 @@ import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { Route, Switch } from 'react-router-dom'
 
-import { Icon, requestData } from 'pass-culture-shared'
+import { assignData, requestData } from 'pass-culture-shared'
 
+import { Icon } from '../layout/Icon'
 import renderPageFooter from './search/Footer'
 import renderPageHeader from './search/Header'
 import NavByOfferType from './search/NavByOfferType'
@@ -22,55 +23,54 @@ class SearchPageContent extends PureComponent {
   constructor(props) {
     super(props)
     this.state = {
+      hasMore: false,
       isFilterVisible: false,
       keywordsKey: 0,
       keywordsValue: get(props, `pagination.windowQuery.mots-cles`),
     }
+
+    props.dispatch(assignData({ recommendations: [] }))
   }
 
-  handleDataRequest = (handleSuccess = () => {}, handleFail = () => {}) => {
-    const { dispatch, location, match, pagination, search } = this.props
-    const {
-      params: { view },
-    } = match
-    // pagination props comes from the hoc withPagination from pass-culture-shared folder
-    const { apiQueryString, goToNextPage, page } = pagination
-    const { isFilterVisible } = this.state
-
-    // BECAUSE THE INFINITE SCROLLER CALLS ONCE THIS FUNCTION
-    // BUT THEN PUSH THE SEARCH TO PAGE + 1
-    // WE PASS AGAIN HERE FOR THE SAME PAGE
-    // SO WE NEED TO PREVENT A SECOND CALL
-    if (page !== 1 && search.page && page === Number(search.page)) {
-      return
-    }
+  componentDidMount() {
+    const { dispatch } = this.props
 
     dispatch(requestData('GET', 'types'))
 
-    const len = get(location, 'search.length')
-    if (!len) return
+    this.handleRecommendationsRequest()
+  }
 
-    if (view !== 'resultats') return
+  componentDidUpdate(prevProps) {
+    const {
+      pagination: { windowQuery },
+    } = this.props
+    if (windowQuery !== prevProps.pagination.windowQuery) {
+      this.handleRecommendationsRequest()
+    }
+  }
+
+  handleRecommendationsRequest = () => {
+    const { dispatch, match, pagination } = this.props
+    const { apiQueryString } = pagination
+
+    if (match.params.view !== 'resultats') {
+      return
+    }
+
+    const path = `recommendations?${apiQueryString}`
 
     const path = `recommendations?page=${page}&${apiQueryString}`
     dispatch(
       requestData('GET', path, {
-        handleFail,
         handleSuccess: (state, action) => {
-          handleSuccess(state, action)
-          if (match.params.view === 'resultats' && !isFilterVisible) {
-            goToNextPage()
+          if (action.data && action.data.length === 0) {
+            this.setState({ hasMore: false })
+          } else {
+            this.setState({ hasMore: true })
           }
         },
       })
     )
-  }
-
-  loadMoreHandler = (handleSuccess, handleFail) => {
-    this.handleDataRequest(handleSuccess, handleFail)
-    const { history, location, pagination } = this.props
-    const { windowQueryString, page } = pagination
-    history.push(`${location.pathname}?page=${page}&${windowQueryString}`)
   }
 
   onBackToSearchHome = () => {
@@ -100,20 +100,19 @@ class SearchPageContent extends PureComponent {
   }
 
   onSubmit = event => {
-    const { pagination } = this.props
+    const { dispatch, pagination } = this.props
     const { value } = event.target.elements.keywords
     event.preventDefault()
 
     this.setState({ isFilterVisible: false })
 
+    if (value !== '') {
+      dispatch(assignData({ recommendations: [] }))
+    }
+
     pagination.change(
-      {
-        'mots-cles': value === '' ? null : value,
-      },
-      {
-        isClearingData: value !== '',
-        pathname: '/recherche/resultats',
-      }
+      { 'mots-cles': value === '' ? null : value },
+      { pathname: '/recherche/resultats' }
     )
   }
 
@@ -158,7 +157,7 @@ class SearchPageContent extends PureComponent {
       typeSublabelsAndDescription,
     } = this.props
 
-    const { keywordsKey, keywordsValue, isFilterVisible } = this.state
+    const { hasMore, keywordsKey, keywordsValue, isFilterVisible } = this.state
     const { windowQuery } = pagination
     const onResultPage = match.params.view === 'resultats'
     const keywords = get(windowQuery, `mots-cles`)
@@ -195,7 +194,7 @@ class SearchPageContent extends PureComponent {
       <Main
         id="search-page"
         backButton={backButton}
-        handleDataRequest={this.handleDataRequest}
+        handleDataRequest={() => {}}
         header={renderPageHeader}
         pageTitle={searchPageTitle}
         name="search"
@@ -287,8 +286,9 @@ class SearchPageContent extends PureComponent {
                 description={description}
               />,
               <SearchResults
-                keywords={keywords}
+                hasMore={hasMore}
                 items={recommendations}
+                keywords={keywords}
                 loadMoreHandler={this.loadMoreHandler}
                 pagination={pagination}
                 typeSublabels={typeSublabels}
@@ -300,9 +300,9 @@ class SearchPageContent extends PureComponent {
             path="/recherche/resultats"
             render={() => (
               <SearchResults
-                keywords={keywords}
+                hasMore={hasMore}
                 items={recommendations}
-                loadMoreHandler={this.loadMoreHandler}
+                keywords={keywords}
                 pagination={pagination}
                 typeSublabels={typeSublabels}
                 withNavigation={false}
@@ -317,12 +317,10 @@ class SearchPageContent extends PureComponent {
 
 SearchPageContent.propTypes = {
   dispatch: PropTypes.func.isRequired,
-  history: PropTypes.object.isRequired,
   location: PropTypes.object.isRequired,
   match: PropTypes.object.isRequired,
   pagination: PropTypes.object.isRequired,
   recommendations: PropTypes.array.isRequired,
-  search: PropTypes.object.isRequired,
   typeSublabels: PropTypes.array.isRequired,
   typeSublabelsAndDescription: PropTypes.array.isRequired,
 }

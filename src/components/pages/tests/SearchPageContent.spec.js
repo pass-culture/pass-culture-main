@@ -334,7 +334,6 @@ describe('src | components | pages | SearchPageContent', () => {
             'mots-cles': 'AnyWord',
           }
           const argument2 = {
-            isClearingData: true,
             pathname: '/recherche/resultats',
           }
 
@@ -369,7 +368,6 @@ describe('src | components | pages | SearchPageContent', () => {
             'mots-cles': null,
           }
           const argument2 = {
-            isClearingData: false,
             pathname: '/recherche/resultats',
           }
 
