@@ -54,21 +54,21 @@ EVENT_INCLUDES = [
     "mediations",
     "offers",
     "-type",
-    "enum_type"
+    "offerType"
 ]
 
 THING_INCLUDES = [
     "mediations",
     "offers",
     "-type",
-    "enum_type"
+    "offerType"
 ]
 
 OFFER_INCLUDES = [
     {
         "key": "event",
         "sub_joins": [
-            'enum_type',
+            'offerType',
             '-type'
         ]
     },
@@ -89,7 +89,7 @@ OFFER_INCLUDES = [
                 "key": "stock"
             },
             'mediations',
-            'enum_type',
+            'offerType',
             '-type'
         ]
     },

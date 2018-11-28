@@ -60,7 +60,7 @@ class Thing(PcObject,
                         nullable=False)
 
     @property
-    def enum_type(self):
+    def offerType(self):
         for possible_type in list(ThingType):
             if str(possible_type) == self.type:
                 return possible_type

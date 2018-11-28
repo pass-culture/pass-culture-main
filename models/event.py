@@ -77,7 +77,7 @@ class Event(PcObject,
                         nullable=False)
 
     @property
-    def enum_type(self):
+    def offerType(self):
         for possible_type in list(EventType):
             if str(possible_type) == self.type:
                 return possible_type

@@ -64,10 +64,10 @@ def test_thing_type_enum_returns_enum_matching_type():
     thing = create_thing(thing_type=ThingType.LIVRE_EDITION)
 
     # when
-    enum_type = thing.enum_type
+    offer_type = thing.offerType
 
     # then
-    assert enum_type == ThingType.LIVRE_EDITION
+    assert offer_type == ThingType.LIVRE_EDITION
 
 
 def test_thing_type_enum_returns_information_in_type_if_does_not_match_enum():
@@ -75,7 +75,7 @@ def test_thing_type_enum_returns_information_in_type_if_does_not_match_enum():
     thing = create_thing(thing_type='')
 
     # when
-    enum_type = thing.enum_type
+    offer_type = thing.offerType
 
     # then
-    assert enum_type == ''
+    assert offer_type == ''

@@ -47,10 +47,10 @@ def test_event_type_enum_returns_enum_matching_type():
     event = create_event(event_type=EventType.SPECTACLE_VIVANT)
 
     # when
-    enum_type = event.enum_type
+    offer_type = event.offerType
 
     # then
-    assert enum_type == EventType.SPECTACLE_VIVANT
+    assert offer_type == EventType.SPECTACLE_VIVANT
 
 
 def test_event_type_enum_returns_information_in_type_if_does_not_match_enum():
@@ -58,7 +58,7 @@ def test_event_type_enum_returns_information_in_type_if_does_not_match_enum():
     event = create_event(event_type='Workshop')
 
     # when
-    enum_type = event.enum_type
+    offer_type = event.offerType
 
     # then
-    assert enum_type == 'Workshop'
+    assert offer_type == 'Workshop'

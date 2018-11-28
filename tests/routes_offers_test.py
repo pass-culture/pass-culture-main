@@ -393,7 +393,7 @@ def test_list_offers_returns_list_of_offers_with_thing_or_event_with_type_detail
 
     # then
     json = response.json()
-    types = list(map(lambda x: x['thing']['enum_type'] if 'thing' in x else x['event']['enum_type'], json))
+    types = list(map(lambda x: x['thing']['offerType'] if 'thing' in x else x['event']['offerType'], json))
     thing_or_event_keys = list(map(lambda x: x['thing'].keys() if 'thing' in x else x['event'].keys(), json))
     assert response.status_code == 200
     assert expected_thing_type in types
