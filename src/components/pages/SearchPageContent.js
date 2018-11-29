@@ -1,4 +1,3 @@
-import get from 'lodash.get'
 import { assignData, requestData } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import { stringify } from 'query-string'
@@ -23,22 +22,28 @@ import Main from '../layout/Main'
 class SearchPageContent extends PureComponent {
   constructor(props) {
     super(props)
+    const { pagination } = props
+
     this.state = {
       hasMore: false,
       isFilterVisible: false,
       keywordsKey: 0,
-      keywordsValue: get(props, `pagination.windowQuery.mots-cles`),
+      keywordsValue: pagination.query['mots-cles'],
     }
 
     props.dispatch(assignData({ recommendations: [] }))
   }
 
   componentDidMount() {
-    const { dispatch } = this.props
+    const { dispatch, pagination } = this.props
 
     dispatch(requestData('GET', 'types'))
 
-    this.handleRecommendationsRequest()
+    if (pagination.query.page) {
+      pagination.change({ page: null })
+    } else {
+      this.handleRecommendationsRequest()
+    }
   }
 
   componentDidUpdate(prevProps) {
@@ -52,18 +57,16 @@ class SearchPageContent extends PureComponent {
 
   handleRecommendationsRequest = () => {
     const { dispatch, match, pagination } = this.props
-    const { windowQuery } = pagination
+    const { query } = pagination
 
     if (match.params.view !== 'resultats') {
       return
     }
 
-    console.log('handleRecommendationsRequest', windowQuery)
+    console.log('handleRecommendationsRequest query', query)
 
-    const apiQuery = translateBrowserUrlToApiUrl(windowQuery)
+    const apiQuery = translateBrowserUrlToApiUrl(query)
     const apiQueryString = stringify(apiQuery)
-
-    console.log('apiQueryString', apiQueryString)
 
     const path = `recommendations?${apiQueryString}`
 
@@ -100,6 +103,7 @@ class SearchPageContent extends PureComponent {
         date: null,
         jours: null,
         'mots-cles': null,
+        page: null,
       },
       {
         pathname: '/recherche',
@@ -118,10 +122,11 @@ class SearchPageContent extends PureComponent {
       dispatch(assignData({ recommendations: [] }))
     }
 
-    console.log('value', value)
-
     pagination.change(
-      { 'mots-cles': value === '' ? null : value },
+      {
+        'mots-cles': value === '' ? null : value,
+        page: null,
+      },
       { pathname: '/recherche/resultats' }
     )
   }
@@ -136,9 +141,10 @@ class SearchPageContent extends PureComponent {
     })
   }
 
-  onKeywordsEraseClick = () => () => {
+  onKeywordsEraseClick = () => {
+    const { dispatch, location, pagination } = this.props
     const { keywordsKey } = this.state
-    const { pagination, location } = this.props
+
     this.setState({
       // https://stackoverflow.com/questions/37946229/how-do-i-reset-the-defaultvalue-for-a-react-input
       // WE NEED TO MAKE THE PARENT OF THE KEYWORD INPUT
@@ -147,7 +153,13 @@ class SearchPageContent extends PureComponent {
       keywordsKey: keywordsKey + 1,
       keywordsValue: '',
     })
-    pagination.change({ 'mots-cles': null }, { pathname: location.pathname })
+
+    dispatch(assignData({ recommendations: [] }))
+
+    pagination.change(
+      { 'mots-cles': null, page: null },
+      { pathname: location.pathname }
+    )
   }
 
   render() {
@@ -161,9 +173,9 @@ class SearchPageContent extends PureComponent {
     } = this.props
 
     const { hasMore, keywordsKey, keywordsValue, isFilterVisible } = this.state
-    const { windowQuery } = pagination
+    const { query } = pagination
     const onResultPage = match.params.view === 'resultats'
-    const keywords = get(windowQuery, `mots-cles`)
+    const keywords = query[`mots-cles`]
 
     const backButton = onResultPage && {
       onClick: () => this.onBackToSearchHome(),
@@ -171,7 +183,7 @@ class SearchPageContent extends PureComponent {
 
     const whithoutFilters = isInitialQueryWithoutFilters(
       INITIAL_FILTER_PARAMS,
-      windowQuery
+      query
     )
 
     const iconName = whithoutFilters ? 'filter' : 'filter-active'
@@ -179,13 +191,13 @@ class SearchPageContent extends PureComponent {
     const filtersToggleButtonClass =
       (isFilterVisible && 'filters-are-opened') || ''
 
-    const isOneCharInKeywords = get(keywordsValue, 'length') > 0
+    const isOneCharInKeywords = keywordsValue && keywordsValue.length > 0
 
     // ******************** Displaying datas helpers ********************** //
     const searchPageTitle = onResultPage ? 'Recherche : résultats' : 'Recherche'
 
     let description
-    const category = decodeURIComponent(pagination.windowQuery.categories)
+    const category = decodeURIComponent(pagination.query.categories)
     if (location.pathname.indexOf('/resultats/') !== -1) {
       description = getDescriptionForSublabel(
         category,
@@ -226,7 +238,7 @@ class SearchPageContent extends PureComponent {
                       type="button"
                       className="no-border no-background is-red-text"
                       id="refresh-keywords-button"
-                      onClick={this.onKeywordsEraseClick()}
+                      onClick={this.onKeywordsEraseClick}
                     >
                       <span
                         aria-hidden

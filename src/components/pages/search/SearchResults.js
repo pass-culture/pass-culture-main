@@ -41,13 +41,13 @@ class SearchResults extends PureComponent {
       items,
       hasMore,
       keywords,
-      pagination: { windowQuery },
+      pagination: { query },
       withNavigation,
     } = this.props
     const resultTitle = searchResultsTitle(
       keywords,
       items,
-      windowQuery,
+      query,
       withNavigation
     )
     const { isLoading } = this.state
@@ -78,7 +78,7 @@ class SearchResults extends PureComponent {
             hasMore={hasMore}
             loadMore={this.loadMore}
             loader={<Spinner key="loader" />}
-            pageStart={parseInt(windowQuery.page || 1, 10)}
+            pageStart={parseInt(query.page || 1, 10)}
             threshold={threshold}
             useWindow={false}
           >

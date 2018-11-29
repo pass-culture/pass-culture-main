@@ -33,7 +33,7 @@ ShallowWrapper {
         "change": [MockFunction],
         "goToNextPage": [MockFunction],
         "page": 1,
-        "windowQuery": Object {
+        "query": Object {
           "categories": null,
           "date": null,
           "distance": null,
@@ -126,7 +126,7 @@ ShallowWrapper {
               "change": [MockFunction],
               "goToNextPage": [MockFunction],
               "page": 1,
-              "windowQuery": Object {
+              "query": Object {
                 "categories": null,
                 "date": null,
                 "distance": null,
@@ -458,7 +458,7 @@ ShallowWrapper {
             "change": [MockFunction],
             "goToNextPage": [MockFunction],
             "page": 1,
-            "windowQuery": Object {
+            "query": Object {
               "categories": null,
               "date": null,
               "distance": null,
@@ -616,7 +616,7 @@ ShallowWrapper {
                 "change": [MockFunction],
                 "goToNextPage": [MockFunction],
                 "page": 1,
-                "windowQuery": Object {
+                "query": Object {
                   "categories": null,
                   "date": null,
                   "distance": null,
@@ -948,7 +948,7 @@ ShallowWrapper {
               "change": [MockFunction],
               "goToNextPage": [MockFunction],
               "page": 1,
-              "windowQuery": Object {
+              "query": Object {
                 "categories": null,
                 "date": null,
                 "distance": null,

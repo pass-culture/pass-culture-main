@@ -6,7 +6,7 @@ import React, { PureComponent } from 'react'
 import { withRouter } from 'react-router-dom'
 
 const pagination = {
-  windowQuery: {},
+  query: {},
 }
 
 export const withPaginationRouter = WrappedComponent => {
@@ -20,7 +20,6 @@ export const withPaginationRouter = WrappedComponent => {
         orderBy: this.orderBy,
         remove: this.remove,
         reverseOrder: this.reverseOrder,
-        setPage: this.setPage,
       }
 
       Object.assign(pagination, paginationMethods)
@@ -30,30 +29,24 @@ export const withPaginationRouter = WrappedComponent => {
       }
     }
 
-    componentDidMount() {
-      this.change({ page: null })
-      this.setState({ canRenderWhenPageIsInitialized: true })
-    }
-
     static getDerivedStateFromProps(nextProps) {
-      const windowQuery = parse(nextProps.location.search)
-      const windowQueryString = stringify(Object.assign({}, windowQuery))
+      const { location } = nextProps
+
+      pagination.query = parse(location.search)
 
       return {
-        windowQuery,
-        windowQueryString,
+        canRenderWhenPageIsInitialized: true,
       }
     }
 
     clear = () => {
       const { history, location } = this.props
-      this.setState({ windowQuery: {} })
       history.push(location.pathname)
     }
 
     reverseOrder = () => {
-      const { windowQuery } = this.state
-      const { orderBy } = windowQuery || {}
+      const { query } = this.state
+      const { orderBy } = query || {}
       if (!orderBy) {
         console.warn('there is no orderBy in the window query')
         return
@@ -67,8 +60,8 @@ export const withPaginationRouter = WrappedComponent => {
     }
 
     orderBy = e => {
-      const { windowQuery } = this.state
-      const { orderBy } = windowQuery || {}
+      const { query } = this.state
+      const { orderBy } = query || {}
       if (!orderBy) {
         console.warn('there is no orderBy in the window query')
         return
@@ -81,34 +74,26 @@ export const withPaginationRouter = WrappedComponent => {
 
     change = (queryUpdater, changeConfig = {}) => {
       const { history, location } = this.props
-      const { windowQuery } = this.state
+      const query = parse(location.search)
       const historyMethod = changeConfig.historyMethod || 'push'
       const pathname = changeConfig.pathname || location.pathname
 
       const queryKeys = uniq(
-        Object.keys(windowQuery).concat(Object.keys(queryUpdater))
+        Object.keys(query).concat(Object.keys(queryUpdater))
       )
 
-      if (!queryUpdater.page) {
-        queryUpdater.page = null
-      }
-
-      console.log('queryUpdater', queryUpdater, 'windowQuery', windowQuery)
-
-      const newWindowQuery = {}
+      const nextQuery = {}
       queryKeys.forEach(queryKey => {
         if (queryUpdater[queryKey]) {
-          newWindowQuery[queryKey] = queryUpdater[queryKey]
+          nextQuery[queryKey] = queryUpdater[queryKey]
           return
         }
-        if (queryUpdater[queryKey] !== null && windowQuery[queryKey]) {
-          newWindowQuery[queryKey] = windowQuery[queryKey]
+        if (queryUpdater[queryKey] !== null && query[queryKey]) {
+          nextQuery[queryKey] = query[queryKey]
         }
       })
-      const nextLocationSearch = stringify(newWindowQuery)
 
-      console.log('nextLocationSearch', nextLocationSearch)
-      pagination.windowQuery = newWindowQuery
+      const nextLocationSearch = stringify(nextQuery)
 
       const newPath = `${pathname}?${nextLocationSearch}`
 
@@ -116,10 +101,10 @@ export const withPaginationRouter = WrappedComponent => {
     }
 
     add = (key, value) => {
-      const { windowQuery } = this.state
+      const { query } = this.state
 
       let nextValue = value
-      const previousValue = windowQuery[key]
+      const previousValue = query[key]
       if (get(previousValue, 'length')) {
         const args = previousValue.split(',').concat([value])
         args.sort()
@@ -134,9 +119,9 @@ export const withPaginationRouter = WrappedComponent => {
     }
 
     remove = (key, value) => {
-      const { windowQuery } = this.state
+      const { query } = this.state
 
-      const previousValue = windowQuery[key]
+      const previousValue = query[key]
       if (get(previousValue, 'length')) {
         let nextValue = previousValue
           .replace(`,${value}`, '')

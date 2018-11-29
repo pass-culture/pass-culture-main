@@ -18,6 +18,7 @@ export const INITIAL_FILTER_PARAMS = {
   latitude: null,
   longitude: null,
   [`mots-cles`]: null,
+  page: null,
 }
 
 export const DAYS_CHECKBOXES = [
@@ -115,7 +116,7 @@ const mapWindowToApi = {
   'mots-cles': 'keywords',
 }
 
-export const translateBrowserUrlToApiUrl = windowQuery =>
-  getObjectWithMappedKeys(windowQuery, mapWindowToApi)
+export const translateBrowserUrlToApiUrl = query =>
+  getObjectWithMappedKeys(query, mapWindowToApi)
 
 export default isInitialQueryWithoutFilters

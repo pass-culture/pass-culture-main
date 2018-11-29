@@ -7,7 +7,6 @@ describe('src | components | pages | SearchPageContent', () => {
   // Initializing Mocks
   const dispatchMock = jest.fn()
   const paginationChangeMock = jest.fn()
-  const goToNextPageMock = jest.fn()
   const historyMock = { push: jest.fn() }
 
   const initialProps = {
@@ -27,11 +26,8 @@ describe('src | components | pages | SearchPageContent', () => {
       },
     },
     pagination: {
-      apiQueryString: 'orderBy=offer.id+desc',
       change: paginationChangeMock,
-      goToNextPage: goToNextPageMock,
-      page: 1,
-      windowQuery: {
+      query: {
         categories: null,
         date: null,
         distance: null,
@@ -40,6 +36,7 @@ describe('src | components | pages | SearchPageContent', () => {
         longitude: null,
         'mots-cles': null,
         orderBy: 'offer.id+desc',
+        page: 1,
       },
     },
     recommendations: [],
@@ -126,10 +123,8 @@ describe('src | components | pages | SearchPageContent', () => {
     it('NavResultsHeader & SearchResults with path="/recherche/resultats/:categorie"', () => {
       // given
       initialProps.location.pathname = '/recherche/resultats/'
-      initialProps.pagination.windowQueryString =
-        'categories=Jouer&orderBy=offer.id+desc'
-      initialProps.pagination.windowQuery.categories = 'Jouer'
-      initialProps.pagination.windowQuery['mots-cles'] = 'Fake'
+      initialProps.pagination.query.categories = 'Jouer'
+      initialProps.pagination.query['mots-cles'] = 'Fake'
       initialProps.typeSublabelsAndDescription = [
         {
           description:
@@ -160,7 +155,7 @@ describe('src | components | pages | SearchPageContent', () => {
     })
     it('SearchResults with path="/recherche/resultats"', () => {
       // given
-      initialProps.pagination.windowQueryString =
+      initialProps.pagination.queryString =
         'categories=Jouer&orderBy=offer.id+desc'
 
       // when
@@ -172,9 +167,6 @@ describe('src | components | pages | SearchPageContent', () => {
         .render()
 
       // then
-      expect(SearchResultsComponent.props.pagination.windowQueryString).toEqual(
-        'categories=Jouer&orderBy=offer.id+desc'
-      )
       expect(SearchResultsComponent.props.withNavigation).toEqual(false)
     })
   })
@@ -183,7 +175,7 @@ describe('src | components | pages | SearchPageContent', () => {
     describe('constructor', () => {
       it('should initialize state correctly', () => {
         // given
-        initialProps.pagination.windowQuery['mots-cles'] = 'Fake'
+        initialProps.pagination.query['mots-cles'] = 'Fake'
         // when
         const wrapper = shallow(<SearchPageContent {...initialProps} />)
         const expected = {
@@ -229,7 +221,7 @@ describe('src | components | pages | SearchPageContent', () => {
       })
       xit('should change history location', () => {
         // given
-        initialProps.pagination.windowQueryString =
+        initialProps.pagination.queryString =
           'categories=Jouer&orderBy=offer.id+desc'
 
         // when
@@ -507,7 +499,7 @@ describe('src | components | pages | SearchPageContent', () => {
       describe('When there is some filters in search', () => {
         it('should show ico-filter-active icone', () => {
           // given
-          initialProps.pagination.windowQuery = {
+          initialProps.pagination.query = {
             categories: '%C3%89couter,Pratiquer',
             date: '2018-09-25T09:38:20.576Z',
             days: null,

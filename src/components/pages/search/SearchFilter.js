@@ -33,7 +33,7 @@ class SearchFilter extends Component {
     super(props)
     this.state = {
       isNew: false,
-      query: Object.assign({}, props.pagination.windowQuery),
+      query: Object.assign({}, props.pagination.query),
     }
     this.filterActions = {
       add: this.handleQueryAdd,
@@ -46,14 +46,14 @@ class SearchFilter extends Component {
   componentDidUpdate(prevProps) {
     const {
       location: { search },
-      pagination: { windowQuery },
+      pagination: { query },
     } = this.props
     // TODO: eslint does not support setState inside componentDidUpdate
     if (search !== prevProps.location.search) {
       /* eslint-disable */
       this.setState({
         isNew: false,
-        query: windowQuery,
+        query,
       })
     }
   }
@@ -66,21 +66,24 @@ class SearchFilter extends Component {
       dispatch(assignData({ recommendations: [] }))
     }
 
+    query.page = null
+
     pagination.change(query, {
       pathname: '/recherche/resultats',
     })
   }
 
   onResetClick = () => {
-    const isNew = getFirstChangingKey(
-      this.props.pagination.windowQuery,
-      INITIAL_FILTER_PARAMS
-    )
+    const { dispatch, pagination } = this.props
+
+    dispatch(assignData({ recommendations: [] }))
+
+    const isNew = getFirstChangingKey(pagination.query, INITIAL_FILTER_PARAMS)
     this.setState({
       isNew,
     })
 
-    this.props.pagination.change(INITIAL_FILTER_PARAMS, {
+    pagination.change(INITIAL_FILTER_PARAMS, {
       pathname: '/recherche/resultats',
     })
   }
@@ -90,7 +93,7 @@ class SearchFilter extends Component {
     const { query } = this.state
 
     const nextFilterParams = Object.assign({}, query, newValue)
-    const isNew = getFirstChangingKey(pagination.windowQuery, newValue)
+    const isNew = getFirstChangingKey(pagination.query, newValue)
 
     this.setState(
       {

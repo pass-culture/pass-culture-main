@@ -13,7 +13,7 @@ describe('src | components | pages | search | SearchFilter', () => {
       const props = {
         isVisible: true,
         pagination: {
-          windowQuery: {
+          query: {
             categories: null,
             date: '2018-09-28T12:52:52.341Z',
             distance: '50',
@@ -42,7 +42,7 @@ describe('src | components | pages | search | SearchFilter', () => {
         const props = {
           isVisible: false,
           pagination: {
-            windowQuery: {},
+            query: {},
           },
         }
 
@@ -63,7 +63,7 @@ describe('src | components | pages | search | SearchFilter', () => {
         const props = {
           isVisible: false,
           pagination: {
-            windowQuery: {
+            query: {
               categories: 'Jouer',
               date: null,
               distance: null,
@@ -79,7 +79,7 @@ describe('src | components | pages | search | SearchFilter', () => {
         const prevProps = {
           isVisible: false,
           pagination: {
-            windowQuery: {
+            query: {
               categories: 'Jouer',
               date: null,
               distance: null,
@@ -121,7 +121,7 @@ describe('src | components | pages | search | SearchFilter', () => {
           isVisible: true,
           pagination: {
             change: paginationChangeMock,
-            windowQuery: {
+            query: {
               categories: null,
               date: '2018-09-28T12:52:52.341Z',
               distance: '50',
@@ -155,7 +155,7 @@ describe('src | components | pages | search | SearchFilter', () => {
           isVisible: true,
           pagination: {
             change: paginationChangeMock,
-            windowQuery: {
+            query: {
               categories: null,
               date: null,
               distance: '50',

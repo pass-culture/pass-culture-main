@@ -7,7 +7,7 @@ ShallowWrapper {
     isVisible={true}
     pagination={
       Object {
-        "windowQuery": Object {
+        "query": Object {
           "categories": null,
           "date": "2018-09-28T12:52:52.341Z",
           "distance": "50",
