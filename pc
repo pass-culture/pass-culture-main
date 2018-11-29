@@ -47,6 +47,7 @@ if [[ $# -gt 2 ]] && [[ "$1" == "-t" ]]; then
 fi
 
 CMD="$1"
+shift
 
 # =============================================
 # Set variables for env
@@ -435,8 +436,8 @@ fi
 # =============================================
 
 if [[ $PWD == "/home/deploy/pass-culture-main" ]]; then
-	echo "$RUN"
-  eval "$RUN"
+	echo $RUN
+  eval $RUN
 else
 	if [[ "$ENV" == "production" ]]; then
 	  echo "$RUN" | ssh deploy@api.passculture.beta.gouv.fr bash
@@ -445,7 +446,7 @@ else
 	elif [[ "$ENV" == "wordpress" ]]; then
 	  ssh debian@passculture.beta.gouv.fr
 	else
-	  echo "$RUN"
-	  eval "$RUN"
+	  echo $RUN
+	  eval $RUN
 	fi
 fi
