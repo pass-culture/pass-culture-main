@@ -3,7 +3,9 @@ import { assignData } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import { withRouter } from 'react-router-dom'
 import { Transition } from 'react-transition-group'
+import { compose } from 'redux'
 
 import FilterByDates from './FilterByDates'
 import FilterByDistance from './FilterByDistance'
@@ -42,10 +44,12 @@ class SearchFilter extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    const { pagination } = this.props
-    const { windowQuery } = pagination
+    const {
+      location: { search },
+      pagination: { windowQuery },
+    } = this.props
     // TODO: eslint does not support setState inside componentDidUpdate
-    if (windowQuery !== prevProps.pagination.windowQuery) {
+    if (search !== prevProps.location.search) {
       /* eslint-disable */
       this.setState({
         isNew: false,
@@ -180,7 +184,11 @@ class SearchFilter extends Component {
 
 SearchFilter.propTypes = {
   isVisible: PropTypes.bool.isRequired,
+  location: PropTypes.object.isRequired,
   pagination: PropTypes.object.isRequired,
 }
 
-export default connect()(SearchFilter)
+export default compose(
+  withRouter,
+  connect()
+)(SearchFilter)

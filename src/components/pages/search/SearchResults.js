@@ -26,6 +26,7 @@ class SearchResults extends PureComponent {
   }
 
   loadMore = page => {
+    console.log('LOAD MORE', page)
     const { pagination } = this.props
     const { isLoading } = this.state
     if (isLoading) {

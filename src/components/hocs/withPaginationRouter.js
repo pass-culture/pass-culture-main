@@ -1,25 +1,18 @@
 import get from 'lodash.get'
+import uniq from 'lodash.uniq'
 import PropTypes from 'prop-types'
 import { parse, stringify } from 'query-string'
 import React, { PureComponent } from 'react'
 import { withRouter } from 'react-router-dom'
 
-export const withPaginationRouter = (config = {}) => WrappedComponent => {
-  const defaultWindowQuery = Object.assign(
-    { page: '1' },
-    config.defaultWindowQuery
-  )
-  const defaultWindowQueryString = parse(defaultWindowQuery)
+const pagination = {
+  windowQuery: {},
+}
 
+export const withPaginationRouter = WrappedComponent => {
   class _withPaginationRouter extends PureComponent {
     constructor() {
       super()
-
-      const paginationData = {
-        value: null,
-        windowQuery: defaultWindowQuery,
-        windowQueryString: defaultWindowQueryString,
-      }
 
       const paginationMethods = {
         add: this.add,
@@ -30,42 +23,20 @@ export const withPaginationRouter = (config = {}) => WrappedComponent => {
         setPage: this.setPage,
       }
 
+      Object.assign(pagination, paginationMethods)
+
       this.state = {
-        ...paginationData,
-        ...paginationMethods,
+        canRenderWhenPageIsInitialized: false,
       }
     }
 
     componentDidMount() {
-      const { windowQuery } = this.state
-
-      const mountWindowQuery = {}
-      Object.keys(defaultWindowQuery).forEach(key => {
-        mountWindowQuery[key] =
-          typeof windowQuery[key] !== 'undefined'
-            ? windowQuery[key]
-            : defaultWindowQuery[key]
-      })
-
-      mountWindowQuery.page = null
-
-      this.change(mountWindowQuery)
+      this.change({ page: null })
+      this.setState({ canRenderWhenPageIsInitialized: true })
     }
 
     static getDerivedStateFromProps(nextProps) {
-      const search = parse(nextProps.location.search)
-
-      const windowQuery = {}
-
-      Object.keys(defaultWindowQuery).forEach(key => {
-        if (search[key]) {
-          windowQuery[key] = search[key]
-          return
-        }
-        if (search[key]) {
-          windowQuery[key] = search[key]
-        }
-      })
+      const windowQuery = parse(nextProps.location.search)
       const windowQueryString = stringify(Object.assign({}, windowQuery))
 
       return {
@@ -76,7 +47,7 @@ export const withPaginationRouter = (config = {}) => WrappedComponent => {
 
     clear = () => {
       const { history, location } = this.props
-      this.setState({ windowQuery: defaultWindowQuery })
+      this.setState({ windowQuery: {} })
       history.push(location.pathname)
     }
 
@@ -108,42 +79,38 @@ export const withPaginationRouter = (config = {}) => WrappedComponent => {
       })
     }
 
-    change = (newValue, changeConfig = {}) => {
+    change = (queryUpdater, changeConfig = {}) => {
       const { history, location } = this.props
       const { windowQuery } = this.state
       const historyMethod = changeConfig.historyMethod || 'push'
       const pathname = changeConfig.pathname || location.pathname
 
-      const hasKeyNotInWindowQuery = Object.keys(newValue).find(
-        key => typeof defaultWindowQuery[key] === 'undefined'
+      const queryKeys = uniq(
+        Object.keys(windowQuery).concat(Object.keys(queryUpdater))
       )
 
-      if (hasKeyNotInWindowQuery) {
-        console.warn(
-          'You tried to change the window query with a not specified key'
-        )
-        return
+      if (!queryUpdater.page) {
+        queryUpdater.page = null
       }
+
+      console.log('queryUpdater', queryUpdater, 'windowQuery', windowQuery)
 
       const newWindowQuery = {}
-      Object.keys(defaultWindowQuery).forEach(key => {
-        if (newValue[key]) {
-          newWindowQuery[key] = newValue[key]
+      queryKeys.forEach(queryKey => {
+        if (queryUpdater[queryKey]) {
+          newWindowQuery[queryKey] = queryUpdater[queryKey]
           return
         }
-        if (newValue[key] !== null && windowQuery[key]) {
-          newWindowQuery[key] = windowQuery[key]
+        if (queryUpdater[queryKey] !== null && windowQuery[queryKey]) {
+          newWindowQuery[queryKey] = windowQuery[queryKey]
         }
       })
-      const newWindowSearch = stringify(newWindowQuery)
+      const nextLocationSearch = stringify(newWindowQuery)
 
-      const newPath = `${pathname}?${newWindowSearch}`
+      console.log('nextLocationSearch', nextLocationSearch)
+      pagination.windowQuery = newWindowQuery
 
-      const nextState = {
-        value: newValue,
-      }
-
-      this.setState(nextState)
+      const newPath = `${pathname}?${nextLocationSearch}`
 
       history[historyMethod](newPath)
     }
@@ -186,7 +153,11 @@ export const withPaginationRouter = (config = {}) => WrappedComponent => {
     }
 
     render() {
-      return <WrappedComponent {...this.props} pagination={this.state} />
+      const { canRenderWhenPageIsInitialized } = this.state
+      if (!canRenderWhenPageIsInitialized) {
+        return null
+      }
+      return <WrappedComponent {...this.props} pagination={pagination} />
     }
   }
 

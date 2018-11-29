@@ -22,19 +22,6 @@ const mapStateToProps = state => {
 
 export default compose(
   withLogin({ failRedirect: '/connexion' }),
-  withPaginationRouter({
-    dataKey: 'recommendations',
-    defaultWindowQuery: {
-      categories: null,
-      date: null,
-      distance: null,
-      jours: null,
-      latitude: null,
-      longitude: null,
-      'mots-cles': null,
-      orderBy: null,
-      page: null,
-    },
-  }),
+  withPaginationRouter,
   connect(mapStateToProps)
 )(SearchPageContent)

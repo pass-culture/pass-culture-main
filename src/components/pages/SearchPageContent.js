@@ -43,9 +43,9 @@ class SearchPageContent extends PureComponent {
 
   componentDidUpdate(prevProps) {
     const {
-      pagination: { windowQuery },
+      location: { search },
     } = this.props
-    if (windowQuery !== prevProps.pagination.windowQuery) {
+    if (search !== prevProps.location.search) {
       this.handleRecommendationsRequest()
     }
   }
@@ -58,8 +58,12 @@ class SearchPageContent extends PureComponent {
       return
     }
 
+    console.log('handleRecommendationsRequest', windowQuery)
+
     const apiQuery = translateBrowserUrlToApiUrl(windowQuery)
     const apiQueryString = stringify(apiQuery)
+
+    console.log('apiQueryString', apiQueryString)
 
     const path = `recommendations?${apiQueryString}`
 
@@ -114,6 +118,8 @@ class SearchPageContent extends PureComponent {
       dispatch(assignData({ recommendations: [] }))
     }
 
+    console.log('value', value)
+
     pagination.change(
       { 'mots-cles': value === '' ? null : value },
       { pathname: '/recherche/resultats' }
@@ -141,14 +147,7 @@ class SearchPageContent extends PureComponent {
       keywordsKey: keywordsKey + 1,
       keywordsValue: '',
     })
-    pagination.change(
-      {
-        'mots-cles': null,
-      },
-      {
-        pathname: location.pathname,
-      }
-    )
+    pagination.change({ 'mots-cles': null }, { pathname: location.pathname })
   }
 
   render() {
