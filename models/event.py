@@ -81,7 +81,6 @@ class Event(PcObject,
         for possible_type in list(EventType):
             if str(possible_type) == self.type:
                 return possible_type
-        return self.type
 
 
     @property

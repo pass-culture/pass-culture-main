@@ -64,7 +64,6 @@ class Thing(PcObject,
         for possible_type in list(ThingType):
             if str(possible_type) == self.type:
                 return possible_type
-        return self.type
 
     @property
     def isDigital(self):

@@ -78,4 +78,4 @@ def test_thing_type_enum_returns_information_in_type_if_does_not_match_enum():
     offer_type = thing.offerType
 
     # then
-    assert offer_type == ''
+    assert offer_type == None

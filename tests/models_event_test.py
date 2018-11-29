@@ -61,4 +61,4 @@ def test_event_type_enum_returns_information_in_type_if_does_not_match_enum():
     offer_type = event.offerType
 
     # then
-    assert offer_type == 'Workshop'
+    assert offer_type == None
