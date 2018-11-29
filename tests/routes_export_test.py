@@ -187,7 +187,7 @@ def test_get_venues_return_200_and_filtered_venues(app):
         "is_validated": True, 
         "from_date": "2018-10-02",
         "to_date": "2018-12-31",
-        "has_offer": "ALL"
+        "offer_status": "ALL"
     }
 
     user = create_user(password='p@55sw0rd', is_admin=True, can_book_free_offers=False)

@@ -19,7 +19,7 @@ def test_check_get_venues_params_raises_api_error_if_not_valid_date(app):
 
 
 @pytest.mark.standalone
-def test_check_get_venues_params_raises_api_error_if_not_valid_dpt_list(app):
+def test_check_get_venues_params_raises_api_error_if_not_valid_dpt_in_list(app):
     # given
     not_valid_dpt_list = {}
     not_valid_dpt_list['dpt'] = ['93', '17', 'Paris']
@@ -29,7 +29,22 @@ def test_check_get_venues_params_raises_api_error_if_not_valid_dpt_list(app):
         check_get_venues_params(not_valid_dpt_list)
 
     # then
-    assert errors.value.errors['dpt'] == ['dpt is of type xx or xxx (2 or 3 digits), or 2A, or 2B']
+    assert errors.value.errors['dpt'] == ['dpt is a list of type xx or xxx (2 or 3 digits), or 2A, or 2B :\
+                ["34", "37"]']
+
+
+@pytest.mark.standalone
+def test_check_get_venues_params_raises_api_error_if_dpt_list_is_not_list(app):
+    # given
+    not_valid_dpt_list = {}
+    not_valid_dpt_list['dpt'] = '93'
+    # when
+    with pytest.raises(ApiErrors) as errors:
+        check_get_venues_params(not_valid_dpt_list)
+
+    # then
+    assert errors.value.errors['dpt'] == ['dpt is a list of type xx or xxx (2 or 3 digits), or 2A, or 2B :\
+                ["34", "37"]']
 
 
 @pytest.mark.standalone
@@ -44,7 +59,8 @@ def test_check_get_venues_params_raises_api_error_if_not_valid_zip_codes_list(ap
 
     # then
     assert errors.value.errors['zip_codes'] == \
-        ['zip_codes is of type xxxxx (5 digits, ex: 78140 ou 2a000)']
+        ['zip_codes is a list of type xxxxx (5 digits, ex: 78140 ou 2a000) : \
+        ["78140", "69007"]']
 
 
 @pytest.mark.standalone
@@ -103,32 +119,18 @@ def test_check_get_venues_params_raises_api_error_if_not_valid_is_validated_para
     assert errors.value.errors['is_validated'] == ['is_validated is a boolean, it accepts True or False']
 
 
-# @pytest.mark.standalone
-# def test_check_if_bool_dont_raises_error_with_true(app):
-#     # given
-#     trueBool = True
+@pytest.mark.standalone
+def test_check_get_venues_params_raises_api_error_if_not_valid_offer_status_param(app):
+    # given
+    not_valid_offer_status_param = {}
+    not_valid_offer_status_param['offer_status'] = 'plein'
 
-#     # when
-#      # pytest.raises(ApiErrors) as errors:
-#     try:
-#         _check_if_bool(trueBool)
-#     except ApiErrors:
-#     # then
-#         assert True
+    # when
+    with pytest.raises(ApiErrors) as errors:
+        check_get_venues_params(not_valid_offer_status_param)
 
-
-# @pytest.mark.standalone
-# def test_check_if_bool_dont_raises_error_with_false(app):
-#     # given
-#     trueBool = False
-
-#     # when
-#     try:
-#         _check_if_bool(trueBool)
-#     except ApiErrors:
-
-#     # then
-#         assert True
+    # then
+    assert errors.value.errors['offer_status'] == ['offer_status accepte ALL ou VALID ou WITHOUT ou EXPIRED']
 
 
 @pytest.mark.standalone
@@ -141,7 +143,7 @@ def test_check_get_venues_params_does_not_raise_api_error_if_good_param(app):
     params['to_date'] = '2018-12-1'
     params['has_siret'] = False
     params['is_virtual'] = True
-    params['has_offer'] = 'VALID'
+    params['offer_status'] = 'VALID'
     
     # when
     try:

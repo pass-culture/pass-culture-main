@@ -32,8 +32,8 @@ def check_get_venues_params(param: {}) -> []:
     if param.get('is_virtual', None):
         _check_is_virtual_param(param['is_virtual'])
 
-    if param.get('has_offer', None):
-        _check_has_offer_param(param['has_offer'])
+    if param.get('offer_status', None):
+        _check_offer_status_param(param['offer_status'])
 
     if param.get('is_validated', None):
         _check_is_validated_param(param['is_validated'])
@@ -42,7 +42,7 @@ def check_get_venues_params(param: {}) -> []:
 
 
 def _check_date_format(date: str) -> bool:
-    if re.search('^\d{4}-\d{2}-\d{2}$', date):
+    if re.search('^(\d+){4}-(\d+){2}-(\d+){2}$', date):
        return True
     api_errors = ApiErrors()
     api_errors.addError('date_format', 'to_date and from_date are of type yyyy-mm-dd')
@@ -50,22 +50,33 @@ def _check_date_format(date: str) -> bool:
 
 
 def _check_dpt_list(dpt_list:  []) -> bool:
+    if not type(dpt_list) == []:
+        api_errors = ApiErrors()
+        api_errors.addError('dpt', 
+            'dpt is a list of type xx or xxx (2 or 3 digits), or 2A, or 2B :\
+            ["34", "37"]')        
     for dpt in dpt_list:
-       if not re.search('^\d{2}$|^2{1}(a|b|A|B)$|^\d{3}$', dpt):
+       if not re.search('^(\d+){2}$|^2{1}(a|b|A|B)$|^(\d+){3}$', dpt):
             api_errors = ApiErrors()
             api_errors.addError('dpt', 
-                'dpt is of type xx or xxx (2 or 3 digits), or 2A, or 2B')
+                'dpt is a list of type xx or xxx (2 or 3 digits), or 2A, or 2B :\
+                ["34", "37"]')
             raise api_errors
     return True
 
 
 def _check_zip_codes_list(zip_codes_list:  []) -> bool:
-
+    if not type(zip_codes_list) == []:
+        api_errors = ApiErrors()
+        api_errors.addError('zip_codes',
+                'zip_codes is a list of type xxxxx (5 digits, ex: 78140 ou 2a000) : \
+        ["78140", "69007"]')
     for zip_code in zip_codes_list:
-        if not re.search('^\d{5}$|^2{1}(a|b|A|B)\d{3}$', zip_code):
+        if not re.search('^(\d+){5}$|^2{1}(a|b|A|B)(\d+){3}$', zip_code):
             api_errors = ApiErrors()
             api_errors.addError('zip_codes',
-                'zip_codes is of type xxxxx (5 digits, ex: 78140 ou 2a000)')
+                'zip_codes is a list of type xxxxx (5 digits, ex: 78140 ou 2a000) : \
+        ["78140", "69007"]')
             raise api_errors
     return True
 
@@ -86,13 +97,13 @@ def _check_is_virtual_param(is_virtual) -> bool:
     raise api_errors
 
 
-def _check_has_offer_param(has_offer: str) -> bool:
+def _check_offer_status_param(offer_status: str) -> bool:
     valid_param = ['ALL', 'VALID', 'WITHOUT', 'EXPIRED']
     for elem in valid_param:
-        if has_offer == elem:
+        if offer_status == elem:
             return True
     api_errors = ApiErrors()
-    api_errors.addError('has_offer', 'has_offer accepte ALL ou VALID ou WITHOUT ou EXPIRED')
+    api_errors.addError('offer_status', 'offer_status accepte ALL ou VALID ou WITHOUT ou EXPIRED')
     raise api_errors
 
 

@@ -157,7 +157,7 @@ def test_find_venues_with_is_validated_param_return_filtered_venues(app):
 
 @pytest.mark.standalone
 @clean_database
-def test_find_venues_with_has_offer_with_VALID_param_return_filtered_venues(app):
+def test_find_venues_with_offer_status_with_VALID_param_return_filtered_venues(app):
     # Given
     offerer = create_offerer()
 
@@ -183,7 +183,7 @@ def test_find_venues_with_has_offer_with_VALID_param_return_filtered_venues(app)
         valid_stock, expired_stock)
    
     # When
-    query_has_valid_offer = find_venues(has_offer='VALID')
+    query_has_valid_offer = find_venues(offer_status='VALID')
    
     # Then
     assert venue_with_valid_event in query_has_valid_offer
@@ -195,7 +195,7 @@ def test_find_venues_with_has_offer_with_VALID_param_return_filtered_venues(app)
 
 @pytest.mark.standalone
 @clean_database
-def test_find_venues_with_has_offer_with_EXPIRED_param_return_filtered_venues(app):
+def test_find_venues_with_offer_status_with_EXPIRED_param_return_filtered_venues(app):
     # Given
     offerer = create_offerer()
 
@@ -221,7 +221,7 @@ def test_find_venues_with_has_offer_with_EXPIRED_param_return_filtered_venues(ap
         valid_stock, expired_stock)
    
     # When
-    query_has_expired_offer = find_venues(has_offer='EXPIRED')
+    query_has_expired_offer = find_venues(offer_status='EXPIRED')
    
     # Then
     assert venue_with_valid_event not in query_has_expired_offer
@@ -233,7 +233,7 @@ def test_find_venues_with_has_offer_with_EXPIRED_param_return_filtered_venues(ap
 
 @pytest.mark.standalone
 @clean_database
-def test_find_venues_with_has_offer_with_WITHOUT_param_return_filtered_venues(app):
+def test_find_venues_with_offer_status_with_WITHOUT_param_return_filtered_venues(app):
     # Given
     offerer = create_offerer()
 
@@ -259,7 +259,7 @@ def test_find_venues_with_has_offer_with_WITHOUT_param_return_filtered_venues(ap
         valid_stock, expired_stock)
    
     # When
-    query_without_offer = find_venues(has_offer='WITHOUT')
+    query_without_offer = find_venues(offer_status='WITHOUT')
    
     # Then
     assert venue_with_valid_event not in query_without_offer
@@ -271,7 +271,7 @@ def test_find_venues_with_has_offer_with_WITHOUT_param_return_filtered_venues(ap
 
 @pytest.mark.standalone
 @clean_database
-def test_find_venues_with_has_offer_with_ALL_param_return_filtered_venues(app):
+def test_find_venues_with_offer_status_with_ALL_param_return_filtered_venues(app):
     # Given
     offerer = create_offerer()
 
@@ -297,7 +297,7 @@ def test_find_venues_with_has_offer_with_ALL_param_return_filtered_venues(app):
         valid_stock, expired_stock)
    
     # When
-    query_all = find_venues(has_offer='ALL')
+    query_all = find_venues(offer_status='ALL')
    
     # Then
     assert venue_with_valid_event in query_all 
