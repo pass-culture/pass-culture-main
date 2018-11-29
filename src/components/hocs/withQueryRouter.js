@@ -155,6 +155,8 @@ export const withQueryRouter = WrappedComponent => {
     location: PropTypes.object.isRequired,
   }
 
+  _withQueryRouter.WrappedComponent = WrappedComponent
+
   return withRouter(_withQueryRouter)
 }
 

@@ -1,8 +1,7 @@
-import configureStore from 'redux-mock-store'
 import { Provider } from 'react-redux'
 import React from 'react'
+import configureStore from 'redux-mock-store'
 import { shallow } from 'enzyme'
-// import { createStore } from 'redux';
 
 import REDUX_STATE from '../../../mocks/reduxState'
 

@@ -1,10 +1,19 @@
+import { createBrowserHistory } from 'history'
 import React from 'react'
-import { shallow } from 'enzyme'
+import { Provider } from 'react-redux'
+import { mount, shallow } from 'enzyme'
+import { Route, Router } from 'react-router-dom'
+import configureStore from 'redux-mock-store'
 
 import SearchFilter from '../SearchFilter'
 import { INITIAL_FILTER_PARAMS } from '../utils'
+import REDUX_STATE from '../../../../mocks/reduxState'
 
-const paginationChangeMock = jest.fn()
+const dispatchMock = jest.fn()
+const queryChangeMock = jest.fn()
+
+const middlewares = []
+const mockStore = configureStore(middlewares)
 
 describe('src | components | pages | search | SearchFilter', () => {
   describe('snapshot', () => {
@@ -12,7 +21,7 @@ describe('src | components | pages | search | SearchFilter', () => {
       // given
       const props = {
         isVisible: true,
-        query: {
+        params: {
           params: {
             categories: null,
             date: '2018-09-28T12:52:52.341Z',
@@ -41,8 +50,8 @@ describe('src | components | pages | search | SearchFilter', () => {
         // given
         const props = {
           isVisible: false,
-          pagination: {
-            query: {},
+          params: {
+            params: {},
           },
         }
 
@@ -58,56 +67,31 @@ describe('src | components | pages | search | SearchFilter', () => {
     })
 
     describe('onComponentDidUpdate', () => {
-      it('should update state if query has changed', () => {
+      it('should update state if params has changed', () => {
         // given
-        const props = {
-          isVisible: false,
-          pagination: {
-            query: {
-              categories: 'Jouer',
-              date: null,
-              distance: null,
-              jours: '1-5',
-              latitude: null,
-              longitude: null,
-              [`mots-cles`]: 'fake',
-              orderBy: 'offer.id+desc',
-            },
-          },
-        }
-
-        const prevProps = {
-          isVisible: false,
-          pagination: {
-            query: {
-              categories: 'Jouer',
-              date: null,
-              distance: null,
-              jours: '1-5',
-              latitude: null,
-              longitude: null,
-              [`mots-cles`]: 'fake',
-              orderBy: 'offer.id+desc',
-            },
-          },
-        }
+        const initialState = REDUX_STATE
+        const store = mockStore(initialState)
+        const history = createBrowserHistory()
+        history.push('/test?categories=Jouer')
 
         // when
-        const wrapper = shallow(<SearchFilter {...props} />)
-        wrapper.instance().componentDidUpdate(prevProps)
+        const wrapper = mount(
+          <Provider store={store}>
+            <Router history={history}>
+              <Route path="/test">
+                <SearchFilter isVisible />
+              </Route>
+            </Router>
+          </Provider>
+        )
+        history.push('/test?categories=Sourire')
 
-        // the
-        const updatedQuery = wrapper.state('query')
-        const isNewKey = wrapper.state('isNew')
+        // then
+        const searchFilter = wrapper.find('SearchFilter')
+        const updatedQuery = searchFilter.state('params')
+        const isNewKey = searchFilter.state('isNew')
         const expected = {
-          categories: 'Jouer',
-          date: null,
-          distance: null,
-          jours: '1-5',
-          latitude: null,
-          longitude: null,
-          'mots-cles': 'fake',
-          orderBy: 'offer.id+desc',
+          categories: 'Sourire',
         }
         expect(updatedQuery).toEqual(expected)
         expect(isNewKey).toEqual(false)
@@ -115,36 +99,33 @@ describe('src | components | pages | search | SearchFilter', () => {
     })
 
     describe('onResetClick', () => {
-      it('should call hoc pagination change method with the good parameters', () => {
+      it('should call hoc withQueryRouter change method with the good parameters', () => {
         // given
         const props = {
+          dispatch: dispatchMock,
           isVisible: true,
-          pagination: {
-            change: paginationChangeMock,
-            query: {
-              categories: null,
-              date: '2018-09-28T12:52:52.341Z',
-              distance: '50',
+          location: { search: '?page=1&jours=0-1' },
+          query: {
+            change: queryChangeMock,
+            params: {
               jours: '0-1',
-              latitude: '48.8637546',
-              longitude: '2.337428',
-              [`mots-cles`]: 'fake',
-              orderBy: 'offer.id+desc',
+              page: '1',
             },
           },
         }
 
         // when
-        const wrapper = shallow(<SearchFilter {...props} />)
+        const wrapper = shallow(
+          <SearchFilter.WrappedComponent.WrappedComponent {...props} />
+        )
         wrapper.instance().onResetClick()
         const updatedFormState = wrapper.state('isNew')
 
-        expect(updatedFormState).toEqual('date')
+        expect(updatedFormState).toEqual('jours')
 
-        expect(paginationChangeMock).toHaveBeenCalledWith(
-          INITIAL_FILTER_PARAMS,
-          { pathname: '/recherche/resultats' }
-        )
+        expect(queryChangeMock).toHaveBeenCalledWith(INITIAL_FILTER_PARAMS, {
+          pathname: '/recherche/resultats',
+        })
       })
     })
 
@@ -152,30 +133,28 @@ describe('src | components | pages | search | SearchFilter', () => {
       it('should call hoc pagination change method with the good parameters', () => {
         // given
         const props = {
+          dispatch: dispatchMock,
           isVisible: true,
-          pagination: {
-            change: paginationChangeMock,
-            query: {
-              categories: null,
-              date: null,
-              distance: '50',
-              jours: null,
-              latitude: '48.8637546',
-              longitude: '2.337428',
-              [`mots-cles`]: 'fake',
-              orderBy: 'offer.id+desc',
+          location: { search: '?page=1&jours=0-1' },
+          query: {
+            change: queryChangeMock,
+            params: {
+              jours: '0-1',
+              page: '1',
             },
           },
         }
 
         // when
-        const wrapper = shallow(<SearchFilter {...props} />)
+        const wrapper = shallow(
+          <SearchFilter.WrappedComponent.WrappedComponent {...props} />
+        )
         wrapper.instance().onFilterClick()
-        const currentQuery = wrapper.state('query')
+        const currentQuery = wrapper.state('params')
         const updatedFormState = wrapper.state('isNew')
 
         // THEN
-        expect(paginationChangeMock).toHaveBeenCalledWith(currentQuery, {
+        expect(queryChangeMock).toHaveBeenCalledWith(currentQuery, {
           pathname: '/recherche/resultats',
         })
 

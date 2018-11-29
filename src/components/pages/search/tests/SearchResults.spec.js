@@ -18,7 +18,7 @@ describe('src | components | pages | SearchResults', () => {
             jours: '0-1',
             latitude: '48.8637546',
             longitude: '2.337428',
-            [`mots-cles`]: 'fake query',
+            'mots-cles': 'fake query',
             orderBy: 'offer.id+desc',
           },
         },

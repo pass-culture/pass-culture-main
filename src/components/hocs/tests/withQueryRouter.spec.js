@@ -1,6 +1,6 @@
 import { mount, shallow } from 'enzyme'
-import React from 'react'
 import { createBrowserHistory } from 'history'
+import React from 'react'
 import { Route, Router } from 'react-router-dom'
 
 import { withQueryRouter } from '../withQueryRouter'

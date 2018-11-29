@@ -44,10 +44,8 @@ class SearchFilter extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    const {
-      location: { search },
-    } = this.props
-    if (search !== prevProps.location.search) {
+    const { location } = this.props
+    if (location.search !== prevProps.location.search) {
       this.handleReinitializeParams()
     }
   }
