@@ -49,7 +49,7 @@ export const withQueryRouter = WrappedComponent => {
         params: { orderBy },
       } = query
       if (!orderBy) {
-        console.warn('there is no orderBy in the window query')
+        console.warn('there is no orderBy in the query')
         return
       }
       const [orderName, orderDirection] = orderBy.split('+')
@@ -65,7 +65,7 @@ export const withQueryRouter = WrappedComponent => {
         params: { orderBy },
       } = query
       if (!orderBy) {
-        console.warn('there is no orderBy in the window query')
+        console.warn('there is no orderBy in the query')
         return
       }
       const [, orderDirection] = orderBy.split('+')
@@ -76,12 +76,11 @@ export const withQueryRouter = WrappedComponent => {
 
     change = (queryParamsUpdater, changeConfig = {}) => {
       const { history, location } = this.props
-      const { params } = query
       const historyMethod = changeConfig.historyMethod || 'push'
       const pathname = changeConfig.pathname || location.pathname
 
       const queryParamsKeys = uniq(
-        Object.keys(params).concat(Object.keys(queryParamsUpdater))
+        Object.keys(query.params).concat(Object.keys(queryParamsUpdater))
       )
 
       const nextQueryParams = {}
@@ -92,9 +91,9 @@ export const withQueryRouter = WrappedComponent => {
         }
         if (
           queryParamsUpdater[queryParamsKey] !== null &&
-          query[queryParamsKey]
+          query.params[queryParamsKey]
         ) {
-          nextQueryParams[queryParamsKey] = query[queryParamsKey]
+          nextQueryParams[queryParamsKey] = query.params[queryParamsKey]
         }
       })
 

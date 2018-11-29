@@ -25,9 +25,9 @@ describe('src | components | pages | SearchPageContent', () => {
         view: undefined,
       },
     },
-    pagination: {
+    query: {
       change: paginationChangeMock,
-      query: {
+      params: {
         categories: null,
         date: null,
         distance: null,
