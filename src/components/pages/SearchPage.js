@@ -1,10 +1,9 @@
+import { withLogin } from 'pass-culture-shared'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 
-import { withLogin, withPaginationRouter } from 'pass-culture-shared'
-import { translateBrowserUrlToApiUrl } from './search/utils'
-
 import SearchPageContent from './SearchPageContent'
+import { withPaginationRouter } from '../hocs/withPaginationRouter'
 import { selectRecommendations } from '../../selectors'
 import selectTypeSublabels, { selectTypes } from '../../selectors/selectTypes'
 
@@ -36,7 +35,6 @@ export default compose(
       orderBy: null,
       page: null,
     },
-    windowToApiQuery: translateBrowserUrlToApiUrl,
   }),
   connect(mapStateToProps)
 )(SearchPageContent)

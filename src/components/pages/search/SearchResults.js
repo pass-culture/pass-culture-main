@@ -28,7 +28,6 @@ class SearchResults extends PureComponent {
   loadMore = page => {
     const { pagination } = this.props
     const { isLoading } = this.state
-    console.log('LOAD MORE page', page, 'isLoading', isLoading)
     if (isLoading) {
       return
     }
@@ -51,7 +50,6 @@ class SearchResults extends PureComponent {
       withNavigation
     )
     const { isLoading } = this.state
-    console.log('RENDER', isLoading)
 
     const reachableThresholdThatTriggersLoadMore = -10
     const unreachableThreshold = -1000

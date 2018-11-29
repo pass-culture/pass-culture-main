@@ -1,9 +1,9 @@
 import get from 'lodash.get'
+import { assignData, requestData } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
+import { stringify } from 'query-string'
 import React, { PureComponent } from 'react'
 import { Route, Switch } from 'react-router-dom'
-
-import { assignData, requestData } from 'pass-culture-shared'
 
 import { Icon } from '../layout/Icon'
 import renderPageFooter from './search/Footer'
@@ -15,6 +15,7 @@ import SearchResults from './search/SearchResults'
 import isInitialQueryWithoutFilters, {
   getDescriptionForSublabel,
   INITIAL_FILTER_PARAMS,
+  translateBrowserUrlToApiUrl,
 } from './search/utils'
 
 import Main from '../layout/Main'
@@ -51,11 +52,14 @@ class SearchPageContent extends PureComponent {
 
   handleRecommendationsRequest = () => {
     const { dispatch, match, pagination } = this.props
-    const { apiQueryString } = pagination
+    const { windowQuery } = pagination
 
     if (match.params.view !== 'resultats') {
       return
     }
+
+    const apiQuery = translateBrowserUrlToApiUrl(windowQuery)
+    const apiQueryString = stringify(apiQuery)
 
     const path = `recommendations?${apiQueryString}`
 
