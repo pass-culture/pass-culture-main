@@ -102,6 +102,7 @@
   z-index: 100000;
 }
 
+#error-catcher,
 #application-loader {
   @extend .flex-center;
   @extend .flex-rows;

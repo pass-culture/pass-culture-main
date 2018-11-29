@@ -1,0 +1,279 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`src | components | layout | ErrorCatcher | ErrorCatcherView match snapshot 1`] = `
+ShallowWrapper {
+  Symbol(enzyme.__root__): [Circular],
+  Symbol(enzyme.__unrendered__): <ErrorCatcherView
+    onClick={[MockFunction]}
+  />,
+  Symbol(enzyme.__renderer__): Object {
+    "batchedUpdates": [Function],
+    "getNode": [Function],
+    "render": [Function],
+    "simulateError": [Function],
+    "simulateEvent": [Function],
+    "unmount": [Function],
+  },
+  Symbol(enzyme.__node__): Object {
+    "instance": null,
+    "key": undefined,
+    "nodeType": "host",
+    "props": Object {
+      "children": <div
+        className="flex-1 flex-rows flex-center"
+      >
+        <h2
+          className="fs20"
+        >
+          Une erreur est survenue.
+        </h2>
+        <p
+          className="mt12"
+        >
+          <button
+            className="no-background border-all rd4 py12 px18 is-inline-block is-white-text text-center fs16"
+            onClick={[MockFunction]}
+            type="button"
+          >
+            <span>
+              Retour aux offres
+            </span>
+          </button>
+        </p>
+      </div>,
+      "id": "error-catcher",
+    },
+    "ref": null,
+    "rendered": Object {
+      "instance": null,
+      "key": undefined,
+      "nodeType": "host",
+      "props": Object {
+        "children": Array [
+          <h2
+            className="fs20"
+          >
+            Une erreur est survenue.
+          </h2>,
+          <p
+            className="mt12"
+          >
+            <button
+              className="no-background border-all rd4 py12 px18 is-inline-block is-white-text text-center fs16"
+              onClick={[MockFunction]}
+              type="button"
+            >
+              <span>
+                Retour aux offres
+              </span>
+            </button>
+          </p>,
+        ],
+        "className": "flex-1 flex-rows flex-center",
+      },
+      "ref": null,
+      "rendered": Array [
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": "Une erreur est survenue.",
+            "className": "fs20",
+          },
+          "ref": null,
+          "rendered": "Une erreur est survenue.",
+          "type": "h2",
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": <button
+              className="no-background border-all rd4 py12 px18 is-inline-block is-white-text text-center fs16"
+              onClick={[MockFunction]}
+              type="button"
+            >
+              <span>
+                Retour aux offres
+              </span>
+            </button>,
+            "className": "mt12",
+          },
+          "ref": null,
+          "rendered": Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": <span>
+                Retour aux offres
+              </span>,
+              "className": "no-background border-all rd4 py12 px18 is-inline-block is-white-text text-center fs16",
+              "onClick": [MockFunction],
+              "type": "button",
+            },
+            "ref": null,
+            "rendered": Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": "Retour aux offres",
+              },
+              "ref": null,
+              "rendered": "Retour aux offres",
+              "type": "span",
+            },
+            "type": "button",
+          },
+          "type": "p",
+        },
+      ],
+      "type": "div",
+    },
+    "type": "div",
+  },
+  Symbol(enzyme.__nodes__): Array [
+    Object {
+      "instance": null,
+      "key": undefined,
+      "nodeType": "host",
+      "props": Object {
+        "children": <div
+          className="flex-1 flex-rows flex-center"
+        >
+          <h2
+            className="fs20"
+          >
+            Une erreur est survenue.
+          </h2>
+          <p
+            className="mt12"
+          >
+            <button
+              className="no-background border-all rd4 py12 px18 is-inline-block is-white-text text-center fs16"
+              onClick={[MockFunction]}
+              type="button"
+            >
+              <span>
+                Retour aux offres
+              </span>
+            </button>
+          </p>
+        </div>,
+        "id": "error-catcher",
+      },
+      "ref": null,
+      "rendered": Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": Array [
+            <h2
+              className="fs20"
+            >
+              Une erreur est survenue.
+            </h2>,
+            <p
+              className="mt12"
+            >
+              <button
+                className="no-background border-all rd4 py12 px18 is-inline-block is-white-text text-center fs16"
+                onClick={[MockFunction]}
+                type="button"
+              >
+                <span>
+                  Retour aux offres
+                </span>
+              </button>
+            </p>,
+          ],
+          "className": "flex-1 flex-rows flex-center",
+        },
+        "ref": null,
+        "rendered": Array [
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": "Une erreur est survenue.",
+              "className": "fs20",
+            },
+            "ref": null,
+            "rendered": "Une erreur est survenue.",
+            "type": "h2",
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": <button
+                className="no-background border-all rd4 py12 px18 is-inline-block is-white-text text-center fs16"
+                onClick={[MockFunction]}
+                type="button"
+              >
+                <span>
+                  Retour aux offres
+                </span>
+              </button>,
+              "className": "mt12",
+            },
+            "ref": null,
+            "rendered": Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": <span>
+                  Retour aux offres
+                </span>,
+                "className": "no-background border-all rd4 py12 px18 is-inline-block is-white-text text-center fs16",
+                "onClick": [MockFunction],
+                "type": "button",
+              },
+              "ref": null,
+              "rendered": Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": "Retour aux offres",
+                },
+                "ref": null,
+                "rendered": "Retour aux offres",
+                "type": "span",
+              },
+              "type": "button",
+            },
+            "type": "p",
+          },
+        ],
+        "type": "div",
+      },
+      "type": "div",
+    },
+  ],
+  Symbol(enzyme.__options__): Object {
+    "adapter": ReactSixteenAdapter {
+      "options": Object {
+        "enableComponentDidUpdateOnSetState": true,
+        "lifecycles": Object {
+          "componentDidUpdate": Object {
+            "onSetState": true,
+          },
+          "getDerivedStateFromProps": true,
+          "getSnapshotBeforeUpdate": true,
+          "setState": Object {
+            "skipsComponentDidUpdateOnNullish": true,
+          },
+        },
+      },
+    },
+  },
+}
+`;
