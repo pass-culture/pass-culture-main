@@ -21,7 +21,7 @@ class FilterByDates extends PureComponent {
     this.setState({ pickedDate: null })
     const { filterActions, filterState } = this.props
 
-    const pickedDaysInQuery = decodeURI(filterState.query.jours || '')
+    const pickedDaysInQuery = decodeURI(filterState.params.jours || '')
     const isdayAlreadyChecked = pickedDaysInQuery.includes(day)
     let callback
     const pickedDaysInQueryLenght = get(pickedDaysInQuery, 'length')
@@ -61,8 +61,7 @@ class FilterByDates extends PureComponent {
 
   render() {
     const { filterState, title } = this.props
-    const pickedDaysInQuery = decodeURI(filterState.query.jours || '')
-
+    const pickedDaysInQuery = decodeURI(filterState.params.jours || '')
     const { pickedDate } = this.state
 
     return (

@@ -9,7 +9,7 @@ class FilterByOfferTypes extends PureComponent {
   onChange = typeSublabel => {
     const { filterActions, filterState } = this.props
 
-    const typesValue = decodeURI(filterState.query.categories || '')
+    const typesValue = decodeURI(filterState.params.categories || '')
 
     const isAlreadyIncluded = typesValue.includes(typeSublabel)
 
@@ -24,7 +24,7 @@ class FilterByOfferTypes extends PureComponent {
   render() {
     const { filterState, typeSublabels, title } = this.props
 
-    const typesValue = decodeURI(filterState.query.categories || '')
+    const typesValue = decodeURI(filterState.params.categories || '')
 
     return (
       <div id="filter-by-offer-types" className="pt18">

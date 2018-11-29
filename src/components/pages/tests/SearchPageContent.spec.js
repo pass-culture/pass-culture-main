@@ -499,7 +499,7 @@ describe('src | components | pages | SearchPageContent', () => {
       describe('When there is some filters in search', () => {
         it('should show ico-filter-active icone', () => {
           // given
-          initialProps.pagination.query = {
+          initialProps.query.params = {
             categories: '%C3%89couter,Pratiquer',
             date: '2018-09-25T09:38:20.576Z',
             days: null,

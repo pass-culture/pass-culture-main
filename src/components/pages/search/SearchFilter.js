@@ -33,7 +33,7 @@ class SearchFilter extends Component {
     super(props)
     this.state = {
       isNew: false,
-      query: Object.assign({}, props.pagination.query),
+      params: Object.assign({}, props.query.params),
     }
     this.filterActions = {
       add: this.handleQueryAdd,
@@ -46,69 +46,68 @@ class SearchFilter extends Component {
   componentDidUpdate(prevProps) {
     const {
       location: { search },
-      pagination: { query },
     } = this.props
-    // TODO: eslint does not support setState inside componentDidUpdate
     if (search !== prevProps.location.search) {
-      /* eslint-disable */
-      this.setState({
-        isNew: false,
-        query,
-      })
+      this.handleReinitializeParams()
     }
   }
 
+  handleReinitializeParams = () => {
+    const { query } = this.props
+    this.setState({
+      isNew: false,
+      params: query.params,
+    })
+  }
+
   onFilterClick = () => {
-    const { dispatch, pagination } = this.props
-    const { isNew, query } = this.state
+    const { dispatch, query } = this.props
+    const { isNew, params } = this.state
 
     if (isNew) {
       dispatch(assignData({ recommendations: [] }))
     }
 
-    query.page = null
+    params.page = null
 
-    pagination.change(query, {
-      pathname: '/recherche/resultats',
-    })
+    query.change(params, { pathname: '/recherche/resultats' })
   }
 
   onResetClick = () => {
-    const { dispatch, pagination } = this.props
+    const { dispatch, query } = this.props
 
     dispatch(assignData({ recommendations: [] }))
 
-    const isNew = getFirstChangingKey(pagination.query, INITIAL_FILTER_PARAMS)
-    this.setState({
-      isNew,
-    })
+    const isNew = getFirstChangingKey(query.params, INITIAL_FILTER_PARAMS)
 
-    pagination.change(INITIAL_FILTER_PARAMS, {
+    this.setState({ isNew })
+
+    query.change(INITIAL_FILTER_PARAMS, {
       pathname: '/recherche/resultats',
     })
   }
 
   handleQueryChange = (newValue, callback) => {
-    const { pagination } = this.props
-    const { query } = this.state
+    const { query } = this.props
+    const { params } = this.state
 
-    const nextFilterParams = Object.assign({}, query, newValue)
-    const isNew = getFirstChangingKey(pagination.query, newValue)
+    const nextFilterParams = Object.assign({}, params, newValue)
+    const isNew = getFirstChangingKey(query.params, newValue)
 
     this.setState(
       {
         isNew,
-        query: nextFilterParams,
+        params: nextFilterParams,
       },
       callback
     )
   }
 
   handleQueryAdd = (key, value, callback) => {
-    const { query } = this.state
+    const { params } = this.state
     const encodedValue = encodeURI(value)
     let nextValue = encodedValue
-    const previousValue = query[key]
+    const previousValue = params[key]
     if (get(previousValue, 'length')) {
       const args = previousValue.split(',').concat([encodedValue])
       args.sort()
@@ -119,8 +118,8 @@ class SearchFilter extends Component {
   }
 
   handleQueryRemove = (key, value, callback) => {
-    const { query } = this.state
-    const previousValue = query[key]
+    const { params } = this.state
+    const previousValue = params[key]
 
     if (get(previousValue, 'length')) {
       const encodedValue = encodeURI(value)
@@ -144,11 +143,11 @@ class SearchFilter extends Component {
             <div
               id="search-filter-menu"
               className={`is-full-width transition-status-${status} mb20`}
-              style={{ ...defaultStyle, ...transitionStyles[status] }}>
+              style={{ ...defaultStyle, ...transitionStyles[status] }}
+            >
               <FilterByDates
                 filterActions={this.filterActions}
                 filterState={this.state}
-                pagination={this.pagination}
                 title="QUAND"
               />
               <FilterByDistance
@@ -163,18 +162,23 @@ class SearchFilter extends Component {
               />
               <div
                 id="search-filter-menu-footer-controls"
-                className="flex-columns mt18">
+                className="flex-columns mt18"
+              >
                 <button
                   className="no-background no-outline col-1of2 fs20 py12"
                   onClick={this.onResetClick}
-                  type="button">
+                  type="button"
+                >
                   Réinitialiser
                 </button>
                 <button
                   className="no-background no-outline col-1of2 fs20 py12"
                   onClick={this.onFilterClick}
-                  type="button">
-                  <span className="is-bold">Filtrer</span>
+                  type="button"
+                >
+                  <span className="is-bold">
+Filtrer
+                  </span>
                 </button>
               </div>
             </div>
@@ -186,9 +190,10 @@ class SearchFilter extends Component {
 }
 
 SearchFilter.propTypes = {
+  dispatch: PropTypes.func.isRequired,
   isVisible: PropTypes.bool.isRequired,
   location: PropTypes.object.isRequired,
-  pagination: PropTypes.object.isRequired,
+  query: PropTypes.object.isRequired,
 }
 
 export default compose(

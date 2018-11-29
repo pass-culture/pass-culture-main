@@ -31,27 +31,21 @@ class SearchResults extends PureComponent {
   }
 
   loadMore = page => {
-    const { pagination } = this.props
+    const { query } = this.props
     const { isLoading } = this.state
     if (isLoading) {
       return
     }
 
-    this.setState({ isLoading: true }, () => pagination.change({ page }))
+    this.setState({ isLoading: true }, () => query.change({ page }))
   }
 
   render() {
-    const {
-      items,
-      hasMore,
-      keywords,
-      pagination: { query },
-      withNavigation,
-    } = this.props
+    const { items, hasMore, keywords, query, withNavigation } = this.props
     const resultTitle = searchResultsTitle(
       keywords,
       items,
-      query,
+      query.params,
       withNavigation
     )
     const { isLoading } = this.state
@@ -106,7 +100,7 @@ SearchResults.propTypes = {
   hasMore: PropTypes.bool,
   items: PropTypes.array,
   keywords: PropTypes.string,
-  pagination: PropTypes.object.isRequired,
+  query: PropTypes.object.isRequired,
   withNavigation: PropTypes.bool.isRequired,
 }
 

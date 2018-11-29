@@ -4,7 +4,7 @@ import React from 'react'
 import SearchPicture from './SearchPicture'
 import { withQueryRouter } from '../../hocs/withQueryRouter'
 
-const NavByOfferType = ({ pagination, title, typeSublabels }) => (
+const NavByOfferType = ({ query, title, typeSublabels }) => (
   <div id="nav-by-offer-type">
     <h2 className="is-italic fs15">
       {title}
@@ -15,7 +15,7 @@ const NavByOfferType = ({ pagination, title, typeSublabels }) => (
           id="button-nav-by-offer-type"
           key={typeSublabel}
           onClick={() =>
-            pagination.change(
+            query.change(
               { categories: typeSublabel, page: null },
               { pathname: `/recherche/resultats/${typeSublabel}` }
             )
@@ -31,7 +31,7 @@ const NavByOfferType = ({ pagination, title, typeSublabels }) => (
 )
 
 NavByOfferType.propTypes = {
-  pagination: PropTypes.object.isRequired,
+  query: PropTypes.object.isRequired,
   title: PropTypes.string.isRequired,
   typeSublabels: PropTypes.array.isRequired,
 }

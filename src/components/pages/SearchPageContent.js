@@ -22,53 +22,48 @@ import Main from '../layout/Main'
 class SearchPageContent extends PureComponent {
   constructor(props) {
     super(props)
-    const { pagination } = props
+    const { query } = props
 
     this.state = {
       hasMore: false,
       isFilterVisible: false,
       keywordsKey: 0,
-      keywordsValue: pagination.query['mots-cles'],
+      keywordsValue: query.params['mots-cles'],
     }
 
     props.dispatch(assignData({ recommendations: [] }))
   }
 
   componentDidMount() {
-    const { dispatch, pagination } = this.props
+    const { dispatch, query } = this.props
 
     dispatch(requestData('GET', 'types'))
 
-    if (pagination.query.page) {
-      pagination.change({ page: null })
+    if (query.params.page) {
+      query.change({ page: null })
     } else {
       this.handleRecommendationsRequest()
     }
   }
 
   componentDidUpdate(prevProps) {
-    const {
-      location: { search },
-    } = this.props
-    if (search !== prevProps.location.search) {
+    const { location } = this.props
+    if (location.search !== prevProps.location.search) {
       this.handleRecommendationsRequest()
     }
   }
 
   handleRecommendationsRequest = () => {
-    const { dispatch, match, pagination } = this.props
-    const { query } = pagination
+    const { dispatch, match, query } = this.props
 
     if (match.params.view !== 'resultats') {
       return
     }
 
-    console.log('handleRecommendationsRequest query', query)
+    const apiParams = translateBrowserUrlToApiUrl(query.params)
+    const apiParamsString = stringify(apiParams)
 
-    const apiQuery = translateBrowserUrlToApiUrl(query)
-    const apiQueryString = stringify(apiQuery)
-
-    const path = `recommendations?${apiQueryString}`
+    const path = `recommendations?${apiParamsString}`
 
     const path = `recommendations?page=${page}&${apiQueryString}`
     dispatch(
@@ -86,7 +81,7 @@ class SearchPageContent extends PureComponent {
 
   onBackToSearchHome = () => {
     const { keywordsKey } = this.state
-    const { pagination } = this.props
+    const { query } = this.props
 
     this.setState({
       // https://stackoverflow.com/questions/37946229/how-do-i-reset-the-defaultvalue-for-a-react-input
@@ -97,7 +92,7 @@ class SearchPageContent extends PureComponent {
       keywordsKey: keywordsKey + 1,
       keywordsValue: '',
     })
-    pagination.change(
+    query.change(
       {
         categories: null,
         date: null,
@@ -112,7 +107,7 @@ class SearchPageContent extends PureComponent {
   }
 
   onSubmit = event => {
-    const { dispatch, pagination } = this.props
+    const { dispatch, query } = this.props
     const { value } = event.target.elements.keywords
     event.preventDefault()
 
@@ -122,7 +117,7 @@ class SearchPageContent extends PureComponent {
       dispatch(assignData({ recommendations: [] }))
     }
 
-    pagination.change(
+    query.change(
       {
         'mots-cles': value === '' ? null : value,
         page: null,
@@ -142,7 +137,7 @@ class SearchPageContent extends PureComponent {
   }
 
   onKeywordsEraseClick = () => {
-    const { dispatch, location, pagination } = this.props
+    const { dispatch, location, query } = this.props
     const { keywordsKey } = this.state
 
     this.setState({
@@ -156,7 +151,7 @@ class SearchPageContent extends PureComponent {
 
     dispatch(assignData({ recommendations: [] }))
 
-    pagination.change(
+    query.change(
       { 'mots-cles': null, page: null },
       { pathname: location.pathname }
     )
@@ -166,16 +161,15 @@ class SearchPageContent extends PureComponent {
     const {
       location,
       match,
-      pagination,
+      query,
       recommendations,
       typeSublabels,
       typeSublabelsAndDescription,
     } = this.props
 
     const { hasMore, keywordsKey, keywordsValue, isFilterVisible } = this.state
-    const { query } = pagination
     const onResultPage = match.params.view === 'resultats'
-    const keywords = query[`mots-cles`]
+    const keywords = query.params[`mots-cles`]
 
     const backButton = onResultPage && {
       onClick: () => this.onBackToSearchHome(),
@@ -183,7 +177,7 @@ class SearchPageContent extends PureComponent {
 
     const whithoutFilters = isInitialQueryWithoutFilters(
       INITIAL_FILTER_PARAMS,
-      query
+      query.params
     )
 
     const iconName = whithoutFilters ? 'filter' : 'filter-active'
@@ -197,7 +191,7 @@ class SearchPageContent extends PureComponent {
     const searchPageTitle = onResultPage ? 'Recherche : résultats' : 'Recherche'
 
     let description
-    const category = decodeURIComponent(pagination.query.categories)
+    const category = decodeURIComponent(query.params.categories)
     if (location.pathname.indexOf('/resultats/') !== -1) {
       description = getDescriptionForSublabel(
         category,
@@ -209,12 +203,12 @@ class SearchPageContent extends PureComponent {
       <Main
         id="search-page"
         backButton={backButton}
+        closeSearchButton
+        footer={renderPageFooter}
         handleDataRequest={() => {}}
         header={renderPageHeader}
-        pageTitle={searchPageTitle}
         name="search"
-        footer={renderPageFooter}
-        closeSearchButton
+        pageTitle={searchPageTitle}
       >
         <form onSubmit={this.onSubmit}>
           <div className="flex-columns items-start">
@@ -279,7 +273,7 @@ class SearchPageContent extends PureComponent {
           </div>
         </form>
 
-        <SearchFilter isVisible={isFilterVisible} pagination={pagination} />
+        <SearchFilter isVisible={isFilterVisible} />
 
         <Switch location={location}>
           <Route
@@ -331,7 +325,7 @@ SearchPageContent.propTypes = {
   dispatch: PropTypes.func.isRequired,
   location: PropTypes.object.isRequired,
   match: PropTypes.object.isRequired,
-  pagination: PropTypes.object.isRequired,
+  query: PropTypes.object.isRequired,
   recommendations: PropTypes.array.isRequired,
   typeSublabels: PropTypes.array.isRequired,
   typeSublabelsAndDescription: PropTypes.array.isRequired,

@@ -47,9 +47,9 @@ class FilterByDistance extends PureComponent {
     // DEPENDING ON THE KEYWORDS VALUE IN ORDER TO RERENDER
     // THE IN PUT WITH A SYNCED DEFAULT VALUE
     const distanceKey =
-      filterState.query.distance === null ? 'empty' : 'not-empty'
+      filterState.params.distance === null ? 'empty' : 'not-empty'
 
-    const distanceValue = filterState.query.distance || 20000
+    const distanceValue = filterState.params.distance || 20000
 
     return (
       <div key={distanceKey} id="filter-by-distance" className="pt18">

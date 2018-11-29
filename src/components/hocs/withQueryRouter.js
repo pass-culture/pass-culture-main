@@ -5,8 +5,8 @@ import { parse, stringify } from 'query-string'
 import React, { PureComponent } from 'react'
 import { withRouter } from 'react-router-dom'
 
-const pagination = {
-  query: {},
+const query = {
+  params: {},
 }
 
 export const withQueryRouter = WrappedComponent => {
@@ -14,7 +14,7 @@ export const withQueryRouter = WrappedComponent => {
     constructor() {
       super()
 
-      const paginationMethods = {
+      const queryMethods = {
         add: this.add,
         change: this.change,
         orderBy: this.orderBy,
@@ -22,7 +22,7 @@ export const withQueryRouter = WrappedComponent => {
         reverseOrder: this.reverseOrder,
       }
 
-      Object.assign(pagination, paginationMethods)
+      Object.assign(query, queryMethods)
 
       this.state = {
         canRenderWhenPageIsInitialized: false,
@@ -32,7 +32,7 @@ export const withQueryRouter = WrappedComponent => {
     static getDerivedStateFromProps(nextProps) {
       const { location } = nextProps
 
-      pagination.query = parse(location.search)
+      query.params = parse(location.search)
 
       return {
         canRenderWhenPageIsInitialized: true,
@@ -45,8 +45,9 @@ export const withQueryRouter = WrappedComponent => {
     }
 
     reverseOrder = () => {
-      const { query } = this.state
-      const { orderBy } = query || {}
+      const {
+        params: { orderBy },
+      } = query
       if (!orderBy) {
         console.warn('there is no orderBy in the window query')
         return
@@ -60,8 +61,9 @@ export const withQueryRouter = WrappedComponent => {
     }
 
     orderBy = e => {
-      const { query } = this.state
-      const { orderBy } = query || {}
+      const {
+        params: { orderBy },
+      } = query
       if (!orderBy) {
         console.warn('there is no orderBy in the window query')
         return
@@ -72,28 +74,31 @@ export const withQueryRouter = WrappedComponent => {
       })
     }
 
-    change = (queryUpdater, changeConfig = {}) => {
+    change = (queryParamsUpdater, changeConfig = {}) => {
       const { history, location } = this.props
-      const query = parse(location.search)
+      const { params } = query
       const historyMethod = changeConfig.historyMethod || 'push'
       const pathname = changeConfig.pathname || location.pathname
 
-      const queryKeys = uniq(
-        Object.keys(query).concat(Object.keys(queryUpdater))
+      const queryParamsKeys = uniq(
+        Object.keys(params).concat(Object.keys(queryParamsUpdater))
       )
 
-      const nextQuery = {}
-      queryKeys.forEach(queryKey => {
-        if (queryUpdater[queryKey]) {
-          nextQuery[queryKey] = queryUpdater[queryKey]
+      const nextQueryParams = {}
+      queryParamsKeys.forEach(queryParamsKey => {
+        if (queryParamsUpdater[queryParamsKey]) {
+          nextQueryParams[queryParamsKey] = queryParamsUpdater[queryParamsKey]
           return
         }
-        if (queryUpdater[queryKey] !== null && query[queryKey]) {
-          nextQuery[queryKey] = query[queryKey]
+        if (
+          queryParamsUpdater[queryParamsKey] !== null &&
+          query[queryParamsKey]
+        ) {
+          nextQueryParams[queryParamsKey] = query[queryParamsKey]
         }
       })
 
-      const nextLocationSearch = stringify(nextQuery)
+      const nextLocationSearch = stringify(nextQueryParams)
 
       const newPath = `${pathname}?${nextLocationSearch}`
 
@@ -101,10 +106,10 @@ export const withQueryRouter = WrappedComponent => {
     }
 
     add = (key, value) => {
-      const { query } = this.state
+      const { params } = query
 
       let nextValue = value
-      const previousValue = query[key]
+      const previousValue = params[key]
       if (get(previousValue, 'length')) {
         const args = previousValue.split(',').concat([value])
         args.sort()
@@ -119,9 +124,9 @@ export const withQueryRouter = WrappedComponent => {
     }
 
     remove = (key, value) => {
-      const { query } = this.state
+      const { params } = query
 
-      const previousValue = query[key]
+      const previousValue = params[key]
       if (get(previousValue, 'length')) {
         let nextValue = previousValue
           .replace(`,${value}`, '')
@@ -142,7 +147,7 @@ export const withQueryRouter = WrappedComponent => {
       if (!canRenderWhenPageIsInitialized) {
         return null
       }
-      return <WrappedComponent {...this.props} pagination={pagination} />
+      return <WrappedComponent {...this.props} query={query} />
     }
   }
 
