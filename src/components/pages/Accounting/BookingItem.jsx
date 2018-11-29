@@ -21,6 +21,7 @@ import selectStockById from '../../../selectors/selectStockById'
 import selectUserById from '../../../selectors/selectUserById'
 import venueSelector from '../../../selectors/venue'
 import { bookingNormalizer } from '../../../utils/normalizers'
+import { getOfferTypeLabel } from '../../../utils/offerItem'
 
 const getBookingState = booking => {
   const { isCancelled, isUsed } = booking
@@ -113,7 +114,16 @@ class BookingItem extends Component {
   }
 
   render() {
-    const { booking, event, offerer, stock, thing, venue, user } = this.props
+    const {
+      booking,
+      event,
+      offerer,
+      stock,
+      thing,
+      venue,
+      user,
+      offerTypeLabel,
+    } = this.props
     const {
       amount,
       dateModified,
@@ -127,7 +137,7 @@ class BookingItem extends Component {
     const userIdentifier =
       firstName && lastName ? `${firstName} ${lastName}` : email
     const eventOrThing = event || thing
-    const { name, type } = eventOrThing || {}
+    const { name } = eventOrThing || {}
     const offererName = get(offerer, 'name')
     const venueName = get(venue, 'name')
     const { picto, message } = getBookingState(booking)
@@ -142,24 +152,23 @@ class BookingItem extends Component {
             {token}: {userIdentifier}
           </td>
           <td rowSpan="2">
-            {!isCancelled &&
-              !isUsed && (
-                <div className="navbar-item has-dropdown is-hoverable AccountingPage-actions">
-                  <div className="actionButton" />
-                  <div className="navbar-dropdown is-right">
-                    <a
-                      className="navbar-item cancel"
-                      onClick={this.onCancelClick}>
-                      <Icon svg="ico-close-r" /> Annuler la réservation
-                    </a>
-                  </div>
+            {!isCancelled && !isUsed && (
+              <div className="navbar-item has-dropdown is-hoverable AccountingPage-actions">
+                <div className="actionButton" />
+                <div className="navbar-dropdown is-right">
+                  <a
+                    className="navbar-item cancel"
+                    onClick={this.onCancelClick}>
+                    <Icon svg="ico-close-r" /> Annuler la réservation
+                  </a>
                 </div>
-              )}
+              </div>
+            )}
           </td>
         </tr>
         <tr className="offer-item first-col">
           <td>{moment(dateModified).format('D/MM/YY')}</td>
-          <td>{type}</td>
+          <td>{offerTypeLabel}</td>
           <td>{offererName}</td>
           <td>{venueName}</td>
           <td>
@@ -202,11 +211,13 @@ function mapStateToProps(state, ownProps) {
   const venue = venueSelector(state, get(offer, 'venueId'))
   const offerer = offererSelector(state, get(venue, 'managingOffererId'))
   const user = selectUserById(state, ownProps.booking.userId)
+  const offerTypeLabel = getOfferTypeLabel(event, thing)
 
   return {
     event,
     eventOccurrence,
     offer,
+    offerTypeLabel,
     offerer,
     stock,
     thing,
