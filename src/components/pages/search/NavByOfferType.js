@@ -2,6 +2,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 
 import SearchPicture from './SearchPicture'
+import { withQueryRouter } from '../../hocs/withQueryRouter'
 
 const NavByOfferType = ({ pagination, title, typeSublabels }) => (
   <div id="nav-by-offer-type">
@@ -15,7 +16,7 @@ const NavByOfferType = ({ pagination, title, typeSublabels }) => (
           key={typeSublabel}
           onClick={() =>
             pagination.change(
-              { categories: typeSublabel },
+              { categories: typeSublabel, page: null },
               { pathname: `/recherche/resultats/${typeSublabel}` }
             )
           }
@@ -35,4 +36,4 @@ NavByOfferType.propTypes = {
   typeSublabels: PropTypes.array.isRequired,
 }
 
-export default NavByOfferType
+export default withQueryRouter(NavByOfferType)

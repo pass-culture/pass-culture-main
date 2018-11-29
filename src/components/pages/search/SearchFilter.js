@@ -3,7 +3,6 @@ import { assignData } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { withRouter } from 'react-router-dom'
 import { Transition } from 'react-transition-group'
 import { compose } from 'redux'
 
@@ -11,6 +10,7 @@ import FilterByDates from './FilterByDates'
 import FilterByDistance from './FilterByDistance'
 import FilterByOfferTypes from './FilterByOfferTypes'
 import { getFirstChangingKey, INITIAL_FILTER_PARAMS } from './utils'
+import { withQueryRouter } from '../../hocs/withQueryRouter'
 
 const filtersPanelHeight = 475
 const transitionDelay = 0
@@ -192,6 +192,6 @@ SearchFilter.propTypes = {
 }
 
 export default compose(
-  withRouter,
+  withQueryRouter,
   connect()
 )(SearchFilter)

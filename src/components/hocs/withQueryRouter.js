@@ -9,8 +9,8 @@ const pagination = {
   query: {},
 }
 
-export const withPaginationRouter = WrappedComponent => {
-  class _withPaginationRouter extends PureComponent {
+export const withQueryRouter = WrappedComponent => {
+  class _withQueryRouter extends PureComponent {
     constructor() {
       super()
 
@@ -111,7 +111,7 @@ export const withPaginationRouter = WrappedComponent => {
         nextValue = args.join(',')
       } else if (typeof previousValue === 'undefined') {
         console.warn(
-          `Weird did you forget to mention this ${key} query param in your withPaginationRouter hoc ?`
+          `Weird did you forget to mention this ${key} query param in your withQueryRouter hoc ?`
         )
       }
 
@@ -132,7 +132,7 @@ export const withPaginationRouter = WrappedComponent => {
         this.change({ [key]: nextValue })
       } else if (typeof previousValue === 'undefined') {
         console.warn(
-          `Weird did you forget to mention this ${key} query param in your withPaginationRouter hoc ?`
+          `Weird did you forget to mention this ${key} query param in your withQueryRouter hoc ?`
         )
       }
     }
@@ -146,12 +146,12 @@ export const withPaginationRouter = WrappedComponent => {
     }
   }
 
-  _withPaginationRouter.propTypes = {
+  _withQueryRouter.propTypes = {
     history: PropTypes.object.isRequired,
     location: PropTypes.object.isRequired,
   }
 
-  return withRouter(_withPaginationRouter)
+  return withRouter(_withQueryRouter)
 }
 
-export default withPaginationRouter
+export default withQueryRouter

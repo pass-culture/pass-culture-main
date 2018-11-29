@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import { compose } from 'redux'
 
 import SearchPageContent from './SearchPageContent'
-import { withPaginationRouter } from '../hocs/withPaginationRouter'
+import { withQueryRouter } from '../hocs/withQueryRouter'
 import { selectRecommendations } from '../../selectors'
 import selectTypeSublabels, { selectTypes } from '../../selectors/selectTypes'
 
@@ -22,6 +22,6 @@ const mapStateToProps = state => {
 
 export default compose(
   withLogin({ failRedirect: '/connexion' }),
-  withPaginationRouter,
+  withQueryRouter,
   connect(mapStateToProps)
 )(SearchPageContent)

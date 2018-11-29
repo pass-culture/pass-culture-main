@@ -287,7 +287,6 @@ class SearchPageContent extends PureComponent {
             path="/recherche"
             render={() => (
               <NavByOfferType
-                pagination={pagination}
                 title="PAR CATÉGORIES"
                 typeSublabels={typeSublabels}
               />
@@ -305,7 +304,6 @@ class SearchPageContent extends PureComponent {
                 items={recommendations}
                 keywords={keywords}
                 loadMoreHandler={this.loadMoreHandler}
-                pagination={pagination}
                 typeSublabels={typeSublabels}
                 withNavigation
               />,
@@ -318,7 +316,6 @@ class SearchPageContent extends PureComponent {
                 hasMore={hasMore}
                 items={recommendations}
                 keywords={keywords}
-                pagination={pagination}
                 typeSublabels={typeSublabels}
                 withNavigation={false}
               />

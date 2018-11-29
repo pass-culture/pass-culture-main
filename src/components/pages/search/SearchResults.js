@@ -2,10 +2,10 @@ import classnames from 'classnames'
 import React, { PureComponent } from 'react'
 import InfiniteScroll from 'react-infinite-scroller'
 import PropTypes from 'prop-types'
-import { withRouter } from 'react-router-dom'
 
 import SearchResultItem from './SearchResultItem'
 import { searchResultsTitle } from './utils'
+import { withQueryRouter } from '../../hocs/withQueryRouter'
 import Spinner from '../../layout/Spinner'
 
 class SearchResults extends PureComponent {
@@ -18,15 +18,19 @@ class SearchResults extends PureComponent {
 
   componentDidUpdate(prevProps) {
     const { items } = this.props
+    if (items !== prevProps.items) {
+      this.handleShouldCancelLoading()
+    }
+  }
+
+  handleShouldCancelLoading = () => {
     const { isLoading } = this.state
-    if (isLoading && items !== prevProps.items) {
-      /* eslint-disable react/no-did-update-set-state */
+    if (isLoading) {
       this.setState({ isLoading: false })
     }
   }
 
   loadMore = page => {
-    console.log('LOAD MORE', page)
     const { pagination } = this.props
     const { isLoading } = this.state
     if (isLoading) {
@@ -106,4 +110,4 @@ SearchResults.propTypes = {
   withNavigation: PropTypes.bool.isRequired,
 }
 
-export default withRouter(SearchResults)
+export default withQueryRouter(SearchResults)

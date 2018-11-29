@@ -1,1 +1,1 @@
-export * from './withPaginationRouter'
+export * from './withQueryRouter'
