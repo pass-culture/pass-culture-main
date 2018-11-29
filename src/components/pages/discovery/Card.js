@@ -1,3 +1,4 @@
+import get from 'lodash.get'
 import { requestData } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
@@ -13,10 +14,9 @@ import currentRecommendationSelector from '../../../selectors/currentRecommendat
 import nextRecommendationSelector from '../../../selectors/nextRecommendation'
 import previousRecommendationSelector from '../../../selectors/previousRecommendation'
 
-// FIXME -> move to pass-culture-shared
 const noop = () => {}
 
-class Card extends PureComponent {
+export class RawCard extends PureComponent {
   componentDidUpdate(prevProps) {
     const {
       isFlipped,
@@ -41,7 +41,14 @@ class Card extends PureComponent {
   }
 
   render() {
-    const { position, recommendation, width, headerColor } = this.props
+    const { position, recommendation, width } = this.props
+
+    const firstThumbDominantColor = get(
+      recommendation,
+      'firstThumbDominantColor'
+    )
+    const headerColor = getHeaderColor(firstThumbDominantColor)
+
     const { index } = recommendation || {}
     const iscurrent = position === 'current'
     const translateTo = index * width
@@ -60,14 +67,12 @@ class Card extends PureComponent {
   }
 }
 
-Card.defaultProps = {
-  headerColor: null,
+RawCard.defaultProps = {
   isFlipped: false,
   recommendation: null,
 }
 
-Card.propTypes = {
-  headerColor: PropTypes.string,
+RawCard.propTypes = {
   isFlipped: PropTypes.bool,
   position: PropTypes.string.isRequired,
   recommendation: PropTypes.object,
@@ -106,13 +111,11 @@ export default compose(
         mediationId,
         ownProps.position
       )
-      const headerColor = getHeaderColor(recommendation.firstThumbDominantColor)
       return {
-        headerColor,
         isFlipped: state.verso.isFlipped,
         recommendation,
       }
     },
     { requestDataAction: requestData }
   )
-)(Card)
+)(RawCard)

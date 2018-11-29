@@ -12,7 +12,7 @@ import { ROOT_PATH } from '../../utils/config'
 
 import { makeDraggable, makeUndraggable } from '../../reducers/verso'
 
-class VersoWrapper extends Component {
+export class RawVersoWrapper extends Component {
   constructor(props) {
     super(props)
     this.toucheMoveHandler = this.toucheMoveHandler.bind(this)
@@ -51,12 +51,14 @@ class VersoWrapper extends Component {
   }
 
   render() {
-    const {
-      children,
-      className,
+    const { children, className, currentRecommendation } = this.props
+
+    const firstThumbDominantColor = get(
       currentRecommendation,
-      headerColor,
-    } = this.props
+      'firstThumbDominantColor'
+    )
+    const headerColor = getHeaderColor(firstThumbDominantColor)
+
     const { mediation, offer } = currentRecommendation || {}
     const { eventOrThing, venue } = offer || {}
 
@@ -102,19 +104,17 @@ class VersoWrapper extends Component {
   }
 }
 
-VersoWrapper.defaultProps = {
+RawVersoWrapper.defaultProps = {
   currentRecommendation: null,
-  headerColor: null,
 }
 
-VersoWrapper.propTypes = {
+RawVersoWrapper.propTypes = {
   children: PropTypes.node.isRequired,
   className: PropTypes.string.isRequired,
   currentRecommendation: PropTypes.object,
   dispatchMakeDraggable: PropTypes.func.isRequired,
   dispatchMakeUndraggable: PropTypes.func.isRequired,
   draggable: PropTypes.bool.isRequired,
-  headerColor: PropTypes.string,
   isFlipped: PropTypes.bool.isRequired,
 }
 
@@ -128,13 +128,9 @@ export default compose(
         offerId,
         mediationId
       )
-      const headerColor = getHeaderColor(
-        currentRecommendation.firstThumbDominantColor
-      )
       return {
         currentRecommendation,
         draggable: state.verso.draggable,
-        headerColor,
         isFlipped: state.verso.isFlipped,
       }
     },
@@ -143,4 +139,4 @@ export default compose(
       dispatchMakeUndraggable: makeUndraggable,
     }
   )
-)(VersoWrapper)
+)(RawVersoWrapper)

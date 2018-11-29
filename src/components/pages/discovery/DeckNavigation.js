@@ -1,3 +1,4 @@
+import get from 'lodash.get'
 import { Icon } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import React from 'react'
@@ -31,7 +32,7 @@ function getPageY(event) {
   return event.pageY
 }
 
-class DeckNavigation extends React.PureComponent {
+export class RawDeckNavigation extends React.PureComponent {
   onStop = event => {
     const { flipHandler, height, verticalSlideRatio } = this.props
     const shiftedDistance = height - getPageY(event)
@@ -77,19 +78,26 @@ class DeckNavigation extends React.PureComponent {
   render() {
     const {
       isFinished,
-      headerColor,
       recommendation,
       flipHandler,
       transitionTimeout,
     } = this.props
+
     const { distance, offer } = recommendation || {}
     let distanceClue = ' '
     if (offer && offer.venue) {
       distanceClue = offer.venue.isVirtual ? 'offre en ligne' : distance
     }
+
+    const firstThumbDominantColor = get(
+      recommendation,
+      'firstThumbDominantColor'
+    )
+    const headerColor = getHeaderColor(firstThumbDominantColor)
+
     const priceRange = getPriceRangeFromStocks(offer && offer.stocks)
-    const color = headerColor || '#000'
-    const backgroundGradient = `linear-gradient(to bottom, rgba(0,0,0,0) 0%,${color} 30%,${color} 100%)`
+
+    const backgroundGradient = `linear-gradient(to bottom, rgba(0,0,0,0) 0%,${headerColor} 30%,${headerColor} 100%)`
     return (
       <div id="deck-navigation" style={{ background: backgroundGradient }}>
         <div
@@ -141,22 +149,20 @@ class DeckNavigation extends React.PureComponent {
   }
 }
 
-DeckNavigation.defaultProps = {
+RawDeckNavigation.defaultProps = {
   flipHandler: null,
   handleGoNext: null,
   handleGoPrevious: null,
-  headerColor: null,
   isFinished: null,
   recommendation: null,
   transitionTimeout: 250,
   verticalSlideRatio: 0.3,
 }
 
-DeckNavigation.propTypes = {
+RawDeckNavigation.propTypes = {
   flipHandler: PropTypes.func,
   handleGoNext: PropTypes.func,
   handleGoPrevious: PropTypes.func,
-  headerColor: PropTypes.string,
   height: PropTypes.number.isRequired,
   isFinished: PropTypes.bool,
   recommendation: PropTypes.object,
@@ -164,16 +170,16 @@ DeckNavigation.propTypes = {
   verticalSlideRatio: PropTypes.number,
 }
 
-export default compose(
+const DeckNavigation = compose(
   withRouter,
   connect((state, ownProps) => {
     const { recommendation } = ownProps
     const { offerId } = recommendation
     const isFinished = isRecommendationFinished(recommendation, offerId)
-    const headerColor = getHeaderColor(recommendation.firstThumbDominantColor)
     return {
-      headerColor,
       isFinished,
     }
   })
-)(DeckNavigation)
+)(RawDeckNavigation)
+
+export default DeckNavigation

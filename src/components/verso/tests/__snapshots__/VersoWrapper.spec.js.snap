@@ -1,0 +1,516 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`src | components | verso | RawVersoWrapper snapshot should match snapshot 1`] = `
+ShallowWrapper {
+  Symbol(enzyme.__root__): [Circular],
+  Symbol(enzyme.__unrendered__): <RawVersoWrapper
+    className="className"
+    currentRecommendation={null}
+    dispatchMakeDraggable={[MockFunction]}
+    dispatchMakeUndraggable={[MockFunction]}
+    draggable={true}
+    isFlipped={true}
+  >
+    Object {
+      "addMatchers": [Function],
+      "advanceTimersByTime": [Function],
+      "autoMockOff": [Function],
+      "autoMockOn": [Function],
+      "clearAllMocks": [Function],
+      "clearAllTimers": [Function],
+      "deepUnmock": [Function],
+      "disableAutomock": [Function],
+      "doMock": [Function],
+      "dontMock": [Function],
+      "enableAutomock": [Function],
+      "fn": [Function],
+      "genMockFromModule": [Function],
+      "isMockFunction": [Function],
+      "mock": [Function],
+      "requireActual": [Function],
+      "requireMock": [Function],
+      "resetAllMocks": [Function],
+      "resetModuleRegistry": [Function],
+      "resetModules": [Function],
+      "restoreAllMocks": [Function],
+      "retryTimes": [Function],
+      "runAllImmediates": [Function],
+      "runAllTicks": [Function],
+      "runAllTimers": [Function],
+      "runOnlyPendingTimers": [Function],
+      "runTimersToTime": [Function],
+      "setMock": [Function],
+      "setTimeout": [Function],
+      "spyOn": [Function],
+      "unmock": [Function],
+      "useFakeTimers": [Function],
+      "useRealTimers": [Function],
+    }
+  </RawVersoWrapper>,
+  Symbol(enzyme.__renderer__): Object {
+    "batchedUpdates": [Function],
+    "getNode": [Function],
+    "render": [Function],
+    "simulateError": [Function],
+    "simulateEvent": [Function],
+    "unmount": [Function],
+  },
+  Symbol(enzyme.__node__): Object {
+    "instance": null,
+    "key": undefined,
+    "nodeType": "host",
+    "props": Object {
+      "children": Array [
+        <div
+          className="verso-header"
+          style={
+            Object {
+              "backgroundColor": "black",
+            }
+          }
+        >
+          <h1>
+             
+             
+          </h1>
+          <h2 />
+        </div>,
+        <withRouter(Connect(VersoControl)) />,
+        <div
+          className="verso-content"
+          style={
+            Object {
+              "backgroundImage": "url('http://localhost/mosaic-k.png')",
+            }
+          }
+        >
+          Object {
+            "addMatchers": [Function],
+            "advanceTimersByTime": [Function],
+            "autoMockOff": [Function],
+            "autoMockOn": [Function],
+            "clearAllMocks": [Function],
+            "clearAllTimers": [Function],
+            "deepUnmock": [Function],
+            "disableAutomock": [Function],
+            "doMock": [Function],
+            "dontMock": [Function],
+            "enableAutomock": [Function],
+            "fn": [Function],
+            "genMockFromModule": [Function],
+            "isMockFunction": [Function],
+            "mock": [Function],
+            "requireActual": [Function],
+            "requireMock": [Function],
+            "resetAllMocks": [Function],
+            "resetModuleRegistry": [Function],
+            "resetModules": [Function],
+            "restoreAllMocks": [Function],
+            "retryTimes": [Function],
+            "runAllImmediates": [Function],
+            "runAllTicks": [Function],
+            "runAllTimers": [Function],
+            "runOnlyPendingTimers": [Function],
+            "runTimersToTime": [Function],
+            "setMock": [Function],
+            "setTimeout": [Function],
+            "spyOn": [Function],
+            "unmock": [Function],
+            "useFakeTimers": [Function],
+            "useRealTimers": [Function],
+          }
+        </div>,
+      ],
+      "className": "verso-wrapper className",
+    },
+    "ref": [Function],
+    "rendered": Array [
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": Array [
+            <h1>
+               
+               
+            </h1>,
+            <h2 />,
+          ],
+          "className": "verso-header",
+          "style": Object {
+            "backgroundColor": "black",
+          },
+        },
+        "ref": [Function],
+        "rendered": Array [
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": Array [
+                " ",
+                undefined,
+                undefined,
+                " ",
+              ],
+            },
+            "ref": null,
+            "rendered": Array [
+              " ",
+              undefined,
+              undefined,
+              " ",
+            ],
+            "type": "h1",
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": undefined,
+            },
+            "ref": null,
+            "rendered": null,
+            "type": "h2",
+          },
+        ],
+        "type": "div",
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "function",
+        "props": Object {},
+        "ref": null,
+        "rendered": null,
+        "type": [Function],
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": Object {
+            "addMatchers": [Function],
+            "advanceTimersByTime": [Function],
+            "autoMockOff": [Function],
+            "autoMockOn": [Function],
+            "clearAllMocks": [Function],
+            "clearAllTimers": [Function],
+            "deepUnmock": [Function],
+            "disableAutomock": [Function],
+            "doMock": [Function],
+            "dontMock": [Function],
+            "enableAutomock": [Function],
+            "fn": [Function],
+            "genMockFromModule": [Function],
+            "isMockFunction": [Function],
+            "mock": [Function],
+            "requireActual": [Function],
+            "requireMock": [Function],
+            "resetAllMocks": [Function],
+            "resetModuleRegistry": [Function],
+            "resetModules": [Function],
+            "restoreAllMocks": [Function],
+            "retryTimes": [Function],
+            "runAllImmediates": [Function],
+            "runAllTicks": [Function],
+            "runAllTimers": [Function],
+            "runOnlyPendingTimers": [Function],
+            "runTimersToTime": [Function],
+            "setMock": [Function],
+            "setTimeout": [Function],
+            "spyOn": [Function],
+            "unmock": [Function],
+            "useFakeTimers": [Function],
+            "useRealTimers": [Function],
+          },
+          "className": "verso-content",
+          "style": Object {
+            "backgroundImage": "url('http://localhost/mosaic-k.png')",
+          },
+        },
+        "ref": null,
+        "rendered": Object {
+          "addMatchers": [Function],
+          "advanceTimersByTime": [Function],
+          "autoMockOff": [Function],
+          "autoMockOn": [Function],
+          "clearAllMocks": [Function],
+          "clearAllTimers": [Function],
+          "deepUnmock": [Function],
+          "disableAutomock": [Function],
+          "doMock": [Function],
+          "dontMock": [Function],
+          "enableAutomock": [Function],
+          "fn": [Function],
+          "genMockFromModule": [Function],
+          "isMockFunction": [Function],
+          "mock": [Function],
+          "requireActual": [Function],
+          "requireMock": [Function],
+          "resetAllMocks": [Function],
+          "resetModuleRegistry": [Function],
+          "resetModules": [Function],
+          "restoreAllMocks": [Function],
+          "retryTimes": [Function],
+          "runAllImmediates": [Function],
+          "runAllTicks": [Function],
+          "runAllTimers": [Function],
+          "runOnlyPendingTimers": [Function],
+          "runTimersToTime": [Function],
+          "setMock": [Function],
+          "setTimeout": [Function],
+          "spyOn": [Function],
+          "unmock": [Function],
+          "useFakeTimers": [Function],
+          "useRealTimers": [Function],
+        },
+        "type": "div",
+      },
+    ],
+    "type": "div",
+  },
+  Symbol(enzyme.__nodes__): Array [
+    Object {
+      "instance": null,
+      "key": undefined,
+      "nodeType": "host",
+      "props": Object {
+        "children": Array [
+          <div
+            className="verso-header"
+            style={
+              Object {
+                "backgroundColor": "black",
+              }
+            }
+          >
+            <h1>
+               
+               
+            </h1>
+            <h2 />
+          </div>,
+          <withRouter(Connect(VersoControl)) />,
+          <div
+            className="verso-content"
+            style={
+              Object {
+                "backgroundImage": "url('http://localhost/mosaic-k.png')",
+              }
+            }
+          >
+            Object {
+              "addMatchers": [Function],
+              "advanceTimersByTime": [Function],
+              "autoMockOff": [Function],
+              "autoMockOn": [Function],
+              "clearAllMocks": [Function],
+              "clearAllTimers": [Function],
+              "deepUnmock": [Function],
+              "disableAutomock": [Function],
+              "doMock": [Function],
+              "dontMock": [Function],
+              "enableAutomock": [Function],
+              "fn": [Function],
+              "genMockFromModule": [Function],
+              "isMockFunction": [Function],
+              "mock": [Function],
+              "requireActual": [Function],
+              "requireMock": [Function],
+              "resetAllMocks": [Function],
+              "resetModuleRegistry": [Function],
+              "resetModules": [Function],
+              "restoreAllMocks": [Function],
+              "retryTimes": [Function],
+              "runAllImmediates": [Function],
+              "runAllTicks": [Function],
+              "runAllTimers": [Function],
+              "runOnlyPendingTimers": [Function],
+              "runTimersToTime": [Function],
+              "setMock": [Function],
+              "setTimeout": [Function],
+              "spyOn": [Function],
+              "unmock": [Function],
+              "useFakeTimers": [Function],
+              "useRealTimers": [Function],
+            }
+          </div>,
+        ],
+        "className": "verso-wrapper className",
+      },
+      "ref": [Function],
+      "rendered": Array [
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": Array [
+              <h1>
+                 
+                 
+              </h1>,
+              <h2 />,
+            ],
+            "className": "verso-header",
+            "style": Object {
+              "backgroundColor": "black",
+            },
+          },
+          "ref": [Function],
+          "rendered": Array [
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": Array [
+                  " ",
+                  undefined,
+                  undefined,
+                  " ",
+                ],
+              },
+              "ref": null,
+              "rendered": Array [
+                " ",
+                undefined,
+                undefined,
+                " ",
+              ],
+              "type": "h1",
+            },
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": undefined,
+              },
+              "ref": null,
+              "rendered": null,
+              "type": "h2",
+            },
+          ],
+          "type": "div",
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "function",
+          "props": Object {},
+          "ref": null,
+          "rendered": null,
+          "type": [Function],
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": Object {
+              "addMatchers": [Function],
+              "advanceTimersByTime": [Function],
+              "autoMockOff": [Function],
+              "autoMockOn": [Function],
+              "clearAllMocks": [Function],
+              "clearAllTimers": [Function],
+              "deepUnmock": [Function],
+              "disableAutomock": [Function],
+              "doMock": [Function],
+              "dontMock": [Function],
+              "enableAutomock": [Function],
+              "fn": [Function],
+              "genMockFromModule": [Function],
+              "isMockFunction": [Function],
+              "mock": [Function],
+              "requireActual": [Function],
+              "requireMock": [Function],
+              "resetAllMocks": [Function],
+              "resetModuleRegistry": [Function],
+              "resetModules": [Function],
+              "restoreAllMocks": [Function],
+              "retryTimes": [Function],
+              "runAllImmediates": [Function],
+              "runAllTicks": [Function],
+              "runAllTimers": [Function],
+              "runOnlyPendingTimers": [Function],
+              "runTimersToTime": [Function],
+              "setMock": [Function],
+              "setTimeout": [Function],
+              "spyOn": [Function],
+              "unmock": [Function],
+              "useFakeTimers": [Function],
+              "useRealTimers": [Function],
+            },
+            "className": "verso-content",
+            "style": Object {
+              "backgroundImage": "url('http://localhost/mosaic-k.png')",
+            },
+          },
+          "ref": null,
+          "rendered": Object {
+            "addMatchers": [Function],
+            "advanceTimersByTime": [Function],
+            "autoMockOff": [Function],
+            "autoMockOn": [Function],
+            "clearAllMocks": [Function],
+            "clearAllTimers": [Function],
+            "deepUnmock": [Function],
+            "disableAutomock": [Function],
+            "doMock": [Function],
+            "dontMock": [Function],
+            "enableAutomock": [Function],
+            "fn": [Function],
+            "genMockFromModule": [Function],
+            "isMockFunction": [Function],
+            "mock": [Function],
+            "requireActual": [Function],
+            "requireMock": [Function],
+            "resetAllMocks": [Function],
+            "resetModuleRegistry": [Function],
+            "resetModules": [Function],
+            "restoreAllMocks": [Function],
+            "retryTimes": [Function],
+            "runAllImmediates": [Function],
+            "runAllTicks": [Function],
+            "runAllTimers": [Function],
+            "runOnlyPendingTimers": [Function],
+            "runTimersToTime": [Function],
+            "setMock": [Function],
+            "setTimeout": [Function],
+            "spyOn": [Function],
+            "unmock": [Function],
+            "useFakeTimers": [Function],
+            "useRealTimers": [Function],
+          },
+          "type": "div",
+        },
+      ],
+      "type": "div",
+    },
+  ],
+  Symbol(enzyme.__options__): Object {
+    "adapter": ReactSixteenAdapter {
+      "options": Object {
+        "enableComponentDidUpdateOnSetState": true,
+        "lifecycles": Object {
+          "componentDidUpdate": Object {
+            "onSetState": true,
+          },
+          "getDerivedStateFromProps": true,
+          "getSnapshotBeforeUpdate": true,
+          "setState": Object {
+            "skipsComponentDidUpdateOnNullish": true,
+          },
+        },
+      },
+    },
+  },
+}
+`;
