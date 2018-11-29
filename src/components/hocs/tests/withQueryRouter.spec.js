@@ -20,7 +20,7 @@ describe('src | components | pages | hocs | withQueryRouter', () => {
     })
   })
   describe('functions ', () => {
-    describe('withQueryRouter passes pagination query object that has parsed location search', () => {
+    it('withQueryRouter passes pagination query object that has parsed location search', () => {
       // given
       const history = createBrowserHistory()
       history.push('/test?page=1&mots-cles=test')
@@ -35,14 +35,12 @@ describe('src | components | pages | hocs | withQueryRouter', () => {
       )
 
       // then
-      const query = wrapper.find('Test').props().pagination.query
-      const expectedQuery = {
-        query: { 'mots-cles': 'test', page: '1' },
-      }
-      expect(query).toEqual(expectedQuery)
+      const { query } = wrapper.find('Test').props()
+      const expectedParams = { 'mots-cles': 'test', page: '1' }
+      expect(query.params).toEqual(expectedParams)
     })
 
-    describe('withQueryRouter passes pagination change function that help to modify location search', () => {
+    it('withQueryRouter passes query change function that help to modify location search', () => {
       // given
       const history = createBrowserHistory()
       history.push('/test?page=1&mots-cles=test')
@@ -55,13 +53,12 @@ describe('src | components | pages | hocs | withQueryRouter', () => {
           </Route>
         </Router>
       )
+      const { query } = wrapper.find('Test').props()
+      query.change({ 'mots-cles': null, page: 2 })
 
       // then
-      const pagination = wrapper.find('Test').props().pagination.query
-      const expectedQuery = {
-        query: { 'mots-cles': 'test', page: '1' },
-      }
-      expect(testedQuery).toEqual(expectedQuery)
+      const expectedParams = { page: '2' }
+      expect(query.params).toEqual(expectedParams)
     })
   })
 })
