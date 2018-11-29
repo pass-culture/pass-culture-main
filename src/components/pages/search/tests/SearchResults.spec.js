@@ -10,7 +10,7 @@ describe('src | components | pages | SearchResults', () => {
       // given
       const props = {
         loadMoreHandler: jest.fn(),
-        params: {
+        query: {
           params: {
             categories: null,
             date: '2018-09-28T12:52:52.341Z',
@@ -190,7 +190,7 @@ describe('src | components | pages | SearchResults', () => {
           }
 
           // when
-          const wrapper = shallow(<SearchResults {...props} />)
+          const wrapper = shallow(<SearchResults.WrappedComponent {...props} />)
           const resultsTitle = wrapper.find('h2').props()
           const SearchResultItemWrapper = wrapper.find(SearchResultItem)
           const item = {
@@ -225,7 +225,7 @@ describe('src | components | pages | SearchResults', () => {
           }
 
           // when
-          const wrapper = shallow(<SearchResults {...props} />)
+          const wrapper = shallow(<SearchResults.WrappedComponent {...props} />)
           const resultsTitle = wrapper.find('h2').props()
           const SearchResultItemWrapper = wrapper.find(SearchResultItem)
 
@@ -261,7 +261,7 @@ describe('src | components | pages | SearchResults', () => {
           }
 
           // when
-          const wrapper = shallow(<SearchResults {...props} />)
+          const wrapper = shallow(<SearchResults.WrappedComponent {...props} />)
           const resultsTitle = wrapper.find('h2').props()
           const SearchResultItemWrapper = wrapper.find(SearchResultItem)
           const item = {
@@ -296,7 +296,7 @@ describe('src | components | pages | SearchResults', () => {
           }
 
           // when
-          const wrapper = shallow(<SearchResults {...props} />)
+          const wrapper = shallow(<SearchResults.WrappedComponent {...props} />)
           const resultsTitle = wrapper.find('h2').props()
           const SearchResultItemWrapper = wrapper.find(SearchResultItem)
 
