@@ -62,10 +62,7 @@ class SearchPageContent extends PureComponent {
 
     const apiParams = translateBrowserUrlToApiUrl(query.params)
     const apiParamsString = stringify(apiParams)
-
     const path = `recommendations?${apiParamsString}`
-
-    const path = `recommendations?page=${page}&${apiQueryString}`
     dispatch(
       requestData('GET', path, {
         handleSuccess: (state, action) => {
