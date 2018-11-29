@@ -54,25 +54,25 @@ def do_local_backup_prod_container(prod_container_name, dest_folder_name):
         print('Ce conteneur ne semble pas exister')
         return 1
 
-    dl_count = 0
-    obj_count = 0
+    download_count = 0
+    object_count = 0
     print("Backup starting")
 
     for data in prod_conn.get_container(prod_container_name)[1]:
         obj_tuple = prod_conn.get_object(prod_container_name, data['name'])
         destination_path = Path(os.path.dirname(os.path.realpath(__file__))) \
                            / '..' / 'static' / dest_folder_name / data['name']
-        obj_count += 1
+        object_count += 1
         if not destination_path.is_file() \
                 or data['bytes'] != destination_path.stat().st_size:
             with open(destination_path, 'wb') as destination_file:
                 destination_file.write(obj_tuple[1])
-            dl_count += 1
+            download_count += 1
             print("Object [" + data['name'] + "] retrieved")
 
     print("Backup done.")
-    print("%s objects listed" % obj_count)
-    print("%s objects downloaded." % dl_count )
+    print("%s objects listed" % object_count)
+    print("%s objects downloaded." % download_count )
 
     return 0
 
