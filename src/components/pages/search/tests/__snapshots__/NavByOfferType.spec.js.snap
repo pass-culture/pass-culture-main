@@ -15,8 +15,8 @@ ShallowWrapper {
       }
     }
   >
-    <NavByOfferType
-      pagination={Object {}}
+    <withRouter(_withQueryRouter)
+      query={Object {}}
       title="fake Title"
       typeSublabels={Array []}
     />
@@ -34,7 +34,7 @@ ShallowWrapper {
     "key": undefined,
     "nodeType": "function",
     "props": Object {
-      "pagination": Object {},
+      "query": Object {},
       "title": "fake Title",
       "typeSublabels": Array [],
     },
@@ -48,7 +48,7 @@ ShallowWrapper {
       "key": undefined,
       "nodeType": "function",
       "props": Object {
-        "pagination": Object {},
+        "query": Object {},
         "title": "fake Title",
         "typeSublabels": Array [],
       },

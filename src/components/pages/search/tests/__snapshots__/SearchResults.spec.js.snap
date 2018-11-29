@@ -3,13 +3,11 @@
 exports[`src | components | pages | SearchResults snapshot should match snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
-  Symbol(enzyme.__unrendered__): <SearchResults
-    items={Array []}
-    keywords=""
+  Symbol(enzyme.__unrendered__): <withRouter(_withQueryRouter)
     loadMoreHandler={[MockFunction]}
-    pagination={
+    params={
       Object {
-        "query": Object {
+        "params": Object {
           "categories": null,
           "date": "2018-09-28T12:52:52.341Z",
           "distance": "50",
@@ -34,151 +32,25 @@ ShallowWrapper {
   Symbol(enzyme.__node__): Object {
     "instance": null,
     "key": undefined,
-    "nodeType": "host",
+    "nodeType": "class",
     "props": Object {
-      "children": Array [
-        <h2
-          className="fs15 is-uppercase is-italic is-semi-bold mb12"
-          id="results-title"
-        >
-
-        </h2>,
-        <InfiniteScroller
-          Tag="ul"
-          className={null}
-          handleLoadMore={[MockFunction]}
-          loadScrollRatio={0.9}
-          renderErrors={[Function]}
-          renderFinished={[Function]}
-          renderLoading={[Function]}
-          scrollingElement={
-            <html>
-              <head />
-              <body
-                class=" web"
-              />
-            </html>
-          }
-        />,
-      ],
-      "className": "search-results",
+      "children": [Function],
     },
     "ref": null,
-    "rendered": Array [
-      Object {
-        "instance": null,
-        "key": undefined,
-        "nodeType": "host",
-        "props": Object {
-          "children": "",
-          "className": "fs15 is-uppercase is-italic is-semi-bold mb12",
-          "id": "results-title",
-        },
-        "ref": null,
-        "rendered": "",
-        "type": "h2",
-      },
-      Object {
-        "instance": null,
-        "key": undefined,
-        "nodeType": "class",
-        "props": Object {
-          "Tag": "ul",
-          "children": Array [],
-          "className": null,
-          "handleLoadMore": [MockFunction],
-          "loadScrollRatio": 0.9,
-          "renderErrors": [Function],
-          "renderFinished": [Function],
-          "renderLoading": [Function],
-          "scrollingElement": <html>
-            <head />
-            <body
-              class=" web"
-            />
-          </html>,
-        },
-        "ref": null,
-        "rendered": Array [],
-        "type": [Function],
-      },
-    ],
-    "type": "div",
+    "rendered": [Function],
+    "type": [Function],
   },
   Symbol(enzyme.__nodes__): Array [
     Object {
       "instance": null,
       "key": undefined,
-      "nodeType": "host",
+      "nodeType": "class",
       "props": Object {
-        "children": Array [
-          <h2
-            className="fs15 is-uppercase is-italic is-semi-bold mb12"
-            id="results-title"
-          >
-
-          </h2>,
-          <InfiniteScroller
-            Tag="ul"
-            className={null}
-            handleLoadMore={[MockFunction]}
-            loadScrollRatio={0.9}
-            renderErrors={[Function]}
-            renderFinished={[Function]}
-            renderLoading={[Function]}
-            scrollingElement={
-              <html>
-                <head />
-                <body
-                  class=" web"
-                />
-              </html>
-            }
-          />,
-        ],
-        "className": "search-results",
+        "children": [Function],
       },
       "ref": null,
-      "rendered": Array [
-        Object {
-          "instance": null,
-          "key": undefined,
-          "nodeType": "host",
-          "props": Object {
-            "children": "",
-            "className": "fs15 is-uppercase is-italic is-semi-bold mb12",
-            "id": "results-title",
-          },
-          "ref": null,
-          "rendered": "",
-          "type": "h2",
-        },
-        Object {
-          "instance": null,
-          "key": undefined,
-          "nodeType": "class",
-          "props": Object {
-            "Tag": "ul",
-            "children": Array [],
-            "className": null,
-            "handleLoadMore": [MockFunction],
-            "loadScrollRatio": 0.9,
-            "renderErrors": [Function],
-            "renderFinished": [Function],
-            "renderLoading": [Function],
-            "scrollingElement": <html>
-              <head />
-              <body
-                class=" web"
-              />
-            </html>,
-          },
-          "ref": null,
-          "rendered": Array [],
-          "type": [Function],
-        },
-      ],
-      "type": "div",
+      "rendered": [Function],
+      "type": [Function],
     },
   ],
   Symbol(enzyme.__options__): Object {

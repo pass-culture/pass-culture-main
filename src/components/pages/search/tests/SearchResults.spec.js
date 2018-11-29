@@ -10,8 +10,8 @@ describe('src | components | pages | SearchResults', () => {
       // given
       const props = {
         loadMoreHandler: jest.fn(),
-        pagination: {
-          query: {
+        params: {
+          params: {
             categories: null,
             date: '2018-09-28T12:52:52.341Z',
             distance: '50',
@@ -174,8 +174,8 @@ describe('src | components | pages | SearchResults', () => {
             items,
             keywords: 'fakeKeywords',
             loadMoreHandler: jest.fn(),
-            pagination: {
-              query: {
+            query: {
+              params: {
                 categories: null,
                 date: '2018-09-28T12:52:52.341Z',
                 distance: '50',
@@ -209,8 +209,8 @@ describe('src | components | pages | SearchResults', () => {
             items: [],
             keywords: 'fakeKeywords',
             loadMoreHandler: jest.fn(),
-            pagination: {
-              query: {
+            query: {
+              params: {
                 categories: null,
                 date: '2018-09-28T12:52:52.341Z',
                 distance: '50',
@@ -245,8 +245,8 @@ describe('src | components | pages | SearchResults', () => {
             items,
             keywords: 'fakeKeywords',
             loadMoreHandler: jest.fn(),
-            pagination: {
-              query: {
+            query: {
+              params: {
                 categories: null,
                 date: '2018-09-28T12:52:52.341Z',
                 distance: '50',
@@ -280,8 +280,8 @@ describe('src | components | pages | SearchResults', () => {
             items: [],
             keywords: 'fakeKeywords',
             loadMoreHandler: jest.fn(),
-            pagination: {
-              query: {
+            query: {
+              params: {
                 categories: null,
                 date: '2018-09-28T12:52:52.341Z',
                 distance: '50',

@@ -16,7 +16,7 @@ const initialProps = {
   },
   filterState: {
     isNew: false,
-    query: {
+    params: {
       categories: null,
       date: null,
       distance: null,
@@ -86,7 +86,7 @@ describe('src | components | pages | search | FilterByDates', () => {
             filterActions,
             filterState: {
               isNew: false,
-              query: {
+              params: {
                 categories: null,
                 date: '2018-10-24T09:15:55.098Z',
                 distance: null,
