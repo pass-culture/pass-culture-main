@@ -26,7 +26,7 @@ def test_find_venues_with_has_validated_offerer_param_return_filtered_venues(app
     query_with_not_valid_offerer_only = find_venues(has_validated_offerer=False)
 
     # Then
-    assert venue_with_offerer_not_valid not in query_with_valid_offerer_only
+    assert venue_with_offerer_valid not in query_with_not_valid_offerer_only 
     assert venue_with_offerer_not_valid in query_with_not_valid_offerer_only
 
 
