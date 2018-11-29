@@ -112,6 +112,7 @@ def test_find_venues_date_param(app):
     venue_20180730 = create_venue(offerer, siret='12345678912346')
     venue_20180830 = create_venue(offerer, siret='12345678912347')
     PcObject.check_and_save(venue_20180630, venue_20180730, venue_20180830)
+    
     activity1 = create_venue_activity(venue_20180630, 'venue', 'insert', issued_at=datetime(2018,
         6, 30))
     activity2 = create_venue_activity(venue_20180730, 'venue', 'insert', issued_at=datetime(2018,

@@ -7,7 +7,8 @@ import requests
 from models import PcObject
 from tests.conftest import clean_database
 from utils.test_utils import API_URL, create_user, req_with_auth, create_user_offerer, \
-    create_offerer, create_venue
+    create_offerer, create_venue, create_event_occurrence, create_event_offer, create_venue_activity
+from tests.repository_venue_queries_test import _save_all_activities
 
 TOKEN = os.environ.get('EXPORT_TOKEN')
 
@@ -192,31 +193,98 @@ def test_get_venues_returns_403_when_user_is_structure_admin_but_not_admin(app):
 
 @pytest.mark.standalone
 @clean_database
-def test_get_venues_return_200_and_venue_with_params(app):
+def test_get_venues_return_200_and_filtered_venues(app):
     #given
     data={
         "has_validated_offerer": True,
         "dpt": ["93","67"],
         "has_siret": True,
         "is_virtual": False,
-        "is_validated": True
+        "is_validated": True, 
+        "from_date": "2018-10-02",
+        "to_date": "2018-12-31",
+        "has_offer": "ALL"
     }
 
     user = create_user(password='p@55sw0rd', is_admin=True, can_book_free_offers=False)
     validated_offerer = create_offerer()
     not_validated_offerer = create_offerer(validation_token="here is a token", siren="123456798")
-    
-    venue93 = create_venue(validated_offerer, name='venue93', postal_code='93100', siret="12345678912310")
-    venue67 = create_venue(validated_offerer, name='venue67', postal_code='67100', siret="12345678912311")
-    venue34 = create_venue(validated_offerer, name='venue34', postal_code='34100', siret="12345678912312")
-    venue_without_siret = create_venue(validated_offerer, name='venue_without_siret', comment="here is a comment" , siret=None)
-    venue_virtual = create_venue(validated_offerer, name='venue_virtual', siret=None, is_virtual=True)
-    venue_not_validated = create_venue(validated_offerer, name='venue_not_validated', 
-        validation_token="here is a validation_token", siret="12345678912315")
 
-    venue_with_not_validated_offerer = create_venue(not_validated_offerer, name='venue_with_not_validated_offerer', siret="12345678912316")
+    venue93_with_offer_before_date_range = create_venue(validated_offerer,
+       name='venue93_with_offer_before_date_range', postal_code='93100', siret="12345678912310")
+    venue93_with_offer_after_date_range = create_venue(validated_offerer,
+       name='venue93_with_offer_after_date_range', postal_code='93100', siret="12345678912311") 
+    venue93_with_offer_in_date_range = create_venue(validated_offerer, 
+       name='venue93_with_offer_in_date_range', postal_code='93100', siret="12345678912312")
+    venue67_with_offer_before_date_range = create_venue(validated_offerer, 
+       name='venue67_with_offer_before_date_range', postal_code='67100', siret="12345678912313")
+    venue67_with_offer_in_date_range = create_venue(validated_offerer, name='venue67_with_offer_in_date_range',
+       postal_code='67100', siret="12345678912314")
+    venue67_without_offer_in_date_range = create_venue(validated_offerer, 
+       name='venue67_without_offer_in_date_range', postal_code='67100', siret="12345678912315")
+    venue34_with_offer_in_date_range = create_venue(validated_offerer, 
+       name='venue34_with_offer_in_date_range', postal_code='34100', siret="12345678912316")
+    venue_without_siret_with_offer_in_date_range = create_venue(validated_offerer, 
+       name='venue_without_siret_with_offer_in_date_range', comment="here is a comment" , siret=None)
+    venue_virtual_with_offer_in_date_range = create_venue(validated_offerer,
+       name='venue_virtual_with_offer_in_date_range', siret=None, is_virtual=True)
+    venue_not_validated_with_offer_in_date_range = create_venue(validated_offerer, name='venue_not_validated_with_offer_in_date_range', 
+       validation_token="here is a validation_token", siret="12345678912317")
+    venue_with_not_validated_offerer_in_date_range = create_venue(not_validated_offerer,
+       name='venue_with_not_validated_offerer_in_date_range', siret="12345678912318")
 
-    PcObject.check_and_save(user, venue93, venue67, venue34, venue_without_siret, venue_virtual, venue_not_validated, venue_with_not_validated_offerer)
+    offer1 = create_event_offer(venue93_with_offer_before_date_range)
+    offer2 = create_event_offer(venue93_with_offer_after_date_range)
+    offer3 = create_event_offer(venue93_with_offer_in_date_range)
+    offer4 = create_event_offer(venue67_with_offer_before_date_range)
+    offer5 = create_event_offer(venue67_with_offer_in_date_range)
+    offer6 = create_event_offer(venue34_with_offer_in_date_range)
+    offer7 = create_event_offer(venue_without_siret_with_offer_in_date_range)
+    offer8 = create_event_offer(venue_virtual_with_offer_in_date_range)
+    offer9 = create_event_offer(venue_not_validated_with_offer_in_date_range)
+
+    valid_event_occurrence1 = create_event_occurrence(offer1)
+    valid_event_occurrence2 = create_event_occurrence(offer2)
+    valid_event_occurrence3 = create_event_occurrence(offer3)
+    valid_event_occurrence4 = create_event_occurrence(offer4)
+    valid_event_occurrence5 = create_event_occurrence(offer5)
+    valid_event_occurrence6 = create_event_occurrence(offer6)
+    valid_event_occurrence7 = create_event_occurrence(offer7)
+    valid_event_occurrence8 = create_event_occurrence(offer8)
+    valid_event_occurrence9 = create_event_occurrence(offer9)
+
+    PcObject.check_and_save(user, valid_event_occurrence1, valid_event_occurrence2, valid_event_occurrence3,
+     valid_event_occurrence4, valid_event_occurrence5, valid_event_occurrence6, valid_event_occurrence7,
+     valid_event_occurrence8, valid_event_occurrence9, venue_with_not_validated_offerer_in_date_range,
+     venue67_without_offer_in_date_range)
+
+    activity_in_date_range1 = create_venue_activity(venue93_with_offer_in_date_range, 'venue', 'insert',
+       issued_at=datetime(2018, 11, 30))
+    activity_in_date_range2 = create_venue_activity(venue67_with_offer_in_date_range, 'venue', 'insert',
+       issued_at=datetime(2018, 11, 30))
+    activity_in_date_range3 = create_venue_activity(venue67_without_offer_in_date_range, 'venue', 'insert',
+       issued_at=datetime(2018, 11, 30))
+    activity_in_date_range4 = create_venue_activity(venue34_with_offer_in_date_range, 'venue', 'insert',
+       issued_at=datetime(2018, 11, 30))
+    activity_in_date_range5 = create_venue_activity(venue_virtual_with_offer_in_date_range, 'venue', 'insert',
+       issued_at=datetime(2018, 11, 30))
+    activity_in_date_range6 = create_venue_activity(venue_not_validated_with_offer_in_date_range, 'venue', 'insert',
+       issued_at=datetime(2018, 11, 30))
+    activity_in_date_range7 = create_venue_activity(venue_with_not_validated_offerer_in_date_range, 'venue', 'insert',
+       issued_at=datetime(2018, 11, 30))
+    activity_before_date_range1 = create_venue_activity(venue93_with_offer_before_date_range, 'venue', 'insert',
+       issued_at=datetime(2018, 6, 30))
+    activity_before_date_range2 = create_venue_activity(venue67_with_offer_before_date_range, 'venue', 'insert',
+       issued_at=datetime(2018, 6, 30))
+    activity_after_date_range = create_venue_activity(venue93_with_offer_after_date_range, 'venue', 'insert',
+       issued_at=datetime(2019, 8, 30))
+
+    _save_all_activities(activity_in_date_range1, activity_in_date_range2, activity_in_date_range3,
+      activity_in_date_range4, activity_in_date_range5, activity_in_date_range6,
+      activity_in_date_range7, activity_before_date_range1, activity_before_date_range2, 
+      activity_after_date_range)
+
+
     auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
 
     #when
@@ -226,14 +294,17 @@ def test_get_venues_return_200_and_venue_with_params(app):
     venue_names = list(map(lambda x: x['name'], response.json()))
 
     assert response.status_code == 200
-    assert venue93.name in venue_names
-    assert venue67.name in venue_names
-    assert venue34.name not in venue_names
-    assert venue_without_siret.name not in venue_names
-    assert venue_virtual.name not in venue_names
-    assert venue_not_validated.name not in venue_names
-    assert venue_with_not_validated_offerer.name not in venue_names
-
+    assert venue67_with_offer_in_date_range.name in venue_names
+    assert venue93_with_offer_in_date_range.name in venue_names
+    assert venue93_with_offer_before_date_range.name not in venue_names
+    assert venue93_with_offer_after_date_range.name not in venue_names
+    assert venue67_with_offer_before_date_range.name not in venue_names
+    assert venue67_without_offer_in_date_range.name not in venue_names
+    assert venue34_with_offer_in_date_range.name not in venue_names
+    assert venue_without_siret_with_offer_in_date_range.name not in venue_names
+    assert venue_virtual_with_offer_in_date_range.name not in venue_names
+    assert venue_not_validated_with_offer_in_date_range.name not in venue_names
+    assert venue_with_not_validated_offerer_in_date_range.name not in venue_names
 
 
 @pytest.mark.standalone
