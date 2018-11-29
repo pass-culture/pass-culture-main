@@ -25,7 +25,7 @@ from utils.test_utils import API_URL, \
     create_user_offerer, \
     create_venue, \
     req, \
-    req_with_auth
+    req_with_auth, create_thing, create_event, create_stock_from_event_occurrence, create_event_occurrence
 
 
 @pytest.mark.standalone
@@ -428,6 +428,61 @@ def test_get_offerer_bookings_returns_bookings_with_their_reimbursements_infos(a
     assert response.json()[0]['id'] == humanize(booking.id)
     assert response.json()[0]['reimbursement_rule'] == ReimbursementRules.PHYSICAL_OFFERS.value.description
     assert response.json()[0]['reimbursed_amount'] == booking.value
+
+
+@pytest.mark.standalone
+@clean_database
+def test_get_offerer_bookings_returns_bookings_with_thing_or_event_offer_type(app):
+    # given
+    now = datetime.utcnow()
+    user_pro = create_user(can_book_free_offers=False, password='p@55sw0rd')
+    user = create_user(email='test@email.com')
+    offerer = create_offerer()
+    user_offerer = create_user_offerer(user_pro, offerer)
+    venue = create_venue(offerer)
+    thing = create_thing(thing_type=ThingType.AUDIOVISUEL)
+    offer_thing = create_thing_offer(venue, thing)
+    stock_thing = create_stock_from_offer(offer_thing, price=0)
+    booking_thing = create_booking(user, stock_thing, venue, recommendation=None, quantity=2,
+                                   date_created=now - timedelta(days=5))
+    event = create_event(event_type=EventType.MUSEES_PATRIMOINE)
+    offer_event = create_event_offer(venue, event)
+    stock_event = create_stock_from_event_occurrence(create_event_occurrence(offer_event), price=0)
+    booking_event = create_booking(user, stock_event, venue, recommendation=None, quantity=2,
+                                   date_created=now - timedelta(days=5))
+
+    PcObject.check_and_save(booking_thing, booking_event, user_offerer)
+
+    expected_audiovisuel_offer_type = {'description': 'Action, science-fiction, documentaire ou comédie sentimentale ? ' \
+                                                      'En salle, en plein air ou bien au chaud chez soi ? ' \
+                                                      'Et si c’était plutôt cette exposition qui allait faire son cinéma ?',
+                                       'label': 'Audiovisuel (Films sur supports physiques et VOD)',
+                                       'offlineOnly': False,
+                                       'onlineOnly': False, 'sublabel': 'Regarder'}
+    expected_musees_patrimoine_offer_type = {
+        'description': 'Action, science-fiction, documentaire ou comédie sentimentale ? '
+                       'En salle, en plein air ou bien au chaud chez soi ? '
+                       'Et si c’était plutôt cette exposition qui allait faire son cinéma ?',
+        'label': 'Musées — Patrimoine (Expositions, Visites guidées, Activités spécifiques)',
+        'offlineOnly': True,
+        'onlineOnly': False, 'sublabel': 'Regarder'
+    }
+    auth_request = req_with_auth(email=user_pro.email, password='p@55sw0rd')
+
+    # when
+    response = auth_request.get(API_URL + '/offerers/%s/bookings' % humanize(offerer.id))
+
+    # then
+    offer_types = list(map(get_offer_type, response.json()))
+    assert expected_audiovisuel_offer_type in offer_types
+    assert expected_musees_patrimoine_offer_type in offer_types
+
+
+def get_offer_type(response_json):
+    try:
+        return response_json['stock']['resolvedOffer']['thing']['offerType']
+    except KeyError:
+        return response_json['stock']['resolvedOffer']['event']['offerType']
 
 
 @pytest.mark.standalone

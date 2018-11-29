@@ -153,7 +153,16 @@ PRO_BOOKING_INCLUDES = [
             [
                 {
                     "key": "resolvedOffer",
-                    "sub_joins": ["event", "thing"]
+                    "sub_joins": [
+                        {
+                            "key": "event",
+                            "sub_joins": ["offerType"]
+                        },
+                        {
+                            "key": "thing",
+                            "sub_joins": ["offerType"]
+                        }
+                    ]
                 },
                 "eventOccurrence"
             ]
