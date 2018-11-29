@@ -158,22 +158,6 @@ def test_get_venues_returns_403_when_user_is_not_admin(app):
 
 @pytest.mark.standalone
 @clean_database
-def test_get_venues_returns_200_when_user_is_admin(app):
-    #given
-    data={}
-    user = create_user(password='p@55sw0rd', is_admin=True, can_book_free_offers=False)
-    PcObject.check_and_save(user)
-    auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
-
-    #when
-    response = auth_request.post(API_URL + '/exports/venues', json=data)
-
-    #then
-    assert response.status_code == 200
-
-
-@pytest.mark.standalone
-@clean_database
 def test_get_venues_returns_403_when_user_is_structure_admin_but_not_admin(app):
     #given
     data={}
