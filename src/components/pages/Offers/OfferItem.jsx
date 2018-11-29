@@ -19,12 +19,12 @@ import eventOccurrencesSelector from '../../../selectors/eventOccurrences'
 import stocksSelector from '../../../selectors/stocks'
 import thingSelector from '../../../selectors/thing'
 import thumbUrlSelector from '../../../selectors/thumbUrl'
-import typeSelector from '../../../selectors/type'
 import venueSelector from '../../../selectors/venue'
 import offerrerSelector from '../../../selectors/offerer'
 import { offerNormalizer } from '../../../utils/normalizers'
+import { getOfferTypeLabel } from '../../../utils/offerItem'
 
-class OccasionItem extends Component {
+class OfferItem extends Component {
   onDeactivateClick = event => {
     const { dispatch, offer } = this.props
     const { id, isActive } = offer || {}
@@ -53,7 +53,7 @@ class OccasionItem extends Component {
       stocks,
       thing,
       thumbUrl,
-      type,
+      offerTypeLabel,
       offerrer,
       venue,
     } = this.props
@@ -80,9 +80,7 @@ class OccasionItem extends Component {
             <Dotdotdot clamp={1}>{name}</Dotdotdot>
           </NavLink>
           <ul className="infos">
-            <li className="is-uppercase">
-              {get(type, 'label') || (event ? 'Evénement' : 'Objet')}
-            </li>
+            <li className="is-uppercase">{offerTypeLabel}</li>
             <li>
               <span className="label">Structure :</span>
               {offerrer && offerrer.name}
@@ -198,7 +196,7 @@ class OccasionItem extends Component {
   }
 }
 
-OccasionItem.defaultProps = {
+OfferItem.defaultProps = {
   maxDescriptionLength: 300,
 }
 
@@ -206,7 +204,6 @@ function mapStateToProps(state, ownProps) {
   const { id, eventId, thingId } = ownProps.offer
   const event = eventSelector(state, eventId)
   const thing = thingSelector(state, thingId)
-  const typeValue = get(event, 'type') || get(thing, 'type')
   const eventOccurrences = eventOccurrencesSelector(state, id)
   const venue = venueSelector(state, ownProps.offer.venueId)
   const offerrer = offerrerSelector(state, venue.managingOffererId)
@@ -223,7 +220,7 @@ function mapStateToProps(state, ownProps) {
     stocks: stocksSelector(state, id, event && eventOccurrences),
     thing,
     thumbUrl: thumbUrlSelector(state, id, eventId, thingId),
-    type: typeSelector(state, typeValue),
+    offerTypeLabel: getOfferTypeLabel(event, thing),
     venue,
     offerrer,
   }
@@ -232,4 +229,4 @@ function mapStateToProps(state, ownProps) {
 export default compose(
   withRouter,
   connect(mapStateToProps)
-)(OccasionItem)
+)(OfferItem)
