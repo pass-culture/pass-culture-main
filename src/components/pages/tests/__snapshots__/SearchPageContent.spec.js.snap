@@ -4,7 +4,206 @@ exports[`src | components | pages | SearchPageContent snapshot should match snap
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <SearchPageContent
-    dispatch={[MockFunction]}
+    dispatch={
+      [MockFunction] {
+        "calls": Array [
+          Array [
+            Object {
+              "patch": Object {
+                "recommendations": Array [],
+              },
+              "type": "ASSIGN_DATA",
+            },
+          ],
+          Array [
+            Object {
+              "config": Object {},
+              "method": "GET",
+              "path": "types",
+              "type": "REQUEST_DATA_GET_TYPES",
+            },
+          ],
+          Array [
+            Object {
+              "patch": Object {
+                "recommendations": Array [],
+              },
+              "type": "ASSIGN_DATA",
+            },
+          ],
+          Array [
+            Object {
+              "config": Object {},
+              "method": "GET",
+              "path": "types",
+              "type": "REQUEST_DATA_GET_TYPES",
+            },
+          ],
+          Array [
+            Object {
+              "patch": Object {
+                "recommendations": Array [],
+              },
+              "type": "ASSIGN_DATA",
+            },
+          ],
+          Array [
+            Object {
+              "config": Object {},
+              "method": "GET",
+              "path": "types",
+              "type": "REQUEST_DATA_GET_TYPES",
+            },
+          ],
+          Array [
+            Object {
+              "patch": Object {
+                "recommendations": Array [],
+              },
+              "type": "ASSIGN_DATA",
+            },
+          ],
+          Array [
+            Object {
+              "config": Object {},
+              "method": "GET",
+              "path": "types",
+              "type": "REQUEST_DATA_GET_TYPES",
+            },
+          ],
+          Array [
+            Object {
+              "patch": Object {
+                "recommendations": Array [],
+              },
+              "type": "ASSIGN_DATA",
+            },
+          ],
+          Array [
+            Object {
+              "config": Object {},
+              "method": "GET",
+              "path": "types",
+              "type": "REQUEST_DATA_GET_TYPES",
+            },
+          ],
+          Array [
+            Object {
+              "patch": Object {
+                "recommendations": Array [],
+              },
+              "type": "ASSIGN_DATA",
+            },
+          ],
+          Array [
+            Object {
+              "config": Object {},
+              "method": "GET",
+              "path": "types",
+              "type": "REQUEST_DATA_GET_TYPES",
+            },
+          ],
+          Array [
+            Object {
+              "patch": Object {
+                "recommendations": Array [],
+              },
+              "type": "ASSIGN_DATA",
+            },
+          ],
+          Array [
+            Object {
+              "config": Object {},
+              "method": "GET",
+              "path": "types",
+              "type": "REQUEST_DATA_GET_TYPES",
+            },
+          ],
+          Array [
+            Object {
+              "patch": Object {
+                "recommendations": Array [],
+              },
+              "type": "ASSIGN_DATA",
+            },
+          ],
+          Array [
+            Object {
+              "config": Object {},
+              "method": "GET",
+              "path": "types",
+              "type": "REQUEST_DATA_GET_TYPES",
+            },
+          ],
+        ],
+        "results": Array [
+          Object {
+            "isThrow": false,
+            "value": undefined,
+          },
+          Object {
+            "isThrow": false,
+            "value": undefined,
+          },
+          Object {
+            "isThrow": false,
+            "value": undefined,
+          },
+          Object {
+            "isThrow": false,
+            "value": undefined,
+          },
+          Object {
+            "isThrow": false,
+            "value": undefined,
+          },
+          Object {
+            "isThrow": false,
+            "value": undefined,
+          },
+          Object {
+            "isThrow": false,
+            "value": undefined,
+          },
+          Object {
+            "isThrow": false,
+            "value": undefined,
+          },
+          Object {
+            "isThrow": false,
+            "value": undefined,
+          },
+          Object {
+            "isThrow": false,
+            "value": undefined,
+          },
+          Object {
+            "isThrow": false,
+            "value": undefined,
+          },
+          Object {
+            "isThrow": false,
+            "value": undefined,
+          },
+          Object {
+            "isThrow": false,
+            "value": undefined,
+          },
+          Object {
+            "isThrow": false,
+            "value": undefined,
+          },
+          Object {
+            "isThrow": false,
+            "value": undefined,
+          },
+          Object {
+            "isThrow": false,
+            "value": undefined,
+          },
+        ],
+      }
+    }
     history={
       Object {
         "push": [MockFunction],
@@ -27,13 +226,87 @@ ShallowWrapper {
         },
       }
     }
-    pagination={
+    query={
       Object {
-        "apiQueryString": "orderBy=offer.id+desc",
-        "change": [MockFunction],
-        "goToNextPage": [MockFunction],
-        "page": 1,
-        "query": Object {
+        "change": [MockFunction] {
+          "calls": Array [
+            Array [
+              Object {
+                "page": null,
+              },
+            ],
+            Array [
+              Object {
+                "page": null,
+              },
+            ],
+            Array [
+              Object {
+                "page": null,
+              },
+            ],
+            Array [
+              Object {
+                "page": null,
+              },
+            ],
+            Array [
+              Object {
+                "page": null,
+              },
+            ],
+            Array [
+              Object {
+                "page": null,
+              },
+            ],
+            Array [
+              Object {
+                "page": null,
+              },
+            ],
+            Array [
+              Object {
+                "page": null,
+              },
+            ],
+          ],
+          "results": Array [
+            Object {
+              "isThrow": false,
+              "value": undefined,
+            },
+            Object {
+              "isThrow": false,
+              "value": undefined,
+            },
+            Object {
+              "isThrow": false,
+              "value": undefined,
+            },
+            Object {
+              "isThrow": false,
+              "value": undefined,
+            },
+            Object {
+              "isThrow": false,
+              "value": undefined,
+            },
+            Object {
+              "isThrow": false,
+              "value": undefined,
+            },
+            Object {
+              "isThrow": false,
+              "value": undefined,
+            },
+            Object {
+              "isThrow": false,
+              "value": undefined,
+            },
+          ],
+        },
+        "params": Object {
           "categories": null,
           "date": null,
           "distance": null,
@@ -42,6 +315,7 @@ ShallowWrapper {
           "longitude": null,
           "mots-cles": null,
           "orderBy": "offer.id+desc",
+          "page": 1,
         },
       }
     }
@@ -112,32 +386,14 @@ ShallowWrapper {
                 type="button"
               >
                 <Icon
-                  svg="ico-filter"
+                  svg="ico-filter-active"
                 />
               </button>
             </div>
           </div>
         </form>,
-        <SearchFilter
+        <withRouter(_withQueryRouter)
           isVisible={false}
-          pagination={
-            Object {
-              "apiQueryString": "orderBy=offer.id+desc",
-              "change": [MockFunction],
-              "goToNextPage": [MockFunction],
-              "page": 1,
-              "query": Object {
-                "categories": null,
-                "date": null,
-                "distance": null,
-                "jours": null,
-                "latitude": null,
-                "longitude": null,
-                "mots-cles": null,
-                "orderBy": "offer.id+desc",
-              },
-            }
-          }
         />,
         <Switch
           location={
@@ -222,7 +478,7 @@ ShallowWrapper {
                 type="button"
               >
                 <Icon
-                  svg="ico-filter"
+                  svg="ico-filter-active"
                 />
               </button>
             </div>
@@ -275,7 +531,7 @@ ShallowWrapper {
                   type="button"
                 >
                   <Icon
-                    svg="ico-filter"
+                    svg="ico-filter-active"
                   />
                 </button>
               </div>,
@@ -334,7 +590,7 @@ ShallowWrapper {
                         placeholder="Un mot-clé"
                         type="text"
                       />,
-                      false,
+                      null,
                     ],
                     "className": "control has-icons-right flex-1",
                   },
@@ -356,7 +612,7 @@ ShallowWrapper {
                       "rendered": null,
                       "type": "input",
                     },
-                    false,
+                    null,
                   ],
                   "type": "p",
                 },
@@ -407,7 +663,7 @@ ShallowWrapper {
                   type="button"
                 >
                   <Icon
-                    svg="ico-filter"
+                    svg="ico-filter-active"
                   />
                 </button>,
                 "className": "flex-0 text-center flex-rows flex-center pb12 ",
@@ -420,7 +676,7 @@ ShallowWrapper {
                 "nodeType": "host",
                 "props": Object {
                   "children": <Icon
-                    svg="ico-filter"
+                    svg="ico-filter-active"
                   />,
                   "className": "no-border no-background no-outline ",
                   "onClick": [Function],
@@ -432,7 +688,7 @@ ShallowWrapper {
                   "key": undefined,
                   "nodeType": "function",
                   "props": Object {
-                    "svg": "ico-filter",
+                    "svg": "ico-filter-active",
                   },
                   "ref": null,
                   "rendered": null,
@@ -450,25 +706,9 @@ ShallowWrapper {
       Object {
         "instance": null,
         "key": undefined,
-        "nodeType": "class",
+        "nodeType": "function",
         "props": Object {
           "isVisible": false,
-          "pagination": Object {
-            "apiQueryString": "orderBy=offer.id+desc",
-            "change": [MockFunction],
-            "goToNextPage": [MockFunction],
-            "page": 1,
-            "query": Object {
-              "categories": null,
-              "date": null,
-              "distance": null,
-              "jours": null,
-              "latitude": null,
-              "longitude": null,
-              "mots-cles": null,
-              "orderBy": "offer.id+desc",
-            },
-          },
         },
         "ref": null,
         "rendered": null,
@@ -602,32 +842,14 @@ ShallowWrapper {
                   type="button"
                 >
                   <Icon
-                    svg="ico-filter"
+                    svg="ico-filter-active"
                   />
                 </button>
               </div>
             </div>
           </form>,
-          <SearchFilter
+          <withRouter(_withQueryRouter)
             isVisible={false}
-            pagination={
-              Object {
-                "apiQueryString": "orderBy=offer.id+desc",
-                "change": [MockFunction],
-                "goToNextPage": [MockFunction],
-                "page": 1,
-                "query": Object {
-                  "categories": null,
-                  "date": null,
-                  "distance": null,
-                  "jours": null,
-                  "latitude": null,
-                  "longitude": null,
-                  "mots-cles": null,
-                  "orderBy": "offer.id+desc",
-                },
-              }
-            }
           />,
           <Switch
             location={
@@ -712,7 +934,7 @@ ShallowWrapper {
                   type="button"
                 >
                   <Icon
-                    svg="ico-filter"
+                    svg="ico-filter-active"
                   />
                 </button>
               </div>
@@ -765,7 +987,7 @@ ShallowWrapper {
                     type="button"
                   >
                     <Icon
-                      svg="ico-filter"
+                      svg="ico-filter-active"
                     />
                   </button>
                 </div>,
@@ -824,7 +1046,7 @@ ShallowWrapper {
                           placeholder="Un mot-clé"
                           type="text"
                         />,
-                        false,
+                        null,
                       ],
                       "className": "control has-icons-right flex-1",
                     },
@@ -846,7 +1068,7 @@ ShallowWrapper {
                         "rendered": null,
                         "type": "input",
                       },
-                      false,
+                      null,
                     ],
                     "type": "p",
                   },
@@ -897,7 +1119,7 @@ ShallowWrapper {
                     type="button"
                   >
                     <Icon
-                      svg="ico-filter"
+                      svg="ico-filter-active"
                     />
                   </button>,
                   "className": "flex-0 text-center flex-rows flex-center pb12 ",
@@ -910,7 +1132,7 @@ ShallowWrapper {
                   "nodeType": "host",
                   "props": Object {
                     "children": <Icon
-                      svg="ico-filter"
+                      svg="ico-filter-active"
                     />,
                     "className": "no-border no-background no-outline ",
                     "onClick": [Function],
@@ -922,7 +1144,7 @@ ShallowWrapper {
                     "key": undefined,
                     "nodeType": "function",
                     "props": Object {
-                      "svg": "ico-filter",
+                      "svg": "ico-filter-active",
                     },
                     "ref": null,
                     "rendered": null,
@@ -940,25 +1162,9 @@ ShallowWrapper {
         Object {
           "instance": null,
           "key": undefined,
-          "nodeType": "class",
+          "nodeType": "function",
           "props": Object {
             "isVisible": false,
-            "pagination": Object {
-              "apiQueryString": "orderBy=offer.id+desc",
-              "change": [MockFunction],
-              "goToNextPage": [MockFunction],
-              "page": 1,
-              "query": Object {
-                "categories": null,
-                "date": null,
-                "distance": null,
-                "jours": null,
-                "latitude": null,
-                "longitude": null,
-                "mots-cles": null,
-                "orderBy": "offer.id+desc",
-              },
-            },
           },
           "ref": null,
           "rendered": null,

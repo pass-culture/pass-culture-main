@@ -5,7 +5,7 @@ ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <withRouter(_withQueryRouter)
     isVisible={true}
-    params={
+    query={
       Object {
         "params": Object {
           "categories": null,

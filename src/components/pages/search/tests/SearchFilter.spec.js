@@ -21,7 +21,7 @@ describe('src | components | pages | search | SearchFilter', () => {
       // given
       const props = {
         isVisible: true,
-        params: {
+        query: {
           params: {
             categories: null,
             date: '2018-09-28T12:52:52.341Z',
