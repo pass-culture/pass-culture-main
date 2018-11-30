@@ -22,14 +22,17 @@ export const withQueryRouter = WrappedComponent => {
         reverseOrder: this.reverseOrder,
       }
 
+      this.state = {}
+
       Object.assign(query, queryMethods)
 
       query.params = parse(props.location.search)
     }
 
-    componentDidUpdate() {
-      const { location } = this.props
+    static getDerivedStateFromProps(nextProps) {
+      const { location } = nextProps
       query.params = parse(location.search)
+      return {}
     }
 
     clear = () => {
