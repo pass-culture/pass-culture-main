@@ -11,8 +11,8 @@ const query = {
 
 export const withQueryRouter = WrappedComponent => {
   class _withQueryRouter extends PureComponent {
-    constructor() {
-      super()
+    constructor(props) {
+      super(props)
 
       const queryMethods = {
         add: this.add,
@@ -24,19 +24,12 @@ export const withQueryRouter = WrappedComponent => {
 
       Object.assign(query, queryMethods)
 
-      this.state = {
-        canRenderWhenPageIsInitialized: false,
-      }
+      query.params = parse(props.location.search)
     }
 
-    static getDerivedStateFromProps(nextProps) {
-      const { location } = nextProps
-
+    componentDidUpdate() {
+      const { location } = this.props
       query.params = parse(location.search)
-
-      return {
-        canRenderWhenPageIsInitialized: true,
-      }
     }
 
     clear = () => {
@@ -142,10 +135,6 @@ export const withQueryRouter = WrappedComponent => {
     }
 
     render() {
-      const { canRenderWhenPageIsInitialized } = this.state
-      if (!canRenderWhenPageIsInitialized) {
-        return null
-      }
       return <WrappedComponent {...this.props} query={query} />
     }
   }
