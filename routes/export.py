@@ -143,7 +143,7 @@ def get_venues():
     check_user_is_admin(current_user)
 
     params_keys = ['dpt', 'has_validated_offerer', 'zip_codes', 'from_date', 'to_date', 'has_siret',
-    'is_virtual', 'offer_status', 'is_validated']
+    'is_virtual', 'offer_status', 'is_validated',  "has_offerer_with_siren", "has_validated_user_offerer", "has_validated_user"]
     params = {}
 
     for key in params_keys:
@@ -152,7 +152,9 @@ def get_venues():
     check_get_venues_params(params)
     result = find_venues(dpt=params['dpt'], zip_codes=params['zip_codes'], from_date=params['from_date'], to_date=params['to_date'],
      has_siret=params['has_siret'], is_virtual=params['is_virtual'], offer_status=params['offer_status'],
-     has_validated_offerer=params['has_validated_offerer'], is_validated=params['is_validated'])
+     has_validated_offerer=params['has_validated_offerer'], is_validated=params['is_validated'],
+     has_offerer_with_siren=params['has_offerer_with_siren'], has_validated_user_offerer=params['has_validated_user_offerer'],
+     has_validated_user=params['has_validated_user'])
 
     return jsonify(result), 200
 

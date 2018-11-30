@@ -10,7 +10,7 @@ def check_user_is_admin(user):
         raise api_errors
 
 
-def check_get_venues_params(param: {}) -> []:
+def check_get_venues_params(param: {}) -> bool:
     if param.get('dpt', []):
         _check_dpt_list(param['dpt'])
 
@@ -37,6 +37,15 @@ def check_get_venues_params(param: {}) -> []:
 
     if param.get('is_validated', None):
         _check_is_validated_param(param['is_validated'])
+
+    if param.get('has_offerer_with_siren', None):
+        _check_has_offerer_with_siren_param(param['has_offerer_with_siren'])
+
+    if param.get('has_validated_user_offerer', None):
+        _check_has_validated_user_offerer_param(param['has_validated_user_offerer'])
+
+    if param.get('has_validated_user', None):
+        _check_has_validated_user_param(param['has_validated_user'])
 
     return True
 
@@ -120,4 +129,28 @@ def _check_is_validated_param(is_validated) -> bool:
        return True
     api_errors = ApiErrors()
     api_errors.addError('is_validated', 'is_validated is a boolean, it accepts True or False')   
+    raise api_errors
+
+
+def _check_has_offerer_with_siren_param(has_offerer_with_siren) -> bool:
+    if type(has_offerer_with_siren) == bool:
+        return True
+    api_errors = ApiErrors()
+    api_errors.addError('has_offerer_with_siren', 'has_offerer_with_siren is a boolean, it accepts True or False')
+    raise api_errors
+
+
+def _check_has_validated_user_offerer_param(has_validated_user_offerer) -> bool:
+    if type(has_validated_user_offerer) == bool:
+        return True
+    api_errors = ApiErrors()
+    api_errors.addError('has_validated_user_offerer', 'has_validated_user_offerer is a boolean, it accepts True or False')
+    raise api_errors
+
+
+def _check_has_validated_user_param(has_validated_user) -> bool:
+    if type(has_validated_user) == bool:
+        return True
+    api_errors = ApiErrors()
+    api_errors.addError('has_validated_user', 'has_validated_user is a boolean, it accepts True or False')
     raise api_errors

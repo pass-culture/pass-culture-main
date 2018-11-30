@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from models import PcObject, ApiErrors
-from models import Venue, Offer, EventOccurrence, Event, Thing, Stock, Offerer
+from models import Venue, Offer, EventOccurrence, Event, Thing, Stock, Offerer, UserOfferer, User
 from models.db import db
 from models.venue import TooManyVirtualVenuesException
 from models.activity import load_activity
@@ -30,7 +30,10 @@ def find_venues(has_validated_offerer=None,
                 has_siret=None,
                 is_virtual=None,
                 offer_status=None, 
-                is_validated=None):
+                is_validated=None,
+                has_offerer_with_siren=None,
+                has_validated_user_offerer=None,
+                has_validated_user=None):
 
     query = db.session.query(Venue) 
     if is_virtual is not None:
@@ -39,17 +42,44 @@ def find_venues(has_validated_offerer=None,
         else:
             query = query.filter(Venue.isVirtual == False)
 
-    if has_validated_offerer is not None:
+    if has_validated_offerer is not None or has_offerer_with_siren is not None or has_validated_user_offerer is not None or has_validated_user is not None:
         query = query.join(Offerer)
-        if has_validated_offerer:
-            query = query.filter(Offerer.validationToken == None)
-        else:
-            query = query.filter(Offerer.validationToken != None)
-    
+
+        if has_validated_offerer is not None:
+            is_valid = Offerer.validationToken == None
+            if has_validated_offerer:
+                query = query.filter(is_valid)
+            else:
+                query = query.filter(~is_valid)
+
+        if has_offerer_with_siren is not None:
+            has_siren = Offerer.siren != None
+            if has_offerer_with_siren:
+                query = query.filter(has_siren)
+            else:
+                query = query.filter(~has_siren)
+
+        if has_validated_user_offerer is not None or has_validated_user is not None:
+            query = query.join(UserOfferer)
+            if has_validated_user_offerer is not None:
+                is_valid = UserOfferer.validationToken == None
+                if has_validated_user_offerer:
+                    query = query.filter(Offerer.users.any(is_valid))
+                else:
+                    query = query.filter(~Offerer.users.any(is_valid))
+
+            if has_validated_user is not None:
+                is_valid = User.validationToken == None
+                query = query.join(User)
+                if has_validated_user:
+                    query = query.filter(Offerer.users.any(is_valid))
+                else:
+                    query = query.filter(~Offerer.users.any(is_valid))
+
     if dpt:
         query = query.filter(Venue.departementCode.in_(dpt))
     
-    if zip_codes:
+    if zip_codes: 
         query = query.filter(Venue.postalCode.in_(zip_codes))
  
     if from_date or to_date:

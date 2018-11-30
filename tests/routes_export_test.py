@@ -297,9 +297,9 @@ def test_get_venues_with_maitena_params_return_200_and_filtered_venues(app):
     #given
     data={
         "has_validated_offerer": True,
-        "has_offerer_with_siren": True, 
+        "has_offerer_with_siren": True,
         "has_validated_user_offerer": True,
-        "has_validated_user": True,   
+        "has_validated_user": True
     }
     query_user = create_user(password='p@55sw0rd', is_admin=True, can_book_free_offers=False)
 
@@ -307,21 +307,23 @@ def test_get_venues_with_maitena_params_return_200_and_filtered_venues(app):
     not_validated_user = create_user(email="a@mail.com", can_book_free_offers=False,
        validation_token = "a_token")
 
-    validated_offerer_with_siren  = create_offerer()
+    validated_offerer_with_siren1  = create_offerer()
+    validated_offerer_with_siren2  = create_offerer(siren='123456782')
+    validated_offerer_with_siren3  = create_offerer(siren='123456783')
     validated_offerer_without_siren  = create_offerer(siren=None)
     not_validated_offerer_with_siren = create_offerer(siren='123456781', validation_token="token")
     
-    validated_user_offerer_with_validated_user_with_validated_offerer_with_siren = create_user_offerer(validated_user, validated_offerer_with_siren)
-    validated_user_offerer_with_not_validated_user_with_validated_offerer_with_siren = create_user_offerer(not_validated_user, validated_offerer_with_siren)
+    validated_user_offerer_with_validated_user_with_validated_offerer_with_siren = create_user_offerer(validated_user, validated_offerer_with_siren1)
+    validated_user_offerer_with_not_validated_user_with_validated_offerer_with_siren = create_user_offerer(not_validated_user, validated_offerer_with_siren3)
     validated_user_offerer_with_validated_user_with_not_validated_offerer_with_siren = create_user_offerer(validated_user, not_validated_offerer_with_siren)
     validated_user_offerer_with_validated_user_with_validated_offerer_without_siren = create_user_offerer(validated_user, validated_offerer_without_siren )
-    not_validated_user_offerer_with_validated_user_with_validated_offerer_with_siren =  create_user_offerer(validated_user, validated_offerer_with_siren, validation_token="another_token")
+    not_validated_user_offerer_with_validated_user_with_validated_offerer_with_siren =  create_user_offerer(validated_user, validated_offerer_with_siren2, validation_token="another_token")
 
-    venue_with_validated_offerer_with_siren_with_user_offerer_with_user = create_venue(validated_offerer_with_siren, name="venue_with_validated_offerer_with_siren_with_user_offerer_with_user", siret="12345678912341")
+    venue_with_validated_offerer_with_siren_with_user_offerer_with_user = create_venue(validated_offerer_with_siren1, name="venue_with_validated_offerer_with_siren_with_user_offerer_with_user", siret="12345678912341")
     venue_without_validated_offerer_with_siren_with_user_offerer_with_user = create_venue(not_validated_offerer_with_siren, name="venue_without_validated_offerer_with_siren_with_user_offerer_with_user", siret="12345678912342")
     venue_with_validated_offerer_without_siren_with_user_offerer_with_user = create_venue(validated_offerer_without_siren, name="venue_with_validated_offerer_without_siren_with_user_offerer_with_user", siret="12345678912343")
-    venue_with_validated_offerer_with_siren_without_user_offerer_with_user = create_venue(validated_offerer_with_siren, name="venue_with_validated_offerer_with_siren_without_user_offerer_with_user", siret="12345678912344")
-    venue_with_validated_offerer_with_siren_with_user_offerer_without_user = create_venue(validated_offerer_with_siren, name="venue_with_validated_offerer_with_siren_with_user_offerer_without_user", siret="12345678912345")
+    venue_with_validated_offerer_with_siren_without_user_offerer_with_user = create_venue(validated_offerer_with_siren2, name="venue_with_validated_offerer_with_siren_without_user_offerer_with_user", siret="12345678912344")
+    venue_with_validated_offerer_with_siren_with_user_offerer_without_user = create_venue(validated_offerer_with_siren3, name="venue_with_validated_offerer_with_siren_with_user_offerer_without_user", siret="12345678912345")
 
     PcObject.check_and_save(query_user,
       venue_with_validated_offerer_with_siren_with_user_offerer_with_user,

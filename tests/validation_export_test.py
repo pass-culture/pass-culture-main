@@ -34,6 +34,21 @@ def test_check_get_venues_params_raises_api_error_if_not_valid_dpt_in_list(app):
 
 
 @pytest.mark.standalone
+def test_check_get_venues_params_doesnt_raise_api_error_for_valid_dpt_in_list(app):
+    # given
+    valid_dpt_list = {}
+    valid_dpt_list['dpt'] = ['93', '17', '01', '2a', '2B', '978']
+
+    # when
+    try:
+        check_get_venues_params(valid_dpt_list)
+    
+    except ApiErrors:
+        # Then
+        assert pytest.fail("Should not fail with valid params")
+
+
+@pytest.mark.standalone
 def test_check_get_venues_params_raises_api_error_if_dpt_list_is_not_list(app):
     # given
     not_valid_dpt_list = {}
@@ -61,6 +76,21 @@ def test_check_get_venues_params_raises_api_error_if_not_valid_zip_codes_list(ap
     assert errors.value.errors['zip_codes'] == \
         ['zip_codes is a list of type xxxxx (5 digits, ex: 78140 ou 2a000) : \
         ["78140", "69007"]']
+
+
+@pytest.mark.standalone
+def test_check_get_venues_params_doesnt_raise_api_error_for_valid_zip_codes_list(app):
+    # given
+    valid_zip_codes_list = {}
+    valid_zip_codes_list['zip_codes'] = ['69000', '13020', '2a250', '2B456', '00007']
+
+    # when
+    try:
+        check_get_venues_params(valid_zip_codes_list)
+    
+    except ApiErrors:
+        # Then
+        assert pytest.fail("Should not fail with valid params")
 
 
 @pytest.mark.standalone
@@ -123,7 +153,7 @@ def test_check_get_venues_params_raises_api_error_if_not_valid_is_validated_para
 def test_check_get_venues_params_raises_api_error_if_not_valid_has_offerer_with_siren_param(app):
     # given
     not_valid_has_offerer_with_siren_param = {}
-    not_valid_has_offerer_with_siren_param['has_offerer_with_siren'] = 'plein'
+    not_valid_has_offerer_with_siren_param['has_offerer_with_siren'] = 'I\'m not a boolean'
 
     # when
     with pytest.raises(ApiErrors) as errors:
@@ -132,11 +162,12 @@ def test_check_get_venues_params_raises_api_error_if_not_valid_has_offerer_with_
     # then
     assert errors.value.errors['has_offerer_with_siren'] == ['has_offerer_with_siren is a boolean, it accepts True or False']
 
+
 @pytest.mark.standalone
 def test_check_get_venues_params_raises_api_error_if_not_valid_has_validated_user_offerer_param(app):
     # given
     not_valid_has_validated_user_offerer_param = {}
-    not_valid_has_validated_user_offerer_param['has_validated_user_offerer'] = 'plein'
+    not_valid_has_validated_user_offerer_param['has_validated_user_offerer'] = 'I\'m not a boolean'
 
     # when
     with pytest.raises(ApiErrors) as errors:
@@ -145,11 +176,12 @@ def test_check_get_venues_params_raises_api_error_if_not_valid_has_validated_use
     # then
     assert errors.value.errors['has_validated_user_offerer'] == ['has_validated_user_offerer is a boolean, it accepts True or False']
 
+
 @pytest.mark.standalone
 def test_check_get_venues_params_raises_api_error_if_not_valid_has_validated_user_param(app):
     # given
     not_valid_has_validated_user_param = {}
-    not_valid_has_validated_user_param['has_validated_user'] = 'plein'
+    not_valid_has_validated_user_param['has_validated_user'] = 'I\'m not a boolean'
 
     # when
     with pytest.raises(ApiErrors) as errors:
@@ -163,7 +195,7 @@ def test_check_get_venues_params_raises_api_error_if_not_valid_has_validated_use
 def test_check_get_venues_params_raises_api_error_if_not_valid_offer_status_param(app):
     # given
     not_valid_offer_status_param = {}
-    not_valid_offer_status_param['offer_status'] = 'plein'
+    not_valid_offer_status_param['offer_status'] = 'I\'m not a boolean'
 
     # when
     with pytest.raises(ApiErrors) as errors:
@@ -173,7 +205,6 @@ def test_check_get_venues_params_raises_api_error_if_not_valid_offer_status_para
     assert errors.value.errors['offer_status'] == ['offer_status accepte ALL ou VALID ou WITHOUT ou EXPIRED']
 
 
-from pprint import pprint
 @pytest.mark.standalone
 def test_check_get_venues_params_does_not_raise_api_error_if_good_param(app):
     # given
@@ -190,7 +221,20 @@ def test_check_get_venues_params_does_not_raise_api_error_if_good_param(app):
     params["has_validated_user_offerer"] = True
     params["has_validated_user"] = False  
 
-    pprint(params)
+    # when
+    try:
+        check_get_venues_params(params)
+    
+    except ApiErrors:
+        # Then
+        assert pytest.fail("Should not fail with valid params")
+
+
+@pytest.mark.standalone
+def test_check_get_venues_params_does_not_raise_api_error_if_empty_param(app):
+    # given
+    params = {}
+    
     # when
     try:
         check_get_venues_params(params)
