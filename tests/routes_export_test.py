@@ -293,6 +293,66 @@ def test_get_venues_return_200_and_filtered_venues(app):
 
 @pytest.mark.standalone
 @clean_database
+def test_get_venues_with_maitena_params_return_200_and_filtered_venues(app):
+    #given
+    data={
+        "has_validated_offerer": True,
+        "has_offerer_with_siren": True, 
+        "has_validated_user_offerer": True,
+        "has_validated_user": True,   
+    }
+    query_user = create_user(password='p@55sw0rd', is_admin=True, can_book_free_offers=False)
+
+    validated_user = create_user(email="another@mail.com", can_book_free_offers=False)
+    not_validated_user = create_user(email="a@mail.com", can_book_free_offers=False,
+       validation_token = "a_token")
+
+    validated_offerer_with_siren  = create_offerer()
+    validated_offerer_without_siren  = create_offerer(siren=None)
+    not_validated_offerer_with_siren = create_offerer(siren='123456781', validation_token="token")
+    
+    validated_user_offerer_with_validated_user_with_validated_offerer_with_siren = create_user_offerer(validated_user, validated_offerer_with_siren)
+    validated_user_offerer_with_not_validated_user_with_validated_offerer_with_siren = create_user_offerer(not_validated_user, validated_offerer_with_siren)
+    validated_user_offerer_with_validated_user_with_not_validated_offerer_with_siren = create_user_offerer(validated_user, not_validated_offerer_with_siren)
+    validated_user_offerer_with_validated_user_with_validated_offerer_without_siren = create_user_offerer(validated_user, validated_offerer_without_siren )
+    not_validated_user_offerer_with_validated_user_with_validated_offerer_with_siren =  create_user_offerer(validated_user, validated_offerer_with_siren, validation_token="another_token")
+
+    venue_with_validated_offerer_with_siren_with_user_offerer_with_user = create_venue(validated_offerer_with_siren, name="venue_with_validated_offerer_with_siren_with_user_offerer_with_user", siret="12345678912341")
+    venue_without_validated_offerer_with_siren_with_user_offerer_with_user = create_venue(not_validated_offerer_with_siren, name="venue_without_validated_offerer_with_siren_with_user_offerer_with_user", siret="12345678912342")
+    venue_with_validated_offerer_without_siren_with_user_offerer_with_user = create_venue(validated_offerer_without_siren, name="venue_with_validated_offerer_without_siren_with_user_offerer_with_user", siret="12345678912343")
+    venue_with_validated_offerer_with_siren_without_user_offerer_with_user = create_venue(validated_offerer_with_siren, name="venue_with_validated_offerer_with_siren_without_user_offerer_with_user", siret="12345678912344")
+    venue_with_validated_offerer_with_siren_with_user_offerer_without_user = create_venue(validated_offerer_with_siren, name="venue_with_validated_offerer_with_siren_with_user_offerer_without_user", siret="12345678912345")
+
+    PcObject.check_and_save(query_user,
+      venue_with_validated_offerer_with_siren_with_user_offerer_with_user,
+      venue_without_validated_offerer_with_siren_with_user_offerer_with_user, 
+      venue_with_validated_offerer_without_siren_with_user_offerer_with_user,
+      venue_with_validated_offerer_with_siren_without_user_offerer_with_user,
+      venue_with_validated_offerer_with_siren_with_user_offerer_without_user, 
+      validated_user_offerer_with_validated_user_with_validated_offerer_with_siren,
+      validated_user_offerer_with_not_validated_user_with_validated_offerer_with_siren,
+      validated_user_offerer_with_validated_user_with_not_validated_offerer_with_siren,
+      validated_user_offerer_with_validated_user_with_validated_offerer_without_siren,
+      not_validated_user_offerer_with_validated_user_with_validated_offerer_with_siren)
+
+    auth_request = req_with_auth(email=query_user.email, password='p@55sw0rd')
+
+    #when
+    response = auth_request.post(API_URL + '/exports/venues', json=data)
+
+    #then
+    venue_names = list(map(lambda x: x['name'], response.json()))
+
+    assert response.status_code == 200
+    assert venue_with_validated_offerer_with_siren_with_user_offerer_with_user.name in venue_names
+    assert venue_without_validated_offerer_with_siren_with_user_offerer_with_user.name not in venue_names
+    assert venue_with_validated_offerer_without_siren_with_user_offerer_with_user.name not in venue_names
+    assert venue_with_validated_offerer_with_siren_without_user_offerer_with_user.name not in venue_names
+    assert venue_with_validated_offerer_with_siren_with_user_offerer_without_user.name not in venue_names
+
+
+@pytest.mark.standalone
+@clean_database
 def test_get_venues_return_error_when_date_param_is_wrong(app):
     #given
     wrong_date = "I\'m not a valid date"

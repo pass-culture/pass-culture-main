@@ -157,6 +157,74 @@ def test_find_venues_with_is_validated_param_return_filtered_venues(app):
 
 @pytest.mark.standalone
 @clean_database
+def test_find_venues_with_has_offerer_with_siren_param_return_filtered_venues(app):
+    # Given
+    offerer_with_siren = create_offerer()
+    offerer_without_siren = create_offerer()
+
+    venue_with_offerer_with_siren = create_venue(offerer_with_siren)
+    venue_with_offerer_without_siren = create_venue(offerer_without_siren, siret='12345678912346')
+    PcObject.check_and_save(venue_with_offerer_with_siren, venue_with_offerer_without_siren)
+    
+    # When
+    query_only_validated = find_venues(has_offerer_with_siren=True)
+
+    # Then
+    assert venue_without_offerer_with_siren not in query_only_validated 
+    assert venue_with_offerer_with_siren in query_only_validated 
+
+
+@pytest.mark.standalone
+@clean_database
+def test_find_venues_with_has_validated_user_offerer_param_return_filtered_venues(app):
+    # Given
+    user = create_user()
+    offerer1 = create_offerer()
+    offerer2 = create_offerer()
+    validated_user_offerer = create_user_offerer(user, offerer1)
+    not_validated_user_offerer = create_user_offerer(user, offerer2, validation_token="a_token")
+    venue_with_not_validated_user_offerer = create_venue(offerer1)
+    venue_with_validated_user_offerer = create_venue(offerer2, siret='12345678912346')
+    PcObject.check_and_save(validated_user_offerer, not_validated_user_offerer, venue_with_not_validated_user_offerer, venue_with_validated_user_offerer)
+
+    # When
+    query_only_validated = find_venues(has_validated_user_offerer=True)
+
+    # Then
+    assert venue_with_not_validated_user_offerer not in query_only_validated 
+    assert venue_with_validated_user_offerer in query_only_validated 
+
+
+@pytest.mark.standalone
+@clean_database
+def test_find_venues_with_has_validated_user_param_return_filtered_venues(app):
+    # Given
+    validated_user = create_user()
+    not_validated_user = create_user(email= "mail@mail.com", validation_token="hello token")
+    offerer1 = create_offerer()
+    offerer2 = create_offerer()
+    user_offerer1 = create_user_offerer(validated_user, offerer1)
+    user_offerer2 = create_user_offerer(not_validated_user, offerer2)
+    user_offerer3 = create_user_offerer(validated_user, offerer3)
+    user_offerer4 = create_user_offerer(not_validated_user, offerer3)
+
+    venue_with_not_validated_user = create_venue(offerer1)
+    venue_with_validated_user= create_venue(offerer2, siret='12345678912346')
+    venue_with_both = create_venue(offerer3, siret='12345678912347')
+
+    PcObject.check_and_save(venue_not_validated, venue_validated)
+    
+    # When
+    query_not_validated = find_venues(has_validated_user=False)
+
+    # Then
+    assert venue_with_not_validated_user in query_not_validated
+    assert venue_with_validated_user not in query_not_validated
+    assert venue_with_both not in query_not_validated
+
+
+@pytest.mark.standalone
+@clean_database
 def test_find_venues_with_offer_status_with_VALID_param_return_filtered_venues(app):
     # Given
     offerer = create_offerer()
@@ -305,7 +373,6 @@ def test_find_venues_with_offer_status_with_ALL_param_return_filtered_venues(app
     assert venue_with_expired_event in query_all 
     assert venue_with_valid_thing in query_all
     assert venue_with_expired_thing in query_all
-
 
 
 @pytest.mark.standalone
