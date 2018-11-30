@@ -4,11 +4,11 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { NavLink, withRouter } from 'react-router-dom'
 
-import Logo from '../layout/Logo'
-import Main from '../layout/Main'
+import Logo from '../../layout/Logo'
+import Main from '../../layout/Main'
 import { Route, Switch } from 'react-router-dom/umd/react-router-dom'
 import { compose } from 'redux'
-import { ROOT_PATH } from '../../utils/config'
+import { ROOT_PATH } from '../../../utils/config'
 
 const SignupPage = ({ errors, location, sirenName }) => {
   return (

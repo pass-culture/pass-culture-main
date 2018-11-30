@@ -11,11 +11,11 @@ import Offerer from '../components/pages/Offerer'
 import Offerers from '../components/pages/Offerers'
 import Profile from '../components/pages/Profile'
 import Signin from '../components/pages/Signin'
-import Signup from '../components/pages/Signup'
+import Signup from '../components/pages/Signup/Signup'
 import Terms from '../components/pages/Terms'
 import Venue from '../components/pages/Venue'
 import LostPassword from '../components/pages/LostPassword'
-import SignupValidation from '../components/pages/SignupValidation'
+import SignupValidation from '../components/pages/Signup/SignupValidation'
 
 // NOTE: routes are sorted by PATH alphabetical order
 const routes = [
