@@ -22,13 +22,15 @@ import Main from '../layout/Main'
 class SearchPageContent extends PureComponent {
   constructor(props) {
     super(props)
+
     const { query } = props
+    const queryParams = query.parse()
 
     this.state = {
       hasMore: false,
       isFilterVisible: false,
       keywordsKey: 0,
-      keywordsValue: query.params['mots-cles'],
+      keywordsValue: queryParams['mots-cles'],
     }
 
     props.dispatch(assignData({ recommendations: [] }))
@@ -39,7 +41,8 @@ class SearchPageContent extends PureComponent {
 
     dispatch(requestData('GET', 'types'))
 
-    if (query.params.page) {
+    const queryParams = query.parse()
+    if (queryParams.page) {
       query.change({ page: null })
     } else {
       this.handleRecommendationsRequest()
@@ -60,7 +63,8 @@ class SearchPageContent extends PureComponent {
       return
     }
 
-    const apiParams = translateBrowserUrlToApiUrl(query.params)
+    const queryParams = query.parse()
+    const apiParams = translateBrowserUrlToApiUrl(queryParams)
     const apiParamsString = stringify(apiParams)
     const path = `recommendations?${apiParamsString}`
     dispatch(
@@ -163,10 +167,11 @@ class SearchPageContent extends PureComponent {
       typeSublabels,
       typeSublabelsAndDescription,
     } = this.props
+    const queryParams = query.parse()
 
     const { hasMore, keywordsKey, keywordsValue, isFilterVisible } = this.state
     const onResultPage = match.params.view === 'resultats'
-    const keywords = query.params[`mots-cles`]
+    const keywords = queryParams[`mots-cles`]
 
     const backButton = onResultPage && {
       onClick: () => this.onBackToSearchHome(),
@@ -174,7 +179,7 @@ class SearchPageContent extends PureComponent {
 
     const whithoutFilters = isInitialQueryWithoutFilters(
       INITIAL_FILTER_PARAMS,
-      query.params
+      queryParams
     )
 
     const iconName = whithoutFilters ? 'filter' : 'filter-active'
@@ -188,7 +193,7 @@ class SearchPageContent extends PureComponent {
     const searchPageTitle = onResultPage ? 'Recherche : résultats' : 'Recherche'
 
     let description
-    const category = decodeURIComponent(query.params.categories)
+    const category = decodeURIComponent(queryParams.categories)
     if (location.pathname.indexOf('/resultats/') !== -1) {
       description = getDescriptionForSublabel(
         category,

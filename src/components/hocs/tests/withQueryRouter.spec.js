@@ -37,7 +37,7 @@ describe('src | components | pages | hocs | withQueryRouter', () => {
       // then
       const { query } = wrapper.find('Test').props()
       const expectedParams = { 'mots-cles': 'test', page: '1' }
-      expect(query.params).toEqual(expectedParams)
+      expect(query.parse()).toEqual(expectedParams)
     })
 
     it('withQueryRouter passes query change function that help to modify location search', () => {
@@ -58,7 +58,7 @@ describe('src | components | pages | hocs | withQueryRouter', () => {
 
       // then
       const expectedParams = { page: '2' }
-      expect(query.params).toEqual(expectedParams)
+      expect(query.parse()).toEqual(expectedParams)
     })
 
     it('withQueryRouter passes query add function that help to add value in search', () => {
@@ -79,10 +79,9 @@ describe('src | components | pages | hocs | withQueryRouter', () => {
 
       // then
       const expectedParams = { jours: '0,1,2', 'mots-cles': 'test' }
-      expect(query.params).toEqual(expectedParams)
+      expect(query.parse()).toEqual(expectedParams)
     })
 
-    /*
     it('withQueryRouter passes query remove function that help to remove value in search', () => {
       // given
       const history = createBrowserHistory()
@@ -101,8 +100,7 @@ describe('src | components | pages | hocs | withQueryRouter', () => {
 
       // then
       const expectedParams = { jours: '0', 'mots-cles': 'test' }
-      expect(query.params).toEqual(expectedParams)
+      expect(query.parse()).toEqual(expectedParams)
     })
-    */
   })
 })

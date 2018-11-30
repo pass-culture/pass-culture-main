@@ -21,18 +21,7 @@ describe('src | components | pages | search | SearchFilter', () => {
       // given
       const props = {
         isVisible: true,
-        query: {
-          params: {
-            categories: null,
-            date: '2018-09-28T12:52:52.341Z',
-            distance: '50',
-            jours: '0-1',
-            latitude: '48.8637546',
-            longitude: '2.337428',
-            [`mots-cles`]: 'fake',
-            orderBy: 'offer.id+desc',
-          },
-        },
+        query: {},
       }
 
       // when
@@ -50,9 +39,7 @@ describe('src | components | pages | search | SearchFilter', () => {
         // given
         const props = {
           isVisible: false,
-          params: {
-            params: {},
-          },
+          query: {},
         }
 
         // when
@@ -107,10 +94,10 @@ describe('src | components | pages | search | SearchFilter', () => {
           location: { search: '?page=1&jours=0-1' },
           query: {
             change: queryChangeMock,
-            params: {
+            parse: () => ({
               jours: '0-1',
               page: '1',
-            },
+            }),
           },
         }
 
@@ -138,10 +125,10 @@ describe('src | components | pages | search | SearchFilter', () => {
           location: { search: '?page=1&jours=0-1' },
           query: {
             change: queryChangeMock,
-            params: {
+            parse: () => ({
               jours: '0-1',
               page: '1',
-            },
+            }),
           },
         }
 

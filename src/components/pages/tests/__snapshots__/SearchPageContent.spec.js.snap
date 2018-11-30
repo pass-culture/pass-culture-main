@@ -306,17 +306,7 @@ ShallowWrapper {
             },
           ],
         },
-        "params": Object {
-          "categories": null,
-          "date": null,
-          "distance": null,
-          "jours": null,
-          "latitude": null,
-          "longitude": null,
-          "mots-cles": null,
-          "orderBy": "offer.id+desc",
-          "page": 1,
-        },
+        "parse": [Function],
       }
     }
     recommendations={Array []}
@@ -356,7 +346,6 @@ ShallowWrapper {
               >
                 <input
                   className="input search-input"
-                  defaultValue={null}
                   id="keywords"
                   onChange={[Function]}
                   placeholder="Un mot-clé"
@@ -448,7 +437,6 @@ ShallowWrapper {
               >
                 <input
                   className="input search-input"
-                  defaultValue={null}
                   id="keywords"
                   onChange={[Function]}
                   placeholder="Un mot-clé"
@@ -501,7 +489,6 @@ ShallowWrapper {
                 >
                   <input
                     className="input search-input"
-                    defaultValue={null}
                     id="keywords"
                     onChange={[Function]}
                     placeholder="Un mot-clé"
@@ -551,7 +538,6 @@ ShallowWrapper {
                   >
                     <input
                       className="input search-input"
-                      defaultValue={null}
                       id="keywords"
                       onChange={[Function]}
                       placeholder="Un mot-clé"
@@ -584,13 +570,12 @@ ShallowWrapper {
                     "children": Array [
                       <input
                         className="input search-input"
-                        defaultValue={null}
                         id="keywords"
                         onChange={[Function]}
                         placeholder="Un mot-clé"
                         type="text"
                       />,
-                      null,
+                      undefined,
                     ],
                     "className": "control has-icons-right flex-1",
                   },
@@ -602,7 +587,7 @@ ShallowWrapper {
                       "nodeType": "host",
                       "props": Object {
                         "className": "input search-input",
-                        "defaultValue": null,
+                        "defaultValue": undefined,
                         "id": "keywords",
                         "onChange": [Function],
                         "placeholder": "Un mot-clé",
@@ -612,7 +597,7 @@ ShallowWrapper {
                       "rendered": null,
                       "type": "input",
                     },
-                    null,
+                    undefined,
                   ],
                   "type": "p",
                 },
@@ -812,7 +797,6 @@ ShallowWrapper {
                 >
                   <input
                     className="input search-input"
-                    defaultValue={null}
                     id="keywords"
                     onChange={[Function]}
                     placeholder="Un mot-clé"
@@ -904,7 +888,6 @@ ShallowWrapper {
                 >
                   <input
                     className="input search-input"
-                    defaultValue={null}
                     id="keywords"
                     onChange={[Function]}
                     placeholder="Un mot-clé"
@@ -957,7 +940,6 @@ ShallowWrapper {
                   >
                     <input
                       className="input search-input"
-                      defaultValue={null}
                       id="keywords"
                       onChange={[Function]}
                       placeholder="Un mot-clé"
@@ -1007,7 +989,6 @@ ShallowWrapper {
                     >
                       <input
                         className="input search-input"
-                        defaultValue={null}
                         id="keywords"
                         onChange={[Function]}
                         placeholder="Un mot-clé"
@@ -1040,13 +1021,12 @@ ShallowWrapper {
                       "children": Array [
                         <input
                           className="input search-input"
-                          defaultValue={null}
                           id="keywords"
                           onChange={[Function]}
                           placeholder="Un mot-clé"
                           type="text"
                         />,
-                        null,
+                        undefined,
                       ],
                       "className": "control has-icons-right flex-1",
                     },
@@ -1058,7 +1038,7 @@ ShallowWrapper {
                         "nodeType": "host",
                         "props": Object {
                           "className": "input search-input",
-                          "defaultValue": null,
+                          "defaultValue": undefined,
                           "id": "keywords",
                           "onChange": [Function],
                           "placeholder": "Un mot-clé",
@@ -1068,7 +1048,7 @@ ShallowWrapper {
                         "rendered": null,
                         "type": "input",
                       },
-                      null,
+                      undefined,
                     ],
                     "type": "p",
                   },

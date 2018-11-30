@@ -31,9 +31,13 @@ const transitionStyles = {
 class SearchFilter extends Component {
   constructor(props) {
     super(props)
+
+    const { query } = props
+    const queryParams = query.parse()
+
     this.state = {
       isNew: false,
-      params: Object.assign({}, props.query.params),
+      params: Object.assign({}, queryParams),
     }
     this.filterActions = {
       add: this.handleQueryAdd,
@@ -52,9 +56,11 @@ class SearchFilter extends Component {
 
   handleReinitializeParams = () => {
     const { query } = this.props
+    const queryParams = query.parse()
+
     this.setState({
       isNew: false,
-      params: query.params,
+      params: queryParams,
     })
   }
 
@@ -73,10 +79,11 @@ class SearchFilter extends Component {
 
   onResetClick = () => {
     const { dispatch, query } = this.props
+    const queryParams = query.parse()
 
     dispatch(assignData({ recommendations: [] }))
 
-    const isNew = getFirstChangingKey(query.params, INITIAL_FILTER_PARAMS)
+    const isNew = getFirstChangingKey(queryParams, INITIAL_FILTER_PARAMS)
 
     this.setState({ isNew })
 
@@ -88,9 +95,10 @@ class SearchFilter extends Component {
   handleQueryChange = (newValue, callback) => {
     const { query } = this.props
     const { params } = this.state
+    const queryParams = query.parse()
 
     const nextFilterParams = Object.assign({}, params, newValue)
-    const isNew = getFirstChangingKey(query.params, newValue)
+    const isNew = getFirstChangingKey(queryParams, newValue)
 
     this.setState(
       {

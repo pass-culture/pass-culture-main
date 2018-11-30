@@ -1,38 +1,23 @@
-import get from 'lodash.get'
 import uniq from 'lodash.uniq'
 import PropTypes from 'prop-types'
-import { parse, stringify } from 'query-string'
+import { stringify } from 'query-string'
 import React, { PureComponent } from 'react'
 import { withRouter } from 'react-router-dom'
 
-const query = {
-  params: {},
-}
+import { selectQueryParamsFromQueryString } from '../../selectors/selectQueryParamsFromQueryString'
 
 export const withQueryRouter = WrappedComponent => {
   class _withQueryRouter extends PureComponent {
     constructor(props) {
       super(props)
-
-      const queryMethods = {
+      this.query = {
         add: this.add,
         change: this.change,
         orderBy: this.orderBy,
+        parse: this.parse,
         remove: this.remove,
         reverseOrder: this.reverseOrder,
       }
-
-      this.state = {}
-
-      Object.assign(query, queryMethods)
-
-      query.params = parse(props.location.search)
-    }
-
-    static getDerivedStateFromProps(nextProps) {
-      const { location } = nextProps
-      query.params = parse(location.search)
-      return {}
     }
 
     clear = () => {
@@ -41,9 +26,7 @@ export const withQueryRouter = WrappedComponent => {
     }
 
     reverseOrder = () => {
-      const {
-        params: { orderBy },
-      } = query
+      const { orderBy } = this.selectParams()
       if (!orderBy) {
         console.warn('there is no orderBy in the query')
         return
@@ -57,9 +40,7 @@ export const withQueryRouter = WrappedComponent => {
     }
 
     orderBy = e => {
-      const {
-        params: { orderBy },
-      } = query
+      const { orderBy } = this.selectParams()
       if (!orderBy) {
         console.warn('there is no orderBy in the query')
         return
@@ -72,11 +53,12 @@ export const withQueryRouter = WrappedComponent => {
 
     change = (queryParamsUpdater, changeConfig = {}) => {
       const { history, location } = this.props
+      const queryParams = this.selectParams()
+
       const historyMethod = changeConfig.historyMethod || 'push'
       const pathname = changeConfig.pathname || location.pathname
-
       const queryParamsKeys = uniq(
-        Object.keys(query.params).concat(Object.keys(queryParamsUpdater))
+        Object.keys(queryParams).concat(Object.keys(queryParamsUpdater))
       )
 
       const nextQueryParams = {}
@@ -87,9 +69,9 @@ export const withQueryRouter = WrappedComponent => {
         }
         if (
           queryParamsUpdater[queryParamsKey] !== null &&
-          query.params[queryParamsKey]
+          queryParams[queryParamsKey]
         ) {
-          nextQueryParams[queryParamsKey] = query.params[queryParamsKey]
+          nextQueryParams[queryParamsKey] = queryParams[queryParamsKey]
         }
       })
 
@@ -101,11 +83,11 @@ export const withQueryRouter = WrappedComponent => {
     }
 
     add = (key, value) => {
-      const { params } = query
+      const queryParams = this.selectParams()
 
       let nextValue = value
-      const previousValue = params[key]
-      if (get(previousValue, 'length')) {
+      const previousValue = queryParams[key]
+      if (previousValue && previousValue.length) {
         const args = previousValue.split(',').concat([value])
         args.sort()
         nextValue = args.join(',')
@@ -118,11 +100,16 @@ export const withQueryRouter = WrappedComponent => {
       this.change({ [key]: nextValue })
     }
 
-    remove = (key, value) => {
-      const { params } = query
+    parse = () => {
+      const { location } = this.props
+      return selectQueryParamsFromQueryString(location.search)
+    }
 
-      const previousValue = params[key]
-      if (get(previousValue, 'length')) {
+    remove = (key, value) => {
+      const queryParams = this.selectParams()
+
+      const previousValue = queryParams[key]
+      if (previousValue && previousValue.length) {
         let nextValue = previousValue
           .replace(`,${value}`, '')
           .replace(value, '')
@@ -138,7 +125,7 @@ export const withQueryRouter = WrappedComponent => {
     }
 
     render() {
-      return <WrappedComponent {...this.props} query={query} />
+      return <WrappedComponent {...this.props} query={this.query} />
     }
   }
 

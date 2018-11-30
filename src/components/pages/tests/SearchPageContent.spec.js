@@ -27,17 +27,7 @@ describe('src | components | pages | SearchPageContent', () => {
     },
     query: {
       change: queryChangeMock,
-      params: {
-        categories: null,
-        date: null,
-        distance: null,
-        jours: null,
-        latitude: null,
-        longitude: null,
-        'mots-cles': null,
-        orderBy: 'offer.id+desc',
-        page: 1,
-      },
+      parse: () => ({ page: '1' }),
     },
     recommendations: [],
     search: {},
@@ -123,8 +113,10 @@ describe('src | components | pages | SearchPageContent', () => {
     it('NavResultsHeader & SearchResults with path="/recherche/resultats/:categorie"', () => {
       // given
       initialProps.location.pathname = '/recherche/resultats/'
-      initialProps.query.params.categories = 'Jouer'
-      initialProps.query.params['mots-cles'] = 'Fake'
+      initialProps.query.parse = () => ({
+        categories: 'Jouer',
+        'mots-cles': 'Fake',
+      })
       initialProps.typeSublabelsAndDescription = [
         {
           description:
@@ -154,10 +146,6 @@ describe('src | components | pages | SearchPageContent', () => {
       expect(SearchResultsComponent.props.withNavigation).toEqual(true)
     })
     it('SearchResults with path="/recherche/resultats"', () => {
-      // given
-      initialProps.query.params.String =
-        'categories=Jouer&orderBy=offer.id+desc'
-
       // when
       const wrapper = shallow(<SearchPageContent {...initialProps} />)
       const switchRouteComponent = wrapper.find('Route')
@@ -175,7 +163,7 @@ describe('src | components | pages | SearchPageContent', () => {
     describe('constructor', () => {
       it('should initialize state correctly', () => {
         // given
-        initialProps.query.params['mots-cles'] = 'Fake'
+        initialProps.query.parse = () => ({ 'mots-cles': 'Fake' })
         // when
         const wrapper = shallow(<SearchPageContent {...initialProps} />)
         const expected = {
@@ -221,14 +209,17 @@ describe('src | components | pages | SearchPageContent', () => {
       })
       xit('should change history location', () => {
         // given
-        initialProps.query.params.String =
-          'categories=Jouer&orderBy=offer.id+desc'
+        initialProps.query.parse = () => ({
+          categories: 'Jouer',
+          orderBy: 'offer.id+desc',
+          page: '1',
+        })
 
         // when
         const wrapper = shallow(<SearchPageContent {...initialProps} />)
         wrapper.instance().loadMoreHandler()
         const expected =
-          '/recherche?page=1&categories=Jouer&orderBy=offer.id+desc'
+          '/recherche?page=2&categories=Jouer&orderBy=offer.id+desc'
 
         // then
         expect(historyMock.push).toHaveBeenCalledWith(expected)
@@ -312,7 +303,7 @@ describe('src | components | pages | SearchPageContent', () => {
             hasMore: false,
             isFilterVisible: false,
             keywordsKey: 0,
-            keywordsValue: null,
+            keywordsValue: undefined,
           }
 
           // then
@@ -457,7 +448,7 @@ describe('src | components | pages | SearchPageContent', () => {
             hasMore: false,
             isFilterVisible: false,
             keywordsKey: 0,
-            keywordsValue: null,
+            keywordsValue: undefined,
           }
 
           // then
@@ -479,7 +470,7 @@ describe('src | components | pages | SearchPageContent', () => {
             hasMore: false,
             isFilterVisible: true,
             keywordsKey: 0,
-            keywordsValue: null,
+            keywordsValue: undefined,
           }
 
           // then

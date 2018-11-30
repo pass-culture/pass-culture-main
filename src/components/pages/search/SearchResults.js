@@ -42,10 +42,11 @@ class SearchResults extends PureComponent {
 
   render() {
     const { items, hasMore, keywords, query, withNavigation } = this.props
+    const queryParams = query.parse()
     const resultTitle = searchResultsTitle(
       keywords,
       items,
-      query.params,
+      queryParams,
       withNavigation
     )
     const { isLoading } = this.state
@@ -76,7 +77,7 @@ class SearchResults extends PureComponent {
             hasMore={hasMore}
             loadMore={this.loadMore}
             loader={<Spinner key="loader" />}
-            pageStart={parseInt(query.page || 1, 10)}
+            pageStart={parseInt(queryParams.page || 1, 10)}
             threshold={threshold}
             useWindow={false}
           >
