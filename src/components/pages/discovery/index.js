@@ -27,7 +27,7 @@ const renderPageFooter = () => {
   return <Footer {...footerProps} />
 }
 
-class DiscoveryPage extends React.PureComponent {
+export class RawDiscoveryPage extends React.PureComponent {
   constructor(props) {
     super(props)
     const { dispatch } = props
@@ -46,7 +46,6 @@ class DiscoveryPage extends React.PureComponent {
 
   handleRequestFail = () => {
     this.setState({ haserror: true, isloading: true }, () => {
-      // Fixes #136
       const { history } = this.props
       const delayBeforeRedirect = 2000
       setTimeout(() => history.replace('/connexion'), delayBeforeRedirect)
@@ -129,11 +128,11 @@ class DiscoveryPage extends React.PureComponent {
   }
 }
 
-DiscoveryPage.defaultProps = {
+RawDiscoveryPage.defaultProps = {
   recommendations: null,
 }
 
-DiscoveryPage.propTypes = {
+RawDiscoveryPage.propTypes = {
   backButton: PropTypes.bool.isRequired,
   dispatch: PropTypes.func.isRequired,
   history: PropTypes.object.isRequired,
@@ -144,7 +143,9 @@ const mapStateToProps = (state, ownProps) => ({
   backButton: ownProps.location.search.indexOf('to=verso') > -1,
 })
 
-export default compose(
+const DiscoveryPage = compose(
   withLogin({ failRedirect: '/connexion' }),
   connect(mapStateToProps)
-)(DiscoveryPage)
+)(RawDiscoveryPage)
+
+export default DiscoveryPage
