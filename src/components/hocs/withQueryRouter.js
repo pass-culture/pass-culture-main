@@ -26,7 +26,7 @@ export const withQueryRouter = WrappedComponent => {
     }
 
     reverseOrder = () => {
-      const { orderBy } = this.selectParams()
+      const { orderBy } = this.parse()
       if (!orderBy) {
         console.warn('there is no orderBy in the query')
         return
@@ -40,7 +40,7 @@ export const withQueryRouter = WrappedComponent => {
     }
 
     orderBy = e => {
-      const { orderBy } = this.selectParams()
+      const { orderBy } = this.parse()
       if (!orderBy) {
         console.warn('there is no orderBy in the query')
         return
@@ -53,7 +53,7 @@ export const withQueryRouter = WrappedComponent => {
 
     change = (queryParamsUpdater, changeConfig = {}) => {
       const { history, location } = this.props
-      const queryParams = this.selectParams()
+      const queryParams = this.parse()
 
       const historyMethod = changeConfig.historyMethod || 'push'
       const pathname = changeConfig.pathname || location.pathname
@@ -83,7 +83,7 @@ export const withQueryRouter = WrappedComponent => {
     }
 
     add = (key, value) => {
-      const queryParams = this.selectParams()
+      const queryParams = this.parse()
 
       let nextValue = value
       const previousValue = queryParams[key]
@@ -106,7 +106,7 @@ export const withQueryRouter = WrappedComponent => {
     }
 
     remove = (key, value) => {
-      const queryParams = this.selectParams()
+      const queryParams = this.parse()
 
       const previousValue = queryParams[key]
       if (previousValue && previousValue.length) {
