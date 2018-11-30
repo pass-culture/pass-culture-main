@@ -64,12 +64,7 @@ test('Menu | Liens | Les offres', async t => {
 
 test('Menu | Liens | Recherche', async t => {
   const menuRecherche = Selector('.navlink').withText('Recherche')
-  await t
-
-    .expect(menuRecherche.exists)
-    .ok()
-    .expect(menuRecherche.hasAttribute('disabled'))
-    .ok()
+  await t.expect(menuRecherche.exists).ok()
   // .click(menuRecherche)
   // .wait(100)
   // const location = await t.eval(() => window.location)
