@@ -4,6 +4,7 @@
 
   .section {
     font-size: 13px;
+    margin-bottom: 0.7rem;
 
     h2 {
       font-size: 16px;
@@ -40,6 +41,19 @@
 .crop-explain .column {
   display: flex;
   flex-flow: column nowrap;
+  color: #003818;
+
+  &.explain-text {
+    padding-left: 0;
+
+    b {
+      display: block;
+    }
+  }
+
+  &.explain-bad {
+    color: #B30041;
+  }
 }
 
 .crop-explain p {

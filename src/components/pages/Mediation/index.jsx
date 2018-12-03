@@ -294,9 +294,10 @@ class Mediation extends Component {
                       alt="Explication"
                     />
                   </div>
-                  <div className="column">
+                  <div className="column explain-text explain-bad">
                     <p>
-                      Mauvais cadrage Les éléments importants sont hors-cadre.
+                      <b>Mauvais cadrage</b>
+                      Les éléments importants sont hors-cadre.
                     </p>
                   </div>
                   <div className="column">
@@ -306,10 +307,11 @@ class Mediation extends Component {
                       alt="Explication"
                     />
                   </div>
-                  <div className="column">
+                  <div className="column explain-text explain-good">
                     <p>
-                      Cadrage idéal Les éléments importants sont visibles dans
-                      tous les cadres.
+                      <b>Cadrage idéal</b>
+                      Les éléments importants sont visibles dans tous les
+                      cadres.
                     </p>
                   </div>
                 </div>
