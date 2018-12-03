@@ -73,13 +73,19 @@
       }
     }
     .zoom {
-      // margin-top: 1rem;
-      position: absolute;
-      left: 0;
-      right: 0;
-      width: 50%;
-      margin: auto;
+      width: calc(100% - 100px);
       cursor: pointer;
+    }
+
+    .change-zoom {
+      width: 45px;
+      height: 45px;
+      margin: 0 0 0 5px;
+      display: inline-block;
+    }
+
+    .change-zoom.decrement {
+      margin: 0 5px 0 0;
     }
   }
 
@@ -88,4 +94,16 @@
     margin: auto;
   }
 
+}
+
+#zoomControl {
+  display: flex;
+  flex: 1;
+  width: 68%;
+  margin: auto;
+
+  button, input {
+    flex-direction: row;
+
+  }
 }

@@ -100,6 +100,25 @@ class UploadThumb extends Component {
     }
   }
 
+  setZoomInput = element => {
+    this.zoomInput = element
+  }
+
+  changeZoom(direction) {
+    const factor = 10 // Slider step is too low for button usage
+    const step = parseFloat(this.zoomInput.getAttribute('step'))
+    const zoom = this.state.zoom + step * factor * direction
+
+    const min = parseFloat(this.zoomInput.getAttribute('min'))
+    const max = parseFloat(this.zoomInput.getAttribute('max'))
+    if (zoom >= min && zoom <= max) {
+      this.setState({ zoom })
+    }
+  }
+
+  increment = () => this.changeZoom(1)
+  decrement = () => this.changeZoom(-1)
+
   render() {
     const {
       border,
@@ -150,9 +169,15 @@ class UploadThumb extends Component {
               image={image}
               onImageChange={this.onImageChange}
             />
-            {!readOnly &&
-              image && (
+            {!readOnly && image && (
+              <div id="zoomControl">
+                <button
+                  onClick={this.decrement}
+                  className="change-zoom decrement">
+                  -
+                </button>
                 <input
+                  ref={this.setZoomInput}
                   className="zoom level-left"
                   type="range"
                   min="0.1"
@@ -161,7 +186,13 @@ class UploadThumb extends Component {
                   value={zoom}
                   onChange={this.onZoomChange}
                 />
-              )}
+                <button
+                  onClick={this.increment}
+                  className="change-zoom increment">
+                  +
+                </button>
+              </div>
+            )}
           </Dropzone>
           <nav className="field content">
             {isUploadDisabled && (
@@ -191,35 +222,32 @@ class UploadThumb extends Component {
                     </button>
                   )}
               </div>
-              {!readOnly &&
-                image &&
-                !this.props.image && (
-                  <div className="control">
-                    <button
-                      onClick={e =>
-                        this.setState({
-                          image: null,
-                          dragging: false,
-                          isUploadDisabled: false,
-                        })
-                      }
-                      className="button is-primary is-outlined">
-                      Retirer l'image
-                    </button>
-                  </div>
-                )}
-              {!readOnly &&
-                hasExistingImage && (
-                  <div className="control">
-                    <button
-                      onClick={e =>
-                        this.setState({ isEdited: false, dragging: false })
-                      }
-                      className="button is-primary is-outlined">
-                      Annuler la modification
-                    </button>
-                  </div>
-                )}
+              {!readOnly && image && !this.props.image && (
+                <div className="control">
+                  <button
+                    onClick={e =>
+                      this.setState({
+                        image: null,
+                        dragging: false,
+                        isUploadDisabled: false,
+                      })
+                    }
+                    className="button is-primary is-outlined">
+                    Retirer l'image
+                  </button>
+                </div>
+              )}
+              {!readOnly && hasExistingImage && (
+                <div className="control">
+                  <button
+                    onClick={e =>
+                      this.setState({ isEdited: false, dragging: false })
+                    }
+                    className="button is-primary is-outlined">
+                    Annuler la modification
+                  </button>
+                </div>
+              )}
             </div>
           </nav>
         </div>
