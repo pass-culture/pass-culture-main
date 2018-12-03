@@ -138,9 +138,7 @@ class SearchPageContent extends PureComponent {
   }
 
   onKeywordsEraseClick = () => {
-    const { dispatch, location, query } = this.props
     const { keywordsKey } = this.state
-
     this.setState({
       // https://stackoverflow.com/questions/37946229/how-do-i-reset-the-defaultvalue-for-a-react-input
       // WE NEED TO MAKE THE PARENT OF THE KEYWORD INPUT
@@ -149,13 +147,6 @@ class SearchPageContent extends PureComponent {
       keywordsKey: keywordsKey + 1,
       keywordsValue: '',
     })
-
-    dispatch(assignData({ recommendations: [] }))
-
-    query.change(
-      { 'mots-cles': null, page: null },
-      { pathname: location.pathname }
-    )
   }
 
   render() {

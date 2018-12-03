@@ -41,13 +41,19 @@ class SearchResults extends PureComponent {
   }
 
   render() {
-    const { items, hasMore, keywords, query, withNavigation } = this.props
+    const {
+      cameFromOfferTypesPage,
+      items,
+      hasMore,
+      keywords,
+      query,
+    } = this.props
     const queryParams = query.parse()
     const resultTitle = searchResultsTitle(
       keywords,
       items,
       queryParams,
-      withNavigation
+      cameFromOfferTypesPage
     )
     const { isLoading } = this.state
 
@@ -63,7 +69,7 @@ class SearchResults extends PureComponent {
           className={classnames(
             'fs15 is-uppercase is-italic is-semi-bold mb12',
             {
-              [`nav-result-title`]: withNavigation,
+              [`nav-result-title`]: cameFromOfferTypesPage,
             }
           )}
           id="results-title"
@@ -81,8 +87,8 @@ class SearchResults extends PureComponent {
             threshold={threshold}
             useWindow={false}
           >
-            {items.map(o => (
-              <SearchResultItem key={o.id} recommendation={o} />
+            {items.map(item => (
+              <SearchResultItem key={item.id} recommendation={item} />
             ))}
           </InfiniteScroll>
         )}
@@ -98,11 +104,11 @@ SearchResults.defaultProps = {
 }
 
 SearchResults.propTypes = {
+  cameFromOfferTypesPage: PropTypes.bool.isRequired,
   hasMore: PropTypes.bool,
   items: PropTypes.array,
   keywords: PropTypes.string,
   query: PropTypes.object.isRequired,
-  withNavigation: PropTypes.bool.isRequired,
 }
 
 export default withQueryRouter(SearchResults)
