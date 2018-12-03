@@ -16,7 +16,7 @@ import previousRecommendationSelector from '../../../selectors/previousRecommend
 import recommendationsSelector from '../../../selectors/recommendations'
 import { PREVIOUS_NEXT_LIMIT } from '../../../utils/deck'
 
-class Deck extends Component {
+export class RawDeck extends Component {
   constructor(props) {
     super(props)
     this.currentReadRecommendationId = null
@@ -24,16 +24,25 @@ class Deck extends Component {
   }
 
   componentDidMount() {
-    Logger.log('Deck ---> componentDidMount')
+    Logger.log('DECK ---> componentDidMount')
+    console.log('DECK ---> componentDidMount')
     const { currentRecommendation, history, recommendations } = this.props
     this.handleUrlFlip(history)
+    console.log(
+      'DECK ---> componentDidMount : currentRecommendation',
+      currentRecommendation
+    )
+    console.log('DECK ---> componentDidMount : history', history)
     if (!recommendations || !currentRecommendation) {
-      // this.handleRefreshedData()
+      this.handleRefreshedData()
     }
   }
 
   componentDidUpdate(previousProps) {
+    Logger.log('DECK ---> componentDidUpdate', previousProps)
+    console.log('**** DECK ---> componentDidUpdate')
     const { currentRecommendation, history, recommendations } = this.props
+    console.log('history', history)
     this.handleUrlFlip(history, previousProps.history)
     if (
       !recommendations ||
@@ -48,7 +57,7 @@ class Deck extends Component {
   }
 
   componentWillUnmount() {
-    Logger.log('Deck ---> componentWillUnmount')
+    Logger.log('DECK ---> componentWillUnmount')
     const { dispatch } = this.props
     dispatch(unFlip())
     if (this.readTimeout) clearTimeout(this.readTimeout)
@@ -120,9 +129,10 @@ class Deck extends Component {
   }
 
   handleRefreshedData = () => {
-    this.setState(previousState => ({
-      refreshKey: previousState.refreshKey + 1,
-    }))
+    console.log("Adieu l'ami, salut le trésor !")
+    // this.setState(previousState => ({
+    //   refreshKey: previousState.refreshKey + 1,
+    // }))
   }
 
   handleFlip = () => {
@@ -138,11 +148,21 @@ class Deck extends Component {
   }
 
   handleUrlFlip = (history, previousHistory = false) => {
+    console.log('°°°°°°° handleUrlFlip history : °°°°°°°°', history)
+    // console.log(
+    //   'history.location ',
+    //   history.location.search.indexOf('to=verso')
+    // )
+    console.log('previousHistory : ', previousHistory)
+    Logger.log('DECK ---> handleUrlFlip')
     const { dispatch } = this.props
     const isNewUrl =
       !previousHistory ||
       (previousHistory && history.location.key !== previousHistory.location.key)
     if (isNewUrl && history.location.search.indexOf('to=verso') > 0) {
+      console.log(
+        '*********************************************************************************************************************** DISPATCH *********************************************************************************************************************** '
+      )
       dispatch(flipUnflippable())
     }
   }
@@ -201,6 +221,8 @@ class Deck extends Component {
       unFlippable,
     } = this.props
 
+    // console.log('****** PROPS ********', this.props)
+
     const showCloseButton = isFlipped && !unFlippable
     const showNavigation = !isFlipped || isFlipDisabled
 
@@ -233,7 +255,7 @@ class Deck extends Component {
   }
 }
 
-Deck.defaultProps = {
+RawDeck.defaultProps = {
   currentRecommendation: null,
   horizontalSlideRatio: 0.2,
   nextRecommendation: null,
@@ -241,7 +263,7 @@ Deck.defaultProps = {
   verticalSlideRatio: 0.1,
 }
 
-Deck.propTypes = {
+RawDeck.propTypes = {
   currentRecommendation: PropTypes.object,
   dispatch: PropTypes.func.isRequired,
   draggable: PropTypes.bool.isRequired,
@@ -261,6 +283,7 @@ Deck.propTypes = {
 }
 
 const mapStateToProps = (state, ownProps) => {
+  // console.log('^^^^^^^^^ ownProps ^^^^^^^^^', ownProps.match)
   const { mediationId, offerId } = ownProps.match.params
   const currentRecommendation = currentRecommendationSelector(
     state,
@@ -307,7 +330,9 @@ const mapSizeToProps = ({ width, height }) => ({
   width: Math.min(width, 500),
 })
 
-export default compose(
+const Deck = compose(
   withSizes(mapSizeToProps),
   connect(mapStateToProps)
-)(Deck)
+)(RawDeck)
+
+export default Deck
