@@ -282,11 +282,15 @@ class OfferPage extends Component {
   }
 
   hasConditionalField(fieldName) {
-    if (!this.props.type) {
+    if (!this.props.selectedOfferType) {
       return false
     }
 
-    return CONDITIONAL_FIELDS[fieldName].indexOf(this.props.type.value) > -1
+    return (
+      CONDITIONAL_FIELDS[fieldName].indexOf(
+        this.props.selectedOfferType.value
+      ) > -1
+    )
   }
 
   render() {
@@ -301,7 +305,7 @@ class OfferPage extends Component {
       offerers,
       stocks,
       thing,
-      type,
+      selectedOfferType,
       types,
       venue,
       venues,
@@ -314,7 +318,7 @@ class OfferPage extends Component {
     const eventOrThingName = get(event, 'name') || get(thing, 'name')
     const offerId = get(offer, 'id')
     const offererId = get(offerer, 'id')
-    const showAllForm = type || !isNew
+    const showAllForm = selectedOfferType || !isNew
     const venueId = get(venue, 'id')
     const isOfferActive = get(offer, 'isActive')
     const isOffererSelectReadOnly = typeof offererId !== 'undefined'
@@ -365,13 +369,13 @@ class OfferPage extends Component {
               <Field isExpanded label="Titre de l'offre" name="name" required />
               <Field
                 label="Type"
-                name="type"
+                name="offerTypeValue"
                 optionLabel="label"
                 optionValue="value"
                 options={types}
                 placeholder={
-                  get(eventOrThingPatch, 'type') && !type
-                    ? get(eventOrThingPatch, 'type')
+                  get(eventOrThingPatch, 'offerTypeValue') && !selectedOfferType
+                    ? get(eventOrThingPatch, 'offerTypeValue')
                     : "Sélectionnez un type d'offre"
                 }
                 readOnly={offerId}
@@ -673,15 +677,17 @@ function mapStateToProps(state, ownProps) {
   const isVirtual = get(venue, 'isVirtual')
   const types = typesSelector(state, isVirtual)
 
-  const typeValue =
-    get(state, 'form.offer.type') || get(event, 'type') || get(thing, 'type')
+  const offerTypeValue =
+    get(state, 'form.offer.offerTypeValue') ||
+    get(event, 'offerType.value') ||
+    get(thing, 'offerType.value')
 
-  const type = typeSelector(state, isVirtual, typeValue)
+  const selectedOfferType = typeSelector(state, isVirtual, offerTypeValue)
 
   const formOffererId = get(state, 'form.offer.offererId')
   let offererId = formOffererId || search.offererId
 
-  const venues = venuesSelector(state, offererId, type)
+  const venues = venuesSelector(state, offererId, selectedOfferType)
 
   offererId = offererId || get(venue, 'managingOffererId')
 
@@ -706,7 +712,6 @@ function mapStateToProps(state, ownProps) {
     offerer,
     venue
   )
-
   const extraData = get(state, 'form.offer.extraData') || {}
 
   const musicSubOptions =
@@ -734,7 +739,7 @@ function mapStateToProps(state, ownProps) {
     stocks,
     thing,
     types,
-    type,
+    selectedOfferType,
     url,
     user,
     venue,
