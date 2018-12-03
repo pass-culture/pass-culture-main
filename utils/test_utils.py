@@ -348,7 +348,7 @@ def create_stock(price=10, available=10, booking_limit_datetime=None):
 
 
 def create_stock_with_thing_offer(offerer, venue, thing_offer, price=10, available=50,
-                                  booking_email='offer.booking.email@test.com'):
+                                  booking_email='offer.booking.email@test.com', soft_deleted=False):
     stock = Stock()
     stock.offerer = offerer
     stock.price = price
@@ -359,6 +359,7 @@ def create_stock_with_thing_offer(offerer, venue, thing_offer, price=10, availab
     stock.offer.bookingEmail = booking_email
     stock.offer.venue = venue
     stock.available = available
+    stock.isSoftDeleted = soft_deleted
     return stock
 
 
