@@ -13,7 +13,7 @@ import models
 from models.api_errors import ApiErrors
 from models.pc_object import PcObject
 from repository import offerer_queries
-from repository.venue_queries import find_venues
+from repository.venue_queries import find_filtered_venues
 from validation.exports import check_user_is_admin , check_get_venues_params
 
 from utils.includes import OFFERER_INCLUDES_FOR_ADMIN
@@ -150,11 +150,18 @@ def get_venues():
         params[key] = request.json.get(key, None)
 
     check_get_venues_params(params)
-    result = find_venues(dpt=params['dpt'], zip_codes=params['zip_codes'], from_date=params['from_date'], to_date=params['to_date'],
-     has_siret=params['has_siret'], is_virtual=params['is_virtual'], offer_status=params['offer_status'],
-     has_validated_offerer=params['has_validated_offerer'], is_validated=params['is_validated'],
-     has_offerer_with_siren=params['has_offerer_with_siren'], has_validated_user_offerer=params['has_validated_user_offerer'],
-     has_validated_user=params['has_validated_user'])
+    result = find_filtered_venues(dpt=params['dpt'],
+                                  zip_codes=params['zip_codes'],
+                                  from_date=params['from_date'],
+                                  to_date=params['to_date'],
+                                  has_siret=params['has_siret'],
+                                  is_virtual=params['is_virtual'],
+                                  offer_status=params['offer_status'],
+                                  is_validated=params['is_validated'],
+                                  has_validated_offerer=params['has_validated_offerer'],
+                                  has_offerer_with_siren=params['has_offerer_with_siren'],
+                                  has_validated_user_offerer=params['has_validated_user_offerer'],
+                                  has_validated_user=params['has_validated_user'])
 
     return jsonify(result), 200
 

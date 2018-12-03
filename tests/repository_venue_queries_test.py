@@ -5,7 +5,7 @@ import pytest
 from models import PcObject
 from models.db import db
 
-from repository.venue_queries import find_venues
+from repository.venue_queries import find_filtered_venues
 from tests.conftest import clean_database
 from utils.test_utils import create_venue, create_event_offer, create_venue_activity, \
     create_event_occurrence, create_offerer, create_thing_offer, create_stock_with_thing_offer, \
@@ -15,7 +15,7 @@ from utils.test_utils import create_venue, create_event_offer, create_venue_acti
  
 @pytest.mark.standalone
 @clean_database
-def test_find_venues_with_has_validated_offerer_param_return_filtered_venues(app):
+def test_find_filtered_venues_with_has_validated_offerer_param_return_filtered_venues(app):
     # Given
     offerer_valid = create_offerer()
     offerer_not_valid = create_offerer(siren='123456798', validation_token='abc')
@@ -24,7 +24,7 @@ def test_find_venues_with_has_validated_offerer_param_return_filtered_venues(app
     PcObject.check_and_save(venue_with_offerer_valid, venue_with_offerer_not_valid)
 
     # When
-    query_with_not_valid_offerer_only = find_venues(has_validated_offerer=False)
+    query_with_not_valid_offerer_only = find_filtered_venues(has_validated_offerer=False)
 
     # Then
     assert venue_with_offerer_valid not in query_with_not_valid_offerer_only 
@@ -33,7 +33,7 @@ def test_find_venues_with_has_validated_offerer_param_return_filtered_venues(app
 
 @pytest.mark.standalone
 @clean_database
-def test_find_venues_with_dpt_param_return_filtered_venues(app):
+def test_find_filtered_venues_with_dpt_param_return_filtered_venues(app):
     # Given
     offerer = create_offerer()
     venue_93 = create_venue(offerer, departement_code='93', postal_code='93000')
@@ -45,7 +45,7 @@ def test_find_venues_with_dpt_param_return_filtered_venues(app):
     PcObject.check_and_save(venue_93, venue_67, venue_34, venue_virtual)
 
     # When
-    query_with_dpt = find_venues(dpt=['93','67'])
+    query_with_dpt = find_filtered_venues(dpt=['93','67'])
 
     # Then
     assert venue_93 in query_with_dpt
@@ -56,7 +56,7 @@ def test_find_venues_with_dpt_param_return_filtered_venues(app):
 
 @pytest.mark.standalone
 @clean_database
-def test_find_venues_with_zipcodes_param_return_filtered_venues(app):
+def test_find_filtered_venues_with_zipcodes_param_return_filtered_venues(app):
     # Given
     offerer = create_offerer()
     venue_93000 = create_venue(offerer, postal_code='93000')
@@ -66,7 +66,7 @@ def test_find_venues_with_zipcodes_param_return_filtered_venues(app):
     PcObject.check_and_save(venue_virtual, venue_93000, venue_67000, venue_34000)
 
     # When
-    query_with_zipcodes = find_venues(zip_codes=['93000', '34000'])
+    query_with_zipcodes = find_filtered_venues(zip_codes=['93000', '34000'])
 
     # Then
     assert venue_93000 in query_with_zipcodes
@@ -77,7 +77,7 @@ def test_find_venues_with_zipcodes_param_return_filtered_venues(app):
 
 @pytest.mark.standalone
 @clean_database
-def test_find_venues_with_date_params_return_filtered_venues(app):
+def test_find_filtered_venues_with_date_params_return_filtered_venues(app):
     # Given
     offerer = create_offerer()
     venue_20180630 = create_venue(offerer)
@@ -94,7 +94,7 @@ def test_find_venues_with_date_params_return_filtered_venues(app):
     _save_all_activities(activity1, activity2, activity3)
 
     # When
-    query_with_date = find_venues(from_date='2018-07-01',
+    query_with_date = find_filtered_venues(from_date='2018-07-01',
         to_date='2018-08-01')
 
     # Then
@@ -105,7 +105,7 @@ def test_find_venues_with_date_params_return_filtered_venues(app):
 
 @pytest.mark.standalone
 @clean_database
-def test_find_venues_with_is_virtual_param_return_filtered_venues(app):
+def test_find_filtered_venues_with_is_virtual_param_return_filtered_venues(app):
     # Given
     offerer = create_offerer()
     venue_virtual = create_venue(offerer, is_virtual=True, siret=None)
@@ -113,7 +113,7 @@ def test_find_venues_with_is_virtual_param_return_filtered_venues(app):
     PcObject.check_and_save(venue_virtual, venue_not_virtual)
 
     # When
-    query_only_virtual = find_venues(is_virtual=True)
+    query_only_virtual = find_filtered_venues(is_virtual=True)
     
     # Then
     assert venue_virtual in query_only_virtual 
@@ -122,7 +122,7 @@ def test_find_venues_with_is_virtual_param_return_filtered_venues(app):
 
 @pytest.mark.standalone
 @clean_database
-def test_find_venues_with_has_siret_param_return_filtered_venues(app):
+def test_find_filtered_venues_with_has_siret_param_return_filtered_venues(app):
     # Given
     offerer = create_offerer()
     venue_virtual = create_venue(offerer, is_virtual=True, siret=None)
@@ -131,7 +131,7 @@ def test_find_venues_with_has_siret_param_return_filtered_venues(app):
     PcObject.check_and_save(venue_virtual, venue_with_siret, venue_without_siret)
     
     # When
-    query_no_siret = find_venues(has_siret=False)
+    query_no_siret = find_filtered_venues(has_siret=False)
 
     # Then
     assert venue_without_siret in query_no_siret
@@ -141,7 +141,7 @@ def test_find_venues_with_has_siret_param_return_filtered_venues(app):
 
 @pytest.mark.standalone
 @clean_database
-def test_find_venues_with_is_validated_param_return_filtered_venues(app):
+def test_find_filtered_venues_with_is_validated_param_return_filtered_venues(app):
     # Given
     offerer = create_offerer()
     venue_not_validated = create_venue(offerer, validation_token="there is a token here")
@@ -149,7 +149,7 @@ def test_find_venues_with_is_validated_param_return_filtered_venues(app):
     PcObject.check_and_save(venue_not_validated, venue_validated)
     
     # When
-    query_only_validated = find_venues(is_validated=True)
+    query_only_validated = find_filtered_venues(is_validated=True)
 
     # Then
     assert venue_not_validated not in query_only_validated 
@@ -158,7 +158,7 @@ def test_find_venues_with_is_validated_param_return_filtered_venues(app):
 
 @pytest.mark.standalone
 @clean_database
-def test_find_venues_with_has_offerer_with_siren_param_return_filtered_venues(app):
+def test_find_filtered_venues_with_has_offerer_with_siren_param_return_filtered_venues(app):
     # Given
     offerer_with_siren = create_offerer()
     offerer_without_siren = create_offerer(siren=None)
@@ -168,7 +168,7 @@ def test_find_venues_with_has_offerer_with_siren_param_return_filtered_venues(ap
     PcObject.check_and_save(venue_with_offerer_with_siren, venue_with_offerer_without_siren)
     
     # When
-    query_validated = find_venues(has_offerer_with_siren=True)
+    query_validated = find_filtered_venues(has_offerer_with_siren=True)
 
     # Then
     assert venue_with_offerer_without_siren not in query_validated 
@@ -177,7 +177,7 @@ def test_find_venues_with_has_offerer_with_siren_param_return_filtered_venues(ap
 
 @pytest.mark.standalone
 @clean_database
-def test_find_venues_with_True_has_validated_user_offerer_param_return_filtered_venues(app):
+def test_find_filtered_venues_with_True_has_validated_user_offerer_param_return_filtered_venues(app):
     # Given
     user = create_user()
     offerer1 = create_offerer()
@@ -198,7 +198,7 @@ def test_find_venues_with_True_has_validated_user_offerer_param_return_filtered_
         venue_with_validated_user_offerer, venue_with_both)
 
     # When
-    query_validated = find_venues(has_validated_user_offerer=True)
+    query_validated = find_filtered_venues(has_validated_user_offerer=True)
 
     # Then
     assert venue_with_not_validated_user_offerer not in query_validated 
@@ -208,7 +208,7 @@ def test_find_venues_with_True_has_validated_user_offerer_param_return_filtered_
 
 @pytest.mark.standalone
 @clean_database
-def test_find_venues_with_False_has_validated_user_offerer_param_return_filtered_venues(app):
+def test_find_filtered_venues_with_False_has_validated_user_offerer_param_return_filtered_venues(app):
     # Given
     user = create_user()
     offerer1 = create_offerer()
@@ -229,7 +229,7 @@ def test_find_venues_with_False_has_validated_user_offerer_param_return_filtered
         venue_with_validated_user_offerer, venue_with_both)
 
     # When
-    query_not_validated = find_venues(has_validated_user_offerer=False)
+    query_not_validated = find_filtered_venues(has_validated_user_offerer=False)
 
     # Then
     assert venue_with_not_validated_user_offerer in query_not_validated 
@@ -239,7 +239,7 @@ def test_find_venues_with_False_has_validated_user_offerer_param_return_filtered
 
 @pytest.mark.standalone
 @clean_database
-def test_find_venues_with_True_has_validated_user_param_return_filtered_venues(app):
+def test_find_filtered_venues_with_True_has_validated_user_param_return_filtered_venues(app):
     # Given
     validated_user = create_user()
     not_validated_user1= create_user(email= "mail1@mail.com", validation_token="hello token")
@@ -259,7 +259,7 @@ def test_find_venues_with_True_has_validated_user_param_return_filtered_venues(a
     PcObject.check_and_save( user_offerer1, user_offerer2, user_offerer3, user_offerer4, venue_with_not_validated_user, venue_with_validated_user, venue_with_both)
 
     # When
-    query_validated = find_venues(has_validated_user=True)
+    query_validated = find_filtered_venues(has_validated_user=True)
 
     # Then
     assert venue_with_not_validated_user not in query_validated
@@ -269,7 +269,7 @@ def test_find_venues_with_True_has_validated_user_param_return_filtered_venues(a
 
 @pytest.mark.standalone
 @clean_database
-def test_find_venues_with_False_has_validated_user_param_return_filtered_venues(app):
+def test_find_filtered_venues_with_False_has_validated_user_param_return_filtered_venues(app):
     # Given
     validated_user = create_user()
     not_validated_user1= create_user(email= "mail1@mail.com", validation_token="hello token")
@@ -289,7 +289,7 @@ def test_find_venues_with_False_has_validated_user_param_return_filtered_venues(
     PcObject.check_and_save( user_offerer1, user_offerer2, user_offerer3, user_offerer4, venue_with_not_validated_user, venue_with_validated_user, venue_with_both)
 
     # When
-    query_not_validated = find_venues(has_validated_user=False)
+    query_not_validated = find_filtered_venues(has_validated_user=False)
 
     # Then
     assert venue_with_not_validated_user in query_not_validated
@@ -299,7 +299,7 @@ def test_find_venues_with_False_has_validated_user_param_return_filtered_venues(
 
 @pytest.mark.standalone
 @clean_database
-def test_find_venues_with_offer_status_with_VALID_param_return_filtered_venues(app):
+def test_find_filtered_venues_with_offer_status_with_VALID_param_return_filtered_venues(app):
     # Given
     offerer = create_offerer()
 
@@ -325,7 +325,7 @@ def test_find_venues_with_offer_status_with_VALID_param_return_filtered_venues(a
         valid_stock, expired_stock)
    
     # When
-    query_has_valid_offer = find_venues(offer_status='VALID')
+    query_has_valid_offer = find_filtered_venues(offer_status='VALID')
    
     # Then
     assert venue_with_valid_event in query_has_valid_offer
@@ -337,7 +337,7 @@ def test_find_venues_with_offer_status_with_VALID_param_return_filtered_venues(a
 
 @pytest.mark.standalone
 @clean_database
-def test_find_venues_with_offer_status_with_EXPIRED_param_return_filtered_venues(app):
+def test_find_filtered_venues_with_offer_status_with_EXPIRED_param_return_filtered_venues(app):
     # Given
     offerer = create_offerer()
 
@@ -363,7 +363,7 @@ def test_find_venues_with_offer_status_with_EXPIRED_param_return_filtered_venues
         valid_stock, expired_stock)
    
     # When
-    query_has_expired_offer = find_venues(offer_status='EXPIRED')
+    query_has_expired_offer = find_filtered_venues(offer_status='EXPIRED')
    
     # Then
     assert venue_with_valid_event not in query_has_expired_offer
@@ -375,7 +375,7 @@ def test_find_venues_with_offer_status_with_EXPIRED_param_return_filtered_venues
 
 @pytest.mark.standalone
 @clean_database
-def test_find_venues_with_offer_status_with_WITHOUT_param_return_filtered_venues(app):
+def test_find_filtered_venues_with_offer_status_with_WITHOUT_param_return_filtered_venues(app):
     # Given
     offerer = create_offerer()
 
@@ -401,7 +401,7 @@ def test_find_venues_with_offer_status_with_WITHOUT_param_return_filtered_venues
         valid_stock, expired_stock)
    
     # When
-    query_without_offer = find_venues(offer_status='WITHOUT')
+    query_without_offer = find_filtered_venues(offer_status='WITHOUT')
    
     # Then
     assert venue_with_valid_event not in query_without_offer
@@ -413,7 +413,7 @@ def test_find_venues_with_offer_status_with_WITHOUT_param_return_filtered_venues
 
 @pytest.mark.standalone
 @clean_database
-def test_find_venues_with_offer_status_with_ALL_param_return_filtered_venues(app):
+def test_find_filtered_venues_with_offer_status_with_ALL_param_return_filtered_venues(app):
     # Given
     offerer = create_offerer()
 
@@ -439,7 +439,7 @@ def test_find_venues_with_offer_status_with_ALL_param_return_filtered_venues(app
         valid_stock, expired_stock)
    
     # When
-    query_all = find_venues(offer_status='ALL')
+    query_all = find_filtered_venues(offer_status='ALL')
    
     # Then
     assert venue_with_valid_event in query_all 
@@ -451,7 +451,7 @@ def test_find_venues_with_offer_status_with_ALL_param_return_filtered_venues(app
 
 @pytest.mark.standalone
 @clean_database
-def test_find_venues_with_default_param_return_all_venues(app):
+def test_find_filtered_venues_with_default_param_return_all_venues(app):
     # Given
     offerer = create_offerer()
 
@@ -477,7 +477,7 @@ def test_find_venues_with_default_param_return_all_venues(app):
         venue_67000, venue_34000)
    
     # When
-    default_query = find_venues()
+    default_query = find_filtered_venues()
 
     # Then
     assert venue_with_valid_offer in default_query

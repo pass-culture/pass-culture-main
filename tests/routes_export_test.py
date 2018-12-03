@@ -293,7 +293,7 @@ def test_get_venues_return_200_and_filtered_venues(app):
 
 @pytest.mark.standalone
 @clean_database
-def test_get_venues_with_maitena_params_return_200_and_filtered_venues(app):
+def test_get_venues_with_params_for_pc_reporting_return_200_and_filtered_venues(app):
     #given
     data={
         "has_validated_offerer": True,
