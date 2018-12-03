@@ -124,11 +124,41 @@ class Mediation extends Component {
       size - 2 * (imageUploadBorder + size / 32),
     ]
 
+    const firstDimensionsLabel = [
+      firstDimensions[0],
+      firstDimensions[1],
+      20,
+      20,
+    ]
+    const firstDimensionsLabelBorder = Array.from(firstDimensionsLabel).map(
+      pos => pos + 0.5
+    )
+    const firstDimensionsLabelText = [
+      '1',
+      firstDimensions[0] + 6,
+      firstDimensions[1] + 13,
+    ]
+
     const secondDimensions = [
       imageUploadBorder + size / 8,
       imageUploadBorder + size / 20,
       size - 2 * (imageUploadBorder + size / 8),
       size - 2 * (imageUploadBorder + size / 20),
+    ]
+
+    const secondDimensionsLabel = [
+      secondDimensions[0],
+      secondDimensions[1],
+      20,
+      20,
+    ]
+    const secondDimensionsLabelBorder = Array.from(secondDimensionsLabel).map(
+      pos => pos + 0.5
+    )
+    const secondDimensionsLabelText = [
+      '2',
+      secondDimensions[0] + 5,
+      secondDimensions[1] + 13,
     ]
 
     const thirdDimensions = [
@@ -145,30 +175,45 @@ class Mediation extends Component {
 
     // Reset dash
     ctx.setLineDash([0, 0])
+    ctx.font = 'bold 13px barlow'
 
     // First violet rectangle
     ctx.beginPath()
-    ctx.lineWidth = '5'
+    ctx.lineWidth = '4'
     ctx.strokeStyle = 'white'
     ctx.rect(...firstDimensions)
     ctx.stroke()
     ctx.beginPath()
-    ctx.lineWidth = '3'
+    ctx.lineWidth = '2'
     ctx.strokeStyle = '#b921d7'
     ctx.rect(...firstDimensions)
     ctx.stroke()
 
+    ctx.fillStyle = 'white'
+    ctx.fillRect(...firstDimensionsLabelBorder)
+    ctx.fillStyle = '#b921d7'
+    ctx.fillRect(...firstDimensionsLabel)
+    ctx.fillStyle = 'white'
+    ctx.fillText(...firstDimensionsLabelText)
+
     // Second green rectangle
     ctx.beginPath()
-    ctx.lineWidth = '5'
+    ctx.lineWidth = '4'
     ctx.strokeStyle = 'white'
     ctx.rect(...secondDimensions)
     ctx.stroke()
     ctx.beginPath()
-    ctx.lineWidth = '3'
+    ctx.lineWidth = '2'
     ctx.strokeStyle = '#4CD964'
     ctx.rect(...secondDimensions)
     ctx.stroke()
+
+    ctx.fillStyle = 'white'
+    ctx.fillRect(...secondDimensionsLabelBorder)
+    ctx.fillStyle = '#4CD964'
+    ctx.fillRect(...secondDimensionsLabel)
+    ctx.fillStyle = 'black'
+    ctx.fillText(...secondDimensionsLabelText)
 
     // Third blue rectangle
     ctx.beginPath()
