@@ -88,13 +88,13 @@ class OfferPage extends Component {
         params: { offerId },
       },
       offer,
-      type,
+      selectedOfferType,
     } = nextProps
     const { eventId, thingId } = offer || {}
 
     const isEdit = search.indexOf('modifie') > -1
     const isNew = offerId === 'nouveau'
-    const isEventType = get(type, 'type') === 'Event' || eventId
+    const isEventType = get(selectedOfferType, 'type') === 'Event' || eventId
     const isReadOnly = !isNew && !isEdit
 
     const apiPath = isEventType
@@ -234,7 +234,7 @@ class OfferPage extends Component {
       offer,
       offerer,
       offerTypeError,
-      type,
+      selectedOfferType,
       venue,
     } = this.props
 
@@ -252,7 +252,8 @@ class OfferPage extends Component {
 
     if (
       !formOffererId &&
-      ((!offerer && prevProps.offerer) || (!type && prevProps.type))
+      ((!offerer && prevProps.offerer) ||
+        (!selectedOfferType && prevProps.selectedOfferType))
     ) {
       dispatch(
         mergeForm('offer', {
@@ -270,7 +271,11 @@ class OfferPage extends Component {
       )
     }
 
-    if (get(eventOrThingPatch, 'type') && !type && !offerTypeError) {
+    if (
+      get(eventOrThingPatch, 'type') &&
+      !selectedOfferType &&
+      !offerTypeError
+    ) {
       dispatch(
         mergeErrors('offer', {
           type: [
@@ -369,12 +374,12 @@ class OfferPage extends Component {
               <Field isExpanded label="Titre de l'offre" name="name" required />
               <Field
                 label="Type"
-                name="offerTypeValue"
+                name="type"
                 optionLabel="label"
                 optionValue="value"
                 options={types}
                 placeholder={
-                  get(eventOrThingPatch, 'offerTypeValue') && !selectedOfferType
+                  get(eventOrThingPatch, 'type') && !selectedOfferType
                     ? get(eventOrThingPatch, 'offerTypeValue')
                     : "Sélectionnez un type d'offre"
                 }
@@ -678,7 +683,7 @@ function mapStateToProps(state, ownProps) {
   const types = typesSelector(state, isVirtual)
 
   const offerTypeValue =
-    get(state, 'form.offer.offerTypeValue') ||
+    get(state, 'form.offer.type') ||
     get(event, 'offerType.value') ||
     get(thing, 'offerType.value')
 
