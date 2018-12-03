@@ -222,10 +222,10 @@ class SearchPageContent extends PureComponent {
                 {isOneCharInKeywords && (
                   <span className="icon is-small is-right">
                     <button
-                      type="button"
                       className="no-border no-background is-red-text"
                       id="refresh-keywords-button"
                       onClick={this.onKeywordsEraseClick}
+                      type="button"
                     >
                       <span
                         aria-hidden
@@ -266,7 +266,10 @@ class SearchPageContent extends PureComponent {
           </div>
         </form>
 
-        <SearchFilter isVisible={isFilterVisible} />
+        <SearchFilter
+          isVisible={isFilterVisible}
+          onKeywordsEraseClick={this.onKeywordsEraseClick}
+        />
 
         <Switch location={location}>
           <Route

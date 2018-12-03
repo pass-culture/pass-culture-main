@@ -65,7 +65,7 @@ class SearchFilter extends Component {
   }
 
   onFilterClick = () => {
-    const { dispatch, query } = this.props
+    const { dispatch, onKeywordsEraseClick, query } = this.props
     const { isNew, params } = this.state
 
     if (isNew) {
@@ -73,6 +73,10 @@ class SearchFilter extends Component {
     }
 
     params.page = null
+
+    if (onKeywordsEraseClick) {
+      onKeywordsEraseClick()
+    }
 
     query.change(params, { pathname: '/recherche/resultats' })
   }
@@ -199,6 +203,7 @@ SearchFilter.propTypes = {
   dispatch: PropTypes.func.isRequired,
   isVisible: PropTypes.bool.isRequired,
   location: PropTypes.object.isRequired,
+  onKeywordsEraseClick: PropTypes.func.isRequired,
   query: PropTypes.object.isRequired,
 }
 

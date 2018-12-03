@@ -20,8 +20,7 @@ describe('src | components | pages | hocs | withQueryRouter', () => {
     })
   })
   describe('functions ', () => {
-    describe(
-      'parse',
+    describe('parse', () =>
       it('withQueryRouter gives a parse method helping for having the query params', () => {
         // given
         const history = createBrowserHistory()
@@ -40,11 +39,9 @@ describe('src | components | pages | hocs | withQueryRouter', () => {
         const { query } = wrapper.find('Test').props()
         const expectedParams = { 'mots-cles': 'test', page: '1' }
         expect(query.parse()).toEqual(expectedParams)
-      })
-    )
+      }))
 
-    describe(
-      'clear',
+    describe('clear', () =>
       it('withQueryRouter passes query clear function that clear the location search', () => {
         // given
         const history = createBrowserHistory()
@@ -64,11 +61,9 @@ describe('src | components | pages | hocs | withQueryRouter', () => {
         // then
         const expectedParams = {}
         expect(query.parse()).toEqual(expectedParams)
-      })
-    )
+      }))
 
-    describe(
-      'change',
+    describe('change', () =>
       it('withQueryRouter passes query change function that help to modify location search', () => {
         // given
         const history = createBrowserHistory()
@@ -88,11 +83,9 @@ describe('src | components | pages | hocs | withQueryRouter', () => {
         // then
         const expectedParams = { page: '2' }
         expect(query.parse()).toEqual(expectedParams)
-      })
-    )
+      }))
 
-    describe(
-      'add',
+    describe('add', () =>
       it('withQueryRouter passes query add function that help to add value in search', () => {
         // given
         const history = createBrowserHistory()
@@ -112,11 +105,9 @@ describe('src | components | pages | hocs | withQueryRouter', () => {
         // then
         const expectedParams = { jours: '0,1,2', 'mots-cles': 'test' }
         expect(query.parse()).toEqual(expectedParams)
-      })
-    )
+      }))
 
-    describe(
-      'remove',
+    describe('remove', () =>
       it('withQueryRouter passes query remove function that help to remove value in search', () => {
         // given
         const history = createBrowserHistory()
@@ -136,7 +127,6 @@ describe('src | components | pages | hocs | withQueryRouter', () => {
         // then
         const expectedParams = { jours: '0', 'mots-cles': 'test' }
         expect(query.parse()).toEqual(expectedParams)
-      })
-    )
+      }))
   })
 })

@@ -92,6 +92,7 @@ describe('src | components | pages | search | SearchFilter', () => {
           dispatch: dispatchMock,
           isVisible: true,
           location: { search: '?page=1&jours=0-1' },
+          onKeywordsEraseClick: jest.fn(),
           query: {
             change: queryChangeMock,
             parse: () => ({
@@ -123,6 +124,7 @@ describe('src | components | pages | search | SearchFilter', () => {
           dispatch: dispatchMock,
           isVisible: true,
           location: { search: '?page=1&jours=0-1' },
+          onKeywordsEraseClick: jest.fn(),
           query: {
             change: queryChangeMock,
             parse: () => ({
