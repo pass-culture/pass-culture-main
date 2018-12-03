@@ -280,11 +280,15 @@ describe('src | components | pages | search | utils', () => {
     let queryParams
     let result
     let expected
+    let cameFromOfferTypesPage
+    let hasReceivedFirstSuccessData
     describe('with keyword search field or filter', () => {
       describe('when there is a keywords but no filters', () => {
         describe('with a search results', () => {
           it('should return number of results occurences with resultatS in plural and keyword searched', () => {
             // given
+            cameFromOfferTypesPage = false
+            hasReceivedFirstSuccessData = true
             items = [{}, {}, {}, {}]
             keywords = 'keyword'
 
@@ -300,7 +304,13 @@ describe('src | components | pages | search | utils', () => {
             }
 
             // when
-            result = searchResultsTitle(keywords, items, queryParams)
+            result = searchResultsTitle(
+              keywords,
+              items,
+              queryParams,
+              cameFromOfferTypesPage,
+              hasReceivedFirstSuccessData
+            )
             expected = '"keyword" : 4 résultats'
 
             // then
@@ -308,6 +318,8 @@ describe('src | components | pages | search | utils', () => {
           })
           it('should return number of results with resultat in singular and keyword searched', () => {
             // given
+            cameFromOfferTypesPage = false
+            hasReceivedFirstSuccessData = true
             items = [{}]
             keywords = 'keyword'
 
@@ -325,7 +337,13 @@ describe('src | components | pages | search | utils', () => {
             }
 
             // when
-            result = searchResultsTitle(keywords, items, queryParams)
+            result = searchResultsTitle(
+              keywords,
+              items,
+              queryParams,
+              cameFromOfferTypesPage,
+              hasReceivedFirstSuccessData
+            )
             expected = '"keyword" : 1 résultat'
 
             // then
@@ -336,6 +354,8 @@ describe('src | components | pages | search | utils', () => {
         describe('without results', () => {
           it('should return should 0 with resultat in singular and keyword searched', () => {
             // given
+            cameFromOfferTypesPage = false
+            hasReceivedFirstSuccessData = true
             items = []
             keywords = 'keyword'
             queryParams = {
@@ -352,7 +372,13 @@ describe('src | components | pages | search | utils', () => {
             }
 
             // when
-            result = searchResultsTitle(keywords, items, queryParams)
+            result = searchResultsTitle(
+              keywords,
+              items,
+              queryParams,
+              cameFromOfferTypesPage,
+              hasReceivedFirstSuccessData
+            )
             expected = '"keyword" : 0 résultat'
 
             // then
@@ -365,6 +391,8 @@ describe('src | components | pages | search | utils', () => {
         describe('with items in results', () => {
           it('should return a title for search results', () => {
             // given
+            cameFromOfferTypesPage = false
+            hasReceivedFirstSuccessData = true
             items = [{}, {}, {}, {}]
             keywords = 'keyword'
 
@@ -380,7 +408,13 @@ describe('src | components | pages | search | utils', () => {
             }
 
             // when
-            result = searchResultsTitle(keywords, items, queryParams)
+            result = searchResultsTitle(
+              keywords,
+              items,
+              queryParams,
+              cameFromOfferTypesPage,
+              hasReceivedFirstSuccessData
+            )
             expected = '"keyword" : 4 résultats'
 
             // then
@@ -391,6 +425,8 @@ describe('src | components | pages | search | utils', () => {
         describe('without items', () => {
           it('should return a title for search results', () => {
             // given
+            cameFromOfferTypesPage = false
+            hasReceivedFirstSuccessData = true
             items = []
             keywords = 'keyword'
             queryParams = {
@@ -405,7 +441,13 @@ describe('src | components | pages | search | utils', () => {
             }
 
             // when
-            result = searchResultsTitle(keywords, items, queryParams)
+            result = searchResultsTitle(
+              keywords,
+              items,
+              queryParams,
+              cameFromOfferTypesPage,
+              hasReceivedFirstSuccessData
+            )
             expected = '"keyword" : 0 résultat'
 
             // then
@@ -427,11 +469,12 @@ describe('src | components | pages | search | utils', () => {
         longitude: null,
         [`mots-cles`]: null,
       }
-      const withPagination = true
 
       describe('with results', () => {
         it('should not return title', () => {
           // given
+          cameFromOfferTypesPage = true
+          hasReceivedFirstSuccessData = true
           items = [{}]
 
           // when
@@ -439,7 +482,8 @@ describe('src | components | pages | search | utils', () => {
             keywords,
             items,
             queryParams,
-            withPagination
+            cameFromOfferTypesPage,
+            hasReceivedFirstSuccessData
           )
           expected = ''
 
@@ -451,6 +495,8 @@ describe('src | components | pages | search | utils', () => {
       describe('without no results', () => {
         it('should return a message that inform that there is no offers for the moment', () => {
           // given
+          cameFromOfferTypesPage = true
+          hasReceivedFirstSuccessData = true
           items = []
 
           // when
@@ -458,7 +504,8 @@ describe('src | components | pages | search | utils', () => {
             keywords,
             items,
             queryParams,
-            withPagination
+            cameFromOfferTypesPage,
+            hasReceivedFirstSuccessData
           )
           expected =
             "Il n'y a pas d'offres dans cette catégorie pour le moment."

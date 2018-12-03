@@ -127,15 +127,13 @@ describe('src | components | pages | SearchPageContent', () => {
 
       // when
       const wrapper = shallow(<SearchPageContent {...initialProps} />)
-      const switchRouteComponent = wrapper.find('Route')
-      const NavResultsHeaderComponent = switchRouteComponent
+      const switchRouteComponent = wrapper
+        .find('Route')
         .at(1)
         .props()
-        .render()[0]
-      const SearchResultsComponent = switchRouteComponent
-        .at(1)
-        .props()
-        .render()[1]
+        .render().props.children
+      const NavResultsHeaderComponent = switchRouteComponent[0]
+      const SearchResultsComponent = switchRouteComponent[1]
 
       // then
       expect(NavResultsHeaderComponent.props.category).toEqual('Jouer')
@@ -143,7 +141,7 @@ describe('src | components | pages | SearchPageContent', () => {
         'Résoudre l’énigme d’un jeu de piste dans votre ville ? Jouer en ligne entre amis ? Découvrir cet univers étrange avec une manette ?'
       )
       expect(SearchResultsComponent.props.keywords).toEqual('Fake')
-      expect(SearchResultsComponent.props.withNavigation).toEqual(true)
+      expect(SearchResultsComponent.props.cameFromOfferTypesPage).toEqual(true)
     })
     it('SearchResults with path="/recherche/resultats"', () => {
       // when
@@ -155,7 +153,7 @@ describe('src | components | pages | SearchPageContent', () => {
         .render()
 
       // then
-      expect(SearchResultsComponent.props.withNavigation).toEqual(false)
+      expect(SearchResultsComponent.props.cameFromOfferTypesPage).toEqual(false)
     })
   })
 
@@ -397,7 +395,7 @@ describe('src | components | pages | SearchPageContent', () => {
           button.props().onClick()
 
           // then
-          expect(queryChangeMock).toHaveBeenCalled()
+          expect(wrapperInstance.state.keywordsValue).toEqual('')
           queryChangeMock.mockClear()
         })
       })

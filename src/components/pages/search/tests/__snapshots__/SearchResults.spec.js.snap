@@ -4,8 +4,8 @@ exports[`src | components | pages | SearchResults snapshot should match snapshot
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <withRouter(_withQueryRouter)
+    cameFromOfferTypesPage={false}
     loadMoreHandler={[MockFunction]}
-    withNavigation={false}
   />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],

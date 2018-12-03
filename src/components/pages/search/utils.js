@@ -63,10 +63,14 @@ export const searchResultsTitle = (
   keywords,
   items,
   queryParams,
-  withNavigation = false
+  cameFromOfferTypesPage = false,
+  hasReceivedFirstSuccessData
 ) => {
+  if (!hasReceivedFirstSuccessData) {
+    return ''
+  }
   let resultTitle
-  if (withNavigation) {
+  if (cameFromOfferTypesPage) {
     resultTitle =
       items.length === 0
         ? "Il n'y a pas d'offres dans cette catégorie pour le moment."

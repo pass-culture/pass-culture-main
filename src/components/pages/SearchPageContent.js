@@ -1,7 +1,7 @@
 import { assignData, requestData } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import { stringify } from 'query-string'
-import React, { PureComponent } from 'react'
+import React, { Fragment, PureComponent } from 'react'
 import { Route, Switch } from 'react-router-dom'
 
 import { Icon } from '../layout/Icon'
@@ -281,30 +281,32 @@ class SearchPageContent extends PureComponent {
           />
           <Route
             path="/recherche/resultats/:categorie"
-            render={() => [
-              <NavResultsHeader
-                category={category}
-                description={description}
-              />,
-              <SearchResults
-                hasMore={hasMore}
-                items={recommendations}
-                keywords={keywords}
-                loadMoreHandler={this.loadMoreHandler}
-                typeSublabels={typeSublabels}
-                withNavigation
-              />,
-            ]}
+            render={() => (
+              <Fragment>
+                <NavResultsHeader
+                  category={category}
+                  description={description}
+                />
+                <SearchResults
+                  cameFromOfferTypesPage
+                  hasMore={hasMore}
+                  items={recommendations}
+                  keywords={keywords}
+                  loadMoreHandler={this.loadMoreHandler}
+                  typeSublabels={typeSublabels}
+                />
+              </Fragment>
+            )}
           />
           <Route
             path="/recherche/resultats"
             render={() => (
               <SearchResults
+                cameFromOfferTypesPage={false}
                 hasMore={hasMore}
                 items={recommendations}
                 keywords={keywords}
                 typeSublabels={typeSublabels}
-                withNavigation={false}
               />
             )}
           />

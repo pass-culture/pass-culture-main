@@ -9,8 +9,8 @@ describe('src | components | pages | SearchResults', () => {
     it('should match snapshot', () => {
       // given
       const props = {
+        cameFromOfferTypesPage: false,
         loadMoreHandler: jest.fn(),
-        withNavigation: false,
       }
 
       // when
@@ -159,11 +159,11 @@ describe('src | components | pages | SearchResults', () => {
         it('should not render title', () => {
           // given
           const props = {
+            cameFromOfferTypesPage: true,
             items,
             keywords: 'fakeKeywords',
             loadMoreHandler: jest.fn(),
             query: { parse: () => ({ page: '1' }) },
-            withNavigation: true,
           }
 
           // when
@@ -183,15 +183,16 @@ describe('src | components | pages | SearchResults', () => {
         it('should render properly the result title with no item', () => {
           // given
           const props = {
+            cameFromOfferTypesPage: true,
             items: [],
             keywords: 'fakeKeywords',
             loadMoreHandler: jest.fn(),
             query: { parse: () => ({ page: '1' }) },
-            withNavigation: true,
           }
 
           // when
           const wrapper = shallow(<SearchResults.WrappedComponent {...props} />)
+          wrapper.setState({ hasReceivedFirstSuccessData: true })
           const resultsTitle = wrapper.find('h2').props()
           const SearchResultItemWrapper = wrapper.find(SearchResultItem)
 
@@ -208,15 +209,16 @@ describe('src | components | pages | SearchResults', () => {
         it('should render properly the result title and item', () => {
           // given
           const props = {
+            cameFromOfferTypesPage: false,
             items,
             keywords: 'fakeKeywords',
             loadMoreHandler: jest.fn(),
             query: { parse: () => ({ page: '1' }) },
-            withNavigation: false,
           }
 
           // when
           const wrapper = shallow(<SearchResults.WrappedComponent {...props} />)
+          wrapper.setState({ hasReceivedFirstSuccessData: true })
           const resultsTitle = wrapper.find('h2').props()
           const SearchResultItemWrapper = wrapper.find(SearchResultItem)
           const item = {
@@ -232,15 +234,16 @@ describe('src | components | pages | SearchResults', () => {
         it('should render properly the result title with no item', () => {
           // given
           const props = {
+            cameFromOfferTypesPage: false,
             items: [],
             keywords: 'fakeKeywords',
             loadMoreHandler: jest.fn(),
             query: { parse: () => ({ page: '1' }) },
-            withNavigation: false,
           }
 
           // when
           const wrapper = shallow(<SearchResults.WrappedComponent {...props} />)
+          wrapper.setState({ hasReceivedFirstSuccessData: true })
           const resultsTitle = wrapper.find('h2').props()
           const SearchResultItemWrapper = wrapper.find(SearchResultItem)
 

@@ -12,6 +12,7 @@ class SearchResults extends PureComponent {
   constructor() {
     super()
     this.state = {
+      hasReceivedFirstSuccessData: false,
       isLoading: false,
     }
   }
@@ -19,7 +20,15 @@ class SearchResults extends PureComponent {
   componentDidUpdate(prevProps) {
     const { items } = this.props
     if (items !== prevProps.items) {
+      this.handleSetHasReceivedFirstSuccessData()
       this.handleShouldCancelLoading()
+    }
+  }
+
+  handleSetHasReceivedFirstSuccessData = () => {
+    const { hasReceivedFirstSuccessData } = this.state
+    if (!hasReceivedFirstSuccessData) {
+      this.setState({ hasReceivedFirstSuccessData: true })
     }
   }
 
@@ -37,7 +46,9 @@ class SearchResults extends PureComponent {
       return
     }
 
-    this.setState({ isLoading: true }, () => query.change({ page }))
+    this.setState({ isLoading: true }, () =>
+      query.change({ page }, { historyMethod: 'replace' })
+    )
   }
 
   render() {
@@ -48,14 +59,15 @@ class SearchResults extends PureComponent {
       keywords,
       query,
     } = this.props
+    const { hasReceivedFirstSuccessData, isLoading } = this.state
     const queryParams = query.parse()
     const resultTitle = searchResultsTitle(
       keywords,
       items,
       queryParams,
-      cameFromOfferTypesPage
+      cameFromOfferTypesPage,
+      hasReceivedFirstSuccessData
     )
-    const { isLoading } = this.state
 
     const reachableThresholdThatTriggersLoadMore = -10
     const unreachableThreshold = -1000
