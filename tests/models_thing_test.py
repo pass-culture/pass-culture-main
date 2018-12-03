@@ -59,15 +59,25 @@ def test_thing_error_when_thing_type_is_offlineOnly_but_has_url(app):
     assert errors.value.errors['url'] == ['Une offre de type Jeux (Biens physiques) ne peut pas être numérique']
 
 
-def test_thing_type_enum_returns_enum_matching_type():
+def test_thing_type_enum_returns_dict_matching_type_enum_value():
     # given
     thing = create_thing(thing_type=ThingType.LIVRE_EDITION)
+    expected_value = {'label': 'Livre — Édition',
+                      'offlineOnly': False,
+                      'onlineOnly': False,
+                      'sublabel': 'Lire',
+                      'description': 'S’abonner à un quotidien d’actualité ?'
+                                     ' À un hebdomadaire humoristique ? '
+                                     'À un mensuel dédié à la nature ? '
+                                     'Acheter une BD ou un manga ? '
+                                     'Ou tout simplement ce livre dont tout le monde parle ?',
+                      'type': 'ThingType.LIVRE_EDITION'}
 
     # when
     offer_type = thing.offerType
 
     # then
-    assert offer_type == ThingType.LIVRE_EDITION
+    assert offer_type == expected_value
 
 
 def test_thing_type_enum_returns_information_in_type_if_does_not_match_enum():

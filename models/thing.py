@@ -61,9 +61,11 @@ class Thing(PcObject,
 
     @property
     def offerType(self):
+        offer_type = {'type': str(self.type)}
         for possible_type in list(ThingType):
             if str(possible_type) == self.type:
-                return possible_type
+                offer_type.update(possible_type.value)
+                return offer_type
 
     @property
     def isDigital(self):
