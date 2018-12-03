@@ -246,7 +246,7 @@ describe('src | components | pages | SearchPageContent', () => {
           // then
           expect(wrapper.state()).toEqual(expected)
         })
-        it('should change pagination', () => {
+        it('should change query', () => {
           // when
           const wrapper = shallow(<SearchPageContent {...initialProps} />)
           wrapper.props().backButton.onClick()
@@ -309,7 +309,7 @@ describe('src | components | pages | SearchPageContent', () => {
           // then
           expect(wrapper.state()).toEqual(expected)
         })
-        it('should change pagination', () => {
+        it('should change query', () => {
           // when
           wrapper.find('form').simulate('submit', event)
 
@@ -328,7 +328,7 @@ describe('src | components | pages | SearchPageContent', () => {
       })
 
       describe('when keywords is an empty string', () => {
-        it('should change pagination with mots-clés setted to null', () => {
+        it('should change query with mots-clés setted to null', () => {
           // given
           const eventEmptyWord = Object.assign(jest.fn(), {
             preventDefault: () => {},

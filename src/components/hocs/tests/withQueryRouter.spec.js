@@ -20,7 +20,7 @@ describe('src | components | pages | hocs | withQueryRouter', () => {
     })
   })
   describe('functions ', () => {
-    it('withQueryRouter passes pagination query object that has parsed location search', () => {
+    it('withQueryRouter gives a parse method helping for having the query params', () => {
       // given
       const history = createBrowserHistory()
       history.push('/test?page=1&mots-cles=test')

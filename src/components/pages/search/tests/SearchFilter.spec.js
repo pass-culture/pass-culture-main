@@ -117,7 +117,7 @@ describe('src | components | pages | search | SearchFilter', () => {
     })
 
     describe('onFilterClick', () => {
-      it('should call hoc pagination change method with the good parameters', () => {
+      it('should call hoc withQueryRouter change method with the good parameters', () => {
         // given
         const props = {
           dispatch: dispatchMock,

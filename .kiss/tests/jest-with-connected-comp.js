@@ -33,7 +33,7 @@ describe('src | components | pages | NavByOfferType', () => {
       }
       const store = mockStore(initialState)
       const props = {
-        pagination: {},
+        query: {},
         title: 'fake Title',
         typeSublabels: [],
       }
