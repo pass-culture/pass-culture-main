@@ -15,6 +15,15 @@ class SearchableType(Enum):
 
 
 class EventType(SearchableType):
+    def as_dict(self):
+        dict_value = {
+            'type': 'Event',
+            'value': str(self),
+        }
+        dict_value.update(self.value)
+        return dict_value
+
+
     CINEMA = {
         'label': "Cinéma (Projections, Séances, Évènements)",
         'offlineOnly': True,
@@ -74,6 +83,15 @@ class EventType(SearchableType):
 
 
 class ThingType(SearchableType):
+    def as_dict(self):
+        dict_value = {
+            'type': 'Thing',
+            'value': str(self),
+        }
+        dict_value.update(self.value)
+
+        return dict_value
+
     AUDIOVISUEL = {
         'label': "Audiovisuel (Films sur supports physiques et VOD)",
         'offlineOnly': False,

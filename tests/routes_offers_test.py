@@ -1,7 +1,6 @@
 """ routes offers tests """
 import secrets
 from datetime import datetime, timedelta
-from pprint import pprint
 
 import pytest
 
@@ -374,17 +373,24 @@ def test_list_offers_returns_list_of_offers_with_thing_or_event_with_type_detail
     stock_thing = create_stock_from_offer(thing_offer, price=0)
     PcObject.check_and_save(user, stock_event, stock_thing)
 
-    expected_thing_type = {'label': "Livre — Édition",
-                           'offlineOnly': False,
-                           'onlineOnly': False,
-                           'sublabel': "Lire",
-                           'description': "S’abonner à un quotidien d’actualité ? À un hebdomadaire humoristique ? À un mensuel dédié à la nature ? Acheter une BD ou un manga ? Ou tout simplement ce livre dont tout le monde parle ?"}
-    expected_event_type = {'label': "Spectacle vivant",
-                           'offlineOnly': True,
-                           'onlineOnly': False,
-                           'sublabel': "Applaudir",
-                           'description': "Suivre un géant de 12 mètres dans la ville ? Rire aux éclats devant un stand up ? Rêver le temps d’un opéra ou d’un spectacle de danse ? Assister à une pièce de théâtre, ou se laisser conter une histoire ?"
-                           }
+    expected_thing_type = {
+        'label': "Livre — Édition",
+        'offlineOnly': False,
+        'onlineOnly': False,
+        'sublabel': "Lire",
+        'description': "S’abonner à un quotidien d’actualité ? À un hebdomadaire humoristique ? À un mensuel dédié à la nature ? Acheter une BD ou un manga ? Ou tout simplement ce livre dont tout le monde parle ?",
+        'type': 'Thing',
+        'value': 'ThingType.LIVRE_EDITION'
+    }
+    expected_event_type = {
+        'label': "Spectacle vivant",
+        'offlineOnly': True,
+        'onlineOnly': False,
+        'sublabel': "Applaudir",
+        'description': "Suivre un géant de 12 mètres dans la ville ? Rire aux éclats devant un stand up ? Rêver le temps d’un opéra ou d’un spectacle de danse ? Assister à une pièce de théâtre, ou se laisser conter une histoire ?",
+        'type': 'Event',
+        'value': 'EventType.SPECTACLE_VIVANT'
+    }
 
     auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
 

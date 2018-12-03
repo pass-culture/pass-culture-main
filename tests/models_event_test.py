@@ -45,15 +45,18 @@ def test_event_type_find_from_sub_labels_returns_several_types_given_several_sub
 def test_event_type_enum_returns_dict_matching_enum_type():
     # given
     event = create_event(event_type=EventType.SPECTACLE_VIVANT)
-    expected_value = {'label': "Spectacle vivant",
-                      'offlineOnly': True,
-                      'onlineOnly': False,
-                      'sublabel': "Applaudir",
-                      'description': "Suivre un géant de 12 mètres dans la ville ? "
-                                     "Rire aux éclats devant un stand up ?"
-                                     " Rêver le temps d’un opéra ou d’un spectacle de danse ? "
-                                     "Assister à une pièce de théâtre, ou se laisser conter une histoire ?",
-                      'type': 'EventType.SPECTACLE_VIVANT'}
+    expected_value = {
+        'label': "Spectacle vivant",
+        'offlineOnly': True,
+        'onlineOnly': False,
+        'sublabel': "Applaudir",
+        'description': "Suivre un géant de 12 mètres dans la ville ? "
+                       "Rire aux éclats devant un stand up ?"
+                       " Rêver le temps d’un opéra ou d’un spectacle de danse ? "
+                       "Assister à une pièce de théâtre, ou se laisser conter une histoire ?",
+        'value': 'EventType.SPECTACLE_VIVANT',
+        'type': 'Event'
+    }
 
     # when
     offer_type = event.offerType

@@ -453,20 +453,29 @@ def test_get_offerer_bookings_returns_bookings_with_thing_or_event_offer_type(ap
 
     PcObject.check_and_save(booking_thing, booking_event, user_offerer)
 
-    expected_audiovisuel_offer_type = {'description': 'Action, science-fiction, documentaire ou comédie sentimentale ? ' \
-                                                      'En salle, en plein air ou bien au chaud chez soi ? ' \
-                                                      'Et si c’était plutôt cette exposition qui allait faire son cinéma ?',
-                                       'label': 'Audiovisuel (Films sur supports physiques et VOD)',
-                                       'offlineOnly': False,
-                                       'onlineOnly': False, 'sublabel': 'Regarder'}
+    expected_audiovisuel_offer_type = {
+        'description': 'Action, science-fiction, documentaire ou comédie sentimentale ? ' \
+                       'En salle, en plein air ou bien au chaud chez soi ? ' \
+                       'Et si c’était plutôt cette exposition qui allait faire son cinéma ?',
+        'label': 'Audiovisuel (Films sur supports physiques et VOD)',
+        'offlineOnly': False,
+        'onlineOnly': False,
+        'sublabel': 'Regarder',
+        'type': 'Thing',
+        'value': 'ThingType.AUDIOVISUEL'
+    }
+
     expected_musees_patrimoine_offer_type = {
         'description': 'Action, science-fiction, documentaire ou comédie sentimentale ? '
                        'En salle, en plein air ou bien au chaud chez soi ? '
                        'Et si c’était plutôt cette exposition qui allait faire son cinéma ?',
         'label': 'Musées — Patrimoine (Expositions, Visites guidées, Activités spécifiques)',
         'offlineOnly': True,
-        'onlineOnly': False, 'sublabel': 'Regarder'
+        'onlineOnly': False, 'sublabel': 'Regarder',
+        'type': 'Event',
+        'value': 'EventType.MUSEES_PATRIMOINE'
     }
+
     auth_request = req_with_auth(email=user_pro.email, password='p@55sw0rd')
 
     # when

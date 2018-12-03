@@ -62,16 +62,19 @@ def test_thing_error_when_thing_type_is_offlineOnly_but_has_url(app):
 def test_thing_type_enum_returns_dict_matching_type_enum_value():
     # given
     thing = create_thing(thing_type=ThingType.LIVRE_EDITION)
-    expected_value = {'label': 'Livre — Édition',
-                      'offlineOnly': False,
-                      'onlineOnly': False,
-                      'sublabel': 'Lire',
-                      'description': 'S’abonner à un quotidien d’actualité ?'
-                                     ' À un hebdomadaire humoristique ? '
-                                     'À un mensuel dédié à la nature ? '
-                                     'Acheter une BD ou un manga ? '
-                                     'Ou tout simplement ce livre dont tout le monde parle ?',
-                      'type': 'ThingType.LIVRE_EDITION'}
+    expected_value = {
+        'label': 'Livre — Édition',
+        'offlineOnly': False,
+        'onlineOnly': False,
+        'sublabel': 'Lire',
+        'description': 'S’abonner à un quotidien d’actualité ?'
+                       ' À un hebdomadaire humoristique ? '
+                       'À un mensuel dédié à la nature ? '
+                       'Acheter une BD ou un manga ? '
+                       'Ou tout simplement ce livre dont tout le monde parle ?',
+        'value': 'ThingType.LIVRE_EDITION',
+        'type': 'Thing'
+    }
 
     # when
     offer_type = thing.offerType

@@ -61,15 +61,19 @@ def test_post_event_returns_201_when_creating_a_new_event(app):
     assert request.status_code == 201
     assert request.json()['durationMinutes'] == 60
     assert request.json()['name'] == 'La pièce de théâtre'
-    assert request.json()['offerType'] == {'description': 'Suivre un géant de 12 mètres dans la ville ? '
-                                                          'Rire aux éclats devant un stand up ? '
-                                                          'Rêver le temps d’un opéra ou d’un spectacle de danse ? '
-                                                          'Assister à une pièce de théâtre, '
-                                                          'ou se laisser conter une histoire ?',
-                                           'label': 'Spectacle vivant',
-                                           'offlineOnly': True,
-                                           'onlineOnly': False,
-                                           'sublabel': 'Applaudir'}
+    assert request.json()['offerType'] == {
+        'description': 'Suivre un géant de 12 mètres dans la ville ? '
+                       'Rire aux éclats devant un stand up ? '
+                       'Rêver le temps d’un opéra ou d’un spectacle de danse ? '
+                       'Assister à une pièce de théâtre, '
+                       'ou se laisser conter une histoire ?',
+        'label': 'Spectacle vivant',
+        'offlineOnly': True,
+        'onlineOnly': False,
+        'sublabel': 'Applaudir',
+        'type': 'Event',
+        'value': 'EventType.SPECTACLE_VIVANT'
+    }
 
 
 @clean_database
