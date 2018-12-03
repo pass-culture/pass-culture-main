@@ -174,7 +174,7 @@ class UploadThumb extends Component {
                 <button
                   onClick={this.decrement}
                   className="change-zoom decrement">
-                  -
+                  <span>-</span>
                 </button>
                 <input
                   ref={this.setZoomInput}
@@ -189,7 +189,7 @@ class UploadThumb extends Component {
                 <button
                   onClick={this.increment}
                   className="change-zoom increment">
-                  +
+                  <span>+</span>
                 </button>
               </div>
             )}

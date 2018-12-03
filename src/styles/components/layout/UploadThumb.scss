@@ -73,21 +73,37 @@
       }
     }
     .zoom {
-      width: calc(100% - 100px);
+      width: calc(100% - 90px);
       cursor: pointer;
     }
 
     .change-zoom {
-      width: 45px;
-      height: 45px;
+      width: 40px;
+      height: 40px;
       margin: 0 0 0 5px;
       display: inline-block;
+      border: 2px solid $red;
+      border-radius: 50%;
+      background: transparent;
+      color: $red;
+      font-size: 40px;
+      padding: 0;
+
+      span {
+        display: block;
+        margin-top: -9px;
+      }
     }
 
     .change-zoom.decrement {
       margin: 0 5px 0 0;
     }
   }
+
+  input[type=range]::-webkit-slider-thumb {
+    background: url(/thumb.png) center no-repeat $red !important;
+  }
+
 
   canvas {
     display: block;
@@ -100,7 +116,7 @@
   display: flex;
   flex: 1;
   width: 68%;
-  margin: auto;
+  margin: 10px auto;
 
   button, input {
     flex-direction: row;

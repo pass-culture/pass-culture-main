@@ -158,3 +158,31 @@ $marginPaddingIntSizes: (
   60
 );
 $textIntSizes: (12, 13, 14, 15, 16, 18, 19, 20, 22, 30, 32, 36, 48, 52, 60, 80);
+
+
+// Input Range
+
+$track-color: #95A5A6;
+$thumb-color: #E60039;
+
+$thumb-radius: 12px !default;
+$thumb-height: 24px !default;
+$thumb-width: 24px !default;
+$thumb-shadow-size: 0;
+$thumb-shadow-blur: 0;
+$thumb-shadow-color: rgba(0, 0, 0, .2) !default;
+$thumb-border-width: 0;
+$thumb-border-color: transparent;
+
+$track-width: 100% !default;
+$track-height: 3px !default;
+$track-shadow-size: 0;
+$track-shadow-blur: 0;
+$track-shadow-color: transparent;
+$track-border-width: 0;
+$track-border-color: transparent;
+
+$track-radius: 0;
+$contrast: 5% !default;
+
+$ie-bottom-track-color: darken($track-color, $contrast) !default;
