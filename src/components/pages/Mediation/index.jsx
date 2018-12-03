@@ -317,6 +317,8 @@ class Mediation extends Component {
                 </div>
               </div>
             </div>
+
+            <hr className="dotted" />
             <div className="row">
               <UploadThumb
                 border={imageUploadBorder}
