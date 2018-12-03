@@ -11,7 +11,7 @@ const mapStateToProps = state => {
   const recommendations = selectRecommendations(state)
   const typeSublabels = selectTypeSublabels(state)
   const typeSublabelsAndDescription = selectTypes(state)
-  const user = { ...state }
+  const { user } = state
   return {
     recommendations,
     typeSublabels,
