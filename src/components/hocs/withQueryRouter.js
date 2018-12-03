@@ -4,7 +4,7 @@ import { stringify } from 'query-string'
 import React, { PureComponent } from 'react'
 import { withRouter } from 'react-router-dom'
 
-import { selectQueryParamsFromQueryString } from '../../selectors/selectQueryParamsFromQueryString'
+import { selectQueryParamsFromQueryString } from '../../helpers/selectQueryParamsFromQueryString'
 
 export const withQueryRouter = WrappedComponent => {
   class _withQueryRouter extends PureComponent {
@@ -23,32 +23,6 @@ export const withQueryRouter = WrappedComponent => {
     clear = () => {
       const { history, location } = this.props
       history.push(location.pathname)
-    }
-
-    reverseOrder = () => {
-      const { orderBy } = this.parse()
-      if (!orderBy) {
-        console.warn('there is no orderBy in the query')
-        return
-      }
-      const [orderName, orderDirection] = orderBy.split('+')
-      this.change({
-        orderBy: [orderName, orderDirection === 'desc' ? 'asc' : 'desc'].join(
-          '+'
-        ),
-      })
-    }
-
-    orderBy = e => {
-      const { orderBy } = this.parse()
-      if (!orderBy) {
-        console.warn('there is no orderBy in the query')
-        return
-      }
-      const [, orderDirection] = orderBy.split('+')
-      this.change({
-        orderBy: [e.target.value, orderDirection].join('+'),
-      })
     }
 
     change = (queryParamsUpdater, changeConfig = {}) => {
