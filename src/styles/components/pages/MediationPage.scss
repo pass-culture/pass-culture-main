@@ -1,0 +1,47 @@
+.thumbnailManager {
+  background-color: #ECF0F1;
+  padding: 18px;
+
+  .section {
+    font-size: 13px;
+
+    h2 {
+      font-size: 16px;
+      margin-bottom: 15px;
+    }
+  }
+
+  ul li {
+    display: flex;
+    flex-direction: row;
+  }
+
+  ul li span.li-number {
+    height: 20px;
+    width: 20px;
+    color: black;
+    background-color: #4CD964;
+    text-align: center;
+    font-weight: bold;
+    margin-right: 10px;
+
+  }
+  ul li:first-child span.li-number {
+    color: white;
+    background-color: #BD10E0;
+  }
+
+  h6 {
+    margin-bottom: 5px;
+  }
+
+}
+
+.crop-explain .column {
+  display: flex;
+  flex-flow: column nowrap;
+}
+
+.crop-explain p {
+  margin-top:auto;
+}

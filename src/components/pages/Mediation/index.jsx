@@ -125,22 +125,30 @@ class Mediation extends Component {
     ]
 
     const secondDimensions = [
-      imageUploadBorder + size / 7.5,
+      imageUploadBorder + size / 8,
       imageUploadBorder + size / 20,
-      size - 2 * (imageUploadBorder + size / 7.5),
+      size - 2 * (imageUploadBorder + size / 8),
       size - 2 * (imageUploadBorder + size / 20),
     ]
 
     const thirdDimensions = [
       imageUploadBorder + size / 6,
-      imageUploadBorder + size / 4.5,
+      imageUploadBorder + size / 4,
       size - 2 * (imageUploadBorder + size / 6),
       size / 2.7 - 2 * imageUploadBorder,
     ]
 
+    const thirdDimensionsBorder = Array.from(thirdDimensions).map(
+      pos => pos + 1
+    )
+    const thirdDimensionsDashDimension = [10, 5]
+
+    // Reset dash
+    ctx.setLineDash([0, 0])
+
     // First violet rectangle
     ctx.beginPath()
-    ctx.lineWidth = '7'
+    ctx.lineWidth = '5'
     ctx.strokeStyle = 'white'
     ctx.rect(...firstDimensions)
     ctx.stroke()
@@ -152,7 +160,7 @@ class Mediation extends Component {
 
     // Second green rectangle
     ctx.beginPath()
-    ctx.lineWidth = '7'
+    ctx.lineWidth = '5'
     ctx.strokeStyle = 'white'
     ctx.rect(...secondDimensions)
     ctx.stroke()
@@ -164,13 +172,15 @@ class Mediation extends Component {
 
     // Third blue rectangle
     ctx.beginPath()
-    ctx.lineWidth = '7'
+    ctx.lineWidth = '1'
+    ctx.setLineDash(thirdDimensionsDashDimension)
     ctx.strokeStyle = 'white'
-    ctx.rect(...thirdDimensions)
+    ctx.rect(...thirdDimensionsBorder)
     ctx.stroke()
     ctx.beginPath()
-    ctx.lineWidth = '3'
-    ctx.strokeStyle = '#54c7fc'
+    ctx.lineWidth = '1'
+    ctx.setLineDash(thirdDimensionsDashDimension)
+    ctx.strokeStyle = 'black'
     ctx.rect(...thirdDimensions)
     ctx.stroke()
   }
@@ -247,48 +257,80 @@ class Mediation extends Component {
 
     const $imageSections = (image || imageUrl) && (
       <Fragment>
-        <div className="section">
-          <p className="mb12">Pour obtenir le meilleur effet:</p>
-          <ul>
-            <li className="mb12">
-              1. Votre visuel doit remplir le cadre violet
-            </li>
-            <li className="mb12">
-              2. Les élèments importants du visuel doivent se situer dans la{' '}
-              <b>
-                zone verte : c'est la première vision de l'offre qu'aura
-                l'utilisateur.
-              </b>
-            </li>
-          </ul>
-          La zone bleue représente le cadrage de l'image dans la fiche détails.
-        </div>
-        <div className="section columns">
-          <div className="column is-three-quarters">
-            <UploadThumb
-              border={imageUploadBorder}
-              borderRadius={0}
-              collectionName="mediations"
-              entityId={get(mediation, 'id')}
-              hasExistingImage={!isNew}
-              height={imageUploadSize}
-              image={image || imageUrl}
-              index={0}
-              width={imageUploadSize}
-              readOnly
-              required
-              onImageChange={this.onImageChange}
-              storeKey="mediations"
-              type="thumb"
-            />
+        <div className="thumbnailManager">
+          <div className="section ">
+            <h2 className="has-text-primary has-text-weight-semibold active">
+              Comment cadrer votre image d’accroche
+            </h2>
+            <ul>
+              <li className="mb12">
+                <span className="li-number">1</span>
+                <span>
+                  Le visuel doit <b>remplir le cadre 1 violet</b>.
+                </span>
+              </li>
+              <li className="mb12">
+                <span className="li-number">2</span>
+                <span>
+                  <b>Les éléments importants</b> (p. ex. un visage, une zone
+                  d’intérêt…) doivent se situer <b>dans le cadre 2 vert.</b>
+                  <br /> C’est la première vision de l'offre qu'aura
+                  l'utilisateur.
+                </span>
+              </li>
+            </ul>
+            La zone en pointillés représente la partie visible de l'image dans
+            la fiche détail de l’offre.
           </div>
-          <div className="column is-one-quarter">
-            <div className="section">
-              <h6>Exemple :</h6>
-              <img
-                src="/mediation-example.png"
-                title="Exemple de cadrage"
-                alt="Explication"
+          <div className="section">
+            <div className="row">
+              <div className="section">
+                <h6>Exemples :</h6>
+                <div className="columns crop-explain">
+                  <div className="column">
+                    <img
+                      src="/bad-crop.png"
+                      title="Exemple de cadrage"
+                      alt="Explication"
+                    />
+                  </div>
+                  <div className="column">
+                    <p>
+                      Mauvais cadrage Les éléments importants sont hors-cadre.
+                    </p>
+                  </div>
+                  <div className="column">
+                    <img
+                      src="/good-crop.png"
+                      title="Exemple de cadrage"
+                      alt="Explication"
+                    />
+                  </div>
+                  <div className="column">
+                    <p>
+                      Cadrage idéal Les éléments importants sont visibles dans
+                      tous les cadres.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="row">
+              <UploadThumb
+                border={imageUploadBorder}
+                borderRadius={0}
+                collectionName="mediations"
+                entityId={get(mediation, 'id')}
+                hasExistingImage={!isNew}
+                height={imageUploadSize}
+                image={image || imageUrl}
+                index={0}
+                width={imageUploadSize}
+                readOnly
+                required
+                onImageChange={this.onImageChange}
+                storeKey="mediations"
+                type="thumb"
               />
             </div>
           </div>
