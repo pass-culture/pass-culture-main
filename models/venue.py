@@ -76,8 +76,6 @@ class Venue(PcObject,
 
     bookingEmail = Column(String(120), nullable=True)
 
-    address = Column(String(200), nullable=True)
-
     postalCode = Column(String(6), nullable=True)
 
     city = Column(String(50), nullable=True)

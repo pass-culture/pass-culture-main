@@ -1,6 +1,6 @@
 import pytest
 
-from models import PcObject
+from models import PcObject, ApiErrors
 from tests.conftest import clean_database
 from utils.test_utils import create_offerer, create_venue, create_thing_offer, create_event_offer
 
@@ -146,3 +146,17 @@ def test_nOffers(app):
 
     # then
     assert n_offers == 5
+
+
+@pytest.mark.standalone
+@clean_database
+def test_offerer_can_have_null_address(app):
+    # given
+    offerer = create_offerer(address=None)
+
+    try:
+        # when
+        PcObject.check_and_save(offerer)
+    except ApiErrors:
+        # then
+        assert False

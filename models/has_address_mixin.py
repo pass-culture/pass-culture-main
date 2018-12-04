@@ -9,7 +9,7 @@ from models.api_errors import ApiErrors
 
 
 class HasAddressMixin(object):
-    address = Column(String(200), nullable=False)
+    address = Column(String(200), nullable=True)
 
     postalCode = Column(String(6), nullable=False)
 

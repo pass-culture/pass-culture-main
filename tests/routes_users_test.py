@@ -463,20 +463,6 @@ class ProSignupTest:
         assert 'name' in error
 
     @clean_database
-    def test_signup_without_offerer_address_returns_status_code_400_and_adress_in_error(self, app):
-        data = BASE_DATA_PRO.copy()
-        del (data['address'])
-
-        # When
-        r_signup = req.post(API_URL + '/users/signup/pro',
-                            json=data, headers={'origin': 'http://localhost:3000'})
-
-        # Then
-        assert r_signup.status_code == 400
-        error = r_signup.json()
-        assert 'address' in error
-
-    @clean_database
     def test_signup_without_offerer_city_returns_status_code_400_and_city_in_error(self, app):
         data = BASE_DATA_PRO.copy()
         del (data['city'])

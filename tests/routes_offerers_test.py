@@ -254,7 +254,7 @@ def test_get_offerers_should_return_all_info_of_validated_offerers_if_param_vali
 
 @pytest.mark.standalone
 @clean_database
-def test_post_offerers_create_an_offerer(app):
+def test_post_offerers_creates_an_offerer_and_one_virtual_venue(app):
     # given
     user = create_user(password='p@55sw0rd')
     PcObject.check_and_save(user)
@@ -277,6 +277,29 @@ def test_post_offerers_create_an_offerer(app):
     virtual_venues = list(filter(lambda v: v['isVirtual'],
                                  response.json()['managedVenues']))
     assert len(virtual_venues) == 1
+
+
+@pytest.mark.standalone
+@clean_database
+def test_post_offerers_without_address_creates_an_offerer(app):
+    # given
+    user = create_user(password='p@55sw0rd')
+    PcObject.check_and_save(user)
+    auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
+    body = {
+        'name': 'Test Offerer',
+        'siren': '418166096',
+        'postalCode': '93100',
+        'city': 'Montreuil'
+    }
+
+    # when
+    response = auth_request.post(API_URL + '/offerers', json=body)
+
+    # then
+    assert response.status_code == 201
+    assert response.json()['siren'] == '418166096'
+    assert response.json()['name'] == 'Test Offerer'
 
 
 @pytest.mark.standalone
