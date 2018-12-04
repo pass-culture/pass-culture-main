@@ -12,7 +12,7 @@ where:
     -e  specify environment to target (default: development)
     -b  specify backend to connect with local app (default: localhost)
     -t  specify version you want to deploy (create tag with this name)
-    c   command that you want to run"
+    -c  command that you want to run"
     exit 0
 fi
 
@@ -37,13 +37,16 @@ fi
 
 if [[ $# -gt 2 ]] && [[ "$1" == "-t" ]]; then
 
-  if [[ "$2" =~ ^v[0-9]+\.[0-9]+\.[0-9]+ ]]; then
+  if [[ "$2" =~ ^[0-9]+\.[0-9]+\.[0-9]+ ]]; then
     TAG_NAME=$2
   else
-    echo "tag format should be Semantic Versioning compliant (vx.x.x)"
+    echo "tag format should be Semantic Versioning compliant x.x.x"
+    exit 1
   fi
 
   shift 2
+else
+  TAG_NAME=${TAG_NAME:-'not-set'}
 fi
 
 CMD="$1"
@@ -64,6 +67,10 @@ fi
 # =============================================
 # Utilities functions
 # =============================================
+RED='\033[0;31m'
+ORANGE='\033[0;33m'
+NO_COLOR='\033[0m'
+
 PRG="$BASH_SOURCE"
 
 while [ -h "$PRG" ] ; do
@@ -94,12 +101,21 @@ function ensure_remote {
   fi
 }
 
+function echo_error {
+  echo -e "${RED}""$1""${NO_COLOR}"
+}
+
+function echo_warning {
+  echo -e "${ORANGE}""$1""${NO_COLOR}"
+}
+
+
 current_branch=$(git symbolic-ref -q HEAD)
 current_branch=${current_branch##refs/heads/}
 
 function exit_restoring_branch {
   git checkout "$current_branch"
-  exit
+  exit 1
 }
 
 # =============================================
@@ -251,14 +267,27 @@ elif [[ "$CMD" == "deploy-backend" ]] \
      || [[ "$CMD" == "deploy-frontend-webapp" ]] \
      || [[ "$CMD" == "deploy-frontend-pro" ]]; then
 
-  ensure_remote "Deploy backend cannot be run on the local environment. Use (for example) \"pc -e staging "$CMD"\"."
+  ensure_remote "Deploy backend cannot be run on the local environment. Use (for example) \"pc -e staging -t X.Y.Z "$CMD"\"."
 
   if [[ ! "$ENV" == 'production' ]] \
         && [[ ! "$ENV" == 'staging' ]] \
         && [[ ! "$ENV" == 'demo' ]] \
+        && [[ ! "$ENV" == 'bats-tests' ]] \
         && [[ ! "$ENV" == 'integration' ]]; then
-     echo "Can only deploy-backend in staging, demo, integration and production"
-     exit
+     echo_error "Can only deploy-backend in staging, demo, integration and production"
+     exit 1
+  fi
+
+  if [[ "$TAG_NAME" == 'not-set' ]]; then
+    echo_error "ERROR: You need to specify an existing tag to deploy"
+    exit_restoring_branch
+  fi
+
+  if [[ ! -z $(git ls-remote --tags origin refs/tags/v"$TAG_NAME") ]]; then
+    git checkout "v$TAG_NAME"
+  else
+    echo_error "ERROR: You need to specify an existing remote tag to deploy"
+    exit_restoring_branch
   fi
 
   if [[ "$CMD" == "deploy-frontend-webapp"  ]]; then
@@ -270,38 +299,34 @@ elif [[ "$CMD" == "deploy-backend" ]] \
   fi
 
   cd "$APP_PATH"
+  echo "$current_branch will be deployed to $ENV"
+  commit_to_deploy=$(git log -n 1 --pretty=format:%H)
 
   git fetch
   git checkout master
-  git pull || exit_restoring_branch
+  git pull origin master || exit_restoring_branch
+  git checkout bats-tests
+  git pull origin bats-tests || exit_restoring_branch
   git checkout staging
-  git pull || exit_restoring_branch
+  git pull origin staging || exit_restoring_branch
   git checkout demo
-  git pull || exit_restoring_branch
+  git pull origin demo || exit_restoring_branch
   git checkout integration
-  git pull || exit_restoring_branch
+  git pull origin integration || exit_restoring_branch
   git checkout production
-  git pull || exit_restoring_branch
-
-  if [[ "$TAG_VERSION" ]] \
-    && [[ ! -z $(git ls-remote --tags origin refs/tags/"$TAG_VERSION") ]]; then
-    git checkout "v$TAG_VERSION"
-  else
-    echo "ERROR: You need to specify an existing tag to deploy"
-    exit_restoring_branch
-  fi
-
-  commit_to_deploy=$(git log -n 1 --pretty=format:%H)
+  git pull origin production || exit_restoring_branch
 
   if [[ $(git tag -l --points-at "$commit_to_deploy" | wc -l) == 0 ]]; then
-    echo "ERROR: Can only deploy tagged commits"
+    echo_error "ERROR: Can only deploy tagged commits"
     exit_restoring_branch
   fi
 
-  if [[ "$ENV" == "production" ]]; then
+  if [[ "$ENV" == "production" ]] \
+    || [[ "$ENV" == "bats-tests" ]]; then
     staging_commit=$(git log -n 1 --pretty=format:%H staging)
+    echo "$staging_commit"
     if [[ "$staging_commit" != "$commit_to_deploy" ]]; then
-      echo "ERROR: Can only deploy in production commits that are also deployed in staging"
+      echo_error "ERROR: Can only deploy in production commits that are also deployed in staging"
       exit_restoring_branch
     fi
   fi
@@ -312,13 +337,20 @@ elif [[ "$CMD" == "deploy-backend" ]] \
 
   if [[ "$CMD" == "deploy-frontend-webapp" ]] \
      || [[ "$CMD" == "deploy-frontend-pro" ]]; then
-    (set -a; source "$APP_PATH/node_modules/pass-culture-shared/config/run_envs/$ENV" && yarn build) || exit
-     ./"$APP_PATH"/scripts/build_redirects.sh
-    netlify deploy -e "$ENV"
+     rm -rf "$APP_PATH"/node_modules "$APP_PATH"/build "$APP_PATH"/public/static/fontello/.fontello.session && yarn install
+     (set -a; source "$APP_PATH/node_modules/pass-culture-shared/config/run_envs/$ENV" && yarn build) || exit
+
+     url_is_set=$(cat build/static/js/*.js | grep -E backend.passculture*.beta.gouv.fr)
+     if [ -z "$url_is_set" ]; then
+        echo_error "URL not found in build artifact. Problem with environment variables"
+        exit_restoring_branch
+     fi
+     netlify deploy -e "$ENV"
   fi
 
-  if [[ "$ENV" == 'production' ]]; then
-     echo "/!\\ You just deployed to production. Was the version also delivered to integration ?"
+  if [[ "$ENV" == 'production' ]]\
+    || [[ "$ENV" == "bats-tests" ]]; then
+     echo_warning "/!\\ You just deployed to production. Was the version also delivered to integration ?"
   fi
 
   exit_restoring_branch
