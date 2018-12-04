@@ -1,6 +1,7 @@
 .thumbnailManager {
   background-color: #ECF0F1;
   padding: 18px;
+  margin-bottom: 10px;
 
   hr {
     margin: 1rem 0;
@@ -8,6 +9,7 @@
 
   canvas {
     background: url(/pattern-checker.png) repeat white;
+    border: 1px solid #C7C7CC;
   }
 
   .section {
