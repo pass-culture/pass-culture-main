@@ -383,6 +383,7 @@ ShallowWrapper {
         </form>,
         <withRouter(_withQueryRouter)
           isVisible={false}
+          onKeywordsEraseClick={[Function]}
         />,
         <Switch
           location={
@@ -694,6 +695,7 @@ ShallowWrapper {
         "nodeType": "function",
         "props": Object {
           "isVisible": false,
+          "onKeywordsEraseClick": [Function],
         },
         "ref": null,
         "rendered": null,
@@ -834,6 +836,7 @@ ShallowWrapper {
           </form>,
           <withRouter(_withQueryRouter)
             isVisible={false}
+            onKeywordsEraseClick={[Function]}
           />,
           <Switch
             location={
@@ -1145,6 +1148,7 @@ ShallowWrapper {
           "nodeType": "function",
           "props": Object {
             "isVisible": false,
+            "onKeywordsEraseClick": [Function],
           },
           "ref": null,
           "rendered": null,
