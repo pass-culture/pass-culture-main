@@ -21,4 +21,5 @@ def upgrade():
 
 
 def downgrade():
+    op.execute("UPDATE offerer SET address='' WHERE address IS NULL")
     op.alter_column('offerer', 'address', nullable=False)
