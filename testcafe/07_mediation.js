@@ -97,6 +97,7 @@ test('Je peux creer une accroche', async t => {
     .click(urlButton)
     .typeText(creditInput, 'deridet')
     .click(submitButton)
+    .wait(3000)
 
   // Then
   await t

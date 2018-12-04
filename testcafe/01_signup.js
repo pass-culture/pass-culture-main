@@ -109,7 +109,7 @@ fixture`01_04 SignupPage | Clique sur le lien de validation de compte reçu par 
 
 test('Je suis redirigé sur la page de connexion avec un message de confirmation', async t => {
   // when
-  await t.navigateTo('/inscription/validation/AZERTY123')
+  await t.navigateTo('/inscription/validation/AZERTY123').wait(500)
 
   // then
   const location = await t.eval(() => window.location)
