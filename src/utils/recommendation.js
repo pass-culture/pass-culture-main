@@ -13,6 +13,4 @@ export function setUniqIdOnRecommendation(recommendation) {
   return Object.assign({ uniqId }, recommendation)
 }
 
-const toto = ''
-
-export default toto
+export default setUniqIdOnRecommendation
