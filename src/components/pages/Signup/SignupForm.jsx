@@ -1,11 +1,6 @@
 import React, { PureComponent } from 'react'
 import { NavLink, withRouter } from 'react-router-dom'
-import {
-  Field,
-  Form,
-  showNotification,
-  SubmitButton,
-} from 'pass-culture-shared'
+import { Field, Form, SubmitButton } from 'pass-culture-shared'
 import { compose } from 'redux'
 import { connect } from 'react-redux'
 import get from 'lodash.get'
