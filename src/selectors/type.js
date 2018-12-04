@@ -6,7 +6,7 @@ function mapArgsToCachedKey(state, isVirtual, offerType) {
   return `${isVirtual || ''}${offerType || ''}`
 }
 
-export default createCachedSelector(
+export const typeSelector = createCachedSelector(
   typesSelector,
   (state, isVirtual, offerTypeValue) => offerTypeValue,
   (types, offerTypeValue) =>

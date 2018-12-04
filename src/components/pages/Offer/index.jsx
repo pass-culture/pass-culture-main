@@ -35,7 +35,7 @@ import selectShowSubOptionsByShowType from 'selectors/selectShowSubOptionsByShow
 import stocksSelector from 'selectors/stocks'
 import thingSelector from 'selectors/thing'
 import typesSelector from 'selectors/types'
-import typeSelector from 'selectors/type'
+import { typeSelector } from 'selectors/type'
 import venueSelector from 'selectors/venue'
 import venuesSelector from 'selectors/venues'
 import { musicOptions, showOptions } from 'utils/edd'

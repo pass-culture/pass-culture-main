@@ -55,7 +55,188 @@
     ],
     "providers": [],
     "things": [],
-    "types": [],
+    "types": [
+      {
+        "id": 0,
+        "description": "Action, science-fiction, documentaire ou comédie sentimentale ? En salle, en plein air ou bien au chaud chez soi ? Et si c’était plutôt cette exposition qui allait faire son cinéma ?",
+        "label": "Cinéma (Projections, Séances, Évènements)",
+        "offlineOnly": true,
+        "onlineOnly": false,
+        "sublabel": "Regarder",
+        "type": "Event",
+        "value": "EventType.CINEMA"
+      },
+      {
+        "id": 1,
+        "description": "Parfois une simple rencontre peut changer une vie...",
+        "label": "Conférence — Débat — Dédicace",
+        "offlineOnly": true,
+        "onlineOnly": false,
+        "sublabel": "Rencontrer",
+        "type": "Event",
+        "value": "EventType.CONFERENCE_DEBAT_DEDICACE"
+      },
+      {
+        "id": 2,
+        "description": "Résoudre l’énigme d’un jeu de piste dans votre ville ? Jouer en ligne entre amis ? Découvrir cet univers étrange avec une manette ?",
+        "label": "Jeux (Évenements, Rencontres, Concours)",
+        "offlineOnly": true,
+        "onlineOnly": false,
+        "sublabel": "Jouer",
+        "type": "Event",
+        "value": "EventType.JEUX"
+      },
+      {
+        "id": 3,
+        "description": "Plutôt rock, rap ou classique ? Sur un smartphone avec des écouteurs ou entre amis au concert ?",
+        "label": "Musique (Concerts, Festivals)",
+        "offlineOnly": true,
+        "onlineOnly": false,
+        "sublabel": "Écouter",
+        "type": "Event",
+        "value": "EventType.MUSIQUE"
+      },
+      {
+        "id": 4,
+        "description": "Action, science-fiction, documentaire ou comédie sentimentale ? En salle, en plein air ou bien au chaud chez soi ? Et si c’était plutôt cette exposition qui allait faire son cinéma ?",
+        "label": "Musées — Patrimoine (Expositions, Visites guidées, Activités spécifiques)",
+        "offlineOnly": true,
+        "onlineOnly": false,
+        "sublabel": "Regarder",
+        "type": "Event",
+        "value": "EventType.MUSEES_PATRIMOINE"
+      },
+      {
+        "id": 5,
+        "description": "Jamais osé monter sur les planches ? Tenter d’apprendre la guitare, le piano ou la photographie ? Partir cinq jours découvrir un autre monde ? Bricoler dans un fablab, ou pourquoi pas, enregistrer votre premier titre ?",
+        "label": "Pratique Artistique (Stages ponctuels)",
+        "offlineOnly": true,
+        "onlineOnly": false,
+        "sublabel": "Pratiquer",
+        "type": "Event",
+        "value": "EventType.PRATIQUE_ARTISTIQUE"
+      },
+      {
+        "id": 6,
+        "description": "Suivre un géant de 12 mètres dans la ville ? Rire aux éclats devant un stand up ? Rêver le temps d’un opéra ou d’un spectacle de danse ? Assister à une pièce de théâtre, ou se laisser conter une histoire ?",
+        "label": "Spectacle vivant",
+        "offlineOnly": true,
+        "onlineOnly": false,
+        "sublabel": "Applaudir",
+        "type": "Event",
+        "value": "EventType.SPECTACLE_VIVANT"
+      },
+      {
+        "id": 7,
+        "description": "Action, science-fiction, documentaire ou comédie sentimentale ? En salle, en plein air ou bien au chaud chez soi ? Et si c’était plutôt cette exposition qui allait faire son cinéma ?",
+        "label": "Audiovisuel (Films sur supports physiques et VOD)",
+        "offlineOnly": false,
+        "onlineOnly": false,
+        "sublabel": "Regarder",
+        "type": "Thing",
+        "value": "ThingType.AUDIOVISUEL"
+      },
+      {
+        "id": 8,
+        "description": "Action, science-fiction, documentaire ou comédie sentimentale ? En salle, en plein air ou bien au chaud chez soi ? Et si c’était plutôt cette exposition qui allait faire son cinéma ?",
+        "label": "Cinéma (Abonnements)",
+        "offlineOnly": true,
+        "onlineOnly": false,
+        "sublabel": "Regarder",
+        "type": "Thing",
+        "value": "ThingType.CINEMA_ABO"
+      },
+      {
+        "id": 9,
+        "description": "Résoudre l’énigme d’un jeu de piste dans votre ville ? Jouer en ligne entre amis ? Découvrir cet univers étrange avec une manette ?",
+        "label": "Jeux (Abonnements)",
+        "offlineOnly": true,
+        "onlineOnly": false,
+        "sublabel": "Jouer",
+        "type": "Thing",
+        "value": "ThingType.JEUX_ABO"
+      },
+      {
+        "id": 10,
+        "description": "Résoudre l’énigme d’un jeu de piste dans votre ville ? Jouer en ligne entre amis ? Découvrir cet univers étrange avec une manette ?",
+        "label": "Jeux (Biens physiques)",
+        "offlineOnly": true,
+        "onlineOnly": false,
+        "sublabel": "Jouer",
+        "type": "Thing",
+        "value": "ThingType.JEUX"
+      },
+      {
+        "id": 11,
+        "description": "Résoudre l’énigme d’un jeu de piste dans votre ville ? Jouer en ligne entre amis ? Découvrir cet univers étrange avec une manette ?",
+        "label": "Jeux Vidéo",
+        "offlineOnly": false,
+        "onlineOnly": true,
+        "sublabel": "Jouer",
+        "type": "Thing",
+        "value": "ThingType.JEUX_VIDEO"
+      },
+      {
+        "id": 12,
+        "description": "S’abonner à un quotidien d’actualité ? À un hebdomadaire humoristique ? À un mensuel dédié à la nature ? Acheter une BD ou un manga ? Ou tout simplement ce livre dont tout le monde parle ?",
+        "label": "Livre — Édition",
+        "offlineOnly": false,
+        "onlineOnly": false,
+        "sublabel": "Lire",
+        "type": "Thing",
+        "value": "ThingType.LIVRE_EDITION"
+      },
+      {
+        "id": 13,
+        "description": "Action, science-fiction, documentaire ou comédie sentimentale ? En salle, en plein air ou bien au chaud chez soi ? Et si c’était plutôt cette exposition qui allait faire son cinéma ?",
+        "label": "Musées — Patrimoine (Abonnements, Visites libres)",
+        "offlineOnly": true,
+        "onlineOnly": false,
+        "sublabel": "Regarder",
+        "type": "Thing",
+        "value": "ThingType.MUSEES_PATRIMOINE_ABO"
+      },
+      {
+        "id": 14,
+        "description": "Plutôt rock, rap ou classique ? Sur un smartphone avec des écouteurs ou entre amis au concert ?",
+        "label": "Musique (Abonnements concerts)",
+        "offlineOnly": true,
+        "onlineOnly": false,
+        "sublabel": "Écouter",
+        "type": "Thing",
+        "value": "ThingType.MUSIQUE_ABO"
+      },
+      {
+        "id": 15,
+        "description": "Plutôt rock, rap ou classique ? Sur un smartphone avec des écouteurs ou entre amis au concert ?",
+        "label": "Musique (sur supports physiques ou en ligne)",
+        "offlineOnly": false,
+        "onlineOnly": false,
+        "sublabel": "Écouter",
+        "type": "Thing",
+        "value": "ThingType.MUSIQUE"
+      },
+      {
+        "id": 16,
+        "description": "Jamais osé monter sur les planches ? Tenter d’apprendre la guitare, le piano ou la photographie ? Partir cinq jours découvrir un autre monde ? Bricoler dans un fablab, ou pourquoi pas, enregistrer votre premier titre ?",
+        "label": "Pratique Artistique (Abonnements)",
+        "offlineOnly": true,
+        "onlineOnly": false,
+        "sublabel": "Pratiquer",
+        "type": "Thing",
+        "value": "ThingType.PRATIQUE_ARTISTIQUE_ABO"
+      },
+      {
+        "id": 17,
+        "description": "S’abonner à un quotidien d’actualité ? À un hebdomadaire humoristique ? À un mensuel dédié à la nature ? Acheter une BD ou un manga ? Ou tout simplement ce livre dont tout le monde parle ?",
+        "label": "Presse (Abonnements)",
+        "offlineOnly": false,
+        "onlineOnly": true,
+        "sublabel": "Lire",
+        "type": "Thing",
+        "value": "ThingType.PRESSE_ABO"
+      }
+    ],
     "venues": [
       {
         "id": "BQ",
