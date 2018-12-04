@@ -431,8 +431,26 @@ class Mediation extends Component {
         <HeroSection title={`${isNew ? 'Créez' : 'Modifiez'} une accroche`}>
           <p className="subtitle">
             Ajoutez un visuel marquant pour mettre en avant cette offre.
+
+          </p>
+          <p>
+            <b>L'accroche permet d'afficher votre offre "à la une" de l'app, </b>
+            et la rend visuellement plus attrayante.
+            C'est une image (et bientôt une phrase ou une vidéo) intrigante, percutante, séduisante...
+            <br /> en un mot : accrocheuse.
+          </p>
+          <p>
+            Les accroches font la spécificité du Pass Culture.
+            Prenez le temps de les choisir avec soin !
+
+          </p>
+          <p>
+            Le fichier doit peser <b>100Ko minimum.</b>
+          {/*
             <br />
-            <span className="label">Le fichier doit peser 100Ko minimum.</span>
+            Utilisateurs avancés : vous pouvez
+            <a>télécharger ici les gabarits Illustrator et Photoshop.</a>
+          */}
           </p>
         </HeroSection>
 
