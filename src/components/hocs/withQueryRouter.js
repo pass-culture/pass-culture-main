@@ -13,6 +13,7 @@ export const withQueryRouter = WrappedComponent => {
       this.query = {
         add: this.add,
         change: this.change,
+        clear: this.clear,
         orderBy: this.orderBy,
         parse: this.parse,
         remove: this.remove,

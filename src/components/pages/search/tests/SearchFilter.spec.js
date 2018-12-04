@@ -21,6 +21,7 @@ describe('src | components | pages | search | SearchFilter', () => {
       // given
       const props = {
         isVisible: true,
+        onKeywordsEraseClick: jest.fn(),
         query: {},
       }
 
@@ -39,6 +40,7 @@ describe('src | components | pages | search | SearchFilter', () => {
         // given
         const props = {
           isVisible: false,
+          onKeywordsEraseClick: jest.fn(),
           query: {},
         }
 
@@ -66,7 +68,7 @@ describe('src | components | pages | search | SearchFilter', () => {
           <Provider store={store}>
             <Router history={history}>
               <Route path="/test">
-                <SearchFilter isVisible />
+                <SearchFilter isVisible onKeywordsEraseClick={jest.fn()} />
               </Route>
             </Router>
           </Provider>
