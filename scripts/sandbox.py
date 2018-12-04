@@ -11,9 +11,13 @@ from sandboxes.scripts.save_sandbox import save_sandbox
                     '--name',
                     help='Sandbox name',
                     default="classic")
-def sandbox(name):
+@app.manager.option('-c',
+                    '--clean',
+                    help='Clean database first',
+                    default=True)
+def sandbox(name, clean):
     try:
-        save_sandbox(name)
+        save_sandbox(name, clean)
     except Exception as e:
         print('ERROR: ' + str(e))
         traceback.print_tb(e.__traceback__)
