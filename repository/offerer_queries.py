@@ -74,3 +74,8 @@ def find_all_pending_validation():
 
 def find_first_by_user_offerer_id(user_offerer_id):
     return Offerer.query.join(UserOfferer).filter_by(id=user_offerer_id).first()
+
+
+def find_filtered_offerers():
+
+    return True

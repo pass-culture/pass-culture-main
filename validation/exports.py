@@ -52,6 +52,13 @@ def check_get_venues_params(param: {}) -> bool:
     return True
 
 
+def check_get_offerers_params():
+
+    return True
+
+
+
+
 def _check_date_format(date: str) -> bool:
     if re.search('^(\d+){4}-(\d+){2}-(\d+){2}$', date):
        return True

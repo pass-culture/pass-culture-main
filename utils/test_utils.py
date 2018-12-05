@@ -347,7 +347,7 @@ def create_stock(price=10, available=10, booking_limit_datetime=None):
     return stock
 
 
-def create_stock_with_thing_offer(offerer, venue, thing_offer, price=10, available=50,
+def create_stock_with_thing_offer(offerer, venue, thing_offer=None, price=10, available=50,
                                   booking_email='offer.booking.email@test.com', soft_deleted=False):
     stock = Stock()
     stock.offerer = offerer
@@ -474,11 +474,12 @@ def create_offerer(
         validation_token=None,
         iban=None,
         bic=None,
-        idx=None
+        idx=None,
+        is_active=True
 ):
     offerer = Offerer()
     offerer.siren = siren
-    offerer.isActive = True
+    offerer.isActive = is_active
     offerer.address = address
     offerer.postalCode = postal_code
     offerer.city = city
@@ -625,6 +626,19 @@ def create_venue_activity(venue, table_name, verb, issued_at=datetime.utcnow):
                  'siret': venue.siret,
                  'departementCode': venue.departementCode,
                  'postalCode': venue.postalCode}
+    activity.changed_data = variables
+    return activity
+
+
+def create_offerer_activity(offerer, table_name, verb, issued_at=datetime.utcnow):
+    Activity = versioning_manager.activity_cls
+    activity = Activity()
+    activity.issued_at = issued_at
+    activity.table_name = table_name
+    activity.verb = verb
+    variables = {'id': offerer.id,
+                 'name': offerer.name,
+                 'siren': offerer.siren}
     activity.changed_data = variables
     return activity
 
