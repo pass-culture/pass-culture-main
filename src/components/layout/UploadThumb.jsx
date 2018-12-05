@@ -5,6 +5,16 @@ import AvatarEditor from 'react-avatar-editor'
 import Dropzone from 'react-dropzone'
 import { connect } from 'react-redux'
 
+export function computeNewZoom(current, min, max, step, factor, direction) {
+  const zoom = current + step * factor * direction
+
+  if (zoom >= min && zoom <= max) {
+    return zoom
+  }
+
+  return current
+}
+
 class UploadThumb extends Component {
   constructor() {
     super()
@@ -107,13 +117,19 @@ class UploadThumb extends Component {
   changeZoom(direction) {
     const factor = 10 // Slider step is too low for button usage
     const step = parseFloat(this.zoomInput.getAttribute('step'))
-    const zoom = this.state.zoom + step * factor * direction
-
     const min = parseFloat(this.zoomInput.getAttribute('min'))
     const max = parseFloat(this.zoomInput.getAttribute('max'))
-    if (zoom >= min && zoom <= max) {
-      this.setState({ zoom })
-    }
+
+    const zoom = computeNewZoom(
+      this.state.zoom,
+      min,
+      max,
+      step,
+      factor,
+      direction
+    )
+
+    this.setState({ zoom })
   }
 
   increment = () => this.changeZoom(1)
