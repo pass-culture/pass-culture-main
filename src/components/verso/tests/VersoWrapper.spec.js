@@ -16,7 +16,7 @@ describe('src | components | verso | RawVersoWrapper', () => {
         dispatchMakeDraggable: dispatchMakeDraggableMock,
         dispatchMakeUndraggable: dispatchMakeUndraggableMock,
         draggable: true,
-        isFlipped: true,
+        isShownDetails: true,
       }
 
       // when
@@ -38,7 +38,7 @@ describe('src | components | verso | RawVersoWrapper', () => {
             dispatchMakeDraggable: dispatchMakeDraggableMock,
             dispatchMakeUndraggable: dispatchMakeUndraggableMock,
             draggable: true,
-            isFlipped: true,
+            isShownDetails: true,
           }
 
           // when
@@ -61,7 +61,7 @@ describe('src | components | verso | RawVersoWrapper', () => {
             dispatchMakeDraggable: dispatchMakeDraggableMock,
             dispatchMakeUndraggable: dispatchMakeUndraggableMock,
             draggable: true,
-            isFlipped: true,
+            isShownDetails: true,
           }
 
           // when

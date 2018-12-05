@@ -1,51 +1,51 @@
-import verso, {
-  flip,
+import offerDetails, {
+  closeOfferDetails,
   flipUnflippable,
   makeDraggable,
   makeUndraggable,
-  unFlip,
-  CLOSE_VERSO,
+  showOfferDetails,
+  CLOSE_DETAILS_VIEW,
   MAKE_DRAGGABLE,
   MAKE_UNDRAGGABLE,
-  SHOW_UNFLIPPABLE_VERSO,
-  SHOW_VERSO,
-} from '../verso'
+  SHOW_UNFLIPPABLE_DETAILS_VIEW,
+  SHOW_DETAILS_VIEW,
+} from '../offerDetails'
 
-describe('src | reducers | verso  ', () => {
+describe('src | reducers | offerDetails  ', () => {
   const state = []
   it('should return the initial state by default', () => {
     // given
     const action = {}
 
     // when
-    const updatedState = verso(state, action)
+    const updatedState = offerDetails(state, action)
 
     // then
     expect(updatedState).toEqual(state)
   })
 
-  describe('When action.type is CLOSE_VERSO', () => {
+  describe('When action.type is CLOSE_DETAILS_VIEW', () => {
     it('should return correct update state', () => {
       // given
-      const action = { type: CLOSE_VERSO }
+      const action = { type: CLOSE_DETAILS_VIEW }
 
       // when
-      const queriesReducer = verso(state, action)
-      const expected = { isFlipped: false, unFlippable: false }
+      const queriesReducer = offerDetails(state, action)
+      const expected = { isShownDetails: false, unFlippable: false }
 
       // then
       expect(queriesReducer).toEqual(expected)
     })
   })
 
-  describe('When action.type is SHOW_VERSO', () => {
+  describe('When action.type is SHOW_DETAILS_VIEW', () => {
     it('should return correct update state', () => {
       // given
-      const action = { type: SHOW_VERSO }
+      const action = { type: SHOW_DETAILS_VIEW }
 
       // when
-      const queriesReducer = verso(state, action)
-      const expected = { isFlipped: true }
+      const queriesReducer = offerDetails(state, action)
+      const expected = { isShownDetails: true }
 
       // then
       expect(queriesReducer).toEqual(expected)
@@ -58,7 +58,7 @@ describe('src | reducers | verso  ', () => {
       const action = { type: MAKE_UNDRAGGABLE }
 
       // when
-      const queriesReducer = verso(state, action)
+      const queriesReducer = offerDetails(state, action)
       const expected = { draggable: false }
 
       // then
@@ -72,7 +72,7 @@ describe('src | reducers | verso  ', () => {
       const action = { type: MAKE_DRAGGABLE }
 
       // when
-      const queriesReducer = verso(state, action)
+      const queriesReducer = offerDetails(state, action)
       const expected = { draggable: true }
 
       // then
@@ -80,17 +80,17 @@ describe('src | reducers | verso  ', () => {
     })
   })
 
-  describe('When action.type is SHOW_UNFLIPPABLE_VERSO', () => {
+  describe('When action.type is SHOW_UNFLIPPABLE_DETAILS_VIEW', () => {
     it('should return correct update state', () => {
       // given
       const action = {
-        type: SHOW_UNFLIPPABLE_VERSO,
+        type: SHOW_UNFLIPPABLE_DETAILS_VIEW,
       }
 
       // when
-      const queriesReducer = verso(state, action)
+      const queriesReducer = offerDetails(state, action)
       const expected = {
-        isFlipped: true,
+        isShownDetails: true,
         unFlippable: true,
       }
 
@@ -100,12 +100,12 @@ describe('src | reducers | verso  ', () => {
   })
 
   describe('src | actions', () => {
-    describe('flip', () => {
+    describe('showOfferDetails', () => {
       it('should return correct action type', () => {
         // when
-        const action = flip({})
+        const action = showOfferDetails({})
         const expected = {
-          type: SHOW_VERSO,
+          type: SHOW_DETAILS_VIEW,
         }
 
         // then
@@ -117,7 +117,7 @@ describe('src | reducers | verso  ', () => {
         // when
         const action = flipUnflippable({})
         const expected = {
-          type: SHOW_UNFLIPPABLE_VERSO,
+          type: SHOW_UNFLIPPABLE_DETAILS_VIEW,
         }
 
         // then
@@ -151,12 +151,12 @@ describe('src | reducers | verso  ', () => {
       })
     })
 
-    describe('unFlip', () => {
+    describe('closeOfferDetails', () => {
       it('should return correct action type', () => {
         // when
-        const action = unFlip({})
+        const action = closeOfferDetails({})
         const expected = {
-          type: CLOSE_VERSO,
+          type: CLOSE_DETAILS_VIEW,
         }
 
         // then

@@ -10,7 +10,7 @@ import { getHeaderColor } from '../../utils/colors'
 import currentRecommendationSelector from '../../selectors/currentRecommendation'
 import { ROOT_PATH } from '../../utils/config'
 
-import { makeDraggable, makeUndraggable } from '../../reducers/verso'
+import { makeDraggable, makeUndraggable } from '../../reducers/offerDetails'
 
 export class RawVersoWrapper extends Component {
   constructor(props) {
@@ -25,9 +25,9 @@ export class RawVersoWrapper extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    const { isFlipped } = this.props
+    const { isShownDetails } = this.props
     const shouldScroll =
-      !isFlipped && prevProps.isFlipped && this.$header.scrollTo
+      !isShownDetails && prevProps.isShownDetails && this.$header.scrollTo
     if (!shouldScroll) return
     this.$header.scrollTo(0, 0)
   }
@@ -115,7 +115,7 @@ RawVersoWrapper.propTypes = {
   dispatchMakeDraggable: PropTypes.func.isRequired,
   dispatchMakeUndraggable: PropTypes.func.isRequired,
   draggable: PropTypes.bool.isRequired,
-  isFlipped: PropTypes.bool.isRequired,
+  isShownDetails: PropTypes.bool.isRequired,
 }
 
 export default compose(
@@ -130,8 +130,8 @@ export default compose(
       )
       return {
         currentRecommendation,
-        draggable: state.verso.draggable,
-        isFlipped: state.verso.isFlipped,
+        draggable: state.offerDetails.draggable,
+        isShownDetails: state.offerDetails.isShownDetails,
       }
     },
     {

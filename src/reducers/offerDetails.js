@@ -1,44 +1,44 @@
 // ACTIONS
-export const CLOSE_VERSO = 'CLOSE_VERSO'
+export const CLOSE_DETAILS_VIEW = 'CLOSE_DETAILS_VIEW'
 export const LOCATION_CHANGE = '@@router/LOCATION_CHANGE'
 export const MAKE_DRAGGABLE = 'MAKE_DRAGGABLE'
 export const MAKE_UNDRAGGABLE = 'MAKE_UNDRAGGABLE'
-export const SHOW_UNFLIPPABLE_VERSO = 'SHOW_UNFLIPPABLE_VERSO'
-export const SHOW_VERSO = 'SHOW_VERSO'
+export const SHOW_UNFLIPPABLE_DETAILS_VIEW = 'SHOW_UNFLIPPABLE_DETAILS_VIEW'
+export const SHOW_DETAILS_VIEW = 'SHOW_DETAILS_VIEW'
 
 // INITIAL STATE
 const initialState = {
   draggable: true,
   isActive: false,
-  isFlipped: false,
+  isShownDetails: false,
   unFlippable: false,
 }
 
 // REDUCER
 function verso(state = initialState, action) {
   switch (action.type) {
-    case CLOSE_VERSO:
-      return Object.assign({}, state, { isFlipped: false, unFlippable: false })
-    case SHOW_VERSO:
-      return Object.assign({}, state, { isFlipped: true })
+    case CLOSE_DETAILS_VIEW:
+      return Object.assign({}, state, { isShownDetails: false, unFlippable: false })
+    case SHOW_DETAILS_VIEW:
+      return Object.assign({}, state, { isShownDetails: true })
     case MAKE_UNDRAGGABLE:
       return Object.assign({}, state, { draggable: false })
     case MAKE_DRAGGABLE:
       return Object.assign({}, state, { draggable: true })
-    case SHOW_UNFLIPPABLE_VERSO:
-      return Object.assign({}, state, { isFlipped: true, unFlippable: true })
+    case SHOW_UNFLIPPABLE_DETAILS_VIEW:
+      return Object.assign({}, state, { isShownDetails: true, unFlippable: true })
     default:
       return state
   }
 }
 
 // ACTION CREATORS
-export function flip() {
-  return { type: SHOW_VERSO }
+export function showOfferDetails() {
+  return { type: SHOW_DETAILS_VIEW }
 }
 
 export function flipUnflippable() {
-  return { type: SHOW_UNFLIPPABLE_VERSO }
+  return { type: SHOW_UNFLIPPABLE_DETAILS_VIEW }
 }
 
 export function makeDraggable() {
@@ -49,8 +49,8 @@ export function makeUndraggable() {
   return { type: MAKE_UNDRAGGABLE }
 }
 
-export function unFlip() {
-  return { type: CLOSE_VERSO }
+export function closeOfferDetails() {
+  return { type: CLOSE_DETAILS_VIEW }
 }
 
 // default

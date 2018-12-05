@@ -9,7 +9,7 @@ ShallowWrapper {
     dispatchMakeDraggable={[MockFunction]}
     dispatchMakeUndraggable={[MockFunction]}
     draggable={true}
-    isFlipped={true}
+    isShownDetails={true}
   >
     Object {
       "addMatchers": [Function],

@@ -9,7 +9,11 @@ import withSizes from 'react-sizes'
 
 import Card from './Card'
 import DeckNavigation from './DeckNavigation'
-import { flip, flipUnflippable, unFlip } from '../../../reducers/verso'
+import {
+  closeOfferDetails,
+  showOfferDetails,
+  flipUnflippable,
+} from '../../../reducers/offerDetails'
 import currentRecommendationSelector from '../../../selectors/currentRecommendation'
 import nextRecommendationSelector from '../../../selectors/nextRecommendation'
 import previousRecommendationSelector from '../../../selectors/previousRecommendation'
@@ -60,7 +64,7 @@ export class RawDeck extends Component {
   componentWillUnmount() {
     Logger.log('DECK ---> componentWillUnmount')
     const { dispatch } = this.props
-    dispatch(unFlip())
+    dispatch(closeOfferDetails())
     if (this.readTimeout) clearTimeout(this.readTimeout)
     if (this.noDataTimeout) clearTimeout(this.noDataTimeout)
   }
@@ -89,16 +93,16 @@ export class RawDeck extends Component {
   }
 
   handleGoNext = () => {
-    const { history, isFlipped, nextRecommendation } = this.props
-    if (!nextRecommendation || isFlipped) return
+    const { history, isShownDetails, nextRecommendation } = this.props
+    if (!nextRecommendation || isShownDetails) return
     const { offerId, mediationId } = nextRecommendation
     history.push(`/decouverte/${offerId || 'tuto'}/${mediationId || ''}`)
     this.handleRefreshNext()
   }
 
   handleGoPrevious = () => {
-    const { history, isFlipped, previousRecommendation } = this.props
-    if (!previousRecommendation || isFlipped) return
+    const { history, isShownDetails, previousRecommendation } = this.props
+    if (!previousRecommendation || isShownDetails) return
     const { offerId, mediationId } = previousRecommendation
     history.push(`/decouverte/${offerId || 'tuto'}/${mediationId || ''}`)
     this.handleRefreshPrevious()
@@ -137,18 +141,84 @@ export class RawDeck extends Component {
     }))
   }
 
+  handleSetDateRead = prevProps => {
+    const {
+      currentRecommendation,
+      dispatch,
+      isShownDetails,
+      readTimeout,
+    } = this.props
+    const { isRead } = this.state
+
+    const isSameReco =
+      !currentRecommendation ||
+      (prevProps &&
+        prevProps.currentRecommendation &&
+        currentRecommendation &&
+        prevProps.currentRecommendation.id === currentRecommendation.id)
+    // we don't need to go further if we are still on the same reco
+    if (isSameReco) return
+
+    const isCurrentReco =
+      this.currentReadRecommendationId !== currentRecommendation.id
+    // we need to delete the readTimeout in the case
+    // where we were on a previous reco
+    // and we just swipe to another before triggering the end of the readTimeout
+    if (isCurrentReco) {
+      clearTimeout(this.readTimeout)
+      delete this.readTimeout
+    }
+
+    // if the reco is not read yet
+    // we trigger a timeout in the end of which
+    // we will request a dateRead Patch if we are still
+    // on the same reco
+    if (
+      !this.readTimeout &&
+      !isShownDetails &&
+      !currentRecommendation.dateRead
+    ) {
+      // this.setState({ isRead: false })
+      this.currentReadRecommendationId = currentRecommendation.id
+      this.readTimeout = setTimeout(() => {
+        if (currentRecommendation && !currentRecommendation.dateRead) {
+          dispatch(
+            requestData(
+              'PATCH',
+              `recommendations/${currentRecommendation.id}`,
+              {
+                body: {
+                  dateRead: moment().toISOString(),
+                },
+              }
+            )
+          )
+          // this.setState({ isRead: true })
+          clearTimeout(this.readTimeout)
+          delete this.readTimeout
+        }
+      }, readTimeout)
+    } else if (
+      !isRead &&
+      currentRecommendation &&
+      currentRecommendation.dateRead
+    ) {
+      // this.setState({ isRead: true })
+    }
+  }
+
   handleFlip = () => {
     console.log('°°°°°°° handleFlip °°°°°°°°')
 
     const { dispatch, isFlipDisabled } = this.props
     if (isFlipDisabled) return
-    dispatch(flip())
+    dispatch(showOfferDetails())
   }
 
   handleUnFlip = () => {
     const { dispatch, unFlippable } = this.props
     if (unFlippable) return
-    dispatch(unFlip())
+    dispatch(closeOfferDetails())
   }
 
   handleUrlFlip = (history, previousHistory = false) => {
@@ -174,7 +244,7 @@ export class RawDeck extends Component {
   renderDraggableCards() {
     const {
       currentRecommendation,
-      isFlipped,
+      isShownDetails,
       nextRecommendation,
       previousRecommendation,
       width,
@@ -186,7 +256,7 @@ export class RawDeck extends Component {
       x: -1 * width * index,
       y: 0,
     }
-    const draggableBounds = (isFlipped && {}) || {
+    const draggableBounds = (isShownDetails && {}) || {
       bottom: 0,
       left: position.x - width,
       right: position.x + width,
@@ -201,7 +271,7 @@ export class RawDeck extends Component {
         onStop={this.onStop}
         bounds={draggableBounds}
         enableUserSelectHack={false}
-        axis={isFlipped ? 'none' : 'exclude'}
+        axis={isShownDetails ? 'none' : 'exclude'}
       >
         <div className="is-overlay">
           <div className="inner is-relative">
@@ -220,15 +290,15 @@ export class RawDeck extends Component {
       height,
       nextRecommendation,
       isFlipDisabled,
-      isFlipped,
+      isShownDetails,
       previousRecommendation,
       unFlippable,
     } = this.props
 
     // console.log('****** PROPS ********', this.props)
 
-    const showCloseButton = isFlipped && !unFlippable
-    const showNavigation = !isFlipped || isFlipDisabled
+    const showCloseButton = isShownDetails && !unFlippable
+    const showNavigation = !isShownDetails || isFlipDisabled
 
     return (
       <div id="deck" className="is-clipped is-relative">
@@ -275,7 +345,7 @@ RawDeck.propTypes = {
   history: PropTypes.object.isRequired,
   horizontalSlideRatio: PropTypes.number,
   isFlipDisabled: PropTypes.bool.isRequired,
-  isFlipped: PropTypes.bool.isRequired,
+  isShownDetails: PropTypes.bool.isRequired,
   nextLimit: PropTypes.number.isRequired,
   nextRecommendation: PropTypes.object,
   previousLimit: PropTypes.number.isRequired,
@@ -301,12 +371,12 @@ const mapStateToProps = (state, ownProps) => {
 
   return {
     currentRecommendation,
-    draggable: state.verso.draggable,
+    draggable: state.offerDetails.draggable,
     isEmpty: get(state, 'loading.config.isEmpty'),
     isFlipDisabled:
       !currentRecommendation ||
       (typeof tutoIndex === 'number' && thumbCount === 1),
-    isFlipped: state.verso.isFlipped,
+    isShownDetails: state.offerDetails.isShownDetails,
     nextLimit:
       recommendations &&
       (PREVIOUS_NEXT_LIMIT >= recommendations.length - 1
@@ -324,7 +394,7 @@ const mapStateToProps = (state, ownProps) => {
       mediationId
     ),
     recommendations,
-    unFlippable: state.verso.unFlippable,
+    unFlippable: state.offerDetails.unFlippable,
   }
 }
 

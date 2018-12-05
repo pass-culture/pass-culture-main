@@ -6,14 +6,14 @@ import { connect } from 'react-redux'
 import ProfilePicture from './ProfilePicture'
 import { toggleMainMenu } from '../../reducers/menu'
 
-const Footer = ({ borderTop, colored, isFlipped, onTop, dispatch }) => {
+const Footer = ({ borderTop, colored, isShownDetails, onTop, dispatch }) => {
   const maybeColored = {}
   if (colored) {
     maybeColored.colored = 'colored'
   }
   const style = {}
   if (!colored) {
-    style.display = isFlipped ? 'none' : 'block'
+    style.display = isShownDetails ? 'none' : 'block'
   }
   const cssclass = classnames('footer', {
     bordered: borderTop,
@@ -44,10 +44,12 @@ Footer.propTypes = {
   borderTop: PropTypes.bool.isRequired,
   colored: PropTypes.bool,
   dispatch: PropTypes.func.isRequired,
-  isFlipped: PropTypes.bool.isRequired,
+  isShownDetails: PropTypes.bool.isRequired,
   onTop: PropTypes.bool,
 }
 
-const mapStateToProps = state => ({ isFlipped: state.verso.isFlipped })
+const mapStateToProps = state => ({
+  isShownDetails: state.offerDetails.isShownDetails,
+})
 
 export default connect(mapStateToProps)(Footer)

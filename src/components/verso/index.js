@@ -11,13 +11,13 @@ import VersoWrapper from './VersoWrapper'
 import currentRecommendationSelector from '../../selectors/currentRecommendation'
 import { THUMBS_URL } from '../../utils/config'
 
-const Verso = ({ currentRecommendation, isFlipped }) => {
+const Verso = ({ currentRecommendation, isShownDetails }) => {
   const { mediation } = currentRecommendation || {}
   const { tutoIndex } = mediation || {}
   return (
     <div
       className={classnames('verso', {
-        flipped: isFlipped,
+        flipped: isShownDetails,
       })}
     >
       <VersoWrapper className="with-padding-top">
@@ -44,7 +44,7 @@ Verso.defaultProps = {
 
 Verso.propTypes = {
   currentRecommendation: PropTypes.object,
-  isFlipped: PropTypes.bool.isRequired,
+  isShownDetails: PropTypes.bool.isRequired,
 }
 
 export default compose(
@@ -57,7 +57,7 @@ export default compose(
         offerId,
         mediationId
       ),
-      isFlipped: state.verso.isFlipped,
+      isShownDetails: state.offerDetails.isShownDetails,
     }
   })
 )(Verso)

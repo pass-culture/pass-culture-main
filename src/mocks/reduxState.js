@@ -15553,7 +15553,7 @@ const state = {
   verso: {
     draggable: true,
     isActive: false,
-    isFlipped: true,
+    isShownDetails: true,
     unFlippable: false,
   },
   _persist: {

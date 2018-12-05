@@ -18,7 +18,7 @@ ShallowWrapper {
     }
     horizontalSlideRatio={0.2}
     isFlipDisabled={false}
-    isFlipped={false}
+    isShownDetails={false}
     match={Object {}}
     nextLimit={50}
     nextRecommendation={null}

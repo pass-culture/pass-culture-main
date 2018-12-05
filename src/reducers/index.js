@@ -6,7 +6,7 @@ import geolocation from './geolocation'
 import { menu } from './menu'
 import { share } from './share'
 import splash from './splash'
-import verso from './verso'
+import offerDetails from './offerDetails'
 
 const rootReducer = combineReducers({
   data,
@@ -16,10 +16,10 @@ const rootReducer = combineReducers({
   loading,
   menu,
   modal,
+  offerDetails,
   share,
   splash,
   user,
-  verso,
 })
 
 export default rootReducer

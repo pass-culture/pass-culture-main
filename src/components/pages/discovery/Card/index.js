@@ -24,7 +24,7 @@ export class RawCard extends PureComponent {
     const {
       handleClickRecommendation,
       handleReadRecommendation,
-      isFlipped,
+      isShownDetails,
       recommendation,
       position,
     } = this.props
@@ -42,7 +42,7 @@ export class RawCard extends PureComponent {
     if (!isCurrent) return
 
     const shouldRequest =
-      !prevProps.isFlipped && isFlipped && !recommendation.isClicked
+      !prevProps.isShownDetails && isShownDetails && !recommendation.isClicked
     if (!shouldRequest) return
 
     handleClickRecommendation(recommendation)
@@ -73,14 +73,15 @@ export class RawCard extends PureComponent {
 }
 
 RawCard.defaultProps = {
-  isFlipped: false,
+  isShownDetails: false,
   recommendation: null,
 }
 
 RawCard.propTypes = {
   handleClickRecommendation: PropTypes.func.isRequired,
   handleReadRecommendation: PropTypes.func.isRequired,
-  isFlipped: PropTypes.bool,
+
+  isShownDetails: PropTypes.bool,
   position: PropTypes.string.isRequired,
   recommendation: PropTypes.object,
   width: PropTypes.number.isRequired,

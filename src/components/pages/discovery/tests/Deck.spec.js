@@ -19,7 +19,7 @@ describe('src | components | pages | discovery | Index | DiscoveryPage', () => 
       },
     },
     isFlipDisabled: false,
-    isFlipped: false,
+    isShownDetails: false,
     match: {},
     nextLimit: 50,
     previousLimit: 40,
@@ -67,7 +67,7 @@ describe('src | components | pages | discovery | Index | DiscoveryPage', () => 
               },
             },
             isFlipDisabled: false,
-            isFlipped: false,
+            isShownDetails: false,
             match: {
               params: {
                 mediationId: 'HM',
@@ -112,7 +112,7 @@ describe('src | components | pages | discovery | Index | DiscoveryPage', () => 
               },
             },
             isFlipDisabled: false,
-            isFlipped: false,
+            isShownDetails: false,
             match: {
               params: {
                 mediationId: 'HM',
@@ -148,7 +148,7 @@ describe('src | components | pages | discovery | Index | DiscoveryPage', () => 
               },
             },
             isFlipDisabled: false,
-            isFlipped: false,
+            isShownDetails: false,
             match: {
               params: {
                 mediationId: 'HM',
@@ -186,7 +186,7 @@ describe('src | components | pages | discovery | Index | DiscoveryPage', () => 
               },
             },
             isFlipDisabled: false,
-            isFlipped: false,
+            isShownDetails: false,
             match: {
               params: {
                 mediationId: 'HM',
@@ -208,7 +208,7 @@ describe('src | components | pages | discovery | Index | DiscoveryPage', () => 
                 search: '?to=verso',
               },
             },
-            isFlipped: true,
+            isShownDetails: true,
           }
 
           // when
@@ -240,7 +240,7 @@ describe('src | components | pages | discovery | Index | DiscoveryPage', () => 
               },
             },
             isFlipDisabled: false,
-            isFlipped: false,
+            isShownDetails: false,
             match: {
               params: {
                 mediationId: 'HM',

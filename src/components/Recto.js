@@ -13,7 +13,7 @@ import { IS_DEV } from '../utils/config'
 // FIXME -> move to pass-culture-shared
 const noop = () => {}
 
-const Recto = ({ isFlipped, recommendation }) => {
+const Recto = ({ isShownDetails, recommendation }) => {
   const { dateRead, mediation, id, index, isClicked, offer, thumbUrl } =
     recommendation || {}
 
@@ -24,7 +24,11 @@ const Recto = ({ isFlipped, recommendation }) => {
   }
   return (
     <div className="recto">
-      <Thumb src={thumbUrl} withMediation={mediation} translated={isFlipped} />
+      <Thumb
+        src={thumbUrl}
+        withMediation={mediation}
+        translated={isShownDetails}
+      />
       {IS_DEV && (
         <div className="debug debug-recto">
           <div>
@@ -59,7 +63,7 @@ Recto.defaultProps = {
 }
 
 Recto.propTypes = {
-  isFlipped: PropTypes.bool.isRequired,
+  isShownDetails: PropTypes.bool.isRequired,
   recommendation: PropTypes.object,
 }
 
@@ -82,7 +86,7 @@ export default compose(
     const { mediationId, offerId } = ownProps.match.params
     const recoSelector = getSelectorByCardPosition(ownProps.position)
     return {
-      isFlipped: state.verso.isFlipped,
+      isShownDetails: state.offerDetails.isShownDetails,
       recommendation: recoSelector(state, offerId, mediationId),
     }
   })
