@@ -12,6 +12,10 @@ const selectRecommendations = createSelector(
   state => state.geolocation.latitude,
   state => state.geolocation.longitude,
   (recommendations, latitude, longitude) => {
+    console.log(
+      '>>>>>>>>> IN SELECTOR >>> recommendations',
+      recommendations.length
+    )
     // RECOMMENDATION MUST HAVE MEDIATION AND/OR OFFER CHILDREN
     // AND THAT IS A CRITERION TO MAKE THEM UNIQ
     let filteredRecommendations = recommendations.map(setUniqIdOnRecommendation)

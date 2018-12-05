@@ -5,7 +5,7 @@ ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <RawDeck
     backButton={true}
-    currentRecommendation={null}
+    currentRecommendation={Object {}}
     dispatch={[MockFunction]}
     draggable={true}
     height={947}
@@ -25,7 +25,11 @@ ShallowWrapper {
     previousLimit={40}
     previousRecommendation={null}
     readTimeout={2000}
-    recommendations={Array []}
+    recommendations={
+      Array [
+        Object {},
+      ]
+    }
     unFlippable={false}
     verticalSlideRatio={0.1}
     width={500}
@@ -105,7 +109,7 @@ ShallowWrapper {
           handleGoNext={null}
           handleGoPrevious={null}
           height={947}
-          recommendation={null}
+          recommendation={Object {}}
         />,
       ],
       "className": "is-clipped is-relative",
@@ -225,7 +229,7 @@ ShallowWrapper {
           "handleGoNext": null,
           "handleGoPrevious": null,
           "height": 947,
-          "recommendation": null,
+          "recommendation": Object {},
         },
         "ref": null,
         "rendered": null,
@@ -302,7 +306,7 @@ ShallowWrapper {
             handleGoNext={null}
             handleGoPrevious={null}
             height={947}
-            recommendation={null}
+            recommendation={Object {}}
           />,
         ],
         "className": "is-clipped is-relative",
@@ -422,7 +426,7 @@ ShallowWrapper {
             "handleGoNext": null,
             "handleGoPrevious": null,
             "height": 947,
-            "recommendation": null,
+            "recommendation": Object {},
           },
           "ref": null,
           "rendered": null,

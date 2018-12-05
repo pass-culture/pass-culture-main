@@ -25,35 +25,36 @@ export class RawDeck extends Component {
 
   componentDidMount() {
     Logger.log('DECK ---> componentDidMount')
-    console.log('DECK ---> componentDidMount')
     const { currentRecommendation, history, recommendations } = this.props
+
+    const isRecommendations =
+      !recommendations || recommendations.length === 0 || !currentRecommendation
+
     this.handleUrlFlip(history)
-    console.log(
-      'DECK ---> componentDidMount : currentRecommendation',
-      currentRecommendation
-    )
-    console.log('DECK ---> componentDidMount : history', history)
-    if (!recommendations || !currentRecommendation) {
-      this.handleRefreshedData()
+    if (isRecommendations) {
+      this.handleRefreshedDraggableKey()
     }
   }
 
   componentDidUpdate(previousProps) {
     Logger.log('DECK ---> componentDidUpdate', previousProps)
-    console.log('**** DECK ---> componentDidUpdate')
     const { currentRecommendation, history, recommendations } = this.props
-    console.log('history', history)
-    this.handleUrlFlip(history, previousProps.history)
-    if (
+
+    const isRecommendations =
       !recommendations ||
       !previousProps.recommendations ||
       recommendations === previousProps.recommendations ||
       !currentRecommendation ||
       !previousProps.currentRecommendation ||
       currentRecommendation.index === previousProps.currentRecommendation.index
-    ) {
-      // this.handleRefreshedData()
-    }
+    console.log('isRecommendations', isRecommendations)
+
+    this.handleUrlFlip(history, previousProps.history)
+
+    // if (isRecommendations) {
+    // BUGGE > en boucle
+    // this.handleRefreshedDraggableKey()
+    // }
   }
 
   componentWillUnmount() {
@@ -73,6 +74,7 @@ export class RawDeck extends Component {
       horizontalSlideRatio,
       currentRecommendation,
     } = this.props
+
     const index = get(currentRecommendation, 'index', 0)
     const offset = (data.x + width * index) / width
     if (draggable && data.y > height * verticalSlideRatio) {
@@ -128,14 +130,16 @@ export class RawDeck extends Component {
     }
   }
 
-  handleRefreshedData = () => {
-    console.log("Adieu l'ami, salut le trésor !")
-    // this.setState(previousState => ({
-    //   refreshKey: previousState.refreshKey + 1,
-    // }))
+  handleRefreshedDraggableKey = () => {
+    console.log("handleRefreshedDraggableKey >> Adieu l'ami, salut le trésor !")
+    this.setState(previousState => ({
+      refreshKey: previousState.refreshKey + 1,
+    }))
   }
 
   handleFlip = () => {
+    console.log('°°°°°°° handleFlip °°°°°°°°')
+
     const { dispatch, isFlipDisabled } = this.props
     if (isFlipDisabled) return
     dispatch(flip())
@@ -148,13 +152,13 @@ export class RawDeck extends Component {
   }
 
   handleUrlFlip = (history, previousHistory = false) => {
-    console.log('°°°°°°° handleUrlFlip history : °°°°°°°°', history)
+    // console.log('°°°°°°° handleUrlFlip history : °°°°°°°°', history)
     // console.log(
     //   'history.location ',
     //   history.location.search.indexOf('to=verso')
     // )
-    console.log('previousHistory : ', previousHistory)
-    Logger.log('DECK ---> handleUrlFlip')
+    // console.log('previousHistory : ', previousHistory)
+    // Logger.log('DECK ---> handleUrlFlip')
     const { dispatch } = this.props
     const isNewUrl =
       !previousHistory ||
