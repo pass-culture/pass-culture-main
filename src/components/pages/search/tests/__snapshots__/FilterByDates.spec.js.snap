@@ -127,7 +127,7 @@ ShallowWrapper {
             </label>
             <withSizes(DatePickerField)
               className="item fs19 py5 px7"
-              minDate="Dec 4th 18"
+              minDate="Dec 5th 18"
               name="pick-by-date-filter"
               onChange={[Function]}
               popperRefContainer={
@@ -245,7 +245,7 @@ ShallowWrapper {
             </label>
             <withSizes(DatePickerField)
               className="item fs19 py5 px7"
-              minDate="Dec 4th 18"
+              minDate="Dec 5th 18"
               name="pick-by-date-filter"
               onChange={[Function]}
               popperRefContainer={
@@ -341,7 +341,7 @@ ShallowWrapper {
               ],
               <withSizes(DatePickerField)
                 className="item fs19 py5 px7"
-                minDate="Dec 4th 18"
+                minDate="Dec 5th 18"
                 name="pick-by-date-filter"
                 onChange={[Function]}
                 popperRefContainer={
@@ -599,7 +599,7 @@ ShallowWrapper {
               "nodeType": "class",
               "props": Object {
                 "className": "item fs19 py5 px7",
-                "minDate": "Dec 4th 18",
+                "minDate": "Dec 5th 18",
                 "name": "pick-by-date-filter",
                 "onChange": [Function],
                 "popperRefContainer": Object {
@@ -735,7 +735,7 @@ ShallowWrapper {
               </label>
               <withSizes(DatePickerField)
                 className="item fs19 py5 px7"
-                minDate="Dec 4th 18"
+                minDate="Dec 5th 18"
                 name="pick-by-date-filter"
                 onChange={[Function]}
                 popperRefContainer={
@@ -853,7 +853,7 @@ ShallowWrapper {
               </label>
               <withSizes(DatePickerField)
                 className="item fs19 py5 px7"
-                minDate="Dec 4th 18"
+                minDate="Dec 5th 18"
                 name="pick-by-date-filter"
                 onChange={[Function]}
                 popperRefContainer={
@@ -949,7 +949,7 @@ ShallowWrapper {
                 ],
                 <withSizes(DatePickerField)
                   className="item fs19 py5 px7"
-                  minDate="Dec 4th 18"
+                  minDate="Dec 5th 18"
                   name="pick-by-date-filter"
                   onChange={[Function]}
                   popperRefContainer={
@@ -1207,7 +1207,7 @@ ShallowWrapper {
                 "nodeType": "class",
                 "props": Object {
                   "className": "item fs19 py5 px7",
-                  "minDate": "Dec 4th 18",
+                  "minDate": "Dec 5th 18",
                   "name": "pick-by-date-filter",
                   "onChange": [Function],
                   "popperRefContainer": Object {

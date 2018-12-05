@@ -439,10 +439,10 @@ describe('src | components | pages | SearchPageContent', () => {
           .find('#search-filter-menu-toggle-button')
           .find('Icon')
 
-        it.skip('should show ico-filter', () => {
+        it('should show ico-filter', () => {
           expect(toogleIcon.props('svg')).toEqual({ svg: 'ico-filter' })
         })
-        it.skip('isFilterVisible state is false', () => {
+        it('isFilterVisible state is false', () => {
           const expected = {
             hasMore: false,
             isFilterVisible: false,
@@ -487,9 +487,9 @@ describe('src | components | pages | SearchPageContent', () => {
       })
 
       describe('When there is some filters in search', () => {
-        it('should show ico-filter-active icone', () => {
+        it('should show ico-filter-active icon', () => {
           // given
-          initialProps.query.params = {
+          initialProps.query.parse = () => ({
             categories: '%C3%89couter,Pratiquer',
             date: '2018-09-25T09:38:20.576Z',
             days: null,
@@ -500,7 +500,7 @@ describe('src | components | pages | SearchPageContent', () => {
             [`mots-cles`]: null,
             page: '2',
             types: null,
-          }
+          })
 
           // when
           const wrapper = shallow(<SearchPageContent {...initialProps} />)

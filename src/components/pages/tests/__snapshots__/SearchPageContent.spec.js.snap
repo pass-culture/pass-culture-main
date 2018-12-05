@@ -375,7 +375,7 @@ ShallowWrapper {
                 type="button"
               >
                 <Icon
-                  svg="ico-filter-active"
+                  svg="ico-filter"
                 />
               </button>
             </div>
@@ -467,7 +467,7 @@ ShallowWrapper {
                 type="button"
               >
                 <Icon
-                  svg="ico-filter-active"
+                  svg="ico-filter"
                 />
               </button>
             </div>
@@ -519,7 +519,7 @@ ShallowWrapper {
                   type="button"
                 >
                   <Icon
-                    svg="ico-filter-active"
+                    svg="ico-filter"
                   />
                 </button>
               </div>,
@@ -649,7 +649,7 @@ ShallowWrapper {
                   type="button"
                 >
                   <Icon
-                    svg="ico-filter-active"
+                    svg="ico-filter"
                   />
                 </button>,
                 "className": "flex-0 text-center flex-rows flex-center pb12 ",
@@ -662,7 +662,7 @@ ShallowWrapper {
                 "nodeType": "host",
                 "props": Object {
                   "children": <Icon
-                    svg="ico-filter-active"
+                    svg="ico-filter"
                   />,
                   "className": "no-border no-background no-outline ",
                   "onClick": [Function],
@@ -674,7 +674,7 @@ ShallowWrapper {
                   "key": undefined,
                   "nodeType": "function",
                   "props": Object {
-                    "svg": "ico-filter-active",
+                    "svg": "ico-filter",
                   },
                   "ref": null,
                   "rendered": null,
@@ -828,7 +828,7 @@ ShallowWrapper {
                   type="button"
                 >
                   <Icon
-                    svg="ico-filter-active"
+                    svg="ico-filter"
                   />
                 </button>
               </div>
@@ -920,7 +920,7 @@ ShallowWrapper {
                   type="button"
                 >
                   <Icon
-                    svg="ico-filter-active"
+                    svg="ico-filter"
                   />
                 </button>
               </div>
@@ -972,7 +972,7 @@ ShallowWrapper {
                     type="button"
                   >
                     <Icon
-                      svg="ico-filter-active"
+                      svg="ico-filter"
                     />
                   </button>
                 </div>,
@@ -1102,7 +1102,7 @@ ShallowWrapper {
                     type="button"
                   >
                     <Icon
-                      svg="ico-filter-active"
+                      svg="ico-filter"
                     />
                   </button>,
                   "className": "flex-0 text-center flex-rows flex-center pb12 ",
@@ -1115,7 +1115,7 @@ ShallowWrapper {
                   "nodeType": "host",
                   "props": Object {
                     "children": <Icon
-                      svg="ico-filter-active"
+                      svg="ico-filter"
                     />,
                     "className": "no-border no-background no-outline ",
                     "onClick": [Function],
@@ -1127,7 +1127,7 @@ ShallowWrapper {
                     "key": undefined,
                     "nodeType": "function",
                     "props": Object {
-                      "svg": "ico-filter-active",
+                      "svg": "ico-filter",
                     },
                     "ref": null,
                     "rendered": null,
