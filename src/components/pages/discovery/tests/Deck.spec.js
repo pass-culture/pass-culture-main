@@ -38,12 +38,10 @@ describe('src | components | pages | discovery | Index | DiscoveryPage', () => 
       expect(wrapper).toMatchSnapshot()
     })
   })
-  // describe('render', () => {
-  //
-  // })
   describe('react functions', () => {
     describe('constructor', () => {
       it('should initialize state correctly', () => {
+        // when
         const wrapper = shallow(<RawDeck {...initialProps} />)
         const expected = {
           refreshKey: 0,
@@ -92,6 +90,8 @@ describe('src | components | pages | discovery | Index | DiscoveryPage', () => 
             .mockImplementation(() => {})
           wrapper.setProps(props)
           // setProps() make the componentDidMount after instanciating the spy
+
+          // then
           expect(spy).toHaveBeenCalledWith(history, history)
         })
       })
@@ -161,16 +161,12 @@ describe('src | components | pages | discovery | Index | DiscoveryPage', () => 
             unFlippable: false,
             width: 500,
           }
+
           // when
           const wrapper = shallow(<RawDeck {...props} />)
-          // const wrapperInstance = wrapper.instance()
-          // // const spy = jest
-          //   .spyOn(wrapperInstance, 'handleRefreshedDraggableKey')
-          //   .mockImplementation(() => {})
-          expect(wrapper.state()).toEqual({ refreshKey: 1 })
           wrapper.setProps(props)
-          // setProps() make the componentDidMount after instanciating the spy
-          // expect(spy).toHaveBeenCalled()
+
+          // then
           expect(wrapper.state()).toEqual({ refreshKey: 1 })
         })
       })
@@ -214,6 +210,8 @@ describe('src | components | pages | discovery | Index | DiscoveryPage', () => 
             },
             isFlipped: true,
           }
+
+          // when
           const wrapper = shallow(<RawDeck {...props} />)
           const wrapperInstance = wrapper.instance()
           const spy = jest
@@ -224,14 +222,8 @@ describe('src | components | pages | discovery | Index | DiscoveryPage', () => 
           const { history } = newProps
           const previousHistory = props.history
 
+          // then
           expect(spy).toHaveBeenCalledWith(history, previousHistory)
-          // expect(dispatchMock.mock.calls.length).toBe(1)
-
-          // expect(dispatchMock.mock.calls[0][0]).toEqual(
-          // expectedRequest
-          // )
-
-          // expect(dispatchMock).toHaveBeenCalledWith(expectedRequest)
         })
       })
       describe.skip('When there is no recommendations or currentRecommendation available', () => {
@@ -269,14 +261,27 @@ describe('src | components | pages | discovery | Index | DiscoveryPage', () => 
             .mockImplementation(() => {})
           wrapper.setProps(props)
           // setProps() make the componentDidMount after instanciating the spy
+
+          // then
           expect(spy).toHaveBeenCalled()
         })
       })
     })
-    describe('componentWillUnmount', () => {
+    describe.only('componentWillUnmount', () => {
       // C'est quand on passe de la page découverte à mes bookings par exemple
-      it('should dispatch unFlip', () => {})
-      it('should clearTimeout', () => {
+      it('should dispatch unFlip', () => {
+        // when
+        const wrapper = shallow(<RawDeck {...initialProps} />)
+
+        wrapper.unmount()
+
+        // then
+        expect(dispatchMock.mock.calls.length).toBe(1)
+        expect(dispatchMock).toHaveBeenCalledWith({
+          type: 'CLOSE_DETAILS_VIEW',
+        })
+      })
+      xit('should clearTimeout', () => {
         // 2 cases
       })
     })
@@ -301,33 +306,7 @@ describe('src | components | pages | discovery | Index | DiscoveryPage', () => 
       it('', () => {})
     })
     describe('handleSetDateRead', () => {
-      it('', () => {
-        //     it('should first dispatch requestData when  Main component is rendered', () => {
-        //       // given
-        //       const props = {
-        //         backButton: true,
-        //         dispatch: dispatchMock,
-        //         history: {},
-        //         match: {},
-        //       }
-        //
-        //       // when
-        //       const wrapper = shallow(<RawDeck {...props} />)
-        //       wrapper.instance().handleDataRequest()
-        //       const expectedRequest = {
-        //         config: {},
-        //         method: 'PUT',
-        //         path: 'recommendations?',
-        //         type: 'REQUEST_DATA_PUT_RECOMMENDATIONS?',
-        //       }
-        //
-        //       // then
-        //       expect(dispatchMock.mock.calls.length).toBe(1)
-        //       expect(dispatchMock.mock.calls[0][0].method).toEqual(
-        //         expectedRequest.method
-        //       )
-        //     })
-      })
+      it('', () => {})
     })
     describe('handleFlip', () => {
       it('', () => {})
