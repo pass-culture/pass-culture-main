@@ -36,7 +36,7 @@ class SearchFilter extends Component {
     const queryParams = query.parse()
 
     this.state = {
-      isNew: false,
+      filterParamsMatchingQueryParams: false,
       params: Object.assign({}, queryParams),
     }
     this.filterActions = {
@@ -59,16 +59,16 @@ class SearchFilter extends Component {
     const queryParams = query.parse()
 
     this.setState({
-      isNew: false,
+      filterParamsMatchingQueryParams: false,
       params: queryParams,
     })
   }
 
   onFilterClick = () => {
     const { dispatch, onKeywordsEraseClick, query } = this.props
-    const { isNew, params } = this.state
+    const { filterParamsMatchingQueryParams, params } = this.state
 
-    if (isNew) {
+    if (filterParamsMatchingQueryParams) {
       dispatch(assignData({ recommendations: [] }))
     }
 
@@ -87,9 +87,12 @@ class SearchFilter extends Component {
 
     dispatch(assignData({ recommendations: [] }))
 
-    const isNew = getFirstChangingKey(queryParams, INITIAL_FILTER_PARAMS)
+    const filterParamsMatchingQueryParams = getFirstChangingKey(
+      queryParams,
+      INITIAL_FILTER_PARAMS
+    )
 
-    this.setState({ isNew })
+    this.setState({ filterParamsMatchingQueryParams })
 
     query.change(INITIAL_FILTER_PARAMS, {
       pathname: '/recherche/resultats',
@@ -102,11 +105,14 @@ class SearchFilter extends Component {
     const queryParams = query.parse()
 
     const nextFilterParams = Object.assign({}, params, newValue)
-    const isNew = getFirstChangingKey(queryParams, newValue)
+    const filterParamsMatchingQueryParams = getFirstChangingKey(
+      queryParams,
+      newValue
+    )
 
     this.setState(
       {
-        isNew,
+        filterParamsMatchingQueryParams,
         params: nextFilterParams,
       },
       callback
@@ -145,7 +151,6 @@ class SearchFilter extends Component {
 
   render() {
     const { isVisible } = this.props
-
     return (
       <div className="is-relative is-clipped">
         <Transition in={isVisible} timeout={transitionDelay}>

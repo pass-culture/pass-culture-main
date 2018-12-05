@@ -37,10 +37,11 @@ describe('src | components | pages | search | utils', () => {
     it('should render date is there is a date range for Cayenne Timezone', () => {
       // given
       const recommendation = {
-        id: 'AEWP9',
+        bookingsIds: [],
         dateCreated: '2018-10-10T14:19:05.418465Z',
         dateRead: null,
         dateUpdated: '2018-10-10T14:19:05.418488Z',
+        id: 'AEWP9',
         inviteforEventOccurrenceId: null,
         isClicked: false,
         isFavorite: false,
@@ -176,7 +177,6 @@ describe('src | components | pages | search | utils', () => {
         shareMedium: null,
         userId: 'AQBA',
         validUntilDate: '2018-10-13T14:19:05.431082Z',
-        bookingsIds: [],
       }
 
       // when
@@ -311,9 +311,9 @@ describe('src | components | pages | search | utils', () => {
               cameFromOfferTypesPage,
               hasReceivedFirstSuccessData
             )
-            expected = '"keyword" : 4 résultats'
 
             // then
+            expected = '"keyword" : 4 résultats'
             expect(result).toEqual(expected)
           })
           it('should return number of results with resultat in singular and keyword searched', () => {
@@ -344,9 +344,9 @@ describe('src | components | pages | search | utils', () => {
               cameFromOfferTypesPage,
               hasReceivedFirstSuccessData
             )
-            expected = '"keyword" : 1 résultat'
 
             // then
+            expected = '"keyword" : 1 résultat'
             expect(result).toEqual(expected)
           })
         })
@@ -379,9 +379,9 @@ describe('src | components | pages | search | utils', () => {
               cameFromOfferTypesPage,
               hasReceivedFirstSuccessData
             )
-            expected = '"keyword" : 0 résultat'
 
             // then
+            expected = '"keyword" : 0 résultat'
             expect(result).toEqual(expected)
           })
         })
@@ -415,9 +415,9 @@ describe('src | components | pages | search | utils', () => {
               cameFromOfferTypesPage,
               hasReceivedFirstSuccessData
             )
-            expected = '"keyword" : 4 résultats'
 
             // then
+            expected = '"keyword" : 4 résultats'
             expect(result).toEqual(expected)
           })
         })
@@ -448,9 +448,9 @@ describe('src | components | pages | search | utils', () => {
               cameFromOfferTypesPage,
               hasReceivedFirstSuccessData
             )
-            expected = '"keyword" : 0 résultat'
 
             // then
+            expected = '"keyword" : 0 résultat'
             expect(result).toEqual(expected)
           })
         })
@@ -485,9 +485,9 @@ describe('src | components | pages | search | utils', () => {
             cameFromOfferTypesPage,
             hasReceivedFirstSuccessData
           )
-          expected = ''
 
           // then
+          expected = ''
           expect(result).toEqual(expected)
         })
       })
@@ -507,10 +507,10 @@ describe('src | components | pages | search | utils', () => {
             cameFromOfferTypesPage,
             hasReceivedFirstSuccessData
           )
-          expected =
-            "Il n'y a pas d'offres dans cette catégorie pour le moment."
 
           // then
+          expected =
+            "Il n'y a pas d'offres dans cette catégorie pour le moment."
           expect(result).toEqual(expected)
         })
       })

@@ -14,10 +14,8 @@ export const withQueryRouter = WrappedComponent => {
         add: this.add,
         change: this.change,
         clear: this.clear,
-        orderBy: this.orderBy,
         parse: this.parse,
         remove: this.remove,
-        reverseOrder: this.reverseOrder,
       }
     }
 
@@ -68,7 +66,7 @@ export const withQueryRouter = WrappedComponent => {
         nextValue = args.join(',')
       } else if (typeof previousValue === 'undefined') {
         console.warn(
-          `Weird did you forget to mention this ${key} query param in your withQueryRouter hoc ?`
+          `Weird did you forget to mention this ${key} query param in your withQueryRouter hoc?`
         )
       }
 
@@ -94,7 +92,7 @@ export const withQueryRouter = WrappedComponent => {
         this.change({ [key]: nextValue })
       } else if (typeof previousValue === 'undefined') {
         console.warn(
-          `Weird did you forget to mention this ${key} query param in your withQueryRouter hoc ?`
+          `Weird did you forget to mention this ${key} query param in your withQueryRouter hoc?`
         )
       }
     }

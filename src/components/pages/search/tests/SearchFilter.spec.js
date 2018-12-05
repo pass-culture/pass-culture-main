@@ -36,7 +36,7 @@ describe('src | components | pages | search | SearchFilter', () => {
 
   describe('functions', () => {
     describe('constructor', () => {
-      it.skip('should initilize state with functions', () => {
+      it.skip('should initiliaze state with functions', () => {
         // given
         const props = {
           isVisible: false,
@@ -78,17 +78,19 @@ describe('src | components | pages | search | SearchFilter', () => {
         // then
         const searchFilter = wrapper.find('SearchFilter')
         const updatedQuery = searchFilter.state('params')
-        const isNewKey = searchFilter.state('isNew')
+        const filterParamsMatchingQueryParamsKey = searchFilter.state(
+          'filterParamsMatchingQueryParams'
+        )
         const expected = {
           categories: 'Sourire',
         }
         expect(updatedQuery).toEqual(expected)
-        expect(isNewKey).toEqual(false)
+        expect(filterParamsMatchingQueryParamsKey).toEqual(false)
       })
     })
 
     describe('onResetClick', () => {
-      it('should call hoc withQueryRouter change method with the good parameters', () => {
+      it('should call the hoc withQueryRouter query.change method with INITIAL_FILTER_PARAMS', () => {
         // given
         const props = {
           dispatch: dispatchMock,
@@ -103,13 +105,15 @@ describe('src | components | pages | search | SearchFilter', () => {
             }),
           },
         }
-
-        // when
         const wrapper = shallow(
           <SearchFilter.WrappedComponent.WrappedComponent {...props} />
         )
+
+        // when
         wrapper.instance().onResetClick()
-        const updatedFormState = wrapper.state('isNew')
+        const updatedFormState = wrapper.state(
+          'filterParamsMatchingQueryParams'
+        )
 
         expect(updatedFormState).toEqual('jours')
 
@@ -142,7 +146,9 @@ describe('src | components | pages | search | SearchFilter', () => {
         )
         wrapper.instance().onFilterClick()
         const currentQuery = wrapper.state('params')
-        const updatedFormState = wrapper.state('isNew')
+        const updatedFormState = wrapper.state(
+          'filterParamsMatchingQueryParams'
+        )
 
         // THEN
         expect(queryChangeMock).toHaveBeenCalledWith(currentQuery, {

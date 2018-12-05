@@ -2,6 +2,7 @@ import React from 'react'
 import { shallow } from 'enzyme'
 
 import SearchPageContent from '../SearchPageContent'
+import SearchFilter from '../search/SearchFilter'
 
 describe('src | components | pages | SearchPageContent', () => {
   // Initializing Mocks
@@ -72,23 +73,23 @@ describe('src | components | pages | SearchPageContent', () => {
     })
     describe('SearchFilter', () => {
       describe('When arriving on page search', () => {
-        it.skip('should be invisible', () => {
+        it('should be invisible', () => {
           // when
           const wrapper = shallow(<SearchPageContent {...initialProps} />)
-          const searchFilterComponent = wrapper.find('SearchFilter')
+          const searchFilterComponent = wrapper.find(SearchFilter)
 
           // then
           expect(searchFilterComponent.props().isVisible).toEqual(false)
         })
       })
       describe('When state isFilterVisible is setted to true ', () => {
-        it.skip('should be visible', () => {
+        it('should be visible', () => {
           // when
           const wrapper = shallow(<SearchPageContent {...initialProps} />)
           const wrapperInstance = wrapper.instance()
           wrapperInstance.setState({ isFilterVisible: true })
 
-          const searchFilterComponent = wrapper.find('SearchFilter')
+          const searchFilterComponent = wrapper.find(SearchFilter)
 
           // then
           expect(searchFilterComponent.props().isVisible).toEqual(true)
@@ -178,7 +179,7 @@ describe('src | components | pages | SearchPageContent', () => {
 
     describe('handleDataRequest', () => {
       describe('On resultats page', () => {
-        it.skip('should first dispatch requestDataTypes when component is rendered', () => {
+        it('should dispatch requestDataTypes when component is rendered', () => {
           // when
           const wrapper = shallow(<SearchPageContent {...initialProps} />)
           wrapper.instance().componentDidMount()
@@ -190,7 +191,7 @@ describe('src | components | pages | SearchPageContent', () => {
           }
 
           // THEN
-          expect(dispatchMock.mock.calls[0][0]).toEqual(
+          expect(dispatchMock.mock.calls[1][0]).toEqual(
             expectedRequestedGetTypes
           )
         })

@@ -21,7 +21,7 @@ describe('src | components | pages | hocs | withQueryRouter', () => {
   })
   describe('functions ', () => {
     describe('parse', () =>
-      it('withQueryRouter gives a parse method helping for having the query params', () => {
+      it('withQueryRouter passes a query.parse function that formats the location search string into in a params object', () => {
         // given
         const history = createBrowserHistory()
         history.push('/test?page=1&mots-cles=test')
@@ -42,12 +42,10 @@ describe('src | components | pages | hocs | withQueryRouter', () => {
       }))
 
     describe('clear', () =>
-      it('withQueryRouter passes query clear function that clear the location search', () => {
+      it('withQueryRouter passes query.clear function that erases the location.search string', () => {
         // given
         const history = createBrowserHistory()
         history.push('/test?page=1&mots-cles=test')
-
-        // when
         const wrapper = mount(
           <Router history={history}>
             <Route path="/test">
@@ -56,6 +54,8 @@ describe('src | components | pages | hocs | withQueryRouter', () => {
           </Router>
         )
         const { query } = wrapper.find('Test').props()
+
+        // when
         query.clear()
 
         // then
@@ -64,12 +64,10 @@ describe('src | components | pages | hocs | withQueryRouter', () => {
       }))
 
     describe('change', () =>
-      it('withQueryRouter passes query change function that help to modify location search', () => {
+      it('withQueryRouter passes query.change that overwrites the location.search', () => {
         // given
         const history = createBrowserHistory()
         history.push('/test?page=1&mots-cles=test')
-
-        // when
         const wrapper = mount(
           <Router history={history}>
             <Route path="/test">
@@ -78,6 +76,8 @@ describe('src | components | pages | hocs | withQueryRouter', () => {
           </Router>
         )
         const { query } = wrapper.find('Test').props()
+
+        // when
         query.change({ 'mots-cles': null, page: 2 })
 
         // then
@@ -86,12 +86,10 @@ describe('src | components | pages | hocs | withQueryRouter', () => {
       }))
 
     describe('add', () =>
-      it('withQueryRouter passes query add function that help to add value in search', () => {
+      it('withQueryRouter passes query.add function that concatenates values in the location.search', () => {
         // given
         const history = createBrowserHistory()
         history.push('/test?jours=0,1&mots-cles=test')
-
-        // when
         const wrapper = mount(
           <Router history={history}>
             <Route path="/test">
@@ -100,6 +98,8 @@ describe('src | components | pages | hocs | withQueryRouter', () => {
           </Router>
         )
         const { query } = wrapper.find('Test').props()
+
+        // when
         query.add('jours', '2')
 
         // then
@@ -108,12 +108,10 @@ describe('src | components | pages | hocs | withQueryRouter', () => {
       }))
 
     describe('remove', () =>
-      it('withQueryRouter passes query remove function that help to remove value in search', () => {
+      it('withQueryRouter passes query.remove function that pops values from the location.search', () => {
         // given
         const history = createBrowserHistory()
         history.push('/test?jours=0,1&mots-cles=test')
-
-        // when
         const wrapper = mount(
           <Router history={history}>
             <Route path="/test">
@@ -122,6 +120,8 @@ describe('src | components | pages | hocs | withQueryRouter', () => {
           </Router>
         )
         const { query } = wrapper.find('Test').props()
+
+        // when
         query.remove('jours', '1')
 
         // then
