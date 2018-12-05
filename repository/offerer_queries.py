@@ -76,6 +76,21 @@ def find_first_by_user_offerer_id(user_offerer_id):
     return Offerer.query.join(UserOfferer).filter_by(id=user_offerer_id).first()
 
 
-def find_filtered_offerers():
+def find_filtered_offerers(dpt=None,
+                           zip_codes=None,
+                           from_date=None,
+                           to_date=None,
+                           has_siren=None,
+                           has_not_virtual_venue=None,
+                           has_validated_venu=None,
+                           offer_status=None,
+                           is_validated=None,
+                           has_validated_use=None,
+                           has_bank_information=None,
+                           is_active=None,
+                           has_validated_user_offerer=None):
+    
+    query = db.session.query(Offerer)
 
-    return True
+    result = query.all()
+    return result

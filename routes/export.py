@@ -14,7 +14,8 @@ from models.api_errors import ApiErrors
 from models.pc_object import PcObject
 from repository import offerer_queries
 from repository.venue_queries import find_filtered_venues
-from validation.exports import check_user_is_admin , check_get_venues_params
+from validation.exports import check_user_is_admin , check_get_venues_params, \
+    check_get_offerers_params
 
 from utils.includes import OFFERER_INCLUDES_FOR_ADMIN
 from utils.rest import expect_json_data
@@ -162,6 +163,36 @@ def get_venues():
                                   has_offerer_with_siren=params['has_offerer_with_siren'],
                                   has_validated_user_offerer=params['has_validated_user_offerer'],
                                   has_validated_user=params['has_validated_user'])
+
+    return jsonify(result), 200
+
+
+@app.route('/exports/offerers', methods=['POST'])
+@login_required
+@expect_json_data
+def get_offerers():
+    check_user_is_admin(current_user)
+
+    params_keys = ['dpt', 'zip_codes', 'from_date', 'to_date', 'has_siren', 'has_not_virtual_venue', 'has_validated_venue', 'offer_status', 'is_validated', 'has_validated_user', 'has_bank_information', 'is_active', 'has_validated_user_offerer']
+    params = {}
+
+    for key in params_keys:
+        params[key] = request.json.get(key, None)
+
+    check_get_offerers_params(params)
+    result = find_filtered_offerers(dpt = params['dpt'],
+                                    zip_codes = params['zip_codes'],
+                                    from_date = params['from_date'],
+                                    to_date = params['to_date'],
+                                    has_siren = params['has_siren'],
+                                    has_not_virtual_venue = params['has_not_virtual_venue'],
+                                    has_validated_venu = params['has_validated_venue'],
+                                    offer_status = params['offer_status'],
+                                    is_validated = params['is_validated'],
+                                    has_validated_use = params['has_validated_user'],
+                                    has_bank_information = params['has_bank_information'],
+                                    is_active = params['is_active'],
+                                    has_validated_user_offerer = params['has_validated_user_offerer'])
 
     return jsonify(result), 200
 

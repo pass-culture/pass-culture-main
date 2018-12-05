@@ -52,11 +52,47 @@ def check_get_venues_params(param: {}) -> bool:
     return True
 
 
-def check_get_offerers_params():
+def check_get_offerers_params(param: {}) -> bool:
+    if param.get('dpt', None):
+        _check_dpt_list(param['dpt'])
+
+    if param.get('zip_codes', None):
+        _check_zip_codes_list(param['zip_codes'])
+
+    if param.get('from_date', None):
+        _check_date_format(param['from_date'])
+
+    if param.get('to_date', None):
+        _check_date_format(param['to_date'])
+
+    if param.get('has_siren', None):
+        _check_has_siren_param(param['has_siren'])
+
+    if param.get('has_not_virtual_venue', None):
+        _check_has_not_virtual_venue_param(param['has_not_virtual_venue'])
+
+    if param.get('has_validated_venue', None):
+        _check_has_validated_venue_param(param['has_validated_venue'])
+
+    if param.get('offer_status', None):
+        _check_offer_status_param(param['offer_status'])
+
+    if param.get('is_validated', None):
+        _check_is_validated_param(param['is_validated'])
+
+    if param.get('has_validated_user', None):
+        _check_has_validated_user_param(param['has_validated_user'])
+
+    if param.get('has_bank_information', None):
+        _check_has_bank_information_param(param['has_bank_information'])
+
+    if param.get('is_active', None):
+        _check_is_active_param(param['is_active'])
+
+    if param.get('has_validated_user_offerer', None):
+        _check_has_validated_user_offerer_param(param['has_validated_user_offerer'])
 
     return True
-
-
 
 
 def _check_date_format(date: str) -> bool:
@@ -162,4 +198,44 @@ def _check_has_validated_user_param(has_validated_user) -> bool:
         return True
     api_errors = ApiErrors()
     api_errors.addError('has_validated_user', 'has_validated_user is a boolean, it accepts True or False')
+    raise api_errors
+
+
+def _check_has_siren_param(has_siren) -> bool:
+    if type(has_siren) == bool:
+        return True
+    api_errors = ApiErrors()
+    api_errors.addError('has_siren', 'has_siren is a boolean, it accepts True or False')
+    raise api_errors
+
+
+def _check_has_not_virtual_venue_param(has_not_virtual_venue) -> bool:
+    if type(has_not_virtual_venue) == bool:
+        return True
+    api_errors = ApiErrors()
+    api_errors.addError('has_not_virtual_venue', 'has_not_virtual_venue is a boolean, it accepts True or False')
+    raise api_errors
+
+
+def _check_has_validated_venue_param(has_validated_venue) -> bool:
+    if type(has_validated_venue) == bool:
+        return True
+    api_errors = ApiErrors()
+    api_errors.addError('has_validated_venue', 'has_validated_venue is a boolean, it accepts True or False')
+    raise api_errors
+
+
+def _check_has_bank_information_param(has_bank_information) -> bool:
+    if type(has_bank_information) == bool:
+        return True
+    api_errors = ApiErrors()
+    api_errors.addError('has_bank_information', 'has_bank_information is a boolean, it accepts True or False')
+    raise api_errors
+
+
+def _check_is_active_param(is_active) -> bool:
+    if type(is_active) == bool:
+        return True
+    api_errors = ApiErrors()
+    api_errors.addError('is_active', 'is_active is a boolean, it accepts True or False')
     raise api_errors
