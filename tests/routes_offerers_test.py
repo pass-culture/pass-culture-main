@@ -28,6 +28,13 @@ from utils.test_utils import API_URL, \
     req_with_auth, create_thing, create_event, create_stock_from_event_occurrence, create_event_occurrence
 
 
+def _get_offer_type(response_json):
+    try:
+        return response_json['stock']['resolvedOffer']['thing']['offerType']
+    except KeyError:
+        return response_json['stock']['resolvedOffer']['event']['offerType']
+
+
 @pytest.mark.standalone
 def test_get_offerers_should_work_only_when_logged_in():
     # when
@@ -471,7 +478,8 @@ def test_get_offerer_bookings_returns_bookings_with_thing_or_event_offer_type(ap
                        'Et si c’était plutôt cette exposition qui allait faire son cinéma ?',
         'label': 'Musées — Patrimoine (Expositions, Visites guidées, Activités spécifiques)',
         'offlineOnly': True,
-        'onlineOnly': False, 'sublabel': 'Regarder',
+        'onlineOnly': False,
+        'sublabel': 'Regarder',
         'type': 'Event',
         'value': 'EventType.MUSEES_PATRIMOINE'
     }
@@ -482,16 +490,9 @@ def test_get_offerer_bookings_returns_bookings_with_thing_or_event_offer_type(ap
     response = auth_request.get(API_URL + '/offerers/%s/bookings' % humanize(offerer.id))
 
     # then
-    offer_types = list(map(get_offer_type, response.json()))
+    offer_types = list(map(_get_offer_type, response.json()))
     assert expected_audiovisuel_offer_type in offer_types
     assert expected_musees_patrimoine_offer_type in offer_types
-
-
-def get_offer_type(response_json):
-    try:
-        return response_json['stock']['resolvedOffer']['thing']['offerType']
-    except KeyError:
-        return response_json['stock']['resolvedOffer']['event']['offerType']
 
 
 @pytest.mark.standalone
