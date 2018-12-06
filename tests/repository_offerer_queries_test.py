@@ -202,7 +202,6 @@ def test_find_first_by_user_offerer_id_returns_the_first_offerer_that_was_create
     assert offerer.id == offerer1.id
 
 
-
 @pytest.mark.standalone
 @clean_database
 def test_find_filtered_offerers_with_dpt_param_return_filtered_offerers(app):
@@ -236,9 +235,9 @@ def test_find_filtered_offerers_with_zipcodes_param_return_filtered_offerers(app
     query_with_zipcodes = find_filtered_offerers(zip_codes=['93125', '34758'])
 
     # Then
-    assert offerer_93125 in query_with_dpt
-    assert offerer_67000 in query_with_dpt
-    assert offerer_34758 not in query_with_dpt
+    assert offerer_93125 in query_with_zipcodes
+    assert offerer_67000 in query_with_zipcodes
+    assert offerer_34758 not in query_with_zipcodes
 
 
 @pytest.mark.standalone
@@ -329,7 +328,7 @@ def test_find_filtered_offerers_with_is_active_param_return_filtered_offerers(ap
 def test_find_filtered_offerers_with_has_bank_information_param_return_filtered_offerers(app):
     # Given
     offerer_with_bank_information = create_offerer(siren="123456781")
-    offerer_without_bank_information = create_offerer(iban='DE89 3704 0044 0532 0130 00', bic="GENODEM1GLS")
+    offerer_without_bank_information = create_offerer(iban='DE89 3704 0044 0532 0130 00', bic="AGRIFRPP")
     
     PcObject.check_and_save(offerer_with_bank_information, offerer_without_bank_information)
     
@@ -394,9 +393,9 @@ def test_find_filtered_offerers_with_False_has_validated_user_param_return_filte
     query_not_validated = find_filtered_offerers(has_validated_user=False)
 
     # Then
-    assert offerer_with_not_validated_user in query_validated_user
-    assert offerer_with_validated_user not in query_validated_user
-    assert offerer_with_both not in query_validated_user
+    assert offerer_with_not_validated_user in query_not_validated
+    assert offerer_with_validated_user not in query_not_validated
+    assert offerer_with_both not in query_not_validated
 
 
 @pytest.mark.standalone
@@ -842,7 +841,122 @@ def test_find_filtered_offerers_with_offer_status_with_ALL_param_return_filtered
 
 @pytest.mark.standalone
 @clean_database
-def test_find_filtered_offerers_with_offer_status_with_ALL_param_and_virtual_venues_return_filtered_offerers(app):
+def test_find_filtered_offerers_with_offer_status_with_ALL_param_and_False_has_not_virtual_venues_return_virtual_offerers(app):
+    # Given
+    offerer_with_only_virtual_venue_with_offer = create_offerer(siren="123456785")
+    offerer_with_only_virtual_venue_without_offer = create_offerer(siren="123456786")
+    offerer_with_both_venues_none_offer = create_offerer(siren="123456781")
+    offerer_with_both_venues_offer_on_both = create_offerer(siren="123456782")
+    offerer_with_both_venues_offer_on_virtual = create_offerer(siren="123456783")
+    offerer_with_both_venues_offer_on_not_virtual = create_offerer(siren="123456784")
+
+    virtual_venue_with_offer_1 = create_venue(offerer_with_only_virtual_venue_with_offer, is_virtual=True, siret=None)
+    virtual_venue_without_offer_1 = create_venue(offerer_with_only_virtual_venue_without_offer, is_virtual=True, siret=None)
+    virtual_venue_without_offer_2 = create_venue(offerer_with_both_venues_none_offer, is_virtual=True, siret=None)
+    venue_without_offer_2 = create_venue(offerer_with_both_venues_none_offer, siret="12345678112345")
+    virtual_venue_with_offer_3 = create_venue(offerer_with_both_venues_offer_on_both, is_virtual=True, siret=None)
+    venue_with_offer_3 = create_venue(offerer_with_both_venues_offer_on_both, siret="12345678212345")
+    virtual_venue_with_offer_4 = create_venue(offerer_with_both_venues_offer_on_virtual, is_virtual=True, siret=None)
+    venue_without_offer_4 = create_venue(offerer_with_both_venues_offer_on_virtual, siret="12345678312345")
+    virtual_venue_without_offer_5 = create_venue(offerer_with_both_venues_offer_on_not_virtual, is_virtual=True, siret=None)
+    venue_with_offer_5 = create_venue(offerer_with_both_venues_offer_on_not_virtual, siret="12345678412345")
+
+    offer_1 = create_event_offer(virtual_venue_with_offer_1)
+    offer_2 = create_event_offer(virtual_venue_with_offer_3)
+    offer_3 = create_event_offer(venue_with_offer_3)
+    offer_4 = create_event_offer(virtual_venue_with_offer_4)
+    offer_5 = create_event_offer(venue_with_offer_5)
+
+    PcObject.check_and_save(offer_1, offer_2, offer_3, offer_4, offer_5, virtual_venue_without_offer_1, virtual_venue_without_offer_2, venue_without_offer_2, venue_without_offer_4, virtual_venue_without_offer_5)
+
+    # When
+    query_with_all_offer = find_filtered_offerers(offer_status='ALL', has_not_virtual_venue=False)
+   
+    # Then
+    assert offerer_with_only_virtual_venue_with_offer in query_with_all_offer
+    assert offerer_with_only_virtual_venue_without_offer not in query_with_all_offer
+    assert offerer_with_both_venues_none_offer not in query_with_all_offer
+    assert offerer_with_both_venues_offer_on_both in query_with_all_offer
+    assert offerer_with_both_venues_offer_on_virtual in query_with_all_offer
+    assert offerer_with_both_venues_offer_on_not_virtual not in query_with_all_offer
 
 
-    assert (1+1) == 3
+@pytest.mark.standalone
+@clean_database
+def test_find_filtered_offerers_with_offer_status_with_ALL_param_and_True_has_not_virtual_venues_return_virtual_offerers(app):
+    # Given
+    offerer_with_only_virtual_venue_with_offer = create_offerer(siren="123456785")
+    offerer_with_only_virtual_venue_without_offer = create_offerer(siren="123456786")
+    offerer_with_both_venues_none_offer = create_offerer(siren="123456781")
+    offerer_with_both_venues_offer_on_both = create_offerer(siren="123456782")
+    offerer_with_both_venues_offer_on_virtual = create_offerer(siren="123456783")
+    offerer_with_both_venues_offer_on_not_virtual = create_offerer(siren="123456784")
+
+    virtual_venue_with_offer_1 = create_venue(offerer_with_only_virtual_venue_with_offer, is_virtual=True, siret=None)
+    virtual_venue_without_offer_1 = create_venue(offerer_with_only_virtual_venue_without_offer, is_virtual=True, siret=None)
+    virtual_venue_without_offer_2 = create_venue(offerer_with_both_venues_none_offer, is_virtual=True, siret=None)
+    venue_without_offer_2 = create_venue(offerer_with_both_venues_none_offer, siret="12345678112345")
+    virtual_venue_with_offer_3 = create_venue(offerer_with_both_venues_offer_on_both, is_virtual=True, siret=None)
+    venue_with_offer_3 = create_venue(offerer_with_both_venues_offer_on_both, siret="12345678212345")
+    virtual_venue_with_offer_4 = create_venue(offerer_with_both_venues_offer_on_virtual, is_virtual=True, siret=None)
+    venue_without_offer_4 = create_venue(offerer_with_both_venues_offer_on_virtual, siret="12345678312345")
+    virtual_venue_without_offer_5 = create_venue(offerer_with_both_venues_offer_on_not_virtual, is_virtual=True, siret=None)
+    venue_with_offer_5 = create_venue(offerer_with_both_venues_offer_on_not_virtual, siret="12345678412345")
+
+    offer_1 = create_event_offer(virtual_venue_with_offer_1)
+    offer_2 = create_event_offer(virtual_venue_with_offer_3)
+    offer_3 = create_event_offer(venue_with_offer_3)
+    offer_4 = create_event_offer(virtual_venue_with_offer_4)
+    offer_5 = create_event_offer(venue_with_offer_5)
+
+    PcObject.check_and_save(offer_1, offer_2, offer_3, offer_4, offer_5, virtual_venue_without_offer_1, virtual_venue_without_offer_2, venue_without_offer_2, venue_without_offer_4, virtual_venue_without_offer_5)    
+
+    # When
+    query_with_all_offer = find_filtered_offerers(offer_status='ALL', has_not_virtual_venue=True)
+   
+    # Then
+    assert offerer_with_only_virtual_venue_with_offer in query_with_all_offer
+    assert offerer_with_only_virtual_venue_without_offer not in query_with_all_offer
+    assert offerer_with_both_venues_none_offer not in query_with_all_offer
+    assert offerer_with_both_venues_offer_on_both in query_with_all_offer
+    assert offerer_with_both_venues_offer_on_virtual in query_with_all_offer
+    assert offerer_with_both_venues_offer_on_not_virtual not in query_with_all_offer
+    assert 'what should this case do ?' in query_with_all_offer
+
+
+@pytest.mark.standalone
+@clean_database
+def test_find_filtered_offerers_with_default_param_return_all_offerers(app):
+    # Given
+    offerer_67 = create_offerer(siren="123456781", postal_code="67520")
+    offerer_34000 = create_offerer(siren="123456782", postal_code="34000")
+    offerer_with_siren = create_offerer(siren="123456784")
+    offerer_without_siren = create_offerer(siren=None)
+    offerer_with_no_venue = create_offerer(siren="123456786")
+    offerer_with_only_virtual_venue = create_offerer(siren="123456787")
+    offerer_with_both_venues = create_offerer(siren="123456788")
+    offerer_not_validated = create_offerer(siren="123456789", validation_token="a_token")
+    offerer_with_bank_information = create_offerer(siren="123456771", iban='DE89 3704 0044 0532 0130 00', bic="AGRIFRPP")
+    offerer_not_active  = create_offerer(siren="123456772", is_active=False)
+
+    virtual_venue_1 = create_venue(offerer_with_only_virtual_venue, siret=None, is_virtual=True)
+    virtual_venue_2 = create_venue(offerer_with_both_venues, siret=None, is_virtual=True)
+    not_virtual_venue = create_venue(offerer_with_both_venues)
+
+
+    PcObject.check_and_save(offerer_67, offerer_34000, offerer_with_siren, offerer_without_siren, offerer_with_no_venue, offerer_with_only_virtual_venue, offerer_with_both_venues, offerer_not_validated, offerer_with_bank_information, offerer_not_active, virtual_venue_1, virtual_venue_2, not_virtual_venue)
+
+    # When
+    default_query = find_filtered_offerers()
+
+    # Then
+    assert offerer_67 in default_query
+    assert offerer_34000 in default_query
+    assert offerer_with_siren in default_query
+    assert offerer_without_siren in default_query
+    assert offerer_with_no_venue in default_query
+    assert offerer_with_only_virtual_venue in default_query
+    assert offerer_with_both_venues in default_query
+    assert offerer_not_validated in default_query
+    assert offerer_with_bank_information in default_query
+    assert offerer_not_active in default_query

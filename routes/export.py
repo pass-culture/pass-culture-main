@@ -13,6 +13,7 @@ import models
 from models.api_errors import ApiErrors
 from models.pc_object import PcObject
 from repository import offerer_queries
+from repository.offerer_queries import find_filtered_offerers
 from repository.venue_queries import find_filtered_venues
 from validation.exports import check_user_is_admin , check_get_venues_params, \
     check_get_offerers_params
@@ -186,10 +187,10 @@ def get_offerers():
                                     to_date = params['to_date'],
                                     has_siren = params['has_siren'],
                                     has_not_virtual_venue = params['has_not_virtual_venue'],
-                                    has_validated_venu = params['has_validated_venue'],
+                                    has_validated_venue = params['has_validated_venue'],
                                     offer_status = params['offer_status'],
                                     is_validated = params['is_validated'],
-                                    has_validated_use = params['has_validated_user'],
+                                    has_validated_user = params['has_validated_user'],
                                     has_bank_information = params['has_bank_information'],
                                     is_active = params['is_active'],
                                     has_validated_user_offerer = params['has_validated_user_offerer'])
