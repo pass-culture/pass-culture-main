@@ -18,8 +18,7 @@ export class RawErrorCatcher extends React.PureComponent {
   }
 
   componentDidCatch(error, info) {
-    // Display fallback UI
-    // You can also log the error to an error reporting service
+    // https://reactjs.org/blog/2017/07/26/error-handling-in-react-16.html
     Logger.log(`Current react version: ${React.version}`)
     Logger.error(`Error: ${error}`)
     Logger.error(`With info: ${JSON.stringify(info)}`)

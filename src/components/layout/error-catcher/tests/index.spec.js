@@ -10,16 +10,18 @@ const routerProps = {
 }
 
 describe('src | components | layout | ErrorCatcher', () => {
-  it('match snapshot and render the children as it', () => {
+  it('match snapshot and render the children as is', () => {
     // given
     const props = { ...routerProps }
     const Children = () => <span>any child component</span>
+
     // when
     const wrapper = shallow(
       <RawErrorCatcher {...props}>
         <Children />
       </RawErrorCatcher>
     ).dive()
+
     // then
     expect(wrapper).toBeDefined()
     expect(wrapper).toMatchSnapshot()
@@ -29,6 +31,7 @@ describe('src | components | layout | ErrorCatcher', () => {
     const Children = () => null
     const props = { ...routerProps }
     const error = new Error('This is an error!')
+
     // when
     const wrapper = shallow(
       <RawErrorCatcher {...props}>
@@ -36,6 +39,7 @@ describe('src | components | layout | ErrorCatcher', () => {
       </RawErrorCatcher>
     )
     wrapper.find(Children).simulateError(error)
+
     // then
     expect(wrapper).toBeDefined()
     expect(wrapper).toMatchSnapshot()
@@ -45,6 +49,7 @@ describe('src | components | layout | ErrorCatcher', () => {
     const Children = () => null
     const props = { ...routerProps }
     const error = new Error('This is an error!')
+
     // when
     const wrapper = shallow(
       <RawErrorCatcher {...props}>
@@ -52,6 +57,7 @@ describe('src | components | layout | ErrorCatcher', () => {
       </RawErrorCatcher>
     )
     wrapper.find(Children).simulateError(error)
+
     // then
     expect(Children).toHaveLength(0)
   })
@@ -60,6 +66,7 @@ describe('src | components | layout | ErrorCatcher', () => {
     const Children = () => null
     const props = { ...routerProps }
     const error = new Error('This is an error!')
+
     // when
     const wrapper = shallow(
       <RawErrorCatcher {...props}>
@@ -67,6 +74,7 @@ describe('src | components | layout | ErrorCatcher', () => {
       </RawErrorCatcher>
     )
     wrapper.find(Children).simulateError(error)
+
     // then
     expect(wrapper).toBeDefined()
     expect(wrapper).toMatchSnapshot()

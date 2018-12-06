@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | layout | ErrorCatcher match snapshot and render the children as it 1`] = `
+exports[`src | components | layout | ErrorCatcher match snapshot and render the children as is 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <Children />,

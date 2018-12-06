@@ -9,8 +9,10 @@ describe('src | components | layout | ErrorCatcher | ErrorCatcherView', () => {
   it('match snapshot', () => {
     // given
     const props = { onClick: jest.fn() }
+
     // when
     const wrapper = shallow(<ErrorCatcherView {...props} />)
+
     // then
     expect(wrapper).toBeDefined()
     expect(wrapper).toMatchSnapshot()
