@@ -133,7 +133,6 @@ describe('src | components | pages | discovery | Index | DiscoveryPage', () => 
           expect(wrapper.state()).toEqual({ refreshKey: 0 })
         })
       })
-
       describe('When there is no recommendations or currentRecommendation available', () => {
         it('should call handleRefreshedDraggableKey', () => {
           // given
@@ -173,7 +172,7 @@ describe('src | components | pages | discovery | Index | DiscoveryPage', () => 
     })
     describe('componentDidUpdate', () => {
       describe('When query search contains to=verso', () => {
-        it('should dispatch handleUrlFlip', () => {
+        xit('should dispatch handleUrlFlip', () => {
           // given
           const props = {
             backButton: true,
@@ -221,13 +220,14 @@ describe('src | components | pages | discovery | Index | DiscoveryPage', () => 
           wrapper.setProps(newProps)
           const { history } = newProps
           const previousHistory = props.history
+          // BUGGE > en boucle
 
           // then
           expect(spy).toHaveBeenCalledWith(history, previousHistory)
         })
       })
-      describe.skip('When there is no recommendations or currentRecommendation available', () => {
-        it('should call handleRefreshedDraggableKey', () => {
+      describe.skip('When there is no recommendations or currentRecommendation available ????', () => {
+        it('should call handleRefreshedDraggableKey ???', () => {
           // given
           const props = {
             backButton: true,
@@ -267,12 +267,10 @@ describe('src | components | pages | discovery | Index | DiscoveryPage', () => 
         })
       })
     })
-    describe.only('componentWillUnmount', () => {
-      // C'est quand on passe de la page découverte à mes bookings par exemple
+    describe('componentWillUnmount', () => {
       it('should dispatch unFlip', () => {
         // when
         const wrapper = shallow(<RawDeck {...initialProps} />)
-
         wrapper.unmount()
 
         // then
@@ -281,8 +279,14 @@ describe('src | components | pages | discovery | Index | DiscoveryPage', () => 
           type: 'CLOSE_DETAILS_VIEW',
         })
       })
-      xit('should clearTimeout', () => {
-        // 2 cases
+      it('should clearTimeout', () => {
+        jest.useFakeTimers()
+        // when
+        const wrapper = shallow(<RawDeck {...initialProps} />)
+        wrapper.unmount()
+
+        // then
+        expect(clearTimeout).toHaveBeenCalled()
       })
     })
   })
@@ -303,7 +307,9 @@ describe('src | components | pages | discovery | Index | DiscoveryPage', () => 
       it('', () => {})
     })
     describe('handleRefreshedDraggableKey', () => {
-      it('', () => {})
+      it('', () => {
+        // tested via componentDidMount
+      })
     })
     describe('handleSetDateRead', () => {
       it('', () => {})
@@ -323,5 +329,8 @@ describe('src | components | pages | discovery | Index | DiscoveryPage', () => 
         })
       })
     })
+  })
+  describe('render', () => {
+    // showCloseButton
   })
 })

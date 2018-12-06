@@ -42,16 +42,15 @@ export class RawDeck extends Component {
 
   componentDidUpdate(previousProps) {
     Logger.log('DECK ---> componentDidUpdate', previousProps)
-    const { currentRecommendation, history, recommendations } = this.props
+    const { history } = this.props
 
-    const isRecommendations =
-      !recommendations ||
-      !previousProps.recommendations ||
-      recommendations === previousProps.recommendations ||
-      !currentRecommendation ||
-      !previousProps.currentRecommendation ||
-      currentRecommendation.index === previousProps.currentRecommendation.index
-    console.log('isRecommendations', isRecommendations)
+    // const isRecommendations =
+    //   !recommendations ||
+    //   !previousProps.recommendations ||
+    //   recommendations === previousProps.recommendations ||
+    //   !currentRecommendation ||
+    //   !previousProps.currentRecommendation ||
+    //   currentRecommendation.index === previousProps.currentRecommendation.index
 
     this.handleUrlFlip(history, previousProps.history)
 
@@ -63,10 +62,11 @@ export class RawDeck extends Component {
 
   componentWillUnmount() {
     Logger.log('DECK ---> componentWillUnmount')
-    const { dispatch } = this.props
+    const { dispatch, readTimeout, noDataTimeout } = this.props
     dispatch(closeOfferDetails())
-    if (this.readTimeout) clearTimeout(this.readTimeout)
-    if (this.noDataTimeout) clearTimeout(this.noDataTimeout)
+
+    if (readTimeout) clearTimeout(readTimeout)
+    if (noDataTimeout) clearTimeout(noDataTimeout)
   }
 
   onStop = (e, data) => {
@@ -82,9 +82,9 @@ export class RawDeck extends Component {
     const index = get(currentRecommendation, 'index', 0)
     const offset = (data.x + width * index) / width
     if (draggable && data.y > height * verticalSlideRatio) {
-      this.handleUnFlip()
+      this.handleCloseOfferDetails()
     } else if (data.y < -height * verticalSlideRatio) {
-      this.handleFlip()
+      this.handleShowOfferDetails()
     } else if (offset > horizontalSlideRatio) {
       this.handleGoPrevious()
     } else if (-offset > horizontalSlideRatio) {
@@ -135,7 +135,6 @@ export class RawDeck extends Component {
   }
 
   handleRefreshedDraggableKey = () => {
-    console.log("handleRefreshedDraggableKey >> Adieu l'ami, salut le trésor !")
     this.setState(previousState => ({
       refreshKey: previousState.refreshKey + 1,
     }))
@@ -207,36 +206,25 @@ export class RawDeck extends Component {
     }
   }
 
-  handleFlip = () => {
-    console.log('°°°°°°° handleFlip °°°°°°°°')
-
+  handleShowOfferDetails = () => {
     const { dispatch, isFlipDisabled } = this.props
     if (isFlipDisabled) return
     dispatch(showOfferDetails())
   }
 
-  handleUnFlip = () => {
+  handleCloseOfferDetails = () => {
     const { dispatch, unFlippable } = this.props
     if (unFlippable) return
     dispatch(closeOfferDetails())
   }
 
   handleUrlFlip = (history, previousHistory = false) => {
-    // console.log('°°°°°°° handleUrlFlip history : °°°°°°°°', history)
-    // console.log(
-    //   'history.location ',
-    //   history.location.search.indexOf('to=verso')
-    // )
-    // console.log('previousHistory : ', previousHistory)
-    // Logger.log('DECK ---> handleUrlFlip')
+    // Quand on arrive depuis un booking vers une offre, le details doit être affiché
     const { dispatch } = this.props
     const isNewUrl =
       !previousHistory ||
       (previousHistory && history.location.key !== previousHistory.location.key)
     if (isNewUrl && history.location.search.indexOf('to=verso') > 0) {
-      console.log(
-        '*********************************************************************************************************************** DISPATCH *********************************************************************************************************************** '
-      )
       dispatch(flipUnflippable())
     }
   }
@@ -295,8 +283,6 @@ export class RawDeck extends Component {
       unFlippable,
     } = this.props
 
-    // console.log('****** PROPS ********', this.props)
-
     const showCloseButton = isShownDetails && !unFlippable
     const showNavigation = !isShownDetails || isFlipDisabled
 
@@ -306,7 +292,7 @@ export class RawDeck extends Component {
           <button
             type="button"
             className="close-button"
-            onClick={this.handleUnFlip}
+            onClick={this.handleCloseOfferDetails}
             style={{ zIndex: 300 }}
           >
             <Icon svg="ico-close" alt="Fermer" />
@@ -316,7 +302,9 @@ export class RawDeck extends Component {
         {showNavigation && (
           <DeckNavigation
             recommendation={currentRecommendation}
-            flipHandler={(!isFlipDisabled && this.handleFlip) || null}
+            flipHandler={
+              (!isFlipDisabled && this.handleShowOfferDetails) || null
+            }
             handleGoNext={(nextRecommendation && this.handleGoNext) || null}
             handleGoPrevious={
               (previousRecommendation && this.handleGoPrevious) || null
@@ -333,6 +321,7 @@ RawDeck.defaultProps = {
   currentRecommendation: null,
   horizontalSlideRatio: 0.2,
   nextRecommendation: null,
+  noDataTimeout: 20000,
   previousRecommendation: null,
   verticalSlideRatio: 0.1,
 }
@@ -348,8 +337,12 @@ RawDeck.propTypes = {
   isShownDetails: PropTypes.bool.isRequired,
   nextLimit: PropTypes.number.isRequired,
   nextRecommendation: PropTypes.object,
+  noDataTimeout: PropTypes.number,
   previousLimit: PropTypes.number.isRequired,
   previousRecommendation: PropTypes.object,
+  // flipRatio: PropTypes.number,
+  // isDebug: PropTypes.bool,
+  readTimeout: PropTypes.number,
   recommendations: PropTypes.array.isRequired,
   unFlippable: PropTypes.bool.isRequired,
   verticalSlideRatio: PropTypes.number,

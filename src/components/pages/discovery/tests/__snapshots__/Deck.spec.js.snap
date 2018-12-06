@@ -22,6 +22,7 @@ ShallowWrapper {
     match={Object {}}
     nextLimit={50}
     nextRecommendation={null}
+    noDataTimeout={20000}
     previousLimit={40}
     previousRecommendation={null}
     readTimeout={2000}
