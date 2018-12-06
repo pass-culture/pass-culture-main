@@ -12,15 +12,12 @@ from utils.storage_utils import do_list_content,\
     do_local_backup_prod_container
 
 
-@app.manager.option('-c',
-                    '--container',
-                    help='Container name')
 @app.manager.option('-f',
                     '--folder',
                     help='Destination folder name')
-def backup_prod_object_storage(container, folder):
+def backup_prod_object_storage(folder):
     try:
-        do_local_backup_prod_container(container, folder)
+        do_local_backup_prod_container(folder)
     except Exception as e:
         print('ERROR: ' + str(e))
         traceback.print_tb(e.__traceback__)

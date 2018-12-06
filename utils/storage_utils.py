@@ -47,11 +47,12 @@ def swift_con_prod():
                                   auth_version=auth_version)
 
 
-def do_local_backup_prod_container(prod_container_name, dest_folder_name):
-    if prod_container_name == 'storage-pc':
+def do_local_backup_prod_container(dest_folder_name):
+    if 'OVH_BUCKET_NAME' in os.environ:
+        prod_container_name = os.environ.get('OVH_BUCKET_NAME')
         prod_conn = swift_con_prod()
     else:
-        print('Ce conteneur ne semble pas exister')
+        print('OVH_BUCKET_NAME does not seem to be set.')
         return 1
 
     download_count = 0
@@ -85,7 +86,9 @@ def do_copy_prod_container_content_to_dest_container(dest_container_name):
         return 1
 
     prod_conn = swift_con_prod()
-    prod_container_name = "pc-storage"
+
+    if 'OVH_BUCKET_NAME' in os.environ:
+        prod_container_name = os.environ.get('OVH_BUCKET_NAME')
 
     for data in prod_conn.get_container(prod_container_name)[1]:
         obj_tuple = prod_conn.get_object(prod_container_name, data['name'])
