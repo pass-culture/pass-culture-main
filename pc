@@ -118,6 +118,11 @@ function exit_restoring_branch {
   exit 1
 }
 
+function exit_success_restoring_branch {
+  git checkout "$current_branch"
+  exit 0
+}
+
 # =============================================
 # Local commands : use Docker
 # =============================================
@@ -130,7 +135,12 @@ if [[ "$CMD" == "alembic" ]]; then
 
 # Connect to API container
 elif [[ "$CMD" == "bash" ]]; then
-  RUN='docker exec -it `docker ps | grep flask | cut -d" " -f 1` bash'
+  if [[ "$ENV" == "development" ]]; then
+      RUN='docker exec -it `docker ps | grep flask | cut -d" " -f 1` bash'
+  else
+      scalingo -a "$SCALINGO_APP" run bash
+      exit
+  fi
 
 # Create diff output between schema in staging & local backend
 elif [[ "$CMD" == "diff-schema" ]]; then
@@ -272,7 +282,6 @@ elif [[ "$CMD" == "deploy-backend" ]] \
   if [[ ! "$ENV" == 'production' ]] \
         && [[ ! "$ENV" == 'staging' ]] \
         && [[ ! "$ENV" == 'demo' ]] \
-        && [[ ! "$ENV" == 'bats-tests' ]] \
         && [[ ! "$ENV" == 'integration' ]]; then
      echo_error "Can only deploy-backend in staging, demo, integration and production"
      exit 1
@@ -302,11 +311,10 @@ elif [[ "$CMD" == "deploy-backend" ]] \
   echo "$current_branch will be deployed to $ENV"
   commit_to_deploy=$(git log -n 1 --pretty=format:%H)
 
+# TODO: extract
   git fetch
   git checkout master
   git pull origin master || exit_restoring_branch
-  git checkout bats-tests
-  git pull origin bats-tests || exit_restoring_branch
   git checkout staging
   git pull origin staging || exit_restoring_branch
   git checkout demo
@@ -321,8 +329,7 @@ elif [[ "$CMD" == "deploy-backend" ]] \
     exit_restoring_branch
   fi
 
-  if [[ "$ENV" == "production" ]] \
-    || [[ "$ENV" == "bats-tests" ]]; then
+  if [[ "$ENV" == "production" ]]; then
     staging_commit=$(git log -n 1 --pretty=format:%H staging)
     echo "$staging_commit"
     if [[ "$staging_commit" != "$commit_to_deploy" ]]; then
@@ -340,20 +347,19 @@ elif [[ "$CMD" == "deploy-backend" ]] \
      rm -rf "$APP_PATH"/node_modules "$APP_PATH"/build "$APP_PATH"/public/static/fontello/.fontello.session && yarn install
      (set -a; source "$APP_PATH/node_modules/pass-culture-shared/config/run_envs/$ENV" && yarn build) || exit
 
-     url_is_set=$(cat build/static/js/*.js | grep -E backend.passculture*.beta.gouv.fr)
-     if [ -z "$url_is_set" ]; then
+     url_is_set=$(cat build/static/js/*.js | grep -E backend.passculture*)
+     if [  -z "$url_is_set" ]; then
         echo_error "URL not found in build artifact. Problem with environment variables"
         exit_restoring_branch
      fi
      netlify deploy -e "$ENV"
   fi
 
-  if [[ "$ENV" == 'production' ]]\
-    || [[ "$ENV" == "bats-tests" ]]; then
+  if [[ "$ENV" == 'production' ]]; then
      echo_warning "/!\\ You just deployed to production. Was the version also delivered to integration ?"
   fi
 
-  exit_restoring_branch
+  exit_success_restoring_branch
 
 # =============================================
 # Initialization commands
