@@ -314,10 +314,10 @@ describe('src | components | pages | discovery | Index | DiscoveryPage', () => 
     describe('handleSetDateRead', () => {
       it('', () => {})
     })
-    describe('handleFlip', () => {
+    describe('handleShowOfferDetails', () => {
       it('', () => {})
     })
-    describe('handleUnFlip', () => {
+    describe('handleCloseOfferDetails', () => {
       it('', () => {})
     })
     describe('handleUrlFlip', () => {

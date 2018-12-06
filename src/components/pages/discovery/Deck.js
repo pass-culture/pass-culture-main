@@ -18,7 +18,10 @@ import currentRecommendationSelector from '../../../selectors/currentRecommendat
 import nextRecommendationSelector from '../../../selectors/nextRecommendation'
 import previousRecommendationSelector from '../../../selectors/previousRecommendation'
 import recommendationsSelector from '../../../selectors/recommendations'
-import { PREVIOUS_NEXT_LIMIT } from '../../../utils/deck'
+import {
+  PREVIOUS_NEXT_LIMIT,
+  isThereRecommendations,
+} from '../../../utils/deck'
 
 export class RawDeck extends Component {
   constructor(props) {
@@ -42,22 +45,21 @@ export class RawDeck extends Component {
 
   componentDidUpdate(previousProps) {
     Logger.log('DECK ---> componentDidUpdate', previousProps)
-    const { history } = this.props
+    const { history, recommendations, currentRecommendation } = this.props
 
-    // const isRecommendations =
-    //   !recommendations ||
-    //   !previousProps.recommendations ||
-    //   recommendations === previousProps.recommendations ||
-    //   !currentRecommendation ||
-    //   !previousProps.currentRecommendation ||
-    //   currentRecommendation.index === previousProps.currentRecommendation.index
+    const isRecommendations = isThereRecommendations(
+      recommendations,
+      previousProps,
+      currentRecommendation
+    )
 
     this.handleUrlFlip(history, previousProps.history)
 
-    // if (isRecommendations) {
-    // BUGGE > en boucle
-    // this.handleRefreshedDraggableKey()
-    // }
+    if (!isRecommendations) {
+      console.log('LES CAROTTES SONT CUITES, ARCHI CUITES')
+      // BUGGE > en boucle car toutjours frais
+      this.handleRefreshedDraggableKey()
+    }
   }
 
   componentWillUnmount() {
@@ -350,7 +352,6 @@ RawDeck.propTypes = {
 }
 
 const mapStateToProps = (state, ownProps) => {
-  // console.log('^^^^^^^^^ ownProps ^^^^^^^^^', ownProps.match)
   const { mediationId, offerId } = ownProps.match.params
   const currentRecommendation = currentRecommendationSelector(
     state,
@@ -362,25 +363,31 @@ const mapStateToProps = (state, ownProps) => {
 
   const recommendations = recommendationsSelector(state)
 
+  const isFlipDisabled =
+    !currentRecommendation ||
+    (typeof tutoIndex === 'number' && thumbCount === 1)
+
+  const nextLimit =
+    recommendations &&
+    (PREVIOUS_NEXT_LIMIT >= recommendations.length - 1
+      ? recommendations.length - 1
+      : recommendations.length - 1 - PREVIOUS_NEXT_LIMIT)
+
+  const previousLimit =
+    recommendations &&
+    (PREVIOUS_NEXT_LIMIT < recommendations.length - 1
+      ? PREVIOUS_NEXT_LIMIT + 1
+      : 0)
+
   return {
     currentRecommendation,
     draggable: state.offerDetails.draggable,
     isEmpty: get(state, 'loading.config.isEmpty'),
-    isFlipDisabled:
-      !currentRecommendation ||
-      (typeof tutoIndex === 'number' && thumbCount === 1),
+    isFlipDisabled,
     isShownDetails: state.offerDetails.isShownDetails,
-    nextLimit:
-      recommendations &&
-      (PREVIOUS_NEXT_LIMIT >= recommendations.length - 1
-        ? recommendations.length - 1
-        : recommendations.length - 1 - PREVIOUS_NEXT_LIMIT),
+    nextLimit,
     nextRecommendation: nextRecommendationSelector(state, offerId, mediationId),
-    previousLimit:
-      recommendations &&
-      (PREVIOUS_NEXT_LIMIT < recommendations.length - 1
-        ? PREVIOUS_NEXT_LIMIT + 1
-        : 0),
+    previousLimit,
     previousRecommendation: previousRecommendationSelector(
       state,
       offerId,
