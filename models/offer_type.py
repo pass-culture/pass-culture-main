@@ -23,7 +23,13 @@ class EventType(SearchableType):
         dict_value.update(self.value)
         return dict_value
 
-
+    ACTIVATION = {
+        'label': 'Activation événementielle du pass Culture',
+        'offlineOnly': True,
+        'onlineOnly': False,
+        'sublabel': 'Activation',
+        'description': 'Activez votre pass Culture grâce à cette offre',
+    }
     CINEMA = {
         'label': "Cinéma (Projections, Séances, Évènements)",
         'offlineOnly': True,
@@ -72,13 +78,6 @@ class EventType(SearchableType):
         'onlineOnly': False,
         'sublabel': "Applaudir",
         'description': "Suivre un géant de 12 mètres dans la ville ? Rire aux éclats devant un stand up ? Rêver le temps d’un opéra ou d’un spectacle de danse ? Assister à une pièce de théâtre, ou se laisser conter une histoire ?"
-    }
-    ACTIVATION = {
-        'label': 'Activation événementielle du pass Culture',
-        'offlineOnly': True,
-        'onlineOnly': False,
-        'sublabel': 'Activation',
-        'description': 'Activez votre pass Culture grâce à cette offre',
     }
 
 

@@ -1,4 +1,5 @@
 from domain.types import get_formatted_event_or_thing_types
+from models.offer_type import EventType
 from models.pc_object import PcObject
 from utils.logger import logger
 from utils.test_utils import create_event
@@ -21,6 +22,10 @@ MOCK_DESCRIPTIONS = [
     "Voilà d'où naît la diversité des spectacles, selon les goûts divers des nations. Un peuple intrépide, grave et cruel, veut des fêtes meurtrières et périlleuses, où brillent la valeur et le sang-froid. Un peuple féroce et bouillant veut du sang, des combats et des passions atroces. Un peuple voluptueux veut de la musique et des danses. Un peuple galant veut de l'amour et de la politesse. Un peuple badin veut de la plaisanterie et du ridicule. Trahit sua quemque voluptas . Il faut, pour leur plaire, des spectacles qui favorisent leurs penchants, au lieu qu'il en faudrait qui les modérassent."
 ]
 
+MOCK_ACTIVATION_NAME = "Activation de votre Pass Culture"
+
+MOCK_ACTIVATION_DESCRIPTION = "Venez à ce rendez-vous pour activer l'argent de votre pass."
+
 def create_industrial_events():
     logger.info('create_industrial_events')
 
@@ -32,9 +37,16 @@ def create_industrial_events():
 
         mock_index = event_index % len(MOCK_NAMES)
 
+        if event_type == EventType.ACTIVATION:
+            name = MOCK_ACTIVATION_NAME
+            description = MOCK_ACTIVATION_DESCRIPTION
+        else:
+            name = MOCK_NAMES[mock_index]
+            description = MOCK_DESCRIPTIONS[mock_index]
+
         events_by_name["{} / {}".format(event_type['value'], MOCK_NAMES[mock_index])] = create_event(
-            description=MOCK_DESCRIPTIONS[mock_index],
-            event_name=MOCK_NAMES[mock_index],
+            description=description,
+            event_name=name,
             event_type=event_type['value'],
             duration_minutes=60
         )
