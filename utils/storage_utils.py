@@ -85,10 +85,12 @@ def do_copy_prod_container_content_to_dest_container(dest_container_name):
         print('Ce conteneur ne semble pas exister')
         return 1
 
-    prod_conn = swift_con_prod()
-
     if 'OVH_BUCKET_NAME' in os.environ:
         prod_container_name = os.environ.get('OVH_BUCKET_NAME')
+        prod_conn = swift_con_prod()
+    else:
+        print('OVH_BUCKET_NAME does not seem to be set.')
+        return 1
 
     for data in prod_conn.get_container(prod_container_name)[1]:
         obj_tuple = prod_conn.get_object(prod_container_name, data['name'])
