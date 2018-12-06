@@ -209,17 +209,27 @@ def test_find_filtered_offerers_with_dpt_param_return_filtered_offerers(app):
     offerer_93 = create_offerer(postal_code="93125") 
     offerer_67 = create_offerer(postal_code="67000", siren="123456781")
     offerer_34 = create_offerer(postal_code="34758", siren="123456782")
+    offerer_00 = create_offerer(postal_code="00930", siren="123456783")
+    offerer_01 = create_offerer(postal_code="00793", siren="123456784")
+    offerer_78 = create_offerer(postal_code="78758", siren="123456785")
+    offerer_973 = create_offerer(postal_code="97393", siren="123456786")
+    offerer_2A = create_offerer(postal_code="2A793", siren="123456787")
 
-    PcObject.check_and_save(offerer_93, offerer_67, offerer_34)
+    PcObject.check_and_save(offerer_93, offerer_67, offerer_34, offerer_00, offerer_01, offerer_78,
+        offerer_973, offerer_2A)
 
     # When
-    query_with_dpt = find_filtered_offerers(dpt=['93','67'])
+    query_with_dpt = find_filtered_offerers(dpt=['93','67', '2A', '973'])
 
     # Then
     assert offerer_93 in query_with_dpt
     assert offerer_67 in query_with_dpt
     assert offerer_34 not in query_with_dpt
-
+    assert offerer_00 not in query_with_dpt
+    assert offerer_01 not in query_with_dpt
+    assert offerer_78 not in query_with_dpt
+    assert offerer_973 in query_with_dpt
+    assert offerer_2A in query_with_dpt
 
 @pytest.mark.standalone
 @clean_database
@@ -236,8 +246,8 @@ def test_find_filtered_offerers_with_zipcodes_param_return_filtered_offerers(app
 
     # Then
     assert offerer_93125 in query_with_zipcodes
-    assert offerer_67000 in query_with_zipcodes
-    assert offerer_34758 not in query_with_zipcodes
+    assert offerer_67000 not in query_with_zipcodes
+    assert offerer_34758 in query_with_zipcodes
 
 
 @pytest.mark.standalone
