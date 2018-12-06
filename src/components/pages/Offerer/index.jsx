@@ -48,7 +48,7 @@ const formatOffererPatch = (patch, config) => {
   return formPatch
 }
 
-export class OffererPage extends Component {
+class OffererPage extends Component {
   constructor() {
     super()
     this.state = {

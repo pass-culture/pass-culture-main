@@ -1,4 +1,4 @@
-import { Selector } from 'testcafe'
+import { Selector, RequestMock } from 'testcafe'
 
 import { validatedOffererUserRole } from './helpers/roles'
 import { OFFERER_WITH_NO_PHYSICAL_VENUE } from './helpers/offerers'
@@ -17,6 +17,24 @@ const ibanInput = Selector('#offerer-iban')
 const bicInput = Selector('#offerer-bic')
 const sirenErrorInput = Selector('#offerer-siren-error')
 const submitButton = Selector('button.button.is-primary') //connexion
+
+var apiSireneMock = RequestMock()
+  .onRequestTo('https://sirene.entreprise.api.gouv.fr/v1/siren/216701375')
+  .respond(
+    {
+      siege_social: {
+        siren: '216701375',
+        l1_normalisee: 'Nom',
+        l4_normalisee: null,
+        libelle_commune: 'test',
+        latitude: '12.98723',
+        longitude: '87.01821',
+        code_postal: '75000',
+      },
+    },
+    200,
+    { 'access-control-allow-origin': '*' }
+  )
 
 fixture`04_01 OffererPage | Créer une nouvelle structure`.beforeEach(
   async t => {
@@ -99,23 +117,23 @@ test.skip('J edit une structure pour lui ajouter ses coordonnées bancaires car 
   // t.typeText(ibanInput, 'FR7630004000031234567890143')
 })
 
-test("Je rentre une structure dont l'adresse n'est pas renvoyée par l'api sirene et je peux valider", async t => {
-  // navigation
-  let location = await t.eval(() => window.location)
-  await t
-    .expect(location.pathname)
-    .eql('/structures/nouveau')
+test.requestHooks(apiSireneMock)(
+  "Je rentre une structure dont l'adresse n'est pas renvoyée par l'api sirene et je peux valider",
+  async t => {
+    // given
+    const sirenWithNoAddress = '216 701 375'
 
-    // input
-    .typeText(sirenInput, '216 701 375')
+    let location = await t.eval(() => window.location)
+    await t
+      .typeText(sirenInput, sirenWithNoAddress)
+      .expect(adressInput.value)
+      .eql('')
 
-  // check other completed fields
-  await t.expect(adressInput.value).eql('')
+      // when
+      .click(submitButton)
 
-  // submit
-  await t.click(submitButton)
-
-  // check location success change
-  location = await t.eval(() => window.location)
-  await t.expect(location.pathname).eql('/structures')
-})
+    // then
+    location = await t.eval(() => window.location)
+    await t.expect(location.pathname).eql('/structures')
+  }
+)

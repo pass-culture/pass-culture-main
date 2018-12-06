@@ -119,6 +119,7 @@ test('Une entrée avec cet identifiant existe déjà', async t => {
   // close notification div
   await t
     .click(closeAnchor)
+    .wait(2000)
     .expect(notificationError.exists)
     .notOk()
 })
