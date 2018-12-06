@@ -9,8 +9,7 @@ from tests.conftest import clean_database
 from utils.test_utils import API_URL, create_user, req_with_auth, create_user_offerer, \
     create_offerer, create_venue, create_event_occurrence, create_event_offer, \
     create_venue_activity, create_stock_with_thing_offer, create_stock_with_event_offer, \
-    create_offerer_activity
-from tests.repository_venue_queries_test import _save_all_activities
+    create_offerer_activity, save_all_activities
 
 TOKEN = os.environ.get('EXPORT_TOKEN')
 
@@ -265,7 +264,7 @@ def test_get_venues_return_200_and_filtered_venues(app):
     activity_after_date_range = create_venue_activity(venue93_with_offer_after_date_range, 'venue', 'insert',
        issued_at=datetime(2019, 8, 30))
 
-    _save_all_activities(activity_in_date_range1, activity_in_date_range2, activity_in_date_range3,
+    save_all_activities(activity_in_date_range1, activity_in_date_range2, activity_in_date_range3,
       activity_in_date_range4, activity_in_date_range5, activity_in_date_range6,
       activity_in_date_range7, activity_before_date_range1, activity_before_date_range2, 
       activity_after_date_range)
@@ -481,7 +480,7 @@ def test_get_offerers_return_200_and_filtered_offerers(app):
     activity_before_date_range = create_offerer_activity(offerer_93100_before_date_range_with_validated_venue_with_siret_with_offer, "offerer", "insert", issued_at=datetime(2018, 1, 2))
     activity_after_date_range = create_offerer_activity(offerer_93100_after_date_range_with_validated_venue_with_siret_with_offer, "offerer", "insert", issued_at=datetime(2018, 12, 2))
 
-    _save_all_activities(activity_in_date_range_1, activity_in_date_range_2, activity_in_date_range_3, activity_in_date_range_4, activity_in_date_range_5, activity_in_date_range_6, activity_in_date_range_7, activity_in_date_range_8, activity_in_date_range_9, activity_in_date_range_10, activity_in_date_range_11, activity_before_date_range, activity_after_date_range)
+    save_all_activities(activity_in_date_range_1, activity_in_date_range_2, activity_in_date_range_3, activity_in_date_range_4, activity_in_date_range_5, activity_in_date_range_6, activity_in_date_range_7, activity_in_date_range_8, activity_in_date_range_9, activity_in_date_range_10, activity_in_date_range_11, activity_before_date_range, activity_after_date_range)
 
     auth_request = req_with_auth(email=query_user.email, password='p@55sw0rd')
 

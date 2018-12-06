@@ -9,7 +9,7 @@ from repository.venue_queries import find_filtered_venues
 from tests.conftest import clean_database
 from utils.test_utils import create_venue, create_event_offer, create_venue_activity, \
     create_event_occurrence, create_offerer, create_thing_offer, create_stock_with_thing_offer, \
-    create_user, create_user_offerer, create_stock_from_event_occurrence
+    create_user, create_user_offerer, create_stock_from_event_occurrence, save_all_activities
 
 
  
@@ -91,7 +91,7 @@ def test_find_filtered_venues_with_date_params_return_filtered_venues(app):
         7, 30))
     activity3 = create_venue_activity(venue_20180830, 'venue', 'insert', issued_at=datetime(2018,
         8, 30))
-    _save_all_activities(activity1, activity2, activity3)
+    save_all_activities(activity1, activity2, activity3)
 
     # When
     query_with_date = find_filtered_venues(from_date='2018-07-01',
@@ -608,9 +608,3 @@ def test_find_filtered_venues_with_default_param_return_all_venues(app):
     assert venue_93000 in default_query
     assert venue_67000 in default_query
     assert venue_34000 in default_query
-
-
-def _save_all_activities(*objects):
-    for obj in objects:
-        db.session.add(obj)
-    db.session.commit()

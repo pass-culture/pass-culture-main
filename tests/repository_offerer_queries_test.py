@@ -13,7 +13,7 @@ from repository.user_queries import find_all_emails_of_user_offerers_admins
 from tests.conftest import clean_database
 from utils.test_utils import create_user, create_offerer, create_user_offerer, create_venue, \
     create_offerer_activity, create_event_offer, create_thing_offer, create_event_occurrence, \
-    create_stock_with_thing_offer, create_stock_from_event_occurrence 
+    create_stock_with_thing_offer, create_stock_from_event_occurrence, save_all_activities 
 
 
 @pytest.mark.standalone
@@ -259,7 +259,7 @@ def test_find_filtered_offerers_with_date_params_return_filtered_offerers(app):
     activity_before_date_range = create_offerer_activity(offerer_before_date_range, 'offerer', 'insert', issued_at=datetime(2017,7,15))
     activity_after_date_range = create_offerer_activity(offerer_after_date_range, 'offerer', 'insert', issued_at=datetime(2018,12,15))
 
-    _save_all_activities(activity_in_date_range, activity_20180701, activity_20180801, activity_before_date_range, activity_after_date_range)
+    save_all_activities(activity_in_date_range, activity_20180701, activity_20180801, activity_before_date_range, activity_after_date_range)
 
     # When
     query_with_date = find_filtered_offerers(from_date='2018-07-01',

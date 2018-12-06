@@ -29,6 +29,7 @@ from models import Booking, \
     Venue
 from models.payment_status import PaymentStatus, TransactionStatus
 from models.pc_object import PcObject
+from models.db import db
 from utils.object_storage import STORAGE_DIR
 from utils.token import random_token
 
@@ -721,3 +722,9 @@ def provider_test(app, provider, venueProvider, **counts):
         assert getattr(providerObj, countName) == counts[countName]
         del counts[countName]
     assertCreatedCounts(app, **counts)
+
+
+def save_all_activities(*objects):
+    for obj in objects:
+        db.session.add(obj)
+    db.session.commit()
