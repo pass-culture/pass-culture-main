@@ -15,8 +15,10 @@ describe('src | components | layout | header | PageSubmitButton', () => {
   it('should match snapshot with default props', () => {
     // given
     const props = { ...componentDefaultProps }
+
     // when
     const wrapper = shallow(<PageSubmitButton {...props} />)
+
     // then
     expect(wrapper).toBeDefined()
     expect(wrapper).toMatchSnapshot()
@@ -30,8 +32,10 @@ describe('src | components | layout | header | PageSubmitButton', () => {
       isloading: false,
       theme: 'green',
     }
+
     // when
     const wrapper = shallow(<PageSubmitButton {...props} />)
+
     // then
     expect(wrapper).toBeDefined()
     expect(wrapper).toMatchSnapshot()
@@ -45,8 +49,10 @@ describe('src | components | layout | header | PageSubmitButton', () => {
       isloading: true,
       theme: 'purple',
     }
+
     // when
     const wrapper = shallow(<PageSubmitButton {...props} />)
+
     // then
     expect(wrapper).toBeDefined()
     expect(wrapper).toMatchSnapshot()

@@ -18,12 +18,15 @@ describe('src | components | layout | header | PageBackButton', () => {
   it('should match snapshot with default props', () => {
     // given
     const props = { ...componentDefaultProps, ...routerProps }
+
     // when
     const wrapper = shallow(<RawPageBackButton {...props} />)
+
     // then
     expect(wrapper).toBeDefined()
     expect(wrapper).toMatchSnapshot()
   })
+
   it('should match snapshot with custom props', () => {
     // given
     const props = {
@@ -33,8 +36,10 @@ describe('src | components | layout | header | PageBackButton', () => {
       disabled: true,
       theme: 'purple',
     }
+
     // when
     const wrapper = shallow(<RawPageBackButton {...props} />)
+
     // then
     expect(wrapper).toBeDefined()
     expect(wrapper).toMatchSnapshot()

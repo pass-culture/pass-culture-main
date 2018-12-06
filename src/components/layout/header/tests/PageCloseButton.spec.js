@@ -19,8 +19,10 @@ describe('src | components | layout | header | PageCloseButton', () => {
   it('should match snapshot with default props', () => {
     // given
     const props = { ...routerProps, ...componentDefaultProps }
+
     // when
     const wrapper = shallow(<RawPageCloseButton {...props} />)
+
     // then
     expect(wrapper).toBeDefined()
     expect(wrapper).toMatchSnapshot()
@@ -35,8 +37,10 @@ describe('src | components | layout | header | PageCloseButton', () => {
       disabled: true,
       theme: 'purple',
     }
+
     // when
     const wrapper = shallow(<RawPageCloseButton {...props} />)
+
     // then
     expect(wrapper).toBeDefined()
     expect(wrapper).toMatchSnapshot()
