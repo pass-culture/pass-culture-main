@@ -12,10 +12,8 @@ class SignupConfirmation extends PureComponent {
           <div className="is-italic">
             <h1 className="title is-spaced is-1">Merci !</h1>
 
-            <h2 className="subtitle is-2">
-              Votre compte est en cours de création.
-            </h2>
-            <h2 className="is-2 fs20">
+            <h2>Votre compte est en cours de création.</h2>
+            <h2>
               <span className="is-bold">
                 Vous allez recevoir un lien de confirmation
               </span>{' '}

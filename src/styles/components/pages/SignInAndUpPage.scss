@@ -78,8 +78,15 @@
     }
   }
 
-  h2.subtitle {
-    margin-bottom: 0.5rem;
+  h1 {
+    font-weight: $weight-medium;
+  }
+
+  h2 {
+    margin-bottom: 12px;
+    font-weight: $weight-medium;
+    font-size: 20px;
+    line-height: 24px;
   }
 
   form {
@@ -191,10 +198,10 @@
     display: flex;
     align-items: flex-start;
     flex-direction: row;
-    margin-top: 36px;
+    margin-top: 24px;
 
     img {
-      height: 1rem;
+      height: 21px;
       margin-right: 6px;
       margin-top: 3px;
     }

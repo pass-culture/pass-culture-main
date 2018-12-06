@@ -29,9 +29,7 @@ class SignupForm extends PureComponent {
           <Form
             action="/users/signup/pro"
             BlockComponent={null}
-            handleSuccessNotification={() =>
-              'Votre compte a été créé avec succès.'
-            }
+            handleSuccessNotification={null}
             handleSuccessRedirect={() => '/inscription/confirmation'}
             layout="vertical"
             name="user">
