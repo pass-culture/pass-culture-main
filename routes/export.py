@@ -141,7 +141,7 @@ def get_pending_validation():
 @app.route('/exports/venues', methods=['POST'])
 @login_required
 @expect_json_data
-def get_venues():
+def get_export_venues():
     check_user_is_admin(current_user)
 
     params_keys = ['dpt', 'has_validated_offerer', 'zip_codes', 'from_date', 'to_date', 'has_siret',
@@ -171,7 +171,7 @@ def get_venues():
 @app.route('/exports/offerers', methods=['POST'])
 @login_required
 @expect_json_data
-def get_offerers():
+def get_export_offerers():
     check_user_is_admin(current_user)
 
     params_keys = ['dpt', 'zip_codes', 'from_date', 'to_date', 'has_siren', 'has_not_virtual_venue', 'has_validated_venue', 'offer_status', 'is_validated', 'has_validated_user', 'has_bank_information', 'is_active', 'has_validated_user_offerer']
