@@ -98,3 +98,24 @@ test.skip('J edit une structure pour lui ajouter ses coordonnées bancaires car 
   // t.typeText(bicInput, 'BNPAFRPP')
   // t.typeText(ibanInput, 'FR7630004000031234567890143')
 })
+
+test("Je rentre une structure dont l'adresse n'est pas renvoyée par l'api sirene et je peux valider", async t => {
+  // navigation
+  let location = await t.eval(() => window.location)
+  await t
+    .expect(location.pathname)
+    .eql('/structures/nouveau')
+
+    // input
+    .typeText(sirenInput, '216 701 375')
+
+  // check other completed fields
+  await t.expect(adressInput.value).eql('')
+
+  // submit
+  await t.click(submitButton)
+
+  // check location success change
+  location = await t.eval(() => window.location)
+  await t.expect(location.pathname).eql('/structures')
+})

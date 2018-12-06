@@ -48,7 +48,7 @@ const formatOffererPatch = (patch, config) => {
   return formPatch
 }
 
-class OffererPage extends Component {
+export class OffererPage extends Component {
   constructor() {
     super()
     this.state = {
@@ -243,7 +243,6 @@ class OffererPage extends Component {
                 label="Siège social"
                 name="address"
                 readOnly
-                required
               />
             </div>
           </div>
