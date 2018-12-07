@@ -3,6 +3,8 @@ import { Selector } from 'testcafe'
 import { validatedOffererUserRole } from './helpers/roles'
 import { OFFERER_WITH_NO_PHYSICAL_VENUE } from './helpers/offerers'
 
+const form = Selector('form#venue')
+const mapMarker = Selector('.leaflet-marker-pane img')
 const adressInput = Selector('#venue-address')
 const backAnchor = Selector('a.back-button')
 const cityInput = Selector('#venue-city')
@@ -166,6 +168,51 @@ test('Le code SIRET doit correspondre à un établissement de votre structure', 
     )
     .expect(notificationError.innerText)
     .contains('Formulaire non validé\nOK')
+})
+
+test('La saisie de mauvaise coordonées géographique ne crash pas la page', async t => {
+  await t
+    .typeText(latitudeInput, '45')
+    .expect(form.exists)
+    .ok()
+    .selectText(latitudeInput)
+    .typeText(latitudeInput, '45.3')
+    .expect(form.exists)
+    .ok()
+    .selectText(latitudeInput)
+    .typeText(latitudeInput, '45,3')
+    .expect(form.exists)
+    .ok()
+    .selectText(latitudeInput)
+    .pressKey('delete')
+    .typeText(latitudeInput, 'ABC')
+    .expect(form.exists)
+    .ok()
+    .selectText(latitudeInput)
+    .pressKey('delete')
+    .typeText(latitudeInput, '---')
+    .expect(form.exists)
+    .ok()
+    .selectText(latitudeInput)
+    .pressKey('delete')
+    .typeText(latitudeInput, ' ')
+    .expect(form.exists)
+    .ok()
+})
+
+test('La saisie de bonnes coordonées géographiques ajoute un marker', async t => {
+  await t
+    // Given
+    .expect(mapMarker.exists)
+    .notOk()
+    // when
+    .typeText(latitudeInput, '45')
+    .typeText(longitudeInput, '3.5')
+    // then
+    .expect(form.exists)
+    .ok()
+    .expect(mapMarker.exists)
+    .ok()
 })
 
 test("Le siret n'est pas valide", async t => {

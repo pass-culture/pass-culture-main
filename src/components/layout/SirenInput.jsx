@@ -3,7 +3,7 @@ import { BasicInput, removeWhitespaces } from 'pass-culture-shared'
 import React, { Component, Fragment } from 'react'
 import { connect } from 'react-redux'
 
-import { formatSiren } from '../../utils/string'
+import { formatSiren } from '../../utils/input'
 
 class SirenInput extends Component {
   onChange = event => {

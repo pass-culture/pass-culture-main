@@ -7,6 +7,7 @@ import Autocomplete from 'react-autocomplete'
 import { Map, Marker, TileLayer } from 'react-leaflet'
 
 import { ROOT_PATH } from '../../utils/config'
+import { sanitizeCoordinates } from '../../utils/input'
 
 const customIcon = new L.Icon({
   iconUrl: `${ROOT_PATH}/icons/ico-geoloc-solid2.svg`,
@@ -51,27 +52,28 @@ class GeoInput extends Component {
   static extraFormPatch = ['latitude', 'longitude']
 
   static getDerivedStateFromProps = (newProps, currentState) => {
+    const latitude = sanitizeCoordinates(newProps.latitude)
+    const longitude = sanitizeCoordinates(newProps.longitude)
+
     return Object.assign(
       {},
       currentState,
       {
         position: {
-          latitude:
-            newProps.latitude || newProps.defaultInitialPosition.latitude,
-          longitude:
-            newProps.longitude || newProps.defaultInitialPosition.longitude,
+          latitude: latitude || newProps.defaultInitialPosition.latitude,
+          longitude: longitude || newProps.defaultInitialPosition.longitude,
           zoom:
-            newProps.latitude && newProps.longitude
+            latitude && longitude
               ? newProps.zoom
               : newProps.defaultInitialPosition.zoom,
         },
       },
-      newProps.latitude && newProps.longitude
+      latitude && longitude
         ? {
             suggestions: [],
             marker: {
-              latitude: newProps.latitude,
-              longitude: newProps.longitude,
+              latitude: latitude,
+              longitude: longitude,
             },
           }
         : null

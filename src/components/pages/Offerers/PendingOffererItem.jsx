@@ -1,5 +1,5 @@
 import React from 'react'
-import { formatSiren } from '../../../utils/string'
+import { formatSiren } from '../../../utils/input'
 
 const PendingOffererItem = ({ offerer }) => (
   <li className="offerer-item pending">
