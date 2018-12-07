@@ -108,14 +108,41 @@ teardown(){
 
 @test "Deploy-backend on known environment with local tag but not existing remotely is not allowed" {
     # Given
+    index=0
     expected_output='ERROR: You need to specify an existing remote tag to deploy'
 
     # call with param: symbolic-ref -q HEAD
     mock_set_output "${mock}" "bats-tests" 1
-    # call with param: ls-remote --tags origin refs/tags/v0.0.0
-    mock_set_output "${mock}" "" 2
-    # call with param: checkout bats-tests (function exit_restoring_branch)
-    mock_set_output "${mock}" "ok" 3
+    # $(git log -n 1 --pretty=format:%H)
+    mock_set_output "${mock}" "commit_hash" 2
+    # git fetch
+    mock_set_output "${mock}" "fetch" 3
+    # git checkout master
+    mock_set_output "${mock}" "checkout master" 4
+    # git pull origin master || exit_restoring_branch
+    mock_set_output "${mock}" "pull master" 5
+    # git checkout staging
+    mock_set_output "${mock}" "checkout staging" 6
+    # git pull origin staging || exit_restoring_branch
+    mock_set_output "${mock}" "pull staging" 7
+    # git checkout demo
+    mock_set_output "${mock}" "checkout demo" 8
+    # git pull origin demo || exit_restoring_branch
+    mock_set_output "${mock}" "pull demo" 9
+    # git checkout integration
+    mock_set_output "${mock}" "checkout integration" 10
+    # git pull origin integration || exit_restoring_branch
+    mock_set_output "${mock}" "pull integration" 11
+    # git checkout production
+    mock_set_output "${mock}" "checkout production" 12
+    # git pull origin production || exit_restoring_branch
+    mock_set_output "${mock}" "pull production" 13
+    # git tag -l --points-at "$commit_to_deploy" | wc -l
+    mock_set_output "${mock}" "tagged_commit" 14
+    # git ls-remote --tags origin refs/tags/v"$TAG_NAME"
+    mock_set_output "${mock}" "" 15
+    # exit_restoring_branch
+    mock_set_output "${mock}" "checkout origin branch" 16
 
     # Test mock is set up properly
     [[ "$(readlink -e $(which git))" == "$(readlink -e ${mock})" ]]
@@ -125,14 +152,16 @@ teardown(){
 
     # Then
     echo "$(mock_get_call_num ${mock})"
-    [[ "$(mock_get_call_num ${mock})" -eq 3 ]]
+    [[ "$(mock_get_call_num ${mock})" -eq 16 ]]
 
-    echo "Status: ""$status"
-    [ "$status" -eq 1 ]
-
+    # Allow to follow last steps
+    for index in ${!lines[@]}; do
+      echo "Output $index: ${lines[index]}"
+    done
+    index=$((index-1))
     echo "Expected: ""$expected_output"
-    echo "Output: ""${lines[0]}"
-    [[ "${lines[0]}" =~ .*$expected_output.* ]]
+    echo "Output: ${lines[index]}"
+    [[ "${lines[index]}" =~ .*$expected_output.* ]]
 }
 
 @test "Deploy-backend on known environment with valid tag but not deployed in staging is not allowed" {
@@ -142,38 +171,40 @@ teardown(){
 
     # call with param: symbolic-ref -q HEAD
     mock_set_output "${mock}" "bats-tests" 1
-    # call with param: ls-remote --tags origin refs/tags/v0.0.0
-    mock_set_output "${mock}" "v0.0.0" 2
-    # call with param: checkout bats-tests (function exit_restoring_branch)
-    mock_set_output "${mock}" "exit_restoring_branch" 3
     # $(git log -n 1 --pretty=format:%H)
-    mock_set_output "${mock}" "commit_hash" 4
+    mock_set_output "${mock}" "commit_hash" 2
     # git fetch
-    mock_set_output "${mock}" "fetch" 5
+    mock_set_output "${mock}" "fetch" 3
     # git checkout master
-    mock_set_output "${mock}" "checkout master" 6
+    mock_set_output "${mock}" "checkout master" 4
     # git pull origin master || exit_restoring_branch
-    mock_set_output "${mock}" "pull master" 7
+    mock_set_output "${mock}" "pull master" 5
     # git checkout staging
-    mock_set_output "${mock}" "checkout staging" 8
+    mock_set_output "${mock}" "checkout staging" 6
     # git pull origin staging || exit_restoring_branch
-    mock_set_output "${mock}" "pull staging" 9
+    mock_set_output "${mock}" "pull staging" 7
     # git checkout demo
-    mock_set_output "${mock}" "checkout demo" 10
+    mock_set_output "${mock}" "checkout demo" 8
     # git pull origin demo || exit_restoring_branch
-    mock_set_output "${mock}" "pull demo" 11
+    mock_set_output "${mock}" "pull demo" 9
     # git checkout integration
-    mock_set_output "${mock}" "checkout integration" 12
+    mock_set_output "${mock}" "checkout integration" 10
     # git pull origin integration || exit_restoring_branch
-    mock_set_output "${mock}" "pull integration" 13
+    mock_set_output "${mock}" "pull integration" 11
     # git checkout production
-    mock_set_output "${mock}" "checkout production" 14
+    mock_set_output "${mock}" "checkout production" 12
     # git pull origin production || exit_restoring_branch
-    mock_set_output "${mock}" "pull production" 15
+    mock_set_output "${mock}" "pull production" 13
     # git tag -l --points-at "$commit_to_deploy" | wc -l
-    mock_set_output "${mock}" "commit_not_in_staging" 16
+    mock_set_output "${mock}" "tagged_commit" 14
+    # git ls-remote --tags origin refs/tags/v"$TAG_NAME"
+    mock_set_output "${mock}" "v0.0.0" 15
+    # git checkout "v$TAG_NAME"
+    mock_set_output "${mock}" "ok" 16
     # git log -n 1 --pretty=format:%H staging
-    mock_set_output "${mock}" "pretty log" 17
+    mock_set_output "${mock}" "commit_hash_not_in_staging" 17
+    # exit_restoring_branch
+    mock_set_output "${mock}" "checkout origin branch" 18
 
     # Test mock is set up properly
     [[ "$(readlink -e $(which git))" == "$(readlink -e ${mock})" ]]
@@ -192,7 +223,7 @@ teardown(){
     for index in ${!lines[@]}; do
       echo "Output $index: ${lines[index]}"
     done
-    index=$((index))
+    index=$((index-1))
     echo "Expected: ""$expected_output"
     echo "Output: ${lines[index]}"
     [[ "${lines[index]}" =~ .*$expected_output.* ]]
@@ -205,45 +236,41 @@ teardown(){
     expected_output='/!\\ You just deployed to production. Was the version also delivered to integration ?'
 
     # call with param: symbolic-ref -q HEAD
-    mock_set_output "${mock}" "current_branch" 1
-    # call with param: ls-remote --tags origin refs/tags/v0.0.0
-    mock_set_output "${mock}" "v0.0.0" 2
+    mock_set_output "${mock}" "bats-tests" 1
     # $(git log -n 1 --pretty=format:%H)
-    mock_set_output "${mock}" "commit_hash" 3
+    mock_set_output "${mock}" "commit_hash" 2
     # git fetch
-    mock_set_output "${mock}" "fetch" 4
+    mock_set_output "${mock}" "fetch" 3
     # git checkout master
-    mock_set_output "${mock}" "checkout master" 5
+    mock_set_output "${mock}" "checkout master" 4
     # git pull origin master || exit_restoring_branch
-    mock_set_output "${mock}" "pull master" 6
+    mock_set_output "${mock}" "pull master" 5
     # git checkout staging
-    mock_set_output "${mock}" "checkout staging" 7
+    mock_set_output "${mock}" "checkout staging" 6
     # git pull origin staging || exit_restoring_branch
-    mock_set_output "${mock}" "pull staging" 8
+    mock_set_output "${mock}" "pull staging" 7
     # git checkout demo
-    mock_set_output "${mock}" "checkout demo" 9
+    mock_set_output "${mock}" "checkout demo" 8
     # git pull origin demo || exit_restoring_branch
-    mock_set_output "${mock}" "pull demo" 10
+    mock_set_output "${mock}" "pull demo" 9
     # git checkout integration
-    mock_set_output "${mock}" "checkout integration" 11
+    mock_set_output "${mock}" "checkout integration" 10
     # git pull origin integration || exit_restoring_branch
-    mock_set_output "${mock}" "pull integration" 12
+    mock_set_output "${mock}" "pull integration" 11
     # git checkout production
-    mock_set_output "${mock}" "checkout production" 13
+    mock_set_output "${mock}" "checkout production" 12
     # git pull origin production || exit_restoring_branch
-    mock_set_output "${mock}" "pull production" 14
+    mock_set_output "${mock}" "pull production" 13
     # git tag -l --points-at "$commit_to_deploy" | wc -l
-    mock_set_output "${mock}" "tagged commit" 15
+    mock_set_output "${mock}" "tagged_commit" 14
+    # git ls-remote --tags origin refs/tags/v"$TAG_NAME"
+    mock_set_output "${mock}" "v0.0.0" 15
+    # git checkout "v$TAG_NAME"
+    mock_set_output "${mock}" "ok" 16
     # git log -n 1 --pretty=format:%H staging
-    mock_set_output "${mock}" "commit_hash" 16
-    # git checkout "$ENV"
-    mock_set_output "${mock}" "checkout ENV" 17
-    # git merge "$commit_to_deploy"
-    mock_set_output "${mock}" "merge" 18
-    # git push origin "$ENV"
-    mock_set_output "${mock}" "push ENV" 19
-    # git push origin "$ENV"
-    mock_set_output "${mock}" "Exit success !" 20
+    mock_set_output "${mock}" "commit_hash" 17
+    # git push -f origin HEAD:"$ENV"
+    mock_set_output "${mock}" "Exit success !" 18
 
     # Test mock is set up properly
     [[ "$(readlink -e $(which git))" == "$(readlink -e ${mock})" ]]
@@ -252,9 +279,8 @@ teardown(){
     run pc -e production -t 0.0.0 deploy-backend
 
     # Then
-    debug_mock
     echo "$(mock_get_call_num ${mock})"
-    #[[ "$(mock_get_call_num ${mock})" -eq 20 ]]
+    [[ "$(mock_get_call_num ${mock})" -eq 19 ]]
 
     for index in ${!lines[@]};
     do
@@ -262,8 +288,9 @@ teardown(){
     done
 
     echo "Status: ""$status"
-    [ "$status" -eq 1 ]
+    [ "$status" -eq 0 ]
 
+    index=$((index))
     echo "Expected: ""$expected_output"
     echo "Output: ${lines[index]}"
     [[ "${lines[index]}" =~ .*$expected_output.* ]]
