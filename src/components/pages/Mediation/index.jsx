@@ -17,6 +17,10 @@ import {
   mediationNormalizer,
   offerNormalizer,
 } from '../../../utils/normalizers'
+import CanvasTools from '../../../utils/canvas'
+
+const IMAGE_UPLOAD_SIZE = 400
+const IMAGE_UPLOAD_BORDER = 25
 
 class Mediation extends Component {
   constructor() {
@@ -40,12 +44,6 @@ class Mediation extends Component {
       imageUrl: prevState.imageUrl || get(nextProps, 'mediation.thumbPath'),
       isNew: mediationId === 'nouveau',
     }
-  }
-
-  static defaultProps = {
-    type: 'image',
-    imageUploadSize: 400,
-    imageUploadBorder: 25,
   }
 
   handleDataRequest = (handleSuccess, handleFail) => {
@@ -113,121 +111,70 @@ class Mediation extends Component {
   }
 
   drawRectangles = ctx => {
-    const { imageUploadBorder, imageUploadSize } = this.props
+    const cvs = new CanvasTools(ctx)
 
-    const size =
-      window.devicePixelRatio * (imageUploadSize + 2 * imageUploadBorder)
-    const firstDimensions = [
-      imageUploadBorder + size / 32,
-      imageUploadBorder + size / 32,
-      size - 2 * (imageUploadBorder + size / 32),
-      size - 2 * (imageUploadBorder + size / 32),
-    ]
-
-    const firstDimensionsLabel = [
-      firstDimensions[0],
-      firstDimensions[1],
-      20,
-      20,
-    ]
-    const firstDimensionsLabelBorder = Array.from(firstDimensionsLabel).map(
-      pos => pos + 0.5
-    )
-    const firstDimensionsLabelText = [
-      '1',
-      firstDimensions[0] + 6,
-      firstDimensions[1] + 13,
-    ]
-
-    const secondDimensions = [
-      imageUploadBorder + size / 8,
-      imageUploadBorder + size / 20,
-      size - 2 * (imageUploadBorder + size / 8),
-      size - 2 * (imageUploadBorder + size / 20),
-    ]
-
-    const secondDimensionsLabel = [
-      secondDimensions[0],
-      secondDimensions[1],
-      20,
-      20,
-    ]
-    const secondDimensionsLabelBorder = Array.from(secondDimensionsLabel).map(
-      pos => pos + 0.5
-    )
-    const secondDimensionsLabelText = [
-      '2',
-      secondDimensions[0] + 5,
-      secondDimensions[1] + 13,
-    ]
-
-    const thirdDimensions = [
-      imageUploadBorder + size / 6,
-      imageUploadBorder + size / 4,
-      size - 2 * (imageUploadBorder + size / 6),
-      size / 2.7 - 2 * imageUploadBorder,
-    ]
-
-    const thirdDimensionsBorder = Array.from(thirdDimensions).map(
-      pos => pos + 1
-    )
-    const thirdDimensionsDashDimension = [10, 5]
-
-    // Reset dash
-    ctx.setLineDash([0, 0])
     ctx.font = 'bold 13px barlow'
 
-    // First violet rectangle
-    ctx.beginPath()
-    ctx.lineWidth = '4'
-    ctx.strokeStyle = 'white'
-    ctx.rect(...firstDimensions)
-    ctx.stroke()
-    ctx.beginPath()
-    ctx.lineWidth = '2'
-    ctx.strokeStyle = '#b921d7'
-    ctx.rect(...firstDimensions)
-    ctx.stroke()
+    const purpleRectangle = {
+      width: 2,
+      color: '#b921d7',
+      coordinates: [
+        IMAGE_UPLOAD_BORDER,
+        IMAGE_UPLOAD_BORDER,
+        IMAGE_UPLOAD_SIZE,
+        IMAGE_UPLOAD_SIZE,
+      ],
+    }
 
-    ctx.fillStyle = 'white'
-    ctx.fillRect(...firstDimensionsLabelBorder)
-    ctx.fillStyle = '#b921d7'
-    ctx.fillRect(...firstDimensionsLabel)
-    ctx.fillStyle = 'white'
-    ctx.fillText(...firstDimensionsLabelText)
+    cvs.drawArea(purpleRectangle)
+    cvs.drawLabel({
+      parent: purpleRectangle,
+      text: '1',
+      color: 'white',
+      width: 20,
+    })
 
-    // Second green rectangle
-    ctx.beginPath()
-    ctx.lineWidth = '4'
-    ctx.strokeStyle = 'white'
-    ctx.rect(...secondDimensions)
-    ctx.stroke()
-    ctx.beginPath()
-    ctx.lineWidth = '2'
-    ctx.strokeStyle = '#4CD964'
-    ctx.rect(...secondDimensions)
-    ctx.stroke()
+    const greenRectangle = {
+      width: 2,
+      color: '#4CD964',
+      coordinates: [
+        IMAGE_UPLOAD_BORDER + 57,
+        IMAGE_UPLOAD_BORDER + 11,
+        IMAGE_UPLOAD_SIZE - 57 * 2,
+        IMAGE_UPLOAD_SIZE - 11 * 2,
+      ],
+    }
+    cvs.drawArea(greenRectangle)
+    cvs.drawLabel({
+      parent: greenRectangle,
+      text: '2',
+      color: 'white',
+      width: 20,
+    })
 
-    ctx.fillStyle = 'white'
-    ctx.fillRect(...secondDimensionsLabelBorder)
-    ctx.fillStyle = '#4CD964'
-    ctx.fillRect(...secondDimensionsLabel)
-    ctx.fillStyle = 'black'
-    ctx.fillText(...secondDimensionsLabelText)
+    const dashedRectangle = [
+      0.5 + IMAGE_UPLOAD_BORDER + 72,
+      0.5 + IMAGE_UPLOAD_BORDER + 80,
+      0.5 + IMAGE_UPLOAD_SIZE - 72 * 2,
+      0.5 + 160,
+    ]
 
-    // Third blue rectangle
-    ctx.beginPath()
-    ctx.lineWidth = '1'
-    ctx.setLineDash(thirdDimensionsDashDimension)
-    ctx.strokeStyle = 'white'
-    ctx.rect(...thirdDimensionsBorder)
-    ctx.stroke()
-    ctx.beginPath()
-    ctx.lineWidth = '1'
-    ctx.setLineDash(thirdDimensionsDashDimension)
-    ctx.strokeStyle = 'black'
-    ctx.rect(...thirdDimensions)
-    ctx.stroke()
+    const dash = {
+      length: 10,
+      space: 4,
+    }
+
+    cvs.drawDashed({
+      coordinates: dashedRectangle,
+      dash,
+      color: 'white',
+    })
+
+    cvs.drawDashed({
+      coordinates: cvs.shift(dashedRectangle),
+      dash,
+      color: 'black',
+    })
   }
 
   onOkClick = e => {
@@ -290,8 +237,6 @@ class Mediation extends Component {
 
   render() {
     const {
-      imageUploadSize,
-      imageUploadBorder,
       match: {
         params: { offerId },
       },
@@ -366,15 +311,15 @@ class Mediation extends Component {
             <hr className="dotted" />
             <div className="row">
               <UploadThumb
-                border={imageUploadBorder}
+                border={IMAGE_UPLOAD_BORDER}
                 borderRadius={0}
                 collectionName="mediations"
                 entityId={get(mediation, 'id')}
                 hasExistingImage={!isNew}
-                height={imageUploadSize}
+                height={IMAGE_UPLOAD_SIZE}
                 image={image || imageUrl}
                 index={0}
-                width={imageUploadSize}
+                width={IMAGE_UPLOAD_SIZE}
                 readOnly
                 required
                 onImageChange={this.onImageChange}
@@ -431,22 +376,22 @@ class Mediation extends Component {
         <HeroSection title={`${isNew ? 'Créez' : 'Modifiez'} une accroche`}>
           <p className="subtitle">
             Ajoutez un visuel marquant pour mettre en avant cette offre.
-
           </p>
           <p>
-            <b>L'accroche permet d'afficher votre offre "à la une" de l'app, </b>
-            et la rend visuellement plus attrayante.
-            C'est une image (et bientôt une phrase ou une vidéo) intrigante, percutante, séduisante...
+            <b>
+              L'accroche permet d'afficher votre offre "à la une" de l'app,{' '}
+            </b>
+            et la rend visuellement plus attrayante. C'est une image (et bientôt
+            une phrase ou une vidéo) intrigante, percutante, séduisante...
             <br /> en un mot : accrocheuse.
           </p>
           <p>
-            Les accroches font la spécificité du Pass Culture.
-            Prenez le temps de les choisir avec soin !
-
+            Les accroches font la spécificité du Pass Culture. Prenez le temps
+            de les choisir avec soin !
           </p>
           <p>
             Le fichier doit peser <b>100Ko minimum.</b>
-          {/*
+            {/*
             <br />
             Utilisateurs avancés : vous pouvez
             <a>télécharger ici les gabarits Illustrator et Photoshop.</a>
