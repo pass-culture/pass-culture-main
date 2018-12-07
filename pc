@@ -272,6 +272,22 @@ elif [[ "$CMD" == "test-cafe-webapp" ]] || [[ "$CMD" == "test-cafe-pro" ]]; then
 # Deploy commands
 # =============================================
 
+# Tag commit on the current branch of API/Webapp/Pro
+elif [[ "$CMD" == "tag-version-api" ]] \
+     || [[ "$CMD" == "tag-version-webapp" ]] \
+     || [[ "$CMD" == "tag-version-pro" ]]; then
+  if [[ "$TAG_NAME" ]]; then
+    if [[ "$CMD" == "tag-version-api" ]]; then
+      TAG_VERSION="v$TAG_NAME"
+      git tag "$TAG_VERSION"
+    else
+      TAG_VERSION="$TAG_NAME"
+      yarn version --new-version "$TAG_VERSION"
+      git push origin "$current_branch"
+    fi
+    git push origin "$TAG_VERSION"
+  fi
+
 # Deploy current version of API/Webapp/Pro to specified environment
 elif [[ "$CMD" == "deploy-backend" ]] \
      || [[ "$CMD" == "deploy-frontend-webapp" ]] \
@@ -292,13 +308,6 @@ elif [[ "$CMD" == "deploy-backend" ]] \
     exit_restoring_branch
   fi
 
-  if [[ ! -z $(git ls-remote --tags origin refs/tags/v"$TAG_NAME") ]]; then
-    git checkout "v$TAG_NAME"
-  else
-    echo_error "ERROR: You need to specify an existing remote tag to deploy"
-    exit_restoring_branch
-  fi
-
   if [[ "$CMD" == "deploy-frontend-webapp"  ]]; then
 	APP_PATH="$ROOT_PATH"/webapp
   elif [[ "$CMD" == "deploy-frontend-pro"  ]]; then
@@ -311,7 +320,7 @@ elif [[ "$CMD" == "deploy-backend" ]] \
   echo "$current_branch will be deployed to $ENV"
   commit_to_deploy=$(git log -n 1 --pretty=format:%H)
 
-# TODO: extract
+  # TODO: extract
   git fetch
   git checkout master
   git pull origin master || exit_restoring_branch
@@ -329,6 +338,13 @@ elif [[ "$CMD" == "deploy-backend" ]] \
     exit_restoring_branch
   fi
 
+  if [[ ! -z $(git ls-remote --tags origin refs/tags/v"$TAG_NAME") ]]; then
+    git checkout "v$TAG_NAME"
+  else
+    echo_error "ERROR: You need to specify an existing remote tag to deploy"
+    exit_restoring_branch
+  fi
+
   if [[ "$ENV" == "production" ]]; then
     staging_commit=$(git log -n 1 --pretty=format:%H staging)
     echo "$staging_commit"
@@ -338,9 +354,7 @@ elif [[ "$CMD" == "deploy-backend" ]] \
     fi
   fi
 
-  git checkout "$ENV"
-  git merge "$commit_to_deploy"
-  git push origin "$ENV"
+  git push -f origin HEAD:"$ENV"
 
   if [[ "$CMD" == "deploy-frontend-webapp" ]] \
      || [[ "$CMD" == "deploy-frontend-pro" ]]; then
