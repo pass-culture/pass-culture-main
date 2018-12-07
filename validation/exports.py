@@ -74,6 +74,9 @@ def check_get_offerers_params(param: {}) -> bool:
     if param.get('has_validated_venue', None):
         _check_has_validated_venue_param(param['has_validated_venue'])
 
+    if param.get('has_venue_with_siret', None):
+        _check_has_venue_with_siret_param(param['has_venue_with_siret'])
+
     if param.get('offer_status', None):
         _check_offer_status_param(param['offer_status'])
 
@@ -222,6 +225,13 @@ def _check_has_validated_venue_param(has_validated_venue) -> bool:
         return True
     api_errors = ApiErrors()
     api_errors.addError('has_validated_venue', 'has_validated_venue is a boolean, it accepts True or False')
+    raise api_errors
+
+def _check_has_venue_with_siret_param(has_venue_with_siret) -> bool:
+    if type(has_venue_with_siret) == bool:
+        return True
+    api_errors = ApiErrors()
+    api_errors.addError('has_venue_with_siret', 'has_venue_with_siret is a boolean, it accepts True or False')
     raise api_errors
 
 

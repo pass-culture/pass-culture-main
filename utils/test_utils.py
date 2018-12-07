@@ -476,7 +476,8 @@ def create_offerer(
         iban=None,
         bic=None,
         idx=None,
-        is_active=True
+        is_active=True, 
+        date_created=datetime.utcnow()
 ):
     offerer = Offerer()
     offerer.siren = siren
@@ -489,6 +490,7 @@ def create_offerer(
     offerer.bic = bic
     offerer.iban = iban
     offerer.id = idx
+    offerer.dateCreated = date_created
     return offerer
 
 

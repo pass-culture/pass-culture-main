@@ -174,7 +174,7 @@ def get_export_venues():
 def get_export_offerers():
     check_user_is_admin(current_user)
 
-    params_keys = ['dpt', 'zip_codes', 'from_date', 'to_date', 'has_siren', 'has_not_virtual_venue', 'has_validated_venue', 'offer_status', 'is_validated', 'has_validated_user', 'has_bank_information', 'is_active', 'has_validated_user_offerer']
+    params_keys = ['dpt', 'zip_codes', 'from_date', 'to_date', 'has_siren', 'has_not_virtual_venue', 'has_validated_venue', 'has_venue_with_siret', 'offer_status', 'is_validated', 'has_validated_user', 'has_bank_information', 'is_active', 'has_validated_user_offerer']
     params = {}
 
     for key in params_keys:
@@ -188,6 +188,7 @@ def get_export_offerers():
                                     has_siren = params['has_siren'],
                                     has_not_virtual_venue = params['has_not_virtual_venue'],
                                     has_validated_venue = params['has_validated_venue'],
+                                    has_venue_with_siret = params['has_venue_with_siret'],
                                     offer_status = params['offer_status'],
                                     is_validated = params['is_validated'],
                                     has_validated_user = params['has_validated_user'],

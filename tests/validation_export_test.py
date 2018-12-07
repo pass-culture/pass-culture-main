@@ -390,6 +390,20 @@ def test_check_get_offerers_params_raises_api_error_if_not_valid_has_validated_v
 
 
 @pytest.mark.standalone
+def test_check_get_offerers_params_raises_api_error_if_not_valid_has_venue_with_siret_param(app):
+    # given
+    not_valid_has_venue_with_siret_param = {}
+    not_valid_has_venue_with_siret_param['has_venue_with_siret'] = 'I\'m not a boolean'
+
+    # when
+    with pytest.raises(ApiErrors) as errors:
+        check_get_offerers_params(not_valid_has_venue_with_siret_param)
+
+    # then
+    assert errors.value.errors['has_venue_with_siret'] == ['has_venue_with_siret is a boolean, it accepts True or False']
+
+
+@pytest.mark.standalone
 def test_check_get_offerers_params_raises_api_error_if_not_valid_is_validated_param(app):
     # given
     not_valid_is_validated_param = {}
@@ -470,6 +484,7 @@ def test_check_get_offerers_params_does_not_raise_api_error_if_good_param(app):
     params['has_siren'] = True 
     params['has_not_virtual_venue'] = False 
     params['has_validated_venue'] = True
+    params['has_venue_with_siret'] = True
     params['offer_status'] = 'EXPIRED'
     params['is_validated'] = True
     params['has_validated_user'] = True
