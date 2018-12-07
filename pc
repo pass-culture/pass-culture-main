@@ -287,11 +287,11 @@ elif [[ "$CMD" == "test-cafe-webapp" ]] || [[ "$CMD" == "test-cafe-pro" ]]; then
 # =============================================
 
 # Tag commit on the current branch of API/Webapp/Pro
-elif [[ "$CMD" == "tag-version-api" ]] \
+elif [[ "$CMD" == "tag-version-backend" ]] \
      || [[ "$CMD" == "tag-version-webapp" ]] \
      || [[ "$CMD" == "tag-version-pro" ]]; then
   if [[ "$TAG_NAME" ]]; then
-    if [[ "$CMD" == "tag-version-api" ]]; then
+    if [[ "$CMD" == "tag-version-backend" ]]; then
       TAG_VERSION="v$TAG_NAME"
       git tag "$TAG_VERSION"
     else
