@@ -4,7 +4,8 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Field } from 'react-final-form'
 
-import { FormError } from '../FormError'
+import FormError from '../FormError'
+import InputLabel from '../InputLabel'
 import { validateRequiredField } from '../validators'
 
 const InputField = ({
@@ -27,12 +28,7 @@ const InputField = ({
       render={({ input, meta }) => (
         <p className={`${className}`}>
           <label htmlFor={name} className="pc-final-form-text">
-            {label && (
-              <span className="pc-final-form-label">
-                <span>{label}</span>
-                {required && <span className="pc-final-form-asterisk">*</span>}
-              </span>
-            )}
+            {label && <InputLabel label={label} required={required} />}
             <span className="pc-final-form-inner">
               <input
                 {...input}

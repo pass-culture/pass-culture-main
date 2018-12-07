@@ -4,7 +4,8 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Field } from 'react-final-form'
 
-import { FormError } from '../FormError'
+import FormError from '../FormError'
+import InputLabel from '../InputLabel'
 import { validatePasswordField } from '../validators'
 
 class PasswordField extends React.PureComponent {
@@ -44,14 +45,7 @@ class PasswordField extends React.PureComponent {
         render={({ input, meta }) => (
           <p className={`${className}`}>
             <label htmlFor={id || name} className="pc-final-form-password">
-              {label && (
-                <span className="pc-final-form-label">
-                  <span>{label}</span>
-                  {required && (
-                    <span className="pc-final-form-asterisk">*</span>
-                  )}
-                </span>
-              )}
+              {label && <InputLabel label={label} required={required} />}
               <span className="pc-final-form-inner">
                 <input
                   {...input}

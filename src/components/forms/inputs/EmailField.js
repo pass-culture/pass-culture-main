@@ -4,7 +4,8 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Field } from 'react-final-form'
 
-import { FormError } from '../FormError'
+import FormError from '../FormError'
+import InputLabel from '../InputLabel'
 import { isEmpty } from '../../../utils/strings'
 
 const DEFAULT_REQUIRED_ERROR = 'Ce champs est requis'
@@ -35,12 +36,7 @@ const EmailField = ({
       render={({ input, meta }) => (
         <p className={`${className}`}>
           <label htmlFor={id || name} className="pc-final-form-text">
-            {label && (
-              <span className="pc-final-form-label">
-                <span>{label}</span>
-                {required && <span className="pc-final-form-asterisk">*</span>}
-              </span>
-            )}
+            {label && <InputLabel label={label} required={required} />}
             <span className="pc-final-form-inner">
               <input
                 {...input}

@@ -6,6 +6,8 @@ import PropTypes from 'prop-types'
 import { withSizes } from 'react-sizes'
 import DatePicker from 'react-datepicker'
 
+import InputLabel from '../InputLabel'
+
 const DatePickerCustomInput = React.forwardRef((props, ref) => {
   const hasvalue =
     props.value && typeof props.value === 'string' && props.value.trim() !== ''
@@ -55,12 +57,7 @@ const DatePickerField = ({
   return (
     <div className={`${className}`}>
       <label htmlFor={id || name} className="pc-final-form-datepicker">
-        {label && (
-          <span className="pc-final-form-label">
-            <span>{label}</span>
-            {required && <span className="pc-final-form-asterisk">*</span>}
-          </span>
-        )}
+        {label && <InputLabel label={label} required={required} />}
         <div className="pc-final-form-inner">
           <DatePicker
             shouldCloseOnSelect

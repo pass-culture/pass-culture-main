@@ -10,7 +10,7 @@ import PropTypes from 'prop-types'
 // Documentation: https://reactjs.org/docs/lists-and-keys.html#keys
 const setDangerousArrayKeyIndex = index => `field_error_${index}`
 
-export const FormError = ({ className, customMessage, id, meta, theme }) => {
+const FormError = ({ className, customMessage, id, meta, theme }) => {
   const showError =
     customMessage ||
     (meta &&

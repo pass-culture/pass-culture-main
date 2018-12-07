@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Field } from 'react-final-form'
 
-import { FormError } from '../FormError'
+import FormError from '../FormError'
 
 const noop = () => {}
 
