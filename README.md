@@ -115,28 +115,23 @@ pc test-cafe-pro -b chrome:headless -f signup.js
 Pour déployer une nouvelle version web, par exemple en staging:
 **(Attention de ne pas déployer sur la prod sans authorisation !)**
 ```bash
-git checkout [branch_to_deploy]
-rm -rf node_modules build
-yarn install
-yarn version
-pc -e staging deploy-frontend-webapp
+pc -t 8.0.0 tag-version-webapp
+pc -e staging -t 8.0.0 deploy-frontend-webapp
 ```
 Et pour pro sur staging, il suffit de remplacer la dernière commande par celle-ci:
 
 ```bash
-pc -e staging deploy-frontend-pro
+pc -t 8.0.0 tag-version-pro
+pc -e staging -t 8.0.0 deploy-frontend-pro
 ```
 
-Lors du yarn version, vous devrez respecter le semantic versionning (https://semver.org/) : vN.x.0
+Lors du tag de version, vous devrez respecter le semantic versionning (https://semver.org/) : vN.x.0
 N est le numéro de l'itération et x un autoincrément qui démarre à 0 et est changé en cas de hotfix en cours d'itération.
 
 Pour déployer en production ensuite :
 
 ```bash
-git checkout [branch_to_deploy]
-rm -rf node_modules build
-yarn install
-pc -e production deploy-frontend-webapp
+pc -e production -t 8.0.0 deploy-frontend-webapp
 ```
 
 #### Publier shared sur npm
@@ -167,21 +162,14 @@ Pour déployer une nouvelle version de l'API, par exemple en staging:
 **(Attention de ne pas déployer sur la prod sans autorisation !)**
 
 ```bash
-git checkout [branch_to_deploy]
-git pull -r
-git tag 'vN.x'
-git push origin tag
-pc -e staging deploy-backend
+pc -t 8.0.0 tag-version-backend
+pc -e staging -t 8.0.0 deploy-backend
 ```
 
-où N est le numéro de l'itération et x un autoincrément qui démarre à 0 et est changé en cas de hotfix en cours d'itération.
-
-Ensuite pour mettre en production ce qui a été déployé sur l'environnement staging :
+Ensuite pour mettre en production le tag qui a été déployé sur l'environnement staging :
 
 ```bash
-git checkout staging
-git pull -r
-pc -e production deploy-backend
+pc -e production -t 8.0.0 deploy-backend
 ```
 
 
