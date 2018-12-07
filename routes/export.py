@@ -174,14 +174,15 @@ def get_export_venues():
 def get_export_offerers():
     check_user_is_admin(current_user)
 
-    params_keys = ['dpt', 'zip_codes', 'from_date', 'to_date', 'has_siren', 'has_not_virtual_venue', 'has_validated_venue', 'has_venue_with_siret', 'offer_status', 'is_validated', 'has_validated_user', 'has_bank_information', 'is_active', 'has_validated_user_offerer']
+    params_keys = ['siren_list', 'dpt', 'zip_codes', 'from_date', 'to_date', 'has_siren', 'has_not_virtual_venue', 'has_validated_venue', 'has_venue_with_siret', 'offer_status', 'is_validated', 'has_validated_user', 'has_bank_information', 'is_active', 'has_validated_user_offerer']
     params = {}
 
     for key in params_keys:
         params[key] = request.json.get(key, None)
 
     check_get_offerers_params(params)
-    result = find_filtered_offerers(dpt = params['dpt'],
+    result = find_filtered_offerers(siren_list = params['siren_list'],
+                                    dpt = params['dpt'],
                                     zip_codes = params['zip_codes'],
                                     from_date = params['from_date'],
                                     to_date = params['to_date'],

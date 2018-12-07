@@ -77,7 +77,8 @@ def find_first_by_user_offerer_id(user_offerer_id):
     return Offerer.query.join(UserOfferer).filter_by(id=user_offerer_id).first()
 
 
-def find_filtered_offerers(dpt=None,
+def find_filtered_offerers(siren_list=None,
+                           dpt=None,
                            zip_codes=None,
                            from_date=None,
                            to_date=None,
@@ -93,6 +94,9 @@ def find_filtered_offerers(dpt=None,
                            has_validated_user_offerer=None):
     
     query = db.session.query(Offerer)
+    if siren_list is not None:
+        query = _filter_by_siren_list(query, siren_list)
+
     if dpt is not None:
         query = _filter_by_dpt(query, dpt)
     
@@ -131,7 +135,7 @@ def find_filtered_offerers(dpt=None,
     
     if has_validated_user_offerer is not None or has_validated_user is not None: 
         query = query.join(UserOfferer)
-        
+
     if has_validated_user_offerer is not None:
         query = _filter_by_has_validated_user_offerer(query, has_validated_user_offerer)
     
@@ -142,6 +146,10 @@ def find_filtered_offerers(dpt=None,
 
     result = query.all()
     return result
+
+
+def _filter_by_siren_list(query, siren_list):
+    return query.filter(Offerer.siren.in_(siren_list))
  
 
 def _filter_by_dpt(query, dpt):

@@ -466,22 +466,6 @@ def test_get_offerers_return_200_and_filtered_offerers(app):
 
     PcObject.check_and_save(query_user, stock_offer_1, stock_offer_2, stock_offer_3, stock_offer_4, stock_offer_5, stock_offer_6, stock_offer_7, stock_offer_8, stock_offer_9, stock_offer_10, stock_active_offer_thing, stock_expired_offer_thing, validated_venue_with_siret_without_offer)
 
-    # activity_in_date_range_1 = create_offerer_activity(offerer_93100_in_date_range_with_validated_venue_with_siret_with_offer, "offerer", "insert", issued_at=datetime(2018, 11, 2))
-    # activity_in_date_range_2 = create_offerer_activity(offerer_93100_in_date_range_with_validated_venue_with_siret_and_venue_without_siret_with_offer, "offerer", "insert", issued_at=datetime(2018, 11, 2))
-    # activity_in_date_range_3 = create_offerer_activity(not_validated_offerer_93100_in_date_range_with_validated_venue_with_siret_with_offer, "offerer", "insert", issued_at=datetime(2018, 11, 2))
-    # activity_in_date_range_4 = create_offerer_activity(offerer_93100_in_date_range_with_validated_venue_with_siret_with_offer_without_siren, "offerer", "insert", issued_at=datetime(2018, 11, 2))
-    # activity_in_date_range_5 = create_offerer_activity(offerer_2A450_in_date_range_with_validated_venue_with_siret_with_active_offer_thing, "offerer", "insert", issued_at=datetime(2018, 11, 2))
-    # activity_in_date_range_6 = create_offerer_activity(offerer_2A450_in_date_range_with_validated_venue_with_siret_with_expired_offer_thing, "offerer", "insert", issued_at=datetime(2018, 11, 2))
-    # activity_in_date_range_7 = create_offerer_activity(offerer_66666_in_date_range_with_validated_venue_with_siret_with_offer, "offerer", "insert", issued_at=datetime(2018, 11, 2))
-    # activity_in_date_range_8 = create_offerer_activity(offerer_2A450_in_date_range_with_validated_venue_without_siret_with_offer, "offerer", "insert", issued_at=datetime(2018, 11, 2))
-    # activity_in_date_range_9 = create_offerer_activity(offerer_2A450_in_date_range_with_validated_venue_with_siret_without_offer, "offerer", "insert", issued_at=datetime(2018, 11, 2))
-    # activity_in_date_range_10 = create_offerer_activity(offerer_93100_in_date_range_with_virtual_venue_with_offer, "offerer", "insert", issued_at=datetime(2018, 11, 2))
-    # activity_in_date_range_11 = create_offerer_activity(offerer_2A450_in_date_range_without_validated_venue_with_siret_with_offer, "offerer", "insert", issued_at=datetime(2018, 11, 2))
-    # activity_before_date_range = create_offerer_activity(offerer_93100_before_date_range_with_validated_venue_with_siret_with_offer, "offerer", "insert", issued_at=datetime(2018, 1, 2))
-    # activity_after_date_range = create_offerer_activity(offerer_93100_after_date_range_with_validated_venue_with_siret_with_offer, "offerer", "insert", issued_at=datetime(2018, 12, 2))
-
-    # save_all_activities(activity_in_date_range_1, activity_in_date_range_2, activity_in_date_range_3, activity_in_date_range_4, activity_in_date_range_5, activity_in_date_range_6, activity_in_date_range_7, activity_in_date_range_8, activity_in_date_range_9, activity_in_date_range_10, activity_in_date_range_11, activity_before_date_range, activity_after_date_range)
-
     auth_request = req_with_auth(email=query_user.email, password='p@55sw0rd')
 
     #when
@@ -555,7 +539,7 @@ def test_get_offerers_with_params_for_pc_reporting_return_200_and_filtered_offer
     validated_user_offerer_with_validated_user_with_bank_information = create_user_offerer(validated_user_6, validated_active_offerer_with_siren_with_validated_user_offerer_with_validated_user_with_bank_information)
 
     PcObject.check_and_save(query_user, validated_user_offerer_with_validated_user_without_bank_information_1,
-     both_user_offerer_with_validated_user_without_bank_information_1, both_user_offerer_with_validated_user_without_bank_information_2, 
+     both_user_offerer_with_validated_user_without_bank_information_1, both_user_offerer_with_validated_user_without_bank_information_2,
      validated_user_offerer_with_both_user_without_bank_information_1, validated_user_offerer_with_both_user_without_bank_information_2,
      validated_user_offerer_with_validated_user_without_bank_information_2, validated_user_offerer_with_validated_user_without_bank_information_3,
      validated_user_offerer_with_validated_user_without_bank_information_4, validated_user_offerer_with_validated_user_without_bank_information_5, 
@@ -583,6 +567,39 @@ def test_get_offerers_with_params_for_pc_reporting_return_200_and_filtered_offer
 
 @pytest.mark.standalone
 @clean_database
+def test_get_offerers_with_siren_list_params_return_200_and_filtered_offerers(app):
+    #given
+    data={
+        "siren_list": ["123456781", "123456782", "123456783"]
+    }
+
+    query_user = create_user(password='p@55sw0rd', is_admin=True, can_book_free_offers=False)
+
+    offerer_123456789 = create_offerer(name="offerer_123456789", siren="123456789")
+    offerer_123456781 = create_offerer(name="offerer_123456781", siren="123456781")
+    offerer_123456782 = create_offerer(name="offerer_123456782", siren="123456782")
+    offerer_123456783 = create_offerer(name="offerer_123456783", siren="123456783")
+    offerer_123456784 = create_offerer(name="offerer_123456784", siren="123456784")
+    
+    PcObject.check_and_save(query_user, offerer_123456789, offerer_123456781, offerer_123456782, offerer_123456783, offerer_123456784)
+    auth_request = req_with_auth(email=query_user.email, password='p@55sw0rd')
+ 
+    #when
+    response = auth_request.post(API_URL + '/exports/offerers', json=data)
+    
+    #then
+    offerer_names = list(map(lambda x: x['name'], response.json()))
+
+    assert response.status_code == 200
+    assert offerer_123456789.name not in offerer_names
+    assert offerer_123456781.name in offerer_names
+    assert offerer_123456782.name in offerer_names
+    assert offerer_123456783.name in offerer_names
+    assert offerer_123456784.name not in offerer_names
+
+
+@pytest.mark.standalone
+@clean_database
 def test_get_offerers_return_error_when_date_param_is_wrong(app):
     #given
     wrong_date = "I\'m not a valid date"
@@ -597,5 +614,5 @@ def test_get_offerers_return_error_when_date_param_is_wrong(app):
 
     #then
     assert response.status_code == 400
-    assert response.json()['date_format'] == ['to_date and from_date are of type yyyy-mm-dd'] 
+    assert response.json()['date_format'] == ['to_date and from_date are of type yyyy-mm-dd']
     

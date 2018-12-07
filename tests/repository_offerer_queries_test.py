@@ -201,6 +201,28 @@ def test_find_first_by_user_offerer_id_returns_the_first_offerer_that_was_create
     # then
     assert offerer.id == offerer1.id
 
+@pytest.mark.standalone
+@clean_database
+def test_find_filtered_offerers_with_siren_list_params_return_filtered_offerers(app):
+    #given
+    offerer_123456789 = create_offerer(name="offerer_123456789", siren="123456789")
+    offerer_123456781 = create_offerer(name="offerer_123456781", siren="123456781")
+    offerer_123456782 = create_offerer(name="offerer_123456782", siren="123456782")
+    offerer_123456783 = create_offerer(name="offerer_123456783", siren="123456783")
+    offerer_123456784 = create_offerer(name="offerer_123456784", siren="123456784")
+    
+    PcObject.check_and_save(offerer_123456789, offerer_123456781, offerer_123456782, offerer_123456783, offerer_123456784)
+ 
+    #when
+    query_with_siren_list = find_filtered_offerers(siren_list=["123456781", "123456782", "123456783"])
+    
+    #then
+    assert offerer_123456789 not in query_with_siren_list
+    assert offerer_123456781 in query_with_siren_list
+    assert offerer_123456782 in query_with_siren_list
+    assert offerer_123456783 in query_with_siren_list
+    assert offerer_123456784 not in query_with_siren_list
+
 
 @pytest.mark.standalone
 @clean_database
@@ -555,8 +577,6 @@ def test_find_filtered_offerers_with_False_has_venue_with_siret_param_return_fil
     query_whitout_siret = find_filtered_offerers(has_venue_with_siret=False)
 
     # Then
-    # Offerer always have virtual venue without siret so offerer_with_venue_with_siret
-    # don't exist in prod
     assert offerer_with_venue_without_siret_comment in query_whitout_siret
     assert offerer_with_venue_without_siret_virtual in query_whitout_siret
     assert offerer_with_venue_with_siret not in query_whitout_siret
@@ -999,10 +1019,6 @@ def test_find_filtered_offerers_with_offer_status_with_ALL_param_and_True_has_no
     assert offerer_with_both_venues_offer_on_both in query_with_all_offer
     assert offerer_with_both_venues_offer_on_virtual in query_with_all_offer
     assert offerer_with_both_venues_offer_on_not_virtual in query_with_all_offer
-
-
-
-
 
 
 @pytest.mark.standalone

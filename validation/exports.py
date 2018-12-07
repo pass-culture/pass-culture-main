@@ -53,6 +53,9 @@ def check_get_venues_params(param: {}) -> bool:
 
 
 def check_get_offerers_params(param: {}) -> bool:
+    if param.get('siren_list', None):
+        _check_siren_list(param['siren_list'])
+
     if param.get('dpt', None):
         _check_dpt_list(param['dpt'])
 
@@ -104,6 +107,20 @@ def _check_date_format(date: str) -> bool:
     api_errors = ApiErrors()
     api_errors.addError('date_format', 'to_date and from_date are of type yyyy-mm-dd')
     raise api_errors
+
+
+def _check_siren_list(siren_list:  []) -> bool:
+    if not type(siren_list) == []:
+        api_errors = ApiErrors()
+        api_errors.addError('siren_list', 
+            'siren_list is a list of 9 digits : ["123456789", "789654123"]')
+    for siren in siren_list:
+       if not re.search('^(\d+){9}$', siren):
+            api_errors = ApiErrors()
+            api_errors.addError('siren_list', 
+            'siren_list is a list of 9 digits : ["123456789", "789654123"]')    
+            raise api_errors
+    return True
 
 
 def _check_dpt_list(dpt_list:  []) -> bool:

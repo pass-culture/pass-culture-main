@@ -306,7 +306,7 @@ def test_check_get_offerers_params_raises_api_error_if_dpt_list_is_not_list(app)
 def test_check_get_offerers_params_raises_api_error_if_not_valid_zip_codes_list(app):
     # given
     not_valid_zip_codes_list = {}
-    not_valid_zip_codes_list['zip_codes'] = ['69000', '13020', '78sang40RpZ']
+    not_valid_zip_codes_list['zip_codes'] = ['69000', '13020', '78sang40RpZ', 78140]
 
     # when
     with pytest.raises(ApiErrors) as errors:
@@ -316,6 +316,36 @@ def test_check_get_offerers_params_raises_api_error_if_not_valid_zip_codes_list(
     assert errors.value.errors['zip_codes'] == \
         ['zip_codes is a list of type xxxxx (5 digits, ex: 78140 ou 2a000) : \
         ["78140", "69007"]']
+
+
+@pytest.mark.standalone
+def test_check_get_offerers_params_doesnt_raise_api_error_for_valid_siren_list(app):
+    # given
+    valid_siren_list = {}
+    valid_siren_list['siren_list'] = ["123456789", "789654123"]
+
+    # when
+    try:
+        check_get_offerers_params(valid_siren_list)
+    
+    except ApiErrors:
+        # Then
+        assert pytest.fail("Should not fail with valid params")
+
+
+@pytest.mark.standalone
+def test_check_get_offerers_params_raises_api_error_if_not_valid_siren_list(app):
+    # given
+    not_valid_siren_list = {}
+    not_valid_siren_list['siren_list'] = ['69000', '13020', '78sang40RpZ', '121253654789', 123456789]
+
+    # when
+    with pytest.raises(ApiErrors) as errors:
+        check_get_offerers_params(not_valid_siren_list)
+
+    # then
+    assert errors.value.errors['siren_list'] == \
+        ['siren_list is a list of 9 digits : ["123456789", "789654123"]']
 
 
 @pytest.mark.standalone
@@ -477,6 +507,7 @@ def test_check_get_offerers_params_raises_api_error_if_not_valid_offer_status_pa
 def test_check_get_offerers_params_does_not_raise_api_error_if_good_param(app):
     # given
     params = {}
+    params['siren_list'] = ['123456789', '123454789', '789654123']
     params['dpt'] = ['12', '2A', '56']
     params['zip_codes'] = ['12111', '2A250', '56698']
     params['from_date'] = '2018-05-30'
