@@ -1,3 +1,4 @@
+from models.offer_type import EventType
 from models.pc_object import PcObject
 from utils.logger import logger
 from utils.test_utils import create_booking
@@ -7,23 +8,59 @@ def create_industrial_bookings(recommendations_by_name, stocks_by_name):
 
     bookings_by_name = {}
 
-    recommendation = recommendations_by_name['Rencontre avec Franck Lepage / THEATRE LE GRAND REX PARIS / jeune93 0']
-    stock = stocks_by_name['Rencontre avec Franck Lepage / THEATRE LE GRAND REX PARIS / 0 / 20h / 10 / 10']
-    bookings_by_name['Rencontre avec Franck Lepage / THEATRE LE GRAND REX PARIS / 20h / 10 / 10 / jeune93 0'] = create_booking(
-        recommendation.user,
-        recommendation=recommendation,
-        stock=stock,
-        token="2ALYY5"
-    )
+    token = 100000
 
-    recommendation = recommendations_by_name['Ravage / THEATRE DE L ODEON / jeune93 0']
-    stock = stocks_by_name['Ravage / THEATRE DE L ODEON / 50 / 50']
-    bookings_by_name['Ravage / THEATRE DE L ODEON / 50 / 50 / jeune93 0'] = create_booking(
-        recommendation.user,
-        recommendation=recommendation,
-        stock=stock,
-        token="2AEVY3"
-    )
+    stocks = stocks_by_name.values()
+
+    for (recommendation_name, recommendation) in recommendations_by_name.items():
+
+        offer = recommendation.offer
+        user = recommendation.user
+
+        user_should_not_have_yet_bookings_in_its_user_story = \
+            user.firstName != "PC Test Jeune" or \
+            "has-signed-up" in user.email
+
+        if user_should_not_have_yet_bookings_in_its_user_story:
+            continue
+
+        user_should_have_only_activation_booked = \
+            "has-booked-activation" in user.email or \
+            "has-confirmed-activation" in user.email
+
+        is_activation_offer = offer.eventOrThing.offerType['value'] == str(EventType.ACTIVATION)
+
+        if user_should_have_only_activation_booked and not is_activation_offer:
+            continue
+
+        recommendation_stocks = [
+            stock for stock in stocks
+            if stock.offer == offer or\
+            stock.eventOccurrence in offer.eventOccurrences
+        ]
+
+        stock = recommendation_stocks[0]
+
+        booking_name = "{} / {}".format(recommendation_name, str(token))
+
+        is_used = is_activation_offer and \
+            "has-confirmed-activation" in user.email or \
+            "has-booked-some" in user.email or \
+            "has-no-more-money" in user.email
+
+        booking = create_booking(
+            user,
+            is_used=is_used,
+            recommendation=recommendation,
+            stock=stock,
+            token=str(token),
+            venue=recommendation.offer.venue
+        )
+
+        token += 1
+
+        bookings_by_name[booking_name] = booking
+
 
     PcObject.check_and_save(*bookings_by_name.values())
 

@@ -1,12 +1,12 @@
 import pytest
 
-from domain.types import get_formatted_event_or_thing_types, get_event_or_thing_type_values_from_sublabels
+from domain.types import get_formatted_event_or_thing_type_dicts, get_event_or_thing_type_values_from_sublabels
 
 
 @pytest.mark.standalone
-def test_get_formatted_event_or_thing_types_returns_all_types_except_activations_if_user_is_not_admin():
+def test_get_formatted_event_or_thing_type_dicts_returns_all_types_except_activations_if_user_is_not_admin():
     # when
-    types = get_formatted_event_or_thing_types(as_admin=False)
+    types = get_formatted_event_or_thing_type_dicts(with_activation_type=False)
 
     # then
     assert types[0] == {
@@ -24,7 +24,7 @@ def test_get_formatted_event_or_thing_types_returns_all_types_except_activations
 
 
 @pytest.mark.standalone
-def test_get_formatted_event_or_thing_types_returns_all_types_including_activations_if_user_is_admin():
+def test_get_formatted_event_or_thing_type_dicts_returns_all_types_including_activations_if_user_is_admin():
     # given
     activation_event = {
         'offlineOnly': True,
@@ -37,7 +37,7 @@ def test_get_formatted_event_or_thing_types_returns_all_types_including_activati
     }
 
     # when
-    types = get_formatted_event_or_thing_types(as_admin=True)
+    types = get_formatted_event_or_thing_type_dicts(with_activation_type=True)
 
     # then
     assert activation_event in types

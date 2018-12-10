@@ -1,4 +1,4 @@
-from domain.types import get_formatted_event_or_thing_types_by_value
+from domain.types import get_formatted_event_or_thing_type_dicts
 from models.pc_object import PcObject
 from utils.logger import logger
 from utils.test_utils import create_thing
@@ -35,24 +35,26 @@ def create_industrial_things():
 
     things_by_name = {}
 
-    types_by_value = get_formatted_event_or_thing_types_by_value()
+    thing_type_dicts = [
+        t for t in get_formatted_event_or_thing_type_dicts()
+        if t['type'] == 'Thing'
+    ]
 
-    thing_types = [t for t in types_by_value.values() if t['type'] == 'Thing']
-
-    for (thing_index, thing_type) in enumerate(thing_types):
+    for (thing_index, thing_type_dict) in enumerate(thing_type_dicts):
 
         mock_index = thing_index % len(MOCK_NAMES)
 
-        name = "{} / {}".format(thing_type['value'], MOCK_NAMES[mock_index])
+        name = "{} / {}".format(thing_type_dict['value'], MOCK_NAMES[mock_index])
+        is_national = True if thing_type_dict['onlineOnly'] else False
+        url = 'https://ilestencoretemps.fr/' if thing_type_dict['onlineOnly'] else None
         things_by_name[name] = create_thing(
             author_name=MOCK_AUTHOR_NAMES[mock_index],
             description=MOCK_DESCRIPTIONS[mock_index],
-            is_national=True if types_by_value[thing_type['value']]['onlineOnly'] else False,
+            is_national=is_national,
             thing_name=MOCK_NAMES[mock_index],
-            thing_type=thing_type['value'],
-            url='https://ilestencoretemps.fr/'
-            if types_by_value[thing_type['value']]['onlineOnly']
-            else None)
+            thing_type=thing_type_dict['value'],
+            url=url
+        )
 
     PcObject.check_and_save(*things_by_name.values())
 

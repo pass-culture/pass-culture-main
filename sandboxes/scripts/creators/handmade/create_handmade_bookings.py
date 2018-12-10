@@ -12,7 +12,8 @@ def create_handmade_bookings(recommendations_by_name, stocks_by_name, users_by_n
         users_by_name['jeune93 0'],
         recommendation=recommendations_by_name['Rencontre avec Franck Lepage / THEATRE LE GRAND REX PARIS / jeune93 0'],
         stock=stock,
-        token="2ALYY5"
+        token="2ALYY5",
+        venue=recommendation.offer.venue
     )
 
     stock = stocks_by_name['Ravage / THEATRE DE L ODEON / 50 / 50']
@@ -20,7 +21,8 @@ def create_handmade_bookings(recommendations_by_name, stocks_by_name, users_by_n
         users_by_name['jeune93 0'],
         recommendation=recommendations_by_name['Ravage / THEATRE DE L ODEON / jeune93 0'],
         stock=stock,
-        token="2AEVY3"
+        token="2AEVY3",
+        venue=recommendation.offer.venue
     )
 
     PcObject.check_and_save(*bookings_by_name.values())

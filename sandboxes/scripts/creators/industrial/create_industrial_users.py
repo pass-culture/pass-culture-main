@@ -16,7 +16,7 @@ JEUNES_TAGS = [
     "has-signed-up",
     "has-booked-activation",
     "has-confirmed-activation",
-    "has-money-and-booked",
+    "has-booked-some",
     "has-no-more-money"
 ]
 
@@ -40,26 +40,28 @@ def create_industrial_users():
                 public_name="PC Test Admin {} {}".format(departement_code, admin_count)
             )
 
-        for tag in range(PROS_TAGS):
+        for tag in PROS_TAGS:
+            short_tag = "".join([chunk[0].upper() for chunk in tag.split('-')])
             users_by_name['pro{} {}'.format(departement_code, tag)] = create_user(
                 departement_code=str(departement_code),
                 email="pctest.pro{}.{}@btmx.fr".format(departement_code, tag),
                 first_name="PC Test Pro",
-                last_name="{} {}".format(departement_code, tag),
+                last_name="{} {}".format(departement_code, short_tag),
                 password="pctest.Pro{}.{}".format(departement_code, tag),
                 postal_code="{}100".format(departement_code),
-                public_name="PC Test Pro {} {}".format(departement_code, tag)
+                public_name="PC Test Pro {} {}".format(departement_code, short_tag)
             )
 
         for tag in JEUNES_TAGS:
+            short_tag = "".join([chunk[0].upper() for chunk in tag.split('-')])
             users_by_name['jeune{} {}'.format(departement_code, tag)] = create_user(
-                departement_code=str(departement_code, tag),
+                departement_code=str(departement_code),
                 email="pctest.jeune{}.{}@btmx.fr".format(departement_code, tag),
                 first_name="PC Test Jeune",
-                last_name="{} {}".format(departement_code, tag),
+                last_name="{} {}".format(departement_code, short_tag),
                 password="pctest.Jeune{}.{}".format(departement_code, tag),
                 postal_code="{}100".format(departement_code),
-                public_name="PC Test Jeune {} {}".format(departement_code, tag)
+                public_name="PC Test Jeune {} {}".format(departement_code, short_tag)
             )
 
     PcObject.check_and_save(*users_by_name.values())

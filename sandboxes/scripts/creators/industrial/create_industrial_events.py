@@ -1,4 +1,4 @@
-from domain.types import get_formatted_event_or_thing_types
+from domain.types import get_formatted_event_or_thing_type_dicts
 from models.offer_type import EventType
 from models.pc_object import PcObject
 from utils.logger import logger
@@ -31,23 +31,27 @@ def create_industrial_events():
 
     events_by_name = {}
 
-    event_types = [t for t in get_formatted_event_or_thing_types() if t['type'] == 'Event']
+    event_type_dicts = [
+        t for t in get_formatted_event_or_thing_type_dicts(with_activation_type=True)
+        if t['type'] == 'Event'
+    ]
 
-    for (event_index, event_type) in enumerate(event_types):
+    for (event_index, event_type_dict) in enumerate(event_type_dicts):
 
         mock_index = event_index % len(MOCK_NAMES)
 
-        if event_type == EventType.ACTIVATION:
-            name = MOCK_ACTIVATION_NAME
+        if event_type_dict['value'] == str(EventType.ACTIVATION):
+            event_name = MOCK_ACTIVATION_NAME
             description = MOCK_ACTIVATION_DESCRIPTION
         else:
-            name = MOCK_NAMES[mock_index]
+            event_name = MOCK_NAMES[mock_index]
             description = MOCK_DESCRIPTIONS[mock_index]
 
-        events_by_name["{} / {}".format(event_type['value'], MOCK_NAMES[mock_index])] = create_event(
+        name = "{} / {}".format(event_type_dict['value'], MOCK_NAMES[mock_index])
+        events_by_name[name] = create_event(
             description=description,
-            event_name=name,
-            event_type=event_type['value'],
+            event_name=event_name,
+            event_type=event_type_dict['value'],
             duration_minutes=60
         )
 
