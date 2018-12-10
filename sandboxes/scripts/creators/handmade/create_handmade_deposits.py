@@ -7,8 +7,8 @@ def create_handmade_deposits(users_by_name):
 
     deposits_by_name = {}
 
-    deposits_by_name['jeune93 0 / public / 500'] = create_deposit(
-        users_by_name['jeune93 0'],
+    deposits_by_name['jeune93 has-booked-some / public / 500'] = create_deposit(
+        users_by_name['jeune93 has-booked-some'],
         None,
         amount=500
     )

@@ -1,24 +1,10 @@
 from models.pc_object import PcObject
 from utils.logger import logger
 from utils.test_utils import create_user
+from sandboxes.scripts.utils.user_tags import JEUNES_TAGS,PROS_TAGS
 
 ADMINS_COUNT = 1
 DEPARTEMENT_CODES = ["93", "97"]
-
-PROS_TAGS = [
-    "has-signed-up",
-    "has-validated-email",
-    "has-validated-unregistered-offerer",
-    "has-validated-registered-offerer"
-]
-
-JEUNES_TAGS = [
-    "has-signed-up",
-    "has-booked-activation",
-    "has-confirmed-activation",
-    "has-booked-some",
-    "has-no-more-money"
-]
 
 def create_industrial_users():
     logger.info('create_industrial_users')

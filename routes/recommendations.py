@@ -29,7 +29,7 @@ from utils.rest import expect_json_data
 @login_required
 def list_recommendations():
     search_params = get_recommendation_search_params(request.args)
-    
+
     recommendations = create_recommendations_for_search(
         current_user,
         **search_params
@@ -54,6 +54,7 @@ def patch_recommendation(recommendationId):
 @expect_json_data
 def put_recommendations():
     if 'seenRecommendationIds' in request.json.keys():
+        print("request.json['seenRecommendationIds']", request.json['seenRecommendationIds'])
         humanized_seen_recommendation_ids = request.json['seenRecommendationIds'] or []
         seen_recommendation_ids = list(map(dehumanize, humanized_seen_recommendation_ids))
     else:

@@ -8,19 +8,19 @@ def create_handmade_recommendations(mediations_by_name, offers_by_name, users_by
     recommendations_by_name = {}
 
     mediation = mediations_by_name['Rencontre avec Franck Lepage / THEATRE LE GRAND REX PARIS']
-    recommendations_by_name['Rencontre avec Franck Lepage / THEATRE LE GRAND REX PARIS / jeune93 0'] = \
+    recommendations_by_name['Rencontre avec Franck Lepage / THEATRE LE GRAND REX PARIS / jeune93 has-booked-some'] = \
         create_recommendation(
             mediation=mediation,
             offer=mediation.offer,
-            user=users_by_name['jeune93 0']
+            user=users_by_name['jeune93 has-booked-some']
         )
 
     mediation = mediations_by_name['Ravage / THEATRE DE L ODEON']
-    recommendations_by_name['Ravage / THEATRE DE L ODEON / jeune93 0'] = \
+    recommendations_by_name['Ravage / THEATRE DE L ODEON / jeune93 has-booked-some'] = \
         create_recommendation(
             mediation=mediation,
             offer=mediation.offer,
-            user=users_by_name['jeune93 0']
+            user=users_by_name['jeune93 has-booked-some']
         )
 
     PcObject.check_and_save(*recommendations_by_name.values())

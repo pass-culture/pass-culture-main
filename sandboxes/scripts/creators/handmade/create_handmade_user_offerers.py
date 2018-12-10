@@ -7,33 +7,52 @@ def create_handmade_user_offerers(users_by_name, offerers_by_name):
 
     user_offerers_by_name = {}
 
-    user_offerers_by_name['pro93 0 / LE GRAND REX PARIS'] = create_user_offerer(
+    #
+    # 93 HVUO
+    #
+
+    user_offerers_by_name['pro93 has-validated-unregistered-offerer / LE GRAND REX PARIS'] = create_user_offerer(
         is_admin=True,
         offerer=offerers_by_name['LE GRAND REX PARIS'],
-        user=users_by_name['pro93 0']
+        user=users_by_name['pro93 has-validated-unregistered-offerer']
     )
-    user_offerers_by_name['pro93 1 / THEATRE DE L ODEON'] = create_user_offerer(
-        offerer=offerers_by_name['THEATRE DE L ODEON'],
-        user=users_by_name['pro93 1']
-    )
-    user_offerers_by_name['pro93 0 / THEATRE DU SOLEIL'] = create_user_offerer(
+
+    user_offerers_by_name['pro93 has-validated-unregistered-offerer / THEATRE DU SOLEIL'] = create_user_offerer(
         offerer=offerers_by_name['THEATRE DU SOLEIL'],
-        user=users_by_name['pro93 0']
+        user=users_by_name['pro93 has-validated-unregistered-offerer']
     )
 
-    user_offerers_by_name['pro93 0 / NOUVEAU THEATRE DE MONTREUIL'] = create_user_offerer(
+    user_offerers_by_name['pro93 has-validated-unregistered-offerer / NOUVEAU THEATRE DE MONTREUIL'] = create_user_offerer(
         offerer=offerers_by_name['NOUVEAU THEATRE DE MONTREUIL'],
-        user=users_by_name['pro93 0']
+        user=users_by_name['pro93 has-validated-unregistered-offerer']
     )
 
-    user_offerers_by_name['pro93 0 / LA MARBRERIE'] = create_user_offerer(
+    user_offerers_by_name['pro93 has-validated-unregistered-offerer / LA MARBRERIE'] = create_user_offerer(
         offerer=offerers_by_name['LA MARBRERIE'],
-        user=users_by_name['pro93 0']
+        user=users_by_name['pro93 has-validated-unregistered-offerer']
     )
 
-    user_offerers_by_name['pro97 0 / KWATA'] = create_user_offerer(
+    #
+    # 93 HVRO
+    #
+
+    user_offerers_by_name['pro93 has-validated-registered-offerer / THEATRE DE L ODEON'] = create_user_offerer(
+        offerer=offerers_by_name['LE GRAND REX PARIS'],
+        user=users_by_name['pro93 has-validated-registered-offerer']
+    )
+
+    user_offerers_by_name['pro93 has-validated-registered-offerer / THEATRE DE L ODEON'] = create_user_offerer(
+        offerer=offerers_by_name['THEATRE DE L ODEON'],
+        user=users_by_name['pro93 has-validated-registered-offerer']
+    )
+
+    #
+    # 97 HVUO
+    #
+
+    user_offerers_by_name['pro97 has-validated-unregistered-offerer / KWATA'] = create_user_offerer(
         offerer=offerers_by_name['KWATA'],
-        user=users_by_name['pro97 0']
+        user=users_by_name['pro97 has-validated-unregistered-offerer']
     )
 
     PcObject.check_and_save(*user_offerers_by_name.values())

@@ -9,6 +9,10 @@ def create_handmade_users():
 
     users_by_name = {}
 
+    ######################################
+    # ADMINS
+    ######################################
+
     users_by_name['admin93 0'] = create_user(
         can_book_free_offers=False,
         departement_code="93",
@@ -21,75 +25,83 @@ def create_handmade_users():
         public_name="PC Test Admin93 0"
     )
 
-    users_by_name['jeune93 0'] = create_user(
+    ######################################
+    # PRO
+    ######################################
+
+    users_by_name['pro93 has-signed-up'] = create_user(
         departement_code="93",
-        email="pctest.jeune93.0@btmx.fr",
-        first_name="PC Test Jeune",
-        last_name="93 0",
-        password="pctest.Jeune93.0",
+        first_name="PC Test Pro",
+        last_name="93 HSU",
+        email="pctest.pro93.has-signed-up@btmx.fr",
+        password="pctest.Pro93.has-signed-up",
         postal_code="93100",
-        public_name="PC Test Jeune93 0"
+        public_name="PC Test Pro93 HSU",
+        validation_token='AZERTY123'
+    )
+
+    users_by_name['pro93 has-validated-unregistered-offerer'] = create_user(
+        departement_code="93",
+        email="pctest.pro93.pro93 has-validated-unregistered-offerer@btmx.fr",
+        first_name="PC Test Pro",
+        last_name="93 HVUO",
+        password="pctest.Pro93.pro93 has-validated-unregistered-offerer",
+        postal_code="93100",
+        public_name="PC Test Pro93 HVUO"
+    )
+
+    users_by_name['pro93 has-validated-registered-offerer'] = create_user(
+        departement_code="93",
+        first_name="PC Test Pro",
+        last_name="93 HVRO",
+        email="pctest.pro93.has-validated-registered-offerer@btmx.fr",
+        password="pctest.Pro93.has-validated-registered-offerer",
+        postal_code="93100",
+        public_name="PC Test Pro93 HVRO"
+    )
+
+    users_by_name['pro97 has-validated-unregistered-offerer'] = create_user(
+        departement_code="97",
+        first_name="PC Test Pro",
+        last_name="97 HVUO",
+        email="pctest.pro97.has-validated-unregistered-offerer@btmx.fr",
+        password="pctest.Pro97.has-validated-unregistered-offerer",
+        postal_code="97351",
+        public_name="PC Test Pro97 HVUO"
+    )
+
+    ######################################
+    # JEUNES
+    ######################################
+
+    users_by_name['jeune93 has-booked-some'] = create_user(
+        departement_code="93",
+        email="pctest.jeune93.has-booked-some@btmx.fr",
+        first_name="PC Test Jeune",
+        last_name="93 HBS",
+        password="pctest.Jeune93.has-booked-some",
+        postal_code="93100",
+        public_name="PC Test Jeune93 HBS"
     )
 
     users_by_name['jeune34 0'] = create_user(
         departement_code="34",
-        email="pctest.jeune.34@btmx.fr",
+        email="pctest.jeune34.has-signed-up@btmx.fr",
         first_name="PC Test Jeune",
-        last_name="34 0",
-        password="pctest.Jeune34.0",
+        last_name="34 has-signed-up",
+        password="pctest.Jeune34.has-signed-up",
         postal_code="34080",
-        public_name="PC Test Jeune34 0"
+        public_name="PC Test Jeune34 HSU"
     )
 
-    users_by_name['jeune97 0'] = create_user(
+    users_by_name['jeune97 has-booked-some'] = create_user(
         departement_code="97",
-        email="pctest.jeune97.0@btmx.fr",
+        email="pctest.jeune97.has-booked-some@btmx.fr",
         first_name="PC Test Jeune",
-        last_name="97 0",
-        password="pctest.Jeune97.0",
+        last_name="97 HBS",
+        password="pctest.Jeune97.has-booked-some",
         postal_code="97351",
-        public_name="PC Test Jeune97 0"
-    )
-
-    users_by_name['pro93 0'] = create_user(
-        departement_code="93",
-        email="pctest.pro93.0@btmx.fr",
-        first_name="PC Test Pro",
-        last_name="93 0",
-        password="pctest.Pro93.0",
-        postal_code="93100",
-        public_name="PC Test Pro93 0"
-    )
-
-    users_by_name['pro93 1'] = create_user(
-        departement_code="93",
-        first_name="PC Test Pro",
-        last_name="93 1",
-        email="pctest.pro93.1@btmx.fr",
-        password="pctest.Pro93.1",
-        postal_code="93100",
-        public_name="PC Test Pro93 1"
-    )
-
-    users_by_name['pro93 2'] = create_user(
-        departement_code="93",
-        first_name="PC Test Pro",
-        last_name="93 2",
-        email="pctest.pro93.2@btmx.fr",
-        password="pctest.Pro93.2",
-        postal_code="93100",
-        public_name="PC Test Pro93 2",
-        validation_token='AZERTY123'
-    )
-
-    users_by_name['pro97 0'] = create_user(
-        departement_code="97",
-        first_name="PC Test Pro",
-        last_name="97 0",
-        email="pctest.pro97.0@btmx.fr",
-        password="pctest.Pro97.0",
-        postal_code="97351",
-        public_name="PC Test Pro97 0"
+        public_name="PC Test Jeune97 HBS"
     )
 
     PcObject.check_and_save(*users_by_name.values())
