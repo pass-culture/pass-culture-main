@@ -314,17 +314,27 @@ def test_get_venues_with_params_for_pc_reporting_return_200_and_filtered_venues(
     validated_offerer_without_siren  = create_offerer(siren=None)
     not_validated_offerer_with_siren = create_offerer(siren='123456781', validation_token="token")
     
-    validated_user_offerer_with_validated_user_with_validated_offerer_with_siren = create_user_offerer(validated_user, validated_offerer_with_siren1)
-    validated_user_offerer_with_not_validated_user_with_validated_offerer_with_siren = create_user_offerer(not_validated_user, validated_offerer_with_siren3)
-    validated_user_offerer_with_validated_user_with_not_validated_offerer_with_siren = create_user_offerer(validated_user, not_validated_offerer_with_siren)
-    validated_user_offerer_with_validated_user_with_validated_offerer_without_siren = create_user_offerer(validated_user, validated_offerer_without_siren )
-    not_validated_user_offerer_with_validated_user_with_validated_offerer_with_siren =  create_user_offerer(validated_user, validated_offerer_with_siren2, validation_token="another_token")
+    validated_user_offerer_with_validated_user_with_validated_offerer_with_siren = create_user_offerer(validated_user,
+     validated_offerer_with_siren1)
+    validated_user_offerer_with_not_validated_user_with_validated_offerer_with_siren = create_user_offerer(not_validated_user,
+     validated_offerer_with_siren3)
+    validated_user_offerer_with_validated_user_with_not_validated_offerer_with_siren = create_user_offerer(validated_user,
+     not_validated_offerer_with_siren)
+    validated_user_offerer_with_validated_user_with_validated_offerer_without_siren = create_user_offerer(validated_user,
+     validated_offerer_without_siren )
+    not_validated_user_offerer_with_validated_user_with_validated_offerer_with_siren =  create_user_offerer(validated_user,
+     validated_offerer_with_siren2, validation_token="another_token")
 
-    venue_with_validated_offerer_with_siren_with_user_offerer_with_user = create_venue(validated_offerer_with_siren1, name="venue_with_validated_offerer_with_siren_with_user_offerer_with_user", siret="12345678912341")
-    venue_without_validated_offerer_with_siren_with_user_offerer_with_user = create_venue(not_validated_offerer_with_siren, name="venue_without_validated_offerer_with_siren_with_user_offerer_with_user", siret="12345678912342")
-    venue_with_validated_offerer_without_siren_with_user_offerer_with_user = create_venue(validated_offerer_without_siren, name="venue_with_validated_offerer_without_siren_with_user_offerer_with_user", siret="12345678912343")
-    venue_with_validated_offerer_with_siren_without_user_offerer_with_user = create_venue(validated_offerer_with_siren2, name="venue_with_validated_offerer_with_siren_without_user_offerer_with_user", siret="12345678912344")
-    venue_with_validated_offerer_with_siren_with_user_offerer_without_user = create_venue(validated_offerer_with_siren3, name="venue_with_validated_offerer_with_siren_with_user_offerer_without_user", siret="12345678912345")
+    venue_with_validated_offerer_with_siren_with_user_offerer_with_user = create_venue(validated_offerer_with_siren1,
+     name="venue_with_validated_offerer_with_siren_with_user_offerer_with_user", siret="12345678912341")
+    venue_without_validated_offerer_with_siren_with_user_offerer_with_user = create_venue(not_validated_offerer_with_siren,
+     name="venue_without_validated_offerer_with_siren_with_user_offerer_with_user", siret="12345678912342")
+    venue_with_validated_offerer_without_siren_with_user_offerer_with_user = create_venue(validated_offerer_without_siren,
+     name="venue_with_validated_offerer_without_siren_with_user_offerer_with_user", siret="12345678912343")
+    venue_with_validated_offerer_with_siren_without_user_offerer_with_user = create_venue(validated_offerer_with_siren2,
+     name="venue_with_validated_offerer_with_siren_without_user_offerer_with_user", siret="12345678912344")
+    venue_with_validated_offerer_with_siren_with_user_offerer_without_user = create_venue(validated_offerer_with_siren3,
+     name="venue_with_validated_offerer_with_siren_with_user_offerer_without_user", siret="12345678912345")
 
     PcObject.check_and_save(query_user,
       venue_with_validated_offerer_with_siren_with_user_offerer_with_user,
@@ -423,48 +433,100 @@ def test_get_offerers_return_200_and_filtered_offerers(app):
 
     query_user = create_user(password='p@55sw0rd', is_admin=True, can_book_free_offers=False)
   
-    offerer_93100_in_date_range_with_validated_venue_with_siret_with_offer = create_offerer(name="offerer_93100_in_date_range_with_validated_venue_with_siret_with_offer", postal_code="93100", siren="123456781", date_created=datetime(2018, 11, 2))
-    offerer_93100_in_date_range_with_validated_venue_with_siret_and_venue_without_siret_with_offer = create_offerer(name="offerer_93100_in_date_range_with_validated_venue_with_siret_and_venue_without_siret_with_offer", postal_code="93100", siren="123456782", date_created=datetime(2018, 11, 2))
-    not_validated_offerer_93100_in_date_range_with_validated_venue_with_siret_with_offer = create_offerer(name="not_validated_offerer_93100_in_date_range_with_validated_venue_with_siret_with_offer", postal_code="93100", siren="123456770", validation_token="token", date_created=datetime(2018, 11, 2))
-    offerer_93100_in_date_range_with_validated_venue_with_siret_with_offer_without_siren = create_offerer(name="offerer_93100_in_date_range_with_validated_venue_with_siret_with_offer_without_siren", postal_code="93100", siren=None, date_created=datetime(2018, 11, 2))
-    offerer_2A450_in_date_range_with_validated_venue_with_siret_with_active_offer_thing = create_offerer(name="offerer_2A450_in_date_range_with_validated_venue_with_siret_with_active_offer_thing", postal_code="2A450", siren="123456783", date_created=datetime(2018, 11, 2))
-    offerer_2A450_in_date_range_with_validated_venue_with_siret_with_expired_offer_thing = create_offerer(name="offerer_2A450_in_date_range_with_validated_venue_with_siret_with_expired_offer_thing", postal_code="2A450", siren="123456784", date_created=datetime(2018, 11, 2))
-    offerer_66666_in_date_range_with_validated_venue_with_siret_with_offer = create_offerer(name="offerer_66666_in_date_range_with_validated_venue_with_siret_with_offer", postal_code="66666", siren="123456785", date_created=datetime(2018, 11, 2))
-    offerer_2A450_in_date_range_with_validated_venue_without_siret_with_offer = create_offerer(name="offerer_2A450_in_date_range_with_validated_venue_without_siret_with_offer", postal_code="2A450", siren="123456788", date_created=datetime(2018, 11, 2))
-    offerer_2A450_in_date_range_with_validated_venue_with_siret_without_offer = create_offerer(name="offerer_2A450_in_date_range_with_validated_venue_with_siret_without_offer", postal_code="2A450", siren="123456780", date_created=datetime(2018, 11, 2))
-    offerer_93100_in_date_range_with_virtual_venue_with_offer = create_offerer(name="offerer_93100_in_date_range_with_virtual_venue_with_offer", postal_code="93100", siren="123456771", date_created=datetime(2018, 11, 2))
-    offerer_2A450_in_date_range_without_validated_venue_with_siret_with_offer = create_offerer(name="offerer_2A450_in_date_range_without_validated_venue_with_siret_with_offer", postal_code="2A450", siren="123456789", date_created=datetime(2018, 11, 2))
-    offerer_93100_before_date_range_with_validated_venue_with_siret_with_offer = create_offerer(name="offerer_93100_before_date_range_with_validated_venue_with_siret_with_offer", postal_code="93100", siren="123456786", date_created=datetime(2018, 1, 2))
-    offerer_93100_after_date_range_with_validated_venue_with_siret_with_offer = create_offerer(name="offerer_93100_after_date_range_with_validated_venue_with_siret_with_offer", postal_code="93100", siren="123456787", date_created=datetime(2019, 12, 2))
+    offerer_93100_in_date_range_with_validated_venue_with_siret_with_offer = create_offerer(
+        name="offerer_93100_in_date_range_with_validated_venue_with_siret_with_offer",
+        postal_code="93100", siren="123456781", date_created=datetime(2018, 11, 2))
+    offerer_93100_in_date_range_with_validated_venue_with_siret_and_venue_without_siret_with_offer = create_offerer(
+        name="offerer_93100_in_date_range_with_validated_venue_with_siret_and_venue_without_siret_with_offer",
+        postal_code="93100", siren="123456782", date_created=datetime(2018, 11, 2))
+    not_validated_offerer_93100_in_date_range_with_validated_venue_with_siret_with_offer = create_offerer(
+        name="not_validated_offerer_93100_in_date_range_with_validated_venue_with_siret_with_offer",
+        postal_code="93100", siren="123456770", validation_token="token", date_created=datetime(2018, 11, 2))
+    offerer_93100_in_date_range_with_validated_venue_with_siret_with_offer_without_siren = create_offerer(
+        name="offerer_93100_in_date_range_with_validated_venue_with_siret_with_offer_without_siren",
+        postal_code="93100", siren=None, date_created=datetime(2018, 11, 2))
+    offerer_2A450_in_date_range_with_validated_venue_with_siret_with_active_offer_thing = create_offerer(
+        name="offerer_2A450_in_date_range_with_validated_venue_with_siret_with_active_offer_thing",
+        postal_code="2A450", siren="123456783", date_created=datetime(2018, 11, 2))
+    offerer_2A450_in_date_range_with_validated_venue_with_siret_with_expired_offer_thing = create_offerer(
+        name="offerer_2A450_in_date_range_with_validated_venue_with_siret_with_expired_offer_thing",
+        postal_code="2A450", siren="123456784", date_created=datetime(2018, 11, 2))
+    offerer_66666_in_date_range_with_validated_venue_with_siret_with_offer = create_offerer(
+        name="offerer_66666_in_date_range_with_validated_venue_with_siret_with_offer",
+        postal_code="66666", siren="123456785", date_created=datetime(2018, 11, 2))
+    offerer_2A450_in_date_range_with_validated_venue_without_siret_with_offer = create_offerer(
+        name="offerer_2A450_in_date_range_with_validated_venue_without_siret_with_offer",
+        postal_code="2A450", siren="123456788", date_created=datetime(2018, 11, 2))
+    offerer_2A450_in_date_range_with_validated_venue_with_siret_without_offer = create_offerer(
+        name="offerer_2A450_in_date_range_with_validated_venue_with_siret_without_offer",
+        postal_code="2A450", siren="123456780", date_created=datetime(2018, 11, 2))
+    offerer_93100_in_date_range_with_virtual_venue_with_offer = create_offerer(
+        name="offerer_93100_in_date_range_with_virtual_venue_with_offer",
+        postal_code="93100", siren="123456771", date_created=datetime(2018, 11, 2))
+    offerer_2A450_in_date_range_without_validated_venue_with_siret_with_offer = create_offerer(
+        name="offerer_2A450_in_date_range_without_validated_venue_with_siret_with_offer",
+        postal_code="2A450", siren="123456789", date_created=datetime(2018, 11, 2))
+    offerer_93100_before_date_range_with_validated_venue_with_siret_with_offer = create_offerer(
+        name="offerer_93100_before_date_range_with_validated_venue_with_siret_with_offer",
+        postal_code="93100", siren="123456786", date_created=datetime(2018, 1, 2))
+    offerer_93100_after_date_range_with_validated_venue_with_siret_with_offer = create_offerer(
+        name="offerer_93100_after_date_range_with_validated_venue_with_siret_with_offer",
+        postal_code="93100", siren="123456787", date_created=datetime(2019, 12, 2))
 
-    validated_venue_with_siret_with_offer_1 = create_venue(offerer_93100_in_date_range_with_validated_venue_with_siret_with_offer, siret="12345678912341")
-    validated_venue_with_siret_and_venue_without_siret_with_offer = create_venue(offerer_93100_in_date_range_with_validated_venue_with_siret_and_venue_without_siret_with_offer, siret="12345678912342")
-    validated_venue_with_siret_with_offer_2 = create_venue(not_validated_offerer_93100_in_date_range_with_validated_venue_with_siret_with_offer, siret="12345678912343")
-    validated_venue_with_siret_with_offer_without_siren = create_venue(offerer_93100_in_date_range_with_validated_venue_with_siret_with_offer_without_siren, siret="12345678912344")
-    validated_venue_with_siret_with_active_offer_thing = create_venue(offerer_2A450_in_date_range_with_validated_venue_with_siret_with_active_offer_thing, siret="12345678912345")
-    validated_venue_with_siret_with_expired_offer_thing = create_venue(offerer_2A450_in_date_range_with_validated_venue_with_siret_with_expired_offer_thing, siret="12345678912346")
-    validated_venue_with_siret_with_offer_3 = create_venue(offerer_66666_in_date_range_with_validated_venue_with_siret_with_offer, siret="12345678912347")
-    validated_venue_with_siret_with_offer_4 = create_venue(offerer_93100_before_date_range_with_validated_venue_with_siret_with_offer, siret="12345678912348")
-    validated_venue_with_siret_with_offer_5 = create_venue(offerer_93100_after_date_range_with_validated_venue_with_siret_with_offer, siret="12345678912349")
-    validated_venue_without_siret_with_offer = create_venue(offerer_2A450_in_date_range_with_validated_venue_without_siret_with_offer, siret=None, comment="i've no siret because that life")
-    not_validated_venue_with_siret_with_offer = create_venue(offerer_2A450_in_date_range_without_validated_venue_with_siret_with_offer, siret="12345678912331", validation_token="token")
-    validated_venue_with_siret_without_offer = create_venue(offerer_2A450_in_date_range_with_validated_venue_with_siret_without_offer, siret="12345678912332")
-    virtual_venue_with_offer = create_venue(offerer_93100_in_date_range_with_virtual_venue_with_offer, siret=None, is_virtual=True)
+    validated_venue_with_siret_with_offer_1 = create_venue(
+        offerer_93100_in_date_range_with_validated_venue_with_siret_with_offer, siret="12345678912341")
+    validated_venue_with_siret_and_venue_without_siret_with_offer = create_venue(
+        offerer_93100_in_date_range_with_validated_venue_with_siret_and_venue_without_siret_with_offer, siret="12345678912342")
+    validated_venue_with_siret_with_offer_2 = create_venue(
+        not_validated_offerer_93100_in_date_range_with_validated_venue_with_siret_with_offer, siret="12345678912343")
+    validated_venue_with_siret_with_offer_without_siren = create_venue(
+        offerer_93100_in_date_range_with_validated_venue_with_siret_with_offer_without_siren, siret="12345678912344")
+    validated_venue_with_siret_with_active_offer_thing = create_venue(
+        offerer_2A450_in_date_range_with_validated_venue_with_siret_with_active_offer_thing, siret="12345678912345")
+    validated_venue_with_siret_with_expired_offer_thing = create_venue(
+        offerer_2A450_in_date_range_with_validated_venue_with_siret_with_expired_offer_thing, siret="12345678912346")
+    validated_venue_with_siret_with_offer_3 = create_venue(
+        offerer_66666_in_date_range_with_validated_venue_with_siret_with_offer, siret="12345678912347")
+    validated_venue_with_siret_with_offer_4 = create_venue(
+        offerer_93100_before_date_range_with_validated_venue_with_siret_with_offer, siret="12345678912348")
+    validated_venue_with_siret_with_offer_5 = create_venue(
+        offerer_93100_after_date_range_with_validated_venue_with_siret_with_offer, siret="12345678912349")
+    validated_venue_without_siret_with_offer = create_venue(
+        offerer_2A450_in_date_range_with_validated_venue_without_siret_with_offer, siret=None, comment="i've no siret because that life")
+    not_validated_venue_with_siret_with_offer = create_venue(
+        offerer_2A450_in_date_range_without_validated_venue_with_siret_with_offer, siret="12345678912331", validation_token="token")
+    validated_venue_with_siret_without_offer = create_venue(
+        offerer_2A450_in_date_range_with_validated_venue_with_siret_without_offer, siret="12345678912332")
+    virtual_venue_with_offer = create_venue(
+        offerer_93100_in_date_range_with_virtual_venue_with_offer, siret=None, is_virtual=True)
 
-    stock_offer_1 = create_stock_with_event_offer(offerer_93100_in_date_range_with_validated_venue_with_siret_with_offer, validated_venue_with_siret_with_offer_1)
-    stock_offer_2 = create_stock_with_event_offer(offerer_93100_in_date_range_with_validated_venue_with_siret_and_venue_without_siret_with_offer, validated_venue_with_siret_and_venue_without_siret_with_offer)
-    stock_offer_3 = create_stock_with_event_offer(not_validated_offerer_93100_in_date_range_with_validated_venue_with_siret_with_offer, validated_venue_with_siret_with_offer_2)
-    stock_offer_4= create_stock_with_event_offer(offerer_93100_in_date_range_with_validated_venue_with_siret_with_offer_without_siren, validated_venue_with_siret_with_offer_without_siren)
-    stock_offer_5 = create_stock_with_event_offer(offerer_66666_in_date_range_with_validated_venue_with_siret_with_offer, validated_venue_with_siret_with_offer_3)
-    stock_offer_6 = create_stock_with_event_offer(offerer_93100_before_date_range_with_validated_venue_with_siret_with_offer, validated_venue_with_siret_with_offer_4)
-    stock_offer_7 = create_stock_with_event_offer(offerer_93100_after_date_range_with_validated_venue_with_siret_with_offer, validated_venue_with_siret_with_offer_5)
-    stock_offer_8 = create_stock_with_event_offer(offerer_2A450_in_date_range_with_validated_venue_without_siret_with_offer, validated_venue_without_siret_with_offer)
-    stock_offer_9 = create_stock_with_event_offer(offerer_2A450_in_date_range_without_validated_venue_with_siret_with_offer, not_validated_venue_with_siret_with_offer)
-    stock_offer_10 = create_stock_with_event_offer(offerer_93100_in_date_range_with_virtual_venue_with_offer, virtual_venue_with_offer)
-    stock_active_offer_thing = create_stock_with_thing_offer(offerer_2A450_in_date_range_with_validated_venue_with_siret_with_active_offer_thing, validated_venue_with_siret_with_active_offer_thing)
-    stock_expired_offer_thing = create_stock_with_thing_offer(offerer_2A450_in_date_range_with_validated_venue_with_siret_with_expired_offer_thing, validated_venue_with_siret_with_expired_offer_thing, available=0)
+    stock_offer_1 = create_stock_with_event_offer(offerer_93100_in_date_range_with_validated_venue_with_siret_with_offer,
+     validated_venue_with_siret_with_offer_1)
+    stock_offer_2 = create_stock_with_event_offer(offerer_93100_in_date_range_with_validated_venue_with_siret_and_venue_without_siret_with_offer,
+     validated_venue_with_siret_and_venue_without_siret_with_offer)
+    stock_offer_3 = create_stock_with_event_offer(not_validated_offerer_93100_in_date_range_with_validated_venue_with_siret_with_offer,
+     validated_venue_with_siret_with_offer_2)
+    stock_offer_4= create_stock_with_event_offer(offerer_93100_in_date_range_with_validated_venue_with_siret_with_offer_without_siren,
+     validated_venue_with_siret_with_offer_without_siren)
+    stock_offer_5 = create_stock_with_event_offer(offerer_66666_in_date_range_with_validated_venue_with_siret_with_offer,
+     validated_venue_with_siret_with_offer_3)
+    stock_offer_6 = create_stock_with_event_offer(offerer_93100_before_date_range_with_validated_venue_with_siret_with_offer,
+     validated_venue_with_siret_with_offer_4)
+    stock_offer_7 = create_stock_with_event_offer(offerer_93100_after_date_range_with_validated_venue_with_siret_with_offer,
+     validated_venue_with_siret_with_offer_5)
+    stock_offer_8 = create_stock_with_event_offer(offerer_2A450_in_date_range_with_validated_venue_without_siret_with_offer,
+     validated_venue_without_siret_with_offer)
+    stock_offer_9 = create_stock_with_event_offer(offerer_2A450_in_date_range_without_validated_venue_with_siret_with_offer,
+     not_validated_venue_with_siret_with_offer)
+    stock_offer_10 = create_stock_with_event_offer(offerer_93100_in_date_range_with_virtual_venue_with_offer,
+     virtual_venue_with_offer)
+    stock_active_offer_thing = create_stock_with_thing_offer(offerer_2A450_in_date_range_with_validated_venue_with_siret_with_active_offer_thing,
+     validated_venue_with_siret_with_active_offer_thing)
+    stock_expired_offer_thing = create_stock_with_thing_offer(offerer_2A450_in_date_range_with_validated_venue_with_siret_with_expired_offer_thing,
+     validated_venue_with_siret_with_expired_offer_thing, available=0)
 
-    PcObject.check_and_save(query_user, stock_offer_1, stock_offer_2, stock_offer_3, stock_offer_4, stock_offer_5, stock_offer_6, stock_offer_7, stock_offer_8, stock_offer_9, stock_offer_10, stock_active_offer_thing, stock_expired_offer_thing, validated_venue_with_siret_without_offer)
+    PcObject.check_and_save(query_user, stock_offer_1, stock_offer_2, stock_offer_3, stock_offer_4, stock_offer_5, stock_offer_6, stock_offer_7,
+     stock_offer_8, stock_offer_9, stock_offer_10, stock_active_offer_thing, stock_expired_offer_thing, validated_venue_with_siret_without_offer)
 
     auth_request = req_with_auth(email=query_user.email, password='p@55sw0rd')
 
@@ -504,15 +566,27 @@ def test_get_offerers_with_params_for_pc_reporting_return_200_and_filtered_offer
     }
     query_user = create_user(password='p@55sw0rd', is_admin=True, can_book_free_offers=False)
 
-    validated_active_offerer_with_siren_with_validated_user_offerer_with_validated_user_without_bank_information = create_offerer(name="validated_active_offerer_with_siren_with_validated_user_offerer_with_validated_user_without_bank_information", siren="123456781")
-    validated_active_offerer_with_siren_with_both_user_offerer_with_validated_user_without_bank_information = create_offerer(name="validated_active_offerer_with_siren_with_both_user_offerer_with_validated_user_without_bank_information", siren="123456782")
-    validated_active_offerer_with_siren_with_validated_user_offerer_with_both_user_without_bank_information = create_offerer(name="validated_active_offerer_with_siren_with_validated_user_offerer_with_both_user_without_bank_information", siren="123456783")
-    not_validated_active_offerer_with_siren_with_validated_user_offerer_with_validated_user_without_bank_information = create_offerer(name="not_validated_active_offerer_with_siren_with_validated_user_offerer_with_validated_user_without_bank_information", siren="123456784", validation_token="a_token")
-    validated_not_active_offerer_with_siren_with_validated_user_offerer_with_validated_user_without_bank_information = create_offerer(name="validated_not_active_offerer_with_siren_with_validated_user_offerer_with_validated_user_without_bank_information", siren="123456785", is_active=False)
-    validated_active_offerer_without_siren_with_validated_user_offerer_with_validated_user_without_bank_information = create_offerer(name="validated_active_offerer_without_siren_with_validated_user_offerer_with_validated_user_without_bank_information", siren=None)
-    validated_active_offerer_with_siren_with_not_validated_user_offerer_with_validated_user_without_bank_information = create_offerer(name="validated_active_offerer_with_siren_with_not_validated_user_offerer_with_validated_user_without_bank_information", siren="123456787")
-    validated_active_offerer_with_siren_with_validated_user_offerer_with_not_validated_user_without_bank_information = create_offerer(name="validated_active_offerer_with_siren_with_validated_user_offerer_with_not_validated_user_without_bank_information", siren="123456788")
-    validated_active_offerer_with_siren_with_validated_user_offerer_with_validated_user_with_bank_information = create_offerer(name="validated_active_offerer_with_siren_with_validated_user_offerer_with_validated_user_with_bank_information", siren="123456789", iban='DE89 3704 0044 0532 0130 00', bic="AGRIFRPP")
+    validated_active_offerer_with_siren_with_validated_user_offerer_with_validated_user_without_bank_information = create_offerer(
+        name="validated_active_offerer_with_siren_with_validated_user_offerer_with_validated_user_without_bank_information", siren="123456781")
+    validated_active_offerer_with_siren_with_both_user_offerer_with_validated_user_without_bank_information = create_offerer(
+        name="validated_active_offerer_with_siren_with_both_user_offerer_with_validated_user_without_bank_information", siren="123456782")
+    validated_active_offerer_with_siren_with_validated_user_offerer_with_both_user_without_bank_information = create_offerer(
+        name="validated_active_offerer_with_siren_with_validated_user_offerer_with_both_user_without_bank_information", siren="123456783")
+    not_validated_active_offerer_with_siren_with_validated_user_offerer_with_validated_user_without_bank_information = create_offerer(
+        name="not_validated_active_offerer_with_siren_with_validated_user_offerer_with_validated_user_without_bank_information",
+         siren="123456784", validation_token="a_token")
+    validated_not_active_offerer_with_siren_with_validated_user_offerer_with_validated_user_without_bank_information = create_offerer(
+        name="validated_not_active_offerer_with_siren_with_validated_user_offerer_with_validated_user_without_bank_information",
+         siren="123456785", is_active=False)
+    validated_active_offerer_without_siren_with_validated_user_offerer_with_validated_user_without_bank_information = create_offerer(
+        name="validated_active_offerer_without_siren_with_validated_user_offerer_with_validated_user_without_bank_information", siren=None)
+    validated_active_offerer_with_siren_with_not_validated_user_offerer_with_validated_user_without_bank_information = create_offerer(
+        name="validated_active_offerer_with_siren_with_not_validated_user_offerer_with_validated_user_without_bank_information", siren="123456787")
+    validated_active_offerer_with_siren_with_validated_user_offerer_with_not_validated_user_without_bank_information = create_offerer(
+        name="validated_active_offerer_with_siren_with_validated_user_offerer_with_not_validated_user_without_bank_information", siren="123456788")
+    validated_active_offerer_with_siren_with_validated_user_offerer_with_validated_user_with_bank_information = create_offerer(
+        name="validated_active_offerer_with_siren_with_validated_user_offerer_with_validated_user_with_bank_information",
+         siren="123456789", iban='DE89 3704 0044 0532 0130 00', bic="AGRIFRPP")
 
     validated_user_1  = create_user(email="5@mail.fr")
     validated_user_for_both_1  = create_user(email="1@mail.fr")
@@ -526,17 +600,29 @@ def test_get_offerers_with_params_for_pc_reporting_return_200_and_filtered_offer
     not_validated_user  = create_user(email="10@mail.fr", validation_token="a_token")
     validated_user_6  = create_user(email="11@mail.fr")
 
-    validated_user_offerer_with_validated_user_without_bank_information_1 = create_user_offerer(validated_user_1, validated_active_offerer_with_siren_with_validated_user_offerer_with_validated_user_without_bank_information)
-    both_user_offerer_with_validated_user_without_bank_information_1 = create_user_offerer(validated_user_for_both_1, validated_active_offerer_with_siren_with_both_user_offerer_with_validated_user_without_bank_information)
-    both_user_offerer_with_validated_user_without_bank_information_2 = create_user_offerer(validated_user_for_both_2, validated_active_offerer_with_siren_with_both_user_offerer_with_validated_user_without_bank_information)
-    validated_user_offerer_with_both_user_without_bank_information_1 = create_user_offerer(validated_user_for_both_1, validated_active_offerer_with_siren_with_validated_user_offerer_with_both_user_without_bank_information)
-    validated_user_offerer_with_both_user_without_bank_information_2 = create_user_offerer(not_validated_user_for_both_2, validated_active_offerer_with_siren_with_validated_user_offerer_with_both_user_without_bank_information)
-    validated_user_offerer_with_validated_user_without_bank_information_2 = create_user_offerer(validated_user_2, not_validated_active_offerer_with_siren_with_validated_user_offerer_with_validated_user_without_bank_information)
-    validated_user_offerer_with_validated_user_without_bank_information_3 = create_user_offerer(validated_user_3, validated_not_active_offerer_with_siren_with_validated_user_offerer_with_validated_user_without_bank_information)
-    validated_user_offerer_with_validated_user_without_bank_information_4 = create_user_offerer(validated_user_4, validated_active_offerer_without_siren_with_validated_user_offerer_with_validated_user_without_bank_information)
-    validated_user_offerer_with_validated_user_without_bank_information_5 = create_user_offerer(validated_user_5, validated_active_offerer_with_siren_with_not_validated_user_offerer_with_validated_user_without_bank_information, validation_token="a_token")
-    validated_user_offerer_with_not_validated_user_without_bank_information = create_user_offerer(not_validated_user, validated_active_offerer_with_siren_with_validated_user_offerer_with_not_validated_user_without_bank_information)
-    validated_user_offerer_with_validated_user_with_bank_information = create_user_offerer(validated_user_6, validated_active_offerer_with_siren_with_validated_user_offerer_with_validated_user_with_bank_information)
+    validated_user_offerer_with_validated_user_without_bank_information_1 = create_user_offerer(
+        validated_user_1, validated_active_offerer_with_siren_with_validated_user_offerer_with_validated_user_without_bank_information)
+    both_user_offerer_with_validated_user_without_bank_information_1 = create_user_offerer(
+        validated_user_for_both_1, validated_active_offerer_with_siren_with_both_user_offerer_with_validated_user_without_bank_information)
+    both_user_offerer_with_validated_user_without_bank_information_2 = create_user_offerer(
+        validated_user_for_both_2, validated_active_offerer_with_siren_with_both_user_offerer_with_validated_user_without_bank_information)
+    validated_user_offerer_with_both_user_without_bank_information_1 = create_user_offerer(
+        validated_user_for_both_1, validated_active_offerer_with_siren_with_validated_user_offerer_with_both_user_without_bank_information)
+    validated_user_offerer_with_both_user_without_bank_information_2 = create_user_offerer(
+        not_validated_user_for_both_2, validated_active_offerer_with_siren_with_validated_user_offerer_with_both_user_without_bank_information)
+    validated_user_offerer_with_validated_user_without_bank_information_2 = create_user_offerer(
+        validated_user_2, not_validated_active_offerer_with_siren_with_validated_user_offerer_with_validated_user_without_bank_information)
+    validated_user_offerer_with_validated_user_without_bank_information_3 = create_user_offerer(
+        validated_user_3, validated_not_active_offerer_with_siren_with_validated_user_offerer_with_validated_user_without_bank_information)
+    validated_user_offerer_with_validated_user_without_bank_information_4 = create_user_offerer(
+        validated_user_4, validated_active_offerer_without_siren_with_validated_user_offerer_with_validated_user_without_bank_information)
+    validated_user_offerer_with_validated_user_without_bank_information_5 = create_user_offerer(
+        validated_user_5, validated_active_offerer_with_siren_with_not_validated_user_offerer_with_validated_user_without_bank_information,
+        validation_token="a_token")
+    validated_user_offerer_with_not_validated_user_without_bank_information = create_user_offerer(
+        not_validated_user, validated_active_offerer_with_siren_with_validated_user_offerer_with_not_validated_user_without_bank_information)
+    validated_user_offerer_with_validated_user_with_bank_information = create_user_offerer(
+        validated_user_6, validated_active_offerer_with_siren_with_validated_user_offerer_with_validated_user_with_bank_information)
 
     PcObject.check_and_save(query_user, validated_user_offerer_with_validated_user_without_bank_information_1,
      both_user_offerer_with_validated_user_without_bank_information_1, both_user_offerer_with_validated_user_without_bank_information_2,

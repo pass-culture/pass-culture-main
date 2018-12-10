@@ -57,7 +57,8 @@ def find_filtered_venues(dpt=None,
     if is_validated is not None:
         query = _filter_by_is_validated(query, is_validated)
     
-    if has_validated_offerer is not None or has_offerer_with_siren is not None or has_validated_user_offerer is not None or has_validated_user is not None:
+    if has_validated_offerer is not None or has_offerer_with_siren is not None \
+     or has_validated_user_offerer is not None or has_validated_user is not None:
         query = query.join(Offerer)
     
     if has_validated_offerer is not None:

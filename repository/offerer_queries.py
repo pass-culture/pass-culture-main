@@ -118,7 +118,8 @@ def find_filtered_offerers(siren_list=None,
     if is_active is not None:
         query = _filter_by_is_active(query, is_active)
     
-    if has_not_virtual_venue is not None or has_validated_venue is not None or offer_status is not None or has_venue_with_siret is not None:
+    if has_not_virtual_venue is not None or has_validated_venue is not None \
+     or offer_status is not None or has_venue_with_siret is not None:
         query = query.join(Venue)
 
     if has_not_virtual_venue is not None:
@@ -259,20 +260,25 @@ def _filter_by_offer_status(query, offer_status):
         query = query.join(Offer)
         can_still_be_booked_event = Stock.bookingLimitDatetime >= datetime.utcnow()
         is_not_soft_deleted_thing = Stock.isSoftDeleted == False
-        can_still_be_booked_thing = ((Stock.bookingLimitDatetime == None) | (Stock.bookingLimitDatetime >= datetime.utcnow()))
+        can_still_be_booked_thing = ((Stock.bookingLimitDatetime == None)
+         | (Stock.bookingLimitDatetime >= datetime.utcnow()))
         is_available_thing = ((Stock.available == None) | (Stock.available > 0))
 
         query_1 = query.join(EventOccurrence).join(Stock)
         query_2 = query.join(Stock)
 
     if offer_status == "VALID":
-        query_with_valid_event = query_1.filter(is_not_soft_deleted_thing & can_still_be_booked_thing & is_available_thing)
-        query_with_valid_thing = query_2.filter(is_not_soft_deleted_thing & can_still_be_booked_thing & is_available_thing)
+        query_with_valid_event = query_1.filter(is_not_soft_deleted_thing 
+            & can_still_be_booked_thing & is_available_thing)
+        query_with_valid_thing = query_2.filter(is_not_soft_deleted_thing
+         & can_still_be_booked_thing & is_available_thing)
         query = query_with_valid_event.union_all(query_with_valid_thing)
 
     if offer_status == "EXPIRED":
-        query_with_expired_event = query_1.filter(~(is_not_soft_deleted_thing & can_still_be_booked_thing & is_available_thing))
-        query_with_expired_thing = query_2.filter(~(is_not_soft_deleted_thing & can_still_be_booked_thing & is_available_thing))
+        query_with_expired_event = query_1.filter(~(is_not_soft_deleted_thing
+         & can_still_be_booked_thing & is_available_thing))
+        query_with_expired_thing = query_2.filter(~(is_not_soft_deleted_thing
+         & can_still_be_booked_thing & is_available_thing))
         query = query_with_expired_event.union_all(query_with_expired_thing)
 
     return query

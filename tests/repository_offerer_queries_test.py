@@ -211,7 +211,8 @@ def test_find_filtered_offerers_with_siren_list_params_return_filtered_offerers(
     offerer_123456783 = create_offerer(name="offerer_123456783", siren="123456783")
     offerer_123456784 = create_offerer(name="offerer_123456784", siren="123456784")
     
-    PcObject.check_and_save(offerer_123456789, offerer_123456781, offerer_123456782, offerer_123456783, offerer_123456784)
+    PcObject.check_and_save(offerer_123456789, offerer_123456781, offerer_123456782, 
+        offerer_123456783, offerer_123456784)
  
     #when
     query_with_siren_list = find_filtered_offerers(siren_list=["123456781", "123456782", "123456783"])
@@ -282,16 +283,9 @@ def test_find_filtered_offerers_with_date_params_return_filtered_offerers(app):
     offerer_before_date_range = create_offerer(siren="123456784", date_created=datetime(2017,7,15))
     offerer_after_date_range = create_offerer(siren="123456785", date_created=datetime(2018,12,15))
 
-    PcObject.check_and_save(offerer_in_date_range, offerer_20180701, offerer_20180801, offerer_before_date_range, offerer_after_date_range)
+    PcObject.check_and_save(offerer_in_date_range, offerer_20180701, offerer_20180801,
+     offerer_before_date_range, offerer_after_date_range)
     
-    activity_in_date_range = create_offerer_activity(offerer_in_date_range, 'offerer', 'insert', issued_at=datetime(2018,7,15))
-    activity_20180701 = create_offerer_activity(offerer_20180701, 'offerer', 'insert', issued_at=datetime(2018,7,1))
-    activity_20180801 = create_offerer_activity(offerer_20180801, 'offerer', 'insert', issued_at=datetime(2018,8,1))
-    activity_before_date_range = create_offerer_activity(offerer_before_date_range, 'offerer', 'insert', issued_at=datetime(2017,7,15))
-    activity_after_date_range = create_offerer_activity(offerer_after_date_range, 'offerer', 'insert', issued_at=datetime(2018,12,15))
-
-    save_all_activities(activity_in_date_range, activity_20180701, activity_20180801, activity_before_date_range, activity_after_date_range)
-
     # When
     query_with_date = find_filtered_offerers(from_date='2018-07-01',
         to_date='2018-08-01')
@@ -390,7 +384,8 @@ def test_find_filtered_offerers_with_True_has_validated_user_param_return_filter
     user_offerer_not_validated_user_1 = create_user_offerer(not_validated_user_1, offerer_with_not_validated_user)
     user_offerer_not_validated_user_2 = create_user_offerer(not_validated_user_2, offerer_with_both)
 
-    PcObject.check_and_save(user_offerer_validated_user_1, user_offerer_validated_user_2, user_offerer_not_validated_user_1, user_offerer_not_validated_user_2)
+    PcObject.check_and_save(user_offerer_validated_user_1, user_offerer_validated_user_2,
+     user_offerer_not_validated_user_1, user_offerer_not_validated_user_2)
 
     # When
     query_validated_user = find_filtered_offerers(has_validated_user=True)
@@ -419,7 +414,8 @@ def test_find_filtered_offerers_with_False_has_validated_user_param_return_filte
     user_offerer_not_validated_user_1 = create_user_offerer(not_validated_user_1, offerer_with_not_validated_user)
     user_offerer_not_validated_user_2 = create_user_offerer(not_validated_user_2, offerer_with_both)
 
-    PcObject.check_and_save(user_offerer_validated_user_1, user_offerer_validated_user_2, user_offerer_not_validated_user_1, user_offerer_not_validated_user_2)
+    PcObject.check_and_save(user_offerer_validated_user_1, user_offerer_validated_user_2,
+     user_offerer_not_validated_user_1, user_offerer_not_validated_user_2)
 
     # When
     query_not_validated = find_filtered_offerers(has_validated_user=False)
@@ -482,12 +478,17 @@ def test_find_filtered_offerers_with_True_has_validated_venue_param_return_filte
     offerer_with_validated_venue = create_offerer(siren="123456781")
     offerer_with_both = create_offerer(siren="123456782")
 
-    venue_with_not_validated_venue_1 = create_venue(offerer_with_not_validated_venue, siret="12345678912341", validation_token="another_token")
-    venue_with_validated_venue_1 = create_venue(offerer_with_validated_venue, siret="12345678912342")
-    venue_with_not_validated_venue_2 = create_venue(offerer_with_both, siret="12345678912343", validation_token="a_token")
-    venue_with_validated_venue_2 = create_venue(offerer_with_both, siret="12345678912344")
+    venue_with_not_validated_venue_1 = create_venue(offerer_with_not_validated_venue,
+     siret="12345678912341", validation_token="another_token")
+    venue_with_validated_venue_1 = create_venue(offerer_with_validated_venue, 
+     siret="12345678912342")
+    venue_with_not_validated_venue_2 = create_venue(offerer_with_both,
+     siret="12345678912343", validation_token="a_token")
+    venue_with_validated_venue_2 = create_venue(offerer_with_both,
+     siret="12345678912344")
 
-    PcObject.check_and_save(venue_with_not_validated_venue_1, venue_with_validated_venue_1, venue_with_not_validated_venue_2, venue_with_validated_venue_2)
+    PcObject.check_and_save(venue_with_not_validated_venue_1, venue_with_validated_venue_1,
+     venue_with_not_validated_venue_2, venue_with_validated_venue_2)
 
     # When
     query_validated = find_filtered_offerers(has_validated_venue=True)
@@ -506,12 +507,17 @@ def test_find_filtered_offerers_with_False_has_validated_venue_param_return_filt
     offerer_with_validated_venue = create_offerer(siren="123456781")
     offerer_with_both = create_offerer(siren="123456782")
 
-    venue_with_not_validated_venue_1 = create_venue(offerer_with_not_validated_venue, siret="12345678912341", validation_token="another_token")
-    venue_with_validated_venue_1 = create_venue(offerer_with_validated_venue, siret="12345678912342")
-    venue_with_not_validated_venue_2 = create_venue(offerer_with_both, siret="12345678912343", validation_token="a_token")
-    venue_with_validated_venue_2 = create_venue(offerer_with_both, siret="12345678912344")
+    venue_with_not_validated_venue_1 = create_venue(offerer_with_not_validated_venue,
+     siret="12345678912341", validation_token="another_token")
+    venue_with_validated_venue_1 = create_venue(offerer_with_validated_venue,
+     siret="12345678912342")
+    venue_with_not_validated_venue_2 = create_venue(offerer_with_both,
+     siret="12345678912343", validation_token="a_token")
+    venue_with_validated_venue_2 = create_venue(offerer_with_both,
+     siret="12345678912344")
 
-    PcObject.check_and_save(venue_with_not_validated_venue_1, venue_with_validated_venue_1, venue_with_not_validated_venue_2, venue_with_validated_venue_2)
+    PcObject.check_and_save(venue_with_not_validated_venue_1, venue_with_validated_venue_1,
+     venue_with_not_validated_venue_2, venue_with_validated_venue_2)
 
     # When
     query_not_validated = find_filtered_offerers(has_validated_venue=False)
@@ -532,15 +538,20 @@ def test_find_filtered_offerers_with_True_has_venue_with_siret_param_return_filt
     offerer_with_both_comment = create_offerer(siren="123456786")
     offerer_with_both_virtual = create_offerer(siren="123456785")
 
-    venue_with_no_siret_comment_1 = create_venue(offerer_with_venue_without_siret_comment, siret=None, comment="I've no siret")
-    venue_with_no_siret_virtual_1 = create_venue(offerer_with_venue_without_siret_virtual, siret=None, is_virtual=True)
+    venue_with_no_siret_comment_1 = create_venue(offerer_with_venue_without_siret_comment,
+     siret=None, comment="I've no siret")
+    venue_with_no_siret_virtual_1 = create_venue(offerer_with_venue_without_siret_virtual,
+     siret=None, is_virtual=True)
     venue_with_siret_1 = create_venue(offerer_with_venue_with_siret, siret="12345678912341")
     venue_with_siret_2 = create_venue(offerer_with_both_comment, siret="12345678912342")
     venue_with_siret_3 = create_venue(offerer_with_both_virtual, siret="12345678912343")
-    venue_with_no_siret_comment_2 = create_venue(offerer_with_both_comment, siret=None, comment="No more siret :/")
-    venue_with_no_siret_virtual_2 = create_venue(offerer_with_both_virtual, siret=None, is_virtual=True)
+    venue_with_no_siret_comment_2 = create_venue(offerer_with_both_comment,
+     siret=None, comment="No more siret :/")
+    venue_with_no_siret_virtual_2 = create_venue(offerer_with_both_virtual,
+     siret=None, is_virtual=True)
 
-    PcObject.check_and_save(venue_with_no_siret_comment_1, venue_with_no_siret_virtual_1, venue_with_siret_1, venue_with_siret_2, venue_with_siret_3, venue_with_no_siret_comment_2, venue_with_no_siret_virtual_2)
+    PcObject.check_and_save(venue_with_no_siret_comment_1, venue_with_no_siret_virtual_1, venue_with_siret_1,
+     venue_with_siret_2, venue_with_siret_3, venue_with_no_siret_comment_2, venue_with_no_siret_virtual_2)
 
     # When
     query_with_siret = find_filtered_offerers(has_venue_with_siret=True)
@@ -563,15 +574,19 @@ def test_find_filtered_offerers_with_False_has_venue_with_siret_param_return_fil
     offerer_with_both_comment = create_offerer(siren="123456786")
     offerer_with_both_virtual = create_offerer(siren="123456785")
 
-    venue_with_no_siret_comment_1 = create_venue(offerer_with_venue_without_siret_comment, siret=None, comment="I've no siret")
-    venue_with_no_siret_virtual_1 = create_venue(offerer_with_venue_without_siret_virtual, siret=None, is_virtual=True)
+    venue_with_no_siret_comment_1 = create_venue(offerer_with_venue_without_siret_comment,
+     siret=None, comment="I've no siret")
+    venue_with_no_siret_virtual_1 = create_venue(offerer_with_venue_without_siret_virtual,
+     siret=None, is_virtual=True)
     venue_with_siret_1 = create_venue(offerer_with_venue_with_siret, siret="12345678912341")
     venue_with_siret_2 = create_venue(offerer_with_both_comment, siret="12345678912342")
     venue_with_siret_3 = create_venue(offerer_with_both_virtual, siret="12345678912343")
-    venue_with_no_siret_comment_2 = create_venue(offerer_with_both_comment, siret=None, comment="No more siret :/")
+    venue_with_no_siret_comment_2 = create_venue(offerer_with_both_comment,
+     siret=None, comment="No more siret :/")
     venue_with_no_siret_virtual_2 = create_venue(offerer_with_both_virtual, siret=None, is_virtual=True)
 
-    PcObject.check_and_save(venue_with_no_siret_comment_1, venue_with_no_siret_virtual_1, venue_with_siret_1, venue_with_siret_2, venue_with_siret_3, venue_with_no_siret_comment_2, venue_with_no_siret_virtual_2)
+    PcObject.check_and_save(venue_with_no_siret_comment_1, venue_with_no_siret_virtual_1, venue_with_siret_1,
+     venue_with_siret_2, venue_with_siret_3, venue_with_no_siret_comment_2, venue_with_no_siret_virtual_2)
 
     # When
     query_whitout_siret = find_filtered_offerers(has_venue_with_siret=False)
@@ -596,10 +611,12 @@ def test_find_filtered_offerers_with_True_has_validated_user_offerer_param_retur
 
     user_offerer_validated_1 = create_user_offerer(user, offerer_with_validated_user_offerer)
     user_offerer_validated_2 = create_user_offerer(user, offerer_with_both)
-    user_offerer_not_validated_1 = create_user_offerer(user, offerer_with_not_validated_user_offerer, validation_token="a_token")
+    user_offerer_not_validated_1 = create_user_offerer(user, offerer_with_not_validated_user_offerer,
+     validation_token="a_token")
     user_offerer_not_validated_2 = create_user_offerer(user, offerer_with_both, validation_token="another_token")
 
-    PcObject.check_and_save(user_offerer_validated_1, user_offerer_validated_2, user_offerer_not_validated_1, user_offerer_not_validated_2)
+    PcObject.check_and_save(user_offerer_validated_1, user_offerer_validated_2,
+     user_offerer_not_validated_1, user_offerer_not_validated_2)
 
     # When
     query_validated = find_filtered_offerers(has_validated_user_offerer=True)
@@ -623,10 +640,12 @@ def test_find_filtered_offerers_with_False_has_validated_user_offerer_param_retu
 
     user_offerer_validated_1 = create_user_offerer(user, offerer_with_validated_user_offerer)
     user_offerer_validated_2 = create_user_offerer(user, offerer_with_both)
-    user_offerer_not_validated_1 = create_user_offerer(user, offerer_with_not_validated_user_offerer, validation_token="a_token")
+    user_offerer_not_validated_1 = create_user_offerer(user, offerer_with_not_validated_user_offerer,
+     validation_token="a_token")
     user_offerer_not_validated_2 = create_user_offerer(user, offerer_with_both, validation_token="another_token")
 
-    PcObject.check_and_save(user_offerer_validated_1, user_offerer_validated_2, user_offerer_not_validated_1, user_offerer_not_validated_2)
+    PcObject.check_and_save(user_offerer_validated_1, user_offerer_validated_2, user_offerer_not_validated_1,
+     user_offerer_not_validated_2)
 
     # When
     query_not_validated = find_filtered_offerers(has_validated_user_offerer=False)
@@ -965,7 +984,8 @@ def test_find_filtered_offerers_with_offer_status_with_ALL_param_and_False_has_n
     offer_4 = create_event_offer(virtual_venue_with_offer_4)
     offer_5 = create_event_offer(venue_with_offer_5)
 
-    PcObject.check_and_save(offer_1, offer_2, offer_3, offer_4, offer_5, virtual_venue_without_offer_1, virtual_venue_without_offer_2, venue_without_offer_2, venue_without_offer_4, virtual_venue_without_offer_5)
+    PcObject.check_and_save(offer_1, offer_2, offer_3, offer_4, offer_5, virtual_venue_without_offer_1, virtual_venue_without_offer_2,
+     venue_without_offer_2, venue_without_offer_4, virtual_venue_without_offer_5)
 
     # When
     query_with_all_offer = find_filtered_offerers(offer_status='ALL', has_not_virtual_venue=False)
@@ -1007,7 +1027,8 @@ def test_find_filtered_offerers_with_offer_status_with_ALL_param_and_True_has_no
     offer_4 = create_event_offer(virtual_venue_with_offer_4)
     offer_5 = create_event_offer(venue_with_offer_5)
 
-    PcObject.check_and_save(offer_1, offer_2, offer_3, offer_4, offer_5, virtual_venue_without_offer_1, virtual_venue_without_offer_2, venue_without_offer_2, venue_without_offer_4, virtual_venue_without_offer_5)    
+    PcObject.check_and_save(offer_1, offer_2, offer_3, offer_4, offer_5, virtual_venue_without_offer_1, virtual_venue_without_offer_2,
+     venue_without_offer_2, venue_without_offer_4, virtual_venue_without_offer_5)    
 
     # When
     query_with_all_offer = find_filtered_offerers(offer_status='ALL', has_not_virtual_venue=True)
@@ -1041,7 +1062,9 @@ def test_find_filtered_offerers_with_default_param_return_all_offerers(app):
     not_virtual_venue = create_venue(offerer_with_both_venues)
 
 
-    PcObject.check_and_save(offerer_67, offerer_34000, offerer_with_siren, offerer_without_siren, offerer_with_no_venue, offerer_with_only_virtual_venue, offerer_with_both_venues, offerer_not_validated, offerer_with_bank_information, offerer_not_active, virtual_venue_1, virtual_venue_2, not_virtual_venue)
+    PcObject.check_and_save(offerer_67, offerer_34000, offerer_with_siren, offerer_without_siren, offerer_with_no_venue,
+     offerer_with_only_virtual_venue, offerer_with_both_venues, offerer_not_validated, offerer_with_bank_information,
+     offerer_not_active, virtual_venue_1, virtual_venue_2, not_virtual_venue)
 
     # When
     default_query = find_filtered_offerers()
@@ -1057,3 +1080,4 @@ def test_find_filtered_offerers_with_default_param_return_all_offerers(app):
     assert offerer_not_validated in default_query
     assert offerer_with_bank_information in default_query
     assert offerer_not_active in default_query
+    
