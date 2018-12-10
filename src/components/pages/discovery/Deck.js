@@ -107,32 +107,18 @@ export class RawDeck extends Component {
     if (!previousRecommendation || isShownDetails) return
     const { offerId, mediationId } = previousRecommendation
     history.push(`/decouverte/${offerId || 'tuto'}/${mediationId || ''}`)
-    this.handleRefreshPrevious()
-  }
-
-  handleRefreshPrevious = () => {
-    const { currentRecommendation, previousLimit } = this.props
-    if (currentRecommendation.index <= previousLimit) {
-      // TODO replace by a requestData
-      /*
-      worker.postMessage({
-        key: 'dexie-push-pull',
-        state: { around: currentRecommendation.id },
-      })
-      */
-    }
   }
 
   handleRefreshNext = () => {
-    const { currentRecommendation, nextLimit } = this.props
+    const {
+      currentRecommendation,
+      handleDataRequest,
+      nextLimit,
+      recommendations,
+    } = this.props
     if (currentRecommendation.index >= nextLimit) {
-      // TODO replace by a requestData
-      /*
-      worker.postMessage({
-        key: 'dexie-push-pull',
-        state: { around: currentRecommendation.id },
-      })
-      */
+      const seenRecommendationIds = recommendations.map(r => r.id)
+      handleDataRequest(seenRecommendationIds)
     }
   }
 
@@ -332,6 +318,7 @@ RawDeck.propTypes = {
   currentRecommendation: PropTypes.object,
   dispatch: PropTypes.func.isRequired,
   draggable: PropTypes.bool.isRequired,
+  handleDataRequest: PropTypes.func.isRequired,
   height: PropTypes.number.isRequired,
   history: PropTypes.object.isRequired,
   horizontalSlideRatio: PropTypes.number,
@@ -340,7 +327,6 @@ RawDeck.propTypes = {
   nextLimit: PropTypes.number.isRequired,
   nextRecommendation: PropTypes.object,
   noDataTimeout: PropTypes.number,
-  previousLimit: PropTypes.number.isRequired,
   previousRecommendation: PropTypes.object,
   // flipRatio: PropTypes.number,
   // isDebug: PropTypes.bool,
