@@ -1,7 +1,7 @@
 import classnames from 'classnames'
 import get from 'lodash.get'
 import { requestData, showNotification, withLogin } from 'pass-culture-shared'
-import React, { Component, Fragment } from 'react'
+import React, { PureComponent, Fragment } from 'react'
 import { connect } from 'react-redux'
 import { NavLink, withRouter } from 'react-router-dom'
 import { compose } from 'redux'
@@ -22,7 +22,7 @@ import CanvasTools from '../../../utils/canvas'
 const IMAGE_UPLOAD_SIZE = 400
 const IMAGE_UPLOAD_BORDER = 25
 
-class Mediation extends Component {
+class Mediation extends PureComponent {
   constructor() {
     super()
     this.state = {
