@@ -60,7 +60,7 @@ class FilterByDates extends PureComponent {
       : pickedDaysInQuery.includes(inputValue)
 
   render() {
-    const { filterState, title } = this.props
+    const { filterState, minDate, title } = this.props
     const pickedDaysInQuery = decodeURI(filterState.params.jours || '')
     const { pickedDate } = this.state
 
@@ -101,7 +101,7 @@ class FilterByDates extends PureComponent {
             <DatePickerField
               name="pick-by-date-filter"
               className="item fs19 py5 px7"
-              minDate={TODAY_DATE}
+              minDate={minDate || TODAY_DATE}
               selected={pickedDate}
               onChange={this.onPickedDateChange}
               popperRefContainer={this.datepickerPopper}
@@ -118,9 +118,14 @@ class FilterByDates extends PureComponent {
   }
 }
 
+FilterByDates.defaultProps = {
+  minDate: false, // allows fixing timestamp issues with snapshots tests
+}
+
 FilterByDates.propTypes = {
   filterActions: PropTypes.object.isRequired,
   filterState: PropTypes.object.isRequired,
+  minDate: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
   title: PropTypes.string.isRequired,
 }
 export default FilterByDates

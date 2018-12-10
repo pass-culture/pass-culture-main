@@ -1,3 +1,4 @@
+// jest --env=jsdom ./src/components/pages/search/tests/FilterByDates --watch
 import moment from 'moment'
 import React from 'react'
 import { shallow } from 'enzyme'
@@ -37,12 +38,15 @@ describe('src | components | pages | search | FilterByDates', () => {
     remove: filterActionsRemoveMock,
   }
   describe('snapshot', () => {
-    // skipped because of minDate that make the tests allways false
-    // Return a fixed timestamp when moment().format() is called
-    jest.mock('moment', () => '2018-11-01T14:15:25.812')
     it('should match snapshot', () => {
       // when
-      const wrapper = shallow(<FilterByDates {...initialProps} />)
+      const snapshotExpectedDateFormat = 'MMM Do YY'
+      const snapshotExpectedDateString = '2018-12-10 09:30:00'
+      const minDate = moment(snapshotExpectedDateString).format(
+        snapshotExpectedDateFormat
+      )
+      const props = { ...initialProps, minDate }
+      const wrapper = shallow(<FilterByDates {...props} />)
 
       // then
       expect(wrapper).toBeDefined()
