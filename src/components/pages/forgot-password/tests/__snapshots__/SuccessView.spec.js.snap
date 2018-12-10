@@ -1,0 +1,673 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`src | components | pages | forgot-password | SuccessView should match snapshot with token 1`] = `
+ShallowWrapper {
+  Symbol(enzyme.__root__): [Circular],
+  Symbol(enzyme.__unrendered__): <SuccessView
+    token="1234567890"
+  />,
+  Symbol(enzyme.__renderer__): Object {
+    "batchedUpdates": [Function],
+    "getNode": [Function],
+    "render": [Function],
+    "simulateError": [Function],
+    "simulateEvent": [Function],
+    "unmount": [Function],
+  },
+  Symbol(enzyme.__node__): Object {
+    "instance": null,
+    "key": undefined,
+    "nodeType": "host",
+    "props": Object {
+      "children": Array [
+        <main
+          className="pc-main padded-2x flex-rows flex-center flex-1"
+          role="main"
+        >
+          <div
+            className="is-italic fs22 is-white-text"
+          >
+            <React.Fragment>
+              <p
+                className="is-medium"
+              >
+                Votre mode de passe a bien été enregistré, vous pouvez l'utiliser pour vous connecter
+              </p>
+            </React.Fragment>
+          </div>
+        </main>,
+        <FormFooter
+          cancel={null}
+          className=""
+          submit={
+            Object {
+              "className": "is-bold is-white-text",
+              "disabled": false,
+              "label": "Connexion",
+              "url": "/connexion",
+            }
+          }
+        />,
+      ],
+      "className": "is-full-layout flex-rows",
+      "id": "reset-password-page-success",
+    },
+    "ref": null,
+    "rendered": Array [
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": <div
+            className="is-italic fs22 is-white-text"
+          >
+            <React.Fragment>
+              <p
+                className="is-medium"
+              >
+                Votre mode de passe a bien été enregistré, vous pouvez l'utiliser pour vous connecter
+              </p>
+            </React.Fragment>
+          </div>,
+          "className": "pc-main padded-2x flex-rows flex-center flex-1",
+          "role": "main",
+        },
+        "ref": null,
+        "rendered": Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": <React.Fragment>
+              <p
+                className="is-medium"
+              >
+                Votre mode de passe a bien été enregistré, vous pouvez l'utiliser pour vous connecter
+              </p>
+            </React.Fragment>,
+            "className": "is-italic fs22 is-white-text",
+          },
+          "ref": null,
+          "rendered": Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "function",
+            "props": Object {
+              "children": <p
+                className="is-medium"
+              >
+                Votre mode de passe a bien été enregistré, vous pouvez l'utiliser pour vous connecter
+              </p>,
+            },
+            "ref": null,
+            "rendered": Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": "Votre mode de passe a bien été enregistré, vous pouvez l'utiliser pour vous connecter",
+                "className": "is-medium",
+              },
+              "ref": null,
+              "rendered": "Votre mode de passe a bien été enregistré, vous pouvez l'utiliser pour vous connecter",
+              "type": "p",
+            },
+            "type": Symbol(react.fragment),
+          },
+          "type": "div",
+        },
+        "type": "main",
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "class",
+        "props": Object {
+          "cancel": null,
+          "className": "",
+          "submit": Object {
+            "className": "is-bold is-white-text",
+            "disabled": false,
+            "label": "Connexion",
+            "url": "/connexion",
+          },
+        },
+        "ref": null,
+        "rendered": null,
+        "type": [Function],
+      },
+    ],
+    "type": "div",
+  },
+  Symbol(enzyme.__nodes__): Array [
+    Object {
+      "instance": null,
+      "key": undefined,
+      "nodeType": "host",
+      "props": Object {
+        "children": Array [
+          <main
+            className="pc-main padded-2x flex-rows flex-center flex-1"
+            role="main"
+          >
+            <div
+              className="is-italic fs22 is-white-text"
+            >
+              <React.Fragment>
+                <p
+                  className="is-medium"
+                >
+                  Votre mode de passe a bien été enregistré, vous pouvez l'utiliser pour vous connecter
+                </p>
+              </React.Fragment>
+            </div>
+          </main>,
+          <FormFooter
+            cancel={null}
+            className=""
+            submit={
+              Object {
+                "className": "is-bold is-white-text",
+                "disabled": false,
+                "label": "Connexion",
+                "url": "/connexion",
+              }
+            }
+          />,
+        ],
+        "className": "is-full-layout flex-rows",
+        "id": "reset-password-page-success",
+      },
+      "ref": null,
+      "rendered": Array [
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": <div
+              className="is-italic fs22 is-white-text"
+            >
+              <React.Fragment>
+                <p
+                  className="is-medium"
+                >
+                  Votre mode de passe a bien été enregistré, vous pouvez l'utiliser pour vous connecter
+                </p>
+              </React.Fragment>
+            </div>,
+            "className": "pc-main padded-2x flex-rows flex-center flex-1",
+            "role": "main",
+          },
+          "ref": null,
+          "rendered": Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": <React.Fragment>
+                <p
+                  className="is-medium"
+                >
+                  Votre mode de passe a bien été enregistré, vous pouvez l'utiliser pour vous connecter
+                </p>
+              </React.Fragment>,
+              "className": "is-italic fs22 is-white-text",
+            },
+            "ref": null,
+            "rendered": Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "function",
+              "props": Object {
+                "children": <p
+                  className="is-medium"
+                >
+                  Votre mode de passe a bien été enregistré, vous pouvez l'utiliser pour vous connecter
+                </p>,
+              },
+              "ref": null,
+              "rendered": Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": "Votre mode de passe a bien été enregistré, vous pouvez l'utiliser pour vous connecter",
+                  "className": "is-medium",
+                },
+                "ref": null,
+                "rendered": "Votre mode de passe a bien été enregistré, vous pouvez l'utiliser pour vous connecter",
+                "type": "p",
+              },
+              "type": Symbol(react.fragment),
+            },
+            "type": "div",
+          },
+          "type": "main",
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "class",
+          "props": Object {
+            "cancel": null,
+            "className": "",
+            "submit": Object {
+              "className": "is-bold is-white-text",
+              "disabled": false,
+              "label": "Connexion",
+              "url": "/connexion",
+            },
+          },
+          "ref": null,
+          "rendered": null,
+          "type": [Function],
+        },
+      ],
+      "type": "div",
+    },
+  ],
+  Symbol(enzyme.__options__): Object {
+    "adapter": ReactSixteenAdapter {
+      "options": Object {
+        "enableComponentDidUpdateOnSetState": true,
+        "lifecycles": Object {
+          "componentDidUpdate": Object {
+            "onSetState": true,
+          },
+          "getDerivedStateFromProps": true,
+          "getSnapshotBeforeUpdate": true,
+          "setState": Object {
+            "skipsComponentDidUpdateOnNullish": true,
+          },
+        },
+      },
+    },
+  },
+}
+`;
+
+exports[`src | components | pages | forgot-password | SuccessView should match snapshot without token 1`] = `
+ShallowWrapper {
+  Symbol(enzyme.__root__): [Circular],
+  Symbol(enzyme.__unrendered__): <SuccessView
+    token={null}
+  />,
+  Symbol(enzyme.__renderer__): Object {
+    "batchedUpdates": [Function],
+    "getNode": [Function],
+    "render": [Function],
+    "simulateError": [Function],
+    "simulateEvent": [Function],
+    "unmount": [Function],
+  },
+  Symbol(enzyme.__node__): Object {
+    "instance": null,
+    "key": undefined,
+    "nodeType": "host",
+    "props": Object {
+      "children": Array [
+        <main
+          className="pc-main padded-2x flex-rows flex-center flex-1"
+          role="main"
+        >
+          <div
+            className="is-italic fs22 is-white-text"
+          >
+            <React.Fragment>
+              <p
+                className="is-medium"
+              >
+                Vous allez recevoir un e-mail avec les instructions de réinitialisation.
+              </p>
+              <p
+                className="is-medium mt28"
+              >
+                Si vous n'avez rien reçu d'ici une heure, merci de vérifier votre e-mail et de le saisir à nouveau.
+              </p>
+            </React.Fragment>
+          </div>
+        </main>,
+        <FormFooter
+          cancel={
+            Object {
+              "className": "is-white-text",
+              "disabled": false,
+              "label": "Recommencer",
+              "url": "/mot-de-passe-perdu",
+            }
+          }
+          className=""
+          submit={
+            Object {
+              "className": "is-bold is-white-text",
+              "disabled": false,
+              "label": "Connexion",
+              "url": "/connexion",
+            }
+          }
+        />,
+      ],
+      "className": "is-full-layout flex-rows",
+      "id": "reset-password-page-success",
+    },
+    "ref": null,
+    "rendered": Array [
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": <div
+            className="is-italic fs22 is-white-text"
+          >
+            <React.Fragment>
+              <p
+                className="is-medium"
+              >
+                Vous allez recevoir un e-mail avec les instructions de réinitialisation.
+              </p>
+              <p
+                className="is-medium mt28"
+              >
+                Si vous n'avez rien reçu d'ici une heure, merci de vérifier votre e-mail et de le saisir à nouveau.
+              </p>
+            </React.Fragment>
+          </div>,
+          "className": "pc-main padded-2x flex-rows flex-center flex-1",
+          "role": "main",
+        },
+        "ref": null,
+        "rendered": Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": <React.Fragment>
+              <p
+                className="is-medium"
+              >
+                Vous allez recevoir un e-mail avec les instructions de réinitialisation.
+              </p>
+              <p
+                className="is-medium mt28"
+              >
+                Si vous n'avez rien reçu d'ici une heure, merci de vérifier votre e-mail et de le saisir à nouveau.
+              </p>
+            </React.Fragment>,
+            "className": "is-italic fs22 is-white-text",
+          },
+          "ref": null,
+          "rendered": Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "function",
+            "props": Object {
+              "children": Array [
+                <p
+                  className="is-medium"
+                >
+                  Vous allez recevoir un e-mail avec les instructions de réinitialisation.
+                </p>,
+                <p
+                  className="is-medium mt28"
+                >
+                  Si vous n'avez rien reçu d'ici une heure, merci de vérifier votre e-mail et de le saisir à nouveau.
+                </p>,
+              ],
+            },
+            "ref": null,
+            "rendered": Array [
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": "Vous allez recevoir un e-mail avec les instructions de réinitialisation.",
+                  "className": "is-medium",
+                },
+                "ref": null,
+                "rendered": "Vous allez recevoir un e-mail avec les instructions de réinitialisation.",
+                "type": "p",
+              },
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": "Si vous n'avez rien reçu d'ici une heure, merci de vérifier votre e-mail et de le saisir à nouveau.",
+                  "className": "is-medium mt28",
+                },
+                "ref": null,
+                "rendered": "Si vous n'avez rien reçu d'ici une heure, merci de vérifier votre e-mail et de le saisir à nouveau.",
+                "type": "p",
+              },
+            ],
+            "type": Symbol(react.fragment),
+          },
+          "type": "div",
+        },
+        "type": "main",
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "class",
+        "props": Object {
+          "cancel": Object {
+            "className": "is-white-text",
+            "disabled": false,
+            "label": "Recommencer",
+            "url": "/mot-de-passe-perdu",
+          },
+          "className": "",
+          "submit": Object {
+            "className": "is-bold is-white-text",
+            "disabled": false,
+            "label": "Connexion",
+            "url": "/connexion",
+          },
+        },
+        "ref": null,
+        "rendered": null,
+        "type": [Function],
+      },
+    ],
+    "type": "div",
+  },
+  Symbol(enzyme.__nodes__): Array [
+    Object {
+      "instance": null,
+      "key": undefined,
+      "nodeType": "host",
+      "props": Object {
+        "children": Array [
+          <main
+            className="pc-main padded-2x flex-rows flex-center flex-1"
+            role="main"
+          >
+            <div
+              className="is-italic fs22 is-white-text"
+            >
+              <React.Fragment>
+                <p
+                  className="is-medium"
+                >
+                  Vous allez recevoir un e-mail avec les instructions de réinitialisation.
+                </p>
+                <p
+                  className="is-medium mt28"
+                >
+                  Si vous n'avez rien reçu d'ici une heure, merci de vérifier votre e-mail et de le saisir à nouveau.
+                </p>
+              </React.Fragment>
+            </div>
+          </main>,
+          <FormFooter
+            cancel={
+              Object {
+                "className": "is-white-text",
+                "disabled": false,
+                "label": "Recommencer",
+                "url": "/mot-de-passe-perdu",
+              }
+            }
+            className=""
+            submit={
+              Object {
+                "className": "is-bold is-white-text",
+                "disabled": false,
+                "label": "Connexion",
+                "url": "/connexion",
+              }
+            }
+          />,
+        ],
+        "className": "is-full-layout flex-rows",
+        "id": "reset-password-page-success",
+      },
+      "ref": null,
+      "rendered": Array [
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": <div
+              className="is-italic fs22 is-white-text"
+            >
+              <React.Fragment>
+                <p
+                  className="is-medium"
+                >
+                  Vous allez recevoir un e-mail avec les instructions de réinitialisation.
+                </p>
+                <p
+                  className="is-medium mt28"
+                >
+                  Si vous n'avez rien reçu d'ici une heure, merci de vérifier votre e-mail et de le saisir à nouveau.
+                </p>
+              </React.Fragment>
+            </div>,
+            "className": "pc-main padded-2x flex-rows flex-center flex-1",
+            "role": "main",
+          },
+          "ref": null,
+          "rendered": Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": <React.Fragment>
+                <p
+                  className="is-medium"
+                >
+                  Vous allez recevoir un e-mail avec les instructions de réinitialisation.
+                </p>
+                <p
+                  className="is-medium mt28"
+                >
+                  Si vous n'avez rien reçu d'ici une heure, merci de vérifier votre e-mail et de le saisir à nouveau.
+                </p>
+              </React.Fragment>,
+              "className": "is-italic fs22 is-white-text",
+            },
+            "ref": null,
+            "rendered": Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "function",
+              "props": Object {
+                "children": Array [
+                  <p
+                    className="is-medium"
+                  >
+                    Vous allez recevoir un e-mail avec les instructions de réinitialisation.
+                  </p>,
+                  <p
+                    className="is-medium mt28"
+                  >
+                    Si vous n'avez rien reçu d'ici une heure, merci de vérifier votre e-mail et de le saisir à nouveau.
+                  </p>,
+                ],
+              },
+              "ref": null,
+              "rendered": Array [
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": "Vous allez recevoir un e-mail avec les instructions de réinitialisation.",
+                    "className": "is-medium",
+                  },
+                  "ref": null,
+                  "rendered": "Vous allez recevoir un e-mail avec les instructions de réinitialisation.",
+                  "type": "p",
+                },
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": "Si vous n'avez rien reçu d'ici une heure, merci de vérifier votre e-mail et de le saisir à nouveau.",
+                    "className": "is-medium mt28",
+                  },
+                  "ref": null,
+                  "rendered": "Si vous n'avez rien reçu d'ici une heure, merci de vérifier votre e-mail et de le saisir à nouveau.",
+                  "type": "p",
+                },
+              ],
+              "type": Symbol(react.fragment),
+            },
+            "type": "div",
+          },
+          "type": "main",
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "class",
+          "props": Object {
+            "cancel": Object {
+              "className": "is-white-text",
+              "disabled": false,
+              "label": "Recommencer",
+              "url": "/mot-de-passe-perdu",
+            },
+            "className": "",
+            "submit": Object {
+              "className": "is-bold is-white-text",
+              "disabled": false,
+              "label": "Connexion",
+              "url": "/connexion",
+            },
+          },
+          "ref": null,
+          "rendered": null,
+          "type": [Function],
+        },
+      ],
+      "type": "div",
+    },
+  ],
+  Symbol(enzyme.__options__): Object {
+    "adapter": ReactSixteenAdapter {
+      "options": Object {
+        "enableComponentDidUpdateOnSetState": true,
+        "lifecycles": Object {
+          "componentDidUpdate": Object {
+            "onSetState": true,
+          },
+          "getDerivedStateFromProps": true,
+          "getSnapshotBeforeUpdate": true,
+          "setState": Object {
+            "skipsComponentDidUpdateOnNullish": true,
+          },
+        },
+      },
+    },
+  },
+}
+`;

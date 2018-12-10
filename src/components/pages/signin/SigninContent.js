@@ -6,19 +6,21 @@ import { Form } from 'react-final-form'
 import { requestData } from 'pass-culture-shared'
 
 import FormInputs from './FormInputs'
-import FormFooter from './FormFooter'
 import FormHeader from './FormHeader'
 
+import { FormFooter } from '../../forms'
 import { parseSubmitErrors } from '../../forms/utils'
 
 const cancelButtonOptions = {
   className: 'is-white-text',
+  id: 'signin-signup-button',
   label: 'Créer un compte',
   url: '/inscription',
 }
 
 const submitButtonOptions = {
   className: 'is-bold is-white-text',
+  id: 'signin-submit-button',
   label: 'Connexion',
 }
 

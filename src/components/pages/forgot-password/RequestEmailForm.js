@@ -3,12 +3,23 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-import { FormError } from '../../forms'
+import { FormError, FormFooter } from '../../forms'
 import { InputField } from '../../forms/inputs'
-import FormFooter from './FormFooter'
 import withResetForm from './withResetForm'
 
-class RequestEmailForm extends React.PureComponent {
+const cancelOptions = {
+  className: 'is-white-text',
+  disabled: false,
+  label: 'Annuler',
+  url: '/connexion',
+}
+
+const submitOptions = {
+  className: 'is-bold is-white-text',
+  label: 'OK',
+}
+
+export class RawRequestEmailForm extends React.PureComponent {
   render() {
     const { canSubmit, isLoading, formErrors } = this.props
     return (
@@ -44,28 +55,19 @@ class RequestEmailForm extends React.PureComponent {
           </div>
         </main>
         <FormFooter
-          cancel={{
-            className: 'is-white-text',
-            disabled: false,
-            label: 'Annuler',
-            url: '/connexion',
-          }}
-          submit={{
-            className: 'is-bold is-white-text',
-            disabled: !canSubmit,
-            label: 'OK',
-          }}
+          cancel={cancelOptions}
+          submit={{ ...submitOptions, disabled: !canSubmit }}
         />
       </div>
     )
   }
 }
 
-RequestEmailForm.defaultProps = {
+RawRequestEmailForm.defaultProps = {
   formErrors: false,
 }
 
-RequestEmailForm.propTypes = {
+RawRequestEmailForm.propTypes = {
   canSubmit: PropTypes.bool.isRequired,
   formErrors: PropTypes.oneOfType([
     PropTypes.array,
@@ -76,7 +78,7 @@ RequestEmailForm.propTypes = {
 }
 
 export default withResetForm(
-  RequestEmailForm,
+  RawRequestEmailForm,
   null,
   '/users/reset-password',
   'POST'

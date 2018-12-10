@@ -3,7 +3,21 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 
-import FormFooter from './FormFooter'
+import { FormFooter } from '../../forms'
+
+const cancelOptions = {
+  className: 'is-white-text',
+  disabled: false,
+  label: 'Recommencer',
+  url: '/mot-de-passe-perdu',
+}
+
+const submitOptions = {
+  className: 'is-bold is-white-text',
+  disabled: false,
+  label: 'Connexion',
+  url: '/connexion',
+}
 
 const renderRequestSuccessMessage = () => (
   <React.Fragment>
@@ -40,21 +54,8 @@ const SuccessView = ({ token }) => {
         </div>
       </main>
       <FormFooter
-        cancel={
-          (!token && {
-            className: 'is-white-text',
-            disabled: false,
-            label: 'Recommencer',
-            url: '/mot-de-passe-perdu',
-          }) ||
-          null
-        }
-        submit={{
-          className: 'is-bold is-white-text',
-          disabled: false,
-          label: 'Connexion',
-          url: '/connexion',
-        }}
+        cancel={(!token && cancelOptions) || null}
+        submit={submitOptions}
       />
     </div>
   )

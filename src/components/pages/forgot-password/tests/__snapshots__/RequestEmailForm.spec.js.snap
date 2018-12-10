@@ -1,0 +1,725 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`src | components | pages | forgot-password | RawRequestEmailForm snapshot should match snapshot 1`] = `
+ShallowWrapper {
+  Symbol(enzyme.__root__): [Circular],
+  Symbol(enzyme.__unrendered__): <RawRequestEmailForm
+    canSubmit={true}
+    formErrors={false}
+    isLoading={false}
+  />,
+  Symbol(enzyme.__renderer__): Object {
+    "batchedUpdates": [Function],
+    "getNode": [Function],
+    "render": [Function],
+    "simulateError": [Function],
+    "simulateEvent": [Function],
+    "unmount": [Function],
+  },
+  Symbol(enzyme.__node__): Object {
+    "instance": null,
+    "key": undefined,
+    "nodeType": "host",
+    "props": Object {
+      "children": Array [
+        <main
+          className="pc-main is-white-text flex-1"
+          role="main"
+        >
+          <div
+            className="pc-scroll-container"
+          >
+            <div
+              className="is-full-layout flex-rows flex-center padded-2x"
+            >
+              <h2
+                className="mb36"
+              >
+                <span
+                  className="is-block is-italic is-medium fs22"
+                >
+                  Renseignez votre adresse e-mail pour réinitialiser votre mot de passe.
+                </span>
+                <span
+                  className="is-block is-regular fs13 mt18"
+                >
+                  <span>
+                    *
+                  </span>
+                   Champs obligatoires
+                </span>
+              </h2>
+              <div>
+                <InputField
+                  autoComplete={false}
+                  className=""
+                  disabled={false}
+                  label="Adresse e-mail"
+                  name="email"
+                  placeholder="Ex. : nom@domaine.fr"
+                  required={true}
+                  theme="primary"
+                />
+              </div>
+            </div>
+          </div>
+        </main>,
+        <FormFooter
+          cancel={
+            Object {
+              "className": "is-white-text",
+              "disabled": false,
+              "label": "Annuler",
+              "url": "/connexion",
+            }
+          }
+          className=""
+          submit={
+            Object {
+              "className": "is-bold is-white-text",
+              "disabled": false,
+              "label": "OK",
+            }
+          }
+        />,
+      ],
+      "className": "is-full-layout flex-rows",
+      "id": "reset-password-page-request",
+    },
+    "ref": null,
+    "rendered": Array [
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": <div
+            className="pc-scroll-container"
+          >
+            <div
+              className="is-full-layout flex-rows flex-center padded-2x"
+            >
+              <h2
+                className="mb36"
+              >
+                <span
+                  className="is-block is-italic is-medium fs22"
+                >
+                  Renseignez votre adresse e-mail pour réinitialiser votre mot de passe.
+                </span>
+                <span
+                  className="is-block is-regular fs13 mt18"
+                >
+                  <span>
+                    *
+                  </span>
+                   Champs obligatoires
+                </span>
+              </h2>
+              <div>
+                <InputField
+                  autoComplete={false}
+                  className=""
+                  disabled={false}
+                  label="Adresse e-mail"
+                  name="email"
+                  placeholder="Ex. : nom@domaine.fr"
+                  required={true}
+                  theme="primary"
+                />
+              </div>
+            </div>
+          </div>,
+          "className": "pc-main is-white-text flex-1",
+          "role": "main",
+        },
+        "ref": null,
+        "rendered": Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": <div
+              className="is-full-layout flex-rows flex-center padded-2x"
+            >
+              <h2
+                className="mb36"
+              >
+                <span
+                  className="is-block is-italic is-medium fs22"
+                >
+                  Renseignez votre adresse e-mail pour réinitialiser votre mot de passe.
+                </span>
+                <span
+                  className="is-block is-regular fs13 mt18"
+                >
+                  <span>
+                    *
+                  </span>
+                   Champs obligatoires
+                </span>
+              </h2>
+              <div>
+                <InputField
+                  autoComplete={false}
+                  className=""
+                  disabled={false}
+                  label="Adresse e-mail"
+                  name="email"
+                  placeholder="Ex. : nom@domaine.fr"
+                  required={true}
+                  theme="primary"
+                />
+              </div>
+            </div>,
+            "className": "pc-scroll-container",
+          },
+          "ref": null,
+          "rendered": Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": Array [
+                <h2
+                  className="mb36"
+                >
+                  <span
+                    className="is-block is-italic is-medium fs22"
+                  >
+                    Renseignez votre adresse e-mail pour réinitialiser votre mot de passe.
+                  </span>
+                  <span
+                    className="is-block is-regular fs13 mt18"
+                  >
+                    <span>
+                      *
+                    </span>
+                     Champs obligatoires
+                  </span>
+                </h2>,
+                <div>
+                  <InputField
+                    autoComplete={false}
+                    className=""
+                    disabled={false}
+                    label="Adresse e-mail"
+                    name="email"
+                    placeholder="Ex. : nom@domaine.fr"
+                    required={true}
+                    theme="primary"
+                  />
+                </div>,
+              ],
+              "className": "is-full-layout flex-rows flex-center padded-2x",
+            },
+            "ref": null,
+            "rendered": Array [
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": Array [
+                    <span
+                      className="is-block is-italic is-medium fs22"
+                    >
+                      Renseignez votre adresse e-mail pour réinitialiser votre mot de passe.
+                    </span>,
+                    <span
+                      className="is-block is-regular fs13 mt18"
+                    >
+                      <span>
+                        *
+                      </span>
+                       Champs obligatoires
+                    </span>,
+                  ],
+                  "className": "mb36",
+                },
+                "ref": null,
+                "rendered": Array [
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "host",
+                    "props": Object {
+                      "children": "Renseignez votre adresse e-mail pour réinitialiser votre mot de passe.",
+                      "className": "is-block is-italic is-medium fs22",
+                    },
+                    "ref": null,
+                    "rendered": "Renseignez votre adresse e-mail pour réinitialiser votre mot de passe.",
+                    "type": "span",
+                  },
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "host",
+                    "props": Object {
+                      "children": Array [
+                        <span>
+                          *
+                        </span>,
+                        " Champs obligatoires",
+                      ],
+                      "className": "is-block is-regular fs13 mt18",
+                    },
+                    "ref": null,
+                    "rendered": Array [
+                      Object {
+                        "instance": null,
+                        "key": undefined,
+                        "nodeType": "host",
+                        "props": Object {
+                          "children": "*",
+                        },
+                        "ref": null,
+                        "rendered": "*",
+                        "type": "span",
+                      },
+                      " Champs obligatoires",
+                    ],
+                    "type": "span",
+                  },
+                ],
+                "type": "h2",
+              },
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": Array [
+                    <InputField
+                      autoComplete={false}
+                      className=""
+                      disabled={false}
+                      label="Adresse e-mail"
+                      name="email"
+                      placeholder="Ex. : nom@domaine.fr"
+                      required={true}
+                      theme="primary"
+                    />,
+                    false,
+                  ],
+                },
+                "ref": null,
+                "rendered": Array [
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "function",
+                    "props": Object {
+                      "autoComplete": false,
+                      "className": "",
+                      "disabled": false,
+                      "label": "Adresse e-mail",
+                      "name": "email",
+                      "placeholder": "Ex. : nom@domaine.fr",
+                      "required": true,
+                      "theme": "primary",
+                    },
+                    "ref": null,
+                    "rendered": null,
+                    "type": [Function],
+                  },
+                  false,
+                ],
+                "type": "div",
+              },
+            ],
+            "type": "div",
+          },
+          "type": "div",
+        },
+        "type": "main",
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "class",
+        "props": Object {
+          "cancel": Object {
+            "className": "is-white-text",
+            "disabled": false,
+            "label": "Annuler",
+            "url": "/connexion",
+          },
+          "className": "",
+          "submit": Object {
+            "className": "is-bold is-white-text",
+            "disabled": false,
+            "label": "OK",
+          },
+        },
+        "ref": null,
+        "rendered": null,
+        "type": [Function],
+      },
+    ],
+    "type": "div",
+  },
+  Symbol(enzyme.__nodes__): Array [
+    Object {
+      "instance": null,
+      "key": undefined,
+      "nodeType": "host",
+      "props": Object {
+        "children": Array [
+          <main
+            className="pc-main is-white-text flex-1"
+            role="main"
+          >
+            <div
+              className="pc-scroll-container"
+            >
+              <div
+                className="is-full-layout flex-rows flex-center padded-2x"
+              >
+                <h2
+                  className="mb36"
+                >
+                  <span
+                    className="is-block is-italic is-medium fs22"
+                  >
+                    Renseignez votre adresse e-mail pour réinitialiser votre mot de passe.
+                  </span>
+                  <span
+                    className="is-block is-regular fs13 mt18"
+                  >
+                    <span>
+                      *
+                    </span>
+                     Champs obligatoires
+                  </span>
+                </h2>
+                <div>
+                  <InputField
+                    autoComplete={false}
+                    className=""
+                    disabled={false}
+                    label="Adresse e-mail"
+                    name="email"
+                    placeholder="Ex. : nom@domaine.fr"
+                    required={true}
+                    theme="primary"
+                  />
+                </div>
+              </div>
+            </div>
+          </main>,
+          <FormFooter
+            cancel={
+              Object {
+                "className": "is-white-text",
+                "disabled": false,
+                "label": "Annuler",
+                "url": "/connexion",
+              }
+            }
+            className=""
+            submit={
+              Object {
+                "className": "is-bold is-white-text",
+                "disabled": false,
+                "label": "OK",
+              }
+            }
+          />,
+        ],
+        "className": "is-full-layout flex-rows",
+        "id": "reset-password-page-request",
+      },
+      "ref": null,
+      "rendered": Array [
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": <div
+              className="pc-scroll-container"
+            >
+              <div
+                className="is-full-layout flex-rows flex-center padded-2x"
+              >
+                <h2
+                  className="mb36"
+                >
+                  <span
+                    className="is-block is-italic is-medium fs22"
+                  >
+                    Renseignez votre adresse e-mail pour réinitialiser votre mot de passe.
+                  </span>
+                  <span
+                    className="is-block is-regular fs13 mt18"
+                  >
+                    <span>
+                      *
+                    </span>
+                     Champs obligatoires
+                  </span>
+                </h2>
+                <div>
+                  <InputField
+                    autoComplete={false}
+                    className=""
+                    disabled={false}
+                    label="Adresse e-mail"
+                    name="email"
+                    placeholder="Ex. : nom@domaine.fr"
+                    required={true}
+                    theme="primary"
+                  />
+                </div>
+              </div>
+            </div>,
+            "className": "pc-main is-white-text flex-1",
+            "role": "main",
+          },
+          "ref": null,
+          "rendered": Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": <div
+                className="is-full-layout flex-rows flex-center padded-2x"
+              >
+                <h2
+                  className="mb36"
+                >
+                  <span
+                    className="is-block is-italic is-medium fs22"
+                  >
+                    Renseignez votre adresse e-mail pour réinitialiser votre mot de passe.
+                  </span>
+                  <span
+                    className="is-block is-regular fs13 mt18"
+                  >
+                    <span>
+                      *
+                    </span>
+                     Champs obligatoires
+                  </span>
+                </h2>
+                <div>
+                  <InputField
+                    autoComplete={false}
+                    className=""
+                    disabled={false}
+                    label="Adresse e-mail"
+                    name="email"
+                    placeholder="Ex. : nom@domaine.fr"
+                    required={true}
+                    theme="primary"
+                  />
+                </div>
+              </div>,
+              "className": "pc-scroll-container",
+            },
+            "ref": null,
+            "rendered": Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": Array [
+                  <h2
+                    className="mb36"
+                  >
+                    <span
+                      className="is-block is-italic is-medium fs22"
+                    >
+                      Renseignez votre adresse e-mail pour réinitialiser votre mot de passe.
+                    </span>
+                    <span
+                      className="is-block is-regular fs13 mt18"
+                    >
+                      <span>
+                        *
+                      </span>
+                       Champs obligatoires
+                    </span>
+                  </h2>,
+                  <div>
+                    <InputField
+                      autoComplete={false}
+                      className=""
+                      disabled={false}
+                      label="Adresse e-mail"
+                      name="email"
+                      placeholder="Ex. : nom@domaine.fr"
+                      required={true}
+                      theme="primary"
+                    />
+                  </div>,
+                ],
+                "className": "is-full-layout flex-rows flex-center padded-2x",
+              },
+              "ref": null,
+              "rendered": Array [
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": Array [
+                      <span
+                        className="is-block is-italic is-medium fs22"
+                      >
+                        Renseignez votre adresse e-mail pour réinitialiser votre mot de passe.
+                      </span>,
+                      <span
+                        className="is-block is-regular fs13 mt18"
+                      >
+                        <span>
+                          *
+                        </span>
+                         Champs obligatoires
+                      </span>,
+                    ],
+                    "className": "mb36",
+                  },
+                  "ref": null,
+                  "rendered": Array [
+                    Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "host",
+                      "props": Object {
+                        "children": "Renseignez votre adresse e-mail pour réinitialiser votre mot de passe.",
+                        "className": "is-block is-italic is-medium fs22",
+                      },
+                      "ref": null,
+                      "rendered": "Renseignez votre adresse e-mail pour réinitialiser votre mot de passe.",
+                      "type": "span",
+                    },
+                    Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "host",
+                      "props": Object {
+                        "children": Array [
+                          <span>
+                            *
+                          </span>,
+                          " Champs obligatoires",
+                        ],
+                        "className": "is-block is-regular fs13 mt18",
+                      },
+                      "ref": null,
+                      "rendered": Array [
+                        Object {
+                          "instance": null,
+                          "key": undefined,
+                          "nodeType": "host",
+                          "props": Object {
+                            "children": "*",
+                          },
+                          "ref": null,
+                          "rendered": "*",
+                          "type": "span",
+                        },
+                        " Champs obligatoires",
+                      ],
+                      "type": "span",
+                    },
+                  ],
+                  "type": "h2",
+                },
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": Array [
+                      <InputField
+                        autoComplete={false}
+                        className=""
+                        disabled={false}
+                        label="Adresse e-mail"
+                        name="email"
+                        placeholder="Ex. : nom@domaine.fr"
+                        required={true}
+                        theme="primary"
+                      />,
+                      false,
+                    ],
+                  },
+                  "ref": null,
+                  "rendered": Array [
+                    Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "function",
+                      "props": Object {
+                        "autoComplete": false,
+                        "className": "",
+                        "disabled": false,
+                        "label": "Adresse e-mail",
+                        "name": "email",
+                        "placeholder": "Ex. : nom@domaine.fr",
+                        "required": true,
+                        "theme": "primary",
+                      },
+                      "ref": null,
+                      "rendered": null,
+                      "type": [Function],
+                    },
+                    false,
+                  ],
+                  "type": "div",
+                },
+              ],
+              "type": "div",
+            },
+            "type": "div",
+          },
+          "type": "main",
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "class",
+          "props": Object {
+            "cancel": Object {
+              "className": "is-white-text",
+              "disabled": false,
+              "label": "Annuler",
+              "url": "/connexion",
+            },
+            "className": "",
+            "submit": Object {
+              "className": "is-bold is-white-text",
+              "disabled": false,
+              "label": "OK",
+            },
+          },
+          "ref": null,
+          "rendered": null,
+          "type": [Function],
+        },
+      ],
+      "type": "div",
+    },
+  ],
+  Symbol(enzyme.__options__): Object {
+    "adapter": ReactSixteenAdapter {
+      "options": Object {
+        "enableComponentDidUpdateOnSetState": true,
+        "lifecycles": Object {
+          "componentDidUpdate": Object {
+            "onSetState": true,
+          },
+          "getDerivedStateFromProps": true,
+          "getSnapshotBeforeUpdate": true,
+          "setState": Object {
+            "skipsComponentDidUpdateOnNullish": true,
+          },
+        },
+      },
+    },
+  },
+}
+`;
