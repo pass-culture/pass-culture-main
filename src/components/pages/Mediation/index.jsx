@@ -134,14 +134,18 @@ class Mediation extends PureComponent {
       width: 20,
     })
 
+    const greenVerticalMargin = 57
+    const greenHorizontalMargin = 11
     const greenRectangle = {
       width: 2,
       color: '#4CD964',
       coordinates: [
-        IMAGE_UPLOAD_BORDER + 57,
-        IMAGE_UPLOAD_BORDER + 11,
-        IMAGE_UPLOAD_SIZE - 57 * 2,
-        IMAGE_UPLOAD_SIZE - 11 * 2,
+        IMAGE_UPLOAD_BORDER + greenVerticalMargin,
+        IMAGE_UPLOAD_BORDER + greenHorizontalMargin,
+        // Margins have to be removed 2 times,
+        // one for each sides of the rectangle
+        IMAGE_UPLOAD_SIZE - greenVerticalMargin * 2,
+        IMAGE_UPLOAD_SIZE - greenHorizontalMargin * 2,
       ],
     }
     cvs.drawArea(greenRectangle)
@@ -152,11 +156,14 @@ class Mediation extends PureComponent {
       width: 20,
     })
 
+    const dashedVerticalMargin = 72
+    const dashedHorizontalMargin = 80
+    const dashedHeight = 160
     const dashedRectangle = [
-      0.5 + IMAGE_UPLOAD_BORDER + 72,
-      0.5 + IMAGE_UPLOAD_BORDER + 80,
-      0.5 + IMAGE_UPLOAD_SIZE - 72 * 2,
-      0.5 + 160,
+      0.5 + IMAGE_UPLOAD_BORDER + dashedVerticalMargin,
+      0.5 + IMAGE_UPLOAD_BORDER + dashedHorizontalMargin,
+      0.5 + IMAGE_UPLOAD_SIZE - dashedVerticalMargin * 2,
+      0.5 + dashedHeight,
     ]
 
     const dash = {
