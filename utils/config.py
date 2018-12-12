@@ -20,7 +20,7 @@ elif IS_PROD:
 else:
     API_URL = 'https://backend.passculture-%s.beta.gouv.fr' % ENV
 
-BLOB_SIZE = 10
+BLOB_SIZE = 80
 BLOB_UNREAD_NUMBER = int(BLOB_SIZE/5)
 BLOB_READ_NUMBER = int(BLOB_SIZE/5)
 
