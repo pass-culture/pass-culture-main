@@ -5,11 +5,14 @@ import pytest
 import requests
 
 from models import PcObject
+from models.pc_object import serialize
 from tests.conftest import clean_database
 from utils.test_utils import API_URL, create_user, req_with_auth, create_user_offerer, \
     create_offerer, create_venue, create_event_occurrence, create_event_offer, \
     create_venue_activity, create_stock_with_thing_offer, create_stock_with_event_offer, \
     create_offerer_activity, save_all_activities
+from utils.human_ids import humanize
+
 
 TOKEN = os.environ.get('EXPORT_TOKEN')
 
@@ -75,7 +78,7 @@ def test_export_model_returns_400_when_given_model_is_unknown(app):
 
 @pytest.mark.standalone
 @clean_database
-def test_check_pending_validation_returns_403_when_user_is_not_admin(app):
+def test_pending_validation_returns_403_when_user_is_not_admin(app):
     #given
     user = create_user(password='p@55sw0rd', is_admin=False)
     PcObject.check_and_save(user)
@@ -90,7 +93,7 @@ def test_check_pending_validation_returns_403_when_user_is_not_admin(app):
 
 @pytest.mark.standalone
 @clean_database
-def test_check_pending_validation_returns_200_when_user_is_admin(app):
+def test_pending_validation_returns_200_when_user_is_admin(app):
     #given
     user = create_user(can_book_free_offers=False, password='p@55sw0rd', is_admin=True)
     PcObject.check_and_save(user)
@@ -105,7 +108,7 @@ def test_check_pending_validation_returns_200_when_user_is_admin(app):
 
 @pytest.mark.standalone
 @clean_database
-def test_check_pending_validation_returns_403_when_user_is_structure_admin_but_not_admin(app):
+def test_pending_validation_returns_403_when_user_is_structure_admin_but_not_admin(app):
     #given
     user = create_user(can_book_free_offers=False, password='p@55sw0rd', is_admin=False)
     offerer = create_offerer()
@@ -122,7 +125,7 @@ def test_check_pending_validation_returns_403_when_user_is_structure_admin_but_n
 
 @pytest.mark.standalone
 @clean_database
-def test_check_pending_validation_return_200_and_validation_token(app):
+def test_pending_validation_return_200_and_validation_token(app):
     #given
     user = create_user(can_book_free_offers=False, password='p@55sw0rd', is_admin=True)
     user_pro = create_user(email='user0@test.com', can_book_free_offers=False, password='p@55sw0rd', is_admin=False)
@@ -139,6 +142,56 @@ def test_check_pending_validation_return_200_and_validation_token(app):
     assert response.status_code == 200
     assert response.json()[0]["validationToken"] == "first_token"
     assert response.json()[0]["UserOfferers"][0]["validationToken"] == "a_token"
+
+
+@pytest.mark.standalone
+@clean_database
+def test_pending_validation_return_only_requested_data(app):
+    # given
+    user = create_user(can_book_free_offers=False, password='p@55sw0rd', is_admin=True)
+    user_pro = create_user(email='user0@test.com', can_book_free_offers=False, password='p@55sw0rd', is_admin=False)
+    offerer = create_offerer(validation_token="first_token")
+    user_offerer = create_user_offerer(user_pro, offerer, is_admin=True)
+    PcObject.check_and_save(user, user_pro, offerer)
+
+    expected_result = {
+    'UserOfferers': [{
+        'id': humanize(user_offerer.id),
+        'modelName': 'UserOfferer',
+        'offererId': humanize(offerer.id),
+        'rights': 'admin',
+        'user': {'canBookFreeOffers': False,
+                 'dateCreated': serialize(user_pro.dateCreated),
+                 'departementCode': '93',
+                 'email': 'user0@test.com',
+                 'firstName': 'John',
+                 'isAdmin': False,
+                 'lastName': 'Doe',
+                 'phoneNumber': '0612345678',
+                 'postalCode': '93100',
+                 'publicName': 'John Doe'},
+        'userId': humanize(user_pro.id),
+        'validationToken': None}],
+    'address': '123 rue de Paris',
+    'city': 'Montreuil',
+    'dateCreated': serialize(offerer.dateCreated),
+    'dateModifiedAtLastProvider': serialize(offerer.dateModifiedAtLastProvider),
+    'id': humanize(offerer.id),
+    'isActive': True,
+    'lastProviderId': None,
+    'modelName': 'Offerer',
+    'name': 'Test Offerer',
+    'postalCode': '93100',
+    'siren': '123456789',
+    'validationToken': 'first_token'}
+
+    auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
+    # when
+    response = auth_request.get(API_URL + '/exports/pending_validation')
+
+    # then
+    assert response.status_code == 200
+    assert response.json()[0] == expected_result
 
 
 @pytest.mark.standalone

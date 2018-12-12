@@ -213,10 +213,12 @@ VENUE_PROVIDER_INCLUDES = [
 
 
 OFFERER_INCLUDES_FOR_ADMIN = [
-
     "validationToken",
     "-firstThumbDominantColor",
-    "-thumbcount",
+    "-thumbCount",
+    "-iban",
+    "-bic",
+    "-idAtProviders",
     {
         "key": "UserOfferers",
         "sub_joins": [{
