@@ -142,6 +142,81 @@ def test_check_get_venues_params_doesnt_raise_api_error_for_valid_zip_codes(app)
 
 
 @pytest.mark.standalone
+def test_check_get_venues_params_doesnt_raise_api_error_for_valid_siren(app):
+    # given
+    valid_siren = {}
+    valid_siren['siren_list'] = ["123456789", "789654123"]
+
+    # when
+    try:
+        check_get_venues_params(valid_siren)
+    
+    except ApiErrors:
+        # Then
+        assert pytest.fail("Should not fail with valid params")
+
+
+@pytest.mark.standalone
+def test_check_get_venues_params_raises_api_error_if_too_short_siren(app):
+    # given
+    not_valid_siren = {}
+    not_valid_siren['siren_list'] = ['12345678']
+
+    # when
+    with pytest.raises(ApiErrors) as errors:
+        check_get_venues_params(not_valid_siren)
+
+    # then
+    assert errors.value.errors['siren_list'] == \
+        ['siren_list is a list of 9 digits : ["123456789", "789654123"]']
+
+
+@pytest.mark.standalone
+def test_check_get_venues_params_raises_api_error_if_too_long_siren(app):
+    # given
+    not_valid_siren = {}
+    not_valid_siren['siren_list'] = ['1234567891888888']
+
+    # when
+    with pytest.raises(ApiErrors) as errors:
+        check_get_venues_params(not_valid_siren)
+
+    # then
+    assert errors.value.errors['siren_list'] == \
+        ['siren_list is a list of 9 digits : ["123456789", "789654123"]']
+
+
+@pytest.mark.standalone
+def test_check_get_venues_params_raises_api_error_if_not_list_siren(app):
+    # given
+    not_valid_siren = {}
+    not_valid_siren['siren_list'] = "123456789"
+
+    # when
+    with pytest.raises(ApiErrors) as errors:
+        check_get_venues_params(not_valid_siren)
+
+    # then
+    assert errors.value.errors['siren_list'] == \
+        ['siren_list is a list of 9 digits : ["123456789", "789654123"]']
+
+
+@pytest.mark.standalone
+def test_check_get_venues_params_raises_api_error_if_letter_in_siren(app):
+    # given
+    not_valid_siren = {}
+    not_valid_siren['siren_list'] = ['78sang40R']
+
+    # when
+    with pytest.raises(ApiErrors) as errors:
+        check_get_venues_params(not_valid_siren)
+
+    # then
+    assert errors.value.errors['siren_list'] == \
+        ['siren_list is a list of 9 digits : ["123456789", "789654123"]']
+
+
+@pytest.mark.standalone
 def test_check_get_venues_params_raises_api_error_if_not_valid_has_validated_offerer_params(app):
     # given
     not_valid_has_validated_offerer_param = {}
@@ -257,6 +332,7 @@ def test_check_get_venues_params_raises_api_error_if_not_valid_offer_status_para
 def test_check_get_venues_params_does_not_raise_api_error_if_good_params(app):
     # given
     params = {}
+    params['siren_list'] = ['123456789', '123454789', '789654123']
     params['dpt'] = ['32', '35', '36']
     params['has_validated_offerer'] = True
     params['zip_codes'] = ['32000', '35000', '36000']

@@ -7,6 +7,7 @@ from models.venue import TooManyVirtualVenuesException
 from models.activity import load_activity
 from sqlalchemy import and_
 from repository.offer_queries import with_active_and_validated_offerer
+from repository.offerer_queries import _filter_by_siren_list
 
 
 def save_venue(venue):
@@ -22,7 +23,8 @@ def find_by_id(venue_id):
     return Venue.query.filter_by(id=venue_id).first()
 
 
-def find_filtered_venues(dpt=None,
+def find_filtered_venues(siren_list=None,
+                         dpt=None,
                          zip_codes=None,
                          from_date=None,
                          to_date=None,
@@ -58,8 +60,12 @@ def find_filtered_venues(dpt=None,
         query = _filter_by_is_validated(query, is_validated)
     
     if has_validated_offerer is not None or has_offerer_with_siren is not None \
-     or has_validated_user_offerer is not None or has_validated_user is not None:
+     or has_validated_user_offerer is not None or has_validated_user is not None \
+     or siren_list is not None:
         query = query.join(Offerer)
+
+    if siren_list is not None:
+        query = _filter_by_siren_list(query, siren_list)
     
     if has_validated_offerer is not None:
         query = _filter_by_has_validated_offerer(query, has_validated_offerer)

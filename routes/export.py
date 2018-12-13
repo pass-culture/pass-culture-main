@@ -144,7 +144,7 @@ def get_pending_validation():
 def get_export_venues():
     check_user_is_admin(current_user)
 
-    params_keys = ['dpt', 'has_validated_offerer', 'zip_codes', 'from_date', 'to_date', 'has_siret',
+    params_keys = ['siren_list', 'dpt', 'has_validated_offerer', 'zip_codes', 'from_date', 'to_date', 'has_siret',
     'is_virtual', 'offer_status', 'is_validated',  "has_offerer_with_siren", "has_validated_user_offerer", "has_validated_user"]
     params = {}
 
@@ -152,7 +152,8 @@ def get_export_venues():
         params[key] = request.json.get(key, None)
 
     check_get_venues_params(params)
-    result = find_filtered_venues(dpt=params['dpt'],
+    result = find_filtered_venues(siren_list = params['siren_list'],
+                                  dpt=params['dpt'],
                                   zip_codes=params['zip_codes'],
                                   from_date=params['from_date'],
                                   to_date=params['to_date'],

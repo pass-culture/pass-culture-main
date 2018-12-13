@@ -13,6 +13,9 @@ def check_user_is_admin(user):
 
 
 def check_get_venues_params(param: {}) -> bool:
+    if param.get('siren_list', None):
+        _check_siren_list(param['siren_list'])
+    
     if param.get('dpt', []):
         _check_dpt_list(param['dpt'])
 

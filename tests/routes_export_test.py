@@ -366,6 +366,46 @@ def test_get_venues_with_params_for_pc_reporting_return_200_and_filtered_venues(
 
 @pytest.mark.standalone
 @clean_database
+def test_get_venues_with_siren_list_params_return_200_and_filtered_venues(app):
+    #given
+    data={
+        "siren_list": ["123456781", "123456782", "123456783"]
+    }
+
+    query_user = create_user(password='p@55sw0rd', is_admin=True, can_book_free_offers=False)
+
+    offerer_123456789 = create_offerer(name="offerer_123456789", siren="123456789")
+    offerer_123456781 = create_offerer(name="offerer_123456781", siren="123456781")
+    offerer_123456782 = create_offerer(name="offerer_123456782", siren="123456782")
+    offerer_123456783 = create_offerer(name="offerer_123456783", siren="123456783")
+    offerer_123456784 = create_offerer(name="offerer_123456784", siren="123456784")
+
+    venue_123456789 = create_venue(offerer_123456789, name="venue_123456789", siret="12345678912345")
+    venue_123456781 = create_venue(offerer_123456781, name="venue_123456781", siret="12345678112345")
+    venue_123456782 = create_venue(offerer_123456782, name="venue_123456782", siret="12345678212345")
+    venue_123456783 = create_venue(offerer_123456783, name="venue_123456783", siret="12345678312345")
+    venue_123456784 = create_venue(offerer_123456784, name="venue_123456784", siret="12345678412345")
+    
+    PcObject.check_and_save(query_user, venue_123456789, venue_123456781, venue_123456782, venue_123456783, venue_123456784)
+    auth_request = req_with_auth(email=query_user.email, password='p@55sw0rd')
+ 
+    #when
+    response = auth_request.post(API_URL + '/exports/venues', json=data)
+    
+    #then
+    venue_names = list(map(lambda x: x['name'], response.json()))
+
+    assert response.status_code == 200
+    assert venue_123456789.name not in venue_names
+    assert venue_123456781.name in venue_names
+    assert venue_123456782.name in venue_names
+    assert venue_123456783.name in venue_names
+    assert venue_123456784.name not in venue_names
+
+
+
+@pytest.mark.standalone
+@clean_database
 def test_get_venues_return_error_when_date_param_is_wrong(app):
     #given
     wrong_date = "I\'m not a valid date"

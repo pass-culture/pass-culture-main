@@ -12,7 +12,36 @@ from utils.test_utils import create_venue, create_event_offer, create_venue_acti
     create_user, create_user_offerer, create_stock_from_event_occurrence, save_all_activities
 
 
+
+@pytest.mark.standalone
+@clean_database
+def test_find_filtered_venues_with_siren_list_params_return_filtered_venues(app):
+    #given
+    offerer_123456789 = create_offerer(name="offerer_123456789", siren="123456789")
+    offerer_123456781 = create_offerer(name="offerer_123456781", siren="123456781")
+    offerer_123456782 = create_offerer(name="offerer_123456782", siren="123456782")
+    offerer_123456783 = create_offerer(name="offerer_123456783", siren="123456783")
+    offerer_123456784 = create_offerer(name="offerer_123456784", siren="123456784")
+
+    venue_123456789 = create_venue(offerer_123456789, name="venue_123456789", siret="12345678912345")
+    venue_123456781 = create_venue(offerer_123456781, name="venue_123456781", siret="12345678112345")
+    venue_123456782 = create_venue(offerer_123456782, name="venue_123456782", siret="12345678212345")
+    venue_123456783 = create_venue(offerer_123456783, name="venue_123456783", siret="12345678312345")
+    venue_123456784 = create_venue(offerer_123456784, name="venue_123456784", siret="12345678412345")
+    
+    PcObject.check_and_save(venue_123456789, venue_123456781, venue_123456782, venue_123456783, venue_123456784)
  
+    #when
+    query_with_siren_list = find_filtered_venues(siren_list=["123456781", "123456782", "123456783"])
+    
+    #then
+    assert venue_123456789 not in query_with_siren_list
+    assert venue_123456781 in query_with_siren_list
+    assert venue_123456782 in query_with_siren_list
+    assert venue_123456783 in query_with_siren_list
+    assert venue_123456784 not in query_with_siren_list
+
+
 @pytest.mark.standalone
 @clean_database
 def test_find_filtered_venues_with_has_validated_offerer_param_return_filtered_venues(app):
