@@ -19,14 +19,14 @@ def test_check_get_venues_params_raises_api_error_if_not_valid_date(app):
 
 
 @pytest.mark.standalone
-def test_check_get_venues_params_raises_api_error_if_not_valid_dpt_in_list(app):
+def test_check_get_venues_params_raises_api_error_if_not_valid_dpt_in(app):
     # given
-    not_valid_dpt_list = {}
-    not_valid_dpt_list['dpt'] = ['93', '17', 'Paris']
+    not_valid_dpt = {}
+    not_valid_dpt['dpt'] = ['93', '17', 'Paris']
 
     # when
     with pytest.raises(ApiErrors) as errors:
-        check_get_venues_params(not_valid_dpt_list)
+        check_get_venues_params(not_valid_dpt)
 
     # then
     assert errors.value.errors['dpt'] == ['dpt is a list of type xx or xxx (2 or 3 digits), or 2A, or 2B :\
@@ -34,14 +34,14 @@ def test_check_get_venues_params_raises_api_error_if_not_valid_dpt_in_list(app):
 
 
 @pytest.mark.standalone
-def test_check_get_venues_params_doesnt_raise_api_error_for_valid_dpt_in_list(app):
+def test_check_get_venues_params_doesnt_raise_api_error_for_valid_dpt_in(app):
     # given
-    valid_dpt_list = {}
-    valid_dpt_list['dpt'] = ['93', '17', '01', '2a', '2B', '978']
+    valid_dpt = {}
+    valid_dpt['dpt'] = ['93', '17', '01', '2a', '2B', '978']
 
     # when
     try:
-        check_get_venues_params(valid_dpt_list)
+        check_get_venues_params(valid_dpt)
     
     except ApiErrors:
         # Then
@@ -49,13 +49,13 @@ def test_check_get_venues_params_doesnt_raise_api_error_for_valid_dpt_in_list(ap
 
 
 @pytest.mark.standalone
-def test_check_get_venues_params_raises_api_error_if_dpt_list_is_not_list(app):
+def test_check_get_venues_params_raises_api_error_if_dpt_is_not_list(app):
     # given
-    not_valid_dpt_list = {}
-    not_valid_dpt_list['dpt'] = '93'
+    not_valid_dpt = {}
+    not_valid_dpt['dpt'] = '93'
     # when
     with pytest.raises(ApiErrors) as errors:
-        check_get_venues_params(not_valid_dpt_list)
+        check_get_venues_params(not_valid_dpt)
 
     # then
     assert errors.value.errors['dpt'] == ['dpt is a list of type xx or xxx (2 or 3 digits), or 2A, or 2B :\
@@ -63,14 +63,14 @@ def test_check_get_venues_params_raises_api_error_if_dpt_list_is_not_list(app):
 
 
 @pytest.mark.standalone
-def test_check_get_venues_params_raises_api_error_if_not_valid_zip_codes_list(app):
+def test_check_get_venues_params_raises_api_error_if_not_valid_zip_codes(app):
     # given
-    not_valid_zip_codes_list = {}
-    not_valid_zip_codes_list['zip_codes'] = ['69000', '13020', '78sang40RpZ']
+    not_valid_zip_codes = {}
+    not_valid_zip_codes['zip_codes'] = ['78sang40']
 
     # when
     with pytest.raises(ApiErrors) as errors:
-        check_get_venues_params(not_valid_zip_codes_list)
+        check_get_venues_params(not_valid_zip_codes)
 
     # then
     assert errors.value.errors['zip_codes'] == \
@@ -79,14 +79,62 @@ def test_check_get_venues_params_raises_api_error_if_not_valid_zip_codes_list(ap
 
 
 @pytest.mark.standalone
-def test_check_get_venues_params_doesnt_raise_api_error_for_valid_zip_codes_list(app):
+def test_check_get_venues_params_raises_api_error_if_too_long_zip_codes(app):
     # given
-    valid_zip_codes_list = {}
-    valid_zip_codes_list['zip_codes'] = ['69000', '13020', '2a250', '2B456', '00007']
+    not_valid_zip_codes = {}
+    not_valid_zip_codes['zip_codes'] = ['690001']
+
+    # when
+    with pytest.raises(ApiErrors) as errors:
+        check_get_venues_params(not_valid_zip_codes)
+
+    # then
+    assert errors.value.errors['zip_codes'] == \
+        ['zip_codes is a list of type xxxxx (5 digits, ex: 78140 ou 2a000) : \
+        ["78140", "69007"]']
+
+
+@pytest.mark.standalone
+def test_check_get_venues_params_raises_api_error_if_too_short_zip_codes(app):
+    # given
+    not_valid_zip_codes = {}
+    not_valid_zip_codes['zip_codes'] = ['6900']
+
+    # when
+    with pytest.raises(ApiErrors) as errors:
+        check_get_venues_params(not_valid_zip_codes)
+
+    # then
+    assert errors.value.errors['zip_codes'] == \
+        ['zip_codes is a list of type xxxxx (5 digits, ex: 78140 ou 2a000) : \
+        ["78140", "69007"]']
+
+
+@pytest.mark.standalone
+def test_check_get_venues_params_raises_api_error_if_not_list_zip_codes(app):
+    # given
+    not_valid_zip_codes = {}
+    not_valid_zip_codes['zip_codes'] = '69000'
+
+    # when
+    with pytest.raises(ApiErrors) as errors:
+        check_get_venues_params(not_valid_zip_codes)
+
+    # then
+    assert errors.value.errors['zip_codes'] == \
+        ['zip_codes is a list of type xxxxx (5 digits, ex: 78140 ou 2a000) : \
+        ["78140", "69007"]']
+
+
+@pytest.mark.standalone
+def test_check_get_venues_params_doesnt_raise_api_error_for_valid_zip_codes(app):
+    # given
+    valid_zip_codes = {}
+    valid_zip_codes['zip_codes'] = ['69000', '13020', '2a250', '2B456', '00007']
 
     # when
     try:
-        check_get_venues_params(valid_zip_codes_list)
+        check_get_venues_params(valid_zip_codes)
     
     except ApiErrors:
         # Then
@@ -94,7 +142,7 @@ def test_check_get_venues_params_doesnt_raise_api_error_for_valid_zip_codes_list
 
 
 @pytest.mark.standalone
-def test_check_get_venues_params_raises_api_error_if_not_valid_has_validated_offerer_param(app):
+def test_check_get_venues_params_raises_api_error_if_not_valid_has_validated_offerer_params(app):
     # given
     not_valid_has_validated_offerer_param = {}
     not_valid_has_validated_offerer_param['has_validated_offerer'] = 'oui'
@@ -108,7 +156,7 @@ def test_check_get_venues_params_raises_api_error_if_not_valid_has_validated_off
 
 
 @pytest.mark.standalone
-def test_check_get_venues_params_raises_api_error_if_not_valid_has_siret_param(app):
+def test_check_get_venues_params_raises_api_error_if_not_valid_has_siret_params(app):
     # given
     not_valid_has_siret_param = {}
     not_valid_has_siret_param['has_siret'] = "peut-être"
@@ -122,7 +170,7 @@ def test_check_get_venues_params_raises_api_error_if_not_valid_has_siret_param(a
 
 
 @pytest.mark.standalone
-def test_check_get_venues_params_raises_api_error_if_not_valid_is_virtual_param(app):
+def test_check_get_venues_params_raises_api_error_if_not_valid_is_virtual_params(app):
     # given
     not_valid_is_virtual_param = {}
     not_valid_is_virtual_param['is_virtual'] = "De type moderne"
@@ -136,7 +184,7 @@ def test_check_get_venues_params_raises_api_error_if_not_valid_is_virtual_param(
 
 
 @pytest.mark.standalone
-def test_check_get_venues_params_raises_api_error_if_not_valid_is_validated_param(app):
+def test_check_get_venues_params_raises_api_error_if_not_valid_is_validated_params(app):
     # given
     not_valid_is_validated_param = {}
     not_valid_is_validated_param['is_validated'] = 'plein'
@@ -150,7 +198,7 @@ def test_check_get_venues_params_raises_api_error_if_not_valid_is_validated_para
 
 
 @pytest.mark.standalone
-def test_check_get_venues_params_raises_api_error_if_not_valid_has_offerer_with_siren_param(app):
+def test_check_get_venues_params_raises_api_error_if_not_valid_has_offerer_with_siren_params(app):
     # given
     not_valid_has_offerer_with_siren_param = {}
     not_valid_has_offerer_with_siren_param['has_offerer_with_siren'] = 'I\'m not a boolean'
@@ -164,7 +212,7 @@ def test_check_get_venues_params_raises_api_error_if_not_valid_has_offerer_with_
 
 
 @pytest.mark.standalone
-def test_check_get_venues_params_raises_api_error_if_not_valid_has_validated_user_offerer_param(app):
+def test_check_get_venues_params_raises_api_error_if_not_valid_has_validated_user_offerer_params(app):
     # given
     not_valid_has_validated_user_offerer_param = {}
     not_valid_has_validated_user_offerer_param['has_validated_user_offerer'] = 'I\'m not a boolean'
@@ -178,7 +226,7 @@ def test_check_get_venues_params_raises_api_error_if_not_valid_has_validated_use
 
 
 @pytest.mark.standalone
-def test_check_get_venues_params_raises_api_error_if_not_valid_has_validated_user_param(app):
+def test_check_get_venues_params_raises_api_error_if_not_valid_has_validated_user_params(app):
     # given
     not_valid_has_validated_user_param = {}
     not_valid_has_validated_user_param['has_validated_user'] = 'I\'m not a boolean'
@@ -192,7 +240,7 @@ def test_check_get_venues_params_raises_api_error_if_not_valid_has_validated_use
 
 
 @pytest.mark.standalone
-def test_check_get_venues_params_raises_api_error_if_not_valid_offer_status_param(app):
+def test_check_get_venues_params_raises_api_error_if_not_valid_offer_status_params(app):
     # given
     not_valid_offer_status_param = {}
     not_valid_offer_status_param['offer_status'] = 'I\'m not a valid status'
@@ -206,7 +254,7 @@ def test_check_get_venues_params_raises_api_error_if_not_valid_offer_status_para
 
 
 @pytest.mark.standalone
-def test_check_get_venues_params_does_not_raise_api_error_if_good_param(app):
+def test_check_get_venues_params_does_not_raise_api_error_if_good_params(app):
     # given
     params = {}
     params['dpt'] = ['32', '35', '36']
@@ -231,7 +279,7 @@ def test_check_get_venues_params_does_not_raise_api_error_if_good_param(app):
 
 
 @pytest.mark.standalone
-def test_check_get_venues_params_does_not_raise_api_error_if_empty_param(app):
+def test_check_get_venues_params_does_not_raise_api_error_if_empty_params(app):
     # given
     params = {}
     
@@ -259,14 +307,14 @@ def test_check_get_offerers_params_raises_api_error_if_not_valid_date(app):
 
 
 @pytest.mark.standalone
-def test_check_get_offerers_params_raises_api_error_if_not_valid_dpt_in_list(app):
+def test_check_get_offerers_params_raises_api_error_if_not_valid_dpt_in(app):
     # given
-    not_valid_dpt_list = {}
-    not_valid_dpt_list['dpt'] = ['93', '17', 'Paris']
+    not_valid_dpt = {}
+    not_valid_dpt['dpt'] = ['93', '17', 'Paris']
 
     # when
     with pytest.raises(ApiErrors) as errors:
-        check_get_offerers_params(not_valid_dpt_list)
+        check_get_offerers_params(not_valid_dpt)
 
     # then
     assert errors.value.errors['dpt'] == ['dpt is a list of type xx or xxx (2 or 3 digits), or 2A, or 2B :\
@@ -274,14 +322,14 @@ def test_check_get_offerers_params_raises_api_error_if_not_valid_dpt_in_list(app
 
 
 @pytest.mark.standalone
-def test_check_get_offerers_params_doesnt_raise_api_error_for_valid_dpt_in_list(app):
+def test_check_get_offerers_params_doesnt_raise_api_error_for_valid_dpt_in(app):
     # given
-    valid_dpt_list = {}
-    valid_dpt_list['dpt'] = ['93', '17', '01', '2a', '2B', '978']
+    valid_dpt = {}
+    valid_dpt['dpt'] = ['93', '17', '01', '2a', '2B', '978']
 
     # when
     try:
-        check_get_offerers_params(valid_dpt_list)
+        check_get_offerers_params(valid_dpt)
     
     except ApiErrors:
         # Then
@@ -289,13 +337,13 @@ def test_check_get_offerers_params_doesnt_raise_api_error_for_valid_dpt_in_list(
 
 
 @pytest.mark.standalone
-def test_check_get_offerers_params_raises_api_error_if_dpt_list_is_not_list(app):
+def test_check_get_offerers_params_raises_api_error_if_dpt_is_not_list(app):
     # given
-    not_valid_dpt_list = {}
-    not_valid_dpt_list['dpt'] = '93'
+    not_valid_dpt = {}
+    not_valid_dpt['dpt'] = '93'
     # when
     with pytest.raises(ApiErrors) as errors:
-        check_get_offerers_params(not_valid_dpt_list)
+        check_get_offerers_params(not_valid_dpt)
 
     # then
     assert errors.value.errors['dpt'] == ['dpt is a list of type xx or xxx (2 or 3 digits), or 2A, or 2B :\
@@ -303,14 +351,14 @@ def test_check_get_offerers_params_raises_api_error_if_dpt_list_is_not_list(app)
 
 
 @pytest.mark.standalone
-def test_check_get_offerers_params_raises_api_error_if_not_valid_zip_codes_list(app):
+def test_check_get_offerers_params_raises_api_error_if_not_valid_zip_codes(app):
     # given
-    not_valid_zip_codes_list = {}
-    not_valid_zip_codes_list['zip_codes'] = ['69000', '13020', '78sang40RpZ', 78140]
+    not_valid_zip_codes = {}
+    not_valid_zip_codes['zip_codes'] = ['69000', '13020', '78sang40RpZ', 78140]
 
     # when
     with pytest.raises(ApiErrors) as errors:
-        check_get_offerers_params(not_valid_zip_codes_list)
+        check_get_offerers_params(not_valid_zip_codes)
 
     # then
     assert errors.value.errors['zip_codes'] == \
@@ -319,14 +367,14 @@ def test_check_get_offerers_params_raises_api_error_if_not_valid_zip_codes_list(
 
 
 @pytest.mark.standalone
-def test_check_get_offerers_params_doesnt_raise_api_error_for_valid_siren_list(app):
+def test_check_get_offerers_params_doesnt_raise_api_error_for_valid_siren(app):
     # given
-    valid_siren_list = {}
-    valid_siren_list['siren_list'] = ["123456789", "789654123"]
+    valid_siren = {}
+    valid_siren['siren_list'] = ["123456789", "789654123"]
 
     # when
     try:
-        check_get_offerers_params(valid_siren_list)
+        check_get_offerers_params(valid_siren)
     
     except ApiErrors:
         # Then
@@ -334,14 +382,14 @@ def test_check_get_offerers_params_doesnt_raise_api_error_for_valid_siren_list(a
 
 
 @pytest.mark.standalone
-def test_check_get_offerers_params_raises_api_error_if_not_valid_siren_list(app):
+def test_check_get_offerers_params_raises_api_error_if_too_short_siren(app):
     # given
-    not_valid_siren_list = {}
-    not_valid_siren_list['siren_list'] = ['69000', '13020', '78sang40RpZ', '121253654789', 123456789]
+    not_valid_siren = {}
+    not_valid_siren['siren_list'] = ['12345678']
 
     # when
     with pytest.raises(ApiErrors) as errors:
-        check_get_offerers_params(not_valid_siren_list)
+        check_get_offerers_params(not_valid_siren)
 
     # then
     assert errors.value.errors['siren_list'] == \
@@ -349,14 +397,59 @@ def test_check_get_offerers_params_raises_api_error_if_not_valid_siren_list(app)
 
 
 @pytest.mark.standalone
-def test_check_get_offerers_params_doesnt_raise_api_error_for_valid_zip_codes_list(app):
+def test_check_get_offerers_params_raises_api_error_if_too_long_siren(app):
     # given
-    valid_zip_codes_list = {}
-    valid_zip_codes_list['zip_codes'] = ['69000', '13020', '2a250', '2B456', '00007']
+    not_valid_siren = {}
+    not_valid_siren['siren_list'] = ['1234567891888888']
+
+    # when
+    with pytest.raises(ApiErrors) as errors:
+        check_get_offerers_params(not_valid_siren)
+
+    # then
+    assert errors.value.errors['siren_list'] == \
+        ['siren_list is a list of 9 digits : ["123456789", "789654123"]']
+
+
+@pytest.mark.standalone
+def test_check_get_offerers_params_raises_api_error_if_not_list_siren(app):
+    # given
+    not_valid_siren = {}
+    not_valid_siren['siren_list'] = "123456789"
+
+    # when
+    with pytest.raises(ApiErrors) as errors:
+        check_get_offerers_params(not_valid_siren)
+
+    # then
+    assert errors.value.errors['siren_list'] == \
+        ['siren_list is a list of 9 digits : ["123456789", "789654123"]']
+
+
+@pytest.mark.standalone
+def test_check_get_offerers_params_raises_api_error_if_letter_in_siren(app):
+    # given
+    not_valid_siren = {}
+    not_valid_siren['siren_list'] = ['78sang40R']
+
+    # when
+    with pytest.raises(ApiErrors) as errors:
+        check_get_offerers_params(not_valid_siren)
+
+    # then
+    assert errors.value.errors['siren_list'] == \
+        ['siren_list is a list of 9 digits : ["123456789", "789654123"]']
+
+
+@pytest.mark.standalone
+def test_check_get_offerers_params_doesnt_raise_api_error_for_valid_zip_codes(app):
+    # given
+    valid_zip_codes = {}
+    valid_zip_codes['zip_codes'] = ['69000', '13020', '2a250', '2B456', '00007']
 
     # when
     try:
-        check_get_offerers_params(valid_zip_codes_list)
+        check_get_offerers_params(valid_zip_codes)
     
     except ApiErrors:
         # Then
@@ -364,7 +457,7 @@ def test_check_get_offerers_params_doesnt_raise_api_error_for_valid_zip_codes_li
 
 
 @pytest.mark.standalone
-def test_check_get_offerers_params_raises_api_error_if_not_valid_has_validated_user_offerer_param(app):
+def test_check_get_offerers_params_raises_api_error_if_not_valid_has_validated_user_offerer_params(app):
     # given
     not_valid_has_validated_user_offerer_param = {}
     not_valid_has_validated_user_offerer_param['has_validated_user_offerer'] = 'I\'m not a boolean'
@@ -378,7 +471,7 @@ def test_check_get_offerers_params_raises_api_error_if_not_valid_has_validated_u
 
 
 @pytest.mark.standalone
-def test_check_get_offerers_params_raises_api_error_if_not_valid_has_siren_param(app):
+def test_check_get_offerers_params_raises_api_error_if_not_valid_has_siren_params(app):
     # given
     not_valid_has_siren_param = {}
     not_valid_has_siren_param['has_siren'] = 'I\'m not a boolean'
@@ -392,7 +485,7 @@ def test_check_get_offerers_params_raises_api_error_if_not_valid_has_siren_param
 
 
 @pytest.mark.standalone
-def test_check_get_offerers_params_raises_api_error_if_not_valid_has_not_virtual_venue_param(app):
+def test_check_get_offerers_params_raises_api_error_if_not_valid_has_not_virtual_venue_params(app):
     # given
     not_valid_has_not_virtual_venue_param = {}
     not_valid_has_not_virtual_venue_param['has_not_virtual_venue'] = 'I\'m not a boolean'
@@ -406,7 +499,7 @@ def test_check_get_offerers_params_raises_api_error_if_not_valid_has_not_virtual
 
 
 @pytest.mark.standalone
-def test_check_get_offerers_params_raises_api_error_if_not_valid_has_validated_venue_param(app):
+def test_check_get_offerers_params_raises_api_error_if_not_valid_has_validated_venue_params(app):
     # given
     not_valid_has_validated_venue_param = {}
     not_valid_has_validated_venue_param['has_validated_venue'] = 'I\'m not a boolean'
@@ -420,7 +513,7 @@ def test_check_get_offerers_params_raises_api_error_if_not_valid_has_validated_v
 
 
 @pytest.mark.standalone
-def test_check_get_offerers_params_raises_api_error_if_not_valid_has_venue_with_siret_param(app):
+def test_check_get_offerers_params_raises_api_error_if_not_valid_has_venue_with_siret_params(app):
     # given
     not_valid_has_venue_with_siret_param = {}
     not_valid_has_venue_with_siret_param['has_venue_with_siret'] = 'I\'m not a boolean'
@@ -434,7 +527,7 @@ def test_check_get_offerers_params_raises_api_error_if_not_valid_has_venue_with_
 
 
 @pytest.mark.standalone
-def test_check_get_offerers_params_raises_api_error_if_not_valid_is_validated_param(app):
+def test_check_get_offerers_params_raises_api_error_if_not_valid_is_validated_params(app):
     # given
     not_valid_is_validated_param = {}
     not_valid_is_validated_param['is_validated'] = 'I\'m not a boolean'
@@ -448,7 +541,7 @@ def test_check_get_offerers_params_raises_api_error_if_not_valid_is_validated_pa
 
 
 @pytest.mark.standalone
-def test_check_get_offerers_params_raises_api_error_if_not_valid_has_validated_user_param(app):
+def test_check_get_offerers_params_raises_api_error_if_not_valid_has_validated_user_params(app):
     # given
     not_valid_has_validated_user_param = {}
     not_valid_has_validated_user_param['has_validated_user'] = 'I\'m not a boolean'
@@ -462,7 +555,7 @@ def test_check_get_offerers_params_raises_api_error_if_not_valid_has_validated_u
 
 
 @pytest.mark.standalone
-def test_check_get_offerers_params_raises_api_error_if_not_valid_has_bank_information_param(app):
+def test_check_get_offerers_params_raises_api_error_if_not_valid_has_bank_information_params(app):
     # given
     not_valid_has_bank_information_param = {}
     not_valid_has_bank_information_param['has_bank_information'] = 'I\'m not a boolean'
@@ -476,7 +569,7 @@ def test_check_get_offerers_params_raises_api_error_if_not_valid_has_bank_inform
 
 
 @pytest.mark.standalone
-def test_check_get_offerers_params_raises_api_error_if_not_valid_is_active_param(app):
+def test_check_get_offerers_params_raises_api_error_if_not_valid_is_active_params(app):
     # given
     not_valid_is_active_param = {}
     not_valid_is_active_param['is_active'] = 'I\'m not a boolean'
@@ -490,7 +583,7 @@ def test_check_get_offerers_params_raises_api_error_if_not_valid_is_active_param
 
 
 @pytest.mark.standalone
-def test_check_get_offerers_params_raises_api_error_if_not_valid_offer_status_param(app):
+def test_check_get_offerers_params_raises_api_error_if_not_valid_offer_status_params(app):
     # given
     not_valid_offer_status_param = {}
     not_valid_offer_status_param['offer_status'] = 'I\'m not a boolean'
@@ -504,7 +597,7 @@ def test_check_get_offerers_params_raises_api_error_if_not_valid_offer_status_pa
     
 
 @pytest.mark.standalone
-def test_check_get_offerers_params_does_not_raise_api_error_if_good_param(app):
+def test_check_get_offerers_params_does_not_raise_api_error_if_good_params(app):
     # given
     params = {}
     params['siren_list'] = ['123456789', '123454789', '789654123']
@@ -533,7 +626,7 @@ def test_check_get_offerers_params_does_not_raise_api_error_if_good_param(app):
 
 
 @pytest.mark.standalone
-def test_check_get_offerers_params_does_not_raise_api_error_if_empty_param(app):
+def test_check_get_offerers_params_does_not_raise_api_error_if_empty_params(app):
     # given
     params = {}
     

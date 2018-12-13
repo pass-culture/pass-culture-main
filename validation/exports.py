@@ -102,7 +102,7 @@ def check_get_offerers_params(param: {}) -> bool:
 
 
 def _check_date_format(date: str) -> bool:
-    if re.search('^(\d+){4}-(\d+){2}-(\d+){2}$', date):
+    if re.search(r'^(\d){4}-(\d){2}-(\d){2}$', date):
        return True
     api_errors = ApiErrors()
     api_errors.addError('date_format', 'to_date and from_date are of type yyyy-mm-dd')
@@ -115,7 +115,7 @@ def _check_siren_list(siren_list:  []) -> bool:
         api_errors.addError('siren_list', 
             'siren_list is a list of 9 digits : ["123456789", "789654123"]')
     for siren in siren_list:
-       if not re.search('^(\d+){9}$', siren):
+        if not re.search(r'^(\d){9}$', siren):
             api_errors = ApiErrors()
             api_errors.addError('siren_list', 
             'siren_list is a list of 9 digits : ["123456789", "789654123"]')    
@@ -130,7 +130,7 @@ def _check_dpt_list(dpt_list:  []) -> bool:
             'dpt is a list of type xx or xxx (2 or 3 digits), or 2A, or 2B :\
             ["34", "37"]')        
     for dpt in dpt_list:
-       if not re.search('^(\d+){2}$|^2{1}(a|b|A|B)$|^(\d+){3}$', dpt):
+       if not re.search(r'^(\d){2}$|^2{1}(a|b|A|B)$|^(\d){3}$', dpt):
             api_errors = ApiErrors()
             api_errors.addError('dpt', 
                 'dpt is a list of type xx or xxx (2 or 3 digits), or 2A, or 2B :\
@@ -146,7 +146,7 @@ def _check_zip_codes_list(zip_codes_list:  []) -> bool:
                 'zip_codes is a list of type xxxxx (5 digits, ex: 78140 ou 2a000) : \
         ["78140", "69007"]')
     for zip_code in zip_codes_list:
-        if not re.search('^(\d+){5}$|^2{1}(a|b|A|B)(\d+){3}$', zip_code):
+        if not re.search(r'^(\d){5}$|^2{1}(a|b|A|B)(\d){3}$', zip_code):
             api_errors = ApiErrors()
             api_errors.addError('zip_codes',
                 'zip_codes is a list of type xxxxx (5 digits, ex: 78140 ou 2a000) : \
