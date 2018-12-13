@@ -56,8 +56,9 @@ class CanvasTools {
     this.context.fillStyle = params.parent.color
     this.context.fillRect(...scaledCoordinates)
     this.context.fillStyle = params.color
-    this.context.fillText(params.text, ...scaledTextCoordinates)
     this.context.font = scaledFont
+    this.context.fillText(params.text, ...scaledTextCoordinates)
+
     return this
   }
 
