@@ -113,8 +113,6 @@ class Mediation extends PureComponent {
   drawRectangles = ctx => {
     const cvs = new CanvasTools(ctx)
 
-    ctx.font = 'bold 13px barlow'
-
     const purpleRectangle = {
       width: 2,
       color: '#b921d7',
@@ -128,6 +126,9 @@ class Mediation extends PureComponent {
 
     cvs.drawArea(purpleRectangle)
     cvs.drawLabel({
+      fontFamily: 'barlow',
+      fontSize: 14,
+      fontWeight: 'bold',
       parent: purpleRectangle,
       text: '1',
       color: 'white',
