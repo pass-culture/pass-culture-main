@@ -1,4 +1,3 @@
-// import get from 'lodash.get'
 import createCachedSelector from 're-reselect'
 
 import recommendationsSelector from './recommendations'

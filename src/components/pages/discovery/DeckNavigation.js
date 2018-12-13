@@ -10,10 +10,8 @@ import Draggable from 'react-draggable'
 import Price from '../../layout/Price'
 import Finishable from '../../layout/Finishable'
 import { getHeaderColor } from '../../../utils/colors'
-import {
-  getPriceRangeFromStocks,
-  isRecommendationFinished,
-} from '../../../helpers'
+import { getPriceRangeFromStocks } from '../../../helpers'
+import { isRecommendationFinished } from '../../../helpers/discovery'
 import { ROOT_PATH } from '../../../utils/config'
 
 const toRectoDraggableBounds = {

@@ -20,8 +20,10 @@ import previousRecommendationSelector from '../../../selectors/previousRecommend
 import recommendationsSelector from '../../../selectors/recommendations'
 import {
   PREVIOUS_NEXT_LIMIT,
-  isThereRecommendations,
-} from '../../../utils/deck'
+  withRecommandations,
+  withCurrentRecommandation,
+  isSameReco,
+} from '../../../helpers/discovery'
 
 export class RawDeck extends Component {
   constructor(props) {
@@ -38,26 +40,31 @@ export class RawDeck extends Component {
       !recommendations || recommendations.length === 0 || !currentRecommendation
 
     this.handleUrlFlip(history)
+
     if (isRecommendations) {
       this.handleRefreshedDraggableKey()
     }
   }
 
   componentDidUpdate(previousProps) {
-    Logger.log('DECK ---> componentDidUpdate', previousProps)
+    Logger.log(
+      'DECK ---> componentDidUpdate',
+      previousProps.recommendations.length
+    )
     const { history, recommendations, currentRecommendation } = this.props
 
-    const isRecommendations = isThereRecommendations(
+    const isRecommendations = withRecommandations(
       recommendations,
-      previousProps,
-      currentRecommendation
+      previousProps
+    )
+    const isCurrentRecommandation = withCurrentRecommandation(
+      currentRecommendation,
+      previousProps
     )
 
     this.handleUrlFlip(history, previousProps.history)
 
-    if (!isRecommendations) {
-      console.log('LES CAROTTES SONT CUITES, ARCHI CUITES')
-      // BUGGE > en boucle car toutjours frais
+    if (!isRecommendations || !isCurrentRecommandation) {
       this.handleRefreshedDraggableKey()
     }
   }
@@ -116,6 +123,7 @@ export class RawDeck extends Component {
       nextLimit,
       recommendations,
     } = this.props
+
     if (currentRecommendation.index >= nextLimit) {
       const seenRecommendationIds = recommendations.map(r => r.id)
       handleDataRequest(seenRecommendationIds)
@@ -137,14 +145,8 @@ export class RawDeck extends Component {
     } = this.props
     const { isRead } = this.state
 
-    const isSameReco =
-      !currentRecommendation ||
-      (prevProps &&
-        prevProps.currentRecommendation &&
-        currentRecommendation &&
-        prevProps.currentRecommendation.id === currentRecommendation.id)
-    // we don't need to go further if we are still on the same reco
-    if (isSameReco) return
+    const withSameReco = isSameReco(currentRecommendation, prevProps)
+    if (withSameReco) return
 
     const isCurrentReco =
       this.currentReadRecommendationId !== currentRecommendation.id

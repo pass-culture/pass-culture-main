@@ -4,6 +4,7 @@ import { shallow } from 'enzyme'
 import { RawDeck } from '../Deck'
 
 const dispatchMock = jest.fn()
+const handleDataRequestMock = jest.fn()
 
 describe('src | components | pages | discovery | Index | DiscoveryPage', () => {
   // given
@@ -12,6 +13,7 @@ describe('src | components | pages | discovery | Index | DiscoveryPage', () => 
     currentRecommendation: {},
     dispatch: dispatchMock,
     draggable: true,
+    handleDataRequest: handleDataRequestMock,
     height: 947,
     history: {
       location: {
@@ -60,6 +62,7 @@ describe('src | components | pages | discovery | Index | DiscoveryPage', () => 
             backButton: true,
             dispatch: dispatchMock,
             draggable: true,
+            handleDataRequest: handleDataRequestMock,
             height: 947,
             history: {
               location: {
@@ -105,6 +108,7 @@ describe('src | components | pages | discovery | Index | DiscoveryPage', () => 
             },
             dispatch: dispatchMock,
             draggable: true,
+            handleDataRequest: handleDataRequestMock,
             height: 947,
             history: {
               location: {
@@ -140,6 +144,7 @@ describe('src | components | pages | discovery | Index | DiscoveryPage', () => 
             backButton: true,
             dispatch: dispatchMock,
             draggable: true,
+            handleDataRequest: handleDataRequestMock,
             height: 947,
             history: {
               location: {
@@ -178,6 +183,7 @@ describe('src | components | pages | discovery | Index | DiscoveryPage', () => 
             backButton: true,
             dispatch: dispatchMock,
             draggable: true,
+            handleDataRequest: handleDataRequestMock,
             height: 947,
             history: {
               location: {
@@ -233,6 +239,7 @@ describe('src | components | pages | discovery | Index | DiscoveryPage', () => 
             backButton: true,
             dispatch: dispatchMock,
             draggable: true,
+            handleDataRequest: handleDataRequestMock,
             height: 947,
             history: {
               location: {
@@ -314,10 +321,10 @@ describe('src | components | pages | discovery | Index | DiscoveryPage', () => 
     describe('handleSetDateRead', () => {
       it('', () => {})
     })
-    describe('handleShowOfferDetails', () => {
+    describe('handleShowrecommandationDetails', () => {
       it('', () => {})
     })
-    describe('handleCloseOfferDetails', () => {
+    describe('handleCloserecommandationDetails', () => {
       it('', () => {})
     })
     describe('handleUrlFlip', () => {

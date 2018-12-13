@@ -8,6 +8,7 @@ ShallowWrapper {
     currentRecommendation={Object {}}
     dispatch={[MockFunction]}
     draggable={true}
+    handleDataRequest={[MockFunction]}
     height={947}
     history={
       Object {
