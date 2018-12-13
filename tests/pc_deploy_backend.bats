@@ -1,9 +1,7 @@
 #!./test/libs/bats/bin/bats
 
 load bats-mock/src/bats-mock
-#load test-utils
 
-#TODO: mettre dans utils
 debug_mock() {
   # Debug
   # Use the below line if you actually want to see all the arguments the function used to call the 'stub'
