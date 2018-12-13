@@ -1,4 +1,4 @@
-from domain.types import get_formatted_event_or_thing_type_dicts
+from domain.types import get_formatted_event_or_thing_types
 from models.pc_object import PcObject
 from utils.logger import logger
 from utils.test_utils import create_thing
@@ -36,7 +36,7 @@ def create_industrial_things():
     things_by_name = {}
 
     thing_type_dicts = [
-        t for t in get_formatted_event_or_thing_type_dicts()
+        t for t in get_formatted_event_or_thing_types()
         if t['type'] == 'Thing'
     ]
 

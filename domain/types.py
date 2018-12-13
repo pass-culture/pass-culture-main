@@ -1,7 +1,7 @@
 """ types """
 from models.offer_type import EventType, ThingType
 
-def get_formatted_event_or_thing_type_dicts(with_activation_type=False):
+def get_formatted_event_or_thing_types(with_activation_type=False) -> dict:
     event_format_event_or_thing_types = [type_obj.as_dict() for type_obj in EventType]
     thing_format_event_or_thing_types = [type_obj.as_dict() for type_obj in ThingType]
     all_types = event_format_event_or_thing_types + thing_format_event_or_thing_types

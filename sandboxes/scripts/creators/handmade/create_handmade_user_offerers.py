@@ -8,7 +8,7 @@ def create_handmade_user_offerers(users_by_name, offerers_by_name):
     user_offerers_by_name = {}
 
     #
-    # 93 HVUO
+    # 93 has-validated-unregistered-offerer (HVUO)
     #
 
     user_offerers_by_name['pro93 has-validated-unregistered-offerer / LE GRAND REX PARIS'] = create_user_offerer(
@@ -33,7 +33,7 @@ def create_handmade_user_offerers(users_by_name, offerers_by_name):
     )
 
     #
-    # 93 HVRO
+    # 93 has-validated-registered-offerer (HVRO)
     #
 
     user_offerers_by_name['pro93 has-validated-registered-offerer / THEATRE DE L ODEON'] = create_user_offerer(
@@ -47,7 +47,7 @@ def create_handmade_user_offerers(users_by_name, offerers_by_name):
     )
 
     #
-    # 97 HVUO
+    # 97 has-validated-unregistered-offerer (HVUO)
     #
 
     user_offerers_by_name['pro97 has-validated-unregistered-offerer / KWATA'] = create_user_offerer(

@@ -17,7 +17,7 @@ from sandboxes.scripts.save_sandbox import save_sandbox
                     default="true")
 def sandbox(name, clean):
     try:
-        with_clean = True if clean == "true" else False
+        with_clean = clean == "true"
         save_sandbox(name, with_clean)
     except Exception as e:
         print('ERROR: ' + str(e))

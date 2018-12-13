@@ -17,20 +17,20 @@ def create_industrial_bookings(recommendations_by_name, stocks_by_name):
         offer = recommendation.offer
         user = recommendation.user
 
-        user_should_not_have_yet_bookings_in_its_user_story = \
+        user_has_not_yet_bookings = \
             user.firstName != "PC Test Jeune" or \
             "has-signed-up" in user.email
 
-        if user_should_not_have_yet_bookings_in_its_user_story:
+        if user_has_not_yet_bookings:
             continue
 
-        user_should_have_only_activation_booked = \
+        user_has_only_activation_booked = \
             "has-booked-activation" in user.email or \
             "has-confirmed-activation" in user.email
 
         is_activation_offer = offer.eventOrThing.offerType['value'] == str(EventType.ACTIVATION)
 
-        if user_should_have_only_activation_booked and not is_activation_offer:
+        if user_has_only_activation_booked and not is_activation_offer:
             continue
 
         recommendation_stocks = [
