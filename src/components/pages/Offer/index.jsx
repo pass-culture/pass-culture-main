@@ -383,7 +383,7 @@ class OfferPage extends Component {
                     ? get(eventOrThingPatch, 'offerTypeValue')
                     : "Sélectionnez un type d'offre"
                 }
-                readOnly={offerId}
+                readOnly={offerId && selectedOfferType}
                 required
                 sublabel="Le type d'offre ne peut pas être modifié une fois l'offre enregistrée."
                 type="select"
