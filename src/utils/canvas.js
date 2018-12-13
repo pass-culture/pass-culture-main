@@ -1,6 +1,9 @@
 class CanvasTools {
   constructor(context) {
     this.context = context
+    this.dpr = window.devicePixelRatio
+
+    this.context.scale(this.dpr, this.dpr)
   }
 
   drawArea(params) {
