@@ -6,8 +6,6 @@ import React, { PureComponent } from 'react'
 import { DAYS_CHECKBOXES } from './utils'
 import { DatePickerField } from '../../forms/inputs'
 
-const TODAY_DATE = moment().format('MMM Do YY')
-
 class FilterByDates extends PureComponent {
   constructor(props) {
     super(props)
@@ -101,7 +99,7 @@ class FilterByDates extends PureComponent {
             <DatePickerField
               name="pick-by-date-filter"
               className="item fs19 py5 px7"
-              minDate={minDate || TODAY_DATE}
+              minDate={minDate}
               selected={pickedDate}
               onChange={this.onPickedDateChange}
               popperRefContainer={this.datepickerPopper}
@@ -119,7 +117,7 @@ class FilterByDates extends PureComponent {
 }
 
 FilterByDates.defaultProps = {
-  minDate: false, // allows fixing timestamp issues with snapshots tests
+  minDate: moment().format('MMM Do YY'),
 }
 
 FilterByDates.propTypes = {

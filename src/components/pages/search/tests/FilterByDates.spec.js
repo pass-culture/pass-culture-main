@@ -103,7 +103,7 @@ describe('src | components | pages | search | FilterByDates', () => {
             },
             title: 'Fake title',
           }
-          const pickedDate = moment('12/12/2034')
+          const pickedDate = moment('12/12/2034', 'DD/MM/YYYY')
 
           // when
           const wrapper = shallow(<FilterByDates {...props} />)
