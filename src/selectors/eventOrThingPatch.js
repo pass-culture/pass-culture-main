@@ -15,7 +15,9 @@ export default createCachedSelector(
       {
         offererId: get(offerer, 'id'),
         venueId: get(venue, 'id'),
-        type: event ? event.offerType.value : thing && thing.offerType.value,
+        type: event
+          ? get(event, 'offerType.value', '')
+          : thing && thing.offerType.value,
       },
       event || thing
     )
