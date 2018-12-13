@@ -57,7 +57,7 @@ export default compose(
         offerId,
         mediationId
       ),
-      isShownDetails: state.offerDetails.isShownDetails,
+      isShownDetails: state.recommandationDetails.isShownDetails,
     }
   })
 )(Verso)

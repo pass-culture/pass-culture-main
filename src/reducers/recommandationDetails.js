@@ -33,7 +33,7 @@ function verso(state = initialState, action) {
 }
 
 // ACTION CREATORS
-export function showOfferDetails() {
+export function showrecommandationDetails() {
   return { type: SHOW_DETAILS_VIEW }
 }
 
@@ -49,7 +49,7 @@ export function makeUndraggable() {
   return { type: MAKE_UNDRAGGABLE }
 }
 
-export function closeOfferDetails() {
+export function closerecommandationDetails() {
   return { type: CLOSE_DETAILS_VIEW }
 }
 

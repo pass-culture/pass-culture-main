@@ -10,7 +10,10 @@ import { getHeaderColor } from '../../utils/colors'
 import currentRecommendationSelector from '../../selectors/currentRecommendation'
 import { ROOT_PATH } from '../../utils/config'
 
-import { makeDraggable, makeUndraggable } from '../../reducers/offerDetails'
+import {
+  makeDraggable,
+  makeUndraggable,
+} from '../../reducers/recommandationDetails'
 
 export class RawVersoWrapper extends Component {
   constructor(props) {
@@ -130,8 +133,8 @@ export default compose(
       )
       return {
         currentRecommendation,
-        draggable: state.offerDetails.draggable,
-        isShownDetails: state.offerDetails.isShownDetails,
+        draggable: state.recommandationDetails.draggable,
+        isShownDetails: state.recommandationDetails.isShownDetails,
       }
     },
     {

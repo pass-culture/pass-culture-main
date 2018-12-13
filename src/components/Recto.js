@@ -86,7 +86,7 @@ export default compose(
     const { mediationId, offerId } = ownProps.match.params
     const recoSelector = getSelectorByCardPosition(ownProps.position)
     return {
-      isShownDetails: state.offerDetails.isShownDetails,
+      isShownDetails: state.recommandationDetails.isShownDetails,
       recommendation: recoSelector(state, offerId, mediationId),
     }
   })

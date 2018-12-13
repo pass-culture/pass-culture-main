@@ -49,7 +49,7 @@ Footer.propTypes = {
 }
 
 const mapStateToProps = state => ({
-  isShownDetails: state.offerDetails.isShownDetails,
+  isShownDetails: state.recommandationDetails.isShownDetails,
 })
 
 export default connect(mapStateToProps)(Footer)
