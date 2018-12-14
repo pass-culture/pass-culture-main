@@ -10,20 +10,15 @@ import withSizes from 'react-sizes'
 import Card from './Card'
 import DeckNavigation from './DeckNavigation'
 import {
-  closeOfferDetails,
-  showOfferDetails,
+  closerecommandationDetails,
+  showrecommandationDetails,
   flipUnflippable,
-} from '../../../reducers/offerDetails'
+} from '../../../reducers/recommandationDetails'
 import currentRecommendationSelector from '../../../selectors/currentRecommendation'
 import nextRecommendationSelector from '../../../selectors/nextRecommendation'
 import previousRecommendationSelector from '../../../selectors/previousRecommendation'
 import recommendationsSelector from '../../../selectors/recommendations'
-import {
-  PREVIOUS_NEXT_LIMIT,
-  withRecommandations,
-  withCurrentRecommandation,
-  isSameReco,
-} from '../../../helpers/discovery'
+import { PREVIOUS_NEXT_LIMIT, isSameReco } from '../../../helpers/discovery'
 
 export class RawDeck extends Component {
   constructor(props) {
@@ -36,12 +31,12 @@ export class RawDeck extends Component {
     Logger.log('DECK ---> componentDidMount')
     const { currentRecommendation, history, recommendations } = this.props
 
-    const isRecommendations =
-      !recommendations || recommendations.length === 0 || !currentRecommendation
-
     this.handleUrlFlip(history)
 
-    if (isRecommendations) {
+    const isStateWithoutRecommendationsOrCurrentRecommendation =
+      !recommendations || recommendations.length === 0 || !currentRecommendation
+
+    if (isStateWithoutRecommendationsOrCurrentRecommendation) {
       this.handleRefreshedDraggableKey()
     }
   }
@@ -51,28 +46,36 @@ export class RawDeck extends Component {
       'DECK ---> componentDidUpdate',
       previousProps.recommendations.length
     )
-    const { history, recommendations, currentRecommendation } = this.props
+    const { history } = this.props
 
-    const isRecommendations = withRecommandations(
-      recommendations,
-      previousProps
-    )
-    const isCurrentRecommandation = withCurrentRecommandation(
-      currentRecommendation,
-      previousProps
-    )
-
+    // const withRecommendationsAvailable = isRecommendations(
+    //   recommendations,
+    //   previousProps
+    // )
+    // const withCurrentRecommandationAvailable = isCurrentRecommendation(
+    //   currentRecommendation,
+    //   previousProps
+    // )
+    // const withNewRecommendationsAvailable = isNewRecommendations(
+    //   recommendations,
+    //   previousProps
+    // )
+    // const withNewCurrentRecommandationAvailable = isNewCurrentRecommendation(
+    //   currentRecommendation,
+    //   previousProps
+    // )
     this.handleUrlFlip(history, previousProps.history)
 
-    if (!isRecommendations || !isCurrentRecommandation) {
-      this.handleRefreshedDraggableKey()
-    }
+    // if (!withRecommendationsAvailable || !withCurrentRecommandationAvailable || !withNewRecommendationsAvailable || !withNewCurrentRecommandationAvailable) {
+    //   console.log('in componentDidUpdate handleRefreshedDraggableKey');
+    //   this.handleRefreshedDraggableKey()
+    // }
   }
 
   componentWillUnmount() {
     Logger.log('DECK ---> componentWillUnmount')
     const { dispatch, readTimeout, noDataTimeout } = this.props
-    dispatch(closeOfferDetails())
+    dispatch(closerecommandationDetails())
 
     if (readTimeout) clearTimeout(readTimeout)
     if (noDataTimeout) clearTimeout(noDataTimeout)
@@ -91,9 +94,9 @@ export class RawDeck extends Component {
     const index = get(currentRecommendation, 'index', 0)
     const offset = (data.x + width * index) / width
     if (draggable && data.y > height * verticalSlideRatio) {
-      this.handleCloseOfferDetails()
+      this.handleCloserecommandationDetails()
     } else if (data.y < -height * verticalSlideRatio) {
-      this.handleShowOfferDetails()
+      this.handleShowrecommandationDetails()
     } else if (offset > horizontalSlideRatio) {
       this.handleGoPrevious()
     } else if (-offset > horizontalSlideRatio) {
@@ -196,16 +199,16 @@ export class RawDeck extends Component {
     }
   }
 
-  handleShowOfferDetails = () => {
+  handleShowrecommandationDetails = () => {
     const { dispatch, isFlipDisabled } = this.props
     if (isFlipDisabled) return
-    dispatch(showOfferDetails())
+    dispatch(showrecommandationDetails())
   }
 
-  handleCloseOfferDetails = () => {
+  handleCloserecommandationDetails = () => {
     const { dispatch, unFlippable } = this.props
     if (unFlippable) return
-    dispatch(closeOfferDetails())
+    dispatch(closerecommandationDetails())
   }
 
   handleUrlFlip = (history, previousHistory = false) => {
@@ -282,7 +285,7 @@ export class RawDeck extends Component {
           <button
             type="button"
             className="close-button"
-            onClick={this.handleCloseOfferDetails}
+            onClick={this.handleCloserecommandationDetails}
             style={{ zIndex: 300 }}
           >
             <Icon svg="ico-close" alt="Fermer" />
@@ -293,7 +296,7 @@ export class RawDeck extends Component {
           <DeckNavigation
             recommendation={currentRecommendation}
             flipHandler={
-              (!isFlipDisabled && this.handleShowOfferDetails) || null
+              (!isFlipDisabled && this.handleShowrecommandationDetails) || null
             }
             handleGoNext={(nextRecommendation && this.handleGoNext) || null}
             handleGoPrevious={
@@ -369,10 +372,10 @@ const mapStateToProps = (state, ownProps) => {
 
   return {
     currentRecommendation,
-    draggable: state.offerDetails.draggable,
+    draggable: state.recommandationDetails.draggable,
     isEmpty: get(state, 'loading.config.isEmpty'),
     isFlipDisabled,
-    isShownDetails: state.offerDetails.isShownDetails,
+    isShownDetails: state.recommandationDetails.isShownDetails,
     nextLimit,
     nextRecommendation: nextRecommendationSelector(state, offerId, mediationId),
     previousLimit,
@@ -382,7 +385,7 @@ const mapStateToProps = (state, ownProps) => {
       mediationId
     ),
     recommendations,
-    unFlippable: state.offerDetails.unFlippable,
+    unFlippable: state.recommandationDetails.unFlippable,
   }
 }
 
