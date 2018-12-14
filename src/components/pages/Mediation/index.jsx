@@ -399,11 +399,12 @@ class Mediation extends PureComponent {
           </p>
           <p>
             Le fichier doit peser <b>100Ko minimum.</b>
-            {/*
             <br />
             Utilisateurs avancés : vous pouvez
-            <a>télécharger ici les gabarits Illustrator et Photoshop.</a>
-          */}
+            <a href="https://pass.culture.fr/assets/docs/PassCulture-accroche-template-20181114.zip">
+              {' '}
+              télécharger ici les gabarits Illustrator et Photoshop.
+            </a>
           </p>
         </HeroSection>
 
