@@ -290,16 +290,27 @@ elif [[ "$CMD" == "test-cafe-webapp" ]] || [[ "$CMD" == "test-cafe-pro" ]]; then
 elif [[ "$CMD" == "tag-version-backend" ]] \
      || [[ "$CMD" == "tag-version-webapp" ]] \
      || [[ "$CMD" == "tag-version-pro" ]]; then
+
+  if [[ "$CMD" == "tag-version-webapp"  ]]; then
+	APP_PATH="$ROOT_PATH"/webapp
+  elif [[ "$CMD" == "tag-version-pro"  ]]; then
+    APP_PATH="$ROOT_PATH"/pro
+  else
+	APP_PATH="$ROOT_PATH"/api
+  fi
+
+  cd "$APP_PATH"
+
   if [[ "$TAG_NAME" ]]; then
+    TAG_VERSION="v$TAG_NAME"
     if [[ "$CMD" == "tag-version-backend" ]]; then
-      TAG_VERSION="v$TAG_NAME"
       git tag "$TAG_VERSION"
     else
-      TAG_VERSION="$TAG_NAME"
-      yarn version --new-version "$TAG_VERSION"
+      yarn version --new-version "$TAG_NAME"
       git push origin "$current_branch"
     fi
     git push origin "$TAG_VERSION"
+    exit_success_restoring_branch
   fi
 
 # Deploy current version of API/Webapp/Pro to specified environment
