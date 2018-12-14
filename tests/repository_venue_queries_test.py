@@ -15,7 +15,7 @@ from utils.test_utils import create_venue, create_event_offer, create_venue_acti
 
 @pytest.mark.standalone
 @clean_database
-def test_find_filtered_venues_with_siren_list_params_return_filtered_venues(app):
+def test_find_filtered_venues_with_sirens_params_return_filtered_venues(app):
     #given
     offerer_123456789 = create_offerer(name="offerer_123456789", siren="123456789")
     offerer_123456781 = create_offerer(name="offerer_123456781", siren="123456781")
@@ -32,14 +32,14 @@ def test_find_filtered_venues_with_siren_list_params_return_filtered_venues(app)
     PcObject.check_and_save(venue_123456789, venue_123456781, venue_123456782, venue_123456783, venue_123456784)
  
     #when
-    query_with_siren_list = find_filtered_venues(siren_list=["123456781", "123456782", "123456783"])
+    query_with_sirens = find_filtered_venues(sirens=["123456781", "123456782", "123456783"])
     
     #then
-    assert venue_123456789 not in query_with_siren_list
-    assert venue_123456781 in query_with_siren_list
-    assert venue_123456782 in query_with_siren_list
-    assert venue_123456783 in query_with_siren_list
-    assert venue_123456784 not in query_with_siren_list
+    assert venue_123456789 not in query_with_sirens
+    assert venue_123456781 in query_with_sirens
+    assert venue_123456782 in query_with_sirens
+    assert venue_123456783 in query_with_sirens
+    assert venue_123456784 not in query_with_sirens
 
 
 @pytest.mark.standalone
@@ -62,7 +62,7 @@ def test_find_filtered_venues_with_has_validated_offerer_param_return_filtered_v
 
 @pytest.mark.standalone
 @clean_database
-def test_find_filtered_venues_with_dpt_param_return_filtered_venues(app):
+def test_find_filtered_venues_with_dpts_param_return_filtered_venues(app):
     # Given
     offerer = create_offerer()
     venue_93 = create_venue(offerer, departement_code='93', postal_code='93000')
@@ -74,13 +74,13 @@ def test_find_filtered_venues_with_dpt_param_return_filtered_venues(app):
     PcObject.check_and_save(venue_93, venue_67, venue_34, venue_virtual)
 
     # When
-    query_with_dpt = find_filtered_venues(dpt=['93','67'])
+    query_with_dpts = find_filtered_venues(dpts=['93','67'])
 
     # Then
-    assert venue_93 in query_with_dpt
-    assert venue_67 in query_with_dpt
-    assert venue_34 not in query_with_dpt
-    assert venue_virtual not in query_with_dpt 
+    assert venue_93 in query_with_dpts
+    assert venue_67 in query_with_dpts
+    assert venue_34 not in query_with_dpts
+    assert venue_virtual not in query_with_dpts 
     
 
 @pytest.mark.standalone

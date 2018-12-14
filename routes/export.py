@@ -144,7 +144,7 @@ def get_pending_validation():
 def get_export_venues():
     check_user_is_admin(current_user)
 
-    params_keys = ['siren_list', 'dpt', 'has_validated_offerer', 'zip_codes', 'from_date', 'to_date', 'has_siret',
+    params_keys = ['sirens', 'dpts', 'has_validated_offerer', 'zip_codes', 'from_date', 'to_date', 'has_siret',
     'is_virtual', 'offer_status', 'is_validated',  "has_offerer_with_siren", "has_validated_user_offerer", "has_validated_user"]
     params = {}
 
@@ -152,8 +152,8 @@ def get_export_venues():
         params[key] = request.json.get(key, None)
 
     check_get_venues_params(params)
-    result = find_filtered_venues(siren_list = params['siren_list'],
-                                  dpt=params['dpt'],
+    result = find_filtered_venues(sirens = params['sirens'],
+                                  dpts=params['dpts'],
                                   zip_codes=params['zip_codes'],
                                   from_date=params['from_date'],
                                   to_date=params['to_date'],
@@ -175,7 +175,7 @@ def get_export_venues():
 def get_export_offerers():
     check_user_is_admin(current_user)
 
-    params_keys = ['siren_list', 'dpt', 'zip_codes', 'from_date', 'to_date', 'has_siren', 'has_not_virtual_venue',
+    params_keys = ['sirens', 'dpts', 'zip_codes', 'from_date', 'to_date', 'has_siren', 'has_not_virtual_venue',
      'has_validated_venue', 'has_venue_with_siret', 'offer_status', 'is_validated', 'has_validated_user',
      'has_bank_information', 'is_active', 'has_validated_user_offerer']
     params = {}
@@ -184,8 +184,8 @@ def get_export_offerers():
         params[key] = request.json.get(key, None)
 
     check_get_offerers_params(params)
-    result = find_filtered_offerers(siren_list = params['siren_list'],
-                                    dpt = params['dpt'],
+    result = find_filtered_offerers(sirens = params['sirens'],
+                                    dpts = params['dpts'],
                                     zip_codes = params['zip_codes'],
                                     from_date = params['from_date'],
                                     to_date = params['to_date'],

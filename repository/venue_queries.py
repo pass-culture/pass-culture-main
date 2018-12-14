@@ -7,7 +7,7 @@ from models.venue import TooManyVirtualVenuesException
 from models.activity import load_activity
 from sqlalchemy import and_
 from repository.offer_queries import with_active_and_validated_offerer
-from repository.offerer_queries import _filter_by_siren_list
+from repository.offerer_queries import _filter_by_sirens
 
 
 def save_venue(venue):
@@ -23,8 +23,8 @@ def find_by_id(venue_id):
     return Venue.query.filter_by(id=venue_id).first()
 
 
-def find_filtered_venues(siren_list=None,
-                         dpt=None,
+def find_filtered_venues(sirens=None,
+                         dpts=None,
                          zip_codes=None,
                          from_date=None,
                          to_date=None,
@@ -38,8 +38,8 @@ def find_filtered_venues(siren_list=None,
                          has_validated_user=None):
 
     query = db.session.query(Venue) 
-    if dpt:
-        query = _filter_by_dpt(query, dpt)
+    if dpts:
+        query = _filter_by_dpts(query, dpts)
     
     if zip_codes: 
         query = _filter_by_zipcodes(query, zip_codes)
@@ -61,11 +61,11 @@ def find_filtered_venues(siren_list=None,
     
     if has_validated_offerer is not None or has_offerer_with_siren is not None \
      or has_validated_user_offerer is not None or has_validated_user is not None \
-     or siren_list is not None:
+     or sirens is not None:
         query = query.join(Offerer)
 
-    if siren_list is not None:
-        query = _filter_by_siren_list(query, siren_list)
+    if sirens is not None:
+        query = _filter_by_sirens(query, sirens)
     
     if has_validated_offerer is not None:
         query = _filter_by_has_validated_offerer(query, has_validated_offerer)
@@ -136,8 +136,8 @@ def _filter_by_has_validated_user(query, has_validated_user):
     return query 
 
 
-def _filter_by_dpt(query, dpt):
-    query = query.filter(Venue.departementCode.in_(dpt))
+def _filter_by_dpts(query, dpts):
+    query = query.filter(Venue.departementCode.in_(dpts))
     return query
 
 

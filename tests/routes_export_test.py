@@ -182,7 +182,7 @@ def test_get_venues_return_200_and_filtered_venues(app):
     #given
     data={
         "has_validated_offerer": True,
-        "dpt": ["93","67"],
+        "dpts": ["93","67"],
         "has_siret": True,
         "is_virtual": False,
         "is_validated": True, 
@@ -366,10 +366,10 @@ def test_get_venues_with_params_for_pc_reporting_return_200_and_filtered_venues(
 
 @pytest.mark.standalone
 @clean_database
-def test_get_venues_with_siren_list_params_return_200_and_filtered_venues(app):
+def test_get_venues_with_sirens_params_return_200_and_filtered_venues(app):
     #given
     data={
-        "siren_list": ["123456781", "123456782", "123456783"]
+        "sirens": ["123456781", "123456782", "123456783"]
     }
 
     query_user = create_user(password='p@55sw0rd', is_admin=True, can_book_free_offers=False)
@@ -693,10 +693,10 @@ def test_get_offerers_with_params_for_pc_reporting_return_200_and_filtered_offer
 
 @pytest.mark.standalone
 @clean_database
-def test_get_offerers_with_siren_list_params_return_200_and_filtered_offerers(app):
+def test_get_offerers_with_sirens_params_return_200_and_filtered_offerers(app):
     #given
     data={
-        "siren_list": ["123456781", "123456782", "123456783"]
+        "sirens": ["123456781", "123456782", "123456783"]
     }
 
     query_user = create_user(password='p@55sw0rd', is_admin=True, can_book_free_offers=False)

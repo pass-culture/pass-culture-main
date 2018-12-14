@@ -203,7 +203,7 @@ def test_find_first_by_user_offerer_id_returns_the_first_offerer_that_was_create
 
 @pytest.mark.standalone
 @clean_database
-def test_find_filtered_offerers_with_siren_list_params_return_filtered_offerers(app):
+def test_find_filtered_offerers_with_sirens_params_return_filtered_offerers(app):
     #given
     offerer_123456789 = create_offerer(name="offerer_123456789", siren="123456789")
     offerer_123456781 = create_offerer(name="offerer_123456781", siren="123456781")
@@ -215,19 +215,19 @@ def test_find_filtered_offerers_with_siren_list_params_return_filtered_offerers(
         offerer_123456783, offerer_123456784)
  
     #when
-    query_with_siren_list = find_filtered_offerers(siren_list=["123456781", "123456782", "123456783"])
+    query_with_sirens = find_filtered_offerers(sirens=["123456781", "123456782", "123456783"])
     
     #then
-    assert offerer_123456789 not in query_with_siren_list
-    assert offerer_123456781 in query_with_siren_list
-    assert offerer_123456782 in query_with_siren_list
-    assert offerer_123456783 in query_with_siren_list
-    assert offerer_123456784 not in query_with_siren_list
+    assert offerer_123456789 not in query_with_sirens
+    assert offerer_123456781 in query_with_sirens
+    assert offerer_123456782 in query_with_sirens
+    assert offerer_123456783 in query_with_sirens
+    assert offerer_123456784 not in query_with_sirens
 
 
 @pytest.mark.standalone
 @clean_database
-def test_find_filtered_offerers_with_dpt_param_return_filtered_offerers(app):
+def test_find_filtered_offerers_with_dpts_param_return_filtered_offerers(app):
     # Given
     offerer_93 = create_offerer(postal_code="93125") 
     offerer_67 = create_offerer(postal_code="67000", siren="123456781")
@@ -242,17 +242,17 @@ def test_find_filtered_offerers_with_dpt_param_return_filtered_offerers(app):
         offerer_973, offerer_2A)
 
     # When
-    query_with_dpt = find_filtered_offerers(dpt=['93','67', '2A', '973'])
+    query_with_dpts = find_filtered_offerers(dpts=['93','67', '2A', '973'])
 
     # Then
-    assert offerer_93 in query_with_dpt
-    assert offerer_67 in query_with_dpt
-    assert offerer_34 not in query_with_dpt
-    assert offerer_00 not in query_with_dpt
-    assert offerer_01 not in query_with_dpt
-    assert offerer_78 not in query_with_dpt
-    assert offerer_973 in query_with_dpt
-    assert offerer_2A in query_with_dpt
+    assert offerer_93 in query_with_dpts
+    assert offerer_67 in query_with_dpts
+    assert offerer_34 not in query_with_dpts
+    assert offerer_00 not in query_with_dpts
+    assert offerer_01 not in query_with_dpts
+    assert offerer_78 not in query_with_dpts
+    assert offerer_973 in query_with_dpts
+    assert offerer_2A in query_with_dpts
 
 @pytest.mark.standalone
 @clean_database

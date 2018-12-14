@@ -13,11 +13,11 @@ def check_user_is_admin(user):
 
 
 def check_get_venues_params(param: {}) -> bool:
-    if param.get('siren_list', None):
-        _check_siren_list(param['siren_list'])
+    if param.get('sirens', None):
+        _check_sirens(param['sirens'])
     
-    if param.get('dpt', []):
-        _check_dpt_list(param['dpt'])
+    if param.get('dpts', []):
+        _check_dpts_list(param['dpts'])
 
     if param.get('has_validated_offerer', None):
         _check_has_validated_offerer_param(param['has_validated_offerer'])
@@ -56,11 +56,11 @@ def check_get_venues_params(param: {}) -> bool:
 
 
 def check_get_offerers_params(param: {}) -> bool:
-    if param.get('siren_list', None):
-        _check_siren_list(param['siren_list'])
+    if param.get('sirens', None):
+        _check_sirens(param['sirens'])
 
-    if param.get('dpt', None):
-        _check_dpt_list(param['dpt'])
+    if param.get('dpts', None):
+        _check_dpts_list(param['dpts'])
 
     if param.get('zip_codes', None):
         _check_zip_codes_list(param['zip_codes'])
@@ -112,31 +112,31 @@ def _check_date_format(date: str) -> bool:
     raise api_errors
 
 
-def _check_siren_list(siren_list:  []) -> bool:
-    if not type(siren_list) == []:
+def _check_sirens(sirens:  []) -> bool:
+    if not type(sirens) == []:
         api_errors = ApiErrors()
-        api_errors.addError('siren_list', 
-            'siren_list is a list of 9 digits : ["123456789", "789654123"]')
-    for siren in siren_list:
+        api_errors.addError('sirens', 
+            'sirens is a list of 9 digits : ["123456789", "789654123"]')
+    for siren in sirens:
         if not re.search(r'^(\d){9}$', siren):
             api_errors = ApiErrors()
-            api_errors.addError('siren_list', 
-            'siren_list is a list of 9 digits : ["123456789", "789654123"]')    
+            api_errors.addError('sirens', 
+            'sirens is a list of 9 digits : ["123456789", "789654123"]')    
             raise api_errors
     return True
 
 
-def _check_dpt_list(dpt_list:  []) -> bool:
-    if not type(dpt_list) == []:
+def _check_dpts_list(dpts_list:  []) -> bool:
+    if not type(dpts_list) == []:
         api_errors = ApiErrors()
-        api_errors.addError('dpt', 
-            'dpt is a list of type xx or xxx (2 or 3 digits), or 2A, or 2B :\
+        api_errors.addError('dpts', 
+            'dpts is a list of type xx or xxx (2 or 3 digits), or 2A, or 2B :\
             ["34", "37"]')        
-    for dpt in dpt_list:
-       if not re.search(r'^(\d){2}$|^2{1}(a|b|A|B)$|^(\d){3}$', dpt):
+    for dpts in dpts_list:
+       if not re.search(r'^(\d){2}$|^2{1}(a|b|A|B)$|^(\d){3}$', dpts):
             api_errors = ApiErrors()
-            api_errors.addError('dpt', 
-                'dpt is a list of type xx or xxx (2 or 3 digits), or 2A, or 2B :\
+            api_errors.addError('dpts', 
+                'dpts is a list of type xx or xxx (2 or 3 digits), or 2A, or 2B :\
                 ["34", "37"]')
             raise api_errors
     return True

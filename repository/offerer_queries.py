@@ -77,8 +77,8 @@ def find_first_by_user_offerer_id(user_offerer_id):
     return Offerer.query.join(UserOfferer).filter_by(id=user_offerer_id).first()
 
 
-def find_filtered_offerers(siren_list=None,
-                           dpt=None,
+def find_filtered_offerers(sirens=None,
+                           dpts=None,
                            zip_codes=None,
                            from_date=None,
                            to_date=None,
@@ -94,11 +94,11 @@ def find_filtered_offerers(siren_list=None,
                            has_validated_user_offerer=None):
     
     query = db.session.query(Offerer)
-    if siren_list is not None:
-        query = _filter_by_siren_list(query, siren_list)
+    if sirens is not None:
+        query = _filter_by_sirens(query, sirens)
 
-    if dpt is not None:
-        query = _filter_by_dpt(query, dpt)
+    if dpts is not None:
+        query = _filter_by_dpts(query, dpts)
     
     if zip_codes is not None:
         query = _filter_by_zip_codes(query, zip_codes)
@@ -149,34 +149,34 @@ def find_filtered_offerers(siren_list=None,
     return result
 
 
-def _filter_by_siren_list(query, siren_list):
-    return query.filter(Offerer.siren.in_(siren_list))
+def _filter_by_sirens(query, sirens):
+    return query.filter(Offerer.siren.in_(sirens))
  
 
-def _filter_by_dpt(query, dpt):
-    dpt_filter = _create_filter_from_dpt_list(dpt)
+def _filter_by_dpts(query, dpts):
+    dpts_filter = _create_filter_from_dpts_list(dpts)
 
-    query = query.filter(dpt_filter)
+    query = query.filter(dpts_filter)
     return query
 
 
-def  _create_filter_from_dpt_list(dpt): 
-    previous_dpt_filter = None
-    dpt_filter = None
-    final_dpt_filter = None
+def  _create_filter_from_dpts_list(dpts): 
+    previous_dpts_filter = None
+    dpts_filter = None
+    final_dpts_filter = None
 
-    for d in dpt:
-        if dpt_filter is not None:
-            previous_dpt_filter = dpt_filter
-            if final_dpt_filter is not None:
-                previous_dpt_filter = final_dpt_filter
+    for dpt in dpts:
+        if dpts_filter is not None:
+            previous_dpts_filter = dpts_filter
+            if final_dpts_filter is not None:
+                previous_dpts_filter = final_dpts_filter
 
-        dpt_filter = Offerer.postalCode.like(d + '%')
+        dpts_filter = Offerer.postalCode.like(dpt + '%')
         
-        if previous_dpt_filter is not None:
-            final_dpt_filter = previous_dpt_filter | dpt_filter
+        if previous_dpts_filter is not None:
+            final_dpts_filter = previous_dpts_filter | dpts_filter
 
-    return final_dpt_filter
+    return final_dpts_filter
 
 
 def _filter_by_zip_codes(query, zip_codes):
