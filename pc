@@ -116,15 +116,15 @@ current_branch=${current_branch##refs/heads/}
 function update_deploy_branches {
     git fetch
     git checkout master
-    git pull origin master || exit_error_restoring_branch
+    git reset --hard origin/master || exit_error_restoring_branch
     git checkout staging
-    git pull origin staging || exit_error_restoring_branch
+    git reset --hard origin/staging || exit_error_restoring_branch
     git checkout demo
-    git pull origin demo || exit_error_restoring_branch
+    git reset --hard origin/demo || exit_error_restoring_branch
     git checkout integration
-    git pull origin integration || exit_error_restoring_branch
+    git reset --hard origin/integration || exit_error_restoring_branch
     git checkout production
-    git pull origin production || exit_error_restoring_branch
+    git reset --hard origin/production || exit_error_restoring_branch
 }
 
 function exit_error_restoring_branch {
@@ -292,13 +292,12 @@ elif [[ "$CMD" == "tag-version-backend" ]] \
      || [[ "$CMD" == "tag-version-pro" ]]; then
 
   if [[ "$CMD" == "tag-version-webapp"  ]]; then
-	APP_PATH="$ROOT_PATH"/webapp
+    APP_PATH="$ROOT_PATH"/webapp
   elif [[ "$CMD" == "tag-version-pro"  ]]; then
     APP_PATH="$ROOT_PATH"/pro
   else
-	APP_PATH="$ROOT_PATH"/api
+    APP_PATH="$ROOT_PATH"/api
   fi
-
   cd "$APP_PATH"
 
   if [[ "$TAG_NAME" ]]; then
