@@ -27,6 +27,7 @@ def _get_origin_header_whitelist():
     elif ENV == 'testing':
         valid_urls = [
             'https://app-passculture-testing.scalingo.io',
+            'https://passculture-team.netlify.com',
             'http://localhost:3000',
             'http://localhost',
             'https://localhost',
@@ -57,6 +58,7 @@ def _get_origin_header_whitelist_for_non_dev_environments(api_url):
     for url in url_variations:
         valid_urls.append(url.replace('backend', 'pro'))
         valid_urls.append(url.replace('backend', 'app'))
+        valid_urls.append(url.replace('backend', 'team'))
 
     return valid_urls
     
