@@ -28,9 +28,7 @@ const buildStoreEnhancer = (middlewares = []) => {
 // dans une function pour les tests unitaires
 export const configureStore = (initialState = {}) => {
   const sagaMiddleware = createSagaMiddleware()
-  // const storeReducers = buildStoreReducers()
   const store = createStore(
-    // storeReducers,
     rootReducer,
     initialState,
     buildStoreEnhancer([sagaMiddleware])
