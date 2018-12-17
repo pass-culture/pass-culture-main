@@ -10,8 +10,9 @@ from flask import render_template
 from lxml import etree
 
 from domain.reimbursement import BookingReimbursement
-from models.payment import Payment
+from models.payment import Payment, PaymentDetails
 from models.payment_status import TransactionStatus
+from repository.booking_queries import find_date_used
 
 
 class InvalidTransactionXML(Exception):
@@ -34,6 +35,7 @@ def create_payment_for_booking(booking_reimbursement: BookingReimbursement) -> P
     payment.booking = booking_reimbursement.booking
     payment.amount = booking_reimbursement.reimbursed_amount
     payment.reimbursementRule = booking_reimbursement.reimbursement.value.description
+    payment.reimbursementRate = booking_reimbursement.reimbursement.value.rate
     payment.author = 'batch'
     venue = booking_reimbursement.booking.stock.resolvedOffer.venue
 
@@ -92,6 +94,10 @@ def validate_transaction_file(transaction_file: str):
     xsd_schema.assertValid(xml_doc)
 
 
+def create_payment_details(payment: Payment, find_booking_date_used=find_date_used) -> PaymentDetails:
+    return PaymentDetails(payment, find_booking_date_used(payment.booking.id))
+
+
 def _group_payments_into_transactions(payments: List[Payment], message_id: str) -> List[Transaction]:
     payments_with_iban = sorted(filter(lambda x: x.iban, payments), key=lambda x: (x.iban, x.bic))
     payments_by_iban = itertools.groupby(payments_with_iban, lambda x: (x.iban, x.bic))
@@ -105,5 +111,7 @@ def _group_payments_into_transactions(payments: List[Payment], message_id: str) 
         for payment in payments_of_iban:
             payment.setTransactionIds(message_id, end_to_end_id)
 
-        transactions.append(Transaction(iban, bic, payments_of_iban[0].recipientName, payments_of_iban[0].recipientSiren, end_to_end_id, amount))
+        transactions.append(
+            Transaction(iban, bic, payments_of_iban[0].recipientName, payments_of_iban[0].recipientSiren, end_to_end_id,
+                        amount))
     return transactions

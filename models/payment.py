@@ -34,6 +34,8 @@ class Payment(PcObject, Model):
 
     reimbursementRule = Column(String(200), nullable=False)
 
+    reimbursementRate = Column(Numeric(10, 2), nullable=False)
+
     recipientName = Column(String(140), nullable=False)
 
     recipientSiren = Column(String(9), nullable=False)
@@ -53,7 +55,7 @@ class Payment(PcObject, Model):
 
     transactionEndToEndId = Column(UUID(as_uuid=True), nullable=True)
 
-    def setStatus(self, status: TransactionStatus, detail: str=None):
+    def setStatus(self, status: TransactionStatus, detail: str = None):
         payment_status = PaymentStatus()
         payment_status.status = status
         payment_status.date = datetime.utcnow()
@@ -71,3 +73,23 @@ class Payment(PcObject, Model):
     def nullifyTransactionIds(self):
         self.transactionMessageId = None
         self.transactionEndToEndId = None
+
+
+class PaymentDetails:
+    def __init__(self, payment: Payment, booking_used_date: datetime):
+        self.booking_user_id = payment.booking.user.id
+        self.booking_user_email = payment.booking.user.email
+        self.offerer_name = payment.booking.stock.resolvedOffer.venue.managingOfferer.name
+        self.offerer_siren = payment.booking.stock.resolvedOffer.venue.managingOfferer.siren
+        self.venue_name = payment.booking.stock.resolvedOffer.venue.name
+        self.venue_siret = payment.booking.stock.resolvedOffer.venue.siret
+        self.offer_name = payment.booking.stock.resolvedOffer.eventOrThing.name
+        self.offer_type = payment.booking.stock.resolvedOffer.eventOrThing.offerType['label']
+        self.booking_date = payment.booking.dateCreated
+        self.booking_amount = payment.booking.value
+        self.booking_used_date = booking_used_date
+        self.payment_iban = payment.iban
+        self.transaction_message_id = payment.transactionMessageId
+        self.transaction_end_to_end_id = payment.transactionEndToEndId
+        self.reimbursement_rate = payment.reimbursementRate
+        self.reimbursed_amount = payment.amount

@@ -2,6 +2,7 @@
 import random
 import string
 from datetime import datetime, timedelta, timezone
+from decimal import Decimal
 from glob import glob
 from inspect import isclass
 from unittest.mock import Mock
@@ -192,7 +193,7 @@ def req_with_auth(email=None, password=None, headers={'origin': 'http://localhos
 
 
 def create_booking(user, stock=None, venue=None, recommendation=None, quantity=1, date_created=datetime.utcnow(),
-                   is_cancelled=False, is_used=False, token=None):
+                   is_cancelled=False, is_used=False, token=None, idx=None):
     booking = Booking()
     if venue is None:
         offerer = create_offerer('987654321', 'Test address', 'Test city', '93000', 'Test name')
@@ -219,6 +220,7 @@ def create_booking(user, stock=None, venue=None, recommendation=None, quantity=1
         booking.recommendation = create_recommendation(stock.offer, user)
     booking.isCancelled = is_cancelled
     booking.isUsed = is_used
+    booking.id = idx
     return booking
 
 
@@ -262,7 +264,8 @@ def create_user(public_name='John Doe', first_name='John', last_name='Doe', post
                 email='john.doe@test.com', can_book_free_offers=True, password='totallysafepsswd',
                 validation_token=None, is_admin=False, reset_password_token=None,
                 reset_password_token_validity_limit=datetime.utcnow() + timedelta(hours=24),
-                date_created=datetime.utcnow(), phone_number='0612345678', date_of_birth=datetime(2001, 1, 1)):
+                date_created=datetime.utcnow(), phone_number='0612345678', date_of_birth=datetime(2001, 1, 1),
+                idx=None):
     user = User()
     user.publicName = public_name
     user.firstName = first_name
@@ -279,6 +282,7 @@ def create_user(public_name='John Doe', first_name='John', last_name='Doe', post
     user.dateCreated = date_created
     user.phoneNumber = phone_number
     user.dateOfBirth = date_of_birth
+    user.id = idx
     return user
 
 
@@ -340,11 +344,12 @@ def create_stock_from_offer(offer, price=10, available=10, soft_deleted=False, b
     return stock
 
 
-def create_stock(price=10, available=10, booking_limit_datetime=None):
+def create_stock(price=10, available=10, booking_limit_datetime=None, offer=None):
     stock = Stock()
     stock.price = price
     stock.available = available
     stock.bookingLimitDatetime = booking_limit_datetime
+    stock.offer = offer
     return stock
 
 
@@ -591,16 +596,29 @@ def create_mediation(offer, author=None, date_created=datetime.utcnow(), front_t
     return mediation
 
 
-def create_booking_activity(booking, table_name, verb, issued_at=datetime.utcnow):
+def create_booking_activity(booking, table_name, verb, issued_at=datetime.utcnow, data=None):
     Activity = versioning_manager.activity_cls
     activity = Activity()
     activity.issued_at = issued_at
     activity.table_name = table_name
     activity.verb = verb
-    variables = {"id": booking.id, "token": booking.token, "userId": booking.userId, "stockId": booking.stockId,
-                 "isCancelled": booking.isCancelled, "quantity": booking.quantity,
-                 "recommendationId": booking.recommendationId, "isUsed": booking.isUsed}
-    activity.changed_data = variables
+
+    base_data = {
+        "id": booking.id, "token": booking.token, "userId": booking.userId, "stockId": booking.stockId,
+        "isCancelled": booking.isCancelled, "quantity": booking.quantity,
+        "recommendationId": booking.recommendationId, "isUsed": booking.isUsed
+    }
+
+    if verb.lower() == 'insert':
+        activity.old_data = {}
+        activity.changed_data = base_data
+    elif verb.lower() == 'update':
+        activity.old_data = base_data
+        activity.changed_data = data
+    else:
+        activity.old_data = base_data
+        activity.changed_data = {}
+
     return activity
 
 
@@ -661,7 +679,11 @@ def create_mocked_bookings(num_bookings, venue_email, name='Offer name'):
     return bookings
 
 
-def create_payment(booking, offerer, amount, author='test author', reimbursement_rule='remboursement à 100%', idx=None):
+def create_payment(booking, offerer, amount, author='test author', reimbursement_rule='remboursement à 100%',
+                   reimbursement_rate=Decimal(0.5),
+                   transaction_message_id=None,
+                   transaction_end_ot_end_id=None,
+                   idx=None):
     payment = Payment()
     payment.booking = booking
     payment.amount = amount
@@ -674,6 +696,9 @@ def create_payment(booking, offerer, amount, author='test author', reimbursement
     payment_status.status = TransactionStatus.PENDING
     payment.statuses = [payment_status]
     payment.reimbursementRule = reimbursement_rule
+    payment.reimbursementRate = reimbursement_rate
+    payment.transactionMessageId = transaction_message_id
+    payment.transactionEndToEndId = transaction_end_ot_end_id
     payment.id = idx
     return payment
 

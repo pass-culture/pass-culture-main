@@ -5,7 +5,8 @@ import pytest
 
 from models import PcObject
 from repository.booking_queries import find_all_ongoing_bookings_by_stock, \
-    find_offerer_bookings, find_all_bookings_for_stock, find_all_bookings_for_event_occurrence, find_final_offerer_bookings
+    find_offerer_bookings, find_all_bookings_for_stock, find_all_bookings_for_event_occurrence, \
+    find_final_offerer_bookings, find_date_used
 from tests.conftest import clean_database
 from utils.test_utils import create_booking, \
     create_deposit, \
@@ -13,8 +14,8 @@ from utils.test_utils import create_booking, \
     create_stock_with_event_offer, \
     create_stock_with_thing_offer, \
     create_user, \
-    create_venue, create_stock_from_event_occurrence, create_event_occurrence, create_thing_offer, create_payment, \
-    create_event_offer
+    create_venue, create_stock_from_event_occurrence, create_event_occurrence, create_thing_offer, create_event_offer, \
+    create_booking_activity, save_all_activities
 
 
 @clean_database
@@ -226,3 +227,50 @@ def test_find_final_offerer_bookings_returns_only_bookings_on_events_older_than_
     # Then
     assert len(bookings) == 1
     assert booking1 in bookings
+
+
+@pytest.mark.standalone
+@clean_database
+def test_find_date_used_on_booking_returns_issued_date_of_matching_activity(app):
+    # given
+    user = create_user()
+    deposit = create_deposit(user, datetime.utcnow(), amount=500)
+    booking = create_booking(user)
+    PcObject.check_and_save(user, deposit, booking)
+
+    activity_insert = create_booking_activity(
+        booking, 'booking', 'insert', issued_at=datetime(2018, 1, 28)
+    )
+    activity_update = create_booking_activity(
+        booking, 'booking', 'update', issued_at=datetime(2018, 2, 12),
+        data={'isUsed': True}
+    )
+    save_all_activities(activity_insert, activity_update)
+
+    # when
+    date_used = find_date_used(booking)
+
+    # then
+    assert date_used == datetime(2018, 2, 12)
+
+
+@pytest.mark.standalone
+@clean_database
+def test_find_date_used_on_booking_returns_none_if_no_activity_with_is_used_changed_is_found(app):
+    # given
+    user = create_user()
+    deposit = create_deposit(user, datetime.utcnow(), amount=500)
+    booking = create_booking(user)
+    PcObject.check_and_save(user, deposit, booking)
+
+    activity_insert = create_booking_activity(
+        booking, 'booking', 'insert', issued_at=datetime(2018, 1, 28)
+    )
+
+    save_all_activities(activity_insert)
+
+    # when
+    date_used = find_date_used(booking)
+
+    # then
+    assert date_used is None

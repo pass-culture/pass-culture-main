@@ -1,8 +1,8 @@
 """ booking queries """
 from datetime import datetime, timedelta
 
-from flask import render_template
-from sqlalchemy import and_
+from postgresql_audit.flask import versioning_manager
+from sqlalchemy import and_, text
 from sqlalchemy.exc import InternalError
 from sqlalchemy.orm import aliased
 
@@ -17,7 +17,6 @@ from models import ApiErrors, \
     User, \
     Venue, Offerer
 from models.api_errors import ResourceNotFound
-from models.db import db
 from repository.search_queries import get_keywords_filter
 from utils.rest import query_with_order_by
 
@@ -139,3 +138,14 @@ def find_final_offerer_bookings(offerer_id):
         .filter(Booking.isCancelled == False) \
         .filter((Booking.isUsed == True) | booking_on_event_older_than_two_days) \
         .all()
+
+
+def find_date_used(booking: Booking) -> datetime:
+    Activity = versioning_manager.activity_cls
+    find_by_id_and_is_used = "table_name='booking' " \
+                             "AND verb='update' " \
+                             "AND cast(old_data->>'id' AS INT) = %s " \
+                             "AND cast(changed_data->>'isUsed' as boolean) = true" % booking.id
+
+    activity = Activity.query.filter(text(find_by_id_and_is_used)).first()
+    return activity.issued_at if activity else None
