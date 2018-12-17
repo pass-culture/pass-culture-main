@@ -3,16 +3,14 @@ from datetime import datetime
 
 from sqlalchemy import func
 
-from models import Event, \
-    EventOccurrence, \
-    Mediation, \
-    Offer, \
-    Recommendation, \
-    Stock, \
-    Thing, \
-    Venue
-from models.db import db
+from models import EventOccurrence, \
+                   Mediation, \
+                   Offer, \
+                   Recommendation, \
+                   Stock
+from models.pc_object import PcObject
 from utils.config import BLOB_SIZE
+from utils.human_ids import dehumanize
 
 
 def find_unseen_tutorials_for_user(seen_recommendation_ids, user):
@@ -66,7 +64,7 @@ def find_recommendations_for_user_matching_offers_and_search(user_id=None, offer
         query = query.filter(Recommendation.search == search)
 
     return query.all()
-    
+
 
 def filter_out_recommendation_on_soft_deleted_stocks():
     join_on_stocks = Recommendation.query \
@@ -98,3 +96,10 @@ def filter_unseen_valid_recommendations_for_user(query, user, seen_recommendatio
 
 def find_favored_recommendations_for_user(user):
     return Recommendation.query.filter_by(user=user, isFavorite=True).all()
+
+def update_read_recommendations(read_recommendations):
+    recommendations = []
+    for read_recommendation in read_recommendations:
+        recommendation = Recommendation.query.get(dehumanize(read_recommendation['id']))
+        recommendation.dateRead = read_recommendation['dateRead']
+    PcObject.check_and_save(*recommendations)

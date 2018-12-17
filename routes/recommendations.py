@@ -17,7 +17,8 @@ from repository.booking_queries import find_bookings_from_recommendation
 from repository.recommendation_queries import count_read_recommendations_for_user, \
                                               find_all_unread_recommendations, \
                                               find_all_read_recommendations, \
-                                              find_favored_recommendations_for_user
+                                              find_favored_recommendations_for_user, \
+                                              update_read_recommendations
 from utils.config import BLOB_SIZE, BLOB_READ_NUMBER, BLOB_UNREAD_NUMBER
 from utils.human_ids import dehumanize
 from utils.includes import BOOKING_INCLUDES, RECOMMENDATION_INCLUDES
@@ -53,7 +54,13 @@ def patch_recommendation(recommendationId):
 @login_required
 @expect_json_data
 def put_recommendations():
-    if 'seenRecommendationIds' in request.json.keys():
+
+    json_keys = request.json.keys()
+
+    if 'readRecommendations' in json_keys:
+        update_read_recommendations(request.json['readRecommendations'] or [])
+
+    if 'seenRecommendationIds' in json_keys:
         humanized_seen_recommendation_ids = request.json['seenRecommendationIds'] or []
         seen_recommendation_ids = list(map(dehumanize, humanized_seen_recommendation_ids))
     else:
