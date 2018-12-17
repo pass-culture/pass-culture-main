@@ -99,7 +99,12 @@ def find_favored_recommendations_for_user(user):
 
 def update_read_recommendations(read_recommendations):
     recommendations = []
-    for read_recommendation in read_recommendations:
-        recommendation = Recommendation.query.get(dehumanize(read_recommendation['id']))
-        recommendation.dateRead = read_recommendation['dateRead']
-    PcObject.check_and_save(*recommendations)
+    if read_recommendations:
+        for read_recommendation in read_recommendations:
+            dehumanize_id = dehumanize(read_recommendation['id'])
+            recommendation = Recommendation.query.get(dehumanize_id)
+            print("read_recommendation['dateRead']", read_recommendation['dateRead'])
+            recommendation.dateRead = read_recommendation['dateRead']
+            recommendations.append(recommendation)
+        PcObject.check_and_save(*recommendations)
+    return recommendations

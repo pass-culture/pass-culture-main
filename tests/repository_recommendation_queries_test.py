@@ -4,8 +4,10 @@ import pytest
 
 from models import PcObject, Recommendation
 from repository.recommendation_queries import filter_out_recommendation_on_soft_deleted_stocks, \
-    filter_unseen_valid_recommendations_for_user
+    filter_unseen_valid_recommendations_for_user, \
+    update_read_recommendations
 from tests.conftest import clean_database
+from utils.human_ids import humanize
 from utils.test_utils import create_recommendation, create_event_offer, create_offerer, \
     create_venue, create_user, create_stock_from_event_occurrence, create_event_occurrence, create_stock_from_offer, \
     create_thing_offer, create_mediation
@@ -42,7 +44,7 @@ def test_filter_out_recommendation_on_soft_deleted_stocks_returns_recos_with_at_
     assert recommendation1.id in recommendation_ids
     assert recommendation2.id not in recommendation_ids
     assert recommendation3.id in recommendation_ids
-    
+
 
 @pytest.mark.standalone
 @clean_database
@@ -74,3 +76,37 @@ def test_filter_unseen_valid_recommendations_for_user_only_keeps_non_tuto_recomm
     assert len(recommendations) == 2
     assert valid_recommendation in recommendations
     assert recommendation_with_no_validity_date in recommendations
+
+@pytest.mark.standalone
+@clean_database
+def test_update_read_recommendations(app):
+    # Given
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    offer = create_event_offer(venue)
+    user = create_user()
+    event_occurrence1 = create_event_occurrence(offer)
+    event_occurrence2 = create_event_occurrence(offer)
+    stock1 = create_stock_from_event_occurrence(event_occurrence1)
+    stock2 = create_stock_from_event_occurrence(event_occurrence2)
+    thing_offer1 = create_thing_offer(venue)
+    thing_offer2 = create_thing_offer(venue)
+    stock3 = create_stock_from_offer(thing_offer1)
+    stock4 = create_stock_from_offer(thing_offer2)
+    recommendation1 = create_recommendation(offer, user)
+    recommendation2 = create_recommendation(thing_offer1, user)
+    recommendation3 = create_recommendation(thing_offer2, user)
+    PcObject.check_and_save(stock1, stock2, stock3, stock4, recommendation1, recommendation2, recommendation3)
+
+    # When
+    reads = [
+        { "id": humanize(recommendation1.id), "dateRead": "2018-12-17T15:59:11.689Z" },
+        { "id": humanize(recommendation2.id), "dateRead": "2018-12-17T15:59:15.689Z" },
+        { "id": humanize(recommendation3.id), "dateRead": "2018-12-17T15:59:21.689Z" },
+    ]
+    recommendations = update_read_recommendations(reads)
+
+    # Then
+    assert recommendations[0].dateRead == datetime(2018, 12, 17, 15, 59, 11, 689000)
+    assert recommendations[1].dateRead == datetime(2018, 12, 17, 15, 59, 15, 689000)
+    assert recommendations[2].dateRead == datetime(2018, 12, 17, 15, 59, 21, 689000)

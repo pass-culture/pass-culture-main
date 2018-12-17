@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 import pytest
 
 from models import PcObject
+from models.mediation import upsertTutoMediations
 from tests.conftest import clean_database
 from utils.human_ids import humanize
 from utils.test_utils import API_URL, \
@@ -782,3 +783,88 @@ def test_put_recommendations_returns_new_recommendation_with_active_mediation_fo
     mediation_ids = list(map(lambda x: x['mediationId'], json))
     assert humanize(active_mediation.id) in mediation_ids
     assert humanize(inactive_mediation.id) not in mediation_ids
+
+@clean_database
+@pytest.mark.standalone
+def test_put_recommendations_updates_read_recommendations(app):
+    # given
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    offer = create_event_offer(venue)
+    user = create_user()
+    event_occurrence1 = create_event_occurrence(offer)
+    event_occurrence2 = create_event_occurrence(offer)
+    stock1 = create_stock_from_event_occurrence(event_occurrence1)
+    stock2 = create_stock_from_event_occurrence(event_occurrence2)
+    thing_offer1 = create_thing_offer(venue)
+    thing_offer2 = create_thing_offer(venue)
+    stock3 = create_stock_from_offer(thing_offer1)
+    stock4 = create_stock_from_offer(thing_offer2)
+    recommendation1 = create_recommendation(offer, user)
+    recommendation2 = create_recommendation(thing_offer1, user)
+    recommendation3 = create_recommendation(thing_offer2, user)
+    PcObject.check_and_save(stock1, stock2, stock3, stock4, recommendation1, recommendation2, recommendation3)
+
+    auth_request = req_with_auth(user.email, user.clearTextPassword)
+
+    reads = [
+        { "id": humanize(recommendation1.id), "dateRead": "2018-12-17T15:59:11.689000Z" },
+        { "id": humanize(recommendation2.id), "dateRead": "2018-12-17T15:59:15.689000Z" },
+        { "id": humanize(recommendation3.id), "dateRead": "2018-12-17T15:59:21.689000Z" },
+    ]
+    data = {'readRecommendations': reads}
+    # when
+    response = auth_request.put(RECOMMENDATION_URL, json=data)
+
+    # then
+    assert response.status_code == 200
+    previous_date_reads = set([r['dateRead'] for r in reads])
+    next_date_reads = set([r['dateRead'] for r in response.json()])
+    assert previous_date_reads.issubset(next_date_reads)
+
+@clean_database
+@pytest.mark.standalone
+def test_put_recommendations_with_read_tuto_recommendations_returns_recommendations_without_tutos(app):
+    # given
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    offer = create_event_offer(venue)
+    user = create_user()
+    event_occurrence1 = create_event_occurrence(offer)
+    event_occurrence2 = create_event_occurrence(offer)
+    stock1 = create_stock_from_event_occurrence(event_occurrence1)
+    stock2 = create_stock_from_event_occurrence(event_occurrence2)
+    thing_offer1 = create_thing_offer(venue)
+    thing_offer2 = create_thing_offer(venue)
+    stock3 = create_stock_from_offer(thing_offer1)
+    stock4 = create_stock_from_offer(thing_offer2)
+    PcObject.check_and_save(stock1, stock2, stock3, stock4, user)
+    upsertTutoMediations()
+
+    # first when
+    auth_request = req_with_auth(user.email, user.clearTextPassword)
+    response = auth_request.put(RECOMMENDATION_URL, json={})
+
+    # first then
+    assert response.status_code == 200
+    first_recommendations = response.json()
+    assert first_recommendations[0]['mediation']['tutoIndex'] == 0
+    assert first_recommendations[1]['mediation']['tutoIndex'] == 1
+
+    # when
+    reads = [
+        { "id": first_recommendations[0]['id'], "dateRead": "2018-12-17T15:59:11.689Z" },
+        { "id": first_recommendations[1]['id'], "dateRead": "2018-12-17T15:59:15.689Z" }
+    ]
+    first_recommendation_ids = [r['id'] for r in first_recommendations]
+    data = {
+        'readRecommendations': reads
+    }
+    response = auth_request.put(RECOMMENDATION_URL, json=data)
+
+    # second then
+    assert response.status_code == 200
+    second_recommendations = response.json()
+    second_recommendation_ids = [r['id'] for r in second_recommendations]
+    assert first_recommendations[0]['id'] not in second_recommendation_ids
+    assert first_recommendations[1]['id'] not in second_recommendation_ids
