@@ -1,6 +1,6 @@
 import get from 'lodash.get'
 import moment from 'moment'
-import { Logger, Icon, requestData } from 'pass-culture-shared'
+import { mergeData, Logger, Icon, requestData } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import Draggable from 'react-draggable'
 import React, { Component } from 'react'
@@ -80,9 +80,16 @@ class Deck extends Component {
   }
 
   handleGoNext = () => {
-    const { history, isFlipped, nextRecommendation } = this.props
+    const {
+      currentRecommendation,
+      dispatch,
+      history,
+      isFlipped,
+      nextRecommendation,
+    } = this.props
     if (!nextRecommendation || isFlipped) return
     const { offerId, mediationId } = nextRecommendation
+    dispatch(mergeData({ seenRecommendations: [currentRecommendation] }))
     history.push(`/decouverte/${offerId || 'tuto'}/${mediationId || ''}`)
     this.handleRefreshNext()
   }

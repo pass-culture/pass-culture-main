@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types'
 import {
+  assignData,
   closeLoading,
   requestData,
   showLoading,
@@ -53,11 +54,14 @@ export class RawDiscoveryPage extends React.PureComponent {
   }
 
   handleRequestSuccess = (state, action) => {
-    const { history, match } = this.props
+    const { dispatch, history, match } = this.props
     const { offerId, mediationId } = match.params
     const len = get(action, 'data.length')
     const isempty = !(len && len > 0)
+    // loading
     this.setState({ isempty, isloading: false })
+    // clear the cache of seen cards
+    dispatch(assignData({ seenRecommendations: [] }))
     // NOTE -> on recharge pas la page
     // si l'URL contient déjà une offer et une mediation
     // car il s'agit alors d'une URL partagée
@@ -77,17 +81,19 @@ export class RawDiscoveryPage extends React.PureComponent {
   }
 
   handleDataRequest = () => {
-    const { match } = this.props
+    const { match, seenRecommendations } = this.props
+    const seenRecommendationIds =
+      seenRecommendations &&
+      seenRecommendations.map(seenRecommendation => seenRecommendation.id)
     this.setState({ isloading: true })
     // recupere les arguments depuis l'URL
     // l'API renvoi cette première carte avant les autres recommendations
-    const query = getQueryParams(match)
-    const serviceuri = `recommendations?${query}`
+    const queryString = getQueryParams(match, seenRecommendations)
+    const serviceuri = `recommendations?${queryString}`
     this.actions.requestData('PUT', serviceuri, {
+      body: { seenRecommendationIds },
       handleFail: this.handleRequestFail,
       handleSuccess: this.handleRequestSuccess,
-      // replace all the recommendations by the new ones ? as we want
-      // isMergingArray: false,
       normalizer: recommendationNormalizer,
     })
   }
@@ -141,6 +147,7 @@ RawDiscoveryPage.propTypes = {
 
 const mapStateToProps = (state, ownProps) => ({
   backButton: ownProps.location.search.indexOf('to=verso') > -1,
+  seenRecommendations: state.data.seenRecommendations,
 })
 
 const DiscoveryPage = compose(
