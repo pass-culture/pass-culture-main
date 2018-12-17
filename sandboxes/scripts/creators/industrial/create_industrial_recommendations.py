@@ -1,3 +1,4 @@
+from models.mediation import Mediation
 from models.offer_type import EventType
 from models.pc_object import PcObject
 from utils.logger import logger
@@ -8,6 +9,11 @@ def create_industrial_recommendations(mediations_by_name, offers_by_name, users_
 
     recommendations_by_name = {}
 
+
+    first_mediation = Mediation.query.filter_by(tutoIndex=0).one()
+    second_mediation = Mediation.query.filter_by(tutoIndex=1).one()
+    tuto_mediations = [first_mediation, second_mediation]
+
     activation_mediation_items = [
         mediation_item
         for mediation_item in mediations_by_name.items()
@@ -16,13 +22,24 @@ def create_industrial_recommendations(mediations_by_name, offers_by_name, users_
 
     for (user_name, user) in users_by_name.items():
 
-        user_should_not_have_yet_recommendations_in_its_user_story = \
+        user_has_no_recommendation = \
             user.firstName != "PC Test Jeune" or \
-            "has-signed-up" in user_name or \
-            "has-confirmed-activation" in user_name
+            "has-signed-up" in user_name
 
-        if user_should_not_have_yet_recommendations_in_its_user_story:
+        if user_has_no_recommendation:
             continue
+
+        for (tuto_index, tuto_mediation) in enumerate(tuto_mediations):
+            recommendation_name = 'Tuto {} / {}'.format(
+                tuto_index,
+                user_name
+            )
+            recommendations_by_name[recommendation_name] = \
+                create_recommendation(
+                    date_read="2018-12-17T15:59:11.689Z",
+                    mediation=tuto_mediation,
+                    user=user
+                )
 
         (mediation_name, mediation) = activation_mediation_items[0]
         recommendation_name = '{} / {}'.format(
@@ -31,6 +48,7 @@ def create_industrial_recommendations(mediations_by_name, offers_by_name, users_
         )
         recommendations_by_name[recommendation_name] = \
             create_recommendation(
+                is_clicked=True,
                 mediation=mediation,
                 offer=mediation.offer,
                 user=user

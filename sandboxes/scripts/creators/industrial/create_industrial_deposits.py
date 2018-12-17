@@ -9,9 +9,11 @@ def create_industrial_deposits(users_by_name):
 
     for (user_name, user) in users_by_name.items():
 
-        if user.firstName != "PC Test Jeune" or\
+        user_has_no_deposit = user.firstName != "PC Test Jeune" or\
            "has-signed-up" in user_name or\
-           "has-confirmed-activation" in user_name:
+           "has-booked-activation" in user_name
+
+        if user_has_no_deposit:
             continue
 
         deposits_by_name['{} / public / 500'.format(user_name)] = create_deposit(

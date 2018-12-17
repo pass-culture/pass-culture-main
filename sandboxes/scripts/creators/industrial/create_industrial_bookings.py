@@ -17,11 +17,15 @@ def create_industrial_bookings(recommendations_by_name, stocks_by_name):
         offer = recommendation.offer
         user = recommendation.user
 
-        user_has_not_yet_bookings = \
+        not_bookable_recommendation = offer is None
+        if not_bookable_recommendation:
+            continue
+
+        user_has_no_booking = \
             user.firstName != "PC Test Jeune" or \
             "has-signed-up" in user.email
 
-        if user_has_not_yet_bookings:
+        if user_has_no_booking:
             continue
 
         user_has_only_activation_booked = \

@@ -74,6 +74,16 @@ def create_handmade_users():
     # JEUNES
     ######################################
 
+    users_by_name['jeune93 has-signed-up'] = create_user(
+        departement_code="93",
+        email="pctest.jeune93.has-signed-up@btmx.fr",
+        first_name="PC Test Jeune",
+        last_name="93 HSU",
+        password="pctest.Jeune93.has-signed-up",
+        postal_code="93100",
+        public_name="PC Test Jeune93 HSU"
+    )
+
     users_by_name['jeune93 has-booked-some'] = create_user(
         departement_code="93",
         email="pctest.jeune93.has-booked-some@btmx.fr",
