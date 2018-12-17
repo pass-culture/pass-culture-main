@@ -26,9 +26,9 @@ export const adminUser0 = {
 }
 
 export const validatedOffererUser = {
-  email: 'pctest.pro93.0@btmx.fr',
+  email: 'pctest.pro93.has-validated-unregistered-offerer@btmx.fr',
   firstName: 'PC Test',
-  lastName: '93 0',
-  password: 'pctest.Pro93.0',
-  publicName: 'PC Test Pro93 0',
+  lastName: '93 HVUO',
+  password: 'pctest.Pro93.has-validated-unregistered-offerer',
+  publicName: 'PC Test Pro93 HVUO',
 }
