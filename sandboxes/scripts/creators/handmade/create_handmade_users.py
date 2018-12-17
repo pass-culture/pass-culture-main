@@ -42,10 +42,10 @@ def create_handmade_users():
 
     users_by_name['pro93 has-validated-unregistered-offerer'] = create_user(
         departement_code="93",
-        email="pctest.pro93.pro93 has-validated-unregistered-offerer@btmx.fr",
+        email="pctest.pro93.has-validated-unregistered-offerer@btmx.fr",
         first_name="PC Test Pro",
         last_name="93 HVUO",
-        password="pctest.Pro93.pro93 has-validated-unregistered-offerer",
+        password="pctest.Pro93.has-validated-unregistered-offerer",
         postal_code="93100",
         public_name="PC Test Pro93 HVUO"
     )
