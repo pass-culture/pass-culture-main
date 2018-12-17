@@ -1,6 +1,6 @@
 import get from 'lodash.get'
 import moment from 'moment'
-import { mergeData, Logger, Icon, requestData } from 'pass-culture-shared'
+import { mergeData, Logger, Icon } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import Draggable from 'react-draggable'
 import React, { Component } from 'react'
@@ -31,7 +31,6 @@ class Deck extends Component {
     if (!recommendations || !currentRecommendation) {
       // this.handleRefreshedData()
     }
-    // this.handleSetDateRead()
   }
 
   componentDidUpdate(previousProps) {
@@ -80,16 +79,10 @@ class Deck extends Component {
   }
 
   handleGoNext = () => {
-    const {
-      currentRecommendation,
-      dispatch,
-      history,
-      isFlipped,
-      nextRecommendation,
-    } = this.props
+    const { history, isFlipped, nextRecommendation } = this.props
     if (!nextRecommendation || isFlipped) return
     const { offerId, mediationId } = nextRecommendation
-    dispatch(mergeData({ seenRecommendations: [currentRecommendation] }))
+    this.handleReadRecommendation()
     history.push(`/decouverte/${offerId || 'tuto'}/${mediationId || ''}`)
     this.handleRefreshNext()
   }
@@ -100,6 +93,14 @@ class Deck extends Component {
     const { offerId, mediationId } = previousRecommendation
     history.push(`/decouverte/${offerId || 'tuto'}/${mediationId || ''}`)
     this.handleRefreshPrevious()
+  }
+
+  handleReadRecommendation = () => {
+    const { currentRecommendation, dispatch } = this.props
+    const readRecommendation = Object.assign({}, currentRecommendation, {
+      dateRead: moment.utc().toISOString(),
+    })
+    dispatch(mergeData({ readRecommendations: [readRecommendation] }))
   }
 
   handleRefreshPrevious = () => {
@@ -132,68 +133,6 @@ class Deck extends Component {
     this.setState(previousState => ({
       refreshKey: previousState.refreshKey + 1,
     }))
-  }
-
-  handleSetDateRead = prevProps => {
-    const {
-      currentRecommendation,
-      dispatch,
-      isFlipped,
-      readTimeout,
-    } = this.props
-    const { isRead } = this.state
-
-    const isSameReco =
-      !currentRecommendation ||
-      (prevProps &&
-        prevProps.currentRecommendation &&
-        currentRecommendation &&
-        prevProps.currentRecommendation.id === currentRecommendation.id)
-    // we don't need to go further if we are still on the same reco
-    if (isSameReco) return
-
-    const isCurrentReco =
-      this.currentReadRecommendationId !== currentRecommendation.id
-    // we need to delete the readTimeout in the case
-    // where we were on a previous reco
-    // and we just swipe to another before triggering the end of the readTimeout
-    if (isCurrentReco) {
-      clearTimeout(this.readTimeout)
-      delete this.readTimeout
-    }
-
-    // if the reco is not read yet
-    // we trigger a timeout in the end of which
-    // we will request a dateRead Patch if we are still
-    // on the same reco
-    if (!this.readTimeout && !isFlipped && !currentRecommendation.dateRead) {
-      // this.setState({ isRead: false })
-      this.currentReadRecommendationId = currentRecommendation.id
-      this.readTimeout = setTimeout(() => {
-        if (currentRecommendation && !currentRecommendation.dateRead) {
-          dispatch(
-            requestData(
-              'PATCH',
-              `recommendations/${currentRecommendation.id}`,
-              {
-                body: {
-                  dateRead: moment().toISOString(),
-                },
-              }
-            )
-          )
-          // this.setState({ isRead: true })
-          clearTimeout(this.readTimeout)
-          delete this.readTimeout
-        }
-      }, readTimeout)
-    } else if (
-      !isRead &&
-      currentRecommendation &&
-      currentRecommendation.dateRead
-    ) {
-      // this.setState({ isRead: true })
-    }
   }
 
   handleFlip = () => {
@@ -306,13 +245,10 @@ class Deck extends Component {
 
 Deck.defaultProps = {
   currentRecommendation: null,
-  // flipRatio: 0.25,
   horizontalSlideRatio: 0.2,
   nextRecommendation: null,
   previousRecommendation: null,
-  readTimeout: 2000,
   verticalSlideRatio: 0.1,
-  // noDataTimeout: 20000,
 }
 
 Deck.propTypes = {
@@ -328,10 +264,6 @@ Deck.propTypes = {
   nextRecommendation: PropTypes.object,
   previousLimit: PropTypes.number.isRequired,
   previousRecommendation: PropTypes.object,
-  // flipRatio: PropTypes.number,
-  // isDebug: PropTypes.bool,
-  // noDataTimeout: PropTypes.number,
-  readTimeout: PropTypes.number,
   recommendations: PropTypes.array.isRequired,
   unFlippable: PropTypes.bool.isRequired,
   verticalSlideRatio: PropTypes.number,

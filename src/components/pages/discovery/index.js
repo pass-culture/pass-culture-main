@@ -61,7 +61,7 @@ export class RawDiscoveryPage extends React.PureComponent {
     // loading
     this.setState({ isempty, isloading: false })
     // clear the cache of seen cards
-    dispatch(assignData({ seenRecommendations: [] }))
+    dispatch(assignData({ readRecommendations: [] }))
     // NOTE -> on recharge pas la page
     // si l'URL contient déjà une offer et une mediation
     // car il s'agit alors d'une URL partagée
@@ -81,17 +81,20 @@ export class RawDiscoveryPage extends React.PureComponent {
   }
 
   handleDataRequest = () => {
-    const { match, seenRecommendations } = this.props
+    const { match, readRecommendations, recommendations } = this.props
     const seenRecommendationIds =
-      seenRecommendations &&
-      seenRecommendations.map(seenRecommendation => seenRecommendation.id)
+      recommendations &&
+      recommendations.map(seenRecommendation => seenRecommendation.id)
     this.setState({ isloading: true })
     // recupere les arguments depuis l'URL
     // l'API renvoi cette première carte avant les autres recommendations
-    const queryString = getQueryParams(match, seenRecommendations)
+    const queryString = getQueryParams(match, readRecommendations)
     const serviceuri = `recommendations?${queryString}`
     this.actions.requestData('PUT', serviceuri, {
-      body: { seenRecommendationIds },
+      body: {
+        readRecommendations,
+        seenRecommendationIds,
+      },
       handleFail: this.handleRequestFail,
       handleSuccess: this.handleRequestSuccess,
       normalizer: recommendationNormalizer,
@@ -147,7 +150,8 @@ RawDiscoveryPage.propTypes = {
 
 const mapStateToProps = (state, ownProps) => ({
   backButton: ownProps.location.search.indexOf('to=verso') > -1,
-  seenRecommendations: state.data.seenRecommendations,
+  readRecommendations: state.data.readRecommendations,
+  recommendations: state.data.recommendations,
 })
 
 const DiscoveryPage = compose(

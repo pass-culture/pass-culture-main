@@ -5,13 +5,13 @@ import storage from 'redux-persist/lib/storage'
 const dataPersistConfig = {
   key: 'passculture-webapp-data',
   storage,
-  whitelist: ['seenRecommendations'],
+  whitelist: ['readRecommendations'],
 }
 
 const dataReducer = createData({
   bookings: [],
+  readRecommendations: [],
   recommendations: [],
-  seenRecommendations: [],
   types: [],
   users: [],
 })
