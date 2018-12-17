@@ -126,7 +126,7 @@ class BookingItem extends Component {
     } = this.props
     const {
       amount,
-      dateModified,
+      dateCreated,
       isCancelled,
       isUsed,
       reimbursed_amount,
@@ -167,7 +167,7 @@ class BookingItem extends Component {
           </td>
         </tr>
         <tr className="offer-item first-col">
-          <td>{moment(dateModified).format('D/MM/YY')}</td>
+          <td>{moment(dateCreated).format('D/MM/YY')}</td>
           <td>{offerTypeLabel}</td>
           <td>{offererName}</td>
           <td>{venueName}</td>
