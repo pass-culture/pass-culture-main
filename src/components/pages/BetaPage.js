@@ -24,15 +24,15 @@ const BetaPage = () => (
     </main>
     <footer role="navigation" className="pc-footer flex-columns flex-end">
       <Link
-        id="beta-inscription-link"
-        to="/inscription"
+        id="beta-connexion-link"
+        to="/connexion"
         className="flex-center items-center"
       >
         <span className="fs32 is-italic is-semi-bold">C&apos;est par là</span>
         <span
           aria-hidden="true"
           className="pc-icon icon-legacy-next-long"
-          title="C&apos;est par là"
+          title="C'est par là"
         />
       </Link>
     </footer>

@@ -11,13 +11,6 @@ import FormHeader from './FormHeader'
 import { FormFooter } from '../../forms'
 import { parseSubmitErrors } from '../../forms/utils'
 
-const cancelButtonOptions = {
-  className: 'is-white-text',
-  id: 'signin-signup-button',
-  label: 'Créer un compte',
-  url: '/inscription',
-}
-
 const submitButtonOptions = {
   className: 'is-bold is-white-text',
   id: 'signin-submit-button',
@@ -99,7 +92,7 @@ class Signin extends React.PureComponent {
                   <FormInputs />
                 </div>
                 <FormFooter
-                  cancel={{ ...cancelButtonOptions, disabled: isloading }}
+                  cancel={false}
                   submit={{ ...submitButtonOptions, disabled: !canSubmit }}
                 />
               </form>

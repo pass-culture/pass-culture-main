@@ -66,11 +66,11 @@ describe('getMainMenuItems', () => {
     // when
     const result = getMainMenuItems(routes)
     const expected = [
-      null,
-      null,
-      null,
-      null,
-      null,
+      null, // redirect
+      null, // BetaPage
+      null, // Signin/Connexion
+      null, // Signup/Inscription
+      null, // ForgotPasswordPage
       {
         component: DiscoveryPage,
         disabled: false,

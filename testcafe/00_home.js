@@ -12,9 +12,9 @@ test('Je suis redirigé·e  vers /beta', async t => {
   await t.expect(location.pathname).eql('/beta')
 })
 
-test('Lorsque je clique sur la flêche, je suis redirigé·e  vers la page /inscription', async t => {
-  const button = Selector('#beta-inscription-link')
+test('Lorsque je clique sur la flêche, je suis redirigé·e  vers la page /connexion', async t => {
+  const button = Selector('#beta-connexion-link')
   await t.click(button).wait(1000)
   const location = await t.eval(() => window.location)
-  await t.expect(location.pathname).eql('/inscription')
+  await t.expect(location.pathname).eql('/connexion')
 })

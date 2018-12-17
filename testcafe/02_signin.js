@@ -13,17 +13,17 @@ const userIdentifier = Selector(userId)
 const passwordError = Selector(`${passId}-error`).find(errorClass)
 const identifierErrors = Selector(`${userId}-error`).find(errorClass)
 const signInButton = Selector('#signin-submit-button')
-const signUpButton = Selector('#signin-signup-button')
+// const signUpButton = Selector('#signin-signup-button')
 
 fixture("02_01 SignInPage Component | J'ai un compte et je me connecte").page(
   `${ROOT_PATH}connexion`
 )
 
-test('Je peux cliquer sur lien /inscription', async t => {
-  await t.click(signUpButton)
-  const location = await t.eval(() => window.location)
-  await t.expect(location.pathname).eql('/inscription')
-})
+// test('Je peux cliquer sur lien /inscription', async t => {
+//   await t.click(signUpButton)
+//   const location = await t.eval(() => window.location)
+//   await t.expect(location.pathname).eql('/inscription')
+// })
 
 test("Lorsque l'un des deux champs est manquant, le bouton connexion est désactivé", async t => {
   await t
