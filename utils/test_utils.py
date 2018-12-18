@@ -28,9 +28,10 @@ from models import Booking, \
     User, \
     UserOfferer, \
     Venue
+from models.db import db
+from models.payment import PaymentDetails
 from models.payment_status import PaymentStatus, TransactionStatus
 from models.pc_object import PcObject
-from models.db import db
 from utils.object_storage import STORAGE_DIR
 from utils.token import random_token
 
@@ -701,6 +702,44 @@ def create_payment(booking, offerer, amount, author='test author', reimbursement
     payment.transactionEndToEndId = transaction_end_ot_end_id
     payment.id = idx
     return payment
+
+
+def create_payment_details(
+        booking_user_id=1234,
+        booking_user_email='john.doe@test.com',
+        offerer_name='Les petites librairies',
+        offerer_siren='123456789',
+        venue_name='Vive les BDs',
+        venue_siret='12345678912345',
+        offer_name='Blake & Mortimer',
+        offer_type=ThingType.LIVRE_EDITION,
+        booking_date=datetime.utcnow() - timedelta(days=10),
+        booking_amount=15,
+        booking_used_date=datetime.utcnow() - timedelta(days=5),
+        payment_iban='FR7630001007941234567890185',
+        transaction_message_id='AZERTY123456',
+        transaction_end_to_end_id='QSDFGH56789',
+        reimbursement_rate=Decimal(0.5),
+        reimbursed_amount=Decimal(7.5)
+):
+    details = PaymentDetails()
+    details.booking_user_id = booking_user_id
+    details.booking_user_email = booking_user_email
+    details.offerer_name = offerer_name
+    details.offerer_siren = offerer_siren
+    details.venue_name = venue_name
+    details.venue_siret = venue_siret
+    details.offer_name = offer_name
+    details.offer_type = str(offer_type)
+    details.booking_date = booking_date
+    details.booking_amount = booking_amount
+    details.booking_used_date = booking_used_date
+    details.payment_iban = payment_iban
+    details.transaction_message_id = transaction_message_id
+    details.transaction_end_to_end_id = transaction_end_to_end_id
+    details.reimbursement_rate = reimbursement_rate
+    details.reimbursed_amount = reimbursed_amount
+    return details
 
 
 def saveCounts(app):

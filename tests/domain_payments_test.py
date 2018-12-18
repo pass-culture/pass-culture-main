@@ -5,7 +5,8 @@ from unittest.mock import Mock
 import pytest
 from freezegun import freeze_time
 
-from domain.payments import create_payment_for_booking, filter_out_already_paid_for_bookings, create_payment_details
+from domain.payments import create_payment_for_booking, filter_out_already_paid_for_bookings, create_payment_details, \
+    create_all_payments_details
 from domain.reimbursement import BookingReimbursement, ReimbursementRules
 from models import Offer, Venue, Booking
 from models.payment import Payment
@@ -288,3 +289,29 @@ class CreatePaymentDetailsTest:
         # then
         assert details.offer_name == 'Test Book'
         assert details.offer_type == 'Audiovisuel (Films sur supports physiques et VOD)'
+
+
+@pytest.mark.standalone
+class CreateAllPaymentsDetailsTest:
+    def test_returns_an_empty_list_if_no_payments_given(self):
+        # when
+        details = create_all_payments_details([], find_booking_date_used=Mock())
+
+        # then
+        assert details == []
+
+    def test_returns_as_much_payment_details_as_there_are_payments_given(self):
+        # given
+        offerer1, offerer2 = create_offerer(), create_offerer()
+        user1, user2 = create_user(), create_user()
+        payments = [
+            create_payment(create_booking(user1), offerer1, 10),
+            create_payment(create_booking(user1), offerer1, 20),
+            create_payment(create_booking(user2), offerer2, 30)
+        ]
+
+        # when
+        details = create_all_payments_details(payments, find_booking_date_used=Mock())
+
+        # then
+        assert len(details) == 3

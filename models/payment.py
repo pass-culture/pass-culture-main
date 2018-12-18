@@ -76,20 +76,60 @@ class Payment(PcObject, Model):
 
 
 class PaymentDetails:
-    def __init__(self, payment: Payment, booking_used_date: datetime):
-        self.booking_user_id = payment.booking.user.id
-        self.booking_user_email = payment.booking.user.email
-        self.offerer_name = payment.booking.stock.resolvedOffer.venue.managingOfferer.name
-        self.offerer_siren = payment.booking.stock.resolvedOffer.venue.managingOfferer.siren
-        self.venue_name = payment.booking.stock.resolvedOffer.venue.name
-        self.venue_siret = payment.booking.stock.resolvedOffer.venue.siret
-        self.offer_name = payment.booking.stock.resolvedOffer.eventOrThing.name
-        self.offer_type = payment.booking.stock.resolvedOffer.eventOrThing.offerType['label']
-        self.booking_date = payment.booking.dateCreated
-        self.booking_amount = payment.booking.value
-        self.booking_used_date = booking_used_date
-        self.payment_iban = payment.iban
-        self.transaction_message_id = payment.transactionMessageId
-        self.transaction_end_to_end_id = payment.transactionEndToEndId
-        self.reimbursement_rate = payment.reimbursementRate
-        self.reimbursed_amount = payment.amount
+    CSV_HEADER = [
+        "ID de l'utilisateur",
+        "Email de l'utlisateur",
+        "Raison social de la structure",
+        "SIREN",
+        "Raison sociale du lieu",
+        "SIRET",
+        "Nom de l'offre",
+        "Type de l'offre",
+        "Date de la réservation",
+        "Prix de la réservation",
+        "Date de validation",
+        "IBAN",
+        "Message ID",
+        "Transaction ID",
+        "Taux de remboursement",
+        "Montant remboursé à l'offreur",
+    ]
+
+    def __init__(self, payment: Payment = None, booking_used_date: datetime = None):
+        if payment is not None:
+            self.booking_user_id = payment.booking.user.id
+            self.booking_user_email = payment.booking.user.email
+            self.offerer_name = payment.booking.stock.resolvedOffer.venue.managingOfferer.name
+            self.offerer_siren = payment.booking.stock.resolvedOffer.venue.managingOfferer.siren
+            self.venue_name = payment.booking.stock.resolvedOffer.venue.name
+            self.venue_siret = payment.booking.stock.resolvedOffer.venue.siret
+            self.offer_name = payment.booking.stock.resolvedOffer.eventOrThing.name
+            self.offer_type = payment.booking.stock.resolvedOffer.eventOrThing.offerType['label']
+            self.booking_date = payment.booking.dateCreated
+            self.booking_amount = payment.booking.value
+            self.booking_used_date = booking_used_date
+            self.payment_iban = payment.iban
+            self.transaction_message_id = payment.transactionMessageId
+            self.transaction_end_to_end_id = payment.transactionEndToEndId
+            self.reimbursement_rate = payment.reimbursementRate
+            self.reimbursed_amount = payment.amount
+
+    def as_csv_row(self):
+        return [
+            str(self.booking_user_id),
+            self.booking_user_email,
+            self.offerer_name,
+            self.offerer_siren,
+            self.venue_name,
+            self.venue_siret,
+            self.offer_name,
+            self.offer_type,
+            str(self.booking_date),
+            str(self.booking_amount),
+            str(self.booking_used_date),
+            self.payment_iban,
+            self.transaction_message_id,
+            self.transaction_end_to_end_id,
+            str(self.reimbursement_rate),
+            str(self.reimbursed_amount)
+        ]

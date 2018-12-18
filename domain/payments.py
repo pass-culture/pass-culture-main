@@ -1,8 +1,9 @@
+import csv
 import itertools
 import uuid
 from datetime import datetime, timedelta
 from decimal import Decimal
-from io import BytesIO
+from io import BytesIO, StringIO
 from typing import List
 from uuid import UUID
 
@@ -94,8 +95,21 @@ def validate_transaction_file(transaction_file: str):
     xsd_schema.assertValid(xml_doc)
 
 
+def create_all_payments_details(payments: List[Payment], find_booking_date_used=find_date_used) -> List[PaymentDetails]:
+    return list(map(lambda p: create_payment_details(p, find_booking_date_used), payments))
+
+
 def create_payment_details(payment: Payment, find_booking_date_used=find_date_used) -> PaymentDetails:
     return PaymentDetails(payment, find_booking_date_used(payment.booking.id))
+
+
+def generate_payment_details_csv(payments_details: List[PaymentDetails]):
+    output = StringIO()
+    csv_lines = [details.as_csv_row() for details in payments_details]
+    writer = csv.writer(output, quoting=csv.QUOTE_NONNUMERIC)
+    writer.writerow(PaymentDetails.CSV_HEADER)
+    writer.writerows(csv_lines)
+    return output.getvalue()
 
 
 def _group_payments_into_transactions(payments: List[Payment], message_id: str) -> List[Transaction]:

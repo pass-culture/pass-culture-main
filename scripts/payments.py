@@ -11,7 +11,7 @@ from domain.payments import filter_out_already_paid_for_bookings, create_payment
     validate_transaction_file
 from domain.reimbursement import find_all_booking_reimbursement
 from models import Offerer, PcObject
-from models.payment import Payment
+from models.payment import Payment, PaymentDetails
 from models.payment_status import TransactionStatus
 from repository.booking_queries import find_final_offerer_bookings
 from utils.logger import logger
