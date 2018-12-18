@@ -227,7 +227,7 @@ def test_do_send_payments_does_not_update_payments_with_message_id_and_end_to_en
 @clean_database
 @mocked_mail
 @freeze_time('2018-10-15 09:21:34')
-def test_do_send_payment_details_(app):
+def test_do_send_payment_details_sends_a_csv_attachment(app):
     # given
     offerer1 = create_offerer(name='first offerer', iban='CF13QSDFGH456789', bic='QSDFGH8Z555', idx=1)
     user = create_user()
@@ -255,3 +255,17 @@ def test_do_send_payment_details_(app):
     app.mailjet_client.send.create.assert_called_once()
     args = app.mailjet_client.send.create.call_args
     assert len(args[1]['data']['Attachments']) == 1
+    assert args[1]['data']['Attachments'][0]['ContentType'] == 'text/csv'
+
+
+@pytest.mark.standalone
+@mocked_mail
+def test_do_send_payment_details_does_not_send_anything_if_recipients_are_missing(app):
+    # given
+    payments = []
+
+    # when
+    do_send_payment_details(payments, None)
+
+    # then
+    app.mailjet_client.send.create.assert_not_called()

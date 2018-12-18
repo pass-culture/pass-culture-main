@@ -17,10 +17,10 @@ from repository.booking_queries import find_final_offerer_bookings
 from utils.logger import logger
 from utils.mailing import MailServiceException
 
-PASS_CULTURE_IBAN = os.environ.get('PASS_CULTURE_IBAN')
-PASS_CULTURE_BIC = os.environ.get('PASS_CULTURE_BIC')
-PASS_CULTURE_REMITTANCE_CODE = os.environ.get('PASS_CULTURE_REMITTANCE_CODE')
-PASS_CULTURE_PAYMENTS_DETAILS_RECIPIENTS = os.environ.get('PASS_CULTURE_PAYMENTS_DETAILS_RECIPIENTS')
+PASS_CULTURE_IBAN = os.environ.get('PASS_CULTURE_IBAN', None)
+PASS_CULTURE_BIC = os.environ.get('PASS_CULTURE_BIC', None)
+PASS_CULTURE_REMITTANCE_CODE = os.environ.get('PASS_CULTURE_REMITTANCE_CODE', None)
+PASS_CULTURE_PAYMENTS_DETAILS_RECIPIENTS = os.environ.get('PASS_CULTURE_PAYMENTS_DETAILS_RECIPIENTS', None)
 
 
 def generate_and_send_payments():
@@ -81,9 +81,12 @@ def do_send_payments(payments: List[Payment], pass_culture_iban: str, pass_cultu
 
 
 def do_send_payment_details(payments: List[Payment], recipients: str) -> None:
-    details = create_all_payments_details(payments)
-    csv = generate_payment_details_csv(details)
-    try:
-        send_payment_details_email(csv, recipients, app.mailjet_client.send.create)
-    except MailServiceException as e:
-        logger.error('Error while sending payment details email to MailJet', e)
+    if not recipients:
+        logger.error('Missing PASS_CULTURE_PAYMENTS_DETAILS_RECIPIENTS in environment variables')
+    else:
+        details = create_all_payments_details(payments)
+        csv = generate_payment_details_csv(details)
+        try:
+            send_payment_details_email(csv, recipients, app.mailjet_client.send.create)
+        except MailServiceException as e:
+            logger.error('Error while sending payment details email to MailJet', e)

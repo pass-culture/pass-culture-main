@@ -129,7 +129,7 @@ class PaymentDetails:
             str(self.booking_used_date),
             self.payment_iban,
             self.transaction_message_id,
-            self.transaction_end_to_end_id,
+            str(self.transaction_end_to_end_id),
             str(self.reimbursement_rate),
             str(self.reimbursed_amount)
         ]

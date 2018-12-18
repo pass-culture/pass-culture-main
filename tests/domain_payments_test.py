@@ -1,3 +1,4 @@
+import uuid
 from datetime import datetime, timedelta
 from decimal import Decimal
 from unittest.mock import Mock
@@ -182,7 +183,11 @@ class CreatePaymentDetailsTest:
         user = create_user()
         booking = create_booking(user)
         offerer = create_offerer(iban='123456789')
-        payment = create_payment(booking, offerer, 35, transaction_message_id='1234', transaction_end_ot_end_id='5678')
+        payment = create_payment(
+            booking, offerer, 35,
+            transaction_message_id='1234',
+            transaction_end_ot_end_id=uuid.uuid4()
+        )
 
         # when
         details = create_payment_details(payment, find_booking_date_used=Mock())
@@ -190,7 +195,7 @@ class CreatePaymentDetailsTest:
         # then
         assert details.payment_iban == '123456789'
         assert details.transaction_message_id == '1234'
-        assert details.transaction_end_to_end_id == '5678'
+        assert details.transaction_end_to_end_id == payment.transactionEndToEndId
         assert details.reimbursed_amount == 35
         assert details.reimbursement_rate == 0.5
 

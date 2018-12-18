@@ -1,6 +1,7 @@
 """ test utils """
 import random
 import string
+import uuid
 from datetime import datetime, timedelta, timezone
 from decimal import Decimal
 from glob import glob
@@ -616,7 +617,7 @@ def create_booking_activity(booking, table_name, verb, issued_at=datetime.utcnow
     elif verb.lower() == 'update':
         activity.old_data = base_data
         activity.changed_data = data
-    else:
+    elif verb.lower() == 'delete':
         activity.old_data = base_data
         activity.changed_data = {}
 
@@ -718,7 +719,7 @@ def create_payment_details(
         booking_used_date=datetime.utcnow() - timedelta(days=5),
         payment_iban='FR7630001007941234567890185',
         transaction_message_id='AZERTY123456',
-        transaction_end_to_end_id='QSDFGH56789',
+        transaction_end_to_end_id=uuid.uuid4(),
         reimbursement_rate=Decimal(0.5),
         reimbursed_amount=Decimal(7.5)
 ):
