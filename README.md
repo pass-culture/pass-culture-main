@@ -125,8 +125,8 @@ pc -t X.Y.Z tag-version-pro
 pc -e staging -t X.Y.Z deploy-frontend-pro
 ```
 
-Lors du tag de version, vous devrez respecter le semantic versionning (https://semver.org/) : vN.x.0
-N est le numéro de l'itération et x un autoincrément qui démarre à 0 et est changé en cas de hotfix en cours d'itération.
+Lors du tag de version, vous devrez respecter le semantic versionning (https://semver.org/) : vX.Y.Z
+X est le numéro de l'itération et Y un autoincrément qui démarre à 0 et est changé en cas de hotfix en cours d'itération.
 
 Pour déployer en production ensuite :
 
@@ -166,6 +166,7 @@ pc -t X.Y.Z tag-version-backend
 pc -e staging -t X.Y.Z deploy-backend
 ```
 
+Avec vX.Y.Z, le tag de la version à déployer.
 Ensuite pour mettre en production le tag qui a été déployé sur l'environnement staging :
 
 ```bash
