@@ -107,6 +107,6 @@ def test_update_read_recommendations(app):
     update_read_recommendations(reads)
 
     # Then
-    assert recommendations1.dateRead == datetime(2018, 12, 17, 15, 59, 11, 689000)
-    assert recommendations2.dateRead == datetime(2018, 12, 17, 15, 59, 15, 689000)
-    assert recommendations3.dateRead == datetime(2018, 12, 17, 15, 59, 21, 689000)
+    assert recommendation1.dateRead == datetime(2018, 12, 17, 15, 59, 11, 689000)
+    assert recommendation2.dateRead == datetime(2018, 12, 17, 15, 59, 15, 689000)
+    assert recommendation3.dateRead == datetime(2018, 12, 17, 15, 59, 21, 689000)

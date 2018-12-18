@@ -1,7 +1,7 @@
 """ recommendation queries """
 from datetime import datetime
 
-from sqlalchemy import func
+from sqlalchemy import func, update
 
 from models import EventOccurrence, \
                    Mediation, \
@@ -100,11 +100,8 @@ def find_favored_recommendations_for_user(user):
 
 def update_read_recommendations(read_recommendations):
     if read_recommendations:
-        query = Recommendation
         for read_recommendation in read_recommendations:
             recommendation_id = dehumanize(read_recommendation['id'])
-            query = query.update()\
-                         .where(Recommendation.id == recommendation_id)\
-                         .values(dateRead=read_recommendation['dateRead'])
+            Recommendation.query.filter_by(id=recommendation_id)\
+                          .update({"dateRead": read_recommendation['dateRead']})
         db.session.commit()
-    return recommendations

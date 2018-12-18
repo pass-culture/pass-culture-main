@@ -85,7 +85,10 @@ def put_recommendations():
                        - min(len(unread_recos), BLOB_UNREAD_NUMBER) \
                        - min(len(read_recos), BLOB_READ_NUMBER)
 
-    created_recommendations = create_recommendations_for_discovery(needed_new_recos, user=current_user)
+    created_recommendations = create_recommendations_for_discovery(
+        needed_new_recos,
+        user=current_user
+    )
 
     logger.info('(unread reco) count %i', len(unread_recos))
     logger.info('(read reco) count %i', len(read_recos))

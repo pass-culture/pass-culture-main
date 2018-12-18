@@ -4,7 +4,8 @@ from datetime import datetime, timedelta
 import pytest
 
 from models import PcObject
-from models.mediation import upsertTutoMediations
+from models.mediation import Mediation, upsertTutoMediations
+from models.recommendation import Recommendation
 from tests.conftest import clean_database
 from utils.human_ids import humanize
 from utils.test_utils import API_URL, \
@@ -824,7 +825,7 @@ def test_put_recommendations_updates_read_recommendations(app):
 
 @clean_database
 @pytest.mark.standalone
-def test_put_recommendations_with_read_tuto_recommendations_returns_recommendations_without_tutos(app):
+def test_put_recommendations_at_first_request_returns_tutos(app):
     # given
     offerer = create_offerer()
     venue = create_venue(offerer)
@@ -841,30 +842,66 @@ def test_put_recommendations_with_read_tuto_recommendations_returns_recommendati
     PcObject.check_and_save(stock1, stock2, stock3, stock4, user)
     upsertTutoMediations()
 
-    # first when
+    # when
     auth_request = req_with_auth(user.email, user.clearTextPassword)
     response = auth_request.put(RECOMMENDATION_URL, json={})
 
-    # first then
+    # then
     assert response.status_code == 200
-    first_recommendations = response.json()
-    assert first_recommendations[0]['mediation']['tutoIndex'] == 0
-    assert first_recommendations[1]['mediation']['tutoIndex'] == 1
+    recommendations = response.json()
+    assert recommendations[0]['mediation']['tutoIndex'] == 0
+    assert recommendations[1]['mediation']['tutoIndex'] == 1
+
+@clean_database
+@pytest.mark.standalone
+def test_put_recommendations_with_read_tuto_recommendations_returns_recommendations_without_tutos(app):
+    # given
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    offer = create_event_offer(venue)
+    user = create_user()
+    event_occurrence1 = create_event_occurrence(offer)
+    event_occurrence2 = create_event_occurrence(offer)
+    stock1 = create_stock_from_event_occurrence(event_occurrence1)
+    stock2 = create_stock_from_event_occurrence(event_occurrence2)
+    thing_offer1 = create_thing_offer(venue)
+    thing_offer2 = create_thing_offer(venue)
+    stock3 = create_stock_from_offer(thing_offer1)
+    stock4 = create_stock_from_offer(thing_offer2)
+    PcObject.check_and_save(stock1, stock2, stock3, stock4, user)
+    upsertTutoMediations()
+    tuto_mediation0 = Mediation.query.filter_by(tutoIndex=0).one()
+    tuto_mediation1 = Mediation.query.filter_by(tutoIndex=1).one()
+    tuto_recommendation0 = create_recommendation(
+        mediation=tuto_mediation0,
+        user=user
+    )
+    tuto_recommendation1 = create_recommendation(
+        mediation=tuto_mediation1,
+        user=user
+    )
+    PcObject.check_and_save(tuto_recommendation0, tuto_recommendation1)
 
     # when
+    humanized_tuto_recommendation0_id = humanize(tuto_recommendation0.id)
+    humanized_tuto_recommendation1_id = humanize(tuto_recommendation1.id)
     reads = [
-        { "id": first_recommendations[0]['id'], "dateRead": "2018-12-17T15:59:11.689Z" },
-        { "id": first_recommendations[1]['id'], "dateRead": "2018-12-17T15:59:15.689Z" }
+        {
+            "id": humanized_tuto_recommendation0_id,
+            "dateRead":  "2018-12-17T15:59:11.689Z"
+        },
+        {
+            "id": humanized_tuto_recommendation1_id,
+            "dateRead":  "2018-12-17T15:59:15.689Z"
+        }
     ]
-    first_recommendation_ids = [r['id'] for r in first_recommendations]
-    data = {
-        'readRecommendations': reads
-    }
+    data = { 'readRecommendations': reads }
+    auth_request = req_with_auth(user.email, user.clearTextPassword)
     response = auth_request.put(RECOMMENDATION_URL, json=data)
 
-    # second then
+    # then
     assert response.status_code == 200
-    second_recommendations = response.json()
-    second_recommendation_ids = [r['id'] for r in second_recommendations]
-    assert first_recommendations[0]['id'] not in second_recommendation_ids
-    assert first_recommendations[1]['id'] not in second_recommendation_ids
+    recommendations = response.json()
+    recommendation_ids = [r['id'] for r in recommendations]
+    assert humanized_tuto_recommendation0_id not in recommendation_ids
+    assert humanized_tuto_recommendation1_id not in recommendation_ids
