@@ -100,10 +100,10 @@ def create_all_payments_details(payments: List[Payment], find_booking_date_used=
 
 
 def create_payment_details(payment: Payment, find_booking_date_used=find_date_used) -> PaymentDetails:
-    return PaymentDetails(payment, find_booking_date_used(payment.booking.id))
+    return PaymentDetails(payment, find_booking_date_used(payment.booking))
 
 
-def generate_payment_details_csv(payments_details: List[PaymentDetails]):
+def generate_payment_details_csv(payments_details: List[PaymentDetails]) -> str:
     output = StringIO()
     csv_lines = [details.as_csv_row() for details in payments_details]
     writer = csv.writer(output, quoting=csv.QUOTE_NONNUMERIC)

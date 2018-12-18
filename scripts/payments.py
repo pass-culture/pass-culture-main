@@ -6,9 +6,9 @@ from typing import List
 
 from flask import current_app as app
 
-from domain.admin_emails import send_payment_transaction_email
+from domain.admin_emails import send_payment_transaction_email, send_payment_details_email
 from domain.payments import filter_out_already_paid_for_bookings, create_payment_for_booking, generate_transaction_file, \
-    validate_transaction_file
+    validate_transaction_file, create_all_payments_details, generate_payment_details_csv
 from domain.reimbursement import find_all_booking_reimbursement
 from models import Offerer, PcObject
 from models.payment import Payment
@@ -27,6 +27,7 @@ def generate_and_send_payments():
     try:
         payments = do_generate_payments()
         do_send_payments(payments, PASS_CULTURE_IBAN, PASS_CULTURE_BIC, PASS_CULTURE_REMITTANCE_CODE)
+        do_send_payment_details(payments, PASS_CULTURE_PAYMENTS_DETAILS_RECIPIENTS)
     except Exception as e:
         print('ERROR: ' + str(e))
         traceback.print_tb(e.__traceback__)
@@ -80,4 +81,9 @@ def do_send_payments(payments: List[Payment], pass_culture_iban: str, pass_cultu
 
 
 def do_send_payment_details(payments: List[Payment], recipients: str) -> None:
-    pass
+    details = create_all_payments_details(payments)
+    csv = generate_payment_details_csv(details)
+    try:
+        send_payment_details_email(csv, recipients, app.mailjet_client.send.create)
+    except MailServiceException as e:
+        logger.error('Error while sending payment details email to MailJet', e)
