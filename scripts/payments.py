@@ -11,7 +11,7 @@ from domain.payments import filter_out_already_paid_for_bookings, create_payment
     validate_transaction_file
 from domain.reimbursement import find_all_booking_reimbursement
 from models import Offerer, PcObject
-from models.payment import Payment, PaymentDetails
+from models.payment import Payment
 from models.payment_status import TransactionStatus
 from repository.booking_queries import find_final_offerer_bookings
 from utils.logger import logger
@@ -20,6 +20,7 @@ from utils.mailing import MailServiceException
 PASS_CULTURE_IBAN = os.environ.get('PASS_CULTURE_IBAN')
 PASS_CULTURE_BIC = os.environ.get('PASS_CULTURE_BIC')
 PASS_CULTURE_REMITTANCE_CODE = os.environ.get('PASS_CULTURE_REMITTANCE_CODE')
+PASS_CULTURE_PAYMENTS_DETAILS_RECIPIENTS = os.environ.get('PASS_CULTURE_PAYMENTS_DETAILS_RECIPIENTS')
 
 
 def generate_and_send_payments():
@@ -57,11 +58,13 @@ def do_generate_payments():
 def do_send_payments(payments: List[Payment], pass_culture_iban: str, pass_culture_bic: str,
                      pass_culture_remittance_code: str) -> None:
     if not pass_culture_iban or not pass_culture_bic or not pass_culture_remittance_code:
-        logger.error('Missing PASS_CULTURE_IBAN[%s], PASS_CULTURE_BIC[%s] or PASS_CULTURE_REMITTANCE_CODE[%s] in environment variables' % (
-            pass_culture_iban, pass_culture_bic, pass_culture_remittance_code))
+        logger.error(
+            'Missing PASS_CULTURE_IBAN[%s], PASS_CULTURE_BIC[%s] or PASS_CULTURE_REMITTANCE_CODE[%s] in environment variables' % (
+                pass_culture_iban, pass_culture_bic, pass_culture_remittance_code))
     else:
         message_id = 'passCulture-SCT-%s' % datetime.strftime(datetime.utcnow(), "%Y%m%d-%H%M%S")
-        file = generate_transaction_file(payments, pass_culture_iban, pass_culture_bic, message_id, pass_culture_remittance_code)
+        file = generate_transaction_file(payments, pass_culture_iban, pass_culture_bic, message_id,
+                                         pass_culture_remittance_code)
         validate_transaction_file(file)
         try:
             send_payment_transaction_email(file, app.mailjet_client.send.create)
@@ -74,3 +77,7 @@ def do_send_payments(payments: List[Payment], pass_culture_iban: str, pass_cultu
             for payment in payments:
                 payment.setStatus(TransactionStatus.SENT)
             PcObject.check_and_save(*payments)
+
+
+def do_send_payment_details(payments: List[Payment], recipients: str) -> None:
+    pass

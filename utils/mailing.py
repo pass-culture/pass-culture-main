@@ -328,6 +328,20 @@ def make_payment_transaction_email(xml: str) -> dict:
     }
 
 
+def make_payment_details_email(csv: str) -> dict:
+    now = datetime.utcnow()
+    csv_b64encode = base64.b64encode(csv.encode())
+    return {
+        'From': {"Email": "passculture@beta.gouv.fr",
+                 "Name": "pass Culture Pro"},
+        'Subject': "Détails des paiements pass Culture Pro - {}".format(datetime.strftime(now, "%Y-%m-%d")),
+        'Attachments': [{"ContentType": "text/csv",
+                         "Filename": "details_des_paiements_{}.xml".format(datetime.strftime(now, "%Y%m%d")),
+                         "Base64Content": csv_b64encode}],
+        'Html-part': ""
+    }
+
+
 def make_venue_validation_confirmation_email(venue):
     html = render_template('mails/venue_validation_confirmation_email.html', venue=venue)
     return {
@@ -344,7 +358,8 @@ def compute_email_html_part_and_recipients(email_html_part, recipients):
     if feature_send_mail_to_users_enabled():
         email_to = recipients_string
     else:
-        email_html_part = '<p>This is a test (ENV={environment}). In production, email would have been sent to : {recipients}</p>{html_part}'.format(environment=ENV, recipients=recipients_string, html_part=email_html_part)
+        email_html_part = '<p>This is a test (ENV={environment}). In production, email would have been sent to : {recipients}</p>{html_part}'.format(
+            environment=ENV, recipients=recipients_string, html_part=email_html_part)
         email_to = 'passculture-dev@beta.gouv.fr'
     return email_html_part, email_to
 
