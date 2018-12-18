@@ -18,11 +18,11 @@ def test_save_industrial_sandbox(app):
         logger.info = logger_info
         assertCreatedCounts(
             app,
-            Booking=24,
+            Booking=8,
             Deposit=6,
             Event=8,
             EventOccurrence=144,
-            Mediation=114,
+            Mediation=116,
             Offer=114,
             Offerer=6,
             Recommendation=24,
