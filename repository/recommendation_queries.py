@@ -8,6 +8,7 @@ from models import EventOccurrence, \
                    Offer, \
                    Recommendation, \
                    Stock
+from models.db import db
 from models.pc_object import PcObject
 from utils.config import BLOB_SIZE
 from utils.human_ids import dehumanize
@@ -98,12 +99,12 @@ def find_favored_recommendations_for_user(user):
     return Recommendation.query.filter_by(user=user, isFavorite=True).all()
 
 def update_read_recommendations(read_recommendations):
-    recommendations = []
     if read_recommendations:
+        query = Recommendation
         for read_recommendation in read_recommendations:
-            dehumanize_id = dehumanize(read_recommendation['id'])
-            recommendation = Recommendation.query.get(dehumanize_id)
-            recommendation.dateRead = read_recommendation['dateRead']
-            recommendations.append(recommendation)
-        PcObject.check_and_save(*recommendations)
+            recommendation_id = dehumanize(read_recommendation['id'])
+            query = query.update()\
+                         .where(Recommendation.id == recommendation_id)\
+                         .values(dateRead=read_recommendation['dateRead'])
+        db.session.commit()
     return recommendations

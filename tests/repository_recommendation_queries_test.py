@@ -104,9 +104,9 @@ def test_update_read_recommendations(app):
         { "id": humanize(recommendation2.id), "dateRead": "2018-12-17T15:59:15.689Z" },
         { "id": humanize(recommendation3.id), "dateRead": "2018-12-17T15:59:21.689Z" },
     ]
-    recommendations = update_read_recommendations(reads)
+    update_read_recommendations(reads)
 
     # Then
-    assert recommendations[0].dateRead == datetime(2018, 12, 17, 15, 59, 11, 689000)
-    assert recommendations[1].dateRead == datetime(2018, 12, 17, 15, 59, 15, 689000)
-    assert recommendations[2].dateRead == datetime(2018, 12, 17, 15, 59, 21, 689000)
+    assert recommendations1.dateRead == datetime(2018, 12, 17, 15, 59, 11, 689000)
+    assert recommendations2.dateRead == datetime(2018, 12, 17, 15, 59, 15, 689000)
+    assert recommendations3.dateRead == datetime(2018, 12, 17, 15, 59, 21, 689000)
