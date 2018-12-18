@@ -178,6 +178,7 @@ def get_recommendation_search_params(kwargs):
 
     if 'categories' in kwargs and kwargs['categories']:
         type_sublabels = kwargs['categories']
+        print('************',type_sublabels)
         search_params['type_values'] = get_event_or_thing_type_values_from_sublabels(type_sublabels)
 
     if 'date' in kwargs and kwargs['date'] and \

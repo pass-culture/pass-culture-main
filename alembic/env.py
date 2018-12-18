@@ -54,7 +54,8 @@ def run_migrations_offline():
         target_metadata=target_metadata,
         literal_binds=True,
         include_object=include_object,
-        include_schemas=True
+        include_schemas=True,
+        compare_type=True
     )
 
     with context.begin_transaction():
