@@ -196,8 +196,8 @@ class UploadThumb extends Component {
                   ref={this.setZoomInput}
                   className="zoom level-left"
                   type="range"
-                  min="0.1"
-                  max="3"
+                  min="1"
+                  max="4"
                   step="0.01"
                   value={zoom}
                   onChange={this.onZoomChange}
