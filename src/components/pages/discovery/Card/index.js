@@ -13,7 +13,9 @@ import { getHeaderColor } from '../../../../utils/colors'
 export class RawCard extends PureComponent {
   componentDidMount() {
     const { handleReadRecommendation, position, recommendation } = this.props
-    if (position === 'previous') {
+
+    const isFirstHasJustBeenRead = position === 'previous'
+    if (isFirstHasJustBeenRead) {
       handleReadRecommendation(recommendation)
     }
   }

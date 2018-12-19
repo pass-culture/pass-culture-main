@@ -5,21 +5,7 @@ ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <RawCard
     handleClickRecommendation={[MockFunction]}
-    handleReadRecommendation={
-      [MockFunction] {
-        "calls": Array [
-          Array [
-            null,
-          ],
-        ],
-        "results": Array [
-          Object {
-            "isThrow": false,
-            "value": undefined,
-          },
-        ],
-      }
-    }
+    handleReadRecommendation={[MockFunction]}
     isFlipped={false}
     position="position"
     recommendation={null}
