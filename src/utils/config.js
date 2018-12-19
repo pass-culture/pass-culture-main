@@ -15,9 +15,6 @@ export const PROJECT_NAME = 'Pass Culture'
 export const IS_DEV = NODE_ENV === 'development'
 export const IS_PROD = !IS_DEV
 export const MOBILE_OS = getMobileOperatingSystem()
-export const PERSIST_WHITE_LIST = [
-  // 'data',
-]
 
 export const API_URL = process.env.API_URL || 'http://localhost'
 export const THUMBS_URL =
