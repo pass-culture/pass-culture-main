@@ -1,12 +1,12 @@
 import { ClientFunction, Role, Selector } from 'testcafe'
 
 import { ROOT_PATH } from '../../src/utils/config'
-import youngUser from './users'
+import { youngUser } from './users'
 
 const getPageUrl = ClientFunction(() => window.location.href.toString())
 const signInButton = Selector('button').withText('Connexion')
 
-const regularUser = Role(
+export const youngUserRole = Role(
   `${ROOT_PATH}connexion`,
   async t => {
     await t
@@ -22,4 +22,4 @@ const regularUser = Role(
   }
 )
 
-export default regularUser
+export default youngUserRole

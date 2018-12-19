@@ -1,6 +1,6 @@
 import { ClientFunction, Selector } from 'testcafe'
 
-import regularUser from './helpers/roles'
+import { youngUserRole } from './helpers/roles'
 import { ROOT_PATH } from '../src/utils/config'
 
 const getPageUrl = ClientFunction(() => window.location.href.toString())
@@ -23,7 +23,7 @@ fixture
     "O5_02 Recherche | Je me suis connecté·e | J'arrive sur la page de recherche | Header"
   )
   .beforeEach(async t => {
-    await t.useRole(regularUser).navigateTo(`${ROOT_PATH}recherche/`)
+    await t.useRole(youngUserRole).navigateTo(`${ROOT_PATH}recherche/`)
   })
 
 // header
@@ -67,14 +67,14 @@ test("Je vois le bouton retour lorsque j'ai un résultat de recherche", async t 
 fixture
   .skip('O5_03 Recherche | Je cherche des offres par catégories et navigue')
   .beforeEach(async t => {
-    await t.useRole(regularUser).navigateTo(`${ROOT_PATH}recherche/`)
+    await t.useRole(youngUserRole).navigateTo(`${ROOT_PATH}recherche/`)
   })
 
 // ------------------------ RECHERCHE PAR MOTS-CLES
 
 // ------------------------ NO RESULTS
 fixture.skip('O5_04 Recherche | Recherche textuelle').beforeEach(async t => {
-  await t.useRole(regularUser).navigateTo(`${ROOT_PATH}recherche/categories`)
+  await t.useRole(youngUserRole).navigateTo(`${ROOT_PATH}recherche/categories`)
 })
 
 // Je vois le filtre par type sous le formulaire de recherche textuelle
@@ -118,7 +118,7 @@ test("Je fais une recherche par mots-clés et j'ai des résultats", async t => {
 
 // ------------------------ NAVIGATION PAR TYPE (LIRE, ETC)
 fixture.skip('O5_ Recherche | Navigation par catégorie').beforeEach(async t => {
-  await t.useRole(regularUser).navigateTo(`${ROOT_PATH}recherche/`)
+  await t.useRole(youngUserRole).navigateTo(`${ROOT_PATH}recherche/`)
 })
 
 test('Je clique sur la vignette Lire et je suis redirigé vers la page de résultats de la recherche', async t => {

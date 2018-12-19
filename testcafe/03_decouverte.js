@@ -1,7 +1,7 @@
 import { Selector, ClientFunction } from 'testcafe'
 
 import { ROOT_PATH } from '../src/utils/config'
-import regularUser from './helpers/roles'
+import { youngUserRole } from './helpers/roles'
 
 const getPageUrl = ClientFunction(() => window.location.href.toString())
 
@@ -25,7 +25,7 @@ fixture
     'O3_02 Découverte | Après connexion | Les offres sont en cours de chargement'
   )
   .beforeEach(async t => {
-    await t.useRole(regularUser)
+    await t.useRole(youngUserRole)
   })
 
 test('Je suis informé·e du fait que les offres sont en cours de chargement', async t => {
@@ -59,10 +59,23 @@ test('Lorsque je clique sur la flêche vers le haut, je vois le verso de la reco
     .notOk()
 })
 
+fixture('O3_03 Découverte | Deuxième connexion | Recommandations').beforeEach(
+  async t => {
+    await t.useRole(youngUserRole)
+  }
+)
+
+test("Il n'y a plus les cartes tutos quand je les ai déjà lues une fois", async t => {
+  await t.wait(10000)
+  await t
+    .expect(getPageUrl())
+    .notContains('/decouverte/tuto/', { timeout: 1000 })
+})
+
 fixture
-  .skip('O3_03 Découverte | Après connexion | Recommandations')
+  .skip('O3_03 Découverte | exploration | Recommandations')
   .beforeEach(async t => {
-    await t.useRole(regularUser)
+    await t.useRole(youngUserRole)
     await t.navigateTo(`${ROOT_PATH}decouverte/AH7Q/AU#AM`)
     // TODO
   })

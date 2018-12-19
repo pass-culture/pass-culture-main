@@ -1,5 +1,5 @@
 import { ClientFunction, Selector } from 'testcafe'
-import youngUser from './helpers/users'
+import { youngUser } from './helpers/users'
 
 import { ROOT_PATH } from '../src/utils/config'
 

@@ -1,7 +1,7 @@
 import { ClientFunction, Selector } from 'testcafe'
 
 import { ROOT_PATH } from '../src/utils/config'
-import youngUser from './helpers/users'
+import { youngUser } from './helpers/users'
 
 const getPageUrl = ClientFunction(() => window.location.href.toString())
 
