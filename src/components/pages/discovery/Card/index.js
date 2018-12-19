@@ -11,20 +11,32 @@ import Verso from '../../../verso'
 import { getHeaderColor } from '../../../../utils/colors'
 
 export class RawCard extends PureComponent {
-  componentDidMount () {
-    const { handleReadRecommendation, recommendation } = this.props
-    handleReadRecommendation(recommendation)
+  componentDidMount() {
+    const { handleReadRecommendation, position, recommendation } = this.props
+    if (position === 'previous') {
+      handleReadRecommendation(recommendation)
+    }
   }
 
   componentDidUpdate(prevProps) {
     const {
       handleClickRecommendation,
+      handleReadRecommendation,
       isFlipped,
       recommendation,
-      position
+      position,
     } = this.props
 
     const isCurrent = recommendation && position === 'current'
+
+    const hasJustBeenRead =
+      position === 'previous' &&
+      (recommendation && recommendation.id) !==
+        (prevProps.recommendation && prevProps.recommendation.id)
+    if (hasJustBeenRead) {
+      handleReadRecommendation(recommendation)
+    }
+
     if (!isCurrent) return
 
     const shouldRequest =
@@ -36,8 +48,8 @@ export class RawCard extends PureComponent {
 
   render() {
     const { position, recommendation, width } = this.props
-    const firstThumbDominantColor = recommendation &&
-      recommendation.firstThumbDominantColor
+    const firstThumbDominantColor =
+      recommendation && recommendation.firstThumbDominantColor
     const headerColor = getHeaderColor(firstThumbDominantColor)
 
     const { index } = recommendation || {}
@@ -80,5 +92,8 @@ const mapSizeToProps = ({ width, height }) => ({
 export default compose(
   withSizes(mapSizeToProps),
   withRouter,
-  connect(mapStateToProps, mapDispatchToProps)
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )
 )(RawCard)
