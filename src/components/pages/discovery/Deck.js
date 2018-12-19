@@ -1,6 +1,5 @@
 import get from 'lodash.get'
-import moment from 'moment'
-import { mergeData, Logger, Icon } from 'pass-culture-shared'
+import { Logger, Icon } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import Draggable from 'react-draggable'
 import React, { Component } from 'react'
@@ -82,7 +81,6 @@ class Deck extends Component {
     const { history, isFlipped, nextRecommendation } = this.props
     if (!nextRecommendation || isFlipped) return
     const { offerId, mediationId } = nextRecommendation
-    this.handleReadRecommendation()
     history.push(`/decouverte/${offerId || 'tuto'}/${mediationId || ''}`)
     this.handleRefreshNext()
   }
@@ -93,14 +91,6 @@ class Deck extends Component {
     const { offerId, mediationId } = previousRecommendation
     history.push(`/decouverte/${offerId || 'tuto'}/${mediationId || ''}`)
     this.handleRefreshPrevious()
-  }
-
-  handleReadRecommendation = () => {
-    const { currentRecommendation, dispatch } = this.props
-    const readRecommendation = Object.assign({}, currentRecommendation, {
-      dateRead: moment.utc().toISOString(),
-    })
-    dispatch(mergeData({ readRecommendations: [readRecommendation] }))
   }
 
   handleRefreshPrevious = () => {
