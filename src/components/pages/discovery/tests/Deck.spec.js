@@ -297,47 +297,4 @@ describe('src | components | pages | discovery | Index | DiscoveryPage', () => 
       })
     })
   })
-  describe('instance functions', () => {
-    describe('onStop', () => {
-      it('', () => {})
-    })
-    describe('handleGoNext', () => {
-      it('', () => {})
-    })
-    describe('handleGoPrevious', () => {
-      it('', () => {})
-    })
-    describe('handleRefreshPrevious', () => {
-      it('', () => {})
-    })
-    describe('handleRefreshNext', () => {
-      it('', () => {})
-    })
-    describe('handleRefreshedDraggableKey', () => {
-      it('', () => {
-        // tested via componentDidMount
-      })
-    })
-    describe('handleSetDateRead', () => {
-      it('', () => {})
-    })
-    describe('handleShowrecommandationDetails', () => {
-      it('', () => {})
-    })
-    describe('handleCloserecommandationDetails', () => {
-      it('', () => {})
-    })
-    describe('handleUrlFlip', () => {
-      it('', () => {})
-      describe('handleSetDateRead', () => {
-        it('', () => {})
-        describe('handleSetDateRead', () => {
-          it('', () => {})
-        })
-      })
-    })
-  })
-  describe('render', () => {
-    // showCloseButton
-  })
 })
