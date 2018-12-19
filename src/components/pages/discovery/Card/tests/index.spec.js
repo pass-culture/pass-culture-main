@@ -1,17 +1,16 @@
 import React from 'react'
 import { shallow } from 'enzyme'
 
-import { RawCard } from '../Card'
-
-const requestDataMock = jest.fn()
+import { RawCard } from '../index'
 
 describe('src | components | pages | discovery | RawCard', () => {
   describe('snapshot', () => {
     it('should match snapshot', () => {
       // given
       const props = {
+        handleClickRecommendation: jest.fn(),
+        handleReadRecommendation: jest.fn(),
         position: 'position',
-        requestDataAction: requestDataMock,
         width: 500,
       }
 
@@ -29,8 +28,9 @@ describe('src | components | pages | discovery | RawCard', () => {
         it('should render black by default', () => {
           // given
           const props = {
+            handleClickRecommendation: jest.fn(),
+            handleReadRecommendation: jest.fn(),
             position: 'position',
-            requestDataAction: requestDataMock,
             width: 500,
           }
 
@@ -46,11 +46,12 @@ describe('src | components | pages | discovery | RawCard', () => {
         it('should render associate color', () => {
           // given
           const props = {
+            handleClickRecommendation: jest.fn(),
+            handleReadRecommendation: jest.fn(),
             position: 'position',
             recommendation: {
               firstThumbDominantColor: [56, 28, 45],
             },
-            requestDataAction: requestDataMock,
             width: 500,
           }
 

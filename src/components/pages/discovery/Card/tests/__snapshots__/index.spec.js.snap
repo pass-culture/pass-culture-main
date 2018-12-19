@@ -4,10 +4,25 @@ exports[`src | components | pages | discovery | RawCard snapshot should match sn
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <RawCard
+    handleClickRecommendation={[MockFunction]}
+    handleReadRecommendation={
+      [MockFunction] {
+        "calls": Array [
+          Array [
+            null,
+          ],
+        ],
+        "results": Array [
+          Object {
+            "isThrow": false,
+            "value": undefined,
+          },
+        ],
+      }
+    }
     isFlipped={false}
     position="position"
     recommendation={null}
-    requestDataAction={[MockFunction]}
     width={500}
   />,
   Symbol(enzyme.__renderer__): Object {

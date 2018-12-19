@@ -6,6 +6,10 @@ import {
 
 const initGeolocation = store => {
   Logger.log('Geoloc queried')
+  if (!navigator.geolocation || !navigator.geolocation.watchPosition) {
+    Logger.log('No Geoloc here')
+    return
+  }
   const watchId = navigator.geolocation.watchPosition(
     position => {
       Logger.log('Geoloc received', position)

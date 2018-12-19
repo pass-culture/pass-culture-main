@@ -5,26 +5,6 @@ import currentRecommendationSelector from '../../../../selectors/currentRecommen
 import nextRecommendationSelector from '../../../../selectors/nextRecommendation'
 import previousRecommendationSelector from '../../../../selectors/previousRecommendation'
 
-export const mapDispatchToProps = dispatch => ({
-  handleClickRecommendation: recommendation => {
-    const options = {
-      body: { isClicked: true },
-      key: 'recommendations',
-    }
-
-    const path = `recommendations/${recommendation.id}`
-
-    dispatch(requestData('PATCH', path, options))
-  },
-
-  handleReadRecommendation: recommendation => {
-    const readRecommendation = Object.assign({}, recommendation, {
-      dateRead: moment.utc().toISOString(),
-    })
-    dispatch(mergeData({ readRecommendations: [readRecommendation] }))
-  },
-})
-
 const noop = () => {}
 
 const getSelectorByCardPosition = position => {
@@ -54,3 +34,23 @@ export const mapStateToProps = (state, ownProps) => {
     recommendation,
   }
 }
+
+export const mapDispatchToProps = dispatch => ({
+  handleClickRecommendation: recommendation => {
+    const options = {
+      body: { isClicked: true },
+      key: 'recommendations',
+    }
+
+    const path = `recommendations/${recommendation.id}`
+
+    dispatch(requestData('PATCH', path, options))
+  },
+
+  handleReadRecommendation: recommendation => {
+    const readRecommendation = Object.assign({}, recommendation, {
+      dateRead: moment.utc().toISOString(),
+    })
+    dispatch(mergeData({ readRecommendations: [readRecommendation] }))
+  },
+})
