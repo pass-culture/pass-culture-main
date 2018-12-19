@@ -116,6 +116,8 @@ class OfferPage extends Component {
       match: {
         params: { offerId },
       },
+      offerers,
+      venues,
       providers,
       search,
       types,
@@ -163,8 +165,22 @@ class OfferPage extends Component {
       )
     }
 
-    providers.length === 0 && dispatch(requestData('GET', 'providers'))
-    types.length === 0 && dispatch(requestData('GET', 'types'))
+    if (offerers.length === 0 || venues.length === 0) {
+      dispatch(
+        requestData('GET', 'offerers', {
+          normalizer: { managedVenues: 'venues' },
+        })
+      )
+    }
+
+    if (providers.length === 0) {
+      dispatch(requestData('GET', 'providers'))
+    }
+
+    if (types.length === 0) {
+      dispatch(requestData('GET', 'types'))
+    }
+
     handleSuccess()
   }
 
