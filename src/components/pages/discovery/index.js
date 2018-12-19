@@ -84,7 +84,7 @@ export class RawDiscoveryPage extends React.PureComponent {
     const { match, readRecommendations, recommendations } = this.props
     const seenRecommendationIds =
       recommendations &&
-      recommendations.map(seenRecommendation => seenRecommendation.id)
+      recommendations.map(recommendation => recommendation.id)
     this.setState({ isloading: true })
     // recupere les arguments depuis l'URL
     // l'API renvoi cette première carte avant les autres recommendations
