@@ -37,7 +37,7 @@ test('Je suis redirigé·e vers la première page de tutoriel decouverte tuto 0'
   await t.expect(getPageUrl()).contains('/decouverte/tuto/', { timeout: 1000 })
 })
 
-test("Lorsque je clique sur la flêche suivante, je vois la page suivante du tutoriel et je peux l'ouvrir et fermer", async t => {
+test("Lorsque je clique sur la flêche suivante, je vois la page suivante du tutoriel et je peux l'ouvrir et fermer et je ne vois plus les cartes tutos", async t => {
   await t.click(nextButton).wait(1000)
   await t.expect(getPageUrl()).contains('/decouverte/tuto/', { timeout: 1000 })
   await t
@@ -50,15 +50,12 @@ test("Lorsque je clique sur la flêche suivante, je vois la page suivante du tut
     .click(closeButton)
     .expect(versoDiv.hasClass('flipped'))
     .notOk()
-})
 
-fixture('O3_03 Découverte | Deuxième connexion | Recommandations').beforeEach(
-  async t => {
-    await t.useRole(youngUserRole)
-  }
-)
-
-test("Il n'y a plus les cartes tutos quand je les ai déjà lues une fois", async t => {
+  // this last part is important to make read the last tuto card
+  // and the reload triggers the PUT recommendations in order to
+  // save the read card
+  await t.click(nextButton).wait(1000)
+  await t.eval(() => window.location.reload(true))
   await t.wait(10000)
   await t
     .expect(getPageUrl())
