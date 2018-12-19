@@ -881,8 +881,6 @@ def test_put_recommendations_with_read_tuto_recommendations_returns_recommendati
         user=user
     )
     PcObject.check_and_save(tuto_recommendation0, tuto_recommendation1)
-
-    # when
     humanized_tuto_recommendation0_id = humanize(tuto_recommendation0.id)
     humanized_tuto_recommendation1_id = humanize(tuto_recommendation1.id)
     reads = [
@@ -897,6 +895,8 @@ def test_put_recommendations_with_read_tuto_recommendations_returns_recommendati
     ]
     data = { 'readRecommendations': reads }
     auth_request = req_with_auth(user.email, user.clearTextPassword)
+
+    # when
     response = auth_request.put(RECOMMENDATION_URL, json=data)
 
     # then
