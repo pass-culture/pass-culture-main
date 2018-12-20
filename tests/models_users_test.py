@@ -150,3 +150,82 @@ class WalletBalanceTest:
 
         # then
         assert balance == Decimal(130)
+
+
+@pytest.mark.standalone
+class RealWalletBalanceTest:
+    @clean_database
+    def test_real_wallet_balance_is_0_with_no_deposits_and_no_bookings(self, app):
+        # given
+        user = create_user()
+        PcObject.check_and_save(user)
+
+        # when
+        balance = user.real_wallet_balance
+
+        # then
+        assert balance == Decimal(0)
+
+    @clean_database
+    def test_real_wallet_balance_is_the_sum_of_deposits_if_no_bookings(self, app):
+        # given
+        user = create_user()
+        deposit1 = create_deposit(user, datetime.utcnow(), amount=100)
+        deposit2 = create_deposit(user, datetime.utcnow(), amount=50)
+        PcObject.check_and_save(deposit1, deposit2)
+
+        # when
+        balance = user.real_wallet_balance
+
+        # then
+        assert balance == Decimal(150)
+
+    @clean_database
+    def test_real_wallet_balance_is_the_sum_of_deposits_minus_the_sum_of_used_bookings(self, app):
+        # given
+        user = create_user()
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_thing_offer(venue)
+
+        deposit1 = create_deposit(user, datetime.utcnow(), amount=100)
+        deposit2 = create_deposit(user, datetime.utcnow(), amount=50)
+        stock1 = create_stock(price=20, offer=offer)
+        stock2 = create_stock(price=30, offer=offer)
+        stock3 = create_stock(price=40, offer=offer)
+        booking1 = create_booking(user, venue=venue, stock=stock1, quantity=1, is_used=True)
+        booking2 = create_booking(user, venue=venue, stock=stock2, quantity=2, is_used=True)
+        booking3 = create_booking(user, venue=venue, stock=stock3, quantity=1, is_used=False)
+
+        PcObject.check_and_save(deposit1, deposit2, booking1, booking2, booking3)
+
+        # when
+        balance = user.real_wallet_balance
+
+        # then
+        assert balance == Decimal(70)
+
+    @clean_database
+    def test_real_wallet_balance_does_not_count_cancelled_bookings(self, app):
+        # given
+        user = create_user()
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_thing_offer(venue)
+
+        deposit1 = create_deposit(user, datetime.utcnow(), amount=100)
+        deposit2 = create_deposit(user, datetime.utcnow(), amount=50)
+        stock1 = create_stock(price=20, offer=offer)
+        stock2 = create_stock(price=30, offer=offer)
+        stock3 = create_stock(price=40, offer=offer)
+        booking1 = create_booking(user, venue=venue, stock=stock1, quantity=1, is_cancelled=True, is_used=True)
+        booking2 = create_booking(user, venue=venue, stock=stock2, quantity=2, is_cancelled=False, is_used=True)
+        booking3 = create_booking(user, venue=venue, stock=stock3, quantity=1, is_cancelled=False, is_used=True)
+
+        PcObject.check_and_save(deposit1, deposit2, booking1, booking2, booking3)
+
+        # when
+        balance = user.real_wallet_balance
+
+        # then
+        assert balance == Decimal(50)

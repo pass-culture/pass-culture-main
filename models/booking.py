@@ -93,16 +93,37 @@ class Booking(PcObject,
 
 
 Booking.trig_ddl = """
-    CREATE OR REPLACE FUNCTION get_wallet_balance(user_id BIGINT)
+    DROP FUNCTION IF EXISTS get_wallet_balance(user_id BIGINT);
+
+    CREATE OR REPLACE FUNCTION get_wallet_balance(user_id BIGINT, only_used_bookings BOOLEAN)
     RETURNS NUMERIC(10,2) AS $$
+    DECLARE
+        sum_deposits NUMERIC ;
+        sum_bookings NUMERIC ;
     BEGIN
-        RETURN 
-                (SELECT COALESCE(SUM(amount), 0) FROM deposit WHERE "userId"=user_id)
-                -
-                (SELECT COALESCE(SUM(amount * quantity), 0) FROM booking WHERE "userId"=user_id AND NOT "isCancelled");
+        SELECT COALESCE(SUM(amount), 0)
+        INTO sum_deposits
+        FROM deposit
+        WHERE "userId"=user_id;
+        
+        CASE
+            only_used_bookings
+        WHEN true THEN
+            SELECT COALESCE(SUM(amount * quantity), 0)
+            INTO sum_bookings
+            FROM booking
+            WHERE "userId"=user_id AND NOT "isCancelled" AND "isUsed" = true;
+        WHEN false THEN
+            SELECT COALESCE(SUM(amount * quantity), 0)
+            INTO sum_bookings
+            FROM booking
+            WHERE "userId"=user_id AND NOT "isCancelled";
+        END CASE;
+        
+        RETURN (sum_deposits - sum_bookings);            
     END; $$
     LANGUAGE plpgsql;
-
+    
     CREATE OR REPLACE FUNCTION check_booking()
     RETURNS TRIGGER AS $$
     BEGIN
@@ -113,7 +134,7 @@ Booking.trig_ddl = """
                 USING HINT = 'Number of bookings cannot exceed "stock.available"';
       END IF;
       
-      IF (SELECT get_wallet_balance(NEW."userId") < 0)
+      IF (SELECT get_wallet_balance(NEW."userId", false) < 0)
       THEN RAISE EXCEPTION 'insufficientFunds'
                  USING HINT = 'The user does not have enough credit to book';
       END IF;
@@ -121,7 +142,7 @@ Booking.trig_ddl = """
       RETURN NEW;
     END;
     $$ LANGUAGE plpgsql;
-
+    
     DROP TRIGGER IF EXISTS booking_update ON booking;
     CREATE CONSTRAINT TRIGGER booking_update AFTER INSERT OR UPDATE
     ON booking
