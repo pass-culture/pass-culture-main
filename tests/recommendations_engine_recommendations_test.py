@@ -1,12 +1,29 @@
 import pytest
 
 from models import PcObject
-from recommendations_engine import create_recommendations_for_discovery
+from recommendations_engine import create_recommendations_for_discovery, \
+                                   create_recommendations_for_search
 from tests.conftest import clean_database
 from utils.human_ids import humanize
-from utils.test_utils import create_user, create_offerer, create_venue, create_thing_offer, create_stock_from_offer, \
-    create_mediation
+from utils.test_utils import create_user, \
+                      create_offerer, \
+                      create_venue, \
+                      create_thing_offer, \
+                      create_stock_from_offer, \
+                      create_mediation
 
+@clean_database
+@pytest.mark.standalone
+def test_create_recommendations_for_search(app):
+    # Given
+    user = create_user()
+    search_params = {}
+
+    # When
+    recommendations = create_recommendations_for_search(user=user, search_params=search_params)
+
+    # Then
+    assert len(recommendations) == 2
 
 @clean_database
 @pytest.mark.standalone
