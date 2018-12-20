@@ -744,59 +744,6 @@ def test_user_should_have_its_wallet_balance(app):
 
 @clean_database
 @pytest.mark.standalone
-def test_user_wallet_balance_should_be_30_if_sum_deposit_50_and_one_booking_quantity_2_amount_10(app):
-    # Given
-    user = create_user(public_name='Test', departement_code='93', email='wallet_2_bookings_test@email.com',
-                       password='testpsswd')
-    offerer = create_offerer('999199987', '2 Test adress', 'Test city', '93000', 'Test offerer')
-    venue = create_venue(offerer)
-    thing_offer = create_thing_offer(venue=None)
-    stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=10)
-    recommendation = create_recommendation(thing_offer, user)
-    deposit_date = datetime.utcnow() - timedelta(minutes=2)
-    deposit = create_deposit(user, deposit_date, amount=50)
-    booking = create_booking(user, stock, venue, recommendation, quantity=2)
-
-    PcObject.check_and_save(deposit)
-    PcObject.check_and_save(booking)
-
-    # When
-    r_create = req_with_auth('wallet_2_bookings_test@email.com', 'testpsswd').get(API_URL + '/users/current')
-
-    # Then
-    wallet_balance = r_create.json()['wallet_balance']
-    assert wallet_balance == 30
-
-
-@clean_database
-@pytest.mark.standalone
-def test_user_wallet_balance_should_not_include_cancelled_booking_amounts(app):
-    # Given
-    user = create_user(public_name='Test', departement_code='93', email='wallet_2_bookings_test@email.com',
-                       password='testpsswd')
-    offerer = create_offerer('999199987', '2 Test adress', 'Test city', '93000', 'Test offerer')
-    venue = create_venue(offerer)
-    thing_offer = create_thing_offer(venue=None)
-    stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=10)
-    stock2 = create_stock_with_thing_offer(offerer, venue, thing_offer, price=11)
-    recommendation = create_recommendation(thing_offer, user)
-    deposit_date = datetime.utcnow() - timedelta(minutes=2)
-    deposit = create_deposit(user, deposit_date, amount=50)
-    booking = create_booking(user, stock, venue, recommendation, quantity=2)
-    booking2 = create_booking(user, stock2, venue, recommendation, quantity=2, is_cancelled=True)
-
-    PcObject.check_and_save(deposit, booking, booking2)
-
-    # When
-    r_create = req_with_auth('wallet_2_bookings_test@email.com', 'testpsswd').get(API_URL + '/users/current')
-
-    # Then
-    wallet_balance = r_create.json()['wallet_balance']
-    assert wallet_balance == 30
-
-
-@clean_database
-@pytest.mark.standalone
 def test_get_current_user_returns_expenses(app):
     # Given
     user = create_user(public_name='Test', departement_code='93', email='wallet_2_bookings_test@email.com',
