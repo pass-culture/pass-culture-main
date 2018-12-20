@@ -32,12 +32,9 @@ test('Je suis informé·e du fait que les offres sont en cours de chargement', a
     .eql('\nChargement des offres\n')
 })
 
-test('Je suis redirigé·e vers la première page de tutoriel decouverte tuto 0', async t => {
+test.skip("Je suis redirigé·e vers la première page de tutoriel decouverte tuto 0 et Lorsque je clique sur la flêche suivante, je vois la page suivante du tutoriel et je peux l'ouvrir et fermer et je ne vois plus les cartes tutos", async t => {
   await t.wait(10000)
   await t.expect(getPageUrl()).contains('/decouverte/tuto/', { timeout: 1000 })
-})
-
-test("Lorsque je clique sur la flêche suivante, je vois la page suivante du tutoriel et je peux l'ouvrir et fermer et je ne vois plus les cartes tutos", async t => {
   await t.click(nextButton).wait(1000)
   await t.expect(getPageUrl()).contains('/decouverte/tuto/', { timeout: 1000 })
   await t
