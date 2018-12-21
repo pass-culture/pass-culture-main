@@ -79,6 +79,9 @@
                 <Purp>
                     <Cd>GOVT</Cd>
                 </Purp>
+                <RmtInf>
+                    <Ustrd>{{ transaction.custom_message }}</Ustrd>
+                </RmtInf>
             </CdtTrfTxInf>
             {% endfor %}
         </PmtInf>

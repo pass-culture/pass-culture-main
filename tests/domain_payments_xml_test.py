@@ -15,6 +15,7 @@ from utils.test_utils import create_payment, create_offerer, create_user, create
 XML_NAMESPACE = {'ns': 'urn:iso:std:iso:20022:tech:xsd:pain.001.001.03'}
 MESSAGE_ID = 'passCulture-SCT-20181015-114356'
 
+
 @pytest.mark.standalone
 def test_generate_transaction_file_has_custom_message_id_in_group_header(app):
     # Given
@@ -408,8 +409,10 @@ def test_generate_transaction_file_has_iban_in_credit_transfer_transaction_info(
 @pytest.mark.standalone
 def test_generate_transaction_file_has_recipient_name_and_siren_in_creditor_info(app):
     # Given
-    offerer1 = create_offerer(name='first offerer', iban='CF13QSDFGH456789', bic='QSDFGH8Z555', siren='123456789', idx=1)
-    offerer2 = create_offerer(name='second offerer', iban='FR14WXCVBN123456', bic='WXCVBN7B444',siren='987654321',  idx=2)
+    offerer1 = create_offerer(name='first offerer', iban='CF13QSDFGH456789', bic='QSDFGH8Z555', siren='123456789',
+                              idx=1)
+    offerer2 = create_offerer(name='second offerer', iban='FR14WXCVBN123456', bic='WXCVBN7B444', siren='987654321',
+                              idx=2)
     offerer3 = create_offerer(name='third offerer', iban=None, bic=None, idx=3)
     user = create_user()
     venue1 = create_venue(offerer1, idx=4)
@@ -467,6 +470,39 @@ def test_generate_transaction_file_has_bic_in_credit_transfer_transaction_info(a
     # Then
     assert find_all_nodes('//ns:PmtInf/ns:CdtTrfTxInf/ns:CdtrAgt/ns:FinInstnId/ns:BIC', xml)[0] == 'QSDFGH8Z555'
     assert find_all_nodes('//ns:PmtInf/ns:CdtTrfTxInf/ns:CdtrAgt/ns:FinInstnId/ns:BIC', xml)[1] == 'WXCVBN7B444'
+
+
+@pytest.mark.standalone
+def test_generate_transaction_file_has_bic_in_credit_transfer_transaction_info(app):
+    # Given
+    offerer1 = create_offerer(name='first offerer', iban='CF13QSDFGH456789', bic='QSDFGH8Z555', idx=1)
+    offerer2 = create_offerer(name='second offerer', iban='FR14WXCVBN123456', bic='WXCVBN7B444', idx=2)
+    offerer3 = create_offerer(name='third offerer', iban=None, bic=None, idx=3)
+    user = create_user()
+    venue1 = create_venue(offerer1, idx=4)
+    venue2 = create_venue(offerer2, idx=5)
+    venue3 = create_venue(offerer3, idx=6)
+    stock1 = create_stock_from_offer(create_thing_offer(venue1))
+    stock2 = create_stock_from_offer(create_thing_offer(venue2))
+    stock3 = create_stock_from_offer(create_thing_offer(venue3))
+    booking1 = create_booking(user, stock1)
+    booking2 = create_booking(user, stock2)
+    booking3 = create_booking(user, stock3)
+
+    payments = [
+        create_payment(booking1, offerer1, Decimal(10), custom_message='remboursement 1ère quinzaine 09-2018', idx=7),
+        create_payment(booking2, offerer2, Decimal(20), custom_message='remboursement 1ère quinzaine 09-2018', idx=8),
+        create_payment(booking3, offerer3, Decimal(20), custom_message='remboursement 1ère quinzaine 09-2018', idx=9)
+    ]
+
+    # When
+    xml = generate_transaction_file(payments, 'BD12AZERTY123456', 'AZERTY9Q666', MESSAGE_ID, '0000')
+
+    # Then
+    assert find_all_nodes('//ns:PmtInf/ns:CdtTrfTxInf/ns:RmtInf/ns:Ustrd', xml)[0] \
+           == 'remboursement 1ère quinzaine 09-2018'
+    assert find_all_nodes('//ns:PmtInf/ns:CdtTrfTxInf/ns:RmtInf/ns:Ustrd', xml)[1] \
+           == 'remboursement 1ère quinzaine 09-2018'
 
 
 @pytest.mark.standalone

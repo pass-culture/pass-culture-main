@@ -7,7 +7,7 @@ import pytest
 from freezegun import freeze_time
 
 from domain.payments import create_payment_for_booking, filter_out_already_paid_for_bookings, create_payment_details, \
-    create_all_payments_details
+    create_all_payments_details, make_custom_message
 from domain.reimbursement import BookingReimbursement, ReimbursementRules
 from models import Offer, Venue, Booking
 from models.payment import Payment
@@ -17,6 +17,7 @@ from utils.test_utils import create_booking, create_stock, create_user, create_o
 
 
 @pytest.mark.standalone
+@freeze_time('2018-10-15 09:21:34')
 def test_create_payment_for_booking_with_common_information():
     # given
     user = create_user()
@@ -37,6 +38,7 @@ def test_create_payment_for_booking_with_common_information():
     assert payment.reimbursementRate == ReimbursementRules.PHYSICAL_OFFERS.value.rate
     assert payment.comment == None
     assert payment.author == 'batch'
+    assert payment.customMessage == 'pass Culture Pro - remboursement 2nde quinzaine 10-2018'
 
 
 @pytest.mark.standalone
@@ -320,3 +322,22 @@ class CreateAllPaymentsDetailsTest:
 
         # then
         assert len(details) == 3
+
+
+@pytest.mark.standalone
+class PaymentCustomMessageTest:
+    @pytest.mark.parametrize('date', [datetime(2018, 7, d) for d in range(1, 15)])
+    def test_in_first_half_of_a_month(self, date):
+        # when
+        message = make_custom_message(date)
+
+        # then
+        assert message == 'pass Culture Pro - remboursement 1ère quinzaine 07-2018'
+
+    @pytest.mark.parametrize('date', [datetime(2018, 7, d) for d in range(15, 31)])
+    def test_in_second_half_of_a_month(self, date):
+        # when
+        message = make_custom_message(date)
+
+        # then
+        assert message == 'pass Culture Pro - remboursement 2nde quinzaine 07-2018'

@@ -23,13 +23,14 @@ class InvalidTransactionXML(Exception):
 
 class Transaction:
     def __init__(self, creditor_iban: str, creditor_bic: str, creditor_name: str, creditor_siren: str,
-                 end_to_end_id: UUID, amount: Decimal):
+                 end_to_end_id: UUID, amount: Decimal, custom_message: str):
         self.creditor_iban = creditor_iban
         self.creditor_bic = creditor_bic
         self.creditor_name = creditor_name
         self.creditor_siren = creditor_siren
         self.end_to_end_id = end_to_end_id
         self.amount = amount
+        self.custom_message = custom_message
 
 
 def create_payment_for_booking(booking_reimbursement: BookingReimbursement) -> Payment:
@@ -39,6 +40,7 @@ def create_payment_for_booking(booking_reimbursement: BookingReimbursement) -> P
     payment.reimbursementRule = booking_reimbursement.reimbursement.value.description
     payment.reimbursementRate = booking_reimbursement.reimbursement.value.rate
     payment.author = 'batch'
+    payment.customMessage = make_custom_message(datetime.utcnow())
     venue = booking_reimbursement.booking.stock.resolvedOffer.venue
 
     if venue.iban:
@@ -81,7 +83,7 @@ def generate_transaction_file(payments: List[Payment], pass_culture_iban: str, p
         total_amount=total_amount,
         pass_culture_iban=pass_culture_iban,
         pass_culture_bic=pass_culture_bic,
-        initiating_party_id=remittance_code
+        initiating_party_id=remittance_code,
     )
 
 
@@ -122,6 +124,12 @@ def generate_wallet_balances_csv(wallet_balances: List[WalletBalance]) -> str:
     return output.getvalue()
 
 
+def make_custom_message(date: datetime.date) -> str:
+    month_and_year = date.strftime('%m-%Y')
+    period = '1ère' if date.day < 15 else '2nde'
+    return 'pass Culture Pro - remboursement %s quinzaine %s' % (period, month_and_year)
+
+
 def _group_payments_into_transactions(payments: List[Payment], message_id: str) -> List[Transaction]:
     payments_with_iban = sorted(filter(lambda x: x.iban, payments), key=lambda x: (x.iban, x.bic))
     payments_by_iban = itertools.groupby(payments_with_iban, lambda x: (x.iban, x.bic))
@@ -137,5 +145,5 @@ def _group_payments_into_transactions(payments: List[Payment], message_id: str) 
 
         transactions.append(
             Transaction(iban, bic, payments_of_iban[0].recipientName, payments_of_iban[0].recipientSiren, end_to_end_id,
-                        amount))
+                        amount, payments_of_iban[0].customMessage))
     return transactions

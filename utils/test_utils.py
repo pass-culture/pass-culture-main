@@ -685,6 +685,7 @@ def create_payment(booking, offerer, amount, author='test author', reimbursement
                    reimbursement_rate=Decimal(0.5),
                    transaction_message_id=None,
                    transaction_end_ot_end_id=None,
+                   custom_message='pass Culture Pro - remboursement 2nde quinzaine 07-2018',
                    idx=None):
     payment = Payment()
     payment.booking = booking
@@ -701,6 +702,7 @@ def create_payment(booking, offerer, amount, author='test author', reimbursement
     payment.reimbursementRate = reimbursement_rate
     payment.transactionMessageId = transaction_message_id
     payment.transactionEndToEndId = transaction_end_ot_end_id
+    payment.customMessage = custom_message
     payment.id = idx
     return payment
 
