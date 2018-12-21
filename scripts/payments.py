@@ -6,14 +6,15 @@ from typing import List
 
 from flask import current_app as app
 
-from domain.admin_emails import send_payment_transaction_email, send_payment_details_email
+from domain.admin_emails import send_payment_transaction_email, send_payment_details_email, send_wallet_balances_email
 from domain.payments import filter_out_already_paid_for_bookings, create_payment_for_booking, generate_transaction_file, \
-    validate_transaction_file, create_all_payments_details, generate_payment_details_csv
+    validate_transaction_file, create_all_payments_details, generate_payment_details_csv, generate_wallet_balances_csv
 from domain.reimbursement import find_all_booking_reimbursement
 from models import Offerer, PcObject
 from models.payment import Payment
 from models.payment_status import TransactionStatus
 from repository.booking_queries import find_final_offerer_bookings
+from repository.user_queries import get_all_users_wallet_balances
 from utils.logger import logger
 from utils.mailing import MailServiceException
 
@@ -21,6 +22,7 @@ PASS_CULTURE_IBAN = os.environ.get('PASS_CULTURE_IBAN', None)
 PASS_CULTURE_BIC = os.environ.get('PASS_CULTURE_BIC', None)
 PASS_CULTURE_REMITTANCE_CODE = os.environ.get('PASS_CULTURE_REMITTANCE_CODE', None)
 PASS_CULTURE_PAYMENTS_DETAILS_RECIPIENTS = os.environ.get('PASS_CULTURE_PAYMENTS_DETAILS_RECIPIENTS', None)
+PASS_CULTURE_WALLET_BALANCES_RECIPIENTS = os.environ.get('PASS_CULTURE_WALLET_BALANCES_RECIPIENTS', None)
 
 
 def generate_and_send_payments():
@@ -28,6 +30,7 @@ def generate_and_send_payments():
         payments = do_generate_payments()
         do_send_payments(payments, PASS_CULTURE_IBAN, PASS_CULTURE_BIC, PASS_CULTURE_REMITTANCE_CODE)
         do_send_payment_details(payments, PASS_CULTURE_PAYMENTS_DETAILS_RECIPIENTS)
+        do_send_wallet_balances(PASS_CULTURE_WALLET_BALANCES_RECIPIENTS)
     except Exception as e:
         print('ERROR: ' + str(e))
         traceback.print_tb(e.__traceback__)
@@ -93,4 +96,12 @@ def do_send_payment_details(payments: List[Payment], recipients: str) -> None:
 
 
 def do_send_wallet_balances(recipients: str) -> None:
-    pass
+    if not recipients:
+        logger.error('Missing PASS_CULTURE_WALLET_BALANCES_RECIPIENTS in environment variables')
+    else:
+        balances = get_all_users_wallet_balances()
+        csv = generate_wallet_balances_csv(balances)
+        try:
+            send_wallet_balances_email(csv, recipients, app.mailjet_client.send.create)
+        except MailServiceException as e:
+            logger.error('Error while sending users wallet balances email to MailJet', e)

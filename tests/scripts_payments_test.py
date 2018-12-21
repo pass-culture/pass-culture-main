@@ -9,7 +9,7 @@ from freezegun import freeze_time
 from models import PcObject
 from models.payment import Payment
 from models.payment_status import TransactionStatus
-from scripts.payments import do_generate_payments, do_send_payments, do_send_payment_details
+from scripts.payments import do_generate_payments, do_send_payments, do_send_payment_details, do_send_wallet_balances
 from tests.conftest import clean_database, mocked_mail
 from utils.test_utils import create_offerer, create_venue, create_thing_offer, create_stock_from_offer, \
     create_booking, create_user, create_deposit, create_payment
@@ -266,6 +266,36 @@ def test_do_send_payment_details_does_not_send_anything_if_recipients_are_missin
 
     # when
     do_send_payment_details(payments, None)
+
+    # then
+    app.mailjet_client.send.create.assert_not_called()
+
+
+@pytest.mark.standalone
+@clean_database
+@mocked_mail
+@freeze_time('2018-10-15 09:21:34')
+def test_do_send_wallet_balances_sends_a_csv_attachment(app):
+    # given
+    app.mailjet_client.send.create.return_value = Mock(status_code=200)
+
+    # when
+    do_send_wallet_balances('comptable@test.com')
+
+    # then
+    app.mailjet_client.send.create.assert_called_once()
+    args = app.mailjet_client.send.create.call_args
+    assert len(args[1]['data']['Attachments']) == 1
+    assert args[1]['data']['Attachments'][0]['ContentType'] == 'text/csv'
+
+
+@pytest.mark.standalone
+@mocked_mail
+def test_do_send_wallet_balances_does_not_send_anything_if_recipients_are_missing(app):
+    # given
+
+    # when
+    do_send_wallet_balances(None)
 
     # then
     app.mailjet_client.send.create.assert_not_called()
