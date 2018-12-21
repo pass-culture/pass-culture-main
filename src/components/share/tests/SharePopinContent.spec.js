@@ -1,3 +1,4 @@
+// jest --env=jsdom ./src/components/share/tests/SharePopinContent --watch
 import React from 'react'
 import { shallow } from 'enzyme'
 

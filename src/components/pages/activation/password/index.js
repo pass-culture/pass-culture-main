@@ -3,6 +3,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
+import { Redirect } from 'react-router-dom'
 
 import FormInputs from './FormInputs'
 import FormWrapper from './FormWrapper'
@@ -16,7 +17,8 @@ export class RawActivationPassword extends React.PureComponent {
   }
 
   handleActivationLoginRequestFail = () => {
-    // redirect to error page
+    const { history } = this.props
+    history.push('/activation/error')
   }
 
   handleActivationPasswordRequestFail = formResolver => (state, action) => {
@@ -53,6 +55,10 @@ export class RawActivationPassword extends React.PureComponent {
 
   onFormSubmit = formValues => {
     this.setState({ isLoading: true })
+    // debug
+    // const promise = new Promise(resolve =>
+    //   setTimeout(this.savePasswordRequestSuccess(resolve, formValues), 3000)
+    // )
     const { sendActivationPasswordForm } = this.props
     const promise = sendActivationPasswordForm(
       { ...formValues },
@@ -65,6 +71,11 @@ export class RawActivationPassword extends React.PureComponent {
   render() {
     const { isLoading } = this.state
     const { initialValues } = this.props
+    const isValidURL =
+      initialValues && initialValues.email && initialValues.token
+    if (!isValidURL) {
+      return <Redirect to="/activation/error" />
+    }
     return (
       <FormWrapper
         isLoading={isLoading}
@@ -99,6 +110,7 @@ export class RawActivationPassword extends React.PureComponent {
 }
 
 RawActivationPassword.propTypes = {
+  history: PropTypes.object.isRequired,
   initialValues: PropTypes.object.isRequired,
   loginUserAfterPasswordSaveSuccess: PropTypes.func.isRequired,
   sendActivationPasswordForm: PropTypes.func.isRequired,

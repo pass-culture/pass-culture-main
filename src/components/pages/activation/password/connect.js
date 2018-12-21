@@ -6,6 +6,7 @@ export const mapDispatchToProps = dispatch => ({
   loginUserAfterPasswordSaveSuccess: (values, fail, success) => {
     const { email: identifier, newPassword: password } = values
     const options = {
+      // AzertyAzertyP1$
       body: { identifier, password },
       handleFail: fail,
       handleSuccess: success,

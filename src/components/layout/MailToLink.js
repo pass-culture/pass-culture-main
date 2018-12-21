@@ -1,10 +1,10 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-import createMailToLink from './utils'
+import createMailToLink from '../../helpers/createMailToLink'
 
 class MailToLink extends React.PureComponent {
-  handleClick = event => {
+  handleObfuscatedClick = event => {
     event.preventDefault()
     const { email, headers } = this.props
     // NOTE -> il doit y avoir un peu mieux, par exemple passer par l'API HTML5
@@ -23,7 +23,11 @@ class MailToLink extends React.PureComponent {
   renderObfuscatedLink = () => {
     const { email, obfuscate, headers, children, ...others } = this.props
     return (
-      <a onClick={this.handleClick} href="mailto:obfuscated" {...others}>
+      <a
+        href="mailto:obfuscated"
+        onClick={this.handleObfuscatedClick}
+        {...others}
+      >
         {children}
       </a>
     )
