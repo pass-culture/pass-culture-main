@@ -239,7 +239,7 @@ def test_send_payment_details_email_when_mailjet_status_code_400_raises_MailServ
 
 
 @pytest.mark.standalone
-def test_send_wallet_balances_email_email_when_mailjet_status_code_200_sends_email_to_pass_culture(app):
+def test_send_wallet_balances_email_when_mailjet_status_code_200_sends_email_to_pass_culture(app):
     # Given
     csv = '"header A","header B","header C","header D"\n"part A","part B","part C","part D"\n'
     recipients = ['comptable1@culture.fr', 'comptable2@culture.fr']
