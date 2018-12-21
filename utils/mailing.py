@@ -336,10 +336,25 @@ def make_payment_details_email(csv: str) -> dict:
                  "Name": "pass Culture Pro"},
         'Subject': "Détails des paiements pass Culture Pro - {}".format(datetime.strftime(now, "%Y-%m-%d")),
         'Attachments': [{"ContentType": "text/csv",
-                         "Filename": "details_des_paiements_{}.xml".format(datetime.strftime(now, "%Y%m%d")),
+                         "Filename": "details_des_paiements_{}.csv".format(datetime.strftime(now, "%Y%m%d")),
                          "Base64Content": csv_b64encode}],
         'Html-part': ""
     }
+
+
+def make_wallet_balances_email(csv: str) -> dict:
+    now = datetime.utcnow()
+    csv_b64encode = base64.b64encode(csv.encode())
+    return {
+        'From': {"Email": "passculture@beta.gouv.fr",
+                 "Name": "pass Culture Pro"},
+        'Subject': "Soldes des utilisateurs pass Culture - {}".format(datetime.strftime(now, "%Y-%m-%d")),
+        'Attachments': [{"ContentType": "text/csv",
+                         "Filename": "soldes_des_utilisateurs_{}.csv".format(datetime.strftime(now, "%Y%m%d")),
+                         "Base64Content": csv_b64encode}],
+        'Html-part': ""
+    }
+
 
 
 def make_venue_validation_confirmation_email(venue):

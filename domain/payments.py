@@ -13,6 +13,7 @@ from lxml import etree
 from domain.reimbursement import BookingReimbursement
 from models.payment import Payment, PaymentDetails
 from models.payment_status import TransactionStatus
+from models.user import WalletBalances
 from repository.booking_queries import find_date_used
 
 
@@ -108,6 +109,15 @@ def generate_payment_details_csv(payments_details: List[PaymentDetails]) -> str:
     csv_lines = [details.as_csv_row() for details in payments_details]
     writer = csv.writer(output, quoting=csv.QUOTE_NONNUMERIC)
     writer.writerow(PaymentDetails.CSV_HEADER)
+    writer.writerows(csv_lines)
+    return output.getvalue()
+
+
+def generate_wallet_balances_csv(wallet_balances: List[WalletBalances]) -> str:
+    output = StringIO()
+    csv_lines = [balance.as_csv_row() for balance in wallet_balances]
+    writer = csv.writer(output, quoting=csv.QUOTE_NONNUMERIC)
+    writer.writerow(WalletBalances.CSV_HEADER)
     writer.writerows(csv_lines)
     return output.getvalue()
 

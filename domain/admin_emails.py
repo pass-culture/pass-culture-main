@@ -40,6 +40,13 @@ def send_payment_details_email(csv_attachment, recipients, send_create_email):
     check_if_email_sent(mail_result)
 
 
+def send_wallet_balances_email(csv_attachment, recipients, send_create_email):
+    email = make_payment_details_email(csv_attachment)
+    email['Html-part'], email['To'] = compute_email_html_part_and_recipients("", recipients)
+    mail_result = send_create_email(data=email)
+    check_if_email_sent(mail_result)
+
+
 def send_venue_validation_email(venue, send_create_email):
     email = make_venue_validation_email(venue)
     recipients = ['passculture@beta.gouv.fr']

@@ -1,31 +1,91 @@
-from domain.payments import generate_payment_details_csv
+from decimal import Decimal
+
+import pytest
+
+from domain.payments import generate_payment_details_csv, generate_wallet_balances_csv
+from models.user import WalletBalances
 from utils.test_utils import create_payment_details
 
 
-def test_generate_payment_details_csv_with_headers_and_three_payment_details_lines():
-    # given
-    payments_details = [
-        create_payment_details(),
-        create_payment_details(),
-        create_payment_details()
-    ]
+@pytest.mark.standalone
+class PaymentDetailsCSVTest:
+    def test_generate_payment_details_csv_has_human_readable_header(self):
+        # given
+        payments_details = [
+            create_payment_details(),
+            create_payment_details(),
+            create_payment_details()
+        ]
 
-    # when
-    csv = generate_payment_details_csv(payments_details)
+        # when
+        csv = generate_payment_details_csv(payments_details)
 
-    # then
-    assert _count_non_empty_lines(csv) == 4
+        # then
+        assert _get_header(csv) == '"ID de l\'utilisateur","Email de l\'utlisateur",' \
+                                   '"Raison social de la structure","SIREN",' \
+                                   '"Raison sociale du lieu","SIRET",' \
+                                   '"Nom de l\'offre","Type de l\'offre",' \
+                                   '"Date de la réservation","Prix de la réservation","Date de validation",' \
+                                   '"IBAN","Message ID","Transaction ID",' \
+                                   '"Taux de remboursement","Montant remboursé à l\'offreur"\r'
+
+    def test_generate_payment_details_csv_with_headers_and_three_payment_details_lines(self):
+        # given
+        payments_details = [
+            create_payment_details(),
+            create_payment_details(),
+            create_payment_details()
+        ]
+
+        # when
+        csv = generate_payment_details_csv(payments_details)
+
+        # then
+        assert _count_non_empty_lines(csv) == 4
+
+    def test_generate_payment_details_csv_with_headers_and_zero_payment_details_lines(self):
+        # given
+        payments_details = []
+
+        # when
+        csv = generate_payment_details_csv(payments_details)
+
+        # then
+        assert _count_non_empty_lines(csv) == 1
 
 
-def test_generate_payment_details_csv_with_headers_and_zero_payment_details_lines():
-    # given
-    payments_details = []
+@pytest.mark.standalone
+class WalletBalancesCSVTest:
+    def test_generate_wallet_balances_csv_has_human_readable_header(self):
+        # given
+        balances = [
+            WalletBalances(123, Decimal(100), Decimal(50)),
+            WalletBalances(456, Decimal(120), Decimal(60)),
+            WalletBalances(789, Decimal(80), Decimal(40))
+        ]
+        # when
+        csv = generate_wallet_balances_csv(balances)
 
-    # when
-    csv = generate_payment_details_csv(payments_details)
+        # then
+        assert _get_header(csv) == '"ID de l\'utilisateur","Solde théorique","Solde réel"\r'
 
-    # then
-    assert _count_non_empty_lines(csv) == 1
+    def test_generate_wallet_balances_csv_with_headers_and_three_user_wallet_balances_lines(self):
+        # given
+        balances = [
+            WalletBalances(123, Decimal(100), Decimal(50)),
+            WalletBalances(456, Decimal(120), Decimal(60)),
+            WalletBalances(789, Decimal(80), Decimal(40))
+        ]
+
+        # when
+        csv = generate_wallet_balances_csv(balances)
+
+        # then
+        assert _count_non_empty_lines(csv) == 4
+
+
+def _get_header(csv):
+    return csv.split('\n')[0]
 
 
 def _count_non_empty_lines(csv):

@@ -92,5 +92,5 @@ def do_send_payment_details(payments: List[Payment], recipients: str) -> None:
             logger.error('Error while sending payment details email to MailJet', e)
 
 
-def do_send_wallet_balances(payments: List[Payment], recipients: str) -> None:
+def do_send_wallet_balances(recipients: str) -> None:
     pass

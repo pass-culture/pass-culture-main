@@ -18,7 +18,7 @@ from utils.mailing import make_user_booking_recap_email, \
     make_venue_validation_email, \
     make_venue_validation_confirmation_email, \
     make_batch_cancellation_email, make_payment_transaction_email, make_user_validation_email, \
-    make_payment_details_email
+    make_payment_details_email, make_wallet_balances_email
 from utils.test_utils import create_stock_with_event_offer, create_stock_with_thing_offer, \
     create_user, create_booking, MOCKED_SIREN_ENTREPRISES_API_RETURN, create_user_offerer, \
     create_offerer, create_venue, create_thing_offer, create_event_offer, create_stock_from_offer, \
@@ -886,7 +886,26 @@ def test_make_payment_details_email():
     assert email["Subject"] == "Détails des paiements pass Culture Pro - 2018-10-15"
     assert email["Html-part"] == ""
     assert email["Attachments"] == [{"ContentType": "text/csv",
-                                     "Filename": "details_des_paiements_20181015.xml",
+                                     "Filename": "details_des_paiements_20181015.csv",
+                                     "Base64Content": b'ImhlYWRlciBBIiwiaGVhZGVyIEIiLCJoZWFkZXIgQyIsImhlYWRlciBE'
+                                                      b'IgoicGFydCBBIiwicGFydCBCIiwicGFydCBDIiwicGFydCBEIgo='}]
+
+
+@freeze_time('2018-10-15 09:21:34')
+def test_make_wallet_balances_email():
+    # Given
+    csv = '"header A","header B","header C","header D"\n"part A","part B","part C","part D"\n'
+
+    # When
+    email = make_wallet_balances_email(csv)
+
+    # Then
+    assert email["From"] == {"Email": "passculture@beta.gouv.fr",
+                             "Name": "pass Culture Pro"}
+    assert email["Subject"] == "Soldes des utilisateurs pass Culture - 2018-10-15"
+    assert email["Html-part"] == ""
+    assert email["Attachments"] == [{"ContentType": "text/csv",
+                                     "Filename": "soldes_des_utilisateurs_20181015.csv",
                                      "Base64Content": b'ImhlYWRlciBBIiwiaGVhZGVyIEIiLCJoZWFkZXIgQyIsImhlYWRlciBE'
                                                       b'IgoicGFydCBBIiwicGFydCBCIiwicGFydCBDIiwicGFydCBEIgo='}]
 

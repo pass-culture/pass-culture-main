@@ -23,8 +23,8 @@ def test_get_all_users_wallet_balances_sorted_by_user_id(app):
     stock3 = create_stock(price=40, offer=offer)
     PcObject.check_and_save(stock1, stock2, stock3, user1, user2)
 
-    _create_balances_for_user1(stock1, stock2, stock3, user1, venue)
     _create_balances_for_user2(stock3, user2, venue)
+    _create_balances_for_user1(stock1, stock2, stock3, user1, venue)
 
     # when
     balances = get_all_users_wallet_balances()
