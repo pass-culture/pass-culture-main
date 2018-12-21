@@ -145,7 +145,7 @@ class User(PcObject,
         return len(self.deposits) > 0
 
 
-class WalletBalances:
+class WalletBalance:
     CSV_HEADER = [
         'ID de l\'utilisateur',
         'Solde théorique',

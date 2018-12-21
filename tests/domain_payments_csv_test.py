@@ -3,7 +3,7 @@ from decimal import Decimal
 import pytest
 
 from domain.payments import generate_payment_details_csv, generate_wallet_balances_csv
-from models.user import WalletBalances
+from models.user import WalletBalance
 from utils.test_utils import create_payment_details
 
 
@@ -59,9 +59,9 @@ class WalletBalancesCSVTest:
     def test_generate_wallet_balances_csv_has_human_readable_header(self):
         # given
         balances = [
-            WalletBalances(123, Decimal(100), Decimal(50)),
-            WalletBalances(456, Decimal(120), Decimal(60)),
-            WalletBalances(789, Decimal(80), Decimal(40))
+            WalletBalance(123, Decimal(100), Decimal(50)),
+            WalletBalance(456, Decimal(120), Decimal(60)),
+            WalletBalance(789, Decimal(80), Decimal(40))
         ]
         # when
         csv = generate_wallet_balances_csv(balances)
@@ -72,9 +72,9 @@ class WalletBalancesCSVTest:
     def test_generate_wallet_balances_csv_with_headers_and_three_user_wallet_balances_lines(self):
         # given
         balances = [
-            WalletBalances(123, Decimal(100), Decimal(50)),
-            WalletBalances(456, Decimal(120), Decimal(60)),
-            WalletBalances(789, Decimal(80), Decimal(40))
+            WalletBalance(123, Decimal(100), Decimal(50)),
+            WalletBalance(456, Decimal(120), Decimal(60)),
+            WalletBalance(789, Decimal(80), Decimal(40))
         ]
 
         # when

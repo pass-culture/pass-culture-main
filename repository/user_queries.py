@@ -4,7 +4,7 @@ from sqlalchemy import func
 
 from models import User, UserOfferer, Offerer, RightsType
 from models.db import db
-from models.user import WalletBalances
+from models.user import WalletBalance
 
 
 def find_user_by_email(email):
@@ -24,7 +24,7 @@ def find_all_emails_of_user_offerers_admins(offerer_id):
                 id=offerer_id).all()]
 
 
-def get_all_users_wallet_balances() -> List[WalletBalances]:
+def get_all_users_wallet_balances() -> List[WalletBalance]:
     wallet_balances = db.session.query(User.id,
                                        func.get_wallet_balance(User.id, False),
                                        func.get_wallet_balance(User.id, True)
@@ -33,5 +33,5 @@ def get_all_users_wallet_balances() -> List[WalletBalances]:
         .order_by(User.id) \
         .all()
 
-    instantiate_wallet_balances = lambda u: WalletBalances(u[0], u[1], u[2])
-    return list(map(instantiate_wallet_balances, wallet_balances))
+    instantiate_result_set = lambda u: WalletBalance(u[0], u[1], u[2])
+    return list(map(instantiate_result_set, wallet_balances))
