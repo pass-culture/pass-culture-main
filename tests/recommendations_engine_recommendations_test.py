@@ -12,20 +12,6 @@ from utils.test_utils import create_user, \
                       create_stock_from_offer, \
                       create_mediation
 
-@clean_database
-@pytest.mark.standalone
-def test_create_recommendations_for_search(app):
-    # Given
-    user = create_user()
-    search_params = {}
-
-    # TODO or cherry pick to another issue
-
-    # When
-    recommendations = create_recommendations_for_search(user=user, search_params=search_params)
-
-    # Then
-    assert len(recommendations) == 2
 
 @clean_database
 @pytest.mark.standalone
