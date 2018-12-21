@@ -1,23 +1,32 @@
-// jest -env=jsdom ./src/components/pages/tests/BetaPage --watch
+// jest --env=jsdom ./src/components/pages/tests/BetaPage --watch
 import React from 'react'
-import { shallow } from 'enzyme'
+import { render } from 'enzyme'
+import { MemoryRouter } from 'react-router-dom'
 
-import BetaPage from '../BetaPage'
+import { RawBetaPage } from '../BetaPage'
 
-describe('src | components | pages | BetaPage', () => {
-  describe('snapshot', () => {
-    it('should match snapshot', () => {
-      // given
-      const props = {
-        errors: {},
-      }
-
-      // when
-      const wrapper = shallow(<BetaPage {...props} />)
-
-      // then
-      expect(wrapper).toBeDefined()
-      expect(wrapper).toMatchSnapshot()
-    })
+describe('src | components | pages | RawBetaPage', () => {
+  it('should match snapshot', () => {
+    // when
+    const wrapper = render(
+      <MemoryRouter initialEntries={['/beta']}>
+        <RawBetaPage />
+      </MemoryRouter>
+    )
+    // then
+    expect(wrapper).toBeDefined()
+    expect(wrapper).toMatchSnapshot()
+  })
+  it('should contains a link to inscription page', () => {
+    // when
+    const wrapper = render(
+      <MemoryRouter initialEntries={['/beta']}>
+        <RawBetaPage />
+      </MemoryRouter>
+    )
+    const element = wrapper.find('#beta-inscription-link')
+    // then
+    expect(element).toHaveLength(1)
+    expect(element.prop('href')).toEqual('/inscription')
   })
 })
