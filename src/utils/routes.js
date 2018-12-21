@@ -2,6 +2,7 @@ import React from 'react'
 import { Redirect } from 'react-router-dom'
 
 import BetaPage from '../components/pages/BetaPage'
+import ActivationPage from '../components/pages/activation'
 import MyBookingsPage from '../components/pages/MyBookingsPage'
 import DiscoveryPage from '../components/pages/discovery'
 import FavoritesPage from '../components/pages/FavoritesPage'
@@ -23,6 +24,11 @@ const routes = [
     component: BetaPage,
     path: '/beta',
     title: "Bienvenue dans l'avant-première du Pass Culture",
+  },
+  {
+    component: ActivationPage,
+    path: '/activation/:token?/:view?',
+    title: 'Activation',
   },
   {
     component: Signin,

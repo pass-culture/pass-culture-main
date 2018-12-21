@@ -1,4 +1,4 @@
-/* eslint no-console: 0, max-nested-callbacks: 0 */
+// jest --env=jsdom ./src/utils/tests/routes-utils --watch
 import { getReactRoutes, getMainMenuItems } from '../routes-utils'
 
 import routes from '../routes'
@@ -71,6 +71,7 @@ describe('getMainMenuItems', () => {
       null, // Signin/Connexion
       null, // Signup/Inscription
       null, // ForgotPasswordPage
+      null, // Activation
       {
         component: DiscoveryPage,
         disabled: false,
