@@ -55,6 +55,8 @@ class Payment(PcObject, Model):
 
     transactionEndToEndId = Column(UUID(as_uuid=True), nullable=True)
 
+    customMessage = Column(String(140), nullable=True)
+
     def setStatus(self, status: TransactionStatus, detail: str = None):
         payment_status = PaymentStatus()
         payment_status.status = status
