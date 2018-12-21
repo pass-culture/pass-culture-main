@@ -1,5 +1,6 @@
 """User model"""
 from datetime import datetime
+from decimal import Decimal
 
 import bcrypt
 from sqlalchemy import Binary, Boolean, Column, DateTime, String, func, CheckConstraint
@@ -142,3 +143,10 @@ class User(PcObject,
     @property
     def wallet_is_activated(self):
         return len(self.deposits) > 0
+
+
+class WalletBalances:
+    def __init__(self, user_id: int, current_wallet_balance: Decimal, real_wallet_balance: Decimal):
+        self.user_id = user_id
+        self.current_balance = current_wallet_balance
+        self.real_balance = real_wallet_balance

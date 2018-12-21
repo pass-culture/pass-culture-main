@@ -90,3 +90,7 @@ def do_send_payment_details(payments: List[Payment], recipients: str) -> None:
             send_payment_details_email(csv, recipients, app.mailjet_client.send.create)
         except MailServiceException as e:
             logger.error('Error while sending payment details email to MailJet', e)
+
+
+def do_send_wallet_balances(payments: List[Payment], recipients: str) -> None:
+    pass
