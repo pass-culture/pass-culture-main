@@ -18,7 +18,13 @@ import currentRecommendationSelector from '../../../selectors/currentRecommendat
 import nextRecommendationSelector from '../../../selectors/nextRecommendation'
 import previousRecommendationSelector from '../../../selectors/previousRecommendation'
 import recommendationsSelector from '../../../selectors/recommendations'
-import { PREVIOUS_NEXT_LIMIT, isSameReco } from '../../../helpers/discovery'
+import {
+  PREVIOUS_NEXT_LIMIT,
+  isRecommendations,
+  isCurrentRecommendation,
+  isNewRecommendations,
+  isNewCurrentRecommendation,
+} from '../../../helpers/discovery'
 
 export class RawDeck extends Component {
   constructor(props) {
@@ -46,30 +52,34 @@ export class RawDeck extends Component {
       'DECK ---> componentDidUpdate',
       previousProps.recommendations.length
     )
-    const { history } = this.props
+    const { currentRecommendation, history, recommendations } = this.props
 
-    // const withRecommendationsAvailable = isRecommendations(
-    //   recommendations,
-    //   previousProps
-    // )
-    // const withCurrentRecommandationAvailable = isCurrentRecommendation(
-    //   currentRecommendation,
-    //   previousProps
-    // )
-    // const withNewRecommendationsAvailable = isNewRecommendations(
-    //   recommendations,
-    //   previousProps
-    // )
-    // const withNewCurrentRecommandationAvailable = isNewCurrentRecommendation(
-    //   currentRecommendation,
-    //   previousProps
-    // )
+    const withRecommendationsAvailable = isRecommendations(
+      recommendations,
+      previousProps
+    )
+    const withCurrentRecommandationAvailable = isCurrentRecommendation(
+      currentRecommendation,
+      previousProps
+    )
+    const withNewRecommendationsAvailable = isNewRecommendations(
+      recommendations,
+      previousProps
+    )
+    const withNewCurrentRecommandationAvailable = isNewCurrentRecommendation(
+      currentRecommendation,
+      previousProps
+    )
     this.handleUrlFlip(history, previousProps.history)
 
-    // if (!withRecommendationsAvailable || !withCurrentRecommandationAvailable || !withNewRecommendationsAvailable || !withNewCurrentRecommandationAvailable) {
-    //   console.log('in componentDidUpdate handleRefreshedDraggableKey');
-    //   this.handleRefreshedDraggableKey()
-    // }
+    if (
+      !withRecommendationsAvailable ||
+      !withCurrentRecommandationAvailable ||
+      !withNewRecommendationsAvailable ||
+      !withNewCurrentRecommandationAvailable
+    ) {
+      this.handleRefreshedDraggableKey()
+    }
   }
 
   componentWillUnmount() {
@@ -137,66 +147,6 @@ export class RawDeck extends Component {
     this.setState(previousState => ({
       refreshKey: previousState.refreshKey + 1,
     }))
-  }
-
-  handleSetDateRead = prevProps => {
-    const {
-      currentRecommendation,
-      dispatch,
-      isShownDetails,
-      readTimeout,
-    } = this.props
-    const { isRead } = this.state
-
-    const withSameReco = isSameReco(currentRecommendation, prevProps)
-    if (withSameReco) return
-
-    const isCurrentReco =
-      this.currentReadRecommendationId !== currentRecommendation.id
-    // we need to delete the readTimeout in the case
-    // where we were on a previous reco
-    // and we just swipe to another before triggering the end of the readTimeout
-    if (isCurrentReco) {
-      clearTimeout(this.readTimeout)
-      delete this.readTimeout
-    }
-
-    // if the reco is not read yet
-    // we trigger a timeout in the end of which
-    // we will request a dateRead Patch if we are still
-    // on the same reco
-    if (
-      !this.readTimeout &&
-      !isShownDetails &&
-      !currentRecommendation.dateRead
-    ) {
-      // this.setState({ isRead: false })
-      this.currentReadRecommendationId = currentRecommendation.id
-      this.readTimeout = setTimeout(() => {
-        if (currentRecommendation && !currentRecommendation.dateRead) {
-          dispatch(
-            requestData(
-              'PATCH',
-              `recommendations/${currentRecommendation.id}`,
-              {
-                body: {
-                  dateRead: moment().toISOString(),
-                },
-              }
-            )
-          )
-          // this.setState({ isRead: true })
-          clearTimeout(this.readTimeout)
-          delete this.readTimeout
-        }
-      }, readTimeout)
-    } else if (
-      !isRead &&
-      currentRecommendation &&
-      currentRecommendation.dateRead
-    ) {
-      // this.setState({ isRead: true })
-    }
   }
 
   handleShowrecommandationDetails = () => {
@@ -316,6 +266,7 @@ RawDeck.defaultProps = {
   nextRecommendation: null,
   noDataTimeout: 20000,
   previousRecommendation: null,
+  readTimeout: 2000,
   verticalSlideRatio: 0.1,
 }
 

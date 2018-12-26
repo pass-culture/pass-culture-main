@@ -80,7 +80,6 @@ RawCard.defaultProps = {
 RawCard.propTypes = {
   handleClickRecommendation: PropTypes.func.isRequired,
   handleReadRecommendation: PropTypes.func.isRequired,
-
   isShownDetails: PropTypes.bool,
   position: PropTypes.string.isRequired,
   recommendation: PropTypes.object,

@@ -20,7 +20,7 @@ describe('src | components | pages | discovery | card | connect', () => {
 
       // then
       const expected = {
-        isFlipped: false,
+        isShownDetails: false,
         recommendation: undefined,
       }
       expect(result).toStrictEqual(expected)

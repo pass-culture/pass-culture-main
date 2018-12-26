@@ -30,7 +30,7 @@ export const mapStateToProps = (state, ownProps) => {
     ownProps.position
   )
   return {
-    isFlipped: state.verso.isFlipped,
+    isShownDetails: state.verso.isShownDetails,
     recommendation,
   }
 }
