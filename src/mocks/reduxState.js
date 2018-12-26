@@ -15550,10 +15550,10 @@ const state = {
     wallet_balance: 0,
     wallet_is_activated: false,
   },
-  verso: {
+  card: {
     draggable: true,
     isActive: false,
-    isShownDetails: true,
+    areDetailsVisible: true,
     unFlippable: false,
   },
   _persist: {

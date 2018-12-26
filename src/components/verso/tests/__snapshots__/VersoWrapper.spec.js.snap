@@ -4,12 +4,12 @@ exports[`src | components | verso | RawVersoWrapper snapshot should match snapsh
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <RawVersoWrapper
+    areDetailsVisible={true}
     className="className"
     currentRecommendation={null}
     dispatchMakeDraggable={[MockFunction]}
     dispatchMakeUndraggable={[MockFunction]}
     draggable={true}
-    isShownDetails={true}
   >
     Object {
       "addMatchers": [Function],

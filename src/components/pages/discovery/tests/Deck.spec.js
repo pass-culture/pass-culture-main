@@ -9,6 +9,7 @@ const handleDataRequestMock = jest.fn()
 describe('src | components | pages | discovery | Index | DiscoveryPage', () => {
   // given
   const initialProps = {
+    areDetailsVisible: false,
     backButton: true,
     currentRecommendation: {},
     dispatch: dispatchMock,
@@ -21,7 +22,6 @@ describe('src | components | pages | discovery | Index | DiscoveryPage', () => 
       },
     },
     isFlipDisabled: false,
-    isShownDetails: false,
     match: {},
     nextLimit: 50,
     previousLimit: 40,
@@ -59,6 +59,7 @@ describe('src | components | pages | discovery | Index | DiscoveryPage', () => 
         it('should call handleUrlFlip with history', async () => {
           // given
           const props = {
+            areDetailsVisible: false,
             backButton: true,
             dispatch: dispatchMock,
             draggable: true,
@@ -70,7 +71,6 @@ describe('src | components | pages | discovery | Index | DiscoveryPage', () => 
               },
             },
             isFlipDisabled: false,
-            isShownDetails: false,
             match: {
               params: {
                 mediationId: 'HM',
@@ -102,6 +102,7 @@ describe('src | components | pages | discovery | Index | DiscoveryPage', () => 
         it('should not refresh the key of draggable component', () => {
           // given
           const props = {
+            areDetailsVisible: false,
             backButton: true,
             currentRecommendation: {
               bookingsIds: [],
@@ -116,7 +117,6 @@ describe('src | components | pages | discovery | Index | DiscoveryPage', () => 
               },
             },
             isFlipDisabled: false,
-            isShownDetails: false,
             match: {
               params: {
                 mediationId: 'HM',
@@ -141,6 +141,7 @@ describe('src | components | pages | discovery | Index | DiscoveryPage', () => 
         it('should call handleRefreshedDraggableKey', () => {
           // given
           const props = {
+            areDetailsVisible: false,
             backButton: true,
             dispatch: dispatchMock,
             draggable: true,
@@ -152,7 +153,6 @@ describe('src | components | pages | discovery | Index | DiscoveryPage', () => 
               },
             },
             isFlipDisabled: false,
-            isShownDetails: false,
             match: {
               params: {
                 mediationId: 'HM',
@@ -180,6 +180,7 @@ describe('src | components | pages | discovery | Index | DiscoveryPage', () => 
         xit('should dispatch handleUrlFlip', () => {
           // given
           const props = {
+            areDetailsVisible: false,
             backButton: true,
             dispatch: dispatchMock,
             draggable: true,
@@ -191,7 +192,6 @@ describe('src | components | pages | discovery | Index | DiscoveryPage', () => 
               },
             },
             isFlipDisabled: false,
-            isShownDetails: false,
             match: {
               params: {
                 mediationId: 'HM',
@@ -206,6 +206,7 @@ describe('src | components | pages | discovery | Index | DiscoveryPage', () => 
           }
 
           const newProps = {
+            areDetailsVisible: true,
             history: {
               location: {
                 key: 'odnw65',
@@ -213,7 +214,7 @@ describe('src | components | pages | discovery | Index | DiscoveryPage', () => 
                 search: '?to=verso',
               },
             },
-            isShownDetails: true,
+
           }
 
           // when
@@ -236,6 +237,7 @@ describe('src | components | pages | discovery | Index | DiscoveryPage', () => 
         it('should call handleRefreshedDraggableKey ???', () => {
           // given
           const props = {
+            areDetailsVisible: false,
             backButton: true,
             dispatch: dispatchMock,
             draggable: true,
@@ -247,7 +249,6 @@ describe('src | components | pages | discovery | Index | DiscoveryPage', () => 
               },
             },
             isFlipDisabled: false,
-            isShownDetails: false,
             match: {
               params: {
                 mediationId: 'HM',

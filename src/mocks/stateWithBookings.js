@@ -2112,10 +2112,10 @@ const stateWithBookings = {
     wallet_balance: 270,
     wallet_is_activated: true,
   },
-  verso: {
+  card: {
     draggable: true,
     isActive: false,
-    isShownDetails: false,
+    areDetailsVisible: false,
     unFlippable: false,
   },
   _persist: {

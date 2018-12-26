@@ -10,20 +10,20 @@ import withSizes from 'react-sizes'
 import Card from './Card'
 import DeckNavigation from './DeckNavigation'
 import {
-  closerecommandationDetails,
-  showrecommandationDetails,
+  closeCardDetails,
+  showCardDetails,
   flipUnflippable,
-} from '../../../reducers/recommandationDetails'
+} from '../../../reducers/card'
 import currentRecommendationSelector from '../../../selectors/currentRecommendation'
 import nextRecommendationSelector from '../../../selectors/nextRecommendation'
 import previousRecommendationSelector from '../../../selectors/previousRecommendation'
 import recommendationsSelector from '../../../selectors/recommendations'
 import {
   PREVIOUS_NEXT_LIMIT,
-  isRecommendations,
-  isCurrentRecommendation,
-  isNewRecommendations,
-  isNewCurrentRecommendation,
+  // isRecommendations,
+  // isCurrentRecommendation,
+  // isNewRecommendations,
+  // isNewCurrentRecommendation,
 } from '../../../helpers/discovery'
 
 export class RawDeck extends Component {
@@ -52,40 +52,41 @@ export class RawDeck extends Component {
       'DECK ---> componentDidUpdate',
       previousProps.recommendations.length
     )
-    const { currentRecommendation, history, recommendations } = this.props
+    const { history } = this.props
 
-    const withRecommendationsAvailable = isRecommendations(
-      recommendations,
-      previousProps
-    )
-    const withCurrentRecommandationAvailable = isCurrentRecommendation(
-      currentRecommendation,
-      previousProps
-    )
-    const withNewRecommendationsAvailable = isNewRecommendations(
-      recommendations,
-      previousProps
-    )
-    const withNewCurrentRecommandationAvailable = isNewCurrentRecommendation(
-      currentRecommendation,
-      previousProps
-    )
+    // const withRecommendationsAvailable = isRecommendations(
+    //   recommendations,
+    //   previousProps
+    // )
+    // const withCurrentRecommandationAvailable = isCurrentRecommendation(
+    //   currentRecommendation,
+    //   previousProps
+    // )
+    // const withNewRecommendationsAvailable = isNewRecommendations(
+    //   recommendations,
+    //   previousProps
+    // )
+    // const withNewCurrentRecommandationAvailable = isNewCurrentRecommendation(
+    //   currentRecommendation,
+    //   previousProps
+    // )
+
     this.handleUrlFlip(history, previousProps.history)
 
-    if (
-      !withRecommendationsAvailable ||
-      !withCurrentRecommandationAvailable ||
-      !withNewRecommendationsAvailable ||
-      !withNewCurrentRecommandationAvailable
-    ) {
-      this.handleRefreshedDraggableKey()
-    }
+    // if (
+    //   !withRecommendationsAvailable ||
+    //   !withCurrentRecommandationAvailable ||
+    //   !withNewRecommendationsAvailable ||
+    //   !withNewCurrentRecommandationAvailable
+    // ) {
+    //   this.handleRefreshedDraggableKey()
+    // }
   }
 
   componentWillUnmount() {
     Logger.log('DECK ---> componentWillUnmount')
     const { dispatch, readTimeout, noDataTimeout } = this.props
-    dispatch(closerecommandationDetails())
+    dispatch(closeCardDetails())
 
     if (readTimeout) clearTimeout(readTimeout)
     if (noDataTimeout) clearTimeout(noDataTimeout)
@@ -104,9 +105,9 @@ export class RawDeck extends Component {
     const index = get(currentRecommendation, 'index', 0)
     const offset = (data.x + width * index) / width
     if (draggable && data.y > height * verticalSlideRatio) {
-      this.handleCloserecommandationDetails()
+      this.handleClosecardDetails()
     } else if (data.y < -height * verticalSlideRatio) {
-      this.handleShowrecommandationDetails()
+      this.handleShowcardDetails()
     } else if (offset > horizontalSlideRatio) {
       this.handleGoPrevious()
     } else if (-offset > horizontalSlideRatio) {
@@ -115,16 +116,16 @@ export class RawDeck extends Component {
   }
 
   handleGoNext = () => {
-    const { history, isShownDetails, nextRecommendation } = this.props
-    if (!nextRecommendation || isShownDetails) return
+    const { history, areDetailsVisible, nextRecommendation } = this.props
+    if (!nextRecommendation || areDetailsVisible) return
     const { offerId, mediationId } = nextRecommendation
     history.push(`/decouverte/${offerId || 'tuto'}/${mediationId || ''}`)
     this.handleRefreshNext()
   }
 
   handleGoPrevious = () => {
-    const { history, isShownDetails, previousRecommendation } = this.props
-    if (!previousRecommendation || isShownDetails) return
+    const { history, areDetailsVisible, previousRecommendation } = this.props
+    if (!previousRecommendation || areDetailsVisible) return
     const { offerId, mediationId } = previousRecommendation
     history.push(`/decouverte/${offerId || 'tuto'}/${mediationId || ''}`)
   }
@@ -149,16 +150,16 @@ export class RawDeck extends Component {
     }))
   }
 
-  handleShowrecommandationDetails = () => {
+  handleShowcardDetails = () => {
     const { dispatch, isFlipDisabled } = this.props
     if (isFlipDisabled) return
-    dispatch(showrecommandationDetails())
+    dispatch(showCardDetails())
   }
 
-  handleCloserecommandationDetails = () => {
+  handleClosecardDetails = () => {
     const { dispatch, unFlippable } = this.props
     if (unFlippable) return
-    dispatch(closerecommandationDetails())
+    dispatch(closeCardDetails())
   }
 
   handleUrlFlip = (history, previousHistory = false) => {
@@ -175,7 +176,7 @@ export class RawDeck extends Component {
   renderDraggableCards() {
     const {
       currentRecommendation,
-      isShownDetails,
+      areDetailsVisible,
       nextRecommendation,
       previousRecommendation,
       width,
@@ -187,7 +188,7 @@ export class RawDeck extends Component {
       x: -1 * width * index,
       y: 0,
     }
-    const draggableBounds = (isShownDetails && {}) || {
+    const draggableBounds = (areDetailsVisible && {}) || {
       bottom: 0,
       left: position.x - width,
       right: position.x + width,
@@ -202,7 +203,7 @@ export class RawDeck extends Component {
         onStop={this.onStop}
         bounds={draggableBounds}
         enableUserSelectHack={false}
-        axis={isShownDetails ? 'none' : 'exclude'}
+        axis={areDetailsVisible ? 'none' : 'exclude'}
       >
         <div className="is-overlay">
           <div className="inner is-relative">
@@ -221,13 +222,13 @@ export class RawDeck extends Component {
       height,
       nextRecommendation,
       isFlipDisabled,
-      isShownDetails,
+      areDetailsVisible,
       previousRecommendation,
       unFlippable,
     } = this.props
 
-    const showCloseButton = isShownDetails && !unFlippable
-    const showNavigation = !isShownDetails || isFlipDisabled
+    const showCloseButton = areDetailsVisible && !unFlippable
+    const showNavigation = !areDetailsVisible || isFlipDisabled
 
     return (
       <div id="deck" className="is-clipped is-relative">
@@ -235,7 +236,7 @@ export class RawDeck extends Component {
           <button
             type="button"
             className="close-button"
-            onClick={this.handleCloserecommandationDetails}
+            onClick={this.handleClosecardDetails}
             style={{ zIndex: 300 }}
           >
             <Icon svg="ico-close" alt="Fermer" />
@@ -246,7 +247,7 @@ export class RawDeck extends Component {
           <DeckNavigation
             recommendation={currentRecommendation}
             flipHandler={
-              (!isFlipDisabled && this.handleShowrecommandationDetails) || null
+              (!isFlipDisabled && this.handleShowcardDetails) || null
             }
             handleGoNext={(nextRecommendation && this.handleGoNext) || null}
             handleGoPrevious={
@@ -271,6 +272,7 @@ RawDeck.defaultProps = {
 }
 
 RawDeck.propTypes = {
+  areDetailsVisible: PropTypes.bool.isRequired,
   currentRecommendation: PropTypes.object,
   dispatch: PropTypes.func.isRequired,
   draggable: PropTypes.bool.isRequired,
@@ -279,7 +281,6 @@ RawDeck.propTypes = {
   history: PropTypes.object.isRequired,
   horizontalSlideRatio: PropTypes.number,
   isFlipDisabled: PropTypes.bool.isRequired,
-  isShownDetails: PropTypes.bool.isRequired,
   nextLimit: PropTypes.number.isRequired,
   nextRecommendation: PropTypes.object,
   noDataTimeout: PropTypes.number,
@@ -322,11 +323,11 @@ const mapStateToProps = (state, ownProps) => {
       : 0)
 
   return {
+    areDetailsVisible: state.card.areDetailsVisible,
     currentRecommendation,
-    draggable: state.recommandationDetails.draggable,
+    draggable: state.card.draggable,
     isEmpty: get(state, 'loading.config.isEmpty'),
     isFlipDisabled,
-    isShownDetails: state.recommandationDetails.isShownDetails,
     nextLimit,
     nextRecommendation: nextRecommendationSelector(state, offerId, mediationId),
     previousLimit,
@@ -336,7 +337,7 @@ const mapStateToProps = (state, ownProps) => {
       mediationId
     ),
     recommendations,
-    unFlippable: state.recommandationDetails.unFlippable,
+    unFlippable: state.card.unFlippable,
   }
 }
 

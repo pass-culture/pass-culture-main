@@ -10560,10 +10560,10 @@ const state = {
     thumbCount: 0,
     wallet_balance: 0,
   },
-  verso: {
+  card: {
     draggable: true,
     isActive: false,
-    isShownDetails: false,
+    areDetailsVisible: false,
     unFlippable: false,
   },
   _persist: {

@@ -10,10 +10,7 @@ import { getHeaderColor } from '../../utils/colors'
 import currentRecommendationSelector from '../../selectors/currentRecommendation'
 import { ROOT_PATH } from '../../utils/config'
 
-import {
-  makeDraggable,
-  makeUndraggable,
-} from '../../reducers/recommandationDetails'
+import { makeDraggable, makeUndraggable } from '../../reducers/card'
 
 export class RawVersoWrapper extends Component {
   constructor(props) {
@@ -28,9 +25,9 @@ export class RawVersoWrapper extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    const { isShownDetails } = this.props
+    const { areDetailsVisible } = this.props
     const shouldScroll =
-      !isShownDetails && prevProps.isShownDetails && this.$header.scrollTo
+      !areDetailsVisible && prevProps.areDetailsVisible && this.$header.scrollTo
     if (!shouldScroll) return
     this.$header.scrollTo(0, 0)
   }
@@ -112,13 +109,13 @@ RawVersoWrapper.defaultProps = {
 }
 
 RawVersoWrapper.propTypes = {
+  areDetailsVisible: PropTypes.bool.isRequired,
   children: PropTypes.node.isRequired,
   className: PropTypes.string.isRequired,
   currentRecommendation: PropTypes.object,
   dispatchMakeDraggable: PropTypes.func.isRequired,
   dispatchMakeUndraggable: PropTypes.func.isRequired,
   draggable: PropTypes.bool.isRequired,
-  isShownDetails: PropTypes.bool.isRequired,
 }
 
 export default compose(
@@ -132,9 +129,9 @@ export default compose(
         mediationId
       )
       return {
+        areDetailsVisible: state.card.areDetailsVisible,
         currentRecommendation,
-        draggable: state.recommandationDetails.draggable,
-        isShownDetails: state.recommandationDetails.isShownDetails,
+        draggable: state.card.draggable,
       }
     },
     {

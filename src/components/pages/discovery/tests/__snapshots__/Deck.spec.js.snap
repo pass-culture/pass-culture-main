@@ -4,6 +4,7 @@ exports[`src | components | pages | discovery | Index | DiscoveryPage snapshot 
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <RawDeck
+    areDetailsVisible={false}
     backButton={true}
     currentRecommendation={Object {}}
     dispatch={[MockFunction]}
@@ -19,7 +20,6 @@ ShallowWrapper {
     }
     horizontalSlideRatio={0.2}
     isFlipDisabled={false}
-    isShownDetails={false}
     match={Object {}}
     nextLimit={50}
     nextRecommendation={null}

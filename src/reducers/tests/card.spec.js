@@ -1,24 +1,24 @@
-import recommandationDetails, {
-  closerecommandationDetails,
+import card, {
+  closeCardDetails,
   flipUnflippable,
   makeDraggable,
   makeUndraggable,
-  showrecommandationDetails,
+  showCardDetails,
   CLOSE_DETAILS_VIEW,
   MAKE_DRAGGABLE,
   MAKE_UNDRAGGABLE,
   SHOW_UNFLIPPABLE_DETAILS_VIEW,
   SHOW_DETAILS_VIEW,
-} from '../recommandationDetails'
+} from '../card'
 
-describe('src | reducers | recommandationDetails  ', () => {
+describe('src | reducers | card  ', () => {
   const state = []
   it('should return the initial state by default', () => {
     // given
     const action = {}
 
     // when
-    const updatedState = recommandationDetails(state, action)
+    const updatedState = card(state, action)
 
     // then
     expect(updatedState).toEqual(state)
@@ -30,8 +30,8 @@ describe('src | reducers | recommandationDetails  ', () => {
       const action = { type: CLOSE_DETAILS_VIEW }
 
       // when
-      const queriesReducer = recommandationDetails(state, action)
-      const expected = { isShownDetails: false, unFlippable: false }
+      const queriesReducer = card(state, action)
+      const expected = { areDetailsVisible: false, unFlippable: false }
 
       // then
       expect(queriesReducer).toEqual(expected)
@@ -44,8 +44,8 @@ describe('src | reducers | recommandationDetails  ', () => {
       const action = { type: SHOW_DETAILS_VIEW }
 
       // when
-      const queriesReducer = recommandationDetails(state, action)
-      const expected = { isShownDetails: true }
+      const queriesReducer = card(state, action)
+      const expected = { areDetailsVisible: true }
 
       // then
       expect(queriesReducer).toEqual(expected)
@@ -58,7 +58,7 @@ describe('src | reducers | recommandationDetails  ', () => {
       const action = { type: MAKE_UNDRAGGABLE }
 
       // when
-      const queriesReducer = recommandationDetails(state, action)
+      const queriesReducer = card(state, action)
       const expected = { draggable: false }
 
       // then
@@ -72,7 +72,7 @@ describe('src | reducers | recommandationDetails  ', () => {
       const action = { type: MAKE_DRAGGABLE }
 
       // when
-      const queriesReducer = recommandationDetails(state, action)
+      const queriesReducer = card(state, action)
       const expected = { draggable: true }
 
       // then
@@ -88,9 +88,9 @@ describe('src | reducers | recommandationDetails  ', () => {
       }
 
       // when
-      const queriesReducer = recommandationDetails(state, action)
+      const queriesReducer = card(state, action)
       const expected = {
-        isShownDetails: true,
+        areDetailsVisible: true,
         unFlippable: true,
       }
 
@@ -100,10 +100,10 @@ describe('src | reducers | recommandationDetails  ', () => {
   })
 
   describe('src | actions', () => {
-    describe('showrecommandationDetails', () => {
+    describe('showCardDetails', () => {
       it('should return correct action type', () => {
         // when
-        const action = showrecommandationDetails({})
+        const action = showCardDetails({})
         const expected = {
           type: SHOW_DETAILS_VIEW,
         }
@@ -151,10 +151,10 @@ describe('src | reducers | recommandationDetails  ', () => {
       })
     })
 
-    describe('closerecommandationDetails', () => {
+    describe('closeCardDetails', () => {
       it('should return correct action type', () => {
         // when
-        const action = closerecommandationDetails({})
+        const action = closeCardDetails({})
         const expected = {
           type: CLOSE_DETAILS_VIEW,
         }

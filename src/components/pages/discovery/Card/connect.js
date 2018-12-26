@@ -30,7 +30,7 @@ export const mapStateToProps = (state, ownProps) => {
     ownProps.position
   )
   return {
-    isShownDetails: state.verso.isShownDetails,
+    areDetailsVisible: state.card.areDetailsVisible,
     recommendation,
   }
 }
