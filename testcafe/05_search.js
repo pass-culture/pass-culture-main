@@ -1,82 +1,20 @@
-import { ClientFunction, Selector } from 'testcafe'
+import { Selector } from 'testcafe'
 
 import { youngUserRole } from './helpers/roles'
 import { ROOT_PATH } from '../src/utils/config'
 
-const getPageUrl = ClientFunction(() => window.location.href.toString())
-
 const searchInput = Selector('#keywords')
 const keywordsSearchButton = Selector('#keywords-search-button')
-const searchTypeCheckbox = Selector('#search-type-checkbox').withText('Lire')
+
 const resultsTitle = Selector('#results-title')
 
-fixture('O5_01 Recherche | Je ne suis pas connecté·e').page(
-  `${ROOT_PATH}recherche`
-)
-
-test('Je suis redirigé vers la page /connexion', async t => {
-  await t.expect(getPageUrl()).contains('/connexion', { timeout: 500 })
+fixture('O5_02 Recherche | Je me suis connecté·e').beforeEach(async t => {
+  await t.useRole(youngUserRole).navigateTo(`${ROOT_PATH}recherche/`)
 })
-
-fixture
-  .skip(
-    "O5_02 Recherche | Je me suis connecté·e | J'arrive sur la page de recherche | Header"
-  )
-  .beforeEach(async t => {
-    await t.useRole(youngUserRole).navigateTo(`${ROOT_PATH}recherche/`)
-  })
-
-// header
-test('Je peux accéder à la page de /recherche', async t => {
-  await t
-    .wait(1000)
-    .expect(getPageUrl())
-    .contains('/recherche', { timeout: 5000 })
-})
-
-test('Lorsque je clique sur la croix, je reviens à la page des offres', async t => {
-  const closeButton = Selector('#search-close-button')
-
-  await t
-    .click(closeButton)
-    .wait(500)
-    .expect(getPageUrl())
-    .contains('/decouverte', { timeout: 5000 })
-})
-
-test('Je vois le titre de la page', async t => {
-  await t.expect(Selector('h1').withText('Recherche')).ok()
-})
-
-test('Je ne vois pas le bouton retour', async t => {
-  await t
-  await t.expect(Selector('.back-button').exists).notOk()
-})
-
-test("Je vois le bouton retour lorsque j'ai un résultat de recherche", async t => {
-  const pictureButton = Selector('#button-nav-by-offer-type')
-  await t.expect(pictureButton.count).eql(7)
-  await t.click(pictureButton.nth(0)).wait(2000)
-  await t.expect(getPageUrl()).contains('categories')
-  await t.expect(Selector('.back-button').exists).ok()
-})
-
-// FOOTER
-// Si je clique sur le menu, je ne peux pas cliquer sur Recherche
-
-fixture
-  .skip('O5_03 Recherche | Je cherche des offres par catégories et navigue')
-  .beforeEach(async t => {
-    await t.useRole(youngUserRole).navigateTo(`${ROOT_PATH}recherche/`)
-  })
 
 // ------------------------ RECHERCHE PAR MOTS-CLES
 
 // ------------------------ NO RESULTS
-fixture.skip('O5_04 Recherche | Recherche textuelle').beforeEach(async t => {
-  await t.useRole(youngUserRole).navigateTo(`${ROOT_PATH}recherche/categories`)
-})
-
 // Je vois le filtre par type sous le formulaire de recherche textuelle
 
 test("Je fais une recherche par mots-clés et je n'ai pas de résultats", async t => {
@@ -117,18 +55,6 @@ test("Je fais une recherche par mots-clés et j'ai des résultats", async t => {
 // si je veux revenir à ma page de début de recherche je clique sur la flêche < back et cela réinitialise tous les filtres
 
 // ------------------------ NAVIGATION PAR TYPE (LIRE, ETC)
-fixture.skip('O5_ Recherche | Navigation par catégorie').beforeEach(async t => {
-  await t.useRole(youngUserRole).navigateTo(`${ROOT_PATH}recherche/`)
-})
-
-test('Je clique sur la vignette Lire et je suis redirigé vers la page de résultats de la recherche', async t => {
-  await t
-  const location = await t.eval(() => window.location)
-  await t
-    .expect(location.pathname)
-    .eql('/recherche/categories')
-    .click(searchTypeCheckbox)
-})
 
 // Voir les fonctionnalitées sur https://github.com/betagouv/pass-culture-browser/issues/664
 
