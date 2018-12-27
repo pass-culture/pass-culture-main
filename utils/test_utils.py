@@ -7,6 +7,7 @@ from decimal import Decimal
 from glob import glob
 from inspect import isclass
 from unittest.mock import Mock
+from hashlib import sha1
 
 import requests as req
 from postgresql_audit.flask import versioning_manager
@@ -28,7 +29,7 @@ from models import Booking, \
     ThingType, \
     User, \
     UserOfferer, \
-    Venue
+    Venue, PaymentTransaction
 from models.db import db
 from models.payment import PaymentDetails
 from models.payment_status import PaymentStatus, TransactionStatus
@@ -700,11 +701,21 @@ def create_payment(booking, offerer, amount, author='test author', reimbursement
     payment.statuses = [payment_status]
     payment.reimbursementRule = reimbursement_rule
     payment.reimbursementRate = reimbursement_rate
-    payment.transactionMessageId = transaction_message_id
+
+    if transaction_message_id:
+        payment.transaction = create_payment_transaction(transaction_message_id)
+
     payment.transactionEndToEndId = transaction_end_ot_end_id
     payment.customMessage = custom_message
     payment.id = idx
     return payment
+
+
+def create_payment_transaction(transaction_message_id="ABCD123"):
+    transaction = PaymentTransaction()
+    transaction.messageId = transaction_message_id
+    transaction.hash = sha1(transaction_message_id.encode('utf-8')).hexdigest()
+    return transaction
 
 
 def create_payment_details(

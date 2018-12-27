@@ -70,16 +70,17 @@ def do_send_payments(payments: List[Payment], pass_culture_iban: str, pass_cultu
         file = generate_transaction_file(payments, pass_culture_iban, pass_culture_bic, message_id,
                                          pass_culture_remittance_code)
         validate_transaction_file(file)
+
         try:
             send_payment_transaction_email(file, app.mailjet_client.send.create)
         except MailServiceException as e:
-            for payment in payments:
-                payment.nullifyTransactionIds()
-
             logger.error('Error while sending payment transaction email to MailJet', e)
+            for payment in payments:
+                payment.setStatus(TransactionStatus.ERROR, detail="Erreur d'envoi à MailJet")
         else:
             for payment in payments:
                 payment.setStatus(TransactionStatus.SENT)
+        finally:
             PcObject.check_and_save(*payments)
 
 

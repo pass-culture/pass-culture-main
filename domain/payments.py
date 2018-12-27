@@ -3,6 +3,7 @@ import itertools
 import uuid
 from datetime import datetime, timedelta
 from decimal import Decimal
+from hashlib import sha1
 from io import BytesIO, StringIO
 from typing import List
 from uuid import UUID
@@ -11,6 +12,7 @@ from flask import render_template
 from lxml import etree
 
 from domain.reimbursement import BookingReimbursement
+from models import PaymentTransaction
 from models.payment import Payment, PaymentDetails
 from models.payment_status import TransactionStatus
 from models.user import WalletBalance
@@ -139,9 +141,13 @@ def _group_payments_into_transactions(payments: List[Payment], message_id: str) 
         payments_of_iban = list(grouped_payments)
         amount = sum([payment.amount for payment in payments_of_iban])
         end_to_end_id = uuid.uuid4()
+        payment_transaction = PaymentTransaction()
+        payment_transaction.messageId = message_id
+        payment_transaction.hash = sha1(message_id.encode('utf-8')).hexdigest()
 
         for payment in payments_of_iban:
-            payment.setTransactionIds(message_id, end_to_end_id)
+            payment.transaction = payment_transaction
+            payment.transactionEndToEndId = end_to_end_id
 
         transactions.append(
             Transaction(iban, bic, payments_of_iban[0].recipientName, payments_of_iban[0].recipientSiren, end_to_end_id,

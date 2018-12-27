@@ -12,7 +12,7 @@ from models.payment_status import TransactionStatus
 from scripts.payments import do_generate_payments, do_send_payments, do_send_payment_details, do_send_wallet_balances
 from tests.conftest import clean_database, mocked_mail
 from utils.test_utils import create_offerer, create_venue, create_thing_offer, create_stock_from_offer, \
-    create_booking, create_user, create_deposit, create_payment
+    create_booking, create_user, create_deposit, create_payment, create_payment_transaction
 
 
 @pytest.mark.standalone
@@ -28,9 +28,10 @@ def test_do_generate_payments_records_new_payment_lines_in_database(app):
     booking1 = create_booking(user, stock, venue, is_used=True)
     booking2 = create_booking(user, stock, venue, is_used=True)
     booking3 = create_booking(user, stock, venue, is_used=True)
-    payment1 = create_payment(booking2, offerer, 10)
+    payment1 = create_payment(booking2, offerer, 10, transaction_message_id="ABCD123")
 
-    PcObject.check_and_save(deposit, booking1, booking3, payment1)
+    PcObject.check_and_save(payment1)
+    PcObject.check_and_save(deposit, booking1, booking3)
 
     initial_payment_count = Payment.query.count()
 
@@ -136,6 +137,7 @@ def test_do_send_payments_should_send_an_email_with_xml_attachment(app):
         create_payment(booking3, offerer1, Decimal(20), idx=9)
     ]
 
+
     app.mailjet_client.send.create.return_value = Mock(status_code=200)
 
     # when
@@ -189,7 +191,7 @@ def test_do_send_payments_updates_payments_with_message_id_and_end_to_end_id_and
 @clean_database
 @mocked_mail
 @freeze_time('2018-10-15 09:21:34')
-def test_do_send_payments_does_not_update_payments_with_message_id_and_end_to_end_id_and_status_if_email_was_not_sent_properly(
+def test_do_send_payments_set_status_to_failed_sending_if_email_was_not_sent_properly(
         app):
     # given
     offerer1 = create_offerer(name='first offerer', iban='CF13QSDFGH456789', bic='QSDFGH8Z555', idx=1)
@@ -217,10 +219,9 @@ def test_do_send_payments_does_not_update_payments_with_message_id_and_end_to_en
     # then
     updated_payments = Payment.query.all()
     for payment in updated_payments:
-        assert payment.transactionMessageId is None
-        assert payment.transactionEndToEndId is None
-        assert len(payment.statuses) == 1
-        assert payment.statuses[0].status == TransactionStatus.PENDING
+        assert len(payment.statuses) == 2
+        assert payment.statuses[1].status == TransactionStatus.ERROR
+        assert payment.statuses[1].detail == "Erreur d'envoi à MailJet"
 
 
 @pytest.mark.standalone

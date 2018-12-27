@@ -1,22 +1,23 @@
 from models.activity import load_activity
 from models.db import db
-from models import  Booking, \
-                    Deposit, \
-                    Event, \
-                    EventOccurrence, \
-                    Mediation, \
-                    Payment, \
-                    PaymentStatus, \
-                    Offer, \
-                    Offerer, \
-                    Recommendation, \
-                    Stock, \
-                    Thing, \
-                    User, \
-                    UserOfferer, \
-                    UserSession, \
-                    Venue, \
-                    VenueProvider
+from models import Booking, \
+    Deposit, \
+    Event, \
+    EventOccurrence, \
+    Mediation, \
+    Payment, \
+    PaymentStatus, \
+    Offer, \
+    Offerer, \
+    Recommendation, \
+    Stock, \
+    Thing, \
+    User, \
+    UserOfferer, \
+    UserSession, \
+    Venue, \
+    VenueProvider, PaymentTransaction
+
 
 def clean_all_database(*args, **kwargs):
     """ Order of deletions matters because of foreign key constraints """
@@ -24,6 +25,7 @@ def clean_all_database(*args, **kwargs):
     VenueProvider.query.delete()
     PaymentStatus.query.delete()
     Payment.query.delete()
+    PaymentTransaction.query.delete()
     Booking.query.delete()
     Stock.query.delete()
     EventOccurrence.query.delete()

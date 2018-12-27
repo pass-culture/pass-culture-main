@@ -17,6 +17,7 @@ from models.offerer import Offerer
 from models.offer_type import ThingType, EventType
 from models.payment import Payment
 from models.payment_status import PaymentStatus
+from models.payment_transaction import PaymentTransaction
 from models.pc_object import PcObject
 from models.providable_mixin import ProvidableMixin
 from models.provider import Provider
@@ -56,6 +57,7 @@ __all__ = (
     'Offer',
     'Payment',
     'PaymentStatus',
+    'PaymentTransaction',
     'Provider',
     'Recommendation',
     'RightsType',

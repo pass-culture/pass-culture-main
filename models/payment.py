@@ -9,7 +9,7 @@ from sqlalchemy import BigInteger, \
     Numeric, \
     Text, CheckConstraint
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, backref
 
 from models.db import Model
 from models.payment_status import TransactionStatus, PaymentStatus
@@ -51,11 +51,21 @@ class Payment(PcObject, Model):
 
     author = Column(String(27), nullable=False)
 
-    transactionMessageId = Column(String(50), nullable=True)
-
     transactionEndToEndId = Column(UUID(as_uuid=True), nullable=True)
 
     customMessage = Column(String(140), nullable=True)
+
+    transactionId = Column(BigInteger,
+                           ForeignKey('payment_transaction.id'),
+                           nullable=True)
+
+    transaction = relationship('PaymentTransaction',
+                               foreign_keys=[transactionId],
+                               backref=backref("payments"))
+
+    @property
+    def transactionMessageId(self):
+        return self.transaction.messageId if self.transaction else None
 
     def setStatus(self, status: TransactionStatus, detail: str = None):
         payment_status = PaymentStatus()
@@ -67,14 +77,6 @@ class Payment(PcObject, Model):
             self.statuses.append(payment_status)
         else:
             self.statuses = [payment_status]
-
-    def setTransactionIds(self, message_id: str, end_to_end_id: uuid.UUID):
-        self.transactionMessageId = message_id
-        self.transactionEndToEndId = end_to_end_id
-
-    def nullifyTransactionIds(self):
-        self.transactionMessageId = None
-        self.transactionEndToEndId = None
 
 
 class PaymentDetails:
