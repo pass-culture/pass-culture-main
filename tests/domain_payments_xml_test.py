@@ -610,7 +610,9 @@ def test_generate_transaction_file_has_initiating_party_in_group_header(app):
 
 
 @pytest.mark.standalone
-def test_validate_transaction_file_does_not_raise_an_exception_when_generated_xml_is_valid(app):
+@freeze_time('2018-10-15 09:21:34')
+@patch('domain.payments.uuid.uuid4')
+def test_validate_transaction_file_returns_a_hash_of_the_file_when_generated_xml_is_valid(uuid4, app):
     # given
     offerer1 = create_offerer(name='first offerer', iban='CF13QSDFGH456789', bic='QSDFGH8Z555', idx=1)
     offerer2 = create_offerer(name='second offerer', iban='FR14WXCVBN123456', bic='WXCVBN7B444', idx=2)
@@ -629,14 +631,17 @@ def test_validate_transaction_file_does_not_raise_an_exception_when_generated_xm
         create_payment(booking2, offerer1, Decimal(20), idx=8),
         create_payment(booking3, offerer2, Decimal(20), idx=9)
     ]
+    uuid1 = UUID(hex='abcd1234abcd1234abcd1234abcd1234', version=4)
+    uuid2 = UUID(hex='cdef5678cdef5678cdef5678cdef5678', version=4)
+    uuid4.side_effect = [uuid1, uuid2]
 
     xml = generate_transaction_file(payments, 'BD12AZERTY123456', 'AZERTY9Q666', MESSAGE_ID, '0000')
 
     # when
-    try:
-        validate_transaction_file(xml)
-    except Exception:
-        assert False
+    hash = validate_transaction_file(xml)
+
+    # then
+    assert hash == '9e9b111cf88d16d594a28559f5b3eaf1ebb6fea6'
 
 
 @pytest.mark.standalone

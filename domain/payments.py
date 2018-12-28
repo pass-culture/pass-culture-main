@@ -89,7 +89,7 @@ def generate_transaction_file(payments: List[Payment], pass_culture_iban: str, p
     )
 
 
-def validate_transaction_file(transaction_file: str):
+def validate_transaction_file(transaction_file: str) -> str:
     xsd = render_template('transactions/transaction_banque_de_france.xsd')
     xsd_doc = etree.parse(BytesIO(xsd.encode()))
     xsd_schema = etree.XMLSchema(xsd_doc)
@@ -98,6 +98,7 @@ def validate_transaction_file(transaction_file: str):
     xml_doc = etree.parse(xml)
 
     xsd_schema.assertValid(xml_doc)
+    return sha1(transaction_file.encode('utf-8')).hexdigest()
 
 
 def create_all_payments_details(payments: List[Payment], find_booking_date_used=find_date_used) -> List[PaymentDetails]:
@@ -132,6 +133,14 @@ def make_custom_message(date: datetime.date) -> str:
     return 'pass Culture Pro - remboursement %s quinzaine %s' % (period, month_and_year)
 
 
+def generate_payment_transaction(message_id: str, hash: str, payments: List[Payment]) -> PaymentTransaction:
+    payment_transaction = PaymentTransaction()
+    payment_transaction.messageId = message_id
+    payment_transaction.hash = hash
+    payment_transaction.payments = payments
+    return payment_transaction
+
+
 def _group_payments_into_transactions(payments: List[Payment], message_id: str) -> List[Transaction]:
     payments_with_iban = sorted(filter(lambda x: x.iban, payments), key=lambda x: (x.iban, x.bic))
     payments_by_iban = itertools.groupby(payments_with_iban, lambda x: (x.iban, x.bic))
@@ -141,12 +150,8 @@ def _group_payments_into_transactions(payments: List[Payment], message_id: str) 
         payments_of_iban = list(grouped_payments)
         amount = sum([payment.amount for payment in payments_of_iban])
         end_to_end_id = uuid.uuid4()
-        payment_transaction = PaymentTransaction()
-        payment_transaction.messageId = message_id
-        payment_transaction.hash = sha1(message_id.encode('utf-8')).hexdigest()
 
         for payment in payments_of_iban:
-            payment.transaction = payment_transaction
             payment.transactionEndToEndId = end_to_end_id
 
         transactions.append(

@@ -1,7 +1,6 @@
 from datetime import datetime
 from decimal import Decimal
 from unittest.mock import Mock
-from uuid import UUID
 
 import pytest
 from freezegun import freeze_time
@@ -12,7 +11,7 @@ from models.payment_status import TransactionStatus
 from scripts.payments import do_generate_payments, do_send_payments, do_send_payment_details, do_send_wallet_balances
 from tests.conftest import clean_database, mocked_mail
 from utils.test_utils import create_offerer, create_venue, create_thing_offer, create_stock_from_offer, \
-    create_booking, create_user, create_deposit, create_payment, create_payment_transaction
+    create_booking, create_user, create_deposit, create_payment
 
 
 @pytest.mark.standalone
@@ -137,7 +136,6 @@ def test_do_send_payments_should_send_an_email_with_xml_attachment(app):
         create_payment(booking3, offerer1, Decimal(20), idx=9)
     ]
 
-
     app.mailjet_client.send.create.return_value = Mock(status_code=200)
 
     # when
@@ -153,7 +151,41 @@ def test_do_send_payments_should_send_an_email_with_xml_attachment(app):
 @clean_database
 @mocked_mail
 @freeze_time('2018-10-15 09:21:34')
-def test_do_send_payments_updates_payments_with_message_id_and_end_to_end_id_and_status_if_email_sent(app):
+def test_do_send_payments_creates_a_new_payment_transaction_if_email_was_sent_properly(app):
+    # given
+    offerer1 = create_offerer(name='first offerer', iban='CF13QSDFGH456789', bic='QSDFGH8Z555', idx=1)
+    user = create_user()
+    venue1 = create_venue(offerer1, idx=4)
+    stock1 = create_stock_from_offer(create_thing_offer(venue1))
+    booking1 = create_booking(user, stock1)
+    booking2 = create_booking(user, stock1)
+    booking3 = create_booking(user, stock1)
+    deposit = create_deposit(user, datetime.utcnow(), amount=500)
+    payments = [
+        create_payment(booking1, offerer1, Decimal(10), idx=7),
+        create_payment(booking2, offerer1, Decimal(20), idx=8),
+        create_payment(booking3, offerer1, Decimal(20), idx=9)
+    ]
+
+    PcObject.check_and_save(deposit)
+    PcObject.check_and_save(*payments)
+
+    app.mailjet_client.send.create.return_value = Mock(status_code=200)
+
+    # when
+    do_send_payments(payments, 'BD12AZERTY123456', 'AZERTY9Q666', '0000')
+
+    # then
+    updated_payments = Payment.query.all()
+    assert all(p.transactionMessageId == 'passCulture-SCT-20181015-092134' for p in updated_payments)
+    assert all(p.transactionHash == payments[0].transactionHash for p in updated_payments)
+
+
+@pytest.mark.standalone
+@clean_database
+@mocked_mail
+@freeze_time('2018-10-15 09:21:34')
+def test_do_send_payments_set_status_to_sent_if_email_was_sent_properly(app):
     # given
     offerer1 = create_offerer(name='first offerer', iban='CF13QSDFGH456789', bic='QSDFGH8Z555', idx=1)
     user = create_user()
@@ -180,9 +212,6 @@ def test_do_send_payments_updates_payments_with_message_id_and_end_to_end_id_and
     # then
     updated_payments = Payment.query.all()
     for payment in updated_payments:
-        assert payment.transactionMessageId == 'passCulture-SCT-20181015-092134'
-        assert payment.transactionEndToEndId is not None
-        assert type(payment.transactionEndToEndId) is UUID
         assert len(payment.statuses) == 2
         assert payment.statuses[1].status == TransactionStatus.SENT
 
@@ -191,7 +220,7 @@ def test_do_send_payments_updates_payments_with_message_id_and_end_to_end_id_and
 @clean_database
 @mocked_mail
 @freeze_time('2018-10-15 09:21:34')
-def test_do_send_payments_set_status_to_failed_sending_if_email_was_not_sent_properly(
+def test_do_send_payments_set_status_to_error_with_details_if_email_was_not_sent_properly(
         app):
     # given
     offerer1 = create_offerer(name='first offerer', iban='CF13QSDFGH456789', bic='QSDFGH8Z555', idx=1)
