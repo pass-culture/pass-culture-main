@@ -314,17 +314,19 @@ def subscribe_newsletter(user):
     ).json()
 
 
-def make_payment_transaction_email(xml: str) -> dict:
+def make_payment_transaction_email(xml: str, file_hash: str) -> dict:
     now = datetime.utcnow()
     xml_b64encode = base64.b64encode(xml.encode())
+    file_name = "transaction_banque_de_france_{}.xml".format(datetime.strftime(now, "%Y%m%d"))
+
     return {
         'From': {"Email": "passculture@beta.gouv.fr",
                  "Name": "pass Culture Pro"},
         'Subject': "Virements pass Culture Pro - {}".format(datetime.strftime(now, "%Y-%m-%d")),
         'Attachments': [{"ContentType": "text/xml",
-                         "Filename": "transaction_banque_de_france_{}.xml".format(datetime.strftime(now, "%Y%m%d")),
+                         "Filename": file_name,
                          "Base64Content": xml_b64encode}],
-        'Html-part': ""
+        'Html-part': render_template('mails/payments_xml_email.html', file_name=file_name, file_hash=file_hash)
     }
 
 

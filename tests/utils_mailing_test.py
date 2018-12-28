@@ -2,6 +2,7 @@ import re
 import re
 import secrets
 from datetime import datetime, timezone, timedelta
+from pprint import pprint
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -852,26 +853,31 @@ def test_make_offerer_booking_user_cancellation_does_not_have_recap_information(
     assert email_html.find('table', {'id': 'recap-table'}) is None
 
 
+@pytest.mark.standalone
 @freeze_time('2018-10-15 09:21:34')
-def test_make_payment_transaction_email():
+def test_make_payment_transaction_email(app):
     # Given
     xml = '<?xml version="1.0" encoding="UTF-8"?><Document xmlns="urn:iso:std:iso:20022:tech:xsd:pain.001.001.03"></Document>'
+    file_hash = '12345678AZERTYU'
 
     # When
-    email = make_payment_transaction_email(xml)
+    email = make_payment_transaction_email(xml, file_hash)
 
     # Then
     assert email["From"] == {"Email": "passculture@beta.gouv.fr",
                              "Name": "pass Culture Pro"}
     assert email["Subject"] == "Virements pass Culture Pro - 2018-10-15"
-    assert email["Html-part"] == ""
     assert email["Attachments"] == [{"ContentType": "text/xml",
                                      "Filename": "transaction_banque_de_france_20181015.xml",
                                      "Base64Content": b'PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48RG9j'
                                                       b'dW1lbnQgeG1sbnM9InVybjppc286c3RkOmlzbzoyMDAyMjp0ZWNoOnhz'
                                                       b'ZDpwYWluLjAwMS4wMDEuMDMiPjwvRG9jdW1lbnQ+'}]
+    email_html = BeautifulSoup(email['Html-part'], 'html.parser')
+    assert 'transaction_banque_de_france_20181015.xml' in email_html.find('p', {'id': 'file_name'}).find('strong').text
+    assert '12345678AZERTYU' in email_html.find('p', {'id': 'file_hash'}).find('strong').text
 
 
+@pytest.mark.standalone
 @freeze_time('2018-10-15 09:21:34')
 def test_make_payment_details_email():
     # Given
@@ -891,6 +897,7 @@ def test_make_payment_details_email():
                                                       b'IgoicGFydCBBIiwicGFydCBCIiwicGFydCBDIiwicGFydCBEIgo='}]
 
 
+@pytest.mark.standalone
 @freeze_time('2018-10-15 09:21:34')
 def test_make_wallet_balances_email():
     # Given

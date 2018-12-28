@@ -25,8 +25,8 @@ def maybe_send_offerer_validation_email(offerer, user_offerer, send_create_email
     check_if_email_sent(mail_result)
 
 
-def send_payment_transaction_email(xml_attachment, send_create_email):
-    email = make_payment_transaction_email(xml_attachment)
+def send_payment_transaction_email(xml_attachment, file_hash, send_create_email):
+    email = make_payment_transaction_email(xml_attachment, file_hash)
     recipients = ["passculture-dev@beta.gouv.fr"]
     email['Html-part'], email['To'] = compute_email_html_part_and_recipients(email['Html-part'], recipients)
     mail_result = send_create_email(data=email)

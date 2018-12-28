@@ -74,7 +74,7 @@ def do_send_payments(payments: List[Payment], pass_culture_iban: str, pass_cultu
         transaction = generate_payment_transaction(message_id, file_hash, payments)
 
         try:
-            send_payment_transaction_email(file, app.mailjet_client.send.create)
+            send_payment_transaction_email(file, file_hash, app.mailjet_client.send.create)
         except MailServiceException as e:
             logger.error('Error while sending payment transaction email to MailJet', e)
             for payment in payments:
