@@ -3,7 +3,7 @@ import itertools
 import uuid
 from datetime import datetime, timedelta
 from decimal import Decimal
-from hashlib import sha1
+from hashlib import sha256
 from io import BytesIO, StringIO
 from typing import List
 from uuid import UUID
@@ -99,7 +99,7 @@ def validate_transaction_file(transaction_file: str) -> str:
     xml_doc = etree.parse(xml)
 
     xsd_schema.assertValid(xml_doc)
-    return sha1(encoded_file).hexdigest()
+    return sha256(encoded_file).hexdigest()
 
 
 def create_all_payments_details(payments: List[Payment], find_booking_date_used=find_date_used) -> List[PaymentDetails]:

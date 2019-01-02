@@ -641,7 +641,7 @@ def test_validate_transaction_file_returns_a_checksum_of_the_file_when_generated
     hash = validate_transaction_file(xml)
 
     # then
-    assert hash == '9e9b111cf88d16d594a28559f5b3eaf1ebb6fea6'
+    assert hash == '16910c117e4873c51aa3573113bf216a7140ea20203c6826ef1faffc7f4fc882'
 
 
 @pytest.mark.standalone
