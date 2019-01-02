@@ -7,7 +7,7 @@ from decimal import Decimal
 from glob import glob
 from inspect import isclass
 from unittest.mock import Mock
-from hashlib import sha1
+from hashlib import sha256
 
 import requests as req
 from postgresql_audit.flask import versioning_manager
@@ -714,7 +714,7 @@ def create_payment(booking, offerer, amount, author='test author', reimbursement
 def create_payment_transaction(transaction_message_id="ABCD123"):
     transaction = PaymentTransaction()
     transaction.messageId = transaction_message_id
-    transaction.checksum = sha1(transaction_message_id.encode('utf-8')).hexdigest()
+    transaction.checksum = sha256(transaction_message_id.encode('utf-8')).hexdigest()
     return transaction
 
 

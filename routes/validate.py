@@ -89,3 +89,8 @@ def validate_user(token):
             app.logger.error('Mail service failure', e)
 
     return jsonify({}), 202
+
+
+@app.route('/validate/transaction', methods=['POST'])
+def validate_transaction_file():
+    pass
