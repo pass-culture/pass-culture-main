@@ -18,6 +18,8 @@ from models.payment_status import TransactionStatus
 from models.user import WalletBalance
 from repository.booking_queries import find_date_used
 
+XML_NAMESPACE = {'ns': 'urn:iso:std:iso:20022:tech:xsd:pain.001.001.03'}
+
 
 class InvalidTransactionXML(Exception):
     pass
@@ -140,6 +142,13 @@ def generate_payment_transaction(message_id: str, checksum: str, payments: List[
     payment_transaction.checksum = checksum
     payment_transaction.payments = payments
     return payment_transaction
+
+
+def read_message_id_in_transaction_file(xml_file: str) -> str:
+    xml = BytesIO(xml_file.encode())
+    tree = etree.parse(xml, etree.XMLParser())
+    node = tree.find('//ns:GrpHdr/ns:MsgId', namespaces=XML_NAMESPACE)
+    return node.text
 
 
 def _group_payments_into_transactions(payments: List[Payment], message_id: str) -> List[Transaction]:

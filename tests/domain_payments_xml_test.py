@@ -8,7 +8,7 @@ from freezegun import freeze_time
 from lxml import etree
 from lxml.etree import DocumentInvalid
 
-from domain.payments import validate_transaction_file, generate_transaction_file
+from domain.payments import validate_transaction_file, generate_transaction_file, read_message_id_in_transaction_file
 from utils.test_utils import create_payment, create_offerer, create_user, create_venue, create_stock_from_offer, \
     create_booking, create_thing_offer
 
@@ -657,6 +657,28 @@ def test_validate_transaction_file_raises_a_document_invalid_exception_with_spec
 
     # then
     assert str(e.value) == "Element 'broken': No matching global declaration available for the validation root., line 2"
+
+
+@pytest.mark.standalone
+def test_read_message_id_in_transaction_file_returns_the_content_of_message_id_tag(app):
+    # given
+    offerer = create_offerer(iban='CF13QSDFGH456789', bic='QSDFGH8Z555', idx=1)
+    user = create_user()
+    venue = create_venue(offerer, idx=2)
+    stock = create_stock_from_offer(create_thing_offer(venue))
+    booking = create_booking(user, stock)
+    offerer = create_offerer(iban='CF13QSDFGH456789', bic='QSDFGH8Z555')
+    payment1 = create_payment(booking, offerer, Decimal(10), idx=3)
+    payment2 = create_payment(booking, offerer, Decimal(20), idx=4)
+    payments = [payment1, payment2]
+
+    xml_file = generate_transaction_file(payments, 'BD12AZERTY123456', 'AZERTY9Q666', MESSAGE_ID, '0000')
+
+    # when
+    message_id = read_message_id_in_transaction_file(xml_file)
+
+    # then
+    assert message_id == MESSAGE_ID
 
 
 def find_node(xpath, transaction_file):
