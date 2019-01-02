@@ -178,7 +178,7 @@ def test_do_send_payments_creates_a_new_payment_transaction_if_email_was_sent_pr
     # then
     updated_payments = Payment.query.all()
     assert all(p.transactionMessageId == 'passCulture-SCT-20181015-092134' for p in updated_payments)
-    assert all(p.transactionHash == payments[0].transactionHash for p in updated_payments)
+    assert all(p.transactionChecksum == payments[0].transactionChecksum for p in updated_payments)
 
 
 @pytest.mark.standalone

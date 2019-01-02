@@ -68,13 +68,13 @@ def do_send_payments(payments: List[Payment], pass_culture_iban: str, pass_cultu
                 pass_culture_iban, pass_culture_bic, pass_culture_remittance_code))
     else:
         message_id = 'passCulture-SCT-%s' % datetime.strftime(datetime.utcnow(), "%Y%m%d-%H%M%S")
-        file = generate_transaction_file(payments, pass_culture_iban, pass_culture_bic, message_id,
+        xml_file = generate_transaction_file(payments, pass_culture_iban, pass_culture_bic, message_id,
                                          pass_culture_remittance_code)
-        file_hash = validate_transaction_file(file)
-        transaction = generate_payment_transaction(message_id, file_hash, payments)
+        checksum = validate_transaction_file(xml_file)
+        transaction = generate_payment_transaction(message_id, checksum, payments)
 
         try:
-            send_payment_transaction_email(file, file_hash, app.mailjet_client.send.create)
+            send_payment_transaction_email(xml_file, checksum, app.mailjet_client.send.create)
         except MailServiceException as e:
             logger.error('Error while sending payment transaction email to MailJet', e)
             for payment in payments:

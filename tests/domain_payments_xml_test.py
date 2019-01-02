@@ -537,7 +537,7 @@ def test_generate_transaction_file_has_amount_in_credit_transfer_transaction_inf
 
 @pytest.mark.standalone
 @patch('domain.payments.uuid.uuid4')
-def test_generate_transaction_file_has_hexadecimal_uuids_as_end_to_end_ids_in_transaction_info(uuid4, app):
+def test_generate_transaction_file_has_hexadecimal_uuids_as_end_to_end_ids_in_transaction_info(mocked_uuid, app):
     # Given
     user = create_user()
     offerer1 = create_offerer(name='first offerer', iban='CF13QSDFGH456789', bic='QSDFGH8Z555', idx=1)
@@ -550,7 +550,7 @@ def test_generate_transaction_file_has_hexadecimal_uuids_as_end_to_end_ids_in_tr
     booking2 = create_booking(user, stock2)
     uuid1 = UUID(hex='abcd1234abcd1234abcd1234abcd1234', version=4)
     uuid2 = UUID(hex='cdef5678cdef5678cdef5678cdef5678', version=4)
-    uuid4.side_effect = [uuid1, uuid2]
+    mocked_uuid.side_effect = [uuid1, uuid2]
 
     payments = [
         create_payment(booking1, offerer1, Decimal(10), idx=7),
@@ -612,7 +612,7 @@ def test_generate_transaction_file_has_initiating_party_in_group_header(app):
 @pytest.mark.standalone
 @freeze_time('2018-10-15 09:21:34')
 @patch('domain.payments.uuid.uuid4')
-def test_validate_transaction_file_returns_a_hash_of_the_file_when_generated_xml_is_valid(uuid4, app):
+def test_validate_transaction_file_returns_a_checksum_of_the_file_when_generated_xml_is_valid(mocked_uuid, app):
     # given
     offerer1 = create_offerer(name='first offerer', iban='CF13QSDFGH456789', bic='QSDFGH8Z555', idx=1)
     offerer2 = create_offerer(name='second offerer', iban='FR14WXCVBN123456', bic='WXCVBN7B444', idx=2)
@@ -633,7 +633,7 @@ def test_validate_transaction_file_returns_a_hash_of_the_file_when_generated_xml
     ]
     uuid1 = UUID(hex='abcd1234abcd1234abcd1234abcd1234', version=4)
     uuid2 = UUID(hex='cdef5678cdef5678cdef5678cdef5678', version=4)
-    uuid4.side_effect = [uuid1, uuid2]
+    mocked_uuid.side_effect = [uuid1, uuid2]
 
     xml = generate_transaction_file(payments, 'BD12AZERTY123456', 'AZERTY9Q666', MESSAGE_ID, '0000')
 

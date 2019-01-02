@@ -133,10 +133,10 @@ def make_custom_message(date: datetime.date) -> str:
     return 'pass Culture Pro - remboursement %s quinzaine %s' % (period, month_and_year)
 
 
-def generate_payment_transaction(message_id: str, hash: str, payments: List[Payment]) -> PaymentTransaction:
+def generate_payment_transaction(message_id: str, checksum: str, payments: List[Payment]) -> PaymentTransaction:
     payment_transaction = PaymentTransaction()
     payment_transaction.messageId = message_id
-    payment_transaction.hash = hash
+    payment_transaction.checksum = checksum
     payment_transaction.payments = payments
     return payment_transaction
 

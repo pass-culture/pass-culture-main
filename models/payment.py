@@ -68,8 +68,8 @@ class Payment(PcObject, Model):
         return self.transaction.messageId if self.transaction else None
 
     @property
-    def transactionHash(self):
-        return self.transaction.hash if self.transaction else None
+    def transactionChecksum(self):
+        return self.transaction.checksum if self.transaction else None
 
     def setStatus(self, status: TransactionStatus, detail: str = None):
         payment_status = PaymentStatus()

@@ -26,7 +26,7 @@ def upgrade():
         'payment_transaction',
         sa.Column('id', sa.BigInteger, primary_key=True, autoincrement=True),
         sa.Column('messageId', sa.String(50), unique=True, nullable=False),
-        sa.Column('hash', sa.String(40), unique=True, nullable=False)
+        sa.Column('checksum', sa.String(40), unique=True, nullable=False)
     )
     op.add_column(
         'payment',

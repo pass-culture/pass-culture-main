@@ -1,8 +1,6 @@
 import re
-import re
 import secrets
 from datetime import datetime, timezone, timedelta
-from pprint import pprint
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -855,7 +853,7 @@ def test_make_offerer_booking_user_cancellation_does_not_have_recap_information(
 
 @pytest.mark.standalone
 @freeze_time('2018-10-15 09:21:34')
-def test_make_payment_transaction_email(app):
+def test_make_payment_transaction_email_sends_a_xml_file_with_its_checksum_in_email_body(app):
     # Given
     xml = '<?xml version="1.0" encoding="UTF-8"?><Document xmlns="urn:iso:std:iso:20022:tech:xsd:pain.001.001.03"></Document>'
     file_hash = '12345678AZERTYU'
