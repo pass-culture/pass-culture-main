@@ -94,11 +94,12 @@ def validate_transaction_file(transaction_file: str) -> str:
     xsd_doc = etree.parse(BytesIO(xsd.encode()))
     xsd_schema = etree.XMLSchema(xsd_doc)
 
-    xml = BytesIO(transaction_file.encode())
+    encoded_file = transaction_file.encode('utf-8')
+    xml = BytesIO(encoded_file)
     xml_doc = etree.parse(xml)
 
     xsd_schema.assertValid(xml_doc)
-    return sha1(transaction_file.encode('utf-8')).hexdigest()
+    return sha1(encoded_file).hexdigest()
 
 
 def create_all_payments_details(payments: List[Payment], find_booking_date_used=find_date_used) -> List[PaymentDetails]:
