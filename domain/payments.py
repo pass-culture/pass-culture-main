@@ -73,7 +73,7 @@ def filter_out_already_paid_for_bookings(booking_reimbursements: List[BookingRei
 
 def generate_transaction_file(payments: List[Payment], pass_culture_iban: str, pass_culture_bic: str, message_id: str,
                               remittance_code: str) -> str:
-    transactions = _group_payments_into_transactions(payments, message_id)
+    transactions = _group_payments_into_transactions(payments)
     total_amount = sum([transaction.amount for transaction in transactions])
     now = datetime.utcnow()
 
@@ -151,7 +151,7 @@ def read_message_id_in_transaction_file(xml_file: str) -> str:
     return node.text
 
 
-def _group_payments_into_transactions(payments: List[Payment], message_id: str) -> List[Transaction]:
+def _group_payments_into_transactions(payments: List[Payment]) -> List[Transaction]:
     payments_with_iban = sorted(filter(lambda x: x.iban, payments), key=lambda x: (x.iban, x.bic))
     payments_by_iban = itertools.groupby(payments_with_iban, lambda x: (x.iban, x.bic))
 
