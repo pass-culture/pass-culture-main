@@ -1,9 +1,8 @@
-import { ClientFunction, Role, Selector } from 'testcafe'
+import { Role, Selector } from 'testcafe'
 
 import { ROOT_PATH } from '../../src/utils/config'
 import { youngUser } from './users'
 
-const getPageUrl = ClientFunction(() => window.location.href.toString())
 const signInButton = Selector('button').withText('Connexion')
 
 export const youngUserRole = Role(
@@ -15,7 +14,6 @@ export const youngUserRole = Role(
       .wait(500)
       .click(signInButton)
       .wait(500)
-    await t.expect(getPageUrl()).contains('/decouverte', { timeout: 2000 })
   },
   {
     preserveUrl: true,
