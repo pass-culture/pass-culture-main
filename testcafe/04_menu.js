@@ -1,7 +1,6 @@
 import { Selector } from 'testcafe'
 
 import { youngUserRole } from './helpers/roles'
-import { ROOT_PATH } from '../src/utils/config'
 
 const menuButton = Selector('#open-menu-button')
 const mainMenu = Selector('#main-menu')
@@ -9,7 +8,6 @@ const mainMenu = Selector('#main-menu')
 fixture`04_01 Menu - Affichage de la modale`.beforeEach(async t => {
   await t
     .useRole(youngUserRole)
-    .navigateTo(`${ROOT_PATH}mentions-legales/`)
     .wait(500)
     .click(menuButton)
     .wait(100)
@@ -25,7 +23,6 @@ test("Lorsque je clique sur l'icône profil, la modale s'affiche", async t => {
 
 test('Lorsque je clique sur la croix, la modale se referme', async t => {
   const closeButton = Selector('#main-menu-close-button')
-
   await t
     .wait(500)
     .click(closeButton)
@@ -44,7 +41,6 @@ test('Je vois le montant de mon pass dans le header', async t => {
 fixture`04_02 Modale Menu - Liens vers pages`.beforeEach(async t => {
   await t
     .useRole(youngUserRole)
-    .navigateTo(`${ROOT_PATH}mentions-legales/`)
     .wait(500)
     .click(menuButton)
     .wait(100)
@@ -85,7 +81,6 @@ test('Menu | Liens | Mes réservations', async t => {
 
 test('Menu | Liens | Mes préférés', async t => {
   const menuFavoris = Selector('.navlink').withText('Mes Préférés')
-
   await t
     .expect(menuFavoris.exists)
     .ok()
@@ -100,7 +95,6 @@ test('Menu | Liens | Mes préférés', async t => {
 test('Menu | Liens | Mon profil', async t => {
   const menuProfil = Selector('.navlink').withText('Mon Profil')
   await t
-
     .expect(menuProfil.exists)
     .ok()
     .click(menuProfil)
@@ -125,7 +119,7 @@ test('Menu | Liens | Mentions légales', async t => {
     .click(menuMentionsLegales)
     .wait(100)
   const location = await t.eval(() => window.location)
-  await t.expect(location.pathname).eql('/mentions-legales/')
+  await t.expect(location.pathname).eql('/mentions-legales')
 })
 
 test('Menu | Liens | Déconnexion', async t => {
