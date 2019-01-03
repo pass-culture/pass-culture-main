@@ -9,6 +9,7 @@ from freezegun import freeze_time
 
 from models import PcObject, Offerer
 from tests.conftest import clean_database, mocked_mail
+from tests.files.api_entreprise import MOCKED_SIREN_ENTREPRISES_API_RETURN
 from utils.mailing import make_user_booking_recap_email, \
     make_offerer_booking_recap_email_after_user_action, make_final_recap_email_for_stock_with_event, \
     write_object_validation_email, make_offerer_driven_cancellation_email_for_user, \
@@ -19,7 +20,7 @@ from utils.mailing import make_user_booking_recap_email, \
     make_batch_cancellation_email, make_payment_transaction_email, make_user_validation_email, \
     make_payment_details_email, make_wallet_balances_email
 from utils.test_utils import create_stock_with_event_offer, create_stock_with_thing_offer, \
-    create_user, create_booking, MOCKED_SIREN_ENTREPRISES_API_RETURN, create_user_offerer, \
+    create_user, create_booking, create_user_offerer, \
     create_offerer, create_venue, create_thing_offer, create_event_offer, create_stock_from_offer, \
     create_stock_from_event_occurrence, create_event_occurrence, create_thing, create_mocked_bookings
 
