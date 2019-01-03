@@ -1,13 +1,19 @@
 """ validate """
+
 from flask import current_app as app, jsonify, request
+from flask_login import login_required, current_user
+from lxml.etree import LxmlError
 
 import models
 from domain.admin_emails import maybe_send_offerer_validation_email
+from domain.payments import validate_transaction_file, read_message_id_in_transaction_file
 from domain.user_emails import send_validation_confirmation_email, send_venue_validation_confirmation_email
 from models import ApiErrors, \
     User, \
     PcObject, UserOfferer, Offerer, Venue
+from models.api_errors import ResourceNotFound, ForbiddenError
 from repository import user_offerer_queries, offerer_queries
+from repository.payment_queries import find_transaction_checksum
 from tests.validation_validate_test import check_validation_request, check_venue_found
 from utils.mailing import MailServiceException
 from validation.validate import check_valid_token_for_user_validation
@@ -92,5 +98,23 @@ def validate_user(token):
 
 
 @app.route('/validate/transaction', methods=['POST'])
-def validate_transaction_file():
-    pass
+@login_required
+def certify_transaction_file_authenticity():
+    if not current_user.isAdmin:
+        raise ForbiddenError()
+
+    xml_content = request.files['file'].read().decode('utf-8')
+    try:
+        given_checksum = validate_transaction_file(xml_content)
+    except LxmlError:
+        raise ApiErrors({'xml': ['Le document ne correspond pas à la spécification ISO 20022']})
+
+    message_id = read_message_id_in_transaction_file(xml_content)
+    found_checksum = find_transaction_checksum(message_id)
+    if not found_checksum:
+        raise ResourceNotFound({'xml': ["L'identifiant du document XML 'MsgId' est inconnu"]})
+
+    if found_checksum != given_checksum:
+        raise ApiErrors({'xml': ["L'intégrité du document n'est pas validée"]})
+
+    return jsonify({}), 204

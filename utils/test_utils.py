@@ -711,10 +711,13 @@ def create_payment(booking, offerer, amount, author='test author', reimbursement
     return payment
 
 
-def create_payment_transaction(transaction_message_id="ABCD123"):
+def create_payment_transaction(transaction_message_id="ABCD123", checksum=None):
     transaction = PaymentTransaction()
     transaction.messageId = transaction_message_id
-    transaction.checksum = sha256(transaction_message_id.encode('utf-8')).hexdigest()
+    if checksum:
+        transaction.checksum = checksum
+    else:
+        transaction.checksum = sha256(transaction_message_id.encode('utf-8')).hexdigest()
     return transaction
 
 

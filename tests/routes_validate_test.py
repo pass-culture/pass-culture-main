@@ -5,7 +5,10 @@ import pytest
 from models import Offerer, PcObject
 from models.db import db
 from tests.conftest import clean_database
-from utils.test_utils import req, create_user, req_with_auth, API_URL, create_offerer, create_user_offerer, create_venue
+from tests.files.transactions import VALID_TRANSACTION, INVALID_TRANSACTION, \
+    VALID_TRANSACTION_WITH_MALFORMED_XML_DECLARATION
+from utils.test_utils import req, create_user, req_with_auth, API_URL, create_offerer, create_user_offerer, \
+    create_venue, create_payment_transaction
 
 
 @clean_database
@@ -116,3 +119,151 @@ def test_validate_user_when_validation_token_not_found_returns_status_code_404(a
     # Then
     assert response.status_code == 404
     assert response.json()['global'] == ['Ce lien est invalide']
+
+
+@pytest.mark.standalone
+class CertifyTransactionFileAuthenticityTest:
+    @clean_database
+    def test_returns_no_content_if_file_authenticity_is_certified(self, app):
+        # given
+        user = create_user(password='p@55sw0rd', is_admin=True, can_book_free_offers=False)
+        transaction = create_payment_transaction(
+            transaction_message_id='passCulture-SCT-20181015-114356',
+            checksum='86055b286afd11316cd7cacd00e61034fddedda50c234c0157a8f0da6e30931e'
+        )
+        PcObject.check_and_save(user, transaction)
+
+        auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
+
+        # when
+        response = auth_request.post(
+            API_URL + '/validate/transaction/',
+            data={},
+            files={'file': ('transaction.xml', VALID_TRANSACTION)}
+        )
+
+        # then
+        assert response.status_code == 204
+
+    @clean_database
+    def test_returns_bad_request_if_file_is_not_structurally_valid(self, app):
+        # given
+        user = create_user(password='p@55sw0rd', is_admin=True, can_book_free_offers=False)
+        PcObject.check_and_save(user)
+
+        auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
+
+        # when
+        response = auth_request.post(
+            API_URL + '/validate/transaction/',
+            data={},
+            files={'file': ('transaction.xml', INVALID_TRANSACTION)}
+        )
+
+        # then
+        assert response.status_code == 400
+        assert response.json()['xml'] == [
+            'Le document ne correspond pas à la spécification ISO 20022'
+        ]
+
+    @clean_database
+    def test_returns_bad_request_if_file_checksum_does_not_match_known_checksum(self, app):
+        # given
+        user = create_user(password='p@55sw0rd', is_admin=True, can_book_free_offers=False)
+        transaction = create_payment_transaction(
+            transaction_message_id='passCulture-SCT-20181015-114356',
+            checksum='FAKE_CHECKSUM'
+        )
+        PcObject.check_and_save(user, transaction)
+
+        auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
+
+        # when
+        response = auth_request.post(
+            API_URL + '/validate/transaction/',
+            data={},
+            files={'file': ('transaction.xml', VALID_TRANSACTION)}
+        )
+
+        # then
+        assert response.status_code == 400
+        assert response.json()['xml'] == [
+            "L'intégrité du document n'est pas validée"
+        ]
+
+    @clean_database
+    def test_returns_bad_request_if_file_is_structurally_valid_with_malformed_xml_declaration(self, app):
+        # given
+        user = create_user(password='p@55sw0rd', is_admin=True, can_book_free_offers=False)
+        PcObject.check_and_save(user)
+
+        auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
+
+        # when
+        response = auth_request.post(
+            API_URL + '/validate/transaction/',
+            data={},
+            files={'file': ('transaction.xml', VALID_TRANSACTION_WITH_MALFORMED_XML_DECLARATION)}
+        )
+
+        # then
+        assert response.status_code == 400
+        assert response.json()['xml'] == [
+            'Le document ne correspond pas à la spécification ISO 20022'
+        ]
+
+    @clean_database
+    def test_returns_unauthorized_if_user_is_not_logged_in(self, app):
+        # when
+        response = req.post(
+            API_URL + '/validate/transaction/',
+            data={},
+            files={'file': ('transaction.xml', VALID_TRANSACTION)},
+            headers={'origin': 'http://localhost:3000'}
+        )
+
+        # then
+        assert response.status_code == 401
+
+    @clean_database
+    def test_returns_forbidden_if_current_user_is_not_admin(self, app):
+        # given
+        user = create_user(password='p@55sw0rd', is_admin=False, can_book_free_offers=True)
+        transaction = create_payment_transaction(
+            transaction_message_id='passCulture-SCT-20181015-114356',
+            checksum='86055b286afd11316cd7cacd00e61034fddedda50c234c0157a8f0da6e30931e'
+        )
+        PcObject.check_and_save(user, transaction)
+
+        auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
+
+        # when
+        response = auth_request.post(
+            API_URL + '/validate/transaction/',
+            data={},
+            files={'file': ('transaction.xml', VALID_TRANSACTION)}
+        )
+
+        # then
+        assert response.status_code == 403
+
+    @clean_database
+    def test_returns_not_found_if_message_id_from_file_is_unknown(self, app):
+        # given
+        user = create_user(password='p@55sw0rd', is_admin=True, can_book_free_offers=False)
+        PcObject.check_and_save(user)
+
+        auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
+
+        # when
+        response = auth_request.post(
+            API_URL + '/validate/transaction/',
+            data={},
+            files={'file': ('transaction.xml', VALID_TRANSACTION)}
+        )
+
+        # then
+        assert response.status_code == 404
+        assert response.json()['xml'] == [
+            "L'identifiant du document XML 'MsgId' est inconnu"
+        ]
