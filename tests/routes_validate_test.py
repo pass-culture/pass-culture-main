@@ -124,7 +124,7 @@ def test_validate_user_when_validation_token_not_found_returns_status_code_404(a
 @pytest.mark.standalone
 class CertifyTransactionFileAuthenticityTest:
     @clean_database
-    def test_returns_no_content_if_file_authenticity_is_certified(self, app):
+    def test_returns_ok_with_checksum_if_file_authenticity_is_certified(self, app):
         # given
         user = create_user(password='p@55sw0rd', is_admin=True, can_book_free_offers=False)
         transaction = create_payment_transaction(
@@ -143,7 +143,8 @@ class CertifyTransactionFileAuthenticityTest:
         )
 
         # then
-        assert response.status_code == 204
+        assert response.status_code == 200
+        assert response.json()['checksum'] == '86055b286afd11316cd7cacd00e61034fddedda50c234c0157a8f0da6e30931e'
 
     @clean_database
     def test_returns_bad_request_if_file_checksum_does_not_match_known_checksum(self, app):
@@ -167,7 +168,8 @@ class CertifyTransactionFileAuthenticityTest:
         # then
         assert response.status_code == 400
         assert response.json()['xml'] == [
-            "L'intégrité du document n'est pas validée"
+            "L'intégrité du document n'est pas validée car la somme de contrôle est invalide : "
+            "86055b286afd11316cd7cacd00e61034fddedda50c234c0157a8f0da6e30931e"
         ]
 
     @clean_database

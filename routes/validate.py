@@ -113,6 +113,6 @@ def certify_transaction_file_authenticity():
     given_checksum = generate_file_checksum(xml_content)
 
     if found_checksum != given_checksum:
-        raise ApiErrors({'xml': ["L'intégrité du document n'est pas validée"]})
+        raise ApiErrors({'xml': ["L'intégrité du document n'est pas validée car la somme de contrôle est invalide : %s" % given_checksum.hex()]})
 
-    return jsonify({}), 204
+    return jsonify({'checksum': given_checksum.hex()}), 200
