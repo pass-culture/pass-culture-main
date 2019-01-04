@@ -8,7 +8,8 @@ from freezegun import freeze_time
 from lxml import etree
 from lxml.etree import DocumentInvalid
 
-from domain.payments import validate_transaction_file, generate_transaction_file, read_message_id_in_transaction_file
+from domain.payments import validate_transaction_file_structure, generate_transaction_file, read_message_id_in_transaction_file, \
+    generate_file_checksum
 from utils.test_utils import create_payment, create_offerer, create_user, create_venue, create_stock_from_offer, \
     create_booking, create_thing_offer
 
@@ -612,7 +613,7 @@ def test_generate_transaction_file_has_initiating_party_in_group_header(app):
 @pytest.mark.standalone
 @freeze_time('2018-10-15 09:21:34')
 @patch('domain.payments.uuid.uuid4')
-def test_validate_transaction_file_returns_a_checksum_of_the_file_when_generated_xml_is_valid(mocked_uuid, app):
+def test_generate_file_checksum_returns_a_checksum_of_the_file_when_generated_xml_is_valid(mocked_uuid, app):
     # given
     offerer1 = create_offerer(name='first offerer', iban='CF13QSDFGH456789', bic='QSDFGH8Z555', idx=1)
     offerer2 = create_offerer(name='second offerer', iban='FR14WXCVBN123456', bic='WXCVBN7B444', idx=2)
@@ -638,14 +639,14 @@ def test_validate_transaction_file_returns_a_checksum_of_the_file_when_generated
     xml = generate_transaction_file(payments, 'BD12AZERTY123456', 'AZERTY9Q666', MESSAGE_ID, '0000')
 
     # when
-    hash = validate_transaction_file(xml)
+    checksum = generate_file_checksum(xml)
 
     # then
-    assert hash == '16910c117e4873c51aa3573113bf216a7140ea20203c6826ef1faffc7f4fc882'
+    assert checksum == '16910c117e4873c51aa3573113bf216a7140ea20203c6826ef1faffc7f4fc882'
 
 
 @pytest.mark.standalone
-def test_validate_transaction_file_raises_a_document_invalid_exception_with_specific_error_when_xml_is_invalid(app):
+def test_validate_transaction_file_structure_raises_a_document_invalid_exception_with_specific_error_when_xml_is_invalid(app):
     # given
     transaction_file = '''
         <broken><xml></xml></broken>
@@ -653,7 +654,7 @@ def test_validate_transaction_file_raises_a_document_invalid_exception_with_spec
 
     # when
     with pytest.raises(DocumentInvalid) as e:
-        validate_transaction_file(transaction_file)
+        validate_transaction_file_structure(transaction_file)
 
     # then
     assert str(e.value) == "Element 'broken': No matching global declaration available for the validation root., line 2"

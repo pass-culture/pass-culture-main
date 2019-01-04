@@ -146,27 +146,6 @@ class CertifyTransactionFileAuthenticityTest:
         assert response.status_code == 204
 
     @clean_database
-    def test_returns_bad_request_if_file_is_not_structurally_valid(self, app):
-        # given
-        user = create_user(password='p@55sw0rd', is_admin=True, can_book_free_offers=False)
-        PcObject.check_and_save(user)
-
-        auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
-
-        # when
-        response = auth_request.post(
-            API_URL + '/validate/transaction/',
-            data={},
-            files={'file': ('transaction.xml', INVALID_TRANSACTION)}
-        )
-
-        # then
-        assert response.status_code == 400
-        assert response.json()['xml'] == [
-            'Le document ne correspond pas à la spécification ISO 20022'
-        ]
-
-    @clean_database
     def test_returns_bad_request_if_file_checksum_does_not_match_known_checksum(self, app):
         # given
         user = create_user(password='p@55sw0rd', is_admin=True, can_book_free_offers=False)
@@ -189,27 +168,6 @@ class CertifyTransactionFileAuthenticityTest:
         assert response.status_code == 400
         assert response.json()['xml'] == [
             "L'intégrité du document n'est pas validée"
-        ]
-
-    @clean_database
-    def test_returns_bad_request_if_file_is_structurally_valid_with_malformed_xml_declaration(self, app):
-        # given
-        user = create_user(password='p@55sw0rd', is_admin=True, can_book_free_offers=False)
-        PcObject.check_and_save(user)
-
-        auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
-
-        # when
-        response = auth_request.post(
-            API_URL + '/validate/transaction/',
-            data={},
-            files={'file': ('transaction.xml', VALID_TRANSACTION_WITH_MALFORMED_XML_DECLARATION)}
-        )
-
-        # then
-        assert response.status_code == 400
-        assert response.json()['xml'] == [
-            'Le document ne correspond pas à la spécification ISO 20022'
         ]
 
     @clean_database

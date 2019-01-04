@@ -91,7 +91,7 @@ def generate_transaction_file(payments: List[Payment], pass_culture_iban: str, p
     )
 
 
-def validate_transaction_file(transaction_file: str) -> str:
+def validate_transaction_file_structure(transaction_file: str) -> str:
     xsd = render_template('transactions/transaction_banque_de_france.xsd')
     xsd_doc = etree.parse(BytesIO(xsd.encode()))
     xsd_schema = etree.XMLSchema(xsd_doc)
@@ -101,6 +101,10 @@ def validate_transaction_file(transaction_file: str) -> str:
     xml_doc = etree.parse(xml)
 
     xsd_schema.assertValid(xml_doc)
+
+
+def generate_file_checksum(file: str) -> str:
+    encoded_file = file.encode('utf-8')
     return sha256(encoded_file).hexdigest()
 
 

@@ -6,7 +6,7 @@ from lxml.etree import LxmlError
 
 import models
 from domain.admin_emails import maybe_send_offerer_validation_email
-from domain.payments import validate_transaction_file, read_message_id_in_transaction_file
+from domain.payments import validate_transaction_file_structure, read_message_id_in_transaction_file, generate_file_checksum
 from domain.user_emails import send_validation_confirmation_email, send_venue_validation_confirmation_email
 from models import ApiErrors, \
     User, \
@@ -104,16 +104,13 @@ def certify_transaction_file_authenticity():
         raise ForbiddenError()
 
     xml_content = request.files['file'].read().decode('utf-8')
-    try:
-        given_checksum = validate_transaction_file(xml_content)
-    except LxmlError:
-        raise ApiErrors({'xml': ['Le document ne correspond pas à la spécification ISO 20022']})
-
     message_id = read_message_id_in_transaction_file(xml_content)
     found_checksum = find_transaction_checksum(message_id)
+
     if not found_checksum:
         raise ResourceNotFound({'xml': ["L'identifiant du document XML 'MsgId' est inconnu"]})
 
+    given_checksum = generate_file_checksum(xml_content)
     if found_checksum != given_checksum:
         raise ApiErrors({'xml': ["L'intégrité du document n'est pas validée"]})
 
