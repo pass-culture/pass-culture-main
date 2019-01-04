@@ -613,7 +613,7 @@ def test_generate_transaction_file_has_initiating_party_in_group_header(app):
 @pytest.mark.standalone
 @freeze_time('2018-10-15 09:21:34')
 @patch('domain.payments.uuid.uuid4')
-def test_generate_file_checksum_returns_a_checksum_of_the_file_when_generated_xml_is_valid(mocked_uuid, app):
+def test_generate_file_checksum_returns_a_checksum_of_the_file(mocked_uuid, app):
     # given
     offerer1 = create_offerer(name='first offerer', iban='CF13QSDFGH456789', bic='QSDFGH8Z555', idx=1)
     offerer2 = create_offerer(name='second offerer', iban='FR14WXCVBN123456', bic='WXCVBN7B444', idx=2)
@@ -642,7 +642,7 @@ def test_generate_file_checksum_returns_a_checksum_of_the_file_when_generated_xm
     checksum = generate_file_checksum(xml)
 
     # then
-    assert checksum == '16910c117e4873c51aa3573113bf216a7140ea20203c6826ef1faffc7f4fc882'
+    assert checksum == b'\x16\x91\x0c\x11~Hs\xc5\x1a\xa3W1\x13\xbf!jq@\xea  <h&\xef\x1f\xaf\xfc\x7fO\xc8\x82'
 
 
 @pytest.mark.standalone

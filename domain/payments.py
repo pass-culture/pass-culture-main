@@ -103,9 +103,9 @@ def validate_transaction_file_structure(transaction_file: str) -> str:
     xsd_schema.assertValid(xml_doc)
 
 
-def generate_file_checksum(file: str) -> str:
+def generate_file_checksum(file: str):
     encoded_file = file.encode('utf-8')
-    return sha256(encoded_file).hexdigest()
+    return sha256(encoded_file).digest()
 
 
 def create_all_payments_details(payments: List[Payment], find_booking_date_used=find_date_used) -> List[PaymentDetails]:

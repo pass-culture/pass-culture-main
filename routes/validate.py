@@ -111,6 +111,7 @@ def certify_transaction_file_authenticity():
         raise ResourceNotFound({'xml': ["L'identifiant du document XML 'MsgId' est inconnu"]})
 
     given_checksum = generate_file_checksum(xml_content)
+
     if found_checksum != given_checksum:
         raise ApiErrors({'xml': ["L'intégrité du document n'est pas validée"]})
 

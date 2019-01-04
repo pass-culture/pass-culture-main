@@ -129,7 +129,7 @@ class CertifyTransactionFileAuthenticityTest:
         user = create_user(password='p@55sw0rd', is_admin=True, can_book_free_offers=False)
         transaction = create_payment_transaction(
             transaction_message_id='passCulture-SCT-20181015-114356',
-            checksum='86055b286afd11316cd7cacd00e61034fddedda50c234c0157a8f0da6e30931e'
+            checksum=b'\x86\x05[(j\xfd\x111l\xd7\xca\xcd\x00\xe6\x104\xfd\xde\xdd\xa5\x0c#L\x01W\xa8\xf0\xdan0\x93\x1e'
         )
         PcObject.check_and_save(user, transaction)
 
@@ -151,7 +151,7 @@ class CertifyTransactionFileAuthenticityTest:
         user = create_user(password='p@55sw0rd', is_admin=True, can_book_free_offers=False)
         transaction = create_payment_transaction(
             transaction_message_id='passCulture-SCT-20181015-114356',
-            checksum='FAKE_CHECKSUM'
+            checksum=b'FAKE_CHECKSUM'
         )
         PcObject.check_and_save(user, transaction)
 
@@ -189,7 +189,7 @@ class CertifyTransactionFileAuthenticityTest:
         user = create_user(password='p@55sw0rd', is_admin=False, can_book_free_offers=True)
         transaction = create_payment_transaction(
             transaction_message_id='passCulture-SCT-20181015-114356',
-            checksum='86055b286afd11316cd7cacd00e61034fddedda50c234c0157a8f0da6e30931e'
+            checksum=b'\x86\x05[(j\xfd\x111l\xd7\xca\xcd\x00\xe6\x104\xfd\xde\xdd\xa5\x0c#L\x01W\xa8\xf0\xdan0\x93\x1e'
         )
         PcObject.check_and_save(user, transaction)
 

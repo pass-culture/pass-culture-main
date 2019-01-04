@@ -576,7 +576,7 @@ def create_payment_transaction(transaction_message_id="ABCD123", checksum=None):
     if checksum:
         transaction.checksum = checksum
     else:
-        transaction.checksum = sha256(transaction_message_id.encode('utf-8')).hexdigest()
+        transaction.checksum = sha256(transaction_message_id.encode('utf-8')).digest()
     return transaction
 
 
