@@ -1,9 +1,3 @@
-/**
- *
- * Lancer les tests en local
- * ./node_modules/.bin/testcafe chrome ./testcafe/02_signin.js  --env=local
- *
- */
 import { ROOT_PATH } from '../src/utils/config'
 
 fixture('08_01 Booking Card').page(`${ROOT_PATH}connexion`)
