@@ -107,8 +107,7 @@ def save_booking(booking):
         if 'tooManyBookings' in str(internal_error.orig):
             api_errors.addError('global', 'la quantité disponible pour cette offre est atteinte')
         elif 'insufficientFunds' in str(internal_error.orig):
-            api_errors.addError('insufficientFunds', 'Le solde de votre Pass n\'est pas suffisant pour '
-                                                     'effectuer une réservation.')
+            api_errors.addError('insufficientFunds', "Le solde de votre pass n'est pas suffisant pour effectuer cette réservation.")
         raise api_errors
 
 

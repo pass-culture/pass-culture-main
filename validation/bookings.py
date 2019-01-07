@@ -35,7 +35,7 @@ def check_not_soft_deleted_stock(stock):
 def check_can_book_free_offer(stock, user):
     if not user.canBookFreeOffers and stock.price == 0:
         api_errors = ApiErrors()
-        api_errors.addError('cannotBookFreeOffers', 'L\'utilisateur n\'a pas le droit de réserver d\'offres gratuites')
+        api_errors.addError('cannotBookFreeOffers', 'Votre compte ne vous permet pas de faire de réservation.')
         raise api_errors
 
 

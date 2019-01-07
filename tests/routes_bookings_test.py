@@ -209,6 +209,7 @@ def test_create_booking_should_not_work_for_free_offer_if_not_userCanBookFreeOff
     # Then
     assert r_create.status_code == 400
     assert 'cannotBookFreeOffers' in r_create.json()
+    assert r_create.json()['cannotBookFreeOffers'] == ["Votre compte ne vous permet pas de faire de réservation."]
 
 
 @clean_database
@@ -243,6 +244,8 @@ def test_create_booking_should_not_work_if_not_enough_credit(app):
     # Then
     assert r_create.status_code == 400
     assert 'insufficientFunds' in r_create.json()
+    assert r_create.json()['insufficientFunds'] == ["Le solde de votre pass n'est pas suffisant pour effectuer cette réservation."]
+
 
 
 @clean_database
