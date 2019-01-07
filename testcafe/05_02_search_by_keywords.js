@@ -8,13 +8,13 @@ const keywordsSearchButton = Selector('#keywords-search-button')
 
 const resultsTitle = Selector('#results-title')
 
-fixture
-  .skip("O5_02_01 Recherche | J'effectue une recherche par mot-clé")
-  .beforeEach(async t => {
+fixture("O5_02_01 Recherche | J'effectue une recherche par mot-clé").beforeEach(
+  async t => {
     await t.useRole(youngUserRole).navigateTo(`${ROOT_PATH}recherche`)
-  })
+  }
+)
 
-test.skip("Je fais une recherche par mots-clés et je n'ai pas de résultats", async t => {
+test("Je fais une recherche par mots-clés et je n'ai pas de résultats", async t => {
   await t
     .wait(500)
     .typeText(searchInput, 'fake')
@@ -26,10 +26,10 @@ test.skip("Je fais une recherche par mots-clés et je n'ai pas de résultats", a
   await t.expect(resultsTitle.innerText).eql('"FAKE" : 0 RÉSULTAT')
 })
 
-test.skip("Je fais une recherche par mots-clés et j'ai des résultats", async t => {
+test("Je fais une recherche par mots-clés et j'ai des résultats", async t => {
   await t
-    .typeText(searchInput, 'vhils')
+    .typeText(searchInput, 'lepage')
     .click(keywordsSearchButton)
     .wait(500)
-  await t.expect(resultsTitle.innerText).eql('"VHILS" : 1 RÉSULTAT')
+  await t.expect(resultsTitle.innerText).eql('"LEPAGE" : 1 RÉSULTAT')
 })
