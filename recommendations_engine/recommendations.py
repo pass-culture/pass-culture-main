@@ -54,7 +54,7 @@ def create_recommendations_for_discovery(limit=3, user=None, coords=None):
             tuto_mediation_index = recommendation_count \
                                         + index \
                                         + inserted_tuto_mediations
-            create_tuto_mediation_if_not_exists_for_user(
+            create_tuto_mediation_if_non_existent_for_user(
                 user,
                 tuto_mediations_by_index[tuto_mediation_index]
             )
@@ -63,7 +63,7 @@ def create_recommendations_for_discovery(limit=3, user=None, coords=None):
     return recommendations
 
 
-def create_tuto_mediation_if_not_exists_for_user(user, tuto_mediation):
+def create_tuto_mediation_if_non_existent_for_user(user, tuto_mediation):
 
     already_existing_tuto_recommendation = Recommendation.query\
         .filter_by(mediation=tuto_mediation, user=user)\
