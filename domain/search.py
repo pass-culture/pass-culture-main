@@ -1,4 +1,6 @@
 """ search """
+import re
+
 from sqlalchemy import func
 from sqlalchemy.sql.expression import or_
 
@@ -15,7 +17,9 @@ def create_tsvector(*args):
 
 
 def get_ts_query(token):
-    ts_query = token.strip().replace(SPACE, ':* | ')
+    ts_query = re.sub(' +', ' ', token)\
+        .strip()\
+        .replace(SPACE, ':* | ')
     return ts_query + ':*'
 
 
