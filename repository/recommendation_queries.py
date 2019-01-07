@@ -17,9 +17,9 @@ from utils.human_ids import dehumanize
 def find_unseen_tutorials_for_user(seen_recommendation_ids, user):
     return Recommendation.query.join(Mediation) \
         .filter(
-        (Mediation.tutoIndex != None)
-        & (Recommendation.user == user)
-        & ~Recommendation.id.in_(seen_recommendation_ids)) \
+            (Mediation.tutoIndex != None)
+            & (Recommendation.user == user)
+            & ~Recommendation.id.in_(seen_recommendation_ids)) \
         .order_by(Mediation.tutoIndex) \
         .all()
 

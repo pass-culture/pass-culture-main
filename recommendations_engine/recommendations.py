@@ -32,29 +32,45 @@ def give_requested_recommendation_to_user(user, offer_id, mediation_id):
 def create_recommendations_for_discovery(limit=3, user=None, coords=None):
     if user and user.is_authenticated:
         recommendation_count = Recommendation.query.filter_by(user=user) \
-            .count()
+                                                   .count()
 
     recommendations = []
-    tuto_mediations = {}
+    tuto_mediations_by_index = {}
 
     for to in Mediation.query.filter(Mediation.tutoIndex != None).all():
-        tuto_mediations[to.tutoIndex] = to
+        tuto_mediations_by_index[to.tutoIndex] = to
 
     inserted_tuto_mediations = 0
-    offers = get_offers_for_recommendations_discovery(limit, user=user, coords=coords)
+    offers = get_offers_for_recommendations_discovery(
+        limit,
+        user=user,
+        coords=coords
+    )
+
     for (index, offer) in enumerate(offers):
 
         while recommendation_count + index + inserted_tuto_mediations \
-                in tuto_mediations:
-            insert_tuto_mediation(user,
-                                  tuto_mediations[recommendation_count + index
-                                                  + inserted_tuto_mediations])
+                in tuto_mediations_by_index:
+            tuto_mediation_index = recommendation_count \
+                                        + index \
+                                        + inserted_tuto_mediations
+            create_tuto_mediation_if_not_exists_for_user(
+                user,
+                tuto_mediations_by_index[tuto_mediation_index]
+            )
             inserted_tuto_mediations += 1
         recommendations.append(_create_recommendation(user, offer))
     return recommendations
 
 
-def insert_tuto_mediation(user, tuto_mediation):
+def create_tuto_mediation_if_not_exists_for_user(user, tuto_mediation):
+
+    already_existing_tuto_recommendation = Recommendation.query\
+        .filter_by(mediation=tuto_mediation, user=user)\
+        .first()
+    if already_existing_tuto_recommendation:
+        return
+
     recommendation = Recommendation()
     recommendation.user = user
     recommendation.mediation = tuto_mediation

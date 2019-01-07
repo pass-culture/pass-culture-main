@@ -1,4 +1,3 @@
-""" user mediations routes """
 from random import shuffle
 
 from flask import current_app as app, jsonify, request
@@ -70,14 +69,17 @@ def put_recommendations():
     mediation_id = dehumanize(request.args.get('mediationId'))
 
     try:
-        requested_recommendation = give_requested_recommendation_to_user(current_user, offer_id, mediation_id)
+        requested_recommendation = give_requested_recommendation_to_user(
+            current_user,
+            offer_id,
+            mediation_id
+        )
     except OfferNotFoundException:
         return "Offer or mediation not found", 404
 
     logger.info('(special) requested_recommendation %s' % (requested_recommendation,))
 
     # we get more read+unread recos than needed in case we can't make enough new recos
-
     unread_recos = find_all_unread_recommendations(current_user, seen_recommendation_ids)
     read_recos = find_all_read_recommendations(current_user, seen_recommendation_ids)
 
