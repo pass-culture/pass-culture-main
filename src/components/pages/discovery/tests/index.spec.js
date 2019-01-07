@@ -3,16 +3,17 @@ import { shallow } from 'enzyme'
 
 import { RawDiscoveryPage } from '../index'
 
-const dispatchMock = jest.fn()
-
 describe('src | components | pages | discovery | Index | DiscoveryPage', () => {
   describe('snapshot', () => {
     it('should match snapshot', () => {
       // given
       const props = {
         backButton: true,
-        dispatch: dispatchMock,
+        dispatch: jest.fn(),
         history: {},
+        location: {
+          search: '',
+        },
         match: {},
       }
 
@@ -30,8 +31,11 @@ describe('src | components | pages | discovery | Index | DiscoveryPage', () => 
         // given
         const props = {
           backButton: true,
-          dispatch: dispatchMock,
+          dispatch: jest.fn(),
           history: {},
+          location: {
+            search: '',
+          },
           match: {},
         }
 
@@ -52,16 +56,19 @@ describe('src | components | pages | discovery | Index | DiscoveryPage', () => 
       describe('One case', () => {
         it('should first dispatch requestData when  Main component is rendered', () => {
           // given
+          const dispatchMock = jest.fn()
           const props = {
             backButton: true,
             dispatch: dispatchMock,
             history: {},
+            location: {
+              search: '',
+            },
             match: {},
           }
 
           // when
-          const wrapper = shallow(<RawDiscoveryPage {...props} />)
-          wrapper.instance().handleDataRequest()
+          shallow(<RawDiscoveryPage {...props} />)
           const expectedRequest = {
             config: {},
             method: 'PUT',
