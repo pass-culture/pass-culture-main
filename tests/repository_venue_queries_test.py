@@ -28,12 +28,12 @@ def test_find_filtered_venues_with_sirens_params_return_filtered_venues(app):
     venue_123456782 = create_venue(offerer_123456782, name="venue_123456782", siret="12345678212345")
     venue_123456783 = create_venue(offerer_123456783, name="venue_123456783", siret="12345678312345")
     venue_123456784 = create_venue(offerer_123456784, name="venue_123456784", siret="12345678412345")
-    
+
     PcObject.check_and_save(venue_123456789, venue_123456781, venue_123456782, venue_123456783, venue_123456784)
- 
+
     #when
     query_with_sirens = find_filtered_venues(sirens=["123456781", "123456782", "123456783"])
-    
+
     #then
     assert venue_123456789 not in query_with_sirens
     assert venue_123456781 in query_with_sirens
@@ -56,7 +56,7 @@ def test_find_filtered_venues_with_has_validated_offerer_param_return_filtered_v
     query_with_not_valid_offerer_only = find_filtered_venues(has_validated_offerer=False)
 
     # Then
-    assert venue_with_offerer_valid not in query_with_not_valid_offerer_only 
+    assert venue_with_offerer_valid not in query_with_not_valid_offerer_only
     assert venue_with_offerer_not_valid in query_with_not_valid_offerer_only
 
 
@@ -80,8 +80,8 @@ def test_find_filtered_venues_with_dpts_param_return_filtered_venues(app):
     assert venue_93 in query_with_dpts
     assert venue_67 in query_with_dpts
     assert venue_34 not in query_with_dpts
-    assert venue_virtual not in query_with_dpts 
-    
+    assert venue_virtual not in query_with_dpts
+
 
 @pytest.mark.standalone
 @clean_database
@@ -143,9 +143,9 @@ def test_find_filtered_venues_with_is_virtual_param_return_filtered_venues(app):
 
     # When
     query_only_virtual = find_filtered_venues(is_virtual=True)
-    
+
     # Then
-    assert venue_virtual in query_only_virtual 
+    assert venue_virtual in query_only_virtual
     assert venue_not_virtual not in query_only_virtual
 
 
@@ -158,7 +158,7 @@ def test_find_filtered_venues_with_has_siret_param_return_filtered_venues(app):
     venue_with_siret = create_venue(offerer)
     venue_without_siret = create_venue(offerer, siret=None, comment="comment", is_virtual=False)
     PcObject.check_and_save(venue_virtual, venue_with_siret, venue_without_siret)
-    
+
     # When
     query_no_siret = find_filtered_venues(has_siret=False)
 
@@ -176,13 +176,13 @@ def test_find_filtered_venues_with_is_validated_param_return_filtered_venues(app
     venue_not_validated = create_venue(offerer, validation_token="there is a token here")
     venue_validated = create_venue(offerer, siret='12345678912346')
     PcObject.check_and_save(venue_not_validated, venue_validated)
-    
+
     # When
     query_only_validated = find_filtered_venues(is_validated=True)
 
     # Then
-    assert venue_not_validated not in query_only_validated 
-    assert venue_validated in query_only_validated 
+    assert venue_not_validated not in query_only_validated
+    assert venue_validated in query_only_validated
 
 
 @pytest.mark.standalone
@@ -195,13 +195,13 @@ def test_find_filtered_venues_with_has_offerer_with_siren_param_return_filtered_
     venue_with_offerer_with_siren = create_venue(offerer_with_siren)
     venue_with_offerer_without_siren = create_venue(offerer_without_siren, siret='12345678912346')
     PcObject.check_and_save(venue_with_offerer_with_siren, venue_with_offerer_without_siren)
-    
+
     # When
     query_validated = find_filtered_venues(has_offerer_with_siren=True)
 
     # Then
-    assert venue_with_offerer_without_siren not in query_validated 
-    assert venue_with_offerer_with_siren in query_validated 
+    assert venue_with_offerer_without_siren not in query_validated
+    assert venue_with_offerer_with_siren in query_validated
 
 
 @pytest.mark.standalone
@@ -230,7 +230,7 @@ def test_find_filtered_venues_with_True_has_validated_user_offerer_param_return_
     query_validated = find_filtered_venues(has_validated_user_offerer=True)
 
     # Then
-    assert venue_with_not_validated_user_offerer not in query_validated 
+    assert venue_with_not_validated_user_offerer not in query_validated
     assert venue_with_validated_user_offerer in query_validated
     assert venue_with_both in query_validated
 
@@ -261,7 +261,7 @@ def test_find_filtered_venues_with_False_has_validated_user_offerer_param_return
     query_not_validated = find_filtered_venues(has_validated_user_offerer=False)
 
     # Then
-    assert venue_with_not_validated_user_offerer in query_not_validated 
+    assert venue_with_not_validated_user_offerer in query_not_validated
     assert venue_with_validated_user_offerer not in query_not_validated
     assert venue_with_both not in query_not_validated
 
@@ -366,23 +366,23 @@ def test_find_filtered_venues_with_offer_status_with_VALID_param_return_filtered
        available=0)
     soft_deleted_thing_stock = create_stock_with_thing_offer(offerer, venue_with_soft_deleted_thing,
        soft_deleted_thing, soft_deleted=True)
-    
+
     expired_booking_limit_date_event_stock = create_stock_from_event_occurrence(expired_event_occurence,
        booking_limit_date=datetime(2018,1,1))
     valid_booking_limit_date_event_stock = create_stock_from_event_occurrence(valid_event_occurrence,
        booking_limit_date=datetime.utcnow() + timedelta(days=3))
-    soft_deleted_event_stock = create_stock_from_event_occurrence(valid_event_occurrence_soft_deleted, 
+    soft_deleted_event_stock = create_stock_from_event_occurrence(valid_event_occurrence_soft_deleted,
        soft_deleted=True, booking_limit_date=datetime.utcnow() + timedelta(days=3))
-    not_available_event_stock = create_stock_from_event_occurrence(valid_event_occurrence_not_available, 
+    not_available_event_stock = create_stock_from_event_occurrence(valid_event_occurrence_not_available,
        available=0, booking_limit_date=datetime.utcnow() + timedelta(days=3))
 
     PcObject.check_and_save(venue_without_offer, valid_event_occurrence, expired_event_occurence,
         valid_stock, expired_stock, soft_deleted_thing_stock, expired_booking_limit_date_event_stock,
         valid_booking_limit_date_event_stock, soft_deleted_event_stock)
-   
+
     # When
     query_has_valid_offer = find_filtered_venues(offer_status='VALID')
-   
+
     # Then
     assert venue_with_valid_event in query_has_valid_offer
     assert venue_without_offer not in query_has_valid_offer
@@ -434,23 +434,23 @@ def test_find_filtered_venues_with_offer_status_with_EXPIRED_param_return_filter
        available=0)
     soft_deleted_thing_stock = create_stock_with_thing_offer(offerer, venue_with_soft_deleted_thing,
        soft_deleted_thing, soft_deleted=True)
-    
+
     expired_booking_limit_date_event_stock = create_stock_from_event_occurrence(expired_event_occurence,
        booking_limit_date=datetime(2018,1,1))
     valid_booking_limit_date_event_stock = create_stock_from_event_occurrence(valid_event_occurrence,
        booking_limit_date=datetime.utcnow() + timedelta(days=3))
-    soft_deleted_event_stock = create_stock_from_event_occurrence(valid_event_occurrence_soft_deleted, 
+    soft_deleted_event_stock = create_stock_from_event_occurrence(valid_event_occurrence_soft_deleted,
        soft_deleted=True, booking_limit_date=datetime.utcnow() + timedelta(days=3))
-    not_available_event_stock = create_stock_from_event_occurrence(valid_event_occurrence_not_available, 
+    not_available_event_stock = create_stock_from_event_occurrence(valid_event_occurrence_not_available,
        available=0, booking_limit_date=datetime.utcnow() + timedelta(days=3))
 
     PcObject.check_and_save(venue_without_offer, valid_event_occurrence, expired_event_occurence,
         valid_stock, expired_stock, soft_deleted_thing_stock, expired_booking_limit_date_event_stock,
         valid_booking_limit_date_event_stock, soft_deleted_event_stock)
-   
+
     # When
     query_has_expired_offer = find_filtered_venues(offer_status='EXPIRED')
-   
+
     # Then
     assert venue_with_valid_event not in query_has_expired_offer
     assert venue_without_offer not in query_has_expired_offer
@@ -502,23 +502,23 @@ def test_find_filtered_venues_with_offer_status_with_WITHOUT_param_return_filter
        available=0)
     soft_deleted_thing_stock = create_stock_with_thing_offer(offerer, venue_with_soft_deleted_thing,
        soft_deleted_thing, soft_deleted=True)
-    
+
     expired_booking_limit_date_event_stock = create_stock_from_event_occurrence(expired_event_occurence,
        booking_limit_date=datetime(2018,1,1))
     valid_booking_limit_date_event_stock = create_stock_from_event_occurrence(valid_event_occurrence,
        booking_limit_date=datetime.utcnow() + timedelta(days=3))
-    soft_deleted_event_stock = create_stock_from_event_occurrence(valid_event_occurrence_soft_deleted, 
+    soft_deleted_event_stock = create_stock_from_event_occurrence(valid_event_occurrence_soft_deleted,
        soft_deleted=True, booking_limit_date=datetime.utcnow() + timedelta(days=3))
-    not_available_event_stock = create_stock_from_event_occurrence(valid_event_occurrence_not_available, 
+    not_available_event_stock = create_stock_from_event_occurrence(valid_event_occurrence_not_available,
        available=0, booking_limit_date=datetime.utcnow() + timedelta(days=3))
 
     PcObject.check_and_save(venue_without_offer, valid_event_occurrence, expired_event_occurence,
         valid_stock, expired_stock, soft_deleted_thing_stock, expired_booking_limit_date_event_stock,
         valid_booking_limit_date_event_stock, soft_deleted_event_stock)
-   
+
     # When
     query_without_offer = find_filtered_venues(offer_status='WITHOUT')
-   
+
     # Then
     assert venue_with_valid_event not in query_without_offer
     assert venue_without_offer in query_without_offer
@@ -570,23 +570,23 @@ def test_find_filtered_venues_with_offer_status_with_ALL_param_return_filtered_v
        available=0)
     soft_deleted_thing_stock = create_stock_with_thing_offer(offerer, venue_with_soft_deleted_thing,
        soft_deleted_thing, soft_deleted=True)
-    
+
     expired_booking_limit_date_event_stock = create_stock_from_event_occurrence(expired_event_occurence,
        booking_limit_date=datetime(2018,1,1))
     valid_booking_limit_date_event_stock = create_stock_from_event_occurrence(valid_event_occurrence,
        booking_limit_date=datetime.utcnow() + timedelta(days=3))
-    soft_deleted_event_stock = create_stock_from_event_occurrence(valid_event_occurrence_soft_deleted, 
+    soft_deleted_event_stock = create_stock_from_event_occurrence(valid_event_occurrence_soft_deleted,
        soft_deleted=True, booking_limit_date=datetime.utcnow() + timedelta(days=3))
-    not_available_event_stock = create_stock_from_event_occurrence(valid_event_occurrence_not_available, 
+    not_available_event_stock = create_stock_from_event_occurrence(valid_event_occurrence_not_available,
        available=0, booking_limit_date=datetime.utcnow() + timedelta(days=3))
 
     PcObject.check_and_save(venue_without_offer, valid_event_occurrence, expired_event_occurence,
         valid_stock, expired_stock, soft_deleted_thing_stock, expired_booking_limit_date_event_stock,
         valid_booking_limit_date_event_stock, soft_deleted_event_stock)
-   
+
     # When
     query_with_all_offer = find_filtered_venues(offer_status='ALL')
-   
+
     # Then
     assert venue_with_valid_event in query_with_all_offer
     assert venue_without_offer not in query_with_all_offer
@@ -624,7 +624,7 @@ def test_find_filtered_venues_with_default_param_return_all_venues(app):
     PcObject.check_and_save(venue_with_valid_offer, venue_without_offer, valid_event_occurrence,
         expired_event_occurence, venue_virtual, venue_97000, venue_without_siret, venue_93000,
         venue_67000, venue_34000)
-   
+
     # When
     default_query = find_filtered_venues()
 
