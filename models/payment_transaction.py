@@ -10,4 +10,4 @@ from models.pc_object import PcObject
 class PaymentTransaction(PcObject, Model):
     messageId = Column(String(50), unique=True, nullable=False)
 
-    checksum = Column(Binary(40), unique=True, nullable=False)
+    checksum = Column(Binary(32), unique=True, nullable=False)
