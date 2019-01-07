@@ -193,6 +193,19 @@ Par exemple, pour l'environnement staging :
 pc -e staging python
 ```
 
+Il est également possible d'uploader un fichier dans l'environnement temporaire grâce à la commande suivante :
+
+```bash
+pc -e staging -f myfile.extension python
+```
+
+L'option -f est également disponible pour la commande bash :
+
+```bash
+pc -e staging -f myfile.extension bash
+```
+
+
 ### Gestion des objects storage OVH
 
 Pour toutes les commandes suivantes, vous devez disposer des secrets de connexion.

@@ -6,11 +6,12 @@ set -o nounset
 # =============================================
 
 if [[ $# -eq 0 ]] || [[ "$1" == "-h" ]]; then
-    echo "$(basename "$0") [-h] [-e env -b backend c] -- program to deal with Pass Culture ecosystem
+    echo "$(basename "$0") [-h] [-e env -b backend -f file c] -- program to deal with Pass Culture ecosystem
 where:
     -h  show this help text
     -e  specify environment to target (default: development)
     -b  specify backend to connect with local app (default: localhost)
+    -f  file to upload to scalingo off-container
     -t  specify version you want to deploy (create tag with this name)
     -c  command that you want to run"
     exit 0
@@ -33,6 +34,13 @@ if [[ $# -gt 2 ]] && [[ "$1" == "-b" ]]; then
   shift 2
 else
   BACKEND=${BACKEND:-'localhost'}
+fi
+
+if [[ $# -gt 2 ]] && [[ "$1" == "-f" ]]; then
+  FILE_TO_UPLOAD=$2
+  shift 2
+else
+  FILE_TO_UPLOAD=${FILE_TO_UPLOAD:-'none'}
 fi
 
 if [[ $# -gt 2 ]] && [[ "$1" == "-t" ]]; then
@@ -152,7 +160,11 @@ elif [[ "$CMD" == "bash" ]]; then
   if [[ "$ENV" == "development" ]]; then
       RUN='docker exec -it `docker ps | grep flask | cut -d" " -f 1` bash'
   else
-      scalingo -a "$SCALINGO_APP" run bash
+      if [ "$FILE_TO_UPLOAD" == 'none' ]; then
+        scalingo -a "$SCALINGO_APP" run bash
+      else
+        scalingo -a "$SCALINGO_APP" run --file "$FILE_TO_UPLOAD" bash
+      fi
       exit
   fi
 
@@ -457,7 +469,11 @@ elif [[ "$CMD" == "python" ]]; then
 	if [[ "$ENV" == "development" ]]; then
 		RUN='docker exec -it `docker ps | grep flask | cut -d" " -f 1` bash -c "cd /opt/services/flaskapp/src/ && PYTHONPATH=. python -i scripts/interact.py '"$CMD $*"'"'
 	else
-		scalingo -a "$SCALINGO_APP" run "python -i scripts/interact.py"
+	    if [ "$FILE_TO_UPLOAD" == 'none' ]; then
+		    scalingo -a "$SCALINGO_APP" run "python -i scripts/interact.py"
+		else
+		    scalingo -a "$SCALINGO_APP" run --file "$FILE_TO_UPLOAD" "python -i scripts/interact.py"
+		fi
 		exit
 	fi
 
@@ -491,7 +507,11 @@ else
   if [[ "$ENV" == "development" ]]; then
     RUN='docker exec `docker ps | grep flask | cut -d" " -f 1` bash -c "cd /opt/services/flaskapp/src/ && PYTHONPATH=. python scripts/pc.py '"$CMD $*"'"'
   else
-    scalingo -a "$SCALINGO_APP" run 'python scripts/pc.py '"$CMD $*"''
+    if [ "$FILE_TO_UPLOAD" == 'none' ]; then
+        scalingo -a "$SCALINGO_APP" run 'python scripts/pc.py '"$CMD $*"''
+    else
+        scalingo -a "$SCALINGO_APP" run --file "$FILE_TO_UPLOAD" 'python scripts/pc.py '"$CMD $*"''
+    fi
     exit
   fi
 fi
