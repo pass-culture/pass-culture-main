@@ -1,7 +1,7 @@
 export const youngUser = {
-  email: 'pctest.jeune93.cafe0@btmx.fr',
-  password: 'pctest.Jeune93.cafe0',
-  publicName: 'Pc Test Jeune93 Cafe0',
+  email: 'pctest.jeune93.has-signed-up@btmx.fr',
+  password: 'pctest.Jeune93.has-signed-up',
+  publicName: 'PC Test Jeune93 HSU',
 }
 
 export default youngUser

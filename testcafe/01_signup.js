@@ -34,7 +34,7 @@ test("Lorsque l'un des champs obligatoire est manquant, le bouton créer est des
   await t.expect(signUpButton.hasAttribute('disabled')).ok()
 })
 
-test('Je crée un compte et je suis redirigé·e vers la page /découverte', async t => {
+test.skip('Je crée un compte et je suis redirigé·e vers la page /découverte', async t => {
   await t
     .typeText(userPublicName, youngUser.publicName)
     .typeText(userEmail, youngUser.email)
