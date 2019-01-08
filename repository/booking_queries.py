@@ -1,4 +1,3 @@
-""" booking queries """
 from datetime import datetime, timedelta
 
 from postgresql_audit.flask import versioning_manager
@@ -6,6 +5,8 @@ from sqlalchemy import and_, text
 from sqlalchemy.exc import InternalError
 from sqlalchemy.orm import aliased
 
+from domain.keywords import create_ts_filter_finding_ts_query_in_at_least_one_of_the_models, \
+                            create_filter_finding_all_keywords_in_at_least_one_of_the_models
 from models import ApiErrors, \
     Booking, \
     Event, \
@@ -17,9 +18,13 @@ from models import ApiErrors, \
     User, \
     Venue, Offerer
 from models.api_errors import ResourceNotFound
-from repository.search_queries import get_keywords_filter
 from utils.rest import query_with_order_by
 
+booking_ts_filter = create_ts_filter_finding_ts_query_in_at_least_one_of_the_models(
+    Event,
+    Thing,
+    Venue,
+)
 
 def find_all_by_user_id(user_id):
     return Booking.query.filter_by(userId=user_id).all()
@@ -28,6 +33,16 @@ def find_all_by_user_id(user_id):
 def find_all_by_stock_id(stock):
     return Booking.query.filter_by(stockId=stock.id).all()
 
+def filter_bookings_with_keywords_chain(query, keywords_chain):
+    keywords_filter = create_filter_finding_all_keywords_in_at_least_one_of_the_models(
+        booking_ts_filter,
+        search
+    )
+    query = query.outerjoin(Event) \
+                 .outerjoin(Thing) \
+                 .outerjoin(Venue) \
+                 .filter(keywords_filter)
+    return query
 
 def find_offerer_bookings(offerer_id, search=None, order_by=None, page=1):
     query = Booking.query.join(Stock) \
@@ -41,15 +56,13 @@ def find_offerer_bookings(offerer_id, search=None, order_by=None, page=1):
         .filter(Venue.managingOffererId == offerer_id)
 
     if search:
-        query = query.outerjoin(Event) \
-            .outerjoin(Thing) \
-            .filter(get_keywords_filter([Event, Thing, Venue], search))
+        query = filter_bookings_with_keywords_chain(query, search)
 
     if order_by:
         query = query_with_order_by(query, order_by)
 
     bookings = query.paginate(int(page), per_page=10, error_out=False) \
-        .items
+                    .items
 
     return bookings
 

@@ -11,6 +11,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.sql.expression import cast
 from sqlalchemy.sql.functions import coalesce
 
+from domain.keywords import create_tsvector
 from models.has_bank_information_mixin import HasBankInformationMixin
 from models.versioned_mixin import VersionedMixin
 from models.db import Model
@@ -21,7 +22,6 @@ from models.needs_validation_mixin import NeedsValidationMixin
 from models.pc_object import PcObject
 from models.providable_mixin import ProvidableMixin
 from models.user_offerer import UserOfferer
-from domain.search import create_tsvector
 
 
 class Offerer(PcObject,
@@ -72,7 +72,7 @@ class Offerer(PcObject,
         for venue in self.managedVenues:
             n_offers += venue.nOffers
         return n_offers
-        
+
 
 Offerer.__ts_vector__ = create_tsvector(
     cast(coalesce(Offerer.name, ''), TEXT),

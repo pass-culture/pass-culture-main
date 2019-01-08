@@ -1,7 +1,6 @@
-""" search """
 import re
 
-from sqlalchemy import func
+from sqlalchemy import and_, func
 from sqlalchemy.sql.expression import or_
 
 AND = '_and_'
@@ -30,8 +29,8 @@ def get_ts_queries(search):
     return [get_ts_query(search)]
 
 
-def create_get_search_queries(*models):
-    def get_search_queries(ts_query):
+def create_ts_filter_finding_ts_query_in_at_least_one_of_the_models(*models):
+    def ts_filter_finding_ts_query_in_at_least_one_of_the_models(ts_query):
         return or_(
             *[
                 model.__ts_vector__.match(
@@ -41,5 +40,11 @@ def create_get_search_queries(*models):
                 for model in models
             ]
         )
+    return ts_filter_finding_ts_query_in_at_least_one_of_the_models
 
-    return get_search_queries
+def create_filter_finding_all_keywords_in_at_least_one_of_the_models(
+        ts_filter,
+        keywords_chain
+):
+    ts_queries = get_ts_queries(keywords_chain)
+    return and_(*map(ts_filter, ts_queries))

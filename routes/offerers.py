@@ -1,5 +1,3 @@
-""" offerers """
-
 from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
 
@@ -9,8 +7,8 @@ from domain.reimbursement import find_all_booking_reimbursement
 from models import Offerer, PcObject, RightsType
 from models.venue import create_digital_venue
 from repository.booking_queries import find_offerer_bookings
-from repository.offerer_queries import find_all_recommendations_for_offerer
-from repository.search_queries import get_keywords_filter
+from repository.offerer_queries import find_all_recommendations_for_offerer,\
+                                       filter_offerers_with_keywords_chain
 from repository.user_offerer_queries import filter_query_where_user_is_user_offerer_and_is_not_validated
 from repository.user_offerer_queries import filter_query_where_user_is_user_offerer_and_is_validated
 from utils.human_ids import dehumanize
@@ -42,7 +40,7 @@ def list_offerers():
 
     keywords = request.args.get('keywords')
     if keywords is not None:
-        query = query.filter(get_keywords_filter([Offerer], keywords))
+        query = filter_offerers_with_keywords_chain(query, keywords)
 
     return handle_rest_get_list(Offerer,
                                 include=OFFERER_INCLUDES if (

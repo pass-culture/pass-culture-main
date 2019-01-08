@@ -1,4 +1,3 @@
-""" repository offer queries """
 from datetime import datetime, timedelta
 
 import pytest
@@ -6,16 +5,23 @@ import pytest
 from models import Thing, PcObject, Event
 from models.offer_type import EventType, ThingType
 from repository.offer_queries import departement_or_national_offers, \
-    get_offers_for_recommendations_search, get_active_offers_by_type, find_activation_offers
+                                     find_activation_offers, \
+                                     get_offers_for_recommendations_search, \
+                                     get_active_offers_by_type
 from tests.conftest import clean_database
-from utils.test_utils import create_event, \
+from utils.test_utils import create_booking, \
+    create_event, \
     create_event_occurrence, \
     create_event_offer, \
+    create_mediation, \
     create_stock_from_event_occurrence, \
     create_thing, \
     create_thing_offer, \
     create_offerer, \
-    create_venue, create_user, create_stock_from_offer, create_mediation, create_stock_with_thing_offer, create_booking
+    create_stock_from_offer, \
+    create_stock_with_thing_offer, \
+    create_venue, \
+    create_user
 
 
 @pytest.mark.standalone

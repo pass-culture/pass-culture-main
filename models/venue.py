@@ -12,6 +12,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.sql.expression import cast
 from sqlalchemy.sql.functions import coalesce
 
+from domain.keywords import create_tsvector
 from models.needs_validation_mixin import NeedsValidationMixin
 from models.db import Model
 from models.has_address_mixin import HasAddressMixin
@@ -21,7 +22,7 @@ from models.offerer import Offerer
 from models.pc_object import PcObject
 from models.providable_mixin import ProvidableMixin
 from models.versioned_mixin import VersionedMixin
-from domain.search import create_tsvector
+
 
 CONSTRAINT_CHECK_IS_VIRTUAL_XOR_HAS_ADDRESS = """
 (

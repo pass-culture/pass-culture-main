@@ -20,7 +20,7 @@ from utils.rest import ensure_current_user_has_rights, \
     handle_rest_get_list, \
     load_or_404, \
     login_or_api_key_required
-from domain.search import LANGUAGE
+from domain.keywords import LANGUAGE
 from validation.stocks import check_offer_id_xor_event_occurrence_id_in_request
 
 search_models = [
@@ -34,7 +34,9 @@ search_models = [
 def join_stocks(query):
     for search_model in search_models:
         if search_model == Event:
-            query = query.outerjoin(EventOccurrence).join(Offer).outerjoin(search_model)
+            query = query.outerjoin(EventOccurrence)\
+                         .join(Offer)\
+                         .outerjoin(search_model)
         else:
             query = query.join(Offer).outerjoin(search_model)
     return query

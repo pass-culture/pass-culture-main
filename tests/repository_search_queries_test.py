@@ -1,7 +1,7 @@
 import pytest
 
-from models import PcObject, Event, Thing, Offer, Venue
-from repository.search_queries import get_keywords_filter
+from models import PcObject, Offer
+from repository.offer_queries import filter_offers_with_keywords_chain
 from tests.conftest import clean_database
 from utils.test_utils import create_event, create_thing, create_offerer, create_venue, create_event_offer, \
     create_thing_offer
@@ -9,7 +9,7 @@ from utils.test_utils import create_event, create_thing, create_offerer, create_
 
 @pytest.mark.standalone
 @clean_database
-def test_get_keywords_filter_returns_all_offers_with_event_or_thing_containing_keywords(app):
+def test_create_filter_finding_all_keywords_in_at_least_one_of_the_models_returns_all_offers_with_event_or_thing_containing_keywords(app):
     # given
     event1 = create_event(event_name='Rencontre avec Jacques Martin')
     event2 = create_event(event_name='Concert de contrebasse')
@@ -20,23 +20,21 @@ def test_get_keywords_filter_returns_all_offers_with_event_or_thing_containing_k
     offer2 = create_event_offer(venue, event2)
     offer3 = create_thing_offer(venue, thing)
     PcObject.check_and_save(offer1, offer2, offer3)
-    models = [Event, Thing]
 
     # when
-    search_filter = get_keywords_filter(models, 'Rencontre')
+    query = filter_offers_with_keywords_chain(Offer.query, 'Rencontre')
 
     # then
-    found_offers = Offer.query.outerjoin(Event).outerjoin(Thing).filter(
-        search_filter).all()
+    found_offers = query.all()
     assert len(found_offers) == 2
-    found_offers_id = list(map(lambda x: x.id, found_offers))
+    found_offers_id = [found_offer.id for found_offer in found_offers]
     assert offer1.id in found_offers_id
     assert offer3.id in found_offers_id
 
 
 @pytest.mark.standalone
 @clean_database
-def test_get_keywords_filter_returns_all_offers_with_event_or_thing_or_venue_containing_keywords(app):
+def test_create_filter_finding_all_keywords_in_at_least_one_of_the_models_returns_all_offers_with_event_or_thing_or_venue_containing_keywords(app):
     # given
     event1 = create_event(event_name='Rencontre avec Jacques Martin')
     event2 = create_event(event_name='Concert de contrebasse')
@@ -48,14 +46,12 @@ def test_get_keywords_filter_returns_all_offers_with_event_or_thing_or_venue_con
     offer2 = create_event_offer(venue1, event2)
     offer3 = create_thing_offer(venue2, thing)
     PcObject.check_and_save(offer1, offer2, offer3)
-    models = [Event, Thing, Venue]
 
     # when
-    search_filter = get_keywords_filter(models, 'Rencontre')
+    query = filter_offers_with_keywords_chain(Offer.query, 'Rencontre')
 
     # then
-    found_offers = Offer.query.outerjoin(Event).outerjoin(Thing).join(Venue).filter(
-        search_filter).all()
+    found_offers = query.all()
     assert len(found_offers) == 2
     found_offers_id = list(map(lambda x: x.id, found_offers))
     assert offer1.id in found_offers_id
@@ -65,7 +61,7 @@ def test_get_keywords_filter_returns_all_offers_with_event_or_thing_or_venue_con
 @pytest.mark.standalone
 @clean_database
 @pytest.mark.skip
-def test_get_keywords_filter_with_an_returns_all_offers_having_rencontre_and_bataclan_or_paris_in_event_thing_or_venue(
+def test_create_filter_finding_all_keywords_in_at_least_one_of_the_models_with_an_returns_all_offers_having_rencontre_and_bataclan_or_paris_in_event_thing_or_venue(
         app):
     # given
     event1 = create_event(event_name='Rencontre avec Jacques Martin')
@@ -78,20 +74,19 @@ def test_get_keywords_filter_with_an_returns_all_offers_having_rencontre_and_bat
     offer2 = create_event_offer(venue1, event2)
     offer3 = create_thing_offer(venue2, thing)
     PcObject.check_and_save(offer1, offer2, offer3)
-    models = [Event, Thing, Venue]
 
     # when
-    search_filter = get_keywords_filter(models, 'Rencontre _and_ Bataclan Paris')
+    query = filter_offers_with_keywords_chain(Offer.query, 'Rencontre _and_ Bataclan Paris')
 
     # then
-    found_offers = Offer.query.outerjoin(Event).outerjoin(Thing).join(Venue).filter(search_filter).all()
+    found_offers = query.all()
     assert len(found_offers) == 1
     assert found_offers[0].id == offer1.id
 
 
 @pytest.mark.standalone
 @clean_database
-def test_get_keywords_filter_with_partial_search_returns_all_offers_with_event_or_thing_or_venue_containing_keywords(
+def test_create_filter_finding_all_keywords_in_at_least_one_of_the_models_with_partial_search_returns_all_offers_with_event_or_thing_or_venue_containing_keywords(
         app):
     # given
     event1 = create_event(event_name='Rencontre avec Jacques Martin')
@@ -104,23 +99,21 @@ def test_get_keywords_filter_with_partial_search_returns_all_offers_with_event_o
     offer2 = create_event_offer(venue1, event2)
     offer3 = create_thing_offer(venue2, thing)
     PcObject.check_and_save(offer1, offer2, offer3)
-    models = [Event, Thing, Venue]
 
     # when
-    search_filter = get_keywords_filter(models, 'Rencon')
+    query = filter_offers_with_keywords_chain(Offer.query, 'Rencon')
 
     # then
-    found_offers = Offer.query.outerjoin(Event).outerjoin(Thing).join(Venue).filter(
-        search_filter).all()
+    found_offers = query.all()
     assert len(found_offers) == 2
-    found_offers_id = list(map(lambda x: x.id, found_offers))
+    found_offers_id = [found_offer.id for found_offer in found_offers]
     assert offer1.id in found_offers_id
     assert offer3.id in found_offers_id
 
 
 @pytest.mark.standalone
 @clean_database
-def test_get_keywords_filter_with_partial_search_returns_all_offers_with_event_or_thing_or_venue_containing_keywords(
+def test_create_filter_finding_all_keywords_in_at_least_one_of_the_models_with_partial_search_returns_all_offers_with_event_or_thing_or_venue_containing_keywords(
         app):
     # given
     event1 = create_event(event_name='Rencontre avec Jacques Martin')
@@ -133,15 +126,13 @@ def test_get_keywords_filter_with_partial_search_returns_all_offers_with_event_o
     offer2 = create_event_offer(venue1, event2)
     offer3 = create_thing_offer(venue2, thing)
     PcObject.check_and_save(offer1, offer2, offer3)
-    models = [Event, Thing, Venue]
 
     # when
-    search_filter = get_keywords_filter(models, 'Rencontre avec Jac')
+    query = filter_offers_with_keywords_chain(Offer.query, 'Rencontre avec Jac')
 
     # then
-    found_offers = Offer.query.outerjoin(Event).outerjoin(Thing).join(Venue).filter(
-        search_filter).all()
+    found_offers = query.all()
     assert len(found_offers) == 2
-    found_offers_id = list(map(lambda x: x.id, found_offers))
+    found_offers_id = [found_offer.id for found_offer in found_offers]
     assert offer1.id in found_offers_id
     assert offer3.id in found_offers_id
