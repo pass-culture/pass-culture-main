@@ -14,6 +14,7 @@ from domain.reimbursement import find_all_booking_reimbursement
 from models import Offerer, PcObject
 from models.payment import Payment
 from models.payment_status import TransactionStatus
+from repository import payment_queries
 from repository.booking_queries import find_final_offerer_bookings
 from repository.user_queries import get_all_users_wallet_balances
 from utils.logger import logger
@@ -28,7 +29,8 @@ PASS_CULTURE_WALLET_BALANCES_RECIPIENTS = os.environ.get('PASS_CULTURE_WALLET_BA
 
 def generate_and_send_payments():
     try:
-        payments = do_generate_payments()
+        new_payments = do_generate_payments()
+        payments = add_failed_payments(new_payments)
         do_send_payments(payments, PASS_CULTURE_IBAN, PASS_CULTURE_BIC, PASS_CULTURE_REMITTANCE_CODE)
         do_send_payment_details(payments, PASS_CULTURE_PAYMENTS_DETAILS_RECIPIENTS)
         do_send_wallet_balances(PASS_CULTURE_WALLET_BALANCES_RECIPIENTS)
@@ -36,6 +38,11 @@ def generate_and_send_payments():
         print('ERROR: ' + str(e))
         traceback.print_tb(e.__traceback__)
         pprint(vars(e))
+
+
+def add_failed_payments(payments):
+    error_payments = payment_queries.find_error_payments()
+    return payments + error_payments
 
 
 def do_generate_payments():
