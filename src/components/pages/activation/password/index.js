@@ -32,11 +32,12 @@ export class RawActivationPassword extends React.PureComponent {
   }
 
   loginActivatedUserRequestSuccess = formResolver => () => {
+    const { history } = this.props
     const nextstate = { isLoading: true }
     this.setState(nextstate, () => {
-      // TODO Redirect to success
       // resolve form without errors
       formResolver()
+      history.push('/activation/events')
     })
   }
 

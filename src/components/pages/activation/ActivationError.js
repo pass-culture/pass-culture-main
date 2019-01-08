@@ -13,9 +13,9 @@ const ActivationError = () => (
         obfuscate
         email={SUPPORT_EMAIL}
         id="activation-error-contact-us"
-        className="no-underline is-block is-white-text py12"
+        className="is-underline is-block is-white-text py12"
       >
-        <span className="is-underline">Contactez-nous</span>
+        <span>Contactez-nous</span>
       </MailToLink>
     </p>
   </div>

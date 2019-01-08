@@ -29,15 +29,13 @@ initialize {
           "children": Array [
             Object {
               "attribs": Object {
-                "class": "no-underline is-block is-white-text py12",
+                "class": "is-underline is-block is-white-text py12",
                 "href": "mailto:obfuscated",
                 "id": "activation-error-contact-us",
               },
               "children": Array [
                 Object {
-                  "attribs": Object {
-                    "class": "is-underline",
-                  },
+                  "attribs": Object {},
                   "children": Array [
                     Object {
                       "data": "Contactez-nous",
@@ -53,12 +51,8 @@ initialize {
                   "parent": [Circular],
                   "prev": null,
                   "type": "tag",
-                  "x-attribsNamespace": Object {
-                    "class": undefined,
-                  },
-                  "x-attribsPrefix": Object {
-                    "class": undefined,
-                  },
+                  "x-attribsNamespace": Object {},
+                  "x-attribsPrefix": Object {},
                 },
               ],
               "name": "a",
@@ -109,15 +103,13 @@ initialize {
         "children": Array [
           Object {
             "attribs": Object {
-              "class": "no-underline is-block is-white-text py12",
+              "class": "is-underline is-block is-white-text py12",
               "href": "mailto:obfuscated",
               "id": "activation-error-contact-us",
             },
             "children": Array [
               Object {
-                "attribs": Object {
-                  "class": "is-underline",
-                },
+                "attribs": Object {},
                 "children": Array [
                   Object {
                     "data": "Contactez-nous",
@@ -133,12 +125,8 @@ initialize {
                 "parent": [Circular],
                 "prev": null,
                 "type": "tag",
-                "x-attribsNamespace": Object {
-                  "class": undefined,
-                },
-                "x-attribsPrefix": Object {
-                  "class": undefined,
-                },
+                "x-attribsNamespace": Object {},
+                "x-attribsPrefix": Object {},
               },
             ],
             "name": "a",
