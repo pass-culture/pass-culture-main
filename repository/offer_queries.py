@@ -138,8 +138,8 @@ def get_offers_for_recommendations_search(
             latitude,
             longitude
         )
-    query = query.join(Venue) \
-                 .filter(distance_instrument < max_distance)
+        query = query.join(Venue) \
+                     .filter(distance_instrument < max_distance)
 
     if days_intervals is not None:
         event_beginningdate_in_interval_filter = or_(*map(_date_interval_to_filter, days_intervals))
@@ -159,7 +159,7 @@ def get_offers_for_recommendations_search(
                            .outerjoin(Thing) \
                            .filter(Thing.type.in_(type_values))
 
-    query = event_query.union_all(thing_query)
+        query = event_query.union_all(thing_query)
 
     if page is not None:
         offers = query.paginate(page, per_page=10, error_out=False) \

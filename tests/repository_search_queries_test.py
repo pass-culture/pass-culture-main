@@ -113,7 +113,7 @@ def test_create_filter_finding_all_keywords_in_at_least_one_of_the_models_with_p
 
 @pytest.mark.standalone
 @clean_database
-def test_create_filter_finding_all_keywords_in_at_least_one_of_the_models_with_partial_search_returns_all_offers_with_event_or_thing_or_venue_containing_keywords(
+def test_create_filter_finding_all_keywords_in_at_least_one_of_the_models_with_partial_search_returns_all_offers_with_event_or_thing_or_venue_containing_all_the_keywords(
         app):
     # given
     event1 = create_event(event_name='Rencontre avec Jacques Martin')
@@ -128,11 +128,10 @@ def test_create_filter_finding_all_keywords_in_at_least_one_of_the_models_with_p
     PcObject.check_and_save(offer1, offer2, offer3)
 
     # when
-    query = filter_offers_with_keywords_chain(Offer.query, 'Rencontre avec Jac')
+    query = filter_offers_with_keywords_chain(Offer.query, 'Rencontre Jacques')
 
     # then
     found_offers = query.all()
-    assert len(found_offers) == 2
+    assert len(found_offers) == 1
     found_offers_id = [found_offer.id for found_offer in found_offers]
     assert offer1.id in found_offers_id
-    assert offer3.id in found_offers_id

@@ -234,11 +234,11 @@ def test_get_offers_for_recommendations_search_with_partial_keyword_returns_offe
 
 @clean_database
 @pytest.mark.standalone
-def test_get_offers_for_recommendations_search_with_multiple_keywords_returns_offers_with_any_keyword_in_name(app):
+def test_get_offers_for_recommendations_search_with_multiple_keywords_returns_only_the_offers_with_intersection_words_in_name(app):
     # Given
-    thing_ok = create_thing(thing_name='Rencontre avec soi-même')
-    thing_ko = create_thing(thing_name='Hors sujet')
-    event = create_event(event_name='Mer et océan')
+    thing_ok = create_thing(thing_name='Rencontre de michel avec soi-même')
+    thing_ko = create_thing(thing_name='Rencontre avec jean-luc')
+    event = create_event(event_name='Rencontre avec jean-michel chelou')
     offerer = create_offerer()
     venue = create_venue(offerer)
 
@@ -254,7 +254,7 @@ def test_get_offers_for_recommendations_search_with_multiple_keywords_returns_of
 
     PcObject.check_and_save(event_stock, thing_ok_stock, thing_ko_stock)
     # When
-    offers = get_offers_for_recommendations_search(keywords='rencontre sous l\'océan')
+    offers = get_offers_for_recommendations_search(keywords='rencontre avec michel')
 
     # Then
     assert event_offer in offers
@@ -264,12 +264,12 @@ def test_get_offers_for_recommendations_search_with_multiple_keywords_returns_of
 
 @clean_database
 @pytest.mark.standalone
-def test_get_offers_for_recommendations_search_with_multiple_keywords_returns_offers_with_any_keyword_in_description(
+def test_get_offers_for_recommendations_search_with_multiple_keywords_returns_offers_with_intersection_words_in_description(
         app):
     # Given
     thing_ok = create_thing(thing_name='Rien à voir', description='Il rencontre une personne')
-    thing_ko = create_thing(thing_name='Hors sujet', description='pas de mot en commun')
-    event_ok = create_event(event_name='Pas de match', description='Océan bleu')
+    thing_ko = create_thing(thing_name='Hors sujet', description='Il rencontre Marx')
+    event_ok = create_event(event_name='Pas de match', description='Il rencontre personne')
     offerer = create_offerer()
     venue = create_venue(offerer)
 
@@ -285,7 +285,7 @@ def test_get_offers_for_recommendations_search_with_multiple_keywords_returns_of
 
     PcObject.check_and_save(thing_ok_stock, thing_ko_stock, event_ok_stock)
     # When
-    offers = get_offers_for_recommendations_search(keywords='rencontre sous l\'océan')
+    offers = get_offers_for_recommendations_search(keywords='Il rencontre personne')
 
     # Then
     assert thing_ok_offer in offers
