@@ -77,6 +77,7 @@ fi
 # =============================================
 RED='\033[0;31m'
 ORANGE='\033[0;33m'
+ABELS_COLOR='\e[38;5;197m'
 NO_COLOR='\033[0m'
 
 PRG="$BASH_SOURCE"
@@ -395,7 +396,7 @@ elif [[ "$CMD" == "deploy-backend" ]] \
   fi
 
   if [[ "$ENV" == 'production' ]]; then
-     echo_warning "/!\\ You just deployed to production. Was the version also delivered to integration ?"
+     echo -e "$ABELS_COLOR""/!\\ You just deployed to production. Was the version also delivered to integration ?""${NO_COLOR}"
   fi
 
   exit_success_restoring_branch
