@@ -3,7 +3,6 @@ export const offererUser0 = {
   firstName: 'PC Test Pro',
   lastName: '93 Café0',
   password: 'pctest.Pro93.cafe0',
-  publicName: 'PC Test Pro93 Café0',
   siren: '692039514',
 }
 
@@ -12,7 +11,6 @@ export const offererUser1 = {
   firstName: 'PC Test Pro',
   lastName: '93 Café1',
   password: 'pctest.Pro93.cafe1',
-  publicName: 'PC Test Pro93 Café1',
   siren: '507633576',
 }
 
@@ -21,7 +19,6 @@ export const adminUser0 = {
   firstName: 'PC Test Admin',
   lastName: '93 0',
   password: 'pctest.Admin93.0',
-  publicName: 'PC Test Admin93 0',
   siren: '507633576',
 }
 
@@ -30,5 +27,4 @@ export const validatedOffererUser = {
   firstName: 'PC Test',
   lastName: '93 HVUO',
   password: 'pctest.Pro93.has-validated-unregistered-offerer',
-  publicName: 'PC Test Pro93 HVUO',
 }

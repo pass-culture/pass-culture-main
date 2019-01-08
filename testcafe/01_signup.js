@@ -12,7 +12,6 @@ const lastNameInput = Selector('#user-lastName')
 const newsletterOkInput = Selector('#user-newsletter_ok')
 const passwordInput = Selector('#user-password')
 const passwordInputError = Selector('#user-password-error')
-const publicNameInput = Selector('#user-publicName')
 const signInButton = Selector('.is-secondary').withText("J'ai déjà un compte")
 const signUpButton = Selector('button.button.is-primary')
 const sirenInput = Selector('#user-siren')
@@ -40,7 +39,6 @@ test("Lorsque l'un des champs obligatoire est manquant, le bouton créer est des
 
 test('Je créé un compte, je suis redirigé·e vers la page /inscription/confirmation', async t => {
   await t
-    .typeText(publicNameInput, offererUser0.publicName)
     .typeText(emailInput, offererUser0.email)
     .typeText(passwordInput, offererUser0.password)
     .typeText(lastNameInput, offererUser0.lastName)
@@ -63,7 +61,6 @@ fixture`01_02 SignupPage | Création d'un compte utilisateur | Messages d'erreur
 
 test.skip('E-mail déjà présent dans la base et mot de passe invalide', async t => {
   await t
-    .typeText(publicNameInput, offererUser0.publicName)
     .typeText(emailInput, offererUser0.email)
     .typeText(passwordInput, 'pas')
     .typeText(sirenInput, offererUser0.siren)
@@ -84,7 +81,6 @@ fixture`01_03 SignupPage | Création d'un compte pour rattachement à une struct
 
 test('Je créé un compte, je suis redirigé·e vers la page /inscription/confirmation', async t => {
   await t
-    .typeText(publicNameInput, offererUser1.publicName)
     .typeText(emailInput, offererUser1.email)
     .typeText(passwordInput, offererUser1.password)
     .typeText(lastNameInput, offererUser1.lastName)

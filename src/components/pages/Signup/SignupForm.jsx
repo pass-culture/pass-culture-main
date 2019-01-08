@@ -7,7 +7,7 @@ import get from 'lodash.get'
 
 class SignupForm extends PureComponent {
   render() {
-    const { errors, sirenName } = this.props
+    const { errors, patch, sirenName } = this.props
     return (
       <section>
         <div className="hero-body">
@@ -31,7 +31,11 @@ class SignupForm extends PureComponent {
             BlockComponent={null}
             handleSuccessNotification={null}
             handleSuccessRedirect={() => '/inscription/confirmation'}
+            formatPatch={patch =>
+              Object.assign({ publicName: patch.firstName }, patch)
+            }
             layout="vertical"
+            patch={patch}
             name="user">
             <div className="field-group">
               <Field
@@ -64,14 +68,6 @@ class SignupForm extends PureComponent {
                 name="firstName"
                 placeholder="Mon prénom"
                 required
-              />
-              <Field
-                autoComplete="name"
-                label="Pseudo"
-                name="publicName"
-                placeholder="Mon nom ou pseudo"
-                required
-                sublabel="affichée dans l'application publique"
               />
               <Field
                 disabling={() => !sirenName}
