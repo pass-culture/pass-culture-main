@@ -111,11 +111,11 @@ def filter_offers_with_keywords_chain(query, keywords_chain):
         offer_ts_filter,
         keywords_chain
     )
-    query = query.from_self() \
-        .outerjoin(Event) \
-        .outerjoin(Thing) \
-        .outerjoin(Venue) \
-        .filter(keywords_filter)
+    query = query.outerjoin(Event) \
+                 .outerjoin(Thing) \
+                 .outerjoin(Venue) \
+                 .filter(keywords_filter) \
+                 .reset_joinpoint()
     return query
 
 def get_offers_for_recommendations_search(
@@ -139,13 +139,17 @@ def get_offers_for_recommendations_search(
             longitude
         )
         query = query.join(Venue) \
-                     .filter(distance_instrument < max_distance)
+                     .filter(distance_instrument < max_distance) \
+                     .reset_joinpoint()
 
     if days_intervals is not None:
-        event_beginningdate_in_interval_filter = or_(*map(_date_interval_to_filter, days_intervals))
-        query = query.reset_joinpoint() \
-                     .outerjoin(EventOccurrence) \
-                     .filter(event_beginningdate_in_interval_filter | (Offer.thing != None))
+        event_beginningdate_in_interval_filter = or_(*map(
+            _date_interval_to_filter, days_intervals))
+        query = query.outerjoin(EventOccurrence) \
+                     .filter(
+                        event_beginningdate_in_interval_filter |\
+                        (Offer.thing != None))\
+                     .reset_joinpoint()
 
     if keywords is not None:
         query = filter_offers_with_keywords_chain(query, keywords)
@@ -184,7 +188,8 @@ def find_by_venue_id_or_offerer_id_and_search_terms_offers_where_user_has_rights
     elif offerer_id is not None:
         query = query.join(Venue) \
                      .join(Offerer) \
-                     .filter_by(id=offerer_id)
+                     .filter_by(id=offerer_id) \
+                     .reset_joinpoint()
     elif not user.isAdmin:
         query = query.join(Venue) \
                      .join(Offerer)

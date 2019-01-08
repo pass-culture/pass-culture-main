@@ -41,7 +41,8 @@ def filter_bookings_with_keywords_chain(query, keywords_chain):
     query = query.outerjoin(Event) \
                  .outerjoin(Thing) \
                  .outerjoin(Venue) \
-                 .filter(keywords_filter)
+                 .filter(keywords_filter) \
+                 .reset_joinpoint()
     return query
 
 def find_offerer_bookings(offerer_id, search=None, order_by=None, page=1):
@@ -53,7 +54,8 @@ def find_offerer_bookings(offerer_id, search=None, order_by=None, page=1):
         .join(Venue) \
         .outerjoin(Thing, and_(Offer.thingId == Thing.id)) \
         .outerjoin(Event, and_(Offer.eventId == Event.id)) \
-        .filter(Venue.managingOffererId == offerer_id)
+        .filter(Venue.managingOffererId == offerer_id) \
+        .reset_joinpoint()
 
     if search:
         query = filter_bookings_with_keywords_chain(query, search)
