@@ -23,6 +23,7 @@ lib64/
 parts/
 sdist/
 var/
+data_doublons_SIREN/
 *.egg-info/
 .installed.cfg
 *.egg
