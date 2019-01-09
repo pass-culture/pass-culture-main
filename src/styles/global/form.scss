@@ -60,11 +60,20 @@
           }
         }
       }
+
       &:not(:last-child) {
         .input {
           border-right: none;
         }
+
+        &.with-info {
+          .button {
+            border-bottom-right-radius: $control-radius;
+            border-top-right-radius: $control-radius;
+          }
+        }
       }
+
       &:last-child {
         .button {
           border-left: none;

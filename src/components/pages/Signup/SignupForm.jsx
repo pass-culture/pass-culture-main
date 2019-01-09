@@ -54,6 +54,7 @@ class SignupForm extends PureComponent {
                 required
                 sublabel="pour se connecter"
                 type="password"
+                withInfo
               />
               <Field
                 autoComplete="last-name"
