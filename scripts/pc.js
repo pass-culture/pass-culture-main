@@ -27,6 +27,6 @@ const NODE_ENV = environment === 'local' ? 'development' : environment
 if (testcafe) {
   const { browser, environment, file } = program
   const debugOption = environment === 'local' ? '-d' : ''
-  const command = `NODE_ENV=${NODE_ENV} ./node_modules/testcafe/bin/testcafe.js ${browser} ${debugOption} testcafe/${file}`
+  const command = `NODE_ENV=${NODE_ENV} ./node_modules/.bin/testcafe ${browser} ${debugOption} testcafe/${file}`
   childProcess.execSync(command, { stdio: [0, 1, 2] })
 }
