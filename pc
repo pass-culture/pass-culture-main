@@ -427,6 +427,17 @@ elif [[ "$CMD" == "symlink" ]]; then
 # Administration commands
 # =============================================
 
+# Open a python prompt in the specified environment
+elif [[ "$CMD" == "api-licenses" ]]; then
+    COLUMNS=${COLUMNS:-''};
+	if [[ "$ENV" == "development" ]]; then
+		RUN='docker exec -it `docker ps | grep flask | cut -d" " -f 1` bash -c "cd /opt/services/flaskapp/src/ && PYTHONPATH=. pip-licenses --format-html >> licenses.html"'
+	else
+    echo_error "These command is only available in DEV"
+		exit
+	fi
+
+
 # Display logs from API
 elif [[ "$CMD" == "logs" ]]; then
   if [[ "$ENV" == "development" ]]; then
