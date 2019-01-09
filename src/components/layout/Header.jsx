@@ -64,12 +64,14 @@ class Header extends Component {
                   <span>{name}</span>
                 </NavLink>
                 <div className="navbar-dropdown is-right">
-                  <NavLink to="/profil" className="navbar-item">
-                    <span className="icon">
-                      <Icon svg="ico-user" />
-                    </span>
-                    <span>Profil</span>
-                  </NavLink>
+                  {false && (
+                    <NavLink to="/profil" className="navbar-item">
+                      <span className="icon">
+                        <Icon svg="ico-user" />
+                      </span>
+                      <span>Profil</span>
+                    </NavLink>
+                  )}
                   <NavLink to="/structures" className="navbar-item">
                     <span className="icon">
                       <Icon svg="ico-structure-r" />
