@@ -37,6 +37,7 @@ ShallowWrapper {
           autoComplete={false}
           className="mb36"
           disabled={false}
+          help={null}
           id="user-password"
           label="Mot de passe"
           name="password"
@@ -95,6 +96,7 @@ ShallowWrapper {
           "autoComplete": false,
           "className": "mb36",
           "disabled": false,
+          "help": null,
           "id": "user-password",
           "label": "Mot de passe",
           "name": "password",
@@ -160,6 +162,7 @@ ShallowWrapper {
             autoComplete={false}
             className="mb36"
             disabled={false}
+            help={null}
             id="user-password"
             label="Mot de passe"
             name="password"
@@ -218,6 +221,7 @@ ShallowWrapper {
             "autoComplete": false,
             "className": "mb36",
             "disabled": false,
+            "help": null,
             "id": "user-password",
             "label": "Mot de passe",
             "name": "password",

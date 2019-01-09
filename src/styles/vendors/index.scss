@@ -4,25 +4,13 @@
 @import '~bulma/sass/components/_all';
 @import '~bulma/sass/grid/_all';
 @import '~bulma/sass/layout/_all';
-@import './bulma-with-overrides.scss';
-@import '~pass-culture-shared/styles/index.scss';
 @import '~react-datepicker/src/stylesheets/datepicker';
 
-.inherits-from-fontello-icon {
-  speak: none;
-  font-style: normal;
-  display: inline-block;
-  font-family: 'pass_culture-icon_font', sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-// quick fix Bulma removed from shared
-// .list {
-//   background-color: inherit;
-//   border-radius: inherit;
-//   box-shadow: inherit;
-// }
+//
+@import './pass-culture-shared.scss'; // import first
+@import './react-toastify.scss';
+@import './bulma-with-overrides.scss';
+@import './fontello-pass-culture.scss';
 
 /* antd | https://ant.design/docs/react/introduce */
 @import './antd-base.scss';

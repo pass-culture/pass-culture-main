@@ -4,11 +4,13 @@ import React from 'react'
 import { compose } from 'redux'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
+import { toast } from 'react-toastify'
 import { withLogin } from 'pass-culture-shared'
 
-import ActivationFormWrapper from './form'
-import ActivationFormFooter from './footer'
-import ActivationFormHeader from './header'
+import ActivationEventsForm from './form'
+import ActivationEventsFooter from './footer'
+import ActivationEventsHeader from './header'
+import ActivationEventsEmail from './email-button'
 import { mapDispatchToProps, mapStateToProps } from './connect'
 
 class ActivationEvents extends React.PureComponent {
@@ -18,8 +20,13 @@ class ActivationEvents extends React.PureComponent {
   }
 
   componentDidMount() {
-    const { getAllActivationOffers } = this.props
+    const { getAllActivationOffers, fromPassword } = this.props
     getAllActivationOffers(this.handleRequestFail, this.handleRequestSuccess)
+    if (!fromPassword) return
+    const delay = 1000
+    const autoClose = 3000
+    const message = 'Votre mot de passe a bien été enregistré.'
+    setTimeout(() => toast(message, { autoClose }), delay)
   }
 
   handleRequestFail = () => {
@@ -40,31 +47,23 @@ class ActivationEvents extends React.PureComponent {
     const { offers } = this.props
     const { hasError, isLoading } = this.state
     return (
-      <div
-        id="activation-page"
-        className="page is-relative pc-gradient is-white-text flex-rows"
-      >
-        <main
-          role="main"
-          className="pc-main p24 is-clipped is-relative flex-1 flex-rows flex-center align-center"
-        >
-          <ActivationFormHeader />
+      <div id="activation-events-page" className="is-full-layout flex-rows">
+        <main role="main" className="pc-main padded-2x flex-rows flex-center">
+          <ActivationEventsHeader />
+          <ActivationEventsEmail />
           {!hasError && (
-            <ActivationFormWrapper
-              isLoading={isLoading}
-              offers={offers}
-              onFormSubmit={this.onFormSubmit}
-            />
+            <ActivationEventsForm isLoading={isLoading} offers={offers} />
           )}
           {(hasError && this.renderErrorText()) || null}
         </main>
-        <ActivationFormFooter />
+        <ActivationEventsFooter />
       </div>
     )
   }
 }
 
 ActivationEvents.propTypes = {
+  fromPassword: PropTypes.bool.isRequired,
   getAllActivationOffers: PropTypes.func.isRequired,
   offers: PropTypes.array.isRequired,
 }

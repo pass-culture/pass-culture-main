@@ -4,7 +4,9 @@ exports[`src | components | pages | activation | ActivationError should match sn
 initialize {
   "0": Object {
     "attribs": Object {
-      "class": "padded-2x flex-1 flex-rows flex-center",
+      "class": "pc-main padded-2x flex-rows flex-center",
+      "id": "activation-error-page",
+      "role": "main",
     },
     "children": Array [
       Object {
@@ -186,7 +188,7 @@ initialize {
         },
       },
     ],
-    "name": "div",
+    "name": "main",
     "namespace": "http://www.w3.org/1999/xhtml",
     "next": null,
     "parent": null,
@@ -208,9 +210,13 @@ initialize {
     "type": "tag",
     "x-attribsNamespace": Object {
       "class": undefined,
+      "id": undefined,
+      "role": undefined,
     },
     "x-attribsPrefix": Object {
       "class": undefined,
+      "id": undefined,
+      "role": undefined,
     },
   },
   "_root": [Circular],

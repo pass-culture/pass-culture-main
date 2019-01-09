@@ -51,6 +51,12 @@
     @extend .is-block;
   }
 
+  .pc-final-form-help {
+    @extend .pb7;
+    @extend .fs13;
+    @extend .is-block;
+  }
+
   .pc-final-form-asterisk {
     @extend .ml3;
 
@@ -78,6 +84,55 @@
     @extend .no-outline;
 
     color: $black !important;
+  }
+}
+
+/* ------------------------------------------------
+
+ SELECTBOX
+ https://react-select.com/props
+
+------------------------------------------------ */
+.pc-final-form-selectbox {
+  .pc-final-form-selectbox__indicator-separator {
+    @extend .is-hidden;
+  }
+
+  .pc-final-form-selectbox__dropdown-indicator,
+  .pc-final-form-selectbox__dropdown-indicator:hover {
+    padding: 0;
+    color: $white;
+    cursor: pointer;
+  }
+
+  .pc-final-form-selectbox__group,
+  .pc-final-form-selectbox__option {
+    font-family: $family-sans-serif;
+  }
+
+  .pc-final-form-selectbox__option {
+    @extend .is-black-text;
+  }
+
+  .pc-final-form-selectbox__group .pc-final-form-selectbox__group-heading {
+    font-size: 100%;
+  }
+
+  .pc-final-form-selectbox__group .pc-final-form-selectbox__option {
+    font-size: 80%;
+  }
+
+  .pc-final-form-selectbox__option.pc-final-form-selectbox__option--is-focused {
+    @extend .is-black-text;
+  }
+
+  .pc-final-form-selectbox__option.pc-final-form-selectbox__option--is-selected {
+    @extend .is-medium;
+    @extend .is-white-text;
+  }
+
+  .icon-retina::before {
+    @extend .no-margin;
   }
 }
 

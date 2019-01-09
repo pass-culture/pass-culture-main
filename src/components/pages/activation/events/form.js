@@ -9,49 +9,76 @@ import Spinner from '../../../layout/Spinner'
 import { canSubmitForm } from '../utils'
 import { SelectBox } from '../../../forms/inputs'
 
-const onFormSubmit = history => formValues => {
-  const { event } = formValues
-  const nexturl = `/decouverte/${event.value}`
-  history.push(nexturl)
+class ActivationEventsForm extends React.PureComponent {
+  onFormSubmit = formValues => {
+    const { event } = formValues
+    const { history } = this.props
+    const nexturl = `${event.url}?to=verso`
+    history.push(nexturl)
+  }
+
+  renderEventsSelectbox = () => {
+    const { offers } = this.props
+    return (
+      <SelectBox
+        name="event"
+        provider={offers}
+        menuPlacement="top"
+        isClearable={false}
+        maxMenuHeight={200}
+        isSearchable={false}
+        placeholder="Choisissez une ville"
+      />
+    )
+  }
+
+  renderSubmitButton = canSubmit => (
+    <p className="clearfix mt18">
+      <button
+        type="submit"
+        disabled={!canSubmit}
+        id="activation-events-submit-button"
+        className="button is-rounded is-medium float-right"
+      >
+        <span>Suite</span>
+      </button>
+    </p>
+  )
+
+  render() {
+    const { isLoading } = this.props
+    return (
+      <React.Fragment>
+        {isLoading && <Spinner />}
+        {!isLoading && (
+          <Form
+            initialValues={{}}
+            onSubmit={this.onFormSubmit}
+            render={({ handleSubmit, ...rest }) => {
+              const canSubmit = !isLoading && canSubmitForm(rest)
+              return (
+                <form
+                  noValidate
+                  autoComplete="off"
+                  disabled={isLoading}
+                  onSubmit={handleSubmit}
+                >
+                  {this.renderEventsSelectbox()}
+                  {this.renderSubmitButton(canSubmit)}
+                </form>
+              )
+            }}
+          />
+        )}
+      </React.Fragment>
+    )
+  }
 }
 
-const ActivationFormWrapper = ({ history, isLoading, offers }) => (
-  <React.Fragment>
-    {isLoading && <Spinner />}
-    {!isLoading && (
-      <Form
-        initialValues={{}}
-        onSubmit={onFormSubmit(history)}
-        render={({ handleSubmit, ...rest }) => {
-          const canSubmit = !isLoading && canSubmitForm(rest)
-          return (
-            <form
-              noValidate
-              autoComplete="off"
-              disabled={isLoading}
-              onSubmit={handleSubmit}
-            >
-              <SelectBox
-                format={{ value: 'id' }}
-                name="event"
-                provider={offers}
-                placeholder="Choisissez une ville"
-              />
-              <button type="submit" disabled={!canSubmit}>
-                <span>Suite</span>
-              </button>
-            </form>
-          )
-        }}
-      />
-    )}
-  </React.Fragment>
-)
-
-ActivationFormWrapper.propTypes = {
+ActivationEventsForm.propTypes = {
   history: PropTypes.object.isRequired,
   isLoading: PropTypes.bool.isRequired,
   offers: PropTypes.array.isRequired,
 }
 
-export default withRouter(ActivationFormWrapper)
+export default withRouter(ActivationEventsForm)

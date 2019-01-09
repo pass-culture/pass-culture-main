@@ -2,11 +2,15 @@
   react/jsx-one-expression-per-line: 0 */
 import React from 'react'
 
-import MailToLink from '../../layout/MailToLink'
-import { SUPPORT_EMAIL } from '../../../utils/config'
+import MailToLink from '../../../layout/MailToLink'
+import { SUPPORT_EMAIL } from '../../../../utils/config'
 
 const ActivationError = () => (
-  <div className="padded-2x flex-1 flex-rows flex-center">
+  <main
+    role="main"
+    id="activation-error-page"
+    className="pc-main padded-2x flex-rows flex-center"
+  >
     <h2 className="fs20">Il semblerait que le lien cliqué soit incorrect.</h2>
     <p className="fs20">
       <MailToLink
@@ -18,6 +22,6 @@ const ActivationError = () => (
         <span>Contactez-nous</span>
       </MailToLink>
     </p>
-  </div>
+  </main>
 )
 export default ActivationError

@@ -1,0 +1,33 @@
+@import '~react-toastify/dist/ReactToastify';
+
+$toaster-height: rem(44px);
+
+.react-toastify-container {
+  width: auto !important;
+  margin-left: 0 !important;
+  top: rem(28px) !important;
+  left: rem(7px) !important;
+  right: rem(7px) !important;
+  position: absolute !important;
+}
+
+.react-toastify-toast {
+  min-height: $toaster-height;
+  padding: rem(0 12px) !important;
+}
+
+.react-toastify-body {
+  @extend .fs16;
+  @extend .is-black-text;
+
+  margin: rem(14px 0) !important;
+}
+
+.react-toastify-custom-close-button {
+  width: $toaster-height;
+  max-width: $toaster-height;
+  min-width: $toaster-height;
+  height: $toaster-height;
+  max-height: $toaster-height;
+  min-height: $toaster-height;
+}

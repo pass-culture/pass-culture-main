@@ -9,6 +9,7 @@ import MainMenu from './components/menu'
 import Debug from './components/layout/Debug'
 import Splash from './components/layout/Splash'
 import Overlay from './components/layout/Overlay'
+import Notifications from './components/layout/Notifications'
 import ErrorCatcher from './components/layout/error-catcher'
 import { SharePopin } from './components/share/SharePopin'
 import { getReactRoutes } from './utils/routes-utils'
@@ -49,6 +50,7 @@ const App = ({ location, children }) => {
           <MainMenu />
           <Splash />
           <SharePopin />
+          <Notifications />
           <img
             alt="beta"
             className="beta-corner is-overlay"

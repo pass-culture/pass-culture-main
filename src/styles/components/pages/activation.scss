@@ -1,0 +1,37 @@
+#activation-password-page {
+  .pc-final-form-label {
+    @extend .fs19;
+  }
+}
+
+#activation-events-page {
+  .pc-final-form-selectbox {
+    .pc-final-form-selectbox__control {
+      @extend .no-outline;
+      @extend .no-background;
+      @extend .no-box-shadow;
+
+      border-top: 0;
+      border-left: 0;
+      border-right: 0;
+      border-radius: 0;
+      border-color: $white !important;
+    }
+
+    .pc-final-form-selectbox__value-container {
+      padding-left: 0;
+    }
+
+    .pc-final-form-selectbox__placeholder,
+    .pc-final-form-selectbox__single-value {
+      @extend .fs18;
+      @extend .is-bold;
+      @extend .is-white-text;
+    }
+  }
+
+  #activation-events-submit-button {
+    color: $white;
+    background-color: transparent;
+  }
+}

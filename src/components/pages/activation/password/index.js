@@ -3,14 +3,15 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
+import { Form } from 'react-final-form'
 import { Redirect } from 'react-router-dom'
 
-import FormInputs from './FormInputs'
-import FormWrapper from './FormWrapper'
+import FormInputs from './inputs'
+import { canSubmitForm } from '../utils'
 import { FormFooter } from '../../../forms'
 import { mapStateToProps, mapDispatchToProps } from './connect'
 
-export class RawActivationPassword extends React.PureComponent {
+class ActivationPassword extends React.PureComponent {
   constructor(props) {
     super(props)
     this.state = { isLoading: false }
@@ -56,10 +57,11 @@ export class RawActivationPassword extends React.PureComponent {
 
   onFormSubmit = formValues => {
     this.setState({ isLoading: true })
-    // debug
+    // <!-- debug
     // const promise = new Promise(resolve =>
     //   setTimeout(this.savePasswordRequestSuccess(resolve, formValues), 3000)
     // )
+    // -->
     const { sendActivationPasswordForm } = this.props
     const promise = sendActivationPasswordForm(
       { ...formValues },
@@ -78,39 +80,46 @@ export class RawActivationPassword extends React.PureComponent {
       return <Redirect to="/activation/error" />
     }
     return (
-      <FormWrapper
-        isLoading={isLoading}
-        initialValues={initialValues}
-        onFormSubmit={this.onFormSubmit}
-        className="pc-final-form is-full-layout"
-      >
-        {(canSubmit, formValues, formErrors) => (
-          <div
-            id="reset-password-page-request"
-            className="is-full-layout flex-rows"
-          >
-            <main role="main" className="pc-main is-white-text flex-1">
-              <FormInputs
-                formErrors={formErrors}
-                formValues={formValues}
-                isLoading={isLoading}
-              />
-            </main>
-            <FormFooter
-              submit={{
-                className: 'is-bold is-white-text',
-                disabled: !canSubmit,
-                label: 'Enregistrer',
-              }}
-            />
-          </div>
-        )}
-      </FormWrapper>
+      <div id="activation-password-page" className="flex-rows">
+        <Form
+          onSubmit={this.onFormSubmit}
+          initialValues={initialValues}
+          render={formProps => {
+            const formValues = formProps.values || {}
+            const canSubmit = !isLoading && canSubmitForm(formProps)
+            const formErrors = !formProps.pristine && formProps.error
+            return (
+              <form
+                noValidate
+                autoComplete="off"
+                disabled={isLoading}
+                onSubmit={formProps.handleSubmit}
+                className="pc-final-form is-full-layout flex-rows"
+              >
+                <main role="main" className="pc-main padded-2x is-white-text">
+                  <FormInputs
+                    formErrors={formErrors}
+                    formValues={formValues}
+                    isLoading={isLoading}
+                  />
+                </main>
+                <FormFooter
+                  submit={{
+                    className: 'is-bold is-white-text',
+                    disabled: !canSubmit,
+                    label: 'Enregistrer',
+                  }}
+                />
+              </form>
+            )
+          }}
+        />
+      </div>
     )
   }
 }
 
-RawActivationPassword.propTypes = {
+ActivationPassword.propTypes = {
   history: PropTypes.object.isRequired,
   initialValues: PropTypes.object.isRequired,
   loginUserAfterPasswordSaveSuccess: PropTypes.func.isRequired,
@@ -120,4 +129,4 @@ RawActivationPassword.propTypes = {
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(RawActivationPassword)
+)(ActivationPassword)

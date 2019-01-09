@@ -1,6 +1,6 @@
 import { requestData } from 'pass-culture-shared'
 
-import { getQueryStringEmail, getURLTokenParam } from '../utils'
+import { getRouterQueryByKey, getRouterParamByKey } from '../../../../helpers'
 
 export const mapDispatchToProps = dispatch => ({
   loginUserAfterPasswordSaveSuccess: (values, fail, success) => {
@@ -35,8 +35,8 @@ export const mapDispatchToProps = dispatch => ({
 })
 
 export const mapStateToProps = (state, { location, match }) => {
-  const email = getQueryStringEmail(location)
-  const token = getURLTokenParam(match)
+  const token = getRouterParamByKey(match, 'token')
+  const email = getRouterQueryByKey(location, 'email')
   const initialValues = { email, token }
   return {
     initialValues,

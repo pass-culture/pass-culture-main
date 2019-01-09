@@ -11,7 +11,7 @@ const FormInputs = ({ formValues, formErrors, isLoading }) => {
   const { email } = formValues
   return (
     <div className="pc-scroll-container">
-      <div className="is-full-layout flex-rows flex-center padded-2x">
+      <div className="is-full-layout flex-rows flex-center">
         <div className="fs22">
           <h2 className="is-italic is-medium">
             <span className="is-block">
@@ -31,13 +31,13 @@ const FormInputs = ({ formValues, formErrors, isLoading }) => {
             </span>
           </div>
           <PasswordField
-            required
+            required={() => undefined}
             theme="primary"
             className="mt36"
             name="newPassword"
             disabled={isLoading}
             id="activation-newPassword"
-            label="Saisissez votre nouveau mot de passe"
+            label="Nouveau mot de passe"
             help="Il doit contenir au minimum 12 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial."
           />
           <PasswordField
@@ -50,7 +50,7 @@ const FormInputs = ({ formValues, formErrors, isLoading }) => {
             disabled={isLoading}
             name="newPasswordConfirm"
             id="activation-newPasswordConfirm"
-            label="Confirmez votre nouveau mot de passe"
+            label="Confirmez le mot de passe"
           />
           <HiddenField name="email" id="activation-email-hidden" />
           <HiddenField name="token" id="activation-token-hidden" />

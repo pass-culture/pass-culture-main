@@ -1,0 +1,20 @@
+@mixin withHeight($pixelSize) {
+  height: rem($pixelSize);
+  min-height: rem($pixelSize);
+  max-height: rem($pixelSize);
+}
+
+@mixin withWidth($pixelSize) {
+  width: rem($pixelSize);
+  min-width: rem($pixelSize);
+  max-width: rem($pixelSize);
+}
+
+@mixin withSize($width, $height) {
+  @include withWidth($width);
+  @include withHeight($height);
+}
+
+@mixin squareSize($pixelSize) {
+  @include withSize($pixelSize, $pixelSize);
+}

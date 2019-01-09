@@ -1,10 +1,19 @@
+/* eslint
+  react/jsx-one-expression-per-line: 0 */
 import React from 'react'
-import Select from 'react-select'
 import PropTypes from 'prop-types'
 import { Field } from 'react-final-form'
+import Select, { components } from 'react-select'
 
 import FormError from '../FormError'
 import InputLabel from '../InputLabel'
+
+const DropdownIndicator = props =>
+  components.DropdownIndicator && (
+    <components.DropdownIndicator {...props}>
+      <i className="icon-retina icon-dropdown-disclosure-down" />
+    </components.DropdownIndicator>
+  )
 
 const formatOptions = (options, format) =>
   (format &&
@@ -25,7 +34,6 @@ class SelectBox extends React.PureComponent {
       name,
       provider,
       required,
-      // props from https://react-select.com/props
       ...reactSelectAPIProps
     } = this.props
     const options = formatOptions(provider, format)
@@ -37,7 +45,14 @@ class SelectBox extends React.PureComponent {
             <label htmlFor={id || name} className="pc-final-form-text">
               {label && <InputLabel label={label} required={required} />}
               <Select
+                // props from https://react-select.com/props
+                // <!-- debug elements, styles, classname
+                // menuIsOpen
+                // defaultMenuIsOpen
+                // closeMenuOnSelect={false}
+                // -->
                 options={options}
+                components={{ DropdownIndicator }}
                 classNamePrefix="pc-final-form-selectbox"
                 isDisabled={disabled || reactSelectAPIProps.isDisabled || false}
                 isSearchable={reactSelectAPIProps.isSearchable || true}
@@ -71,7 +86,7 @@ SelectBox.propTypes = {
   id: PropTypes.string,
   label: PropTypes.string,
   name: PropTypes.string.isRequired,
-  provider: PropTypes.array.isRequired,
+  provider: PropTypes.oneOfType([PropTypes.array, PropTypes.object]).isRequired,
   required: PropTypes.bool,
 }
 

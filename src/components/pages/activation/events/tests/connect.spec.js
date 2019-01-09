@@ -6,24 +6,26 @@ describe('src | components | pages | activation | events | connect', () => {
     it('should return empty array if no data', () => {
       // given
       const state = {}
+      const props = { location: { search: '?from=password' } }
 
       // when
-      const result = mapStateToProps(state)
+      const result = mapStateToProps(state, props)
 
       // then
-      const expected = { offers: [] }
+      const expected = { fromPassword: true, offers: [] }
       expect(result).toStrictEqual(expected)
     })
     it('should return empty array if no offers', () => {
       // given
       const data = { offers: null }
       const state = { data }
+      const props = { location: { search: '?from=password' } }
 
       // when
-      const result = mapStateToProps(state)
+      const result = mapStateToProps(state, props)
 
       // then
-      const expected = { offers: [] }
+      const expected = { fromPassword: true, offers: [] }
       expect(result).toStrictEqual(expected)
     })
   })

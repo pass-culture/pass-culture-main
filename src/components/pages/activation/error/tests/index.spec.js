@@ -1,7 +1,7 @@
 // jest --env=jsdom ./src/components/pages/activation/tests/ActivationError --watch
 import React from 'react'
 import { render } from 'enzyme'
-import ActivationError from '../ActivationError'
+import ActivationError from '../index'
 
 describe('src | components | pages | activation | ActivationError', () => {
   it('should match snapshot', () => {

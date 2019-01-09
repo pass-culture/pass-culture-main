@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 
-const ActivationEventFooter = () => (
+const ActivationEventsFooter = () => (
   <footer className="flex-0 text-center mb24">
     <Link to="/decouverte" title="Continuer sans activer mon pass Culture">
       <span className="fs16 is-white-text">
@@ -11,4 +11,4 @@ const ActivationEventFooter = () => (
   </footer>
 )
 
-export default ActivationEventFooter
+export default ActivationEventsFooter

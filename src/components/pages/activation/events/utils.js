@@ -12,7 +12,7 @@ export const filterActivationOffers = offers =>
 
 export const mapActivationOffersToSelectOptions = offers =>
   offers.map(o => {
-    const { id } = o
+    const { id: value } = o
     // construction de l'URL de redirection
     const { offerId, id: mediationId } = get(o, 'mediations.0')
     const url = `/decouverte/${offerId}/${mediationId}`
@@ -20,8 +20,13 @@ export const mapActivationOffersToSelectOptions = offers =>
     const venueCity = get(o, 'venue.city')
     const venueName = get(o, 'venue.name')
     const venueCodePostal = get(o, 'venue.postalCode')
-    const label = `${venueCodePostal} ${venueCity} - ${venueName}`
-    return { id, label, url }
+    return {
+      city: venueCity,
+      code: venueCodePostal,
+      label: venueName,
+      url,
+      value,
+    }
   })
 
 export const orderActivationOffersByLabel = offers =>
@@ -37,3 +42,20 @@ export const parseActivationOffers = offers =>
     mapActivationOffersToSelectOptions,
     orderActivationOffersByLabel
   )(offers)
+
+export const groupOffersByCityCode = offers => {
+  let group = offers.reduce((acc, obj) => {
+    const { code, city } = obj
+    const label = `${code} - ${city}`
+    const options = ((acc[code] && acc[code].options) || []).concat([obj])
+    return {
+      ...acc,
+      [code]: { label, options },
+    }
+  }, {})
+  group = Object.keys(group).map(key => ({
+    label: group[key].label,
+    options: group[key].options,
+  }))
+  return group
+}

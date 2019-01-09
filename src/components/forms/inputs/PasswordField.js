@@ -5,6 +5,7 @@ import PropTypes from 'prop-types'
 import { Field } from 'react-final-form'
 
 import FormError from '../FormError'
+import InputHelp from '../InputHelp'
 import InputLabel from '../InputLabel'
 import { validatePasswordField } from '../validators'
 
@@ -23,6 +24,7 @@ class PasswordField extends React.PureComponent {
       autoComplete,
       className,
       disabled,
+      help,
       id,
       label,
       name,
@@ -46,6 +48,7 @@ class PasswordField extends React.PureComponent {
           <p className={`${className}`}>
             <label htmlFor={id || name} className="pc-final-form-password">
               {label && <InputLabel label={label} required={required} />}
+              {help && <InputHelp label={help} />}
               <span className="pc-final-form-inner">
                 <input
                   {...input}
@@ -83,6 +86,7 @@ PasswordField.defaultProps = {
   autoComplete: false,
   className: '',
   disabled: false,
+  help: null,
   id: null,
   label: 'Saisissez Votre mot de passe',
   placeholder: '',
@@ -93,6 +97,7 @@ PasswordField.propTypes = {
   autoComplete: PropTypes.bool,
   className: PropTypes.string,
   disabled: PropTypes.bool,
+  help: PropTypes.string,
   id: PropTypes.string,
   label: PropTypes.string,
   name: PropTypes.string.isRequired,

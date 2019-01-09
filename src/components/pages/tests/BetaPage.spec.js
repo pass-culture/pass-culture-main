@@ -17,7 +17,7 @@ describe('src | components | pages | RawBetaPage', () => {
     expect(wrapper).toBeDefined()
     expect(wrapper).toMatchSnapshot()
   })
-  it('should contains a link to inscription page', () => {
+  it('should contains a link to connexion page', () => {
     // when
     const wrapper = render(
       <MemoryRouter initialEntries={['/beta']}>
