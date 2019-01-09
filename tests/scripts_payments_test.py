@@ -8,7 +8,8 @@ from freezegun import freeze_time
 from models import PcObject
 from models.payment import Payment
 from models.payment_status import TransactionStatus
-from scripts.payments import do_generate_payments, do_send_payments, do_send_payments_details, do_send_wallet_balances
+from scripts.payments import do_generate_payments, do_send_payments, do_send_payments_details, do_send_wallet_balances, \
+    do_send_payments_report
 from tests.conftest import clean_database, mocked_mail
 from utils.test_utils import create_offerer, create_venue, create_thing_offer, create_stock_from_offer, \
     create_booking, create_user, create_deposit, create_payment
@@ -322,10 +323,92 @@ def test_do_send_wallet_balances_sends_a_csv_attachment(app):
 @pytest.mark.standalone
 @mocked_mail
 def test_do_send_wallet_balances_does_not_send_anything_if_recipients_are_missing(app):
-    # given
-
     # when
     do_send_wallet_balances(None)
+
+    # then
+    app.mailjet_client.send.create.assert_not_called()
+
+
+@pytest.mark.standalone
+@mocked_mail
+@clean_database
+def test_do_send_payments_report_sends_two_csv_attachments_if_some_payments_are_not_processable_and_in_error(app):
+    # given
+    offerer1 = create_offerer(name='first offerer', iban='CF13QSDFGH456789', bic='QSDFGH8Z555', idx=1)
+    user = create_user()
+    venue1 = create_venue(offerer1, idx=4)
+    stock1 = create_stock_from_offer(create_thing_offer(venue1))
+    booking1 = create_booking(user, stock1)
+    booking2 = create_booking(user, stock1)
+    booking3 = create_booking(user, stock1)
+    deposit = create_deposit(user, datetime.utcnow(), amount=500)
+    payments = [
+        create_payment(booking1, offerer1, Decimal(10), idx=7, status=TransactionStatus.SENT),
+        create_payment(booking2, offerer1, Decimal(20), idx=8, status=TransactionStatus.ERROR),
+        create_payment(booking3, offerer1, Decimal(20), idx=9, status=TransactionStatus.NOT_PROCESSABLE)
+    ]
+
+    PcObject.check_and_save(deposit)
+    PcObject.check_and_save(*payments)
+
+    app.mailjet_client.send.create.return_value = Mock(status_code=200)
+
+    # when
+    do_send_payments_report(payments)
+
+    # then
+    app.mailjet_client.send.create.assert_called_once()
+    args = app.mailjet_client.send.create.call_args
+    assert len(args[1]['data']['Attachments']) == 2
+    assert args[1]['data']['Attachments'][0]['ContentType'] == 'text/csv'
+    assert args[1]['data']['Attachments'][1]['ContentType'] == 'text/csv'
+
+
+@pytest.mark.standalone
+@mocked_mail
+@clean_database
+def test_do_send_payments_report_sends_two_csv_attachments_if_no_payments_are_in_error_or_sent(app):
+    # given
+    offerer1 = create_offerer(name='first offerer', iban='CF13QSDFGH456789', bic='QSDFGH8Z555', idx=1)
+    user = create_user()
+    venue1 = create_venue(offerer1, idx=4)
+    stock1 = create_stock_from_offer(create_thing_offer(venue1))
+    booking1 = create_booking(user, stock1)
+    booking2 = create_booking(user, stock1)
+    booking3 = create_booking(user, stock1)
+    deposit = create_deposit(user, datetime.utcnow(), amount=500)
+    payments = [
+        create_payment(booking1, offerer1, Decimal(10), idx=7, status=TransactionStatus.SENT),
+        create_payment(booking2, offerer1, Decimal(20), idx=8, status=TransactionStatus.SENT),
+        create_payment(booking3, offerer1, Decimal(20), idx=9, status=TransactionStatus.SENT)
+    ]
+
+    PcObject.check_and_save(deposit)
+    PcObject.check_and_save(*payments)
+
+    app.mailjet_client.send.create.return_value = Mock(status_code=200)
+
+    # when
+    do_send_payments_report(payments)
+
+    # then
+    app.mailjet_client.send.create.assert_called_once()
+    args = app.mailjet_client.send.create.call_args
+    assert len(args[1]['data']['Attachments']) == 2
+    assert args[1]['data']['Attachments'][0]['ContentType'] == 'text/csv'
+    assert args[1]['data']['Attachments'][1]['ContentType'] == 'text/csv'
+
+
+@pytest.mark.standalone
+@mocked_mail
+@clean_database
+def test_do_send_payments_report_does_not_send_anything_if_no_payments_are_provided(app):
+    # given
+    payments = []
+
+    # when
+    do_send_payments_report(payments)
 
     # then
     app.mailjet_client.send.create.assert_not_called()

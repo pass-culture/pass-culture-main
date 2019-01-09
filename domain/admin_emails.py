@@ -58,6 +58,7 @@ def send_payments_report_emails(not_processable_payments_csv: str, error_payment
     mail_result = send_create_email(data=email)
     check_if_email_sent(mail_result)
 
+
 def send_venue_validation_email(venue, send_create_email):
     email = make_venue_validation_email(venue)
     recipients = ['passculture@beta.gouv.fr']

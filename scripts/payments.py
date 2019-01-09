@@ -6,11 +6,12 @@ from typing import List
 
 from flask import current_app as app
 
-from domain.admin_emails import send_payment_transaction_email, send_payment_details_email, send_wallet_balances_email
+from domain.admin_emails import send_payment_transaction_email, send_payment_details_email, send_wallet_balances_email, \
+    send_payments_report_emails
 from domain.payments import filter_out_already_paid_for_bookings, create_payment_for_booking, generate_transaction_file, \
     validate_transaction_file_structure, create_all_payments_details, generate_payment_details_csv, \
     generate_wallet_balances_csv, \
-    generate_payment_transaction, generate_file_checksum
+    generate_payment_transaction, generate_file_checksum, group_payments_by_status
 from domain.reimbursement import find_all_booking_reimbursement
 from models import Offerer, PcObject
 from models.payment import Payment
@@ -118,4 +119,16 @@ def do_send_wallet_balances(recipients: str) -> None:
 
 
 def do_send_payments_report(payments: List[Payment]) -> None:
-    pass
+    if payments:
+        groups = group_payments_by_status(payments)
+
+        payments_error_details = create_all_payments_details(groups['ERROR']) if 'ERROR' in groups else []
+        error_csv = generate_payment_details_csv(payments_error_details)
+
+        payments_not_processable_details = create_all_payments_details(groups['NOT_PROCESSABLE']) if 'NOT_PROCESSABLE' in groups else []
+        not_processable_csv = generate_payment_details_csv(payments_not_processable_details)
+
+        try:
+            send_payments_report_emails(not_processable_csv, error_csv, groups,app.mailjet_client.send.create)
+        except MailServiceException as e:
+            logger.error('Error while sending payments reports to MailJet', e)
