@@ -286,7 +286,6 @@ elif [[ "$CMD" == "test-cafe-webapp" ]] || [[ "$CMD" == "test-cafe-pro" ]]; then
 		APP_PATH="$ROOT_PATH"/pro
 		SANDBOX_NAME="light"
 	fi
-  chmod 577 $APP_PATH/node_modules/testcafe/bin/testcafe.js
 	if [[ $# == 0 ]]; then
 		confirm "Warning: your database will be wiped. Is this OK ?"
 	 	"$ROOT_PATH"/pc -e "$ENV" reset-all-db
