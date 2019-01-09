@@ -86,7 +86,7 @@ def test_create_filter_finding_all_keywords_in_at_least_one_of_the_models_with_a
 
 @pytest.mark.standalone
 @clean_database
-def test_create_filter_finding_all_keywords_in_at_least_one_of_the_models_with_partial_search_returns_all_offers_with_event_or_thing_or_venue_containing_keywords(
+def test_create_filter_finding_all_keywords_in_at_least_one_of_the_models_with_partial_keywords_returns_all_offers_with_event_or_thing_or_venue_containing_keywords(
         app):
     # given
     event1 = create_event(event_name='Rencontre avec Jacques Martin')
@@ -113,7 +113,7 @@ def test_create_filter_finding_all_keywords_in_at_least_one_of_the_models_with_p
 
 @pytest.mark.standalone
 @clean_database
-def test_create_filter_finding_all_keywords_in_at_least_one_of_the_models_with_partial_search_returns_all_offers_with_event_or_thing_or_venue_containing_all_the_keywords(
+def test_create_filter_finding_all_keywords_in_at_least_one_of_the_models_with_partial_keywords_returns_all_offers_with_event_or_thing_or_venue_containing_all_the_keywords(
         app):
     # given
     event1 = create_event(event_name='Rencontre avec Jacques Martin')
