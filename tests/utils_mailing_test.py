@@ -1,7 +1,7 @@
 import re
 import secrets
 from datetime import datetime, timezone, timedelta
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock, patch, Mock
 
 import pytest
 from bs4 import BeautifulSoup
@@ -18,7 +18,7 @@ from utils.mailing import make_user_booking_recap_email, \
     make_venue_validation_email, \
     make_venue_validation_confirmation_email, \
     make_batch_cancellation_email, make_payment_transaction_email, make_user_validation_email, \
-    make_payment_details_email, make_wallet_balances_email
+    make_payment_details_email, make_wallet_balances_email, make_payments_report_email
 from utils.test_utils import create_stock_with_event_offer, create_stock_with_thing_offer, \
     create_user, create_booking, create_user_offerer, \
     create_offerer, create_venue, create_thing_offer, create_event_offer, create_stock_from_offer, \
@@ -916,6 +916,60 @@ def test_make_wallet_balances_email():
                                                       b'IgoicGFydCBBIiwicGFydCBCIiwicGFydCBDIiwicGFydCBEIgo='}]
 
 
+@pytest.mark.standalone
+@freeze_time('2018-10-15 09:21:34')
+class MakePaymentsReportEmailTest:
+    def setup_class(self):
+        self.grouped_payments = {
+            'ERROR': [Mock(), Mock()],
+            'SENT': [Mock()],
+            'PENDING': [Mock(), Mock(), Mock()]
+        }
+
+        self.not_processable_csv = '"header A","header B","header C","header D"\n"part A","part B","part C","part D"\n'
+        self.error_csv = '"header 1","header 2","header 3","header 4"\n"part 1","part 2","part 3","part 4"\n'
+
+    def test_it_contains_the_two_csv_files_as_attachment(self, app):
+        # Given
+
+        # When
+        email = make_payments_report_email(self.not_processable_csv, self.error_csv, self.grouped_payments)
+
+        # Then
+        assert email["Attachments"] == [
+            {
+                "ContentType": "text/csv",
+                "Filename": "paiements_non_traitables_2018-10-15.csv",
+                "Base64Content": b'ImhlYWRlciBBIiwiaGVhZGVyIEIiLCJoZWFkZXIgQyIsImhlYWRlciBE'
+                                 b'IgoicGFydCBBIiwicGFydCBCIiwicGFydCBDIiwicGFydCBEIgo='
+            },
+            {
+                "ContentType": "text/csv",
+                "Filename": "paiements_en_erreur_2018-10-15.csv",
+                "Base64Content": b'ImhlYWRlciAxIiwiaGVhZGVyIDIiLCJoZWFkZXIgMyIsImhlYWRlciA0'
+                                 b'IgoicGFydCAxIiwicGFydCAyIiwicGFydCAzIiwicGFydCA0Igo='
+            }
+        ]
+
+    def test_it_contains_from_and_subject_info(self, app):
+        # When
+        email = make_payments_report_email(self.not_processable_csv, self.error_csv, self.grouped_payments)
+
+        # Then
+        assert email["From"] == {"Email": "passculture@beta.gouv.fr",
+                                 "Name": "pass Culture Pro"}
+        assert email["Subject"] == "Récapitulatif des paiements - 2018-10-15"
+
+    def test_it_contains_a_count_of_payments_by_status_in_html_part(self, app):
+        # When
+        email = make_payments_report_email(self.not_processable_csv, self.error_csv, self.grouped_payments)
+
+        # Then
+        print(email['Html-part'])
+        email_html = BeautifulSoup(email['Html-part'], 'html.parser')
+        assert email_html.find('ul').text == '\nERROR : 2\nSENT : 1\nPENDING : 3\n'
+
+
 class UserValidationEmailsTest:
     @pytest.mark.standalone
     def test_make_webapp_user_validation_email_includes_validation_url_with_token_and_user_email(self, app):
@@ -964,12 +1018,6 @@ class UserValidationEmailsTest:
         assert 'Vous pouvez valider votre adresse email en suivant ce lien :' in mail_content
         assert 'portail-pro/inscription/validation/{}'.format(user.validationToken) in mail_content
         assert email['FromName'] == 'pass Culture pro'
-
-
-def remove_whitespaces(text):
-    text = re.sub('\n\s+', ' ', text)
-    text = re.sub('\n', '', text)
-    return text
 
 
 @pytest.mark.standalone
@@ -1021,3 +1069,9 @@ def test_make_venue_validation_confirmation_email(app):
     assert 'à votre structure "La Structure"' in html_validation
     assert 'Cordialement,' in html_salutation
     assert 'L\'équipe pass Culture' in html_salutation
+
+
+def remove_whitespaces(text):
+    text = re.sub('\n\s+', ' ', text)
+    text = re.sub('\n', '', text)
+    return text

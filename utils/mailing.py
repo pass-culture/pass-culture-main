@@ -3,6 +3,7 @@ import base64
 import os
 from datetime import datetime
 from pprint import pformat
+from typing import Dict
 
 from flask import current_app as app, render_template
 
@@ -316,7 +317,7 @@ def subscribe_newsletter(user):
 
 def make_payment_transaction_email(xml: str, file_hash: str) -> dict:
     now = datetime.utcnow()
-    xml_b64encode = base64.b64encode(xml.encode())
+    xml_b64encode = base64.b64encode(xml.encode('utf-8'))
     file_name = "transaction_banque_de_france_{}.xml".format(datetime.strftime(now, "%Y%m%d"))
 
     return {
@@ -332,7 +333,7 @@ def make_payment_transaction_email(xml: str, file_hash: str) -> dict:
 
 def make_payment_details_email(csv: str) -> dict:
     now = datetime.utcnow()
-    csv_b64encode = base64.b64encode(csv.encode())
+    csv_b64encode = base64.b64encode(csv.encode('utf-8'))
     return {
         'From': {"Email": "passculture@beta.gouv.fr",
                  "Name": "pass Culture Pro"},
@@ -344,9 +345,41 @@ def make_payment_details_email(csv: str) -> dict:
     }
 
 
+def make_payments_report_email(not_processable_csv: str, error_csv: str, grouped_payments: Dict) -> Dict:
+    now = datetime.utcnow()
+    not_processable_csv_b64encode = base64.b64encode(not_processable_csv.encode('utf-8'))
+    error_csv_b64encode = base64.b64encode(error_csv.encode('utf-8'))
+    formatted_date = datetime.strftime(now, "%Y-%m-%d")
+
+    return {
+        'Subject': "Récapitulatif des paiements - {}".format(formatted_date),
+        'From': {
+            "Email": "passculture@beta.gouv.fr",
+            "Name": "pass Culture Pro"
+        },
+        'Attachments': [
+            {
+                "ContentType": "text/csv",
+                "Filename": "paiements_non_traitables_{}.csv".format(formatted_date),
+                "Base64Content": not_processable_csv_b64encode
+            },
+            {
+                "ContentType": "text/csv",
+                "Filename": "paiements_en_erreur_{}.csv".format(formatted_date),
+                "Base64Content": error_csv_b64encode
+            }
+        ],
+        'Html-part': render_template(
+            'mails/payments_report_email.html',
+            date_sent=formatted_date,
+            grouped_payments=grouped_payments
+        )
+    }
+
+
 def make_wallet_balances_email(csv: str) -> dict:
     now = datetime.utcnow()
-    csv_b64encode = base64.b64encode(csv.encode())
+    csv_b64encode = base64.b64encode(csv.encode('utf-8'))
     return {
         'From': {"Email": "passculture@beta.gouv.fr",
                  "Name": "pass Culture Pro"},
@@ -356,7 +389,6 @@ def make_wallet_balances_email(csv: str) -> dict:
                          "Base64Content": csv_b64encode}],
         'Html-part': ""
     }
-
 
 
 def make_venue_validation_confirmation_email(venue):

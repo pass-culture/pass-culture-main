@@ -4,7 +4,7 @@ from unittest.mock import Mock, patch
 import pytest
 
 from domain.admin_emails import maybe_send_offerer_validation_email, send_venue_validation_email, \
-    send_payment_details_email, send_wallet_balances_email
+    send_payment_details_email, send_wallet_balances_email, send_payments_report_emails
 from utils.mailing import MailServiceException
 from utils.test_utils import create_offerer, create_user, \
     create_user_offerer, create_venue
@@ -239,7 +239,7 @@ def test_send_payment_details_email_when_mailjet_status_code_400_raises_MailServ
 
 
 @pytest.mark.standalone
-def test_send_wallet_balances_email_when_mailjet_status_code_200_sends_email_to_pass_culture(app):
+def test_send_wallet_balances_email_when_mailjet_status_code_200_sends_email_to_recipients(app):
     # Given
     csv = '"header A","header B","header C","header D"\n"part A","part B","part C","part D"\n'
     recipients = ['comptable1@culture.fr', 'comptable2@culture.fr']
@@ -296,3 +296,78 @@ def test_send_wallet_balances_email_when_mailjet_status_code_400_raises_MailServ
     # When
     with pytest.raises(MailServiceException):
         send_wallet_balances_email(csv, recipients, mocked_send_create_email)
+
+
+@pytest.mark.standalone
+def test_send_payments_report_emails_when_mailjet_status_code_200_sends_email_to_recipients(app):
+    # Given
+    not_processable_csv = '"header A","header B","header C","header D"\n"part A","part B","part C","part D"\n'
+    error_csv = '"header 1","header 2","header 3","header 4"\n"part 1","part 2","part 3","part 4"\n'
+    grouped_payments = {
+        'ERROR': [Mock(), Mock()],
+        'SENT': [Mock()],
+        'PENDING': [Mock(), Mock(), Mock()]
+    }
+
+    mocked_send_create_email = Mock()
+    return_value = Mock()
+    return_value.status_code = 200
+    mocked_send_create_email.return_value = return_value
+
+    # When
+    with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True):
+        send_payments_report_emails(not_processable_csv, error_csv, grouped_payments, mocked_send_create_email)
+
+    # Then
+    mocked_send_create_email.assert_called_once()
+    args = mocked_send_create_email.call_args
+    email = args[1]['data']
+    assert email['To'] == 'passculture@beta.gouv.fr'
+
+
+@pytest.mark.standalone
+def test_send_payments_report_emails_email_has_pass_culture_dev_as_recipient_when_send_email_disabled(app):
+    # Given
+    not_processable_csv = '"header A","header B","header C","header D"\n"part A","part B","part C","part D"\n'
+    error_csv = '"header 1","header 2","header 3","header 4"\n"part 1","part 2","part 3","part 4"\n'
+    grouped_payments = {
+        'ERROR': [Mock(), Mock()],
+        'SENT': [Mock()],
+        'PENDING': [Mock(), Mock(), Mock()]
+    }
+
+    mocked_send_create_email = Mock()
+    return_value = Mock()
+    return_value.status_code = 200
+    mocked_send_create_email.return_value = return_value
+
+    # When
+    with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=False):
+        send_payments_report_emails(not_processable_csv, error_csv, grouped_payments, mocked_send_create_email)
+
+    # Then
+    mocked_send_create_email.assert_called_once()
+    args = mocked_send_create_email.call_args
+    email = args[1]['data']
+    assert email['To'] == 'passculture-dev@beta.gouv.fr'
+
+
+@pytest.mark.standalone
+def test_send_payments_report_emails_when_mailjet_status_code_400_raises_MailServiceException(app):
+    # Given
+    not_processable_csv = '"header A","header B","header C","header D"\n"part A","part B","part C","part D"\n'
+    error_csv = '"header 1","header 2","header 3","header 4"\n"part 1","part 2","part 3","part 4"\n'
+    grouped_payments = {
+        'ERROR': [Mock(), Mock()],
+        'SENT': [Mock()],
+        'PENDING': [Mock(), Mock(), Mock()]
+    }
+
+    mocked_send_create_email = Mock()
+    return_value = Mock()
+    return_value.status_code = 400
+    mocked_send_create_email.return_value = return_value
+
+    # When
+    with pytest.raises(MailServiceException):
+        send_payments_report_emails(not_processable_csv, error_csv, grouped_payments, mocked_send_create_email)

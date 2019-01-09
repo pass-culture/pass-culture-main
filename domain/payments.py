@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 from decimal import Decimal
 from hashlib import sha256
 from io import BytesIO, StringIO
-from typing import List
+from typing import List, Dict
 from uuid import UUID
 
 from flask import render_template
@@ -153,6 +153,18 @@ def read_message_id_in_transaction_file(xml_file: str) -> str:
     tree = etree.parse(xml, etree.XMLParser())
     node = tree.find('//ns:GrpHdr/ns:MsgId', namespaces=XML_NAMESPACE)
     return node.text
+
+
+def group_payments_by_status(payments: List[Payment]) -> Dict:
+    groups = {}
+    for p in payments:
+        status_name = p.currentStatus.status.name
+
+        if status_name in groups:
+            groups[status_name].append(p)
+        else:
+            groups[status_name] = [p]
+    return groups
 
 
 def _group_payments_into_transactions(payments: List[Payment]) -> List[Transaction]:

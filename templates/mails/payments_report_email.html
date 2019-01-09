@@ -1,0 +1,16 @@
+<html>
+    <body>
+        <h1>Récapitulatif des paiements du {{ date_sent }}</h1>
+        <p id="counts">
+            <ul>
+            {% for status, payments in grouped_payments.items() %}
+                <li>{{ status }} : {{ payments | length }}</li>
+            {% endfor %}
+            </ul>
+        </p>
+        <p>
+            En pièces jointes : la liste des paiements au statut <strong>NOT_PROCESSABLE</strong>
+            et la liste des paiements au statut <strong>ERROR</strong>.
+        </p>
+    </body>
+</html>

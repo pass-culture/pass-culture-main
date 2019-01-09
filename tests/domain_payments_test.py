@@ -1,13 +1,14 @@
 import uuid
 from datetime import datetime, timedelta
 from decimal import Decimal
+from pprint import pprint
 from unittest.mock import Mock
 
 import pytest
 from freezegun import freeze_time
 
 from domain.payments import create_payment_for_booking, filter_out_already_paid_for_bookings, create_payment_details, \
-    create_all_payments_details, make_custom_message
+    create_all_payments_details, make_custom_message, group_payments_by_status
 from domain.reimbursement import BookingReimbursement, ReimbursementRules
 from models import Offer, Venue, Booking
 from models.payment import Payment
@@ -341,3 +342,30 @@ class PaymentCustomMessageTest:
 
         # then
         assert message == 'pass Culture Pro - remboursement 2nde quinzaine 07-2018'
+
+
+@pytest.mark.standalone
+class GroupPaymentsByStatusTest:
+    def test_payments_are_grouped_by_current_statuses_names(self):
+        # given
+        user = create_user()
+        booking = create_booking(user)
+        offerer = create_offerer()
+        payment1 = create_payment(booking, offerer, 10)
+        payment2 = create_payment(booking, offerer, 20)
+        payment3 = create_payment(booking, offerer, 30)
+        payment4 = create_payment(booking, offerer, 40)
+        payment1.setStatus(TransactionStatus.SENT)
+        payment2.setStatus(TransactionStatus.NOT_PROCESSABLE)
+        payment3.setStatus(TransactionStatus.ERROR)
+        payment4.setStatus(TransactionStatus.ERROR)
+        payments = [payment1, payment2, payment3, payment4]
+
+        # when
+        groups = group_payments_by_status(payments)
+
+        # then
+        pprint(groups)
+        assert len(groups['SENT']) == 1
+        assert len(groups['NOT_PROCESSABLE']) == 1
+        assert len(groups['ERROR']) == 2

@@ -1,5 +1,4 @@
 """ transfer model """
-import uuid
 from datetime import datetime
 
 from sqlalchemy import BigInteger, \
@@ -70,6 +69,11 @@ class Payment(PcObject, Model):
     @property
     def transactionChecksum(self):
         return self.transaction.checksum if self.transaction else None
+
+    @property
+    def currentStatus(self):
+        statuses_by_date_desc = sorted(self.statuses, key=lambda x: x.date, reverse=True)
+        return statuses_by_date_desc[0]
 
     def setStatus(self, status: TransactionStatus, detail: str = None):
         payment_status = PaymentStatus()

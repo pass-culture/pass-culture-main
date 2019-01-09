@@ -8,7 +8,8 @@ from flask import current_app as app
 
 from domain.admin_emails import send_payment_transaction_email, send_payment_details_email, send_wallet_balances_email
 from domain.payments import filter_out_already_paid_for_bookings, create_payment_for_booking, generate_transaction_file, \
-    validate_transaction_file_structure, create_all_payments_details, generate_payment_details_csv, generate_wallet_balances_csv, \
+    validate_transaction_file_structure, create_all_payments_details, generate_payment_details_csv, \
+    generate_wallet_balances_csv, \
     generate_payment_transaction, generate_file_checksum
 from domain.reimbursement import find_all_booking_reimbursement
 from models import Offerer, PcObject
@@ -34,8 +35,9 @@ def generate_and_send_payments():
 
     try:
         do_send_payments(payments, PASS_CULTURE_IBAN, PASS_CULTURE_BIC, PASS_CULTURE_REMITTANCE_CODE)
-        do_send_payment_details(payments, PASS_CULTURE_PAYMENTS_DETAILS_RECIPIENTS)
+        do_send_payments_details(payments, PASS_CULTURE_PAYMENTS_DETAILS_RECIPIENTS)
         do_send_wallet_balances(PASS_CULTURE_WALLET_BALANCES_RECIPIENTS)
+        do_send_payments_report(payments)
     except Exception as e:
         print('ERROR: ' + str(e))
         traceback.print_tb(e.__traceback__)
@@ -91,7 +93,7 @@ def do_send_payments(payments: List[Payment], pass_culture_iban: str, pass_cultu
             PcObject.check_and_save(transaction, *payments)
 
 
-def do_send_payment_details(payments: List[Payment], recipients: str) -> None:
+def do_send_payments_details(payments: List[Payment], recipients: str) -> None:
     if not recipients:
         logger.error('Missing PASS_CULTURE_PAYMENTS_DETAILS_RECIPIENTS in environment variables')
     else:
@@ -113,3 +115,7 @@ def do_send_wallet_balances(recipients: str) -> None:
             send_wallet_balances_email(csv, recipients, app.mailjet_client.send.create)
         except MailServiceException as e:
             logger.error('Error while sending users wallet balances email to MailJet', e)
+
+
+def do_send_payments_report(payments: List[Payment]) -> None:
+    pass

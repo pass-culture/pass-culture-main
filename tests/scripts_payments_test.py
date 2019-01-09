@@ -8,7 +8,7 @@ from freezegun import freeze_time
 from models import PcObject
 from models.payment import Payment
 from models.payment_status import TransactionStatus
-from scripts.payments import do_generate_payments, do_send_payments, do_send_payment_details, do_send_wallet_balances
+from scripts.payments import do_generate_payments, do_send_payments, do_send_payments_details, do_send_wallet_balances
 from tests.conftest import clean_database, mocked_mail
 from utils.test_utils import create_offerer, create_venue, create_thing_offer, create_stock_from_offer, \
     create_booking, create_user, create_deposit, create_payment
@@ -279,7 +279,7 @@ def test_do_send_payment_details_sends_a_csv_attachment(app):
     app.mailjet_client.send.create.return_value = Mock(status_code=200)
 
     # when
-    do_send_payment_details(payments, 'comptable@test.com')
+    do_send_payments_details(payments, 'comptable@test.com')
 
     # then
     app.mailjet_client.send.create.assert_called_once()
@@ -295,7 +295,7 @@ def test_do_send_payment_details_does_not_send_anything_if_recipients_are_missin
     payments = []
 
     # when
-    do_send_payment_details(payments, None)
+    do_send_payments_details(payments, None)
 
     # then
     app.mailjet_client.send.create.assert_not_called()
