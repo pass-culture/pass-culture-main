@@ -960,12 +960,19 @@ class MakePaymentsReportEmailTest:
                                  "Name": "pass Culture Pro"}
         assert email["Subject"] == "Récapitulatif des paiements - 2018-10-15"
 
+    def test_it_contains_a_the_total_count_of_payments(self, app):
+        # When
+        email = make_payments_report_email(self.not_processable_csv, self.error_csv, self.grouped_payments)
+
+        # Then
+        email_html = BeautifulSoup(email['Html-part'], 'html.parser')
+        assert email_html.find('p', {'id': 'total'}).text == 'Nombre total de paiements : 6'
+
     def test_it_contains_a_count_of_payments_by_status_in_html_part(self, app):
         # When
         email = make_payments_report_email(self.not_processable_csv, self.error_csv, self.grouped_payments)
 
         # Then
-        print(email['Html-part'])
         email_html = BeautifulSoup(email['Html-part'], 'html.parser')
         assert email_html.find('ul').text == '\nERROR : 2\nSENT : 1\nPENDING : 3\n'
 

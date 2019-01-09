@@ -350,6 +350,7 @@ def make_payments_report_email(not_processable_csv: str, error_csv: str, grouped
     not_processable_csv_b64encode = base64.b64encode(not_processable_csv.encode('utf-8'))
     error_csv_b64encode = base64.b64encode(error_csv.encode('utf-8'))
     formatted_date = datetime.strftime(now, "%Y-%m-%d")
+    total_number_of_payments = sum(map(lambda pair: len(pair[1]), grouped_payments.items()))
 
     return {
         'Subject': "Récapitulatif des paiements - {}".format(formatted_date),
@@ -372,6 +373,7 @@ def make_payments_report_email(not_processable_csv: str, error_csv: str, grouped
         'Html-part': render_template(
             'mails/payments_report_email.html',
             date_sent=formatted_date,
+            total_number=total_number_of_payments,
             grouped_payments=grouped_payments
         )
     }

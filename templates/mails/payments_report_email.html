@@ -1,6 +1,7 @@
 <html>
     <body>
         <h1>Récapitulatif des paiements du {{ date_sent }}</h1>
+        <p id="total">Nombre total de paiements : {{ total_number }}</p>
         <p id="counts">
             <ul>
             {% for status, payments in grouped_payments.items() %}
