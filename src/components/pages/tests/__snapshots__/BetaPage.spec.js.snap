@@ -608,8 +608,8 @@ initialize {
             Object {
               "attribs": Object {
                 "class": "flex-center items-center",
-                "href": "/inscription",
-                "id": "beta-inscription-link",
+                "href": "/connexion",
+                "id": "beta-connexion-link",
               },
               "children": Array [
                 Object {
@@ -765,8 +765,8 @@ initialize {
           Object {
             "attribs": Object {
               "class": "flex-center items-center",
-              "href": "/inscription",
-              "id": "beta-inscription-link",
+              "href": "/connexion",
+              "id": "beta-connexion-link",
             },
             "children": Array [
               Object {

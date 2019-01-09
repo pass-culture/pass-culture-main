@@ -24,9 +24,9 @@ describe('src | components | pages | RawBetaPage', () => {
         <RawBetaPage />
       </MemoryRouter>
     )
-    const element = wrapper.find('#beta-inscription-link')
+    const element = wrapper.find('#beta-connexion-link')
     // then
     expect(element).toHaveLength(1)
-    expect(element.prop('href')).toEqual('/inscription')
+    expect(element.prop('href')).toEqual('/connexion')
   })
 })
