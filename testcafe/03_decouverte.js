@@ -16,7 +16,6 @@ fixture('O3_01 Découverte | Je ne suis pas connecté·e').page(
 )
 
 test('Je suis redirigé vers la page /connexion', async t => {
-  await t
   await t.expect(getPageUrl()).contains('/connexion', { timeout: 10000 })
 })
 

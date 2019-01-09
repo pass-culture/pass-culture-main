@@ -180,6 +180,7 @@ class SearchFilter extends Component {
                 className="flex-columns mt18"
               >
                 <button
+                  id="reset-button"
                   className="no-background no-outline col-1of2 fs20 py12"
                   onClick={this.onResetClick}
                   type="button"
@@ -187,6 +188,7 @@ class SearchFilter extends Component {
                   Réinitialiser
                 </button>
                 <button
+                  id="filter-button"
                   className="no-background no-outline col-1of2 fs20 py12"
                   onClick={this.onFilterClick}
                   type="button"
