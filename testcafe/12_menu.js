@@ -6,7 +6,7 @@ import { ROOT_PATH } from '../src/utils/config'
 const menuButton = Selector('#open-menu-button')
 const mainMenu = Selector('#main-menu')
 
-fixture`04_01 Menu - Affichage de la modale`.beforeEach(async t => {
+fixture`12_01 Menu - Affichage de la modale`.beforeEach(async t => {
   await t
     .useRole(youngUserRole)
     .navigateTo(`${ROOT_PATH}mentions-legales`)
@@ -40,7 +40,7 @@ test('Je vois le montant de mon pass dans le header', async t => {
   await t.expect(Selector('#main-menu-header-wallet-value').exists).ok()
 })
 
-fixture`04_02 Modale Menu - Liens vers pages`.beforeEach(async t => {
+fixture`12_02 Modale Menu - Liens vers pages`.beforeEach(async t => {
   await t
     .useRole(youngUserRole)
     .navigateTo(`${ROOT_PATH}mentions-legales`)

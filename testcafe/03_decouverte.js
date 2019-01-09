@@ -22,15 +22,13 @@ test('Je suis redirigé vers la page /connexion', async t => {
 
 fixture(
   'O3_02 Découverte | Après connexion | Les offres sont en cours de chargement'
-).beforeEach(async t => {
+)
+
+test('Je suis informé·e du fait que les offres sont en cours de chargement', async t => {
   await t
     .useRole(youngUserRole)
     .navigateTo(`${ROOT_PATH}decouverte`)
     .wait(500)
-})
-
-test('Je suis informé·e du fait que les offres sont en cours de chargement', async t => {
-  await t
     .expect(Selector('#application-loader').innerText)
     .eql('\nChargement des offres\n')
 })
