@@ -1,7 +1,5 @@
 import os
-import traceback
 from datetime import datetime
-from pprint import pprint
 from typing import List
 
 from flask import current_app as app
@@ -36,33 +34,32 @@ def generate_and_send_payments():
 
     try:
         do_send_payments(payments, PASS_CULTURE_IBAN, PASS_CULTURE_BIC, PASS_CULTURE_REMITTANCE_CODE)
+        do_send_payments_report(payments)
         do_send_payments_details(payments, PASS_CULTURE_PAYMENTS_DETAILS_RECIPIENTS)
         do_send_wallet_balances(PASS_CULTURE_WALLET_BALANCES_RECIPIENTS)
-        do_send_payments_report(payments)
     except Exception as e:
-        print('ERROR: ' + str(e))
-        traceback.print_tb(e.__traceback__)
-        pprint(vars(e))
+        logger.error('GENERATE_AND_SEND_PAYMENTS', e)
 
 
 def do_generate_payments():
     offerers = Offerer.query.all()
-    print('Generating payments for %s Offerers' % len(offerers))
+    logger.info('Generating payments for %s Offerers' % len(offerers))
     all_payments = []
 
     for offerer in offerers:
-        print('Generating payments for Offerer : %s' % offerer.name)
+        logger.info('Generating payments for Offerer : %s' % offerer.name)
 
         final_offerer_bookings = find_final_offerer_bookings(offerer.id)
         booking_reimbursements = find_all_booking_reimbursement(final_offerer_bookings)
         booking_reimbursements_to_pay = filter_out_already_paid_for_bookings(booking_reimbursements)
         payments = list(map(create_payment_for_booking, booking_reimbursements_to_pay))
+
         if payments:
             PcObject.check_and_save(*payments)
             all_payments.extend(payments)
-            print('Saved %s payments for Offerer : %s' % (len(payments), offerer.name))
+            logger.info('Saved %s payments for Offerer : %s' % (len(payments), offerer.name))
         else:
-            print('No payments to save for Offerer : %s' % offerer.name)
+            logger.info('No payments to save for Offerer : %s' % offerer.name)
 
     return all_payments
 
@@ -132,3 +129,5 @@ def do_send_payments_report(payments: List[Payment]) -> None:
             send_payments_report_emails(not_processable_csv, error_csv, groups,app.mailjet_client.send.create)
         except MailServiceException as e:
             logger.error('Error while sending payments reports to MailJet', e)
+    else:
+        logger.info('No payments to report to the pass Culture team')
