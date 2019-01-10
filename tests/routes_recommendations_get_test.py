@@ -367,6 +367,7 @@ def test_get_recommendations_returns__recommendations_from_search_by_date_and_ty
 
 @clean_database
 @pytest.mark.standalone
+@pytest.mark.skip
 def test_get_recommendations_returns_recommendation_from_search_by_type_including_activation_type(app):
     # Given
     search = "categories=Activation%2CLire%2CRegarder"
