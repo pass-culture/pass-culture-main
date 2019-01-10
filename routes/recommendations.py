@@ -49,6 +49,17 @@ def patch_recommendation(recommendationId):
     return jsonify(_serialize_recommendation(recommendation)), 200
 
 
+@app.route('/recommendations/read', methods=['PUT'])
+@login_required
+@expect_json_data
+def put_read_recommendations():
+
+    read_recommendations = request.json['readRecommendations']
+
+    update_read_recommendations(read_recommendations)
+
+    return jsonify(read_recommendations), 200
+
 @app.route('/recommendations', methods=['PUT'])
 @login_required
 @expect_json_data
