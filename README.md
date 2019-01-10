@@ -106,6 +106,20 @@ Exemple d'une commande test en dev sur chrome pour un fichier test particulier:
 pc test-cafe-pro -b chrome:headless -f signup.js
 ```
 
+### Restore DB
+
+Pour restorer un fichier de dump postgresql (file.pgdump) en local:
+
+```bash
+pc restore-db file.pgdump
+```
+
+Pour anonymiser les données après restauration, et changer le mot de passe pour tout les users : 
+
+```bash
+./anonymize_database.sh -p PASSWORD
+```
+
 ## Tagging des versions
 
 La politique de tagging de versions est la suivante :
