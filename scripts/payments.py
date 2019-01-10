@@ -28,9 +28,11 @@ PASS_CULTURE_WALLET_BALANCES_RECIPIENTS = os.environ.get('PASS_CULTURE_WALLET_BA
 
 
 def generate_and_send_payments():
+    new_payments = do_generate_payments()
+    error_payments = payment_queries.find_error_payments()
+    payments = new_payments + error_payments
+
     try:
-        new_payments = do_generate_payments()
-        payments = add_failed_payments(new_payments)
         do_send_payments(payments, PASS_CULTURE_IBAN, PASS_CULTURE_BIC, PASS_CULTURE_REMITTANCE_CODE)
         do_send_payment_details(payments, PASS_CULTURE_PAYMENTS_DETAILS_RECIPIENTS)
         do_send_wallet_balances(PASS_CULTURE_WALLET_BALANCES_RECIPIENTS)
@@ -38,11 +40,6 @@ def generate_and_send_payments():
         print('ERROR: ' + str(e))
         traceback.print_tb(e.__traceback__)
         pprint(vars(e))
-
-
-def add_failed_payments(payments):
-    error_payments = payment_queries.find_error_payments()
-    return payments + error_payments
 
 
 def do_generate_payments():

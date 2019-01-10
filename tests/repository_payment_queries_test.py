@@ -88,4 +88,4 @@ class FindErrorPaymentsTest:
         payments = find_error_payments()
 
         # Then
-        assert len(payments) == 0
+        assert payments == []
