@@ -960,7 +960,7 @@ class MakePaymentsReportEmailTest:
                                  "Name": "pass Culture Pro"}
         assert email["Subject"] == "Récapitulatif des paiements - 2018-10-15"
 
-    def test_it_contains_a_the_total_count_of_payments(self, app):
+    def test_it_contains_the_total_count_of_payments(self, app):
         # When
         email = make_payments_report_email(self.not_processable_csv, self.error_csv, self.grouped_payments)
 
