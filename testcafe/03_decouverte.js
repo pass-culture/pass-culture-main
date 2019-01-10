@@ -1,7 +1,9 @@
 import { Selector, ClientFunction } from 'testcafe'
 
 import { ROOT_PATH } from '../src/utils/config'
-import { youngUserRole } from './helpers/roles'
+
+import { createUserRole, signinAs } from './helpers/roles'
+import { hasBookedSomeUser, hasSignedUpUser } from './helpers/users'
 
 const getPageUrl = ClientFunction(() => window.location.href.toString())
 
@@ -11,32 +13,44 @@ const versoDiv = Selector('div.verso')
 const clueDiv = Selector('div.clue')
 const closeButton = Selector('.close-button')
 
+// WEIRD: PROFILE BUTTON EVEN IF IT IS VISIBLE
+// IS NOT CLICKABLE
+// const profileButton = Selector('button.profile-button')
+// WE NEED TO PASS BY MENTION LEGAL PAGE
+// IN ORDER TO NAVIGATE TO SIGNOUT
+const menuButton = Selector('#open-menu-button')
+const menuLogoutButton = Selector('#main-menu-logout-button')
+
 fixture('O3_01 Découverte | Je ne suis pas connecté·e').page(
   `${ROOT_PATH}decouverte`
 )
 
-test('Je suis redirigé vers la page /connexion', async t => {
-  await t.expect(getPageUrl()).contains('/connexion', { timeout: 10000 })
-})
+  test('Je suis redirigé vers la page /connexion', async t => {
+    await t.expect(getPageUrl()).contains('/connexion', { timeout: 10000 })
+  })
 
-fixture(
-  'O3_02 Découverte | Après connexion | Les offres sont en cours de chargement'
-)
+fixture('O3_02 Découverte | A la première connexion')
 
-test('Je suis informé·e du fait que les offres sont en cours de chargement', async t => {
+test('Je fais ma première visite sur découverte', async t => {
+  await t.navigateTo(`${ROOT_PATH}connexion`)
+  await signinAs(hasSignedUpUser)(t)
+
   await t
-    .useRole(youngUserRole)
-    .navigateTo(`${ROOT_PATH}decouverte`)
     .wait(500)
     .expect(Selector('#application-loader').innerText)
-    .eql('\nChargement des offres\n')
-})
+    .match(/Chargement des offres/)
 
-test.skip("Je suis redirigé·e vers la première page de tutoriel decouverte tuto 0 et Lorsque je clique sur la flêche suivante, je vois la page suivante du tutoriel et je peux l'ouvrir et fermer et je ne vois plus les cartes tutos", async t => {
-  await t.wait(10000)
-  await t.expect(getPageUrl()).contains('/decouverte/tuto/', { timeout: 1000 })
-  await t.click(nextButton).wait(1000)
-  await t.expect(getPageUrl()).contains('/decouverte/tuto/', { timeout: 1000 })
+  await t
+    .wait(5000)
+    .expect(getPageUrl())
+    .contains('/decouverte/tuto/', { timeout: 1000 })
+
+  await t
+    .click(nextButton)
+    .wait(1000)
+    .expect(getPageUrl())
+    .contains('/decouverte/tuto/', { timeout: 1000 })
+
   await t
     .expect(clueDiv.visible)
     .ok()
@@ -47,32 +61,46 @@ test.skip("Je suis redirigé·e vers la première page de tutoriel decouverte tu
     .click(closeButton)
     .expect(versoDiv.hasClass('flipped'))
     .notOk()
+    .wait(1000)
 
-  // this last part is important to make read the last tuto card
-  // and the reload triggers the PUT recommendations in order to
-  // save the read card
   await t.click(nextButton).wait(1000)
-  await t.eval(() => window.location.reload(true))
-  await t.wait(10000)
+
+  // to emulate a disconnection, signout et re signin
   await t
+    .navigateTo(`${ROOT_PATH}mentions-legales`)
+    .wait(500)
+    .click(menuButton)
+    .wait(100)
+    .click(menuLogoutButton)
+  await signinAs(hasSignedUpUser)(t)
+  // or do a hard refresh
+  // await t.eval(() => window.location.reload(true))
+
+  await t
+    .wait(5000)
     .expect(getPageUrl())
     .notContains('/decouverte/tuto/', { timeout: 1000 })
 })
 
-fixture
-  .skip('O3_03 Découverte | exploration | Recommandations')
-  .beforeEach(async t => {
-    await t.useRole(youngUserRole)
-    await t.navigateTo(`${ROOT_PATH}decouverte/AH7Q/AU#AM`)
-    // TODO
-  })
+fixture('O3_02 Découverte | exploration | Recommendations').beforeEach(
+  async t => {
+    await t.useRole(createUserRole(hasBookedSomeUser))
+  }
+)
 
-test("Je vois les informations de l'accroche du recto", async t => {
+test('Je ne vois plus les cartes tutos', async t => {
+  await t
+    .wait(2000)
+    .expect(getPageUrl())
+    .notContains('/decouverte/tuto/', { timeout: 1000 })
+})
+
+test.skip("Je vois les informations de l'accroche du recto", async t => {
   await t
   // TODO
 })
 
-test('Je vois le verso des cartes lorsque je fais glisser la carte vers le haut', async t => {
+test.skip('Je vois le verso des cartes lorsque je fais glisser la carte vers le haut', async t => {
   await t.click(showVerso).wait(1000)
   await t.expect(versoDiv.find('h1').innerText).eql('Vhils')
   await t.expect(versoDiv.find('h2').innerText).eql('LE CENTQUATRE-PARIS')
@@ -82,4 +110,3 @@ test('Je vois le verso des cartes lorsque je fais glisser la carte vers le haut'
 // TODO tester le drag des images https://devexpress.github.io/testcafe/documentation/test-api/actions/drag-element.html
 
 // S'il n'y a pas d'offres, je vois le message 'Aucune offre pour le moment' et je peux accéder au menu profil
-// Compliqué à tester sans maîtrise de la base de données !

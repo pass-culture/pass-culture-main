@@ -1,6 +1,7 @@
 import { Selector } from 'testcafe'
 
-import { youngUserRole } from './helpers/roles'
+import { createUserRole } from './helpers/roles'
+import { hasSignedUpUser } from './helpers/users'
 import { ROOT_PATH } from '../src/utils/config'
 
 const menuButton = Selector('#open-menu-button')
@@ -8,7 +9,7 @@ const mainMenu = Selector('#main-menu')
 
 fixture`12_01 Menu - Affichage de la modale`.beforeEach(async t => {
   await t
-    .useRole(youngUserRole)
+    .useRole(createUserRole(hasSignedUpUser))
     .navigateTo(`${ROOT_PATH}mentions-legales`)
     .wait(500)
     .click(menuButton)
@@ -42,7 +43,7 @@ test('Je vois le montant de mon pass dans le header', async t => {
 
 fixture`12_02 Modale Menu - Liens vers pages`.beforeEach(async t => {
   await t
-    .useRole(youngUserRole)
+    .useRole(createUserRole(hasSignedUpUser))
     .navigateTo(`${ROOT_PATH}mentions-legales`)
     .wait(500)
     .click(menuButton)
@@ -126,14 +127,14 @@ test('Menu | Liens | Mentions légales', async t => {
 })
 
 test('Menu | Liens | Déconnexion', async t => {
-  const menuDeconnexion = Selector('#main-menu-logout-button').withText(
+  const menuLogoutButton = Selector('#main-menu-logout-button').withText(
     'Déconnexion'
   )
 
   await t
-    .expect(menuDeconnexion.exists)
+    .expect(menuLogoutButton.exists)
     .ok()
-    .click(menuDeconnexion)
+    .click(menuLogoutButton)
     .wait(500)
   const location = await t.eval(() => window.location)
   await t.expect(location.pathname).eql('/connexion')

@@ -1,7 +1,8 @@
 import { ClientFunction, Selector, RequestMock } from 'testcafe'
 
+import { createUserRole } from './helpers/roles'
+import { hasSignedUpUser } from './helpers/users'
 import { ROOT_PATH } from '../src/utils/config'
-import { youngUserRole } from './helpers/roles'
 
 const getPageUrl = ClientFunction(() => window.location.href.toString())
 
@@ -22,7 +23,9 @@ test('Je suis redirigé vers la page /connexion', async t => {
 fixture(
   "O5_01_02 Recherche | Je me suis connecté·e | J'arrive sur la page de recherche | Header"
 ).beforeEach(async t => {
-  await t.useRole(youngUserRole).navigateTo(`${ROOT_PATH}recherche`)
+  await t
+    .useRole(createUserRole(hasSignedUpUser))
+    .navigateTo(`${ROOT_PATH}recherche`)
   const location = await t.eval(() => window.location)
   await t.expect(location.pathname).eql('/recherche')
 })
@@ -89,7 +92,7 @@ fixture(
     'Lire'
   )
   await t
-    .useRole(youngUserRole)
+    .useRole(createUserRole(hasSignedUpUser))
     .navigateTo(`${ROOT_PATH}recherche/`)
     .click(buttonNavByOfferType)
     .wait(500)
@@ -180,7 +183,7 @@ const categoryDescription = category.find('span')
 
 test('Je vois le header de la page de résultats de la catégorie Lire', async t => {
   await t
-    .useRole(youngUserRole)
+    .useRole(createUserRole(hasSignedUpUser))
     .navigateTo(`${ROOT_PATH}recherche/`)
     .click(button)
     .wait(500)
@@ -199,7 +202,7 @@ test('Je vois le header de la page de résultats de la catégorie Lire', async t
 
 test("Je vois un titre de la section des résultats qui m'informe qu'il n'y a pas de résultats", async t => {
   await t
-    .useRole(youngUserRole)
+    .useRole(createUserRole(hasSignedUpUser))
     .navigateTo(`${ROOT_PATH}recherche/`)
     .click(button)
     .wait(500)
@@ -220,7 +223,7 @@ const mainMenu = Selector('#main-menu')
 
 test("Lorsque je clique sur l'icône profil, la modale s'affiche", async t => {
   await t
-    .useRole(youngUserRole)
+    .useRole(createUserRole(hasSignedUpUser))
     .navigateTo(`${ROOT_PATH}recherche/`)
     .click(menuButton)
     .wait(100)
