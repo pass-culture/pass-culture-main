@@ -18,7 +18,7 @@ def create_tsvector(*args):
 def get_ts_query(token):
     ts_query = re.sub(' +', ' ', token)\
         .strip()\
-        .replace(SPACE, ':* : ')
+        .replace(SPACE, ':* & ')
     return ts_query + ':*'
 
 
