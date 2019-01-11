@@ -72,6 +72,12 @@ def filter_out_already_paid_for_bookings(booking_reimbursements: List[BookingRei
     return list(filter(lambda x: not x.booking.payments, booking_reimbursements))
 
 
+def filter_out_cost_free_bookings(
+        booking_reimbursements: List[BookingReimbursement]
+) -> List[BookingReimbursement]:
+    return list(filter(lambda x: x.reimbursed_amount > Decimal(0), booking_reimbursements))
+
+
 def generate_transaction_file(payments: List[Payment], pass_culture_iban: str, pass_culture_bic: str, message_id: str,
                               remittance_code: str) -> str:
     transactions = _group_payments_into_transactions(payments)
@@ -92,7 +98,7 @@ def generate_transaction_file(payments: List[Payment], pass_culture_iban: str, p
     )
 
 
-def validate_transaction_file_structure(transaction_file: str) -> str:
+def validate_transaction_file_structure(transaction_file: str):
     xsd = render_template('transactions/transaction_banque_de_france.xsd')
     xsd_doc = etree.parse(BytesIO(xsd.encode()))
     xsd_schema = etree.XMLSchema(xsd_doc)

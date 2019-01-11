@@ -22,16 +22,18 @@ def test_do_generate_payments_records_new_payment_lines_in_database(app):
     offerer = create_offerer()
     venue = create_venue(offerer)
     offer = create_thing_offer(venue)
-    stock = create_stock_from_offer(offer)
+    paying_stock = create_stock_from_offer(offer)
+    free_stock = create_stock_from_offer(offer, price=0)
     user = create_user()
     deposit = create_deposit(user, datetime.utcnow(), amount=500)
-    booking1 = create_booking(user, stock, venue, is_used=True)
-    booking2 = create_booking(user, stock, venue, is_used=True)
-    booking3 = create_booking(user, stock, venue, is_used=True)
+    booking1 = create_booking(user, paying_stock, venue, is_used=True)
+    booking2 = create_booking(user, paying_stock, venue, is_used=True)
+    booking3 = create_booking(user, paying_stock, venue, is_used=True)
+    booking4 = create_booking(user, free_stock, venue, is_used=True)
     payment1 = create_payment(booking2, offerer, 10, transaction_message_id="ABCD123")
 
     PcObject.check_and_save(payment1)
-    PcObject.check_and_save(deposit, booking1, booking3)
+    PcObject.check_and_save(deposit, booking1, booking3, booking4)
 
     initial_payment_count = Payment.query.count()
 

@@ -1,5 +1,5 @@
 import uuid
-from datetime import datetime, timedelta
+from datetime import datetime
 from decimal import Decimal
 from pprint import pprint
 from unittest.mock import Mock
@@ -8,7 +8,8 @@ import pytest
 from freezegun import freeze_time
 
 from domain.payments import create_payment_for_booking, filter_out_already_paid_for_bookings, create_payment_details, \
-    create_all_payments_details, make_custom_message, group_payments_by_status
+    create_all_payments_details, make_custom_message, group_payments_by_status, \
+    filter_out_cost_free_bookings
 from domain.reimbursement import BookingReimbursement, ReimbursementRules
 from models import Offer, Venue, Booking
 from models.payment import Payment
@@ -142,8 +143,6 @@ def test_create_payment_for_booking_with_not_processable_status_when_iban_is_mis
 @freeze_time('2018-10-15 09:21:34')
 def test_create_payment_for_booking_with_pending_status():
     # given
-    one_second = timedelta(seconds=1)
-    now = datetime.utcnow()
     user = create_user()
     stock = create_stock(price=10, available=5)
     booking = create_booking(user, stock=stock, quantity=1)
@@ -163,20 +162,80 @@ def test_create_payment_for_booking_with_pending_status():
 
 
 @pytest.mark.standalone
-def test_filter_out_already_paid_for_bookings():
-    # Given
-    booking_paid = Booking()
-    booking_paid.payments = [Payment()]
-    booking_reimbursement1 = BookingReimbursement(booking_paid, ReimbursementRules.PHYSICAL_OFFERS, Decimal(10))
-    booking_not_paid = Booking()
-    booking_reimbursement2 = BookingReimbursement(booking_not_paid, ReimbursementRules.PHYSICAL_OFFERS, Decimal(10))
-    booking_reimbursements = [booking_reimbursement1, booking_reimbursement2]
+class FilterOutAlreadyPaidForBookingsTest:
+    def test_it_returns_reimbursements_on_bookings_with_no_existing_payments(self):
+        # Given
+        booking_paid = Booking()
+        booking_paid.payments = [Payment()]
+        booking_reimbursement1 = BookingReimbursement(booking_paid, ReimbursementRules.PHYSICAL_OFFERS, Decimal(10))
+        booking_not_paid = Booking()
+        booking_reimbursement2 = BookingReimbursement(booking_not_paid, ReimbursementRules.PHYSICAL_OFFERS, Decimal(10))
+        booking_reimbursements = [booking_reimbursement1, booking_reimbursement2]
 
-    # When
-    bookings_not_paid = filter_out_already_paid_for_bookings(booking_reimbursements)
-    # Then
-    assert len(bookings_not_paid) == 1
-    assert not bookings_not_paid[0].booking.payments
+        # When
+        bookings_not_paid = filter_out_already_paid_for_bookings(booking_reimbursements)
+
+        # Then
+        assert len(bookings_not_paid) == 1
+        assert not bookings_not_paid[0].booking.payments
+
+    @pytest.mark.standalone
+    def test_it_returns_an_empty_list_if_everything_is_filtered_out(self):
+        # Given
+        booking_paid1 = Booking()
+        booking_paid1.payments = [Payment()]
+        booking_reimbursement1 = BookingReimbursement(booking_paid1, ReimbursementRules.PHYSICAL_OFFERS, Decimal(10))
+
+        booking_paid2 = Booking()
+        booking_paid2.payments = [Payment()]
+        booking_reimbursement2 = BookingReimbursement(booking_paid2, ReimbursementRules.PHYSICAL_OFFERS, Decimal(10))
+
+        # When
+        bookings_not_paid = filter_out_already_paid_for_bookings([booking_reimbursement1, booking_reimbursement2])
+
+        # Then
+        assert bookings_not_paid == []
+
+    @pytest.mark.standalone
+    def test_it_returns_an_empty_list_if_an_empty_list_is_given(self):
+        # When
+        bookings_not_paid = filter_out_already_paid_for_bookings([])
+
+        # Then
+        assert bookings_not_paid == []
+
+
+@pytest.mark.standalone
+class FilterOutCostFreeBookingsTest:
+    def test_it_returns_reimbursements_on_bookings_which_reimbursed_value_at_zero(self):
+        # given
+        reimbursement1 = BookingReimbursement(Booking(), ReimbursementRules.PHYSICAL_OFFERS, Decimal(10))
+        reimbursement2 = BookingReimbursement(Booking(), ReimbursementRules.PHYSICAL_OFFERS, Decimal(0))
+
+        # when
+        costly_bookings = filter_out_cost_free_bookings([reimbursement1, reimbursement2])
+
+        # then
+        assert len(costly_bookings) == 1
+        assert costly_bookings[0].reimbursed_amount > Decimal(0)
+
+    def test_it_returns_an_empty_list_if_everything_is_filtered_out(self):
+        # given
+        reimbursement1 = BookingReimbursement(Booking(), ReimbursementRules.PHYSICAL_OFFERS, Decimal(0))
+        reimbursement2 = BookingReimbursement(Booking(), ReimbursementRules.PHYSICAL_OFFERS, Decimal(0))
+
+        # when
+        costly_bookings = filter_out_cost_free_bookings([reimbursement1, reimbursement2])
+
+        # then
+        assert costly_bookings == []
+
+    def test_it_returns_an_empty_list_if_an_empty_list_is_given(self):
+        # when
+        costly_bookings = filter_out_cost_free_bookings([])
+
+        # then
+        assert costly_bookings == []
 
 
 @pytest.mark.standalone

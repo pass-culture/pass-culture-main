@@ -9,7 +9,7 @@ from domain.admin_emails import send_payment_transaction_email, send_payment_det
 from domain.payments import filter_out_already_paid_for_bookings, create_payment_for_booking, generate_transaction_file, \
     validate_transaction_file_structure, create_all_payments_details, generate_payment_details_csv, \
     generate_wallet_balances_csv, \
-    generate_payment_transaction, generate_file_checksum, group_payments_by_status
+    generate_payment_transaction, generate_file_checksum, group_payments_by_status, filter_out_cost_free_bookings
 from domain.reimbursement import find_all_booking_reimbursement
 from models import Offerer, PcObject
 from models.payment import Payment
@@ -41,7 +41,7 @@ def generate_and_send_payments():
         logger.error('GENERATE_AND_SEND_PAYMENTS', e)
 
 
-def do_generate_payments():
+def do_generate_payments() -> List[Payment]:
     offerers = Offerer.query.all()
     logger.info('Generating payments for %s Offerers' % len(offerers))
     all_payments = []
@@ -51,7 +51,9 @@ def do_generate_payments():
 
         final_offerer_bookings = find_final_offerer_bookings(offerer.id)
         booking_reimbursements = find_all_booking_reimbursement(final_offerer_bookings)
-        booking_reimbursements_to_pay = filter_out_already_paid_for_bookings(booking_reimbursements)
+        booking_reimbursements_to_pay = filter_out_already_paid_for_bookings(
+            filter_out_cost_free_bookings(booking_reimbursements)
+        )
         payments = list(map(create_payment_for_booking, booking_reimbursements_to_pay))
 
         if payments:
