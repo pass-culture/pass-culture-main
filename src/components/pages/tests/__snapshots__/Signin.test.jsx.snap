@@ -97,6 +97,8 @@ ShallowWrapper {
                                                             layout="vertical"
                                                             name="user"
                                                             normalizer={null}
+                                                            onEnterKey={[Function]}
+                                                            onEscapeKey={null}
                                                             onSubmit={null}
                                                             successNotification="Formulaire non validé"
                                                   >
@@ -271,6 +273,8 @@ ShallowWrapper {
                                                             layout="vertical"
                                                             name="user"
                                                             normalizer={null}
+                                                            onEnterKey={[Function]}
+                                                            onEscapeKey={null}
                                                             onSubmit={null}
                                                             successNotification="Formulaire non validé"
                                                 >
@@ -412,6 +416,8 @@ ShallowWrapper {
                                                         layout="vertical"
                                                         name="user"
                                                         normalizer={null}
+                                                        onEnterKey={[Function]}
+                                                        onEscapeKey={null}
                                                         onSubmit={null}
                                                         successNotification="Formulaire non validé"
                                           >
@@ -549,6 +555,8 @@ ShallowWrapper {
                                                 layout="vertical"
                                                 name="user"
                                                 normalizer={null}
+                                                onEnterKey={[Function]}
+                                                onEscapeKey={null}
                                                 onSubmit={null}
                                                 successNotification="Formulaire non validé"
                                 >
@@ -682,6 +690,8 @@ ShallowWrapper {
                                     layout="vertical"
                                     name="user"
                                     normalizer={null}
+                                    onEnterKey={[Function]}
+                                    onEscapeKey={null}
                                     onSubmit={null}
                                     successNotification="Formulaire non validé"
                   >
@@ -812,6 +822,8 @@ ShallowWrapper {
                       layout="vertical"
                       name="user"
                       normalizer={null}
+                      onEnterKey={[Function]}
+                      onEscapeKey={null}
                       onSubmit={null}
                       successNotification="Formulaire non validé"
 >
@@ -1083,6 +1095,8 @@ ShallowWrapper {
                       "layout": "vertical",
                       "name": "user",
                       "normalizer": null,
+                      "onEnterKey": [Function],
+                      "onEscapeKey": null,
                       "onSubmit": null,
                       "successNotification": "Formulaire non validé",
                     },
@@ -1378,6 +1392,8 @@ ShallowWrapper {
                                                                         layout="vertical"
                                                                         name="user"
                                                                         normalizer={null}
+                                                                        onEnterKey={[Function]}
+                                                                        onEscapeKey={null}
                                                                         onSubmit={null}
                                                                         successNotification="Formulaire non validé"
                                                             >
@@ -1552,6 +1568,8 @@ ShallowWrapper {
                                                                       layout="vertical"
                                                                       name="user"
                                                                       normalizer={null}
+                                                                      onEnterKey={[Function]}
+                                                                      onEscapeKey={null}
                                                                       onSubmit={null}
                                                                       successNotification="Formulaire non validé"
                                                         >
@@ -1693,6 +1711,8 @@ ShallowWrapper {
                                                                 layout="vertical"
                                                                 name="user"
                                                                 normalizer={null}
+                                                                onEnterKey={[Function]}
+                                                                onEscapeKey={null}
                                                                 onSubmit={null}
                                                                 successNotification="Formulaire non validé"
                                                 >
@@ -1830,6 +1850,8 @@ ShallowWrapper {
                                                       layout="vertical"
                                                       name="user"
                                                       normalizer={null}
+                                                      onEnterKey={[Function]}
+                                                      onEscapeKey={null}
                                                       onSubmit={null}
                                                       successNotification="Formulaire non validé"
                                     >
@@ -1963,6 +1985,8 @@ ShallowWrapper {
                                         layout="vertical"
                                         name="user"
                                         normalizer={null}
+                                        onEnterKey={[Function]}
+                                        onEscapeKey={null}
                                         onSubmit={null}
                                         successNotification="Formulaire non validé"
                     >
@@ -2093,6 +2117,8 @@ ShallowWrapper {
                         layout="vertical"
                         name="user"
                         normalizer={null}
+                        onEnterKey={[Function]}
+                        onEscapeKey={null}
                         onSubmit={null}
                         successNotification="Formulaire non validé"
 >
@@ -2364,6 +2390,8 @@ ShallowWrapper {
                         "layout": "vertical",
                         "name": "user",
                         "normalizer": null,
+                        "onEnterKey": [Function],
+                        "onEscapeKey": null,
                         "onSubmit": null,
                         "successNotification": "Formulaire non validé",
                       },

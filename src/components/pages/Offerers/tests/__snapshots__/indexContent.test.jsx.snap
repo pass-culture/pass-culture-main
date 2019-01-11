@@ -1,0 +1,987 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`src | components | pages | Offerers | IndexSearch snapshot should match snapshot 1`] = `
+ShallowWrapper {
+  Symbol(enzyme.__root__): [Circular],
+  Symbol(enzyme.__unrendered__): <Offerers
+    offerers={
+        Array [
+            Object {},
+          ]
+    }
+    pagination={
+        Object {
+            "apiQuery": Object {
+              "keywords": null,
+            },
+          }
+    }
+    pendingOfferers={Array []}
+/>,
+  Symbol(enzyme.__renderer__): Object {
+    "batchedUpdates": [Function],
+    "getNode": [Function],
+    "render": [Function],
+    "simulateError": [Function],
+    "simulateEvent": [Function],
+    "unmount": [Function],
+  },
+  Symbol(enzyme.__node__): Object {
+    "instance": null,
+    "key": undefined,
+    "nodeType": "function",
+    "props": Object {
+      "children": Array [
+        <HeroSection
+          title="Votre structure"
+>
+          <p
+                    className="subtitle"
+          >
+                    Pour présenter vos offres, vous devez d'abord créer un
+                     
+                    <b>
+                               nouveau lieu 
+                    </b>
+                     lié à une structure.
+                    <br />
+                    Sans lieu, vous ne pouvez ajouter que des offres numériques.
+          </p>
+          <NavLink
+                    activeClassName="active"
+                    aria-current="page"
+                    className="cta button is-primary is-outlined"
+                    to="/structures/nouveau"
+          >
+                    + Rattacher une structure supplémentaire
+          </NavLink>
+</HeroSection>,
+        <form
+          className="section"
+          onSubmit={[Function]}
+>
+          <label
+                    className="label"
+          >
+                    Rechercher une structure :
+          </label>
+          <div
+                    className="field is-grouped"
+          >
+                    <p
+                              className="control is-expanded"
+                    >
+                              <input
+                                        className="input search-input"
+                                        defaultValue={undefined}
+                                        id="search"
+                                        placeholder="Saisissez un ou plusieurs mots complets"
+                                        type="text"
+                              />
+                    </p>
+                    <p
+                              className="control"
+                    >
+                              <button
+                                        className="button is-primary is-outlined"
+                                        type="submit"
+                              >
+                                        OK
+                              </button>
+                               
+                              <button
+                                        className="button is-secondary"
+                                        disabled={true}
+                              >
+                                         
+                                        <Icon
+                                                  svg="ico-filter"
+                                        />
+                                         
+                              </button>
+                    </p>
+          </div>
+</form>,
+        false,
+        <InfiniteScroller
+          Tag="ul"
+          className="main-list offerers-list"
+          handleLoadMore={[Function]}
+          listeningScrollElement={null}
+          loadScrollRatio={0.9}
+          renderErrors={[Function]}
+          renderFinished={[Function]}
+          renderLoading={[Function]}
+          scrollingElement={
+                    <html>
+                              <head />
+                              <body
+                                        class=" web web"
+                              />
+                    </html>
+          }
+>
+          <Connect(OffererItem)
+                    offerer={Object {}}
+          />
+</InfiniteScroller>,
+      ],
+      "handleDataRequest": [Function],
+      "name": "offerers",
+    },
+    "ref": null,
+    "rendered": Array [
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "function",
+        "props": Object {
+          "children": Array [
+            <p
+              className="subtitle"
+>
+              Pour présenter vos offres, vous devez d'abord créer un
+               
+              <b>
+                             nouveau lieu 
+              </b>
+               lié à une structure.
+              <br />
+              Sans lieu, vous ne pouvez ajouter que des offres numériques.
+</p>,
+            <NavLink
+              activeClassName="active"
+              aria-current="page"
+              className="cta button is-primary is-outlined"
+              to="/structures/nouveau"
+>
+              + Rattacher une structure supplémentaire
+</NavLink>,
+          ],
+          "title": "Votre structure",
+        },
+        "ref": null,
+        "rendered": Array [
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": Array [
+                "Pour présenter vos offres, vous devez d'abord créer un",
+                " ",
+                <b>
+                   nouveau lieu 
+</b>,
+                " lié à une structure.",
+                <br />,
+                "Sans lieu, vous ne pouvez ajouter que des offres numériques.",
+              ],
+              "className": "subtitle",
+            },
+            "ref": null,
+            "rendered": Array [
+              "Pour présenter vos offres, vous devez d'abord créer un",
+              " ",
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": " nouveau lieu ",
+                },
+                "ref": null,
+                "rendered": " nouveau lieu ",
+                "type": "b",
+              },
+              " lié à une structure.",
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {},
+                "ref": null,
+                "rendered": null,
+                "type": "br",
+              },
+              "Sans lieu, vous ne pouvez ajouter que des offres numériques.",
+            ],
+            "type": "p",
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "function",
+            "props": Object {
+              "activeClassName": "active",
+              "aria-current": "page",
+              "children": "+ Rattacher une structure supplémentaire",
+              "className": "cta button is-primary is-outlined",
+              "to": "/structures/nouveau",
+            },
+            "ref": null,
+            "rendered": "+ Rattacher une structure supplémentaire",
+            "type": [Function],
+          },
+        ],
+        "type": [Function],
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": Array [
+            <label
+              className="label"
+>
+              Rechercher une structure :
+</label>,
+            <div
+              className="field is-grouped"
+>
+              <p
+                            className="control is-expanded"
+              >
+                            <input
+                                          className="input search-input"
+                                          defaultValue={undefined}
+                                          id="search"
+                                          placeholder="Saisissez un ou plusieurs mots complets"
+                                          type="text"
+                            />
+              </p>
+              <p
+                            className="control"
+              >
+                            <button
+                                          className="button is-primary is-outlined"
+                                          type="submit"
+                            >
+                                          OK
+                            </button>
+                             
+                            <button
+                                          className="button is-secondary"
+                                          disabled={true}
+                            >
+                                           
+                                          <Icon
+                                                        svg="ico-filter"
+                                          />
+                                           
+                            </button>
+              </p>
+</div>,
+          ],
+          "className": "section",
+          "onSubmit": [Function],
+        },
+        "ref": null,
+        "rendered": Array [
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": "Rechercher une structure :",
+              "className": "label",
+            },
+            "ref": null,
+            "rendered": "Rechercher une structure :",
+            "type": "label",
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": Array [
+                <p
+                  className="control is-expanded"
+>
+                  <input
+                                    className="input search-input"
+                                    defaultValue={undefined}
+                                    id="search"
+                                    placeholder="Saisissez un ou plusieurs mots complets"
+                                    type="text"
+                  />
+</p>,
+                <p
+                  className="control"
+>
+                  <button
+                                    className="button is-primary is-outlined"
+                                    type="submit"
+                  >
+                                    OK
+                  </button>
+                   
+                  <button
+                                    className="button is-secondary"
+                                    disabled={true}
+                  >
+                                     
+                                    <Icon
+                                                      svg="ico-filter"
+                                    />
+                                     
+                  </button>
+</p>,
+              ],
+              "className": "field is-grouped",
+            },
+            "ref": null,
+            "rendered": Array [
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": <input
+                    className="input search-input"
+                    defaultValue={undefined}
+                    id="search"
+                    placeholder="Saisissez un ou plusieurs mots complets"
+                    type="text"
+/>,
+                  "className": "control is-expanded",
+                },
+                "ref": null,
+                "rendered": Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "className": "input search-input",
+                    "defaultValue": undefined,
+                    "id": "search",
+                    "placeholder": "Saisissez un ou plusieurs mots complets",
+                    "type": "text",
+                  },
+                  "ref": null,
+                  "rendered": null,
+                  "type": "input",
+                },
+                "type": "p",
+              },
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": Array [
+                    <button
+                      className="button is-primary is-outlined"
+                      type="submit"
+>
+                      OK
+</button>,
+                    " ",
+                    <button
+                      className="button is-secondary"
+                      disabled={true}
+>
+                       
+                      <Icon
+                                            svg="ico-filter"
+                      />
+                       
+</button>,
+                  ],
+                  "className": "control",
+                },
+                "ref": null,
+                "rendered": Array [
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "host",
+                    "props": Object {
+                      "children": "OK",
+                      "className": "button is-primary is-outlined",
+                      "type": "submit",
+                    },
+                    "ref": null,
+                    "rendered": "OK",
+                    "type": "button",
+                  },
+                  " ",
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "host",
+                    "props": Object {
+                      "children": Array [
+                        " ",
+                        <Icon
+                          svg="ico-filter"
+/>,
+                        " ",
+                      ],
+                      "className": "button is-secondary",
+                      "disabled": true,
+                    },
+                    "ref": null,
+                    "rendered": Array [
+                      " ",
+                      Object {
+                        "instance": null,
+                        "key": undefined,
+                        "nodeType": "function",
+                        "props": Object {
+                          "svg": "ico-filter",
+                        },
+                        "ref": null,
+                        "rendered": null,
+                        "type": [Function],
+                      },
+                      " ",
+                    ],
+                    "type": "button",
+                  },
+                ],
+                "type": "p",
+              },
+            ],
+            "type": "div",
+          },
+        ],
+        "type": "form",
+      },
+      false,
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "class",
+        "props": Object {
+          "Tag": "ul",
+          "children": Array [
+            <Connect(OffererItem)
+              offerer={Object {}}
+/>,
+          ],
+          "className": "main-list offerers-list",
+          "handleLoadMore": [Function],
+          "listeningScrollElement": null,
+          "loadScrollRatio": 0.9,
+          "renderErrors": [Function],
+          "renderFinished": [Function],
+          "renderLoading": [Function],
+          "scrollingElement": <html>
+            <head />
+            <body
+                        class=" web web"
+            />
+</html>,
+        },
+        "ref": null,
+        "rendered": Array [
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "class",
+            "props": Object {
+              "offerer": Object {},
+            },
+            "ref": null,
+            "rendered": null,
+            "type": [Function],
+          },
+        ],
+        "type": [Function],
+      },
+    ],
+    "type": [Function],
+  },
+  Symbol(enzyme.__nodes__): Array [
+    Object {
+      "instance": null,
+      "key": undefined,
+      "nodeType": "function",
+      "props": Object {
+        "children": Array [
+          <HeroSection
+            title="Votre structure"
+>
+            <p
+                        className="subtitle"
+            >
+                        Pour présenter vos offres, vous devez d'abord créer un
+                         
+                        <b>
+                                     nouveau lieu 
+                        </b>
+                         lié à une structure.
+                        <br />
+                        Sans lieu, vous ne pouvez ajouter que des offres numériques.
+            </p>
+            <NavLink
+                        activeClassName="active"
+                        aria-current="page"
+                        className="cta button is-primary is-outlined"
+                        to="/structures/nouveau"
+            >
+                        + Rattacher une structure supplémentaire
+            </NavLink>
+</HeroSection>,
+          <form
+            className="section"
+            onSubmit={[Function]}
+>
+            <label
+                        className="label"
+            >
+                        Rechercher une structure :
+            </label>
+            <div
+                        className="field is-grouped"
+            >
+                        <p
+                                    className="control is-expanded"
+                        >
+                                    <input
+                                                className="input search-input"
+                                                defaultValue={undefined}
+                                                id="search"
+                                                placeholder="Saisissez un ou plusieurs mots complets"
+                                                type="text"
+                                    />
+                        </p>
+                        <p
+                                    className="control"
+                        >
+                                    <button
+                                                className="button is-primary is-outlined"
+                                                type="submit"
+                                    >
+                                                OK
+                                    </button>
+                                     
+                                    <button
+                                                className="button is-secondary"
+                                                disabled={true}
+                                    >
+                                                 
+                                                <Icon
+                                                            svg="ico-filter"
+                                                />
+                                                 
+                                    </button>
+                        </p>
+            </div>
+</form>,
+          false,
+          <InfiniteScroller
+            Tag="ul"
+            className="main-list offerers-list"
+            handleLoadMore={[Function]}
+            listeningScrollElement={null}
+            loadScrollRatio={0.9}
+            renderErrors={[Function]}
+            renderFinished={[Function]}
+            renderLoading={[Function]}
+            scrollingElement={
+                        <html>
+                                    <head />
+                                    <body
+                                                class=" web web"
+                                    />
+                        </html>
+            }
+>
+            <Connect(OffererItem)
+                        offerer={Object {}}
+            />
+</InfiniteScroller>,
+        ],
+        "handleDataRequest": [Function],
+        "name": "offerers",
+      },
+      "ref": null,
+      "rendered": Array [
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "function",
+          "props": Object {
+            "children": Array [
+              <p
+                className="subtitle"
+>
+                Pour présenter vos offres, vous devez d'abord créer un
+                 
+                <b>
+                                 nouveau lieu 
+                </b>
+                 lié à une structure.
+                <br />
+                Sans lieu, vous ne pouvez ajouter que des offres numériques.
+</p>,
+              <NavLink
+                activeClassName="active"
+                aria-current="page"
+                className="cta button is-primary is-outlined"
+                to="/structures/nouveau"
+>
+                + Rattacher une structure supplémentaire
+</NavLink>,
+            ],
+            "title": "Votre structure",
+          },
+          "ref": null,
+          "rendered": Array [
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": Array [
+                  "Pour présenter vos offres, vous devez d'abord créer un",
+                  " ",
+                  <b>
+                     nouveau lieu 
+</b>,
+                  " lié à une structure.",
+                  <br />,
+                  "Sans lieu, vous ne pouvez ajouter que des offres numériques.",
+                ],
+                "className": "subtitle",
+              },
+              "ref": null,
+              "rendered": Array [
+                "Pour présenter vos offres, vous devez d'abord créer un",
+                " ",
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": " nouveau lieu ",
+                  },
+                  "ref": null,
+                  "rendered": " nouveau lieu ",
+                  "type": "b",
+                },
+                " lié à une structure.",
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {},
+                  "ref": null,
+                  "rendered": null,
+                  "type": "br",
+                },
+                "Sans lieu, vous ne pouvez ajouter que des offres numériques.",
+              ],
+              "type": "p",
+            },
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "function",
+              "props": Object {
+                "activeClassName": "active",
+                "aria-current": "page",
+                "children": "+ Rattacher une structure supplémentaire",
+                "className": "cta button is-primary is-outlined",
+                "to": "/structures/nouveau",
+              },
+              "ref": null,
+              "rendered": "+ Rattacher une structure supplémentaire",
+              "type": [Function],
+            },
+          ],
+          "type": [Function],
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": Array [
+              <label
+                className="label"
+>
+                Rechercher une structure :
+</label>,
+              <div
+                className="field is-grouped"
+>
+                <p
+                                className="control is-expanded"
+                >
+                                <input
+                                                className="input search-input"
+                                                defaultValue={undefined}
+                                                id="search"
+                                                placeholder="Saisissez un ou plusieurs mots complets"
+                                                type="text"
+                                />
+                </p>
+                <p
+                                className="control"
+                >
+                                <button
+                                                className="button is-primary is-outlined"
+                                                type="submit"
+                                >
+                                                OK
+                                </button>
+                                 
+                                <button
+                                                className="button is-secondary"
+                                                disabled={true}
+                                >
+                                                 
+                                                <Icon
+                                                                svg="ico-filter"
+                                                />
+                                                 
+                                </button>
+                </p>
+</div>,
+            ],
+            "className": "section",
+            "onSubmit": [Function],
+          },
+          "ref": null,
+          "rendered": Array [
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": "Rechercher une structure :",
+                "className": "label",
+              },
+              "ref": null,
+              "rendered": "Rechercher une structure :",
+              "type": "label",
+            },
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": Array [
+                  <p
+                    className="control is-expanded"
+>
+                    <input
+                                        className="input search-input"
+                                        defaultValue={undefined}
+                                        id="search"
+                                        placeholder="Saisissez un ou plusieurs mots complets"
+                                        type="text"
+                    />
+</p>,
+                  <p
+                    className="control"
+>
+                    <button
+                                        className="button is-primary is-outlined"
+                                        type="submit"
+                    >
+                                        OK
+                    </button>
+                     
+                    <button
+                                        className="button is-secondary"
+                                        disabled={true}
+                    >
+                                         
+                                        <Icon
+                                                            svg="ico-filter"
+                                        />
+                                         
+                    </button>
+</p>,
+                ],
+                "className": "field is-grouped",
+              },
+              "ref": null,
+              "rendered": Array [
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": <input
+                      className="input search-input"
+                      defaultValue={undefined}
+                      id="search"
+                      placeholder="Saisissez un ou plusieurs mots complets"
+                      type="text"
+/>,
+                    "className": "control is-expanded",
+                  },
+                  "ref": null,
+                  "rendered": Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "host",
+                    "props": Object {
+                      "className": "input search-input",
+                      "defaultValue": undefined,
+                      "id": "search",
+                      "placeholder": "Saisissez un ou plusieurs mots complets",
+                      "type": "text",
+                    },
+                    "ref": null,
+                    "rendered": null,
+                    "type": "input",
+                  },
+                  "type": "p",
+                },
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": Array [
+                      <button
+                        className="button is-primary is-outlined"
+                        type="submit"
+>
+                        OK
+</button>,
+                      " ",
+                      <button
+                        className="button is-secondary"
+                        disabled={true}
+>
+                         
+                        <Icon
+                                                svg="ico-filter"
+                        />
+                         
+</button>,
+                    ],
+                    "className": "control",
+                  },
+                  "ref": null,
+                  "rendered": Array [
+                    Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "host",
+                      "props": Object {
+                        "children": "OK",
+                        "className": "button is-primary is-outlined",
+                        "type": "submit",
+                      },
+                      "ref": null,
+                      "rendered": "OK",
+                      "type": "button",
+                    },
+                    " ",
+                    Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "host",
+                      "props": Object {
+                        "children": Array [
+                          " ",
+                          <Icon
+                            svg="ico-filter"
+/>,
+                          " ",
+                        ],
+                        "className": "button is-secondary",
+                        "disabled": true,
+                      },
+                      "ref": null,
+                      "rendered": Array [
+                        " ",
+                        Object {
+                          "instance": null,
+                          "key": undefined,
+                          "nodeType": "function",
+                          "props": Object {
+                            "svg": "ico-filter",
+                          },
+                          "ref": null,
+                          "rendered": null,
+                          "type": [Function],
+                        },
+                        " ",
+                      ],
+                      "type": "button",
+                    },
+                  ],
+                  "type": "p",
+                },
+              ],
+              "type": "div",
+            },
+          ],
+          "type": "form",
+        },
+        false,
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "class",
+          "props": Object {
+            "Tag": "ul",
+            "children": Array [
+              <Connect(OffererItem)
+                offerer={Object {}}
+/>,
+            ],
+            "className": "main-list offerers-list",
+            "handleLoadMore": [Function],
+            "listeningScrollElement": null,
+            "loadScrollRatio": 0.9,
+            "renderErrors": [Function],
+            "renderFinished": [Function],
+            "renderLoading": [Function],
+            "scrollingElement": <html>
+              <head />
+              <body
+                            class=" web web"
+              />
+</html>,
+          },
+          "ref": null,
+          "rendered": Array [
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "class",
+              "props": Object {
+                "offerer": Object {},
+              },
+              "ref": null,
+              "rendered": null,
+              "type": [Function],
+            },
+          ],
+          "type": [Function],
+        },
+      ],
+      "type": [Function],
+    },
+  ],
+  Symbol(enzyme.__options__): Object {
+    "adapter": ReactSixteenAdapter {
+      "options": Object {
+        "enableComponentDidUpdateOnSetState": true,
+        "lifecycles": Object {
+          "componentDidUpdate": Object {
+            "onSetState": true,
+          },
+          "getDerivedStateFromProps": true,
+          "getSnapshotBeforeUpdate": true,
+          "setState": Object {
+            "skipsComponentDidUpdateOnNullish": true,
+          },
+        },
+      },
+    },
+  },
+}
+`;

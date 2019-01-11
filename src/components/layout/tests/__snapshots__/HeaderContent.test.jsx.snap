@@ -1,0 +1,2336 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`src | components | Layout | HeaderContent snapshot should match snapshot 1`] = `
+ShallowWrapper {
+  Symbol(enzyme.__root__): [Circular],
+  Symbol(enzyme.__unrendered__): <HeaderContent
+    name="Fake Name"
+    offerers={
+        Array [
+            Object {},
+          ]
+    }
+/>,
+  Symbol(enzyme.__renderer__): Object {
+    "batchedUpdates": [Function],
+    "getNode": [Function],
+    "render": [Function],
+    "simulateError": [Function],
+    "simulateEvent": [Function],
+    "unmount": [Function],
+  },
+  Symbol(enzyme.__node__): Object {
+    "instance": null,
+    "key": undefined,
+    "nodeType": "host",
+    "props": Object {
+      "children": <div
+        className="container"
+>
+        <div
+                className="navbar-brand"
+        >
+                <Logo
+                        className="navbar-item"
+                        whiteHeader={undefined}
+                />
+                <span
+                        className="navbar-burger"
+                        onClick={[Function]}
+                >
+                        <span />
+                        <span />
+                        <span />
+                </span>
+        </div>
+        <div
+                className="navbar-menu"
+        >
+                <div
+                        className="navbar-end"
+                >
+                        <NavLink
+                                activeClassName="active"
+                                aria-current="page"
+                                className="navbar-item"
+                                to="/guichet"
+                        >
+                                <span
+                                        className="icon"
+                                >
+                                        <Icon
+                                                svg="ico-guichet-w"
+                                        />
+                                </span>
+                                <span>
+                                        Guichet
+                                </span>
+                        </NavLink>
+                        <NavLink
+                                activeClassName="active"
+                                aria-current="page"
+                                className="navbar-item"
+                                to="/offres"
+                        >
+                                <span
+                                        className="icon"
+                                >
+                                        <Icon
+                                                svg="ico-offres-w"
+                                        />
+                                </span>
+                                <span>
+                                        Vos offres
+                                </span>
+                        </NavLink>
+                        <div
+                                className="navbar-item has-dropdown is-hoverable"
+                        >
+                                <NavLink
+                                        activeClassName="active"
+                                        aria-current="page"
+                                        className="navbar-link"
+                                        to="#"
+                                >
+                                        <span
+                                                className="icon"
+                                        >
+                                                <Icon
+                                                        svg="ico-user-circled-w"
+                                                />
+                                        </span>
+                                        <span>
+                                                Fake Name
+                                        </span>
+                                </NavLink>
+                                <div
+                                        className="navbar-dropdown is-right"
+                                >
+                                        <NavLink
+                                                activeClassName="active"
+                                                aria-current="page"
+                                                className="navbar-item"
+                                                to="/profil"
+                                        >
+                                                <span
+                                                        className="icon"
+                                                >
+                                                        <Icon
+                                                                svg="ico-user"
+                                                        />
+                                                </span>
+                                                <span>
+                                                        Profil
+                                                </span>
+                                        </NavLink>
+                                        <NavLink
+                                                activeClassName="active"
+                                                aria-current="page"
+                                                className="navbar-item"
+                                                to="/structures"
+                                        >
+                                                <span
+                                                        className="icon"
+                                                >
+                                                        <Icon
+                                                                svg="ico-structure-r"
+                                                        />
+                                                </span>
+                                                <span>
+                                                        Votre structure
+                                                </span>
+                                        </NavLink>
+                                        <withRouter(Connect(SignoutButton))
+                                                Tag="a"
+                                                className="navbar-item"
+                                                handleSuccessRedirect={[Function]}
+                                        >
+                                                <span
+                                                        className="icon"
+                                                >
+                                                        <Icon
+                                                                svg="ico-deconnect"
+                                                        />
+                                                </span>
+                                                <span>
+                                                        Déconnexion
+                                                </span>
+                                        </withRouter(Connect(SignoutButton))>
+                                </div>
+                        </div>
+                </div>
+        </div>
+</div>,
+      "className": "navbar is-primary",
+    },
+    "ref": null,
+    "rendered": Object {
+      "instance": null,
+      "key": undefined,
+      "nodeType": "host",
+      "props": Object {
+        "children": Array [
+          <div
+            className="navbar-brand"
+>
+            <Logo
+                        className="navbar-item"
+                        whiteHeader={undefined}
+            />
+            <span
+                        className="navbar-burger"
+                        onClick={[Function]}
+            >
+                        <span />
+                        <span />
+                        <span />
+            </span>
+</div>,
+          <div
+            className="navbar-menu"
+>
+            <div
+                        className="navbar-end"
+            >
+                        <NavLink
+                                    activeClassName="active"
+                                    aria-current="page"
+                                    className="navbar-item"
+                                    to="/guichet"
+                        >
+                                    <span
+                                                className="icon"
+                                    >
+                                                <Icon
+                                                            svg="ico-guichet-w"
+                                                />
+                                    </span>
+                                    <span>
+                                                Guichet
+                                    </span>
+                        </NavLink>
+                        <NavLink
+                                    activeClassName="active"
+                                    aria-current="page"
+                                    className="navbar-item"
+                                    to="/offres"
+                        >
+                                    <span
+                                                className="icon"
+                                    >
+                                                <Icon
+                                                            svg="ico-offres-w"
+                                                />
+                                    </span>
+                                    <span>
+                                                Vos offres
+                                    </span>
+                        </NavLink>
+                        <div
+                                    className="navbar-item has-dropdown is-hoverable"
+                        >
+                                    <NavLink
+                                                activeClassName="active"
+                                                aria-current="page"
+                                                className="navbar-link"
+                                                to="#"
+                                    >
+                                                <span
+                                                            className="icon"
+                                                >
+                                                            <Icon
+                                                                        svg="ico-user-circled-w"
+                                                            />
+                                                </span>
+                                                <span>
+                                                            Fake Name
+                                                </span>
+                                    </NavLink>
+                                    <div
+                                                className="navbar-dropdown is-right"
+                                    >
+                                                <NavLink
+                                                            activeClassName="active"
+                                                            aria-current="page"
+                                                            className="navbar-item"
+                                                            to="/profil"
+                                                >
+                                                            <span
+                                                                        className="icon"
+                                                            >
+                                                                        <Icon
+                                                                                    svg="ico-user"
+                                                                        />
+                                                            </span>
+                                                            <span>
+                                                                        Profil
+                                                            </span>
+                                                </NavLink>
+                                                <NavLink
+                                                            activeClassName="active"
+                                                            aria-current="page"
+                                                            className="navbar-item"
+                                                            to="/structures"
+                                                >
+                                                            <span
+                                                                        className="icon"
+                                                            >
+                                                                        <Icon
+                                                                                    svg="ico-structure-r"
+                                                                        />
+                                                            </span>
+                                                            <span>
+                                                                        Votre structure
+                                                            </span>
+                                                </NavLink>
+                                                <withRouter(Connect(SignoutButton))
+                                                            Tag="a"
+                                                            className="navbar-item"
+                                                            handleSuccessRedirect={[Function]}
+                                                >
+                                                            <span
+                                                                        className="icon"
+                                                            >
+                                                                        <Icon
+                                                                                    svg="ico-deconnect"
+                                                                        />
+                                                            </span>
+                                                            <span>
+                                                                        Déconnexion
+                                                            </span>
+                                                </withRouter(Connect(SignoutButton))>
+                                    </div>
+                        </div>
+            </div>
+</div>,
+        ],
+        "className": "container",
+      },
+      "ref": null,
+      "rendered": Array [
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": Array [
+              <Logo
+                className="navbar-item"
+                whiteHeader={undefined}
+/>,
+              <span
+                className="navbar-burger"
+                onClick={[Function]}
+>
+                <span />
+                <span />
+                <span />
+</span>,
+            ],
+            "className": "navbar-brand",
+          },
+          "ref": null,
+          "rendered": Array [
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "function",
+              "props": Object {
+                "className": "navbar-item",
+                "whiteHeader": undefined,
+              },
+              "ref": null,
+              "rendered": null,
+              "type": [Function],
+            },
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": Array [
+                  <span />,
+                  <span />,
+                  <span />,
+                ],
+                "className": "navbar-burger",
+                "onClick": [Function],
+              },
+              "ref": null,
+              "rendered": Array [
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {},
+                  "ref": null,
+                  "rendered": null,
+                  "type": "span",
+                },
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {},
+                  "ref": null,
+                  "rendered": null,
+                  "type": "span",
+                },
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {},
+                  "ref": null,
+                  "rendered": null,
+                  "type": "span",
+                },
+              ],
+              "type": "span",
+            },
+          ],
+          "type": "div",
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": <div
+              className="navbar-end"
+>
+              <NavLink
+                            activeClassName="active"
+                            aria-current="page"
+                            className="navbar-item"
+                            to="/guichet"
+              >
+                            <span
+                                          className="icon"
+                            >
+                                          <Icon
+                                                        svg="ico-guichet-w"
+                                          />
+                            </span>
+                            <span>
+                                          Guichet
+                            </span>
+              </NavLink>
+              <NavLink
+                            activeClassName="active"
+                            aria-current="page"
+                            className="navbar-item"
+                            to="/offres"
+              >
+                            <span
+                                          className="icon"
+                            >
+                                          <Icon
+                                                        svg="ico-offres-w"
+                                          />
+                            </span>
+                            <span>
+                                          Vos offres
+                            </span>
+              </NavLink>
+              <div
+                            className="navbar-item has-dropdown is-hoverable"
+              >
+                            <NavLink
+                                          activeClassName="active"
+                                          aria-current="page"
+                                          className="navbar-link"
+                                          to="#"
+                            >
+                                          <span
+                                                        className="icon"
+                                          >
+                                                        <Icon
+                                                                      svg="ico-user-circled-w"
+                                                        />
+                                          </span>
+                                          <span>
+                                                        Fake Name
+                                          </span>
+                            </NavLink>
+                            <div
+                                          className="navbar-dropdown is-right"
+                            >
+                                          <NavLink
+                                                        activeClassName="active"
+                                                        aria-current="page"
+                                                        className="navbar-item"
+                                                        to="/profil"
+                                          >
+                                                        <span
+                                                                      className="icon"
+                                                        >
+                                                                      <Icon
+                                                                                    svg="ico-user"
+                                                                      />
+                                                        </span>
+                                                        <span>
+                                                                      Profil
+                                                        </span>
+                                          </NavLink>
+                                          <NavLink
+                                                        activeClassName="active"
+                                                        aria-current="page"
+                                                        className="navbar-item"
+                                                        to="/structures"
+                                          >
+                                                        <span
+                                                                      className="icon"
+                                                        >
+                                                                      <Icon
+                                                                                    svg="ico-structure-r"
+                                                                      />
+                                                        </span>
+                                                        <span>
+                                                                      Votre structure
+                                                        </span>
+                                          </NavLink>
+                                          <withRouter(Connect(SignoutButton))
+                                                        Tag="a"
+                                                        className="navbar-item"
+                                                        handleSuccessRedirect={[Function]}
+                                          >
+                                                        <span
+                                                                      className="icon"
+                                                        >
+                                                                      <Icon
+                                                                                    svg="ico-deconnect"
+                                                                      />
+                                                        </span>
+                                                        <span>
+                                                                      Déconnexion
+                                                        </span>
+                                          </withRouter(Connect(SignoutButton))>
+                            </div>
+              </div>
+</div>,
+            "className": "navbar-menu",
+          },
+          "ref": null,
+          "rendered": Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": Array [
+                <NavLink
+                  activeClassName="active"
+                  aria-current="page"
+                  className="navbar-item"
+                  to="/guichet"
+>
+                  <span
+                                    className="icon"
+                  >
+                                    <Icon
+                                                      svg="ico-guichet-w"
+                                    />
+                  </span>
+                  <span>
+                                    Guichet
+                  </span>
+</NavLink>,
+                <NavLink
+                  activeClassName="active"
+                  aria-current="page"
+                  className="navbar-item"
+                  to="/offres"
+>
+                  <span
+                                    className="icon"
+                  >
+                                    <Icon
+                                                      svg="ico-offres-w"
+                                    />
+                  </span>
+                  <span>
+                                    Vos offres
+                  </span>
+</NavLink>,
+                <div
+                  className="navbar-item has-dropdown is-hoverable"
+>
+                  <NavLink
+                                    activeClassName="active"
+                                    aria-current="page"
+                                    className="navbar-link"
+                                    to="#"
+                  >
+                                    <span
+                                                      className="icon"
+                                    >
+                                                      <Icon
+                                                                        svg="ico-user-circled-w"
+                                                      />
+                                    </span>
+                                    <span>
+                                                      Fake Name
+                                    </span>
+                  </NavLink>
+                  <div
+                                    className="navbar-dropdown is-right"
+                  >
+                                    <NavLink
+                                                      activeClassName="active"
+                                                      aria-current="page"
+                                                      className="navbar-item"
+                                                      to="/profil"
+                                    >
+                                                      <span
+                                                                        className="icon"
+                                                      >
+                                                                        <Icon
+                                                                                          svg="ico-user"
+                                                                        />
+                                                      </span>
+                                                      <span>
+                                                                        Profil
+                                                      </span>
+                                    </NavLink>
+                                    <NavLink
+                                                      activeClassName="active"
+                                                      aria-current="page"
+                                                      className="navbar-item"
+                                                      to="/structures"
+                                    >
+                                                      <span
+                                                                        className="icon"
+                                                      >
+                                                                        <Icon
+                                                                                          svg="ico-structure-r"
+                                                                        />
+                                                      </span>
+                                                      <span>
+                                                                        Votre structure
+                                                      </span>
+                                    </NavLink>
+                                    <withRouter(Connect(SignoutButton))
+                                                      Tag="a"
+                                                      className="navbar-item"
+                                                      handleSuccessRedirect={[Function]}
+                                    >
+                                                      <span
+                                                                        className="icon"
+                                                      >
+                                                                        <Icon
+                                                                                          svg="ico-deconnect"
+                                                                        />
+                                                      </span>
+                                                      <span>
+                                                                        Déconnexion
+                                                      </span>
+                                    </withRouter(Connect(SignoutButton))>
+                  </div>
+</div>,
+              ],
+              "className": "navbar-end",
+            },
+            "ref": null,
+            "rendered": Array [
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "function",
+                "props": Object {
+                  "activeClassName": "active",
+                  "aria-current": "page",
+                  "children": Array [
+                    <span
+                      className="icon"
+>
+                      <Icon
+                                            svg="ico-guichet-w"
+                      />
+</span>,
+                    <span>
+                      Guichet
+</span>,
+                  ],
+                  "className": "navbar-item",
+                  "to": "/guichet",
+                },
+                "ref": null,
+                "rendered": Array [
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "host",
+                    "props": Object {
+                      "children": <Icon
+                        svg="ico-guichet-w"
+/>,
+                      "className": "icon",
+                    },
+                    "ref": null,
+                    "rendered": Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "function",
+                      "props": Object {
+                        "svg": "ico-guichet-w",
+                      },
+                      "ref": null,
+                      "rendered": null,
+                      "type": [Function],
+                    },
+                    "type": "span",
+                  },
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "host",
+                    "props": Object {
+                      "children": "Guichet",
+                    },
+                    "ref": null,
+                    "rendered": "Guichet",
+                    "type": "span",
+                  },
+                ],
+                "type": [Function],
+              },
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "function",
+                "props": Object {
+                  "activeClassName": "active",
+                  "aria-current": "page",
+                  "children": Array [
+                    <span
+                      className="icon"
+>
+                      <Icon
+                                            svg="ico-offres-w"
+                      />
+</span>,
+                    <span>
+                      Vos offres
+</span>,
+                  ],
+                  "className": "navbar-item",
+                  "to": "/offres",
+                },
+                "ref": null,
+                "rendered": Array [
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "host",
+                    "props": Object {
+                      "children": <Icon
+                        svg="ico-offres-w"
+/>,
+                      "className": "icon",
+                    },
+                    "ref": null,
+                    "rendered": Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "function",
+                      "props": Object {
+                        "svg": "ico-offres-w",
+                      },
+                      "ref": null,
+                      "rendered": null,
+                      "type": [Function],
+                    },
+                    "type": "span",
+                  },
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "host",
+                    "props": Object {
+                      "children": "Vos offres",
+                    },
+                    "ref": null,
+                    "rendered": "Vos offres",
+                    "type": "span",
+                  },
+                ],
+                "type": [Function],
+              },
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": Array [
+                    <NavLink
+                      activeClassName="active"
+                      aria-current="page"
+                      className="navbar-link"
+                      to="#"
+>
+                      <span
+                                            className="icon"
+                      >
+                                            <Icon
+                                                                  svg="ico-user-circled-w"
+                                            />
+                      </span>
+                      <span>
+                                            Fake Name
+                      </span>
+</NavLink>,
+                    <div
+                      className="navbar-dropdown is-right"
+>
+                      <NavLink
+                                            activeClassName="active"
+                                            aria-current="page"
+                                            className="navbar-item"
+                                            to="/profil"
+                      >
+                                            <span
+                                                                  className="icon"
+                                            >
+                                                                  <Icon
+                                                                                        svg="ico-user"
+                                                                  />
+                                            </span>
+                                            <span>
+                                                                  Profil
+                                            </span>
+                      </NavLink>
+                      <NavLink
+                                            activeClassName="active"
+                                            aria-current="page"
+                                            className="navbar-item"
+                                            to="/structures"
+                      >
+                                            <span
+                                                                  className="icon"
+                                            >
+                                                                  <Icon
+                                                                                        svg="ico-structure-r"
+                                                                  />
+                                            </span>
+                                            <span>
+                                                                  Votre structure
+                                            </span>
+                      </NavLink>
+                      <withRouter(Connect(SignoutButton))
+                                            Tag="a"
+                                            className="navbar-item"
+                                            handleSuccessRedirect={[Function]}
+                      >
+                                            <span
+                                                                  className="icon"
+                                            >
+                                                                  <Icon
+                                                                                        svg="ico-deconnect"
+                                                                  />
+                                            </span>
+                                            <span>
+                                                                  Déconnexion
+                                            </span>
+                      </withRouter(Connect(SignoutButton))>
+</div>,
+                  ],
+                  "className": "navbar-item has-dropdown is-hoverable",
+                },
+                "ref": null,
+                "rendered": Array [
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "function",
+                    "props": Object {
+                      "activeClassName": "active",
+                      "aria-current": "page",
+                      "children": Array [
+                        <span
+                          className="icon"
+>
+                          <Icon
+                                                    svg="ico-user-circled-w"
+                          />
+</span>,
+                        <span>
+                          Fake Name
+</span>,
+                      ],
+                      "className": "navbar-link",
+                      "to": "#",
+                    },
+                    "ref": null,
+                    "rendered": Array [
+                      Object {
+                        "instance": null,
+                        "key": undefined,
+                        "nodeType": "host",
+                        "props": Object {
+                          "children": <Icon
+                            svg="ico-user-circled-w"
+/>,
+                          "className": "icon",
+                        },
+                        "ref": null,
+                        "rendered": Object {
+                          "instance": null,
+                          "key": undefined,
+                          "nodeType": "function",
+                          "props": Object {
+                            "svg": "ico-user-circled-w",
+                          },
+                          "ref": null,
+                          "rendered": null,
+                          "type": [Function],
+                        },
+                        "type": "span",
+                      },
+                      Object {
+                        "instance": null,
+                        "key": undefined,
+                        "nodeType": "host",
+                        "props": Object {
+                          "children": "Fake Name",
+                        },
+                        "ref": null,
+                        "rendered": "Fake Name",
+                        "type": "span",
+                      },
+                    ],
+                    "type": [Function],
+                  },
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "host",
+                    "props": Object {
+                      "children": Array [
+                        <NavLink
+                          activeClassName="active"
+                          aria-current="page"
+                          className="navbar-item"
+                          to="/profil"
+>
+                          <span
+                                                    className="icon"
+                          >
+                                                    <Icon
+                                                                              svg="ico-user"
+                                                    />
+                          </span>
+                          <span>
+                                                    Profil
+                          </span>
+</NavLink>,
+                        <NavLink
+                          activeClassName="active"
+                          aria-current="page"
+                          className="navbar-item"
+                          to="/structures"
+>
+                          <span
+                                                    className="icon"
+                          >
+                                                    <Icon
+                                                                              svg="ico-structure-r"
+                                                    />
+                          </span>
+                          <span>
+                                                    Votre structure
+                          </span>
+</NavLink>,
+                        false,
+                        false,
+                        <withRouter(Connect(SignoutButton))
+                          Tag="a"
+                          className="navbar-item"
+                          handleSuccessRedirect={[Function]}
+>
+                          <span
+                                                    className="icon"
+                          >
+                                                    <Icon
+                                                                              svg="ico-deconnect"
+                                                    />
+                          </span>
+                          <span>
+                                                    Déconnexion
+                          </span>
+</withRouter(Connect(SignoutButton))>,
+                      ],
+                      "className": "navbar-dropdown is-right",
+                    },
+                    "ref": null,
+                    "rendered": Array [
+                      Object {
+                        "instance": null,
+                        "key": undefined,
+                        "nodeType": "function",
+                        "props": Object {
+                          "activeClassName": "active",
+                          "aria-current": "page",
+                          "children": Array [
+                            <span
+                              className="icon"
+>
+                              <Icon
+                                                            svg="ico-user"
+                              />
+</span>,
+                            <span>
+                              Profil
+</span>,
+                          ],
+                          "className": "navbar-item",
+                          "to": "/profil",
+                        },
+                        "ref": null,
+                        "rendered": Array [
+                          Object {
+                            "instance": null,
+                            "key": undefined,
+                            "nodeType": "host",
+                            "props": Object {
+                              "children": <Icon
+                                svg="ico-user"
+/>,
+                              "className": "icon",
+                            },
+                            "ref": null,
+                            "rendered": Object {
+                              "instance": null,
+                              "key": undefined,
+                              "nodeType": "function",
+                              "props": Object {
+                                "svg": "ico-user",
+                              },
+                              "ref": null,
+                              "rendered": null,
+                              "type": [Function],
+                            },
+                            "type": "span",
+                          },
+                          Object {
+                            "instance": null,
+                            "key": undefined,
+                            "nodeType": "host",
+                            "props": Object {
+                              "children": "Profil",
+                            },
+                            "ref": null,
+                            "rendered": "Profil",
+                            "type": "span",
+                          },
+                        ],
+                        "type": [Function],
+                      },
+                      Object {
+                        "instance": null,
+                        "key": undefined,
+                        "nodeType": "function",
+                        "props": Object {
+                          "activeClassName": "active",
+                          "aria-current": "page",
+                          "children": Array [
+                            <span
+                              className="icon"
+>
+                              <Icon
+                                                            svg="ico-structure-r"
+                              />
+</span>,
+                            <span>
+                              Votre structure
+</span>,
+                          ],
+                          "className": "navbar-item",
+                          "to": "/structures",
+                        },
+                        "ref": null,
+                        "rendered": Array [
+                          Object {
+                            "instance": null,
+                            "key": undefined,
+                            "nodeType": "host",
+                            "props": Object {
+                              "children": <Icon
+                                svg="ico-structure-r"
+/>,
+                              "className": "icon",
+                            },
+                            "ref": null,
+                            "rendered": Object {
+                              "instance": null,
+                              "key": undefined,
+                              "nodeType": "function",
+                              "props": Object {
+                                "svg": "ico-structure-r",
+                              },
+                              "ref": null,
+                              "rendered": null,
+                              "type": [Function],
+                            },
+                            "type": "span",
+                          },
+                          Object {
+                            "instance": null,
+                            "key": undefined,
+                            "nodeType": "host",
+                            "props": Object {
+                              "children": "Votre structure",
+                            },
+                            "ref": null,
+                            "rendered": "Votre structure",
+                            "type": "span",
+                          },
+                        ],
+                        "type": [Function],
+                      },
+                      false,
+                      false,
+                      Object {
+                        "instance": null,
+                        "key": undefined,
+                        "nodeType": "function",
+                        "props": Object {
+                          "Tag": "a",
+                          "children": Array [
+                            <span
+                              className="icon"
+>
+                              <Icon
+                                                            svg="ico-deconnect"
+                              />
+</span>,
+                            <span>
+                              Déconnexion
+</span>,
+                          ],
+                          "className": "navbar-item",
+                          "handleSuccessRedirect": [Function],
+                        },
+                        "ref": null,
+                        "rendered": Array [
+                          Object {
+                            "instance": null,
+                            "key": undefined,
+                            "nodeType": "host",
+                            "props": Object {
+                              "children": <Icon
+                                svg="ico-deconnect"
+/>,
+                              "className": "icon",
+                            },
+                            "ref": null,
+                            "rendered": Object {
+                              "instance": null,
+                              "key": undefined,
+                              "nodeType": "function",
+                              "props": Object {
+                                "svg": "ico-deconnect",
+                              },
+                              "ref": null,
+                              "rendered": null,
+                              "type": [Function],
+                            },
+                            "type": "span",
+                          },
+                          Object {
+                            "instance": null,
+                            "key": undefined,
+                            "nodeType": "host",
+                            "props": Object {
+                              "children": "Déconnexion",
+                            },
+                            "ref": null,
+                            "rendered": "Déconnexion",
+                            "type": "span",
+                          },
+                        ],
+                        "type": [Function],
+                      },
+                    ],
+                    "type": "div",
+                  },
+                ],
+                "type": "div",
+              },
+            ],
+            "type": "div",
+          },
+          "type": "div",
+        },
+      ],
+      "type": "div",
+    },
+    "type": "header",
+  },
+  Symbol(enzyme.__nodes__): Array [
+    Object {
+      "instance": null,
+      "key": undefined,
+      "nodeType": "host",
+      "props": Object {
+        "children": <div
+          className="container"
+>
+          <div
+                    className="navbar-brand"
+          >
+                    <Logo
+                              className="navbar-item"
+                              whiteHeader={undefined}
+                    />
+                    <span
+                              className="navbar-burger"
+                              onClick={[Function]}
+                    >
+                              <span />
+                              <span />
+                              <span />
+                    </span>
+          </div>
+          <div
+                    className="navbar-menu"
+          >
+                    <div
+                              className="navbar-end"
+                    >
+                              <NavLink
+                                        activeClassName="active"
+                                        aria-current="page"
+                                        className="navbar-item"
+                                        to="/guichet"
+                              >
+                                        <span
+                                                  className="icon"
+                                        >
+                                                  <Icon
+                                                            svg="ico-guichet-w"
+                                                  />
+                                        </span>
+                                        <span>
+                                                  Guichet
+                                        </span>
+                              </NavLink>
+                              <NavLink
+                                        activeClassName="active"
+                                        aria-current="page"
+                                        className="navbar-item"
+                                        to="/offres"
+                              >
+                                        <span
+                                                  className="icon"
+                                        >
+                                                  <Icon
+                                                            svg="ico-offres-w"
+                                                  />
+                                        </span>
+                                        <span>
+                                                  Vos offres
+                                        </span>
+                              </NavLink>
+                              <div
+                                        className="navbar-item has-dropdown is-hoverable"
+                              >
+                                        <NavLink
+                                                  activeClassName="active"
+                                                  aria-current="page"
+                                                  className="navbar-link"
+                                                  to="#"
+                                        >
+                                                  <span
+                                                            className="icon"
+                                                  >
+                                                            <Icon
+                                                                      svg="ico-user-circled-w"
+                                                            />
+                                                  </span>
+                                                  <span>
+                                                            Fake Name
+                                                  </span>
+                                        </NavLink>
+                                        <div
+                                                  className="navbar-dropdown is-right"
+                                        >
+                                                  <NavLink
+                                                            activeClassName="active"
+                                                            aria-current="page"
+                                                            className="navbar-item"
+                                                            to="/profil"
+                                                  >
+                                                            <span
+                                                                      className="icon"
+                                                            >
+                                                                      <Icon
+                                                                                svg="ico-user"
+                                                                      />
+                                                            </span>
+                                                            <span>
+                                                                      Profil
+                                                            </span>
+                                                  </NavLink>
+                                                  <NavLink
+                                                            activeClassName="active"
+                                                            aria-current="page"
+                                                            className="navbar-item"
+                                                            to="/structures"
+                                                  >
+                                                            <span
+                                                                      className="icon"
+                                                            >
+                                                                      <Icon
+                                                                                svg="ico-structure-r"
+                                                                      />
+                                                            </span>
+                                                            <span>
+                                                                      Votre structure
+                                                            </span>
+                                                  </NavLink>
+                                                  <withRouter(Connect(SignoutButton))
+                                                            Tag="a"
+                                                            className="navbar-item"
+                                                            handleSuccessRedirect={[Function]}
+                                                  >
+                                                            <span
+                                                                      className="icon"
+                                                            >
+                                                                      <Icon
+                                                                                svg="ico-deconnect"
+                                                                      />
+                                                            </span>
+                                                            <span>
+                                                                      Déconnexion
+                                                            </span>
+                                                  </withRouter(Connect(SignoutButton))>
+                                        </div>
+                              </div>
+                    </div>
+          </div>
+</div>,
+        "className": "navbar is-primary",
+      },
+      "ref": null,
+      "rendered": Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": Array [
+            <div
+              className="navbar-brand"
+>
+              <Logo
+                            className="navbar-item"
+                            whiteHeader={undefined}
+              />
+              <span
+                            className="navbar-burger"
+                            onClick={[Function]}
+              >
+                            <span />
+                            <span />
+                            <span />
+              </span>
+</div>,
+            <div
+              className="navbar-menu"
+>
+              <div
+                            className="navbar-end"
+              >
+                            <NavLink
+                                          activeClassName="active"
+                                          aria-current="page"
+                                          className="navbar-item"
+                                          to="/guichet"
+                            >
+                                          <span
+                                                        className="icon"
+                                          >
+                                                        <Icon
+                                                                      svg="ico-guichet-w"
+                                                        />
+                                          </span>
+                                          <span>
+                                                        Guichet
+                                          </span>
+                            </NavLink>
+                            <NavLink
+                                          activeClassName="active"
+                                          aria-current="page"
+                                          className="navbar-item"
+                                          to="/offres"
+                            >
+                                          <span
+                                                        className="icon"
+                                          >
+                                                        <Icon
+                                                                      svg="ico-offres-w"
+                                                        />
+                                          </span>
+                                          <span>
+                                                        Vos offres
+                                          </span>
+                            </NavLink>
+                            <div
+                                          className="navbar-item has-dropdown is-hoverable"
+                            >
+                                          <NavLink
+                                                        activeClassName="active"
+                                                        aria-current="page"
+                                                        className="navbar-link"
+                                                        to="#"
+                                          >
+                                                        <span
+                                                                      className="icon"
+                                                        >
+                                                                      <Icon
+                                                                                    svg="ico-user-circled-w"
+                                                                      />
+                                                        </span>
+                                                        <span>
+                                                                      Fake Name
+                                                        </span>
+                                          </NavLink>
+                                          <div
+                                                        className="navbar-dropdown is-right"
+                                          >
+                                                        <NavLink
+                                                                      activeClassName="active"
+                                                                      aria-current="page"
+                                                                      className="navbar-item"
+                                                                      to="/profil"
+                                                        >
+                                                                      <span
+                                                                                    className="icon"
+                                                                      >
+                                                                                    <Icon
+                                                                                                  svg="ico-user"
+                                                                                    />
+                                                                      </span>
+                                                                      <span>
+                                                                                    Profil
+                                                                      </span>
+                                                        </NavLink>
+                                                        <NavLink
+                                                                      activeClassName="active"
+                                                                      aria-current="page"
+                                                                      className="navbar-item"
+                                                                      to="/structures"
+                                                        >
+                                                                      <span
+                                                                                    className="icon"
+                                                                      >
+                                                                                    <Icon
+                                                                                                  svg="ico-structure-r"
+                                                                                    />
+                                                                      </span>
+                                                                      <span>
+                                                                                    Votre structure
+                                                                      </span>
+                                                        </NavLink>
+                                                        <withRouter(Connect(SignoutButton))
+                                                                      Tag="a"
+                                                                      className="navbar-item"
+                                                                      handleSuccessRedirect={[Function]}
+                                                        >
+                                                                      <span
+                                                                                    className="icon"
+                                                                      >
+                                                                                    <Icon
+                                                                                                  svg="ico-deconnect"
+                                                                                    />
+                                                                      </span>
+                                                                      <span>
+                                                                                    Déconnexion
+                                                                      </span>
+                                                        </withRouter(Connect(SignoutButton))>
+                                          </div>
+                            </div>
+              </div>
+</div>,
+          ],
+          "className": "container",
+        },
+        "ref": null,
+        "rendered": Array [
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": Array [
+                <Logo
+                  className="navbar-item"
+                  whiteHeader={undefined}
+/>,
+                <span
+                  className="navbar-burger"
+                  onClick={[Function]}
+>
+                  <span />
+                  <span />
+                  <span />
+</span>,
+              ],
+              "className": "navbar-brand",
+            },
+            "ref": null,
+            "rendered": Array [
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "function",
+                "props": Object {
+                  "className": "navbar-item",
+                  "whiteHeader": undefined,
+                },
+                "ref": null,
+                "rendered": null,
+                "type": [Function],
+              },
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": Array [
+                    <span />,
+                    <span />,
+                    <span />,
+                  ],
+                  "className": "navbar-burger",
+                  "onClick": [Function],
+                },
+                "ref": null,
+                "rendered": Array [
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "host",
+                    "props": Object {},
+                    "ref": null,
+                    "rendered": null,
+                    "type": "span",
+                  },
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "host",
+                    "props": Object {},
+                    "ref": null,
+                    "rendered": null,
+                    "type": "span",
+                  },
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "host",
+                    "props": Object {},
+                    "ref": null,
+                    "rendered": null,
+                    "type": "span",
+                  },
+                ],
+                "type": "span",
+              },
+            ],
+            "type": "div",
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": <div
+                className="navbar-end"
+>
+                <NavLink
+                                activeClassName="active"
+                                aria-current="page"
+                                className="navbar-item"
+                                to="/guichet"
+                >
+                                <span
+                                                className="icon"
+                                >
+                                                <Icon
+                                                                svg="ico-guichet-w"
+                                                />
+                                </span>
+                                <span>
+                                                Guichet
+                                </span>
+                </NavLink>
+                <NavLink
+                                activeClassName="active"
+                                aria-current="page"
+                                className="navbar-item"
+                                to="/offres"
+                >
+                                <span
+                                                className="icon"
+                                >
+                                                <Icon
+                                                                svg="ico-offres-w"
+                                                />
+                                </span>
+                                <span>
+                                                Vos offres
+                                </span>
+                </NavLink>
+                <div
+                                className="navbar-item has-dropdown is-hoverable"
+                >
+                                <NavLink
+                                                activeClassName="active"
+                                                aria-current="page"
+                                                className="navbar-link"
+                                                to="#"
+                                >
+                                                <span
+                                                                className="icon"
+                                                >
+                                                                <Icon
+                                                                                svg="ico-user-circled-w"
+                                                                />
+                                                </span>
+                                                <span>
+                                                                Fake Name
+                                                </span>
+                                </NavLink>
+                                <div
+                                                className="navbar-dropdown is-right"
+                                >
+                                                <NavLink
+                                                                activeClassName="active"
+                                                                aria-current="page"
+                                                                className="navbar-item"
+                                                                to="/profil"
+                                                >
+                                                                <span
+                                                                                className="icon"
+                                                                >
+                                                                                <Icon
+                                                                                                svg="ico-user"
+                                                                                />
+                                                                </span>
+                                                                <span>
+                                                                                Profil
+                                                                </span>
+                                                </NavLink>
+                                                <NavLink
+                                                                activeClassName="active"
+                                                                aria-current="page"
+                                                                className="navbar-item"
+                                                                to="/structures"
+                                                >
+                                                                <span
+                                                                                className="icon"
+                                                                >
+                                                                                <Icon
+                                                                                                svg="ico-structure-r"
+                                                                                />
+                                                                </span>
+                                                                <span>
+                                                                                Votre structure
+                                                                </span>
+                                                </NavLink>
+                                                <withRouter(Connect(SignoutButton))
+                                                                Tag="a"
+                                                                className="navbar-item"
+                                                                handleSuccessRedirect={[Function]}
+                                                >
+                                                                <span
+                                                                                className="icon"
+                                                                >
+                                                                                <Icon
+                                                                                                svg="ico-deconnect"
+                                                                                />
+                                                                </span>
+                                                                <span>
+                                                                                Déconnexion
+                                                                </span>
+                                                </withRouter(Connect(SignoutButton))>
+                                </div>
+                </div>
+</div>,
+              "className": "navbar-menu",
+            },
+            "ref": null,
+            "rendered": Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": Array [
+                  <NavLink
+                    activeClassName="active"
+                    aria-current="page"
+                    className="navbar-item"
+                    to="/guichet"
+>
+                    <span
+                                        className="icon"
+                    >
+                                        <Icon
+                                                            svg="ico-guichet-w"
+                                        />
+                    </span>
+                    <span>
+                                        Guichet
+                    </span>
+</NavLink>,
+                  <NavLink
+                    activeClassName="active"
+                    aria-current="page"
+                    className="navbar-item"
+                    to="/offres"
+>
+                    <span
+                                        className="icon"
+                    >
+                                        <Icon
+                                                            svg="ico-offres-w"
+                                        />
+                    </span>
+                    <span>
+                                        Vos offres
+                    </span>
+</NavLink>,
+                  <div
+                    className="navbar-item has-dropdown is-hoverable"
+>
+                    <NavLink
+                                        activeClassName="active"
+                                        aria-current="page"
+                                        className="navbar-link"
+                                        to="#"
+                    >
+                                        <span
+                                                            className="icon"
+                                        >
+                                                            <Icon
+                                                                                svg="ico-user-circled-w"
+                                                            />
+                                        </span>
+                                        <span>
+                                                            Fake Name
+                                        </span>
+                    </NavLink>
+                    <div
+                                        className="navbar-dropdown is-right"
+                    >
+                                        <NavLink
+                                                            activeClassName="active"
+                                                            aria-current="page"
+                                                            className="navbar-item"
+                                                            to="/profil"
+                                        >
+                                                            <span
+                                                                                className="icon"
+                                                            >
+                                                                                <Icon
+                                                                                                    svg="ico-user"
+                                                                                />
+                                                            </span>
+                                                            <span>
+                                                                                Profil
+                                                            </span>
+                                        </NavLink>
+                                        <NavLink
+                                                            activeClassName="active"
+                                                            aria-current="page"
+                                                            className="navbar-item"
+                                                            to="/structures"
+                                        >
+                                                            <span
+                                                                                className="icon"
+                                                            >
+                                                                                <Icon
+                                                                                                    svg="ico-structure-r"
+                                                                                />
+                                                            </span>
+                                                            <span>
+                                                                                Votre structure
+                                                            </span>
+                                        </NavLink>
+                                        <withRouter(Connect(SignoutButton))
+                                                            Tag="a"
+                                                            className="navbar-item"
+                                                            handleSuccessRedirect={[Function]}
+                                        >
+                                                            <span
+                                                                                className="icon"
+                                                            >
+                                                                                <Icon
+                                                                                                    svg="ico-deconnect"
+                                                                                />
+                                                            </span>
+                                                            <span>
+                                                                                Déconnexion
+                                                            </span>
+                                        </withRouter(Connect(SignoutButton))>
+                    </div>
+</div>,
+                ],
+                "className": "navbar-end",
+              },
+              "ref": null,
+              "rendered": Array [
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "function",
+                  "props": Object {
+                    "activeClassName": "active",
+                    "aria-current": "page",
+                    "children": Array [
+                      <span
+                        className="icon"
+>
+                        <Icon
+                                                svg="ico-guichet-w"
+                        />
+</span>,
+                      <span>
+                        Guichet
+</span>,
+                    ],
+                    "className": "navbar-item",
+                    "to": "/guichet",
+                  },
+                  "ref": null,
+                  "rendered": Array [
+                    Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "host",
+                      "props": Object {
+                        "children": <Icon
+                          svg="ico-guichet-w"
+/>,
+                        "className": "icon",
+                      },
+                      "ref": null,
+                      "rendered": Object {
+                        "instance": null,
+                        "key": undefined,
+                        "nodeType": "function",
+                        "props": Object {
+                          "svg": "ico-guichet-w",
+                        },
+                        "ref": null,
+                        "rendered": null,
+                        "type": [Function],
+                      },
+                      "type": "span",
+                    },
+                    Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "host",
+                      "props": Object {
+                        "children": "Guichet",
+                      },
+                      "ref": null,
+                      "rendered": "Guichet",
+                      "type": "span",
+                    },
+                  ],
+                  "type": [Function],
+                },
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "function",
+                  "props": Object {
+                    "activeClassName": "active",
+                    "aria-current": "page",
+                    "children": Array [
+                      <span
+                        className="icon"
+>
+                        <Icon
+                                                svg="ico-offres-w"
+                        />
+</span>,
+                      <span>
+                        Vos offres
+</span>,
+                    ],
+                    "className": "navbar-item",
+                    "to": "/offres",
+                  },
+                  "ref": null,
+                  "rendered": Array [
+                    Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "host",
+                      "props": Object {
+                        "children": <Icon
+                          svg="ico-offres-w"
+/>,
+                        "className": "icon",
+                      },
+                      "ref": null,
+                      "rendered": Object {
+                        "instance": null,
+                        "key": undefined,
+                        "nodeType": "function",
+                        "props": Object {
+                          "svg": "ico-offres-w",
+                        },
+                        "ref": null,
+                        "rendered": null,
+                        "type": [Function],
+                      },
+                      "type": "span",
+                    },
+                    Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "host",
+                      "props": Object {
+                        "children": "Vos offres",
+                      },
+                      "ref": null,
+                      "rendered": "Vos offres",
+                      "type": "span",
+                    },
+                  ],
+                  "type": [Function],
+                },
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": Array [
+                      <NavLink
+                        activeClassName="active"
+                        aria-current="page"
+                        className="navbar-link"
+                        to="#"
+>
+                        <span
+                                                className="icon"
+                        >
+                                                <Icon
+                                                                        svg="ico-user-circled-w"
+                                                />
+                        </span>
+                        <span>
+                                                Fake Name
+                        </span>
+</NavLink>,
+                      <div
+                        className="navbar-dropdown is-right"
+>
+                        <NavLink
+                                                activeClassName="active"
+                                                aria-current="page"
+                                                className="navbar-item"
+                                                to="/profil"
+                        >
+                                                <span
+                                                                        className="icon"
+                                                >
+                                                                        <Icon
+                                                                                                svg="ico-user"
+                                                                        />
+                                                </span>
+                                                <span>
+                                                                        Profil
+                                                </span>
+                        </NavLink>
+                        <NavLink
+                                                activeClassName="active"
+                                                aria-current="page"
+                                                className="navbar-item"
+                                                to="/structures"
+                        >
+                                                <span
+                                                                        className="icon"
+                                                >
+                                                                        <Icon
+                                                                                                svg="ico-structure-r"
+                                                                        />
+                                                </span>
+                                                <span>
+                                                                        Votre structure
+                                                </span>
+                        </NavLink>
+                        <withRouter(Connect(SignoutButton))
+                                                Tag="a"
+                                                className="navbar-item"
+                                                handleSuccessRedirect={[Function]}
+                        >
+                                                <span
+                                                                        className="icon"
+                                                >
+                                                                        <Icon
+                                                                                                svg="ico-deconnect"
+                                                                        />
+                                                </span>
+                                                <span>
+                                                                        Déconnexion
+                                                </span>
+                        </withRouter(Connect(SignoutButton))>
+</div>,
+                    ],
+                    "className": "navbar-item has-dropdown is-hoverable",
+                  },
+                  "ref": null,
+                  "rendered": Array [
+                    Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "function",
+                      "props": Object {
+                        "activeClassName": "active",
+                        "aria-current": "page",
+                        "children": Array [
+                          <span
+                            className="icon"
+>
+                            <Icon
+                                                        svg="ico-user-circled-w"
+                            />
+</span>,
+                          <span>
+                            Fake Name
+</span>,
+                        ],
+                        "className": "navbar-link",
+                        "to": "#",
+                      },
+                      "ref": null,
+                      "rendered": Array [
+                        Object {
+                          "instance": null,
+                          "key": undefined,
+                          "nodeType": "host",
+                          "props": Object {
+                            "children": <Icon
+                              svg="ico-user-circled-w"
+/>,
+                            "className": "icon",
+                          },
+                          "ref": null,
+                          "rendered": Object {
+                            "instance": null,
+                            "key": undefined,
+                            "nodeType": "function",
+                            "props": Object {
+                              "svg": "ico-user-circled-w",
+                            },
+                            "ref": null,
+                            "rendered": null,
+                            "type": [Function],
+                          },
+                          "type": "span",
+                        },
+                        Object {
+                          "instance": null,
+                          "key": undefined,
+                          "nodeType": "host",
+                          "props": Object {
+                            "children": "Fake Name",
+                          },
+                          "ref": null,
+                          "rendered": "Fake Name",
+                          "type": "span",
+                        },
+                      ],
+                      "type": [Function],
+                    },
+                    Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "host",
+                      "props": Object {
+                        "children": Array [
+                          <NavLink
+                            activeClassName="active"
+                            aria-current="page"
+                            className="navbar-item"
+                            to="/profil"
+>
+                            <span
+                                                        className="icon"
+                            >
+                                                        <Icon
+                                                                                    svg="ico-user"
+                                                        />
+                            </span>
+                            <span>
+                                                        Profil
+                            </span>
+</NavLink>,
+                          <NavLink
+                            activeClassName="active"
+                            aria-current="page"
+                            className="navbar-item"
+                            to="/structures"
+>
+                            <span
+                                                        className="icon"
+                            >
+                                                        <Icon
+                                                                                    svg="ico-structure-r"
+                                                        />
+                            </span>
+                            <span>
+                                                        Votre structure
+                            </span>
+</NavLink>,
+                          false,
+                          false,
+                          <withRouter(Connect(SignoutButton))
+                            Tag="a"
+                            className="navbar-item"
+                            handleSuccessRedirect={[Function]}
+>
+                            <span
+                                                        className="icon"
+                            >
+                                                        <Icon
+                                                                                    svg="ico-deconnect"
+                                                        />
+                            </span>
+                            <span>
+                                                        Déconnexion
+                            </span>
+</withRouter(Connect(SignoutButton))>,
+                        ],
+                        "className": "navbar-dropdown is-right",
+                      },
+                      "ref": null,
+                      "rendered": Array [
+                        Object {
+                          "instance": null,
+                          "key": undefined,
+                          "nodeType": "function",
+                          "props": Object {
+                            "activeClassName": "active",
+                            "aria-current": "page",
+                            "children": Array [
+                              <span
+                                className="icon"
+>
+                                <Icon
+                                                                svg="ico-user"
+                                />
+</span>,
+                              <span>
+                                Profil
+</span>,
+                            ],
+                            "className": "navbar-item",
+                            "to": "/profil",
+                          },
+                          "ref": null,
+                          "rendered": Array [
+                            Object {
+                              "instance": null,
+                              "key": undefined,
+                              "nodeType": "host",
+                              "props": Object {
+                                "children": <Icon
+                                  svg="ico-user"
+/>,
+                                "className": "icon",
+                              },
+                              "ref": null,
+                              "rendered": Object {
+                                "instance": null,
+                                "key": undefined,
+                                "nodeType": "function",
+                                "props": Object {
+                                  "svg": "ico-user",
+                                },
+                                "ref": null,
+                                "rendered": null,
+                                "type": [Function],
+                              },
+                              "type": "span",
+                            },
+                            Object {
+                              "instance": null,
+                              "key": undefined,
+                              "nodeType": "host",
+                              "props": Object {
+                                "children": "Profil",
+                              },
+                              "ref": null,
+                              "rendered": "Profil",
+                              "type": "span",
+                            },
+                          ],
+                          "type": [Function],
+                        },
+                        Object {
+                          "instance": null,
+                          "key": undefined,
+                          "nodeType": "function",
+                          "props": Object {
+                            "activeClassName": "active",
+                            "aria-current": "page",
+                            "children": Array [
+                              <span
+                                className="icon"
+>
+                                <Icon
+                                                                svg="ico-structure-r"
+                                />
+</span>,
+                              <span>
+                                Votre structure
+</span>,
+                            ],
+                            "className": "navbar-item",
+                            "to": "/structures",
+                          },
+                          "ref": null,
+                          "rendered": Array [
+                            Object {
+                              "instance": null,
+                              "key": undefined,
+                              "nodeType": "host",
+                              "props": Object {
+                                "children": <Icon
+                                  svg="ico-structure-r"
+/>,
+                                "className": "icon",
+                              },
+                              "ref": null,
+                              "rendered": Object {
+                                "instance": null,
+                                "key": undefined,
+                                "nodeType": "function",
+                                "props": Object {
+                                  "svg": "ico-structure-r",
+                                },
+                                "ref": null,
+                                "rendered": null,
+                                "type": [Function],
+                              },
+                              "type": "span",
+                            },
+                            Object {
+                              "instance": null,
+                              "key": undefined,
+                              "nodeType": "host",
+                              "props": Object {
+                                "children": "Votre structure",
+                              },
+                              "ref": null,
+                              "rendered": "Votre structure",
+                              "type": "span",
+                            },
+                          ],
+                          "type": [Function],
+                        },
+                        false,
+                        false,
+                        Object {
+                          "instance": null,
+                          "key": undefined,
+                          "nodeType": "function",
+                          "props": Object {
+                            "Tag": "a",
+                            "children": Array [
+                              <span
+                                className="icon"
+>
+                                <Icon
+                                                                svg="ico-deconnect"
+                                />
+</span>,
+                              <span>
+                                Déconnexion
+</span>,
+                            ],
+                            "className": "navbar-item",
+                            "handleSuccessRedirect": [Function],
+                          },
+                          "ref": null,
+                          "rendered": Array [
+                            Object {
+                              "instance": null,
+                              "key": undefined,
+                              "nodeType": "host",
+                              "props": Object {
+                                "children": <Icon
+                                  svg="ico-deconnect"
+/>,
+                                "className": "icon",
+                              },
+                              "ref": null,
+                              "rendered": Object {
+                                "instance": null,
+                                "key": undefined,
+                                "nodeType": "function",
+                                "props": Object {
+                                  "svg": "ico-deconnect",
+                                },
+                                "ref": null,
+                                "rendered": null,
+                                "type": [Function],
+                              },
+                              "type": "span",
+                            },
+                            Object {
+                              "instance": null,
+                              "key": undefined,
+                              "nodeType": "host",
+                              "props": Object {
+                                "children": "Déconnexion",
+                              },
+                              "ref": null,
+                              "rendered": "Déconnexion",
+                              "type": "span",
+                            },
+                          ],
+                          "type": [Function],
+                        },
+                      ],
+                      "type": "div",
+                    },
+                  ],
+                  "type": "div",
+                },
+              ],
+              "type": "div",
+            },
+            "type": "div",
+          },
+        ],
+        "type": "div",
+      },
+      "type": "header",
+    },
+  ],
+  Symbol(enzyme.__options__): Object {
+    "adapter": ReactSixteenAdapter {
+      "options": Object {
+        "enableComponentDidUpdateOnSetState": true,
+        "lifecycles": Object {
+          "componentDidUpdate": Object {
+            "onSetState": true,
+          },
+          "getDerivedStateFromProps": true,
+          "getSnapshotBeforeUpdate": true,
+          "setState": Object {
+            "skipsComponentDidUpdateOnNullish": true,
+          },
+        },
+      },
+    },
+  },
+}
+`;
