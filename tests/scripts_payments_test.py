@@ -8,8 +8,8 @@ from freezegun import freeze_time
 from models import PcObject
 from models.payment import Payment
 from models.payment_status import TransactionStatus
-from scripts.payments import do_generate_payments, do_send_payments, do_send_payments_details, do_send_wallet_balances, \
-    do_send_payments_report
+from scripts.payments import generate_new_payments, send_transactions, send_payments_details, send_wallet_balances, \
+    send_payments_report
 from tests.conftest import clean_database, mocked_mail
 from utils.test_utils import create_offerer, create_venue, create_thing_offer, create_stock_from_offer, \
     create_booking, create_user, create_deposit, create_payment
@@ -17,7 +17,7 @@ from utils.test_utils import create_offerer, create_venue, create_thing_offer, c
 
 @pytest.mark.standalone
 @clean_database
-def test_do_generate_payments_records_new_payment_lines_in_database(app):
+def test_generate_new_payments_records_new_payment_lines_in_database(app):
     # Given
     offerer = create_offerer()
     venue = create_venue(offerer)
@@ -38,7 +38,7 @@ def test_do_generate_payments_records_new_payment_lines_in_database(app):
     initial_payment_count = Payment.query.count()
 
     # When
-    do_generate_payments()
+    generate_new_payments()
 
     # Then
     assert Payment.query.count() - initial_payment_count == 2
@@ -47,7 +47,7 @@ def test_do_generate_payments_records_new_payment_lines_in_database(app):
 @pytest.mark.standalone
 @mocked_mail
 @clean_database
-def test_do_send_payments_should_not_send_an_email_if_pass_culture_iban_is_missing(app):
+def test_send_transactions_should_not_send_an_email_if_pass_culture_iban_is_missing(app):
     # given
     offerer1 = create_offerer(name='first offerer', iban='CF13QSDFGH456789', bic='QSDFGH8Z555', idx=1)
     user = create_user()
@@ -63,7 +63,7 @@ def test_do_send_payments_should_not_send_an_email_if_pass_culture_iban_is_missi
     ]
 
     # when
-    do_send_payments(payments, None, 'AZERTY9Q666', '0000')
+    send_transactions(payments, None, 'AZERTY9Q666', '0000')
 
     # then
     app.mailjet_client.send.create.assert_not_called()
@@ -72,7 +72,7 @@ def test_do_send_payments_should_not_send_an_email_if_pass_culture_iban_is_missi
 @pytest.mark.standalone
 @mocked_mail
 @clean_database
-def test_do_send_payments_should_not_send_an_email_if_pass_culture_bic_is_missing(app):
+def test_send_transactions_should_not_send_an_email_if_pass_culture_bic_is_missing(app):
     # given
     offerer1 = create_offerer(name='first offerer', iban='CF13QSDFGH456789', bic='QSDFGH8Z555', idx=1)
     user = create_user()
@@ -88,7 +88,7 @@ def test_do_send_payments_should_not_send_an_email_if_pass_culture_bic_is_missin
     ]
 
     # when
-    do_send_payments(payments, 'BD12AZERTY123456', None, '0000')
+    send_transactions(payments, 'BD12AZERTY123456', None, '0000')
 
     # then
     app.mailjet_client.send.create.assert_not_called()
@@ -97,7 +97,7 @@ def test_do_send_payments_should_not_send_an_email_if_pass_culture_bic_is_missin
 @pytest.mark.standalone
 @mocked_mail
 @clean_database
-def test_do_send_payments_should_not_send_an_email_if_pass_culture_id_is_missing(app):
+def test_send_transactions_should_not_send_an_email_if_pass_culture_id_is_missing(app):
     # given
     offerer1 = create_offerer(name='first offerer', iban='CF13QSDFGH456789', bic='QSDFGH8Z555', idx=1)
     user = create_user()
@@ -113,7 +113,7 @@ def test_do_send_payments_should_not_send_an_email_if_pass_culture_id_is_missing
     ]
 
     # when
-    do_send_payments(payments, 'BD12AZERTY123456', 'AZERTY9Q666', None)
+    send_transactions(payments, 'BD12AZERTY123456', 'AZERTY9Q666', None)
 
     # then
     app.mailjet_client.send.create.assert_not_called()
@@ -122,7 +122,7 @@ def test_do_send_payments_should_not_send_an_email_if_pass_culture_id_is_missing
 @pytest.mark.standalone
 @mocked_mail
 @clean_database
-def test_do_send_payments_should_send_an_email_with_xml_attachment(app):
+def test_send_transactions_should_send_an_email_with_xml_attachment(app):
     # given
     offerer1 = create_offerer(name='first offerer', iban='CF13QSDFGH456789', bic='QSDFGH8Z555', idx=1)
     user = create_user()
@@ -142,7 +142,7 @@ def test_do_send_payments_should_send_an_email_with_xml_attachment(app):
     app.mailjet_client.send.create.return_value = Mock(status_code=200)
 
     # when
-    do_send_payments(payments, 'BD12AZERTY123456', 'AZERTY9Q666', '0000')
+    send_transactions(payments, 'BD12AZERTY123456', 'AZERTY9Q666', '0000')
 
     # then
     app.mailjet_client.send.create.assert_called_once()
@@ -154,7 +154,7 @@ def test_do_send_payments_should_send_an_email_with_xml_attachment(app):
 @clean_database
 @mocked_mail
 @freeze_time('2018-10-15 09:21:34')
-def test_do_send_payments_creates_a_new_payment_transaction_if_email_was_sent_properly(app):
+def test_send_transactions_creates_a_new_payment_transaction_if_email_was_sent_properly(app):
     # given
     offerer1 = create_offerer(name='first offerer', iban='CF13QSDFGH456789', bic='QSDFGH8Z555', idx=1)
     user = create_user()
@@ -176,7 +176,7 @@ def test_do_send_payments_creates_a_new_payment_transaction_if_email_was_sent_pr
     app.mailjet_client.send.create.return_value = Mock(status_code=200)
 
     # when
-    do_send_payments(payments, 'BD12AZERTY123456', 'AZERTY9Q666', '0000')
+    send_transactions(payments, 'BD12AZERTY123456', 'AZERTY9Q666', '0000')
 
     # then
     updated_payments = Payment.query.all()
@@ -188,7 +188,7 @@ def test_do_send_payments_creates_a_new_payment_transaction_if_email_was_sent_pr
 @clean_database
 @mocked_mail
 @freeze_time('2018-10-15 09:21:34')
-def test_do_send_payments_set_status_to_sent_if_email_was_sent_properly(app):
+def test_send_transactions_set_status_to_sent_if_email_was_sent_properly(app):
     # given
     offerer1 = create_offerer(name='first offerer', iban='CF13QSDFGH456789', bic='QSDFGH8Z555', idx=1)
     user = create_user()
@@ -210,7 +210,7 @@ def test_do_send_payments_set_status_to_sent_if_email_was_sent_properly(app):
     app.mailjet_client.send.create.return_value = Mock(status_code=200)
 
     # when
-    do_send_payments(payments, 'BD12AZERTY123456', 'AZERTY9Q666', '0000')
+    send_transactions(payments, 'BD12AZERTY123456', 'AZERTY9Q666', '0000')
 
     # then
     updated_payments = Payment.query.all()
@@ -223,7 +223,7 @@ def test_do_send_payments_set_status_to_sent_if_email_was_sent_properly(app):
 @clean_database
 @mocked_mail
 @freeze_time('2018-10-15 09:21:34')
-def test_do_send_payments_set_status_to_error_with_details_if_email_was_not_sent_properly(
+def test_send_transactions_set_status_to_error_with_details_if_email_was_not_sent_properly(
         app):
     # given
     offerer1 = create_offerer(name='first offerer', iban='CF13QSDFGH456789', bic='QSDFGH8Z555', idx=1)
@@ -246,7 +246,7 @@ def test_do_send_payments_set_status_to_error_with_details_if_email_was_not_sent
     app.mailjet_client.send.create.return_value = Mock(status_code=400)
 
     # when
-    do_send_payments(payments, 'BD12AZERTY123456', 'AZERTY9Q666', '0000')
+    send_transactions(payments, 'BD12AZERTY123456', 'AZERTY9Q666', '0000')
 
     # then
     updated_payments = Payment.query.all()
@@ -260,7 +260,7 @@ def test_do_send_payments_set_status_to_error_with_details_if_email_was_not_sent
 @clean_database
 @mocked_mail
 @freeze_time('2018-10-15 09:21:34')
-def test_do_send_payment_details_sends_a_csv_attachment(app):
+def test_send_payment_details_sends_a_csv_attachment(app):
     # given
     offerer1 = create_offerer(name='first offerer', iban='CF13QSDFGH456789', bic='QSDFGH8Z555', idx=1)
     user = create_user()
@@ -282,7 +282,7 @@ def test_do_send_payment_details_sends_a_csv_attachment(app):
     app.mailjet_client.send.create.return_value = Mock(status_code=200)
 
     # when
-    do_send_payments_details(payments, 'comptable@test.com')
+    send_payments_details(payments, 'comptable@test.com')
 
     # then
     app.mailjet_client.send.create.assert_called_once()
@@ -293,12 +293,12 @@ def test_do_send_payment_details_sends_a_csv_attachment(app):
 
 @pytest.mark.standalone
 @mocked_mail
-def test_do_send_payment_details_does_not_send_anything_if_recipients_are_missing(app):
+def test_send_payment_details_does_not_send_anything_if_recipients_are_missing(app):
     # given
     payments = []
 
     # when
-    do_send_payments_details(payments, None)
+    send_payments_details(payments, None)
 
     # then
     app.mailjet_client.send.create.assert_not_called()
@@ -308,12 +308,12 @@ def test_do_send_payment_details_does_not_send_anything_if_recipients_are_missin
 @clean_database
 @mocked_mail
 @freeze_time('2018-10-15 09:21:34')
-def test_do_send_wallet_balances_sends_a_csv_attachment(app):
+def test_send_wallet_balances_sends_a_csv_attachment(app):
     # given
     app.mailjet_client.send.create.return_value = Mock(status_code=200)
 
     # when
-    do_send_wallet_balances('comptable@test.com')
+    send_wallet_balances('comptable@test.com')
 
     # then
     app.mailjet_client.send.create.assert_called_once()
@@ -324,9 +324,9 @@ def test_do_send_wallet_balances_sends_a_csv_attachment(app):
 
 @pytest.mark.standalone
 @mocked_mail
-def test_do_send_wallet_balances_does_not_send_anything_if_recipients_are_missing(app):
+def test_send_wallet_balances_does_not_send_anything_if_recipients_are_missing(app):
     # when
-    do_send_wallet_balances(None)
+    send_wallet_balances(None)
 
     # then
     app.mailjet_client.send.create.assert_not_called()
@@ -335,7 +335,7 @@ def test_do_send_wallet_balances_does_not_send_anything_if_recipients_are_missin
 @pytest.mark.standalone
 @mocked_mail
 @clean_database
-def test_do_send_payments_report_sends_two_csv_attachments_if_some_payments_are_not_processable_and_in_error(app):
+def test_send_payments_report_sends_two_csv_attachments_if_some_payments_are_not_processable_and_in_error(app):
     # given
     offerer1 = create_offerer(name='first offerer', iban='CF13QSDFGH456789', bic='QSDFGH8Z555', idx=1)
     user = create_user()
@@ -357,7 +357,7 @@ def test_do_send_payments_report_sends_two_csv_attachments_if_some_payments_are_
     app.mailjet_client.send.create.return_value = Mock(status_code=200)
 
     # when
-    do_send_payments_report(payments)
+    send_payments_report(payments)
 
     # then
     app.mailjet_client.send.create.assert_called_once()
@@ -370,7 +370,7 @@ def test_do_send_payments_report_sends_two_csv_attachments_if_some_payments_are_
 @pytest.mark.standalone
 @mocked_mail
 @clean_database
-def test_do_send_payments_report_sends_two_csv_attachments_if_no_payments_are_in_error_or_sent(app):
+def test_send_payments_report_sends_two_csv_attachments_if_no_payments_are_in_error_or_sent(app):
     # given
     offerer1 = create_offerer(name='first offerer', iban='CF13QSDFGH456789', bic='QSDFGH8Z555', idx=1)
     user = create_user()
@@ -392,7 +392,7 @@ def test_do_send_payments_report_sends_two_csv_attachments_if_no_payments_are_in
     app.mailjet_client.send.create.return_value = Mock(status_code=200)
 
     # when
-    do_send_payments_report(payments)
+    send_payments_report(payments)
 
     # then
     app.mailjet_client.send.create.assert_called_once()
@@ -405,12 +405,12 @@ def test_do_send_payments_report_sends_two_csv_attachments_if_no_payments_are_in
 @pytest.mark.standalone
 @mocked_mail
 @clean_database
-def test_do_send_payments_report_does_not_send_anything_if_no_payments_are_provided(app):
+def test_send_payments_report_does_not_send_anything_if_no_payments_are_provided(app):
     # given
     payments = []
 
     # when
-    do_send_payments_report(payments)
+    send_payments_report(payments)
 
     # then
     app.mailjet_client.send.create.assert_not_called()

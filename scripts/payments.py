@@ -29,21 +29,25 @@ WALLET_BALANCES_RECIPIENTS = os.environ.get('WALLET_BALANCES_RECIPIENTS', None)
 
 
 def generate_and_send_payments():
-    new_payments = do_generate_payments()
-    pending_payments = keep_pending_payments(new_payments)
-    error_payments = payment_queries.find_error_payments()
-    payments = pending_payments + error_payments
+    payments = collect_payments()
 
     try:
-        do_send_payments(payments, PASS_CULTURE_IBAN, PASS_CULTURE_BIC, PASS_CULTURE_REMITTANCE_CODE)
-        do_send_payments_report(payments)
-        do_send_payments_details(payments, PAYMENTS_DETAILS_RECIPIENTS)
-        do_send_wallet_balances(WALLET_BALANCES_RECIPIENTS)
+        send_transactions(payments, PASS_CULTURE_IBAN, PASS_CULTURE_BIC, PASS_CULTURE_REMITTANCE_CODE)
+        send_payments_report(payments)
+        send_payments_details(payments, PAYMENTS_DETAILS_RECIPIENTS)
+        send_wallet_balances(WALLET_BALANCES_RECIPIENTS)
     except Exception as e:
         logger.error('GENERATE_AND_SEND_PAYMENTS', e)
 
 
-def do_generate_payments() -> List[Payment]:
+def collect_payments() -> List[Payment]:
+    new_payments = generate_new_payments()
+    pending_payments = keep_pending_payments(new_payments)
+    error_payments = payment_queries.find_error_payments()
+    return pending_payments + error_payments
+
+
+def generate_new_payments() -> List[Payment]:
     offerers = Offerer.query.all()
     logger.info('Generating payments for %s Offerers' % len(offerers))
     all_payments = []
@@ -68,8 +72,8 @@ def do_generate_payments() -> List[Payment]:
     return all_payments
 
 
-def do_send_payments(payments: List[Payment], pass_culture_iban: str, pass_culture_bic: str,
-                     pass_culture_remittance_code: str) -> None:
+def send_transactions(payments: List[Payment], pass_culture_iban: str, pass_culture_bic: str,
+                      pass_culture_remittance_code: str) -> None:
     if not pass_culture_iban or not pass_culture_bic or not pass_culture_remittance_code:
         logger.error(
             'Missing PASS_CULTURE_IBAN[%s], PASS_CULTURE_BIC[%s] or PASS_CULTURE_REMITTANCE_CODE[%s] in environment variables' % (
@@ -77,7 +81,7 @@ def do_send_payments(payments: List[Payment], pass_culture_iban: str, pass_cultu
     else:
         message_id = 'passCulture-SCT-%s' % datetime.strftime(datetime.utcnow(), "%Y%m%d-%H%M%S")
         xml_file = generate_transaction_file(payments, pass_culture_iban, pass_culture_bic, message_id,
-                                         pass_culture_remittance_code)
+                                             pass_culture_remittance_code)
         validate_transaction_file_structure(xml_file)
         checksum = generate_file_checksum(xml_file)
         transaction = generate_payment_transaction(message_id, checksum, payments)
@@ -95,7 +99,7 @@ def do_send_payments(payments: List[Payment], pass_culture_iban: str, pass_cultu
             PcObject.check_and_save(transaction, *payments)
 
 
-def do_send_payments_details(payments: List[Payment], recipients: str) -> None:
+def send_payments_details(payments: List[Payment], recipients: str) -> None:
     if not recipients:
         logger.error('Missing PASS_CULTURE_PAYMENTS_DETAILS_RECIPIENTS in environment variables')
     else:
@@ -107,7 +111,7 @@ def do_send_payments_details(payments: List[Payment], recipients: str) -> None:
             logger.error('Error while sending payment details email to MailJet', e)
 
 
-def do_send_wallet_balances(recipients: str) -> None:
+def send_wallet_balances(recipients: str) -> None:
     if not recipients:
         logger.error('Missing PASS_CULTURE_WALLET_BALANCES_RECIPIENTS in environment variables')
     else:
@@ -119,18 +123,19 @@ def do_send_wallet_balances(recipients: str) -> None:
             logger.error('Error while sending users wallet balances email to MailJet', e)
 
 
-def do_send_payments_report(payments: List[Payment]) -> None:
+def send_payments_report(payments: List[Payment]) -> None:
     if payments:
         groups = group_payments_by_status(payments)
 
         payments_error_details = create_all_payments_details(groups['ERROR']) if 'ERROR' in groups else []
         error_csv = generate_payment_details_csv(payments_error_details)
 
-        payments_not_processable_details = create_all_payments_details(groups['NOT_PROCESSABLE']) if 'NOT_PROCESSABLE' in groups else []
+        payments_not_processable_details = create_all_payments_details(
+            groups['NOT_PROCESSABLE']) if 'NOT_PROCESSABLE' in groups else []
         not_processable_csv = generate_payment_details_csv(payments_not_processable_details)
 
         try:
-            send_payments_report_emails(not_processable_csv, error_csv, groups,app.mailjet_client.send.create)
+            send_payments_report_emails(not_processable_csv, error_csv, groups, app.mailjet_client.send.create)
         except MailServiceException as e:
             logger.error('Error while sending payments reports to MailJet', e)
     else:
