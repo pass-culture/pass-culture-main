@@ -7,6 +7,8 @@ import { withRouter } from 'react-router'
 import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
 
+import offerersSelector from '../../selectors/offerers'
+
 import Logo from './Logo'
 
 class Header extends Component {
@@ -18,7 +20,7 @@ class Header extends Component {
   }
 
   render() {
-    const { name, whiteHeader } = this.props
+    const { name, whiteHeader, offerers } = this.props
     const { showMobileMenu } = this.state
     return (
       <header className={classnames('navbar', { 'is-primary': !whiteHeader })}>
@@ -76,7 +78,11 @@ class Header extends Component {
                     <span className="icon">
                       <Icon svg="ico-structure-r" />
                     </span>
-                    <span>Structures</span>
+                    <span>
+                      {offerers.length > 1
+                        ? 'Vos structures'
+                        : 'Votre Structure'}
+                    </span>
                   </NavLink>
                   {false && (
                     <NavLink to="/delegations" className="navbar-item">
@@ -116,6 +122,7 @@ class Header extends Component {
 function mapStateToProps(state) {
   return {
     name: get(state, 'user.publicName'),
+    offerers: offerersSelector(state),
   }
 }
 
