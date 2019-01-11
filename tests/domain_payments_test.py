@@ -9,7 +9,7 @@ from freezegun import freeze_time
 
 from domain.payments import create_payment_for_booking, filter_out_already_paid_for_bookings, create_payment_details, \
     create_all_payments_details, make_custom_message, group_payments_by_status, \
-    filter_out_cost_free_bookings
+    filter_out_cost_free_bookings, keep_pending_payments
 from domain.reimbursement import BookingReimbursement, ReimbursementRules
 from models import Offer, Venue, Booking
 from models.payment import Payment
@@ -236,6 +236,51 @@ class FilterOutCostFreeBookingsTest:
 
         # then
         assert costly_bookings == []
+
+
+@pytest.mark.standalone
+class KeepPendingPaymentsTest:
+    def test_it_returns_only_payments_with_current_status_as_pending(self):
+        # given
+        user = create_user()
+        booking = create_booking(user)
+        offerer = create_offerer()
+        payments = [
+            create_payment(booking, offerer, 30, status=TransactionStatus.PENDING),
+            create_payment(booking, offerer, 30, status=TransactionStatus.NOT_PROCESSABLE),
+            create_payment(booking, offerer, 30, status=TransactionStatus.ERROR)
+        ]
+
+        # when
+        pending_payments = keep_pending_payments(payments)
+
+        # then
+        assert len(pending_payments) == 1
+        assert pending_payments[0].currentStatus.status == TransactionStatus.PENDING
+
+    def test_it_returns_an_empty_list_if_everything_is_filtered_out(self):
+        # given
+        user = create_user()
+        booking = create_booking(user)
+        offerer = create_offerer()
+        payments = [
+            create_payment(booking, offerer, 30, status=TransactionStatus.SENT),
+            create_payment(booking, offerer, 30, status=TransactionStatus.SENT),
+            create_payment(booking, offerer, 30, status=TransactionStatus.ERROR)
+        ]
+
+        # when
+        pending_payments = keep_pending_payments(payments)
+
+        # then
+        assert pending_payments == []
+
+    def test_it_returns_an_empty_list_if_an_empty_list_is_given(self):
+        # when
+        pending_payments = keep_pending_payments([])
+
+        # then
+        assert pending_payments == []
 
 
 @pytest.mark.standalone

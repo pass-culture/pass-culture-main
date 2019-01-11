@@ -9,7 +9,8 @@ from domain.admin_emails import send_payment_transaction_email, send_payment_det
 from domain.payments import filter_out_already_paid_for_bookings, create_payment_for_booking, generate_transaction_file, \
     validate_transaction_file_structure, create_all_payments_details, generate_payment_details_csv, \
     generate_wallet_balances_csv, \
-    generate_payment_transaction, generate_file_checksum, group_payments_by_status, filter_out_cost_free_bookings
+    generate_payment_transaction, generate_file_checksum, group_payments_by_status, filter_out_cost_free_bookings, \
+    keep_pending_payments
 from domain.reimbursement import find_all_booking_reimbursement
 from models import Offerer, PcObject
 from models.payment import Payment
@@ -29,8 +30,9 @@ WALLET_BALANCES_RECIPIENTS = os.environ.get('WALLET_BALANCES_RECIPIENTS', None)
 
 def generate_and_send_payments():
     new_payments = do_generate_payments()
+    pending_payments = keep_pending_payments(new_payments)
     error_payments = payment_queries.find_error_payments()
-    payments = new_payments + error_payments
+    payments = pending_payments + error_payments
 
     try:
         do_send_payments(payments, PASS_CULTURE_IBAN, PASS_CULTURE_BIC, PASS_CULTURE_REMITTANCE_CODE)

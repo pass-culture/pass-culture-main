@@ -78,6 +78,10 @@ def filter_out_cost_free_bookings(
     return list(filter(lambda x: x.reimbursed_amount > Decimal(0), booking_reimbursements))
 
 
+def keep_pending_payments(payments: List[Payment]) -> List[Payment]:
+    return list(filter(lambda x: x.currentStatus.status == TransactionStatus.PENDING, payments))
+
+
 def generate_transaction_file(payments: List[Payment], pass_culture_iban: str, pass_culture_bic: str, message_id: str,
                               remittance_code: str) -> str:
     transactions = _group_payments_into_transactions(payments)
