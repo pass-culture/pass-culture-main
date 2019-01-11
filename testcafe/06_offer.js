@@ -303,7 +303,7 @@ test('Je peux créer une offre avec type et sous-type', async t => {
     .ok()
 })
 
-const structuresLink = Selector("a[href='/structures']").withText('Structures')
+const structuresLink = Selector("a[href='/structures']")
 const createVirtualOfferAnchor = Selector(
   "a[href^='/offres/nouveau']"
 ).withText('Nouvelle offre numérique')
