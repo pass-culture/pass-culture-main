@@ -23,8 +23,8 @@ from utils.mailing import MailServiceException
 PASS_CULTURE_IBAN = os.environ.get('PASS_CULTURE_IBAN', None)
 PASS_CULTURE_BIC = os.environ.get('PASS_CULTURE_BIC', None)
 PASS_CULTURE_REMITTANCE_CODE = os.environ.get('PASS_CULTURE_REMITTANCE_CODE', None)
-PASS_CULTURE_PAYMENTS_DETAILS_RECIPIENTS = os.environ.get('PASS_CULTURE_PAYMENTS_DETAILS_RECIPIENTS', None)
-PASS_CULTURE_WALLET_BALANCES_RECIPIENTS = os.environ.get('PASS_CULTURE_WALLET_BALANCES_RECIPIENTS', None)
+PAYMENTS_DETAILS_RECIPIENTS = os.environ.get('PAYMENTS_DETAILS_RECIPIENTS', None)
+WALLET_BALANCES_RECIPIENTS = os.environ.get('WALLET_BALANCES_RECIPIENTS', None)
 
 
 def generate_and_send_payments():
@@ -35,8 +35,8 @@ def generate_and_send_payments():
     try:
         do_send_payments(payments, PASS_CULTURE_IBAN, PASS_CULTURE_BIC, PASS_CULTURE_REMITTANCE_CODE)
         do_send_payments_report(payments)
-        do_send_payments_details(payments, PASS_CULTURE_PAYMENTS_DETAILS_RECIPIENTS)
-        do_send_wallet_balances(PASS_CULTURE_WALLET_BALANCES_RECIPIENTS)
+        do_send_payments_details(payments, PAYMENTS_DETAILS_RECIPIENTS)
+        do_send_wallet_balances(WALLET_BALANCES_RECIPIENTS)
     except Exception as e:
         logger.error('GENERATE_AND_SEND_PAYMENTS', e)
 
