@@ -38,6 +38,8 @@ class Transaction:
 
 
 def create_payment_for_booking(booking_reimbursement: BookingReimbursement) -> Payment:
+    venue = booking_reimbursement.booking.stock.resolvedOffer.venue
+
     payment = Payment()
     payment.booking = booking_reimbursement.booking
     payment.amount = booking_reimbursement.reimbursed_amount
@@ -45,7 +47,6 @@ def create_payment_for_booking(booking_reimbursement: BookingReimbursement) -> P
     payment.reimbursementRate = booking_reimbursement.reimbursement.value.rate
     payment.author = 'batch'
     payment.customMessage = make_custom_message(datetime.utcnow())
-    venue = booking_reimbursement.booking.stock.resolvedOffer.venue
 
     if venue.iban:
         payment.iban = venue.iban
