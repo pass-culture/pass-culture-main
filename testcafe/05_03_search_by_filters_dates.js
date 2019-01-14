@@ -6,7 +6,7 @@ import { youngUserRole } from './helpers/roles'
 const getPageUrl = ClientFunction(() => window.location.href.toString())
 
 const filterButton = Selector('#filter-button')
-const resetButton = Selector('#reset-button')
+const resetButton = Selector('#search-filter-reset-button')
 
 fixture(
   "O5_03_01 Recherche par Filtres | Je suis connecté·e | J'arrive sur la page de recherche | Icone open/close"
