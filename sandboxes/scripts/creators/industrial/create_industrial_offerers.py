@@ -25,6 +25,9 @@ def create_industrial_offerers(
 
     offerers_by_name = {}
 
+    iban_prefix = 'FR7630001007941234567890185'
+    bic_prefix, bic_suffix = 'QSDFGH8Z', 555
+
     for (location_index, location) in enumerate(locations):
 
         mock_index = location_index % len(MOCK_NAMES)
@@ -40,7 +43,9 @@ def create_industrial_offerers(
             city=location['city'],
             name=MOCK_NAMES[mock_index],
             postal_code=location['postalCode'],
-            siren=str(incremented_siren)
+            siren=str(incremented_siren),
+            iban=iban_prefix,
+            bic=bic_prefix + str(bic_suffix)
         )
 
         if needs_validation:
@@ -49,6 +54,7 @@ def create_industrial_offerers(
         offerers_by_name[name] = offerer
 
         incremented_siren += 1
+        bic_suffix += 1
 
     PcObject.check_and_save(*offerers_by_name.values())
 

@@ -2,7 +2,6 @@ from schwifty import IBAN, BIC
 from sqlalchemy import Column, String, CheckConstraint
 
 from models import ApiErrors
-from repository.bic_queries import check_bic_is_known
 
 
 class HasBankInformationMixin(object):
@@ -27,9 +26,7 @@ class HasBankInformationMixin(object):
                 BIC(self.bic)
             except ValueError:
                 api_errors.addError('bic', "Le BIC saisi est invalide")
-            else:
-                if not check_bic_is_known(self.bic):
-                    api_errors.addError('bic', "Le BIC saisi est inconnu")
+
         if not self.bic and self.iban:
             api_errors.addError('bic', "Le BIC es manquant")
         if not self.iban and self.bic:

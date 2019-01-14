@@ -4,11 +4,11 @@ from models.pc_object import PcObject
 from utils.logger import logger
 from utils.test_utils import create_recommendation
 
+
 def create_industrial_recommendations(mediations_by_name, offers_by_name, users_by_name):
     logger.info('create_industrial_recommendations')
 
     recommendations_by_name = {}
-
 
     first_mediation = Mediation.query.filter_by(tutoIndex=0).one()
     second_mediation = Mediation.query.filter_by(tutoIndex=1).one()
@@ -53,6 +53,31 @@ def create_industrial_recommendations(mediations_by_name, offers_by_name, users_
                 offer=mediation.offer,
                 user=user
             )
+
+        user_has_more_than_activation_recommendation = any([
+            user_tag in user_name
+            for user_tag in
+            [
+                "has-confirmed-activation",
+                "has-booked-some",
+                "has-no-more-money"
+            ]
+        ])
+
+        if not user_has_more_than_activation_recommendation:
+            continue
+
+        already_recommended_offer_items = list(offers_by_name.items())[::10]
+        for (offer_name, offer) in already_recommended_offer_items:
+            recommendation_name = '{} / {}'.format(
+                offer_name,
+                user_name
+            )
+            recommendations_by_name[recommendation_name] = \
+                create_recommendation(
+                    offer=offer,
+                    user=user
+                )
 
     PcObject.check_and_save(*recommendations_by_name.values())
 

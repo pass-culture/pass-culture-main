@@ -1,3 +1,5 @@
+import random
+
 from models.offer_type import EventType
 from models.pc_object import PcObject
 from utils.logger import logger
@@ -12,7 +14,9 @@ def create_industrial_bookings(recommendations_by_name, stocks_by_name):
 
     stocks = stocks_by_name.values()
 
-    for (recommendation_name, recommendation) in recommendations_by_name.items():
+    reco_to_create_from = random.sample(recommendations_by_name.items(), 30)
+
+    for (recommendation_name, recommendation) in reco_to_create_from:
 
         offer = recommendation.offer
         user = recommendation.user
