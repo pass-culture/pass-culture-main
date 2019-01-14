@@ -11,21 +11,20 @@ export const filterActivationOffers = offers =>
     )
 
 export const mapActivationOffersToSelectOptions = offers =>
-  offers.map(o => {
-    const { id: value } = o
+  offers.map(obj => {
     // construction de l'URL de redirection
-    const { offerId, id: mediationId } = get(o, 'mediations.0')
+    const { offerId, id: mediationId } = get(obj, 'mediations.0')
     const url = `/decouverte/${offerId}/${mediationId}`
     // construction du label de l'option dans le select
-    const venueCity = get(o, 'venue.city')
-    const venueName = get(o, 'venue.name')
-    const venueCodePostal = get(o, 'venue.postalCode')
+    const venueCity = get(obj, 'venue.city')
+    const venueName = get(obj, 'venue.name')
+    const venueCodePostal = get(obj, 'venue.postalCode')
     return {
       city: venueCity,
       code: venueCodePostal,
       label: venueName,
       url,
-      value,
+      value: obj.id,
     }
   })
 

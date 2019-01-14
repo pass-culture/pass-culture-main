@@ -6,32 +6,32 @@
 
 #activation-events-page {
   .pc-final-form-selectbox {
-    .pc-final-form-selectbox__control {
-      @extend .no-outline;
+    .pc-final-form-inner {
+      @extend .no-border;
       @extend .no-background;
-      @extend .no-box-shadow;
 
-      border-top: 0;
-      border-left: 0;
-      border-right: 0;
       border-radius: 0;
+      border-bottom-width: 1px;
+      border-bottom-style: solid;
       border-color: $white !important;
     }
 
-    .pc-final-form-selectbox__value-container {
-      padding-left: 0;
+    .pc-final-form-inner::after {
+      color: $white;
     }
 
-    .pc-final-form-selectbox__placeholder,
-    .pc-final-form-selectbox__single-value {
+    .pc-final-form-input {
       @extend .fs18;
       @extend .is-bold;
-      @extend .is-white-text;
+      @extend .no-background;
+
+      color: $white !important;
+      margin-left: 0 !important;
     }
   }
+}
 
-  #activation-events-submit-button {
-    color: $white;
-    background-color: transparent;
-  }
+#activation-events-page-submit-button {
+  color: $white;
+  background-color: transparent;
 }

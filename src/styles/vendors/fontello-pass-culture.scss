@@ -1,6 +1,10 @@
+.icon-retina {
+  font-size: 200%;
+}
+
 [class^='icon-retina'],
 [class*=' icon-retina'] {
-  font-size: 200%;
+  @extend .icon-retina;
 }
 
 .inherits-from-fontello-icon {

@@ -23,10 +23,6 @@ class ActivationEventsForm extends React.PureComponent {
       <SelectBox
         name="event"
         provider={offers}
-        menuPlacement="top"
-        isClearable={false}
-        maxMenuHeight={200}
-        isSearchable={false}
         placeholder="Choisissez une ville"
       />
     )
@@ -37,7 +33,7 @@ class ActivationEventsForm extends React.PureComponent {
       <button
         type="submit"
         disabled={!canSubmit}
-        id="activation-events-submit-button"
+        id="activation-events-page-submit-button"
         className="button is-rounded is-medium float-right"
       >
         <span>Suite</span>
