@@ -54,11 +54,14 @@ def patch_recommendation(recommendationId):
 @expect_json_data
 def put_read_recommendations():
 
-    read_recommendations = request.json['readRecommendations']
+    update_read_recommendations(request.json)
 
-    update_read_recommendations(read_recommendations)
+    read_recommendation_ids = [dehumanize(reco['id']) for reco in request.json]
+    read_recommendations = Recommendation.query.filter(
+        Recommendation.id.in_(read_recommendation_ids)
+    ).all()
 
-    return jsonify(read_recommendations), 200
+    return jsonify(_serialize_recommendations(read_recommendations)), 200
 
 @app.route('/recommendations', methods=['PUT'])
 @login_required

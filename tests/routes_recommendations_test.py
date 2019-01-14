@@ -61,7 +61,7 @@ def test_put_read_recommendations(app):
     )
 
     # When
-    read_recommendations = [
+    read_recommendation_data = [
         {
             "dateRead": "2018-12-17T15:59:11.689000Z",
             "id": humanize(recommendation1.id)
@@ -75,14 +75,13 @@ def test_put_read_recommendations(app):
     read_recommendations_url = '{}/read'.format(RECOMMENDATION_URL)
     response = req_with_auth('test@email.com', 'P@55w0rd')\
                          .put(read_recommendations_url,
-                              json=read_recommendations)
+                              json=read_recommendation_data)
 
     # Then
-    recommendations = [r for r in response.json()]
-    assert len(recommendations) == 2
-    assert recommendation1.dateRead is not None
-    assert recommendation2.dateRead is not None
-    assert recommendation3.dateRead is None
+    read_recommendations = [r for r in response.json()]
+    assert len(read_recommendations) == 2
+    assert read_recommendations[0]['dateRead'] == "2018-12-17T15:59:11.689000Z"
+    assert read_recommendations[1]['dateRead'] == "2018-12-17T15:59:14.689000Z"
 
 
 @clean_database
