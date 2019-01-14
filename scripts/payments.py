@@ -37,23 +37,27 @@ def generate_and_send_payments():
         send_payments_details(payments, PAYMENTS_DETAILS_RECIPIENTS)
         send_wallet_balances(WALLET_BALANCES_RECIPIENTS)
     except Exception as e:
-        logger.error('GENERATE_AND_SEND_PAYMENTS', e)
+        logger.error('[BATCH][PAYMENTS] generate_and_send_payments', e)
 
 
 def collect_payments() -> List[Payment]:
     new_payments = generate_new_payments()
     pending_payments = keep_pending_payments(new_payments)
     error_payments = payment_queries.find_error_payments()
-    return pending_payments + error_payments
+    payments = pending_payments + error_payments
+    logger.info('[BATCH][PAYMENTS] %s Payments in status PENDING to send' % len(pending_payments))
+    logger.info('[BATCH][PAYMENTS] %s Payments in status ERROR to send' % len(error_payments))
+    logger.info('[BATCH][PAYMENTS] %s Payments in total to send' % len(payments))
+    return payments
 
 
 def generate_new_payments() -> List[Payment]:
     offerers = Offerer.query.all()
-    logger.info('Generating payments for %s Offerers' % len(offerers))
+    logger.info('[BATCH][PAYMENTS] Generating payments for %s Offerers' % len(offerers))
     all_payments = []
 
     for offerer in offerers:
-        logger.info('Generating payments for Offerer : %s' % offerer.name)
+        logger.info('[BATCH][PAYMENTS] Generating payments for Offerer : %s' % offerer.name)
 
         final_offerer_bookings = find_final_offerer_bookings(offerer.id)
         booking_reimbursements = find_all_booking_reimbursement(final_offerer_bookings)
@@ -65,10 +69,11 @@ def generate_new_payments() -> List[Payment]:
         if payments:
             PcObject.check_and_save(*payments)
             all_payments.extend(payments)
-            logger.info('Saved %s payments for Offerer : %s' % (len(payments), offerer.name))
+            logger.info('[BATCH][PAYMENTS] Saved %s payments for Offerer : %s' % (len(payments), offerer.name))
         else:
-            logger.info('No payments to save for Offerer : %s' % offerer.name)
+            logger.info('[BATCH][PAYMENTS] No payments to save for Offerer : %s' % offerer.name)
 
+    logger.info('[BATCH][PAYMENTS] Generated %s payments in total' % len(all_payments))
     return all_payments
 
 
@@ -76,7 +81,7 @@ def send_transactions(payments: List[Payment], pass_culture_iban: str, pass_cult
                       pass_culture_remittance_code: str) -> None:
     if not pass_culture_iban or not pass_culture_bic or not pass_culture_remittance_code:
         logger.error(
-            'Missing PASS_CULTURE_IBAN[%s], PASS_CULTURE_BIC[%s] or PASS_CULTURE_REMITTANCE_CODE[%s] in environment variables' % (
+            '[BATCH][PAYMENTS] Missing PASS_CULTURE_IBAN[%s], PASS_CULTURE_BIC[%s] or PASS_CULTURE_REMITTANCE_CODE[%s] in environment variables' % (
                 pass_culture_iban, pass_culture_bic, pass_culture_remittance_code))
     else:
         message_id = 'passCulture-SCT-%s' % datetime.strftime(datetime.utcnow(), "%Y%m%d-%H%M%S")
@@ -89,7 +94,7 @@ def send_transactions(payments: List[Payment], pass_culture_iban: str, pass_cult
         try:
             send_payment_transaction_email(xml_file, checksum, app.mailjet_client.send.create)
         except MailServiceException as e:
-            logger.error('Error while sending payment transaction email to MailJet', e)
+            logger.error('[BATCH][PAYMENTS] Error while sending payment transaction email to MailJet', e)
             for payment in payments:
                 payment.setStatus(TransactionStatus.ERROR, detail="Erreur d'envoi à MailJet")
         else:
@@ -101,26 +106,26 @@ def send_transactions(payments: List[Payment], pass_culture_iban: str, pass_cult
 
 def send_payments_details(payments: List[Payment], recipients: str) -> None:
     if not recipients:
-        logger.error('Missing PASS_CULTURE_PAYMENTS_DETAILS_RECIPIENTS in environment variables')
+        logger.error('[BATCH][PAYMENTS] Missing PASS_CULTURE_PAYMENTS_DETAILS_RECIPIENTS in environment variables')
     else:
         details = create_all_payments_details(payments)
         csv = generate_payment_details_csv(details)
         try:
             send_payment_details_email(csv, recipients, app.mailjet_client.send.create)
         except MailServiceException as e:
-            logger.error('Error while sending payment details email to MailJet', e)
+            logger.error('[BATCH][PAYMENTS] Error while sending payment details email to MailJet', e)
 
 
 def send_wallet_balances(recipients: str) -> None:
     if not recipients:
-        logger.error('Missing PASS_CULTURE_WALLET_BALANCES_RECIPIENTS in environment variables')
+        logger.error('[BATCH][PAYMENTS] Missing PASS_CULTURE_WALLET_BALANCES_RECIPIENTS in environment variables')
     else:
         balances = get_all_users_wallet_balances()
         csv = generate_wallet_balances_csv(balances)
         try:
             send_wallet_balances_email(csv, recipients, app.mailjet_client.send.create)
         except MailServiceException as e:
-            logger.error('Error while sending users wallet balances email to MailJet', e)
+            logger.error('[BATCH][PAYMENTS] Error while sending users wallet balances email to MailJet', e)
 
 
 def send_payments_report(payments: List[Payment]) -> None:
@@ -137,6 +142,6 @@ def send_payments_report(payments: List[Payment]) -> None:
         try:
             send_payments_report_emails(not_processable_csv, error_csv, groups, app.mailjet_client.send.create)
         except MailServiceException as e:
-            logger.error('Error while sending payments reports to MailJet', e)
+            logger.error('[BATCH][PAYMENTS] Error while sending payments reports to MailJet', e)
     else:
-        logger.info('No payments to report to the pass Culture team')
+        logger.info('[BATCH][PAYMENTS] No payments to report to the pass Culture team')
