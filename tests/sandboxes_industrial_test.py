@@ -1,15 +1,15 @@
 import pytest
-from tests.conftest import clean_database
 
 from sandboxes.scripts.save_sandbox import save_sandbox
+from tests.conftest import clean_database
 from utils.logger import logger
 from utils.test_utils import assertCreatedCounts, \
-                             saveCounts
+    saveCounts
+
 
 @clean_database
 @pytest.mark.standalone
 def test_save_industrial_sandbox(app):
-    savedCounts = {}
     saveCounts(app)
     with app.app_context():
         logger_info = logger.info
@@ -18,14 +18,14 @@ def test_save_industrial_sandbox(app):
         logger.info = logger_info
         assertCreatedCounts(
             app,
-            Booking=8,
+            Booking=54,
             Deposit=6,
             Event=8,
             EventOccurrence=144,
             Mediation=116,
             Offer=114,
             Offerer=6,
-            Recommendation=24,
+            Recommendation=96,
             Stock=192,
             Thing=11,
             User=20,
