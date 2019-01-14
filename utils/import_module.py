@@ -3,7 +3,7 @@ from importlib.util import module_from_spec, \
 
 def get_imported_module (file_name, folder_path='/tmp/uploads/', module_name=None):
     if module_name is None:
-        module_name = file_name.replace('.py', '') if '.py' in file_name else file_name
+        module_name = file_name.replace('.py', '')
     imported_spec = spec_from_file_location(
         module_name,
         '{}/{}'.format(folder_path, file_name)
