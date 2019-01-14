@@ -36,6 +36,54 @@ def test_put_recommendations_works_only_when_logged_in():
     # then
     assert response.status_code == 401
 
+@clean_database
+@pytest.mark.standalone
+def test_put_read_recommendations(app):
+    # Given
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    offer = create_event_offer(venue)
+    user = create_user(email='test@email.com', password='P@55w0rd')
+    event_occurrence1 = create_event_occurrence(offer)
+    event_occurrence2 = create_event_occurrence(offer)
+    stock1 = create_stock_from_event_occurrence(event_occurrence1, soft_deleted=True)
+    stock2 = create_stock_from_event_occurrence(event_occurrence2, soft_deleted=False)
+    thing_offer1 = create_thing_offer(venue)
+    thing_offer2 = create_thing_offer(venue)
+    stock3 = create_stock_from_offer(thing_offer1, soft_deleted=True)
+    stock4 = create_stock_from_offer(thing_offer2, soft_deleted=False)
+    recommendation1 = create_recommendation(offer, user)
+    recommendation2 = create_recommendation(thing_offer1, user)
+    recommendation3 = create_recommendation(thing_offer2, user)
+    PcObject.check_and_save(
+        stock1, stock2, stock3, stock4,
+        recommendation1, recommendation2, recommendation3
+    )
+
+    # When
+    read_recommendations = [
+        {
+            "dateRead": "2018-12-17T15:59:11.689000Z",
+            "id": humanize(recommendation1.id)
+        },
+        {
+            "dateRead": "2018-12-17T15:59:14.689000Z",
+            "id": humanize(recommendation2.id)
+        }
+    ]
+
+    read_recommendations_url = '{}/read'.format(RECOMMENDATION_URL)
+    response = req_with_auth('test@email.com', 'P@55w0rd')\
+                         .put(read_recommendations_url,
+                              json=read_recommendations)
+
+    # Then
+    recommendations = [r for r in response.json()]
+    assert len(recommendations) == 2
+    assert recommendation1.dateRead is not None
+    assert recommendation2.dateRead is not None
+    assert recommendation3.dateRead is None
+
 
 @clean_database
 @pytest.mark.standalone
