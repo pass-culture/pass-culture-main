@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 import { compose } from 'redux'
 
-import HeaderContent from './HeaderContent'
+import RawHeader from './RawHeader'
 import offerersSelector from '../../selectors/offerers'
 
 const mapStateToProps = state => {
@@ -18,4 +18,4 @@ const mapStateToProps = state => {
 export default compose(
   withRouter,
   connect(mapStateToProps)
-)(HeaderContent)
+)(RawHeader)

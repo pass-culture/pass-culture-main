@@ -1,9 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | Layout | HeaderContent snapshot should match snapshot 1`] = `
+exports[`src | components | Layout | RawHeader snapshot should match snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
-  Symbol(enzyme.__unrendered__): <HeaderContent
+  Symbol(enzyme.__unrendered__): <RawHeader
     name="Fake Name"
     offerers={
         Array [

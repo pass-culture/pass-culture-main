@@ -9,7 +9,7 @@ import Main from '../../layout/Main'
 import { offererNormalizer } from '../../../utils/normalizers'
 import { mapApiToWindow } from '../../../utils/pagination'
 
-class Offerers extends Component {
+class RawOfferers extends Component {
   handleDataRequest = (handleSuccess, handleFail) => {
     const { user, dispatch, pagination, search } = this.props
     const { apiQueryString, page, goToNextPage } = pagination
@@ -135,4 +135,4 @@ class Offerers extends Component {
   }
 }
 
-export default Offerers
+export default RawOfferers

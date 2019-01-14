@@ -2,7 +2,7 @@ import { withLogin, withPagination } from 'pass-culture-shared'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 
-import indexContent from './indexContent'
+import RawOfferers from './RawIndex'
 import offerersSelector, {
   getPendingOfferers,
 } from '../../../selectors/offerers'
@@ -26,4 +26,4 @@ export default compose(
     windowToApiQuery,
   }),
   connect(mapStateToProps)
-)(indexContent)
+)(RawOfferers)

@@ -5,7 +5,7 @@ import { NavLink } from 'react-router-dom'
 
 import Logo from './Logo'
 
-class HeaderContent extends Component {
+class RawHeader extends Component {
   constructor() {
     super()
     this.state = {
@@ -111,4 +111,4 @@ class HeaderContent extends Component {
   }
 }
 
-export default HeaderContent
+export default RawHeader

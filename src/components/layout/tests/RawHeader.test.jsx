@@ -1,9 +1,9 @@
 import React from 'react'
 import { shallow } from 'enzyme'
 
-import HeaderContent from '../HeaderContent'
+import RawHeader from '../RawHeader'
 
-describe('src | components | Layout | HeaderContent', () => {
+describe('src | components | Layout | RawHeader', () => {
   describe('snapshot', () => {
     it('should match snapshot', () => {
       // given
@@ -13,7 +13,7 @@ describe('src | components | Layout | HeaderContent', () => {
       }
 
       // when
-      const wrapper = shallow(<HeaderContent {...props} />)
+      const wrapper = shallow(<RawHeader {...props} />)
 
       // then
       expect(wrapper).toBeDefined()
@@ -29,7 +29,7 @@ describe('src | components | Layout | HeaderContent', () => {
         }
 
         // when
-        const wrapper = shallow(<HeaderContent {...props} />)
+        const wrapper = shallow(<RawHeader {...props} />)
         const navLinks = wrapper.find('NavLink')
 
         const linkTitle = navLinks
@@ -48,7 +48,7 @@ describe('src | components | Layout | HeaderContent', () => {
         }
 
         // when
-        const wrapper = shallow(<HeaderContent {...props} />)
+        const wrapper = shallow(<RawHeader {...props} />)
         const navLinks = wrapper.find('NavLink')
 
         const linkTitle = navLinks

@@ -1,7 +1,7 @@
 import React from 'react'
 import { shallow } from 'enzyme'
 
-import Offerers from '../indexContent'
+import RawOfferers from '../RawIndex'
 
 describe('src | components | pages | Offerers | IndexSearch', () => {
   describe('snapshot', () => {
@@ -18,7 +18,7 @@ describe('src | components | pages | Offerers | IndexSearch', () => {
       }
 
       // when
-      const wrapper = shallow(<Offerers {...props} />)
+      const wrapper = shallow(<RawOfferers {...props} />)
 
       // then
       expect(wrapper).toBeDefined()
@@ -41,7 +41,7 @@ describe('src | components | pages | Offerers | IndexSearch', () => {
         }
 
         // when
-        const wrapper = shallow(<Offerers {...props} />)
+        const wrapper = shallow(<RawOfferers {...props} />)
         const heroSection = wrapper.find('HeroSection').props()
 
         // then
@@ -61,7 +61,7 @@ describe('src | components | pages | Offerers | IndexSearch', () => {
         }
 
         // when
-        const wrapper = shallow(<Offerers {...props} />)
+        const wrapper = shallow(<RawOfferers {...props} />)
         const heroSection = wrapper.find('HeroSection').props()
 
         // then
