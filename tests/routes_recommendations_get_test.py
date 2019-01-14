@@ -364,37 +364,6 @@ def test_get_recommendations_returns__recommendations_from_search_by_date_and_ty
     assert recommendations[0]['offer']['eventOrThing']['name'] == 'The new film'
     assert recommendations[1]['offer']['eventOrThing']['name'] == 'Lire un livre'
 
-
-@clean_database
-@pytest.mark.standalone
-@pytest.mark.skip
-def test_get_recommendations_returns_recommendation_from_search_by_type_including_activation_type(app):
-    # Given
-    search = "categories=Activation%2CLire%2CRegarder"
-    user = create_user(email='test@email.com', password='P@55w0rd')
-    offerer = create_offerer()
-    venue = create_venue(offerer)
-    offer = create_event_offer(venue, event_name='The new film', event_type=EventType.CINEMA)
-    offer1 = create_event_offer(venue, event_name='Activation de votre Pass Culture', event_type=EventType.ACTIVATION)
-    event_occurrence = create_event_occurrence(offer, beginning_datetime=now, end_datetime=one_day_from_now)
-
-    recommendation = create_recommendation(offer, user)
-    recommendation1 = create_recommendation(offer1, user)
-    stock = create_stock_from_event_occurrence(event_occurrence)
-    stock1 = create_stock_from_offer(offer1)
-    PcObject.check_and_save(stock, stock1, recommendation, recommendation1)
-    auth_request = req_with_auth(user.email, user.clearTextPassword)
-
-    # When
-    response = auth_request.get(RECOMMENDATION_URL + '?%s' % search)
-
-    # Then
-    assert len(response.json()) == 2
-    recommendations = response.json()
-    assert recommendations[0]['offer']['eventOrThing']['name'] == 'The new film'
-    assert recommendations[1]['offer']['eventOrThing']['name'] == 'Activation de votre Pass Culture'
-
-
 @clean_database
 @pytest.mark.standalone
 def test_get_recommendations_returns_no_recommendations_from_search_by_date_and_type_and_pagination_not_in_range(app):
