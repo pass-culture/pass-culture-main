@@ -67,18 +67,6 @@ def test_validate_bank_information_raises_an_error_if_bic_is_valid_but_iban_is_n
 
 
 @pytest.mark.standalone
-def test_validate_bank_information_raises_an_error_if_bic_has_correct_length_of_8_but_is_unknown():
-    # given
-    offerer = create_offerer(bic='AZRTAZ22', iban='FR7630006000011234567890189')
-
-    # when
-    errors = offerer.errors()
-
-    # then
-    assert errors.errors['bic'] == ["Le BIC saisi est inconnu"]
-
-
-@pytest.mark.standalone
 def test_validate_bank_information_raises_an_error_if_iban_looks_correct_but_does_not_pass_validation_algorithm():
     # given
     offerer = create_offerer(bic='BDFEFR2LCCB', iban='FR7630006000011234567890180')
