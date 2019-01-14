@@ -17,6 +17,14 @@
   &.type-info {
     background-color: $blue;
     z-index: 99999;
+
+    ul {
+      margin-left: 6px;
+
+      li::before {
+        content: "- ";
+      }
+    }
   }
 
 
