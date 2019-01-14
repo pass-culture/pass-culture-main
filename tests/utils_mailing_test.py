@@ -863,14 +863,14 @@ def test_make_payment_transaction_email_sends_a_xml_file_with_its_checksum_in_em
     email = make_payment_transaction_email(xml, file_hash)
 
     # Then
-    assert email["From"] == {"Email": "passculture@beta.gouv.fr",
-                             "Name": "pass Culture Pro"}
+    assert email["FromEmail"] == "passculture@beta.gouv.fr"
+    assert email["FromName"] == "pass Culture Pro"
     assert email["Subject"] == "Virements pass Culture Pro - 2018-10-15"
     assert email["Attachments"] == [{"ContentType": "text/xml",
                                      "Filename": "transaction_banque_de_france_20181015.xml",
-                                     "Base64Content": b'PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48RG9j'
-                                                      b'dW1lbnQgeG1sbnM9InVybjppc286c3RkOmlzbzoyMDAyMjp0ZWNoOnhz'
-                                                      b'ZDpwYWluLjAwMS4wMDEuMDMiPjwvRG9jdW1lbnQ+'}]
+                                     "Content": 'PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48RG9j'
+                                                      'dW1lbnQgeG1sbnM9InVybjppc286c3RkOmlzbzoyMDAyMjp0ZWNoOnhz'
+                                                      'ZDpwYWluLjAwMS4wMDEuMDMiPjwvRG9jdW1lbnQ+'}]
     email_html = BeautifulSoup(email['Html-part'], 'html.parser')
     assert 'transaction_banque_de_france_20181015.xml' in email_html.find('p', {'id': 'file_name'}).find('strong').text
     assert '12345678AZERTYU' in email_html.find('p', {'id': 'file_hash'}).find('strong').text
@@ -886,14 +886,14 @@ def test_make_payment_details_email():
     email = make_payment_details_email(csv)
 
     # Then
-    assert email["From"] == {"Email": "passculture@beta.gouv.fr",
-                             "Name": "pass Culture Pro"}
+    assert email["FromEmail"] == "passculture@beta.gouv.fr"
+    assert email["FromName"] == "pass Culture Pro"
     assert email["Subject"] == "Détails des paiements pass Culture Pro - 2018-10-15"
     assert email["Html-part"] == ""
     assert email["Attachments"] == [{"ContentType": "text/csv",
                                      "Filename": "details_des_paiements_20181015.csv",
-                                     "Base64Content": b'ImhlYWRlciBBIiwiaGVhZGVyIEIiLCJoZWFkZXIgQyIsImhlYWRlciBE'
-                                                      b'IgoicGFydCBBIiwicGFydCBCIiwicGFydCBDIiwicGFydCBEIgo='}]
+                                     "Content": 'ImhlYWRlciBBIiwiaGVhZGVyIEIiLCJoZWFkZXIgQyIsImhlYWRlciBE'
+                                                      'IgoicGFydCBBIiwicGFydCBCIiwicGFydCBDIiwicGFydCBEIgo='}]
 
 
 @pytest.mark.standalone
@@ -906,14 +906,14 @@ def test_make_wallet_balances_email():
     email = make_wallet_balances_email(csv)
 
     # Then
-    assert email["From"] == {"Email": "passculture@beta.gouv.fr",
-                             "Name": "pass Culture Pro"}
+    assert email["FromEmail"] == "passculture@beta.gouv.fr"
+    assert email["FromName"] == "pass Culture Pro"
     assert email["Subject"] == "Soldes des utilisateurs pass Culture - 2018-10-15"
     assert email["Html-part"] == ""
     assert email["Attachments"] == [{"ContentType": "text/csv",
                                      "Filename": "soldes_des_utilisateurs_20181015.csv",
-                                     "Base64Content": b'ImhlYWRlciBBIiwiaGVhZGVyIEIiLCJoZWFkZXIgQyIsImhlYWRlciBE'
-                                                      b'IgoicGFydCBBIiwicGFydCBCIiwicGFydCBDIiwicGFydCBEIgo='}]
+                                     "Content": 'ImhlYWRlciBBIiwiaGVhZGVyIEIiLCJoZWFkZXIgQyIsImhlYWRlciBE'
+                                                      'IgoicGFydCBBIiwicGFydCBCIiwicGFydCBDIiwicGFydCBEIgo='}]
 
 
 @pytest.mark.standalone
@@ -940,14 +940,14 @@ class MakePaymentsReportEmailTest:
             {
                 "ContentType": "text/csv",
                 "Filename": "paiements_non_traitables_2018-10-15.csv",
-                "Base64Content": b'ImhlYWRlciBBIiwiaGVhZGVyIEIiLCJoZWFkZXIgQyIsImhlYWRlciBE'
-                                 b'IgoicGFydCBBIiwicGFydCBCIiwicGFydCBDIiwicGFydCBEIgo='
+                "Content": 'ImhlYWRlciBBIiwiaGVhZGVyIEIiLCJoZWFkZXIgQyIsImhlYWRlciBE'
+                                 'IgoicGFydCBBIiwicGFydCBCIiwicGFydCBDIiwicGFydCBEIgo='
             },
             {
                 "ContentType": "text/csv",
                 "Filename": "paiements_en_erreur_2018-10-15.csv",
-                "Base64Content": b'ImhlYWRlciAxIiwiaGVhZGVyIDIiLCJoZWFkZXIgMyIsImhlYWRlciA0'
-                                 b'IgoicGFydCAxIiwicGFydCAyIiwicGFydCAzIiwicGFydCA0Igo='
+                "Content": 'ImhlYWRlciAxIiwiaGVhZGVyIDIiLCJoZWFkZXIgMyIsImhlYWRlciA0'
+                                 'IgoicGFydCAxIiwicGFydCAyIiwicGFydCAzIiwicGFydCA0Igo='
             }
         ]
 
@@ -956,8 +956,8 @@ class MakePaymentsReportEmailTest:
         email = make_payments_report_email(self.not_processable_csv, self.error_csv, self.grouped_payments)
 
         # Then
-        assert email["From"] == {"Email": "passculture@beta.gouv.fr",
-                                 "Name": "pass Culture Pro"}
+        assert email["FromEmail"] == "passculture@beta.gouv.fr"
+        assert email["FromName"] == "pass Culture Pro"
         assert email["Subject"] == "Récapitulatif des paiements - 2018-10-15"
 
     def test_it_contains_the_total_count_of_payments(self, app):

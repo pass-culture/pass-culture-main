@@ -317,58 +317,56 @@ def subscribe_newsletter(user):
 
 def make_payment_transaction_email(xml: str, file_hash: str) -> dict:
     now = datetime.utcnow()
-    xml_b64encode = base64.b64encode(xml.encode('utf-8'))
+    xml_b64encode = base64.b64encode(xml.encode('utf-8')).decode()
     file_name = "transaction_banque_de_france_{}.xml".format(datetime.strftime(now, "%Y%m%d"))
 
     return {
-        'From': {"Email": "passculture@beta.gouv.fr",
-                 "Name": "pass Culture Pro"},
+        'FromEmail': "passculture@beta.gouv.fr",
+        'FromName': "pass Culture Pro",
         'Subject': "Virements pass Culture Pro - {}".format(datetime.strftime(now, "%Y-%m-%d")),
         'Attachments': [{"ContentType": "text/xml",
                          "Filename": file_name,
-                         "Base64Content": xml_b64encode}],
+                         "Content": xml_b64encode}],
         'Html-part': render_template('mails/payments_xml_email.html', file_name=file_name, file_hash=file_hash)
     }
 
 
 def make_payment_details_email(csv: str) -> dict:
     now = datetime.utcnow()
-    csv_b64encode = base64.b64encode(csv.encode('utf-8'))
+    csv_b64encode = base64.b64encode(csv.encode('utf-8')).decode()
     return {
-        'From': {"Email": "passculture@beta.gouv.fr",
-                 "Name": "pass Culture Pro"},
+        'FromEmail': "passculture@beta.gouv.fr",
+        'FromName': "pass Culture Pro",
         'Subject': "Détails des paiements pass Culture Pro - {}".format(datetime.strftime(now, "%Y-%m-%d")),
         'Attachments': [{"ContentType": "text/csv",
                          "Filename": "details_des_paiements_{}.csv".format(datetime.strftime(now, "%Y%m%d")),
-                         "Base64Content": csv_b64encode}],
+                         "Content": csv_b64encode}],
         'Html-part': ""
     }
 
 
 def make_payments_report_email(not_processable_csv: str, error_csv: str, grouped_payments: Dict) -> Dict:
     now = datetime.utcnow()
-    not_processable_csv_b64encode = base64.b64encode(not_processable_csv.encode('utf-8'))
-    error_csv_b64encode = base64.b64encode(error_csv.encode('utf-8'))
+    not_processable_csv_b64encode = base64.b64encode(not_processable_csv.encode('utf-8')).decode()
+    error_csv_b64encode = base64.b64encode(error_csv.encode('utf-8')).decode()
     formatted_date = datetime.strftime(now, "%Y-%m-%d")
     number_of_payments_for_one_status = lambda key_value: len(key_value[1])
     total_number_of_payments = sum(map(number_of_payments_for_one_status, grouped_payments.items()))
 
     return {
         'Subject': "Récapitulatif des paiements - {}".format(formatted_date),
-        'From': {
-            "Email": "passculture@beta.gouv.fr",
-            "Name": "pass Culture Pro"
-        },
+        "FromEmail": "passculture@beta.gouv.fr",
+        "FromName": "pass Culture Pro",
         'Attachments': [
             {
                 "ContentType": "text/csv",
                 "Filename": "paiements_non_traitables_{}.csv".format(formatted_date),
-                "Base64Content": not_processable_csv_b64encode
+                "Content": not_processable_csv_b64encode
             },
             {
                 "ContentType": "text/csv",
                 "Filename": "paiements_en_erreur_{}.csv".format(formatted_date),
-                "Base64Content": error_csv_b64encode
+                "Content": error_csv_b64encode
             }
         ],
         'Html-part': render_template(
@@ -382,14 +380,14 @@ def make_payments_report_email(not_processable_csv: str, error_csv: str, grouped
 
 def make_wallet_balances_email(csv: str) -> dict:
     now = datetime.utcnow()
-    csv_b64encode = base64.b64encode(csv.encode('utf-8'))
+    csv_b64encode = base64.b64encode(csv.encode('utf-8')).decode()
     return {
-        'From': {"Email": "passculture@beta.gouv.fr",
-                 "Name": "pass Culture Pro"},
+        'FromEmail': "passculture@beta.gouv.fr",
+        'FromName': "pass Culture Pro",
         'Subject': "Soldes des utilisateurs pass Culture - {}".format(datetime.strftime(now, "%Y-%m-%d")),
         'Attachments': [{"ContentType": "text/csv",
                          "Filename": "soldes_des_utilisateurs_{}.csv".format(datetime.strftime(now, "%Y%m%d")),
-                         "Base64Content": csv_b64encode}],
+                         "Content": csv_b64encode}],
         'Html-part': ""
     }
 

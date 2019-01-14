@@ -14,7 +14,7 @@ def create_industrial_bookings(recommendations_by_name, stocks_by_name):
 
     stocks = stocks_by_name.values()
 
-    reco_to_create_from = random.sample(recommendations_by_name.items(), 30)
+    reco_to_create_from = list(recommendations_by_name.items())[:100]
 
     for (recommendation_name, recommendation) in reco_to_create_from:
 
