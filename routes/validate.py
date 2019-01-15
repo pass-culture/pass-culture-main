@@ -2,11 +2,10 @@
 
 from flask import current_app as app, jsonify, request
 from flask_login import login_required, current_user
-from lxml.etree import LxmlError
 
 import models
 from domain.admin_emails import maybe_send_offerer_validation_email
-from domain.payments import validate_transaction_file_structure, read_message_id_in_transaction_file, generate_file_checksum
+from domain.payments import read_message_id_in_transaction_file, generate_file_checksum
 from domain.user_emails import send_validation_confirmation_email, send_venue_validation_confirmation_email
 from models import ApiErrors, \
     User, \
@@ -112,7 +111,7 @@ def certify_transaction_file_authenticity():
 
     given_checksum = generate_file_checksum(xml_content)
 
-    if found_checksum != given_checksum:
+    if found_checksum != given_checksum.digest():
         raise ApiErrors({'xml': ["L'intégrité du document n'est pas validée car la somme de contrôle est invalide : %s" % given_checksum.hex()]})
 
     return jsonify({'checksum': given_checksum.hex()}), 200

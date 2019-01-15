@@ -116,7 +116,7 @@ def validate_transaction_file_structure(transaction_file: str):
 
 def generate_file_checksum(file: str):
     encoded_file = file.encode('utf-8')
-    return sha256(encoded_file).digest()
+    return sha256(encoded_file)
 
 
 def create_all_payments_details(payments: List[Payment], find_booking_date_used=find_date_used) -> List[PaymentDetails]:
@@ -151,7 +151,7 @@ def make_custom_message(date: datetime.date) -> str:
     return 'pass Culture Pro - remboursement %s quinzaine %s' % (period, month_and_year)
 
 
-def generate_payment_transaction(message_id: str, checksum: str, payments: List[Payment]) -> PaymentTransaction:
+def generate_payment_transaction(message_id: str, checksum: bytes, payments: List[Payment]) -> PaymentTransaction:
     payment_transaction = PaymentTransaction()
     payment_transaction.messageId = message_id
     payment_transaction.checksum = checksum
