@@ -857,10 +857,10 @@ def test_make_offerer_booking_user_cancellation_does_not_have_recap_information(
 def test_make_payment_transaction_email_sends_a_xml_file_with_its_checksum_in_email_body(app):
     # Given
     xml = '<?xml version="1.0" encoding="UTF-8"?><Document xmlns="urn:iso:std:iso:20022:tech:xsd:pain.001.001.03"></Document>'
-    file_hash = '12345678AZERTYU'
+    checksum = b'\x16\x91\x0c\x11~Hs\xc5\x1a\xa3W1\x13\xbf!jq@\xea  <h&\xef\x1f\xaf\xfc\x7fO\xc8\x82'
 
     # When
-    email = make_payment_transaction_email(xml, file_hash)
+    email = make_payment_transaction_email(xml, checksum)
 
     # Then
     assert email["FromEmail"] == "passculture@beta.gouv.fr"
@@ -873,7 +873,8 @@ def test_make_payment_transaction_email_sends_a_xml_file_with_its_checksum_in_em
                                                       'ZDpwYWluLjAwMS4wMDEuMDMiPjwvRG9jdW1lbnQ+'}]
     email_html = BeautifulSoup(email['Html-part'], 'html.parser')
     assert 'transaction_banque_de_france_20181015.xml' in email_html.find('p', {'id': 'file_name'}).find('strong').text
-    assert '12345678AZERTYU' in email_html.find('p', {'id': 'file_hash'}).find('strong').text
+    assert '16910c117e4873c51aa3573113bf216a7140ea20203c6826ef1faffc7f4fc882' \
+           in email_html.find('p', {'id': 'checksum'}).find('strong').text
 
 
 @pytest.mark.standalone
