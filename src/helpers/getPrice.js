@@ -1,7 +1,8 @@
-export const devise = '€'
-// export const defaultFreeValue = 'Gratuit'
+import isEqual from 'lodash.isequal'
 
-// sort numbers in an array
+const devise = ' €'
+const arrow = ' \u2192 '
+
 const sortNumber = (a, b) => {
   if (a > b) return 1
   if (a < b) return -1
@@ -22,8 +23,8 @@ const valueToNumber = v => {
 }
 
 const valueToPrice = value => {
-  if (value === 0) return `0${devise}`
-  return (value && `${value.toString().replace('.', ',')}${devise}`) || ''
+  if (value === 0) return '0'
+  return (value && `${value.toString().replace('.', ',')}`) || ''
 }
 
 const parsePriceArray = array => {
@@ -43,14 +44,21 @@ const priceIsDefined = value => {
   return isDefined
 }
 
-// free = defaultFreeValue
 export const getPrice = value => {
   const isDefined = priceIsDefined(value)
   if (!isDefined) return ''
+
+  const isFree = isEqual(value, [0])
+  if (isFree) return 'Gratuit'
+
   let array = (Array.isArray(value) && value) || [value]
+
   array = parsePriceArray(array)
+
   if (!array) return ''
-  return array.map(v => valueToPrice(v)).join(' - ') || ''
+
+  const formatedDevise = array.map(v => valueToPrice(v)).join(arrow) || ''
+  return formatedDevise + devise
 }
 
 export default getPrice

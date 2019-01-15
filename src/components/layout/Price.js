@@ -3,24 +3,20 @@ import PropTypes from 'prop-types'
 
 import { getPrice } from '../../helpers'
 
-const Price = ({ value, free, className }) => {
-  const price = getPrice(value, free)
+const Price = ({ value }) => {
+  const price = getPrice(value)
   return (
-    <span className={`price ${className}`}>
+    <span className="price">
       {price}
     </span>
 )
 }
 
 Price.defaultProps = {
-  className: '',
-  free: 'Gratuit',
   value: null,
 }
 
 Price.propTypes = {
-  className: PropTypes.string,
-  free: PropTypes.string,
   value: PropTypes.oneOfType([PropTypes.array, PropTypes.number]),
 }
 

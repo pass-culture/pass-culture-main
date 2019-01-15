@@ -1,11 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | pages | Price should match snapshot free prop defined and a zero price 1`] = `
+exports[`src | components | pages | Price snapshots should match snapshot free prop defined and a zero price 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <Price
-    className=""
-    free="Offre gratuite"
     value={0}
   />,
   Symbol(enzyme.__renderer__): Object {
@@ -21,11 +19,11 @@ ShallowWrapper {
     "key": undefined,
     "nodeType": "host",
     "props": Object {
-      "children": "0€",
-      "className": "price ",
+      "children": "0 €",
+      "className": "price",
     },
     "ref": null,
-    "rendered": "0€",
+    "rendered": "0 €",
     "type": "span",
   },
   Symbol(enzyme.__nodes__): Array [
@@ -34,11 +32,11 @@ ShallowWrapper {
       "key": undefined,
       "nodeType": "host",
       "props": Object {
-        "children": "0€",
-        "className": "price ",
+        "children": "0 €",
+        "className": "price",
       },
       "ref": null,
-      "rendered": "0€",
+      "rendered": "0 €",
       "type": "span",
     },
   ],
@@ -62,79 +60,10 @@ ShallowWrapper {
 }
 `;
 
-exports[`src | components | pages | Price should match snapshot with a classname 1`] = `
+exports[`src | components | pages | Price snapshots should match snapshot with a price number 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <Price
-    className="fake-css-class"
-    free="Gratuit"
-    value={
-      Array [
-        5,
-        10,
-      ]
-    }
-  />,
-  Symbol(enzyme.__renderer__): Object {
-    "batchedUpdates": [Function],
-    "getNode": [Function],
-    "render": [Function],
-    "simulateError": [Function],
-    "simulateEvent": [Function],
-    "unmount": [Function],
-  },
-  Symbol(enzyme.__node__): Object {
-    "instance": null,
-    "key": undefined,
-    "nodeType": "host",
-    "props": Object {
-      "children": "5€ - 10€",
-      "className": "price fake-css-class",
-    },
-    "ref": null,
-    "rendered": "5€ - 10€",
-    "type": "span",
-  },
-  Symbol(enzyme.__nodes__): Array [
-    Object {
-      "instance": null,
-      "key": undefined,
-      "nodeType": "host",
-      "props": Object {
-        "children": "5€ - 10€",
-        "className": "price fake-css-class",
-      },
-      "ref": null,
-      "rendered": "5€ - 10€",
-      "type": "span",
-    },
-  ],
-  Symbol(enzyme.__options__): Object {
-    "adapter": ReactSixteenAdapter {
-      "options": Object {
-        "enableComponentDidUpdateOnSetState": true,
-        "lifecycles": Object {
-          "componentDidUpdate": Object {
-            "onSetState": true,
-          },
-          "getDerivedStateFromProps": true,
-          "getSnapshotBeforeUpdate": true,
-          "setState": Object {
-            "skipsComponentDidUpdateOnNullish": true,
-          },
-        },
-      },
-    },
-  },
-}
-`;
-
-exports[`src | components | pages | Price should match snapshot with a price number 1`] = `
-ShallowWrapper {
-  Symbol(enzyme.__root__): [Circular],
-  Symbol(enzyme.__unrendered__): <Price
-    className=""
-    free="Gratuit"
     value={5}
   />,
   Symbol(enzyme.__renderer__): Object {
@@ -150,11 +79,11 @@ ShallowWrapper {
     "key": undefined,
     "nodeType": "host",
     "props": Object {
-      "children": "5€",
-      "className": "price ",
+      "children": "5 €",
+      "className": "price",
     },
     "ref": null,
-    "rendered": "5€",
+    "rendered": "5 €",
     "type": "span",
   },
   Symbol(enzyme.__nodes__): Array [
@@ -163,11 +92,11 @@ ShallowWrapper {
       "key": undefined,
       "nodeType": "host",
       "props": Object {
-        "children": "5€",
-        "className": "price ",
+        "children": "5 €",
+        "className": "price",
       },
       "ref": null,
-      "rendered": "5€",
+      "rendered": "5 €",
       "type": "span",
     },
   ],
@@ -191,12 +120,10 @@ ShallowWrapper {
 }
 `;
 
-exports[`src | components | pages | Price should match snapshot with an array of prices number 1`] = `
+exports[`src | components | pages | Price snapshots should match snapshot with an array of prices number 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <Price
-    className=""
-    free="Gratuit"
     value={
       Array [
         5,
@@ -217,11 +144,11 @@ ShallowWrapper {
     "key": undefined,
     "nodeType": "host",
     "props": Object {
-      "children": "5€ - 10€",
-      "className": "price ",
+      "children": "5 → 10 €",
+      "className": "price",
     },
     "ref": null,
-    "rendered": "5€ - 10€",
+    "rendered": "5 → 10 €",
     "type": "span",
   },
   Symbol(enzyme.__nodes__): Array [
@@ -230,11 +157,11 @@ ShallowWrapper {
       "key": undefined,
       "nodeType": "host",
       "props": Object {
-        "children": "5€ - 10€",
-        "className": "price ",
+        "children": "5 → 10 €",
+        "className": "price",
       },
       "ref": null,
-      "rendered": "5€ - 10€",
+      "rendered": "5 → 10 €",
       "type": "span",
     },
   ],
@@ -258,12 +185,75 @@ ShallowWrapper {
 }
 `;
 
-exports[`src | components | pages | Price should match snapshot without props 1`] = `
+exports[`src | components | pages | Price snapshots should match snapshot with decimal prices 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <Price
-    className=""
-    free="Gratuit"
+    value={
+      Array [
+        5.99,
+        10,
+      ]
+    }
+  />,
+  Symbol(enzyme.__renderer__): Object {
+    "batchedUpdates": [Function],
+    "getNode": [Function],
+    "render": [Function],
+    "simulateError": [Function],
+    "simulateEvent": [Function],
+    "unmount": [Function],
+  },
+  Symbol(enzyme.__node__): Object {
+    "instance": null,
+    "key": undefined,
+    "nodeType": "host",
+    "props": Object {
+      "children": "5,99 → 10 €",
+      "className": "price",
+    },
+    "ref": null,
+    "rendered": "5,99 → 10 €",
+    "type": "span",
+  },
+  Symbol(enzyme.__nodes__): Array [
+    Object {
+      "instance": null,
+      "key": undefined,
+      "nodeType": "host",
+      "props": Object {
+        "children": "5,99 → 10 €",
+        "className": "price",
+      },
+      "ref": null,
+      "rendered": "5,99 → 10 €",
+      "type": "span",
+    },
+  ],
+  Symbol(enzyme.__options__): Object {
+    "adapter": ReactSixteenAdapter {
+      "options": Object {
+        "enableComponentDidUpdateOnSetState": true,
+        "lifecycles": Object {
+          "componentDidUpdate": Object {
+            "onSetState": true,
+          },
+          "getDerivedStateFromProps": true,
+          "getSnapshotBeforeUpdate": true,
+          "setState": Object {
+            "skipsComponentDidUpdateOnNullish": true,
+          },
+        },
+      },
+    },
+  },
+}
+`;
+
+exports[`src | components | pages | Price snapshots should match snapshot without props 1`] = `
+ShallowWrapper {
+  Symbol(enzyme.__root__): [Circular],
+  Symbol(enzyme.__unrendered__): <Price
     value={null}
   />,
   Symbol(enzyme.__renderer__): Object {
@@ -280,7 +270,7 @@ ShallowWrapper {
     "nodeType": "host",
     "props": Object {
       "children": "",
-      "className": "price ",
+      "className": "price",
     },
     "ref": null,
     "rendered": "",
@@ -293,7 +283,7 @@ ShallowWrapper {
       "nodeType": "host",
       "props": Object {
         "children": "",
-        "className": "price ",
+        "className": "price",
       },
       "ref": null,
       "rendered": "",

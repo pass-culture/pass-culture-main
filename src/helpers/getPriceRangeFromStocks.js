@@ -1,8 +1,9 @@
 const getPriceRangeFromStocks = stocks => {
   if (!stocks || !Array.isArray(stocks)) return []
+
   const filtered = stocks
-    .filter(o => o.available && o.available > 0)
-    .map(o => o.price)
+    .filter(stock => stock.available === null || stock.available > 0)
+    .map(stock => stock.price)
   return filtered
 }
 

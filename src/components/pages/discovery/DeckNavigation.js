@@ -86,13 +86,11 @@ export class RawDeckNavigation extends React.PureComponent {
     if (offer && offer.venue) {
       distanceClue = offer.venue.isVirtual ? 'offre en ligne' : distance
     }
-
     const firstThumbDominantColor = get(
       recommendation,
       'firstThumbDominantColor'
     )
     const headerColor = getHeaderColor(firstThumbDominantColor)
-
     const priceRange = getPriceRangeFromStocks(offer && offer.stocks)
 
     const backgroundGradient = `linear-gradient(to bottom, rgba(0,0,0,0) 0%,${headerColor} 30%,${headerColor} 100%)`
