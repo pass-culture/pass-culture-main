@@ -865,7 +865,7 @@ def test_make_payment_transaction_email_sends_a_xml_file_with_its_checksum_in_em
     # Then
     assert email["FromEmail"] == "passculture@beta.gouv.fr"
     assert email["FromName"] == "pass Culture Pro"
-    assert email["Subject"] == "Virements pass Culture Pro - 2018-10-15"
+    assert email["Subject"] == "Virements XML pass Culture Pro - 2018-10-15"
     assert email["Attachments"] == [{"ContentType": "text/xml",
                                      "Filename": "transaction_banque_de_france_20181015.xml",
                                      "Content": 'PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48RG9j'
@@ -959,7 +959,7 @@ class MakePaymentsReportEmailTest:
         # Then
         assert email["FromEmail"] == "passculture@beta.gouv.fr"
         assert email["FromName"] == "pass Culture Pro"
-        assert email["Subject"] == "Récapitulatif des paiements - 2018-10-15"
+        assert email["Subject"] == "Récapitulatif des paiements pass Culture Pro - 2018-10-15"
 
     def test_it_contains_the_total_count_of_payments(self, app):
         # When

@@ -323,7 +323,7 @@ def make_payment_transaction_email(xml: str, checksum: bytes) -> dict:
     return {
         'FromEmail': "passculture@beta.gouv.fr",
         'FromName': "pass Culture Pro",
-        'Subject': "Virements pass Culture Pro - {}".format(datetime.strftime(now, "%Y-%m-%d")),
+        'Subject': "Virements XML pass Culture Pro - {}".format(datetime.strftime(now, "%Y-%m-%d")),
         'Attachments': [{"ContentType": "text/xml",
                          "Filename": file_name,
                          "Content": xml_b64encode}],
@@ -354,7 +354,7 @@ def make_payments_report_email(not_processable_csv: str, error_csv: str, grouped
     total_number_of_payments = sum(map(number_of_payments_for_one_status, grouped_payments.items()))
 
     return {
-        'Subject': "Récapitulatif des paiements - {}".format(formatted_date),
+        'Subject': "Récapitulatif des paiements pass Culture Pro - {}".format(formatted_date),
         "FromEmail": "passculture@beta.gouv.fr",
         "FromName": "pass Culture Pro",
         'Attachments': [
