@@ -28,9 +28,8 @@ def maybe_send_offerer_validation_email(offerer, user_offerer, send_create_email
     check_if_email_sent(mail_result)
 
 
-def send_payment_transaction_email(xml_attachment: str, checksum: bytes, send_create_email):
+def send_payment_transaction_email(xml_attachment: str, checksum: bytes, recipients: List[str], send_create_email):
     email = make_payment_transaction_email(xml_attachment, checksum)
-    recipients = ["passculture-dev@beta.gouv.fr"]
     email['Html-part'], email['To'] = compute_email_html_part_and_recipients(email['Html-part'], recipients)
     mail_result = send_create_email(data=email)
     check_if_email_sent(mail_result)
@@ -51,9 +50,8 @@ def send_wallet_balances_email(csv_attachment: str, recipients: List[str], send_
 
 
 def send_payments_report_emails(not_processable_payments_csv: str, error_payments_csv: str, grouped_payments: Dict,
-                                send_create_email):
+                                recipients: List[str], send_create_email):
     email = make_payments_report_email(not_processable_payments_csv, error_payments_csv, grouped_payments)
-    recipients = ['passculture@beta.gouv.fr']
     email['Html-part'], email['To'] = compute_email_html_part_and_recipients("", recipients)
     mail_result = send_create_email(data=email)
     check_if_email_sent(mail_result)

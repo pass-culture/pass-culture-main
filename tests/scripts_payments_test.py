@@ -63,7 +63,7 @@ def test_send_transactions_should_not_send_an_email_if_pass_culture_iban_is_miss
     ]
 
     # when
-    send_transactions(payments, None, 'AZERTY9Q666', '0000')
+    send_transactions(payments, None, 'AZERTY9Q666', '0000', 'comptable@test.com')
 
     # then
     app.mailjet_client.send.create.assert_not_called()
@@ -88,7 +88,7 @@ def test_send_transactions_should_not_send_an_email_if_pass_culture_bic_is_missi
     ]
 
     # when
-    send_transactions(payments, 'BD12AZERTY123456', None, '0000')
+    send_transactions(payments, 'BD12AZERTY123456', None, '0000', 'comptable@test.com')
 
     # then
     app.mailjet_client.send.create.assert_not_called()
@@ -113,7 +113,7 @@ def test_send_transactions_should_not_send_an_email_if_pass_culture_id_is_missin
     ]
 
     # when
-    send_transactions(payments, 'BD12AZERTY123456', 'AZERTY9Q666', None)
+    send_transactions(payments, 'BD12AZERTY123456', 'AZERTY9Q666', None, 'comptable@test.com')
 
     # then
     app.mailjet_client.send.create.assert_not_called()
@@ -142,7 +142,7 @@ def test_send_transactions_should_send_an_email_with_xml_attachment(app):
     app.mailjet_client.send.create.return_value = Mock(status_code=200)
 
     # when
-    send_transactions(payments, 'BD12AZERTY123456', 'AZERTY9Q666', '0000')
+    send_transactions(payments, 'BD12AZERTY123456', 'AZERTY9Q666', '0000', 'comptable@test.com')
 
     # then
     app.mailjet_client.send.create.assert_called_once()
@@ -176,7 +176,7 @@ def test_send_transactions_creates_a_new_payment_transaction_if_email_was_sent_p
     app.mailjet_client.send.create.return_value = Mock(status_code=200)
 
     # when
-    send_transactions(payments, 'BD12AZERTY123456', 'AZERTY9Q666', '0000')
+    send_transactions(payments, 'BD12AZERTY123456', 'AZERTY9Q666', '0000', 'comptable@test.com')
 
     # then
     updated_payments = Payment.query.all()
@@ -210,7 +210,7 @@ def test_send_transactions_set_status_to_sent_if_email_was_sent_properly(app):
     app.mailjet_client.send.create.return_value = Mock(status_code=200)
 
     # when
-    send_transactions(payments, 'BD12AZERTY123456', 'AZERTY9Q666', '0000')
+    send_transactions(payments, 'BD12AZERTY123456', 'AZERTY9Q666', '0000', 'comptable@test.com')
 
     # then
     updated_payments = Payment.query.all()
@@ -246,7 +246,7 @@ def test_send_transactions_set_status_to_error_with_details_if_email_was_not_sen
     app.mailjet_client.send.create.return_value = Mock(status_code=400)
 
     # when
-    send_transactions(payments, 'BD12AZERTY123456', 'AZERTY9Q666', '0000')
+    send_transactions(payments, 'BD12AZERTY123456', 'AZERTY9Q666', '0000', 'comptable@test.com')
 
     # then
     updated_payments = Payment.query.all()
@@ -357,7 +357,7 @@ def test_send_payments_report_sends_two_csv_attachments_if_some_payments_are_not
     app.mailjet_client.send.create.return_value = Mock(status_code=200)
 
     # when
-    send_payments_report(payments)
+    send_payments_report(payments, ['dev.team@test.com'])
 
     # then
     app.mailjet_client.send.create.assert_called_once()
@@ -392,7 +392,7 @@ def test_send_payments_report_sends_two_csv_attachments_if_no_payments_are_in_er
     app.mailjet_client.send.create.return_value = Mock(status_code=200)
 
     # when
-    send_payments_report(payments)
+    send_payments_report(payments, ['dev.team@test.com'])
 
     # then
     app.mailjet_client.send.create.assert_called_once()
@@ -410,7 +410,7 @@ def test_send_payments_report_does_not_send_anything_if_no_payments_are_provided
     payments = []
 
     # when
-    send_payments_report(payments)
+    send_payments_report(payments, ['dev.team@test.com'])
 
     # then
     app.mailjet_client.send.create.assert_not_called()

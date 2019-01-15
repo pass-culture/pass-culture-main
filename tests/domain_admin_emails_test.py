@@ -316,13 +316,14 @@ def test_send_payments_report_emails_when_mailjet_status_code_200_sends_email_to
 
     # When
     with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True):
-        send_payments_report_emails(not_processable_csv, error_csv, grouped_payments, mocked_send_create_email)
+        send_payments_report_emails(not_processable_csv, error_csv, grouped_payments, ['dev.team@test.com'],
+                                    mocked_send_create_email)
 
     # Then
     mocked_send_create_email.assert_called_once()
     args = mocked_send_create_email.call_args
     email = args[1]['data']
-    assert email['To'] == 'passculture@beta.gouv.fr'
+    assert email['To'] == 'dev.team@test.com'
 
 
 @pytest.mark.standalone
@@ -343,7 +344,8 @@ def test_send_payments_report_emails_email_has_pass_culture_dev_as_recipient_whe
 
     # When
     with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=False):
-        send_payments_report_emails(not_processable_csv, error_csv, grouped_payments, mocked_send_create_email)
+        send_payments_report_emails(not_processable_csv, error_csv, grouped_payments, ['dev.team@test.com'],
+                                    mocked_send_create_email)
 
     # Then
     mocked_send_create_email.assert_called_once()
@@ -370,4 +372,5 @@ def test_send_payments_report_emails_when_mailjet_status_code_400_raises_MailSer
 
     # When
     with pytest.raises(MailServiceException):
-        send_payments_report_emails(not_processable_csv, error_csv, grouped_payments, mocked_send_create_email)
+        send_payments_report_emails(not_processable_csv, error_csv, grouped_payments, ['dev.team@test.com'],
+                                    mocked_send_create_email)

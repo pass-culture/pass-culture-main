@@ -24,6 +24,8 @@ from utils.mailing import MailServiceException, parse_email_addresses
 PASS_CULTURE_IBAN = os.environ.get('PASS_CULTURE_IBAN', None)
 PASS_CULTURE_BIC = os.environ.get('PASS_CULTURE_BIC', None)
 PASS_CULTURE_REMITTANCE_CODE = os.environ.get('PASS_CULTURE_REMITTANCE_CODE', None)
+TRANSACTIONS_RECIPIENTS = parse_email_addresses(os.environ.get('TRANSACTIONS_RECIPIENTS', None))
+PAYMENTS_REPORT_RECIPIENTS = parse_email_addresses(os.environ.get('PAYMENTS_REPORT_RECIPIENTS', None))
 PAYMENTS_DETAILS_RECIPIENTS = parse_email_addresses(os.environ.get('PAYMENTS_DETAILS_RECIPIENTS', None))
 WALLET_BALANCES_RECIPIENTS = parse_email_addresses(os.environ.get('WALLET_BALANCES_RECIPIENTS', None))
 
@@ -37,10 +39,12 @@ def generate_and_send_payments():
 
     try:
         logger.info('[BATCH][PAYMENTS] STEP 3 : send transactions')
-        send_transactions(payments, PASS_CULTURE_IBAN, PASS_CULTURE_BIC, PASS_CULTURE_REMITTANCE_CODE)
+        send_transactions(
+            payments, PASS_CULTURE_IBAN, PASS_CULTURE_BIC, PASS_CULTURE_REMITTANCE_CODE, TRANSACTIONS_RECIPIENTS
+        )
 
         logger.info('[BATCH][PAYMENTS] STEP 4 : send payments report')
-        send_payments_report(payments)
+        send_payments_report(payments, PAYMENTS_REPORT_RECIPIENTS)
 
         logger.info('[BATCH][PAYMENTS] STEP 5 : send payments details')
         send_payments_details(payments, PAYMENTS_DETAILS_RECIPIENTS)
@@ -83,7 +87,7 @@ def generate_new_payments() -> List[Payment]:
 
 
 def send_transactions(payments: List[Payment], pass_culture_iban: str, pass_culture_bic: str,
-                      pass_culture_remittance_code: str) -> None:
+                      pass_culture_remittance_code: str, recipients: List[str]) -> None:
     if not pass_culture_iban or not pass_culture_bic or not pass_culture_remittance_code:
         logger.error(
             '[BATCH][PAYMENTS] Missing PASS_CULTURE_IBAN[%s], PASS_CULTURE_BIC[%s] or PASS_CULTURE_REMITTANCE_CODE[%s] in environment variables' % (
@@ -100,10 +104,10 @@ def send_transactions(payments: List[Payment], pass_culture_iban: str, pass_cult
             '[BATCH][PAYMENTS] Sending file with message ID [%s] and checksum [%s]' %
             (transaction.messageId, transaction.checksum.hex())
         )
-        logger.info('[BATCH][PAYMENTS] Recipients of email : %s' % '')
+        logger.info('[BATCH][PAYMENTS] Recipients of email : %s' % recipients)
 
         try:
-            send_payment_transaction_email(xml_file, checksum, app.mailjet_client.send.create)
+            send_payment_transaction_email(xml_file, checksum, recipients, app.mailjet_client.send.create)
         except MailServiceException as e:
             logger.error('[BATCH][PAYMENTS] Error while sending payment transaction email to MailJet', e)
             for payment in payments:
@@ -143,7 +147,7 @@ def send_wallet_balances(recipients: List[str]) -> None:
             logger.error('[BATCH][PAYMENTS] Error while sending users wallet balances email to MailJet', e)
 
 
-def send_payments_report(payments: List[Payment]) -> None:
+def send_payments_report(payments: List[Payment], recipients: List[str]) -> None:
     if payments:
         groups = group_payments_by_status(payments)
 
@@ -158,10 +162,11 @@ def send_payments_report(payments: List[Payment]) -> None:
             '[BATCH][PAYMENTS] Sending report on %s payment in ERROR and %s payment NOT_PROCESSABLE'
             % (len(payments_error_details), len(payments_not_processable_details))
         )
-        logger.info('[BATCH][PAYMENTS] Recipients of email : %s' % '')
+        logger.info('[BATCH][PAYMENTS] Recipients of email : %s' % recipients)
 
         try:
-            send_payments_report_emails(not_processable_csv, error_csv, groups, app.mailjet_client.send.create)
+            send_payments_report_emails(not_processable_csv, error_csv, groups, recipients,
+                                        app.mailjet_client.send.create)
         except MailServiceException as e:
             logger.error('[BATCH][PAYMENTS] Error while sending payments reports to MailJet', e)
     else:
