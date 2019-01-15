@@ -3,7 +3,7 @@ import base64
 import os
 from datetime import datetime
 from pprint import pformat
-from typing import Dict
+from typing import Dict, List
 
 from flask import current_app as app, render_template
 
@@ -412,6 +412,17 @@ def compute_email_html_part_and_recipients(email_html_part, recipients):
             environment=ENV, recipients=recipients_string, html_part=email_html_part)
         email_to = 'passculture-dev@beta.gouv.fr'
     return email_html_part, email_to
+
+
+def parse_email_addresses(addresses: str) -> List[str]:
+    if not addresses:
+        return []
+    elif ',' in addresses:
+        return [a.strip() for a in addresses.split(',')]
+    elif ';' in addresses:
+        return [a.strip() for a in addresses.split(';')]
+    else:
+        return [addresses]
 
 
 def _generate_reservation_email_html_subject(booking):

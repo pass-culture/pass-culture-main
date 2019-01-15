@@ -19,13 +19,13 @@ from repository import payment_queries
 from repository.booking_queries import find_final_offerer_bookings
 from repository.user_queries import get_all_users_wallet_balances
 from utils.logger import logger
-from utils.mailing import MailServiceException
+from utils.mailing import MailServiceException, parse_email_addresses
 
 PASS_CULTURE_IBAN = os.environ.get('PASS_CULTURE_IBAN', None)
 PASS_CULTURE_BIC = os.environ.get('PASS_CULTURE_BIC', None)
 PASS_CULTURE_REMITTANCE_CODE = os.environ.get('PASS_CULTURE_REMITTANCE_CODE', None)
-PAYMENTS_DETAILS_RECIPIENTS = os.environ.get('PAYMENTS_DETAILS_RECIPIENTS', None)
-WALLET_BALANCES_RECIPIENTS = os.environ.get('WALLET_BALANCES_RECIPIENTS', None)
+PAYMENTS_DETAILS_RECIPIENTS = parse_email_addresses(os.environ.get('PAYMENTS_DETAILS_RECIPIENTS', None))
+WALLET_BALANCES_RECIPIENTS = parse_email_addresses(os.environ.get('WALLET_BALANCES_RECIPIENTS', None))
 
 
 def generate_and_send_payments():
@@ -104,7 +104,7 @@ def send_transactions(payments: List[Payment], pass_culture_iban: str, pass_cult
             PcObject.check_and_save(transaction, *payments)
 
 
-def send_payments_details(payments: List[Payment], recipients: str) -> None:
+def send_payments_details(payments: List[Payment], recipients: List[str]) -> None:
     if not recipients:
         logger.error('[BATCH][PAYMENTS] Missing PASS_CULTURE_PAYMENTS_DETAILS_RECIPIENTS in environment variables')
     else:
@@ -116,7 +116,7 @@ def send_payments_details(payments: List[Payment], recipients: str) -> None:
             logger.error('[BATCH][PAYMENTS] Error while sending payment details email to MailJet', e)
 
 
-def send_wallet_balances(recipients: str) -> None:
+def send_wallet_balances(recipients: List[str]) -> None:
     if not recipients:
         logger.error('[BATCH][PAYMENTS] Missing PASS_CULTURE_WALLET_BALANCES_RECIPIENTS in environment variables')
     else:

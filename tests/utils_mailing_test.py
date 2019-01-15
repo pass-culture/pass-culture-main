@@ -18,7 +18,7 @@ from utils.mailing import make_user_booking_recap_email, \
     make_venue_validation_email, \
     make_venue_validation_confirmation_email, \
     make_batch_cancellation_email, make_payment_transaction_email, make_user_validation_email, \
-    make_payment_details_email, make_wallet_balances_email, make_payments_report_email
+    make_payment_details_email, make_wallet_balances_email, make_payments_report_email, parse_email_addresses
 from utils.test_utils import create_stock_with_event_offer, create_stock_with_thing_offer, \
     create_user, create_booking, create_user_offerer, \
     create_offerer, create_venue, create_thing_offer, create_event_offer, create_stock_from_offer, \
@@ -869,8 +869,8 @@ def test_make_payment_transaction_email_sends_a_xml_file_with_its_checksum_in_em
     assert email["Attachments"] == [{"ContentType": "text/xml",
                                      "Filename": "transaction_banque_de_france_20181015.xml",
                                      "Content": 'PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48RG9j'
-                                                      'dW1lbnQgeG1sbnM9InVybjppc286c3RkOmlzbzoyMDAyMjp0ZWNoOnhz'
-                                                      'ZDpwYWluLjAwMS4wMDEuMDMiPjwvRG9jdW1lbnQ+'}]
+                                                'dW1lbnQgeG1sbnM9InVybjppc286c3RkOmlzbzoyMDAyMjp0ZWNoOnhz'
+                                                'ZDpwYWluLjAwMS4wMDEuMDMiPjwvRG9jdW1lbnQ+'}]
     email_html = BeautifulSoup(email['Html-part'], 'html.parser')
     assert 'transaction_banque_de_france_20181015.xml' in email_html.find('p', {'id': 'file_name'}).find('strong').text
     assert '16910c117e4873c51aa3573113bf216a7140ea20203c6826ef1faffc7f4fc882' \
@@ -894,7 +894,7 @@ def test_make_payment_details_email():
     assert email["Attachments"] == [{"ContentType": "text/csv",
                                      "Filename": "details_des_paiements_20181015.csv",
                                      "Content": 'ImhlYWRlciBBIiwiaGVhZGVyIEIiLCJoZWFkZXIgQyIsImhlYWRlciBE'
-                                                      'IgoicGFydCBBIiwicGFydCBCIiwicGFydCBDIiwicGFydCBEIgo='}]
+                                                'IgoicGFydCBBIiwicGFydCBCIiwicGFydCBDIiwicGFydCBEIgo='}]
 
 
 @pytest.mark.standalone
@@ -914,7 +914,7 @@ def test_make_wallet_balances_email():
     assert email["Attachments"] == [{"ContentType": "text/csv",
                                      "Filename": "soldes_des_utilisateurs_20181015.csv",
                                      "Content": 'ImhlYWRlciBBIiwiaGVhZGVyIEIiLCJoZWFkZXIgQyIsImhlYWRlciBE'
-                                                      'IgoicGFydCBBIiwicGFydCBCIiwicGFydCBDIiwicGFydCBEIgo='}]
+                                                'IgoicGFydCBBIiwicGFydCBCIiwicGFydCBDIiwicGFydCBEIgo='}]
 
 
 @pytest.mark.standalone
@@ -942,13 +942,13 @@ class MakePaymentsReportEmailTest:
                 "ContentType": "text/csv",
                 "Filename": "paiements_non_traitables_2018-10-15.csv",
                 "Content": 'ImhlYWRlciBBIiwiaGVhZGVyIEIiLCJoZWFkZXIgQyIsImhlYWRlciBE'
-                                 'IgoicGFydCBBIiwicGFydCBCIiwicGFydCBDIiwicGFydCBEIgo='
+                           'IgoicGFydCBBIiwicGFydCBCIiwicGFydCBDIiwicGFydCBEIgo='
             },
             {
                 "ContentType": "text/csv",
                 "Filename": "paiements_en_erreur_2018-10-15.csv",
                 "Content": 'ImhlYWRlciAxIiwiaGVhZGVyIDIiLCJoZWFkZXIgMyIsImhlYWRlciA0'
-                                 'IgoicGFydCAxIiwicGFydCAyIiwicGFydCAzIiwicGFydCA0Igo='
+                           'IgoicGFydCAxIiwicGFydCAyIiwicGFydCAzIiwicGFydCA0Igo='
             }
         ]
 
@@ -1077,6 +1077,25 @@ def test_make_venue_validation_confirmation_email(app):
     assert 'à votre structure "La Structure"' in html_validation
     assert 'Cordialement,' in html_salutation
     assert 'L\'équipe pass Culture' in html_salutation
+
+
+class ParseEmailAddressesTest:
+    def test_returns_an_empty_list(self):
+        assert parse_email_addresses('') == []
+        assert parse_email_addresses(None) == []
+
+    def test_returns_a_single_given_address(self):
+        assert parse_email_addresses('recipient@test.com') == ['recipient@test.com']
+
+    def test_returns_two_addresses_separated_by_comma(self):
+        assert parse_email_addresses('one@test.com,two@test.com') == ['one@test.com', 'two@test.com']
+        assert parse_email_addresses('one@test.com, two@test.com') == ['one@test.com', 'two@test.com']
+        assert parse_email_addresses('  one@test.com  , two@test.com   ') == ['one@test.com', 'two@test.com']
+
+    def test_returns_two_addresses_separated_by_semicolon(self):
+        assert parse_email_addresses('one@test.com;two@test.com') == ['one@test.com', 'two@test.com']
+        assert parse_email_addresses('one@test.com; two@test.com') == ['one@test.com', 'two@test.com']
+        assert parse_email_addresses('  one@test.com  ; two@test.com   ') == ['one@test.com', 'two@test.com']
 
 
 def remove_whitespaces(text):
