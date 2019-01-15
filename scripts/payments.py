@@ -89,10 +89,10 @@ def send_transactions(payments: List[Payment], pass_culture_iban: str, pass_cult
                                              pass_culture_remittance_code)
         validate_transaction_file_structure(xml_file)
         checksum = generate_file_checksum(xml_file)
-        transaction = generate_payment_transaction(message_id, checksum.digest(), payments)
+        transaction = generate_payment_transaction(message_id, checksum, payments)
 
         try:
-            send_payment_transaction_email(xml_file, checksum.hexdigest(), app.mailjet_client.send.create)
+            send_payment_transaction_email(xml_file, checksum, app.mailjet_client.send.create)
         except MailServiceException as e:
             logger.error('[BATCH][PAYMENTS] Error while sending payment transaction email to MailJet', e)
             for payment in payments:

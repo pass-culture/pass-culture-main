@@ -602,7 +602,7 @@ def test_generate_file_checksum_returns_a_checksum_of_the_file(mocked_uuid, app)
     checksum = generate_file_checksum(xml)
 
     # then
-    assert checksum.digest() == b'\x16\x91\x0c\x11~Hs\xc5\x1a\xa3W1\x13\xbf!jq@\xea  <h&\xef\x1f\xaf\xfc\x7fO\xc8\x82'
+    assert checksum == b'\x16\x91\x0c\x11~Hs\xc5\x1a\xa3W1\x13\xbf!jq@\xea  <h&\xef\x1f\xaf\xfc\x7fO\xc8\x82'
 
 
 @pytest.mark.standalone
