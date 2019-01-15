@@ -29,23 +29,31 @@ WALLET_BALANCES_RECIPIENTS = parse_email_addresses(os.environ.get('WALLET_BALANC
 
 
 def generate_and_send_payments():
-    payments = collect_payments()
+    logger.info('[BATCH][PAYMENTS] STEP 1 : generate payments')
+    pending_payments = generate_new_payments()
+
+    logger.info('[BATCH][PAYMENTS] STEP 2 : collect other payments')
+    payments = collect_payments(pending_payments)
 
     try:
+        logger.info('[BATCH][PAYMENTS] STEP 3 : send transactions')
         send_transactions(payments, PASS_CULTURE_IBAN, PASS_CULTURE_BIC, PASS_CULTURE_REMITTANCE_CODE)
+
+        logger.info('[BATCH][PAYMENTS] STEP 4 : send payments report')
         send_payments_report(payments)
+
+        logger.info('[BATCH][PAYMENTS] STEP 5 : send payments details')
         send_payments_details(payments, PAYMENTS_DETAILS_RECIPIENTS)
+
+        logger.info('[BATCH][PAYMENTS] STEP 6 : send wallet balances')
         send_wallet_balances(WALLET_BALANCES_RECIPIENTS)
     except Exception as e:
         logger.error('[BATCH][PAYMENTS] generate_and_send_payments', e)
 
 
-def collect_payments() -> List[Payment]:
-    new_payments = generate_new_payments()
-    pending_payments = keep_pending_payments(new_payments)
+def collect_payments(pending_payments: List[Payment]) -> List[Payment]:
     error_payments = payment_queries.find_error_payments()
     payments = pending_payments + error_payments
-    logger.info('[BATCH][PAYMENTS] %s Payments in status PENDING to send' % len(pending_payments))
     logger.info('[BATCH][PAYMENTS] %s Payments in status ERROR to send' % len(error_payments))
     logger.info('[BATCH][PAYMENTS] %s Payments in total to send' % len(payments))
     return payments
@@ -53,12 +61,9 @@ def collect_payments() -> List[Payment]:
 
 def generate_new_payments() -> List[Payment]:
     offerers = Offerer.query.all()
-    logger.info('[BATCH][PAYMENTS] Generating payments for %s Offerers' % len(offerers))
     all_payments = []
 
     for offerer in offerers:
-        logger.info('[BATCH][PAYMENTS] Generating payments for Offerer : %s' % offerer.name)
-
         final_offerer_bookings = find_final_offerer_bookings(offerer.id)
         booking_reimbursements = find_all_booking_reimbursement(final_offerer_bookings)
         booking_reimbursements_to_pay = filter_out_already_paid_for_bookings(
@@ -69,12 +74,12 @@ def generate_new_payments() -> List[Payment]:
         if payments:
             PcObject.check_and_save(*payments)
             all_payments.extend(payments)
-            logger.info('[BATCH][PAYMENTS] Saved %s payments for Offerer : %s' % (len(payments), offerer.name))
-        else:
-            logger.info('[BATCH][PAYMENTS] No payments to save for Offerer : %s' % offerer.name)
+        logger.info('[BATCH][PAYMENTS] Saved %s payments for offerer : %s' % (len(payments), offerer.name))
 
-    logger.info('[BATCH][PAYMENTS] Generated %s payments in total' % len(all_payments))
-    return all_payments
+    pending_payments = keep_pending_payments(all_payments)
+    logger.info('[BATCH][PAYMENTS] Generated %s payments for %s offerers in total' % (len(all_payments), len(offerers)))
+    logger.info('[BATCH][PAYMENTS] %s Payments in status PENDING to send' % len(pending_payments))
+    return pending_payments
 
 
 def send_transactions(payments: List[Payment], pass_culture_iban: str, pass_culture_bic: str,
@@ -90,6 +95,12 @@ def send_transactions(payments: List[Payment], pass_culture_iban: str, pass_cult
         validate_transaction_file_structure(xml_file)
         checksum = generate_file_checksum(xml_file)
         transaction = generate_payment_transaction(message_id, checksum, payments)
+
+        logger.info(
+            '[BATCH][PAYMENTS] Sending file with message ID [%s] and checksum [%s]' %
+            (transaction.messageId, transaction.checksum.hex())
+        )
+        logger.info('[BATCH][PAYMENTS] Recipients of email : %s' % '')
 
         try:
             send_payment_transaction_email(xml_file, checksum, app.mailjet_client.send.create)
@@ -110,6 +121,8 @@ def send_payments_details(payments: List[Payment], recipients: List[str]) -> Non
     else:
         details = create_all_payments_details(payments)
         csv = generate_payment_details_csv(details)
+        logger.info('[BATCH][PAYMENTS] Sending %s details of %s payments' % (len(details), len(payments)))
+        logger.info('[BATCH][PAYMENTS] Recipients of email : %s' % recipients)
         try:
             send_payment_details_email(csv, recipients, app.mailjet_client.send.create)
         except MailServiceException as e:
@@ -122,6 +135,8 @@ def send_wallet_balances(recipients: List[str]) -> None:
     else:
         balances = get_all_users_wallet_balances()
         csv = generate_wallet_balances_csv(balances)
+        logger.info('[BATCH][PAYMENTS] Sending %s wallet balances' % len(balances))
+        logger.info('[BATCH][PAYMENTS] Recipients of email : %s' % recipients)
         try:
             send_wallet_balances_email(csv, recipients, app.mailjet_client.send.create)
         except MailServiceException as e:
@@ -138,6 +153,12 @@ def send_payments_report(payments: List[Payment]) -> None:
         payments_not_processable_details = create_all_payments_details(
             groups['NOT_PROCESSABLE']) if 'NOT_PROCESSABLE' in groups else []
         not_processable_csv = generate_payment_details_csv(payments_not_processable_details)
+
+        logger.info(
+            '[BATCH][PAYMENTS] Sending report on %s payment in ERROR and %s payment NOT_PROCESSABLE'
+            % (len(payments_error_details), len(payments_not_processable_details))
+        )
+        logger.info('[BATCH][PAYMENTS] Recipients of email : %s' % '')
 
         try:
             send_payments_report_emails(not_processable_csv, error_csv, groups, app.mailjet_client.send.create)

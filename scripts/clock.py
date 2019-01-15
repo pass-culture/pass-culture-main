@@ -6,6 +6,7 @@ from apscheduler.schedulers.blocking import BlockingScheduler
 
 from models.db import db
 from utils.mailing import MAILJET_API_KEY, MAILJET_API_SECRET
+from utils.logger import logger
 
 app = Flask(__name__, template_folder='../templates')
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
@@ -25,13 +26,14 @@ def pc_send_final_booking_recaps():
 
 
 def pc_generate_and_send_payments():
-    print("[BATCH][PAYMENTS] Cron generate_and_send_payments: START")
+    logger.info("[BATCH][PAYMENTS] Cron generate_and_send_payments: START")
+
     with app.app_context():
         from scripts.payments import generate_and_send_payments
         app.mailjet_client = Client(auth=(MAILJET_API_KEY, MAILJET_API_SECRET), version='v3')
         generate_and_send_payments()
 
-    print("[BATCH][PAYMENTS] Cron generate_and_send_payments: END")
+    logger.info("[BATCH][PAYMENTS] Cron generate_and_send_payments: END")
 
 
 if __name__ == '__main__':
