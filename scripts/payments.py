@@ -42,17 +42,26 @@ def generate_and_send_payments():
         send_transactions(
             payments, PASS_CULTURE_IBAN, PASS_CULTURE_BIC, PASS_CULTURE_REMITTANCE_CODE, TRANSACTIONS_RECIPIENTS
         )
+    except Exception as e:
+        logger.error('[BATCH][PAYMENTS] STEP 3', e)
 
+    try:
         logger.info('[BATCH][PAYMENTS] STEP 4 : send payments report')
         send_payments_report(payments, PAYMENTS_REPORT_RECIPIENTS)
+    except Exception as e:
+        logger.error('[BATCH][PAYMENTS] STEP 4', e)
 
+    try:
         logger.info('[BATCH][PAYMENTS] STEP 5 : send payments details')
         send_payments_details(payments, PAYMENTS_DETAILS_RECIPIENTS)
+    except Exception as e:
+        logger.error('[BATCH][PAYMENTS] STEP 5', e)
 
+    try:
         logger.info('[BATCH][PAYMENTS] STEP 6 : send wallet balances')
         send_wallet_balances(WALLET_BALANCES_RECIPIENTS)
     except Exception as e:
-        logger.error('[BATCH][PAYMENTS] generate_and_send_payments', e)
+        logger.error('[BATCH][PAYMENTS] STEP 6', e)
 
 
 def collect_payments(pending_payments: List[Payment]) -> List[Payment]:
