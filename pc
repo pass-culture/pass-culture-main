@@ -359,11 +359,6 @@ elif [[ "$CMD" == "deploy-backend" ]] \
 
   update_deploy_branches
 
-  if [[ $(git tag -l --points-at "$commit_to_deploy" | wc -l) == 0 ]]; then
-    echo_error "ERROR: Can only deploy tagged commits"
-    exit_error_restoring_branch
-  fi
-
   if [[ ! -z $(git ls-remote --tags origin refs/tags/v"$TAG_NAME") ]]; then
     git checkout "v$TAG_NAME"
   else
