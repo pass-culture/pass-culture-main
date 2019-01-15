@@ -32,8 +32,8 @@ else
 fi
 
 # PROVIDE BACKUP FILE
-if [[ $# -gt 2 ]] && [[ "$1" == "-b" ]]; then
-  DUMP_DIRECTORY=.
+if [[ $# -gt 1 ]] && [[ "$1" == "-b" ]]; then
+  DUMP_DIRECTORY=~/pass-culture-main/db_prod_dumps
   BACKUP_FILE=$2
   shift 2
 elif [[ "$*" == *"-l"* ]]; then
@@ -71,8 +71,13 @@ fi
 sleep 3
 DB_TUNNEL_PID=$!
 
-PGPASSWORD="$PG_PASSWORD" pg_restore --clean \
-                                         --host 127.0.0.1 \
+PGPASSWORD="$PG_PASSWORD" psql --host 127.0.0.1 \
+                               --port 10000 \
+                               --username "$PG_USER" \
+                               --dbname "$PG_USER" \
+                               -a -f drop_tables.sql
+
+PGPASSWORD="$PG_PASSWORD" pg_restore --host 127.0.0.1 \
                                          --port 10000 \
                                          --username "$PG_USER" \
                                          --no-owner \
@@ -86,10 +91,10 @@ sudo kill -9 "$DB_TUNNEL_PID"
 echo "Backup restored."
 
 if grep -q 'ERROR' restore_"$ENV"_error.log; then
-  echo "Backup fail.."
+  echo "Restore fail.."
   echo "ERRORS found during restore backup. Please see file: restore_dev_error.log"
 else
-  echo "Backup success !"
+  echo "Restore success !"
   echo "Restarting backend.."
   /usr/local/bin/scalingo -a "$APP_NAME" restart
   echo "Application restarted and ready to use."
