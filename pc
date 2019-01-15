@@ -152,7 +152,7 @@ function exit_success_restoring_branch {
 
 # Run alembic migration
 # Need to specify what alembic command you want to execute
-# Example: ./pc alembic upgrade HEAD
+# Example: ./pc alembic upgrade head
 if [[ "$CMD" == "alembic" ]]; then
   RUN='docker exec `docker ps | grep flask | cut -d" " -f 1` bash -c "cd /opt/services/flaskapp/src && PYTHONPATH=. alembic '"$*"'"'
 
@@ -215,7 +215,7 @@ elif [[ "$CMD" == "reset-users-db" ]]; then
 elif [[ "$CMD" == "reset-all-storage" ]]; then
   RUN='sudo rm -rf $ROOT_PATH/flask/static/object_store_data;'
 
-# Restore a postgresql database from file
+# Restore a postgresql database from file (and anonymize data)
 elif [[ "$CMD" == "restore-db" ]]; then
   confirm "Warning: your database will be wiped. Is this OK ?"
   "$ROOT_PATH"/pc -e "$ENV" reset-all-db
@@ -224,7 +224,21 @@ elif [[ "$CMD" == "restore-db" ]]; then
     exit
   fi
   backup_file="$1"
+  RUN='cat "'$backup_file'" | docker exec -i `docker ps | grep postgres | cut -d" " -f 1` pg_restore -d pass_culture -U pass_culture -c;
+              ./anonymize_database.sh -p Password_ ;
+              rm $backup_file'
+
+# Restore a postgresql database from file (non anonymized)
+elif [[ "$CMD" == "restore-db-intact" ]]; then
+  confirm "Warning: your database will be wiped. Is this OK ?"
+  "$ROOT_PATH"/pc -e "$ENV" reset-all-db
+  if [[ $# == 0 ]]; then
+    echo "Usage : pc restore-db <backup_file> [arguments]"
+    exit
+  fi
+  backup_file="$1"
   RUN='cat "'$backup_file'" | docker exec -i `docker ps | grep postgres | cut -d" " -f 1` pg_restore -d pass_culture -U pass_culture -c'
+
 
 # Prepare backend for local use
 elif [[ "$CMD" == "set-backend" ]]; then
