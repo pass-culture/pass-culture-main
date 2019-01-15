@@ -19,10 +19,17 @@
     z-index: 99999;
 
     ul {
-      margin-left: 6px;
+      list-style: none;
 
-      li::before {
-        content: "- ";
+      li {
+        list-style-position: outside;
+        margin-left: 14px;
+
+        &::before {
+          content: "- ";
+          list-style-position: outside;
+          margin-left: -8px;
+        }
       }
     }
   }
