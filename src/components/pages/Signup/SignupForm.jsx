@@ -53,8 +53,18 @@ class SignupForm extends PureComponent {
                 placeholder="Mon mot de passe"
                 required
                 sublabel="pour se connecter"
+                tooltipInfo={`
+                  <div>
+                    Votre mot de passe doit contenir au moins :
+                    <ul>
+                      <li>12 caractères</li>
+                      <li>une majuscule et une minuscule</li>
+                      <li>un chiffre</li>
+                      <li>un caractère spécial (signe de ponctuation, symbole monétaire ou mathématique)</li>
+                    </ul>
+                  </div>
+                  `}
                 type="password"
-                withInfo
               />
               <Field
                 autoComplete="last-name"
