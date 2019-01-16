@@ -12,6 +12,7 @@ from models import RightsType
 from repository.booking_queries import find_all_ongoing_bookings_by_stock
 from repository.features import feature_send_mail_to_users_enabled
 from repository.user_offerer_queries import find_user_offerer_email
+from utils import logger
 from utils.config import API_URL, ENV
 from utils.date import format_datetime, utc_datetime_to_dept_timezone
 
@@ -281,12 +282,13 @@ def make_user_validation_email(user, app_origin_url, is_webapp):
 
 
 def get_contact(user):
-    return app.mailjet_client.contact.get(user.email).json()['Data'][0]
+    mailjet_json_response = app.mailjet_client.contact.get(user.email).json()
+    return mailjet_json_response['Data'][0] if 'Data' in mailjet_json_response else None
 
 
 def subscribe_newsletter(user):
     if not feature_send_mail_to_users_enabled():
-        print("Subscription in DEV or STAGING mode is disabled")
+        logger.info("Subscription in DEV or STAGING mode is disabled")
         return
 
     try:
@@ -297,7 +299,10 @@ def subscribe_newsletter(user):
             'Name': user.publicName
         }
         contact_json = app.mailjet_client.contact.create(data=contact_data).json()
-        contact = contact_json['Data'][0]
+        contact = contact_json['Data'][0] if 'Data' in contact_json else None
+
+    if contact is None:
+        raise MailServiceException
 
     # ('Pass Culture - Liste de diffusion', 1795144)
     contact_lists_data = {

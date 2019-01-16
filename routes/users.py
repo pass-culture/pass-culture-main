@@ -245,10 +245,9 @@ def signup_pro():
 
     try:
         send_user_validation_email(new_user, app.mailjet_client.send.create, app_origin_url, is_webapp=False)
+        subscribe_newsletter(new_user)
     except MailServiceException as e:
         app.logger.error('Mail service failure', e)
-
-    subscribe_newsletter(new_user)
 
     return jsonify(new_user._asdict(include=USER_INCLUDES)), 201
 
