@@ -1,6 +1,6 @@
 import os
 from datetime import datetime
-from typing import List
+from typing import List, Tuple
 
 from flask import current_app as app
 
@@ -10,7 +10,7 @@ from domain.payments import filter_out_already_paid_for_bookings, create_payment
     validate_transaction_file_structure, create_all_payments_details, generate_payment_details_csv, \
     generate_wallet_balances_csv, \
     generate_payment_transaction, generate_file_checksum, group_payments_by_status, filter_out_bookings_without_cost, \
-    keep_only_pending_payments
+    keep_only_pending_payments, keep_only_not_processable_payments
 from domain.reimbursement import find_all_booking_reimbursement
 from models import Offerer, PcObject
 from models.payment import Payment
@@ -32,28 +32,28 @@ WALLET_BALANCES_RECIPIENTS = parse_email_addresses(os.environ.get('WALLET_BALANC
 
 def generate_and_send_payments():
     logger.info('[BATCH][PAYMENTS] STEP 1 : generate payments')
-    pending_payments = generate_new_payments()
+    pending_payments, not_processable_payments = generate_new_payments()
 
     logger.info('[BATCH][PAYMENTS] STEP 2 : collect payments in error')
-    payments = concatenate_error_payments_with(pending_payments)
+    payments_to_send = concatenate_error_payments_with(pending_payments)
 
     try:
         logger.info('[BATCH][PAYMENTS] STEP 3 : send transactions')
         send_transactions(
-            payments, PASS_CULTURE_IBAN, PASS_CULTURE_BIC, PASS_CULTURE_REMITTANCE_CODE, TRANSACTIONS_RECIPIENTS
+            payments_to_send, PASS_CULTURE_IBAN, PASS_CULTURE_BIC, PASS_CULTURE_REMITTANCE_CODE, TRANSACTIONS_RECIPIENTS
         )
     except Exception as e:
         logger.error('[BATCH][PAYMENTS] STEP 3', e)
 
     try:
         logger.info('[BATCH][PAYMENTS] STEP 4 : send payments report')
-        send_payments_report(payments, PAYMENTS_REPORT_RECIPIENTS)
+        send_payments_report(payments_to_send + not_processable_payments, PAYMENTS_REPORT_RECIPIENTS)
     except Exception as e:
         logger.error('[BATCH][PAYMENTS] STEP 4', e)
 
     try:
         logger.info('[BATCH][PAYMENTS] STEP 5 : send payments details')
-        send_payments_details(payments, PAYMENTS_DETAILS_RECIPIENTS)
+        send_payments_details(payments_to_send, PAYMENTS_DETAILS_RECIPIENTS)
     except Exception as e:
         logger.error('[BATCH][PAYMENTS] STEP 5', e)
 
@@ -72,7 +72,7 @@ def concatenate_error_payments_with(pending_payments: List[Payment]) -> List[Pay
     return payments
 
 
-def generate_new_payments() -> List[Payment]:
+def generate_new_payments() -> Tuple[List[Payment], List[Payment]]:
     offerers = Offerer.query.all()
     all_payments = []
 
@@ -92,8 +92,9 @@ def generate_new_payments() -> List[Payment]:
     logger.info('[BATCH][PAYMENTS] Generated %s payments for %s offerers in total' % (len(all_payments), len(offerers)))
 
     pending_payments = keep_only_pending_payments(all_payments)
+    not_processable_payments = keep_only_not_processable_payments(all_payments)
     logger.info('[BATCH][PAYMENTS] %s Payments in status PENDING to send' % len(pending_payments))
-    return pending_payments
+    return pending_payments, not_processable_payments
 
 
 def send_transactions(payments: List[Payment], pass_culture_iban: str, pass_culture_bic: str,

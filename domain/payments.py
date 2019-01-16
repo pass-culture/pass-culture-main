@@ -82,6 +82,10 @@ def keep_only_pending_payments(payments: List[Payment]) -> List[Payment]:
     return list(filter(lambda x: x.currentStatus.status == TransactionStatus.PENDING, payments))
 
 
+def keep_only_not_processable_payments(payments: List[Payment]) -> List[Payment]:
+    return list(filter(lambda x: x.currentStatus.status == TransactionStatus.NOT_PROCESSABLE, payments))
+
+
 def generate_transaction_file(payments: List[Payment], pass_culture_iban: str, pass_culture_bic: str, message_id: str,
                               remittance_code: str) -> str:
     transactions = _group_payments_into_transactions(payments)

@@ -45,6 +45,35 @@ def test_generate_new_payments_records_new_payment_lines_in_database(app):
 
 
 @pytest.mark.standalone
+@clean_database
+def test_generate_new_payments_returns_a_tuple_of_pending_and_not_processable_payments(app):
+    # Given
+    offerer1 = create_offerer(siren='123456789', iban='BD12AZERTY123456', bic='AZERTY9Q666')
+    offerer2 = create_offerer(siren='987654321', iban=None)
+    venue1 = create_venue(offerer1, siret='12345678912345')
+    venue2 = create_venue(offerer2, siret='98765432154321')
+    offer1 = create_thing_offer(venue1)
+    offer2 = create_thing_offer(venue2)
+    paying_stock1 = create_stock_from_offer(offer1)
+    paying_stock2 = create_stock_from_offer(offer2)
+    free_stock1 = create_stock_from_offer(offer1, price=0)
+    user = create_user()
+    deposit = create_deposit(user, datetime.utcnow(), amount=500)
+    booking1 = create_booking(user, paying_stock1, venue1, is_used=True)
+    booking2 = create_booking(user, paying_stock1, venue1, is_used=True)
+    booking3 = create_booking(user, paying_stock2, venue2, is_used=True)
+    booking4 = create_booking(user, free_stock1, venue1, is_used=True)
+    PcObject.check_and_save(deposit, booking1, booking2, booking3, booking4)
+
+    # When
+    pending, not_processable = generate_new_payments()
+
+    # Then
+    assert len(pending) == 2
+    assert len(not_processable) == 1
+
+
+@pytest.mark.standalone
 @mocked_mail
 @clean_database
 def test_send_transactions_should_not_send_an_email_if_pass_culture_iban_is_missing(app):
