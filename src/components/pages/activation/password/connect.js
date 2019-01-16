@@ -25,6 +25,7 @@ export const mapDispatchToProps = dispatch => ({
         body: { ...values },
         handleFail: fail(resolve),
         handleSuccess: success(resolve, values),
+        key: 'activatedUserCredentials',
       }
       const requestMethod = 'POST'
       const requestPath = 'users/new-password'
