@@ -53,7 +53,7 @@ def send_wallet_balances_email(csv_attachment: str, recipients: List[str], send_
 def send_payments_report_emails(not_processable_payments_csv: str, error_payments_csv: str, grouped_payments: Dict,
                                 recipients: List[str], send_create_email: Callable[..., None]):
     email = make_payments_report_email(not_processable_payments_csv, error_payments_csv, grouped_payments)
-    email['Html-part'], email['To'] = compute_email_html_part_and_recipients("", recipients)
+    email['Html-part'], email['To'] = compute_email_html_part_and_recipients(email['Html-part'], recipients)
     mail_result = send_create_email(data=email)
     check_if_email_sent(mail_result)
 

@@ -38,11 +38,6 @@ def pc_generate_and_send_payments():
 
 if __name__ == '__main__':
     scheduler = BlockingScheduler()
-
-    ###
-    # Do we need to activate this cron task ?
-    ###
-    # scheduler.add_job(pc_send_final_booking_recaps, 'cron', id='send_final_booking_recaps', minute='*/10')
-
+    scheduler.add_job(pc_send_final_booking_recaps, 'cron', id='send_final_booking_recaps', day='*')
     scheduler.add_job(pc_generate_and_send_payments, 'cron', id='generate_and_send_payments', day='1,15')
     scheduler.start()
