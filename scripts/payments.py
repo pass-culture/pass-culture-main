@@ -9,8 +9,8 @@ from domain.admin_emails import send_payment_transaction_email, send_payment_det
 from domain.payments import filter_out_already_paid_for_bookings, create_payment_for_booking, generate_transaction_file, \
     validate_transaction_file_structure, create_all_payments_details, generate_payment_details_csv, \
     generate_wallet_balances_csv, \
-    generate_payment_transaction, generate_file_checksum, group_payments_by_status, filter_out_cost_free_bookings, \
-    keep_pending_payments
+    generate_payment_transaction, generate_file_checksum, group_payments_by_status, filter_out_bookings_without_cost, \
+    keep_only_pending_payments
 from domain.reimbursement import find_all_booking_reimbursement
 from models import Offerer, PcObject
 from models.payment import Payment
@@ -34,8 +34,8 @@ def generate_and_send_payments():
     logger.info('[BATCH][PAYMENTS] STEP 1 : generate payments')
     pending_payments = generate_new_payments()
 
-    logger.info('[BATCH][PAYMENTS] STEP 2 : collect other payments')
-    payments = collect_payments(pending_payments)
+    logger.info('[BATCH][PAYMENTS] STEP 2 : collect payments in error')
+    payments = concatenate_error_payments_with(pending_payments)
 
     try:
         logger.info('[BATCH][PAYMENTS] STEP 3 : send transactions')
@@ -64,7 +64,7 @@ def generate_and_send_payments():
         logger.error('[BATCH][PAYMENTS] STEP 6', e)
 
 
-def collect_payments(pending_payments: List[Payment]) -> List[Payment]:
+def concatenate_error_payments_with(pending_payments: List[Payment]) -> List[Payment]:
     error_payments = payment_queries.find_error_payments()
     payments = pending_payments + error_payments
     logger.info('[BATCH][PAYMENTS] %s Payments in status ERROR to send' % len(error_payments))
@@ -80,7 +80,7 @@ def generate_new_payments() -> List[Payment]:
         final_offerer_bookings = find_final_offerer_bookings(offerer.id)
         booking_reimbursements = find_all_booking_reimbursement(final_offerer_bookings)
         booking_reimbursements_to_pay = filter_out_already_paid_for_bookings(
-            filter_out_cost_free_bookings(booking_reimbursements)
+            filter_out_bookings_without_cost(booking_reimbursements)
         )
         payments = list(map(create_payment_for_booking, booking_reimbursements_to_pay))
 
@@ -89,8 +89,9 @@ def generate_new_payments() -> List[Payment]:
             all_payments.extend(payments)
         logger.info('[BATCH][PAYMENTS] Saved %s payments for offerer : %s' % (len(payments), offerer.name))
 
-    pending_payments = keep_pending_payments(all_payments)
     logger.info('[BATCH][PAYMENTS] Generated %s payments for %s offerers in total' % (len(all_payments), len(offerers)))
+
+    pending_payments = keep_only_pending_payments(all_payments)
     logger.info('[BATCH][PAYMENTS] %s Payments in status PENDING to send' % len(pending_payments))
     return pending_payments
 

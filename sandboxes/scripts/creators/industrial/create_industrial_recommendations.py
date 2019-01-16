@@ -54,7 +54,7 @@ def create_industrial_recommendations(mediations_by_name, offers_by_name, users_
                 user=user
             )
 
-        user_has_more_than_activation_recommendation = any([
+        user_has_recommendation_on_something_else_than_activation_offers = any([
             user_tag in user_name
             for user_tag in
             [
@@ -64,7 +64,7 @@ def create_industrial_recommendations(mediations_by_name, offers_by_name, users_
             ]
         ])
 
-        if not user_has_more_than_activation_recommendation:
+        if not user_has_recommendation_on_something_else_than_activation_offers:
             continue
 
         already_recommended_offer_items = list(offers_by_name.items())[::10]

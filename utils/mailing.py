@@ -416,13 +416,15 @@ def compute_email_html_part_and_recipients(email_html_part, recipients):
 
 def parse_email_addresses(addresses: str) -> List[str]:
     if not addresses:
-        return []
+        addresses = []
     elif ',' in addresses:
-        return [a.strip() for a in addresses.split(',')]
+        addresses = [a.strip() for a in addresses.split(',')]
     elif ';' in addresses:
-        return [a.strip() for a in addresses.split(';')]
+        addresses = [a.strip() for a in addresses.split(';')]
     else:
-        return [addresses]
+        addresses = [addresses]
+
+    return [a for a in addresses if a]
 
 
 def _generate_reservation_email_html_subject(booking):

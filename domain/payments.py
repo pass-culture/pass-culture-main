@@ -72,13 +72,13 @@ def filter_out_already_paid_for_bookings(booking_reimbursements: List[BookingRei
     return list(filter(lambda x: not x.booking.payments, booking_reimbursements))
 
 
-def filter_out_cost_free_bookings(
+def filter_out_bookings_without_cost(
         booking_reimbursements: List[BookingReimbursement]
 ) -> List[BookingReimbursement]:
     return list(filter(lambda x: x.reimbursed_amount > Decimal(0), booking_reimbursements))
 
 
-def keep_pending_payments(payments: List[Payment]) -> List[Payment]:
+def keep_only_pending_payments(payments: List[Payment]) -> List[Payment]:
     return list(filter(lambda x: x.currentStatus.status == TransactionStatus.PENDING, payments))
 
 

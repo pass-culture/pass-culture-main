@@ -9,7 +9,7 @@ from freezegun import freeze_time
 
 from domain.payments import create_payment_for_booking, filter_out_already_paid_for_bookings, create_payment_details, \
     create_all_payments_details, make_custom_message, group_payments_by_status, \
-    filter_out_cost_free_bookings, keep_pending_payments
+    filter_out_bookings_without_cost, keep_only_pending_payments
 from domain.reimbursement import BookingReimbursement, ReimbursementRules
 from models import Offer, Venue, Booking
 from models.payment import Payment
@@ -180,7 +180,7 @@ class FilterOutAlreadyPaidForBookingsTest:
         assert not bookings_not_paid[0].booking.payments
 
     @pytest.mark.standalone
-    def test_it_returns_an_empty_list_if_everything_is_filtered_out(self):
+    def test_it_returns_an_empty_list_if_everything_has_been_reimbursed(self):
         # Given
         booking_paid1 = Booking()
         booking_paid1.payments = [Payment()]
@@ -206,40 +206,40 @@ class FilterOutAlreadyPaidForBookingsTest:
 
 
 @pytest.mark.standalone
-class FilterOutCostFreeBookingsTest:
-    def test_it_returns_reimbursements_on_bookings_which_reimbursed_value_at_zero(self):
+class FilterOutBookingsWithoutCost:
+    def test_it_returns_reimbursements_on_bookings_with_reimbursed_value_at_zero(self):
         # given
         reimbursement1 = BookingReimbursement(Booking(), ReimbursementRules.PHYSICAL_OFFERS, Decimal(10))
         reimbursement2 = BookingReimbursement(Booking(), ReimbursementRules.PHYSICAL_OFFERS, Decimal(0))
 
         # when
-        costly_bookings = filter_out_cost_free_bookings([reimbursement1, reimbursement2])
+        bookings_reimbursements_with_cost = filter_out_bookings_without_cost([reimbursement1, reimbursement2])
 
         # then
-        assert len(costly_bookings) == 1
-        assert costly_bookings[0].reimbursed_amount > Decimal(0)
+        assert len(bookings_reimbursements_with_cost) == 1
+        assert bookings_reimbursements_with_cost[0].reimbursed_amount > Decimal(0)
 
-    def test_it_returns_an_empty_list_if_everything_is_filtered_out(self):
+    def test_it_returns_an_empty_list_if_everything_has_a_cost(self):
         # given
         reimbursement1 = BookingReimbursement(Booking(), ReimbursementRules.PHYSICAL_OFFERS, Decimal(0))
         reimbursement2 = BookingReimbursement(Booking(), ReimbursementRules.PHYSICAL_OFFERS, Decimal(0))
 
         # when
-        costly_bookings = filter_out_cost_free_bookings([reimbursement1, reimbursement2])
+        bookings_reimbursements_with_cost = filter_out_bookings_without_cost([reimbursement1, reimbursement2])
 
         # then
-        assert costly_bookings == []
+        assert bookings_reimbursements_with_cost == []
 
     def test_it_returns_an_empty_list_if_an_empty_list_is_given(self):
         # when
-        costly_bookings = filter_out_cost_free_bookings([])
+        bookings_reimbursements_with_cost = filter_out_bookings_without_cost([])
 
         # then
-        assert costly_bookings == []
+        assert bookings_reimbursements_with_cost == []
 
 
 @pytest.mark.standalone
-class KeepPendingPaymentsTest:
+class KeepOnlyPendingPaymentsTest:
     def test_it_returns_only_payments_with_current_status_as_pending(self):
         # given
         user = create_user()
@@ -252,13 +252,13 @@ class KeepPendingPaymentsTest:
         ]
 
         # when
-        pending_payments = keep_pending_payments(payments)
+        pending_payments = keep_only_pending_payments(payments)
 
         # then
         assert len(pending_payments) == 1
         assert pending_payments[0].currentStatus.status == TransactionStatus.PENDING
 
-    def test_it_returns_an_empty_list_if_everything_is_filtered_out(self):
+    def test_it_returns_an_empty_list_if_everything_has_no_pending_payment(self):
         # given
         user = create_user()
         booking = create_booking(user)
@@ -270,14 +270,14 @@ class KeepPendingPaymentsTest:
         ]
 
         # when
-        pending_payments = keep_pending_payments(payments)
+        pending_payments = keep_only_pending_payments(payments)
 
         # then
         assert pending_payments == []
 
     def test_it_returns_an_empty_list_if_an_empty_list_is_given(self):
         # when
-        pending_payments = keep_pending_payments([])
+        pending_payments = keep_only_pending_payments([])
 
         # then
         assert pending_payments == []

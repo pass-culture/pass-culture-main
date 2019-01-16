@@ -1084,15 +1084,17 @@ class ParseEmailAddressesTest:
         assert parse_email_addresses('') == []
         assert parse_email_addresses(None) == []
 
-    def test_returns_a_single_given_address(self):
+    def test_returns_one_address_when_a_single_one_is_given(self):
         assert parse_email_addresses('recipient@test.com') == ['recipient@test.com']
+        assert parse_email_addresses('recipient@test.com  ;  ') == ['recipient@test.com']
+        assert parse_email_addresses(' , recipient@test.com') == ['recipient@test.com']
 
-    def test_returns_two_addresses_separated_by_comma(self):
+    def test_returns_two_addresses_when_given_addresses_are_separated_by_comma(self):
         assert parse_email_addresses('one@test.com,two@test.com') == ['one@test.com', 'two@test.com']
         assert parse_email_addresses('one@test.com, two@test.com') == ['one@test.com', 'two@test.com']
         assert parse_email_addresses('  one@test.com  , two@test.com   ') == ['one@test.com', 'two@test.com']
 
-    def test_returns_two_addresses_separated_by_semicolon(self):
+    def test_returns_two_addresses_when_given_addresses_are_separated_by_semicolon(self):
         assert parse_email_addresses('one@test.com;two@test.com') == ['one@test.com', 'two@test.com']
         assert parse_email_addresses('one@test.com; two@test.com') == ['one@test.com', 'two@test.com']
         assert parse_email_addresses('  one@test.com  ; two@test.com   ') == ['one@test.com', 'two@test.com']
