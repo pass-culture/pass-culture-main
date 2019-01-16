@@ -48,12 +48,7 @@ class SignupForm extends PureComponent {
               />
               <Field
                 autoComplete="new-password"
-                name="password"
-                label="Mot de passe"
-                placeholder="Mon mot de passe"
-                required
-                sublabel="pour se connecter"
-                tooltipInfo={`
+                info={`
                   <div>
                     Votre mot de passe doit contenir au moins :
                     <ul>
@@ -64,6 +59,11 @@ class SignupForm extends PureComponent {
                     </ul>
                   </div>
                   `}
+                name="password"
+                label="Mot de passe"
+                placeholder="Mon mot de passe"
+                required
+                sublabel="pour se connecter"
                 type="password"
               />
               <Field
