@@ -5,7 +5,7 @@ import { Redirect, Route, Switch } from 'react-router-dom'
 
 import ActivationError from './error'
 import ActivationEvents from './events'
-import ActivationPasswordForm from './password'
+import ActivationPassword from './password'
 
 const ActivationPage = () => (
   <div
@@ -15,7 +15,7 @@ const ActivationPage = () => (
     <Switch>
       <Route path="/activation/error" component={ActivationError} exact />
       <Route path="/activation/events" component={ActivationEvents} exact />
-      <Route path="/activation/:token" component={ActivationPasswordForm} />
+      <Route path="/activation/:token" component={ActivationPassword} />
       <Redirect to="/activation/error" />
     </Switch>
   </div>

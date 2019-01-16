@@ -11,47 +11,40 @@ import InputLabel from '../InputLabel'
 import { slugify } from '../../../utils/strings'
 import { SelectboxObjectType } from '../../../types'
 
-const classNamePrefix = 'pc-final-form-selectbox'
+const CLASSNAME_PREFIX = 'pc-final-form-selectbox'
 
-const buildIdentifier = (index, parentIndex = null) => {
-  // le splitter est utilisé par lodash.get
-  // pour obtenir l'objet dans le provider passé en props
-  const isnumber = typeof parentIndex === 'number'
-  const splitter = (isnumber && '.options.') || ''
-  const parent = (isnumber && `${parentIndex}`) || ''
-  const identifier = `${parent}${splitter}${index}`
-  return identifier
-}
-
-const renderOption = (object, index, parentIndex) => {
-  const key = slugify(object.value)
-  const identifier = buildIdentifier(index, parentIndex)
+const renderOption = (object, identifier) => {
+  const keySalt = slugify(object.value)
   return (
     <option
       value={identifier}
-      key={`${key}::${identifier}`}
-      className={`${classNamePrefix}__option`}
+      key={`${keySalt}::${identifier}`}
+      className={`${CLASSNAME_PREFIX}__option`}
     >
       {object.label}
     </option>
   )
 }
 
-const renderOptionsGroup = (group, parentIndex) => {
-  const key = slugify(group.label)
+const renderOptionsGroup = (group, groupIndex) => {
+  const groupkey = slugify(group.label)
   return (
     <optgroup
-      key={key}
+      key={groupkey}
       label={group.label}
-      className={`${classNamePrefix}__optgroup`}
+      className={`${CLASSNAME_PREFIX}__optgroup`}
     >
       {group.options &&
-        group.options.map((obj, index) =>
-          renderOption(obj, index, parentIndex)
-        )}
+        group.options.map((obj, optionIndex) => {
+          const splitter = '.options.'
+          const identifier = `${groupIndex}${splitter}${optionIndex}`
+          return renderOption(obj, identifier)
+        })}
     </optgroup>
   )
 }
+
+const PLACEHOLDER_OPTION_VALUE = 'placeholder_option_value'
 
 class SelectBox extends React.PureComponent {
   constructor(props) {
@@ -61,9 +54,22 @@ class SelectBox extends React.PureComponent {
 
   onChange = input => event => {
     const { value } = event.target
-    const { provider } = this.props
+    const { provider, placeholder } = this.props
+    const isDefaultOption = value === PLACEHOLDER_OPTION_VALUE
+    const shouldResetForm = placeholder && isDefaultOption
+    if (shouldResetForm) {
+      // NOTE undefined reset le form
+      // et desactive le bouton submit
+      this.setState({ value }, () => input.onChange(undefined))
+      return
+    }
     const inputValue = get(provider, value)
     this.setState({ value }, () => input.onChange(inputValue))
+  }
+
+  renderPlaceHolderOption = () => {
+    const { placeholder } = this.props
+    return <option value={PLACEHOLDER_OPTION_VALUE}>{placeholder}</option>
   }
 
   render() {
@@ -84,7 +90,7 @@ class SelectBox extends React.PureComponent {
         name={name}
         render={({ input, meta }) => (
           <div className={`${className}`}>
-            <label htmlFor={id || name} className={classNamePrefix}>
+            <label htmlFor={id || name} className={CLASSNAME_PREFIX}>
               {label && <InputLabel label={label} required={required} />}
               {help && <InputHelp label={help} />}
               <span className="pc-final-form-inner">
@@ -97,7 +103,7 @@ class SelectBox extends React.PureComponent {
                   value={value}
                   onChange={this.onChange(input)}
                 >
-                  {placeholder && <option value={-1}>{placeholder}</option>}
+                  {placeholder && this.renderPlaceHolderOption()}
                   {provider &&
                     provider.map((obj, index) => {
                       const isgroup = obj && obj.options

@@ -4,7 +4,7 @@ import React from 'react'
 import MailToLink from '../../../layout/MailToLink'
 import { SUPPORT_EMAIL } from '../../../../utils/config'
 
-const MyComponent = () => (
+const EmailButton = () => (
   <div className="mb36">
     <div className="mb36">
       <MailToLink
@@ -23,6 +23,5 @@ const MyComponent = () => (
     </div>
   </div>
 )
-MyComponent.defaultProps = {}
-MyComponent.propTypes = {}
-export default MyComponent
+
+export default EmailButton
