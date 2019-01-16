@@ -132,6 +132,8 @@ def send_transactions(payments: List[Payment], pass_culture_iban: str, pass_cult
 def send_payments_details(payments: List[Payment], recipients: List[str]) -> None:
     if not recipients:
         logger.error('[BATCH][PAYMENTS] Missing PASS_CULTURE_PAYMENTS_DETAILS_RECIPIENTS in environment variables')
+    elif all(map(lambda x: x.currentStatus.status == TransactionStatus.ERROR, payments)):
+        logger.warning('[BATCH][PAYMENTS] Not sending payments details as all payments have an ERROR status')
     else:
         details = create_all_payments_details(payments)
         csv = generate_payment_details_csv(details)

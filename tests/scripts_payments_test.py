@@ -293,6 +293,31 @@ def test_send_payment_details_sends_a_csv_attachment(app):
 
 @pytest.mark.standalone
 @mocked_mail
+def test_send_payment_details_does_not_send_anything_if_all_payment_have_error_status(app):
+    # given
+    offerer1 = create_offerer(name='first offerer', iban='CF13QSDFGH456789', bic='QSDFGH8Z555', idx=1)
+    user = create_user()
+    venue1 = create_venue(offerer1, idx=4)
+    stock1 = create_stock_from_offer(create_thing_offer(venue1))
+    booking1 = create_booking(user, stock1)
+    booking2 = create_booking(user, stock1)
+    booking3 = create_booking(user, stock1)
+
+    payments = [
+        create_payment(booking1, offerer1, Decimal(10), idx=7, status=TransactionStatus.ERROR),
+        create_payment(booking2, offerer1, Decimal(20), idx=8, status=TransactionStatus.ERROR),
+        create_payment(booking3, offerer1, Decimal(20), idx=9, status=TransactionStatus.ERROR)
+    ]
+
+    # when
+    send_payments_details(payments, ['comptable@test.com'])
+
+    # then
+    app.mailjet_client.send.create.assert_not_called()
+
+
+@pytest.mark.standalone
+@mocked_mail
 def test_send_payment_details_does_not_send_anything_if_recipients_are_missing(app):
     # given
     payments = []
