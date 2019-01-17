@@ -10,10 +10,10 @@ from validation.bookings import check_expenses_limits
 def test_check_expenses_limits_raises_an_error_when_physical_limit_is_reached_for_things():
     # given
     expenses = {
-        'physical': {'max': SUBVENTION_PHYSICAL_THINGS, 'actual': 90},
+        'physical': {'max': SUBVENTION_PHYSICAL_THINGS, 'actual': 190},
         'digital': {'max': SUBVENTION_DIGITAL_THINGS, 'actual': 190}
     }
-    booking = create_booking_for_thing(url=None, amount=9, quantity=2)
+    booking = create_booking_for_thing(url=None, amount=6, quantity=2)
     stock = booking.stock
 
     # when

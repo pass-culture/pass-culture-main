@@ -3,7 +3,7 @@ from decimal import Decimal
 from repository.booking_queries import find_all_by_user_id
 
 SUBVENTION_TOTAL = Decimal(500)
-SUBVENTION_PHYSICAL_THINGS = Decimal(100)
+SUBVENTION_PHYSICAL_THINGS = Decimal(200)
 SUBVENTION_DIGITAL_THINGS = Decimal(200)
 
 

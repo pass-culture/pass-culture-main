@@ -336,7 +336,7 @@ def test_create_booking_should_work_for_paid_offer_if_user_can_not_book_but_has_
 
 @clean_database
 @pytest.mark.standalone
-def test_create_booking_should_not_work_if_only_public_credit_and_100_euros_limit_physical_thing_reached(app):
+def test_create_booking_should_not_work_if_only_public_credit_and_limit_of_physical_thing_reached(app):
     # Given
     user = create_user(email='test@email.com', password='testpsswd')
     PcObject.check_and_save(user)
@@ -350,8 +350,8 @@ def test_create_booking_should_not_work_if_only_public_credit_and_100_euros_limi
     thing_offer = create_thing_offer(venue)
     PcObject.check_and_save(thing_offer)
 
-    stock_1 = create_stock_with_thing_offer(offerer, venue, thing_offer, price=90)
-    stock_2 = create_stock_with_thing_offer(offerer, venue, thing_offer, price=9)
+    stock_1 = create_stock_with_thing_offer(offerer, venue, thing_offer, price=190)
+    stock_2 = create_stock_with_thing_offer(offerer, venue, thing_offer, price=6)
     PcObject.check_and_save(stock_1, stock_2)
 
     deposit_date = datetime.utcnow() - timedelta(minutes=2)
@@ -376,7 +376,7 @@ def test_create_booking_should_not_work_if_only_public_credit_and_100_euros_limi
     # Then
     error_message = response.json()
     assert response.status_code == 400
-    assert error_message['global'] == ['La limite de 100 € pour les biens culturels ' \
+    assert error_message['global'] == ['La limite de 200 € pour les biens culturels ' \
                                        'ne vous permet pas de réserver']
 
 

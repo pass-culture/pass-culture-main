@@ -26,7 +26,7 @@ def test_get_expenses_returns_max_500_and_actual_210_at_for_all_bookings():
 
 
 @pytest.mark.standalone
-def test_get_expenses_returns_max_100_and_actual_50_for_physical_bookings():
+def test_get_expenses_returns_max_200_and_actual_50_for_physical_bookings():
     # Given
     user = create_user()
     booking_1 = create_booking_for_thing(amount=50)
@@ -38,7 +38,7 @@ def test_get_expenses_returns_max_100_and_actual_50_for_physical_bookings():
     expenses = get_expenses(user, find_bookings_by_user_id=find_bookings_by_user_id)
 
     # Then
-    assert expenses['physical'] == {'max': 100, 'actual': 50}
+    assert expenses['physical'] == {'max': 200, 'actual': 50}
 
 
 @pytest.mark.standalone

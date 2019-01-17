@@ -79,7 +79,6 @@ def create_booking():
     check_expenses_limits(expenses, new_booking, stock)
     booking_queries.save_booking(new_booking)
 
-    new_booking_stock = Stock.query.get(new_booking.stockId)
     try:
         send_booking_recap_emails(new_booking, app.mailjet_client.send.create)
     except MailServiceException as e:
