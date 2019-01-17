@@ -7,7 +7,7 @@ import { withRouter } from 'react-router-dom'
 
 import Spinner from '../../../layout/Spinner'
 import { canSubmitForm } from '../utils'
-import { SelectBox } from '../../../forms/inputs'
+import { SelectBoxField } from '../../../forms/inputs'
 
 class ActivationEventsForm extends React.PureComponent {
   onFormSubmit = formValues => {
@@ -20,7 +20,7 @@ class ActivationEventsForm extends React.PureComponent {
   renderEventsSelectbox = () => {
     const { offers } = this.props
     return (
-      <SelectBox
+      <SelectBoxField
         name="event"
         provider={offers}
         placeholder="Choisissez une ville"

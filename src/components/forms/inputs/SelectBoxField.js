@@ -46,7 +46,7 @@ const renderOptionsGroup = (group, groupIndex) => {
 
 const PLACEHOLDER_OPTION_VALUE = 'placeholder_option_value'
 
-class SelectBox extends React.PureComponent {
+class SelectBoxField extends React.PureComponent {
   constructor(props) {
     super(props)
     this.state = { value: undefined }
@@ -123,7 +123,7 @@ class SelectBox extends React.PureComponent {
   }
 }
 
-SelectBox.defaultProps = {
+SelectBoxField.defaultProps = {
   className: '',
   disabled: false,
   help: null,
@@ -132,7 +132,7 @@ SelectBox.defaultProps = {
   required: false,
 }
 
-SelectBox.propTypes = {
+SelectBoxField.propTypes = {
   className: PropTypes.string,
   disabled: PropTypes.bool,
   help: PropTypes.string,
@@ -143,4 +143,4 @@ SelectBox.propTypes = {
   required: PropTypes.bool,
 }
 
-export default SelectBox
+export default SelectBoxField
