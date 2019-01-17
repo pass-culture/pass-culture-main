@@ -1,0 +1,156 @@
+[
+  {
+    "event": {
+      "offerType": {
+        "value": "EventType.ACTIVATION"
+      }
+    },
+    "id": 1234,
+    "venue": {
+      "city": "ville",
+      "name": "nom lieu",
+      "postalCode": "01000"
+    }
+  },
+  {
+    "event": {
+      "offerType": {
+        "value": "EventType.ACTIVATION"
+      }
+    },
+    "id": 1234,
+    "mediations": [],
+    "venue": {
+      "city": "ville",
+      "name": "nom lieu",
+      "postalCode": "01000"
+    }
+  },
+  {
+    "event": {
+      "offerType": {
+        "value": "EventType.ACTIVATION"
+      }
+    },
+    "id": 1234,
+    "mediations": [{}],
+    "venue": {
+      "city": "ville",
+      "name": "nom lieu",
+      "postalCode": "01000"
+    }
+  },
+  {
+    "event": {
+      "offerType": {
+        "value": "EventType.ACTIVATION"
+      }
+    },
+    "mediations": [
+      {
+        "id": 5678
+      }
+    ],
+    "venue": {
+      "city": "ville",
+      "name": "nom lieu",
+      "postalCode": "01000"
+    }
+  },
+  {
+    "id": 1234,
+    "mediations": [
+      {
+        "id": 5678
+      }
+    ],
+    "venue": {
+      "city": "ville",
+      "name": "nom lieu",
+      "postalCode": "01000"
+    }
+  },
+  {
+    "event": {
+      "offerType": {
+        "value": "not a valid type"
+      }
+    },
+    "id": 1234,
+    "mediations": [
+      {
+        "id": 5678
+      }
+    ],
+    "venue": {
+      "city": "ville",
+      "name": "nom lieu",
+      "postalCode": "01000"
+    }
+  },
+  {
+    "event": {
+      "offerType": {
+        "value": "EventType.ACTIVATION"
+      }
+    },
+    "id": 1234,
+    "mediations": [
+      {
+        "id": 5678
+      }
+    ],
+    "venue": {}
+  },
+  {
+    "event": {
+      "offerType": {
+        "value": "EventType.ACTIVATION"
+      }
+    },
+    "id": 1234,
+    "mediations": [
+      {
+        "id": 5678
+      }
+    ],
+    "venue": {
+      "name": "nom lieu",
+      "postalCode": "01000"
+    }
+  },
+  {
+    "event": {
+      "offerType": {
+        "value": "EventType.ACTIVATION"
+      }
+    },
+    "id": 1234,
+    "mediations": [
+      {
+        "id": 5678
+      }
+    ],
+    "venue": {
+      "city": "ville",
+      "postalCode": "01000"
+    }
+  },
+  {
+    "event": {
+      "offerType": {
+        "value": "EventType.ACTIVATION"
+      }
+    },
+    "id": 1234,
+    "mediations": [
+      {
+        "id": 5678
+      }
+    ],
+    "venue": {
+      "city": "ville",
+      "name": "nom lieu"
+    }
+  }
+]

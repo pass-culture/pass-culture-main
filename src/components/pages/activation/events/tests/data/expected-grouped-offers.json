@@ -1,0 +1,33 @@
+[
+  {
+    "label": "01000 - ville 1",
+    "options": [
+      {
+        "city": "ville 1",
+        "code": "01000",
+        "label": "B - nom lieu",
+        "url": "/decouverte/1234/5678?to=verso",
+        "value": 1234
+      },
+      {
+        "city": "ville 1",
+        "code": "01000",
+        "label": "C - nom lieu",
+        "url": "/decouverte/1234/5678?to=verso",
+        "value": 1234
+      }
+    ]
+  },
+  {
+    "label": "02000 - ville 2",
+    "options": [
+      {
+        "city": "ville 2",
+        "code": "02000",
+        "label": "A - nom lieu",
+        "url": "/decouverte/1234/5678?to=verso",
+        "value": 1234
+      }
+    ]
+  }
+]

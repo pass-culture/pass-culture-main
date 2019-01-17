@@ -1,13 +1,16 @@
 import get from 'lodash.get'
 import { requestData } from 'pass-culture-shared'
 
+import fp from '../../../../utils/functionnals'
 import { getRouterQueryByKey } from '../../../../helpers'
 import { groupOffersByCityCode, parseActivationOffers } from './utils'
 
 export const mapStateToProps = (state, { location }) => {
   let offers = get(state, 'data.offers') || []
-  offers = parseActivationOffers(offers)
-  offers = groupOffersByCityCode(offers)
+  offers = fp.pipe(
+    parseActivationOffers,
+    groupOffersByCityCode
+  )(offers)
   const from = getRouterQueryByKey(location, 'from')
   const fromPassword = from === 'password'
   return { fromPassword, offers }

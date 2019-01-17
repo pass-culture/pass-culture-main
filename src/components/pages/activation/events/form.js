@@ -13,7 +13,7 @@ class ActivationEventsForm extends React.PureComponent {
   onFormSubmit = formValues => {
     const { event } = formValues
     const { history } = this.props
-    const nexturl = `${event.url}?to=verso`
+    const nexturl = `${event.url}`
     history.push(nexturl)
   }
 
