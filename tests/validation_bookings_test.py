@@ -77,13 +77,13 @@ class CheckBookingIsCancellableTest:
         # Then
         assert e.value.errors['booking'] == ["Impossible d\'annuler une réservation consommée"]
 
-    def test_raises_api_error_when_user_cancellation_and_event_in_less_than_48h(self):
+    def test_raises_api_error_when_user_cancellation_and_event_in_less_than_72h(self):
         # Given
         booking = Booking()
         booking.isUsed = False
         booking.stock = Stock()
         booking.stock.eventOccurrence = EventOccurrence()
-        booking.stock.eventOccurrence.beginningDatetime = datetime.utcnow() + timedelta(hours=24)
+        booking.stock.eventOccurrence.beginningDatetime = datetime.utcnow() + timedelta(hours=71)
 
         # When
         with pytest.raises(ApiErrors) as e:
@@ -91,15 +91,29 @@ class CheckBookingIsCancellableTest:
 
         # Then
         assert e.value.errors['booking'] == [
-            "Impossible d\'annuler une réservation moins de 48h avant le début de l'évènement"]
+            "Impossible d\'annuler une réservation moins de 72h avant le début de l'évènement"]
 
-    def test_does_not_raise_api_error_when_offerer_cancellation_and_event_in_less_than_48h(self):
+    def test_does_not_raise_api_error_when_user_cancellation_and_event_in_more_than_72h(self):
         # Given
         booking = Booking()
         booking.isUsed = False
         booking.stock = Stock()
         booking.stock.eventOccurrence = EventOccurrence()
-        booking.stock.eventOccurrence.beginningDatetime = datetime.utcnow() + timedelta(hours=24)
+        booking.stock.eventOccurrence.beginningDatetime = datetime.utcnow() + timedelta(hours=73)
+
+        # When
+        check_output = check_booking_is_cancellable(booking, is_user_cancellation=False)
+
+        # Then
+        assert check_output is None
+
+    def test_does_not_raise_api_error_when_offerer_cancellation_and_event_in_less_than_72h(self):
+        # Given
+        booking = Booking()
+        booking.isUsed = False
+        booking.stock = Stock()
+        booking.stock.eventOccurrence = EventOccurrence()
+        booking.stock.eventOccurrence.beginningDatetime = datetime.utcnow() + timedelta(hours=71)
 
         # When
         check_output = check_booking_is_cancellable(booking, is_user_cancellation=False)
