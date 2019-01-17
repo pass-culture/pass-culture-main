@@ -114,7 +114,7 @@ def test_get_recommendations_returns_one_recommendation_found_from_search_ignori
 @pytest.mark.standalone
 def test_get_recommendations_with_double_and_trailing_whitespaces_returns_one_recommendation(app):
     # given
-    search = "keywords= rencontres  avec "
+    search = "keywords= rencontres  auteurs "
     user = create_user(email='test@email.com', password='P@55w0rd')
     offerer = create_offerer()
     venue = create_venue(offerer)
@@ -271,7 +271,7 @@ def test_get_recommendations_returns_recommendations_in_date_range_from_search_b
 
 @clean_database
 @pytest.mark.standalone
-def test_get_recommendations_returns_no_recommendation_from_search_by_date(app):
+def test_get_recommendations_returns_no_recommendation_when_no_stock_in_date_range(app):
     # Given
     search = "date=" + strftime(ten_days_from_now) + "&days=0-1"
     user = create_user(email='test@email.com', password='P@55w0rd')

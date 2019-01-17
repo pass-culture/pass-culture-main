@@ -115,8 +115,8 @@ def filter_offers_with_keywords_string(query, keywords_string):
     )
     query = query.outerjoin(Event) \
                  .outerjoin(Thing) \
-                 .outerjoin(Venue) \
-                 .outerjoin(Offerer) \
+                 .join(Venue) \
+                 .join(Offerer) \
                  .filter(keywords_filter) \
                  .reset_joinpoint()
     return query

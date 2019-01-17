@@ -36,7 +36,7 @@ def find_all_by_stock_id(stock):
 def filter_bookings_with_keywords_string(query, keywords_string):
     keywords_filter = create_filter_matching_all_keywords_in_any_model(
         get_filter_matching_ts_query_for_booking,
-        search
+        keywords_string
     )
     query = query.outerjoin(Event) \
                  .outerjoin(Thing) \

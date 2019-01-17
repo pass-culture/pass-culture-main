@@ -195,102 +195,31 @@ def test_get_offers_for_recommendations_search_by_datetime(app):
     assert ko_stock_after.resolvedOffer not in search_result_offers
 
 
-@pytest.mark.standalone
-@clean_database
-def test_get_offers_for_recommendations_search_with_partial_keyword_returns_offer_with_event_or_thing_name_matching(
-        app):
-    # Given
-
-    event1 = create_event('Rencontre avec Franck Lepage')
-    event2 = create_event('Concert de Gael Faye')
-    thing = create_thing('Rencontre avec soi-même')
-
-    offerer = create_offerer()
-    venue = create_venue(offerer)
-
-    event1_offer = create_event_offer(venue, event1)
-    event2_offer = create_event_offer(venue, event2)
-    thing_offer = create_thing_offer(venue, thing)
-
-    event1_event_occurrence = create_event_occurrence(
-        event1_offer
-    )
-    event2_event_occurrence = create_event_occurrence(
-        event2_offer
-    )
-
-    event1_stock = create_stock_from_event_occurrence(event1_event_occurrence)
-    event2_stock = create_stock_from_event_occurrence(event2_event_occurrence)
-    thing_stock = create_stock_from_offer(thing_offer)
-
-    PcObject.check_and_save(event1_stock, event2_stock, thing_stock)
-
-    offers = get_offers_for_recommendations_search(keywords='Rencon')
-
-    assert len(offers) == 2
-    assert event1_offer in offers
-    assert thing_offer in offers
-
-
 @clean_database
 @pytest.mark.standalone
-def test_get_offers_for_recommendations_search_with_multiple_keywords_returns_only_the_offers_with_intersection_words_in_name(app):
+def test_get_offers_for_recommendations_search_with_several_partial_keywords(app):
     # Given
-    thing_ok = create_thing(thing_name='Rencontre de michel avec soi-même')
-    thing_ko = create_thing(thing_name='Rencontre avec jean-luc')
-    event = create_event(event_name='Rencontre avec jean-michel chelou')
+    thing_ok = create_thing(thing_name='Rencontre de michel')
+    thing = create_thing(thing_name='Rencontre avec jean-luc')
+    event = create_event(event_name='Rencontre avec jean-mimi chelou')
     offerer = create_offerer()
     venue = create_venue(offerer)
-
-    event_offer = create_event_offer(venue, event)
     thing_ok_offer = create_thing_offer(venue, thing_ok)
-    thing_ko_offer = create_thing_offer(venue, thing_ko)
-
-    event_occurrence = create_event_occurrence(event_offer)
-
-    event_stock = create_stock_from_event_occurrence(event_occurrence)
+    thing_ko_offer = create_thing_offer(venue, thing)
+    event_ko_offer = create_event_offer(venue, event)
+    event_ko_occurrence = create_event_occurrence(event_ko_offer)
+    event_ko_stock = create_stock_from_event_occurrence(event_ko_occurrence)
     thing_ok_stock = create_stock_from_offer(thing_ok_offer)
     thing_ko_stock = create_stock_from_offer(thing_ko_offer)
+    PcObject.check_and_save(event_ko_stock, thing_ok_stock, thing_ko_stock)
 
-    PcObject.check_and_save(event_stock, thing_ok_stock, thing_ko_stock)
     # When
-    offers = get_offers_for_recommendations_search(keywords='rencontre avec michel')
-
-    # Then
-    assert event_offer in offers
-    assert thing_ok_offer in offers
-    assert thing_ko_offer not in offers
-
-
-@clean_database
-@pytest.mark.standalone
-def test_get_offers_for_recommendations_search_with_multiple_keywords_returns_offers_with_intersection_words_in_description(
-        app):
-    # Given
-    thing_ok = create_thing(thing_name='Rien à voir', description='Il rencontre une personne')
-    thing_ko = create_thing(thing_name='Hors sujet', description='Il rencontre Marx')
-    event_ok = create_event(event_name='Pas de match', description='Il rencontre personne')
-    offerer = create_offerer()
-    venue = create_venue(offerer)
-
-    thing_ok_offer = create_thing_offer(venue, thing_ok)
-    thing_ko_offer = create_thing_offer(venue, thing_ko)
-    event_ok_offer = create_event_offer(venue, event_ok)
-
-    event_occurrence = create_event_occurrence(event_ok_offer)
-
-    thing_ok_stock = create_stock_from_offer(thing_ok_offer)
-    thing_ko_stock = create_stock_from_offer(thing_ko_offer)
-    event_ok_stock = create_stock_from_event_occurrence(event_occurrence)
-
-    PcObject.check_and_save(thing_ok_stock, thing_ko_stock, event_ok_stock)
-    # When
-    offers = get_offers_for_recommendations_search(keywords='Il rencontre personne')
+    offers = get_offers_for_recommendations_search(keywords='renc michel')
 
     # Then
     assert thing_ok_offer in offers
-    assert event_ok_offer in offers
     assert thing_ko_offer not in offers
+    assert event_ko_offer not in offers
 
 
 @clean_database
