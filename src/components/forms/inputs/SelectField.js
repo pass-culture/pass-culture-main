@@ -30,13 +30,14 @@ class SelectField extends React.PureComponent {
       className,
       canSearch,
       placeholder,
+      readOnly,
       ...rest
     } = this.props
     return (
       <Form.Item
         {...rest}
         className={`ant-select-custom ${className}`}
-        label={renderLabel(label, help)}
+        label={(label && renderLabel(label, help)) || null}
       >
         <Field
           name={name}
@@ -50,7 +51,12 @@ class SelectField extends React.PureComponent {
               filterOption={filterOption}
               value={input.value || undefined}
               getPopupContainer={() => this.popupContainer}
-              disabled={disabled || !provider.length || provider.length === 1}
+              disabled={
+                readOnly ||
+                disabled ||
+                !provider.length ||
+                provider.length === 1
+              }
             >
               {provider &&
                 provider.map(obj => (
@@ -73,21 +79,23 @@ class SelectField extends React.PureComponent {
 SelectField.defaultProps = {
   canSearch: false,
   className: '',
-  disabled: null,
+  disabled: false,
   help: null,
   label: null,
   placeholder: null,
+  readOnly: false,
 }
 
 SelectField.propTypes = {
   canSearch: PropTypes.bool,
   className: PropTypes.string,
-  disabled: PropTypes.string,
+  disabled: PropTypes.bool,
   help: PropTypes.string,
   label: PropTypes.string,
   name: PropTypes.string.isRequired,
   placeholder: PropTypes.string,
   provider: PropTypes.array.isRequired,
+  readOnly: PropTypes.bool,
 }
 
 export default SelectField

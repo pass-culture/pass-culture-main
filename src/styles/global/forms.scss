@@ -150,7 +150,11 @@
   font-size: rem(30px);
 }
 
-.react-datepicker__input-container_wrapper.selected::after {
+.react-datepicker__input-container_wrapper.read-only .pc-final-form-datepicker-input {
+  background-color: #F5F5F5;
+}
+
+.react-datepicker__input-container_wrapper.selected:not(.read-only)::after {
   display: none;
   visibility: hidden;
 }

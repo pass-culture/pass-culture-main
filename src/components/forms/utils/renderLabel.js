@@ -9,7 +9,7 @@ import React from 'react'
 
 export const renderLabel = (label = '') => (
   <span>
-    <b>{label || ''}</b>
+    <span>{label || ''}</span>
   </span>
 )
 

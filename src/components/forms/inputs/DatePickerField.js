@@ -9,9 +9,10 @@ import DatePicker from 'react-datepicker'
 import InputLabel from '../InputLabel'
 
 const DatePickerCustomInput = React.forwardRef((props, ref) => {
-  const hasvalue =
-    props.value && typeof props.value === 'string' && props.value.trim() !== ''
-  const cssclass = (hasvalue && 'selected') || ''
+  const { readOnly, value } = props
+  const hasvalue = value && typeof value === 'string' && value.trim() !== ''
+  let cssclass = (hasvalue && 'selected') || ''
+  cssclass = `${cssclass} ${(readOnly && 'read-only') || ''}`
   return (
     <div className={`react-datepicker__input-container_wrapper ${cssclass}`}>
       <input
@@ -42,6 +43,7 @@ const DatePickerField = ({
   provider,
   onChange,
   popperRefContainer,
+  readOnly,
   required,
   // NOTE -> Autres props du react-datepicker passées en option
   // github.com/Hacker0x01/react-datepicker/blob/master/docs/datepicker.md
@@ -54,6 +56,7 @@ const DatePickerField = ({
   if (!hideToday) {
     moreprops.todayButton = `Aujourd'hui`
   }
+  const isClearable = !readOnly && clearable
   return (
     <div className={`${className}`}>
       <label htmlFor={id || name} className="pc-final-form-datepicker">
@@ -63,12 +66,13 @@ const DatePickerField = ({
             shouldCloseOnSelect
             id={id || name}
             locale={locale}
+            readOnly={readOnly}
             onChange={onChange}
             dateFormat={dateFormat}
-            isClearable={clearable}
             includeDates={provider}
+            isClearable={isClearable}
             placeholderText={placeholder}
-            customInput={<DatePickerCustomInput />}
+            customInput={<DatePickerCustomInput readOnly={readOnly} />}
             {...moreprops}
           />
         </div>
@@ -76,13 +80,6 @@ const DatePickerField = ({
     </div>
   )
 }
-/* <span className="icon">
-    <Icon
-      alt="Choisissez une date dans le calendrier"
-      className="input-icon"
-      svg="dropdown-disclosure-down"
-    />
-  </span> */
 
 DatePickerField.defaultProps = {
   className: '',
@@ -96,6 +93,7 @@ DatePickerField.defaultProps = {
   placeholder: 'Par date...',
   popperRefContainer: null,
   provider: null,
+  readOnly: false,
   required: false,
   withPortal: false,
 }
@@ -114,6 +112,7 @@ DatePickerField.propTypes = {
   placeholder: PropTypes.string,
   popperRefContainer: PropTypes.object,
   provider: PropTypes.array,
+  readOnly: PropTypes.bool,
   required: PropTypes.bool,
   withPortal: PropTypes.bool,
 }

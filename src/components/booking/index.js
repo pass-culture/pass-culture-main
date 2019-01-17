@@ -2,6 +2,7 @@
   react/jsx-one-expression-per-line: 0 */
 import React from 'react'
 import get from 'lodash.get'
+import moment from 'moment'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
@@ -58,12 +59,9 @@ class Booking extends React.PureComponent {
   }
 
   onFormMutation = ({ invalid, values }) => {
-    // intervient aux changement sur le form
-    // pour les changements sur 'invalid | values'
-    const nextCanSubmitForm = !invalid && values.stockId && values.price >= 0
-    const { canSubmitForm } = this.state
-    const hasFormValid = canSubmitForm !== nextCanSubmitForm
-    if (!hasFormValid) return
+    const nextCanSubmitForm = Boolean(
+      !invalid && values.stockId && values.price >= 0
+    )
     this.setState({ canSubmitForm: nextCanSubmitForm })
   }
 
@@ -184,12 +182,19 @@ class Booking extends React.PureComponent {
     const showForm =
       !isSubmitting && !bookedPayload && !isErrored && !isCancelled
     const defaultBookable = !isEvent && get(bookables, '[0]')
+    //
+    const isReadOnly = isEvent && bookables.length === 1
+    let initialDate = null
+    if (isReadOnly) {
+      initialDate = get(bookables, '0.beginningDatetime')
+      initialDate = moment(initialDate)
+    }
     const formInitialValues = {
       bookables,
-      date: null,
-      price: get(defaultBookable, 'price'),
+      date: (initialDate && { date: initialDate }) || null,
+      price: (defaultBookable && get(defaultBookable, 'price')) || null,
       recommendationId: recommendation.id,
-      stockId: get(defaultBookable, 'id'),
+      stockId: (defaultBookable && get(defaultBookable, 'id')) || null,
     }
     return (
       <Transition in={mounted} timeout={0}>
