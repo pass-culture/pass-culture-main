@@ -1,4 +1,4 @@
-// jest --env=jsdom ./src/components/pages/activation/tests/ActivationError --watch
+// jest --env=jsdom ./src/components/pages/activation/error/tests/index --watch
 import React from 'react'
 import { render } from 'enzyme'
 import ActivationError from '../index'
