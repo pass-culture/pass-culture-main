@@ -1,7 +1,7 @@
 import isEqual from 'lodash.isequal'
 
-const devise = ' €'
-const arrow = ' \u2192 '
+const devise = '€'
+const arrow = '\u2192 '
 
 const sortNumber = (a, b) => {
   if (a > b) return 1
@@ -57,8 +57,8 @@ export const getPrice = value => {
 
   if (!array) return ''
 
-  const formatedDevise = array.map(v => valueToPrice(v)).join(arrow) || ''
-  return formatedDevise + devise
+  const formatedDevise = array.map(v => valueToPrice(v)).join(` ${arrow}`) || ''
+  return `${formatedDevise} ${devise}`
 }
 
 export default getPrice
