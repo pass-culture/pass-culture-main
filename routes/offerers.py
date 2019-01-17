@@ -8,7 +8,7 @@ from models import Offerer, PcObject, RightsType
 from models.venue import create_digital_venue
 from repository.booking_queries import find_offerer_bookings
 from repository.offerer_queries import find_all_recommendations_for_offerer,\
-                                       filter_offerers_with_keywords_chain
+                                       filter_offerers_with_keywords_string
 from repository.user_offerer_queries import filter_query_where_user_is_user_offerer_and_is_not_validated
 from repository.user_offerer_queries import filter_query_where_user_is_user_offerer_and_is_validated
 from utils.human_ids import dehumanize
@@ -40,7 +40,7 @@ def list_offerers():
 
     keywords = request.args.get('keywords')
     if keywords is not None:
-        query = filter_offerers_with_keywords_chain(query, keywords)
+        query = filter_offerers_with_keywords_string(query, keywords)
 
     return handle_rest_get_list(Offerer,
                                 include=OFFERER_INCLUDES if (

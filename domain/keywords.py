@@ -3,10 +3,7 @@ import re
 from sqlalchemy import and_, func
 from sqlalchemy.sql.expression import or_
 
-AND = '_and_'
 LANGUAGE = 'french'
-SPACE = ' '
-
 
 def create_tsvector(*args):
     exp = args[0]
@@ -14,23 +11,16 @@ def create_tsvector(*args):
         exp += ' ' + e
     return func.to_tsvector(LANGUAGE, exp)
 
+def get_ts_queries_from_keywords_string(keywords_string):
 
-def get_ts_query(token):
-    ts_query = re.sub(' +', ' ', token)\
-        .strip()\
-        .replace(SPACE, ':* & ')
-    return ts_query + ':*'
+    ts_queries_string = re.sub(' +', ' ', keywords_string)\
+                          .strip()\
+                          .replace(' ', ':* ') + ':*'
 
+    return [ts_query for ts_query in ts_queries_string.split(' ')]
 
-def get_ts_queries(search):
-    if AND in search:
-        tokens = [token for token in search.split(AND) if token.strip() != '']
-        return [get_ts_query(token) for token in tokens]
-    return [get_ts_query(search)]
-
-
-def create_ts_filter_finding_ts_query_in_at_least_one_of_the_models(*models):
-    def ts_filter_finding_ts_query_in_at_least_one_of_the_models(ts_query):
+def create_get_filter_matching_ts_query_in_any_model(*models):
+    def get_filter_matching_ts_query_in_any_model(ts_query):
         return or_(
             *[
                 model.__ts_vector__.match(
@@ -40,11 +30,15 @@ def create_ts_filter_finding_ts_query_in_at_least_one_of_the_models(*models):
                 for model in models
             ]
         )
-    return ts_filter_finding_ts_query_in_at_least_one_of_the_models
+    return get_filter_matching_ts_query_in_any_model
 
-def create_filter_finding_all_keywords_in_at_least_one_of_the_models(
-        ts_filter,
-        keywords_chain
+def create_filter_matching_all_keywords_in_any_model(
+        get_filter_matching_ts_query_in_any_model,
+        keywords_string
 ):
-    ts_queries = get_ts_queries(keywords_chain)
-    return and_(*map(ts_filter, ts_queries))
+    ts_queries = get_ts_queries_from_keywords_string(keywords_string)
+    ts_filters = [
+        get_filter_matching_ts_query_in_any_model(ts_query)
+        for ts_query in ts_queries
+    ]
+    return and_(*ts_filters)

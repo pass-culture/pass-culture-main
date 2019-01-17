@@ -1,14 +1,14 @@
 from sqlalchemy import or_
 from datetime import datetime
 
-from domain.keywords import create_filter_finding_all_keywords_in_at_least_one_of_the_models,\
-                            create_ts_filter_finding_ts_query_in_at_least_one_of_the_models
+from domain.keywords import create_filter_matching_all_keywords_in_any_model, \
+                            create_get_filter_matching_ts_query_in_any_model
 from models import Offerer, Venue, Offer, EventOccurrence, UserOfferer, User, Event, Booking, Stock, Recommendation
 from models import RightsType
 from models.activity import load_activity
 from models.db import db
 
-offerer_ts_filter = create_ts_filter_finding_ts_query_in_at_least_one_of_the_models(
+get_filter_matching_ts_query_for_offerer = create_get_filter_matching_ts_query_in_any_model(
     Offerer
 )
 
@@ -306,10 +306,10 @@ def _filter_by_has_validated_user(query, has_validated_user):
         query = query.filter(~Offerer.users.any(is_valid))
     return query
 
-def filter_offerers_with_keywords_chain(query, keywords_chain):
-    keywords_filter = create_filter_finding_all_keywords_in_at_least_one_of_the_models(
-        offerer_ts_filter,
-        keywords_chain
+def filter_offerers_with_keywords_string(query, keywords_string):
+    keywords_filter = create_filter_matching_all_keywords_in_any_model(
+        get_filter_matching_ts_query_for_offerer,
+        keywords_string
     )
     query = query.filter(keywords_filter)
     return query

@@ -1,4 +1,3 @@
-""" routes recommendations tests """
 from datetime import datetime, timedelta
 
 import pytest

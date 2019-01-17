@@ -3,8 +3,8 @@ from typing import List
 
 from sqlalchemy import func, and_, or_
 
-from domain.keywords import create_filter_finding_all_keywords_in_at_least_one_of_the_models,\
-                            create_ts_filter_finding_ts_query_in_at_least_one_of_the_models
+from domain.keywords import create_filter_matching_all_keywords_in_any_model, \
+                            create_get_filter_matching_ts_query_in_any_model
 from models import Booking, \
     Event, \
     EventOccurrence, \
@@ -20,7 +20,7 @@ from utils.config import ILE_DE_FRANCE_DEPT_CODES
 from utils.distance import get_sql_geo_distance_in_kilometers
 from utils.logger import logger
 
-offer_ts_filter = create_ts_filter_finding_ts_query_in_at_least_one_of_the_models(
+get_filter_matching_ts_query_for_offer = create_get_filter_matching_ts_query_in_any_model(
     Event,
     Thing,
     Venue
@@ -106,10 +106,10 @@ def _date_interval_to_filter(date_interval):
     return ((EventOccurrence.beginningDatetime >= date_interval[0]) & \
             (EventOccurrence.beginningDatetime <= date_interval[1]))
 
-def filter_offers_with_keywords_chain(query, keywords_chain):
-    keywords_filter = create_filter_finding_all_keywords_in_at_least_one_of_the_models(
-        offer_ts_filter,
-        keywords_chain
+def filter_offers_with_keywords_string(query, keywords_string):
+    keywords_filter = create_filter_matching_all_keywords_in_any_model(
+        get_filter_matching_ts_query_for_offer,
+        keywords_string
     )
     query = query.outerjoin(Event) \
                  .outerjoin(Thing) \
@@ -152,7 +152,7 @@ def get_offers_for_recommendations_search(
                      .reset_joinpoint()
 
     if keywords is not None:
-        query = filter_offers_with_keywords_chain(query, keywords)
+        query = filter_offers_with_keywords_string(query, keywords)
 
     if type_values is not None:
         event_query = query.from_self() \
@@ -196,7 +196,7 @@ def find_by_venue_id_or_offerer_id_and_search_terms_offers_where_user_has_rights
         query = filter_query_where_user_is_user_offerer_and_is_validated(query, user)
 
     if search is not None:
-        query = filter_offers_with_keywords_chain(query, search)
+        query = filter_offers_with_keywords_string(query, search)
 
     return query
 

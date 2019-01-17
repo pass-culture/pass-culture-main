@@ -5,8 +5,8 @@ from sqlalchemy import and_, text
 from sqlalchemy.exc import InternalError
 from sqlalchemy.orm import aliased
 
-from domain.keywords import create_ts_filter_finding_ts_query_in_at_least_one_of_the_models, \
-                            create_filter_finding_all_keywords_in_at_least_one_of_the_models
+from domain.keywords import create_filter_matching_all_keywords_in_any_model, \
+                            create_get_filter_matching_ts_query_in_any_model
 from models import ApiErrors, \
     Booking, \
     Event, \
@@ -20,7 +20,7 @@ from models import ApiErrors, \
 from models.api_errors import ResourceNotFound
 from utils.rest import query_with_order_by
 
-booking_ts_filter = create_ts_filter_finding_ts_query_in_at_least_one_of_the_models(
+get_filter_matching_ts_query_for_booking = create_get_filter_matching_ts_query_in_any_model(
     Event,
     Thing,
     Venue,
@@ -33,9 +33,9 @@ def find_all_by_user_id(user_id):
 def find_all_by_stock_id(stock):
     return Booking.query.filter_by(stockId=stock.id).all()
 
-def filter_bookings_with_keywords_chain(query, keywords_chain):
-    keywords_filter = create_filter_finding_all_keywords_in_at_least_one_of_the_models(
-        booking_ts_filter,
+def filter_bookings_with_keywords_string(query, keywords_string):
+    keywords_filter = create_filter_matching_all_keywords_in_any_model(
+        get_filter_matching_ts_query_for_booking,
         search
     )
     query = query.outerjoin(Event) \
@@ -58,7 +58,7 @@ def find_offerer_bookings(offerer_id, search=None, order_by=None, page=1):
         .reset_joinpoint()
 
     if search:
-        query = filter_bookings_with_keywords_chain(query, search)
+        query = filter_bookings_with_keywords_string(query, search)
 
     if order_by:
         query = query_with_order_by(query, order_by)
