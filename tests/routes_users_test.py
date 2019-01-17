@@ -666,7 +666,7 @@ def test_signin_should_return_the_signed_in_user_with_his_expenses(app):
     assert response.json()['expenses'] == {
         'all': {'actual': 0, 'max': 500},
         'digital': {'actual': 0, 'max': 200},
-        'physical': {'actual': 0, 'max': 100}
+        'physical': {'actual': 0, 'max': 200}
     }
 
 
@@ -767,7 +767,7 @@ def test_get_current_user_returns_expenses(app):
     expenses = response.json()['expenses']
     assert expenses == {
         'all': {'max': 500, 'actual': 20},
-        'physical': {'max': 100, 'actual': 20},
+        'physical': {'max': 200, 'actual': 20},
         'digital': {'max': 200, 'actual': 0}
     }
 
