@@ -65,7 +65,9 @@ class RawOfferers extends Component {
     const { search } = pagination.apiQuery || {}
 
     const sectionTitle =
-      offerers.length > 1 ? 'Vos structures' : 'Votre structure'
+      offerers.length > 1
+        ? 'Vos structures juridiques'
+        : 'Votre structure juridique'
 
     return (
       <Main name="offerers" handleDataRequest={this.handleDataRequest}>

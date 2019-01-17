@@ -46,7 +46,7 @@ describe('src | components | pages | Offerers | IndexSearch', () => {
 
         // then
 
-        expect(heroSection.title).toEqual('Votre structure')
+        expect(heroSection.title).toEqual('Votre structure juridique')
       })
       it('should display Vos structures when many offerers', () => {
         // given
@@ -65,7 +65,7 @@ describe('src | components | pages | Offerers | IndexSearch', () => {
         const heroSection = wrapper.find('HeroSection').props()
 
         // then
-        expect(heroSection.title).toEqual('Vos structures')
+        expect(heroSection.title).toEqual('Vos structures juridiques')
       })
     })
   })

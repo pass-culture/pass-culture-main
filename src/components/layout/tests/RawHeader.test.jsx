@@ -39,7 +39,7 @@ describe('src | components | Layout | RawHeader', () => {
 
         // then
         expect(navLinks).toHaveLength(5)
-        expect(linkTitle).toEqual('Votre structure')
+        expect(linkTitle).toEqual('Votre structure juridique')
       })
       it('should display Vos structures when many offerers', () => {
         // given
@@ -58,7 +58,7 @@ describe('src | components | Layout | RawHeader', () => {
 
         // then
         expect(navLinks).toHaveLength(5)
-        expect(linkTitle).toEqual('Vos structures')
+        expect(linkTitle).toEqual('Vos structures juridiques')
       })
     })
   })

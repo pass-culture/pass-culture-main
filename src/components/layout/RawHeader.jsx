@@ -72,8 +72,8 @@ class RawHeader extends Component {
                     </span>
                     <span>
                       {offerers.length > 1
-                        ? 'Vos structures'
-                        : 'Votre structure'}
+                        ? 'Vos structures juridiques'
+                        : 'Votre structure juridique'}
                     </span>
                   </NavLink>
                   {false && (

@@ -197,7 +197,7 @@ class OffererPage extends Component {
 
     return (
       <Main
-        backTo={{ label: 'Vos structures', path: '/structures' }}
+        backTo={{ label: 'Vos structures juridiques', path: '/structures' }}
         name="offerer"
         handleDataRequest={this.handleDataRequest}>
         <HeroSection subtitle={get(offerer, 'name')} title="Structure">

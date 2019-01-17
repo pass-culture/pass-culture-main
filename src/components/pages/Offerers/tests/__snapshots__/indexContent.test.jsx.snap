@@ -33,7 +33,7 @@ ShallowWrapper {
     "props": Object {
       "children": Array [
         <HeroSection
-          title="Votre structure"
+          title="Votre structure juridique"
 >
           <p
                     className="subtitle"
@@ -158,7 +158,7 @@ ShallowWrapper {
               + Rattacher une structure supplémentaire
 </NavLink>,
           ],
-          "title": "Votre structure",
+          "title": "Votre structure juridique",
         },
         "ref": null,
         "rendered": Array [
@@ -503,7 +503,7 @@ ShallowWrapper {
       "props": Object {
         "children": Array [
           <HeroSection
-            title="Votre structure"
+            title="Votre structure juridique"
 >
             <p
                         className="subtitle"
@@ -628,7 +628,7 @@ ShallowWrapper {
                 + Rattacher une structure supplémentaire
 </NavLink>,
             ],
-            "title": "Votre structure",
+            "title": "Votre structure juridique",
           },
           "ref": null,
           "rendered": Array [
