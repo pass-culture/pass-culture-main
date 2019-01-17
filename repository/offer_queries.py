@@ -9,6 +9,7 @@ from models import Booking, \
     Event, \
     EventOccurrence, \
     Offer, \
+    Offerer, \
     Stock, \
     Offerer, \
     Recommendation, \
@@ -23,7 +24,8 @@ from utils.logger import logger
 get_filter_matching_ts_query_for_offer = create_get_filter_matching_ts_query_in_any_model(
     Event,
     Thing,
-    Venue
+    Venue,
+    Offerer
 )
 
 def departement_or_national_offers(query, offer_type, departement_codes):
@@ -114,6 +116,7 @@ def filter_offers_with_keywords_string(query, keywords_string):
     query = query.outerjoin(Event) \
                  .outerjoin(Thing) \
                  .outerjoin(Venue) \
+                 .outerjoin(Offerer) \
                  .filter(keywords_filter) \
                  .reset_joinpoint()
     return query

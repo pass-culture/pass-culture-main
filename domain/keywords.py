@@ -17,7 +17,12 @@ def get_ts_queries_from_keywords_string(keywords_string):
                           .strip()\
                           .replace(' ', ':* ') + ':*'
 
-    return [ts_query for ts_query in ts_queries_string.split(' ')]
+
+    ts_queries = [ts_query for ts_query in ts_queries_string.split(' ')]
+
+    print('ts_queries', ts_queries)
+
+    return ts_queries
 
 def create_get_filter_matching_ts_query_in_any_model(*models):
     def get_filter_matching_ts_query_in_any_model(ts_query):
