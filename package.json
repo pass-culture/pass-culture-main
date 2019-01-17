@@ -111,7 +111,7 @@
   },
   "scripts": {
     "build": "node scripts/build.js && ./scripts/build_redirects.sh",
-    "test:unit": "jest --env=jsdom",
+    "testunit": "jest --env=jsdom",
     "testcafe": "testcafe 'chrome:headless' testcafe",
     "precommit": "pretty-quick --staged",
     "prettier": "$(yarn bin)/prettier --write 'src/**/*.js'",
