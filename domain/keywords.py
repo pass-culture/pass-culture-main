@@ -1,9 +1,14 @@
+import utils.nltk_downloader
+
 import re
 
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
 from sqlalchemy import and_, func
 from sqlalchemy.sql.expression import or_
 
 LANGUAGE = 'french'
+STOP_WORDS = set(stopwords.words(LANGUAGE))
 
 def create_tsvector(*args):
     exp = args[0]
@@ -13,12 +18,14 @@ def create_tsvector(*args):
 
 def get_ts_queries_from_keywords_string(keywords_string):
 
-    ts_queries_string = re.sub(' +', ' ', keywords_string)\
-                          .strip()\
-                          .replace(' ', ':* ') + ':*'
+    keywords = word_tokenize(keywords_string)
+    keywords_without_stop_words = [
+        keyword
+        for keyword in keywords
+        if keyword not in STOP_WORDS
+    ]
 
-
-    ts_queries = [ts_query for ts_query in ts_queries_string.split(' ')]
+    ts_queries = ['{}:*'.format(keyword) for keyword in keywords_without_stop_words]
 
     return ts_queries
 

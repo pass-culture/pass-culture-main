@@ -114,7 +114,7 @@ def test_get_recommendations_returns_one_recommendation_found_from_search_ignori
 @pytest.mark.standalone
 def test_get_recommendations_with_double_and_trailing_whitespaces_returns_one_recommendation(app):
     # given
-    search = "keywords= rencontres  auteurs "
+    search = "keywords= rencontres avec auteurs "
     user = create_user(email='test@email.com', password='P@55w0rd')
     offerer = create_offerer()
     venue = create_venue(offerer)
