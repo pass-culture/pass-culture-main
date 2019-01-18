@@ -69,7 +69,8 @@ const checkboxDate2 = filterbyDatesDiv.find('input').nth(1)
 const checkboxDate3 = filterbyDatesDiv.find('input').nth(2)
 const datePicker = filterbyDatesDiv.find('input').nth(3)
 
-const utcExampleDay = Selector('.react-datepicker__week').withText('18')
+const utcExampleDay = Selector('.react-datepicker__day').withText('14')
+const nextMonthButton = Selector('.react-datepicker__navigation--next')
 const resetDatePickerInput = Selector('.react-datepicker__close-icon')
 
 test('Je vois le titre de la section', async t => {
@@ -99,11 +100,16 @@ test('Quand on choisit un range de date après une date précise, le date picker
     .click(datePicker)
     .wait(500)
 
+    // Je sélectionne une date via le date picker
+    // Je vais au mois suivant pour être sur d'avoir une date dans le futur
+    .click(nextMonthButton)
     .click(utcExampleDay)
+    .wait(500)
 
-    // la valeur de l'input est mise à jour
+  // la valeur de l'input est mise à jour
+  await t
     .expect(datePicker.value)
-    .contains('17/')
+    .contains('14/')
 
     .click(checkboxDate1)
 
@@ -178,7 +184,7 @@ test('Je sélectionne plusieurs date, je filtre puis je clique sur réinitialise
 
   await t
     .expect(getPageUrl())
-    .contains(`/recherche/resultats?page=`, { timeout: 2000 })
+    .contains(`/recherche/resultats`, { timeout: 2000 })
 })
 
 test("Je sélectionne plusieurs date puis j'utilise le date picker", async t => {
@@ -193,6 +199,8 @@ test("Je sélectionne plusieurs date puis j'utilise le date picker", async t => 
     .wait(200)
 
     // Je sélectionne une date via le date picker
+    // Je vais au mois suivant pour être sur d'avoir une date dans le futur
+    .click(nextMonthButton)
     .click(utcExampleDay)
 
     .expect(checkboxDate1.checked)
@@ -203,12 +211,10 @@ test("Je sélectionne plusieurs date puis j'utilise le date picker", async t => 
     .notOk()
 
     .expect(datePicker.value)
-    .contains('17/')
+    .contains('14/')
 
     .click(filterButton)
 
-  // await t.expect(getPageUrl()).contains('-16')
-  // FIXME UTC sur Circle CI différente que sur l'app
   await t.expect(getPageUrl()).contains('/recherche/resultats?date=')
 })
 test('Je peux réinitiliaser la date choisie via le date picker', async t => {
@@ -221,10 +227,12 @@ test('Je peux réinitiliaser la date choisie via le date picker', async t => {
     .wait(200)
 
     // Je sélectionne une date via le date picker
+    // Je vais au mois suivant pour être sur d'avoir une date dans le futur
+    .click(nextMonthButton)
     .click(utcExampleDay)
 
     .expect(datePicker.value)
-    .contains('17/')
+    .contains('14/')
 
     .click(resetDatePickerInput)
 
