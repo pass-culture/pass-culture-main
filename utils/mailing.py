@@ -288,7 +288,7 @@ def get_contact(user):
 
 def subscribe_newsletter(user):
     if not feature_send_mail_to_users_enabled():
-        logger.info("Subscription in DEV or STAGING mode is disabled")
+        logger.logger.info("Subscription in DEV or STAGING mode is disabled")
         return
 
     try:

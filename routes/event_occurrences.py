@@ -7,6 +7,7 @@ from models import Event, EventOccurrence, Offer, PcObject, RightsType, Venue
 from repository import booking_queries
 from utils.human_ids import dehumanize
 from utils.includes import EVENT_OCCURRENCE_INCLUDES
+from utils.mailing import MailServiceException
 from utils.rest import ensure_current_user_has_rights, \
     expect_json_data, \
     load_or_404, \
@@ -73,8 +74,11 @@ def delete_event_occurrence(id):
     bookings = cancel_bookings(*bookings)
     soft_deleted_objects = soft_delete_objects(event_occurrence,*event_occurrence.stocks)
     if bookings:
-        send_batch_cancellation_emails_to_users(bookings, app.mailjet_client.send.create)
-        send_batch_cancellation_email_to_offerer(bookings, 'event_occurrence', app.mailjet_client.send.create)
+        try:
+            send_batch_cancellation_emails_to_users(bookings, app.mailjet_client.send.create)
+            send_batch_cancellation_email_to_offerer(bookings, 'event_occurrence', app.mailjet_client.send.create)
+        except MailServiceException as e:
+            app.logger.error('Mail service failure', e)
 
     PcObject.check_and_save(*(bookings + soft_deleted_objects))
 
