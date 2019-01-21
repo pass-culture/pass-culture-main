@@ -113,6 +113,12 @@
     .field-label,
     .field-body {
       display: table-cell;
+
+      .columns {
+          &:last-child {
+            margin-bottom: 1rem;
+          }
+      }
     }
 
     .field-label {
