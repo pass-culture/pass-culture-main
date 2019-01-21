@@ -23,7 +23,7 @@ const HomePage = ({ user }) => {
         <Card
           svg="ico-guichet-w"
           title="Guichet"
-          text="Enregistrez les codes de réservation des porteurs du Pass (en construction, pas encore disponible)."
+          text="Enregistrez les codes de réservation des porteurs du Pass."
           navLink="/guichet"
         />
         <Card
