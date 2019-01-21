@@ -19,17 +19,31 @@ def create_industrial_venues(offerers_by_name):
 
     venue_by_name = {}
     mock_index = 0
-    for (offerer_name, offerer) in offerers_by_name.items():
+
+    iban_prefix = 'FR7630001007941234567890185'
+    bic_prefix, bic_suffix = 'QSDFGH8Z', 556
+
+    offerer_items = offerers_by_name.items()
+    for (offerer_index, (offerer_name, offerer))  in enumerate(offerer_items):
         geoloc_match = re.match(r'(.*)lat\:(.*) lon\:(.*)', offerer_name)
 
         venue_name = MOCK_NAMES[mock_index%len(MOCK_NAMES)]
 
+        if offerer_index%4:
+            iban = iban_prefix
+            bic = bic_prefix + str(bic_suffix)
+        else:
+            iban = None
+            bic = None
+
         venue_by_name[offerer_name] = create_venue(
             offerer,
             address=offerer.address,
+            bic=bic,
             booking_email="fake@email.com",
             city=offerer.city,
             comment="Pas de siret car je suis un mock.",
+            iban=iban,
             latitude=float(geoloc_match.group(2)),
             longitude=float(geoloc_match.group(3)),
             name=venue_name,
@@ -37,6 +51,7 @@ def create_industrial_venues(offerers_by_name):
             siret=None
         )
 
+        bic_suffix += 1
         mock_index += 1
 
         venue_by_name["{} (Offre en ligne)".format(venue_name)] = create_venue(

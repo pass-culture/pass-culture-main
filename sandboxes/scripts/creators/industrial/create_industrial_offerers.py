@@ -38,14 +38,21 @@ def create_industrial_offerers(
             location['longitude']
         )
 
+        if location_index%2:
+            iban = iban_prefix
+            bic = bic_prefix + str(bic_suffix)
+        else:
+            iban = None
+            bic = None
+
         offerer = create_offerer(
             address=location['address'].upper(),
             city=location['city'],
             name=MOCK_NAMES[mock_index],
             postal_code=location['postalCode'],
             siren=str(incremented_siren),
-            iban=iban_prefix,
-            bic=bic_prefix + str(bic_suffix)
+            iban=iban,
+            bic=bic
         )
 
         if needs_validation:
