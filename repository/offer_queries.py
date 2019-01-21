@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import List
 
 from sqlalchemy import func, and_, or_
+from sqlalchemy.orm import aliased
 
 from domain.keywords import create_filter_matching_all_keywords_in_any_model, \
                             create_get_filter_matching_ts_query_in_any_model
@@ -108,22 +109,26 @@ def _date_interval_to_filter(date_interval):
     return ((EventOccurrence.beginningDatetime >= date_interval[0]) & \
             (EventOccurrence.beginningDatetime <= date_interval[1]))
 
-def filter_offers_with_keywords_string(query, keywords_string):
+def filter_offers_with_keywords_string(query, keywords_string, do_join_venue=True):
     keywords_filter = create_filter_matching_all_keywords_in_any_model(
         get_filter_matching_ts_query_for_offer,
         keywords_string
     )
+
     query = query.outerjoin(Event) \
-                 .outerjoin(Thing) \
-                 .join(Venue) \
-                 .join(Offerer) \
-                 .filter(keywords_filter) \
+                 .outerjoin(Thing)
+
+    if do_join_venue:
+        query = query.join(Venue) \
+                     .join(Offerer)
+
+    query = query.filter(keywords_filter) \
                  .reset_joinpoint()
     return query
 
 def get_offers_for_recommendations_search(
         page=1,
-        keywords=None,
+        keywords_string=None,
         type_values=None,
         latitude=None,
         longitude=None,
@@ -154,8 +159,8 @@ def get_offers_for_recommendations_search(
                         (Offer.thing != None))\
                      .reset_joinpoint()
 
-    if keywords is not None:
-        query = filter_offers_with_keywords_string(query, keywords)
+    if keywords_string is not None:
+        query = filter_offers_with_keywords_string(query, keywords_string)
 
     if type_values is not None:
         event_query = query.from_self() \
@@ -177,29 +182,34 @@ def get_offers_for_recommendations_search(
     return offers
 
 
-def find_by_venue_id_or_offerer_id_and_search_terms_offers_where_user_has_rights(
+def find_by_venue_id_or_offerer_id_and_keywords_string_offers_where_user_has_rights(
         offerer_id,
         venue,
         venue_id,
         user,
-        search
+        keywords_string
 ):
     query = Offer.query
 
+
     if venue_id is not None:
         query = query.filter_by(venue=venue)
-    elif offerer_id is not None:
-        query = query.join(Venue) \
-                     .join(Offerer) \
-                     .filter_by(id=offerer_id) \
-                     .reset_joinpoint()
-    elif not user.isAdmin:
+
+    if offerer_id is not None or not user.isAdmin or keywords_string is not None:
         query = query.join(Venue) \
                      .join(Offerer)
+
+    if offerer_id is not None:
+        query = query.filter_by(id=offerer_id)
+    elif not user.isAdmin:
         query = filter_query_where_user_is_user_offerer_and_is_validated(query, user)
 
-    if search is not None:
-        query = filter_offers_with_keywords_string(query, search)
+    if keywords_string is not None:
+        query = filter_offers_with_keywords_string(
+            query,
+            keywords_string,
+            do_join_venue=False
+        )
 
     return query
 

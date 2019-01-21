@@ -10,7 +10,8 @@ from models import ApiErrors, Offer, PcObject, Recommendation, \
     RightsType, Venue
 from models.db import db
 from repository import venue_queries, offer_queries
-from repository.offer_queries import find_activation_offers
+from repository.offer_queries import find_activation_offers, \
+                                     find_by_venue_id_or_offerer_id_and_keywords_string_offers_where_user_has_rights
 from utils.human_ids import dehumanize
 from utils.includes import OFFER_INCLUDES
 from utils.rest import ensure_current_user_has_rights, \
@@ -30,7 +31,7 @@ def list_offers():
     check_venue_exists_when_requested(venue, venue_id)
     check_user_has_rights_for_query(offerer_id, venue, venue_id)
 
-    query = offer_queries.find_by_venue_id_or_offerer_id_and_search_terms_offers_where_user_has_rights(
+    query = find_by_venue_id_or_offerer_id_and_keywords_string_offers_where_user_has_rights(
         offerer_id,
         venue,
         venue_id,

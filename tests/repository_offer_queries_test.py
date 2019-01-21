@@ -214,7 +214,7 @@ def test_get_offers_for_recommendations_search_with_several_partial_keywords(app
     PcObject.check_and_save(event_ko_stock, thing_ok_stock, thing_ko_stock)
 
     # When
-    offers = get_offers_for_recommendations_search(keywords='renc michel')
+    offers = get_offers_for_recommendations_search(keywords_string='renc michel')
 
     # Then
     assert thing_ok_offer in offers
