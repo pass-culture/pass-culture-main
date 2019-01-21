@@ -34,7 +34,7 @@ def test_create_recommendations_for_discovery_does_not_put_mediation_ids_of_inac
 
     # Then
     mediations = list(map(lambda x: x.mediationId, recommendations))
-    assert len(recommendations) == 2
+    assert len(recommendations) == 1
     assert mediation3.id in mediations
     assert humanize(mediation2.id) not in mediations
     assert humanize(mediation1.id) not in mediations
