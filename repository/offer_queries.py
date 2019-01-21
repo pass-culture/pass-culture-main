@@ -183,17 +183,16 @@ def get_offers_for_recommendations_search(
 
 
 def find_by_venue_id_or_offerer_id_and_keywords_string_offers_where_user_has_rights(
-        offerer_id,
-        venue,
-        venue_id,
         user,
-        keywords_string
+        offerer_id=None,
+        venue_id=None,
+        keywords_string=None
 ):
     query = Offer.query
 
 
     if venue_id is not None:
-        query = query.filter_by(venue=venue)
+        query = query.filter_by(venueId=venue_id)
 
     if offerer_id is not None or not user.isAdmin or keywords_string is not None:
         query = query.join(Venue) \
@@ -201,6 +200,7 @@ def find_by_venue_id_or_offerer_id_and_keywords_string_offers_where_user_has_rig
 
     if offerer_id is not None:
         query = query.filter_by(id=offerer_id)
+
     elif not user.isAdmin:
         query = filter_query_where_user_is_user_offerer_and_is_validated(query, user)
 

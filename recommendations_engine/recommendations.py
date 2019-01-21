@@ -190,7 +190,7 @@ def get_recommendation_search_params(kwargs):
         search_params['page'] = int(kwargs['page'])
 
     if 'keywords' in kwargs and kwargs['keywords']:
-        search_params['keywords'] = kwargs['keywords']
+        search_params['keywords_string'] = kwargs['keywords']
 
     if 'categories' in kwargs and kwargs['categories']:
         type_sublabels = kwargs['categories']

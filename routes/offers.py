@@ -32,11 +32,10 @@ def list_offers():
     check_user_has_rights_for_query(offerer_id, venue, venue_id)
 
     query = find_by_venue_id_or_offerer_id_and_keywords_string_offers_where_user_has_rights(
-        offerer_id,
-        venue,
-        venue_id,
         current_user,
-        request.args.get('keywords')
+        offerer_id=offerer_id,
+        venue_id=venue_id,
+        keywords_string=request.args.get('keywords')
     )
 
     return handle_rest_get_list(Offer,

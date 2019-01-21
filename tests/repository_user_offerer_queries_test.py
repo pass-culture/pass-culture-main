@@ -1,9 +1,18 @@
 import pytest
 
-from models import PcObject, UserOfferer
-from repository.user_offerer_queries import find_user_offerer_email, find_first_by_user_id
+from models import Offer, Offerer, PcObject, UserOfferer, Venue
+from repository.user_offerer_queries import find_first_by_user_id, \
+                                            find_user_offerer_email, \
+                                            filter_query_where_user_is_user_offerer_and_is_validated
 from tests.conftest import clean_database
-from utils.test_utils import create_user, create_offerer, create_user_offerer
+from utils.test_utils import create_event, \
+                             create_event_offer, \
+                             create_thing, \
+                             create_thing_offer, \
+                             create_offerer, \
+                             create_user, \
+                             create_user_offerer, \
+                             create_venue
 
 
 @pytest.mark.standalone
@@ -40,3 +49,44 @@ def test_find_first_by_user_id_should_return_one_user_offerers_with_user_id(app)
     # Then
     assert type(first_user_offerer) == UserOfferer
     assert first_user_offerer.id == user_offerer1.id
+
+@pytest.mark.standalone
+@clean_database
+def test_filter_query_where_user_is_user_offerer_and_is_validated(app):
+    # Given
+    user = create_user(email='offerer@email.com')
+    offerer1 = create_offerer(siren='123456789')
+    offerer2 = create_offerer(siren='987654321')
+    offerer3 = create_offerer(siren='123456780')
+    user_offerer1 = create_user_offerer(user, offerer1)
+    user_offerer2 = create_user_offerer(user, offerer2)
+
+    event1 = create_event(event_name='Rencontre avec Jacques Martin')
+    event2 = create_event(event_name='Concert de contrebasse')
+    thing1 = create_thing(thing_name='Jacques la fripouille')
+    thing2 = create_thing(thing_name='Belle du Seigneur')
+    venue1 = create_venue(offerer1, name='Bataclan', city='Paris', siret=offerer1.siren + '12345')
+    venue2 = create_venue(offerer2, name='Librairie la Rencontre', city='Saint Denis', siret=offerer2.siren + '54321')
+    venue3 = create_venue(offerer3, name='Une librairie du méchant concurrent gripsou', city='Saint Denis', siret=offerer3.siren + '54321')
+    offer1 = create_event_offer(venue1, event1)
+    offer2 = create_event_offer(venue1, event2)
+    offer3 = create_thing_offer(venue2, thing1)
+    offer4 = create_thing_offer(venue3, thing2)
+
+    PcObject.check_and_save(
+        user_offerer1, user_offerer2, offerer3,
+        offer1, offer2, offer3, offer4
+    )
+
+    # When
+    offers = filter_query_where_user_is_user_offerer_and_is_validated(
+        Offer.query.join(Venue).join(Offerer),
+        user
+    ).all()
+
+    # Then
+    offer_ids = [offer.id for offer in offers]
+    assert offer1.id in offer_ids
+    assert offer2.id in offer_ids
+    assert offer3.id in offer_ids
+    assert offer4.id not in offer_ids

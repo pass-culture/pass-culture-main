@@ -6,6 +6,7 @@ from models import Thing, PcObject, Event
 from models.offer_type import EventType, ThingType
 from repository.offer_queries import departement_or_national_offers, \
                                      find_activation_offers, \
+                                     find_by_venue_id_or_offerer_id_and_keywords_string_offers_where_user_has_rights, \
                                      get_offers_for_recommendations_search, \
                                      get_active_offers_by_type
 from tests.conftest import clean_database
@@ -20,8 +21,9 @@ from utils.test_utils import create_booking, \
     create_offerer, \
     create_stock_from_offer, \
     create_stock_with_thing_offer, \
-    create_venue, \
-    create_user
+    create_user_offerer, \
+    create_user, \
+    create_venue
 
 
 @pytest.mark.standalone
@@ -392,3 +394,44 @@ def test_find_activation_offers_returns_activation_offers_with_future_booking_li
 
     # then
     assert len(offers) == 2
+
+@clean_database
+@pytest.mark.standalone
+def test_find_by_venue_id_or_offerer_id_and_keywords_string_offers_where_user_has_rights(app):
+    user = create_user(email='offerer@email.com')
+    offerer1 = create_offerer(siren='123456789')
+    offerer2 = create_offerer(siren='987654321')
+    offerer3 = create_offerer(siren='123456780')
+    user_offerer1 = create_user_offerer(user, offerer1)
+    user_offerer2 = create_user_offerer(user, offerer2)
+
+    ok_event1 = create_event(event_name='Rencontre avec Jacques Martin')
+    event2 = create_event(event_name='Concert de contrebasse')
+    thing1 = create_thing(thing_name='Jacques la fripouille')
+    thing2 = create_thing(thing_name='Belle du Seigneur')
+    offerer = create_offerer()
+    venue1 = create_venue(offerer1, name='Bataclan', city='Paris', siret=offerer.siren + '12345')
+    venue2 = create_venue(offerer2, name='Librairie la Rencontre', city='Saint Denis', siret=offerer.siren + '54321')
+    venue3 = create_venue(offerer3, name='Une librairie du méchant concurrent gripsou', city='Saint Denis', siret=offerer3.siren + '54321')
+    ok_offer1 = create_event_offer(venue1, ok_event1)
+    ko_offer2 = create_event_offer(venue1, event2)
+    ko_offer3 = create_thing_offer(venue3, thing1)
+    ko_offer4 = create_thing_offer(venue2, thing2)
+    PcObject.check_and_save(
+        user_offerer1, user_offerer2, offerer3,
+        ok_offer1, ko_offer2, ko_offer3, ko_offer4
+    )
+
+    # when
+    offers = find_by_venue_id_or_offerer_id_and_keywords_string_offers_where_user_has_rights(
+        user,
+        venue_id=venue1.id,
+        keywords_string='Jacq Rencon'
+    ).all()
+
+    # then
+    offers_id = [offer.id for offer in offers]
+    assert ok_offer1.id in offers_id
+    assert ko_offer2.id not in offers_id
+    assert ko_offer3.id not in offers_id
+    assert ko_offer4.id not in offers_id

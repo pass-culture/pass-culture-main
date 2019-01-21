@@ -43,7 +43,9 @@ def test_get_recommendations_works_only_when_logged_in():
 @pytest.mark.standalone
 def test_get_recommendations_returns_one_recommendation_found_from_search_with_matching_case(app):
     # given
-    search = "keywords=Training"
+    keywords_string = "Training"
+    location_search = "keywords={}".format(keywords_string)
+    search = "keywords_string={}".format(keywords_string)
     user = create_user(email='test@email.com', password='P@55w0rd')
     offerer = create_offerer()
     venue = create_venue(offerer)
@@ -54,19 +56,19 @@ def test_get_recommendations_returns_one_recommendation_found_from_search_with_m
     auth_request = req_with_auth(user.email, user.clearTextPassword)
 
     # when
-    response = auth_request.get(RECOMMENDATION_URL + '?%s' % search)
+    response = auth_request.get(RECOMMENDATION_URL + '?%s' % location_search)
 
     # then
     recommendations = response.json()
     assert 'Training' in recommendations[0]['offer']['eventOrThing']['name']
-    assert recommendations[0]['search'] == 'keywords=Training'
+    assert recommendations[0]['search'] == search
 
 
 @clean_database
 @pytest.mark.standalone
 def test_get_recommendations_returns_one_recommendation_from_search_by_type(app):
     # given
-    search = "categories=Applaudir"
+    location_search = "categories=Applaudir"
     user = create_user(email='test@email.com', password='P@55w0rd')
     offerer = create_offerer()
     venue = create_venue(offerer)
@@ -77,7 +79,7 @@ def test_get_recommendations_returns_one_recommendation_from_search_by_type(app)
     auth_request = req_with_auth(user.email, user.clearTextPassword)
 
     # when
-    response = auth_request.get(RECOMMENDATION_URL + '?%s' % search)
+    response = auth_request.get(RECOMMENDATION_URL + '?%s' % location_search)
 
     # then
     assert len(response.json()) == 1
@@ -87,7 +89,9 @@ def test_get_recommendations_returns_one_recommendation_from_search_by_type(app)
 @pytest.mark.standalone
 def test_get_recommendations_returns_one_recommendation_found_from_search_ignoring_case(app):
     # given
-    search = "keywords=rencontres"
+    keywords_string = "rencontres"
+    location_search = "keywords={}".format(keywords_string)
+    search = "keywords_string={}".format(keywords_string)
     user = create_user(email='test@email.com', password='P@55w0rd')
     offerer = create_offerer()
     venue = create_venue(offerer)
@@ -102,19 +106,21 @@ def test_get_recommendations_returns_one_recommendation_found_from_search_ignori
     auth_request = req_with_auth(user.email, user.clearTextPassword)
 
     # when
-    response = auth_request.get(RECOMMENDATION_URL + '?%s' % search)
+    response = auth_request.get(RECOMMENDATION_URL + '?%s' % location_search)
 
     # then
     recommendations = response.json()
     assert 'Rencontres' in recommendations[0]['offer']['eventOrThing']['name']
-    assert recommendations[0]['search'] == 'keywords=rencontres'
+    assert recommendations[0]['search'] == search
 
 
 @clean_database
 @pytest.mark.standalone
 def test_get_recommendations_with_double_and_trailing_whitespaces_returns_one_recommendation(app):
     # given
-    search = "keywords= rencontres avec auteurs "
+    keywords_string = " rencontres avec auteurs "
+    location_search = "keywords={}".format(keywords_string)
+    search = "keywords_string={}".format(keywords_string)
     user = create_user(email='test@email.com', password='P@55w0rd')
     offerer = create_offerer()
     venue = create_venue(offerer)
@@ -127,7 +133,7 @@ def test_get_recommendations_with_double_and_trailing_whitespaces_returns_one_re
     auth_request = req_with_auth(user.email, user.clearTextPassword)
 
     # when
-    response = auth_request.get(RECOMMENDATION_URL + '?%s' % search)
+    response = auth_request.get(RECOMMENDATION_URL + '?%s' % location_search)
 
     # then
     recommendations = response.json()
@@ -138,7 +144,9 @@ def test_get_recommendations_with_double_and_trailing_whitespaces_returns_one_re
 @pytest.mark.standalone
 def test_get_recommendations_returns_one_recommendation_found_from_partial_search(app):
     # given
-    search = "keywords=rencon"
+    keywords_string = "rencon"
+    location_search = "keywords={}".format(keywords_string)
+    search = "keywords_string={}".format(keywords_string)
     user = create_user(email='test@email.com', password='P@55w0rd')
     offerer = create_offerer()
     venue = create_venue(offerer)
@@ -151,19 +159,21 @@ def test_get_recommendations_returns_one_recommendation_found_from_partial_searc
     auth_request = req_with_auth(user.email, user.clearTextPassword)
 
     # when
-    response = auth_request.get(RECOMMENDATION_URL + '?%s' % search)
+    response = auth_request.get(RECOMMENDATION_URL + '?%s' % location_search)
 
     # then
     recommendations = response.json()
     assert 'Rencontres' in recommendations[0]['offer']['eventOrThing']['name']
-    assert recommendations[0]['search'] == 'keywords=rencon'
+    assert recommendations[0]['search'] == search
 
 
 @clean_database
 @pytest.mark.standalone
 def test_get_recommendations_does_not_return_recommendations_of_offers_with_soft_deleted_stocks(app):
     # given
-    search = 'keywords=rencontres'
+    keywords_string = 'rencontres'
+    location_search = 'keywords={}'.format(keywords_string)
+    search = 'keywords={}'.format(keywords_string)
     user = create_user(email='test@email.com', password='P@55w0rd')
     offerer = create_offerer()
     venue = create_venue(offerer)
@@ -186,7 +196,7 @@ def test_get_recommendations_does_not_return_recommendations_of_offers_with_soft
     auth_request = req_with_auth(user.email, user.clearTextPassword)
 
     # when
-    response = auth_request.get(RECOMMENDATION_URL + '?%s' % search)
+    response = auth_request.get(RECOMMENDATION_URL + '?%s' % location_search)
 
     # then
     assert len(response.json()) == 1
@@ -196,7 +206,7 @@ def test_get_recommendations_does_not_return_recommendations_of_offers_with_soft
 @pytest.mark.standalone
 def test_get_recommendations_returns_two_recommendation_from_filter_by_two_types(app):
     # given
-    search = "categories=Applaudir%2CRegarder"
+    location_search = "categories=Applaudir%2CRegarder"
     user = create_user(email='test@email.com', password='P@55w0rd')
     offerer = create_offerer()
     venue = create_venue(offerer)
@@ -210,7 +220,7 @@ def test_get_recommendations_returns_two_recommendation_from_filter_by_two_types
     auth_request = req_with_auth(user.email, user.clearTextPassword)
 
     # when
-    response = auth_request.get(RECOMMENDATION_URL + '?%s' % search)
+    response = auth_request.get(RECOMMENDATION_URL + '?%s' % location_search)
 
     # then
     assert len(response.json()) == 2
@@ -220,7 +230,7 @@ def test_get_recommendations_returns_two_recommendation_from_filter_by_two_types
 @pytest.mark.standalone
 def test_get_recommendations_returns_all_recommendations_from_filter_by_all_types(app):
     # given
-    search = "categories=%25C3%2589couter%2CApplaudir%2CJouer%2CLire%2CPratiquer%2CRegarder%2CRencontrer"
+    location_search = "categories=%25C3%2589couter%2CApplaudir%2CJouer%2CLire%2CPratiquer%2CRegarder%2CRencontrer"
     user = create_user(email='test@email.com', password='P@55w0rd')
     offerer = create_offerer()
     venue = create_venue(offerer)
@@ -237,17 +247,16 @@ def test_get_recommendations_returns_all_recommendations_from_filter_by_all_type
     auth_request = req_with_auth(user.email, user.clearTextPassword)
 
     # when
-    response = auth_request.get(RECOMMENDATION_URL + '?%s' % search)
+    response = auth_request.get(RECOMMENDATION_URL + '?%s' % location_search)
 
     # then
     assert len(response.json()) == 3
-
 
 @clean_database
 @pytest.mark.standalone
 def test_get_recommendations_returns_recommendations_in_date_range_from_search_by_date(app):
     # Given
-    search = "date=" + strftime(now) + "&days=0-1"
+    location_search = "date=" + strftime(now) + "&days=0-1"
     user = create_user(email='test@email.com', password='P@55w0rd')
     offerer = create_offerer()
     venue = create_venue(offerer)
@@ -261,7 +270,7 @@ def test_get_recommendations_returns_recommendations_in_date_range_from_search_b
     auth_request = req_with_auth(user.email, user.clearTextPassword)
 
     # When
-    response = auth_request.get(RECOMMENDATION_URL + '?%s' % search)
+    response = auth_request.get(RECOMMENDATION_URL + '?%s' % location_search)
 
     # Then
     recommendations = response.json()
@@ -273,7 +282,7 @@ def test_get_recommendations_returns_recommendations_in_date_range_from_search_b
 @pytest.mark.standalone
 def test_get_recommendations_returns_no_recommendation_when_no_stock_in_date_range(app):
     # Given
-    search = "date=" + strftime(ten_days_from_now) + "&days=0-1"
+    location_search = "date=" + strftime(ten_days_from_now) + "&days=0-1"
     user = create_user(email='test@email.com', password='P@55w0rd')
     offerer = create_offerer()
     venue = create_venue(offerer)
@@ -287,7 +296,7 @@ def test_get_recommendations_returns_no_recommendation_when_no_stock_in_date_ran
     auth_request = req_with_auth(user.email, user.clearTextPassword)
 
     # When
-    response = auth_request.get(RECOMMENDATION_URL + '?%s' % search)
+    response = auth_request.get(RECOMMENDATION_URL + '?%s' % location_search)
 
     # Then
     assert len(response.json()) == 0
@@ -297,8 +306,7 @@ def test_get_recommendations_returns_no_recommendation_when_no_stock_in_date_ran
 @pytest.mark.standalone
 def test_get_recommendations_returns_two_recommendations_from_search_by_date_and_type(app):
     # Given
-    search = "categories=Lire%2CRegarder&date=" + strftime(now) + "&days=0-1"
-    search = "categories=Lire%2CRegarder%2CActivation"
+    location_search = "categories=Lire%2CRegarder&date=" + strftime(now) + "&days=0-1"
     user = create_user(email='test@email.com', password='P@55w0rd')
     offerer = create_offerer()
     venue = create_venue(offerer)
@@ -320,7 +328,7 @@ def test_get_recommendations_returns_two_recommendations_from_search_by_date_and
     auth_request = req_with_auth(user.email, user.clearTextPassword)
 
     # When
-    response = auth_request.get(RECOMMENDATION_URL + '?%s' % search)
+    response = auth_request.get(RECOMMENDATION_URL + '?%s' % location_search)
 
     # Then
     assert len(response.json()) == 2
@@ -333,7 +341,7 @@ def test_get_recommendations_returns_two_recommendations_from_search_by_date_and
 @pytest.mark.standalone
 def test_get_recommendations_returns_recommendations_from_search_by_date_and_type_except_if_it_is_activation_type(app):
     # Given
-    search = "categories=Lire%2CRegarder%2CActivation&date=" + strftime(now) + "&days=0-1"
+    location_search = "categories=Lire%2CRegarder%2CActivation&date=" + strftime(now) + "&days=0-1"
     user = create_user(email='test@email.com', password='P@55w0rd')
     offerer = create_offerer()
     venue = create_venue(offerer)
@@ -355,7 +363,7 @@ def test_get_recommendations_returns_recommendations_from_search_by_date_and_typ
     auth_request = req_with_auth(user.email, user.clearTextPassword)
 
     # When
-    response = auth_request.get(RECOMMENDATION_URL + '?%s' % search)
+    response = auth_request.get(RECOMMENDATION_URL + '?%s' % location_search)
 
     # Then
     assert len(response.json()) == 2
@@ -367,7 +375,7 @@ def test_get_recommendations_returns_recommendations_from_search_by_date_and_typ
 @pytest.mark.standalone
 def test_get_recommendations_returns_recommendation_from_search_by_type_including_activation_type(app):
     # Given
-    search = "categories=Activation%2CLire%2CRegarder"
+    location_search = "categories=Activation%2CLire%2CRegarder"
     user = create_user(email='test@email.com', password='P@55w0rd')
     offerer = create_offerer()
     venue = create_venue(offerer)
@@ -383,7 +391,7 @@ def test_get_recommendations_returns_recommendation_from_search_by_type_includin
     auth_request = req_with_auth(user.email, user.clearTextPassword)
 
     # When
-    response = auth_request.get(RECOMMENDATION_URL + '?%s' % search)
+    response = auth_request.get(RECOMMENDATION_URL + '?%s' % location_search)
 
     # Then
     assert len(response.json()) == 2
@@ -395,7 +403,7 @@ def test_get_recommendations_returns_recommendation_from_search_by_type_includin
 @pytest.mark.standalone
 def test_get_recommendations_returns_no_recommendations_from_search_by_date_and_type_and_pagination_not_in_range(app):
     # Given
-    search = "categories=Lire%2CRegarder&date=" + strftime(now) + "&days=0-1&page=2"
+    location_search = "categories=Lire%2CRegarder&date=" + strftime(now) + "&days=0-1&page=2"
     user = create_user(email='test@email.com', password='P@55w0rd')
     offerer = create_offerer()
     venue = create_venue(offerer)
@@ -414,7 +422,7 @@ def test_get_recommendations_returns_no_recommendations_from_search_by_date_and_
     auth_request = req_with_auth(user.email, user.clearTextPassword)
 
     # When
-    response = auth_request.get(RECOMMENDATION_URL + '?%s' % search)
+    response = auth_request.get(RECOMMENDATION_URL + '?%s' % location_search)
 
     # Then
     assert response.status_code == 200
