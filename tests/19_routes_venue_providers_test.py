@@ -5,15 +5,8 @@ import requests
 
 from models.provider import Provider
 from utils.human_ids import humanize
-from utils.test_utils import API_URL, req_with_auth
+from utils.test_utils import API_URL, req_with_auth, check_open_agenda_api_is_down
 
-
-def check_open_agenda_api_is_down():
-    response = requests.get('https://openagenda.com/agendas/86585975/events.json?limit=1')
-    response_json = response.json()
-    unsuccessful_request = ('success' in response_json) and not response_json['success']
-    status_code_not_200 = (response.status_code != 200)
-    return unsuccessful_request or status_code_not_200
 
 def test_10_delete_venue_provider():
     r_get1 = req_with_auth().get(API_URL + '/venueProviders/AE')

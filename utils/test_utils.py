@@ -674,3 +674,12 @@ def save_all_activities(*objects):
     for obj in objects:
         db.session.add(obj)
     db.session.commit()
+
+
+def check_open_agenda_api_is_down():
+    response = req.get('https://openagenda.com/agendas/86585975/events.json?limit=1')
+    response_json = response.json()
+    unsuccessful_request = ('success' in response_json) and not response_json['success']
+    status_code_not_200 = (response.status_code != 200)
+    return unsuccessful_request or status_code_not_200
+

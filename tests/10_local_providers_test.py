@@ -1,4 +1,5 @@
 """ local providers test """
+import pytest
 from sqlalchemy import func
 
 from local_providers import OpenAgendaEvents, \
@@ -17,10 +18,11 @@ from sandboxes.scripts.creators.handmade import save_handmade_sandbox
 from utils.human_ids import dehumanize
 from utils.logger import logger
 from utils.test_utils import assertCreatedCounts, \
-                             assert_created_thumbs,\
-                             assertEmptyDb, \
-                             provider_test, \
-                             saveCounts
+    assert_created_thumbs, \
+    assertEmptyDb, \
+    provider_test, \
+    saveCounts,\
+    check_open_agenda_api_is_down
 
 savedCounts = {}
 
@@ -137,6 +139,7 @@ def test_16_spreadsheet_exp_stocks_provider(app):
                  )
 
 
+@pytest.mark.skipif(check_open_agenda_api_is_down(), reason="Open Agenda API is down")
 def test_17_openagenda_events_provider(app):
     oa_provider = Provider.getByClassName('OpenAgendaEvents')
     venueProvider = VenueProvider()
