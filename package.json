@@ -3,6 +3,9 @@
   "version": "14.0.1",
   "private": true,
   "homepage": "/",
+  "engines": {
+    "node" : ">=8.12.0 <=8.15.0"
+  },
   "dependencies": {
     "antd": "3.8.1",
     "bulma": "^0.7.1",
