@@ -165,6 +165,11 @@ def test_get_all_pending_offerers_with_user_offerer(app):
     user_offerer3 = create_user_offerer(user3, offerer3, validation_token="another_token")
     user_offerer4 = create_user_offerer(user4, offerer4)
     user_offerer5 = create_user_offerer(user3, offerer3, validation_token="what_a_token")
+    venue1 = create_venue(offerer1, siret="123456781")
+    venue2 = create_venue(offerer2, siret="123456782")
+    venue3 = create_venue(offerer3, siret="123456783")
+    venue4 = create_venue(offerer4, siret="123456784")
+
 
     PcObject.check_and_save(user_offerer1, user_offerer2, user_offerer3, user_offerer4)
 
