@@ -2,7 +2,7 @@
 from datetime import datetime
 from itertools import cycle
 from random import randint
-from typing import Optional
+from typing import Optional, List, Tuple
 
 from sqlalchemy.orm import aliased
 
@@ -17,7 +17,7 @@ roundrobin_predicates = [
 ]
 
 
-def roundrobin(offers, limit):
+def roundrobin(offers: List[Offer], limit: int) -> List[Offer]:
     result = []
     for predicate in cycle(roundrobin_predicates):
         if (len(result) == limit) \
@@ -31,7 +31,7 @@ def roundrobin(offers, limit):
     return result
 
 
-def make_score_tuples(offers, departement_codes):
+def make_score_tuples(offers: List[Offer]) -> List[Tuple[Offer, int]]:
     if len(offers) == 0:
         return []
     scored_offers = list(map(lambda o: (o, score_offer(o)), offers))
@@ -39,12 +39,12 @@ def make_score_tuples(offers, departement_codes):
     return scored_offers
 
 
-def sort_by_score(offers, departement_codes):
-    offer_tuples = make_score_tuples(offers, departement_codes)
+def sort_by_score(offers: List[Offer]) -> List[Offer]:
+    offer_tuples = make_score_tuples(offers)
     return list(_extract_offer(offer_tuples))
 
 
-def score_offer(offer):
+def score_offer(offer: Offer) -> Optional[int]:
     common_score = 0
 
     if offer.hasActiveMediation:
@@ -68,7 +68,7 @@ def score_offer(offer):
     return common_score + specific_score
 
 
-def specific_score_event(event):
+def specific_score_event(event: Event) -> Optional[int]:
     score = 0
 
     next_occurrence = EventOccurrence.query \
@@ -86,12 +86,12 @@ def specific_score_event(event):
     return score
 
 
-def specific_score_thing(thing):
+def specific_score_thing(thing: Thing) -> Optional[int]:
     score = 0
     return score
 
 
-def remove_duplicate_things_or_events(offers):
+def remove_duplicate_things_or_events(offers: List[Offer]) -> List[Offer]:
     seen_thing_ids = {}
     seen_event_ids = {}
     result = []
@@ -105,7 +105,7 @@ def remove_duplicate_things_or_events(offers):
     return result
 
 
-def get_offers_for_recommendations_discovery(limit=3, user=None, coords=None):
+def get_offers_for_recommendations_discovery(limit=3, user=None, coords=None) -> List[Offer]:
     if not user or not user.is_authenticated():
         return []
 
@@ -121,7 +121,7 @@ def get_offers_for_recommendations_discovery(limit=3, user=None, coords=None):
     logger.info('(reco) thing_offers count (%i)',
                 len(thing_offers))
 
-    offers = sort_by_score(event_offers + thing_offers, departement_codes)
+    offers = sort_by_score(event_offers + thing_offers)
     offers = remove_duplicate_things_or_events(offers)
     logger.info('(reco) final offers (events + things) count (%i)',
                 len(offers))
