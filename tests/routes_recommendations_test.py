@@ -76,10 +76,9 @@ def test_put_read_recommendations(app):
                               json=read_recommendation_data)
 
     # Then
-    read_recommendations = [r for r in response.json()]
-    assert len(read_recommendations) == 2
-    assert read_recommendations[0]['dateRead'] == "2018-12-17T15:59:11.689000Z"
-    assert read_recommendations[1]['dateRead'] == "2018-12-17T15:59:14.689000Z"
+    read_recommendation_date_reads = [r['dateRead'] for r in response.json()]
+    assert len(read_recommendation_date_reads) == 2
+    assert set(["2018-12-17T15:59:11.689000Z", "2018-12-17T15:59:14.689000Z"]) == set(read_recommendation_date_reads)
 
 
 @clean_database
