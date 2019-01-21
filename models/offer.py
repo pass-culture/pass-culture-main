@@ -101,3 +101,7 @@ class Offer(PcObject,
             .filter(Offer.id == self.id) \
             .order_by(desc(Stock.bookingLimitDatetime)) \
             .first()
+
+    @property
+    def hasActiveMediation(self):
+        return any(map(lambda m: m.isActive, self.mediations))

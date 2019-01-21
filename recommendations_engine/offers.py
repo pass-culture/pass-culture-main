@@ -2,6 +2,7 @@
 from datetime import datetime
 from itertools import cycle
 from random import randint
+from typing import Optional
 
 from sqlalchemy.orm import aliased
 
@@ -46,7 +47,7 @@ def sort_by_score(offers, departement_codes):
 def score_offer(offer):
     common_score = 0
 
-    if len(offer.mediations) > 0:
+    if offer.hasActiveMediation:
         common_score += 20
     elif offer.eventOrThing.thumbCount == 0:
         # we don't want to recommend offers that have neither their own
