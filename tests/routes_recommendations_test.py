@@ -1,10 +1,9 @@
-from datetime import datetime, timedelta
-
 import pytest
+from datetime import datetime, timedelta
+from pprint import pprint
 
 from models import PcObject
 from models.mediation import Mediation, upsertTutoMediations
-from models.recommendation import Recommendation
 from tests.conftest import clean_database
 from utils.human_ids import humanize
 from utils.test_utils import API_URL, \
@@ -833,3 +832,26 @@ def test_put_recommendations_with_read_tuto_recommendations_returns_recommendati
     recommendation_ids = [r['id'] for r in recommendations]
     assert humanized_tuto_recommendation0_id not in recommendation_ids
     assert humanized_tuto_recommendation1_id not in recommendation_ids
+
+
+@pytest.mark.standalone
+@clean_database
+def test_put_recommendation_should_not_return_read_recommendations_if_stock_invalid_date(app):
+    # Given
+    one_day_ago = datetime.utcnow() - timedelta(days=1)
+    three_days_ago = datetime.utcnow() - timedelta(days=3)
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    offer = create_thing_offer(venue)
+    user = create_user()
+    stock = create_stock_from_offer(offer, booking_limit_datetime=one_day_ago)
+    recommendation = create_recommendation(offer, user, date_read=three_days_ago)
+
+    PcObject.check_and_save(stock, recommendation)
+
+    # When
+    recommendations = req_with_auth(user.email, user.clearTextPassword).put(RECOMMENDATION_URL, json={})
+
+    # Then
+    assert recommendations.status_code == 200
+    assert not recommendations.json()

@@ -1,7 +1,7 @@
 """ recommendation queries """
 from datetime import datetime
 
-from sqlalchemy import func, update
+from sqlalchemy import func, update, or_, and_
 
 from models import EventOccurrence, \
                    Mediation, \
@@ -25,13 +25,13 @@ def find_unseen_tutorials_for_user(seen_recommendation_ids, user):
 
 
 def count_read_recommendations_for_user(user):
-    return filter_out_recommendation_on_soft_deleted_stocks() \
+    return filter_out_recommendation_with_only_not_bookable_stocks() \
         .filter((Recommendation.user == user) & (Recommendation.dateRead != None)) \
         .count()
 
 
 def find_all_unread_recommendations(user, seen_recommendation_ids, limit=BLOB_SIZE):
-    query = filter_out_recommendation_on_soft_deleted_stocks()
+    query = filter_out_recommendation_with_only_not_bookable_stocks()
     query = filter_unseen_valid_recommendations_for_user(query, user, seen_recommendation_ids)
     query = query.filter(Recommendation.dateRead == None) \
         .group_by(Recommendation) \
@@ -42,7 +42,7 @@ def find_all_unread_recommendations(user, seen_recommendation_ids, limit=BLOB_SI
 
 
 def find_all_read_recommendations(user, seen_recommendation_ids, limit=BLOB_SIZE):
-    query = filter_out_recommendation_on_soft_deleted_stocks()
+    query = filter_out_recommendation_with_only_not_bookable_stocks()
     query = filter_unseen_valid_recommendations_for_user(query, user, seen_recommendation_ids)
     query = query.filter(Recommendation.dateRead != None) \
         .group_by(Recommendation) \
@@ -67,16 +67,19 @@ def find_recommendations_for_user_matching_offers_and_search(user_id=None, offer
     return query.all()
 
 
-def filter_out_recommendation_on_soft_deleted_stocks():
+def filter_out_recommendation_with_only_not_bookable_stocks():
+    stock_is_still_bookable = or_(Stock.bookingLimitDatetime > datetime.utcnow(), Stock.bookingLimitDatetime == None)
+    stock_is_not_soft_deleted = Stock.isSoftDeleted == False
     join_on_stocks = Recommendation.query \
         .join(Offer) \
         .join(Stock) \
-        .filter_by(isSoftDeleted=False)
+        .filter(and_(stock_is_not_soft_deleted, stock_is_still_bookable))
     join_on_event_occurrences = Recommendation.query \
         .join(Offer) \
         .join(EventOccurrence) \
         .join(Stock) \
-        .filter_by(isSoftDeleted=False)
+        .filter(and_(stock_is_not_soft_deleted, stock_is_still_bookable))
+
 
     return join_on_stocks.union_all(join_on_event_occurrences)
 
