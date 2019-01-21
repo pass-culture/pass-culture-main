@@ -9,19 +9,20 @@ from sqlalchemy import Binary, CheckConstraint, Column, Integer
 from models.pc_object import PcObject
 from utils.human_ids import humanize
 from utils.inflect_engine import inflect_engine
+from utils.logger import logger
 from utils.object_storage import delete_public_object, \
     get_public_object_date, \
     store_public_object
 
-IDEAL_THUMB_WIDTH = 600
+IDEAL_THUMB_WIDTH = 750
 
 
 class HasThumbMixin(object):
     thumbCount = Column(Integer(), nullable=False, default=0)
     firstThumbDominantColor = Column(Binary(3),
                                      CheckConstraint('"thumbCount"=0 OR "firstThumbDominantColor" IS NOT NULL',
-                                        name='check_thumb_has_dominant_color'),
-                                        nullable=True)
+                                                     name='check_thumb_has_dominant_color'),
+                                     nullable=True)
 
     def delete_thumb(self, index):
         delete_public_object("thumbs", self.thumb_storage_id(index))
@@ -32,19 +33,20 @@ class HasThumbMixin(object):
     def thumb_storage_id(self, index):
         if self.id is None:
             raise ValueError("Trying to get thumb_storage_id for an unsaved object")
-        return inflect_engine.plural(self.__class__.__name__.lower()) + "/"\
-                                     + humanize(self.id)\
-                                     + (('_' + str(index)) if index > 0 else '')
+        return inflect_engine.plural(self.__class__.__name__.lower()) + "/" \
+               + humanize(self.id) \
+               + (('_' + str(index)) if index > 0 else '')
 
     def save_thumb(
-        self,
-        thumb,
-        index,
-        image_type=None,
-        dominant_color=None,
-        no_convert=False,
-        crop=None,
-        symlink_path=None):
+            self,
+            thumb,
+            index,
+            image_type=None,
+            dominant_color=None,
+            convert=True,
+            crop=None,
+            symlink_path=None):
+
         if isinstance(thumb, str):
             if not thumb[0:4] == 'http':
                 raise ValueError('Invalid thumb URL for object %s : %s' % (str(self), thumb))
@@ -59,29 +61,28 @@ class HasThumbMixin(object):
                                  % (str(self), thumb, str(thumb_response.status_code)))
 
         thumb_bytes = None
-        if not no_convert:
+        if convert:
             thumb_bytes = io.BytesIO(thumb)
             img = Image.open(thumb_bytes)
             img = img.convert('RGB')
-            if crop is not None:
-                img = img.crop((img.size[0]*crop[0],
-                                img.size[1]*crop[1],
-                                min(img.size[0]*crop[0]+img.size[1]*crop[2],
-                                    img.size[0]),
-                                min(img.size[1]*crop[1]+img.size[1]*crop[2],
-                                    img.size[1])
-                                    ))
-            if img.size[0] > IDEAL_THUMB_WIDTH:
-                ratio = img.size[1]/img.size[0]
-                img = img.resize([IDEAL_THUMB_WIDTH, int(IDEAL_THUMB_WIDTH*ratio)],
-                                 Image.ANTIALIAS)
+
+            cropped_img = self.crop_image(crop, img)
+            resized_img = self.resize_image(cropped_img)
+
             thumb_bytes.seek(0)
-            img.save(thumb_bytes,
-                     format='JPEG',
-                     quality=80,
-                     optimize=True,
-                     progressive=True)
-            thumb = thumb_bytes.getvalue()
+            thumb_bytes = io.BytesIO(thumb)
+
+            new_bytes = io.BytesIO()
+
+            resized_img.save(
+                new_bytes,
+                format='JPEG',
+                quality=90,
+                optimize=True,
+                progressive=True
+            )
+
+            thumb = new_bytes.getvalue()
 
         if index == 0:
             if dominant_color is None:
@@ -99,6 +100,42 @@ class HasThumbMixin(object):
                             thumb,
                             "image/" + (image_type or "jpeg"),
                             symlink_path=symlink_path)
-        self.thumbCount = max(index+1, self.thumbCount or 0)
+        self.thumbCount = max(index + 1, self.thumbCount or 0)
 
         PcObject.check_and_save(self)
+
+    def resize_image(self, cropped_img):
+        if cropped_img.size[0] > IDEAL_THUMB_WIDTH:
+            ratio = cropped_img.size[1] / cropped_img.size[0]
+            resized_img = cropped_img.resize(
+                [
+                    IDEAL_THUMB_WIDTH,
+                    int(IDEAL_THUMB_WIDTH * ratio)
+                ]
+            )
+        else:
+            resized_img = cropped_img
+        return resized_img
+
+    def crop_image(self, crop, img):
+        if crop is None:
+            cropped_img = img
+        else:
+            width = img.size[0]
+            height = img.size[1]
+            crop_x = crop[0]
+            crop_y = crop[1]
+            crop_width = crop[2]
+            new_x = width * crop_x
+            new_y = height * crop_y
+            new_width = height * crop_width
+
+            cropped_img = img.crop(
+                (
+                    new_x,
+                    new_y,
+                    min(new_x + new_width, width),
+                    min(new_y + new_width, height)
+                )
+            )
+        return cropped_img
