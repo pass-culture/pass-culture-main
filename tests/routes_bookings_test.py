@@ -1003,7 +1003,7 @@ class GetBookingByTokenTest:
 @pytest.mark.standalone
 class PatchBookingAsAnonymousUserTest:
     @clean_database
-    def test_patch_booking_with_token_and_valid_email_and_offer_id(self, app):
+    def test_with_token_and_valid_email_and_offer_id_returns_204_and_sets_booking_is_used(self, app):
         # Given
         user = create_user()
         offerer = create_offerer()
@@ -1102,7 +1102,7 @@ class PatchBookingAsAnonymousUserTest:
 @pytest.mark.standalone
 class PatchBookingByTokenAsLoggedInUserTest:
     @clean_database
-    def test_when_has_rights_return_204_and_is_used_is_true(self, app):
+    def test_when_has_rights_returns_204_and_is_used_is_true(self, app):
         # Given
         user = create_user()
         admin_user = create_user(email='admin@email.fr', password='P@55w0rd')
