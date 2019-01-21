@@ -72,10 +72,21 @@ def find_all_offerers_with_venue():
     return result
 
 
+# def find_all_pending_validation():
+#     return Offerer.query.join(UserOfferer) \
+#         .filter(or_(UserOfferer.validationToken != None, Offerer.validationToken != None)) \
+#         .order_by(Offerer.id).all()
+
+
 def find_all_pending_validation():
-    return Offerer.query.join(UserOfferer) \
-        .filter(or_(UserOfferer.validationToken != None, Offerer.validationToken != None)) \
+    return Offerer.query \
+        .join(UserOfferer) \
+        .join(Venue) \
+        .join(User) \
+        .filter(or_(UserOfferer.validationToken != None, Offerer.validationToken != None, Venue.validationToken != None, User.validationToken != None)) \
         .order_by(Offerer.id).all()
+
+        # .filter(UserOfferer.validationToken != None | Offerer.validationToken != None) \
 
 
 def find_first_by_user_offerer_id(user_offerer_id):

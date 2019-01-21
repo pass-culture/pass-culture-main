@@ -125,6 +125,19 @@ def get_all_offerers_with_venue():
     return _make_csv_response(file_name, headers, result)
 
 
+# @app.route('/exports/pending_validation', methods=['GET'])
+# @login_required
+# def get_pending_validation():
+#     check_user_is_admin(current_user)
+#     result = []    
+#     offerers = offerer_queries.find_all_pending_validation()
+
+#     for o in offerers:
+#         result.append(o._asdict(include=OFFERER_INCLUDES_FOR_ADMIN))
+
+#     return jsonify(result), 200
+
+from pprint import pprint
 @app.route('/exports/pending_validation', methods=['GET'])
 @login_required
 def get_pending_validation():

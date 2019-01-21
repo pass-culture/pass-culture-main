@@ -213,6 +213,7 @@ VENUE_PROVIDER_INCLUDES = [
 ]
 
 
+
 OFFERER_INCLUDES_FOR_ADMIN = [
     "validationToken",
     "-firstThumbDominantColor",
@@ -234,8 +235,24 @@ OFFERER_INCLUDES_FOR_ADMIN = [
                 'firstName': element['firstName'],
                 'lastName': element['lastName'],
                 'postalCode': element['postalCode'], 
-                'phoneNumber': element['phoneNumber']
+                'phoneNumber': element['phoneNumber'],
+                'validationToken': element['validationToken']
             })
         }]
+    }, 
+    {
+        "key": "managedVenues",
+        "resolve": (lambda element, filters: {
+                'id': element['id'],
+                'name': element['name'],
+                'siret': element['siret'],
+                'managingOffererId': element['managingOffererId'],
+                'bookingEmail': element['bookingEmail'],
+                'address': element['address'],
+                'postalCode': element['postalCode'],
+                'city': element['city'],
+                'departementCode': element['departementCode'], 
+                'validationToken': element['validationToken']
+            })
     }
 ]
