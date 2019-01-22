@@ -53,8 +53,11 @@ class HasThumbMixin(object):
             crop_params = crop if crop is not None else DO_NOT_CROP
             new_thumb = convert_image(new_thumb, crop_params)
 
-        if image_index == 0 and dominant_color is None:
-            self.firstThumbDominantColor = compute_dominant_color(new_thumb)
+        if image_index == 0:
+            if dominant_color:
+                self.firstThumbDominantColor = dominant_color
+            else:
+                self.firstThumbDominantColor = compute_dominant_color(new_thumb)
 
         store_public_object(
             'thumbs',
