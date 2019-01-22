@@ -1,15 +1,12 @@
 """ has thumb mixin """
-import io
 
-from colorthief import ColorThief
 from sqlalchemy import Binary, CheckConstraint, Column, Integer
 
 from connectors.thumb import fetch_image
-from domain.mediations import DO_NOT_CROP, convert_image
+from domain.mediations import DO_NOT_CROP, convert_image, compute_dominant_color
 from models.pc_object import PcObject
 from utils.human_ids import humanize
 from utils.inflect_engine import inflect_engine
-from utils.logger import logger
 from utils.object_storage import delete_public_object, \
     get_public_object_date, \
     store_public_object
@@ -40,7 +37,7 @@ class HasThumbMixin(object):
     def save_thumb(
             self,
             thumb,
-            index,
+            image_index,
             image_type=None,
             dominant_color=None,
             convert=True,
@@ -56,26 +53,17 @@ class HasThumbMixin(object):
             crop_params = crop if crop is not None else DO_NOT_CROP
             new_thumb = convert_image(new_thumb, crop_params)
 
-        if index == 0:
-
-            if dominant_color is None:
-                thumb_bytes = io.BytesIO(new_thumb)
-                color_thief = ColorThief(thumb_bytes)
-                dominant_color = bytearray(color_thief.get_color(quality=1))
-
-            if dominant_color is None:
-                logger.warning("Warning: could not determine dominant_color for thumb")
-                self.firstThumbDominantColor = b'\x00\x00\x00'
-
-            self.firstThumbDominantColor = dominant_color
+        if image_index == 0 and dominant_color is None:
+            self.firstThumbDominantColor = compute_dominant_color(new_thumb)
 
         store_public_object(
-            "thumbs",
-            self.thumb_storage_id(index),
+            'thumbs',
+            self.thumb_storage_id(image_index),
             new_thumb,
-            "image/" + (image_type or "jpeg"),
+            'image/' + (image_type or 'jpeg'),
             symlink_path=symlink_path
         )
-        self.thumbCount = max(index + 1, self.thumbCount or 0)
+
+        self.thumbCount = max(image_index + 1, self.thumbCount or 0)
 
         PcObject.check_and_save(self)

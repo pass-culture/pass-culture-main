@@ -3,11 +3,15 @@ from typing import List
 
 import PIL
 from PIL.Image import Image
+from colorthief import ColorThief
+
+from utils.logger import logger
 
 MAX_THUMB_WIDTH = 750
 CONVERSION_QUALITY = 90
 FILE_FORMAT = 'JPEG'
 DO_NOT_CROP = [0, 0, 1]
+BLACK = b'\x00\x00\x00'
 
 
 def convert_image(image: bytes, crop_params: List) -> bytes:
@@ -16,6 +20,18 @@ def convert_image(image: bytes, crop_params: List) -> bytes:
     resized_image = _resize_image(cropped_image)
     converted_image = _convert_to_jpeg(resized_image)
     return converted_image
+
+
+def compute_dominant_color(thumb: bytes) -> bytes:
+    thumb_bytes = io.BytesIO(thumb)
+    color_thief = ColorThief(thumb_bytes)
+    dominant_color = bytearray(color_thief.get_color(quality=1))
+
+    if dominant_color is None:
+        logger.warning('Warning: could not determine dominant_color for thumb')
+        return BLACK
+    else:
+        return dominant_color
 
 
 def _crop_image(crop_x: int, crop_y: int, crop_width: int, image: Image) -> Image:
