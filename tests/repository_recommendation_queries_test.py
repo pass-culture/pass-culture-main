@@ -2,7 +2,7 @@ import pytest
 from datetime import datetime, timedelta
 
 from models import PcObject, Recommendation
-from repository.recommendation_queries import filter_out_recommendation_with_only_not_bookable_stocks, \
+from repository.recommendation_queries import keep_only_bookable_stocks, \
     filter_unseen_valid_recommendations_for_user, \
     update_read_recommendations
 from tests.conftest import clean_database
@@ -43,7 +43,7 @@ def test_filter_out_recommendation_with_not_bookable_stocks_returns_recos_with_a
                             recommendation_on_soft_deleted_thing_stock, recommendation_on_active_thing_stock)
 
     # When
-    result = filter_out_recommendation_with_only_not_bookable_stocks().all()
+    result = keep_only_bookable_stocks().all()
 
     # Then
     recommendation_ids = [r.id for r in result]
@@ -76,7 +76,7 @@ def test_filter_out_recommendation_with_not_bookable_stocks_returns_recos_with_v
     PcObject.check_and_save(invalid_booking_date_stock, recommendation_on_invalid_booking_date_stock, recommendation_on_valid_booking_date_stock, valid_booking_date_stock_valid, valid_booking_date_stock_invalid)
 
     # When
-    result = filter_out_recommendation_with_only_not_bookable_stocks().all()
+    result = keep_only_bookable_stocks().all()
 
     # Then
     recommendation_ids = [r.id for r in result]
