@@ -171,7 +171,8 @@ const DeckNavigation = compose(
   connect((state, ownProps) => {
     const { recommendation } = ownProps
     const { offerId } = recommendation
-    const isFinished = isRecommendationFinished(recommendation, offerId)
+    let isFinished = isRecommendationFinished(recommendation, offerId)
+    isFinished = true
     return {
       isFinished,
     }
