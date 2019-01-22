@@ -7,11 +7,11 @@ import { connect } from 'react-redux'
 import { withLogin } from 'pass-culture-shared'
 import { Route, Switch, withRouter } from 'react-router-dom'
 
-import { config } from './profile/config'
-import NotMatch from './NotMatch'
-import Loader from '../layout/Loader'
-import ProfileMainView from './profile/ProfileMainView'
-import ProfileUpdateSuccess from './profile/ProfileUpdateSuccess'
+import { config } from './config'
+import NotMatch from '../NotMatch'
+import Loader from '../../layout/Loader'
+import ProfileMainView from './ProfileMainView'
+import ProfileUpdateSuccess from './ProfileUpdateSuccess'
 
 const parseRoutesWithComponent = () => {
   const components = config.filter(o => o.component)

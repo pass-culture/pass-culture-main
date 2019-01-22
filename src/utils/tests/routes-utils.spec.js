@@ -8,7 +8,7 @@ import MyBookingsPage from '../../components/pages/MyBookingsPage'
 import DiscoveryPage from '../../components/pages/discovery'
 import FavoritesPage from '../../components/pages/FavoritesPage'
 
-import ProfilePage from '../../components/pages/ProfilePage'
+import ProfilePage from '../../components/pages/profile'
 import TermsPage from '../../components/pages/TermsPage'
 
 describe('getReactRoutes', () => {
