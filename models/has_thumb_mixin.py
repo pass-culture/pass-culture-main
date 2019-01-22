@@ -1,12 +1,11 @@
 """ has thumb mixin """
 import io
 
-import requests
-from PIL import Image
 from colorthief import ColorThief
 from sqlalchemy import Binary, CheckConstraint, Column, Integer
 
-from domain.mediations import crop_image, resize_image, convert_to_jpeg, DO_NOT_CROP
+from connectors.thumb import fetch_image
+from domain.mediations import DO_NOT_CROP, convert_image
 from models.pc_object import PcObject
 from utils.human_ids import humanize
 from utils.inflect_engine import inflect_engine
@@ -48,31 +47,19 @@ class HasThumbMixin(object):
             crop=None,
             symlink_path=None
     ):
+        new_thumb = thumb
 
         if isinstance(thumb, str):
-            if not thumb[0:4] == 'http':
-                raise ValueError('Invalid thumb URL for object %s : %s' % (str(self), thumb))
-
-            thumb_response = requests.get(thumb)
-            content_type = thumb_response.headers['Content-type']
-
-            if thumb_response.status_code == 200 and content_type.split('/')[0] == 'image':
-                thumb = thumb_response.content
-            else:
-                raise ValueError('Error downloading thumb for object %s from url %s (status_code : %s)'
-                                 % (str(self), thumb, str(thumb_response.status_code)))
+            new_thumb = fetch_image(thumb, str(self))
 
         if convert:
-            crop = crop if crop is not None else DO_NOT_CROP
-            raw_image = Image.open(io.BytesIO(thumb)).convert('RGB')
-            cropped_image = crop_image(crop[0], crop[1], crop[2], raw_image)
-            resized_image = resize_image(cropped_image)
-            thumb = convert_to_jpeg(resized_image)
+            crop_params = crop if crop is not None else DO_NOT_CROP
+            new_thumb = convert_image(thumb, crop_params)
 
         if index == 0:
 
             if dominant_color is None:
-                thumb_bytes = io.BytesIO(thumb)
+                thumb_bytes = io.BytesIO(new_thumb)
                 color_thief = ColorThief(thumb_bytes)
                 dominant_color = bytearray(color_thief.get_color(quality=1))
 
@@ -85,7 +72,7 @@ class HasThumbMixin(object):
         store_public_object(
             "thumbs",
             self.thumb_storage_id(index),
-            thumb,
+            new_thumb,
             "image/" + (image_type or "jpeg"),
             symlink_path=symlink_path
         )

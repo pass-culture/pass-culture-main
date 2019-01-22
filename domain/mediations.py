@@ -1,5 +1,7 @@
 import io
+from typing import List
 
+import PIL
 from PIL.Image import Image
 
 MAX_THUMB_WIDTH = 750
@@ -8,7 +10,15 @@ FILE_FORMAT = 'JPEG'
 DO_NOT_CROP = [0, 0, 1]
 
 
-def crop_image(crop_x: int, crop_y: int, crop_width: int, image: Image) -> Image:
+def convert_image(image: bytes, crop_params: List) -> bytes:
+    raw_image = PIL.Image.open(io.BytesIO(image)).convert('RGB')
+    cropped_image = _crop_image(crop_params[0], crop_params[1], crop_params[2], raw_image)
+    resized_image = _resize_image(cropped_image)
+    converted_image = _convert_to_jpeg(resized_image)
+    return converted_image
+
+
+def _crop_image(crop_x: int, crop_y: int, crop_width: int, image: Image) -> Image:
     if crop_x == 0 and crop_y == 0 and crop_width == 1:
         return image
 
@@ -30,7 +40,7 @@ def crop_image(crop_x: int, crop_y: int, crop_width: int, image: Image) -> Image
     return cropped_img
 
 
-def resize_image(image: Image) -> Image:
+def _resize_image(image: Image) -> Image:
     if image.size[0] <= MAX_THUMB_WIDTH:
         return image
 
@@ -45,7 +55,7 @@ def resize_image(image: Image) -> Image:
     return resized_image
 
 
-def convert_to_jpeg(image: Image) -> bytes:
+def _convert_to_jpeg(image: Image) -> bytes:
     new_bytes = io.BytesIO()
 
     image.save(
