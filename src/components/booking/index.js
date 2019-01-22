@@ -192,9 +192,9 @@ class Booking extends React.PureComponent {
     const formInitialValues = {
       bookables,
       date: (initialDate && { date: initialDate }) || null,
-      price: (defaultBookable && get(defaultBookable, 'price')) || null,
+      price: (defaultBookable && defaultBookable.price) || null,
       recommendationId: recommendation.id,
-      stockId: (defaultBookable && get(defaultBookable, 'id')) || null,
+      stockId: (defaultBookable && defaultBookable.id) || null,
     }
     return (
       <Transition in={mounted} timeout={0}>
