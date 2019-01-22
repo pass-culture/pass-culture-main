@@ -54,7 +54,7 @@ class HasThumbMixin(object):
 
         if convert:
             crop_params = crop if crop is not None else DO_NOT_CROP
-            new_thumb = convert_image(thumb, crop_params)
+            new_thumb = convert_image(new_thumb, crop_params)
 
         if index == 0:
 
