@@ -149,10 +149,11 @@ def do_list_content(container_name):
         conn = swift_con_prod()
         container_url_path = os.environ.get('OVH_URL_PATH_PROD')
     else:
-        print('Ce conteneur ne semble pas exister')
-        return 1
+        raise ValueError('Ce conteneur ne semble pas exister')
 
+    objects_urls = []
     for data in conn.get_container(container_name)[1]:
-        print('{0}\t{1}\t{2}'.format(container_url_path + data['name'], data['bytes'], data['last_modified']))
+        object_url = container_url_path + data['name']
+        objects_urls.append(object_url)
 
-    return 0
+    return objects_urls
