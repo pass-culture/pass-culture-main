@@ -9,7 +9,6 @@ from utils.logger import logger
 
 MAX_THUMB_WIDTH = 750
 CONVERSION_QUALITY = 90
-FILE_FORMAT = 'JPEG'
 DO_NOT_CROP = [0, 0, 1]
 BLACK = b'\x00\x00\x00'
 
@@ -34,15 +33,15 @@ def compute_dominant_color(thumb: bytes) -> bytes:
         return dominant_color
 
 
-def _crop_image(crop_x: int, crop_y: int, crop_width: int, image: Image) -> Image:
-    if crop_x == 0 and crop_y == 0 and crop_width == 1:
+def _crop_image(crop_origin_x: int, crop_origin_y: int, crop_size: int, image: Image) -> Image:
+    if crop_origin_x == 0 and crop_origin_y == 0 and crop_size == 1:
         return image
 
     width = image.size[0]
     height = image.size[1]
-    new_x = width * crop_x
-    new_y = height * crop_y
-    new_width = height * crop_width
+    new_x = width * crop_origin_x
+    new_y = height * crop_origin_y
+    new_width = height * crop_size
 
     cropped_img = image.crop(
         (
@@ -77,7 +76,7 @@ def _convert_to_jpeg(image: Image) -> bytes:
 
     image.save(
         new_bytes,
-        format=FILE_FORMAT,
+        format='JPEG',
         quality=CONVERSION_QUALITY,
         optimize=True,
         progressive=True
