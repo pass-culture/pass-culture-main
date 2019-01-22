@@ -5,8 +5,6 @@ import React from 'react'
 import { Transition } from 'react-transition-group'
 
 import { closeSharePopin } from '../../reducers/share'
-import MailToLink from '../layout/MailToLink'
-import CopyToClipboardButton from './CopyToClipboardButton'
 
 const transitionDelay = 500
 const transitionDuration = 250
@@ -25,18 +23,9 @@ const transitionStyles = {
 }
 
 class SharePopinContent extends React.PureComponent {
-  constructor(props) {
-    super(props)
-    this.state = { iscopied: false }
-  }
-
   closeHandler = () => {
     const { dispatch } = this.props
     dispatch(closeSharePopin())
-  }
-
-  onCopyHandler = status => {
-    this.setState({ iscopied: status })
   }
 
   renderCloseButton = () => (
@@ -55,13 +44,8 @@ class SharePopinContent extends React.PureComponent {
   )
 
   render() {
-    const { iscopied } = this.state
-    const { email, visible, options } = this.props
-    const { text, title, url } = options
-    const headers = {
-      body: url,
-      subject: title,
-    }
+    const { visible, options } = this.props
+    const { text, title } = options
     return (
       <Transition in={visible} timeout={transitionDelay}>
         {status => (
@@ -84,26 +68,12 @@ class SharePopinContent extends React.PureComponent {
                     </h3>
                     <p className="mt18">
                       {/* <!-- Popin status text --> */}
-                      {!iscopied && <span>{text}</span>}
-                      {iscopied && <span>Le lien a bien été copié</span>}
+                      <span>{text}</span>
                     </p>
                   </div>
                   <div className="dotted-top-white flex-columns flex-around">
                     {/* <!-- Popin buttons --> */}
-                    <CopyToClipboardButton
-                      value={url}
-                      className="py12 is-bold fs14"
-                      onClick={this.onCopyHandler}
-                    />
-                    {!iscopied && (
-                      <MailToLink
-                        email={email}
-                        headers={headers}
-                        className="no-underline is-block is-white-text py12 is-bold fs14"
-                      >
-                        <span>Envoyer par e-mail</span>
-                      </MailToLink>
-                    )}
+                    {options.buttons}
                   </div>
                 </div>
               </div>
@@ -115,13 +85,8 @@ class SharePopinContent extends React.PureComponent {
   }
 }
 
-SharePopinContent.defaultProps = {
-  email: null,
-}
-
 SharePopinContent.propTypes = {
   dispatch: PropTypes.func.isRequired,
-  email: PropTypes.string,
   options: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]).isRequired,
   visible: PropTypes.bool.isRequired,
 }

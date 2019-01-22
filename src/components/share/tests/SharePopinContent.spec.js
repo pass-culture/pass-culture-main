@@ -30,24 +30,6 @@ describe('src | components | share | SharePopinContent', () => {
     })
   })
   describe('functions', () => {
-    describe('constructor', () => {
-      it('should initialize state correctly', () => {
-        // given
-        const props = {
-          dispatch: dispatchMock,
-          options: true,
-          visible: true,
-        }
-
-        // when
-        const wrapper = shallow(<SharePopinContent {...props} />)
-        const expected = { iscopied: false }
-
-        // then
-        expect(wrapper.state()).toEqual(expected)
-      })
-    })
-
     describe('closeHandler', () => {
       describe('when options are true', () => {
         it('should call dispatch with good action parameters', () => {

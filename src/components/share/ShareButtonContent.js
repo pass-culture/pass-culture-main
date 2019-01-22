@@ -1,11 +1,84 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { openSharePopin } from '../../reducers/share'
+import { openSharePopin, closeSharePopin } from '../../reducers/share'
+import MailToLink from '../layout/MailToLink'
+import CopyToClipboardButton from './CopyToClipboardButton'
+
+export const getCopyToClipboardButton = (url, onClick) => (
+  <CopyToClipboardButton
+    key="CopyToClipboard"
+    value={url}
+    className="py12 is-bold fs14"
+    onClick={onClick}
+  />
+)
+
+export const getMailToLinkButton = (email, headers) => (
+  <MailToLink
+    key="MailToLink"
+    email={email}
+    headers={headers}
+    className="no-underline is-block is-white-text py12 is-bold fs14"
+  >
+    <span>
+Envoyer par e-mail
+    </span>
+  </MailToLink>
+)
+
+export const getCloseButton = onClose => (
+  <button
+    key="closeButton"
+    type="button"
+    className="no-border no-background no-outline is-block py12 is-bold fs14"
+    onClick={() => onClose()}
+  >
+    <span>
+Fermer
+    </span>
+  </button>
+)
 
 class ShareButtonContent extends React.PureComponent {
+  constructor(props) {
+    super(props)
+    this.state = { iscopied: false }
+  }
+
+  onCopyHandler = status => {
+    this.setState({ iscopied: status }, () => {
+      this.onClickShare()
+    })
+  }
+
+  onCloseHandler = () => {
+    const { dispatch } = this.props
+    dispatch(closeSharePopin())
+    this.setState({ iscopied: false })
+  }
+
   onClickShare = () => {
-    const { dispatch, title, url, text } = this.props
-    const options = { text, title, url }
+    const { dispatch, title, url, text, email } = this.props
+    const headers = {
+      body: url,
+      subject: title,
+    }
+    const { iscopied } = this.state
+    const options = {
+      buttons: [
+        getCopyToClipboardButton(url, this.onCopyHandler),
+        getMailToLinkButton(email, headers),
+      ],
+      text,
+      title,
+      url,
+    }
+
+    if (iscopied) {
+      options.text = 'Le lien a bien été copié'
+      options.buttons = [getCloseButton(this.onCloseHandler)]
+    }
+
     try {
       return navigator
         .share(options)
@@ -37,6 +110,7 @@ class ShareButtonContent extends React.PureComponent {
 }
 
 ShareButtonContent.defaultProps = {
+  email: null,
   text: 'Comment souhaitez-vous partager cette offre ?',
   title: null,
   url: null,
@@ -44,6 +118,7 @@ ShareButtonContent.defaultProps = {
 
 ShareButtonContent.propTypes = {
   dispatch: PropTypes.func.isRequired,
+  email: PropTypes.string,
   text: PropTypes.string,
   title: PropTypes.string,
   url: PropTypes.string,

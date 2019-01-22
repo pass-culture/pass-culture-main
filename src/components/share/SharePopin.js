@@ -3,10 +3,7 @@ import { connect } from 'react-redux'
 
 import SharePopinContent from './SharePopinContent'
 
-const mapStateToProps = ({ user, share }) => {
-  const email = (user && user.email) || ''
-  return { email, ...share }
-}
+const mapStateToProps = ({ share }) => ({ ...share })
 
 export const SharePopin = compose(connect(mapStateToProps))(SharePopinContent)
 
