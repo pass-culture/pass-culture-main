@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 
-from models import ApiErrors
-from models.api_errors import ResourceGoneError
+from models import ApiErrors, EventType
+from models.api_errors import ResourceGoneError, ForbiddenError
 
 
 def check_has_stock_id(stock_id):
@@ -121,6 +121,11 @@ def check_email_and_offer_id_for_anonymous_user(email, offer_id):
         api_errors.addError('offer_id', "L'id de l'offre réservée est obligatoire dans l'URL [?offer_id=<id>]")
     if api_errors.errors:
         raise api_errors
+
+
+def check_rights_for_activation_offer(user):
+    if not user.isAdmin:
+        raise ForbiddenError
 
 
 def _check_physical_expense_limit(booking, expenses):

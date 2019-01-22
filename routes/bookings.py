@@ -3,6 +3,7 @@ from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
 
 from domain.expenses import get_expenses
+from domain.user_activation import create_initial_deposit, check_is_activation_booking
 from domain.user_emails import send_booking_recap_emails, \
     send_booking_confirmation_email_to_user, send_cancellation_emails_to_user_and_offerer
 from models import ApiErrors, Booking, PcObject, Stock, RightsType, EventType
@@ -24,7 +25,7 @@ from validation.bookings import check_booking_is_usable, \
     check_offer_is_active, \
     check_stock_booking_limit_date, \
     check_user_is_logged_in_or_email_is_provided, check_email_and_offer_id_for_anonymous_user, \
-    check_booking_is_cancellable, check_stock_venue_is_validated
+    check_booking_is_cancellable, check_stock_venue_is_validated, check_rights_for_activation_offer
 
 
 @app.route('/bookings', methods=['GET'])
@@ -151,6 +152,7 @@ def patch_booking_by_token(token):
     email = request.args.get('email', None)
     offer_id = dehumanize(request.args.get('offer_id', None))
     booking = booking_queries.find_by(token, email, offer_id)
+    is_activation_booking = check_is_activation_booking(booking)
 
     if current_user.is_authenticated:
         ensure_current_user_has_rights(RightsType.editor, booking.stock.resolvedOffer.venue.managingOffererId)
@@ -159,8 +161,19 @@ def patch_booking_by_token(token):
 
     check_booking_is_usable(booking)
     booking.isUsed = True
+
+    if is_activation_booking:
+        activate_user(booking.user)
+
     PcObject.check_and_save(booking)
     return '', 204
+
+
+def activate_user(user):
+    check_rights_for_activation_offer(current_user)
+    user_to_activate = user
+    user_to_activate.canBookFreeOffers = True
+    create_initial_deposit(user_to_activate)
 
 
 def _create_response_to_get_booking_by_token(booking):

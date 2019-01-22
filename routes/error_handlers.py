@@ -4,6 +4,7 @@ import traceback
 import simplejson as json
 from flask import current_app as app, jsonify, request
 
+from domain.user_activation import AlreadyActivatedException
 from models.api_errors import ApiErrors, ResourceGoneError, ResourceNotFound, ForbiddenError, DecimalCastError, \
     DateTimeCastError
 from routes.before_request import InvalidOriginHeader
@@ -79,3 +80,9 @@ def date_time_cast_error(error):
     for field in error.errors.keys():
         api_errors.addError(field, 'Format de date invalide')
     return jsonify(api_errors.errors), 400
+
+
+@app.errorhandler(AlreadyActivatedException)
+def already_activated_exception(error):
+    app.logger.error(json.dumps(error.errors))
+    return jsonify(error.errors), 405

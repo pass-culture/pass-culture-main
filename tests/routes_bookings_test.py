@@ -4,7 +4,7 @@ from urllib.parse import urlencode
 import pytest
 import requests as req
 
-from models import Offerer, PcObject, EventType
+from models import Offerer, PcObject, EventType, Deposit, ThingType
 from models.db import db
 from models.pc_object import serialize
 from tests.conftest import clean_database
@@ -1318,3 +1318,123 @@ class GetBookingTest:
         assert response_json[
                    'completedUrl'] == 'https://host/path/ABCDEF?offerId=%s&email=user+plus@email.fr' % humanize(
             offer.id)
+
+
+@pytest.mark.standalone
+class PatchBookingByTokenForActivationOffersTest:
+    @clean_database
+    def test_when_user_patching_admin_and_activation_event_returns_status_code_204_set_can_book_free_offers_true_for_booking_user(self, app):
+        # Given
+        user = create_user(is_admin=False, can_book_free_offers=False)
+        pro_user = create_user(email='pro@email.fr', password='P@55w0rd', is_admin=True, can_book_free_offers=False)
+        offerer = create_offerer()
+        user_offerer = create_user_offerer(pro_user, offerer)
+        venue = create_venue(offerer)
+        activation_offer = create_event_offer(venue, event_type=EventType.ACTIVATION)
+        activation_event_occurrence = create_event_occurrence(activation_offer)
+        stock = create_stock_from_event_occurrence(activation_event_occurrence, price=0)
+        booking = create_booking(user, stock, venue=venue)
+        PcObject.check_and_save(booking, user_offerer)
+        url = API_URL + '/bookings/token/{}'.format(booking.token)
+
+        # When
+        response = req_with_auth('pro@email.fr', 'P@55w0rd').patch(url)
+
+        # Then
+        db.session.refresh(user)
+        assert response.status_code == 204
+        assert user.canBookFreeOffers == True
+
+    @clean_database
+    def test_when_user_patching_admin_and_activation_thing_set_can_book_free_offers_true_for_booking_user(self, app):
+        # Given
+        user = create_user(is_admin=False, can_book_free_offers=False)
+        pro_user = create_user(email='pro@email.fr', password='P@55w0rd', is_admin=True, can_book_free_offers=False)
+        offerer = create_offerer()
+        user_offerer = create_user_offerer(pro_user, offerer)
+        venue = create_venue(offerer)
+        activation_offer = create_thing_offer(venue, thing_type=ThingType.ACTIVATION)
+        activation_event_occurrence = create_event_occurrence(activation_offer)
+        stock = create_stock_from_event_occurrence(activation_event_occurrence, price=0)
+        booking = create_booking(user, stock, venue=venue)
+        PcObject.check_and_save(booking, user_offerer)
+        url = API_URL + '/bookings/token/{}'.format(booking.token)
+
+        # When
+        response = req_with_auth('pro@email.fr', 'P@55w0rd').patch(url)
+
+        # Then
+        db.session.refresh(user)
+        assert response.status_code == 204
+        assert user.canBookFreeOffers == True
+
+    @clean_database
+    def test_when_user_patching_admin_and_no_deposit_for_booking_user_add_500_eur_deposit(self, app):
+        # Given
+        user = create_user(is_admin=False, can_book_free_offers=False)
+        pro_user = create_user(email='pro@email.fr', password='P@55w0rd', is_admin=True, can_book_free_offers=False)
+        offerer = create_offerer()
+        user_offerer = create_user_offerer(pro_user, offerer)
+        venue = create_venue(offerer)
+        activation_offer = create_event_offer(venue, event_type=EventType.ACTIVATION)
+        activation_event_occurrence = create_event_occurrence(activation_offer)
+        stock = create_stock_from_event_occurrence(activation_event_occurrence, price=0)
+        booking = create_booking(user, stock, venue=venue)
+        PcObject.check_and_save(booking, user_offerer)
+        url = API_URL + '/bookings/token/{}'.format(booking.token)
+
+        # When
+        response = req_with_auth('pro@email.fr', 'P@55w0rd').patch(url)
+
+        # Then
+        deposits_for_user = Deposit.query.filter_by(userId=user.id).all()
+        assert response.status_code == 204
+        assert len(deposits_for_user) == 1
+        assert deposits_for_user[0].amount == 500
+        assert user.canBookFreeOffers == True
+
+    @clean_database
+    def test_when_user_patching_admin_and_deposit_for_booking_do_not_add_new_deposit_and_return_status_code_405(self, app):
+        # Given
+        user = create_user(is_admin=False, can_book_free_offers=False)
+        pro_user = create_user(email='pro@email.fr', password='P@55w0rd', is_admin=True, can_book_free_offers=False)
+        offerer = create_offerer()
+        user_offerer = create_user_offerer(pro_user, offerer)
+        venue = create_venue(offerer)
+        activation_offer = create_event_offer(venue, event_type=EventType.ACTIVATION)
+        activation_event_occurrence = create_event_occurrence(activation_offer)
+        stock = create_stock_from_event_occurrence(activation_event_occurrence, price=0)
+        booking = create_booking(user, stock, venue=venue)
+        deposit = create_deposit(user, datetime.utcnow(), amount=500)
+        PcObject.check_and_save(booking, user_offerer, deposit)
+        url = API_URL + '/bookings/token/{}'.format(booking.token)
+
+        # When
+        response = req_with_auth('pro@email.fr', 'P@55w0rd').patch(url)
+
+        # Then
+        deposits_for_user = Deposit.query.filter_by(userId=user.id).all()
+        assert response.status_code == 405
+        assert len(deposits_for_user) == 1
+        assert deposits_for_user[0].amount == 500
+
+    @clean_database
+    def test_when_user_patching_not_admin_status_code_403(self, app):
+        # Given
+        user = create_user()
+        pro_user = create_user(email='pro@email.fr', password='P@55w0rd', is_admin=False)
+        offerer = create_offerer()
+        user_offerer = create_user_offerer(pro_user, offerer)
+        venue = create_venue(offerer)
+        activation_offer = create_event_offer(venue, event_type=EventType.ACTIVATION)
+        activation_event_occurrence = create_event_occurrence(activation_offer)
+        stock = create_stock_from_event_occurrence(activation_event_occurrence, price=0)
+        booking = create_booking(user, stock, venue=venue)
+        PcObject.check_and_save(booking, user_offerer)
+        url = API_URL + '/bookings/token/{}'.format(booking.token)
+
+        # When
+        response = req_with_auth('pro@email.fr', 'P@55w0rd').patch(url)
+
+        # Then
+        assert response.status_code == 403

@@ -1,19 +1,18 @@
 from sqlalchemy import Column, BigInteger, Numeric, String, ForeignKey
 from sqlalchemy.orm import relationship
 
-from models.pc_object import PcObject
-from models.has_thumb_mixin import  HasThumbMixin
 from models.db import Model
+from models.pc_object import PcObject
 
 
 class Deposit(PcObject,
-                Model,
+              Model,
               ):
     id = Column(BigInteger,
                 primary_key=True,
                 autoincrement=True)
     amount = Column(Numeric(10, 2),
-                   nullable=False)
+                    nullable=False)
     userId = Column(BigInteger,
                     ForeignKey('user.id'),
                     index=True,
@@ -23,4 +22,4 @@ class Deposit(PcObject,
                         foreign_keys=[userId],
                         backref='deposits')
     source = Column(String(12),
-                   nullable=False)
+                    nullable=False)
