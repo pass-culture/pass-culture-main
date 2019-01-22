@@ -7,6 +7,11 @@
   background-color: $primary;
 }
 
+.pc-background-dark-red,
+.pc-background-dark-primary {
+  background-color: $red-dark;
+}
+
 .pc-background-green {
   background-color: $ribbon-green;
 }
@@ -61,6 +66,16 @@
 .pc-theme-primary {
   @extend .is-white-text;
   @extend .pc-background-primary;
+
+  [class*='border-'] {
+    border-color: $white;
+  }
+}
+
+.pc-theme-dark-red,
+.pc-theme-dark-primary {
+  @extend .is-white-text;
+  @extend .pc-background-dark-primary;
 
   [class*='border-'] {
     border-color: $white;
