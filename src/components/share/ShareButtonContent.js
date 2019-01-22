@@ -7,8 +7,8 @@ class ShareButtonContent extends React.PureComponent {
     const { dispatch, title, url, text } = this.props
     const options = { text, title, url }
     try {
-      const nativeShare = window.navigator.share || navigator.share
-      return nativeShare(options)
+      return navigator
+        .share(options)
         .then(() => {})
         .catch(() => {})
     } catch (err) {
