@@ -17,9 +17,11 @@ import BookingError from './BookingError'
 import BookingLoader from './BookingLoader'
 import BookingHeader from './BookingHeader'
 import BookingSuccess from './BookingSuccess'
+import BookingActivation from './BookingActivation'
 import { selectBookables } from '../../selectors/selectBookables'
 import { selectBookingById } from '../../selectors/selectBookings'
 import currentRecommendationSelector from '../../selectors/currentRecommendation'
+import { isUserActivated } from '../../utils/user'
 
 const duration = 250
 const backgroundImage = `url('${ROOT_PATH}/mosaic-k.png')`
@@ -175,6 +177,8 @@ class Booking extends React.PureComponent {
       booking,
       recommendation,
       bookables,
+      isActivatedUser,
+      isActivationOffer,
       isCancelled,
       isEvent,
     } = this.props
@@ -219,16 +223,23 @@ class Booking extends React.PureComponent {
                 )}
                 {isErrored && <BookingError {...isErrored} />}
                 {showForm && (
-                  <BookingForm
-                    className="flex-rows items-center"
-                    isEvent={isEvent}
-                    formId={this.formId}
-                    disabled={userConnected}
-                    onSubmit={this.onFormSubmit}
-                    onMutation={this.onFormMutation}
-                    initialValues={formInitialValues}
-                    onValidation={this.onFormValidation}
-                  />
+                  <React.Fragment>
+                    {!isActivationOffer && !isActivatedUser && (
+                      <BookingActivation />
+                    )}
+                    {(isActivationOffer || isActivatedUser) && (
+                      <BookingForm
+                        className="flex-rows items-center"
+                        isEvent={isEvent}
+                        formId={this.formId}
+                        disabled={userConnected}
+                        onSubmit={this.onFormSubmit}
+                        onMutation={this.onFormMutation}
+                        initialValues={formInitialValues}
+                        onValidation={this.onFormValidation}
+                      />
+                    )}
+                  </React.Fragment>
                 )}
               </div>
             </div>
@@ -257,23 +268,25 @@ Booking.propTypes = {
   recommendation: PropTypes.object,
 }
 
-const mapStateToProps = (state, { match }) => {
+const mapStateToProps = (state, { match, user }) => {
   const { offerId, mediationId, view, bookingId } = match.params
   const recommendation = currentRecommendationSelector(
     state,
     offerId,
     mediationId
   )
+  const { type } = get(recommendation, 'offer.eventOrThing')
+  const isActivationOffer = type === 'EventType.ACTIVATION'
+  const isActivatedUser = isUserActivated(user)
   const isEvent = (get(recommendation, 'offer.eventId') && true) || false
-  // pas sur qu'un selecteur soit pertinent:
-  // perfs -> l'user ne reviendra pas sur la page puisqu'il est déjà venu
-  // opaque -> oblige a regarder dans un fichier ce qui se passe
   const bookables = selectBookables(state, recommendation, match)
   const booking = selectBookingById(state, bookingId)
 
   return {
     bookables,
     booking,
+    isActivatedUser,
+    isActivationOffer,
     isCancelled: view === 'cancelled',
     isEvent,
     recommendation,
