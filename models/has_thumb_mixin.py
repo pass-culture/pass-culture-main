@@ -6,6 +6,7 @@ from PIL import Image
 from colorthief import ColorThief
 from sqlalchemy import Binary, CheckConstraint, Column, Integer
 
+from domain.mediations import crop_image
 from models.pc_object import PcObject
 from utils.human_ids import humanize
 from utils.inflect_engine import inflect_engine
@@ -117,25 +118,8 @@ class HasThumbMixin(object):
             resized_img = cropped_img
         return resized_img
 
-    def crop_image(self, crop, img):
+    def crop_image(self, crop, image):
         if crop is None:
-            cropped_img = img
-        else:
-            width = img.size[0]
-            height = img.size[1]
-            crop_x = crop[0]
-            crop_y = crop[1]
-            crop_width = crop[2]
-            new_x = width * crop_x
-            new_y = height * crop_y
-            new_width = height * crop_width
+            return image
 
-            cropped_img = img.crop(
-                (
-                    new_x,
-                    new_y,
-                    min(new_x + new_width, width),
-                    min(new_y + new_width, height)
-                )
-            )
-        return cropped_img
+        return crop_image(crop[0], crop[1], crop[2], image)
