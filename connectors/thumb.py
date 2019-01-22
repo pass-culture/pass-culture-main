@@ -7,8 +7,9 @@ def fetch_image(thumb_url: str, target_object: str) -> bytes:
 
     response = requests.get(thumb_url)
     content_type = response.headers['Content-type']
+    is_an_image = content_type.split('/')[0] == 'image'
 
-    if response.status_code == 200 and content_type.split('/')[0] == 'image':
+    if response.status_code == 200 and is_an_image:
         return response.content
     else:
         raise ValueError(

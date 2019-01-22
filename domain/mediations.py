@@ -14,18 +14,18 @@ DO_NOT_CROP = [0, 0, 1]
 BLACK = b'\x00\x00\x00'
 
 
-def convert_image(image: bytes, crop_params: List) -> bytes:
+def standardize_image(image: bytes, crop_params: List) -> bytes:
     raw_image = PIL.Image.open(io.BytesIO(image)).convert('RGB')
     cropped_image = _crop_image(crop_params[0], crop_params[1], crop_params[2], raw_image)
     resized_image = _resize_image(cropped_image)
-    converted_image = _convert_to_jpeg(resized_image)
-    return converted_image
+    standard_image = _convert_to_jpeg(resized_image)
+    return standard_image
 
 
 def compute_dominant_color(thumb: bytes) -> bytes:
     thumb_bytes = io.BytesIO(thumb)
-    color_thief = ColorThief(thumb_bytes)
-    dominant_color = bytearray(color_thief.get_color(quality=1))
+    thumb_color_theft = ColorThief(thumb_bytes)
+    dominant_color = bytearray(thumb_color_theft.get_color(quality=1))
 
     if dominant_color is None:
         logger.warning('Warning: could not determine dominant_color for thumb')
@@ -60,11 +60,12 @@ def _resize_image(image: Image) -> Image:
     if image.size[0] <= MAX_THUMB_WIDTH:
         return image
 
-    ratio = image.size[1] / image.size[0]
+    height_to_width_ratio = image.size[1] / image.size[0]
+    new_height = int(MAX_THUMB_WIDTH * height_to_width_ratio)
     resized_image = image.resize(
         [
             MAX_THUMB_WIDTH,
-            int(MAX_THUMB_WIDTH * ratio)
+            new_height
         ]
     )
 

@@ -3,7 +3,7 @@
 from sqlalchemy import Binary, CheckConstraint, Column, Integer
 
 from connectors.thumb import fetch_image
-from domain.mediations import DO_NOT_CROP, convert_image, compute_dominant_color
+from domain.mediations import DO_NOT_CROP, standardize_image, compute_dominant_color
 from models.pc_object import PcObject
 from utils.human_ids import humanize
 from utils.inflect_engine import inflect_engine
@@ -51,7 +51,7 @@ class HasThumbMixin(object):
 
         if convert:
             crop_params = crop if crop is not None else DO_NOT_CROP
-            new_thumb = convert_image(new_thumb, crop_params)
+            new_thumb = standardize_image(new_thumb, crop_params)
 
         if image_index == 0:
             if dominant_color:
