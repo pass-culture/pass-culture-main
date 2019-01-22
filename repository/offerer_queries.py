@@ -72,12 +72,6 @@ def find_all_offerers_with_venue():
     return result
 
 
-# def find_all_pending_validation():
-#     return Offerer.query.join(UserOfferer) \
-#         .filter(or_(UserOfferer.validationToken != None, Offerer.validationToken != None)) \
-#         .order_by(Offerer.id).all()
-
-
 def find_all_pending_validation():
     return Offerer.query \
         .join(UserOfferer) \
@@ -85,8 +79,6 @@ def find_all_pending_validation():
         .join(User) \
         .filter(or_(UserOfferer.validationToken != None, Offerer.validationToken != None, Venue.validationToken != None, User.validationToken != None)) \
         .order_by(Offerer.id).all()
-
-        # .filter(UserOfferer.validationToken != None | Offerer.validationToken != None) \
 
 
 def find_first_by_user_offerer_id(user_offerer_id):
@@ -324,3 +316,4 @@ def filter_offerers_with_keywords_string(query, keywords_string):
     )
     query = query.filter(keywords_filter)
     return query
+

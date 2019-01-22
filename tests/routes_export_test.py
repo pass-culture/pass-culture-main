@@ -211,10 +211,9 @@ def test_pending_validation_return_only_requested_data(app):
     assert response.json()[0] == expected_result
 
 
-
 @pytest.mark.standalone
 @clean_database
-def test_pending_validation_return_only_requested_validation_token_case_1(app):
+def test_pending_validation_return_requested_token_case_1(app):
     # given
     connexion_user = create_user(can_book_free_offers=False, password='p@55sw0rd', is_admin=True)
     user_not_validated = create_user(email="user@user.pro", can_book_free_offers=False, is_admin=False, validation_token="token_for_user")
@@ -229,7 +228,6 @@ def test_pending_validation_return_only_requested_validation_token_case_1(app):
     response = auth_request.get(API_URL + '/exports/pending_validation')
 
     # then
-    #[retour : Tout + Ne pas valider user_offerer + Ne pas valider Venue]
     assert response.status_code == 200
     assert response.json()[0]["validationToken"] == offerer_not_validated.validationToken
     assert response.json()[0]["UserOfferers"][0]["validationToken"] == user_offerer_not_validated.validationToken
@@ -239,7 +237,7 @@ def test_pending_validation_return_only_requested_validation_token_case_1(app):
 
 @pytest.mark.standalone
 @clean_database
-def test_pending_validation_return_only_requested_validation_token_case_2(app):
+def test_pending_validation_return_requested_token_case_2(app):
     # given
     connexion_user = create_user(can_book_free_offers=False, password='p@55sw0rd', is_admin=True)
     user_not_validated = create_user(email="user@user.pro", can_book_free_offers=False, is_admin=False, validation_token="token_for_user")
@@ -254,7 +252,6 @@ def test_pending_validation_return_only_requested_validation_token_case_2(app):
     response = auth_request.get(API_URL + '/exports/pending_validation')
 
     # then
-    #[retour : Tout + Ne pas valider User_Offerer]
     assert response.status_code == 200
     assert response.json()[0]["validationToken"] == offerer_validated.validationToken
     assert response.json()[0]["UserOfferers"][0]["validationToken"] == user_offerer_not_validated.validationToken
@@ -264,7 +261,7 @@ def test_pending_validation_return_only_requested_validation_token_case_2(app):
 
 @pytest.mark.standalone
 @clean_database
-def test_pending_validation_return_only_requested_validation_token_case_3(app):
+def test_pending_validation_return_requested_token_case_3(app):
     # given
     connexion_user = create_user(can_book_free_offers=False, password='p@55sw0rd', is_admin=True)
     user_not_validated = create_user(email="user@user.pro", can_book_free_offers=False, is_admin=False, validation_token="token_for_user")
@@ -279,7 +276,6 @@ def test_pending_validation_return_only_requested_validation_token_case_3(app):
     response = auth_request.get(API_URL + '/exports/pending_validation')
 
     # then
-    #[retour : cas impossible !]
     assert response.status_code == 200
     assert response.json()[0]["validationToken"] == offerer_not_validated.validationToken
     assert response.json()[0]["UserOfferers"][0]["validationToken"] == user_offerer_validated.validationToken
@@ -289,7 +285,7 @@ def test_pending_validation_return_only_requested_validation_token_case_3(app):
 
 @pytest.mark.standalone
 @clean_database
-def test_pending_validation_return_only_requested_validation_token_case_4(app):
+def test_pending_validation_return_requested_token_case_4(app):
     # given
     connexion_user = create_user(can_book_free_offers=False, password='p@55sw0rd', is_admin=True)
     user_not_validated = create_user(email="user@user.pro", can_book_free_offers=False, is_admin=False, validation_token="token_for_user")
@@ -304,7 +300,6 @@ def test_pending_validation_return_only_requested_validation_token_case_4(app):
     response = auth_request.get(API_URL + '/exports/pending_validation')
 
     # then
-    #[retour : cas impossible !]
     assert response.status_code == 200
     assert response.json()[0]["validationToken"] == offerer_validated.validationToken
     assert response.json()[0]["UserOfferers"][0]["validationToken"] == user_offerer_validated.validationToken
@@ -314,7 +309,7 @@ def test_pending_validation_return_only_requested_validation_token_case_4(app):
 
 @pytest.mark.standalone
 @clean_database
-def test_pending_validation_return_only_requested_validation_token_case_5(app):
+def test_pending_validation_return_requested_token_case_5(app):
     # given
     connexion_user = create_user(can_book_free_offers=False, password='p@55sw0rd', is_admin=True)
     user_validated = create_user(email="user@user.pro", can_book_free_offers=False, is_admin=False)
@@ -329,7 +324,6 @@ def test_pending_validation_return_only_requested_validation_token_case_5(app):
     response = auth_request.get(API_URL + '/exports/pending_validation')
 
     # then
-    #[retour : tout ! cas normal + ne pas valider User_offerer + ne pas valider venue]
     assert response.status_code == 200
     assert response.json()[0]["validationToken"] == offerer_not_validated.validationToken
     assert response.json()[0]["UserOfferers"][0]["validationToken"] == user_offerer_not_validated.validationToken
@@ -339,7 +333,7 @@ def test_pending_validation_return_only_requested_validation_token_case_5(app):
 
 @pytest.mark.standalone
 @clean_database
-def test_pending_validation_return_only_requested_validation_token_case_6(app):
+def test_pending_validation_return_requested_token_case_6(app):
     # given
     connexion_user = create_user(can_book_free_offers=False, password='p@55sw0rd', is_admin=True)
     user_validated = create_user(email="user@user.pro", can_book_free_offers=False, is_admin=False)
@@ -354,7 +348,6 @@ def test_pending_validation_return_only_requested_validation_token_case_6(app):
     response = auth_request.get(API_URL + '/exports/pending_validation')
 
     # then
-    #[retour : tout ! cas normal]
     assert response.status_code == 200
     assert response.json()[0]["validationToken"] == offerer_validated.validationToken
     assert response.json()[0]["UserOfferers"][0]["validationToken"] == user_offerer_not_validated.validationToken
@@ -364,7 +357,7 @@ def test_pending_validation_return_only_requested_validation_token_case_6(app):
 
 @pytest.mark.standalone
 @clean_database
-def test_pending_validation_return_only_requested_validation_token_case_7(app):
+def test_pending_validation_return_requested_token_case_7(app):
     # given
     connexion_user = create_user(can_book_free_offers=False, password='p@55sw0rd', is_admin=True)
     user_validated = create_user(email="user@user.pro", can_book_free_offers=False, is_admin=False)
@@ -379,7 +372,6 @@ def test_pending_validation_return_only_requested_validation_token_case_7(app):
     response = auth_request.get(API_URL + '/exports/pending_validation')
 
     # then
-    #[retour : cas impossible !]
     assert response.status_code == 200
 
     assert response.json()[0]["validationToken"] == offerer_not_validated.validationToken
@@ -390,7 +382,7 @@ def test_pending_validation_return_only_requested_validation_token_case_7(app):
 
 @pytest.mark.standalone
 @clean_database
-def test_pending_validation_return_only_requested_validation_token_case_8(app):
+def test_pending_validation_return_requested_token_case_8(app):
     # given
     connexion_user = create_user(can_book_free_offers=False, password='p@55sw0rd', is_admin=True)
     user_validated = create_user(email="user@user.pro", can_book_free_offers=False, is_admin=False)
@@ -405,7 +397,6 @@ def test_pending_validation_return_only_requested_validation_token_case_8(app):
     response = auth_request.get(API_URL + '/exports/pending_validation')
 
     # then
-    #[retour : tout ! cas normal]
     assert response.status_code == 200
     assert response.json()[0]["validationToken"] == offerer_validated.validationToken
     assert response.json()[0]["UserOfferers"][0]["validationToken"] == user_offerer_validated.validationToken
@@ -416,7 +407,7 @@ def test_pending_validation_return_only_requested_validation_token_case_8(app):
 
 @pytest.mark.standalone
 @clean_database
-def test_pending_validation_return_only_requested_validation_token_case_9(app):
+def test_pending_validation_return_requested_token_case_9(app):
     # given
     connexion_user = create_user(can_book_free_offers=False, password='p@55sw0rd', is_admin=True)
     user_not_validated = create_user(email="user@user.pro", can_book_free_offers=False, is_admin=False, validation_token="token_for_user")
@@ -431,7 +422,6 @@ def test_pending_validation_return_only_requested_validation_token_case_9(app):
     response = auth_request.get(API_URL + '/exports/pending_validation')
 
     # then
-    #[retour : cas impossible !]
     assert response.status_code == 200
     assert response.json()[0]["validationToken"] == offerer_not_validated.validationToken
     assert response.json()[0]["UserOfferers"][0]["validationToken"] == user_offerer_not_validated.validationToken
@@ -441,7 +431,7 @@ def test_pending_validation_return_only_requested_validation_token_case_9(app):
 
 @pytest.mark.standalone
 @clean_database
-def test_pending_validation_return_only_requested_validation_token_case_10(app):
+def test_pending_validation_return_requested_token_case_10(app):
     # given
     connexion_user = create_user(can_book_free_offers=False, password='p@55sw0rd', is_admin=True)
     user_not_validated = create_user(email="user@user.pro", can_book_free_offers=False, is_admin=False, validation_token="token_for_user")
@@ -456,7 +446,6 @@ def test_pending_validation_return_only_requested_validation_token_case_10(app):
     response = auth_request.get(API_URL + '/exports/pending_validation')
 
     # then
-    #[retour : tout ! cas normal + ne pas valider user_offerer]
     assert response.status_code == 200
     assert response.json()[0]["validationToken"] == offerer_validated.validationToken
     assert response.json()[0]["UserOfferers"][0]["validationToken"] == user_offerer_not_validated.validationToken
@@ -466,7 +455,7 @@ def test_pending_validation_return_only_requested_validation_token_case_10(app):
 
 @pytest.mark.standalone
 @clean_database
-def test_pending_validation_return_only_requested_validation_token_case_11(app):
+def test_pending_validation_return_requested_token_case_11(app):
     # given
     connexion_user = create_user(can_book_free_offers=False, password='p@55sw0rd', is_admin=True)
     user_not_validated = create_user(email="user@user.pro", can_book_free_offers=False, is_admin=False, validation_token="token_for_user")
@@ -481,7 +470,6 @@ def test_pending_validation_return_only_requested_validation_token_case_11(app):
     response = auth_request.get(API_URL + '/exports/pending_validation')
 
     # then
-    #[retour : cas impossible !]
     assert response.status_code == 200
     assert response.json()[0]["validationToken"] == offerer_not_validated.validationToken
     assert response.json()[0]["UserOfferers"][0]["validationToken"] == user_offerer_validated.validationToken
@@ -491,7 +479,7 @@ def test_pending_validation_return_only_requested_validation_token_case_11(app):
 
 @pytest.mark.standalone
 @clean_database
-def test_pending_validation_return_only_requested_validation_token_case_12(app):
+def test_pending_validation_return_requested_token_case_12(app):
     # given
     connexion_user = create_user(can_book_free_offers=False, password='p@55sw0rd', is_admin=True)
     user_not_validated = create_user(email="user@user.pro", can_book_free_offers=False, is_admin=False, validation_token="token_for_user")
@@ -506,7 +494,6 @@ def test_pending_validation_return_only_requested_validation_token_case_12(app):
     response = auth_request.get(API_URL + '/exports/pending_validation')
 
     # then
-    #[retour : cas impossible ! (mais déjà arrivé)]
     assert response.status_code == 200
     assert response.json()[0]["validationToken"] == offerer_validated.validationToken
     assert response.json()[0]["UserOfferers"][0]["validationToken"] == user_offerer_validated.validationToken
@@ -516,7 +503,7 @@ def test_pending_validation_return_only_requested_validation_token_case_12(app):
 
 @pytest.mark.standalone
 @clean_database
-def test_pending_validation_return_only_requested_validation_token_case_13(app):
+def test_pending_validation_return_requested_token_case_13(app):
     # given
     connexion_user = create_user(can_book_free_offers=False, password='p@55sw0rd', is_admin=True)
     user_validated = create_user(email="user@user.pro", can_book_free_offers=False, is_admin=False)
@@ -531,7 +518,6 @@ def test_pending_validation_return_only_requested_validation_token_case_13(app):
     response = auth_request.get(API_URL + '/exports/pending_validation')
 
     # then
-    #[retour : cas impossible !]
     assert response.status_code == 200
     assert response.json()[0]["validationToken"] == offerer_not_validated.validationToken
     assert response.json()[0]["UserOfferers"][0]["validationToken"] == user_offerer_not_validated.validationToken
@@ -541,7 +527,7 @@ def test_pending_validation_return_only_requested_validation_token_case_13(app):
 
 @pytest.mark.standalone
 @clean_database
-def test_pending_validation_return_only_requested_validation_token_case_14(app):
+def test_pending_validation_return_requested_token_case_14(app):
     # given
     connexion_user = create_user(can_book_free_offers=False, password='p@55sw0rd', is_admin=True)
     user_validated = create_user(email="user@user.pro", can_book_free_offers=False, is_admin=False)
@@ -556,7 +542,6 @@ def test_pending_validation_return_only_requested_validation_token_case_14(app):
     response = auth_request.get(API_URL + '/exports/pending_validation')
 
     # then
-    #[retour : tout ! cas normal]
     assert response.status_code == 200
     assert response.json()[0]["validationToken"] == offerer_validated.validationToken
     assert response.json()[0]["UserOfferers"][0]["validationToken"] == user_offerer_not_validated.validationToken
@@ -566,7 +551,7 @@ def test_pending_validation_return_only_requested_validation_token_case_14(app):
 
 @pytest.mark.standalone
 @clean_database
-def test_pending_validation_return_only_requested_validation_token_case_15(app):
+def test_pending_validation_return_requested_token_case_15(app):
     # given
     connexion_user = create_user(can_book_free_offers=False, password='p@55sw0rd', is_admin=True)
     user_validated = create_user(email="user@user.pro", can_book_free_offers=False, is_admin=False)
@@ -581,7 +566,6 @@ def test_pending_validation_return_only_requested_validation_token_case_15(app):
     response = auth_request.get(API_URL + '/exports/pending_validation')
 
     # then
-    #[retour : cas impossible ! ]
     assert response.status_code == 200
     assert response.json()[0]["validationToken"] == offerer_not_validated.validationToken
     assert response.json()[0]["UserOfferers"][0]["validationToken"] == user_offerer_validated.validationToken
@@ -591,7 +575,7 @@ def test_pending_validation_return_only_requested_validation_token_case_15(app):
 
 @pytest.mark.standalone
 @clean_database
-def test_pending_validation_return_only_requested_validation_token_case_16(app):
+def test_pending_validation_return_requested_token_case_16(app):
     # given
     connexion_user = create_user(can_book_free_offers=False, password='p@55sw0rd', is_admin=True)
     user_validated = create_user(email="user@user.pro", can_book_free_offers=False, is_admin=False)
@@ -606,42 +590,7 @@ def test_pending_validation_return_only_requested_validation_token_case_16(app):
     response = auth_request.get(API_URL + '/exports/pending_validation')
     # then
     assert response.status_code == 200
-    #[retour : tout est bon, rien]
     assert response.json() == []
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 @pytest.mark.standalone
@@ -1244,4 +1193,4 @@ def test_get_offerers_return_error_when_date_param_is_wrong(app):
     #then
     assert response.status_code == 400
     assert response.json()['date_format'] == ['to_date and from_date are of type yyyy-mm-dd']
-    
+

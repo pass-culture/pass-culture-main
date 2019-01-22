@@ -1085,3 +1085,4 @@ def test_find_filtered_offerers_with_default_param_return_all_offerers(app):
     assert offerer_not_validated in default_query
     assert offerer_with_bank_information in default_query
     assert offerer_not_active in default_query
+
