@@ -9,11 +9,19 @@ import Footer from '../layout/Footer'
 import VersoInfo from './VersoInfo'
 import VersoWrapper from './VersoWrapper'
 import currentRecommendationSelector from '../../selectors/currentRecommendation'
-import { THUMBS_URL } from '../../utils/config'
+import StaticVerso from './StaticVerso'
+import ActivationCard from './ActivationCard'
 
-const Verso = ({ currentRecommendation, areDetailsVisible }) => {
+const Verso = ({
+  currentRecommendation,
+  areDetailsVisible,
+  isWalletActivated,
+}) => {
   const { mediation } = currentRecommendation || {}
   const { tutoIndex } = mediation || {}
+  const isTuto = typeof tutoIndex === 'number' && mediation
+  const useTutoImage = isTuto && isWalletActivated
+  const useActivation = isTuto && !isWalletActivated && tutoIndex === 1
   return (
     <div
       className={classnames('verso', {
@@ -21,17 +29,9 @@ const Verso = ({ currentRecommendation, areDetailsVisible }) => {
       })}
     >
       <VersoWrapper className="with-padding-top">
-        {typeof tutoIndex === 'number' ? (
-          mediation && (
-            <img
-              alt="verso"
-              className="verso-tuto-mediation"
-              src={`${THUMBS_URL}/mediations/${mediation.id}_1`}
-            />
-          )
-        ) : (
-          <VersoInfo />
-        )}
+        {!isTuto && <VersoInfo />}
+        {useTutoImage && <StaticVerso mediationId={mediation.id} />}
+        {useActivation && <ActivationCard mediationId={mediation.id} />}
       </VersoWrapper>
       <Footer borderTop colored={typeof tutoIndex !== 'number'} />
     </div>
@@ -45,12 +45,14 @@ Verso.defaultProps = {
 Verso.propTypes = {
   areDetailsVisible: PropTypes.bool.isRequired,
   currentRecommendation: PropTypes.object,
+  isWalletActivated: PropTypes.bool.isRequired,
 }
 
 export default compose(
   withRouter,
   connect((state, ownProps) => {
     const { mediationId, offerId } = ownProps.match.params
+    const isWalletActivated = state.user.wallet_is_activated
     return {
       areDetailsVisible: state.card.areDetailsVisible,
       currentRecommendation: currentRecommendationSelector(
@@ -58,6 +60,7 @@ export default compose(
         offerId,
         mediationId
       ),
+      isWalletActivated,
     }
   })
 )(Verso)
