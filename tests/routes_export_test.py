@@ -192,6 +192,7 @@ def test_pending_validation_return_only_requested_data(app):
          [{'address': '123 rue de Paris',
            'bookingEmail': 'john.doe@test.com',
            'city': 'Montreuil',
+           'comment': 'comment because no siret',
            'departementCode': '93',
            'id': humanize(venue.id),
            'managingOffererId': humanize(offerer.id),
@@ -213,384 +214,48 @@ def test_pending_validation_return_only_requested_data(app):
 
 @pytest.mark.standalone
 @clean_database
-def test_pending_validation_return_requested_token_case_1(app):
+def test_pending_validation_returns_offerers_venues_user_and_user_offerer_with_requested_data(app):
     # given
     connexion_user = create_user(can_book_free_offers=False, password='p@55sw0rd', is_admin=True)
-    user_not_validated = create_user(email="user@user.pro", can_book_free_offers=False, is_admin=False, validation_token="token_for_user")
-    offerer_not_validated = create_offerer(validation_token="this_offerer_has_a_token")
-    user_offerer_not_validated = create_user_offerer(user_not_validated, offerer_not_validated, validation_token='user_off_token')
-    venue_not_validated = create_venue(offerer_not_validated, siret=None, comment="comment because no siret", validation_token="venue_validation_token")
-    PcObject.check_and_save(connexion_user, offerer_not_validated, user_offerer_not_validated, user_not_validated, venue_not_validated)
+    offerer1 = create_offerer(name='offerer1', validation_token="a_token")
+    offerer2 = create_offerer(name='offerer2', siren='789456123', validation_token="some_token")
+    offerer3 = create_offerer(name='offerer3', siren='789456124')
+    offerer4 = create_offerer(name='offerer4', siren='789456125')
+    user1 = create_user(email='1@offerer.com')
+    user2 = create_user(email='2@offerer.com')
+    user3 = create_user(email='3@offerer.com')
+    user4 = create_user(email='4@offerer.com')
+    user_offerer1 = create_user_offerer(user1, offerer1, validation_token="nice_token")
+    user_offerer2 = create_user_offerer(user2, offerer2)
+    user_offerer3 = create_user_offerer(user3, offerer3, validation_token="another_token")
+    user_offerer4 = create_user_offerer(user4, offerer4)
+    user_offerer5 = create_user_offerer(user3, offerer3, validation_token="what_a_token")
+    venue1 = create_venue(offerer1, siret=None, comment="nice_comment", validation_token="venue_token")
+    venue1_bis = create_venue(offerer1, siret="12345678112345")
+    venue2 = create_venue(offerer2, siret="12345678212345")
+    venue3 = create_venue(offerer3, siret="12345678312345")
+    venue4 = create_venue(offerer4, siret="12345678412345")
+
+    PcObject.check_and_save(connexion_user, user_offerer1, user_offerer2, user_offerer3, user_offerer4)
 
     auth_request = req_with_auth(email=connexion_user.email, password='p@55sw0rd')
-    
     # when
     response = auth_request.get(API_URL + '/exports/pending_validation')
 
     # then
     assert response.status_code == 200
-    assert response.json()[0]["validationToken"] == offerer_not_validated.validationToken
-    assert response.json()[0]["UserOfferers"][0]["validationToken"] == user_offerer_not_validated.validationToken
-    assert response.json()[0]["UserOfferers"][0]["user"]["validationToken"] == user_not_validated.validationToken
-    assert response.json()[0]["managedVenues"][0]["validationToken"] == venue_not_validated.validationToken
+    assert response.json()[0]['validationToken'] == offerer1.validationToken
+    assert response.json()[0]['UserOfferers'][0]['validationToken'] == user_offerer1.validationToken
+    assert response.json()[0]['managedVenues'][0]['validationToken'] == venue1.validationToken
+    assert response.json()[0]['managedVenues'][0]['comment'] == venue1.comment
+    assert response.json()[0]['managedVenues'][1]['siret'] == venue1_bis.siret
+    assert response.json()[1]['validationToken'] == offerer2.validationToken
+    assert response.json()[1]['UserOfferers'][0]['validationToken'] == None
+    assert response.json()[2]['validationToken'] == None
+    assert response.json()[2]['UserOfferers'][0]['validationToken'] == user_offerer3.validationToken
+    assert response.json()[2]['UserOfferers'][1]['validationToken'] == user_offerer5.validationToken
+    assert offerer4 not in response
 
-
-@pytest.mark.standalone
-@clean_database
-def test_pending_validation_return_requested_token_case_2(app):
-    # given
-    connexion_user = create_user(can_book_free_offers=False, password='p@55sw0rd', is_admin=True)
-    user_not_validated = create_user(email="user@user.pro", can_book_free_offers=False, is_admin=False, validation_token="token_for_user")
-    offerer_validated = create_offerer()
-    user_offerer_not_validated = create_user_offerer(user_not_validated, offerer_validated, validation_token='user_off_token')
-    venue_not_validated = create_venue(offerer_validated, siret=None, comment="comment because no siret", validation_token="venue_validation_token")
-    PcObject.check_and_save(connexion_user, offerer_validated, user_offerer_not_validated, user_not_validated, venue_not_validated)
-
-    auth_request = req_with_auth(email=connexion_user.email, password='p@55sw0rd')
-    
-    # when
-    response = auth_request.get(API_URL + '/exports/pending_validation')
-
-    # then
-    assert response.status_code == 200
-    assert response.json()[0]["validationToken"] == offerer_validated.validationToken
-    assert response.json()[0]["UserOfferers"][0]["validationToken"] == user_offerer_not_validated.validationToken
-    assert response.json()[0]["UserOfferers"][0]["user"]["validationToken"] == user_not_validated.validationToken
-    assert response.json()[0]["managedVenues"][0]["validationToken"] == venue_not_validated.validationToken
-
-
-@pytest.mark.standalone
-@clean_database
-def test_pending_validation_return_requested_token_case_3(app):
-    # given
-    connexion_user = create_user(can_book_free_offers=False, password='p@55sw0rd', is_admin=True)
-    user_not_validated = create_user(email="user@user.pro", can_book_free_offers=False, is_admin=False, validation_token="token_for_user")
-    offerer_not_validated = create_offerer(validation_token="this_offerer_has_a_token")
-    user_offerer_validated = create_user_offerer(user_not_validated, offerer_not_validated)
-    venue_not_validated = create_venue(offerer_not_validated, siret=None, comment="comment because no siret", validation_token="venue_validation_token")
-    PcObject.check_and_save(connexion_user, offerer_not_validated, user_offerer_validated, user_not_validated, venue_not_validated)
-
-    auth_request = req_with_auth(email=connexion_user.email, password='p@55sw0rd')
-    
-    # when
-    response = auth_request.get(API_URL + '/exports/pending_validation')
-
-    # then
-    assert response.status_code == 200
-    assert response.json()[0]["validationToken"] == offerer_not_validated.validationToken
-    assert response.json()[0]["UserOfferers"][0]["validationToken"] == user_offerer_validated.validationToken
-    assert response.json()[0]["UserOfferers"][0]["user"]["validationToken"] == user_not_validated.validationToken
-    assert response.json()[0]["managedVenues"][0]["validationToken"] == venue_not_validated.validationToken
-
-
-@pytest.mark.standalone
-@clean_database
-def test_pending_validation_return_requested_token_case_4(app):
-    # given
-    connexion_user = create_user(can_book_free_offers=False, password='p@55sw0rd', is_admin=True)
-    user_not_validated = create_user(email="user@user.pro", can_book_free_offers=False, is_admin=False, validation_token="token_for_user")
-    offerer_validated = create_offerer()
-    user_offerer_validated = create_user_offerer(user_not_validated, offerer_validated)
-    venue_not_validated = create_venue(offerer_validated, siret=None, comment="comment because no siret", validation_token="venue_validation_token")
-    PcObject.check_and_save(connexion_user, offerer_validated, user_offerer_validated, user_not_validated, venue_not_validated)
-
-    auth_request = req_with_auth(email=connexion_user.email, password='p@55sw0rd')
-    
-    # when
-    response = auth_request.get(API_URL + '/exports/pending_validation')
-
-    # then
-    assert response.status_code == 200
-    assert response.json()[0]["validationToken"] == offerer_validated.validationToken
-    assert response.json()[0]["UserOfferers"][0]["validationToken"] == user_offerer_validated.validationToken
-    assert response.json()[0]["UserOfferers"][0]["user"]["validationToken"] == user_not_validated.validationToken
-    assert response.json()[0]["managedVenues"][0]["validationToken"] == venue_not_validated.validationToken
-
-
-@pytest.mark.standalone
-@clean_database
-def test_pending_validation_return_requested_token_case_5(app):
-    # given
-    connexion_user = create_user(can_book_free_offers=False, password='p@55sw0rd', is_admin=True)
-    user_validated = create_user(email="user@user.pro", can_book_free_offers=False, is_admin=False)
-    offerer_not_validated = create_offerer(validation_token="this_offerer_has_a_token")
-    user_offerer_not_validated = create_user_offerer(user_validated, offerer_not_validated, validation_token='user_off_token')
-    venue_not_validated = create_venue(offerer_not_validated, siret=None, comment="comment because no siret", validation_token="venue_validation_token")
-    PcObject.check_and_save(connexion_user, offerer_not_validated, user_offerer_not_validated, user_validated, venue_not_validated)
-
-    auth_request = req_with_auth(email=connexion_user.email, password='p@55sw0rd')
-    
-    # when
-    response = auth_request.get(API_URL + '/exports/pending_validation')
-
-    # then
-    assert response.status_code == 200
-    assert response.json()[0]["validationToken"] == offerer_not_validated.validationToken
-    assert response.json()[0]["UserOfferers"][0]["validationToken"] == user_offerer_not_validated.validationToken
-    assert response.json()[0]["UserOfferers"][0]["user"]["validationToken"] == user_validated.validationToken
-    assert response.json()[0]["managedVenues"][0]["validationToken"] == venue_not_validated.validationToken
-
-
-@pytest.mark.standalone
-@clean_database
-def test_pending_validation_return_requested_token_case_6(app):
-    # given
-    connexion_user = create_user(can_book_free_offers=False, password='p@55sw0rd', is_admin=True)
-    user_validated = create_user(email="user@user.pro", can_book_free_offers=False, is_admin=False)
-    offerer_validated = create_offerer()
-    user_offerer_not_validated = create_user_offerer(user_validated, offerer_validated, validation_token='user_off_token')
-    venue_not_validated = create_venue(offerer_validated, siret=None, comment="comment because no siret", validation_token="venue_validation_token")
-    PcObject.check_and_save(connexion_user, offerer_validated, user_offerer_not_validated, user_validated, venue_not_validated)
-
-    auth_request = req_with_auth(email=connexion_user.email, password='p@55sw0rd')
-    
-    # when
-    response = auth_request.get(API_URL + '/exports/pending_validation')
-
-    # then
-    assert response.status_code == 200
-    assert response.json()[0]["validationToken"] == offerer_validated.validationToken
-    assert response.json()[0]["UserOfferers"][0]["validationToken"] == user_offerer_not_validated.validationToken
-    assert response.json()[0]["UserOfferers"][0]["user"]["validationToken"] == user_validated.validationToken
-    assert response.json()[0]["managedVenues"][0]["validationToken"] == venue_not_validated.validationToken
-
-
-@pytest.mark.standalone
-@clean_database
-def test_pending_validation_return_requested_token_case_7(app):
-    # given
-    connexion_user = create_user(can_book_free_offers=False, password='p@55sw0rd', is_admin=True)
-    user_validated = create_user(email="user@user.pro", can_book_free_offers=False, is_admin=False)
-    offerer_not_validated = create_offerer(validation_token="this_offerer_has_a_token")
-    user_offerer_validated = create_user_offerer(user_validated, offerer_not_validated)
-    venue_not_validated = create_venue(offerer_not_validated, siret=None, comment="comment because no siret", validation_token="venue_validation_token")
-    PcObject.check_and_save(connexion_user, offerer_not_validated, user_offerer_validated, user_validated, venue_not_validated)
-
-    auth_request = req_with_auth(email=connexion_user.email, password='p@55sw0rd')
-    
-    # when
-    response = auth_request.get(API_URL + '/exports/pending_validation')
-
-    # then
-    assert response.status_code == 200
-
-    assert response.json()[0]["validationToken"] == offerer_not_validated.validationToken
-    assert response.json()[0]["UserOfferers"][0]["validationToken"] == user_offerer_validated.validationToken
-    assert response.json()[0]["UserOfferers"][0]["user"]["validationToken"] == user_validated.validationToken
-    assert response.json()[0]["managedVenues"][0]["validationToken"] == venue_not_validated.validationToken
-
-
-@pytest.mark.standalone
-@clean_database
-def test_pending_validation_return_requested_token_case_8(app):
-    # given
-    connexion_user = create_user(can_book_free_offers=False, password='p@55sw0rd', is_admin=True)
-    user_validated = create_user(email="user@user.pro", can_book_free_offers=False, is_admin=False)
-    offerer_validated = create_offerer()
-    user_offerer_validated = create_user_offerer(user_validated, offerer_validated)
-    venue_not_validated = create_venue(offerer_validated, siret=None, comment="comment because no siret", validation_token="venue_validation_token")
-    PcObject.check_and_save(connexion_user, offerer_validated, user_offerer_validated, user_validated, venue_not_validated)
-
-    auth_request = req_with_auth(email=connexion_user.email, password='p@55sw0rd')
-    
-    # when
-    response = auth_request.get(API_URL + '/exports/pending_validation')
-
-    # then
-    assert response.status_code == 200
-    assert response.json()[0]["validationToken"] == offerer_validated.validationToken
-    assert response.json()[0]["UserOfferers"][0]["validationToken"] == user_offerer_validated.validationToken
-    assert response.json()[0]["UserOfferers"][0]["user"]["validationToken"] == user_validated.validationToken
-    assert response.json()[0]["managedVenues"][0]["validationToken"] == venue_not_validated.validationToken
-
-# --
-
-@pytest.mark.standalone
-@clean_database
-def test_pending_validation_return_requested_token_case_9(app):
-    # given
-    connexion_user = create_user(can_book_free_offers=False, password='p@55sw0rd', is_admin=True)
-    user_not_validated = create_user(email="user@user.pro", can_book_free_offers=False, is_admin=False, validation_token="token_for_user")
-    offerer_not_validated = create_offerer(validation_token="this_offerer_has_a_token")
-    user_offerer_not_validated = create_user_offerer(user_not_validated, offerer_not_validated, validation_token='user_off_token')
-    venue_validated = create_venue(offerer_not_validated)
-    PcObject.check_and_save(connexion_user, offerer_not_validated, user_offerer_not_validated, user_not_validated, venue_validated)
-
-    auth_request = req_with_auth(email=connexion_user.email, password='p@55sw0rd')
-    
-    # when
-    response = auth_request.get(API_URL + '/exports/pending_validation')
-
-    # then
-    assert response.status_code == 200
-    assert response.json()[0]["validationToken"] == offerer_not_validated.validationToken
-    assert response.json()[0]["UserOfferers"][0]["validationToken"] == user_offerer_not_validated.validationToken
-    assert response.json()[0]["UserOfferers"][0]["user"]["validationToken"] == user_not_validated.validationToken
-    assert response.json()[0]["managedVenues"][0]["validationToken"] == venue_validated.validationToken
-
-
-@pytest.mark.standalone
-@clean_database
-def test_pending_validation_return_requested_token_case_10(app):
-    # given
-    connexion_user = create_user(can_book_free_offers=False, password='p@55sw0rd', is_admin=True)
-    user_not_validated = create_user(email="user@user.pro", can_book_free_offers=False, is_admin=False, validation_token="token_for_user")
-    offerer_validated = create_offerer()
-    user_offerer_not_validated = create_user_offerer(user_not_validated, offerer_validated, validation_token='user_off_token')
-    venue_validated = create_venue(offerer_validated)
-    PcObject.check_and_save(connexion_user, offerer_validated, user_offerer_not_validated, user_not_validated, venue_validated)
-
-    auth_request = req_with_auth(email=connexion_user.email, password='p@55sw0rd')
-    
-    # when
-    response = auth_request.get(API_URL + '/exports/pending_validation')
-
-    # then
-    assert response.status_code == 200
-    assert response.json()[0]["validationToken"] == offerer_validated.validationToken
-    assert response.json()[0]["UserOfferers"][0]["validationToken"] == user_offerer_not_validated.validationToken
-    assert response.json()[0]["UserOfferers"][0]["user"]["validationToken"] == user_not_validated.validationToken
-    assert response.json()[0]["managedVenues"][0]["validationToken"] == venue_validated.validationToken
-
-
-@pytest.mark.standalone
-@clean_database
-def test_pending_validation_return_requested_token_case_11(app):
-    # given
-    connexion_user = create_user(can_book_free_offers=False, password='p@55sw0rd', is_admin=True)
-    user_not_validated = create_user(email="user@user.pro", can_book_free_offers=False, is_admin=False, validation_token="token_for_user")
-    offerer_not_validated = create_offerer(validation_token="this_offerer_has_a_token")
-    user_offerer_validated = create_user_offerer(user_not_validated, offerer_not_validated)
-    venue_validated = create_venue(offerer_not_validated)
-    PcObject.check_and_save(connexion_user, offerer_not_validated, user_offerer_validated, user_not_validated, venue_validated)
-
-    auth_request = req_with_auth(email=connexion_user.email, password='p@55sw0rd')
-    
-    # when
-    response = auth_request.get(API_URL + '/exports/pending_validation')
-
-    # then
-    assert response.status_code == 200
-    assert response.json()[0]["validationToken"] == offerer_not_validated.validationToken
-    assert response.json()[0]["UserOfferers"][0]["validationToken"] == user_offerer_validated.validationToken
-    assert response.json()[0]["UserOfferers"][0]["user"]["validationToken"] == user_not_validated.validationToken
-    assert response.json()[0]["managedVenues"][0]["validationToken"] == venue_validated.validationToken
-
-
-@pytest.mark.standalone
-@clean_database
-def test_pending_validation_return_requested_token_case_12(app):
-    # given
-    connexion_user = create_user(can_book_free_offers=False, password='p@55sw0rd', is_admin=True)
-    user_not_validated = create_user(email="user@user.pro", can_book_free_offers=False, is_admin=False, validation_token="token_for_user")
-    offerer_validated = create_offerer()
-    user_offerer_validated = create_user_offerer(user_not_validated, offerer_validated)
-    venue_validated = create_venue(offerer_validated)
-    PcObject.check_and_save(connexion_user, offerer_validated, user_offerer_validated, user_not_validated, venue_validated)
-
-    auth_request = req_with_auth(email=connexion_user.email, password='p@55sw0rd')
-    
-    # when
-    response = auth_request.get(API_URL + '/exports/pending_validation')
-
-    # then
-    assert response.status_code == 200
-    assert response.json()[0]["validationToken"] == offerer_validated.validationToken
-    assert response.json()[0]["UserOfferers"][0]["validationToken"] == user_offerer_validated.validationToken
-    assert response.json()[0]["UserOfferers"][0]["user"]["validationToken"] == user_not_validated.validationToken
-    assert response.json()[0]["managedVenues"][0]["validationToken"] == venue_validated.validationToken
-
-
-@pytest.mark.standalone
-@clean_database
-def test_pending_validation_return_requested_token_case_13(app):
-    # given
-    connexion_user = create_user(can_book_free_offers=False, password='p@55sw0rd', is_admin=True)
-    user_validated = create_user(email="user@user.pro", can_book_free_offers=False, is_admin=False)
-    offerer_not_validated = create_offerer(validation_token="this_offerer_has_a_token")
-    user_offerer_not_validated = create_user_offerer(user_validated, offerer_not_validated, validation_token='user_off_token')
-    venue_validated = create_venue(offerer_not_validated)
-    PcObject.check_and_save(connexion_user, offerer_not_validated, user_offerer_not_validated, user_validated, venue_validated)
-
-    auth_request = req_with_auth(email=connexion_user.email, password='p@55sw0rd')
-    
-    # when
-    response = auth_request.get(API_URL + '/exports/pending_validation')
-
-    # then
-    assert response.status_code == 200
-    assert response.json()[0]["validationToken"] == offerer_not_validated.validationToken
-    assert response.json()[0]["UserOfferers"][0]["validationToken"] == user_offerer_not_validated.validationToken
-    assert response.json()[0]["UserOfferers"][0]["user"]["validationToken"] == user_validated.validationToken
-    assert response.json()[0]["managedVenues"][0]["validationToken"] == venue_validated.validationToken
-
-
-@pytest.mark.standalone
-@clean_database
-def test_pending_validation_return_requested_token_case_14(app):
-    # given
-    connexion_user = create_user(can_book_free_offers=False, password='p@55sw0rd', is_admin=True)
-    user_validated = create_user(email="user@user.pro", can_book_free_offers=False, is_admin=False)
-    offerer_validated = create_offerer()
-    user_offerer_not_validated = create_user_offerer(user_validated, offerer_validated, validation_token='user_off_token')
-    venue_validated = create_venue(offerer_validated)
-    PcObject.check_and_save(connexion_user, offerer_validated, user_offerer_not_validated, user_validated, venue_validated)
-
-    auth_request = req_with_auth(email=connexion_user.email, password='p@55sw0rd')
-    
-    # when
-    response = auth_request.get(API_URL + '/exports/pending_validation')
-
-    # then
-    assert response.status_code == 200
-    assert response.json()[0]["validationToken"] == offerer_validated.validationToken
-    assert response.json()[0]["UserOfferers"][0]["validationToken"] == user_offerer_not_validated.validationToken
-    assert response.json()[0]["UserOfferers"][0]["user"]["validationToken"] == user_validated.validationToken
-    assert response.json()[0]["managedVenues"][0]["validationToken"] == venue_validated.validationToken
-
-
-@pytest.mark.standalone
-@clean_database
-def test_pending_validation_return_requested_token_case_15(app):
-    # given
-    connexion_user = create_user(can_book_free_offers=False, password='p@55sw0rd', is_admin=True)
-    user_validated = create_user(email="user@user.pro", can_book_free_offers=False, is_admin=False)
-    offerer_not_validated = create_offerer(validation_token="this_offerer_has_a_token")
-    user_offerer_validated = create_user_offerer(user_validated, offerer_not_validated)
-    venue_validated = create_venue(offerer_not_validated)
-    PcObject.check_and_save(connexion_user, offerer_not_validated, user_offerer_validated, user_validated, venue_validated)
-
-    auth_request = req_with_auth(email=connexion_user.email, password='p@55sw0rd')
-    
-    # when
-    response = auth_request.get(API_URL + '/exports/pending_validation')
-
-    # then
-    assert response.status_code == 200
-    assert response.json()[0]["validationToken"] == offerer_not_validated.validationToken
-    assert response.json()[0]["UserOfferers"][0]["validationToken"] == user_offerer_validated.validationToken
-    assert response.json()[0]["UserOfferers"][0]["user"]["validationToken"] == user_validated.validationToken
-    assert response.json()[0]["managedVenues"][0]["validationToken"] == venue_validated.validationToken
-
-
-@pytest.mark.standalone
-@clean_database
-def test_pending_validation_return_requested_token_case_16(app):
-    # given
-    connexion_user = create_user(can_book_free_offers=False, password='p@55sw0rd', is_admin=True)
-    user_validated = create_user(email="user@user.pro", can_book_free_offers=False, is_admin=False)
-    offerer_validated = create_offerer()
-    user_offerer_validated = create_user_offerer(user_validated, offerer_validated)
-    venue_validated = create_venue(offerer_validated)
-    PcObject.check_and_save(connexion_user, offerer_validated, user_offerer_validated, user_validated, venue_validated)
-
-    auth_request = req_with_auth(email=connexion_user.email, password='p@55sw0rd')
-    
-    # when
-    response = auth_request.get(API_URL + '/exports/pending_validation')
-    # then
-    assert response.status_code == 200
-    assert response.json() == []
 
 
 @pytest.mark.standalone

@@ -73,13 +73,19 @@ def find_all_offerers_with_venue():
 
 
 def find_all_pending_validation():
-    return Offerer.query \
+    user_offerer_pending_validation = UserOfferer.validationToken != None
+    offerer_pending_validation = Offerer.validationToken != None
+    venue_pending_validation = Venue.validationToken != None
+    user_pending_validation = User.validationToken != None
+
+    result = Offerer.query \
         .join(UserOfferer) \
         .join(Venue) \
         .join(User) \
-        .filter(or_(UserOfferer.validationToken != None, Offerer.validationToken != None, Venue.validationToken != None, User.validationToken != None)) \
+        .filter(or_(user_offerer_pending_validation, offerer_pending_validation, venue_pending_validation, user_pending_validation)) \
         .order_by(Offerer.id).all()
 
+    return result
 
 def find_first_by_user_offerer_id(user_offerer_id):
     return Offerer.query.join(UserOfferer).filter_by(id=user_offerer_id).first()

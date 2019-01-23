@@ -214,7 +214,7 @@ VENUE_PROVIDER_INCLUDES = [
 
 
 
-OFFERER_INCLUDES_FOR_ADMIN = [
+OFFERER__FOR_PENDING_VALIDATION_INCLUDES = [
     "validationToken",
     "-firstThumbDominantColor",
     "-thumbCount",
@@ -252,6 +252,7 @@ OFFERER_INCLUDES_FOR_ADMIN = [
                 'postalCode': element['postalCode'],
                 'city': element['city'],
                 'departementCode': element['departementCode'], 
+                'comment': element['comment'], 
                 'validationToken': element['validationToken']
             })
     }
