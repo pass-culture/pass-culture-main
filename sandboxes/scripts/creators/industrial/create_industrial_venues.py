@@ -23,33 +23,60 @@ def create_industrial_venues(offerers_by_name):
     iban_prefix = 'FR7630001007941234567890185'
     bic_prefix, bic_suffix = 'QSDFGH8Z', 556
 
+    iban_count = 0
+
     offerer_items = offerers_by_name.items()
     for (offerer_index, (offerer_name, offerer))  in enumerate(offerer_items):
         geoloc_match = re.match(r'(.*)lat\:(.*) lon\:(.*)', offerer_name)
 
         venue_name = MOCK_NAMES[mock_index%len(MOCK_NAMES)]
 
-        if offerer_index%4:
-            iban = iban_prefix
-            bic = bic_prefix + str(bic_suffix)
+        # create all possible case
+        # offerer with or without iban / venue with or without iban
+        if offerer.iban:
+            if iban_count == 0:
+                iban = iban_prefix
+                bic = bic_prefix + str(bic_suffix)
+                iban_count = 1
+            elif iban_count == 2:
+                iban = None
+                bic = None
+                iban_count = 3
         else:
-            iban = None
-            bic = None
+            if iban_count == 1:
+                iban = iban_prefix
+                bic = bic_prefix + str(bic_suffix)
+                iban_count = 2
+            elif iban_count == 3:
+                iban = None
+                bic = None
+                iban_count = 0
 
-        venue_by_name[offerer_name] = create_venue(
-            offerer,
-            address=offerer.address,
-            bic=bic,
-            booking_email="fake@email.com",
-            city=offerer.city,
-            comment="Pas de siret car je suis un mock.",
-            iban=iban,
-            latitude=float(geoloc_match.group(2)),
-            longitude=float(geoloc_match.group(3)),
-            name=venue_name,
-            postal_code=offerer.postalCode,
-            siret=None
-        )
+        # every 5 offerer, create an offerer without physical venue
+        if offerer_index%5 != 0:
+
+            # create half venue with siret / half without
+            if offerer_index%10:
+                comment = "Pas de siret car je suis un mock."
+                siret = None
+            else:
+                comment = None
+                siret = offerer.siren + '11111'
+
+            venue_by_name[offerer_name] = create_venue(
+                offerer,
+                address=offerer.address,
+                bic=bic,
+                booking_email="fake@email.com",
+                city=offerer.city,
+                comment=comment,
+                iban=iban,
+                latitude=float(geoloc_match.group(2)),
+                longitude=float(geoloc_match.group(3)),
+                name=venue_name,
+                postal_code=offerer.postalCode,
+                siret=siret
+            )
 
         bic_suffix += 1
         mock_index += 1

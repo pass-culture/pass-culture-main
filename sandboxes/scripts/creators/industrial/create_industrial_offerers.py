@@ -38,6 +38,7 @@ def create_industrial_offerers(
             location['longitude']
         )
 
+        # create half with iban and half with no iban
         if location_index%2:
             iban = iban_prefix
             bic = bic_prefix + str(bic_suffix)
