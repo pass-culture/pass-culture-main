@@ -35,11 +35,14 @@ def list_offerers():
     if not current_user.isAdmin:
         if only_validated_offerers:
             query = filter_query_where_user_is_user_offerer_and_is_validated(
-                query.join(Venue).join(Offerer),
+                query,
                 current_user
             )
         else:
-            query = filter_query_where_user_is_user_offerer_and_is_not_validated(query, current_user)
+            query = filter_query_where_user_is_user_offerer_and_is_not_validated(
+                query,
+                current_user
+            )
 
     keywords = request.args.get('keywords')
     if keywords is not None:
