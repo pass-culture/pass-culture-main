@@ -109,21 +109,18 @@ def _date_interval_to_filter(date_interval):
     return ((EventOccurrence.beginningDatetime >= date_interval[0]) & \
             (EventOccurrence.beginningDatetime <= date_interval[1]))
 
-def filter_offers_with_keywords_string(query, keywords_string, do_join_venue=True):
+def filter_offers_with_keywords_string(query, keywords_string):
     keywords_filter = create_filter_matching_all_keywords_in_any_model(
         get_filter_matching_ts_query_for_offer,
         keywords_string
     )
 
     query = query.outerjoin(Event) \
-                 .outerjoin(Thing)
+                 .outerjoin(Thing) \
+                 .join(Venue) \
+                 .join(Offerer) \
+                 .filter(keywords_filter)
 
-    if do_join_venue:
-        query = query.join(Venue) \
-                     .join(Offerer)
-
-    query = query.filter(keywords_filter) \
-                 .reset_joinpoint()
     return query
 
 def get_offers_for_recommendations_search(
@@ -182,7 +179,7 @@ def get_offers_for_recommendations_search(
     return offers
 
 
-def find_by_venue_id_or_offerer_id_and_keywords_string_offers_where_user_has_rights(
+def find_offers_with_filter_parameters(
         user,
         offerer_id=None,
         venue_id=None,
@@ -190,25 +187,22 @@ def find_by_venue_id_or_offerer_id_and_keywords_string_offers_where_user_has_rig
 ):
     query = Offer.query
 
-
     if venue_id is not None:
         query = query.filter_by(venueId=venue_id)
-
-    if offerer_id is not None or not user.isAdmin or keywords_string is not None:
-        query = query.join(Venue) \
-                     .join(Offerer)
-
-    if offerer_id is not None:
-        query = query.filter_by(id=offerer_id)
-
-    elif not user.isAdmin:
-        query = filter_query_where_user_is_user_offerer_and_is_validated(query, user)
 
     if keywords_string is not None:
         query = filter_offers_with_keywords_string(
             query,
-            keywords_string,
-            do_join_venue=False
+            keywords_string
+        )
+
+    if offerer_id is not None:
+        query = query.filter_by(managingOffererId=offerer_id)
+
+    if not user.isAdmin:
+        query = filter_query_where_user_is_user_offerer_and_is_validated(
+            query.reset_joinpoint(),
+            user
         )
 
     return query

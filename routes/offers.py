@@ -11,7 +11,7 @@ from models import ApiErrors, Offer, PcObject, Recommendation, \
 from models.db import db
 from repository import venue_queries, offer_queries
 from repository.offer_queries import find_activation_offers, \
-                                     find_by_venue_id_or_offerer_id_and_keywords_string_offers_where_user_has_rights
+                                     find_offers_with_filter_parameters
 from utils.human_ids import dehumanize
 from utils.includes import OFFER_INCLUDES
 from utils.rest import ensure_current_user_has_rights, \
@@ -31,7 +31,7 @@ def list_offers():
     check_venue_exists_when_requested(venue, venue_id)
     check_user_has_rights_for_query(offerer_id, venue, venue_id)
 
-    query = find_by_venue_id_or_offerer_id_and_keywords_string_offers_where_user_has_rights(
+    query = find_offers_with_filter_parameters(
         current_user,
         offerer_id=offerer_id,
         venue_id=venue_id,

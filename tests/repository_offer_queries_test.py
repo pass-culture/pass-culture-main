@@ -6,7 +6,7 @@ from models import Thing, PcObject, Event
 from models.offer_type import EventType, ThingType
 from repository.offer_queries import departement_or_national_offers, \
                                      find_activation_offers, \
-                                     find_by_venue_id_or_offerer_id_and_keywords_string_offers_where_user_has_rights, \
+                                     find_offers_with_filter_parameters, \
                                      get_offers_for_recommendations_search, \
                                      get_active_offers_by_type
 from tests.conftest import clean_database
@@ -397,7 +397,7 @@ def test_find_activation_offers_returns_activation_offers_with_future_booking_li
 
 @clean_database
 @pytest.mark.standalone
-def test_find_by_venue_id_or_offerer_id_and_keywords_string_offers_where_user_has_rights(app):
+def test_find_offers_with_filter_parameters(app):
     user = create_user(email='offerer@email.com')
     offerer1 = create_offerer(siren='123456789')
     offerer2 = create_offerer(siren='987654321')
@@ -423,7 +423,7 @@ def test_find_by_venue_id_or_offerer_id_and_keywords_string_offers_where_user_ha
     )
 
     # when
-    offers = find_by_venue_id_or_offerer_id_and_keywords_string_offers_where_user_has_rights(
+    offers = find_offers_with_filter_parameters(
         user,
         venue_id=venue1.id,
         keywords_string='Jacq Rencon'
