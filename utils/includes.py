@@ -132,6 +132,7 @@ RECOMMENDATION_INCLUDES = [
 
 BOOKING_INCLUDES = [
     "completedUrl",
+    "isUserCancellable",
     {
         "key": "stock",
         "sub_joins":
