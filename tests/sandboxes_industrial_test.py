@@ -23,12 +23,12 @@ def test_save_industrial_sandbox(app):
             Event=8,
             EventOccurrence=144,
             Mediation=116,
-            Offer=114,
-            Offerer=6,
+            Offer=152,
+            Offerer=10,
             Recommendation=96,
             Stock=192,
             Thing=11,
             User=20,
-            UserOfferer=60,
-            Venue=12
+            UserOfferer=100,
+            Venue=18
         )

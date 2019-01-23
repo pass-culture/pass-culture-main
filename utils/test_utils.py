@@ -291,7 +291,8 @@ def create_event(
 def create_thing_offer(venue, thing=None, date_created=datetime.utcnow(), booking_email='booking.email@test.com',
                        thing_type=ThingType.AUDIOVISUEL, thing_name='Test Book', media_urls=['test/urls'],
                        author_name='Test Author',
-                       thumb_count=1, dominant_color=None, url=None, is_national=False, is_active=True):
+                       thumb_count=1, dominant_color=None, url=None, is_national=False, is_active=True,
+                       id_at_providers=None):
     offer = Offer()
     if thing:
         offer.thing = thing
@@ -304,8 +305,11 @@ def create_thing_offer(venue, thing=None, date_created=datetime.utcnow(), bookin
     offer.bookingEmail = booking_email
     offer.isActive = is_active
 
-    if venue is not None:
+    if id_at_providers:
+        offer.id_at_providers = id_at_providers
+    elif venue is not None:
         offer.idAtProviders = "%s@%s" % (offer.thing.idAtProviders, venue.siret or venue.id)
+
     return offer
 
 
@@ -632,6 +636,7 @@ def saveCounts(app):
 def assertCreatedCounts(app, **counts):
     for modelName in counts:
         model = getattr(models, modelName)
+        print(modelName, model.query.count() - savedCounts[modelName], counts[modelName])
         assert model.query.count() - savedCounts[modelName] \
                == counts[modelName]
 
@@ -682,4 +687,3 @@ def check_open_agenda_api_is_down():
     unsuccessful_request = ('success' in response_json) and not response_json['success']
     status_code_not_200 = (response.status_code != 200)
     return unsuccessful_request or status_code_not_200
-

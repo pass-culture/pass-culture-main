@@ -11,6 +11,8 @@ def create_industrial_thing_offers(
 
     thing_offers_by_name = {}
 
+    id_at_providers = 1234
+
     for offerer in offerers_by_name.values():
 
         physical_venues = [
@@ -34,8 +36,11 @@ def create_industrial_thing_offers(
                 thing_offers_by_name[name] = create_thing_offer(
                     thing_venue,
                     thing=thing,
-                    thing_type=thing.type
+                    thing_type=thing.type,
+                    id_at_providers=id_at_providers
                 )
+
+                id_at_providers += 1
 
     PcObject.check_and_save(*thing_offers_by_name.values())
 

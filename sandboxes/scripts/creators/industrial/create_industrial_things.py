@@ -40,6 +40,8 @@ def create_industrial_things():
         if t['type'] == 'Thing'
     ]
 
+    id_at_providers = 1234
+
     for (thing_index, thing_type_dict) in enumerate(thing_type_dicts):
 
         mock_index = thing_index % len(MOCK_NAMES)
@@ -50,11 +52,14 @@ def create_industrial_things():
         things_by_name[name] = create_thing(
             author_name=MOCK_AUTHOR_NAMES[mock_index],
             description=MOCK_DESCRIPTIONS[mock_index],
+            id_at_providers=str(id_at_providers),
             is_national=is_national,
             thing_name=MOCK_NAMES[mock_index],
             thing_type=thing_type_dict['value'],
             url=url
         )
+
+        id_at_providers += 1
 
     PcObject.check_and_save(*things_by_name.values())
 
