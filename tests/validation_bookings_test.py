@@ -65,6 +65,18 @@ class CheckExpenseLimitTest:
 
 @pytest.mark.standalone
 class CheckBookingIsCancellableTest:
+    def test_raises_api_error_when_offerer_cancellation_and_used_booking(self):
+        # Given
+        booking = Booking()
+        booking.isUsed = True
+
+        # When
+        with pytest.raises(ApiErrors) as e:
+            check_booking_is_cancellable(booking, is_user_cancellation=False)
+
+        # Then
+        assert e.value.errors['booking'] == ["Impossible d\'annuler une réservation consommée"]
+
     def test_raises_api_error_when_user_cancellation_and_event_in_less_than_72h(self):
         # Given
         booking = Booking()
