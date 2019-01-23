@@ -401,7 +401,7 @@ def test_find_offers_with_filter_parameters(app):
     user = create_user(email='offerer@email.com')
     offerer1 = create_offerer(siren='123456789')
     offerer2 = create_offerer(siren='987654321')
-    offerer3 = create_offerer(siren='123456780')
+    ko_offerer3 = create_offerer(siren='123456780')
     user_offerer1 = create_user_offerer(user, offerer1)
     user_offerer2 = create_user_offerer(user, offerer2)
 
@@ -412,13 +412,13 @@ def test_find_offers_with_filter_parameters(app):
     offerer = create_offerer()
     venue1 = create_venue(offerer1, name='Bataclan', city='Paris', siret=offerer.siren + '12345')
     venue2 = create_venue(offerer2, name='Librairie la Rencontre', city='Saint Denis', siret=offerer.siren + '54321')
-    venue3 = create_venue(offerer3, name='Une librairie du méchant concurrent gripsou', city='Saint Denis', siret=offerer3.siren + '54321')
+    ko_venue3 = create_venue(ko_offerer3, name='Une librairie du méchant concurrent gripsou', city='Saint Denis', siret=offerer3.siren + '54321')
     ok_offer1 = create_event_offer(venue1, ok_event1)
     ko_offer2 = create_event_offer(venue1, event2)
-    ko_offer3 = create_thing_offer(venue3, thing1)
+    ko_offer3 = create_thing_offer(ko_venue3, thing1)
     ko_offer4 = create_thing_offer(venue2, thing2)
     PcObject.check_and_save(
-        user_offerer1, user_offerer2, offerer3,
+        user_offerer1, user_offerer2, ko_offerer3,
         ok_offer1, ko_offer2, ko_offer3, ko_offer4
     )
 
