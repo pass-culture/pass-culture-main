@@ -20,7 +20,8 @@
     margin-bottom: 0.5rem;
 
     p {
-      font-size: $size-normal;
+      font-size: 13px;
+      font-weight: normal;
     }
 
     .inline {
@@ -28,6 +29,10 @@
       align-items: baseline;
       justify-content: space-between;
     }
+  }
+
+  label[for='user-contact_ok'] .subtitle {
+    font-size: 16px;
   }
 
   h4 {

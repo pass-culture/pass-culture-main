@@ -18,7 +18,7 @@ const FormInputs = ({ formValues, formErrors, isLoading }) => {
               Pour commencer, choisissez votre mot de passe.
             </span>
           </h2>
-          <p className="is-block is-regular fs13 mt18">
+          <p className="is-block is-regular fs13 mt12">
             <span>*</span>
             &nbsp;Champs obligatoires
           </p>

@@ -2,6 +2,15 @@
   .pc-final-form-label {
     @extend .fs19;
   }
+
+  .pc-final-form-input {
+    @extend .fs20;
+    @extend .is-bold;
+  }
+
+  label[for='activation-newPassword'] .pc-final-form-label {
+    padding: 0;
+  }
 }
 
 #activation-events-page {
