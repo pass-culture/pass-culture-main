@@ -165,18 +165,18 @@ class CreateBookingTest:
         # Given
         offerer = create_offerer('819202819', '1 Fake Address', 'Fake city', '93000', 'Fake offerer')
         venue = create_venue(offerer, 'venue name', 'booking@email.com', '1 fake street', '93000', 'False city', '93')
-        thing_offer = create_thing_offer(venue)
+        event_offer = create_event_offer(venue)
 
         user = create_user(email='test@email.com', password='mdppsswd')
         PcObject.check_and_save(user)
 
-        stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=50, available=1)
+        stock = create_stock_with_event_offer(offerer, venue, event_offer, price=50, available=1)
         PcObject.check_and_save(stock)
 
         booking = create_booking(user, stock, venue, is_cancelled=True)
         PcObject.check_and_save(booking)
 
-        recommendation = create_recommendation(thing_offer, user)
+        recommendation = create_recommendation(event_offer, user)
         PcObject.check_and_save(recommendation)
 
         deposit = create_deposit(user, datetime.utcnow(), amount=50)
@@ -558,7 +558,7 @@ class CreateBookingTest:
 
 
 @pytest.mark.standalone
-class CancelBookingTest:
+class PatchBookingTest:
     @clean_database
     def test_cannot_cancel_used_booking(self, app):
         # Given
@@ -580,7 +580,7 @@ class CancelBookingTest:
         assert not booking.isCancelled
 
     @clean_database
-    def test_returns_400_when_it_is_not_is_cancelled_true_key(self, app):
+    def test_returns_400_when_trying_to_patch_something_else_than_is_cancelled(self, app):
         # Given
         user = create_user(email='test@email.com', password='testpsswd')
         deposit_date = datetime.utcnow() - timedelta(minutes=2)
@@ -598,7 +598,7 @@ class CancelBookingTest:
         assert booking.quantity == 1
 
     @clean_database
-    def test_returns_400_when_is_cancelled_false_key(self, app):
+    def test_returns_400_when_trying_to_set_is_cancelled_to_false(self, app):
         # Given
         user = create_user(email='test@email.com', password='testpsswd')
         deposit_date = datetime.utcnow() - timedelta(minutes=2)
@@ -617,12 +617,19 @@ class CancelBookingTest:
         assert booking.isCancelled
 
     @clean_database
-    def test_returns_200_and_effectively_marks_the_booking_as_cancelled(self, app):
+    def test_returns_200_and_effectively_marks_the_booking_as_cancelled_when_valid_usecase(self, app):
         # Given
+        in_four_days = datetime.utcnow() + timedelta(days=4)
+        in_five_days = datetime.utcnow() + timedelta(days=5)
         user = create_user(email='test@email.com', password='testpsswd')
         deposit_date = datetime.utcnow() - timedelta(minutes=2)
         deposit = create_deposit(user, deposit_date, amount=500)
-        booking = create_booking(user)
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_event_offer(venue)
+        event_occurrence = create_event_occurrence(offer, beginning_datetime=in_four_days, end_datetime=in_five_days)
+        stock = create_stock_from_event_occurrence(event_occurrence)
+        booking = create_booking(user, stock, venue)
         PcObject.check_and_save(user, deposit, booking)
 
         # When
