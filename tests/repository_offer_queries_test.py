@@ -412,7 +412,7 @@ def test_find_offers_with_filter_parameters(app):
     offerer = create_offerer()
     venue1 = create_venue(offerer1, name='Bataclan', city='Paris', siret=offerer.siren + '12345')
     venue2 = create_venue(offerer2, name='Librairie la Rencontre', city='Saint Denis', siret=offerer.siren + '54321')
-    ko_venue3 = create_venue(ko_offerer3, name='Une librairie du méchant concurrent gripsou', city='Saint Denis', siret=offerer3.siren + '54321')
+    ko_venue3 = create_venue(ko_offerer3, name='Une librairie du méchant concurrent gripsou', city='Saint Denis', siret=ko_offerer3.siren + '54321')
     ok_offer1 = create_event_offer(venue1, ok_event1)
     ko_offer2 = create_event_offer(venue1, event2)
     ko_offer3 = create_thing_offer(ko_venue3, thing1)
