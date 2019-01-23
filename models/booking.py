@@ -1,5 +1,5 @@
 """ booking model """
-from datetime import datetime
+from datetime import datetime, timedelta
 from sqlalchemy import BigInteger, \
     Boolean, \
     Column, \
@@ -86,10 +86,18 @@ class Booking(PcObject,
             return None
         if not url.startswith('http'):
             url = "http://" + url
-        return url.replace('{token}', self.token)\
-                  .replace('{offerId}', humanize(offer.id))\
-                  .replace('{email}', self.user.email)
+        return url.replace('{token}', self.token) \
+            .replace('{offerId}', humanize(offer.id)) \
+            .replace('{email}', self.user.email)
 
+    @property
+    def isUserCancellable(self):
+        if self.stock.eventOccurrence:
+            event_starts_in_more_than_72_hours = self.stock.eventOccurrence.beginningDatetime > datetime.utcnow() + timedelta(
+                hours=72)
+            return event_starts_in_more_than_72_hours
+        else:
+            return False
 
 
 Booking.trig_ddl = """
