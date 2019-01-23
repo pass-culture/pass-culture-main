@@ -253,7 +253,10 @@ describe('src | components | pages | SearchPageContent', () => {
           const argument1 = {
             categories: null,
             date: null,
+            distance: null,
             jours: null,
+            latitude: null,
+            longitude: null,
             'mots-cles': null,
             page: null,
           }
