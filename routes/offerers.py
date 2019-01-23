@@ -4,7 +4,7 @@ from flask_login import current_user, login_required
 from domain.admin_emails import maybe_send_offerer_validation_email
 from domain.discard_pc_objects import invalidate_recommendations_if_deactivating_object
 from domain.reimbursement import find_all_booking_reimbursement
-from models import Offerer, PcObject, RightsType
+from models import Offerer, PcObject, RightsType, Venue
 from models.venue import create_digital_venue
 from repository.booking_queries import find_offerer_bookings
 from repository.offerer_queries import find_all_recommendations_for_offerer,\
@@ -34,7 +34,10 @@ def list_offerers():
 
     if not current_user.isAdmin:
         if only_validated_offerers:
-            query = filter_query_where_user_is_user_offerer_and_is_validated(query, current_user)
+            query = filter_query_where_user_is_user_offerer_and_is_validated(
+                query.join(Venue).join(Offerer),
+                current_user
+            )
         else:
             query = filter_query_where_user_is_user_offerer_and_is_not_validated(query, current_user)
 

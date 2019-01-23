@@ -201,7 +201,7 @@ def find_offers_with_filter_parameters(
 
     if not user.isAdmin:
         query = filter_query_where_user_is_user_offerer_and_is_validated(
-            query.reset_joinpoint(),
+            query,
             user
         )
 
