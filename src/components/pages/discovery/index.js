@@ -109,15 +109,12 @@ export class RawDiscoveryPage extends React.PureComponent {
                 key="route-discovery-deck"
                 path="/decouverte/:offerId/:mediationId?"
                 render={route => (
-                  <Deck
-                    {...route}
-                    handleDataRequest={this.handleDataRequest}
-                  />
+                  <Deck {...route} handleDataRequest={this.handleDataRequest} />
                 )}
               />
               <Route
                 key="route-discovery-booking"
-                path="/decouverte/:offerId/:mediationId?/:view(booking|verso)"
+                path="/decouverte/:offerId/:mediationId?/:view(booking|verso|cancelled)/:bookingId?"
                 render={route => <Booking {...route} />}
               />
             </Fragment>

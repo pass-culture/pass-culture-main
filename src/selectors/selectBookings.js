@@ -28,4 +28,10 @@ export const selectOtherBookings = createSelector(
   (allBookings, soonBookings) => difference(allBookings, soonBookings)
 )
 
+export const selectBookingById = createSelector(
+  state => state.data.bookings,
+  (state, bookingId) => bookingId,
+  (bookings, bookingId) => bookings.find(o => o.id === bookingId)
+)
+
 export default selectBookings

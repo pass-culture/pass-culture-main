@@ -58,7 +58,8 @@ const routes = [
     icon: 'offres-w',
     // exemple d'URL optimale qui peut être partagée
     // par les sous composants
-    path: '/decouverte/:offerId?/:mediationId?/:view(booking|verso)?',
+    path:
+      '/decouverte/:offerId?/:mediationId?/:view(booking|verso|cancelled)?/:bookingId?',
     title: 'Les offres',
   },
   {
