@@ -6,12 +6,31 @@ import { compose } from 'redux'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { Link, withRouter } from 'react-router-dom'
+import { requestData } from 'pass-culture-shared'
 
 import Price from '../layout/Price'
 import Finishable from '../layout/Finishable'
 import { isRecommendationFinished } from '../../helpers'
+import { openSharePopin, closeSharePopin } from '../../reducers/share'
 import { selectBookings } from '../../selectors/selectBookings'
 import currentRecommendation from '../../selectors/currentRecommendation'
+
+export const getButton = (label, onClick) => (
+  <button
+    type="button"
+    key={label}
+    className="no-border no-background no-outline is-block py12 is-bold fs14"
+    onClick={onClick}
+  >
+    <span>{label}</span>
+  </button>
+)
+
+export const getBookingName = booking =>
+  booking.stock.resolvedOffer.eventOrThing.name
+
+export const getMediationId = booking => booking.recommendation.mediationId
+export const getOfferId = booking => booking.recommendation.offerId
 
 class VersoBookingButton extends React.PureComponent {
   renderBookingLink = () => {
@@ -25,11 +44,87 @@ class VersoBookingButton extends React.PureComponent {
     )
   }
 
-  renderOfflineButton = () => (
+  onCancelSuccess = booking => {
+    const { dispatch, history } = this.props
+    dispatch(closeSharePopin())
+
+    const offerId = getOfferId(booking)
+    const mediationId = getMediationId(booking)
+    history.push(
+      `/decouverte/${offerId}/${mediationId}/cancelled/${booking.id}`
+    )
+  }
+
+  onCancelFailure = (state, request) => {
+    const { dispatch } = this.props
+    const message = get(request, 'errors.booking') || [
+      'Une erreur inconnue sest produite',
+    ]
+
+    const options = {
+      buttons: [
+        getButton('OK', () => {
+          dispatch(closeSharePopin())
+        }),
+      ],
+      text: message.join('\n'),
+      title: 'Annulation impossible',
+    }
+    dispatch(openSharePopin(options))
+  }
+
+  onCancelYes = booking => () => {
+    const { dispatch } = this.props
+    dispatch(
+      requestData('PATCH', `bookings/${booking.id}`, {
+        body: { isCancelled: true },
+        handleFail: this.onCancelFailure,
+        handleSuccess: () => this.onCancelSuccess(booking),
+      })
+    )
+  }
+
+  onCancelNo = () => () => {
+    const { dispatch } = this.props
+    dispatch(closeSharePopin())
+  }
+
+  openCancelPopin = booking => {
+    const { dispatch } = this.props
+    const options = {
+      buttons: [
+        getButton('Oui', this.onCancelYes(booking)),
+        getButton('Non', this.onCancelNo()),
+      ],
+      text: 'Souhaitez vous réellement annuler cette réservation ?',
+      title: getBookingName(booking),
+    }
+    dispatch(openSharePopin(options))
+  }
+
+  renderOfflineCancelableButton = booking => (
+    <button
+      type="button"
+      className="cancel-button"
+      onClick={() => this.openCancelPopin(booking)}
+    >
+      Annuler
+    </button>
+  )
+
+  renderOfflineNotCancelableButton = () => (
     <Link to="/reservations" className="button is-primary is-medium">
       Réservé
     </Link>
   )
+
+  renderOfflineButton = booking => {
+    if (booking.isUserCancellable) {
+      return this.renderOfflineCancelableButton(booking)
+    }
+
+    return this.renderOfflineNotCancelableButton()
+  }
 
   renderOnlineButton = () => {
     const { booking } = this.props
@@ -52,7 +147,7 @@ class VersoBookingButton extends React.PureComponent {
     return (
       <React.Fragment>
         {booking && onlineOfferUrl && this.renderOnlineButton()}
-        {booking && !onlineOfferUrl && this.renderOfflineButton()}
+        {booking && !onlineOfferUrl && this.renderOfflineButton(booking)}
         {!booking && !isFinished && this.renderBookingLink()}
         {!booking && isFinished && (
           <Finishable finished>{this.renderBookingLink()}</Finishable>
@@ -70,6 +165,8 @@ VersoBookingButton.defaultProps = {
 
 VersoBookingButton.propTypes = {
   booking: PropTypes.object,
+  dispatch: PropTypes.func.isRequired,
+  history: PropTypes.object.isRequired,
   isFinished: PropTypes.bool,
   offer: PropTypes.object,
   url: PropTypes.string.isRequired,

@@ -36,5 +36,14 @@ ul.verso-control {
         margin-right: 5px;
       }
     }
+    .cancel-button {
+      background: transparent;
+      color: white;
+      font-weight: bold;
+      font-size: 18px;
+      border: 2px solid white;
+      border-left-style: dotted;
+      padding: 5px 10px;
+    }
   }
 }
