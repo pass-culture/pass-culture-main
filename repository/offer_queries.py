@@ -196,8 +196,6 @@ def find_offers_with_filter_parameters(
             keywords_string
         )
     else:
-        # We need to do the join if it was not done
-        # during the keywords filter time
         query = query.join(Venue).join(Offerer)
 
     if offerer_id is not None:
