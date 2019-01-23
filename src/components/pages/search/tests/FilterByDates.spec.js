@@ -4,6 +4,7 @@ import React from 'react'
 import { shallow } from 'enzyme'
 
 import FilterByDates from '../FilterByDates'
+import { DatePickerField } from '../../../forms/inputs'
 
 const filterActionsAddMock = jest.fn()
 const filterActionsChangeMock = jest.fn()
@@ -28,6 +29,7 @@ const initialProps = {
       orderBy: 'offer.id+desc',
     },
   },
+  initialDateParams: false,
   title: 'Fake title',
 }
 
@@ -101,6 +103,7 @@ describe('src | components | pages | search | FilterByDates', () => {
                 orderBy: 'offer.id+desc',
               },
             },
+            initialDateParams: false,
             title: 'Fake title',
           }
           const pickedDate = moment('12/12/2034', 'DD/MM/YYYY')
@@ -135,6 +138,7 @@ describe('src | components | pages | search | FilterByDates', () => {
                 orderBy: 'offer.id+desc',
               },
             },
+            initialDateParams: false,
             title: 'Fake title',
           }
 
@@ -152,7 +156,7 @@ describe('src | components | pages | search | FilterByDates', () => {
       })
     })
     describe('OnChange', () => {
-      describe('When a date is already selected with calendar', () => {
+      describe('When a date is already selected with calendar and user pick one of the checkboxes', () => {
         it('it should set picked date from calendar to null', () => {
           // given
           const props = {
@@ -170,17 +174,19 @@ describe('src | components | pages | search | FilterByDates', () => {
                 orderBy: 'offer.id+desc',
               },
             },
+            initialDateParams: false,
             title: 'Fake title',
           }
-
           // when
           const wrapper = shallow(<FilterByDates {...props} />)
+          const datePicker = wrapper.find(DatePickerField).props()
           wrapper
             .find('input')
             .at(1)
             .simulate('change')
 
           // then
+          expect(datePicker.selected).toEqual(null)
           expect(wrapper.state()).toEqual({ pickedDate: null })
         })
       })

@@ -9,20 +9,36 @@ import { DatePickerField } from '../../forms/inputs'
 class FilterByDates extends PureComponent {
   constructor(props) {
     super(props)
-    this.datepickerPopper = React.createRef()
     this.state = {
       pickedDate: null,
     }
+    this.datepickerPopper = React.createRef()
+  }
+
+  componentDidUpdate() {
+    const { initialDateParams, filterState } = this.props
+    if (
+      (initialDateParams && filterState.params.date === undefined) ||
+      (initialDateParams && filterState.params.date === null)
+    ) {
+      this.setPickedDate(null)
+    }
+  }
+
+  setPickedDate = value => {
+    this.setState({
+      pickedDate: value,
+    })
   }
 
   onChange = day => {
-    this.setState({ pickedDate: null })
+    this.setPickedDate(null)
     const { filterActions, filterState } = this.props
-
     const pickedDaysInQuery = decodeURI(filterState.params.jours || '')
     const isdayAlreadyChecked = pickedDaysInQuery.includes(day)
     let callback
     const pickedDaysInQueryLenght = get(pickedDaysInQuery, 'length')
+
     // change callback value
     if (pickedDaysInQueryLenght === 0) {
       // Case 1
@@ -49,18 +65,18 @@ class FilterByDates extends PureComponent {
     const { filterActions } = this.props
     const formatedDate = (date && date.toISOString()) || null
     filterActions.change({ date: formatedDate, jours: null })
-    this.setState({ pickedDate: date })
+    this.setPickedDate(date)
   }
 
-  isDaysChecked = (pickedDate, pickedDaysInQuery, inputValue) =>
-    pickedDate !== null && inputValue === '0-1'
+  isDaysChecked = (date, pickedDaysInQuery, inputValue) =>
+    date !== null && inputValue === '0-1'
       ? false
       : pickedDaysInQuery.includes(inputValue)
 
   render() {
+    const { pickedDate } = this.state
     const { filterState, minDate, title } = this.props
     const pickedDaysInQuery = decodeURI(filterState.params.jours || '')
-    const { pickedDate } = this.state
 
     return (
       <div id="filter-by-dates" className="pt18">
@@ -123,6 +139,7 @@ FilterByDates.defaultProps = {
 FilterByDates.propTypes = {
   filterActions: PropTypes.object.isRequired,
   filterState: PropTypes.object.isRequired,
+  initialDateParams: PropTypes.bool.isRequired,
   minDate: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
   title: PropTypes.string.isRequired,
 }

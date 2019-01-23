@@ -37,6 +37,7 @@ class SearchFilter extends Component {
 
     this.state = {
       filterParamsMatchingQueryParams: false,
+      initialDateParams: true,
       params: Object.assign({}, queryParams),
     }
     this.filterActions = {
@@ -65,7 +66,7 @@ class SearchFilter extends Component {
   }
 
   onFilterClick = () => {
-    const { dispatch, onKeywordsEraseClick, query } = this.props
+    const { dispatch, query } = this.props
     const { filterParamsMatchingQueryParams, params } = this.state
 
     if (filterParamsMatchingQueryParams) {
@@ -74,26 +75,23 @@ class SearchFilter extends Component {
 
     params.page = null
 
-    if (onKeywordsEraseClick) {
-      onKeywordsEraseClick()
-    }
-
     query.change(params, { pathname: '/recherche/resultats' })
+    this.setState({
+      initialDateParams: false,
+    })
   }
 
   onResetClick = () => {
     const { dispatch, query } = this.props
-    const queryParams = query.parse()
-
     dispatch(assignData({ recommendations: [] }))
-
-    const filterParamsMatchingQueryParams = getFirstChangingKey(
-      queryParams,
-      INITIAL_FILTER_PARAMS
-    )
-
-    this.setState({ filterParamsMatchingQueryParams })
-
+    this.setState({
+      initialDateParams: true,
+      params: {
+        date: null,
+        distance: null,
+        jours: null,
+      },
+    })
     query.change(INITIAL_FILTER_PARAMS, {
       pathname: '/recherche/resultats',
     })
@@ -151,6 +149,7 @@ class SearchFilter extends Component {
 
   render() {
     const { isVisible } = this.props
+    const { initialDateParams } = this.state
     return (
       <div className="is-relative is-clipped">
         <Transition in={isVisible} timeout={transitionDelay}>
@@ -163,6 +162,7 @@ class SearchFilter extends Component {
               <FilterByDates
                 filterActions={this.filterActions}
                 filterState={this.state}
+                initialDateParams={initialDateParams}
                 title="QUAND"
               />
               <FilterByDistance
@@ -210,7 +210,6 @@ SearchFilter.propTypes = {
   dispatch: PropTypes.func.isRequired,
   isVisible: PropTypes.bool.isRequired,
   location: PropTypes.object.isRequired,
-  onKeywordsEraseClick: PropTypes.func.isRequired,
   query: PropTypes.object.isRequired,
 }
 

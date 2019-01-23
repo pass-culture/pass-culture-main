@@ -26,6 +26,7 @@ ShallowWrapper {
         },
       }
     }
+    initialDateParams={false}
     minDate="Dec 10th 18"
     title="Fake title"
   />,

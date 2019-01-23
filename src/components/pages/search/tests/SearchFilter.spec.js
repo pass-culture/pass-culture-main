@@ -11,6 +11,7 @@ import REDUX_STATE from '../../../../mocks/reduxState'
 
 const dispatchMock = jest.fn()
 const queryChangeMock = jest.fn()
+const queryClearMock = jest.fn()
 
 const middlewares = []
 const mockStore = configureStore(middlewares)
@@ -100,6 +101,8 @@ describe('src | components | pages | search | SearchFilter', () => {
           query: {
             change: queryChangeMock,
             parse: () => ({
+              categories: 'Lire, Regarder',
+              distance: 50,
               jours: '0-1',
               page: '1',
             }),
@@ -111,11 +114,18 @@ describe('src | components | pages | search | SearchFilter', () => {
 
         // when
         wrapper.instance().onResetClick()
-        const updatedFormState = wrapper.state(
-          'filterParamsMatchingQueryParams'
-        )
+        const updatedFormState = wrapper.state()
+        const expected = {
+          filterParamsMatchingQueryParams: false,
+          initialDateParams: true,
+          params: {
+            date: null,
+            distance: null,
+            jours: null,
+          },
+        }
 
-        expect(updatedFormState).toEqual('jours')
+        expect(updatedFormState).toEqual(expected)
 
         expect(queryChangeMock).toHaveBeenCalledWith(INITIAL_FILTER_PARAMS, {
           pathname: '/recherche/resultats',
@@ -133,6 +143,7 @@ describe('src | components | pages | search | SearchFilter', () => {
           onKeywordsEraseClick: jest.fn(),
           query: {
             change: queryChangeMock,
+            clear: queryClearMock,
             parse: () => ({
               jours: '0-1',
               page: '1',
@@ -154,7 +165,6 @@ describe('src | components | pages | search | SearchFilter', () => {
         expect(queryChangeMock).toHaveBeenCalledWith(currentQuery, {
           pathname: '/recherche/resultats',
         })
-
         expect(updatedFormState).toEqual(false)
       })
     })
