@@ -1,4 +1,6 @@
-from sqlalchemy import Column, BigInteger, Numeric, String, ForeignKey
+from datetime import datetime
+
+from sqlalchemy import Column, BigInteger, Numeric, String, ForeignKey, DateTime
 from sqlalchemy.orm import relationship
 
 from models.db import Model
@@ -23,3 +25,6 @@ class Deposit(PcObject,
                         backref='deposits')
     source = Column(String(12),
                     nullable=False)
+    dateCreated = Column(DateTime,
+                         nullable=False,
+                         default=datetime.utcnow)
