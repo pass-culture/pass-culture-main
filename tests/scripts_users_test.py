@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 
-from scripts.users import fill_user_from
-from utils.test_utils import create_user
+from scripts.users import fill_user_from, create_activation_booking_for
+from utils.test_utils import create_user, create_stock, create_thing_offer, create_venue, create_offerer
 
 
 class FillUserFromTest:
@@ -67,3 +67,36 @@ class FillUserFromTest:
         assert user.password == ''
         assert user.resetPasswordToken is not None
         assert user.resetPasswordTokenValidityLimit is not None
+
+
+class CreateActivationBookingForTest:
+    def test_returns_a_booking_for_given_userr_and_stock(self):
+        # given
+        venue = create_venue(create_offerer())
+        offer = create_thing_offer(venue=venue)
+        user = create_user()
+        stock = create_stock(offer=offer)
+
+        # when
+        booking = create_activation_booking_for(user, stock)
+
+        # then
+        assert booking.user == user
+        assert booking.stock == stock
+        assert booking.quantity == 1
+        assert booking.dateCreated.date() == datetime.utcnow().date()
+
+    def test_the_returned_booking_has_a_token_and_is_bookable(self):
+        # given
+        venue = create_venue(create_offerer())
+        offer = create_thing_offer(venue=venue)
+        user = create_user()
+        stock = create_stock(offer=offer)
+
+        # when
+        booking = create_activation_booking_for(user, stock)
+
+        # then
+        assert booking.isCancelled == False
+        assert booking.isUsed == False
+        assert len(booking.token) == 6
