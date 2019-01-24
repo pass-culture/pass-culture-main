@@ -201,6 +201,8 @@ ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <CopyToClipboardButton
     className="py12 is-bold fs14"
+    onClick={[Function]}
+    value="http://foo.com"
   />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
@@ -225,7 +227,7 @@ ShallowWrapper {
       </button>,
       "onCopy": [Function],
       "options": undefined,
-      "text": undefined,
+      "text": "http://foo.com",
     },
     "ref": null,
     "rendered": Object {
@@ -271,7 +273,7 @@ ShallowWrapper {
         </button>,
         "onCopy": [Function],
         "options": undefined,
-        "text": undefined,
+        "text": "http://foo.com",
       },
       "ref": null,
       "rendered": Object {
@@ -327,8 +329,13 @@ ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <MailToLink
     className="no-underline is-block is-white-text py12 is-bold fs14"
-    email={null}
-    headers={Object {}}
+    email="foo@bar.com"
+    headers={
+      Object {
+        "subject": "Fake title",
+        "url": "http://www.fake-url.com",
+      }
+    }
     obfuscate={false}
   >
     <span>
@@ -352,7 +359,7 @@ ShallowWrapper {
         Envoyer par e-mail
       </span>,
       "className": "no-underline is-block is-white-text py12 is-bold fs14",
-      "href": "mailto:?",
+      "href": "mailto:foo@bar.com?subject=Fake%20title&url=http%3A%2F%2Fwww.fake-url.com",
     },
     "ref": null,
     "rendered": Object {
@@ -378,7 +385,7 @@ ShallowWrapper {
           Envoyer par e-mail
         </span>,
         "className": "no-underline is-block is-white-text py12 is-bold fs14",
-        "href": "mailto:?",
+        "href": "mailto:foo@bar.com?subject=Fake%20title&url=http%3A%2F%2Fwww.fake-url.com",
       },
       "ref": null,
       "rendered": Object {

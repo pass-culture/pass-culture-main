@@ -12,7 +12,6 @@ export const getCopyToClipboardButton = (url, onClick) => (
     onClick={onClick}
   />
 )
-
 export const getMailToLinkButton = (email, headers) => (
   <MailToLink
     key="MailToLink"
