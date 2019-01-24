@@ -4,7 +4,7 @@ import { getReactRoutes, getMainMenuItems } from '../routes-utils'
 import routes from '../routes'
 
 import SearchPage from '../../components/pages/SearchPage'
-import MyBookingsPage from '../../components/pages/MyBookingsPage'
+import MyBookingsPage from '../../components/pages/my-bookings'
 import DiscoveryPage from '../../components/pages/discovery'
 import FavoritesPage from '../../components/pages/FavoritesPage'
 

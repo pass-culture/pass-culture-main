@@ -7,19 +7,15 @@ import { connect } from 'react-redux'
 import { bindActionCreators, compose } from 'redux'
 import get from 'lodash.get'
 
-import { ROOT_PATH } from '../../utils/config'
-import MyBookingItem from './my-bookings/MyBookingItem'
-import NoBookingView from './my-bookings/NoBookingView'
-import {
-  selectSoonBookings,
-  selectOtherBookings,
-  selectRecommendations,
-} from '../../selectors'
-import Loader from '../layout/Loader'
-import PageHeader from '../layout/PageHeader'
-import { toggleMainMenu } from '../../reducers/menu'
-import NavigationFooter from '../layout/NavigationFooter'
-import { bookingNormalizer } from '../../utils/normalizers'
+import { ROOT_PATH } from '../../../utils/config'
+import MyBookingItem from './MyBookingItem'
+import NoBookingView from './NoBookingView'
+import Loader from '../../layout/Loader'
+import PageHeader from '../../layout/PageHeader'
+import { toggleMainMenu } from '../../../reducers/menu'
+import NavigationFooter from '../../layout/NavigationFooter'
+import { bookingNormalizer } from '../../../utils/normalizers'
+import { mapStateToProps } from './connect'
 
 const renderBookingList = items => (
   <ul className="bookings">
@@ -120,13 +116,6 @@ MyBookingsPage.propTypes = {
   dispatch: PropTypes.func.isRequired,
   otherBookings: PropTypes.array.isRequired,
   soonBookings: PropTypes.array.isRequired,
-}
-
-const mapStateToProps = state => {
-  const recommendations = selectRecommendations(state)
-  const otherBookings = selectOtherBookings(state)
-  const soonBookings = selectSoonBookings(state)
-  return { otherBookings, recommendations, soonBookings }
 }
 
 export default compose(
