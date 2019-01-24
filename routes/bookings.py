@@ -169,11 +169,11 @@ def patch_booking_by_token(token):
     return '', 204
 
 
-def activate_user(user):
+def activate_user(user_to_activate):
     check_rights_for_activation_offer(current_user)
-    user_to_activate = user
     user_to_activate.canBookFreeOffers = True
-    create_initial_deposit(user_to_activate)
+    deposit = create_initial_deposit(user_to_activate)
+    PcObject.check_and_save(deposit)
 
 
 def _create_response_to_get_booking_by_token(booking):

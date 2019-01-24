@@ -1,4 +1,4 @@
-from models import Deposit, EventType, ThingType, PcObject, ApiErrors
+from models import Deposit, EventType, ThingType, ApiErrors
 
 
 def create_initial_deposit(user_to_activate):
@@ -13,13 +13,11 @@ def create_initial_deposit(user_to_activate):
         deposit.amount = 500
         deposit.user = user_to_activate
         deposit.source = 'activation'
-        PcObject.check_and_save(deposit)
+        return deposit
 
 
 def check_is_activation_booking(booking):
-    is_on_activation_event = booking.stock.resolvedOffer.eventOrThing.type == str(EventType.ACTIVATION)
-    is_on_activation_thing = booking.stock.resolvedOffer.eventOrThing.type == str(ThingType.ACTIVATION)
-    return is_on_activation_event | is_on_activation_thing
+    return booking.stock.resolvedOffer.eventOrThing.type in [str(EventType.ACTIVATION), str(ThingType.ACTIVATION)]
 
 
 class AlreadyActivatedException(ApiErrors):
