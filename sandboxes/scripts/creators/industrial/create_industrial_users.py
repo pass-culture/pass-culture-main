@@ -1,7 +1,7 @@
 from models.pc_object import PcObject
 from utils.logger import logger
 from utils.test_utils import create_user
-from sandboxes.scripts.utils.user_tags import JEUNES_TAGS,PROS_TAGS
+from sandboxes.scripts.utils.user_tags import JEUNES_TAGS, PROS_TAGS
 
 ADMINS_COUNT = 1
 DEPARTEMENT_CODES = ["93", "97"]
@@ -11,6 +11,28 @@ def create_industrial_users():
 
     users_by_name = {}
 
+    validation_prefix, validation_suffix = 'AZERTY', 123
+
+
+    # create a special validation user with a real signup siren
+    # (because the inscription/validation asks for Siren ApiEntreprise)
+    validation_token = '{}{}'.format(validation_prefix, validation_suffix)
+    departement_code = 93
+    tag = 'real-validation'
+    short_tag = "".join([chunk[0].upper() for chunk in tag.split('-')])
+    users_by_name['pro{} {}'.format(departement_code, tag)] = create_user(
+        departement_code=str(departement_code),
+        email="pctest.pro{}.{}@btmx.fr".format(departement_code, tag),
+        first_name="PC Test Pro {}",
+        last_name="{} {}".format(departement_code, short_tag),
+        password="pctest.Pro{}.{}".format(departement_code, tag),
+        postal_code="{}100".format(departement_code),
+        public_name="PC Test Pro {} {}".format(departement_code, short_tag),
+        validation_token=validation_token
+    )
+    validation_suffix += 1
+
+    # loop on department and tags
     for departement_code in DEPARTEMENT_CODES:
 
         for admin_count in range(ADMINS_COUNT):
@@ -28,6 +50,13 @@ def create_industrial_users():
 
         for tag in PROS_TAGS:
             short_tag = "".join([chunk[0].upper() for chunk in tag.split('-')])
+
+            if tag == "has-signed-up":
+                validation_token = '{}{}'.format(validation_prefix, validation_suffix)
+                validation_suffix += 1
+            else:
+                validation_token = None
+
             users_by_name['pro{} {}'.format(departement_code, tag)] = create_user(
                 departement_code=str(departement_code),
                 email="pctest.pro{}.{}@btmx.fr".format(departement_code, tag),
@@ -35,11 +64,19 @@ def create_industrial_users():
                 last_name="{} {}".format(departement_code, short_tag),
                 password="pctest.Pro{}.{}".format(departement_code, tag),
                 postal_code="{}100".format(departement_code),
-                public_name="PC Test Pro {} {}".format(departement_code, short_tag)
+                public_name="PC Test Pro {} {}".format(departement_code, short_tag),
+                validation_token=validation_token
             )
 
         for tag in JEUNES_TAGS:
             short_tag = "".join([chunk[0].upper() for chunk in tag.split('-')])
+
+            if tag == "has-signed-up":
+                validation_token = '{}{}'.format(validation_prefix, validation_suffix)
+                validation_suffix += 1
+            else:
+                validation_token = None
+
             users_by_name['jeune{} {}'.format(departement_code, tag)] = create_user(
                 departement_code=str(departement_code),
                 email="pctest.jeune{}.{}@btmx.fr".format(departement_code, tag),
@@ -47,7 +84,8 @@ def create_industrial_users():
                 last_name="{} {}".format(departement_code, short_tag),
                 password="pctest.Jeune{}.{}".format(departement_code, tag),
                 postal_code="{}100".format(departement_code),
-                public_name="PC Test Jeune {} {}".format(departement_code, short_tag)
+                public_name="PC Test Jeune {} {}".format(departement_code, short_tag),
+                validation_token=validation_token
             )
 
     PcObject.check_and_save(*users_by_name.values())

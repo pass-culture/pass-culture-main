@@ -3,23 +3,10 @@ from sandboxes.scripts.utils.offerer_mocks import MOCK_NAMES
 from utils.logger import logger
 from utils.test_utils import create_offerer
 
-MOCK_NAMES = [
-    "Herbert Marcuse Entreprise",
-    "Club Dorothy",
-    "Scope La Brique",
-    "Danse Jazz Dans Tes Bottes",
-    "Michel Léon",
-    "Syndicat des librairies physiques",
-    "Maison des anachorètes",
-    "Ferme des sarbacanes",
-    "Lieu non dit",
-    ""
-]
-
 def create_industrial_offerers(
-    locations,
-    needs_validation=False,
-    starting_siren=222222222
+        locations,
+        needs_validation=False,
+        starting_siren=222222222
 ):
     logger.info('create_industrial_offerers {}'.format(
         'not validated' if needs_validation else 'validated'
@@ -29,9 +16,20 @@ def create_industrial_offerers(
 
     offerers_by_name = {}
 
+    # add a real offerer just for the inscription/validation API
+    if not needs_validation:
+        name = '784340093 lat:48.8 lon:1.48'
+        offerers_by_name[name] = create_offerer(
+            address="LIEU DIT CARTOUCHERIE",
+            city="Paris 12",
+            name="THEATRE DU SOLEIL",
+            postal_code="75012",
+            siren="784340093"
+        )
+
+    # loop on locations
     iban_prefix = 'FR7630001007941234567890185'
     bic_prefix, bic_suffix = 'QSDFGH8Z', 555
-
     for (location_index, location) in enumerate(locations):
 
         mock_index = location_index % len(MOCK_NAMES)
@@ -52,12 +50,12 @@ def create_industrial_offerers(
 
         offerer = create_offerer(
             address=location['address'].upper(),
+            bic=bic,
             city=location['city'],
+            iban=iban,
             name=MOCK_NAMES[mock_index],
             postal_code=location['postalCode'],
             siren=str(incremented_siren),
-            iban=iban,
-            bic=bic
         )
 
         if needs_validation:
