@@ -57,40 +57,42 @@ class ShareButtonContent extends React.PureComponent {
   }
 
   onClickShare = () => {
-    const { dispatch, title, url, text, email } = this.props
-    const headers = {
-      body: url,
-      subject: title,
-    }
-    const { iscopied } = this.state
-    const options = {
-      buttons: [
-        getCopyToClipboardButton(url, this.onCopyHandler),
-        getMailToLinkButton(email, headers),
-      ],
-      text,
-      title,
-      url,
-    }
-
-    if (iscopied) {
-      options.text = 'Le lien a bien été copié'
-      options.buttons = [getCloseButton(this.onCloseHandler)]
-    }
+    const { dispatch, email, offerName, text, url } = this.props
 
     try {
+      const nativeOptions = { text: `${text}\n`, title: text, url }
       return navigator
-        .share(options)
+        .share(nativeOptions)
         .then(() => {})
         .catch(() => {})
     } catch (err) {
-      return dispatch(openSharePopin(options))
+      const headers = {
+        body: `${text}\n\n${url}`,
+        subject: text,
+      }
+      const popinOptions = {
+        buttons: [
+          getCopyToClipboardButton(url, this.onCopyHandler),
+          getMailToLinkButton(email, headers),
+        ],
+        title: offerName,
+        text: 'Comment souhaitez-vous partager cette offre ?',
+      }
+
+      const { iscopied } = this.state
+
+      if (iscopied) {
+        popinOptions.text = 'Le lien a bien été copié'
+        popinOptions.buttons = [getCloseButton(this.onCloseHandler)]
+      }
+
+      return dispatch(openSharePopin(popinOptions))
     }
   }
 
   render() {
-    const { title, url } = this.props
-    const isDisabled = !title || !url
+    const { offerName, url } = this.props
+    const isDisabled = !offerName || !url
     return (
       <button
         type="button"
@@ -110,16 +112,16 @@ class ShareButtonContent extends React.PureComponent {
 
 ShareButtonContent.defaultProps = {
   email: null,
-  text: 'Comment souhaitez-vous partager cette offre ?',
-  title: null,
+  offerName: null,
+  text: null,
   url: null,
 }
 
 ShareButtonContent.propTypes = {
   dispatch: PropTypes.func.isRequired,
   email: PropTypes.string,
+  offerName: PropTypes.string,
   text: PropTypes.string,
-  title: PropTypes.string,
   url: PropTypes.string,
 }
 

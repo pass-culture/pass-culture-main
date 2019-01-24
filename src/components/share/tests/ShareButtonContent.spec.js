@@ -63,7 +63,8 @@ describe('src | components | share | ShareButtonContent', () => {
       // given
       const props = {
         dispatch: dispatchMock,
-        title: 'Fake title',
+        offerName: 'Fake offer name',
+        text: 'Fake text',
         url: 'http://www.fake-url.com',
       }
 
@@ -83,7 +84,8 @@ describe('src | components | share | ShareButtonContent', () => {
           const props = {
             dispatch: dispatchMock,
             email: 'foo@bar.com',
-            title: 'Fake title',
+            offerName: 'Fake offer name',
+            text: 'Fake text',
             url: 'http://www.fake-url.com',
           }
 
@@ -94,8 +96,7 @@ describe('src | components | share | ShareButtonContent', () => {
             options: {
               buttons: expect.any(Array),
               text: 'Comment souhaitez-vous partager cette offre ?',
-              title: 'Fake title',
-              url: 'http://www.fake-url.com',
+              title: 'Fake offer name',
             },
             type: 'TOGGLE_SHARE_POPIN',
           }

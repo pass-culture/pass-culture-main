@@ -6,8 +6,8 @@ ShallowWrapper {
   Symbol(enzyme.__unrendered__): <ShareButtonContent
     dispatch={[MockFunction]}
     email={null}
-    text="Comment souhaitez-vous partager cette offre ?"
-    title="Fake title"
+    offerName="Fake offer name"
+    text="Fake text"
     url="http://www.fake-url.com"
   />,
   Symbol(enzyme.__renderer__): Object {

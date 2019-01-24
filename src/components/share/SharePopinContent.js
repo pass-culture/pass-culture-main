@@ -45,7 +45,7 @@ class SharePopinContent extends React.PureComponent {
 
   render() {
     const { visible, options } = this.props
-    const { text, title } = options
+    const { buttons, text, title } = options
     return (
       <Transition in={visible} timeout={transitionDelay}>
         {status => (
@@ -67,13 +67,12 @@ class SharePopinContent extends React.PureComponent {
                       <span className="is-bold">{title}</span>
                     </h3>
                     <p className="mt18">
-                      {/* <!-- Popin status text --> */}
                       <span>{text}</span>
                     </p>
                   </div>
                   <div className="dotted-top-white flex-columns flex-around">
                     {/* <!-- Popin buttons --> */}
-                    {options.buttons}
+                    {buttons}
                   </div>
                 </div>
               </div>
