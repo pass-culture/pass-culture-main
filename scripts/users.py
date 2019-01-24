@@ -4,9 +4,22 @@ from typing import List
 
 from domain.password import generate_reset_token
 from models import User, Booking, Stock
+from repository.user_queries import find_user_by_email
 from utils.token import random_token
 
 THIRTY_DAYS = 30 * 24
+
+
+def setup_users(csv_rows: List[List[str]], stock: Stock, find_user_query=find_user_by_email) -> List[Booking]:
+    bookings = []
+
+    for row in csv_rows:
+        existing_user = find_user_query(row[3])
+        filled_user = fill_user_from(row, existing_user)
+        booking = create_activation_booking_for(filled_user, stock)
+        bookings.append(booking)
+
+    return bookings
 
 
 def create_activation_booking_for(user: User, stock: Stock) -> Booking:
@@ -21,7 +34,7 @@ def create_activation_booking_for(user: User, stock: Stock) -> Booking:
     return booking
 
 
-def fill_user_from(csv_row: List[str], user: User = None) -> User:
+def fill_user_from(csv_row: List[str], user: User) -> User:
     if user is None:
         user = User()
 

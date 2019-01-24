@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
+from unittest.mock import Mock
 
-from scripts.users import fill_user_from, create_activation_booking_for
+from scripts.users import fill_user_from, create_activation_booking_for, setup_users
 from utils.test_utils import create_user, create_stock, create_thing_offer, create_venue, create_offerer
 
 
@@ -18,7 +19,7 @@ class FillUserFromTest:
 
     def test_returns_an_user_with_data_from_csv_row(self):
         # when
-        user = fill_user_from(self.csv_row)
+        user = fill_user_from(self.csv_row, None)
 
         # then
         assert user.lastName == 'Mortimer'
@@ -30,7 +31,7 @@ class FillUserFromTest:
 
     def test_sets_default_properties_on_the_user(self):
         # when
-        user = fill_user_from(self.csv_row)
+        user = fill_user_from(self.csv_row, None)
 
         # then
         assert user.canBookFreeOffers == False
@@ -38,7 +39,7 @@ class FillUserFromTest:
 
     def test_has_a_reset_password_token_and_validity_limit(self):
         # when
-        user = fill_user_from(self.csv_row)
+        user = fill_user_from(self.csv_row, None)
 
         # then
         thirty_days_in_the_future = datetime.utcnow() + timedelta(days=30)
@@ -53,7 +54,7 @@ class FillUserFromTest:
         )
 
         # when
-        user = fill_user_from(self.csv_row, user=existing_user)
+        user = fill_user_from(self.csv_row, existing_user)
 
         # then
         assert user.id == 123
@@ -100,3 +101,41 @@ class CreateActivationBookingForTest:
         assert booking.isCancelled == False
         assert booking.isUsed == False
         assert len(booking.token) == 6
+
+
+class SetupUsersTest:
+    def setup_method(self):
+        self.csv_rows = [
+            ['68bfa', 'Mortimer', 'Philip', 'pmortimer@bletchley.co.uk', '0123456789', 'Buckinghamshire (22)', '22850'],
+            ['ebf79', 'Blake', 'Francis', 'fblake@bletchley.co.uk', '0987654321', 'Gloucestershire (33)', '33817'],
+            ['ca45d', 'Nasir', 'Ahmed', 'anasir@bletchley.co.uk', '0567891234', 'Worcestershire (44)', '44019']
+        ]
+        self.mocked_query = Mock()
+
+    def test_returns_n_bookings_for_n_csv_rows(self):
+        # given
+        venue = create_venue(create_offerer())
+        offer = create_thing_offer(venue=venue)
+        stock = create_stock(offer=offer)
+        self.mocked_query.side_effect = [None, None, None]
+
+        # when
+        bookings = setup_users(self.csv_rows, stock, find_user_query=self.mocked_query)
+
+        # then
+        assert len(bookings) == len(self.csv_rows)
+
+    def test_finds_users_by_email_before_setting_them_up(self):
+        # given
+        venue = create_venue(create_offerer())
+        offer = create_thing_offer(venue=venue)
+        stock = create_stock(offer=offer)
+        blake = create_user(idx=123, email='fblake@bletchley.co.uk')
+        self.mocked_query.side_effect = [None, blake, None]
+
+        # when
+        bookings = setup_users(self.csv_rows, stock, find_user_query=self.mocked_query)
+
+        # then
+        assert bookings[1].user.id == 123
+        assert bookings[1].user.email == 'fblake@bletchley.co.uk'
