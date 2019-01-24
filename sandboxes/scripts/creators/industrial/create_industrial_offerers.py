@@ -1,4 +1,5 @@
 from models.pc_object import PcObject
+from sandboxes.scripts.utils.offerer_mocks import MOCK_NAMES
 from utils.logger import logger
 from utils.test_utils import create_offerer
 
@@ -9,7 +10,10 @@ MOCK_NAMES = [
     "Danse Jazz Dans Tes Bottes",
     "Michel Léon",
     "Syndicat des librairies physiques",
-    "Maison des anachorètes"
+    "Maison des anachorètes",
+    "Ferme des sarbacanes",
+    "Lieu non dit",
+    ""
 ]
 
 def create_industrial_offerers(

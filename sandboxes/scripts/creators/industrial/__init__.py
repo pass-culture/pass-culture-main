@@ -22,7 +22,7 @@ def save_industrial_sandbox():
 
     not_validated_offerer_locations = create_locations_from_places(
         NOT_VALIDATED_OFFERER_PLACES,
-        max_location_per_place=1,
+        max_location_per_place=2,
     )
     validated_offerer_locations = create_locations_from_places(
         VALIDATED_OFFERER_PLACES,

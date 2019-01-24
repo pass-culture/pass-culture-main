@@ -1,18 +1,9 @@
 import re
 
 from models.pc_object import PcObject
+from sandboxes.scripts.utils.venue_mocks import MOCK_NAMES
 from utils.logger import logger
 from utils.test_utils import create_venue
-
-MOCK_NAMES = [
-    "Atelier Herbert Marcuse",
-    "Club Dorothy",
-    "Maison de la Brique",
-    "Les Perruches Swing",
-    "Michel et son accordéon",
-    "La librairie quantique",
-    "Folie des anachorètes"
-]
 
 def create_industrial_venues(offerers_by_name):
     logger.info('create_industrial_venues')
@@ -20,18 +11,16 @@ def create_industrial_venues(offerers_by_name):
     venue_by_name = {}
     mock_index = 0
 
+    iban_count = 0
     iban_prefix = 'FR7630001007941234567890185'
     bic_prefix, bic_suffix = 'QSDFGH8Z', 556
 
-    iban_count = 0
-
-    offerer_items = offerers_by_name.items()
-    for (offerer_index, (offerer_name, offerer))  in enumerate(offerer_items):
+    for (offerer_index, (offerer_name, offerer)) in enumerate(offerers_by_name.items()):
         geoloc_match = re.match(r'(.*)lat\:(.*) lon\:(.*)', offerer_name)
 
         venue_name = MOCK_NAMES[mock_index%len(MOCK_NAMES)]
 
-        # create all possible case
+        # create all possible cases:
         # offerer with or without iban / venue with or without iban
         if offerer.iban:
             if iban_count == 0:
@@ -43,7 +32,7 @@ def create_industrial_venues(offerers_by_name):
                 bic = None
                 iban_count = 3
         else:
-            if iban_count == 1:
+            if iban_count == 0 or iban_count == 1:
                 iban = iban_prefix
                 bic = bic_prefix + str(bic_suffix)
                 iban_count = 2
@@ -52,18 +41,18 @@ def create_industrial_venues(offerers_by_name):
                 bic = None
                 iban_count = 0
 
-        # every 5 offerer, create an offerer without physical venue
-        if offerer_index%5 != 0:
+        # every 2/3 offerers, create an offerer with a physical venue
+        if offerer_index%3:
 
-            # create half venue with siret / half without
-            if offerer_index%10:
-                comment = "Pas de siret car je suis un mock."
-                siret = None
-            else:
+            # every 5/6 offerers, create a physical venue without a siret
+            if offerer_index%6:
                 comment = None
-                siret = offerer.siren + '11111'
+                siret = '{}11111'.format(offerer.siren)
+            else:
+                comment = "Pas de siret car c'est comme cela."
+                siret = None
 
-            venue_by_name[offerer_name] = create_venue(
+            venue_by_name[venue_name] = create_venue(
                 offerer,
                 address=offerer.address,
                 bic=bic,
