@@ -214,7 +214,7 @@ VENUE_PROVIDER_INCLUDES = [
 
 
 
-OFFERER__FOR_PENDING_VALIDATION_INCLUDES = [
+OFFERER_FOR_PENDING_VALIDATION_INCLUDES = [
     "validationToken",
     "-firstThumbDominantColor",
     "-thumbCount",

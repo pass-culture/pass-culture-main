@@ -150,188 +150,7 @@ def test_find_all_offerers_with_venue(app):
 
 @pytest.mark.standalone
 @clean_database
-def test_get_all_pending_offerers_with_user_offerer(app):
-    # given
-    offerer1 = create_offerer(name='offerer1', validation_token="a_token")
-    offerer2 = create_offerer(name='offerer2', siren='789456123', validation_token="some_token")
-    offerer3 = create_offerer(name='offerer3', siren='789456124')
-    offerer4 = create_offerer(name='offerer4', siren='789456125')
-    user1 = create_user(email='1@offerer.com')
-    user2 = create_user(email='2@offerer.com')
-    user3 = create_user(email='3@offerer.com')
-    user4 = create_user(email='4@offerer.com')
-    user_offerer1 = create_user_offerer(user1, offerer1, validation_token="nice_token")
-    user_offerer2 = create_user_offerer(user2, offerer2)
-    user_offerer3 = create_user_offerer(user3, offerer3, validation_token="another_token")
-    user_offerer4 = create_user_offerer(user4, offerer4)
-    user_offerer5 = create_user_offerer(user3, offerer3, validation_token="what_a_token")
-    venue1 = create_venue(offerer1, siret="123456781")
-    venue2 = create_venue(offerer2, siret="123456782")
-    venue3 = create_venue(offerer3, siret="123456783")
-    venue4 = create_venue(offerer4, siret="123456784")
-
-
-    PcObject.check_and_save(user_offerer1, user_offerer2, user_offerer3, user_offerer4)
-
-    # when
-    offerers = find_all_pending_validation()
-
-    # then
-    assert len(offerers) == 3
-    assert offerers[0].validationToken == offerer1.validationToken
-    assert offerers[0].UserOfferers[0].validationToken == user_offerer1.validationToken
-    assert offerers[1].validationToken == offerer2.validationToken
-    assert offerers[1].UserOfferers[0].validationToken == None
-    assert offerers[2].validationToken == None
-    assert offerers[2].UserOfferers[0].validationToken == user_offerer3.validationToken
-    assert offerers[2].UserOfferers[1].validationToken == user_offerer5.validationToken
-    assert offerer4 not in offerers
-
-
-@pytest.mark.standalone
-@clean_database
-def test_get_all_pending_offerers_return_requested_tokens_if_case_none_validated(app):
-    # given
-    user_not_validated = create_user(email="user@user.pro", can_book_free_offers=False, is_admin=False, validation_token="token_for_user")
-    offerer_not_validated = create_offerer(validation_token="this_offerer_has_a_token")
-    user_offerer_not_validated = create_user_offerer(user_not_validated, offerer_not_validated, validation_token='user_off_token')
-    venue_not_validated = create_venue(offerer_not_validated, siret=None, comment="comment because no siret", validation_token="venue_validation_token")
-    PcObject.check_and_save(offerer_not_validated, user_offerer_not_validated, user_not_validated, venue_not_validated)
-    
-    # when
-    offerers = find_all_pending_validation()
-
-    # then
-    assert offerers[0].validationToken == offerer_not_validated.validationToken
-    assert offerers[0].UserOfferers[0].validationToken == user_offerer_not_validated.validationToken
-    assert offerers[0].UserOfferers[0].user.validationToken == user_not_validated.validationToken
-    assert offerers[0].managedVenues[0].validationToken == venue_not_validated.validationToken
-
-
-@pytest.mark.standalone
-@clean_database
-def test_get_all_pending_offerers_return_requested_tokens_if_case_only_offerer_validated(app):
-    # given
-    user_not_validated = create_user(email="user@user.pro", can_book_free_offers=False, is_admin=False, validation_token="token_for_user")
-    offerer_validated = create_offerer()
-    user_offerer_not_validated = create_user_offerer(user_not_validated, offerer_validated, validation_token='user_off_token')
-    venue_not_validated = create_venue(offerer_validated, siret=None, comment="comment because no siret", validation_token="venue_validation_token")
-    PcObject.check_and_save(offerer_validated, user_offerer_not_validated, user_not_validated, venue_not_validated)
-    
-    # when
-    offerers = find_all_pending_validation()
-
-    # then
-    assert offerers[0].validationToken == offerer_validated.validationToken
-    assert offerers[0].UserOfferers[0].validationToken == user_offerer_not_validated.validationToken
-    assert offerers[0].UserOfferers[0].user.validationToken == user_not_validated.validationToken
-    assert offerers[0].managedVenues[0].validationToken == venue_not_validated.validationToken
-
-
-@pytest.mark.standalone
-@clean_database
-def test_get_all_pending_offerers_return_requested_tokens_if_case_only_user_offerer_validated(app):
-    # given
-    user_not_validated = create_user(email="user@user.pro", can_book_free_offers=False, is_admin=False, validation_token="token_for_user")
-    offerer_not_validated = create_offerer(validation_token="this_offerer_has_a_token")
-    user_offerer_validated = create_user_offerer(user_not_validated, offerer_not_validated)
-    venue_not_validated = create_venue(offerer_not_validated, siret=None, comment="comment because no siret", validation_token="venue_validation_token")
-    PcObject.check_and_save(offerer_not_validated, user_offerer_validated, user_not_validated, venue_not_validated)
-    
-    # when
-    offerers = find_all_pending_validation()
-
-    # then
-    assert offerers[0].validationToken == offerer_not_validated.validationToken
-    assert offerers[0].UserOfferers[0].validationToken == user_offerer_validated.validationToken
-    assert offerers[0].UserOfferers[0].user.validationToken == user_not_validated.validationToken
-    assert offerers[0].managedVenues[0].validationToken == venue_not_validated.validationToken
-
-
-@pytest.mark.standalone
-@clean_database
-def test_get_all_pending_offerers_return_requested_tokens_if_case_only_offerer_and_user_offerer_validated(app):
-    # given
-    user_not_validated = create_user(email="user@user.pro", can_book_free_offers=False, is_admin=False, validation_token="token_for_user")
-    offerer_validated = create_offerer()
-    user_offerer_validated = create_user_offerer(user_not_validated, offerer_validated)
-    venue_not_validated = create_venue(offerer_validated, siret=None, comment="comment because no siret", validation_token="venue_validation_token")
-    PcObject.check_and_save(offerer_validated, user_offerer_validated, user_not_validated, venue_not_validated)
-    
-    # when
-    offerers = find_all_pending_validation()
-
-    # then
-    assert offerers[0].validationToken == offerer_validated.validationToken
-    assert offerers[0].UserOfferers[0].validationToken == user_offerer_validated.validationToken
-    assert offerers[0].UserOfferers[0].user.validationToken == user_not_validated.validationToken
-    assert offerers[0].managedVenues[0].validationToken == venue_not_validated.validationToken
-
-
-@pytest.mark.standalone
-@clean_database
-def test_get_all_pending_offerers_return_requested_tokens_if_case_only_user_validated(app):
-    # given
-    user_validated = create_user(email="user@user.pro", can_book_free_offers=False, is_admin=False)
-    offerer_not_validated = create_offerer(validation_token="this_offerer_has_a_token")
-    user_offerer_not_validated = create_user_offerer(user_validated, offerer_not_validated, validation_token='user_off_token')
-    venue_not_validated = create_venue(offerer_not_validated, siret=None, comment="comment because no siret", validation_token="venue_validation_token")
-    PcObject.check_and_save(offerer_not_validated, user_offerer_not_validated, user_validated, venue_not_validated)
-    
-    # when
-    offerers = find_all_pending_validation()
-
-    # then
-    assert offerers[0].validationToken == offerer_not_validated.validationToken
-    assert offerers[0].UserOfferers[0].validationToken == user_offerer_not_validated.validationToken
-    assert offerers[0].UserOfferers[0].user.validationToken == user_validated.validationToken
-    assert offerers[0].managedVenues[0].validationToken == venue_not_validated.validationToken
-
-
-@pytest.mark.standalone
-@clean_database
-def test_get_all_pending_offerers_return_requested_tokens_if_case_only_offerer_validated(app):
-    # given
-    user_validated = create_user(email="user@user.pro", can_book_free_offers=False, is_admin=False)
-    offerer_validated = create_offerer()
-    user_offerer_not_validated = create_user_offerer(user_validated, offerer_validated, validation_token='user_off_token')
-    venue_not_validated = create_venue(offerer_validated, siret=None, comment="comment because no siret", validation_token="venue_validation_token")
-    PcObject.check_and_save(offerer_validated, user_offerer_not_validated, user_validated, venue_not_validated)
-    
-    # when
-    offerers = find_all_pending_validation()
-
-    # then
-    assert offerers[0].validationToken == offerer_validated.validationToken
-    assert offerers[0].UserOfferers[0].validationToken == user_offerer_not_validated.validationToken
-    assert offerers[0].UserOfferers[0].user.validationToken == user_validated.validationToken
-    assert offerers[0].managedVenues[0].validationToken == venue_not_validated.validationToken
-
-
-@pytest.mark.standalone
-@clean_database
-def test_get_all_pending_offerers_return_requested_tokens_if_case_only_user_offerer_and_offerer_validated(app):
-    # given
-    user_validated = create_user(email="user@user.pro", can_book_free_offers=False, is_admin=False)
-    offerer_not_validated = create_offerer(validation_token="this_offerer_has_a_token")
-    user_offerer_validated = create_user_offerer(user_validated, offerer_not_validated)
-    venue_not_validated = create_venue(offerer_not_validated, siret=None, comment="comment because no siret", validation_token="venue_validation_token")
-    PcObject.check_and_save(offerer_not_validated, user_offerer_validated, user_validated, venue_not_validated)
-    
-    # when
-    offerers = find_all_pending_validation()
-
-    # then
-
-    assert offerers[0].validationToken == offerer_not_validated.validationToken
-    assert offerers[0].UserOfferers[0].validationToken == user_offerer_validated.validationToken
-    assert offerers[0].UserOfferers[0].user.validationToken == user_validated.validationToken
-    assert offerers[0].managedVenues[0].validationToken == venue_not_validated.validationToken
-
-
-@pytest.mark.standalone
-@clean_database
-def test_get_all_pending_offerers_return_requested_tokens_if_case_only_venue_not_validated(app):
+def test_get_all_pending_offerers_return_requested_tokens_in_case_only_venue_not_validated(app):
     # given
     user_validated = create_user(email="user@user.pro", can_book_free_offers=False, is_admin=False)
     offerer_validated = create_offerer()
@@ -342,77 +161,21 @@ def test_get_all_pending_offerers_return_requested_tokens_if_case_only_venue_not
     # when
     offerers = find_all_pending_validation()
 
-    # then
-    assert offerers[0].validationToken == offerer_validated.validationToken
-    assert offerers[0].UserOfferers[0].validationToken == user_offerer_validated.validationToken
-    assert offerers[0].UserOfferers[0].user.validationToken == user_validated.validationToken
-    assert offerers[0].managedVenues[0].validationToken == venue_not_validated.validationToken
-
-# --
-
-@pytest.mark.standalone
-@clean_database
-def test_get_all_pending_offerers_return_requested_tokens_if_case_only_venue_validated(app):
-    # given
-    user_not_validated = create_user(email="user@user.pro", can_book_free_offers=False, is_admin=False, validation_token="token_for_user")
-    offerer_not_validated = create_offerer(validation_token="this_offerer_has_a_token")
-    user_offerer_not_validated = create_user_offerer(user_not_validated, offerer_not_validated, validation_token='user_off_token')
-    venue_validated = create_venue(offerer_not_validated)
-    PcObject.check_and_save(offerer_not_validated, user_offerer_not_validated, user_not_validated, venue_validated)
-    
-    # when
-    offerers = find_all_pending_validation()
+    offerer = offerers[0]
+    user_offerer = offerer.UserOfferers[0]
+    user = user_offerer.user
+    venue = offerer.managedVenues[0]
 
     # then
-    assert offerers[0].validationToken == offerer_not_validated.validationToken
-    assert offerers[0].UserOfferers[0].validationToken == user_offerer_not_validated.validationToken
-    assert offerers[0].UserOfferers[0].user.validationToken == user_not_validated.validationToken
-    assert offerers[0].managedVenues[0].validationToken == venue_validated.validationToken
+    assert offerer.validationToken == offerer_validated.validationToken
+    assert user_offerer.validationToken == user_offerer_validated.validationToken
+    assert user.validationToken == user_validated.validationToken
+    assert venue.validationToken == venue_not_validated.validationToken
 
 
 @pytest.mark.standalone
 @clean_database
-def test_get_all_pending_offerers_return_requested_tokens_if_case_only_offerer_and_venue_validated(app):
-    # given
-    user_not_validated = create_user(email="user@user.pro", can_book_free_offers=False, is_admin=False, validation_token="token_for_user")
-    offerer_validated = create_offerer()
-    user_offerer_not_validated = create_user_offerer(user_not_validated, offerer_validated, validation_token='user_off_token')
-    venue_validated = create_venue(offerer_validated)
-    PcObject.check_and_save(offerer_validated, user_offerer_not_validated, user_not_validated, venue_validated)
-    
-    # when
-    offerers = find_all_pending_validation()
-
-    # then
-    assert offerers[0].validationToken == offerer_validated.validationToken
-    assert offerers[0].UserOfferers[0].validationToken == user_offerer_not_validated.validationToken
-    assert offerers[0].UserOfferers[0].user.validationToken == user_not_validated.validationToken
-    assert offerers[0].managedVenues[0].validationToken == venue_validated.validationToken
-
-
-@pytest.mark.standalone
-@clean_database
-def test_get_all_pending_offerers_return_requested_tokens_if_case_only_user_offerer_and_venue_validated(app):
-    # given
-    user_not_validated = create_user(email="user@user.pro", can_book_free_offers=False, is_admin=False, validation_token="token_for_user")
-    offerer_not_validated = create_offerer(validation_token="this_offerer_has_a_token")
-    user_offerer_validated = create_user_offerer(user_not_validated, offerer_not_validated)
-    venue_validated = create_venue(offerer_not_validated)
-    PcObject.check_and_save(offerer_not_validated, user_offerer_validated, user_not_validated, venue_validated)
-    
-    # when
-    offerers = find_all_pending_validation()
-
-    # then
-    assert offerers[0].validationToken == offerer_not_validated.validationToken
-    assert offerers[0].UserOfferers[0].validationToken == user_offerer_validated.validationToken
-    assert offerers[0].UserOfferers[0].user.validationToken == user_not_validated.validationToken
-    assert offerers[0].managedVenues[0].validationToken == venue_validated.validationToken
-
-
-@pytest.mark.standalone
-@clean_database
-def test_get_all_pending_offerers_return_requested_tokens_if_case_only_user_not_validated(app):
+def test_get_all_pending_offerers_return_requested_tokens_in_case_only_user_not_validated(app):
     # given
     user_not_validated = create_user(email="user@user.pro", can_book_free_offers=False, is_admin=False, validation_token="token_for_user")
     offerer_validated = create_offerer()
@@ -423,36 +186,21 @@ def test_get_all_pending_offerers_return_requested_tokens_if_case_only_user_not_
     # when
     offerers = find_all_pending_validation()
 
+    offerer = offerers[0]
+    user_offerer = offerer.UserOfferers[0]
+    user = user_offerer.user
+    venue = offerer.managedVenues[0]
+
     # then
-    assert offerers[0].validationToken == offerer_validated.validationToken
-    assert offerers[0].UserOfferers[0].validationToken == user_offerer_validated.validationToken
-    assert offerers[0].UserOfferers[0].user.validationToken == user_not_validated.validationToken
-    assert offerers[0].managedVenues[0].validationToken == venue_validated.validationToken
+    assert offerer.validationToken == offerer_validated.validationToken
+    assert user_offerer.validationToken == user_offerer_validated.validationToken
+    assert user.validationToken == user_not_validated.validationToken
+    assert venue.validationToken == venue_validated.validationToken
 
 
 @pytest.mark.standalone
 @clean_database
-def test_get_all_pending_offerers_return_requested_tokens_if_case_only_user_and_venue_validated(app):
-    # given
-    user_validated = create_user(email="user@user.pro", can_book_free_offers=False, is_admin=False)
-    offerer_not_validated = create_offerer(validation_token="this_offerer_has_a_token")
-    user_offerer_not_validated = create_user_offerer(user_validated, offerer_not_validated, validation_token='user_off_token')
-    venue_validated = create_venue(offerer_not_validated)
-    PcObject.check_and_save(offerer_not_validated, user_offerer_not_validated, user_validated, venue_validated)
-    
-    # when
-    offerers = find_all_pending_validation()
-
-    # then
-    assert offerers[0].validationToken == offerer_not_validated.validationToken
-    assert offerers[0].UserOfferers[0].validationToken == user_offerer_not_validated.validationToken
-    assert offerers[0].UserOfferers[0].user.validationToken == user_validated.validationToken
-    assert offerers[0].managedVenues[0].validationToken == venue_validated.validationToken
-
-
-@pytest.mark.standalone
-@clean_database
-def test_get_all_pending_offerers_return_requested_tokens_if_case_only_user_offerer_not_validated(app):
+def test_get_all_pending_offerers_return_requested_tokens_in_case_only_user_offerer_not_validated(app):
     # given
     user_validated = create_user(email="user@user.pro", can_book_free_offers=False, is_admin=False)
     offerer_validated = create_offerer()
@@ -463,16 +211,21 @@ def test_get_all_pending_offerers_return_requested_tokens_if_case_only_user_offe
     # when
     offerers = find_all_pending_validation()
 
+    offerer = offerers[0]
+    user_offerer = offerer.UserOfferers[0]
+    user = user_offerer.user
+    venue = offerer.managedVenues[0]
+
     # then
-    assert offerers[0].validationToken == offerer_validated.validationToken
-    assert offerers[0].UserOfferers[0].validationToken == user_offerer_not_validated.validationToken
-    assert offerers[0].UserOfferers[0].user.validationToken == user_validated.validationToken
-    assert offerers[0].managedVenues[0].validationToken == venue_validated.validationToken
+    assert offerer.validationToken == offerer_validated.validationToken
+    assert user_offerer.validationToken == user_offerer_not_validated.validationToken
+    assert user.validationToken == user_validated.validationToken
+    assert venue.validationToken == venue_validated.validationToken
 
 
 @pytest.mark.standalone
 @clean_database
-def test_get_all_pending_offerers_return_requested_tokens_if_case_only_offerer_not_validated(app):
+def test_get_all_pending_offerers_return_nothing_in_case_only_offerer_not_validated(app):
     # given
     user_validated = create_user(email="user@user.pro", can_book_free_offers=False, is_admin=False)
     offerer_not_validated = create_offerer(validation_token="this_offerer_has_a_token")
@@ -483,16 +236,21 @@ def test_get_all_pending_offerers_return_requested_tokens_if_case_only_offerer_n
     # when
     offerers = find_all_pending_validation()
 
+    offerer = offerers[0]
+    user_offerer = offerer.UserOfferers[0]
+    user = user_offerer.user
+    venue = offerer.managedVenues[0]
+
     # then
-    assert offerers[0].validationToken == offerer_not_validated.validationToken
-    assert offerers[0].UserOfferers[0].validationToken == user_offerer_validated.validationToken
-    assert offerers[0].UserOfferers[0].user.validationToken == user_validated.validationToken
-    assert offerers[0].managedVenues[0].validationToken == venue_validated.validationToken
+    assert offerer.validationToken == offerer_not_validated.validationToken
+    assert user_offerer.validationToken == user_offerer_validated.validationToken
+    assert user.validationToken == user_validated.validationToken
+    assert venue.validationToken == venue_validated.validationToken
 
 
 @pytest.mark.standalone
 @clean_database
-def test_get_all_pending_offerers_return_requested_tokens_if_case_all_validated(app):
+def test_get_all_pending_offerers_return_requested_tokens_in_case_all_validated(app):
     # given
     user_validated = create_user(email="user@user.pro", can_book_free_offers=False, is_admin=False)
     offerer_validated = create_offerer()
@@ -504,7 +262,6 @@ def test_get_all_pending_offerers_return_requested_tokens_if_case_all_validated(
     offerers = find_all_pending_validation()
     # then
     assert offerers == []
-    assert offerer_validated not in offerers
 
 
 @pytest.mark.standalone

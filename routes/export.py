@@ -18,7 +18,7 @@ from repository.venue_queries import find_filtered_venues
 from validation.exports import check_user_is_admin , check_get_venues_params, \
     check_get_offerers_params
 
-from utils.includes import OFFERER__FOR_PENDING_VALIDATION_INCLUDES
+from utils.includes import OFFERER_FOR_PENDING_VALIDATION_INCLUDES
 from utils.rest import expect_json_data
 
 
@@ -133,7 +133,7 @@ def get_pending_validation():
     offerers = offerer_queries.find_all_pending_validation()
 
     for o in offerers:
-        result.append(o._asdict(include=OFFERER__FOR_PENDING_VALIDATION_INCLUDES))
+        result.append(o._asdict(include=OFFERER_FOR_PENDING_VALIDATION_INCLUDES))
 
     return jsonify(result), 200
 

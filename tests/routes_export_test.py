@@ -231,7 +231,6 @@ def test_pending_validation_returns_offerers_venues_user_and_user_offerer_with_r
     user_offerer4 = create_user_offerer(user4, offerer4)
     user_offerer5 = create_user_offerer(user3, offerer3, validation_token="what_a_token")
     venue1 = create_venue(offerer1, siret=None, comment="nice_comment", validation_token="venue_token")
-    venue1_bis = create_venue(offerer1, siret="12345678112345")
     venue2 = create_venue(offerer2, siret="12345678212345")
     venue3 = create_venue(offerer3, siret="12345678312345")
     venue4 = create_venue(offerer4, siret="12345678412345")
@@ -248,7 +247,6 @@ def test_pending_validation_returns_offerers_venues_user_and_user_offerer_with_r
     assert response.json()[0]['UserOfferers'][0]['validationToken'] == user_offerer1.validationToken
     assert response.json()[0]['managedVenues'][0]['validationToken'] == venue1.validationToken
     assert response.json()[0]['managedVenues'][0]['comment'] == venue1.comment
-    assert response.json()[0]['managedVenues'][1]['siret'] == venue1_bis.siret
     assert response.json()[1]['validationToken'] == offerer2.validationToken
     assert response.json()[1]['UserOfferers'][0]['validationToken'] == None
     assert response.json()[2]['validationToken'] == None
@@ -518,7 +516,6 @@ def test_get_venues_with_sirens_params_return_200_and_filtered_venues(app):
     assert venue_123456782.name in venue_names
     assert venue_123456783.name in venue_names
     assert venue_123456784.name not in venue_names
-
 
 
 @pytest.mark.standalone
