@@ -33,10 +33,10 @@ def validate_change_password_request(json):
         raise errors
 
 
-def generate_reset_token(user):
+def generate_reset_token(user, validity_duration_hours=24):
     token = random_token(length=RESET_PASSWORD_TOKEN_LENGTH)
     user.resetPasswordToken = token
-    user.resetPasswordTokenValidityLimit = datetime.utcnow() + timedelta(hours=24)
+    user.resetPasswordTokenValidityLimit = datetime.utcnow() + timedelta(hours=validity_duration_hours)
 
 
 def validate_reset_request(request):
@@ -94,7 +94,3 @@ def check_password_strength(field_name, field_value):
             '1 majuscule, 1 minuscule, 1 chiffre et 1 caractère spécial parmi _-&?~#|^@=+.$,<>%*!:;'
         )
         raise errors
-
-
-def _random_alphanum_char():
-    return secrets.choice(string.ascii_uppercase + string.digits)
