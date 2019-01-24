@@ -92,9 +92,9 @@ class ThingType(SearchableType):
         return dict_value
 
     ACTIVATION = {
-        'label': 'Activation événementielle du pass Culture',
-        'offlineOnly': True,
-        'onlineOnly': False,
+        'label': 'Activation virtuelle du pass Culture',
+        'offlineOnly': False,
+        'onlineOnly': True,
         'sublabel': 'Activation',
         'description': 'Activez votre pass Culture grâce à cette offre',
     }
