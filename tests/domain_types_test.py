@@ -33,13 +33,13 @@ def test_get_formatted_event_or_thing_types_returns_all_types_including_activati
         'type': 'Event',
         'value': 'EventType.ACTIVATION',
         'description': 'Activez votre pass Culture grâce à cette offre',
-        'label': 'Activation événementielle du pass Culture'
+        'label': 'Pass Culture : activation évènementielle'
     }
 
     activation_thing = {
         'type': 'Thing',
         'value': 'ThingType.ACTIVATION',
-        'label': 'Activation virtuelle du pass Culture',
+        'label': 'Pass Culture : activation en ligne',
         'offlineOnly': False,
         'onlineOnly': True,
         'sublabel': 'Activation',
@@ -50,7 +50,6 @@ def test_get_formatted_event_or_thing_types_returns_all_types_including_activati
     types = get_formatted_event_or_thing_types(with_activation_type=True)
 
     # then
-    print(types)
     assert activation_event in types
     assert activation_thing in types
     assert len(types) == 20
