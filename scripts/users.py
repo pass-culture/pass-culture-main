@@ -1,12 +1,16 @@
+import csv
 import re
 from datetime import datetime
 from typing import List
 
 from domain.password import generate_reset_token
-from models import User, Booking, Stock
+from models import User, Booking, Stock, PcObject
+from repository.stock_queries import find_online_activation_stock
 from repository.user_queries import find_user_by_email
+from utils.logger import logger
 from utils.token import random_token
 
+CHUNK_SIZE = 500
 THIRTY_DAYS = 30 * 24
 
 
@@ -49,3 +53,28 @@ def fill_user_from(csv_row: List[str], user: User) -> User:
     generate_reset_token(user, validity_duration_hours=THIRTY_DAYS)
 
     return user
+
+
+def run(csv_file_path: str) -> None:
+    logger.info('[START] Création des utilisateurs avec contremarques d\'activation')
+
+    csv_reader = csv.reader(open(csv_file_path))
+
+    chunk = []
+    total = 0
+    stock = find_online_activation_stock()
+
+    if not stock:
+        logger.error('No activation stock found')
+    else:
+        for line in csv_reader:
+            chunk.append(line)
+            
+            if len(chunk) >= CHUNK_SIZE or not next(csv_reader):
+                bookings = setup_users(chunk, stock)
+                PcObject.check_and_save(*bookings)
+                logger.info('Enregistrement de 500 comptes utilisateur')
+                total += len(chunk)
+                chunk = []
+
+    logger.info('[END] Création des utilisateurs avec contremarques d\'activation : %s' % total)
