@@ -250,7 +250,7 @@ def test_get_all_pending_offerers_return_nothing_in_case_only_offerer_not_valida
 
 @pytest.mark.standalone
 @clean_database
-def test_get_all_pending_offerers_return_requested_tokens_in_case_all_validated(app):
+def test_get_all_pending_offerers_return_empty_list_in_case_all_validated(app):
     # given
     user_validated = create_user(email="user@user.pro", can_book_free_offers=False, is_admin=False)
     offerer_validated = create_offerer()
