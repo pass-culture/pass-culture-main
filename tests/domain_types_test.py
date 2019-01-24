@@ -36,12 +36,24 @@ def test_get_formatted_event_or_thing_types_returns_all_types_including_activati
         'label': 'Activation événementielle du pass Culture'
     }
 
+    activation_thing = {
+        'type': 'Thing',
+        'value': 'ThingType.ACTIVATION',
+        'label': 'Activation virtuelle du pass Culture',
+        'offlineOnly': False,
+        'onlineOnly': True,
+        'sublabel': 'Activation',
+        'description': 'Activez votre pass Culture grâce à cette offre'
+    }
+
     # when
     types = get_formatted_event_or_thing_types(with_activation_type=True)
 
     # then
+    print(types)
     assert activation_event in types
-    assert len(types) == 19
+    assert activation_thing in types
+    assert len(types) == 20
 
 
 @pytest.mark.standalone
