@@ -98,7 +98,6 @@ class ThingType(SearchableType):
         'sublabel': 'Activation',
         'description': 'Activez votre pass Culture grâce à cette offre',
     }
-
     AUDIOVISUEL = {
         'label': "Audiovisuel (Films sur supports physiques et VOD)",
         'offlineOnly': False,

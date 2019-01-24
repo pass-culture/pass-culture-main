@@ -2,9 +2,9 @@ from datetime import datetime, timedelta
 
 import pytest
 
+from models import PcObject, ThingType
 from models.activity import load_activity
-from models import PcObject
-from repository.stock_queries import find_stocks_of_finished_events_when_no_recap_sent
+from repository.stock_queries import find_stocks_of_finished_events_when_no_recap_sent, find_online_activation_stock
 from tests.conftest import clean_database
 from utils.test_utils import create_stock_from_event_occurrence, create_event_occurrence, create_event_offer, \
     create_venue, create_offerer, create_thing_offer, create_stock_from_offer
@@ -40,6 +40,7 @@ def test_find_stocks_of_finished_events_when_no_recap_sent(app):
     assert stock_thing not in stocks
     assert stock_soft_deleted not in stocks
 
+
 @pytest.mark.standalone
 @clean_database
 def test_create_stock_triggers_insert_activities(app):
@@ -55,13 +56,33 @@ def test_create_stock_triggers_insert_activities(app):
     # Then
     activities = load_activity().query.all()
     assert len(activities) == 5
-    assert set(
-        ["thing", "offerer", "venue", "thing", "offer", "stock"]
-    ) == set(
+    assert {"thing", "offerer", "venue", "thing", "offer", "stock"} == set(
         [a.table_name for a in activities]
     )
-    assert set(
-        ["insert"]
-    ) == set(
-        [a.verb for a in activities]
-    )
+    assert {"insert"} == set([a.verb for a in activities])
+
+
+@pytest.mark.standalone
+@clean_database
+def test_find_online_activation_stock(app):
+    # given
+    offerer = create_offerer(siren='123456789', name='pass Culture')
+    venue_online = create_venue(offerer, siret=None, is_virtual=True)
+    venue_physical = create_venue(offerer, siret='12345678912345', is_virtual=False)
+    activation_offer = create_thing_offer(venue_online, thing_type=ThingType.ACTIVATION)
+    other_thing_offer = create_thing_offer(venue_physical, thing_type=ThingType.ACTIVATION)
+    event_offer = create_event_offer(venue_physical)
+    activation_stock = create_stock_from_offer(activation_offer, available=200, price=0)
+    other_thing_stock = create_stock_from_offer(other_thing_offer, available=100, price=10)
+    event_stock = create_stock_from_offer(event_offer, available=50, price=20)
+
+    PcObject.check_and_save(other_thing_stock, activation_stock, event_stock)
+
+    # when
+    stock = find_online_activation_stock()
+
+    # then
+    assert stock.offer.venue.isVirtual == True
+    assert stock.offer.thing.type == 'ThingType.ACTIVATION'
+    assert stock.available == 200
+    assert stock.price == 0

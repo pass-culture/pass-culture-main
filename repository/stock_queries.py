@@ -2,8 +2,9 @@ from datetime import datetime
 from pprint import pformat
 
 from sqlalchemy.exc import InternalError
+from sqlalchemy.orm import aliased
 
-from models import Stock, Offerer, User, ApiErrors, PcObject, EventOccurrence
+from models import Stock, Offerer, User, ApiErrors, PcObject, EventOccurrence, Offer, Thing, ThingType, Venue
 from utils.human_ids import dehumanize
 
 
@@ -53,5 +54,17 @@ def save_stock(stock):
 def find_stocks_of_finished_events_when_no_recap_sent():
     return Stock.queryNotSoftDeleted().join(EventOccurrence) \
         .filter((Stock.bookingLimitDatetime < datetime.utcnow()) &
-                 (EventOccurrence.beginningDatetime < datetime.utcnow()) &
+                (EventOccurrence.beginningDatetime < datetime.utcnow()) &
                 (Stock.bookingRecapSent == None))
+
+
+def find_online_activation_stock():
+    return Stock.query \
+        .join(Offer) \
+        .join(Venue) \
+        .filter_by(isVirtual=True) \
+        .reset_joinpoint() \
+        .join(aliased(Offer)) \
+        .join(Thing) \
+        .filter_by(type=str(ThingType.ACTIVATION)) \
+        .first()
