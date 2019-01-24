@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-set -o errexit
-set -o pipefail
 set -o nounset
 
 
@@ -15,11 +13,12 @@ where:
     exit 0
 fi
 
-if pgrep -x "scalingo" > /dev/null
+old_scalingo_process_pid=$(pgrep -x "scalingo")
+if [ "$old_scalingo_process_pid" > 1 ]; then
 then
-    echo "A Scalingo tunnel was left opened, restore backup will not start."
+    echo "A Scalingo tunnel was left opened, we are killing the old process ($old_scalingo_process_pid) before starting."
     echo "Safety first !"
-    exit 1
+    sudo kill -9 "$old_scalingo_process_pid"
 fi
 
 # GET APPLICATION NAME
