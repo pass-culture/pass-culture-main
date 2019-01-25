@@ -210,7 +210,6 @@ def get_offers_for_recommendations_search(
 
     return offers
 
-
 def find_offers_with_filter_parameters(
         user,
         offerer_id=None,
@@ -240,7 +239,6 @@ def find_offers_with_filter_parameters(
         )
 
     return query
-
 
 def find_searchable_offer(offer_id):
     return Offer.query.filter_by(id=offer_id)\
