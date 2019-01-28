@@ -290,9 +290,9 @@ elif [[ "$CMD" == "test-cafe-webapp" ]] || [[ "$CMD" == "test-cafe-pro" ]]; then
 		confirm "Warning: your database will be wiped. Is this OK ?"
 	 	"$ROOT_PATH"/pc -e "$ENV" reset-all-db
 		"$ROOT_PATH"/pc -e "$ENV" sandbox --name="$SANDBOX_NAME"
-		RUN='cd $APP_PATH && ./scripts/pc.js testcafe -b chrome:headless'
+		RUN='cd $APP_PATH && ./scripts/manager.js testcafe -b chrome:headless'
 	else
-  	    RUN='cd $APP_PATH && ./scripts/pc.js testcafe '"$*"
+  	    RUN='cd $APP_PATH && ./scripts/manager.js testcafe '"$*"
 	fi
 
 # =============================================
