@@ -87,3 +87,5 @@ La commande ci-dessous permet de mettre à jour le dossier dans `public/static/f
 ```bash
 yarn fontello
 ```
+
+[Nous Contacter](support.passculture@beta.gouv.fr)

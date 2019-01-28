@@ -2,7 +2,7 @@ import { Selector } from 'testcafe'
 
 import { createUserRole } from './helpers/roles'
 import { hasSignedUpUser } from './helpers/users'
-import { ROOT_PATH } from '../src/utils/config'
+import { ROOT_PATH, SUPPORT_EMAIL } from '../src/utils/config'
 
 const menuButton = Selector('#open-menu-button')
 const mainMenu = Selector('#main-menu')
@@ -110,11 +110,10 @@ test('Menu | Liens | Mon profil', async t => {
 })
 
 test('Menu | Liens | Nous contacter', async t => {
+  const mailto = `mailto:${SUPPORT_EMAIL}`
   const menuContact = Selector('.navlink').withText('Nous contacter')
   await t.expect(menuContact.exists).ok()
-  await t
-    .expect(menuContact.getAttribute('href'))
-    .contains('mailto:pass@culture.gouv.fr')
+  await t.expect(menuContact.getAttribute('href')).contains(mailto)
 })
 
 test('Menu | Liens | Mentions légales', async t => {

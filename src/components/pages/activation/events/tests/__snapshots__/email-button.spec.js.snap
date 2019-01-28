@@ -23,7 +23,7 @@ ShallowWrapper {
         >
           <MailToLink
             className="is-block text-center button is-rounded py7 no-background"
-            email="passculture@beta.gouv.fr"
+            email="support.passculture@beta.gouv.fr"
             headers={Object {}}
             id="activation-events-contact-us"
             obfuscate={true}
@@ -56,7 +56,7 @@ ShallowWrapper {
         "props": Object {
           "children": <MailToLink
             className="is-block text-center button is-rounded py7 no-background"
-            email="passculture@beta.gouv.fr"
+            email="support.passculture@beta.gouv.fr"
             headers={Object {}}
             id="activation-events-contact-us"
             obfuscate={true}
@@ -81,7 +81,7 @@ ShallowWrapper {
               Activation par e-mail
             </span>,
             "className": "is-block text-center button is-rounded py7 no-background",
-            "email": "passculture@beta.gouv.fr",
+            "email": "support.passculture@beta.gouv.fr",
             "headers": Object {},
             "id": "activation-events-contact-us",
             "obfuscate": true,
@@ -145,7 +145,7 @@ ShallowWrapper {
           >
             <MailToLink
               className="is-block text-center button is-rounded py7 no-background"
-              email="passculture@beta.gouv.fr"
+              email="support.passculture@beta.gouv.fr"
               headers={Object {}}
               id="activation-events-contact-us"
               obfuscate={true}
@@ -178,7 +178,7 @@ ShallowWrapper {
           "props": Object {
             "children": <MailToLink
               className="is-block text-center button is-rounded py7 no-background"
-              email="passculture@beta.gouv.fr"
+              email="support.passculture@beta.gouv.fr"
               headers={Object {}}
               id="activation-events-contact-us"
               obfuscate={true}
@@ -203,7 +203,7 @@ ShallowWrapper {
                 Activation par e-mail
               </span>,
               "className": "is-block text-center button is-rounded py7 no-background",
-              "email": "passculture@beta.gouv.fr",
+              "email": "support.passculture@beta.gouv.fr",
               "headers": Object {},
               "id": "activation-events-contact-us",
               "obfuscate": true,

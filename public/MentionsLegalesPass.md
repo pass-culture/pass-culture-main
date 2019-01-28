@@ -14,7 +14,7 @@ Toute visite et/ou utilisation de l’Application doit se faire dans le respect 
 
 **Editeur **(ci-après désigné par « l’Editeur ») : Ministère de la Culture. 
 
-Contact : [pass@culture.gouv.fr](mailto:pass@culture.gouv.fr)
+Contact : [support.passculture@beta.gouv.fr](mailto:support.passculture@beta.gouv.fr)
 
 **L’hébergeur **de l’application (ci-après désigné « l’Hébergeur ») : la société OVH.
 
@@ -70,13 +70,13 @@ Dans son interface professionnelle, le Site permet aux Professionnels de référ
 
 ##### 5.1 Inscription de l’Utilisateurs
 
-Pour utiliser l’Application, les Utilisateurs doivent s’inscrire en envoyant un email à : [pass@culture.gouv.fr](mailto:pass@culture.gouv.fr) et fournir à l’Application l’ensemble des informations indiquées comme obligatoires. Toute inscription incomplète ne sera pas validée.
+Pour utiliser l’Application, les Utilisateurs doivent s’inscrire en envoyant un email à : [support.passculture@beta.gouv.fr](mailto:support.passculture@beta.gouv.fr) et fournir à l’Application l’ensemble des informations indiquées comme obligatoires. Toute inscription incomplète ne sera pas validée.
 
 L’inscription entraîne automatiquement l’ouverture d’un compte au nom des Utilisateurs (ci-après : le « Compte »).
 
 ##### 5.2 Inscription du Professionnel sur le Site
 
-Pour avoir accès aux fonctionnalités réservées au Professionnel, ce dernier devra s’inscrire par mail à l’adresse [pass@culture.gouv.fr](mailto:pass@culture.gouv.fr) et fournir à l’Application l’ensemble des informations indiquées comme obligatoires. Toute inscription incomplète ne sera pas validée.
+Pour avoir accès aux fonctionnalités réservées au Professionnel, ce dernier devra s’inscrire par mail à l’adresse [support.passculture@beta.gouv.fr](mailto:support.passculture@beta.gouv.fr) et fournir à l’Application l’ensemble des informations indiquées comme obligatoires. Toute inscription incomplète ne sera pas validée.
 
 #### 6. GEOLOCALISATION
 
@@ -150,7 +150,7 @@ Toute donnée personnelle susceptible d’être collectée dans le cadre de l’
 
 Le refus de fournir certaines données personnelles est susceptible de priver les Utilisateurs de l’accès à certains Services.
 
-En cas de communication de données personnelles, les Utilisateurs disposent d'un droit d'accès direct, de rectification et d’opposition des données qui les concernent, qu’ils peuvent exercer sur simple demande effectuée par mail à l’adresse suivante [pass@culture.gouv.fr](mailto:pass@culture.gouv.fr) ou par courrier à l’adresse suivante : _pass Culture_, 3 rue de Valois, 75001, Paris. 
+En cas de communication de données personnelles, les Utilisateurs disposent d'un droit d'accès direct, de rectification et d’opposition des données qui les concernent, qu’ils peuvent exercer sur simple demande effectuée par mail à l’adresse suivante [support.passculture@beta.gouv.fr](mailto:support.passculture@beta.gouv.fr) ou par courrier à l’adresse suivante : _pass Culture_, 3 rue de Valois, 75001, Paris. 
 
 #### 13. DISPONIBILITÉ DE L’APPLICATION
 
@@ -224,7 +224,7 @@ En renseignant les informations relatives aux offres, le Professionnel concède 
 
 #### 15. LIENS VERS D'AUTRES SITES
 
-La mise en place par le Professionnel de tous liens hypertextes à partir de n’importe quel site et/ou application et de n’importe quel terminal vers tout ou partie de l’Application est strictement interdite, sauf autorisation préalable et écrite de Ministère de la Culture, sollicitée par courriel à l'adresse suivante : [pass@culture.gouv.fr](mailto:pass@culture.gouv.fr) .
+La mise en place par le Professionnel de tous liens hypertextes à partir de n’importe quel site et/ou application et de n’importe quel terminal vers tout ou partie de l’Application est strictement interdite, sauf autorisation préalable et écrite de Ministère de la Culture, sollicitée par courriel à l'adresse suivante : [support.passculture@beta.gouv.fr](mailto:support.passculture@beta.gouv.fr) .
 
 Le Ministère de la Culture est libre de refuser cette autorisation sans avoir à justifier de quelque manière que ce soit sa décision. Dans le cas où le Ministère de la Culture accorderait son autorisation, celle-ci n'est dans tous les cas que temporaire et pourra être retirée à tout moment, sans obligation de justification à la charge du Ministère de la Culture.
 
@@ -252,7 +252,7 @@ Au moment de toute résiliation, les droits et les licences qui avaient été ac
 
 #### 18. CONTACT
 
-Toute question relative à l’Application, au Site et/ou aux Services doit être adressée par mail à l’adresse suivante pass@culture.gouv.fr.
+Toute question relative à l’Application, au Site et/ou aux Services doit être adressée par mail à l’adresse suivante [support.passculture@beta.gouv.fr](mailto:support.passculture@beta.gouv.fr).
 
 #### 19. LOI APPLICABLE
 

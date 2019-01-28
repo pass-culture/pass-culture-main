@@ -15,7 +15,12 @@ export const PROJECT_NAME = 'Pass Culture'
 export const IS_DEV = NODE_ENV === 'development'
 export const IS_PROD = !IS_DEV
 export const MOBILE_OS = getMobileOperatingSystem()
-export const SUPPORT_EMAIL = 'passculture@beta.gouv.fr'
+
+// NOTE: valeur également présente en dur dans:
+// - ./config-staging.xml
+// - ./config-production.xml
+// - ./public/MentionsLegalesPass.md
+export const SUPPORT_EMAIL = 'support.passculture@beta.gouv.fr'
 
 export const API_URL = process.env.API_URL || 'http://localhost'
 export const THUMBS_URL =
@@ -48,8 +53,7 @@ if (typeof window !== 'undefined' && window.cordova) {
     document.body.className += ' cordova-ios'
     // FIXME -> Si ici on applique pas la regle des ';'
     // L'application plante en respectant la regle eslint.prefer-destructuring
-    // CALC_ROOT_PATH = window.location.href.split('/').slice(0, 10).join('/')
-    CALC_ROOT_PATH = window.location.href.match(/file:\/\/(.*)\/www/)[0]
+    CALC_ROOT_PATH = window.location.href.match(/file:\/\/(.*)\/www/)[0] // eslint-disable-line
   }
   window.addEventListener('keyboardWillShow', () => {
     window.log('Keyboard show')

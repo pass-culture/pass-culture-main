@@ -13,6 +13,8 @@ import { Signin } from '../components/pages/signin'
 import SignupPage from '../components/pages/SignupPage'
 import TermsPage from '../components/pages/TermsPage'
 
+import { SUPPORT_EMAIL } from './config'
+
 // NOTE: la gestion des éléments du menu principal
 // se fait dans le fichier src/components/MainMenu
 const routes = [
@@ -92,7 +94,7 @@ const routes = [
   },
   {
     disabled: false,
-    href: 'mailto:pass@culture.gouv.fr',
+    href: `mailto:${SUPPORT_EMAIL}`,
     icon: 'mail-w',
     title: 'Nous contacter',
   },

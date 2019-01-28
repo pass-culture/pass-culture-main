@@ -7,9 +7,9 @@ import SearchPage from '../../components/pages/SearchPage'
 import MyBookingsPage from '../../components/pages/my-bookings'
 import DiscoveryPage from '../../components/pages/discovery'
 import FavoritesPage from '../../components/pages/FavoritesPage'
-
 import ProfilePage from '../../components/pages/profile'
 import TermsPage from '../../components/pages/TermsPage'
+import { SUPPORT_EMAIL } from '../config'
 
 describe('getReactRoutes', () => {
   it('filter routes pour react-router', () => {
@@ -110,7 +110,7 @@ describe('getMainMenuItems', () => {
 
       {
         disabled: false,
-        href: 'mailto:pass@culture.gouv.fr',
+        href: `mailto:${SUPPORT_EMAIL}`,
         icon: 'mail-w',
         title: 'Nous contacter',
       },
