@@ -113,3 +113,6 @@ dev_env_file
 
 # IntelliJ IDEA / PyCharm
 .idea/
+
+# No data should ne versioned
+*.csv

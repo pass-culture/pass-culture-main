@@ -41,7 +41,7 @@ def create_activation_booking_for(user: User, stock: Stock) -> Booking:
 def fill_user_from(csv_row: List[str], user: User) -> User:
     if user is None:
         user = User()
-
+    print(csv_row)
     user.lastName = csv_row[1]
     user.firstName = csv_row[2]
     user.email = csv_row[3]
@@ -68,8 +68,11 @@ def run(csv_file_path: str) -> None:
         logger.error('No activation stock found')
     else:
         for line in csv_reader:
+            if (line[0] == 'id'):
+                continue
+
             chunk.append(line)
-            
+
             if len(chunk) >= CHUNK_SIZE or not next(csv_reader):
                 bookings = setup_users(chunk, stock)
                 PcObject.check_and_save(*bookings)
@@ -78,3 +81,5 @@ def run(csv_file_path: str) -> None:
                 chunk = []
 
     logger.info('[END] Création des utilisateurs avec contremarques d\'activation : %s' % total)
+
+run('data.csv')
