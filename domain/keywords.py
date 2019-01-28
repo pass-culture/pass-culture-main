@@ -1,5 +1,3 @@
-import utils.nltk_downloader
-
 import re
 
 from nltk.corpus import stopwords
