@@ -63,7 +63,7 @@ def create_handmade_offerers():
         city="Paris",
         name="pass Culture",
         postal_code="75002",
-        siren="123456789"
+        siren="192563478"
     )
 
     PcObject.check_and_save(*offerers_by_name.values())
