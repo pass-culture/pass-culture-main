@@ -243,7 +243,7 @@ export class RawDeck extends Component {
           </button>
         )}
         {this.renderDraggableCards()}
-        {showNavigation && (
+        {showNavigation && currentRecommendation && (
           <DeckNavigation
             recommendation={currentRecommendation}
             flipHandler={

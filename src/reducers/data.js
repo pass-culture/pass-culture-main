@@ -12,6 +12,7 @@ const dataReducer = createData({
   bookings: [],
   readRecommendations: [],
   recommendations: [],
+  seenRecommendations: [],
   types: [],
   users: [],
 })

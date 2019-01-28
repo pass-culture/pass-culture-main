@@ -28,6 +28,11 @@ export class RawDiscoveryPage extends React.PureComponent {
     this.handleDataRequest()
   }
 
+  componentWillUnmount() {
+    const { dispatch } = this.props
+    dispatch(assignData({ recommendations: [], seenRecommendations: [] }))
+  }
+
   handleRequestFail = () => {
     this.setState({ haserror: true, isloading: true }, () => {
       const { history } = this.props
@@ -65,11 +70,13 @@ export class RawDiscoveryPage extends React.PureComponent {
   }
 
   handleDataRequest = () => {
-    const { dispatch, match, readRecommendations, recommendations } = this.props
+    const {
+      dispatch,
+      match,
+      readRecommendations,
+      seenRecommendations,
+    } = this.props
 
-    const seenRecommendationIds =
-      recommendations &&
-      recommendations.map(recommendation => recommendation.id)
     this.setState({ isloading: true })
     // recupere les arguments depuis l'URL
     // l'API renvoi cette première carte avant les autres recommendations
@@ -80,7 +87,8 @@ export class RawDiscoveryPage extends React.PureComponent {
       requestData('PUT', serviceuri, {
         body: {
           readRecommendations,
-          seenRecommendationIds,
+          seenRecommendationIds:
+            seenRecommendations && seenRecommendations.map(r => r.id),
         },
         handleFail: this.handleRequestFail,
         handleSuccess: this.handleRequestSuccess,
@@ -129,7 +137,7 @@ export class RawDiscoveryPage extends React.PureComponent {
 
 RawDiscoveryPage.defaultProps = {
   readRecommendations: null,
-  recommendations: null,
+  seenRecommendations: null,
 }
 
 RawDiscoveryPage.propTypes = {
@@ -138,12 +146,12 @@ RawDiscoveryPage.propTypes = {
   location: PropTypes.object.isRequired,
   match: PropTypes.object.isRequired,
   readRecommendations: PropTypes.array,
-  recommendations: PropTypes.array,
+  seenRecommendations: PropTypes.array,
 }
 
 const mapStateToProps = state => ({
   readRecommendations: state.data.readRecommendations,
-  recommendations: state.data.recommendations,
+  seenRecommendations: state.data.seenRecommendations,
 })
 
 const DiscoveryPage = compose(

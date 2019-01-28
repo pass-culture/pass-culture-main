@@ -186,7 +186,7 @@ const mapStateToProps = (state, { match }) => {
   return {
     booking,
     isFinished,
-    offer: recommendation.offer,
+    offer: recommendation && recommendation.offer,
     url,
   }
 }

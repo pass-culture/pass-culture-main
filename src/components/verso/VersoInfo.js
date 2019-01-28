@@ -101,7 +101,7 @@ class VersoInfo extends React.PureComponent {
     const { recommendation } = this.props
     const venue = get(recommendation, 'offer.venue')
     const distance = get(recommendation, 'distance')
-    const { address, city, name, postalCode } = venue || {}
+    const { address, city, latitude, longitude, name, postalCode } = venue || {}
     return (
       <div>
         <h3>Où ?</h3>
@@ -112,11 +112,8 @@ class VersoInfo extends React.PureComponent {
             {postalCode && <span className="is-block">{postalCode}</span>}
             {city && <span className="is-block">{city}</span>}
           </p>
-          {venue.isVirtual || (
-            <a
-              className="distance"
-              href={navigationLink(venue.latitude, venue.longitude)}
-            >
+          {latitude && longitude && (
+            <a className="distance" href={navigationLink(latitude, longitude)}>
               {distance}
               <Icon
                 svg="ico-geoloc-solid2"

@@ -43,7 +43,7 @@ ShallowWrapper {
     }
     match={Object {}}
     readRecommendations={null}
-    recommendations={null}
+    seenRecommendations={null}
   />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],

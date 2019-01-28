@@ -1,7 +1,7 @@
 /* eslint
   react/jsx-one-expression-per-line: 0 */
 import PropTypes from 'prop-types'
-import { requestData, withLogin } from 'pass-culture-shared'
+import { assignData, requestData, withLogin } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators, compose } from 'redux'
@@ -42,6 +42,11 @@ class MyBookingsPage extends Component {
       handleSuccess: this.handleRequestSuccess,
       normalizer: bookingNormalizer,
     })
+  }
+
+  componentWillUnmount() {
+    const { dispatch } = this.props
+    dispatch(assignData({ recommendations: [] }))
   }
 
   handleRequestFail = () => {
