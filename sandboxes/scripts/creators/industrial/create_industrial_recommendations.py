@@ -1,9 +1,14 @@
+from models.event import Event
 from models.mediation import Mediation
+from models.thing import Thing
 from models.offer_type import EventType
 from models.pc_object import PcObject
+from recommendations_engine.offers import get_department_codes_from_user
+from repository.offer_queries import get_active_offers_by_type
 from utils.logger import logger
 from utils.test_utils import create_recommendation
 
+RECOMMENDATION_MODULO = 10
 
 def create_industrial_recommendations(mediations_by_name, offers_by_name, users_by_name):
     logger.info('create_industrial_recommendations')
@@ -67,8 +72,39 @@ def create_industrial_recommendations(mediations_by_name, offers_by_name, users_
         if not user_has_recommendation_on_something_else_than_activation_offers:
             continue
 
-        already_recommended_offer_items = list(offers_by_name.items())[::10]
-        for (offer_name, offer) in already_recommended_offer_items:
+
+        department_codes = get_department_codes_from_user(user)
+
+        active_event_offer_ids = [
+            o.id for o in get_active_offers_by_type(
+                Event,
+                department_codes=department_codes,
+                user=user
+            )
+        ]
+        active_thing_offer_ids = [
+            o.id for o in get_active_offers_by_type(
+                Thing,
+                department_codes=department_codes,
+                user=user
+            )
+        ]
+
+        already_recommended_event_offer_ids = active_event_offer_ids[::RECOMMENDATION_MODULO]
+        already_recommended_thing_offer_ids = active_thing_offer_ids[::RECOMMENDATION_MODULO]
+
+        print('already_recommended_event_offer_ids', already_recommended_event_offer_ids)
+        print('already_recommended_thing_offer_ids', already_recommended_thing_offer_ids)
+
+        for (offer_name, offer) in list(offers_by_name.items()):
+
+            if isinstance(offer.eventOrThing, Event) \
+                and offer.id not in already_recommended_event_offer_ids:
+                continue
+            elif isinstance(offer.eventOrThing, Thing) \
+                and offer.id not in already_recommended_thing_offer_ids:
+                continue
+
             recommendation_name = '{} / {}'.format(
                 offer_name,
                 user_name

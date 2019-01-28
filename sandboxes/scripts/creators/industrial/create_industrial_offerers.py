@@ -6,6 +6,7 @@ from utils.test_utils import create_offerer
 def create_industrial_offerers(
         locations,
         needs_validation=False,
+        starting_index=0,
         starting_siren=222222222
 ):
     logger.info('create_industrial_offerers {}'.format(
@@ -32,7 +33,7 @@ def create_industrial_offerers(
     bic_prefix, bic_suffix = 'QSDFGH8Z', 555
     for (location_index, location) in enumerate(locations):
 
-        mock_index = location_index % len(MOCK_NAMES)
+        mock_index = location_index % len(MOCK_NAMES) + starting_index
 
         name = '{} lat:{} lon:{}'.format(
             incremented_siren,

@@ -104,20 +104,23 @@ def remove_duplicate_things_or_events(offers: List[Offer]) -> List[Offer]:
             result.append(offer)
     return result
 
+def get_department_codes_from_user(user):
+    department_codes = ILE_DE_FRANCE_DEPT_CODES \
+        if user.departementCode == '93' \
+        else [user.departementCode]
+    return department_codes
 
 def get_offers_for_recommendations_discovery(limit=3, user=None, coords=None) -> List[Offer]:
     if not user or not user.is_authenticated():
         return []
 
-    departement_codes = ILE_DE_FRANCE_DEPT_CODES \
-        if user.departementCode == '93' \
-        else [user.departementCode]
+    department_codes = get_department_codes_from_user(user)
 
-    event_offers = get_active_offers_by_type(Event, user=user, departement_codes=departement_codes)
+    event_offers = get_active_offers_by_type(Event, user=user, department_codes=department_codes)
     logger.info('(reco) event_offers count (%i)',
                 len(event_offers))
 
-    thing_offers = get_active_offers_by_type(Thing, user=user, departement_codes=departement_codes)
+    thing_offers = get_active_offers_by_type(Thing, user=user, department_codes=department_codes)
     logger.info('(reco) thing_offers count (%i)',
                 len(thing_offers))
 

@@ -36,6 +36,7 @@ def save_industrial_sandbox():
 
     validated_offerers_by_name = create_industrial_offerers(
         validated_offerer_locations,
+        starting_index=len(not_validated_offerers_by_name),
         starting_siren=222222222 + len(not_validated_offerers_by_name)
     )
 

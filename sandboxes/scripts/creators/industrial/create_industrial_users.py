@@ -4,7 +4,7 @@ from utils.test_utils import create_user
 from sandboxes.scripts.utils.user_tags import JEUNES_TAGS, PROS_TAGS
 
 ADMINS_COUNT = 1
-DEPARTEMENT_CODES = ["93", "97"]
+DEPARTMENT_CODES = ["93", "97"]
 
 def create_industrial_users():
     logger.info('create_industrial_users')
@@ -33,7 +33,7 @@ def create_industrial_users():
     validation_suffix += 1
 
     # loop on department and tags
-    for departement_code in DEPARTEMENT_CODES:
+    for departement_code in DEPARTMENT_CODES:
 
         for admin_count in range(ADMINS_COUNT):
             users_by_name['admin{} {}'.format(departement_code, admin_count)] = create_user(
