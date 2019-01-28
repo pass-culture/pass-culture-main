@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from unittest.mock import Mock
 
+from models import User
 from scripts.users import fill_user_from, create_activation_booking_for, setup_users
 from utils.test_utils import create_user, create_stock, create_thing_offer, create_venue, create_offerer
 
@@ -19,7 +20,7 @@ class FillUserFromTest:
 
     def test_returns_an_user_with_data_from_csv_row(self):
         # when
-        user = fill_user_from(self.csv_row, None)
+        user = fill_user_from(self.csv_row, User())
 
         # then
         assert user.lastName == 'Mortimer'
@@ -31,7 +32,7 @@ class FillUserFromTest:
 
     def test_sets_default_properties_on_the_user(self):
         # when
-        user = fill_user_from(self.csv_row, None)
+        user = fill_user_from(self.csv_row, User())
 
         # then
         assert user.canBookFreeOffers == False
@@ -39,7 +40,7 @@ class FillUserFromTest:
 
     def test_has_a_reset_password_token_and_validity_limit(self):
         # when
-        user = fill_user_from(self.csv_row, None)
+        user = fill_user_from(self.csv_row, User())
 
         # then
         thirty_days_in_the_future = datetime.utcnow() + timedelta(days=30)

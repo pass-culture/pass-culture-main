@@ -18,8 +18,11 @@ def setup_users(csv_rows: List[List[str]], stock: Stock, find_user_query=find_us
     bookings = []
 
     for row in csv_rows:
-        existing_user = find_user_query(row[3])
-        filled_user = fill_user_from(row, existing_user)
+        user = find_user_query(row[3])
+        if not user:
+            user = User()
+
+        filled_user = fill_user_from(row, user)
         booking = create_activation_booking_for(filled_user, stock)
         bookings.append(booking)
 
@@ -39,9 +42,6 @@ def create_activation_booking_for(user: User, stock: Stock) -> Booking:
 
 
 def fill_user_from(csv_row: List[str], user: User) -> User:
-    if user is None:
-        user = User()
-    print(csv_row)
     user.lastName = csv_row[1]
     user.firstName = csv_row[2]
     user.email = csv_row[3]
@@ -82,4 +82,3 @@ def run(csv_file_path: str) -> None:
 
     logger.info('[END] Création des utilisateurs avec contremarques d\'activation : %s' % total)
 
-run('data.csv')
