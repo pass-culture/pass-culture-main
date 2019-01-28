@@ -21,7 +21,7 @@ def test_save_industrial_sandbox(app):
             Booking=20,
             Deposit=6,
             Event=32,
-            EventOccurrence=144,
+            EventOccurrence=48,
             Mediation=38,
             Offer=71,
             Offerer=13,
