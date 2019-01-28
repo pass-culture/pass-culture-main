@@ -93,9 +93,6 @@ def create_industrial_recommendations(mediations_by_name, offers_by_name, users_
         already_recommended_event_offer_ids = active_event_offer_ids[::RECOMMENDATION_MODULO]
         already_recommended_thing_offer_ids = active_thing_offer_ids[::RECOMMENDATION_MODULO]
 
-        print('already_recommended_event_offer_ids', already_recommended_event_offer_ids)
-        print('already_recommended_thing_offer_ids', already_recommended_thing_offer_ids)
-
         for (offer_name, offer) in list(offers_by_name.items()):
 
             if isinstance(offer.eventOrThing, Event) \
