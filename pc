@@ -284,7 +284,7 @@ elif [[ "$CMD" == "test-cafe-webapp" ]] || [[ "$CMD" == "test-cafe-pro" ]]; then
 		SANDBOX_NAME="webapp"
 	else
 		APP_PATH="$ROOT_PATH"/pro
-		SANDBOX_NAME="light"
+		SANDBOX_NAME="industrial"
 	fi
 	if [[ $# == 0 ]]; then
 		confirm "Warning: your database will be wiped. Is this OK ?"
@@ -292,7 +292,7 @@ elif [[ "$CMD" == "test-cafe-webapp" ]] || [[ "$CMD" == "test-cafe-pro" ]]; then
 		"$ROOT_PATH"/pc -e "$ENV" sandbox --name="$SANDBOX_NAME"
 		RUN='cd $APP_PATH && ./scripts/manager.js testcafe -b chrome:headless'
 	else
-  	    RUN='cd $APP_PATH && ./scripts/manager.js testcafe '"$*"
+  	RUN='cd $APP_PATH && ./scripts/manager.js testcafe '"$*"
 	fi
 
 # =============================================
