@@ -58,6 +58,14 @@ def create_handmade_offerers():
         siren="812182491"
     )
 
+    offerers_by_name['PASS CULTURE'] = create_offerer(
+        address="3 rue de Valois",
+        city="Paris",
+        name="pass Culture",
+        postal_code="75002",
+        siren="123456789"
+    )
+
     PcObject.check_and_save(*offerers_by_name.values())
 
     logger.info('created {} offerers'.format(len(offerers_by_name)))

@@ -13,6 +13,12 @@ def create_handmade_thing_stocks(offers_by_name):
         price=50
     )
 
+    thing_stocks_by_name['pass Culture Activation / ACTIVATION (Offre en ligne) / 15000 / 0'] = create_stock_from_offer(
+        offers_by_name['pass Culture Activation / Activation (Offre en ligne)'],
+        available=15000,
+        price=0
+    )
+
     PcObject.check_and_save(*offers_by_name.values())
 
     logger.info('created {} hing_stocks'.format(len(thing_stocks_by_name)))

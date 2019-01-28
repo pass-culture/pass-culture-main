@@ -17,6 +17,11 @@ def create_handmade_thing_offers(things_by_name, venues_by_name):
         thing=things_by_name['Le Monde Diplomatique']
     )
 
+    thing_offers_by_name['pass Culture Activation / Activation (Offre en ligne)'] = create_thing_offer(
+        venues_by_name['ACTIVATION (Offre en ligne)'],
+        thing=things_by_name['pass Culture Activation']
+    )
+
     PcObject.check_and_save(*thing_offers_by_name.values())
 
     logger.info('created {} thing_offers'.format(len(thing_offers_by_name)))

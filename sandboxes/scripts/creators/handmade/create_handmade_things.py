@@ -16,6 +16,11 @@ def create_handmade_things():
                                                            media_urls=['https://www.monde-diplomatique.fr/'],
                                                            author_name="Le Monde", is_national=True)
 
+    things_by_name['pass Culture Activation'] = create_thing(thing_name="Activation en ligne",
+                                                           thing_type=ThingType.ACTIVATION,
+                                                           media_urls=['http://app.passculture.beta.gouv.fr/'],
+                                                           author_name="pass Culture", is_national=True)
+
     PcObject.check_and_save(*things_by_name.values())
 
     logger.info('created {} things'.format(len(things_by_name)))

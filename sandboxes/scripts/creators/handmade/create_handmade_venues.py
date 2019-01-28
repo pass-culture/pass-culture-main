@@ -85,6 +85,15 @@ def create_handmade_venues(offerers_by_name):
         siret=None
     )
 
+    offerer = offerers_by_name["PASS CULTURE"]
+    name = "ACTIVATION (Offre en ligne)"
+    venues_by_name[name] = create_venue(
+        offerer,
+        is_virtual=True,
+        name=name,
+        siret=None
+    )
+
     PcObject.check_and_save(*venues_by_name.values())
 
     logger.info('created {} venues'.format(len(venues_by_name)))
