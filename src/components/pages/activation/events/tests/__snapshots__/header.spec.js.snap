@@ -28,7 +28,7 @@ ShallowWrapper {
         <p
           className="fs22 is-italic"
         >
-          Pour pouvoir bénéficier des offres de votre pass Culture, vous devez l'activer soit par e-mail, soit auprès de nos équipes dans votre région.
+          Pour pouvoir bénéficier des offres de votre pass Culture, vous devez l'activer soit en ligne, soit auprès de nos équipes dans votre région.
         </p>,
       ],
       "className": "mb36",
@@ -64,11 +64,11 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "host",
         "props": Object {
-          "children": "Pour pouvoir bénéficier des offres de votre pass Culture, vous devez l'activer soit par e-mail, soit auprès de nos équipes dans votre région.",
+          "children": "Pour pouvoir bénéficier des offres de votre pass Culture, vous devez l'activer soit en ligne, soit auprès de nos équipes dans votre région.",
           "className": "fs22 is-italic",
         },
         "ref": null,
-        "rendered": "Pour pouvoir bénéficier des offres de votre pass Culture, vous devez l'activer soit par e-mail, soit auprès de nos équipes dans votre région.",
+        "rendered": "Pour pouvoir bénéficier des offres de votre pass Culture, vous devez l'activer soit en ligne, soit auprès de nos équipes dans votre région.",
         "type": "p",
       },
     ],
@@ -91,7 +91,7 @@ ShallowWrapper {
           <p
             className="fs22 is-italic"
           >
-            Pour pouvoir bénéficier des offres de votre pass Culture, vous devez l'activer soit par e-mail, soit auprès de nos équipes dans votre région.
+            Pour pouvoir bénéficier des offres de votre pass Culture, vous devez l'activer soit en ligne, soit auprès de nos équipes dans votre région.
           </p>,
         ],
         "className": "mb36",
@@ -127,11 +127,11 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "host",
           "props": Object {
-            "children": "Pour pouvoir bénéficier des offres de votre pass Culture, vous devez l'activer soit par e-mail, soit auprès de nos équipes dans votre région.",
+            "children": "Pour pouvoir bénéficier des offres de votre pass Culture, vous devez l'activer soit en ligne, soit auprès de nos équipes dans votre région.",
             "className": "fs22 is-italic",
           },
           "ref": null,
-          "rendered": "Pour pouvoir bénéficier des offres de votre pass Culture, vous devez l'activer soit par e-mail, soit auprès de nos équipes dans votre région.",
+          "rendered": "Pour pouvoir bénéficier des offres de votre pass Culture, vous devez l'activer soit en ligne, soit auprès de nos équipes dans votre région.",
           "type": "p",
         },
       ],

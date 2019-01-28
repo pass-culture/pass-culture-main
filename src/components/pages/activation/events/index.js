@@ -10,7 +10,7 @@ import { withLogin } from 'pass-culture-shared'
 import ActivationEventsForm from './form'
 import ActivationEventsFooter from './footer'
 import ActivationEventsHeader from './header'
-import ActivationEventsEmail from './email-button'
+import ActivationOnlineButton from './activation-button'
 import { mapDispatchToProps, mapStateToProps } from './connect'
 
 class ActivationEvents extends React.PureComponent {
@@ -50,7 +50,7 @@ class ActivationEvents extends React.PureComponent {
       <div id="activation-events-page" className="is-full-layout flex-rows">
         <main role="main" className="pc-main padded-2x flex-rows flex-center">
           <ActivationEventsHeader />
-          <ActivationEventsEmail />
+          <ActivationOnlineButton />
           {!hasError && (
             <ActivationEventsForm isLoading={isLoading} offers={offers} />
           )}

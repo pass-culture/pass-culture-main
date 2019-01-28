@@ -9,7 +9,7 @@ const ActivationEventsHeader = () => (
     </h1>
     <p className="fs22 is-italic">
       Pour pouvoir bénéficier des offres de votre pass Culture, vous devez
-      l&apos;activer soit par e-mail, soit auprès de nos équipes dans votre
+      l&apos;activer soit en ligne, soit auprès de nos équipes dans votre
       région.
     </p>
   </header>

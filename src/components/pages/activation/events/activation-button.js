@@ -1,22 +1,24 @@
 /* eslint
   react/jsx-one-expression-per-line: 0 */
 import React from 'react'
-import MailToLink from '../../../layout/MailToLink'
-import { SUPPORT_EMAIL } from '../../../../utils/config'
 
-const EmailButton = () => (
+const DEMARCHE_SIMPLIFIEES_LINK =
+  'https://www.demarches-simplifiees.fr/commencer/activer-mon-compte-pass-culture'
+
+const ActivationOnlineButton = () => (
   <div className="mb36">
     <div className="mb36">
-      <MailToLink
-        obfuscate
-        email={SUPPORT_EMAIL}
-        id="activation-events-contact-us"
+      <a
+        target="_blank"
+        rel="noopener noreferrer"
+        id="activation-online-button"
+        href={DEMARCHE_SIMPLIFIEES_LINK}
         className="is-block text-center button is-rounded py7 no-background"
       >
         <span className="fs18 is-white-text is-bold">
-          Activation par e-mail
+          Activer votre pass en ligne
         </span>
-      </MailToLink>
+      </a>
     </div>
     <div className="text-center">
       <span className="is-italic is-medium fs20">--&nbsp;ou&nbsp;--</span>
@@ -24,4 +26,4 @@ const EmailButton = () => (
   </div>
 )
 
-export default EmailButton
+export default ActivationOnlineButton
