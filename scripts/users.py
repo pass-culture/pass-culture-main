@@ -53,6 +53,7 @@ def fill_user_from(csv_row: List[str], user: User) -> User:
     user.lastName = csv_row[1]
     user.firstName = csv_row[2].split(' ')[0]
     user.publicName = '%s %s.' % (user.firstName, csv_row[1][:1].upper())
+    user.dateOfBirth = datetime.strptime(csv_row[7], "%Y-%m-%d")
     user.email = csv_row[3]
     user.phoneNumber = ''.join(filter(lambda d: d in '+1234567890', csv_row[4]))
     user.departementCode = re.search('\((.*?)\)$', csv_row[5]).group()[1:-1]

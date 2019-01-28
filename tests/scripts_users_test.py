@@ -15,7 +15,8 @@ class FillUserFromTest:
             'pmortimer@bletchley.co.uk',
             '0123456789',
             'Buckinghamshire (22)',
-            '22850'
+            '22850',
+            '1923-03-15'
         ]
 
     def test_returns_an_user_with_data_from_csv_row(self):
@@ -30,6 +31,7 @@ class FillUserFromTest:
         assert user.phoneNumber == '0123456789'
         assert user.departementCode == '22'
         assert user.postalCode == '22850'
+        assert user.dateOfBirth == datetime(1923, 3, 15)
 
     def test_returns_a_formatted_phone_number(self):
         # given
@@ -135,9 +137,12 @@ class CreateActivationBookingForTest:
 class SetupUsersTest:
     def setup_method(self):
         self.csv_rows = [
-            ['68bfa', 'Mortimer', 'Philip', 'pmortimer@bletchley.co.uk', '0123456789', 'Buckinghamshire (22)', '22850'],
-            ['ebf79', 'Blake', 'Francis', 'fblake@bletchley.co.uk', '0987654321', 'Gloucestershire (33)', '33817'],
-            ['ca45d', 'Nasir', 'Ahmed', 'anasir@bletchley.co.uk', '0567891234', 'Worcestershire (44)', '44019']
+            ['68bfa', 'Mortimer', 'Philip', 'pmortimer@bletchley.co.uk', '0123456789', 'Buckinghamshire (22)', '22850',
+             '1923-03-15'],
+            ['ebf79', 'Blake', 'Francis', 'fblake@bletchley.co.uk', '0987654321', 'Gloucestershire (33)', '33817',
+             '1925-06-22'],
+            ['ca45d', 'Nasir', 'Ahmed', 'anasir@bletchley.co.uk', '0567891234', 'Worcestershire (44)', '44019',
+             '1931-11-02']
         ]
         self.mocked_query = Mock()
 
