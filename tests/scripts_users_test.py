@@ -25,10 +25,35 @@ class FillUserFromTest:
         # then
         assert user.lastName == 'Mortimer'
         assert user.firstName == 'Philip'
+        assert user.publicName == 'Philip M.'
         assert user.email == 'pmortimer@bletchley.co.uk'
         assert user.phoneNumber == '0123456789'
         assert user.departementCode == '22'
         assert user.postalCode == '22850'
+
+    def test_returns_a_formatted_phone_number(self):
+        # given
+        data = list(self.csv_row)
+        phone_number_with_weird_trailing_chars = '+33 6 59 81 02 26‬‬'
+        data[4] = phone_number_with_weird_trailing_chars
+
+        # when
+        user = fill_user_from(data, User())
+
+        # then
+        assert user.phoneNumber == '+33659810226'
+
+    def test_returns_only_the_first_firstname(self):
+        # given
+        data = list(self.csv_row)
+        data[2] = 'John Robert James Jack'
+
+        # when
+        user = fill_user_from(data, User())
+
+        # then
+        assert user.firstName == 'John'
+        assert user.publicName == 'John M.'
 
     def test_sets_default_properties_on_the_user(self):
         # when
@@ -36,7 +61,7 @@ class FillUserFromTest:
 
         # then
         assert user.canBookFreeOffers == False
-        assert user.password == ''
+        assert user.password != ''
 
     def test_has_a_reset_password_token_and_validity_limit(self):
         # when
@@ -66,7 +91,7 @@ class FillUserFromTest:
         assert user.departementCode == '22'
         assert user.postalCode == '22850'
         assert user.canBookFreeOffers == False
-        assert user.password == ''
+        assert user.password != ''
         assert user.resetPasswordToken is not None
         assert user.resetPasswordTokenValidityLimit is not None
 
@@ -78,14 +103,16 @@ class CreateActivationBookingForTest:
         offer = create_thing_offer(venue=venue)
         user = create_user()
         stock = create_stock(offer=offer)
+        token = 'ABC123'
 
         # when
-        booking = create_activation_booking_for(user, stock)
+        booking = create_activation_booking_for(user, stock, token)
 
         # then
         assert booking.user == user
         assert booking.stock == stock
         assert booking.quantity == 1
+        assert booking.amount == 0
         assert booking.dateCreated.date() == datetime.utcnow().date()
 
     def test_the_returned_booking_has_a_token_and_is_bookable(self):
@@ -94,9 +121,10 @@ class CreateActivationBookingForTest:
         offer = create_thing_offer(venue=venue)
         user = create_user()
         stock = create_stock(offer=offer)
+        token = 'ABC123'
 
         # when
-        booking = create_activation_booking_for(user, stock)
+        booking = create_activation_booking_for(user, stock, token)
 
         # then
         assert booking.isCancelled == False
@@ -119,9 +147,10 @@ class SetupUsersTest:
         offer = create_thing_offer(venue=venue)
         stock = create_stock(offer=offer)
         self.mocked_query.side_effect = [None, None, None]
+        existing_tokens = set()
 
         # when
-        bookings = setup_users(self.csv_rows, stock, find_user_query=self.mocked_query)
+        bookings = setup_users(self.csv_rows, stock, existing_tokens, find_user_query=self.mocked_query)
 
         # then
         assert len(bookings) == len(self.csv_rows)
@@ -133,9 +162,10 @@ class SetupUsersTest:
         stock = create_stock(offer=offer)
         blake = create_user(idx=123, email='fblake@bletchley.co.uk')
         self.mocked_query.side_effect = [None, blake, None]
+        existing_tokens = set()
 
         # when
-        bookings = setup_users(self.csv_rows, stock, find_user_query=self.mocked_query)
+        bookings = setup_users(self.csv_rows, stock, existing_tokens, find_user_query=self.mocked_query)
 
         # then
         assert bookings[1].user.id == 123
