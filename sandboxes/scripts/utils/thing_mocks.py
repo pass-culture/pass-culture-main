@@ -1,7 +1,7 @@
 MOCK_NAMES = [
     "Nez à Nez d'Anaconda",
     "Sous les parapluies de Borneo",
-    "D-- tu l'auras",
+    "D-- tu l'auras demain",
     "Funky Family",
     "Sun aux lentilles",
     "Topaz de Reackham le Rouge",

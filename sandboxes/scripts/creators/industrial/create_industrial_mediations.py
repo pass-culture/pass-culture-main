@@ -3,13 +3,17 @@ from sandboxes.scripts.utils.storage_utils import store_public_object_from_sandb
 from utils.logger import logger
 from utils.test_utils import create_mediation
 
+MEDIATION_MODULO = 2
+
 def create_industrial_mediations(offers_by_name):
     logger.info('create_industrial_mediations')
 
     mediations_by_name = {}
 
-    for (offer_name, offer) in offers_by_name.items():
-        mediations_by_name[offer_name] = create_mediation(offer)
+    offer_items = list(offers_by_name.items())
+    offer_items_with_mediation = offer_items[::MEDIATION_MODULO]
+    for (offer_with_mediation_name, offer_with_mediation) in offer_items_with_mediation:
+        mediations_by_name[offer_with_mediation_name] = create_mediation(offer_with_mediation)
 
     PcObject.check_and_save(*mediations_by_name.values())
 
