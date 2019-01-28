@@ -268,7 +268,7 @@ Booking.propTypes = {
   recommendation: PropTypes.object,
 }
 
-const mapStateToProps = (state, { match, user }) => {
+const mapStateToProps = (state, { match }) => {
   const { offerId, mediationId, view, bookingId } = match.params
   const recommendation = currentRecommendationSelector(
     state,
@@ -277,7 +277,7 @@ const mapStateToProps = (state, { match, user }) => {
   )
   const { type } = get(recommendation, 'offer.eventOrThing')
   const isActivationOffer = type === 'EventType.ACTIVATION'
-  const isActivatedUser = isUserActivated(user)
+  const isActivatedUser = isUserActivated(state.user)
   const isEvent = (get(recommendation, 'offer.eventId') && true) || false
   const bookables = selectBookables(state, recommendation, match)
   const booking = selectBookingById(state, bookingId)
