@@ -1,5 +1,3 @@
-import re
-
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from sqlalchemy import and_, func
@@ -8,11 +6,13 @@ from sqlalchemy.sql.expression import or_
 LANGUAGE = 'french'
 STOP_WORDS = set(stopwords.words(LANGUAGE))
 
+
 def create_tsvector(*args):
     exp = args[0]
     for e in args[1:]:
         exp += ' ' + e
-    return func.to_tsvector(LANGUAGE, exp)
+    return func.to_tsvector(LANGUAGE+'_unaccent', exp)
+
 
 def get_ts_queries_from_keywords_string(keywords_string):
 
@@ -27,18 +27,20 @@ def get_ts_queries_from_keywords_string(keywords_string):
 
     return ts_queries
 
+
 def create_get_filter_matching_ts_query_in_any_model(*models):
     def get_filter_matching_ts_query_in_any_model(ts_query):
         return or_(
             *[
                 model.__ts_vector__.match(
                     ts_query,
-                    postgresql_regconfig=LANGUAGE
+                    postgresql_regconfig=LANGUAGE+'_unaccent'
                 )
                 for model in models
             ]
         )
     return get_filter_matching_ts_query_in_any_model
+
 
 def create_filter_matching_all_keywords_in_any_model(
         get_filter_matching_ts_query_in_any_model,

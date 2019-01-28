@@ -226,6 +226,42 @@ def test_get_offers_for_recommendations_search_with_several_partial_keywords(app
 
 @clean_database
 @pytest.mark.standalone
+def test_get_offers_for_recommendations_search_without_accents_matches_offer_with_accents_1(app):
+    # Given
+    thing_ok = create_thing(thing_name='Nez à nez')
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    thing_ok_offer = create_thing_offer(venue, thing_ok)
+    thing_ok_stock = create_stock_from_offer(thing_ok_offer)
+    PcObject.check_and_save(thing_ok_stock)
+
+    # When
+    offers = get_offers_for_recommendations_search(keywords_string='nez a')
+
+    # Then
+    assert thing_ok_offer in offers
+
+
+@clean_database
+@pytest.mark.standalone
+def test_get_offers_for_recommendations_search_with_accents_matches_offer_without_accents_2(app):
+    # Given
+    thing_ok = create_thing(thing_name='Déjà')
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    thing_ok_offer = create_thing_offer(venue, thing_ok)
+    thing_ok_stock = create_stock_from_offer(thing_ok_offer)
+    PcObject.check_and_save(thing_ok_stock)
+
+    # When
+    offers = get_offers_for_recommendations_search(keywords_string='deja')
+
+    # Then
+    assert thing_ok_offer in offers
+
+
+@clean_database
+@pytest.mark.standalone
 def test_get_active_offers_by_type_when_departement_code_00(app):
     # Given
     offerer = create_offerer()
