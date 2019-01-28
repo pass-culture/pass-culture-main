@@ -523,14 +523,77 @@ def test_get_recommendations_returns_no_recommendation_from_search_by_date_that_
 
 @clean_database
 @pytest.mark.standalone
-def test_get_recommendations_returns_recommandations_from_search_by_keywords_and_distance_is_all_distances(app):
+def test_get_recommendations_returns_no_recommandation_from_search_by_keywords_and_distance_if_keyword_does_not_match_but_in_1_km_distances_match_with_user_in_paris(app):
     # Given
-    # location_search = "distance=20000&latitude=48.8363788&longitude=2.4002701&mots-cles=Faye"
-    # location_search = "date=2019-01-24T13%3A26%3A58.183Z&days=0-1%2C1-5&distance=50&latitude=48.8637113&longitude=2.3375146"
-    location_search = "keywords=funky"
+    location_search = "distance=1&latitude=48.8363788&longitude=2.4002701&keywords=Funky"
+    user = create_user(email='test@email.com', password='P@55w0rd')
 
-    # plante :
-    # "distance=50&keywords=funky&latitude=48.8637024&longitude=2.3374329"
+    offerer = create_offerer()
+    venue75 = create_venue(
+        offerer,
+        name='LE GRAND REX PARIS',
+        address="1 BD POISSONNIERE",
+        postal_code='75002',
+        city="Paris",
+        departement_code='75',
+        is_virtual=False,
+        longitude="2.4002701",
+        latitude="48.8363788",
+        siret="50763357600075"
+    )
+    venue13 = create_venue(
+        offerer,
+        name='Friche La Belle de Mai',
+        city="Marseille",
+        departement_code='13',
+        is_virtual=False,
+        longitude="5.3764073",
+        latitude="43.303906",
+        siret="50763357600013"
+    )
+    venue973 = create_venue(
+        offerer,
+        name='Théâtre de Macouria',
+        city="Cayenne",
+        departement_code='973',
+        is_virtual=False,
+        longitude="-52.423277",
+        latitude="4.9780178",
+        siret="50763357600973"
+        )
+
+    concert_offer13 = create_event_offer(venue13, event_name='Funky Concert de Gael Faye', event_type=EventType.MUSIQUE)
+    concert_offer75 = create_event_offer(venue75, event_name='Soulfull Concert de Gael Faye', event_type=EventType.MUSIQUE)
+    concert_offer973 = create_event_offer(venue973, event_name='Kiwi', event_type=EventType.MUSIQUE)
+
+    event_occurrence13 = create_event_occurrence(concert_offer13, beginning_datetime=now, end_datetime=ten_days_from_now)
+    event_occurrence75 = create_event_occurrence(concert_offer75, beginning_datetime=now, end_datetime=ten_days_from_now)
+    event_occurrence973 = create_event_occurrence(concert_offer973, beginning_datetime=now, end_datetime=ten_days_from_now)
+
+    recommendation13 = create_recommendation(concert_offer13, user)
+    recommendation75 = create_recommendation(concert_offer75, user)
+    recommendation973 = create_recommendation(concert_offer973, user)
+
+    stock13 = create_stock_from_event_occurrence(event_occurrence13)
+    stock75 = create_stock_from_event_occurrence(event_occurrence75)
+    stock973 = create_stock_from_event_occurrence(event_occurrence973)
+
+    PcObject.check_and_save(stock13, recommendation13, stock75, recommendation75, stock973, recommendation973)
+
+    auth_request = req_with_auth(user.email, user.clearTextPassword)
+
+    # When
+    response = auth_request.get(RECOMMENDATION_URL + '?%s' % location_search)
+
+    # Then
+    assert len(response.json()) == 0
+
+
+@clean_database
+@pytest.mark.standalone
+def test_get_recommendations_returns_one_recommandation_with_good_keyword_from_search_by_keywords_and_distance_is_all_distances(app):
+    # Given
+    location_search = "distance=20000&latitude=48.8363788&longitude=2.4002701&keywords=Macouria"
     user = create_user(email='test@email.com', password='P@55w0rd')
 
     offerer = create_offerer()
@@ -591,4 +654,74 @@ def test_get_recommendations_returns_recommandations_from_search_by_keywords_and
     response = auth_request.get(RECOMMENDATION_URL + '?%s' % location_search)
 
     # Then
-    assert len(response.json()) == 3
+    assert len(response.json()) == 1
+    offers = response.json()
+    assert 'Kiwi' in offers[0]['offer']['eventOrThing']['name']
+
+
+@clean_database
+@pytest.mark.standalone
+def test_get_recommendations_returns_two_recommandations_with_good_keyword_from_search_by_keywords_and_distance_when_no_latitude_and_latitude(app):
+        # Given
+        location_search = "distance=1&keywords=funky"
+        user = create_user(email='test@email.com', password='P@55w0rd')
+
+        offerer = create_offerer()
+        venue75 = create_venue(
+            offerer,
+            name='LE GRAND REX PARIS',
+            address="1 BD POISSONNIERE",
+            postal_code='75002',
+            city="Paris",
+            departement_code='75',
+            is_virtual=False,
+            longitude="2.4002701",
+            latitude="48.8363788",
+            siret="50763357600075"
+        )
+        venue13 = create_venue(
+            offerer,
+            name='Friche La Belle de Mai',
+            city="Marseille",
+            departement_code='13',
+            is_virtual=False,
+            longitude="5.3764073",
+            latitude="43.303906",
+            siret="50763357600013"
+        )
+        venue973 = create_venue(
+            offerer,
+            name='Théâtre de Macouria',
+            city="Cayenne",
+            departement_code='973',
+            is_virtual=False,
+            longitude="-52.423277",
+            latitude="4.9780178",
+            siret="50763357600973"
+            )
+
+        concert_offer13 = create_event_offer(venue13, event_name='Funky Concert de Gael Faye', event_type=EventType.MUSIQUE)
+        concert_offer75 = create_event_offer(venue75, event_name='Funky Concert de Gael Faye', event_type=EventType.MUSIQUE)
+        concert_offer973 = create_event_offer(venue973, event_name='Kiwi', event_type=EventType.MUSIQUE)
+
+        event_occurrence13 = create_event_occurrence(concert_offer13, beginning_datetime=now, end_datetime=ten_days_from_now)
+        event_occurrence75 = create_event_occurrence(concert_offer75, beginning_datetime=now, end_datetime=ten_days_from_now)
+        event_occurrence973 = create_event_occurrence(concert_offer973, beginning_datetime=now, end_datetime=ten_days_from_now)
+
+        recommendation13 = create_recommendation(concert_offer13, user)
+        recommendation75 = create_recommendation(concert_offer75, user)
+        recommendation973 = create_recommendation(concert_offer973, user)
+
+        stock13 = create_stock_from_event_occurrence(event_occurrence13)
+        stock75 = create_stock_from_event_occurrence(event_occurrence75)
+        stock973 = create_stock_from_event_occurrence(event_occurrence973)
+
+        PcObject.check_and_save(stock13, recommendation13, stock75, recommendation75, stock973, recommendation973)
+
+        auth_request = req_with_auth(user.email, user.clearTextPassword)
+
+        # When
+        response = auth_request.get(RECOMMENDATION_URL + '?%s' % location_search)
+
+        # Then
+        assert len(response.json()) == 2

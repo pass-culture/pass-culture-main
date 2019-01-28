@@ -565,8 +565,6 @@ def test_get_offers_for_recommendations_search_with_distance_returns_offers_in_v
         assert concert_offer13 not in offers
         assert concert_offer973 not in offers
 
-
-
 @clean_database
 @pytest.mark.standalone
 def test_get_offers_for_recommendations_search_with_distance_and_keywords(app):
