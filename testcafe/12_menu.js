@@ -64,11 +64,13 @@ test('Menu | Liens | Les offres', async t => {
 
 test('Menu | Liens | Recherche', async t => {
   const menuRecherche = Selector('.navlink').withText('Recherche')
-  await t.expect(menuRecherche.exists).ok()
-  // .click(menuRecherche)
-  // .wait(100)
-  // const location = await t.eval(() => window.location)
-  // await t.expect(location.pathname).eql('/recherche')
+  await t
+    .expect(menuRecherche.exists)
+    .ok()
+    .click(menuRecherche)
+    .wait(100)
+  const location = await t.eval(() => window.location)
+  await t.expect(location.pathname).eql('/recherche')
 })
 
 test('Menu | Liens | Mes réservations', async t => {

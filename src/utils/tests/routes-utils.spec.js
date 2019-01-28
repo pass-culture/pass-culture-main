@@ -81,7 +81,7 @@ describe('getMainMenuItems', () => {
       },
       {
         component: SearchPage,
-        disabled: true,
+        disabled: false,
         icon: 'search-w',
         path: '/recherche',
         title: 'Recherche',
