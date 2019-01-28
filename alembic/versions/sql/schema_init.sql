@@ -209,6 +209,37 @@ ALTER SEQUENCE booking_id_seq OWNED BY booking.id;
 
 
 --
+-- Name: deposit; Type: TABLE; Schema: public; Owner: pass_culture
+--
+
+CREATE TABLE deposit (
+    id bigint NOT NULL,
+    amount numeric(10,2) NOT NULL,
+    "userId" bigint NOT NULL,
+    source character varying(12) NOT NULL
+);
+
+
+--
+-- Name: deposit_id_seq; Type: SEQUENCE; Schema: public; Owner: pass_culture
+--
+
+CREATE SEQUENCE deposit_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: deposit_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pass_culture
+--
+
+ALTER SEQUENCE deposit_id_seq OWNED BY deposit.id;
+
+
+--
 -- Name: event; Type: TABLE; Schema: public; 
 --
 
@@ -802,6 +833,13 @@ ALTER TABLE ONLY booking ALTER COLUMN id SET DEFAULT nextval('booking_id_seq'::r
 
 
 --
+-- Name: deposit id; Type: DEFAULT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY deposit ALTER COLUMN id SET DEFAULT nextval('deposit_id_seq'::regclass);
+
+
+--
 -- Name: event id; Type: DEFAULT; Schema: public; 
 --
 
@@ -912,6 +950,14 @@ ALTER TABLE ONLY booking
 
 ALTER TABLE ONLY booking
     ADD CONSTRAINT booking_token_key UNIQUE (token);
+
+
+--
+-- Name: deposit deposit_pkey; Type: CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY deposit
+    ADD CONSTRAINT deposit_pkey PRIMARY KEY (id);
 
 
 --
@@ -1196,6 +1242,13 @@ CREATE INDEX "ix_booking_userId" ON booking USING btree ("userId");
 
 
 --
+-- Name: ix_deposit_userId; Type: INDEX; Schema: public; Owner: pass_culture
+--
+
+CREATE INDEX "ix_deposit_userId" ON deposit USING btree ("userId");
+
+
+--
 -- Name: ix_event_occurence_beginningDatetime; Type: INDEX; Schema: public; 
 --
 
@@ -1377,6 +1430,14 @@ ALTER TABLE ONLY booking
 
 ALTER TABLE ONLY booking
     ADD CONSTRAINT "booking_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"(id);
+
+
+--
+-- Name: deposit deposit_userId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: pass_culture
+--
+
+ALTER TABLE ONLY deposit
+    ADD CONSTRAINT "deposit_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"(id);
 
 
 --
