@@ -8,7 +8,7 @@ from repository.offer_queries import get_active_offers_by_type
 from utils.logger import logger
 from utils.test_utils import create_recommendation
 
-RECOMMENDATION_MODULO = 10
+RECOMMENDATION_MODULO = 2
 
 def create_industrial_recommendations(mediations_by_name, offers_by_name, users_by_name):
     logger.info('create_industrial_recommendations')

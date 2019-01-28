@@ -59,14 +59,13 @@ def save_industrial_sandbox():
 
     event_offers_by_name = create_industrial_event_offers(
         events_by_name,
-        venues_by_name,
         offerers_by_name
     )
 
     thing_offers_by_name = create_industrial_thing_offers(
         things_by_name,
-        venues_by_name,
-        offerers_by_name
+        offerers_by_name,
+        venues_by_name
     )
 
     offers_by_name = dict(

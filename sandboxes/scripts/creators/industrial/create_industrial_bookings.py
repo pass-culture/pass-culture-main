@@ -5,6 +5,9 @@ from models.pc_object import PcObject
 from utils.logger import logger
 from utils.test_utils import create_booking
 
+BOOKING_MODULO = 2
+USED_BOOKING_MODULO = 2
+
 def create_industrial_bookings(recommendations_by_name, stocks_by_name):
     logger.info('create_industrial_bookings')
 
@@ -14,9 +17,9 @@ def create_industrial_bookings(recommendations_by_name, stocks_by_name):
 
     stocks = stocks_by_name.values()
 
-    reco_to_create_from = list(recommendations_by_name.items())[:100]
+    reco_to_create_from = list(recommendations_by_name.items())[::BOOKING_MODULO]
 
-    for (recommendation_name, recommendation) in reco_to_create_from:
+    for (reco_index, (recommendation_name, recommendation)) in enumerate(reco_to_create_from):
 
         offer = recommendation.offer
         user = recommendation.user
@@ -51,10 +54,13 @@ def create_industrial_bookings(recommendations_by_name, stocks_by_name):
 
         booking_name = "{} / {}".format(recommendation_name, str(token))
 
-        is_used = is_activation_offer and \
-            "has-confirmed-activation" in user.email or \
-            "has-booked-some" in user.email or \
-            "has-no-more-money" in user.email
+        is_used = False
+        if is_activation_offer:
+            is_used = True if "has-confirmed-activation" in user.email or \
+                              "has-booked-some" in user.email or \
+                              "has-no-more-money" in user.email else False
+        else:
+            is_used = reco_index%BOOKING_MODULO == 0
 
         booking = create_booking(
             user,

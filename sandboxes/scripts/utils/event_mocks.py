@@ -29,7 +29,6 @@ MOCK_NAMES = [
     "Habile !",
     "On dira ce qu'on veut, la France ça reste le pays des 400 fromages",
     "Mais enfin, Armand..."
-
 ]
 
 MOCK_DESCRIPTIONS = [

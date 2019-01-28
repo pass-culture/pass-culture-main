@@ -2,12 +2,12 @@ from models.pc_object import PcObject
 from utils.logger import logger
 from utils.test_utils import create_thing_offer
 
-THINGS_COUNT_PER_VENUE = 2
+THINGS_COUNT_PER_OFFERER = 3
 
 def create_industrial_thing_offers(
         things_by_name,
-        venues_by_name,
-        offerers_by_name
+        offerers_by_name,
+        venues_by_name
 ):
     logger.info('create_industrial_thing_offers')
 
@@ -20,20 +20,22 @@ def create_industrial_thing_offers(
 
     for offerer in offerers_by_name.values():
 
-        virtual_venues = [
+        virtual_venue = [
             venue for venue in offerer.managedVenues
             if venue.isVirtual
-        ]
-        for virtual_venue in virtual_venues:
+        ][0]
 
-            physical_venue_name = virtual_venue.name.replace(" (Offre en ligne)", "")
-            physical_venue = venues_by_name.get(physical_venue_name)
+        physical_venue_name = virtual_venue.name.replace(" (Offre en ligne)", "")
+        physical_venue = venues_by_name.get(physical_venue_name)
 
-            for venue_thing_index in range(0, THINGS_COUNT_PER_VENUE):
+        for venue_thing_index in range(0, THINGS_COUNT_PER_OFFERER):
 
-                (thing_name, thing) = thing_items[thing_index + venue_thing_index]
+            thing_venue = None
+            while thing_venue is None:
+                rest_thing_index = (venue_thing_index + thing_index)%len(thing_items)
 
-                thing_venue = None
+                (thing_name, thing) = thing_items[rest_thing_index]
+
                 if thing.offerType['offlineOnly']:
                     thing_venue = physical_venue
                 elif thing.offerType['onlineOnly']:
@@ -41,20 +43,19 @@ def create_industrial_thing_offers(
                 else:
                     thing_venue = physical_venue
 
-                if thing_venue is None:
-                    continue
+                thing_index += 1
 
-                name = "{} / {}".format(thing_name, thing_venue.name)
-                thing_offers_by_name[name] = create_thing_offer(
-                    thing_venue,
-                    thing=thing,
-                    thing_type=thing.type,
-                    id_at_providers=id_at_providers
-                )
+            name = "{} / {}".format(thing_name, thing_venue.name)
+            thing_offers_by_name[name] = create_thing_offer(
+                thing_venue,
+                thing=thing,
+                thing_type=thing.type,
+                id_at_providers=id_at_providers
+            )
 
-                id_at_providers += 1
+            id_at_providers += 1
 
-            thing_index += THINGS_COUNT_PER_VENUE
+        thing_index += THINGS_COUNT_PER_OFFERER
 
     PcObject.check_and_save(*thing_offers_by_name.values())
 
