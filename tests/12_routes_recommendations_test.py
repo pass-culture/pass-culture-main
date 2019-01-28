@@ -76,14 +76,15 @@ def test_put_recommendations_returns_a_list_of_recos_starting_with_two_tutos():
     assert len(list(recos_with_tutos)) == 2
 
 
-def test_put_recommendations_returns_a_list_of_some_recos():
+def test_put_recommendations_returns_a_list_of_some_recos_including_activation_offers():
     # when
     response = req_with_auth().put(RECOMMENDATION_URL, json={'seenRecommendationIds': []})
 
     # then
     recos = response.json()
     assert response.status_code == 200
-    assert len(recos) == 10
+    assert len(recos) == 11
+
 
 def test_put_recommendations_returns_no_duplicate_mediations_in_recos():
     # when
