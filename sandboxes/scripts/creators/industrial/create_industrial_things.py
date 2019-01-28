@@ -6,7 +6,7 @@ from sandboxes.scripts.utils.thing_mocks import MOCK_AUTHOR_NAMES, \
 from utils.logger import logger
 from utils.test_utils import create_thing
 
-THING_COUNTS_PER_TYPE = 3
+THINGS_PER_TYPE = 3
 
 def create_industrial_things():
     logger.info('create_industrial_things')
@@ -20,7 +20,7 @@ def create_industrial_things():
 
     id_at_providers = 1234
 
-    for type_index in range(0, THING_COUNTS_PER_TYPE):
+    for type_index in range(0, THINGS_PER_TYPE):
 
         for (thing_type_dict_index, thing_type_dict) in enumerate(thing_type_dicts):
 

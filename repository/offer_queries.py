@@ -30,7 +30,7 @@ def build_offer_search_base_query():
                  .join(Venue) \
                  .join(Offerer)
 
-def departement_or_national_offers(query, offer_type, department_codes):
+def department_or_national_offers(query, offer_type, department_codes):
     if '00' in department_codes:
         return query
     condition = Venue.departementCode.in_(department_codes)
@@ -95,7 +95,7 @@ def get_active_offers_by_type(offer_type, user=None, department_codes=None, offe
         query = query.filter(Offer.id == offer_id)
     logger.debug(lambda: '(reco) all ' + str(offer_type) + '.count ' + str(query.count()))
 
-    query = departement_or_national_offers(query, offer_type, department_codes)
+    query = department_or_national_offers(query, offer_type, department_codes)
     logger.info('(reco) departement or national {} {} in {}'.format(offer_type.__name__, str(department_codes), query.count()))
     query = bookable_offers(query, offer_type)
     logger.info('(reco) bookable_offers {} {}'.format(offer_type.__name__, query.count()))

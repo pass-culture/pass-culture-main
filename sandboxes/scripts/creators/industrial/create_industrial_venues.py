@@ -5,6 +5,9 @@ from sandboxes.scripts.utils.venue_mocks import MOCK_NAMES
 from utils.logger import logger
 from utils.test_utils import create_venue
 
+OFFERER_WITH_PHYSICAL_VENUE_MODULO = 3
+OFFERER_WITH_PHYSICAL_VENUE_WITH_SIRET_MODULO = 6
+
 def create_industrial_venues(offerers_by_name):
     logger.info('create_industrial_venues')
 
@@ -41,11 +44,11 @@ def create_industrial_venues(offerers_by_name):
                 bic = None
                 iban_count = 0
 
-        # every 2/3 offerers, create an offerer with a physical venue
-        if offerer_index%3:
+        # every OFFERER_WITH_PHYSICAL_VENUE_MODULO offerers, create an offerer with no physical venue
+        if offerer_index%OFFERER_WITH_PHYSICAL_VENUE_MODULO:
 
-            # every 5/6 offerers, create a physical venue without a siret
-            if offerer_index%6:
+            # every OFFERER_WITH_PHYSICAL_VENUE_WITH_SIRET_MODULO offerers, create a physical venue with no siret
+            if offerer_index%OFFERER_WITH_PHYSICAL_VENUE_WITH_SIRET_MODULO:
                 comment = None
                 siret = '{}11111'.format(offerer.siren)
             else:

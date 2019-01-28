@@ -2,7 +2,7 @@ from models.pc_object import PcObject
 from utils.logger import logger
 from utils.test_utils import create_thing_offer
 
-THINGS_COUNT_PER_OFFERER = 3
+THINGS_PER_OFFERER = 3
 
 def create_industrial_thing_offers(
         things_by_name,
@@ -28,7 +28,7 @@ def create_industrial_thing_offers(
         physical_venue_name = virtual_venue.name.replace(" (Offre en ligne)", "")
         physical_venue = venues_by_name.get(physical_venue_name)
 
-        for venue_thing_index in range(0, THINGS_COUNT_PER_OFFERER):
+        for venue_thing_index in range(0, THINGS_PER_OFFERER):
 
             thing_venue = None
             while thing_venue is None:
@@ -55,7 +55,7 @@ def create_industrial_thing_offers(
 
             id_at_providers += 1
 
-        thing_index += THINGS_COUNT_PER_OFFERER
+        thing_index += THINGS_PER_OFFERER
 
     PcObject.check_and_save(*thing_offers_by_name.values())
 

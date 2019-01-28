@@ -2,7 +2,7 @@ from models.pc_object import PcObject
 from utils.logger import logger
 from utils.test_utils import create_event_offer
 
-EVENTS_COUNT_PER_OFFERER_WITH_PHYSICAL_VENUE = 4
+EVENTS_PER_OFFERER_WITH_PHYSICAL_VENUE = 4
 
 def create_industrial_event_offers(
         events_by_name,
@@ -27,7 +27,7 @@ def create_industrial_event_offers(
 
         event_venue = event_venues[0]
 
-        for venue_event_index in range(0, EVENTS_COUNT_PER_OFFERER_WITH_PHYSICAL_VENUE):
+        for venue_event_index in range(0, EVENTS_PER_OFFERER_WITH_PHYSICAL_VENUE):
 
             rest_event_index = (venue_event_index + event_index)%len(event_items)
 
@@ -40,7 +40,7 @@ def create_industrial_event_offers(
                 event_type=event.type
             )
 
-        event_index += EVENTS_COUNT_PER_OFFERER_WITH_PHYSICAL_VENUE
+        event_index += EVENTS_PER_OFFERER_WITH_PHYSICAL_VENUE
 
     PcObject.check_and_save(*event_offers_by_name.values())
 
