@@ -72,7 +72,7 @@ def fill_user_from(csv_row: List[str], user: User) -> User:
     user.dateOfBirth = datetime.strptime(csv_row[BIRTHDATE_COLUMN_INDEX], "%Y-%m-%d")
     user.email = csv_row[EMAIL_COLUMN_INDEX]
     user.phoneNumber = ''.join(filter(lambda d: d in '+1234567890', csv_row[PHONE_COLUMN_INDEX]))
-    user.departementCode = re.search('\((.*?)\)$', csv_row[DEPARTMENT_COLUMN_INDEX]).group()[1:-1]
+    user.departementCode = _extract_department_code(csv_row[DEPARTMENT_COLUMN_INDEX])
     user.postalCode = csv_row[POSTAL_CODE_COLUMN_INDEX]
     user.canBookFreeOffers = False
     user.password = random_token(length=12).encode('utf-8')
@@ -166,3 +166,7 @@ def run(csv_file_path: str) -> None:
 
 def _is_header_or_blank_line(line: str) -> bool:
     return not line or not line[0] or line[0] == 'id'
+
+
+def _extract_department_code(plain_department: str) -> str:
+    return re.search('\((.*?)\)$', plain_department).group()[1:-1]
