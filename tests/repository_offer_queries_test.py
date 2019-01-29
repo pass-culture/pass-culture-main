@@ -470,7 +470,6 @@ def test_find_offers_with_filter_parameters_with_partial_keywords_and_filter_by_
 
     # then
     offers_id = [offer.id for offer in offers]
-    print(offers_id)
     assert ok_offer1.id in offers_id
     assert ok_offer2.id in offers_id
     assert ko_offer2.id not in offers_id

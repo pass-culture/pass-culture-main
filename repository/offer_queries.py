@@ -23,11 +23,13 @@ from utils.config import ILE_DE_FRANCE_DEPT_CODES
 from utils.distance import get_sql_geo_distance_in_kilometers
 from utils.logger import logger
 
+
 def build_offer_search_base_query():
     return Offer.query.outerjoin(Event) \
                  .outerjoin(Thing) \
                  .join(Venue) \
                  .join(Offerer)
+
 
 def departement_or_national_offers(query, offer_type, departement_codes):
     if '00' in departement_codes:
@@ -104,7 +106,6 @@ def get_active_offers_by_type(offer_type, user=None, departement_codes=None, off
     logger.info('(reco) distinct ' + offer_type.__name__ + ' (%i)', query.count())
     return query.all()
 
-
 def _date_interval_to_filter(date_interval):
     return ((EventOccurrence.beginningDatetime >= date_interval[0]) & \
             (EventOccurrence.beginningDatetime <= date_interval[1]))
@@ -127,6 +128,7 @@ def filter_offers_with_keywords_string(query, keywords_string):
 
     return query
 
+
 def get_is_offer_selected_by_keywords_string_at_column(offer, keywords_string, column):
     query = offer.__class__.query.filter_by(id=offer.id)
 
@@ -137,6 +139,7 @@ def get_is_offer_selected_by_keywords_string_at_column(offer, keywords_string, c
         keywords_string,
         column
     ) is not None
+
 
 def get_is_offer_selected_by_keywords_string_at_column(offer, keywords_string, column):
     query = offer.__class__.query.filter_by(id=offer.id)\
@@ -150,6 +153,7 @@ def get_is_offer_selected_by_keywords_string_at_column(offer, keywords_string, c
         keywords_string,
         column
     ) is not None
+
 
 def get_offers_for_recommendations_search(
         date=None,
@@ -176,7 +180,6 @@ def get_offers_for_recommendations_search(
 
         query = query.filter(distance_instrument < max_distance) \
                      .reset_joinpoint()
-        print(query)
 
     if days_intervals is not None:
         event_beginningdate_in_interval_filter = or_(*map(
@@ -203,6 +206,7 @@ def get_offers_for_recommendations_search(
         offers = query.all()
 
     return offers
+
 
 def find_offers_with_filter_parameters(
         user,
@@ -232,22 +236,24 @@ def find_offers_with_filter_parameters(
 
     return query
 
+
 def find_searchable_offer(offer_id):
     return Offer.query.filter_by(id=offer_id)\
                       .join(Venue)\
                       .filter(Venue.validationToken == None)\
                       .first()
 
+
 def _filter_recommendable_offers(offer_query):
     join_on_event_occurrence = Offer.id == EventOccurrence.offerId
     join_on_stock = (Stock.offerId == Offer.id) | (Stock.eventOccurrenceId == EventOccurrence.id)
-    offer_query = offer_query.reset_joinpoint() \
-    .filter_by(isActive=True) \
-    .outerjoin(EventOccurrence, join_on_event_occurrence) \
-    .join(Stock, join_on_stock) \
-    .filter_by(isSoftDeleted=False)
 
-    # return join_on_stocks.union_all(join_on_event_occurrences)
+    offer_query = offer_query.reset_joinpoint() \
+        .filter_by(isActive=True) \
+        .outerjoin(EventOccurrence, join_on_event_occurrence) \
+        .join(Stock, join_on_stock) \
+        .filter_by(isSoftDeleted=False)
+
     return offer_query
 
 
