@@ -71,7 +71,7 @@ def chunk_file(csv_reader: Iterable, chunk_size: int) -> List[List[List[str]]]:
     total = 0
 
     for line in csv_reader:
-        if line[0] == 'id':
+        if not line or not line[0] or line[0] == 'id':
             continue
 
         if line[3] not in existing_emails:

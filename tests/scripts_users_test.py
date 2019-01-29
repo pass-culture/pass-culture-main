@@ -233,3 +233,21 @@ class ChunkFileTest:
         assert len(chunked_file) == 2
         assert len(chunked_file[-1]) == 1
         assert all(len(chunk) == 2 for chunk in chunked_file[:-1])
+
+    def test_ignores_empty_lines(self):
+        # given
+        chunk_size = 2
+        csv_reader = [
+            ['id', 'nom', 'prénom', 'email'],
+            [],
+            ['68bfa', 'Mortimer', 'Philip', '%s@bletchley.co.uk' % random_token()],
+            [''],
+            ['68bfa', 'Mortimer', 'Philip', '%s@bletchley.co.uk' % random_token()]
+        ]
+
+        # when
+        chunked_file = chunk_file(csv_reader, chunk_size)
+
+        # then
+        assert len(chunked_file) == 1
+        assert len(chunked_file[0]) == 2
