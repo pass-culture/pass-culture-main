@@ -27,6 +27,7 @@ from utils.test_utils import create_booking, \
 
 
 @pytest.mark.standalone
+
 @clean_database
 def test_departement_or_national_offers_with_national_thing_returns_national_thing(app):
     # Given
@@ -433,7 +434,7 @@ def test_find_activation_offers_returns_activation_offers_with_future_booking_li
 
 @clean_database
 @pytest.mark.standalone
-def test_find_offers_with_filter_parameters(app):
+def test_find_offers_with_filter_parameters_with_partial_keywords_and_filter_by_venue(app):
     user = create_user(email='offerer@email.com')
     offerer1 = create_offerer(siren='123456789')
     offerer2 = create_offerer(siren='987654321')
@@ -442,6 +443,7 @@ def test_find_offers_with_filter_parameters(app):
     user_offerer2 = create_user_offerer(user, offerer2)
 
     ok_event1 = create_event(event_name='Rencontre avec Jacques Martin')
+    ok_thing = create_thing(thing_name='Rencontrez Jacques Chirac')
     event2 = create_event(event_name='Concert de contrebasse')
     thing1 = create_thing(thing_name='Jacques la fripouille')
     thing2 = create_thing(thing_name='Belle du Seigneur')
@@ -450,6 +452,7 @@ def test_find_offers_with_filter_parameters(app):
     venue2 = create_venue(offerer2, name='Librairie la Rencontre', city='Saint Denis', siret=offerer.siren + '54321')
     ko_venue3 = create_venue(ko_offerer3, name='Une librairie du méchant concurrent gripsou', city='Saint Denis', siret=ko_offerer3.siren + '54321')
     ok_offer1 = create_event_offer(venue1, ok_event1)
+    ok_offer2 = create_thing_offer(venue1, ok_thing)
     ko_offer2 = create_event_offer(venue1, event2)
     ko_offer3 = create_thing_offer(ko_venue3, thing1)
     ko_offer4 = create_thing_offer(venue2, thing2)
@@ -467,7 +470,9 @@ def test_find_offers_with_filter_parameters(app):
 
     # then
     offers_id = [offer.id for offer in offers]
+    print(offers_id)
     assert ok_offer1.id in offers_id
+    assert ok_offer2.id in offers_id
     assert ko_offer2.id not in offers_id
     assert ko_offer3.id not in offers_id
     assert ko_offer4.id not in offers_id

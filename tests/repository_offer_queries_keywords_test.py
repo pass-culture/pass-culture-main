@@ -1,10 +1,11 @@
 import pytest
 
 from models import PcObject, Offer
-from repository.offer_queries import filter_offers_with_keywords_string
+from repository.offer_queries import filter_offers_with_keywords_string, build_offer_search_base_query
 from tests.conftest import clean_database
 from utils.test_utils import create_event, create_thing, create_offerer, create_venue, create_event_offer, \
     create_thing_offer
+
 
 @pytest.mark.standalone
 @clean_database
@@ -21,7 +22,7 @@ def test_create_filter_matching_all_keywords_in_any_models_with_one_keyword_at_e
     PcObject.check_and_save(ok_offer1, ko_offer2, ok_offer3)
 
     # when
-    query = filter_offers_with_keywords_string(Offer.query, 'rencontre')
+    query = filter_offers_with_keywords_string(build_offer_search_base_query(), 'rencontre')
 
     # then
     found_offers = query.all()
@@ -45,7 +46,7 @@ def test_create_filter_matching_all_keywords_in_any_models_with_one_partial_keyw
     PcObject.check_and_save(ok_offer1, ko_offer2, ok_offer3)
 
     # when
-    query = filter_offers_with_keywords_string(Offer.query, 'Renc')
+    query = filter_offers_with_keywords_string(build_offer_search_base_query(), 'Renc')
 
     # then
     found_offers = query.all()
@@ -71,7 +72,7 @@ def test_create_filter_matching_all_keywords_in_any_models_with_several_keywords
     PcObject.check_and_save(ok_offer1, ko_offer2, ok_offer3, ko_offer4)
 
     # when
-    query = filter_offers_with_keywords_string(Offer.query, 'Rencontre Jacques')
+    query = filter_offers_with_keywords_string(build_offer_search_base_query(), 'Rencontre Jacques')
 
     # then
     found_offers = query.all()
@@ -98,7 +99,7 @@ def test_create_filter_matching_all_keywords_in_any_models_with_several_partial_
     PcObject.check_and_save(ok_offer1, ko_offer2, ok_offer3, ko_offer4)
 
     # when
-    query = filter_offers_with_keywords_string(Offer.query, 'Renc Jacqu')
+    query = filter_offers_with_keywords_string(build_offer_search_base_query(), 'Renc Jacqu')
 
     # then
     found_offers = query.all()
@@ -136,7 +137,7 @@ def test_create_filter_matching_all_keywords_in_any_models_with_one_keyword_at_v
     )
 
     # when
-    query = filter_offers_with_keywords_string(Offer.query, 'Rencontre')
+    query = filter_offers_with_keywords_string(build_offer_search_base_query(), 'Rencontre')
 
     # then
     found_offers = query.all()
@@ -178,7 +179,7 @@ def test_create_filter_matching_all_keywords_in_any_models_with_one_keyword_at_v
     )
 
     # when
-    query = filter_offers_with_keywords_string(Offer.query, 'Renc')
+    query = filter_offers_with_keywords_string(build_offer_search_base_query(), 'Renc')
 
     # then
     found_offers = query.all()
@@ -221,7 +222,7 @@ def test_create_filter_matching_all_keywords_in_any_models_with_several_keywords
     )
 
     # when
-    query = filter_offers_with_keywords_string(Offer.query, 'Librairie Rencontre')
+    query = filter_offers_with_keywords_string(build_offer_search_base_query(), 'Librairie Rencontre')
 
     # then
     found_offers = query.all()
@@ -269,7 +270,7 @@ def test_create_filter_matching_all_keywords_in_any_models_with_several_keywords
     )
 
     # when
-    query = filter_offers_with_keywords_string(Offer.query, 'Librairie Marx')
+    query = filter_offers_with_keywords_string(build_offer_search_base_query(), 'Librairie Marx')
 
     # then
     found_offers = query.all()
@@ -318,7 +319,7 @@ def test_create_filter_matching_all_keywords_in_any_models_with_several_partial_
     )
 
     # when
-    query = filter_offers_with_keywords_string(Offer.query, 'Libra Marx')
+    query = filter_offers_with_keywords_string(build_offer_search_base_query(), 'Libra Marx')
 
     # then
     found_offers = query.all()
@@ -349,7 +350,7 @@ def test_create_filter_matching_all_keywords_with_one_keyword_at_mixed_event_or_
     PcObject.check_and_save(ok_offer1, ko_offer2, ok_offer3)
 
     # when
-    query = filter_offers_with_keywords_string(Offer.query, 'Rencontre')
+    query = filter_offers_with_keywords_string(build_offer_search_base_query(), 'Rencontre')
 
     # then
     found_offers = query.all()
@@ -376,7 +377,7 @@ def test_create_filter_matching_all_keywords_in_any_models_with_one_partial_keyw
     PcObject.check_and_save(ok_offer1, ko_offer2, ok_offer3)
 
     # when
-    query = filter_offers_with_keywords_string(Offer.query, 'Rencon')
+    query = filter_offers_with_keywords_string(build_offer_search_base_query(), 'Rencon')
 
     # then
     found_offers = query.all()
@@ -404,7 +405,7 @@ def test_create_filter_matching_all_keywords_in_any_models_with_several_partial_
     PcObject.check_and_save(ok_offer1, ko_offer2, ok_offer3, ko_offer4)
 
     # when
-    query = filter_offers_with_keywords_string(Offer.query, 'Rencontre Jacques')
+    query = filter_offers_with_keywords_string(build_offer_search_base_query(), 'Rencontre Jacques')
 
     # then
     found_offers = query.all()
@@ -433,7 +434,7 @@ def test_create_filter_matching_all_keywords_in_any_models_with_several_partial_
     PcObject.check_and_save(ok_offer1, ko_offer2, ok_offer3, ko_offer4)
 
     # when
-    query = filter_offers_with_keywords_string(Offer.query, 'Jacq Rencon')
+    query = filter_offers_with_keywords_string(build_offer_search_base_query(), 'Jacq Rencon')
 
     # then
     found_offers = query.all()

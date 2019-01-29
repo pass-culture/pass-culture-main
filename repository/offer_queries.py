@@ -23,12 +23,11 @@ from utils.config import ILE_DE_FRANCE_DEPT_CODES
 from utils.distance import get_sql_geo_distance_in_kilometers
 from utils.logger import logger
 
-get_filter_matching_ts_query_for_offer = create_get_filter_matching_ts_query_in_any_model(
-    Event,
-    Thing,
-    Venue,
-    Offerer
-)
+def build_offer_search_base_query():
+    return Offer.query.outerjoin(Event) \
+                 .outerjoin(Thing) \
+                 .join(Venue) \
+                 .join(Offerer)
 
 def departement_or_national_offers(query, offer_type, departement_codes):
     if '00' in departement_codes:
@@ -110,17 +109,21 @@ def _date_interval_to_filter(date_interval):
     return ((EventOccurrence.beginningDatetime >= date_interval[0]) & \
             (EventOccurrence.beginningDatetime <= date_interval[1]))
 
+
 def filter_offers_with_keywords_string(query, keywords_string):
+    get_filter_matching_ts_query_for_offer = create_get_filter_matching_ts_query_in_any_model(
+        Event,
+        Thing,
+        Venue,
+        Offerer
+    )
+
     keywords_filter = create_filter_matching_all_keywords_in_any_model(
         get_filter_matching_ts_query_for_offer,
         keywords_string
     )
 
-    query = query.outerjoin(Event) \
-                 .outerjoin(Thing) \
-                 .join(aliased(Venue)) \
-                 .join(Offerer) \
-                 .filter(keywords_filter)
+    query = query.filter(keywords_filter)
 
     return query
 
@@ -161,7 +164,7 @@ def get_offers_for_recommendations_search(
     # the offer with event that has NO event occurrence
     # Do we exactly want this ?
 
-    query = _filter_recommendable_offers()
+    query = _filter_recommendable_offers(build_offer_search_base_query())
 
     if max_distance is not None and latitude is not None and longitude is not None:
         distance_instrument = get_sql_geo_distance_in_kilometers(
@@ -171,15 +174,14 @@ def get_offers_for_recommendations_search(
             longitude
         )
 
-        query = query.join(Venue) \
-                     .filter(distance_instrument < max_distance) \
+        query = query.filter(distance_instrument < max_distance) \
                      .reset_joinpoint()
+        print(query)
 
     if days_intervals is not None:
         event_beginningdate_in_interval_filter = or_(*map(
             _date_interval_to_filter, days_intervals))
-        query = query.outerjoin(EventOccurrence) \
-                     .filter(
+        query = query.filter(
                         event_beginningdate_in_interval_filter |\
                         (Offer.thing != None))\
                      .reset_joinpoint()
@@ -188,13 +190,9 @@ def get_offers_for_recommendations_search(
         query = filter_offers_with_keywords_string(query, keywords_string)
 
     if type_values is not None:
-        event_query = query.from_self() \
-                           .outerjoin(Event) \
-                           .filter(Event.type.in_(type_values))
+        event_query = query.filter(Event.type.in_(type_values))
 
-        thing_query = query.from_self() \
-                           .outerjoin(Thing) \
-                           .filter(Thing.type.in_(type_values))
+        thing_query = query.filter(Thing.type.in_(type_values))
 
         query = event_query.union_all(thing_query)
 
@@ -212,21 +210,19 @@ def find_offers_with_filter_parameters(
         venue_id=None,
         keywords_string=None
 ):
-    query = Offer.query
+    query = build_offer_search_base_query()
 
     if venue_id is not None:
-        query = query.filter_by(venueId=venue_id)
+        query = query.filter(Offer.venueId == venue_id)
 
     if keywords_string is not None:
         query = filter_offers_with_keywords_string(
             query,
             keywords_string
         )
-    else:
-        query = query.join(Venue).join(Offerer)
 
     if offerer_id is not None:
-        query = query.filter_by(managingOffererId=offerer_id)
+        query = query.filter(Venue.managingOffererId == offerer_id)
 
     if not user.isAdmin:
         query = filter_query_where_user_is_user_offerer_and_is_validated(
@@ -242,17 +238,17 @@ def find_searchable_offer(offer_id):
                       .filter(Venue.validationToken == None)\
                       .first()
 
-def _filter_recommendable_offers():
-    join_on_stocks = Offer.query.filter_by(isActive=True) \
-        .join(Stock) \
-        .filter_by(isSoftDeleted=False)
+def _filter_recommendable_offers(offer_query):
+    join_on_event_occurrence = Offer.id == EventOccurrence.offerId
+    join_on_stock = (Stock.offerId == Offer.id) | (Stock.eventOccurrenceId == EventOccurrence.id)
+    offer_query = offer_query.reset_joinpoint() \
+    .filter_by(isActive=True) \
+    .outerjoin(EventOccurrence, join_on_event_occurrence) \
+    .join(Stock, join_on_stock) \
+    .filter_by(isSoftDeleted=False)
 
-    join_on_event_occurrences = Offer.query.filter_by(isActive=True) \
-        .join(EventOccurrence) \
-        .join(Stock) \
-        .filter_by(isSoftDeleted=False)
-
-    return join_on_stocks.union_all(join_on_event_occurrences)
+    # return join_on_stocks.union_all(join_on_event_occurrences)
+    return offer_query
 
 
 def find_activation_offers(departement_code: str) -> List[Offer]:
