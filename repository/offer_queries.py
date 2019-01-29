@@ -5,7 +5,8 @@ from sqlalchemy import func, and_, or_
 from sqlalchemy.orm import aliased
 
 from domain.keywords import create_filter_matching_all_keywords_in_any_model, \
-                            create_get_filter_matching_ts_query_in_any_model
+                            create_get_filter_matching_ts_query_in_any_model, \
+                            get_first_matching_keywords_string_at_column
 from models import Booking, \
     Event, \
     EventOccurrence, \
@@ -109,19 +110,48 @@ def _date_interval_to_filter(date_interval):
     return ((EventOccurrence.beginningDatetime >= date_interval[0]) & \
             (EventOccurrence.beginningDatetime <= date_interval[1]))
 
+def get_offer_join_query_for_keywords(query):
+    query = query.outerjoin(Event) \
+                 .outerjoin(Thing) \
+                 .join(Venue) \
+                 .join(Offerer)
+    return query
+
 def filter_offers_with_keywords_string(query, keywords_string):
     keywords_filter = create_filter_matching_all_keywords_in_any_model(
         get_filter_matching_ts_query_for_offer,
         keywords_string
     )
 
-    query = query.outerjoin(Event) \
-                 .outerjoin(Thing) \
-                 .join(Venue) \
-                 .join(Offerer) \
-                 .filter(keywords_filter)
+    query = get_offer_join_query_for_keywords(query)
+
+    query = query.filter(keywords_filter)
 
     return query
+
+def get_is_offer_selected_by_keywords_string_at_column(offer, keywords_string, column):
+    query = offer.__class__.query.filter_by(id=offer.id)
+
+    query = get_offer_join_query_for_keywords(query)
+
+    return get_first_matching_keywords_string_at_column(
+        query,
+        keywords_string,
+        column
+    ) is not None
+
+def get_is_offer_selected_by_keywords_string_at_column(offer, keywords_string, column):
+    query = offer.__class__.query.filter_by(id=offer.id)\
+                         .outerjoin(Event) \
+                         .outerjoin(Thing) \
+                         .join(Venue) \
+                         .join(Offerer)
+
+    return get_first_matching_keywords_string_at_column(
+        query,
+        keywords_string,
+        column
+    ) is not None
 
 def get_offers_for_recommendations_search(
         date=None,

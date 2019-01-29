@@ -1,7 +1,8 @@
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
-from sqlalchemy import and_, func
-from sqlalchemy.sql.expression import or_
+from sqlalchemy import and_, func, TEXT
+from sqlalchemy.sql.expression import cast, or_
+from sqlalchemy.sql.functions import coalesce
 
 LANGUAGE = 'french'
 STOP_WORDS = set(stopwords.words(LANGUAGE))
@@ -26,6 +27,21 @@ def get_ts_queries_from_keywords_string(keywords_string):
     ts_queries = ['{}:*'.format(keyword) for keyword in keywords_without_stop_words]
 
     return ts_queries
+
+
+def get_first_matching_any_ts_queries_at_column(query, ts_queries, column):
+    ts_vector = func.to_tsvector(cast(coalesce(column, ''), TEXT))
+    ts_queries_filter = or_(
+        *[
+            ts_vector.match(ts_query, postgresql_regconfig=LANGUAGE)
+            for ts_query in ts_queries
+        ]
+    )
+    return query.filter(ts_queries_filter).first()
+
+def get_first_matching_keywords_string_at_column(query, keywords_string, column):
+    ts_queries = get_ts_queries_from_keywords_string(keywords_string)
+    return get_first_matching_any_ts_queries_at_column(query, ts_queries, column)
 
 
 def create_get_filter_matching_ts_query_in_any_model(*models):
