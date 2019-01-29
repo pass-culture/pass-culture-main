@@ -6,9 +6,11 @@ export function errorKeyToFrenchKey(errorKey) {
     case 'available':
       return 'Places'
     case 'beginningDatetime':
-      return 'Date'
+      return 'Date de début'
+    case 'bookingLimitDatetime':
+      return 'Date de réservation'
     case 'endDatetime':
-      return 'Heure de fin'
+      return 'Date de fin'
     case 'price':
       return 'Prix'
     default:

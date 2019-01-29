@@ -34,6 +34,11 @@ export function getAddUrl(isEditing, isStockOnly, offerId, stocks, defaultUrl) {
 }
 
 class EventOccurrencesAndStocksManager extends Component {
+  constructor() {
+    super()
+    this.state = { info: null }
+  }
+
   onCloseClick = e => {
     const { dispatch, offer, history } = this.props
     dispatch(closeModal())
@@ -78,6 +83,14 @@ class EventOccurrencesAndStocksManager extends Component {
     )
   }
 
+  closeInfo = () => {
+    this.setState({ info: null })
+  }
+
+  showInfo = info => {
+    this.setState({ info })
+  }
+
   componentDidMount() {
     this.elem.focus()
     document.onkeydown = event => {
@@ -105,11 +118,18 @@ class EventOccurrencesAndStocksManager extends Component {
       thing,
       isStockOnly,
     } = this.props
+    const { info } = this.state
 
     return (
       <div
         className="event-occurrences-and-stocks-manager"
         ref={elem => (this.elem = elem)}>
+        <div className={classnames('info', { 'is-invisible': !info })}>
+          <div className="content">
+            <div>{info}</div>
+          </div>
+        </div>
+
         {errors && (
           <div className="notification is-danger">
             {Object.keys(errors).map(key => (
@@ -172,7 +192,10 @@ class EventOccurrencesAndStocksManager extends Component {
               </tbody>
             ) : (
               <tbody>
-                <tr>
+                <tr
+                  className={classnames({
+                    inactive: isStockOnly && stocks.length,
+                  })}>
                   <td colSpan="10">
                     <NavLink
                       className="button is-secondary"
@@ -182,7 +205,7 @@ class EventOccurrencesAndStocksManager extends Component {
                       {isStockOnly
                         ? stocks.length
                           ? ''
-                          : '+ Ajouter un stock'
+                          : 'Renseigner le stock'
                         : '+ Ajouter une date'}
                     </NavLink>
                   </td>
@@ -192,15 +215,19 @@ class EventOccurrencesAndStocksManager extends Component {
 
             {isNew && (
               <EventOccurrenceAndStockItem
+                closeInfo={this.closeInfo}
                 isFullyEditable={!provider}
                 isStockOnly={isStockOnly}
+                showInfo={this.showInfo}
               />
             )}
             {(isStockOnly ? stocks : eventOccurrences).map(item => (
               <EventOccurrenceAndStockItem
+                closeInfo={this.closeInfo}
                 key={item.id}
                 isFullyEditable={!provider}
                 isStockOnly={isStockOnly}
+                showInfo={this.showInfo}
                 {...{ [isStockOnly ? 'stock' : 'eventOccurrence']: item }}
               />
             ))}

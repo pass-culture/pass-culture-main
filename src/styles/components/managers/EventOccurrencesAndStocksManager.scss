@@ -1,4 +1,28 @@
 .event-occurrences-and-stocks-manager {
+  @extend .is-relative;
+
+  .info {
+    @extend .is-absolute;
+    @extend .level;
+
+    bottom: 0;
+    left: 0;
+    right: 0;
+    top: 0;
+    z-index: 3000;
+
+    .content {
+      @extend .level-item;
+      @extend .p24;
+
+      background-color: $blue;
+      color: white;
+      margin: auto;
+      min-height: 200px;
+      max-width: 50%;
+    }
+  }
+
   .event-occurrences-and-stocks-table-wrapper {
     .hero-section {
       text-align: left !important;
@@ -29,41 +53,49 @@
 
           @include dotted($primary, bottom);
 
+          &.inactive {
+            &:hover {
+              background-color: transparent;
+            }
+          }
+
           td {
             text-align: center;
             border: none;
+
             &:first-child {
               width: 20%;
             }
+
             input.date {
               width: 100px;
             }
             input[type='time'] {
               padding-left: 1rem;
             }
-            input[readonly]::placeholder {
+            input[readonly]::placeholder {
               color: $black;
             }
             input[readonly]::-webkit-input-placeholder{
               color: $black;
             }
-            input[readonly]::-moz-placeholder {
+            input[readonly]::-moz-placeholder {
               color: $black;
             }
             input[readonly]:-moz-placeholder {
               color: $black;
             }
           }
-        td.tooltiped {
-          white-space: nowrap;
-          span.tooltip {
-            background-color: transparent;
-            padding: 0;
-            margin: -4px 0 0 2px;
-            z-index:9999999999999999999;
+          td.tooltiped {
+            white-space: nowrap;
+            span.tooltip {
+              background-color: transparent;
+              padding: 0;
+              margin: -4px 0 0 2px;
+              z-index:9999999999999999999;
+            }
           }
         }
-      }
       }
 
       thead {

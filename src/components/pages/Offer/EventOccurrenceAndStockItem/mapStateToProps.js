@@ -3,6 +3,7 @@ import eventSelector from '../../../../selectors/event'
 import eventOccurrencePatchSelector from '../../../../selectors/eventOccurrencePatch'
 import eventOccurrencesSelector from '../../../../selectors/eventOccurrences'
 import offerSelector from '../../../../selectors/offer'
+import offererSelector from '../../../../selectors/offerer'
 import selectApiSearch from '../../../../selectors/selectApiSearch'
 import stockSelector from '../../../../selectors/stock'
 import stockPatchSelector from '../../../../selectors/stockPatch'
@@ -61,6 +62,9 @@ export default function mapStateToProps(state, ownProps) {
 
   const isEditing = !isEventOccurrenceReadOnly || !isStockReadOnly
 
+  const offerer = offererSelector(state, venue && venue.managingOffererId)
+  const hasIban = (venue && venue.iban) || (offerer && offerer.iban)
+
   return {
     event: eventSelector(state, eventId),
     eventId,
@@ -80,6 +84,7 @@ export default function mapStateToProps(state, ownProps) {
       `form.eventOccurrence${eventOccurrenceId || ''}.endDatetime`
     ),
     formPrice: get(state, `form.stock${stockId || ''}.price`),
+    hasIban,
     isEditing,
     isEventOccurrenceReadOnly,
     isStockReadOnly,

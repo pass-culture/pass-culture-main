@@ -15,21 +15,8 @@ function getDisplayedPrice(value, readOnly) {
     return 0
   }
   if (readOnly) {
-    let floatValue = value
-    if (value && String(value).includes(floatSep)) {
-      floatValue = parseFloat(value.replace(/,/, '.')).toFixed(2)
-    }
-    let floatValueString = `${floatValue} €`
-    if (floatSep === ',') {
-      floatValueString = floatValueString.replace('.', ',')
-    }
-    return floatValueString
+    return `${value} €`
   }
-
-  if (value === ' ') {
-    return 0
-  }
-
   return value
 }
 
