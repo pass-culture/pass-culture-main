@@ -15,18 +15,18 @@ program
 
   .option('testcafe', 'testcafe')
 
-  .option('-b, --browser [type]', 'Define browser', 'chrome:headless')
+  .option('-b, --browser [type]', 'Define browser', 'chrome')
+  .option('-d, --debug', 'Debug', '')
   .option('-e, --environment [type]', 'Define environment', 'development')
   .option('-f, --file [type]', 'Define file', '')
 
   .parse(process.argv)
 
-const { environment, testcafe } = program
+const { browser, debug, environment, file, testcafe } = program
 const NODE_ENV = environment === 'local' ? 'development' : environment
 
 if (testcafe) {
-  const { browser, environment, file } = program
-  const debugOption = environment === 'local' ? '-d' : ''
+  const debugOption = debug ? '-d' : ''
   const command = `NODE_ENV=${NODE_ENV} ./node_modules/.bin/testcafe ${browser} ${debugOption} testcafe/${file}`
   childProcess.execSync(command, { stdio: [0, 1, 2] })
 }
