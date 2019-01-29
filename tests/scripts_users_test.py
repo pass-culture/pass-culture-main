@@ -2,8 +2,9 @@ from datetime import datetime, timedelta
 from unittest.mock import Mock
 
 from models import User
-from scripts.users import fill_user_from, create_activation_booking_for, setup_users
+from scripts.users import fill_user_from, create_activation_booking_for, setup_users, chunk_file
 from utils.test_utils import create_user, create_stock, create_thing_offer, create_venue, create_offerer
+from utils.token import random_token
 
 
 class FillUserFromTest:
@@ -175,3 +176,24 @@ class SetupUsersTest:
         # then
         assert bookings[1].user.id == 123
         assert bookings[1].user.email == 'fblake@bletchley.co.uk'
+
+
+class ChunkFileTest:
+    def test_returns_a_list_of_list_of_given_chunk_sizes(self):
+        # given
+        chunk_size = 2
+        csv_reader = [
+            ['68bfa', 'Mortimer', 'Philip', '%s@bletchley.co.uk' % random_token()],
+            ['68bfa', 'Mortimer', 'Philip', '%s@bletchley.co.uk' % random_token()],
+            ['68bfa', 'Mortimer', 'Philip', '%s@bletchley.co.uk' % random_token()],
+            ['68bfa', 'Mortimer', 'Philip', '%s@bletchley.co.uk' % random_token()],
+            ['68bfa', 'Mortimer', 'Philip', '%s@bletchley.co.uk' % random_token()]
+        ]
+
+        # when
+        chunked_file = chunk_file(csv_reader, chunk_size)
+
+        # then
+        assert len(chunked_file) == 3
+        assert len(chunked_file[-1]) == 1
+        assert all(len(chunk) == 2 for chunk in chunked_file[:-1])

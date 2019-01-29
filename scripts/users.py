@@ -1,7 +1,7 @@
 import csv
 import re
 from datetime import datetime
-from typing import List, Set
+from typing import List, Set, Iterable
 
 from domain.password import generate_reset_token
 from models import User, Booking, Stock, PcObject
@@ -10,7 +10,7 @@ from repository.user_queries import find_user_by_email
 from utils.logger import logger
 from utils.token import random_token
 
-CHUNK_SIZE = 100
+CHUNK_SIZE = 250
 THIRTY_DAYS = 30 * 24
 
 
@@ -65,36 +65,63 @@ def fill_user_from(csv_row: List[str], user: User) -> User:
     return user
 
 
-def run(csv_file_path: str) -> None:
-    logger.info('[START] Création des utilisateurs avec contremarques d\'activation')
-
-    csv_reader = csv.reader(open(csv_file_path))
+def chunk_file(csv_reader: Iterable, chunk_size: int) -> List[List[List[str]]]:
+    chunked_rows = []
     chunk = []
+    existing_emails = set()
     total = 0
-    stock = find_online_activation_stock()
-    existing_tokens = set()
 
+    for line in csv_reader:
+        if line[0] == 'id':
+            continue
+
+        if line[3] not in existing_emails:
+            chunk.append(line)
+            existing_emails.add(line[3])
+
+        if len(chunk) >= chunk_size:
+            chunked_rows.append(chunk)
+            total += len(chunk)
+            chunk = []
+
+    total += len(chunk)
+    chunked_rows.append(chunk)
+    logger.info('Lecture des lignes CSV (%s) terminée\n' % total)
+
+    return chunked_rows
+
+
+def run(csv_file_path: str) -> None:
+    logger.info('-------------------------------------------------------------------------------')
+    logger.info('[START] Création des utilisateurs avec contremarques d\'activation')
+    logger.info('-------------------------------------------------------------------------------\n')
+
+    stock = find_online_activation_stock()
     if not stock:
         logger.error('No activation stock found')
-    else:
-        for line in csv_reader:
-            if line[0] == 'id':
-                continue
+        exit(1)
 
-            chunk.append(line)
+    logger.info('[STEP 1] Lecture du fichier CSV')
+    csv_file = open(csv_file_path)
+    csv_reader = csv.reader(csv_file)
+    chunked_file = chunk_file(csv_reader, CHUNK_SIZE)
 
-            if len(chunk) >= CHUNK_SIZE:
-                save_in_database(chunk, stock, total, existing_tokens)
-                total += len(chunk)
-                chunk = []
-
+    logger.info('[STEP 2] Enregistrement des comptes et contremarques d\'activation')
+    existing_tokens = set()
+    total = 0
+    for chunk in chunked_file:
+        bookings = setup_users(chunk, stock, existing_tokens)
+        PcObject.check_and_save(*bookings)
         total += len(chunk)
-        save_in_database(chunk, stock, total, existing_tokens)
+        logger.info('Enregistrement de %s comptes utilisateur | %s' % (CHUNK_SIZE, total))
+    logger.info('Enregistrement des comptes utilisateur terminé\n')
 
+    logger.info('[STEP 3] Compte des objets')
+    logger.info('Users créés -> %s' % total)
+    logger.info('Users en BDD -> %s' % User.query.count())
+    logger.info('Bookings créés -> %s' % len(existing_tokens))
+    logger.info('Bookings en BDD -> %s\n' % Booking.query.count())
+
+    logger.info('-------------------------------------------------------------------------------')
     logger.info('[END] Création des utilisateurs avec contremarques d\'activation : %s' % total)
-
-
-def save_in_database(chunk, stock, total, existing_tokens):
-    bookings = setup_users(chunk, stock, existing_tokens)
-    PcObject.check_and_save(*bookings)
-    logger.info('Enregistrement de %s comptes utilisateur | %s' % (CHUNK_SIZE, total))
+    logger.info('-------------------------------------------------------------------------------')
