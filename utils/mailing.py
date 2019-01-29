@@ -397,6 +397,21 @@ def make_wallet_balances_email(csv: str) -> dict:
     }
 
 
+def make_activation_users_email(csv: str) -> dict:
+    now = datetime.utcnow()
+    csv_b64encode = base64.b64encode(csv.encode('utf-8')).decode()
+    return {
+        'FromEmail': "passculture@beta.gouv.fr",
+        'FromName': "pass Culture Pro",
+        'Subject': "Liste des utilisateurs créés pour l'activation du pass Culture - {}".format(
+            datetime.strftime(now, "%Y-%m-%d")),
+        'Attachments': [{"ContentType": "text/csv",
+                         "Filename": "liste_des_utilisateurs_{}.csv".format(datetime.strftime(now, "%Y%m%d")),
+                         "Content": csv_b64encode}],
+        'Html-part': ""
+    }
+
+
 def make_venue_validation_confirmation_email(venue):
     html = render_template('mails/venue_validation_confirmation_email.html', venue=venue)
     return {

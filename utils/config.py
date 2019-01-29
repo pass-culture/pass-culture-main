@@ -20,6 +20,14 @@ elif IS_PROD:
 else:
     API_URL = 'https://backend.passculture-%s.beta.gouv.fr' % ENV
 
+if IS_DEV:
+    WEBAPP_URL = 'localhost'
+elif IS_PROD:
+    WEBAPP_URL = 'https://app.passculture.beta.gouv.fr'
+else:
+    WEBAPP_URL = 'https://app.passculture-%s.beta.gouv.fr' % ENV
+
+
 BLOB_SIZE = 80
 BLOB_UNREAD_NUMBER = int(BLOB_SIZE/5)
 BLOB_READ_NUMBER = int(BLOB_SIZE/5)

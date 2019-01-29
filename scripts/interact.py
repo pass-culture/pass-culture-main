@@ -1,15 +1,19 @@
 """ interact """
 import os
-from flask import Flask
 
 from local_providers.install import install_local_providers
-from models.db import db
 from models.install import install_models
+from flask import Flask
+from mailjet_rest import Client
+
+from models.db import db
+from utils.mailing import MAILJET_API_KEY, MAILJET_API_SECRET
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('FLASK_SECRET', '+%+3Q23!zbc+!Dd@')
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.mailjet_client = Client(auth=(MAILJET_API_KEY, MAILJET_API_SECRET), version='v3')
 db.init_app(app)
 db.app = app
 

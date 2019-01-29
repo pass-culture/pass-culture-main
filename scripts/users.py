@@ -1,17 +1,25 @@
 import csv
+import os
 import re
 from datetime import datetime
 from typing import List, Set, Iterable
 
+from domain.admin_emails import send_activation_users_report
 from domain.password import generate_reset_token
+from domain.user_activation import generate_activation_users_csv
 from models import User, Booking, Stock, PcObject
+from models.booking import ActivationUser
 from repository.stock_queries import find_online_activation_stock
 from repository.user_queries import find_user_by_email
+from scripts.interact import app
+from utils.config import WEBAPP_URL
 from utils.logger import logger
+from utils.mailing import MailServiceException, parse_email_addresses
 from utils.token import random_token
 
 CHUNK_SIZE = 250
 THIRTY_DAYS = 30 * 24
+ACTIVATION_USER_RECIPIENTS = parse_email_addresses(os.environ.get('ACTIVATION_USER_RECIPIENTS', None))
 
 
 def setup_users(csv_rows: List[List[str]], stock: Stock, existing_tokens: Set[str],
@@ -91,6 +99,16 @@ def chunk_file(csv_reader: Iterable, chunk_size: int) -> List[List[List[str]]]:
     return chunked_rows
 
 
+def export_created_data(bookings: List[Booking]):
+    users = map(lambda b: ActivationUser(b, WEBAPP_URL), bookings)
+    csv = generate_activation_users_csv(users)
+
+    try:
+        send_activation_users_report(csv, ACTIVATION_USER_RECIPIENTS, app.mailjet_client.send.create)
+    except MailServiceException as e:
+        logger.error('Error while sending activation users report email to MailJet', e)
+
+
 def run(csv_file_path: str) -> None:
     logger.info('-------------------------------------------------------------------------------')
     logger.info('[START] Création des utilisateurs avec contremarques d\'activation')
@@ -101,6 +119,10 @@ def run(csv_file_path: str) -> None:
         logger.error('No activation stock found')
         exit(1)
 
+    if not ACTIVATION_USER_RECIPIENTS:
+        logger.error('No recipients [ACTIVATION_USER_RECIPIENTS] found')
+        exit(1)
+
     logger.info('[STEP 1] Lecture du fichier CSV')
     csv_file = open(csv_file_path)
     csv_reader = csv.reader(csv_file)
@@ -108,10 +130,12 @@ def run(csv_file_path: str) -> None:
 
     logger.info('[STEP 2] Enregistrement des comptes et contremarques d\'activation')
     existing_tokens = set()
+    all_bookings = []
     total = 0
     for chunk in chunked_file:
         bookings = setup_users(chunk, stock, existing_tokens)
         PcObject.check_and_save(*bookings)
+        all_bookings.extend(bookings)
         total += len(chunk)
         logger.info('Enregistrement de %s comptes utilisateur | %s' % (CHUNK_SIZE, total))
     logger.info('Enregistrement des comptes utilisateur terminé\n')
@@ -121,6 +145,9 @@ def run(csv_file_path: str) -> None:
     logger.info('Users en BDD -> %s' % User.query.count())
     logger.info('Bookings créés -> %s' % len(existing_tokens))
     logger.info('Bookings en BDD -> %s\n' % Booking.query.count())
+
+    logger.info('[STEP 4] Envoi des comptes créés par mail')
+    export_created_data(all_bookings)
 
     logger.info('-------------------------------------------------------------------------------')
     logger.info('[END] Création des utilisateurs avec contremarques d\'activation : %s' % total)

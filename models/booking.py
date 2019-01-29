@@ -1,5 +1,6 @@
 """ booking model """
 from datetime import datetime, timedelta
+
 from sqlalchemy import BigInteger, \
     Boolean, \
     Column, \
@@ -98,6 +99,32 @@ class Booking(PcObject,
             return event_starts_in_more_than_72_hours
         else:
             return False
+
+
+class ActivationUser:
+    CSV_HEADER = [
+        'Prénom',
+        'Nom',
+        'Email',
+        'Contremarque d\'activation',
+        'Lien de création de mot de passe'
+    ]
+
+    def __init__(self, booking: Booking, app_domain: str):
+        self.first_name = booking.user.firstName
+        self.last_name = booking.user.lastName
+        self.email = booking.user.email
+        self.token = booking.token
+        self.password_url = '%s/activation/%s' % (app_domain, booking.user.resetPasswordToken)
+
+    def as_csv_row(self):
+        return [
+            self.first_name,
+            self.last_name,
+            self.email,
+            self.token,
+            self.password_url
+        ]
 
 
 Booking.trig_ddl = """
