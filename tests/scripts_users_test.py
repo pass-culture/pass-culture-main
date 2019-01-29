@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from unittest.mock import Mock
 
 from models import User
-from scripts.users import fill_user_from, create_activation_booking_for, create_users_with_activation_bookings, \
+from scripts.users import fill_user_from, create_booking_for, create_users_with_activation_bookings, \
     split_rows_in_chunks_with_no_duplicated_emails
 from utils.test_utils import create_user, create_stock, create_thing_offer, create_venue, create_offerer
 from utils.token import random_token
@@ -65,7 +65,7 @@ class FillUserFromTest:
 
         # then
         assert user.canBookFreeOffers == False
-        assert user.password != ''
+        assert user.password
 
     def test_has_a_reset_password_token_and_validity_limit(self):
         # when
@@ -100,7 +100,7 @@ class FillUserFromTest:
         assert user.resetPasswordTokenValidityLimit is not None
 
 
-class CreateActivationBookingForTest:
+class CreateBookingForTest:
     def test_returns_a_booking_for_given_user_and_stock(self):
         # given
         venue = create_venue(create_offerer())
@@ -110,7 +110,7 @@ class CreateActivationBookingForTest:
         token = 'ABC123'
 
         # when
-        booking = create_activation_booking_for(user, stock, token)
+        booking = create_booking_for(user, stock, token)
 
         # then
         assert booking.user == user
@@ -128,7 +128,7 @@ class CreateActivationBookingForTest:
         token = 'ABC123'
 
         # when
-        booking = create_activation_booking_for(user, stock, token)
+        booking = create_booking_for(user, stock, token)
 
         # then
         assert booking.isCancelled == False

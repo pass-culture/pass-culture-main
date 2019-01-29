@@ -46,13 +46,13 @@ def create_users_with_activation_bookings(csv_rows: List[List[str]], stock: Stoc
             token = random_token()
         existing_tokens.add(token)
 
-        booking = create_activation_booking_for(filled_user, stock, token)
+        booking = create_booking_for(filled_user, stock, token)
         bookings.append(booking)
 
     return bookings
 
 
-def create_activation_booking_for(user: User, stock: Stock, token: str) -> Booking:
+def create_booking_for(user: User, stock: Stock, token: str) -> Booking:
     booking = Booking()
     booking.stock = stock
     booking.user = user

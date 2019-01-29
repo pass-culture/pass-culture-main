@@ -62,6 +62,6 @@ def find_online_activation_stock():
         .join(Offer) \
         .join(Venue) \
         .filter_by(isVirtual=True) \
-        .join(Thing, Offer.ThingId == Thing.id) \
+        .join(Thing, Offer.thingId == Thing.id) \
         .filter_by(type=str(ThingType.ACTIVATION)) \
         .first()
