@@ -69,7 +69,9 @@ const SigninPage = ({ errors }) => {
                     <NavLink to="/inscription" className="button is-secondary">
                       Créer un compte
                     </NavLink>
-                    <SubmitButton className="button is-primary is-outlined">
+                    <SubmitButton
+                      className="button is-primary is-outlined"
+                      id="signin-submit-button">
                       Se connecter
                     </SubmitButton>
                   </div>
