@@ -1,51 +1,39 @@
-import { Selector, RequestMock } from 'testcafe'
+import { Selector } from 'testcafe'
 
-import { validatedOffererUserRole } from './helpers/roles'
-import { OFFERER_WITH_NO_PHYSICAL_VENUE } from './helpers/offerers'
+import {
+  navigateToNewOffererAs,
+  navigateToOffererAs,
+} from './helpers/navigations'
+import {
+  FUTURE_OFFERER_CREATED_IN_OFFERER_PAGE_WITH_NO_IBAN,
+  OFFERER_WITH_NO_PHYSICAL_VENUE_WITH_NO_IBAN,
+} from './helpers/offerers'
+import {
+  SIREN_ALREADY_IN_DATABASE,
+  SIREN_WITHOUT_ADDRESS,
+} from './helpers/sirens'
+import { VALIDATED_UNREGISTERED_OFFERER_USER } from './helpers/users'
 
-const adressInput = Selector('input#offerer-address')
+const addressInput = Selector('input#offerer-address')
 const nameInput = Selector('input#offerer-name')
-const navbarAnchor = Selector(
-  'a.navbar-link, span.navbar-burger'
-).filterVisible()
-const newOffererAnchor = Selector(
-  "a.button.is-primary[href='/structures/nouveau']"
-)
-const offerersNavbarLink = Selector("a.navbar-item[href='/structures']")
 const sirenInput = Selector('#offerer-siren')
-const ibanInput = Selector('#offerer-iban')
-const bicInput = Selector('#offerer-bic')
 const sirenErrorInput = Selector('#offerer-siren-error')
 const submitButton = Selector('button.button.is-primary') //connexion
 
-var apiSireneMock = RequestMock()
-  .onRequestTo('https://sirene.entreprise.api.gouv.fr/v1/siren/216701375')
-  .respond(
-    {
-      siege_social: {
-        siren: '216701375',
-        l1_normalisee: 'Nom',
-        l4_normalisee: null,
-        libelle_commune: 'test',
-        latitude: '12.98723',
-        longitude: '87.01821',
-        code_postal: '75000',
-      },
-    },
-    200,
-    { 'access-control-allow-origin': '*' }
-  )
-
-fixture`04_01 OffererPage | Créer une nouvelle structure`.beforeEach(
-  async t => {
-    await t
-      .useRole(validatedOffererUserRole)
-      // le userRole a l'option preserveUrl: true donc le test commence sur la page /offres
-      .click(navbarAnchor)
-      .click(offerersNavbarLink)
-      .click(newOffererAnchor)
-  }
+fixture`OffererPage A | Créer une nouvelle structure`.beforeEach(
+  navigateToNewOffererAs(VALIDATED_UNREGISTERED_OFFERER_USER)
 )
+
+test('Je peux naviguer vers une nouvelle structure et revenir aux structures', async t => {
+  const backAnchor = Selector('a.button.is-secondary')
+
+  const location = await t.eval(() => window.location)
+  await t.expect(location.pathname).eql('/structures/nouveau')
+
+  await t.click(backAnchor)
+  const newLocation = await t.eval(() => window.location)
+  await t.expect(newLocation.pathname).eql('/structures')
+})
 
 test('Je ne peux pas ajouter de nouvelle structure avec un siren faux', async t => {
   // navigation
@@ -64,28 +52,37 @@ test('Je ne peux pas ajouter de nouvelle structure avec un siren faux', async t 
   await t.expect(sirenErrorInput.innerText).contains('Siren invalide')
 })
 
-test('Je ne peux pas ajouter de nouvelle structure ayant un siren déjà existant dans la base', async t => {
-  // navigation
-  let location = await t.eval(() => window.location)
-  await t
-    .expect(location.pathname)
-    .eql('/structures/nouveau')
+test.requestHooks(SIREN_ALREADY_IN_DATABASE)(
+  'Je ne peux pas ajouter de nouvelle structure ayant un siren déjà existant dans la base',
+  async t => {
+    // navigation
+    let location = await t.eval(() => window.location)
+    await t
+      .expect(location.pathname)
+      .eql('/structures/nouveau')
 
-    // input
-    .typeText(sirenInput, OFFERER_WITH_NO_PHYSICAL_VENUE.siren)
+      // input
+      .typeText(sirenInput, OFFERER_WITH_NO_PHYSICAL_VENUE_WITH_NO_IBAN.siren)
 
-  // submit
-  await t.click(submitButton)
+    // submit
+    await t.click(submitButton)
 
-  // api return an error message
-  await t
-    .expect(sirenErrorInput.innerText)
-    .contains(
-      'Une entrée avec cet identifiant existe déjà dans notre base de données'
-    )
-})
+    // api return an error message
+    await t
+      .expect(sirenErrorInput.innerText)
+      .contains(
+        'Une entrée avec cet identifiant existe déjà dans notre base de données'
+      )
+  }
+)
 
 test('Je rentre une nouvelle structure via son siren', async t => {
+  const {
+    address,
+    name,
+    siren,
+  } = FUTURE_OFFERER_CREATED_IN_OFFERER_PAGE_WITH_NO_IBAN
+
   // navigation
   let location = await t.eval(() => window.location)
   await t
@@ -93,11 +90,11 @@ test('Je rentre une nouvelle structure via son siren', async t => {
     .eql('/structures/nouveau')
 
     // input
-    .typeText(sirenInput, '492 475 033')
+    .typeText(sirenInput, siren)
 
   // check other completed fields
-  await t.expect(nameInput.value).eql('NASKA PROD')
-  await t.expect(adressInput.value).eql('167 QUAI DE VALMY')
+  await t.expect(nameInput.value).eql(name)
+  await t.expect(addressInput.value).eql(address)
 
   // submit
   await t.click(submitButton)
@@ -107,17 +104,7 @@ test('Je rentre une nouvelle structure via son siren', async t => {
   await t.expect(location.pathname).eql('/structures')
 })
 
-test.skip('J edit une structure pour lui ajouter ses coordonnées bancaires car je suis admin', async t => {
-  // navigation
-  let location = await t.eval(() => window.location)
-  await t.expect(location.pathname).eql('/structures')
-
-  // form
-  // t.typeText(bicInput, 'BNPAFRPP')
-  // t.typeText(ibanInput, 'FR7630004000031234567890143')
-})
-
-test.requestHooks(apiSireneMock)(
+test.requestHooks(SIREN_WITHOUT_ADDRESS)(
   "Je rentre une structure dont l'adresse n'est pas renvoyée par l'api sirene et je peux valider",
   async t => {
     // given
@@ -126,7 +113,7 @@ test.requestHooks(apiSireneMock)(
     let location = await t.eval(() => window.location)
     await t
       .typeText(sirenInput, sirenWithNoAddress)
-      .expect(adressInput.value)
+      .expect(addressInput.value)
       .eql('')
 
       // when
@@ -137,3 +124,20 @@ test.requestHooks(apiSireneMock)(
     await t.expect(location.pathname).eql('/structures')
   }
 )
+
+fixture`OffererPage B | Modifier une structure`
+
+test.skip('Je modifie une structure pour lui ajouter ses coordonnées bancaires car je suis admin', async t => {
+  // given
+  await navigateToOffererAs(
+    VALIDATED_UNREGISTERED_OFFERER_USER,
+    OFFERER_WITH_NO_PHYSICAL_VENUE_WITH_NO_IBAN
+  )(t)
+
+  // when
+  // t.typeText(bicInput, 'BNPAFRPP')
+  // t.typeText(ibanInput, 'FR7630004000031234567890143')
+
+  // then
+  // TODO
+})

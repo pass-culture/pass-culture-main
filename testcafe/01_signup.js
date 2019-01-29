@@ -1,10 +1,15 @@
 import { Selector } from 'testcafe'
 
 import { ROOT_PATH } from '../src/utils/config'
-import { offererUser0, offererUser1 } from './helpers/users'
+import { SIREN_ALREADY_IN_DATABASE } from './helpers/sirens'
+import {
+  FUTURE_USER_WITH_REGISTERED_OFFERER_USER,
+  FUTURE_USER_WITH_UNREGISTERED_OFFERER,
+  REAL_VALIDATION_USER,
+  VALIDATED_UNREGISTERED_OFFERER_USER,
+} from './helpers/users'
 
 const contactOkInput = Selector('#user-contact_ok')
-const contactOkInputError = Selector('#user-contact_ok-error')
 const emailInput = Selector('#user-email')
 const emailInputError = Selector('#user-email-error')
 const firstNameInput = Selector('#user-firstName')
@@ -15,15 +20,10 @@ const passwordInputError = Selector('#user-password-error')
 const signInButton = Selector('.is-secondary').withText("J'ai déjà un compte")
 const signUpButton = Selector('button.button.is-primary')
 const sirenInput = Selector('#user-siren')
-const sirenInputError = Selector('#user-siren-error')
-const pendingOffererList = Selector('#pending-offerer-list')
-const firstPendingOffererName = Selector(
-  '#pending-offerer-list .list-content p span'
-)
 const notificationSuccess = Selector('.notification.is-success')
 
-fixture`01_01 SignupPage |  Component | Je crée un compte utilisateur·ice`
-  .page`${ROOT_PATH + 'inscription'}`
+fixture`SignupPage A | Je crée un compte utilisateur·ice`.page`${ROOT_PATH +
+  'inscription'}`
 
 test("Je peux cliquer sur lien pour me connecter si j'ai déja un compte", async t => {
   await t.click(signInButton)
@@ -37,13 +37,21 @@ test("Lorsque l'un des champs obligatoire est manquant, le bouton créer est des
   await t.expect(signUpButton.hasAttribute('disabled')).ok()
 })
 
-test('Je créé un compte, je suis redirigé·e vers la page /inscription/confirmation', async t => {
+test('Je créé un compte avec un nouveau siren, je suis redirigé·e vers la page /inscription/confirmation', async t => {
+  const {
+    email,
+    firstName,
+    lastName,
+    password,
+    siren,
+  } = FUTURE_USER_WITH_UNREGISTERED_OFFERER
+
   await t
-    .typeText(emailInput, offererUser0.email)
-    .typeText(passwordInput, offererUser0.password)
-    .typeText(lastNameInput, offererUser0.lastName)
-    .typeText(firstNameInput, offererUser0.firstName)
-    .typeText(sirenInput, offererUser0.siren)
+    .typeText(emailInput, email)
+    .typeText(passwordInput, password)
+    .typeText(lastNameInput, lastName)
+    .typeText(firstNameInput, firstName)
+    .typeText(sirenInput, siren)
 
     .expect(signUpButton.hasAttribute('disabled'))
     .ok()
@@ -56,56 +64,99 @@ test('Je créé un compte, je suis redirigé·e vers la page /inscription/confir
   await t.expect(location.pathname).eql('/inscription/confirmation')
 })
 
-fixture`01_02 SignupPage | Création d'un compte utilisateur | Messages d'erreur lorsque les champs ne sont pas correctement remplis`
+fixture`SignupPage B | Création d'un compte utilisateur et messages d'erreur lorsque les champs ne sont pas correctement remplis`
   .page`${ROOT_PATH + 'inscription'}`
 
-test.skip('E-mail déjà présent dans la base et mot de passe invalide', async t => {
-  await t
-    .typeText(emailInput, offererUser0.email)
-    .typeText(passwordInput, 'pas')
-    .typeText(sirenInput, offererUser0.siren)
+test.requestHooks(SIREN_ALREADY_IN_DATABASE)(
+  'E-mail déjà présent dans la base',
+  async t => {
+    const {
+      email,
+      firstName,
+      lastName,
+      password,
+      siren,
+    } = VALIDATED_UNREGISTERED_OFFERER_USER
 
-    .click(contactOkInput)
+    await t
+      .typeText(emailInput, email)
+      .typeText(passwordInput, password)
+      .typeText(lastNameInput, lastName)
+      .typeText(firstNameInput, firstName)
+      .typeText(sirenInput, siren)
+      .click(contactOkInput)
+    await t.click(signUpButton).wait(5000)
 
-  await t.click(signUpButton)
+    await t.expect(emailInputError.innerText).match(/.*\S.*/)
+  }
+)
 
-  await t
-    .expect(emailInputError.innerText)
-    .eql('\nUn compte lié à cet email existe déjà\n\n')
-  // TODO Mot de passe invalide en attente correction API
-  // await t.expect(passwordInputError.innerText).eql(" Vous devez saisir au moins 8 caractères.\n")
-})
+test.requestHooks(SIREN_ALREADY_IN_DATABASE)(
+  'Mot de passe invalide',
+  async t => {
+    const {
+      email,
+      firstName,
+      lastName,
+      siren,
+    } = VALIDATED_UNREGISTERED_OFFERER_USER
 
-fixture`01_03 SignupPage | Création d'un compte pour rattachement à une structure existante`
+    await t
+      .typeText(emailInput, email)
+      .typeText(passwordInput, 'pas')
+      .typeText(lastNameInput, lastName)
+      .typeText(firstNameInput, firstName)
+      .typeText(sirenInput, siren)
+      .click(contactOkInput)
+
+    await t.click(signUpButton)
+
+    await t.expect(passwordInputError.innerText).match(/.*\S.*/)
+  }
+)
+
+fixture`SignupPage C | Création d'un compte pour rattachement à une structure existante`
   .page`${ROOT_PATH + 'inscription'}`
 
-test('Je créé un compte, je suis redirigé·e vers la page /inscription/confirmation', async t => {
-  await t
-    .typeText(emailInput, offererUser1.email)
-    .typeText(passwordInput, offererUser1.password)
-    .typeText(lastNameInput, offererUser1.lastName)
-    .typeText(firstNameInput, offererUser1.firstName)
-    .typeText(sirenInput, offererUser1.siren)
+test.requestHooks(SIREN_ALREADY_IN_DATABASE)(
+  'Je créé un compte avec un siren déjà dans la base, je suis redirigé·e vers la page /inscription/confirmation',
+  async t => {
+    const {
+      email,
+      firstName,
+      lastName,
+      password,
+      siren,
+    } = FUTURE_USER_WITH_REGISTERED_OFFERER_USER
 
-    .expect(signUpButton.hasAttribute('disabled'))
-    .ok()
-    .click(contactOkInput)
-    .click(newsletterOkInput)
+    await t
+      .typeText(emailInput, email)
+      .typeText(passwordInput, password)
+      .typeText(lastNameInput, lastName)
+      .typeText(firstNameInput, firstName)
+      .typeText(sirenInput, siren)
 
-  await t.click(signUpButton)
+      .expect(signUpButton.hasAttribute('disabled'))
+      .ok()
+      .click(contactOkInput)
+      .click(newsletterOkInput)
 
-  const location = await t.eval(() => window.location)
-  await t.expect(location.pathname).eql('/inscription/confirmation')
-})
+    await t.click(signUpButton)
 
-test('Je demande le rattachement à une structure existante', async t => {})
+    const location = await t.eval(() => window.location)
+    await t.expect(location.pathname).eql('/inscription/confirmation')
+  }
+)
 
-fixture`01_04 SignupPage | Clique sur le lien de validation de compte reçu par email`
+fixture`SignupPage D | Clique sur le lien de validation de compte reçu par email`
   .page`${ROOT_PATH + 'inscription'}`
 
 test('Je suis redirigé sur la page de connexion avec un message de confirmation', async t => {
+  // given
+  const { validationToken } = REAL_VALIDATION_USER
+
   // when
-  await t.navigateTo('/inscription/validation/AZERTY123').wait(500)
+  await t.navigateTo(`/inscription/validation/${validationToken}`).wait(500)
 
   // then
   const location = await t.eval(() => window.location)

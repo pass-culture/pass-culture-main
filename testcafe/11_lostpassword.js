@@ -1,7 +1,7 @@
 import { Selector } from 'testcafe'
 
 import { ROOT_PATH } from '../src/utils/config'
-import { offererUser0 } from './helpers/users'
+import { FUTURE_USER_WITH_UNREGISTERED_OFFERER } from './helpers/users'
 
 const inputUsersEmail = Selector('#user-email')
 const forgotPasswordLink = Selector('#lostPasswordLink')
@@ -11,7 +11,7 @@ const passwordInput = Selector('#user-newPassword')
 const pageH1 = Selector('h1')
 const errorsDiv = Selector('.errors')
 
-fixture`08_01 Lost Password link | La page de connexion propose un lien pour changer de mot de passe`
+fixture`LostPasswordPage A | La page de connexion propose un lien pour changer de mot de passe`
   .page`${ROOT_PATH + 'connexion'}`
 
 test('Je peux cliquer sur lien mot de passe oublié', async t => {
@@ -23,7 +23,9 @@ test('Je peux cliquer sur lien mot de passe oublié', async t => {
     .expect(pageH1.innerText)
     .eql('Mot de passe égaré ?')
 
-  await t.typeText(inputUsersEmail, offererUser0.email).click(sendTokenButton)
+  await t
+    .typeText(inputUsersEmail, FUTURE_USER_WITH_UNREGISTERED_OFFERER.email)
+    .click(sendTokenButton)
 
   location = await t.eval(() => window.location)
   await t
@@ -35,7 +37,7 @@ test('Je peux cliquer sur lien mot de passe oublié', async t => {
     .eql('Merci !')
 })
 
-fixture`08_03 Lost Password form | La page de changement de mot de passe vérifie le token`
+fixture`LostPasswordPage B | La page de changement de mot de passe vérifie le token`
   .page`${ROOT_PATH + 'mot-de-passe-perdu?token=ABCD'}`
 
 test('Je ne peux pas changer mon mot de passe de sans token valide', async t => {

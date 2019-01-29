@@ -1,37 +1,18 @@
-import { Role } from 'testcafe'
+import { Role, Selector } from 'testcafe'
 
 import { ROOT_PATH } from '../../src/utils/config'
 
-import { validatedOffererUser, adminUser0 } from './users'
+const signInButton = Selector('#signin-submit-button')
 
-export const validatedOffererUserRole = Role(
-  ROOT_PATH + 'connexion',
-  async t => {
-    await t
-      .typeText('#user-identifier', validatedOffererUser.email)
-      .typeText('#user-password', validatedOffererUser.password)
+export const signinAs = user => async t => {
+  await t
+    .typeText('#user-identifier', user.email)
+    .wait(100)
+    .typeText('#user-password', user.password)
+    .wait(100)
+    .click(signInButton)
+    .wait(1000)
+}
 
-      .click('button.button.is-primary')
-
-    const location = await t.eval(() => window.location)
-    await t.expect(location.pathname).eql('/offres')
-  },
-  {
-    preserveUrl: true,
-  }
-)
-
-export const admin = Role(
-  ROOT_PATH + 'connexion',
-  async t => {
-    await t
-      .typeText('#user-identifier', adminUser0.email)
-      .typeText('#user-password', adminUser0.password)
-      .click('button.button.is-primary')
-    const location = await t.eval(() => window.location)
-    await t.expect(location.pathname).eql('/offres')
-  },
-  {
-    preserveUrl: true,
-  }
-)
+export const createUserRole = user =>
+  Role(`${ROOT_PATH}connexion`, signinAs(user), { preserveUrl: true })

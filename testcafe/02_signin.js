@@ -1,7 +1,7 @@
 import { Selector } from 'testcafe'
 
 import { ROOT_PATH } from '../src/utils/config'
-import { validatedOffererUser } from './helpers/users'
+import { VALIDATED_UNREGISTERED_OFFERER_USER } from './helpers/users'
 
 const inputUsersIdentifier = Selector('#user-identifier')
 const inputUsersIdentifierError = Selector('#user-identifier-error')
@@ -11,8 +11,8 @@ const pageTitle = Selector('h1')
 const signInButton = Selector('button.button.is-primary') //connexion
 const signUpButton = Selector('.is-secondary') // inscription
 
-fixture`02_01 SignInPage Component | J'ai un compte et je me connecte`
-  .page`${ROOT_PATH + 'connexion'}`
+fixture`SignInPage A | J'ai un compte et je me connecte`.page`${ROOT_PATH +
+  'connexion'}`
 
 test('Je peux cliquer sur lien Créer un compte', async t => {
   await t.click(signUpButton)
@@ -21,14 +21,17 @@ test('Je peux cliquer sur lien Créer un compte', async t => {
 })
 
 test("Lorsque l'un des deux champs est manquant, le bouton connexion est desactivé", async t => {
-  await t.typeText(inputUsersIdentifier, validatedOffererUser.email)
+  await t.typeText(
+    inputUsersIdentifier,
+    VALIDATED_UNREGISTERED_OFFERER_USER.email
+  )
   await t.expect(signInButton.hasAttribute('disabled')).ok()
 })
 
 test("J'ai un compte valide, en cliquant sur 'se connecter' je suis redirigé·e vers la page /offres sans erreurs", async t => {
   await t
-    .typeText(inputUsersIdentifier, validatedOffererUser.email)
-    .typeText(inputUsersPassword, validatedOffererUser.password)
+    .typeText(inputUsersIdentifier, VALIDATED_UNREGISTERED_OFFERER_USER.email)
+    .typeText(inputUsersPassword, VALIDATED_UNREGISTERED_OFFERER_USER.password)
 
     .click(signInButton)
 
@@ -39,8 +42,8 @@ test("J'ai un compte valide, en cliquant sur 'se connecter' je suis redirigé·e
 
 test("J'ai un compte valide, en appuyant sur la touche 'Entrée' je suis redirigé·e vers la page /offres sans erreurs", async t => {
   await t
-    .typeText(inputUsersIdentifier, validatedOffererUser.email)
-    .typeText(inputUsersPassword, validatedOffererUser.password)
+    .typeText(inputUsersIdentifier, VALIDATED_UNREGISTERED_OFFERER_USER.email)
+    .typeText(inputUsersPassword, VALIDATED_UNREGISTERED_OFFERER_USER.password)
     .pressKey('Enter')
 
   const location = await t.eval(() => window.location)
@@ -64,7 +67,7 @@ test("J'ai un compte Identifiant invalide, je vois un messages d'erreur et je re
 
 test("J'ai un mot de passe invalide, je vois un messages d'erreur et je reste sur la page /connection", async t => {
   await t
-    .typeText(inputUsersIdentifier, validatedOffererUser.email)
+    .typeText(inputUsersIdentifier, VALIDATED_UNREGISTERED_OFFERER_USER.email)
     .typeText(inputUsersPassword, 'Pa$$word')
 
     .click(signInButton)
@@ -76,7 +79,7 @@ test("J'ai un mot de passe invalide, je vois un messages d'erreur et je reste su
   await t.expect(location.pathname).eql('/connexion')
 })
 
-fixture`02_02 SignInPage Component | J'accède à une page sans être connecté·e`
+fixture`SignInPage B | J'accède à une page sans être connecté·e`
   .page`${ROOT_PATH + 'offres'}`
 
 test('Je suis redirigé·e vers la page connexion', async t => {

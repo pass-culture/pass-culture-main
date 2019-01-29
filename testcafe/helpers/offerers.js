@@ -1,22 +1,39 @@
-export const OFFERER_WITH_NO_PHYSICAL_VENUE = {
-  name: 'LA MARBRERIE',
-  siren: '812182491',
-  siret: '81218249100017',
-  adress: '21 RUE ALEXIS LEPERE',
-  postalCode: '93100',
-  city: 'MONTREUIL',
-  latitude: '48.864321',
-  longitude: '2.440417',
-  venueMarker: '48.864321-2.440417',
-  venueAnchor: '#a-la-marbrerie',
+export const FUTURE_OFFERER_CREATED_IN_SIGNUP_PAGE = {
+  name: 'WEBEDIA',
+  siren: '501106520',
 }
 
-export const OFFERER_WITH_PHYSICAL_VENUE = {
-  name: 'LE GRAND REX PARIS',
-  siren: '507633576',
-  siret: '81218249100016',
-  adress: '1 BD POISSONNIERE',
+export const FUTURE_OFFERER_CREATED_IN_OFFERER_PAGE_WITH_NO_IBAN = {
+  address: '10 PLACE JEAN JAURES',
+  name: 'NOUVEAU THEATRE DE MONTREUIL',
+  siren: '323339762',
+}
+
+export const OFFERER_WITH_NO_PHYSICAL_VENUE_WITH_NO_IBAN = {
+  address: 'RUE DES POILUS',
+  city: 'Drancy',
+  latitude: '48.9281995',
+  longitude: '2.4579903',
+  keywordsString: 'Herbert Marcuse Entreprise',
+  name: 'Herbert Marcuse Entreprise',
+  postalCode: '93700',
+  siren: '222222222',
+}
+
+export const OFFERER_WITH_PHYSICAL_VENUE_WITH_NO_IBAN = {
+  address: 'RUE DE POLOGNE',
+  city: 'Aulnay-sous-Bois',
+  keywordsString: 'Scope La Brique',
+  name: 'Scope La Brique',
   postalCode: '75002',
-  city: 'PARIS',
-  venueName: 'THEATRE LE GRAND REX PARIS',
+  siren: '222222228',
+}
+
+export const OFFERER_WITH_PHYSICAL_VENUE_WITH_IBAN = {
+  address: 'RUE NIEUPORT',
+  city: 'Drancy',
+  keywordsString: 'Club Dorothy',
+  name: 'Club Dorothy',
+  postalCode: '93700',
+  siren: '222222223',
 }
