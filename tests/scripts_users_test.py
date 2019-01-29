@@ -197,3 +197,39 @@ class ChunkFileTest:
         assert len(chunked_file) == 3
         assert len(chunked_file[-1]) == 1
         assert all(len(chunk) == 2 for chunk in chunked_file[:-1])
+
+    def test_returns_a_list_of_csv_lines_with_no_duplicate_emails(self):
+        # given
+        chunk_size = 2
+        csv_reader = [
+            ['68bfa', 'Mortimer', 'Philip', '%s@bletchley.co.uk' % random_token()],
+            ['68bfa', 'Mortimer', 'Philip', 'abcd@bletchley.co.uk'],
+            ['68bfa', 'Mortimer', 'Philip', '%s@bletchley.co.uk' % random_token()],
+            ['68bfa', 'Mortimer', 'Philip', '%s@bletchley.co.uk' % random_token()],
+            ['68bfa', 'Mortimer', 'Philip', 'abcd@bletchley.co.uk']
+        ]
+
+        # when
+        chunked_file = chunk_file(csv_reader, chunk_size)
+
+        # then
+        assert len(chunked_file) == 2
+        assert all(len(chunk) == 2 for chunk in chunked_file[:-1])
+
+    def test_ignores_the_first_line_with_csv_headers(self):
+        # given
+        chunk_size = 2
+        csv_reader = [
+            ['id', 'nom', 'prénom', 'email'],
+            ['68bfa', 'Mortimer', 'Philip', '%s@bletchley.co.uk' % random_token()],
+            ['68bfa', 'Mortimer', 'Philip', '%s@bletchley.co.uk' % random_token()],
+            ['68bfa', 'Mortimer', 'Philip', '%s@bletchley.co.uk' % random_token()]
+        ]
+
+        # when
+        chunked_file = chunk_file(csv_reader, chunk_size)
+
+        # then
+        assert len(chunked_file) == 2
+        assert len(chunked_file[-1]) == 1
+        assert all(len(chunk) == 2 for chunk in chunked_file[:-1])

@@ -61,7 +61,6 @@ def fill_user_from(csv_row: List[str], user: User) -> User:
     user.canBookFreeOffers = False
     user.password = random_token(length=12).encode('utf-8')
     generate_reset_token(user, validity_duration_hours=THIRTY_DAYS)
-
     return user
 
 
@@ -84,10 +83,11 @@ def chunk_file(csv_reader: Iterable, chunk_size: int) -> List[List[List[str]]]:
             total += len(chunk)
             chunk = []
 
-    total += len(chunk)
-    chunked_rows.append(chunk)
-    logger.info('Lecture des lignes CSV (%s) terminée\n' % total)
+    if chunk:
+        total += len(chunk)
+        chunked_rows.append(chunk)
 
+    logger.info('Lecture des lignes CSV (%s) terminée\n' % total)
     return chunked_rows
 
 
