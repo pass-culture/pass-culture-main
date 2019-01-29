@@ -2,7 +2,8 @@ from datetime import datetime, timedelta
 from unittest.mock import Mock
 
 from models import User
-from scripts.users import fill_user_from, create_activation_booking_for, setup_users, chunk_file
+from scripts.users import fill_user_from, create_activation_booking_for, create_users_with_activation_bookings, \
+    split_rows_in_chunks_with_no_duplicated_emails
 from utils.test_utils import create_user, create_stock, create_thing_offer, create_venue, create_offerer
 from utils.token import random_token
 
@@ -100,7 +101,7 @@ class FillUserFromTest:
 
 
 class CreateActivationBookingForTest:
-    def test_returns_a_booking_for_given_userr_and_stock(self):
+    def test_returns_a_booking_for_given_user_and_stock(self):
         # given
         venue = create_venue(create_offerer())
         offer = create_thing_offer(venue=venue)
@@ -135,7 +136,7 @@ class CreateActivationBookingForTest:
         assert len(booking.token) == 6
 
 
-class SetupUsersTest:
+class CreateUsersWithActivationBookingsTest:
     def setup_method(self):
         self.csv_rows = [
             ['68bfa', 'Mortimer', 'Philip', 'pmortimer@bletchley.co.uk', '0123456789', 'Buckinghamshire (22)', '22850',
@@ -156,7 +157,8 @@ class SetupUsersTest:
         existing_tokens = set()
 
         # when
-        bookings = setup_users(self.csv_rows, stock, existing_tokens, find_user_query=self.mocked_query)
+        bookings = create_users_with_activation_bookings(self.csv_rows, stock, existing_tokens,
+                                                         find_user_query=self.mocked_query)
 
         # then
         assert len(bookings) == len(self.csv_rows)
@@ -171,32 +173,43 @@ class SetupUsersTest:
         existing_tokens = set()
 
         # when
-        bookings = setup_users(self.csv_rows, stock, existing_tokens, find_user_query=self.mocked_query)
+        bookings = create_users_with_activation_bookings(self.csv_rows, stock, existing_tokens,
+                                                         find_user_query=self.mocked_query)
 
         # then
         assert bookings[1].user.id == 123
         assert bookings[1].user.email == 'fblake@bletchley.co.uk'
 
 
-class ChunkFileTest:
+class SplitRowsInChunkWithNoDuplicatedEmailsTest:
     def test_returns_a_list_of_list_of_given_chunk_sizes(self):
         # given
         chunk_size = 2
         csv_reader = [
-            ['68bfa', 'Mortimer', 'Philip', '%s@bletchley.co.uk' % random_token()],
-            ['68bfa', 'Mortimer', 'Philip', '%s@bletchley.co.uk' % random_token()],
-            ['68bfa', 'Mortimer', 'Philip', '%s@bletchley.co.uk' % random_token()],
-            ['68bfa', 'Mortimer', 'Philip', '%s@bletchley.co.uk' % random_token()],
-            ['68bfa', 'Mortimer', 'Philip', '%s@bletchley.co.uk' % random_token()]
+            ['68bfa', 'Mortimer', 'Philip', 'abc@bletchley.co.uk'],
+            ['68bfa', 'Mortimer', 'Philip', 'def@bletchley.co.uk'],
+            ['68bfa', 'Mortimer', 'Philip', 'ghi@bletchley.co.uk'],
+            ['68bfa', 'Mortimer', 'Philip', 'jkl@bletchley.co.uk'],
+            ['68bfa', 'Mortimer', 'Philip', 'mno@bletchley.co.uk']
         ]
 
         # when
-        chunked_file = chunk_file(csv_reader, chunk_size)
+        chunked_file = split_rows_in_chunks_with_no_duplicated_emails(csv_reader, chunk_size)
 
         # then
-        assert len(chunked_file) == 3
-        assert len(chunked_file[-1]) == 1
-        assert all(len(chunk) == 2 for chunk in chunked_file[:-1])
+        assert chunked_file == [
+            [
+                ['68bfa', 'Mortimer', 'Philip', 'abc@bletchley.co.uk'],
+                ['68bfa', 'Mortimer', 'Philip', 'def@bletchley.co.uk']
+            ],
+            [
+                ['68bfa', 'Mortimer', 'Philip', 'ghi@bletchley.co.uk'],
+                ['68bfa', 'Mortimer', 'Philip', 'jkl@bletchley.co.uk']
+            ],
+            [
+                ['68bfa', 'Mortimer', 'Philip', 'mno@bletchley.co.uk']
+            ]
+        ]
 
     def test_returns_a_list_of_csv_lines_with_no_duplicate_emails(self):
         # given
@@ -210,7 +223,7 @@ class ChunkFileTest:
         ]
 
         # when
-        chunked_file = chunk_file(csv_reader, chunk_size)
+        chunked_file = split_rows_in_chunks_with_no_duplicated_emails(csv_reader, chunk_size)
 
         # then
         assert len(chunked_file) == 2
@@ -227,7 +240,7 @@ class ChunkFileTest:
         ]
 
         # when
-        chunked_file = chunk_file(csv_reader, chunk_size)
+        chunked_file = split_rows_in_chunks_with_no_duplicated_emails(csv_reader, chunk_size)
 
         # then
         assert len(chunked_file) == 2
@@ -246,7 +259,7 @@ class ChunkFileTest:
         ]
 
         # when
-        chunked_file = chunk_file(csv_reader, chunk_size)
+        chunked_file = split_rows_in_chunks_with_no_duplicated_emails(csv_reader, chunk_size)
 
         # then
         assert len(chunked_file) == 1

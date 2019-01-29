@@ -50,7 +50,7 @@ def send_wallet_balances_email(csv_attachment: str, recipients: List[str], send_
     check_if_email_sent(mail_result)
 
 
-def send_activation_users_report(csv_attachment: str, recipients: List[str], send_create_email: Callable[..., None]):
+def send_users_activation_report(csv_attachment: str, recipients: List[str], send_create_email: Callable[..., None]):
     email = make_activation_users_email(csv_attachment)
     email['Html-part'], email['To'] = compute_email_html_part_and_recipients("", recipients)
     mail_result = send_create_email(data=email)

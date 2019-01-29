@@ -2,7 +2,6 @@ from datetime import datetime
 from pprint import pformat
 
 from sqlalchemy.exc import InternalError
-from sqlalchemy.orm import aliased
 
 from models import Stock, Offerer, User, ApiErrors, PcObject, EventOccurrence, Offer, Thing, ThingType, Venue
 from utils.human_ids import dehumanize
@@ -63,8 +62,6 @@ def find_online_activation_stock():
         .join(Offer) \
         .join(Venue) \
         .filter_by(isVirtual=True) \
-        .reset_joinpoint() \
-        .join(aliased(Offer)) \
-        .join(Thing) \
+        .join(Thing, Offer.ThingId == Thing.id) \
         .filter_by(type=str(ThingType.ACTIVATION)) \
         .first()
