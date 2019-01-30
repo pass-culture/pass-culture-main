@@ -21,7 +21,7 @@ def get_ts_queries_from_keywords_string(keywords_string):
     keywords_without_stop_words = [
         keyword
         for keyword in keywords
-        if keyword not in STOP_WORDS
+        if keyword.lower() not in STOP_WORDS
     ]
 
     ts_queries = ['{}:*'.format(keyword) for keyword in keywords_without_stop_words]
