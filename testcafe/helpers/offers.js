@@ -42,8 +42,7 @@ export const EVENT_OFFER_WITH_EVENT_OCCURRENCE_WITH_STOCK_WITH_MEDIATION_WITH_OF
 
 export const EVENT_OFFER_WITH_NO_EVENT_OCCURRENCE_WITH_NO_STOCK_WITH_NO_MEDIATION_WITH_OFFERER_IBAN_WITH_NO_VENUE_IBAN = {
   // city: "Aulnay-sous-Bois",
-  // TODO does not work yet with "C'est"
-  keywordsString: 'lit rivière en feu',
+  keywordsString: 'notre prooooojecteur Dorothy',
 }
 
 export const THING_OFFER_WITH_STOCK_WITH_MEDIATION_WITH_OFFERER_IBAN_WITH_NO_VENUE_IBAN = {
