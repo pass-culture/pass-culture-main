@@ -523,7 +523,7 @@ def test_get_recommendations_returns_no_recommendation_from_search_by_date_that_
 
 @clean_database
 @pytest.mark.standalone
-def test_get_recommendations_returns_no_recommandation_from_search_by_keywords_and_distance_if_keyword_does_not_match_but_in_1_km_distances_match_with_user_in_paris(app):
+def test_get_recommendations_returns_no_recommendation_if_not_exact_match_for_keywords_and_distance(app):
     # Given
     location_search = "distance=1&latitude=48.8363788&longitude=2.4002701&keywords=Funky"
     user = create_user(email='test@email.com', password='P@55w0rd')
@@ -588,10 +588,9 @@ def test_get_recommendations_returns_no_recommandation_from_search_by_keywords_a
     # Then
     assert len(response.json()) == 0
 
-
 @clean_database
 @pytest.mark.standalone
-def test_get_recommendations_returns_one_recommandation_with_good_keyword_from_search_by_keywords_and_distance_is_all_distances(app):
+def test_get_recommendations_returns_one_recommandation_that_matches_both_keywords_and_all_distances(app):
     # Given
     location_search = "distance=20000&latitude=48.8363788&longitude=2.4002701&keywords=Macouria"
     user = create_user(email='test@email.com', password='P@55w0rd')
@@ -654,14 +653,14 @@ def test_get_recommendations_returns_one_recommandation_with_good_keyword_from_s
     response = auth_request.get(RECOMMENDATION_URL + '?%s' % location_search)
 
     # Then
-    assert len(response.json()) == 1
     offers = response.json()
+    assert len(offers) == 1
     assert 'Kiwi' in offers[0]['offer']['eventOrThing']['name']
 
 
 @clean_database
 @pytest.mark.standalone
-def test_get_recommendations_returns_two_recommandations_with_good_keyword_from_search_by_keywords_and_distance_when_no_latitude_and_latitude(app):
+def test_get_recommendations_returns_all_recommendations_matching_keywords_if_keywords_and_distance_are_given_but_no_latitude_and_longitude(app):
         # Given
         location_search = "distance=1&keywords=funky"
         user = create_user(email='test@email.com', password='P@55w0rd')

@@ -567,7 +567,95 @@ def test_get_offers_for_recommendations_search_with_distance_returns_offers_in_v
 
 @clean_database
 @pytest.mark.standalone
-def test_get_offers_for_recommendations_search_with_distance_and_keywords(app):
+def test_get_offers_for_recommendations_search_with_specific_distance_and_keywords(app):
+        # Given
+        offerer75 = create_offerer(
+            siren='507633576',
+            city='Paris',
+            postal_code='75002',
+            name='LE GRAND REX PARIS',
+            validation_token=None,
+            iban=None,
+            bic=None
+        )
+        venue45 = create_venue(
+            offerer75,
+            name='Salle Albert Camus',
+            city="Orléans",
+            departement_code='45',
+            is_virtual=False,
+            longitude="1.9201176",
+            latitude="47.9063667",
+            siret="50763357600045"
+        )
+        venue75 = create_venue(
+            offerer75,
+            name='LE GRAND REX PARIS',
+            address="1 BD POISSONNIERE",
+            postal_code='75002',
+            city="Paris",
+            departement_code='75',
+            is_virtual=False,
+            longitude="2.4002701",
+            latitude="48.8363788",
+            siret="50763357600075"
+        )
+        venue78 = create_venue(
+            offerer75,
+            name='CAC Georges Brassens',
+            city="Mantes-la-jolie",
+            departement_code='78',
+            is_virtual=False,
+            longitude="2.713513",
+            latitude="48.985968",
+            siret="50763357600078"
+        )
+        venue91 = create_venue(
+            offerer75,
+            name='Théâtre de Orsay',
+            city="Orsay",
+            departement_code='91',
+            is_virtual=False,
+            longitude="2.1911928",
+            latitude="48.7034926",
+            siret="50763357600091"
+        )
+
+        concert_event = create_event('Concert de Gael Faye')
+        concert_event2 = create_event('Kiwi')
+
+        concert_offer45 = create_event_offer(venue45, concert_event)
+        kiwi_concert_offer75 = create_event_offer(venue75, concert_event2)
+        concert_offer78 = create_event_offer(venue78, concert_event)
+        concert_offer91 = create_event_offer(venue91, concert_event)
+
+        concert_event_occurrence45 = create_event_occurrence(concert_offer45)
+        concert_stock45 = create_stock_from_event_occurrence(concert_event_occurrence45)
+
+        kiwi_concert_event_occurrence75 = create_event_occurrence(kiwi_concert_offer75)
+        kiwi_concert_stock75 = create_stock_from_event_occurrence(kiwi_concert_event_occurrence75)
+
+        concert_event_occurrence78 = create_event_occurrence(concert_offer78)
+        concert_stock78 = create_stock_from_event_occurrence(concert_event_occurrence78)
+
+        concert_event_occurrence91 = create_event_occurrence(concert_offer91)
+        concert_stock91 = create_stock_from_event_occurrence(concert_event_occurrence91)
+
+        PcObject.check_and_save(concert_stock45, kiwi_concert_stock75, concert_stock78, concert_offer91)
+
+        # When
+        # User in Paris
+        offers = get_offers_for_recommendations_search(max_distance=1, longitude=2.4002701, latitude=48.8363788, keywords_string='Kiwi')
+
+        # Then
+        assert concert_offer45 not in offers
+        assert kiwi_concert_offer75 in offers
+        assert concert_offer78 not in offers
+        assert concert_offer91 not in offers
+
+@clean_database
+@pytest.mark.standalone
+def test_get_offers_for_recommendations_search_with_all_distance_and_keywords(app):
         # Given
         offerer75 = create_offerer(
             siren='507633576',

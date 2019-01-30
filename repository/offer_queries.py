@@ -30,7 +30,6 @@ def build_offer_search_base_query():
                  .join(Venue) \
                  .join(Offerer)
 
-
 def departement_or_national_offers(query, offer_type, departement_codes):
     if '00' in departement_codes:
         return query
@@ -130,23 +129,7 @@ def filter_offers_with_keywords_string(query, keywords_string):
 
 
 def get_is_offer_selected_by_keywords_string_at_column(offer, keywords_string, column):
-    query = offer.__class__.query.filter_by(id=offer.id)
-
-    query = get_ofcd cfer_join_query_for_keywords(query)
-
-    return get_first_matching_keywords_string_at_column(
-        query,
-        keywords_string,
-        column
-    ) is not None
-
-
-def get_is_offer_selected_by_keywords_string_at_column(offer, keywords_string, column):
-    query = offer.__class__.query.filter_by(id=offer.id)\
-                         .outerjoin(Event) \
-                         .outerjoin(Thing) \
-                         .join(Venue) \
-                         .join(Offerer)
+    query = build_offer_search_base_query().filter_by(id=offer.id)
 
     return get_first_matching_keywords_string_at_column(
         query,
