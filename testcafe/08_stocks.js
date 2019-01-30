@@ -206,7 +206,7 @@ test("J'ai une info quand je rentre un prix non nul pour l'objet d'une structure
   await t.click(manageStockAnchor).click(addAnchor)
 
   // when
-  await t.typeText(priceInput, '10').click(availableInput, '50')
+  await t.typeText(priceInput, '10').click(availableInput)
 
   // then
   await t.expect(infoDiv.visible).ok()
@@ -238,8 +238,6 @@ test("J'ai une info quand je rentre un prix non nul pour l'évènement d'une str
   // when
   await t.click(confirmationButton).typeText(availableInput, '50')
   await t.click(submitButton).wait(2000)
-
-  await t.debug()
 
   // then
   const location = await t.eval(() => window.location)
