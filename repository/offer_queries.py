@@ -9,14 +9,16 @@ from domain.keywords import create_filter_matching_all_keywords_in_any_model, \
                             get_first_matching_keywords_string_at_column
 from models import Booking, \
     Event, \
+    EventType, \
     EventOccurrence, \
     Offer, \
     Offerer, \
     Stock, \
     Offerer, \
     Recommendation, \
-    Venue, EventType
-from models import Thing
+    Thing, \
+    ThingType, \
+    Venue
 from models.db import db
 from repository.user_offerer_queries import filter_query_where_user_is_user_offerer_and_is_validated
 from utils.config import ILE_DE_FRANCE_DEPT_CODES
@@ -62,6 +64,13 @@ def with_active_and_validated_offerer(query):
     return query
 
 
+def not_activation_offers(query, offer_type):
+    if offer_type == Event:
+        return query.filter(Event.type != str(EventType.ACTIVATION))
+    else:
+        return query.filter(Thing.type != str(ThingType.ACTIVATION))
+
+
 def not_currently_recommended_offers(query, user):
     valid_recommendation_for_user = (Recommendation.userId == user.id) \
                                     & (Recommendation.validUntilDate > datetime.utcnow())
@@ -102,6 +111,7 @@ def get_active_offers_by_type(offer_type, user=None, department_codes=None, offe
     query = with_active_and_validated_offerer(query)
     logger.info('(reco) active and validated {} {}'.format(offer_type.__name__, query.count()))
     query = not_currently_recommended_offers(query, user)
+    query = not_activation_offers(query, offer_type)
     query = query.distinct(offer_type.id)
     logger.info('(reco) distinct {} {}'.format(offer_type.__name__, query.count()))
     return query.all()
