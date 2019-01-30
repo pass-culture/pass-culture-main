@@ -2,13 +2,14 @@ import csv
 import os
 import re
 from datetime import datetime
-from typing import List, Set, Iterable
+from typing import List, Set, Iterable, Callable
 
 from domain.admin_emails import send_users_activation_report
 from domain.password import generate_reset_token
 from domain.user_activation import generate_activation_users_csv
 from models import User, Booking, Stock, PcObject
 from models.booking import ActivationUser
+from repository.booking_queries import user_has_booked_an_online_activation
 from repository.stock_queries import find_online_activation_stock
 from repository.user_queries import find_user_by_email
 from scripts.interact import app
@@ -30,12 +31,14 @@ THIRTY_DAYS_IN_HOURS = 30 * 24
 ACTIVATION_USER_RECIPIENTS = parse_email_addresses(os.environ.get('ACTIVATION_USER_RECIPIENTS', None))
 
 
-def create_users_with_activation_bookings(csv_rows: List[List[str]], stock: Stock, existing_tokens: Set[str],
-                                          find_user_query=find_user_by_email) -> List[Booking]:
+def create_users_with_activation_bookings(
+        csv_rows: List[List[str]], stock: Stock, existing_tokens: Set[str],
+        find_user: Callable = find_user_by_email,
+        user_has_booking: Callable = user_has_booked_an_online_activation
+) -> List[Booking]:
     bookings = []
-
     for row in csv_rows:
-        user = find_user_query(row[EMAIL_COLUMN_INDEX])
+        user = find_user(row[EMAIL_COLUMN_INDEX])
         if not user:
             user = User()
 
@@ -44,10 +47,11 @@ def create_users_with_activation_bookings(csv_rows: List[List[str]], stock: Stoc
         token = random_token()
         while token in existing_tokens:
             token = random_token()
-        existing_tokens.add(token)
 
-        booking = create_booking_for(filled_user, stock, token)
-        bookings.append(booking)
+        if not user_has_booking(user):
+            booking = create_booking_for(filled_user, stock, token)
+            existing_tokens.add(token)
+            bookings.append(booking)
 
     return bookings
 
@@ -144,14 +148,15 @@ def run(csv_file_path: str) -> None:
     total = 0
     for chunk in chunked_file:
         bookings = create_users_with_activation_bookings(chunk, stock, existing_tokens)
-        PcObject.check_and_save(*bookings)
+        if bookings:
+            PcObject.check_and_save(*bookings)
         all_bookings.extend(bookings)
         total += len(chunk)
         logger.info('Enregistrement de %s comptes utilisateur | %s' % (CHUNK_SIZE, total))
     logger.info('Enregistrement des comptes utilisateur terminé\n')
 
     logger.info('[STEP 3] Décompte des objets')
-    logger.info('Users créés -> %s' % total)
+    logger.info('Users créés ou mis à jour -> %s' % total)
     logger.info('Users en BDD -> %s' % User.query.count())
     logger.info('Bookings créés -> %s' % len(existing_tokens))
     logger.info('Bookings en BDD -> %s\n' % Booking.query.count())

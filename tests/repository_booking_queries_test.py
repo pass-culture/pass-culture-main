@@ -3,10 +3,10 @@ from datetime import datetime, timedelta
 
 import pytest
 
-from models import PcObject
+from models import PcObject, ThingType
 from repository.booking_queries import find_all_ongoing_bookings_by_stock, \
     find_offerer_bookings, find_all_bookings_for_stock, find_all_bookings_for_event_occurrence, \
-    find_final_offerer_bookings, find_date_used
+    find_final_offerer_bookings, find_date_used, user_has_booked_an_online_activation
 from tests.conftest import clean_database
 from utils.test_utils import create_booking, \
     create_deposit, \
@@ -15,7 +15,7 @@ from utils.test_utils import create_booking, \
     create_stock_with_thing_offer, \
     create_user, \
     create_venue, create_stock_from_event_occurrence, create_event_occurrence, create_thing_offer, create_event_offer, \
-    create_booking_activity, save_all_activities
+    create_booking_activity, save_all_activities, create_stock_from_offer
 
 
 @clean_database
@@ -274,3 +274,40 @@ def test_find_date_used_on_booking_returns_none_if_no_activity_with_is_used_chan
 
     # then
     assert date_used is None
+
+
+@pytest.mark.standalone
+class UserHasBookedAnOnlineActivationTest:
+    @clean_database
+    def test_returns_true_is_a_booking_exists_on_such_stock(self, app):
+        # given
+        user = create_user()
+        offerer = create_offerer(siren='123456789', name='pass Culture')
+        venue_online = create_venue(offerer, siret=None, is_virtual=True)
+        activation_offer = create_thing_offer(venue_online, thing_type=ThingType.ACTIVATION)
+        activation_stock = create_stock_from_offer(activation_offer, available=200, price=0)
+        activation_booking = create_booking(user, stock=activation_stock, venue=venue_online)
+        PcObject.check_and_save(activation_booking)
+
+        # when
+        has_booked = user_has_booked_an_online_activation(user)
+
+        # then
+        assert has_booked is True
+
+    @clean_database
+    def test_returns_false_is_no_booking_exists_on_such_stock(self, app):
+        # given
+        user = create_user()
+        offerer = create_offerer(siren='123456789', name='pass Culture')
+        venue_online = create_venue(offerer, siret=None, is_virtual=True)
+        book_offer = create_thing_offer(venue_online, thing_type=ThingType.LIVRE_EDITION)
+        book_stock = create_stock_from_offer(book_offer, available=200, price=0)
+        book_booking = create_booking(user, stock=book_stock, venue=venue_online)
+        PcObject.check_and_save(book_booking)
+
+        # when
+        has_booked = user_has_booked_an_online_activation(user)
+
+        # then
+        assert has_booked is False

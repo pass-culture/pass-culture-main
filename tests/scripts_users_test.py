@@ -1,6 +1,8 @@
 from datetime import datetime, timedelta
 from unittest.mock import Mock
 
+import pytest
+
 from models import User
 from scripts.users import fill_user_from, create_booking_for, create_users_with_activation_bookings, \
     split_rows_in_chunks_with_no_duplicated_emails
@@ -8,6 +10,7 @@ from utils.test_utils import create_user, create_stock, create_thing_offer, crea
 from utils.token import random_token
 
 
+@pytest.mark.standalone
 class FillUserFromTest:
     def setup_method(self):
         self.csv_row = [
@@ -100,6 +103,7 @@ class FillUserFromTest:
         assert user.resetPasswordTokenValidityLimit is not None
 
 
+@pytest.mark.standalone
 class CreateBookingForTest:
     def test_returns_a_booking_for_given_user_and_stock(self):
         # given
@@ -136,6 +140,7 @@ class CreateBookingForTest:
         assert len(booking.token) == 6
 
 
+@pytest.mark.standalone
 class CreateUsersWithActivationBookingsTest:
     def setup_method(self):
         self.csv_rows = [
@@ -146,22 +151,46 @@ class CreateUsersWithActivationBookingsTest:
             ['ca45d', 'Nasir', 'Ahmed', 'anasir@bletchley.co.uk', '0567891234', 'Worcestershire (44)', '44019',
              '1931-11-02']
         ]
-        self.mocked_query = Mock()
+        self.find_user_query = Mock()
+        self.user_has_booking_query = Mock()
 
-    def test_returns_n_bookings_for_n_csv_rows(self):
+    def test_returns_n_bookings_for_n_csv_rows_on_first_run(self):
         # given
         venue = create_venue(create_offerer())
         offer = create_thing_offer(venue=venue)
         stock = create_stock(offer=offer)
-        self.mocked_query.side_effect = [None, None, None]
+        self.find_user_query.side_effect = [None, None, None]
+        self.user_has_booking_query.side_effect = [False, False, False]
         existing_tokens = set()
 
         # when
-        bookings = create_users_with_activation_bookings(self.csv_rows, stock, existing_tokens,
-                                                         find_user_query=self.mocked_query)
+        bookings = create_users_with_activation_bookings(
+            self.csv_rows, stock, existing_tokens,
+            find_user=self.find_user_query,
+            user_has_booking=self.user_has_booking_query
+        )
 
         # then
         assert len(bookings) == len(self.csv_rows)
+
+    def test_does_not_return_activation_booking_if_user_already_has_one(self):
+        # given
+        venue = create_venue(create_offerer())
+        offer = create_thing_offer(venue=venue)
+        stock = create_stock(offer=offer)
+        self.find_user_query.side_effect = [None, None, None]
+        self.user_has_booking_query.side_effect = [False, False, True]
+        existing_tokens = set()
+
+        # when
+        bookings = create_users_with_activation_bookings(
+            self.csv_rows, stock, existing_tokens,
+            find_user=self.find_user_query,
+            user_has_booking=self.user_has_booking_query
+        )
+
+        # then
+        assert len(bookings) == 2
 
     def test_finds_users_by_email_before_setting_them_up(self):
         # given
@@ -169,18 +198,23 @@ class CreateUsersWithActivationBookingsTest:
         offer = create_thing_offer(venue=venue)
         stock = create_stock(offer=offer)
         blake = create_user(idx=123, email='fblake@bletchley.co.uk')
-        self.mocked_query.side_effect = [None, blake, None]
+        self.find_user_query.side_effect = [None, blake, None]
+        self.user_has_booking_query.side_effect = [False, False, False]
         existing_tokens = set()
 
         # when
-        bookings = create_users_with_activation_bookings(self.csv_rows, stock, existing_tokens,
-                                                         find_user_query=self.mocked_query)
+        bookings = create_users_with_activation_bookings(
+            self.csv_rows, stock, existing_tokens,
+            find_user=self.find_user_query,
+            user_has_booking=self.user_has_booking_query
+        )
 
         # then
         assert bookings[1].user.id == 123
         assert bookings[1].user.email == 'fblake@bletchley.co.uk'
 
 
+@pytest.mark.standalone
 class SplitRowsInChunkWithNoDuplicatedEmailsTest:
     def test_returns_a_list_of_list_of_given_chunk_sizes(self):
         # given

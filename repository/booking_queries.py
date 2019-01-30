@@ -6,7 +6,7 @@ from sqlalchemy.exc import InternalError
 from sqlalchemy.orm import aliased
 
 from domain.keywords import create_filter_matching_all_keywords_in_any_model, \
-                            create_get_filter_matching_ts_query_in_any_model
+    create_get_filter_matching_ts_query_in_any_model
 from models import ApiErrors, \
     Booking, \
     Event, \
@@ -16,7 +16,7 @@ from models import ApiErrors, \
     Stock, \
     Thing, \
     User, \
-    Venue, Offerer
+    Venue, Offerer, ThingType
 from models.api_errors import ResourceNotFound
 from utils.rest import query_with_order_by
 
@@ -26,6 +26,7 @@ get_filter_matching_ts_query_for_booking = create_get_filter_matching_ts_query_i
     Venue,
 )
 
+
 def find_all_by_user_id(user_id):
     return Booking.query.filter_by(userId=user_id).all()
 
@@ -33,17 +34,19 @@ def find_all_by_user_id(user_id):
 def find_all_by_stock_id(stock):
     return Booking.query.filter_by(stockId=stock.id).all()
 
+
 def filter_bookings_with_keywords_string(query, keywords_string):
     keywords_filter = create_filter_matching_all_keywords_in_any_model(
         get_filter_matching_ts_query_for_booking,
         keywords_string
     )
     query = query.outerjoin(Event) \
-                 .outerjoin(Thing) \
-                 .outerjoin(Venue) \
-                 .filter(keywords_filter) \
-                 .reset_joinpoint()
+        .outerjoin(Thing) \
+        .outerjoin(Venue) \
+        .filter(keywords_filter) \
+        .reset_joinpoint()
     return query
+
 
 def find_offerer_bookings(offerer_id, search=None, order_by=None, page=1):
     query = Booking.query.join(Stock) \
@@ -64,7 +67,7 @@ def find_offerer_bookings(offerer_id, search=None, order_by=None, page=1):
         query = query_with_order_by(query, order_by)
 
     bookings = query.paginate(int(page), per_page=10, error_out=False) \
-                    .items
+        .items
 
     return bookings
 
@@ -122,7 +125,8 @@ def save_booking(booking):
         if 'tooManyBookings' in str(internal_error.orig):
             api_errors.addError('global', 'la quantité disponible pour cette offre est atteinte')
         elif 'insufficientFunds' in str(internal_error.orig):
-            api_errors.addError('insufficientFunds', "Le solde de votre pass n'est pas suffisant pour effectuer cette réservation.")
+            api_errors.addError('insufficientFunds',
+                                "Le solde de votre pass n'est pas suffisant pour effectuer cette réservation.")
         raise api_errors
 
 
@@ -163,3 +167,14 @@ def find_date_used(booking: Booking) -> datetime:
 
     activity = Activity.query.filter(text(find_by_id_and_is_used)).first()
     return activity.issued_at if activity else None
+
+
+def user_has_booked_an_online_activation(user: User) -> bool:
+    return User.query \
+        .join(Booking) \
+        .join(Stock) \
+        .join(Offer) \
+        .join(Thing) \
+        .filter(Thing.type == str(ThingType.ACTIVATION)) \
+        .filter(User.id == user.id) \
+        .count() > 0
