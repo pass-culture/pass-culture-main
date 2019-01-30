@@ -14,7 +14,7 @@ import {
 } from './helpers/offers'
 import { OFFERER_WITH_PHYSICAL_VENUE_WITH_IBAN } from './helpers/offerers'
 import { VALIDATED_UNREGISTERED_OFFERER_USER } from './helpers/users'
-import { PHYSICAL_VENUE_WITH_SIRET_WITH_OFFERER_IBAN_WITH_NO_VENUE_IBAN } from './helpers/venues'
+import { PHYSICAL_VENUE_WITH_SIRET_WITH_OFFERER_IBAN_WITH_NO_IBAN } from './helpers/venues'
 
 fixture(`OfferPage A | Naviguer vers creer une offre et revenir au précédent`)
 

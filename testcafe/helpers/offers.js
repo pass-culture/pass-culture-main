@@ -30,10 +30,9 @@ export const FUTURE_VIRTUAL_THING_OFFER_WITH_OFFERER_IBAN_WITH_NO_VENUE_IBAN = {
   thingUrl: 'http://www.example.com',
 }
 
-export const EVENT_OFFER_WITH_NO_EVENT_OCCURRENCE_WITH_NO_STOCK_WITH_NO_MEDIATION_WITH_OFFERER_IBAN_WITH_NO_VENUE_IBAN = {
+export const EVENT_OFFER_WITH_EVENT_OCCURRENCE_WITH_STOCK_WITH_MEDIATION_WITH_NO_OFFERER_IBAN_WITH_NO_VENUE_IBAN = {
   // city: "Aulnay-sous-Bois",
-  // TODO does not work yet with "C'est"
-  keywordsString: 'notre prooooojecteur en feu',
+  keywordsString: 'Autant en emporte mon gilet en feu',
 }
 
 export const EVENT_OFFER_WITH_EVENT_OCCURRENCE_WITH_STOCK_WITH_MEDIATION_WITH_OFFERER_IBAN_WITH_NO_VENUE_IBAN = {
@@ -41,16 +40,17 @@ export const EVENT_OFFER_WITH_EVENT_OCCURRENCE_WITH_STOCK_WITH_MEDIATION_WITH_OF
   keywordsString: 'This is Spartaaaaa Dorothy',
 }
 
-export const EVENT_OFFER_WITH_EVENT_OCCURRENCE_WITH_STOCK_WITH_MEDIATION_WITH_NO_OFFERER_IBAN_WITH_NO_VENUE_IBAN = {
+export const EVENT_OFFER_WITH_NO_EVENT_OCCURRENCE_WITH_NO_STOCK_WITH_NO_MEDIATION_WITH_OFFERER_IBAN_WITH_NO_VENUE_IBAN = {
   // city: "Aulnay-sous-Bois",
-  keywordsString: 'commune guillemin en feu',
-}
-
-export const VIRTUAL_THING_OFFER_WITH_NO_STOCK_WITH_NO_MEDIATION_WITH_NO_OFFERER_IBAN_WITH_NO_VENUE_IBAN = {
-  keywordsString: 'Guerre et youpi matin Herbert en feu',
+  // TODO does not work yet with "C'est"
+  keywordsString: 'lit rivière en feu',
 }
 
 export const THING_OFFER_WITH_STOCK_WITH_MEDIATION_WITH_OFFERER_IBAN_WITH_NO_VENUE_IBAN = {
   // city: "Drancy"
-  keywordsString: 'Dormons peu soupons bien Dorothy',
+  keywordsString: 'Sun aux lentilles Dorothy',
+}
+
+export const VIRTUAL_THING_OFFER_WITH_NO_STOCK_WITH_NO_MEDIATION_WITH_NO_OFFERER_IBAN_WITH_NO_VENUE_IBAN = {
+  keywordsString: 'Guerre et youpi matin Herbert en feu',
 }

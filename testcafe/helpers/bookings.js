@@ -1,7 +1,6 @@
 export const BOOKING_VALID_NOT_USED = {
-  // eventName: 'Autant en emporte mon gilet'
-  // venueCity: Autant en emporte mon gilet
-  token: '100004',
+  // venueName: "Cinéma de la fin"
+  token: '100005',
 }
 
 export const BOOKING_BAD_CODE = {
