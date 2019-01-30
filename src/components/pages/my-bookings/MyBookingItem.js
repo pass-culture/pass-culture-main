@@ -38,7 +38,7 @@ const MyBookingItem = ({
 }) => {
   const cssclass = (isEvent && 'event') || 'thing'
   const queryURL = getQueryURL({ mediationId, offerId })
-  const linkURL = `/decouverte/${queryURL}?to=verso`
+  const linkURL = `/decouverte/${queryURL}/verso`
   const thumbUrl = `${THUMBS_URL}/mediations/${mediationId}`
   return (
     <li className={`booking-item mb16 ${cssclass}`}>

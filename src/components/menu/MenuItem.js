@@ -57,9 +57,8 @@ export class MenuItemContent extends React.PureComponent {
   }
 
   render() {
-    const { item, location } = this.props
-    const isOnCardVerso =
-      location.search && location.search.indexOf('?to=verso') !== -1
+    const { item, match } = this.props
+    const isOnCardVerso = match.params.view === 'verso'
     const activeClass = isOnCardVerso ? null : 'active'
     const cssclass = (item.disabled && 'is-disabled') || ''
     const options = { activeClass, cssclass }
@@ -76,6 +75,7 @@ MenuItemContent.propTypes = {
   clickHandler: PropTypes.func,
   item: PropTypes.object.isRequired,
   location: PropTypes.object.isRequired,
+  match: PropTypes.object.isRequired,
 }
 
 const MenuItem = withRouter(MenuItemContent)

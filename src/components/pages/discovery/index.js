@@ -98,10 +98,10 @@ export class RawDiscoveryPage extends React.PureComponent {
   }
 
   render() {
-    const { location } = this.props
+    const { match } = this.props
     const { haserror, isempty, isloading } = this.state
 
-    const withBackButton = location.search.indexOf('to=verso') > -1
+    const withBackButton = match.params.view === 'verso'
 
     return (
       <Fragment>
@@ -114,16 +114,16 @@ export class RawDiscoveryPage extends React.PureComponent {
             // do not mount components if its loading
             <Fragment>
               <Route
+                key="route-discovery-booking"
+                path="/decouverte/:offerId/:mediationId?/:view(booking)"
+                render={route => <Booking {...route} />}
+              />
+              <Route
                 key="route-discovery-deck"
-                path="/decouverte/:offerId/:mediationId?"
+                path="decouverte/:offerId/:mediationId?/:view(verso|cancelled)?/:bookingId?"
                 render={route => (
                   <Deck {...route} handleDataRequest={this.handleDataRequest} />
                 )}
-              />
-              <Route
-                key="route-discovery-booking"
-                path="/decouverte/:offerId/:mediationId?/:view(booking|verso|cancelled)/:bookingId?"
-                render={route => <Booking {...route} />}
               />
             </Fragment>
           )}

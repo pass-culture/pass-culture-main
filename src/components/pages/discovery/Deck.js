@@ -3,6 +3,7 @@ import { Logger, Icon } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import Draggable from 'react-draggable'
 import React, { Component } from 'react'
+import { withRouter } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 import withSizes from 'react-sizes'
@@ -35,9 +36,9 @@ export class RawDeck extends Component {
 
   componentDidMount() {
     Logger.log('DECK ---> componentDidMount')
-    const { currentRecommendation, history, recommendations } = this.props
+    const { currentRecommendation, recommendations } = this.props
 
-    this.handleUrlFlip(history)
+    this.handleUrlFlip()
 
     const isStateWithoutRecommendationsOrCurrentRecommendation =
       !recommendations || recommendations.length === 0 || !currentRecommendation
@@ -52,8 +53,6 @@ export class RawDeck extends Component {
       'DECK ---> componentDidUpdate',
       previousProps.recommendations.length
     )
-    const { history } = this.props
-
     // const withRecommendationsAvailable = isRecommendations(
     //   recommendations,
     //   previousProps
@@ -71,7 +70,7 @@ export class RawDeck extends Component {
     //   previousProps
     // )
 
-    this.handleUrlFlip(history, previousProps.history)
+    this.handleUrlFlip()
 
     // if (
     //   !withRecommendationsAvailable ||
@@ -162,13 +161,10 @@ export class RawDeck extends Component {
     dispatch(closeCardDetails())
   }
 
-  handleUrlFlip = (history, previousHistory = false) => {
+  handleUrlFlip = () => {
     // Quand on arrive depuis un booking vers une offre, le details doit être affiché
-    const { dispatch } = this.props
-    const isNewUrl =
-      !previousHistory ||
-      (previousHistory && history.location.key !== previousHistory.location.key)
-    if (isNewUrl && history.location.search.indexOf('to=verso') > 0) {
+    const { dispatch, match } = this.props
+    if (match.params.view === 'verso') {
       dispatch(flipUnflippable())
     }
   }
@@ -281,6 +277,7 @@ RawDeck.propTypes = {
   history: PropTypes.object.isRequired,
   horizontalSlideRatio: PropTypes.number,
   isFlipDisabled: PropTypes.bool.isRequired,
+  match: PropTypes.object.isRequired,
   nextLimit: PropTypes.number.isRequired,
   nextRecommendation: PropTypes.object,
   noDataTimeout: PropTypes.number,
@@ -348,6 +345,7 @@ const mapSizeToProps = ({ width, height }) => ({
 })
 
 const Deck = compose(
+  withRouter,
   withSizes(mapSizeToProps),
   connect(mapStateToProps)
 )(RawDeck)
