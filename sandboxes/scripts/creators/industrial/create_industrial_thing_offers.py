@@ -2,6 +2,7 @@ from models.pc_object import PcObject
 from utils.logger import logger
 from utils.test_utils import create_thing_offer
 
+DEACTIVATED_OFFERS_PICK_MODULO = 3
 THINGS_PER_OFFERER = 5
 
 def create_industrial_thing_offers(
@@ -14,8 +15,8 @@ def create_industrial_thing_offers(
     thing_offers_by_name = {}
 
     id_at_providers = 1234
-
     thing_index = 0
+    offer_index = 0
     thing_items = list(things_by_name.items())
 
     for offerer in offerers_by_name.values():
@@ -46,13 +47,18 @@ def create_industrial_thing_offers(
                 thing_index += 1
 
             name = "{} / {}".format(thing_name, thing_venue.name)
+            if offer_index%DEACTIVATED_OFFERS_PICK_MODULO == 0:
+                is_active = False
+            else:
+                is_active = True
             thing_offers_by_name[name] = create_thing_offer(
                 thing_venue,
                 thing=thing,
                 thing_type=thing.type,
+                is_active=is_active,
                 id_at_providers=id_at_providers
             )
-
+            offer_index += 1
             id_at_providers += 1
 
         thing_index += THINGS_PER_OFFERER

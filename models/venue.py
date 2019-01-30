@@ -102,7 +102,7 @@ class Venue(PcObject,
     # means open monday 9 to 18 and tuesday 9 to 19, closed wednesday,
     # open thursday 9 to 18, closed the rest of the week
 
-    def store_department_code(self):
+    def store_departement_code(self):
         self.departementCode = self.postalCode[:-3]
 
     def errors(self):
@@ -140,12 +140,12 @@ class Venue(PcObject,
 @listens_for(Venue, 'before_insert')
 def before_insert(mapper, connect, self):
     _check_if_existing_virtual_venue(self)
-    _fill_department_code_from_postal_code(self)
+    _fill_departement_code_from_postal_code(self)
 
 @listens_for(Venue, 'before_update')
 def before_update(mapper, connect, self):
     _check_if_existing_virtual_venue(self)
-    _fill_department_code_from_postal_code(self)
+    _fill_departement_code_from_postal_code(self)
 
 def _check_if_existing_virtual_venue(self):
     if self.isVirtual:
@@ -158,11 +158,11 @@ def _check_if_existing_virtual_venue(self):
             if already_existing_virtual_venue.id != self.id:
                 raise TooManyVirtualVenuesException()
 
-def _fill_department_code_from_postal_code(self):
+def _fill_departement_code_from_postal_code(self):
     if not self.isVirtual:
         if not self.postalCode:
             raise IntegrityError(None, None, None)
-        self.store_department_code()
+        self.store_departement_code()
 
 
 class TooManyVirtualVenuesException(Exception):

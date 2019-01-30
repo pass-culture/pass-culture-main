@@ -2,7 +2,7 @@ from typing import List
 
 from sqlalchemy import func
 
-from models import User, UserOfferer, Offerer, RightsType
+from models import Offer, User, UserOfferer, Offerer, RightsType, Venue
 from models.db import db
 from models.user import WalletBalance
 
@@ -38,3 +38,67 @@ def get_all_users_wallet_balances() -> List[WalletBalance]:
 
     instantiate_result_set = lambda u: WalletBalance(u[0], u[1], u[2])
     return list(map(instantiate_result_set, wallet_balances))
+
+def filter_users_with_at_least_one_validated_offerer_validated_user_offerer(query):
+    query = query.join(UserOfferer) \
+                 .join(Offerer) \
+                 .filter(
+                    (Offerer.validationToken == None) & \
+                    (UserOfferer.validationToken == None)
+                )
+    return query
+
+def filter_users_with_at_least_one_validated_offerer_not_validated_user_offerer(query):
+    query = query.join(UserOfferer) \
+                 .join(Offerer) \
+                 .filter(
+                    (Offerer.validationToken == None) & \
+                    (UserOfferer.validationToken != None)
+                )
+    return query
+
+def filter_users_with_at_least_one_not_activated_offerer_not_validated_user_offerer(query):
+    query = query.join(UserOfferer) \
+                 .join(Offerer) \
+                 .filter(
+                    (Offerer.validationToken != None)  & \
+                    (UserOfferer.validationToken != None)
+                )
+    return query
+
+def filter_users_with_at_least_one_not_validated_offerer_validated_user_offerer(query):
+    query = query.join(UserOfferer) \
+                 .join(Offerer) \
+                 .filter(
+                    (Offerer.validationToken != None)  & \
+                    (UserOfferer.validationToken == None)
+                )
+    return query
+
+def filter_users_with_at_least_one_offer(query):
+    query = query.join(UserOfferer) \
+                 .join(Offerer) \
+                 .join(Venue) \
+                 .filter(Venue.offers.any())
+    return query
+
+def filter_users_with_at_least_one_activated_offer(query):
+    query = query.join(UserOfferer) \
+                 .join(Offerer) \
+                 .join(Venue) \
+                 .filter(Venue.offers.any(Offer.isActive == True))
+    return query
+
+def filter_webapp_users(query):
+    query = query.filter(
+        (~User.UserOfferers.any()) &\
+        (User.isAdmin == False)
+    )
+    return query
+
+def filter_users_with_at_least_one_offer(query):
+    query = query.join(UserOfferer) \
+                 .join(Offerer) \
+                 .join(Venue) \
+                 .filter(Venue.offers.any())
+    return query
