@@ -192,7 +192,7 @@ test('Je ne peux pas de rentrer un nouveau stock pour un objet avec déjà un st
   await t.expect(addAnchor.visible).notOk()
 })
 
-fixture(`OfferPage Gestion B | Avertissement pour les offres sans iban`)
+fixture.skip(`OfferPage Gestion B | Avertissement pour les offres sans iban`)
 
 const infoDiv = Selector('div.info')
 const confirmationButton = infoDiv.find('button')
