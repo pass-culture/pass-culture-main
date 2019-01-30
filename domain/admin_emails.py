@@ -1,8 +1,10 @@
 from typing import Dict, List, Callable
 
+from models import Offer
 from utils.mailing import write_object_validation_email, check_if_email_sent, make_payment_transaction_email, \
     make_venue_validation_email, compute_email_html_part_and_recipients, make_payment_details_email, \
-    make_payments_report_email, make_wallet_balances_email, make_activation_users_email
+    make_payments_report_email, make_wallet_balances_email, make_offer_creation_notification_email, \
+    make_activation_users_email
 
 
 def send_dev_email(subject, html_text, send_create_email: Callable[..., None]):
@@ -69,5 +71,12 @@ def send_venue_validation_email(venue, send_create_email: Callable[..., None]):
     email = make_venue_validation_email(venue)
     recipients = ['passculture@beta.gouv.fr']
     email['Html-part'], email['To'] = compute_email_html_part_and_recipients(email['Html-part'], recipients)
+    mail_result = send_create_email(data=email)
+    check_if_email_sent(mail_result)
+
+
+def send_offer_creation_notification_to_support(offer: Offer, send_create_email):
+    email = make_offer_creation_notification_email(offer)
+    email['Html-part'], email['To'] = compute_email_html_part_and_recipients(email['Html-part'], email['To'])
     mail_result = send_create_email(data=email)
     check_if_email_sent(mail_result)

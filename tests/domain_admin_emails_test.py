@@ -4,10 +4,11 @@ from unittest.mock import Mock, patch
 import pytest
 
 from domain.admin_emails import maybe_send_offerer_validation_email, send_venue_validation_email, \
-    send_payment_details_email, send_wallet_balances_email, send_payments_report_emails
+    send_payment_details_email, send_wallet_balances_email, send_payments_report_emails, \
+    send_offer_creation_notification_to_support
 from utils.mailing import MailServiceException
 from utils.test_utils import create_offerer, create_user, \
-    create_user_offerer, create_venue
+    create_user_offerer, create_venue, create_thing_offer
 
 
 @pytest.mark.standalone
@@ -374,3 +375,59 @@ def test_send_payments_report_emails_when_mailjet_status_code_400_raises_MailSer
     with pytest.raises(MailServiceException):
         send_payments_report_emails(not_processable_csv, error_csv, grouped_payments, ['dev.team@test.com'],
                                     mocked_send_create_email)
+
+
+@pytest.mark.standalone
+class SendOfferCreationNotificationToSupportTest:
+    def test_when_mailjet_status_code_200_sends_email_to_support_email(self):
+        mocked_send_create_email = Mock()
+        return_value = Mock()
+        return_value.status_code = 200
+        mocked_send_create_email.return_value = return_value
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_thing_offer(venue)
+
+        # When
+        with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True):
+            send_offer_creation_notification_to_support(offer, mocked_send_create_email)
+
+        # Then
+        mocked_send_create_email.assert_called_once()
+        args = mocked_send_create_email.call_args
+        email = args[1]['data']
+        assert email['To'] == 'support.passculture@beta.gouv.fr'
+
+    def test_when_send_email_disabled_has_pass_culture_dev_as_recipient(self):
+        # Given
+        mocked_send_create_email = Mock()
+        return_value = Mock()
+        return_value.status_code = 200
+        mocked_send_create_email.return_value = return_value
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_thing_offer(venue)
+
+        # When
+        with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=False):
+            send_offer_creation_notification_to_support(offer, mocked_send_create_email)
+
+        # Then
+        mocked_send_create_email.assert_called_once()
+        args = mocked_send_create_email.call_args
+        email = args[1]['data']
+        assert email['To'] == 'passculture-dev@beta.gouv.fr'
+
+    def test_send_payments_report_emails_when_mailjet_status_code_400_raises_MailServiceException(app):
+        # Given
+        mocked_send_create_email = Mock()
+        return_value = Mock()
+        return_value.status_code = 400
+        mocked_send_create_email.return_value = return_value
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_thing_offer(venue)
+
+        # When
+        with pytest.raises(MailServiceException):
+            send_offer_creation_notification_to_support(offer, mocked_send_create_email)

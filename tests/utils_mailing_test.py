@@ -7,7 +7,7 @@ import pytest
 from bs4 import BeautifulSoup
 from freezegun import freeze_time
 
-from models import PcObject, Offerer
+from models import PcObject, Offerer, ThingType
 from tests.conftest import clean_database, mocked_mail
 from tests.files.api_entreprise import MOCKED_SIREN_ENTREPRISES_API_RETURN
 from utils.mailing import make_user_booking_recap_email, \
@@ -19,7 +19,7 @@ from utils.mailing import make_user_booking_recap_email, \
     make_venue_validation_confirmation_email, \
     make_batch_cancellation_email, make_payment_transaction_email, make_user_validation_email, \
     make_payment_details_email, make_wallet_balances_email, make_payments_report_email, parse_email_addresses, \
-    make_activation_notification_email
+    make_activation_notification_email, make_offer_creation_notification_email
 from utils.test_utils import create_stock_with_event_offer, create_stock_with_thing_offer, \
     create_user, create_booking, create_user_offerer, \
     create_offerer, create_venue, create_thing_offer, create_event_offer, create_stock_from_offer, \
@@ -1117,6 +1117,32 @@ class ParseEmailAddressesTest:
         assert parse_email_addresses('one@test.com;two@test.com') == ['one@test.com', 'two@test.com']
         assert parse_email_addresses('one@test.com; two@test.com') == ['one@test.com', 'two@test.com']
         assert parse_email_addresses('  one@test.com  ; two@test.com   ') == ['one@test.com', 'two@test.com']
+
+
+@pytest.mark.standalone
+class MakeOfferCreationNotificationEmailTest:
+    def setup_class(self):
+        self.offerer93 = create_offerer(siren='123456789', postal_code='93100', name='Cinéma de Montreuil')
+        self.offerer97 = create_offerer(siren='987654321', postal_code='97370', name='Théâtre de Maripasoula')
+
+        siret93 = self.offerer93.siren + '12345'
+        siret97 = self.offerer97.siren + '12345'
+
+        self.virtual_venue = create_venue(self.offerer93, siret=None, is_virtual=True, postal_code=None, departement_code=None, address=None)
+        self.venue93 = create_venue(self.offerer93, siret=siret93, is_virtual=False, departement_code='93', postal_code='93100')
+        self.venue97 = create_venue(self.offerer97, siret=siret97, is_virtual=False, departement_code='97', postal_code='97370')
+
+        self.physical_offer93 = create_thing_offer(self.venue93, thing_type=ThingType.AUDIOVISUEL, thing_name='Le vent se lève')
+        self.virtual_offer = create_thing_offer(self.virtual_venue, thing_type=ThingType.JEUX_VIDEO)
+        self.physical_offer97 = create_event_offer(self.venue97, event_type=ThingType.JEUX_VIDEO)
+
+    def test_when_offerer_93_and_physical_offer_returns_dictionary_with_given_content(self):
+        # When
+        email = make_offer_creation_notification_email(self.physical_offer93)
+        # Then
+        assert email["FromEmail"] == "passculture@beta.gouv.fr"
+        assert email["FromName"] == "pass Culture"
+        assert email["Subject"] == "[Création d’offre - 93] Le vent se lève"
 
 
 def remove_whitespaces(text):

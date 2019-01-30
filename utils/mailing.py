@@ -461,6 +461,16 @@ def parse_email_addresses(addresses: str) -> List[str]:
     return [a for a in addresses if a]
 
 
+def make_offer_creation_notification_email(offer, app_origin_url):
+    link = app_origin_url +
+    html = render_template('mails/venue_validation_confirmation_email.html', offer=offer, link=)
+    return {'Html-part': html,
+            'To': ['support.passculture@beta.gouv.fr'],
+            'FromEmail': 'passculture@beta.gouv.fr',
+            'FromName': 'pass Culture',
+            'Subject': f'[Création d’offre - {offer.venue.departementCode}] {offer.eventOrThing.name}'}
+
+
 def _generate_reservation_email_html_subject(booking):
     stock = booking.stock
     user = booking.user
