@@ -8,7 +8,7 @@ from domain.user_emails import send_user_driven_cancellation_email_to_user, \
     send_booking_confirmation_email_to_user, send_booking_recap_emails, send_final_booking_recap_email, \
     send_validation_confirmation_email, send_batch_cancellation_emails_to_users, \
     send_batch_cancellation_email_to_offerer, send_user_validation_email, send_venue_validation_confirmation_email, \
-    send_reset_password_email
+    send_reset_password_email, send_activation_notification_email
 from models import Offerer, UserOfferer, User, RightsType
 from utils.mailing import MailServiceException
 from utils.test_utils import create_user, create_booking, create_stock_with_event_offer, create_offerer, create_venue, \
@@ -795,3 +795,55 @@ def test_send_reset_password_email_raises_an_exception_if_mailjet_failed(app):
     # when
     with pytest.raises(MailServiceException):
         send_reset_password_email(user, mocked_send_create_email, 'localhost')
+
+
+@pytest.mark.standalone
+class SendActivationNotificationEmailTest:
+    def test_sends_a_mail_to_user_to_notify_that_its_account_is_activated_when_send_emails_enabled(self, app):
+        # given
+        user = create_user(public_name='bobby', email='bobby@test.com', reset_password_token='AZ45KNB99H')
+        mocked_send_create_email = Mock()
+        return_value = Mock()
+        return_value.status_code = 200
+        mocked_send_create_email.return_value = return_value
+
+        # when
+        with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True):
+            send_activation_notification_email(user, mocked_send_create_email)
+
+        # then
+        mocked_send_create_email.assert_called_once()
+        args = mocked_send_create_email.call_args
+        data = args[1]['data']
+        assert data['To'] == 'bobby@test.com'
+
+    def test_sends_to_the_pass_culture_dev_when_send_emails_disabled(self, app):
+        # given
+        user = create_user(public_name='bobby', email='bobby@test.com', reset_password_token='AZ45KNB99H')
+        mocked_send_create_email = Mock()
+        return_value = Mock()
+        return_value.status_code = 200
+        mocked_send_create_email.return_value = return_value
+
+        # when
+        with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=False):
+            send_activation_notification_email(user, mocked_send_create_email)
+
+        # then
+        mocked_send_create_email.assert_called_once()
+        args = mocked_send_create_email.call_args
+        email = args[1]['data']
+        assert email['To'] == 'passculture-dev@beta.gouv.fr'
+        assert 'This is a test' in email['Html-part']
+
+    def test_raises_an_exception_if_mailjet_failed(self, app):
+        # given
+        user = create_user(public_name='bobby', email='bobby@test.com', reset_password_token='AZ45KNB99H')
+        mocked_send_create_email = Mock()
+        return_value = Mock()
+        return_value.status_code = 400
+        mocked_send_create_email.return_value = return_value
+
+        # when
+        with pytest.raises(MailServiceException):
+            send_activation_notification_email(user, mocked_send_create_email)

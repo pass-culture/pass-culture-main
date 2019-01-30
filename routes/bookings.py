@@ -5,7 +5,8 @@ from flask_login import current_user, login_required
 from domain.expenses import get_expenses
 from domain.user_activation import create_initial_deposit, check_is_activation_booking
 from domain.user_emails import send_booking_recap_emails, \
-    send_booking_confirmation_email_to_user, send_cancellation_emails_to_user_and_offerer
+    send_booking_confirmation_email_to_user, send_cancellation_emails_to_user_and_offerer, \
+    send_activation_notification_email
 from models import ApiErrors, Booking, PcObject, Stock, RightsType, EventType
 from models.pc_object import serialize
 from repository import booking_queries
@@ -152,7 +153,6 @@ def patch_booking_by_token(token):
     email = request.args.get('email', None)
     offer_id = dehumanize(request.args.get('offer_id', None))
     booking = booking_queries.find_by(token, email, offer_id)
-    is_activation_booking = check_is_activation_booking(booking)
 
     if current_user.is_authenticated:
         ensure_current_user_has_rights(RightsType.editor, booking.stock.resolvedOffer.venue.managingOffererId)
@@ -162,8 +162,9 @@ def patch_booking_by_token(token):
     check_booking_is_usable(booking)
     booking.isUsed = True
 
-    if is_activation_booking:
+    if check_is_activation_booking(booking):
         activate_user(booking.user)
+        send_activation_notification_email(booking.user, app.mailjet_client.send.create)
 
     PcObject.check_and_save(booking)
     return '', 204

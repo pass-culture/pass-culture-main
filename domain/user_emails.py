@@ -1,3 +1,6 @@
+from typing import Callable
+
+from models import User
 from repository.booking_queries import find_all_ongoing_bookings_by_stock
 from repository.stock_queries import set_booking_recap_sent_and_save
 from repository.user_queries import find_all_emails_of_user_offerers_admins
@@ -6,7 +9,8 @@ from utils.mailing import make_user_booking_recap_email, \
     make_offerer_booking_recap_email_after_user_action, make_offerer_driven_cancellation_email_for_user, \
     make_offerer_driven_cancellation_email_for_offerer, make_final_recap_email_for_stock_with_event, \
     check_if_email_sent, make_reset_password_email, make_validation_confirmation_email, make_batch_cancellation_email, \
-    make_user_validation_email, make_venue_validation_confirmation_email, compute_email_html_part_and_recipients
+    make_user_validation_email, make_venue_validation_confirmation_email, compute_email_html_part_and_recipients, \
+    make_activation_notification_email
 
 
 def send_final_booking_recap_email(stock, send_create_email):
@@ -88,7 +92,7 @@ def send_offerer_driven_cancellation_email_to_offerer(booking, send_create_email
 
 def send_reset_password_email(user, send_create_email, app_origin_url):
     email = make_reset_password_email(user, app_origin_url)
-    recipients =  [user.email]
+    recipients = [user.email]
     email['Html-part'], email['To'] = compute_email_html_part_and_recipients(email['Html-part'], recipients)
     mail_result = send_create_email(data=email)
     check_if_email_sent(mail_result)
@@ -139,6 +143,13 @@ def send_venue_validation_confirmation_email(venue, send_create_email):
 
 def send_user_validation_email(user, send_create_email, app_origin_url, is_webapp):
     email = make_user_validation_email(user, app_origin_url, is_webapp)
+    mail_result = send_create_email(data=email)
+    check_if_email_sent(mail_result)
+
+
+def send_activation_notification_email(user: User, send_create_email: Callable) -> None:
+    email = make_activation_notification_email(user)
+    email['Html-part'], email['To'] = compute_email_html_part_and_recipients(email['Html-part'], [user.email])
     mail_result = send_create_email(data=email)
     check_if_email_sent(mail_result)
 

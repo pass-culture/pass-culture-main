@@ -18,7 +18,8 @@ from utils.mailing import make_user_booking_recap_email, \
     make_venue_validation_email, \
     make_venue_validation_confirmation_email, \
     make_batch_cancellation_email, make_payment_transaction_email, make_user_validation_email, \
-    make_payment_details_email, make_wallet_balances_email, make_payments_report_email, parse_email_addresses
+    make_payment_details_email, make_wallet_balances_email, make_payments_report_email, parse_email_addresses, \
+    make_activation_notification_email
 from utils.test_utils import create_stock_with_event_offer, create_stock_with_thing_offer, \
     create_user, create_booking, create_user_offerer, \
     create_offerer, create_venue, create_thing_offer, create_event_offer, create_stock_from_offer, \
@@ -978,8 +979,8 @@ class MakePaymentsReportEmailTest:
         assert email_html.find('ul').text == '\nERROR : 2\nSENT : 1\nPENDING : 3\n'
 
 
+@pytest.mark.standalone
 class UserValidationEmailsTest:
-    @pytest.mark.standalone
     def test_make_webapp_user_validation_email_includes_validation_url_with_token_and_user_email(self, app):
         # Given
         user = create_user(email="test@email.com")
@@ -1004,7 +1005,6 @@ class UserValidationEmailsTest:
         assert email['Subject'] == 'Validation de votre adresse email pour le pass Culture'
         assert email['FromEmail'] == 'passculture@beta.gouv.fr'
 
-    @pytest.mark.standalone
     def test_make_pro_user_validation_email_includes_validation_url_with_token_and_user_email(self, app):
         # Given
         user = create_user(email="test@email.com")
@@ -1055,6 +1055,21 @@ def test_make_venue_validation_email(app):
 
 
 @pytest.mark.standalone
+def test_make_activation_notification_email(app):
+    # Given
+    user = create_user()
+
+    # When
+    email = make_activation_notification_email(user)
+
+    # Then
+    assert email["FromEmail"] == "passculture@beta.gouv.fr"
+    assert email["FromName"] == "pass Culture"
+    assert email["Subject"] == 'ACTIVATION NOTIFICATION'
+    assert email['Html-part'] == '500 €'
+
+
+@pytest.mark.standalone
 def test_make_venue_validation_confirmation_email(app):
     # Given
     offerer = create_offerer(name='La Structure', siren='123456789')
@@ -1079,6 +1094,7 @@ def test_make_venue_validation_confirmation_email(app):
     assert 'L\'équipe pass Culture' in html_salutation
 
 
+@pytest.mark.standalone
 class ParseEmailAddressesTest:
     def test_returns_an_empty_list(self):
         assert parse_email_addresses('') == []
