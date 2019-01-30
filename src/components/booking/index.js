@@ -236,6 +236,7 @@ class Booking extends React.PureComponent {
                         className="flex-rows items-center"
                         isEvent={isEvent}
                         formId={this.formId}
+                        isReadOnly={isReadOnly}
                         disabled={userConnected}
                         onSubmit={this.onFormSubmit}
                         onMutation={this.onFormMutation}

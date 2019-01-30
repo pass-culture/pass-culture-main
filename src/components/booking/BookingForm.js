@@ -38,6 +38,7 @@ const datepickerPopper = React.createRef()
 const BookingForm = ({
   className,
   isEvent,
+  isReadOnly,
   formId,
   disabled,
   initialValues,
@@ -59,13 +60,15 @@ const BookingForm = ({
 
       const calendarReadOnly = calendarDates.length === 1
       const calendarLabel = calendarReadOnly ? false : 'Choisissez une date'
+
+      const readOnlyClassname = isReadOnly ? 'is-read-only' : ''
       return (
         <React.Fragment>
           <FormSpy onChange={onMutation} subscription={spySubscriptions} />
           <form
             id={formId}
             disabled={disabled}
-            className={className}
+            className={`${className} ${readOnlyClassname}`}
             onSubmit={handleSubmit}
           >
             <HiddenField name="price" />
@@ -106,7 +109,7 @@ const BookingForm = ({
                     readOnly={hourReadOnly}
                     provider={hoursAndPrices}
                     placeholder="Heure et prix"
-                    label={hourLabel}
+                    label={(typeof hourLabel === 'string' && hourLabel) || ''}
                     className="text-center"
                   />
                 )}
@@ -131,6 +134,7 @@ BookingForm.defaultProps = {
   className: '',
   initialValues: null,
   isEvent: false,
+  isReadOnly: false,
 }
 
 BookingForm.propTypes = {
@@ -139,6 +143,7 @@ BookingForm.propTypes = {
   formId: PropTypes.string.isRequired,
   initialValues: PropTypes.object,
   isEvent: PropTypes.bool,
+  isReadOnly: PropTypes.bool,
   onMutation: PropTypes.func.isRequired,
   onSubmit: PropTypes.func.isRequired,
 }

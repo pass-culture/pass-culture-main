@@ -1,4 +1,4 @@
-// jest ./src/components/booking/utils/tests/BookingForm --watch
+// jest --env=jsdom ./src/components/booking/tests/BookingForm --watch
 import React from 'react'
 import { shallow } from 'enzyme'
 
@@ -10,6 +10,18 @@ describe('src | components | pages | search | BookingForm', () => {
       const props = {
         disabled: false,
         formId: 'super-form-id',
+        onMutation: () => {},
+        onSubmit: () => {},
+      }
+      const wrapper = shallow(<BookingForm {...props} />)
+      expect(wrapper).toBeDefined()
+      expect(wrapper).toMatchSnapshot()
+    })
+    it('should match snapshot when is read-only', () => {
+      const props = {
+        disabled: false,
+        formId: 'super-form-id',
+        isReadOnly: true,
         onMutation: () => {},
         onSubmit: () => {},
       }

@@ -86,3 +86,13 @@
     left: 50%;
   }
 }
+
+#form-create-booking.is-read-only {
+  .pc-final-form-inner,
+  .ant-select-selection,
+  .pc-final-form-inner input {
+    border: 0 !important;
+    border-radius: 0 !important;
+    background-color: transparent !important;
+  }
+}
