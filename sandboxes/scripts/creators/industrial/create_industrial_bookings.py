@@ -63,8 +63,6 @@ def create_industrial_bookings(
             # every STOCK_MODULO RECO will have several stocks
             if index > 0 and recommendation_index%(RECOMMENDATIONS_WITH_SEVERAL_STOCKS_REMOVE_MODULO + index):
                 continue
-            elif index > 0:
-                print('DOUBLE BOOKING !')
 
             booking_name = "{} / {}".format(recommendation_name, str(token))
 
