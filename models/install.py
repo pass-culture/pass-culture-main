@@ -6,18 +6,17 @@ from models.db import db
 from models.mediation import upsertTutoMediations
 
 
-def install_models():
-
+def create_text_search_configuration_if_not_exists():
     db.engine.execute("CREATE EXTENSION IF NOT EXISTS unaccent;")
 
-    try:
+    cfg_query = db.engine.execute("SELECT * FROM pg_ts_config WHERE cfgname='french_unaccent'");
+    if cfg_query.fetchone() is None:
         db.engine.execute("CREATE TEXT SEARCH CONFIGURATION french_unaccent ( COPY = french );")
-    except IntegrityError:
-        pass  # Not great, but create text search does not include 'IF NOT EXISTS' yet
 
     db.engine.execute("ALTER TEXT SEARCH CONFIGURATION french_unaccent ALTER MAPPING FOR hword, hword_part, word WITH unaccent, french_stem;")
 
-    orm.configure_mappers()
+
+def create_versionning_tables():
     # FIXME: This is seriously ugly... (based on https://github.com/kvesteri/postgresql-audit/issues/21)
     try:
         versioning_manager.transaction_cls.__table__.create(db.session.get_bind())
@@ -27,6 +26,14 @@ def install_models():
         versioning_manager.activity_cls.__table__.create(db.session.get_bind())
     except ProgrammingError:
         pass
+
+
+def install_models():
+    create_text_search_configuration_if_not_exists()
+
+    orm.configure_mappers()
+
+    create_versionning_tables()
 
     db.create_all()
 
