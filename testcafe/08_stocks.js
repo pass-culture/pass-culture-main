@@ -2,13 +2,13 @@ import { Selector } from 'testcafe'
 
 import { navigateToOfferAs } from './helpers/navigations'
 import {
-  EVENT_OFFER_WITH_EVENT_OCCURRENCE_WITH_STOCK_WITH_MEDIATION_WITH_NO_OFFERER_IBAN_WITH_NO_VENUE_IBAN,
-  EVENT_OFFER_WITH_EVENT_OCCURRENCE_WITH_STOCK_WITH_MEDIATION_WITH_OFFERER_IBAN_WITH_NO_VENUE_IBAN,
-  EVENT_OFFER_WITH_NO_EVENT_OCCURRENCE_WITH_NO_STOCK_WITH_NO_MEDIATION_WITH_OFFERER_IBAN_WITH_NO_VENUE_IBAN,
-  THING_OFFER_WITH_STOCK_WITH_MEDIATION_WITH_OFFERER_IBAN_WITH_NO_VENUE_IBAN,
-  VIRTUAL_THING_OFFER_WITH_NO_STOCK_WITH_NO_MEDIATION_WITH_NO_OFFERER_IBAN_WITH_NO_VENUE_IBAN,
+  EXISTING_EVENT_OFFER_WITH_EVENT_OCCURRENCE_WITH_STOCK_WITH_MEDIATION_WITH_NO_93_OFFERER_IBAN_WITH_NO_VENUE_IBAN,
+  EXISTING_EVENT_OFFER_WITH_EVENT_OCCURRENCE_WITH_STOCK_WITH_MEDIATION_WITH_93_OFFERER_IBAN_WITH_NO_VENUE_IBAN,
+  EXISTING_EVENT_OFFER_WITH_NO_EVENT_OCCURRENCE_WITH_NO_STOCK_WITH_NO_MEDIATION_WITH_93_OFFERER_IBAN_WITH_NO_VENUE_IBAN,
+  EXISTING_THING_OFFER_WITH_STOCK_WITH_MEDIATION_WITH_93_OFFERER_IBAN_WITH_NO_VENUE_IBAN,
+  EXISTING_VIRTUAL_THING_OFFER_WITH_NO_STOCK_WITH_NO_MEDIATION_WITH_NO_93_OFFERER_IBAN_WITH_NO_VENUE_IBAN,
 } from './helpers/offers'
-import { VALIDATED_UNREGISTERED_OFFERER_USER } from './helpers/users'
+import { EXISTING_VALIDATED_UNREGISTERED_93_OFFERER_USER } from './helpers/users'
 
 const addAnchor = Selector('#add-occurrence-or-stock')
 const availableInput = Selector('#stock-available')
@@ -21,8 +21,8 @@ fixture(`OfferPage Gestion A | Créer des dates et des stocks`)
 test("Je peux créer une occurrence et un stock d'événement d'une offre vide", async t => {
   // given
   await navigateToOfferAs(
-    VALIDATED_UNREGISTERED_OFFERER_USER,
-    EVENT_OFFER_WITH_NO_EVENT_OCCURRENCE_WITH_NO_STOCK_WITH_NO_MEDIATION_WITH_OFFERER_IBAN_WITH_NO_VENUE_IBAN
+    EXISTING_VALIDATED_UNREGISTERED_93_OFFERER_USER,
+    EXISTING_EVENT_OFFER_WITH_NO_EVENT_OCCURRENCE_WITH_NO_STOCK_WITH_NO_MEDIATION_WITH_93_OFFERER_IBAN_WITH_NO_VENUE_IBAN
   )(t)
 
   // when
@@ -53,8 +53,8 @@ test("Je peux créer une occurrence et un stock d'événement d'une offre vide",
 test('Je peux créer une autre occurrence et un autre stock', async t => {
   // given
   await navigateToOfferAs(
-    VALIDATED_UNREGISTERED_OFFERER_USER,
-    EVENT_OFFER_WITH_EVENT_OCCURRENCE_WITH_STOCK_WITH_MEDIATION_WITH_OFFERER_IBAN_WITH_NO_VENUE_IBAN
+    EXISTING_VALIDATED_UNREGISTERED_93_OFFERER_USER,
+    EXISTING_EVENT_OFFER_WITH_EVENT_OCCURRENCE_WITH_STOCK_WITH_MEDIATION_WITH_93_OFFERER_IBAN_WITH_NO_VENUE_IBAN
   )(t)
 
   // when
@@ -85,8 +85,8 @@ test('Je peux créer une autre occurrence et un autre stock', async t => {
 test('Je peux créer une occurrence en utilisant la touche Entrée', async t => {
   // given
   await navigateToOfferAs(
-    VALIDATED_UNREGISTERED_OFFERER_USER,
-    EVENT_OFFER_WITH_EVENT_OCCURRENCE_WITH_STOCK_WITH_MEDIATION_WITH_OFFERER_IBAN_WITH_NO_VENUE_IBAN
+    EXISTING_VALIDATED_UNREGISTERED_93_OFFERER_USER,
+    EXISTING_EVENT_OFFER_WITH_EVENT_OCCURRENCE_WITH_STOCK_WITH_MEDIATION_WITH_93_OFFERER_IBAN_WITH_NO_VENUE_IBAN
   )(t)
 
   // when
@@ -116,8 +116,8 @@ test('Je peux créer une occurrence en utilisant la touche Entrée', async t => 
 test('Je peux femer la fenêtre en utilisant la touche Escape', async t => {
   // given
   await navigateToOfferAs(
-    VALIDATED_UNREGISTERED_OFFERER_USER,
-    EVENT_OFFER_WITH_EVENT_OCCURRENCE_WITH_STOCK_WITH_MEDIATION_WITH_OFFERER_IBAN_WITH_NO_VENUE_IBAN
+    EXISTING_VALIDATED_UNREGISTERED_93_OFFERER_USER,
+    EXISTING_EVENT_OFFER_WITH_EVENT_OCCURRENCE_WITH_STOCK_WITH_MEDIATION_WITH_93_OFFERER_IBAN_WITH_NO_VENUE_IBAN
   )(t)
 
   // when
@@ -136,8 +136,8 @@ test('Je peux femer la fenêtre en cliquant sur le bouton', async t => {
   // given
   const scheduleCloseButton = Selector('button.button').withText('Fermer')
   await navigateToOfferAs(
-    VALIDATED_UNREGISTERED_OFFERER_USER,
-    EVENT_OFFER_WITH_EVENT_OCCURRENCE_WITH_STOCK_WITH_MEDIATION_WITH_OFFERER_IBAN_WITH_NO_VENUE_IBAN
+    EXISTING_VALIDATED_UNREGISTERED_93_OFFERER_USER,
+    EXISTING_EVENT_OFFER_WITH_EVENT_OCCURRENCE_WITH_STOCK_WITH_MEDIATION_WITH_93_OFFERER_IBAN_WITH_NO_VENUE_IBAN
   )(t)
 
   // when
@@ -155,8 +155,8 @@ test('Je peux femer la fenêtre en cliquant sur le bouton', async t => {
 test('Je peux interrompre la saisie en utilisant la touche Escape', async t => {
   // given
   await navigateToOfferAs(
-    VALIDATED_UNREGISTERED_OFFERER_USER,
-    EVENT_OFFER_WITH_EVENT_OCCURRENCE_WITH_STOCK_WITH_MEDIATION_WITH_OFFERER_IBAN_WITH_NO_VENUE_IBAN
+    EXISTING_VALIDATED_UNREGISTERED_93_OFFERER_USER,
+    EXISTING_EVENT_OFFER_WITH_EVENT_OCCURRENCE_WITH_STOCK_WITH_MEDIATION_WITH_93_OFFERER_IBAN_WITH_NO_VENUE_IBAN
   )(t)
 
   // when
@@ -181,8 +181,8 @@ test('Je peux interrompre la saisie en utilisant la touche Escape', async t => {
 test('Je ne peux pas de rentrer un nouveau stock pour un objet avec déjà un stock', async t => {
   // given
   await navigateToOfferAs(
-    VALIDATED_UNREGISTERED_OFFERER_USER,
-    THING_OFFER_WITH_STOCK_WITH_MEDIATION_WITH_OFFERER_IBAN_WITH_NO_VENUE_IBAN
+    EXISTING_VALIDATED_UNREGISTERED_93_OFFERER_USER,
+    EXISTING_THING_OFFER_WITH_STOCK_WITH_MEDIATION_WITH_93_OFFERER_IBAN_WITH_NO_VENUE_IBAN
   )(t)
 
   // when
@@ -200,8 +200,8 @@ const confirmationButton = infoDiv.find('button')
 test("J'ai une info quand je rentre un prix non nul pour l'objet d'une structure et un lieu sans iban", async t => {
   // given
   await navigateToOfferAs(
-    VALIDATED_UNREGISTERED_OFFERER_USER,
-    VIRTUAL_THING_OFFER_WITH_NO_STOCK_WITH_NO_MEDIATION_WITH_NO_OFFERER_IBAN_WITH_NO_VENUE_IBAN
+    EXISTING_VALIDATED_UNREGISTERED_93_OFFERER_USER,
+    EXISTING_VIRTUAL_THING_OFFER_WITH_NO_STOCK_WITH_NO_MEDIATION_WITH_NO_93_OFFERER_IBAN_WITH_NO_VENUE_IBAN
   )(t)
   await t.click(manageStockAnchor).click(addAnchor)
 
@@ -223,8 +223,8 @@ test("J'ai une info quand je rentre un prix non nul pour l'objet d'une structure
 test("J'ai une info quand je rentre un prix non nul pour l'évènement d'une structure et un lieu sans iban", async t => {
   // given
   await navigateToOfferAs(
-    VALIDATED_UNREGISTERED_OFFERER_USER,
-    EVENT_OFFER_WITH_EVENT_OCCURRENCE_WITH_STOCK_WITH_MEDIATION_WITH_NO_OFFERER_IBAN_WITH_NO_VENUE_IBAN
+    EXISTING_VALIDATED_UNREGISTERED_93_OFFERER_USER,
+    EXISTING_EVENT_OFFER_WITH_EVENT_OCCURRENCE_WITH_STOCK_WITH_MEDIATION_WITH_NO_93_OFFERER_IBAN_WITH_NO_VENUE_IBAN
   )(t)
   await t.click(manageStockAnchor).click(addAnchor)
   await t.click(submitButton)
@@ -255,8 +255,8 @@ test('Je peux modifier une occurrence et un stock', async t => {
     '.react-datepicker__week:last-child .react-datepicker__day:last-child'
   )
   await navigateToOfferAs(
-    VALIDATED_UNREGISTERED_OFFERER_USER,
-    EVENT_OFFER_WITH_EVENT_OCCURRENCE_WITH_STOCK_WITH_MEDIATION_WITH_OFFERER_IBAN_WITH_NO_VENUE_IBAN
+    EXISTING_VALIDATED_UNREGISTERED_93_OFFERER_USER,
+    EXISTING_EVENT_OFFER_WITH_EVENT_OCCURRENCE_WITH_STOCK_WITH_MEDIATION_WITH_93_OFFERER_IBAN_WITH_NO_VENUE_IBAN
   )(t)
   await t.click(manageStockAnchor)
 

@@ -1,8 +1,8 @@
 import { Selector } from 'testcafe'
 
 import { navigateToNewMediationAs } from './helpers/navigations'
-import { EVENT_OFFER_WITH_NO_EVENT_OCCURRENCE_WITH_NO_STOCK_WITH_NO_MEDIATION_WITH_OFFERER_IBAN_WITH_NO_VENUE_IBAN } from './helpers/offers'
-import { VALIDATED_UNREGISTERED_OFFERER_USER } from './helpers/users'
+import { EXISTING_EVENT_OFFER_WITH_NO_EVENT_OCCURRENCE_WITH_NO_STOCK_WITH_NO_MEDIATION_WITH_93_OFFERER_IBAN_WITH_NO_VENUE_IBAN } from './helpers/offers'
+import { EXISTING_VALIDATED_UNREGISTERED_93_OFFERER_USER } from './helpers/users'
 
 const creditInput = Selector('#mediation-credit')
 const dropZoneDiv = Selector('div.dropzone').filterVisible()
@@ -15,8 +15,8 @@ fixture(`MediationPage A | Naviguer vers ajouter une accroche`)
 test("Lorsque je clique sur le bouton créer une accroche sur la page d'une offre, j'accède au formulaire de création d'une accroche", async t => {
   // when
   await navigateToNewMediationAs(
-    VALIDATED_UNREGISTERED_OFFERER_USER,
-    EVENT_OFFER_WITH_NO_EVENT_OCCURRENCE_WITH_NO_STOCK_WITH_NO_MEDIATION_WITH_OFFERER_IBAN_WITH_NO_VENUE_IBAN
+    EXISTING_VALIDATED_UNREGISTERED_93_OFFERER_USER,
+    EXISTING_EVENT_OFFER_WITH_NO_EVENT_OCCURRENCE_WITH_NO_STOCK_WITH_NO_MEDIATION_WITH_93_OFFERER_IBAN_WITH_NO_VENUE_IBAN
   )(t)
 
   // then
@@ -31,8 +31,8 @@ fixture(`MediationPage B | Charger des images de l'url input`)
 test('Je peux charger une image same origin', async t => {
   // given
   await navigateToNewMediationAs(
-    VALIDATED_UNREGISTERED_OFFERER_USER,
-    EVENT_OFFER_WITH_NO_EVENT_OCCURRENCE_WITH_NO_STOCK_WITH_NO_MEDIATION_WITH_OFFERER_IBAN_WITH_NO_VENUE_IBAN
+    EXISTING_VALIDATED_UNREGISTERED_93_OFFERER_USER,
+    EXISTING_EVENT_OFFER_WITH_NO_EVENT_OCCURRENCE_WITH_NO_STOCK_WITH_NO_MEDIATION_WITH_93_OFFERER_IBAN_WITH_NO_VENUE_IBAN
   )(t)
 
   // when
@@ -45,8 +45,8 @@ test('Je peux charger une image same origin', async t => {
 test('Je peux charger une cors image', async t => {
   // given
   await navigateToNewMediationAs(
-    VALIDATED_UNREGISTERED_OFFERER_USER,
-    EVENT_OFFER_WITH_NO_EVENT_OCCURRENCE_WITH_NO_STOCK_WITH_NO_MEDIATION_WITH_OFFERER_IBAN_WITH_NO_VENUE_IBAN
+    EXISTING_VALIDATED_UNREGISTERED_93_OFFERER_USER,
+    EXISTING_EVENT_OFFER_WITH_NO_EVENT_OCCURRENCE_WITH_NO_STOCK_WITH_NO_MEDIATION_WITH_93_OFFERER_IBAN_WITH_NO_VENUE_IBAN
   )(t)
 
   // when
@@ -64,8 +64,8 @@ test('Je peux charger une cors image', async t => {
 test('Je peux changer d image chargee', async t => {
   // given
   await navigateToNewMediationAs(
-    VALIDATED_UNREGISTERED_OFFERER_USER,
-    EVENT_OFFER_WITH_NO_EVENT_OCCURRENCE_WITH_NO_STOCK_WITH_NO_MEDIATION_WITH_OFFERER_IBAN_WITH_NO_VENUE_IBAN
+    EXISTING_VALIDATED_UNREGISTERED_93_OFFERER_USER,
+    EXISTING_EVENT_OFFER_WITH_NO_EVENT_OCCURRENCE_WITH_NO_STOCK_WITH_NO_MEDIATION_WITH_93_OFFERER_IBAN_WITH_NO_VENUE_IBAN
   )(t)
   await t.typeText(urlInput, '/images/mediation-test.jpg').click(urlButton)
 
@@ -90,8 +90,8 @@ test('Je peux créer une accroche', async t => {
   const successBanner = Selector('.notification.is-success')
   const initialMediationCount = await mediationsListItems.count
   await navigateToNewMediationAs(
-    VALIDATED_UNREGISTERED_OFFERER_USER,
-    EVENT_OFFER_WITH_NO_EVENT_OCCURRENCE_WITH_NO_STOCK_WITH_NO_MEDIATION_WITH_OFFERER_IBAN_WITH_NO_VENUE_IBAN
+    EXISTING_VALIDATED_UNREGISTERED_93_OFFERER_USER,
+    EXISTING_EVENT_OFFER_WITH_NO_EVENT_OCCURRENCE_WITH_NO_STOCK_WITH_NO_MEDIATION_WITH_93_OFFERER_IBAN_WITH_NO_VENUE_IBAN
   )(t)
   await t
     .typeText(

@@ -1,24 +1,30 @@
 import { RequestMock } from 'testcafe'
 
-import { OFFERER_WITH_NO_PHYSICAL_VENUE_WITH_NO_IBAN } from './offerers'
+import { EXISTING_93_OFFERER_WITH_NO_PHYSICAL_VENUE_WITH_NO_IBAN } from './offerers'
 import {
-  FUTURE_PHYSICAL_VENUE_WITH_SIRET_WITH_OFFERER_IBAN_WITH_NO_IBAN,
-  PHYSICAL_VENUE_WITH_SIRET_WITH_OFFERER_IBAN_WITH_NO_IBAN,
+  FUTURE_PHYSICAL_VENUE_WITH_SIRET_WITH_93_OFFERER_IBAN_WITH_NO_IBAN,
+  EXISTING_PHYSICAL_VENUE_WITH_SIRET_WITH_93_OFFERER_IBAN_WITH_NO_IBAN,
 } from './venues'
 
-const siren = OFFERER_WITH_NO_PHYSICAL_VENUE_WITH_NO_IBAN.siren
+const siren = EXISTING_93_OFFERER_WITH_NO_PHYSICAL_VENUE_WITH_NO_IBAN.siren
 export const SIREN_ALREADY_IN_DATABASE = RequestMock()
   .onRequestTo(`https://sirene.entreprise.api.gouv.fr/v1/siren/${siren}`)
   .respond(
     {
       siege_social: {
         siren,
-        l1_normalisee: OFFERER_WITH_NO_PHYSICAL_VENUE_WITH_NO_IBAN.name,
-        l4_normalisee: OFFERER_WITH_NO_PHYSICAL_VENUE_WITH_NO_IBAN.address,
-        libelle_commune: OFFERER_WITH_NO_PHYSICAL_VENUE_WITH_NO_IBAN.city,
-        latitude: OFFERER_WITH_NO_PHYSICAL_VENUE_WITH_NO_IBAN.latitude,
-        longitude: OFFERER_WITH_NO_PHYSICAL_VENUE_WITH_NO_IBAN.longitude,
-        code_postal: OFFERER_WITH_NO_PHYSICAL_VENUE_WITH_NO_IBAN.postalCode,
+        l1_normalisee:
+          EXISTING_93_OFFERER_WITH_NO_PHYSICAL_VENUE_WITH_NO_IBAN.name,
+        l4_normalisee:
+          EXISTING_93_OFFERER_WITH_NO_PHYSICAL_VENUE_WITH_NO_IBAN.address,
+        libelle_commune:
+          EXISTING_93_OFFERER_WITH_NO_PHYSICAL_VENUE_WITH_NO_IBAN.city,
+        latitude:
+          EXISTING_93_OFFERER_WITH_NO_PHYSICAL_VENUE_WITH_NO_IBAN.latitude,
+        longitude:
+          EXISTING_93_OFFERER_WITH_NO_PHYSICAL_VENUE_WITH_NO_IBAN.longitude,
+        code_postal:
+          EXISTING_93_OFFERER_WITH_NO_PHYSICAL_VENUE_WITH_NO_IBAN.postalCode,
       },
     },
     200,
@@ -44,7 +50,7 @@ export const SIREN_WITHOUT_ADDRESS = RequestMock()
   )
 
 const futureSiret =
-  FUTURE_PHYSICAL_VENUE_WITH_SIRET_WITH_OFFERER_IBAN_WITH_NO_IBAN.siret
+  FUTURE_PHYSICAL_VENUE_WITH_SIRET_WITH_93_OFFERER_IBAN_WITH_NO_IBAN.siret
 export const FUTURE_SIRET = RequestMock()
   .onRequestTo(`https://sirene.entreprise.api.gouv.fr/v1/siret/${futureSiret}`)
   .respond(
@@ -52,17 +58,17 @@ export const FUTURE_SIRET = RequestMock()
       etablissement: {
         siret: futureSiret,
         l1_normalisee:
-          FUTURE_PHYSICAL_VENUE_WITH_SIRET_WITH_OFFERER_IBAN_WITH_NO_IBAN.name,
+          FUTURE_PHYSICAL_VENUE_WITH_SIRET_WITH_93_OFFERER_IBAN_WITH_NO_IBAN.name,
         l4_normalisee:
-          FUTURE_PHYSICAL_VENUE_WITH_SIRET_WITH_OFFERER_IBAN_WITH_NO_IBAN.address,
+          FUTURE_PHYSICAL_VENUE_WITH_SIRET_WITH_93_OFFERER_IBAN_WITH_NO_IBAN.address,
         libelle_commune:
-          FUTURE_PHYSICAL_VENUE_WITH_SIRET_WITH_OFFERER_IBAN_WITH_NO_IBAN.city,
+          FUTURE_PHYSICAL_VENUE_WITH_SIRET_WITH_93_OFFERER_IBAN_WITH_NO_IBAN.city,
         latitude:
-          FUTURE_PHYSICAL_VENUE_WITH_SIRET_WITH_OFFERER_IBAN_WITH_NO_IBAN.latitude,
+          FUTURE_PHYSICAL_VENUE_WITH_SIRET_WITH_93_OFFERER_IBAN_WITH_NO_IBAN.latitude,
         longitude:
-          FUTURE_PHYSICAL_VENUE_WITH_SIRET_WITH_OFFERER_IBAN_WITH_NO_IBAN.longitude,
+          FUTURE_PHYSICAL_VENUE_WITH_SIRET_WITH_93_OFFERER_IBAN_WITH_NO_IBAN.longitude,
         code_postal:
-          FUTURE_PHYSICAL_VENUE_WITH_SIRET_WITH_OFFERER_IBAN_WITH_NO_IBAN.postalCode,
+          FUTURE_PHYSICAL_VENUE_WITH_SIRET_WITH_93_OFFERER_IBAN_WITH_NO_IBAN.postalCode,
       },
     },
     200,
@@ -70,7 +76,7 @@ export const FUTURE_SIRET = RequestMock()
   )
 
 const alreadyInDatabaseSiret =
-  PHYSICAL_VENUE_WITH_SIRET_WITH_OFFERER_IBAN_WITH_NO_IBAN.siret
+  EXISTING_PHYSICAL_VENUE_WITH_SIRET_WITH_93_OFFERER_IBAN_WITH_NO_IBAN.siret
 export const SIRET_ALREADY_IN_DATABASE = RequestMock()
   .onRequestTo(
     `https://sirene.entreprise.api.gouv.fr/v1/siret/${alreadyInDatabaseSiret}`
@@ -80,17 +86,17 @@ export const SIRET_ALREADY_IN_DATABASE = RequestMock()
       etablissement: {
         siret: alreadyInDatabaseSiret,
         l1_normalisee:
-          PHYSICAL_VENUE_WITH_SIRET_WITH_OFFERER_IBAN_WITH_NO_IBAN.name,
+          EXISTING_PHYSICAL_VENUE_WITH_SIRET_WITH_93_OFFERER_IBAN_WITH_NO_IBAN.name,
         l4_normalisee:
-          PHYSICAL_VENUE_WITH_SIRET_WITH_OFFERER_IBAN_WITH_NO_IBAN.address,
+          EXISTING_PHYSICAL_VENUE_WITH_SIRET_WITH_93_OFFERER_IBAN_WITH_NO_IBAN.address,
         libelle_commune:
-          PHYSICAL_VENUE_WITH_SIRET_WITH_OFFERER_IBAN_WITH_NO_IBAN.city,
+          EXISTING_PHYSICAL_VENUE_WITH_SIRET_WITH_93_OFFERER_IBAN_WITH_NO_IBAN.city,
         latitude:
-          PHYSICAL_VENUE_WITH_SIRET_WITH_OFFERER_IBAN_WITH_NO_IBAN.latitude,
+          EXISTING_PHYSICAL_VENUE_WITH_SIRET_WITH_93_OFFERER_IBAN_WITH_NO_IBAN.latitude,
         longitude:
-          PHYSICAL_VENUE_WITH_SIRET_WITH_OFFERER_IBAN_WITH_NO_IBAN.longitude,
+          EXISTING_PHYSICAL_VENUE_WITH_SIRET_WITH_93_OFFERER_IBAN_WITH_NO_IBAN.longitude,
         code_postal:
-          PHYSICAL_VENUE_WITH_SIRET_WITH_OFFERER_IBAN_WITH_NO_IBAN.postalCode,
+          EXISTING_PHYSICAL_VENUE_WITH_SIRET_WITH_93_OFFERER_IBAN_WITH_NO_IBAN.postalCode,
       },
     },
     200,

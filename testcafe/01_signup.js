@@ -3,10 +3,10 @@ import { Selector } from 'testcafe'
 import { ROOT_PATH } from '../src/utils/config'
 import { SIREN_ALREADY_IN_DATABASE } from './helpers/sirens'
 import {
-  FUTURE_USER_WITH_REGISTERED_OFFERER_USER,
+  EXISTING_REAL_VALIDATION_USER,
+  EXISTING_VALIDATED_UNREGISTERED_93_OFFERER_USER,
+  FUTURE_USER_WITH_REGISTERED_93_OFFERER_USER,
   FUTURE_USER_WITH_UNREGISTERED_OFFERER,
-  REAL_VALIDATION_USER,
-  VALIDATED_UNREGISTERED_OFFERER_USER,
 } from './helpers/users'
 
 const contactOkInput = Selector('#user-contact_ok')
@@ -76,7 +76,7 @@ test.requestHooks(SIREN_ALREADY_IN_DATABASE)(
       lastName,
       password,
       siren,
-    } = VALIDATED_UNREGISTERED_OFFERER_USER
+    } = EXISTING_VALIDATED_UNREGISTERED_93_OFFERER_USER
 
     await t
       .typeText(emailInput, email)
@@ -99,7 +99,7 @@ test.requestHooks(SIREN_ALREADY_IN_DATABASE)(
       firstName,
       lastName,
       siren,
-    } = VALIDATED_UNREGISTERED_OFFERER_USER
+    } = EXISTING_VALIDATED_UNREGISTERED_93_OFFERER_USER
 
     await t
       .typeText(emailInput, email)
@@ -127,7 +127,7 @@ test.requestHooks(SIREN_ALREADY_IN_DATABASE)(
       lastName,
       password,
       siren,
-    } = FUTURE_USER_WITH_REGISTERED_OFFERER_USER
+    } = FUTURE_USER_WITH_REGISTERED_93_OFFERER_USER
 
     await t
       .typeText(emailInput, email)
@@ -153,7 +153,7 @@ fixture`SignupPage D | Clique sur le lien de validation de compte reçu par emai
 
 test('Je suis redirigé sur la page de connexion avec un message de confirmation', async t => {
   // given
-  const { validationToken } = REAL_VALIDATION_USER
+  const { validationToken } = EXISTING_REAL_VALIDATION_USER
 
   // when
   await t.navigateTo(`/inscription/validation/${validationToken}`).wait(500)

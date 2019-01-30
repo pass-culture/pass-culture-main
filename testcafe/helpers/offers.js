@@ -1,4 +1,4 @@
-export const FUTURE_EVENT_OFFER_WITH_OFFERER_IBAN_WITH_NO_VENUE_IBAN = {
+export const FUTURE_EVENT_OFFER_WITH_93_OFFERER_IBAN_WITH_NO_VENUE_IBAN = {
   eventDescription: [
     'Alors que les licenciements sont devenus des plans de sauvegarde de l’emploi, ',
     'ou que votre banquier se veut votre partenaire, ',
@@ -14,7 +14,7 @@ export const FUTURE_EVENT_OFFER_WITH_OFFERER_IBAN_WITH_NO_VENUE_IBAN = {
   eventType: 'Conférence — Débat — Dédicace',
 }
 
-export const FUTURE_MUSIC_EVENT_OFFER_WITH_OFFERER_IBAN_WITH_NO_VENUE_IBAN = {
+export const FUTURE_MUSIC_EVENT_OFFER_WITH_93_OFFERER_IBAN_WITH_NO_VENUE_IBAN = {
   eventDescription: 'Venez re découvrir PNL en accoustique, sans auto-tune',
   eventDurationMinutes: '90',
   eventName: 'Concert de PNL Unplugged',
@@ -23,33 +23,33 @@ export const FUTURE_MUSIC_EVENT_OFFER_WITH_OFFERER_IBAN_WITH_NO_VENUE_IBAN = {
   eventMusicSubType: 'Rap Alternatif',
 }
 
-export const FUTURE_VIRTUAL_THING_OFFER_WITH_OFFERER_IBAN_WITH_NO_VENUE_IBAN = {
+export const FUTURE_VIRTUAL_THING_OFFER_WITH_93_OFFERER_IBAN_WITH_NO_VENUE_IBAN = {
   thingDescription: 'Jeux vidéo de test',
   thingName: 'Jeux vidéo abonnement de test',
   thingType: 'Jeux Vidéo',
   thingUrl: 'http://www.example.com',
 }
 
-export const EVENT_OFFER_WITH_EVENT_OCCURRENCE_WITH_STOCK_WITH_MEDIATION_WITH_NO_OFFERER_IBAN_WITH_NO_VENUE_IBAN = {
+export const EXISTING_EVENT_OFFER_WITH_EVENT_OCCURRENCE_WITH_STOCK_WITH_MEDIATION_WITH_NO_93_OFFERER_IBAN_WITH_NO_VENUE_IBAN = {
   // city: "Aulnay-sous-Bois",
   keywordsString: 'Autant en emporte mon gilet en feu',
 }
 
-export const EVENT_OFFER_WITH_EVENT_OCCURRENCE_WITH_STOCK_WITH_MEDIATION_WITH_OFFERER_IBAN_WITH_NO_VENUE_IBAN = {
+export const EXISTING_EVENT_OFFER_WITH_EVENT_OCCURRENCE_WITH_STOCK_WITH_MEDIATION_WITH_93_OFFERER_IBAN_WITH_NO_VENUE_IBAN = {
   // city: "Drancy",
   keywordsString: 'This is Spartaaaaa Dorothy',
 }
 
-export const EVENT_OFFER_WITH_NO_EVENT_OCCURRENCE_WITH_NO_STOCK_WITH_NO_MEDIATION_WITH_OFFERER_IBAN_WITH_NO_VENUE_IBAN = {
+export const EXISTING_EVENT_OFFER_WITH_NO_EVENT_OCCURRENCE_WITH_NO_STOCK_WITH_NO_MEDIATION_WITH_93_OFFERER_IBAN_WITH_NO_VENUE_IBAN = {
   // city: "Aulnay-sous-Bois",
   keywordsString: 'notre prooooojecteur Dorothy',
 }
 
-export const THING_OFFER_WITH_STOCK_WITH_MEDIATION_WITH_OFFERER_IBAN_WITH_NO_VENUE_IBAN = {
+export const EXISTING_THING_OFFER_WITH_STOCK_WITH_MEDIATION_WITH_93_OFFERER_IBAN_WITH_NO_VENUE_IBAN = {
   // city: "Drancy"
   keywordsString: 'Sun aux lentilles Dorothy',
 }
 
-export const VIRTUAL_THING_OFFER_WITH_NO_STOCK_WITH_NO_MEDIATION_WITH_NO_OFFERER_IBAN_WITH_NO_VENUE_IBAN = {
+export const EXISTING_VIRTUAL_THING_OFFER_WITH_NO_STOCK_WITH_NO_MEDIATION_WITH_NO_93_OFFERER_IBAN_WITH_NO_VENUE_IBAN = {
   keywordsString: 'I want something more Herbert',
 }

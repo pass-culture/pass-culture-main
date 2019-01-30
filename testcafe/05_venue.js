@@ -6,16 +6,16 @@ import {
   navigateToVenueAs,
 } from './helpers/navigations'
 import {
-  OFFERER_WITH_NO_PHYSICAL_VENUE_WITH_NO_IBAN,
-  OFFERER_WITH_PHYSICAL_VENUE_WITH_IBAN,
+  EXISTING_93_OFFERER_WITH_NO_PHYSICAL_VENUE_WITH_NO_IBAN,
+  EXISTING_93_OFFERER_WITH_PHYSICAL_VENUE_WITH_IBAN,
 } from './helpers/offerers'
 import {
-  FUTURE_PHYSICAL_VENUE_WITH_SIRET_WITH_OFFERER_IBAN_WITH_NO_IBAN,
-  FUTURE_PHYSICAL_VENUE_WITH_NO_SIRET_WITH_OFFERER_IBAN_WITH_NO_IBAN,
-  PHYSICAL_VENUE_WITH_SIRET_WITH_OFFERER_IBAN_WITH_NO_IBAN,
+  EXISTING_PHYSICAL_VENUE_WITH_SIRET_WITH_93_OFFERER_IBAN_WITH_NO_IBAN,
+  FUTURE_PHYSICAL_VENUE_WITH_SIRET_WITH_93_OFFERER_IBAN_WITH_NO_IBAN,
+  FUTURE_PHYSICAL_VENUE_WITH_NO_SIRET_WITH_93_OFFERER_IBAN_WITH_NO_IBAN,
 } from './helpers/venues'
 import { FUTURE_SIRET, SIRET_ALREADY_IN_DATABASE } from './helpers/sirens'
-import { VALIDATED_UNREGISTERED_OFFERER_USER } from './helpers/users'
+import { EXISTING_VALIDATED_UNREGISTERED_93_OFFERER_USER } from './helpers/users'
 
 const form = Selector('form#venue')
 const mapMarker = Selector('.leaflet-marker-pane img')
@@ -38,8 +38,8 @@ const venueMarker = Selector('img.leaflet-marker-icon')
 
 fixture`VenuePage A | Créer un nouveau lieu avec succès`.beforeEach(
   navigateToNewVenueAs(
-    VALIDATED_UNREGISTERED_OFFERER_USER,
-    OFFERER_WITH_NO_PHYSICAL_VENUE_WITH_NO_IBAN
+    EXISTING_VALIDATED_UNREGISTERED_93_OFFERER_USER,
+    EXISTING_93_OFFERER_WITH_NO_PHYSICAL_VENUE_WITH_NO_IBAN
   )
 )
 
@@ -55,7 +55,7 @@ test.requestHooks(FUTURE_SIRET)(
       name,
       postalCode,
       siret,
-    } = FUTURE_PHYSICAL_VENUE_WITH_SIRET_WITH_OFFERER_IBAN_WITH_NO_IBAN
+    } = FUTURE_PHYSICAL_VENUE_WITH_SIRET_WITH_93_OFFERER_IBAN_WITH_NO_IBAN
 
     // when
     await t.typeText(siretInput, siret)
@@ -86,7 +86,7 @@ test('Je rentre une nouveau lieu sans siret avec succès', async t => {
     longitude,
     name,
     postalCode,
-  } = FUTURE_PHYSICAL_VENUE_WITH_NO_SIRET_WITH_OFFERER_IBAN_WITH_NO_IBAN
+  } = FUTURE_PHYSICAL_VENUE_WITH_NO_SIRET_WITH_93_OFFERER_IBAN_WITH_NO_IBAN
 
   // when
   await t
@@ -115,8 +115,8 @@ test('Je rentre une nouveau lieu sans siret avec succès', async t => {
 
 fixture`VenuePage B | Je ne peux pas créer de lieu, j'ai des erreurs`.beforeEach(
   navigateToNewVenueAs(
-    VALIDATED_UNREGISTERED_OFFERER_USER,
-    OFFERER_WITH_PHYSICAL_VENUE_WITH_IBAN
+    EXISTING_VALIDATED_UNREGISTERED_93_OFFERER_USER,
+    EXISTING_93_OFFERER_WITH_PHYSICAL_VENUE_WITH_IBAN
   )
 )
 
@@ -124,10 +124,10 @@ test.requestHooks(SIRET_ALREADY_IN_DATABASE)(
   'Une entrée avec cet identifiant existe déjà',
   async t => {
     // when
-    await t.typeText(
-      siretInput,
-      PHYSICAL_VENUE_WITH_SIRET_WITH_OFFERER_IBAN_WITH_NO_IBAN.siret
-    )
+    const {
+      siret,
+    } = EXISTING_PHYSICAL_VENUE_WITH_SIRET_WITH_93_OFFERER_IBAN_WITH_NO_IBAN
+    await t.typeText(siretInput, siret)
     await t.click(submitButton)
 
     // then
@@ -239,9 +239,9 @@ test('La saisie de bonnes coordonées géographiques ajoute un marker', async t 
 
 fixture`VenuePage C | Je suis sur la page de détail du lieu`.beforeEach(
   navigateToVenueAs(
-    VALIDATED_UNREGISTERED_OFFERER_USER,
-    OFFERER_WITH_PHYSICAL_VENUE_WITH_IBAN,
-    PHYSICAL_VENUE_WITH_SIRET_WITH_OFFERER_IBAN_WITH_NO_IBAN
+    EXISTING_VALIDATED_UNREGISTERED_93_OFFERER_USER,
+    EXISTING_93_OFFERER_WITH_PHYSICAL_VENUE_WITH_IBAN,
+    EXISTING_PHYSICAL_VENUE_WITH_SIRET_WITH_93_OFFERER_IBAN_WITH_NO_IBAN
   )
 )
 

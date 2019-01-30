@@ -6,21 +6,21 @@ import {
   navigateToVenueAs,
 } from './helpers/navigations'
 import {
-  EVENT_OFFER_WITH_NO_EVENT_OCCURRENCE_WITH_NO_STOCK_WITH_NO_MEDIATION_WITH_OFFERER_IBAN_WITH_NO_VENUE_IBAN,
-  FUTURE_EVENT_OFFER_WITH_OFFERER_IBAN_WITH_NO_VENUE_IBAN,
-  FUTURE_MUSIC_EVENT_OFFER_WITH_OFFERER_IBAN_WITH_NO_VENUE_IBAN,
-  FUTURE_VIRTUAL_THING_OFFER_WITH_OFFERER_IBAN_WITH_NO_VENUE_IBAN,
-  THING_OFFER_WITH_STOCK_WITH_MEDIATION_WITH_OFFERER_IBAN_WITH_NO_VENUE_IBAN,
+  EXISTING_EVENT_OFFER_WITH_NO_EVENT_OCCURRENCE_WITH_NO_STOCK_WITH_NO_MEDIATION_WITH_93_OFFERER_IBAN_WITH_NO_VENUE_IBAN,
+  EXISTING_THING_OFFER_WITH_STOCK_WITH_MEDIATION_WITH_93_OFFERER_IBAN_WITH_NO_VENUE_IBAN,
+  FUTURE_EVENT_OFFER_WITH_93_OFFERER_IBAN_WITH_NO_VENUE_IBAN,
+  FUTURE_MUSIC_EVENT_OFFER_WITH_93_OFFERER_IBAN_WITH_NO_VENUE_IBAN,
+  FUTURE_VIRTUAL_THING_OFFER_WITH_93_OFFERER_IBAN_WITH_NO_VENUE_IBAN,
 } from './helpers/offers'
-import { OFFERER_WITH_PHYSICAL_VENUE_WITH_IBAN } from './helpers/offerers'
-import { VALIDATED_UNREGISTERED_OFFERER_USER } from './helpers/users'
-import { PHYSICAL_VENUE_WITH_SIRET_WITH_OFFERER_IBAN_WITH_NO_IBAN } from './helpers/venues'
+import { EXISTING_93_OFFERER_WITH_PHYSICAL_VENUE_WITH_IBAN } from './helpers/offerers'
+import { EXISTING_VALIDATED_UNREGISTERED_93_OFFERER_USER } from './helpers/users'
+import { EXISTING_PHYSICAL_VENUE_WITH_SIRET_WITH_93_OFFERER_IBAN_WITH_NO_IBAN } from './helpers/venues'
 
 fixture(`OfferPage A | Naviguer vers creer une offre et revenir au précédent`)
 
 test("Lorsque je clique sur le bouton créer une offre sur la page des offres, j'accède au formulaire de création d'offre", async t => {
   // given
-  await navigateToNewOfferAs(VALIDATED_UNREGISTERED_OFFERER_USER)(t)
+  await navigateToNewOfferAs(EXISTING_VALIDATED_UNREGISTERED_93_OFFERER_USER)(t)
 
   // then
   const location = await t.eval(() => window.location)
@@ -30,8 +30,8 @@ test("Lorsque je clique sur le bouton créer une offre sur la page des offres, j
 test("Lorsque je clique sur le bouton créer une offre d'un item structure dans la page structures, j'accède au formulaire de création d'offre", async t => {
   // given
   await navigateToNewOfferAs(
-    VALIDATED_UNREGISTERED_OFFERER_USER,
-    OFFERER_WITH_PHYSICAL_VENUE_WITH_IBAN
+    EXISTING_VALIDATED_UNREGISTERED_93_OFFERER_USER,
+    EXISTING_93_OFFERER_WITH_PHYSICAL_VENUE_WITH_IBAN
   )(t)
 
   // then
@@ -42,9 +42,9 @@ test("Lorsque je clique sur le bouton créer une offre d'un item structure dans 
 test("Lorsque je clique sur le bouton créer une offre d'un item lieu dans la page d'une structure, j'accède au formulaire de création d'offre", async t => {
   // when
   await navigateToNewOfferAs(
-    VALIDATED_UNREGISTERED_OFFERER_USER,
-    OFFERER_WITH_PHYSICAL_VENUE_WITH_IBAN,
-    PHYSICAL_VENUE_WITH_SIRET_WITH_OFFERER_IBAN_WITH_NO_IBAN
+    EXISTING_VALIDATED_UNREGISTERED_93_OFFERER_USER,
+    EXISTING_93_OFFERER_WITH_PHYSICAL_VENUE_WITH_IBAN,
+    EXISTING_PHYSICAL_VENUE_WITH_SIRET_WITH_93_OFFERER_IBAN_WITH_NO_IBAN
   )(t)
 
   // then
@@ -56,9 +56,9 @@ test("Lorsque je clique sur le bouton créer une offre sur la page d'un lieu, j'
   // given
   const newOfferAnchor = Selector("a[href^='/offres/nouveau?lieu=']")
   await navigateToVenueAs(
-    VALIDATED_UNREGISTERED_OFFERER_USER,
-    OFFERER_WITH_PHYSICAL_VENUE_WITH_IBAN,
-    PHYSICAL_VENUE_WITH_SIRET_WITH_OFFERER_IBAN_WITH_NO_IBAN
+    EXISTING_VALIDATED_UNREGISTERED_93_OFFERER_USER,
+    EXISTING_93_OFFERER_WITH_PHYSICAL_VENUE_WITH_IBAN,
+    EXISTING_PHYSICAL_VENUE_WITH_SIRET_WITH_93_OFFERER_IBAN_WITH_NO_IBAN
   )(t)
 
   // when
@@ -72,7 +72,7 @@ test("Lorsque je clique sur le bouton créer une offre sur la page d'un lieu, j'
 test('Lorsque je clique sur le bouton annuler une offre sur la page des offres, je reviens aux offres', async t => {
   // given
   const cancelAnchor = Selector('button.button').withText('Annuler')
-  await navigateToNewOfferAs(VALIDATED_UNREGISTERED_OFFERER_USER)(t)
+  await navigateToNewOfferAs(EXISTING_VALIDATED_UNREGISTERED_93_OFFERER_USER)(t)
 
   // when
   await t.click(cancelAnchor)
@@ -100,17 +100,19 @@ fixture`OfferPage B | Créer une nouvelle offre`
 
 test('Je peux créer une offre événement', async t => {
   // given
-  await navigateToNewOfferAs(VALIDATED_UNREGISTERED_OFFERER_USER)(t)
+  await navigateToNewOfferAs(EXISTING_VALIDATED_UNREGISTERED_93_OFFERER_USER)(t)
   const {
     eventDescription,
     eventDurationMinutes,
     eventName,
     eventType,
-  } = FUTURE_EVENT_OFFER_WITH_OFFERER_IBAN_WITH_NO_VENUE_IBAN
-  const { name: offererName } = OFFERER_WITH_PHYSICAL_VENUE_WITH_IBAN
+  } = FUTURE_EVENT_OFFER_WITH_93_OFFERER_IBAN_WITH_NO_VENUE_IBAN
+  const {
+    name: offererName,
+  } = EXISTING_93_OFFERER_WITH_PHYSICAL_VENUE_WITH_IBAN
   const {
     name: venueName,
-  } = PHYSICAL_VENUE_WITH_SIRET_WITH_OFFERER_IBAN_WITH_NO_IBAN
+  } = EXISTING_PHYSICAL_VENUE_WITH_SIRET_WITH_93_OFFERER_IBAN_WITH_NO_IBAN
 
   // when
   await t.typeText(nameInput, eventName)
@@ -138,17 +140,19 @@ test('Je peux créer une offre événement', async t => {
 
 test('Je peux créer une offre numérique', async t => {
   // given
-  await navigateToNewOfferAs(VALIDATED_UNREGISTERED_OFFERER_USER)(t)
+  await navigateToNewOfferAs(EXISTING_VALIDATED_UNREGISTERED_93_OFFERER_USER)(t)
   const {
     thingDescription,
     thingName,
     thingType,
     thingUrl,
-  } = FUTURE_VIRTUAL_THING_OFFER_WITH_OFFERER_IBAN_WITH_NO_VENUE_IBAN
-  const { name: offererName } = OFFERER_WITH_PHYSICAL_VENUE_WITH_IBAN
+  } = FUTURE_VIRTUAL_THING_OFFER_WITH_93_OFFERER_IBAN_WITH_NO_VENUE_IBAN
+  const {
+    name: offererName,
+  } = EXISTING_93_OFFERER_WITH_PHYSICAL_VENUE_WITH_IBAN
   const {
     name: venueName,
-  } = PHYSICAL_VENUE_WITH_SIRET_WITH_OFFERER_IBAN_WITH_NO_IBAN
+  } = EXISTING_PHYSICAL_VENUE_WITH_SIRET_WITH_93_OFFERER_IBAN_WITH_NO_IBAN
 
   // when
   await t.typeText(nameInput, thingName)
@@ -180,7 +184,7 @@ test(`Créer des offres avec des sous-types`, async t => {
   const musicTypeOption = Selector('#offer-musicType option')
   const musicSubTypeInput = Selector('#offer-musicSubType')
   const musicSubTypeOption = Selector('#offer-musicSubType option')
-  await navigateToNewOfferAs(VALIDATED_UNREGISTERED_OFFERER_USER)(t)
+  await navigateToNewOfferAs(EXISTING_VALIDATED_UNREGISTERED_93_OFFERER_USER)(t)
   const {
     eventDescription,
     eventDurationMinutes,
@@ -188,11 +192,13 @@ test(`Créer des offres avec des sous-types`, async t => {
     eventMusicSubType,
     eventName,
     eventType,
-  } = FUTURE_MUSIC_EVENT_OFFER_WITH_OFFERER_IBAN_WITH_NO_VENUE_IBAN
-  const { name: offererName } = OFFERER_WITH_PHYSICAL_VENUE_WITH_IBAN
+  } = FUTURE_MUSIC_EVENT_OFFER_WITH_93_OFFERER_IBAN_WITH_NO_VENUE_IBAN
+  const {
+    name: offererName,
+  } = EXISTING_93_OFFERER_WITH_PHYSICAL_VENUE_WITH_IBAN
   const {
     name: venueName,
-  } = PHYSICAL_VENUE_WITH_SIRET_WITH_OFFERER_IBAN_WITH_NO_IBAN
+  } = EXISTING_PHYSICAL_VENUE_WITH_SIRET_WITH_93_OFFERER_IBAN_WITH_NO_IBAN
 
   // when
   await t.typeText(nameInput, eventName)
@@ -241,8 +247,8 @@ test("Je vois les détails d'une offre d'object avec 1 stock", async t => {
 
   // when
   await navigateToOfferAs(
-    VALIDATED_UNREGISTERED_OFFERER_USER,
-    THING_OFFER_WITH_STOCK_WITH_MEDIATION_WITH_OFFERER_IBAN_WITH_NO_VENUE_IBAN
+    EXISTING_VALIDATED_UNREGISTERED_93_OFFERER_USER,
+    EXISTING_THING_OFFER_WITH_STOCK_WITH_MEDIATION_WITH_93_OFFERER_IBAN_WITH_NO_VENUE_IBAN
   )(t)
 
   // then
@@ -252,7 +258,7 @@ test("Je vois les détails d'une offre d'object avec 1 stock", async t => {
 test.skip('*TODO* Je peux modifier un événement', async t => {
   // given
   await navigateToOfferAs(
-    VALIDATED_UNREGISTERED_OFFERER_USER,
-    EVENT_OFFER_WITH_NO_EVENT_OCCURRENCE_WITH_NO_STOCK_WITH_NO_MEDIATION_WITH_OFFERER_IBAN_WITH_NO_VENUE_IBAN
+    EXISTING_VALIDATED_UNREGISTERED_93_OFFERER_USER,
+    EXISTING_EVENT_OFFER_WITH_NO_EVENT_OCCURRENCE_WITH_NO_STOCK_WITH_NO_MEDIATION_WITH_93_OFFERER_IBAN_WITH_NO_VENUE_IBAN
   )(t)
 })

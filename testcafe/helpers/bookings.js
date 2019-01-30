@@ -1,4 +1,4 @@
-export const BOOKING_VALID_NOT_USED = {
+export const EXISTING_BOOKING_VALID_NOT_USED = {
   // venueName: "Cinéma de la fin"
   token: '100005',
 }
