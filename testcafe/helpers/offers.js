@@ -51,5 +51,5 @@ export const THING_OFFER_WITH_STOCK_WITH_MEDIATION_WITH_OFFERER_IBAN_WITH_NO_VEN
 }
 
 export const VIRTUAL_THING_OFFER_WITH_NO_STOCK_WITH_NO_MEDIATION_WITH_NO_OFFERER_IBAN_WITH_NO_VENUE_IBAN = {
-  keywordsString: 'Guerre et youpi matin Herbert en feu',
+  keywordsString: 'I want something more Herbert',
 }
