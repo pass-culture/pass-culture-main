@@ -3,7 +3,7 @@ from models.mediation import Mediation
 from models.thing import Thing
 from models.offer_type import EventType
 from models.pc_object import PcObject
-from recommendations_engine.offers import get_department_codes_from_user
+from recommendations_engine.offers import get_departement_codes_from_user
 from repository.offer_queries import get_active_offers_by_type
 from sandboxes.scripts.utils.select import remove_every
 from utils.logger import logger
@@ -74,19 +74,19 @@ def create_industrial_recommendations(mediations_by_name, offers_by_name, users_
             continue
 
 
-        department_codes = get_department_codes_from_user(user)
+        departement_codes = get_departement_codes_from_user(user)
 
         active_event_offer_ids = [
             o.id for o in get_active_offers_by_type(
                 Event,
-                department_codes=department_codes,
+                departement_codes=departement_codes,
                 user=user
             )
         ]
         active_thing_offer_ids = [
             o.id for o in get_active_offers_by_type(
                 Thing,
-                department_codes=department_codes,
+                departement_codes=departement_codes,
                 user=user
             )
         ]

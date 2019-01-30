@@ -1,3 +1,5 @@
+from utils.config import IS_DEV
+
 import routes.bookings
 import routes.client_errors
 import routes.error_handlers
@@ -7,7 +9,9 @@ import routes.export
 import routes.mediations
 import routes.offers
 import routes.offerers
+import routes.signup
 import routes.stocks
+import routes.passwords
 import routes.providers
 import routes.recommendations
 import routes.storage
@@ -19,5 +23,6 @@ import routes.validate
 import routes.venue_providers
 import routes.venues
 import routes.health_check
-import routes.passwords
-import routes.signup
+
+if IS_DEV:
+    import routes.sandboxes
