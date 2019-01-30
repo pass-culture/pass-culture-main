@@ -4,10 +4,9 @@ import get from 'lodash.get'
 
 import AllBookingsDataset from './data/selectBookings'
 import {
-  filterBookingsActivationOfTypeThing,
+  filterValidBookings,
   filterBookingsInLessThanTwoDays,
-  removePastBookings,
-  filterBookingsInMoreThanTwoDays,
+  filterBookingsInMoreThanTwoDaysOrPast,
   selectBookingById,
 } from '../selectBookings'
 
@@ -28,56 +27,59 @@ describe('src | selectors | selectBookings', () => {
       expect(result).toBe(state.data.bookings[1])
     })
   })
-  describe('filterBookingsActivationOfTypeThing', () => {
-    it('returns false, missing stock', () => {
+
+  describe('filterValidBookings', () => {
+    it('remove offer from bookings, missing stock', () => {
       // given
-      const booking = {}
+      const bookingobj = {}
       // when
-      const result = filterBookingsActivationOfTypeThing(booking)
+      const result = filterValidBookings(bookingobj)
       // then
       const expected = false
       expect(result).toStrictEqual(expected)
     })
-    it('returns false, missing stock.resolvedOffer', () => {
+    it('remove offer from bookings, missing stock.resolvedOffer', () => {
       // given
       const booking = { stock: {} }
       // when
-      const result = filterBookingsActivationOfTypeThing(booking)
+      const result = filterValidBookings(booking)
       // then
       const expected = false
       expect(result).toStrictEqual(expected)
     })
-    it('returns false, missing stock.resolvedOffer.eventOrThing', () => {
+    it('remove offer from bookings, missing stock.resolvedOffer.eventOrThing', () => {
       // given
       const booking = { stock: { resolvedOffer: {} } }
       // when
-      const result = filterBookingsActivationOfTypeThing(booking)
+      const result = filterValidBookings(booking)
       // then
       const expected = false
       expect(result).toStrictEqual(expected)
     })
-    it('returns false, missing stock.resolvedOffer.eventOrThing.type', () => {
+    it('remove offer from bookings, missing stock.resolvedOffer.eventOrThing.type', () => {
       // given
       const booking = { stock: { resolvedOffer: { eventOrThing: {} } } }
       // when
-      const result = filterBookingsActivationOfTypeThing(booking)
+      const result = filterValidBookings(booking)
       // then
       const expected = false
       expect(result).toStrictEqual(expected)
     })
-    it('returns true, type is not an activation type', () => {
+    it('do not remove offer from bookings, is not an activation type', () => {
       const booking = {
         stock: {
-          resolvedOffer: { eventOrThing: { type: 'EventType.ANY' } },
+          resolvedOffer: {
+            eventOrThing: { type: 'EventType.ANY' },
+          },
         },
       }
       // when
-      const result = filterBookingsActivationOfTypeThing(booking)
+      const result = filterValidBookings(booking)
       // then
       const expected = true
       expect(result).toStrictEqual(expected)
     })
-    it('returns false, is an activation type and a thing/numeric offer', () => {
+    it('remove offer from bookings, is an activation type', () => {
       // given
       const booking = {
         stock: {
@@ -85,91 +87,59 @@ describe('src | selectors | selectBookings', () => {
             eventOrThing: {
               type: 'EventType.ACTIVATION',
             },
-            offerId: null,
-            thingId: 1234,
           },
         },
       }
       // when
-      const result = filterBookingsActivationOfTypeThing(booking)
+      const result = filterValidBookings(booking)
       // then
       const expected = false
-      expect(result).toStrictEqual(expected)
-    })
-    it('returns true, is an activation type and not a thing/numeric offer', () => {
-      // given
-      const booking = {
-        stock: {
-          resolvedOffer: {
-            eventOrThing: {
-              type: 'EventType.ACTIVATION',
-            },
-            offerId: 1234,
-            thingId: null,
-          },
-        },
-      }
-      // when
-      const result = filterBookingsActivationOfTypeThing(booking)
-      // then
-      const expected = true
       expect(result).toStrictEqual(expected)
     })
   })
   describe('filterBookingsInLessThanTwoDays', () => {
-    it('returns an array of bookings with beginningDatetime <= 2 days', () => {
+    it('returns an array of bookings with beginningDatetime today or in less than 2 days', () => {
       // given
-      const momentNowMock = moment()
-      const allbookings = AllBookingsDataset(momentNowMock)
+      const nowMomentMock = moment()
+      let allbookings = AllBookingsDataset(nowMomentMock)
+      allbookings = allbookings.filter(filterValidBookings)
       // when
-      const result = filterBookingsInLessThanTwoDays(allbookings, momentNowMock)
+      const result = filterBookingsInLessThanTwoDays(allbookings, nowMomentMock)
       // then
-      const expected = allbookings.filter(o => {
-        const debugid = get(o, 'stock.eventOccurrence.debugid')
-        return (
-          debugid === 'yesterday' ||
-          debugid === 'in-exact-2-days' ||
-          debugid === 'tomorrow'
-        )
-      })
       expect(result).toHaveLength(3)
-      expect(result).toStrictEqual(expected)
-    })
-  })
-  describe('removePastBookings', () => {
-    it('returns all bookings excepts >= today hh:mm:s', () => {
-      // given
-      const momentNowMock = moment()
-      const allbookings = AllBookingsDataset(momentNowMock)
-      // when
-      const result = removePastBookings(allbookings, momentNowMock)
-      // then
       const expected = allbookings.filter(o => {
-        const debugid = get(o, 'stock.eventOccurrence.debugid')
+        const debugid = get(o, 'stock.debugid')
         return (
-          debugid === 'in-4-days' ||
-          debugid === 'in-2-days-and-1-seconds' ||
-          debugid === 'in-exact-2-days' ||
-          debugid === 'tomorrow'
+          debugid === 'not-activation-exact-now' ||
+          debugid === 'not-activation-tomorrow' ||
+          debugid === 'not-activation-in-exact-2-days'
         )
       })
-      expect(result).toHaveLength(4)
       expect(result).toStrictEqual(expected)
     })
   })
-  describe('filterBookingsInMoreThanTwoDays', () => {
+  describe('filterBookingsInMoreThanTwoDaysOrPast', () => {
     it('returns all bookings excepts >= today hh:mm:s', () => {
       // given
-      const momentNowMock = moment()
-      const allbookings = AllBookingsDataset(momentNowMock.clone())
+      const nowMomentMock = moment()
+      let allbookings = AllBookingsDataset(nowMomentMock)
+      allbookings = allbookings.filter(filterValidBookings)
       // when
-      const result = filterBookingsInMoreThanTwoDays(allbookings, momentNowMock)
+      const result = filterBookingsInMoreThanTwoDaysOrPast(
+        allbookings,
+        nowMomentMock
+      )
       // then
+      expect(result).toHaveLength(4)
       const expected = allbookings.filter(o => {
-        const debugid = get(o, 'stock.eventOccurrence.debugid')
-        return debugid === 'in-4-days' || debugid === 'in-2-days-and-1-seconds'
+        const debugid = get(o, 'stock.debugid')
+        return (
+          debugid === 'not-activation-yesterday' ||
+          debugid === 'not-activation-in-4-days' ||
+          debugid === 'not-activation-in-2-days-and-1-seconds' ||
+          debugid === 'not-activation-without-beginningDatetime'
+        )
       })
-      expect(result).toHaveLength(2)
       expect(result).toStrictEqual(expected)
     })
   })
