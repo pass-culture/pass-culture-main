@@ -82,6 +82,11 @@ ShallowWrapper {
         "pathname": "/decouverte",
       }
     }
+    match={
+      Object {
+        "params": Object {},
+      }
+    }
   />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
@@ -96,8 +101,8 @@ ShallowWrapper {
     "key": "/decouverte",
     "nodeType": "function",
     "props": Object {
+      "action": "replace",
       "activeClassName": "active",
-      "aria-current": "page",
       "children": <React.Fragment>
         <span
           className="flex-0 text-center menu-icon mr16 text-center"
@@ -113,7 +118,6 @@ ShallowWrapper {
       </React.Fragment>,
       "className": "navlink mx12 flex-columns ",
       "disabled": undefined,
-      "onClick": [MockFunction],
       "to": "/decouverte",
     },
     "ref": null,
@@ -188,8 +192,8 @@ ShallowWrapper {
       "key": "/decouverte",
       "nodeType": "function",
       "props": Object {
+        "action": "replace",
         "activeClassName": "active",
-        "aria-current": "page",
         "children": <React.Fragment>
           <span
             className="flex-0 text-center menu-icon mr16 text-center"
@@ -205,7 +209,6 @@ ShallowWrapper {
         </React.Fragment>,
         "className": "navlink mx12 flex-columns ",
         "disabled": undefined,
-        "onClick": [MockFunction],
         "to": "/decouverte",
       },
       "ref": null,

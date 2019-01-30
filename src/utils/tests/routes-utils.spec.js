@@ -1,5 +1,5 @@
 // jest --env=jsdom ./src/utils/tests/routes-utils --watch
-import { getReactRoutes, getMainMenuItems } from '../routes-utils'
+import { filterRoutes, getMainMenuItems } from '../routes-utils'
 
 import routes from '../routes'
 
@@ -11,7 +11,7 @@ import ProfilePage from '../../components/pages/profile'
 import TermsPage from '../../components/pages/TermsPage'
 import { SUPPORT_EMAIL } from '../config'
 
-describe('getReactRoutes', () => {
+describe('filterRoutes', () => {
   it('filter routes pour react-router', () => {
     const values = [
       { path: '/' },
@@ -21,7 +21,7 @@ describe('getReactRoutes', () => {
       { exact: false, path: '/toto/:vars?/:vars2?/:vars3?' },
       { href: 'maitlo:mail.cool' },
     ]
-    const result = getReactRoutes(values)
+    const result = filterRoutes(values)
     const expected = [
       { exact: true, path: '/' },
       { exact: true, path: '/toto' },

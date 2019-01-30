@@ -20,7 +20,11 @@ ShallowWrapper {
     }
     horizontalSlideRatio={0.2}
     isFlipDisabled={false}
-    match={Object {}}
+    match={
+      Object {
+        "params": Object {},
+      }
+    }
     nextLimit={50}
     nextRecommendation={null}
     noDataTimeout={20000}

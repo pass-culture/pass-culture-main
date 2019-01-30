@@ -398,15 +398,16 @@ ShallowWrapper {
         >
           <Route
             exact={true}
-            path="/recherche"
+            path="/recherche/:menu(menu)?"
             render={[Function]}
           />
           <Route
-            path="/recherche/resultats/:categorie"
+            path="/recherche/resultats/:categorie([A-Z][a-z]+)/:menu(menu)?"
             render={[Function]}
+            sensitive={true}
           />
           <Route
-            path="/recherche/resultats"
+            path="/recherche/resultats/:menu(menu)?"
             render={[Function]}
           />
         </Switch>,
@@ -709,15 +710,16 @@ ShallowWrapper {
           "children": Array [
             <Route
               exact={true}
-              path="/recherche"
+              path="/recherche/:menu(menu)?"
               render={[Function]}
             />,
             <Route
-              path="/recherche/resultats/:categorie"
+              path="/recherche/resultats/:categorie([A-Z][a-z]+)/:menu(menu)?"
               render={[Function]}
+              sensitive={true}
             />,
             <Route
-              path="/recherche/resultats"
+              path="/recherche/resultats/:menu(menu)?"
               render={[Function]}
             />,
           ],
@@ -737,7 +739,7 @@ ShallowWrapper {
             "nodeType": "class",
             "props": Object {
               "exact": true,
-              "path": "/recherche",
+              "path": "/recherche/:menu(menu)?",
               "render": [Function],
             },
             "ref": null,
@@ -749,8 +751,9 @@ ShallowWrapper {
             "key": undefined,
             "nodeType": "class",
             "props": Object {
-              "path": "/recherche/resultats/:categorie",
+              "path": "/recherche/resultats/:categorie([A-Z][a-z]+)/:menu(menu)?",
               "render": [Function],
+              "sensitive": true,
             },
             "ref": null,
             "rendered": null,
@@ -761,7 +764,7 @@ ShallowWrapper {
             "key": undefined,
             "nodeType": "class",
             "props": Object {
-              "path": "/recherche/resultats",
+              "path": "/recherche/resultats/:menu(menu)?",
               "render": [Function],
             },
             "ref": null,
@@ -851,15 +854,16 @@ ShallowWrapper {
           >
             <Route
               exact={true}
-              path="/recherche"
+              path="/recherche/:menu(menu)?"
               render={[Function]}
             />
             <Route
-              path="/recherche/resultats/:categorie"
+              path="/recherche/resultats/:categorie([A-Z][a-z]+)/:menu(menu)?"
               render={[Function]}
+              sensitive={true}
             />
             <Route
-              path="/recherche/resultats"
+              path="/recherche/resultats/:menu(menu)?"
               render={[Function]}
             />
           </Switch>,
@@ -1162,15 +1166,16 @@ ShallowWrapper {
             "children": Array [
               <Route
                 exact={true}
-                path="/recherche"
+                path="/recherche/:menu(menu)?"
                 render={[Function]}
               />,
               <Route
-                path="/recherche/resultats/:categorie"
+                path="/recherche/resultats/:categorie([A-Z][a-z]+)/:menu(menu)?"
                 render={[Function]}
+                sensitive={true}
               />,
               <Route
-                path="/recherche/resultats"
+                path="/recherche/resultats/:menu(menu)?"
                 render={[Function]}
               />,
             ],
@@ -1190,7 +1195,7 @@ ShallowWrapper {
               "nodeType": "class",
               "props": Object {
                 "exact": true,
-                "path": "/recherche",
+                "path": "/recherche/:menu(menu)?",
                 "render": [Function],
               },
               "ref": null,
@@ -1202,8 +1207,9 @@ ShallowWrapper {
               "key": undefined,
               "nodeType": "class",
               "props": Object {
-                "path": "/recherche/resultats/:categorie",
+                "path": "/recherche/resultats/:categorie([A-Z][a-z]+)/:menu(menu)?",
                 "render": [Function],
+                "sensitive": true,
               },
               "ref": null,
               "rendered": null,
@@ -1214,7 +1220,7 @@ ShallowWrapper {
               "key": undefined,
               "nodeType": "class",
               "props": Object {
-                "path": "/recherche/resultats",
+                "path": "/recherche/resultats/:menu(menu)?",
                 "render": [Function],
               },
               "ref": null,

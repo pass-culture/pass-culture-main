@@ -41,7 +41,11 @@ ShallowWrapper {
         "search": "",
       }
     }
-    match={Object {}}
+    match={
+      Object {
+        "params": Object {},
+      }
+    }
     readRecommendations={null}
     seenRecommendations={null}
   />,
@@ -63,7 +67,7 @@ ShallowWrapper {
           className="discovery-page no-padding page with-footer"
           role="main"
         >
-          <Connect(Footer)
+          <withRouter(Connect(Footer))
             borderTop={true}
           />
         </main>,
@@ -84,7 +88,7 @@ ShallowWrapper {
           "children": Array [
             false,
             false,
-            <Connect(Footer)
+            <withRouter(Connect(Footer))
               borderTop={true}
             />,
           ],
@@ -98,7 +102,7 @@ ShallowWrapper {
           Object {
             "instance": null,
             "key": undefined,
-            "nodeType": "class",
+            "nodeType": "function",
             "props": Object {
               "borderTop": true,
             },
@@ -136,7 +140,7 @@ ShallowWrapper {
             className="discovery-page no-padding page with-footer"
             role="main"
           >
-            <Connect(Footer)
+            <withRouter(Connect(Footer))
               borderTop={true}
             />
           </main>,
@@ -157,7 +161,7 @@ ShallowWrapper {
             "children": Array [
               false,
               false,
-              <Connect(Footer)
+              <withRouter(Connect(Footer))
                 borderTop={true}
               />,
             ],
@@ -171,7 +175,7 @@ ShallowWrapper {
             Object {
               "instance": null,
               "key": undefined,
-              "nodeType": "class",
+              "nodeType": "function",
               "props": Object {
                 "borderTop": true,
               },

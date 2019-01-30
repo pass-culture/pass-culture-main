@@ -16,6 +16,7 @@ describe('src | components | menu | MenuItemContent', () => {
         ...routerProps,
         clickHandler: jest.fn(),
         item: { path: '/decouverte' },
+        match: { params: {} },
       }
 
       // when

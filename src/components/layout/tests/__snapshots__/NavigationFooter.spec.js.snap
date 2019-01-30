@@ -15,7 +15,7 @@ ShallowWrapper {
       }
     }
   >
-    <Connect(NavigationFooter)
+    <withRouter(NavigationFooter)
       dispatch={[MockFunction]}
       theme="fakeTheme"
     />
@@ -31,7 +31,7 @@ ShallowWrapper {
   Symbol(enzyme.__node__): Object {
     "instance": null,
     "key": undefined,
-    "nodeType": "class",
+    "nodeType": "function",
     "props": Object {
       "dispatch": [MockFunction],
       "theme": "fakeTheme",
@@ -44,7 +44,7 @@ ShallowWrapper {
     Object {
       "instance": null,
       "key": undefined,
-      "nodeType": "class",
+      "nodeType": "function",
       "props": Object {
         "dispatch": [MockFunction],
         "theme": "fakeTheme",

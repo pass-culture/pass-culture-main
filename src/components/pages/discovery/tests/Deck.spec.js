@@ -22,7 +22,7 @@ describe('src | components | pages | discovery | Index | DiscoveryPage', () => 
       },
     },
     isFlipDisabled: false,
-    match: {},
+    match: { params: {} },
     nextLimit: 50,
     previousLimit: 40,
     recommendations: [{}],
@@ -56,7 +56,7 @@ describe('src | components | pages | discovery | Index | DiscoveryPage', () => 
     })
     describe('componentDidMount', () => {
       describe('Whenever', () => {
-        it('should call handleUrlFlip with history', async () => {
+        it('should call handleUrlFlip', async () => {
           // given
           const props = {
             areDetailsVisible: false,
@@ -83,7 +83,6 @@ describe('src | components | pages | discovery | Index | DiscoveryPage', () => 
             unFlippable: false,
             width: 500,
           }
-          const { history } = props
 
           // when
           const wrapper = shallow(<RawDeck {...props} />)
@@ -95,7 +94,7 @@ describe('src | components | pages | discovery | Index | DiscoveryPage', () => 
           // setProps() make the componentDidMount after instanciating the spy
 
           // then
-          expect(spy).toHaveBeenCalledWith(history, history)
+          expect(spy).toHaveBeenCalled()
         })
       })
       describe('When there is recommendations', () => {
@@ -214,7 +213,6 @@ describe('src | components | pages | discovery | Index | DiscoveryPage', () => 
                 search: '?to=verso',
               },
             },
-
           }
 
           // when

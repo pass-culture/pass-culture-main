@@ -14,7 +14,9 @@ describe('src | components | pages | discovery | Index | DiscoveryPage', () => 
         location: {
           search: '',
         },
-        match: {},
+        match: {
+          params: {},
+        },
       }
 
       // when
@@ -36,7 +38,9 @@ describe('src | components | pages | discovery | Index | DiscoveryPage', () => 
           location: {
             search: '',
           },
-          match: {},
+          match: {
+            params: {},
+          },
         }
 
         // when
@@ -64,7 +68,9 @@ describe('src | components | pages | discovery | Index | DiscoveryPage', () => 
             location: {
               search: '',
             },
-            match: {},
+            match: {
+              params: {},
+            },
           }
 
           // when
