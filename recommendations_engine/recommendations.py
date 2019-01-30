@@ -183,7 +183,6 @@ def create_recommendations_for_search(user, **kwargs):
 
 def get_recommendation_search_params(kwargs):
     search_params = {}
-
     api_errors = ApiErrors()
 
     if 'page' in kwargs and kwargs['page']:
@@ -196,8 +195,11 @@ def get_recommendation_search_params(kwargs):
         type_sublabels = kwargs['categories']
         search_params['type_values'] = get_event_or_thing_type_values_from_sublabels(type_sublabels)
 
-    if 'date' in kwargs and kwargs['date'] and \
-            'days' in kwargs and kwargs['days']:
+    if 'date' in kwargs and kwargs['date']:
+        date = dateutil.parser.parse(kwargs['date'])
+        search_params['days_intervals'] = [[ date, date + timedelta(days=int(1)) ]]
+
+    if 'days' in kwargs and kwargs['days']:
         date = dateutil.parser.parse(kwargs['date'])
         days_intervals = kwargs['days'].split(',')
         search_params['days_intervals'] = [

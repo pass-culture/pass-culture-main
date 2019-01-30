@@ -26,6 +26,7 @@ from utils.test_utils import API_URL, \
 now = datetime.utcnow()
 one_day_from_now = now + timedelta(days=1)
 ten_days_from_now = now + timedelta(days=10)
+thirty_days_from_now = now + timedelta(days=30)
 
 RECOMMENDATION_URL = API_URL + '/recommendations'
 
@@ -371,6 +372,7 @@ def test_get_recommendations_returns_recommendations_from_search_by_date_and_typ
     assert recommendations[0]['offer']['eventOrThing']['name'] == 'The new film'
     assert recommendations[1]['offer']['eventOrThing']['name'] == 'Lire un livre'
 
+
 @clean_database
 @pytest.mark.standalone
 def test_get_recommendations_returns_recommendation_from_search_by_type_including_activation_type(app):
@@ -398,6 +400,7 @@ def test_get_recommendations_returns_recommendation_from_search_by_type_includin
     recommendations = response.json()
     assert set([r['offer']['eventOrThing']['name'] for r in recommendations]) == \
            set(['The new film', 'Activation de votre Pass Culture'])
+
 
 @clean_database
 @pytest.mark.standalone
@@ -427,3 +430,75 @@ def test_get_recommendations_returns_no_recommendations_from_search_by_date_and_
     # Then
     assert response.status_code == 200
     assert len(response.json()) == 0
+
+
+@clean_database
+@pytest.mark.standalone
+def test_get_recommendations_returns_no_recommendation_from_search_by_date_that_match_but_the_keyword_not(app):
+        # Given
+        location_search = "date=" + strftime(ten_days_from_now) + "&keywords=nekfeu"
+        user = create_user(email='test@email.com', password='P@55w0rd')
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_event_offer(venue, event_name='Training in Modern Jazz')
+
+        event_occurrence = create_event_occurrence(offer, beginning_datetime=now, end_datetime=ten_days_from_now)
+
+        recommendation = create_recommendation(offer, user)
+        stock = create_stock_from_event_occurrence(event_occurrence)
+        PcObject.check_and_save(stock, recommendation)
+        auth_request = req_with_auth(user.email, user.clearTextPassword)
+
+        # When
+        response = auth_request.get(RECOMMENDATION_URL + '?%s' % location_search)
+
+        # Then
+        assert len(response.json()) == 0
+
+
+@clean_database
+@pytest.mark.standalone
+def test_get_recommendations_returns_one_recommendation_from_search_by_date_and_keyword_that_match(app):
+        # Given
+        location_search = "date=" + strftime(ten_days_from_now) + "&keywords=Jazz&distance=0-1&categories=%25C3%2589couter%2CApplaudir%2CJouer%2CLire%2CPratiquer%2CRegarder%2CRencontrer"
+        user = create_user(email='test@email.com', password='P@55w0rd')
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_event_offer(venue, event_name='Training in Modern Jazz', event_type=EventType.CINEMA)
+
+        event_occurrence = create_event_occurrence(offer, beginning_datetime=now, end_datetime=ten_days_from_now)
+
+        recommendation = create_recommendation(offer, user)
+        stock = create_stock_from_event_occurrence(event_occurrence)
+        PcObject.check_and_save(stock, recommendation)
+        auth_request = req_with_auth(user.email, user.clearTextPassword)
+
+        # When
+        response = auth_request.get(RECOMMENDATION_URL + '?%s' % location_search)
+
+        # Then
+        assert len(response.json()) == 1
+
+
+@clean_database
+@pytest.mark.standalone
+def test_get_recommendations_returns_no_recommendation_from_search_by_date_that_does_not_match_and_keyword_that_match(app):
+        # Given
+        location_search = "date=" + strftime(thirty_days_from_now) + "&keywords=Jazz"
+        user = create_user(email='test@email.com', password='P@55w0rd')
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_event_offer(venue, event_name='Training in Modern Jazz', event_type=EventType.CINEMA)
+
+        event_occurrence = create_event_occurrence(offer, beginning_datetime=now, end_datetime=ten_days_from_now)
+
+        recommendation = create_recommendation(offer, user)
+        stock = create_stock_from_event_occurrence(event_occurrence)
+        PcObject.check_and_save(stock, recommendation)
+        auth_request = req_with_auth(user.email, user.clearTextPassword)
+
+        # When
+        response = auth_request.get(RECOMMENDATION_URL + '?%s' % location_search)
+
+        # Then
+        assert len(response.json()) == 0

@@ -124,6 +124,7 @@ def filter_offers_with_keywords_string(query, keywords_string):
     return query
 
 def get_offers_for_recommendations_search(
+        date=None,
         page=1,
         keywords_string=None,
         type_values=None,
@@ -134,6 +135,7 @@ def get_offers_for_recommendations_search(
     # NOTE: filter_out_offers_on_soft_deleted_stocks filter then
     # the offer with event that has NO event occurrence
     # Do we exactly want this ?
+
     query = _filter_recommendable_offers()
 
     if max_distance is not None and latitude is not None and longitude is not None:
