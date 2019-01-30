@@ -21,7 +21,7 @@ else:
     API_URL = 'https://backend.passculture-%s.beta.gouv.fr' % ENV
 
 if IS_DEV:
-    WEBAPP_URL = 'localhost'
+    WEBAPP_URL = 'localhost:3000'
 elif IS_PROD:
     WEBAPP_URL = 'https://app.passculture.beta.gouv.fr'
 else:

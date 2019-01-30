@@ -30,6 +30,6 @@ class GenerateActivationUsersCsvTest:
         assert csv_list_format[0] == ['"Prénom"', '"Nom"', '"Email"', '"Contremarque d\'activation"',
                                       '"Lien de création de mot de passe"']
         assert csv_list_format[1] == ['"Pedro"', '"Gutierrez"', '"email1@test.com"', '"abc"',
-                                      '"localhost/activation/AZERTY123?email=email1@test.com"']
+                                      '"localhost:3000/activation/AZERTY123?email=email1@test.com"']
         assert csv_list_format[2] == ['"Pablo"', '"Rodriguez"', '"email2@test.com"', '"def"',
-                                      '"localhost/activation/123AZERTY?email=email2@test.com"']
+                                      '"localhost:3000/activation/123AZERTY?email=email2@test.com"']
