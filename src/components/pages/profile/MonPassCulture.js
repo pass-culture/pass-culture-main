@@ -6,25 +6,25 @@ import PropTypes from 'prop-types'
 const MonPassCulture = ({ user }) => {
   console.log('user', user)
   const { expenses } = user
-  const { actual: actualAll } = expenses.all
-  const { actual: actualDigital } = expenses.digital
-  const { actual: actualPhysical } = expenses.physical
+  const allWallet = expenses.all.max - expenses.all.actual
+  const digitalWallet = expenses.digital.max - expenses.digital.actual
+  const physicalWallet = expenses.physical.max - expenses.physical.actual
   return (
     <div id="profile-page-user-wallet" className="jauges padded">
       <div className="text overall flex-1">
-        <b className="is-block">{`Il reste ${actualAll} €`}</b>
+        <b className="is-block">{`Il reste ${allWallet} €`}</b>
         <span className="is-block fs14">sur votre Pass Culture</span>
       </div>
       <div className="text-containers flex-0 mt12 py12 mr8">
         <div className="fs14">
           <span className="is-block">
-            jusqu&apos;à <b>{actualPhysical} €</b>
+            jusqu&apos;à <b>{physicalWallet} €</b>
           </span>
           <span className="is-block">pour les biens culturels</span>
         </div>
         <div className="fs14 mt12">
           <span className="is-block">
-            jusqu&apos;à <b>{actualDigital} €</b>
+            jusqu&apos;à <b>{digitalWallet} €</b>
           </span>
           <span className="is-block">pour les offres numériques</span>
         </div>
