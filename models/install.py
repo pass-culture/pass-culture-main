@@ -9,8 +9,8 @@ from models.mediation import upsertTutoMediations
 def create_text_search_configuration_if_not_exists():
     db.engine.execute("CREATE EXTENSION IF NOT EXISTS unaccent;")
 
-    cfg_query = db.engine.execute("SELECT * FROM pg_ts_config WHERE cfgname='french_unaccent'");
-    if cfg_query.fetchone() is None:
+    french_unaccent_configuration_query = db.engine.execute("SELECT * FROM pg_ts_config WHERE cfgname='french_unaccent'");
+    if french_unaccent_configuration_query.fetchone() is None:
         db.engine.execute("CREATE TEXT SEARCH CONFIGURATION french_unaccent ( COPY = french );")
 
     db.engine.execute("ALTER TEXT SEARCH CONFIGURATION french_unaccent ALTER MAPPING FOR hword, hword_part, word WITH unaccent, french_stem;")
