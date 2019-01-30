@@ -10,7 +10,7 @@ class GenerateActivationUsersCsvTest:
         # Given
         user1 = create_user(email='email1@test.com', first_name='Pedro', last_name='Gutierrez',
                             reset_password_token='AZERTY123')
-        user2 = create_user(email='email2@test.com', first_name='Pablo', last_name='Rodriguez',
+        user2 = create_user(email='email2+alias@test.com', first_name='Pablo', last_name='Rodriguez',
                             reset_password_token='123AZERTY')
         offerer = create_offerer()
         venue = create_venue(offerer, is_virtual=True, address=None, postal_code=None, departement_code=None)
@@ -27,9 +27,14 @@ class GenerateActivationUsersCsvTest:
         # Then
         csv_list_format = [row.split(',') for row in csv.split('\r\n')]
         csv_list_format = [row_list for row_list in csv_list_format if row_list[0]]
-        assert csv_list_format[0] == ['"Prénom"', '"Nom"', '"Email"', '"Contremarque d\'activation"',
-                                      '"Lien de création de mot de passe"']
-        assert csv_list_format[1] == ['"Pedro"', '"Gutierrez"', '"email1@test.com"', '"abc"',
-                                      '"localhost:3000/activation/AZERTY123?email=email1@test.com"']
-        assert csv_list_format[2] == ['"Pablo"', '"Rodriguez"', '"email2@test.com"', '"def"',
-                                      '"localhost:3000/activation/123AZERTY?email=email2@test.com"']
+        assert csv_list_format[0] == [
+            '"Prénom"', '"Nom"', '"Email"', '"Contremarque d\'activation"', '"Lien de création de mot de passe"'
+        ]
+        assert csv_list_format[1] == [
+            '"Pedro"', '"Gutierrez"', '"email1@test.com"', '"abc"',
+            '"localhost:3000/activation/AZERTY123?email=email1%40test.com"'
+        ]
+        assert csv_list_format[2] == [
+            '"Pablo"', '"Rodriguez"', '"email2+alias@test.com"', '"def"',
+            '"localhost:3000/activation/123AZERTY?email=email2%2Balias%40test.com"'
+        ]

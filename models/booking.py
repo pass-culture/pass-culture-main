@@ -1,5 +1,7 @@
 """ booking model """
 from datetime import datetime, timedelta
+from urllib.parse import urlencode
+
 from sqlalchemy import BigInteger, \
     Boolean, \
     Column, \
@@ -114,8 +116,11 @@ class ActivationUser:
         self.last_name = booking.user.lastName
         self.email = booking.user.email
         self.token = booking.token
-        self.password_url = '%s/activation/%s?email=%s' % (
-        app_domain, booking.user.resetPasswordToken, booking.user.email)
+        self.password_url = '%s/activation/%s?%s' % (
+            app_domain,
+            booking.user.resetPasswordToken,
+            urlencode({'email': booking.user.email})
+        )
 
     def as_csv_row(self):
         return [
