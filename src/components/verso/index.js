@@ -11,6 +11,7 @@ import VersoWrapper from './VersoWrapper'
 import currentRecommendationSelector from '../../selectors/currentRecommendation'
 import StaticVerso from './StaticVerso'
 import ActivationCard from './ActivationCard'
+import { isUserActivated } from '../../utils/user'
 
 const Verso = ({
   currentRecommendation,
@@ -52,7 +53,7 @@ export default compose(
   withRouter,
   connect((state, ownProps) => {
     const { mediationId, offerId } = ownProps.match.params
-    const isWalletActivated = state.user.wallet_is_activated
+    const isWalletActivated = isUserActivated(state.user)
     return {
       areDetailsVisible: state.card.areDetailsVisible,
       currentRecommendation: currentRecommendationSelector(

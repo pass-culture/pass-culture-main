@@ -38,7 +38,7 @@ class ActivationPassword extends React.PureComponent {
     this.setState(nextstate, () => {
       // resolve form without errors
       formResolver()
-      history.push('/activation/events')
+      history.replace('/decouverte')
     })
   }
 
@@ -57,11 +57,6 @@ class ActivationPassword extends React.PureComponent {
 
   onFormSubmit = formValues => {
     this.setState({ isLoading: true })
-    // <!-- debug
-    // const promise = new Promise(resolve =>
-    //   setTimeout(this.savePasswordRequestSuccess(resolve, formValues), 3000)
-    // )
-    // -->
     const { sendActivationPasswordForm } = this.props
     const promise = sendActivationPasswordForm(
       { ...formValues },

@@ -4,6 +4,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 
 const MonPassCulture = ({ user }) => {
+  console.log('user', user)
   const { expenses } = user
   const { actual: actualAll } = expenses.all
   const { actual: actualDigital } = expenses.digital

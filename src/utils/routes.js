@@ -29,7 +29,7 @@ const routes = [
   },
   {
     component: ActivationPage,
-    path: '/activation/:token?/:view?',
+    path: '/activation/:token?',
     title: 'Activation',
   },
   {
