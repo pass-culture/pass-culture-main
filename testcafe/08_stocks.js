@@ -33,7 +33,7 @@ test("Je peux créer une occurrence et un stock d'événement d'une offre vide",
   await t.expect(location.search).eql('?gestion&date=nouvelle')
 
   // when
-  await t.click(submitButton)
+  await t.click(submitButton).wait(3000)
 
   // then
   location = await t.eval(() => window.location)
@@ -43,7 +43,7 @@ test("Je peux créer une occurrence et un stock d'événement d'une offre vide",
 
   // when
   await t.typeText(priceInput, '10').typeText(availableInput, '50')
-  await t.click(submitButton)
+  await t.click(submitButton).wait(3000)
 
   // then
   location = await t.eval(() => window.location)
@@ -65,7 +65,7 @@ test('Je peux créer une autre occurrence et un autre stock', async t => {
   await t.expect(location.search).eql('?gestion&date=nouvelle')
 
   // when
-  await t.click(submitButton)
+  await t.click(submitButton).wait(3000)
 
   // then
   location = await t.eval(() => window.location)
@@ -75,7 +75,7 @@ test('Je peux créer une autre occurrence et un autre stock', async t => {
 
   // when
   await t.typeText(priceInput, '10').typeText(availableInput, '50')
-  await t.click(submitButton)
+  await t.click(submitButton).wait(3000)
 
   // then
   location = await t.eval(() => window.location)
@@ -206,7 +206,7 @@ test("J'ai une info quand je rentre un prix non nul pour l'objet d'une structure
   await t.click(manageStockAnchor).click(addAnchor)
 
   // when
-  await t.typeText(priceInput, '10').typeText(availableInput, '50')
+  await t.typeText(priceInput, '10').click(availableInput, '50')
 
   // then
   await t.expect(infoDiv.visible).ok()
@@ -227,17 +227,19 @@ test("J'ai une info quand je rentre un prix non nul pour l'évènement d'une str
     EXISTING_EVENT_OFFER_WITH_EVENT_OCCURRENCE_WITH_STOCK_WITH_MEDIATION_WITH_NO_93_OFFERER_IBAN_WITH_NO_VENUE_IBAN
   )(t)
   await t.click(manageStockAnchor).click(addAnchor)
-  await t.click(submitButton)
+  await t.click(submitButton).wait(2000)
 
   // when
-  await t.typeText(priceInput, '10').typeText(availableInput, '50')
+  await t.typeText(priceInput, '10').click(availableInput)
 
   // then
   await t.expect(infoDiv.visible).ok()
 
   // when
   await t.click(confirmationButton).typeText(availableInput, '50')
-  await t.click(submitButton)
+  await t.click(submitButton).wait(2000)
+
+  await t.debug()
 
   // then
   const location = await t.eval(() => window.location)
