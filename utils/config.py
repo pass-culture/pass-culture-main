@@ -15,18 +15,16 @@ LOG_LEVEL = int(os.environ.get('LOG_LEVEL', LOG_LEVEL_INFO))
 
 if IS_DEV:
     API_URL = 'localhost'
+    WEBAPP_URL = 'localhost'
+    PRO_URL = 'localhost'
 elif IS_PROD:
     API_URL = 'https://backend.passculture.beta.gouv.fr'
+    WEBAPP_URL = 'https://app.passculture.beta.gouv.fr'
+    PRO_URL = 'https://pro.passculture.beta.gouv.fr'
 else:
     API_URL = 'https://backend.passculture-%s.beta.gouv.fr' % ENV
-
-if IS_DEV:
-    WEBAPP_URL = 'localhost:3000'
-elif IS_PROD:
-    WEBAPP_URL = 'https://app.passculture.beta.gouv.fr'
-else:
     WEBAPP_URL = 'https://app.passculture-%s.beta.gouv.fr' % ENV
-
+    PRO_URL = 'https://pro.passculture-%s.beta.gouv.fr' % ENV
 
 BLOB_SIZE = 80
 BLOB_UNREAD_NUMBER = int(BLOB_SIZE/5)
