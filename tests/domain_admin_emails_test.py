@@ -379,7 +379,7 @@ def test_send_payments_report_emails_when_mailjet_status_code_400_raises_MailSer
 
 @pytest.mark.standalone
 class SendOfferCreationNotificationToSupportTest:
-    def test_when_mailjet_status_code_200_sends_email_to_support_email(self):
+    def test_when_mailjet_status_code_200_sends_email_to_support_email(self, app):
         mocked_send_create_email = Mock()
         return_value = Mock()
         return_value.status_code = 200
@@ -390,7 +390,7 @@ class SendOfferCreationNotificationToSupportTest:
 
         # When
         with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True):
-            send_offer_creation_notification_to_support(offer, PRO_URL, mocked_send_create_email)
+            send_offer_creation_notification_to_support(offer, 'http://test.url', mocked_send_create_email)
 
         # Then
         mocked_send_create_email.assert_called_once()
@@ -398,7 +398,7 @@ class SendOfferCreationNotificationToSupportTest:
         email = args[1]['data']
         assert email['To'] == 'support.passculture@beta.gouv.fr'
 
-    def test_when_send_email_disabled_has_pass_culture_dev_as_recipient(self):
+    def test_when_send_email_disabled_has_pass_culture_dev_as_recipient(self, app):
         # Given
         mocked_send_create_email = Mock()
         return_value = Mock()
@@ -410,7 +410,7 @@ class SendOfferCreationNotificationToSupportTest:
 
         # When
         with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=False):
-            send_offer_creation_notification_to_support(offer, PRO_URL, mocked_send_create_email)
+            send_offer_creation_notification_to_support(offer, 'http://test.url', mocked_send_create_email)
 
         # Then
         mocked_send_create_email.assert_called_once()
@@ -418,7 +418,7 @@ class SendOfferCreationNotificationToSupportTest:
         email = args[1]['data']
         assert email['To'] == 'passculture-dev@beta.gouv.fr'
 
-    def test_send_payments_report_emails_when_mailjet_status_code_400_raises_MailServiceException(app):
+    def test_when_mailjet_status_code_400_raises_MailServiceException(self, app):
         # Given
         mocked_send_create_email = Mock()
         return_value = Mock()
@@ -430,4 +430,4 @@ class SendOfferCreationNotificationToSupportTest:
 
         # When
         with pytest.raises(MailServiceException):
-            send_offer_creation_notification_to_support(offer, PRO_URL, mocked_send_create_email)
+            send_offer_creation_notification_to_support(offer, 'http://test.url', mocked_send_create_email)

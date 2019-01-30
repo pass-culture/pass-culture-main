@@ -15,8 +15,8 @@ LOG_LEVEL = int(os.environ.get('LOG_LEVEL', LOG_LEVEL_INFO))
 
 if IS_DEV:
     API_URL = 'localhost'
-    WEBAPP_URL = 'localhost'
-    PRO_URL = 'localhost'
+    WEBAPP_URL = 'localhost:3000'
+    PRO_URL = 'localhost:2000'
 elif IS_PROD:
     API_URL = 'https://backend.passculture.beta.gouv.fr'
     WEBAPP_URL = 'https://app.passculture.beta.gouv.fr'

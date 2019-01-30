@@ -82,7 +82,7 @@ def create_booking():
     booking_queries.save_booking(new_booking)
 
     try:
-        send_booking_recap_emails(new_booking, _client.send.create)
+        send_booking_recap_emails(new_booking, app.mailjet_client.send.create)
     except MailServiceException as e:
         app.logger.error('Mail service failure', e)
     try:
