@@ -2,7 +2,7 @@ from models.pc_object import PcObject
 from utils.logger import logger
 from utils.test_utils import create_event_offer
 
-EVENTS_PER_OFFERER_WITH_PHYSICAL_VENUE = 4
+EVENTS_PER_OFFERER_WITH_PHYSICAL_VENUE = 5
 
 def create_industrial_event_offers(
         events_by_name,

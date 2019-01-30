@@ -27,7 +27,28 @@ MOCK_NAMES = [
     "Swing autour de moi",
     "Ca balance pas mal dans le paradis blanc",
     "Jamais sans mon post-it",
-    "Ha!"
+    "Ha!",
+    "Allo Maman ici Groucho",
+    "Keynes au goût de la relance climatique",
+    "Quelqu'un a réservé le air bnb ?",
+    "Bowny Ostro Batard",
+    "Songo Bourse",
+    "Avez-vous déjà vu quelqu'un qui se plaint tout le temps ?",
+    "Toto qui présente sa thèse de médecine",
+    "Qu'est-ce que tu formentes ?",
+    "Vous vous rendez compte ?",
+    "N'oubliez pas d'effacer vos messages",
+    "HZUWGMzLRvyuGFBwG3mXwzHV",
+    "QXsFXPkBvMRrZwTCyoYJTtt9",
+    "HZUWGMzLRvycGFBwGEmXwzHV",
+    "HZUWGMzLRvyuGFBwG3m",
+    "1",
+    "a b c d",
+    "2",
+    "x=2 au carré de ton cousin",
+    "McBatard, l’aïeul écossais",
+    "Toto",
+    "Le Vert et le Jaune"
 ]
 
 MOCK_AUTHOR_NAMES = [
@@ -60,7 +81,27 @@ MOCK_AUTHOR_NAMES = [
     "Olivia Del Sol",
     "Madeleine Chocolat",
     "Marine",
-    "Mimi"
+    "Mimi",
+    "Loupiot",
+    "Nicolas Pablot",
+    "Berger",
+    "Jean-Michel Tabouret (le célèbre)",
+    "Jean-Claude Sandwich",
+    "Tokyo Rio Moscou Bouh Trop Triste",
+    "Bowny Ostro Batard",
+    "Didier Dinard Dinan",
+    "Julie",
+    "Air Bénédicte",
+    "Belino",
+    "Les ptites poules de Poitiers",
+    "Chaise",
+    "ABC",
+    "Tolstoi Tchekov",
+    "(nom inconnu)",
+    "Albert le berbère",
+    "Michel Batard (le cousin de Batard)",
+    "Personne",
+    "Babar et Rataxès"
 ]
 
 MOCK_DESCRIPTIONS = [
@@ -93,5 +134,27 @@ MOCK_DESCRIPTIONS = [
     "En ton lit mugissant ton amour nous rassemble. Autour des noirs écueils ou sur le sable fin Nous allons, confondus, recommencer ensemble Nos fureurs et nos jeux sans fin."
     "Mais le soleil, baissant vers toi son œil splendide, M'a découvert bientôt dans tes gouffres amers. Son rayon tout puissant baise mon front limpide : J'ai repris le chemin des airs !",
     "Ainsi, jamais d'arrêt. L'immortelle matière Un seul instant encor n'a pu se reposer. La Nature ne fait, patiente ouvrière, Que dissoudre et recomposer.",
-    "Tout se métamorphose entre ses mains actives ; Partout le mouvement incessant et divers, Dans le cercle éternel des formes fugitives, Agitant l'immense univers."
+    "Tout se métamorphose entre ses mains actives ; Partout le mouvement incessant et divers, Dans le cercle éternel des formes fugitives, Agitant l'immense univers.",
+    "Le duc, sans regarder à rien, y poussa, toujours suivi du comte de Charolais. Tous deux avaient de bons chevaux ; ils sautèrent le fossé, enfoncèrent la haie, et se trouvèrent au milieu des Gantois.",
+    "1000 milliards, what else ?",
+    "Chouette petite maison dans le Périgord. J'espère qu'on jouera au time's up.",
+    "Le théâtre représente un atelier de Sculpteur. Sur les côtés on voit des blocs de marbre, des groupes, des statues ébauchées. Dans le fond est une autre statue cachée, sous un pavillon, d’une étoffe légere & brillante, orné de crépines & de guirlandes.",
+    "Pas de spoils, pas de spoils",
+    "Maintenant, oui",
+    "La mollesse et la volupté naissent avec l'homme, et ne finissent qu'avec lui ; ni les heureux ni les tristes événemens ne l'en peuvent séparer : c'est pour lui ou le fruit de la bonne fortune, ou un dédommagement de la mauvaise."
+    "Peu de gens se souviennent d'avoir été jeunes, et combien il leur était difficile d'être chastes et tempérans. La première chose qui arrive aux hommes après avoir renoncé aux plaisirs, ou par bienséance, ou par lassitude, ou par régime, c'est de les condamner dans les autres. Il entre dans cette conduite une sorte d'attachement pour les choses mêmes que l'on vient de quitter : l'on aimerait qu'un bien qui n'est plus pour nous ne fût plus aussi pour le reste du monde : c'est un sentiment de jalousie.",
+    "Ce n'est pas le besoin d'argent où les vieillards peuvent appréhender de tomber un jour qui les rend avares, car il y en a de tels qui ont de si grands fonds, qu'ils ne peuvent guère avoir cette inquiétude : et d'ailleurs comment pourraient-ils craindre de manquer dans leur caducité des commodités de la vie, puisqu'ils s'en privent eux-mêmes volontairement pour satisfaire à leur avarice ?",
+    "Ce n'est point aussi l'envie de laisser de plus grandes richesses à leurs enfans, car il n'est pas naturel d'aimer quelque autre chose plus que soi-même, outre qu'il se trouve des avares qui n'ont point d'héritiers.",
+    "Ce vice est plutôt l'effet de l'âge et de la complexion des vieillards, qui s'y abandonnent aussi naturellement qu'ils suivaient leurs plaisirs dans leur jeunesse, ou leur ambition dans l'âge viril. Il ne faut ni vigueur, ni jeunesse, ni santé, pour être avare ; l'on a aussi nul besoin de s'empresser, ou de se donner le moindre mouvement pour épargner ses revenus : il faut laisser seulement son bien dans ses coffres, et se priver de tout.",
+    "Ceux qui ont pris tout le plat dans leurs assiettes, laissant les assiettes des autres vides et qui ayant tout, disent avec une bonne figure, une bonne conscience, nous, nous qui avons tout, on est pour la paix, qu'est-ce que je dois leur crier à ceux-là ? Les premiers violents, les provocateurs de toute violence, c'est vous et quand le soir dans vos belles maisons, vous allez embrasser vos p'tits enfants avec votre bonne conscience. Au regard de Dieu, vous avez probablement plus de sang sur vos mains d'inconscients que n'en aura jamais le désespéré qui a pris des armes pour essayer de sortir de son désespoir",
+    "Il y a des gens qui sont mal logés, mal couchés, mal habillés et plus mal nourris, qui essuient les rigueurs des saisons, qui se privent eux-mêmes de la société des hommes, et passent leurs jours dans la solitude, qui souffrent du présent, du passé, et de l'avenir, dont la vie est comme une pénitence continuelle, et qui ont ainsi trouvé le secret d'aller à leur perte par le chemin le plus pénible : ce sont les avares.",
+    "Le souvenir de la jeunesse est tendre dans les vieillards : ils aiment les lieux où ils l'ont passée : les personnes qu'ils ont commencé de connaître dans ce temps leur sont chères : ils affectent quelques mots du premier langage qu'ils ont parlé : ils tiennent pour l'ancienne manière de chanter, et pour la vieille danse : ils vantent les modes qui régnaient alors dans les habits, les meubles et les équipages : ils ne peuvent encore désapprouver des choses qui servaient à leurs passions, qui étaient si utiles à leurs plaisirs, et qui en rappellent la mémoire.",
+    "Comment pourraient-ils leur préférer de nouveaux usages, et des modes toutes récentes où ils n'ont nulle part, dont ils n'espèrent rien, que les jeunes gens ont faites, et dont ils tirent à leur tour de si grands avantages contre la vieillesse ?",
+    "Mes pareils à  deux fois ne se font poînt connaître, Et pour leurs coups d'essai veulent des coups de maître.",
+    "M. Chélan avait refusé les logements que les libéraux les plus considérés du pays lui avaient offerts à l’envi, lorsque sa destitution le chassa du presbytère. Les deux chambres qu’il avait louées étaient encombrées par ses livres. Julien, voulant montrer à Verrières ce que c’était qu’un prêtre, alla prendre chez son père une douzaine de planches de sapin, qu’il porta lui-même sur le dos tout le long de la grande rue. Il emprunta des outils à un ancien camarade, et eut bientôt bâti une sorte de bibliothèque, dans laquelle il rangea les livres de M. Chélan.",
+    "M. de Rênal avait ordonné à Julien de loger chez lui. Personne ne soupçonna ce qui s’était passé. Le troisième jour après son arrivée, Julien vit monter jusque dans sa chambre un non-moindre personnage que M. le sous-préfet de Maugiron.",
+    "Ce ne fut qu’après deux grandes heures de bavardage insipide et de grandes jérémiades sur la méchanceté des hommes, sur le peu de probité des gens chargés de l’administration des deniers publics, sur les dangers de cette pauvre France, etc., etc., que Julien vit poindre enfin le sujet de la visite.",
+    "On était déjà sur le palier de l’escalier, et le pauvre précepteur à demi disgracié reconduisait avec le respect convenable le futur préfet de quelque heureux département, quand il plut à celui-ci de s’occuper de la fortune de Julien, de louer sa modération en affaires d’intérêt, etc...",
+    "Leur précepteur jouirait de huit cents francs d’appointements payables non pas de mois en mois, ce qui n’est pas noble, dit M. de Maugiron, mais par quartier, et toujours d’avance.",
+    " 42 "
 ]

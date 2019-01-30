@@ -6,7 +6,7 @@ from sandboxes.scripts.utils.thing_mocks import MOCK_AUTHOR_NAMES, \
 from utils.logger import logger
 from utils.test_utils import create_thing
 
-THINGS_PER_TYPE = 3
+THINGS_PER_TYPE = 7
 
 def create_industrial_things():
     logger.info('create_industrial_things')

@@ -2,7 +2,7 @@ from models.pc_object import PcObject
 from utils.logger import logger
 from utils.test_utils import create_thing_offer
 
-THINGS_PER_OFFERER = 3
+THINGS_PER_OFFERER = 5
 
 def create_industrial_thing_offers(
         things_by_name,

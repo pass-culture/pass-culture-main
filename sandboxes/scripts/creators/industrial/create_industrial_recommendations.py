@@ -5,10 +5,11 @@ from models.offer_type import EventType
 from models.pc_object import PcObject
 from recommendations_engine.offers import get_department_codes_from_user
 from repository.offer_queries import get_active_offers_by_type
+from sandboxes.scripts.utils.select import remove_every
 from utils.logger import logger
 from utils.test_utils import create_recommendation
 
-RECOMMENDATION_MODULO = 2
+ACTIVE_OFFERS_WITH_RECOMMENDATION_PER_USER_REMOVE_MODULO = 2
 
 def create_industrial_recommendations(mediations_by_name, offers_by_name, users_by_name):
     logger.info('create_industrial_recommendations')
@@ -90,8 +91,16 @@ def create_industrial_recommendations(mediations_by_name, offers_by_name, users_
             )
         ]
 
-        already_recommended_event_offer_ids = active_event_offer_ids[::RECOMMENDATION_MODULO]
-        already_recommended_thing_offer_ids = active_thing_offer_ids[::RECOMMENDATION_MODULO]
+        # every (OFFER_WITH_RECOMMENDATION_PER_USER_MODULO_RATIO - 1)/OFFER_WITH_RECOMMENDATION_PER_USER_MODULO_RATIO
+        # offers will have a recommendation for this user
+        already_recommended_event_offer_ids = remove_every(
+            active_event_offer_ids,
+            ACTIVE_OFFERS_WITH_RECOMMENDATION_PER_USER_REMOVE_MODULO
+        )
+        already_recommended_thing_offer_ids = remove_every(
+            active_thing_offer_ids,
+            ACTIVE_OFFERS_WITH_RECOMMENDATION_PER_USER_REMOVE_MODULO
+        )
 
         for (offer_name, offer) in list(offers_by_name.items()):
 

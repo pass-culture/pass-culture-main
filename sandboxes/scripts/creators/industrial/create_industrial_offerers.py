@@ -3,7 +3,7 @@ from sandboxes.scripts.utils.offerer_mocks import MOCK_NAMES
 from utils.logger import logger
 from utils.test_utils import create_offerer
 
-OFFERER_WITH_IBAN_MODULO = 2
+OFFERERS_WITH_IBAN_REMOVE_MODULO = 2
 
 def create_industrial_offerers(
         locations,
@@ -43,8 +43,8 @@ def create_industrial_offerers(
             location['longitude']
         )
 
-        # create every OFFERER_WITH_IBAN_MODULO an offerer with no iban
-        if location_index%OFFERER_WITH_IBAN_MODULO:
+        # create every OFFERERS_WITH_IBAN_REMOVE_MODULO an offerer with no iban
+        if location_index%OFFERERS_WITH_IBAN_REMOVE_MODULO:
             iban = iban_prefix
             bic = bic_prefix + str(bic_suffix)
         else:

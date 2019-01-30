@@ -28,7 +28,27 @@ MOCK_NAMES = [
     "Il s'agirait de grandir",
     "Habile !",
     "On dira ce qu'on veut, la France ça reste le pays des 400 fromages",
-    "Mais enfin, Armand..."
+    "Mais enfin, Armand...",
+    "- C’est une bonne situation ça script ?",
+    "Veni Péage Vinci",
+    "Clavier sans moi tu es foutu",
+    "Au fond de cette boîte, Larusso",
+    "P1P2",
+    "^^!-;",
+    "^^Marcher !!-",
+    "OOOOOOOOOOOOOOOO",
+    "AAAAAAhhhhhhhh !!",
+    "             Je",
+    "            42",
+    "A quoi ça sert si la température monte de toute façon ?",
+    "Moi j'aimerais bien que les hackers russes soient gentils",
+    "Et qu'on s'unisse tous pour empêcher la température",
+    "Je veux mon jeu de go du Venezuela",
+    "Et mes croissants au Nociatella",
+    "On en a gros",
+    "On en a très gros",
+    "J'aimerais être considéré en tant que tel",
+    "Comment comment ?"
 ]
 
 MOCK_DESCRIPTIONS = [
@@ -59,7 +79,31 @@ MOCK_DESCRIPTIONS = [
     "La colère est nécessaire ; on ne triomphe de rien sans elle, si elle ne remplit l'âme, si elle n'échauffe le coeur ; elle doit donc nous servir, non comme chef, mais comme soldat.",
     "L'amour commence par l'éblouissement d'une âme qui n'attendait rien et se clôt sur la déception d'un moi qui exige tout.",
     "L'état politique est vis-à-vis de la société civile dans un rapport aussi spiritualiste que le ciel par rapport à la terre.",
-    "Il n'y a rien ici"
+    "Il n'y a rien ici",
+    "- Vous savez, moi je ne crois pas qu’il y ait de bonne ou de mauvaise situation. Moi, si je devais résumer ma vie aujourd’hui avec vous, je dirais que c’est d’abord des rencontres. Des gens qui m’ont tendu la main, peut-être à un moment où je ne pouvais pas, où j’étais seul chez moi. Et c’est assez curieux de se dire que les hasards, les rencontres forgent une destinée... Parce que quand on a le goût de la chose, quand on a le goût de la chose bien faite, le beau geste, parfois on ne trouve pas l’interlocuteur en face je dirais, le miroir qui vous aide à avancer. Alors ça n’est pas mon cas, comme je disais là, puisque moi au contraire, j’ai pu : et je dis merci à la vie, je lui dis merci, je chante la vie, je danse la vie... je ne suis qu’amour ! Et finalement, quand beaucoup de gens aujourd’hui me disent « Mais comment fais-tu pour avoir cette humanité ? », et bien je leur réponds très simplement, je leur dis que c’est ce goût de l’amour ce goût donc qui m’a poussé aujourd’hui à entreprendre une construction mécanique, mais demain qui sait ? Peut-être simplement à me mettre au service de la communauté, à faire le don, le don de soi...",
+    "Je trouve très raisonnable la croyance celtique que les âmes de ceux que nous avons perdus sont captives dans quelque être inférieur, dans une bête, un végétal, une chose inanimée, perdues en effet pour nous jusqu'au jour, qui pour beaucoup ne vient jamais, où nous nous trouvons passer près de l'arbre, entrer en possession de l'objet qui est leur prison. Alors elles tressaillent, nous appellent, et sitôt que nous les avons reconnues l'enchantement est brisé. Délivrées par nous, elles ont vaincu la mort et reviennent vivre avec nous.",
+    "Il en est ainsi de notre passé. C'est peine perdue que nous cherchions à l'évoquer, tous les efforts de notre intelligence sont inutiles. Il est caché hors de son domaine et de sa portée, en quelque objet matériel (en la sensation que nous donnerait cet objet matériel), que nous ne soupçonnons pas. Cet objet, il dépend du hasard que nous le rencontrions avant de mourir, ou que nous ne le rencontrions pas.",
+    "Il y avait déjà bien des années que, de Combray, tout ce qui n'était pas le théâtre et le drame de mon coucher, n'existait plus pour moi, quand un jour d'hiver, comme je rentrais à la maison, ma mère, voyant que j'avais froid, me proposa de me faire prendre, contre mon habitude, un peu de thé. Je refusai d'abord et, je ne sais pourquoi, me ravisai. Elle envoya chercher un de ces gâteaux courts et dodus appelés Petites madeleines qui semblent avoir été moulés dans la valve rainurée d'une coquille de Saint-Jacques.",
+    "D'où avait pu me venir cette puissante joie ? Je sentais qu'elle était liée au goût du thé et du gâteau, mais qu'elle le dépassait infiniment, ne devait pas être de même nature. D'où venait-elle ? Que signifiait-elle ? Où l'appréhender ? Je bois une seconde gorgée où je ne trouve rien de plus que dans la première, une troisième qui m'apporte un peu moins que la seconde. Il est temps que je m'arrête, la vertu du breuvage semble diminuer.",
+    "Fabrice fut frappé de tous ces détails, ils lui serrèrent le cœur ; il paya ainsi le luxe magnifique et plein de fraîcheur qui éclatait dans son joli appartement du palais Sanseverina. Il était obligé d’entrer dans ce sale bureau et d’y paraître comme inférieur ; il allait subir un interrogatoire.",
+    "L’employé qui tendit une main jaune pour prendre son passe-port était petit et noir, il portait un bijou de laiton à sa cravate. Ceci est un bourgeois de mauvaise humeur, se dit Fabrice ; le personnage parut excessivement surpris en lisant le passe-port, et cette lecture dura bien cinq minutes.",
+    "Il n'y a pas trop d'affectation dans le style, se dit Julien, cherchant par ses remarques littéraires à contenir la joie qui contractait ses joues et le forçait à rire malgré lui.",
+    "Quant à moi, ce n'est pas mal, ajouta-t-il en comprimant sa joie le plus possible. J'ai su conserver la dignité de mon caractère. Je n'ai point dit que j'aimais. Il se mit à étudier la forme des caractères ; mademoiselle de La Mole avait une jolie petite écriture anglaise. Il avait besoin d'une occupation physique pour se distraire d'une joie qui allait jusqu'au délire.",
+    "Une pensée vint frapper Julien comme une découverte, interrompre l'examen qu'il faisait de la lettre de Mathilde, et redoubler sa joie. Je l'emporte sur le marquis de Croisenois, s'écria-t-il, moi, qui ne dis que des choses sérieuses ! Et lui est si joli ! il a des moustaches, un charmant uniforme ; il trouve toujours à dire, juste au moment convenable, un mot spirituel et fin.",
+    "— Je suis bien aise que vous ne partiez pas, lui dit le marquis, quand ils eurent fini de parler d'affaires, j'aime à vous voir. Julien sortit ; ce mot le gênait.",
+    "Et moi, je vais séduire sa fille ! rendre impossible peut-être ce mariage avec le marquis de Croisenois, qui fait le charme de son avenir : s'il n'est pas duc, du moins sa fille aura un tabouret. Julien eut l'idée de partir pour le Languedoc malgré la lettre de Mathilde, malgré l'explication donnée au marquis. Cet éclair de vertu disparut bien vite.",
+    "Et il se rappela quelques regards remplis de dédain, à lui adressés par madame de La Mole, et surtout par les dames ses amies.",
+    "Le plaisir de triompher du marquis de Croisenois vint achever la déroute de ce souvenir de vertu.",
+    "Le lendemain, je demandai à Albertine qui cela pouvait être. Car, stupidement, croyant qu’on ne peut aimer qu’une chose, jaloux de l’attitude d’Albertine à l’égard de Robert, j’étais rassuré quant aux femmes. Albertine me dit, je crois très sincèrement, qu’elle ne savait pas.",
+    "On verra du reste pourquoi, pendant longtemps, je dus cesser de la chercher. Mais je ne l’ai pas oubliée. Il m’arrive souvent en pensant à elle d’être pris d’une folle envie.",
+    "Mais ces retours du désir nous forcent à réfléchir que, si on voulait retrouver ces jeunes filles-là avec le même plaisir, il faudrait revenir aussi à l’année, qui a été suivie depuis de dix autres pendant lesquelles la jeune fille s’est fanée.",
+    "Tout cela jusqu’au jour imprévu et triste comme une nuit d’hiver, où on ne cherche plus cette jeune fille-là, ni aucune autre, où trouver vous effraierait même. Car on ne se sent plus assez d’attraits pour plaire, ni de force pour aimer. Non pas, bien entendu, qu’on soit, au sens propre du mot, impuissant. Et quant à aimer, on aimerait plus que jamais. Mais on sent que c’est une trop grande entreprise pour le peu de forces qu’on garde.",
+    "Le repos éternel a déjà mis des intervalles où l’on ne peut sortir, ni parler. Mettre un pied sur la marche qu’il faut, c’est une réussite comme de ne pas manquer le saut périlleux. Être vu dans cet état par une jeune fille qu’on aime, même si l’on a gardé son visage et tous ses cheveux blonds de jeune homme !",
+    "On ne peut plus assumer la fatigue de se mettre au pas de la jeunesse. Tant pis si le désir charnel redouble au lieu de s’amortir ! On fait venir pour lui une femme à qui l’on ne se souciera pas de plaire, qui ne partagera qu’un soir votre couche et qu’on ne reverra jamais.",
+    "Mademoiselle Albertine est partie ! Comme la souffrance va plus loin en psychologie que la psychologie ! Il y a un instant, en train de m’analyser, j’avais cru que cette séparation sans s’être revus était justement ce que je désirais, et comparant la médiocrité des plaisirs que me donnait Albertine à la richesse des désirs qu’elle me privait de réaliser, je m’étais trouvé subtil, j’avais conclu que je ne voulais plus la voir, que je ne l’aimais plus. Mais ces mots : « Mademoiselle Albertine est partie » venaient de produire dans mon cœur une souffrance telle que je ne pourrais pas y résister plus longtemps. Ainsi ce que j’avais cru n’être rien pour moi, c’était tout simplement toute ma vie.",
+    "Vaugoubert n’a pas eu à faire seulement aux intrigues de couloirs mais aux injures de folliculaires à gages qui plus tard, lâches comme l’est tout journaliste stipendié, ont été des premiers à demander l'aman, mais qui en attendant n’ont pas reculé à faire état, contre notre représentant, des ineptes accusations de gens sans aveu.",
+    "J'avais douze ans ; elle en avait bien seize.",
+    "Se souvient-on qu'il fut jadis des roses ?"
 ]
 
 MOCK_ACTIVATION_NAME = "Activation de votre Pass Culture"

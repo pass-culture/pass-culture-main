@@ -1,9 +1,10 @@
 from models.pc_object import PcObject
+from sandboxes.scripts.utils.select import pick_every
 from sandboxes.scripts.utils.storage_utils import store_public_object_from_sandbox_assets
 from utils.logger import logger
 from utils.test_utils import create_mediation
 
-MEDIATION_MODULO = 2
+OFFERS_WITH_MEDIATION_PICK_MODULO = 2
 
 def create_industrial_mediations(offers_by_name):
     logger.info('create_industrial_mediations')
@@ -11,7 +12,7 @@ def create_industrial_mediations(offers_by_name):
     mediations_by_name = {}
 
     offer_items = list(offers_by_name.items())
-    offer_items_with_mediation = offer_items[::MEDIATION_MODULO]
+    offer_items_with_mediation = pick_every(offer_items, OFFERS_WITH_MEDIATION_PICK_MODULO)
     for (offer_with_mediation_name, offer_with_mediation) in offer_items_with_mediation:
         mediations_by_name[offer_with_mediation_name] = create_mediation(offer_with_mediation)
 

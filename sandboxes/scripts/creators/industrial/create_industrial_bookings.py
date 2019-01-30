@@ -1,14 +1,17 @@
-import random
-
 from models.offer_type import EventType
 from models.pc_object import PcObject
+from sandboxes.scripts.utils.select import remove_every
 from utils.logger import logger
 from utils.test_utils import create_booking
 
-BOOKING_MODULO = 2
-USED_BOOKING_MODULO = 2
+RECOMMENDATIONS_WITH_BOOKINGS_REMOVE_RATIO = 3
+RECOMMENDATIONS_WITH_SEVERAL_STOCKS_REMOVE_MODULO = 2
+BOOKINGS_USED_REMOVE_MODULO = 3
 
-def create_industrial_bookings(recommendations_by_name, stocks_by_name):
+def create_industrial_bookings(
+    recommendations_by_name,
+    stocks_by_name
+):
     logger.info('create_industrial_bookings')
 
     bookings_by_name = {}
@@ -17,9 +20,14 @@ def create_industrial_bookings(recommendations_by_name, stocks_by_name):
 
     stocks = stocks_by_name.values()
 
-    reco_to_create_from = list(recommendations_by_name.items())[::BOOKING_MODULO]
+    recommendation_items = recommendations_by_name.items()
 
-    for (reco_index, (recommendation_name, recommendation)) in enumerate(reco_to_create_from):
+    recommendation_items_with_booking = remove_every(
+        recommendation_items,
+        RECOMMENDATIONS_WITH_BOOKINGS_REMOVE_RATIO
+    )
+
+    for (recommendation_index, (recommendation_name, recommendation)) in enumerate(recommendation_items_with_booking):
 
         offer = recommendation.offer
         user = recommendation.user
@@ -50,30 +58,37 @@ def create_industrial_bookings(recommendations_by_name, stocks_by_name):
             stock.eventOccurrence in offer.eventOccurrences
         ]
 
-        stock = recommendation_stocks[0]
+        for (index, stock) in enumerate(recommendation_stocks):
 
-        booking_name = "{} / {}".format(recommendation_name, str(token))
+            # every STOCK_MODULO RECO will have several stocks
+            if index > 0 and recommendation_index%(RECOMMENDATIONS_WITH_SEVERAL_STOCKS_REMOVE_MODULO + index):
+                continue
+            elif index > 0:
+                print('DOUBLE BOOKING !')
 
-        is_used = False
-        if is_activation_offer:
-            is_used = True if "has-confirmed-activation" in user.email or \
-                              "has-booked-some" in user.email or \
-                              "has-no-more-money" in user.email else False
-        else:
-            is_used = reco_index%BOOKING_MODULO == 0
+            booking_name = "{} / {}".format(recommendation_name, str(token))
 
-        booking = create_booking(
-            user,
-            is_used=is_used,
-            recommendation=recommendation,
-            stock=stock,
-            token=str(token),
-            venue=recommendation.offer.venue
-        )
+            is_used = False
+            if is_activation_offer:
+                is_used = True if "has-confirmed-activation" in user.email or \
+                                  "has-booked-some" in user.email or \
+                                  "has-no-more-money" in user.email else False
+            else:
+                # (BOOKINGS_USED_REMOVE_MODULO-1)/BOOKINGS_USED_REMOVE_MODULO are used
+                is_used = recommendation_index%BOOKINGS_USED_REMOVE_MODULO != 0
 
-        token += 1
+            booking = create_booking(
+                user,
+                is_used=is_used,
+                recommendation=recommendation,
+                stock=stock,
+                token=str(token),
+                venue=recommendation.offer.venue
+            )
 
-        bookings_by_name[booking_name] = booking
+            token += 1
+
+            bookings_by_name[booking_name] = booking
 
 
     PcObject.check_and_save(*bookings_by_name.values())

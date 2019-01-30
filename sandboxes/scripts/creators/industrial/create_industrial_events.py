@@ -9,7 +9,7 @@ from utils.logger import logger
 from utils.test_utils import create_event
 
 
-EVENT_COUNTS_PER_TYPE = 4
+EVENT_COUNTS_PER_TYPE = 7
 
 def create_industrial_events():
     logger.info('create_industrial_events')
