@@ -5,6 +5,7 @@ from datetime import datetime
 from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
 
+from domain.admin_emails import send_offer_creation_notification_to_support
 from domain.offers import check_digital_offer_consistency, InconsistentOffer
 from models import ApiErrors, Offer, PcObject, Recommendation, \
     RightsType, Venue
@@ -12,6 +13,7 @@ from models.db import db
 from repository import venue_queries, offer_queries
 from repository.offer_queries import find_activation_offers, \
                                      find_offers_with_filter_parameters
+from utils.config import PRO_URL
 from utils.human_ids import dehumanize
 from utils.includes import OFFER_INCLUDES
 from utils.rest import ensure_current_user_has_rights, \
@@ -84,6 +86,7 @@ def post_offer():
             raise errors
 
     PcObject.check_and_save(offer)
+    send_offer_creation_notification_to_support(offer, PRO_URL, app.mailjet_client.send.create)
     return jsonify(offer._asdict(include=OFFER_INCLUDES)), 201
 
 

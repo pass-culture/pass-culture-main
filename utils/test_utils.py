@@ -292,7 +292,7 @@ def create_thing_offer(venue, thing=None, date_created=datetime.utcnow(), bookin
                        thing_type=ThingType.AUDIOVISUEL, thing_name='Test Book', media_urls=['test/urls'],
                        author_name='Test Author',
                        thumb_count=1, dominant_color=None, url=None, is_national=False, is_active=True,
-                       id_at_providers=None):
+                       id_at_providers=None, idx=None):
     offer = Offer()
     if thing:
         offer.thing = thing
@@ -309,13 +309,14 @@ def create_thing_offer(venue, thing=None, date_created=datetime.utcnow(), bookin
         offer.id_at_providers = id_at_providers
     elif venue is not None:
         offer.idAtProviders = "%s@%s" % (offer.thing.idAtProviders, venue.siret or venue.id)
+    offer.id = idx
 
     return offer
 
 
 def create_event_offer(venue, event=None, event_name='Test event', duration_minutes=60, date_created=datetime.utcnow(),
                        booking_email='booking.email@test.com', thumb_count=0, dominant_color=None,
-                       event_type=EventType.SPECTACLE_VIVANT, is_national=False, is_active=True):
+                       event_type=EventType.SPECTACLE_VIVANT, is_national=False, is_active=True, idx=None):
     offer = Offer()
     if event is None:
         event = create_event(event_name=event_name, event_type=event_type, duration_minutes=duration_minutes,
@@ -325,6 +326,7 @@ def create_event_offer(venue, event=None, event_name='Test event', duration_minu
     offer.dateCreated = date_created
     offer.bookingEmail = booking_email
     offer.isActive = is_active
+    offer.id = idx
     return offer
 
 

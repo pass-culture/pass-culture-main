@@ -1122,27 +1122,45 @@ class ParseEmailAddressesTest:
 @pytest.mark.standalone
 class MakeOfferCreationNotificationEmailTest:
     def setup_class(self):
-        self.offerer93 = create_offerer(siren='123456789', postal_code='93100', name='Cinéma de Montreuil')
-        self.offerer97 = create_offerer(siren='987654321', postal_code='97370', name='Théâtre de Maripasoula')
+        self.offerer = create_offerer(siren='123456789', postal_code='93100', name='Cinéma de Montreuil')
 
-        siret93 = self.offerer93.siren + '12345'
-        siret97 = self.offerer97.siren + '12345'
+        siret = self.offerer.siren + '12345'
 
-        self.virtual_venue = create_venue(self.offerer93, siret=None, is_virtual=True, postal_code=None, departement_code=None, address=None)
-        self.venue93 = create_venue(self.offerer93, siret=siret93, is_virtual=False, departement_code='93', postal_code='93100')
-        self.venue97 = create_venue(self.offerer97, siret=siret97, is_virtual=False, departement_code='97', postal_code='97370')
+        self.virtual_venue = create_venue(self.offerer, siret=None, is_virtual=True, postal_code=None, departement_code=None, address=None)
+        self.venue93 = create_venue(self.offerer, siret=siret, is_virtual=False, departement_code='93', postal_code='93100')
 
-        self.physical_offer93 = create_thing_offer(self.venue93, thing_type=ThingType.AUDIOVISUEL, thing_name='Le vent se lève')
-        self.virtual_offer = create_thing_offer(self.virtual_venue, thing_type=ThingType.JEUX_VIDEO)
-        self.physical_offer97 = create_event_offer(self.venue97, event_type=ThingType.JEUX_VIDEO)
+        self.physical_offer93 = create_thing_offer(self.venue93, thing_type=ThingType.AUDIOVISUEL, thing_name='Le vent se lève', idx=1)
+        self.virtual_offer = create_thing_offer(self.virtual_venue, thing_type=ThingType.JEUX_VIDEO, idx=2, thing_name='Les lapins crétins')
 
-    def test_when_offerer_93_and_physical_offer_returns_dictionary_with_given_content(self):
+    def test_when_physical_offer_returns_subject_with_departement_information_and_dictionary_with_given_content(self, app):
         # When
-        email = make_offer_creation_notification_email(self.physical_offer93)
+        email = make_offer_creation_notification_email(self.physical_offer93, 'test.url')
         # Then
         assert email["FromEmail"] == "passculture@beta.gouv.fr"
         assert email["FromName"] == "pass Culture"
         assert email["Subject"] == "[Création d’offre - 93] Le vent se lève"
+
+        email_html = remove_whitespaces(email['Html-part'])
+        parsed_email = BeautifulSoup(email_html, 'html.parser')
+
+        offer_html = str(parsed_email.find('p', {'id': 'offer'}))
+        assert 'Une nouvelle offre "Le vent se lève"' in offer_html
+
+        offerer_html = str(parsed_email.find('p', {'id': 'offerer'}))
+        assert "Vient d'être créée par Cinéma de Montreuil" in offerer_html
+
+        link_html = str(parsed_email.find('p', {'id': 'give_link'}))
+        assert "Lien pour y accéder : " in link_html
+        link = str(parsed_email.find('a', {'id': 'link'}))
+        assert "test.url/offres/AE" in link
+
+    def test_when_virtual_offer_returns_subject_with_virtual_information_and_dictionary_with_given_content(self, app):
+        # When
+        email = make_offer_creation_notification_email(self.virtual_offer, 'test.url')
+        # Then
+        assert email["FromEmail"] == "passculture@beta.gouv.fr"
+        assert email["FromName"] == "pass Culture"
+        assert email["Subject"] == "[Création d’offre - numérique] Les lapins crétins"
 
 
 def remove_whitespaces(text):

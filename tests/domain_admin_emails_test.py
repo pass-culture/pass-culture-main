@@ -390,7 +390,7 @@ class SendOfferCreationNotificationToSupportTest:
 
         # When
         with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True):
-            send_offer_creation_notification_to_support(offer, mocked_send_create_email)
+            send_offer_creation_notification_to_support(offer, PRO_URL, mocked_send_create_email)
 
         # Then
         mocked_send_create_email.assert_called_once()
@@ -410,7 +410,7 @@ class SendOfferCreationNotificationToSupportTest:
 
         # When
         with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=False):
-            send_offer_creation_notification_to_support(offer, mocked_send_create_email)
+            send_offer_creation_notification_to_support(offer, PRO_URL, mocked_send_create_email)
 
         # Then
         mocked_send_create_email.assert_called_once()
@@ -430,4 +430,4 @@ class SendOfferCreationNotificationToSupportTest:
 
         # When
         with pytest.raises(MailServiceException):
-            send_offer_creation_notification_to_support(offer, mocked_send_create_email)
+            send_offer_creation_notification_to_support(offer, PRO_URL, mocked_send_create_email)

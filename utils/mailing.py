@@ -8,6 +8,7 @@ from typing import Dict, List
 from flask import current_app as app, render_template
 
 from connectors import api_entreprises
+from models import RightsType, Offer
 from models import RightsType, User
 from models.booking import generate_set_password_url
 from repository.booking_queries import find_all_ongoing_bookings_by_stock
@@ -16,6 +17,7 @@ from repository.user_offerer_queries import find_user_offerer_email
 from utils import logger
 from utils.config import API_URL, ENV, WEBAPP_URL
 from utils.date import format_datetime, utc_datetime_to_dept_timezone
+from utils.human_ids import humanize
 
 MAILJET_API_KEY = os.environ.get('MAILJET_API_KEY')
 MAILJET_API_SECRET = os.environ.get('MAILJET_API_SECRET')
@@ -461,14 +463,16 @@ def parse_email_addresses(addresses: str) -> List[str]:
     return [a for a in addresses if a]
 
 
-def make_offer_creation_notification_email(offer, app_origin_url):
-    link = app_origin_url +
-    html = render_template('mails/venue_validation_confirmation_email.html', offer=offer, link=)
+def make_offer_creation_notification_email(offer: Offer, pro_origin_url: str) -> dict:
+    humanized_offer_id = humanize(offer.id)
+    link_to_offer = f'{pro_origin_url}/offres/{humanized_offer_id}'
+    html = render_template('mails/offer_creation_notification_email.html', offer=offer, link_to_offer=link_to_offer)
+    location_information = offer.venue.departementCode or 'numérique'
     return {'Html-part': html,
             'To': ['support.passculture@beta.gouv.fr'],
             'FromEmail': 'passculture@beta.gouv.fr',
             'FromName': 'pass Culture',
-            'Subject': f'[Création d’offre - {offer.venue.departementCode}] {offer.eventOrThing.name}'}
+            'Subject': f'[Création d’offre - {location_information}] {offer.eventOrThing.name}'}
 
 
 def _generate_reservation_email_html_subject(booking):
