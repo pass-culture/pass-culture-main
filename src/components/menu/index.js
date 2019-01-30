@@ -11,6 +11,7 @@ import routes from '../../utils/routes'
 import MenuItem from './MenuItem'
 import MenuHeader from './MenuHeader'
 import MenuSignoutButton from './MenuSignoutButton'
+import { toggleOverlay } from '../../reducers/overlay'
 import { getMainMenuItems } from '../../utils/routes-utils'
 
 const transitionDelay = 250
@@ -31,6 +32,16 @@ const transitionStyles = {
 }
 
 class MainMenu extends React.PureComponent {
+  componentDidMount() {
+    const { dispatch } = this.props
+    dispatch(toggleOverlay())
+  }
+
+  componentWillUnmount() {
+    const { dispatch } = this.props
+    dispatch(toggleOverlay())
+  }
+
   toggleMainMenu = () => {
     window.history.back()
   }
@@ -99,6 +110,7 @@ MainMenu.defaultProps = {
 }
 
 MainMenu.propTypes = {
+  dispatch: PropTypes.func.isRequired,
   isVisible: PropTypes.bool.isRequired,
   user: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
 }

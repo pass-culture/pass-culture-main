@@ -7,6 +7,7 @@ import { menu } from './menu'
 import { share } from './share'
 import splash from './splash'
 import card from './card'
+import { overlay } from './overlay'
 
 const rootReducer = combineReducers({
   card,
@@ -17,6 +18,7 @@ const rootReducer = combineReducers({
   loading,
   menu,
   modal,
+  overlay,
   share,
   splash,
   user,
