@@ -1,9 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Icon } from 'pass-culture-shared'
-import { NavLink, matchPath, withRouter } from 'react-router-dom'
-
-const noop = () => {}
+import { matchPath, withRouter } from 'react-router-dom'
+import ReplaceLink from './ReplaceLink'
 
 const renderLinkContent = (icon, title, styles) => (
   <React.Fragment>
@@ -21,34 +20,33 @@ const renderLinkContent = (icon, title, styles) => (
 
 export class MenuItemContent extends React.PureComponent {
   renderNavLink = opts => {
-    const { clickHandler, item, location } = this.props
+    const { item, location } = this.props
     const { title, disabled, icon, path } = item
     const currentpath = location.pathname
     const isactive = matchPath(currentpath, item)
-    const pathto = isactive ? currentpath : path
+    const pathto = isactive ? currentpath.replace('/menu', '') : path
     return (
-      <NavLink
+      <ReplaceLink
         key={path}
         to={pathto}
         disabled={disabled}
-        onClick={clickHandler}
+        action="replace"
         activeClassName={opts.activeClass}
         className={`navlink mx12 flex-columns ${opts.cssclass}`}
       >
         {renderLinkContent(icon, title)}
-      </NavLink>
+      </ReplaceLink>
     )
   }
 
   renderSimpleLink = opts => {
-    const { clickHandler, item } = this.props
+    const { item } = this.props
     const { title, icon, disabled, href } = item
     return (
       <a
         key={href}
         href={href}
         disabled={disabled}
-        onClick={clickHandler}
         className={`navlink mx12 flex-columns ${opts.cssclass}`}
       >
         {renderLinkContent(icon, title)}
@@ -67,12 +65,7 @@ export class MenuItemContent extends React.PureComponent {
   }
 }
 
-MenuItemContent.defaultProps = {
-  clickHandler: noop,
-}
-
 MenuItemContent.propTypes = {
-  clickHandler: PropTypes.func,
   item: PropTypes.object.isRequired,
   location: PropTypes.object.isRequired,
   match: PropTypes.object.isRequired,

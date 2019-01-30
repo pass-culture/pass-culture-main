@@ -1,6 +1,7 @@
 // NOTE: le filter pour supprimer les éléments `null`
 // augmente les tests unitaires de 3s
-export const getReactRoutes = items =>
+
+export const filterRoutes = items =>
   items
     // si un element a une propriete href
     // alors ce n'est pas une route react
@@ -10,6 +11,16 @@ export const getReactRoutes = items =>
       const extend = { exact }
       return { ...obj, ...extend }
     })
+
+export const addMenuRoutes = routes =>
+  routes.map(route => {
+    if (route.path) {
+      route.path = `${route.path}/:menu(menu)?`
+    }
+    return route
+  })
+
+export const getReactRoutes = routes => filterRoutes(addMenuRoutes(routes))
 
 export const getMainMenuItems = items =>
   items

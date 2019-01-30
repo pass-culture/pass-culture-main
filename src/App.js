@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import Helmet from 'react-helmet'
 import { compose } from 'redux'
-import { withRouter, matchPath } from 'react-router-dom'
+import { withRouter, matchPath, Route } from 'react-router-dom'
 
 import routes from './utils/routes'
 import MainMenu from './components/menu'
@@ -47,7 +47,7 @@ const App = ({ location, children }) => {
         <ErrorCatcher>
           {children}
           <Overlay />
-          <MainMenu />
+          <Route path="*/menu" component={MainMenu} />
           <Splash />
           <SharePopin />
           <Notifications />

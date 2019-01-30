@@ -277,7 +277,7 @@ class SearchPageContent extends PureComponent {
         <Switch location={location}>
           <Route
             exact
-            path="/recherche"
+            path="/recherche/:menu(menu)?"
             render={() => (
               <NavByOfferType
                 title="PAR CATÉGORIES"
@@ -286,7 +286,8 @@ class SearchPageContent extends PureComponent {
             )}
           />
           <Route
-            path="/recherche/resultats/:categorie"
+            path="/recherche/resultats/:categorie([A-Z][a-z]+)/:menu(menu)?"
+            sensitive
             render={() => (
               <Fragment>
                 <NavResultsHeader
@@ -305,7 +306,7 @@ class SearchPageContent extends PureComponent {
             )}
           />
           <Route
-            path="/recherche/resultats"
+            path="/recherche/resultats/:menu(menu)?"
             render={() => (
               <SearchResults
                 cameFromOfferTypesPage={false}

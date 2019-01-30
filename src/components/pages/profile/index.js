@@ -31,13 +31,13 @@ const ProfilePage = ({ isloaded, location, user }) => {
         <Switch location={location}>
           <Route
             exact
-            path="/profil"
+            path="/profil/:menu(menu)?"
             key="route-profile-main-view"
             render={() => <ProfileMainView user={user} config={config} />}
           />
           <Route
             exact
-            path={`/profil/:view(${possibleRoutes})/success`}
+            path={`/profil/:view(${possibleRoutes})/success/:menu(menu)?`}
             key="route-profile-update-success"
             render={routeProps => (
               <ProfileUpdateSuccess {...routeProps} config={routes} />
@@ -45,7 +45,7 @@ const ProfilePage = ({ isloaded, location, user }) => {
           />
           <Route
             exact
-            path={`/profil/:view(${possibleRoutes})`}
+            path={`/profil/:view(${possibleRoutes})/:menu(menu)?`}
             key="route-profile-edit-form"
             render={routeProps => {
               const { view } = routeProps.match.params

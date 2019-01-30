@@ -11,7 +11,6 @@ import routes from '../../utils/routes'
 import MenuItem from './MenuItem'
 import MenuHeader from './MenuHeader'
 import MenuSignoutButton from './MenuSignoutButton'
-import { toggleMainMenu } from '../../reducers/menu'
 import { getMainMenuItems } from '../../utils/routes-utils'
 
 const transitionDelay = 250
@@ -33,8 +32,7 @@ const transitionStyles = {
 
 class MainMenu extends React.PureComponent {
   toggleMainMenu = () => {
-    const { dispatch } = this.props
-    dispatch(toggleMainMenu())
+    window.history.back()
   }
 
   renderCloseButton = () => (
@@ -42,7 +40,7 @@ class MainMenu extends React.PureComponent {
       type="button"
       id="main-menu-close-button"
       className="pc-text-button is-white-text is-absolute fs16"
-      onClick={this.toggleMainMenu}
+      onClick={() => window.history.back()}
     >
       <span
         aria-hidden
@@ -56,14 +54,7 @@ class MainMenu extends React.PureComponent {
     <React.Fragment>
       {menuitems &&
         menuitems.map(
-          obj =>
-            obj && (
-              <MenuItem
-                item={obj}
-                key={obj.path || obj.href}
-                clickHandler={this.toggleMainMenu}
-              />
-            )
+          obj => obj && <MenuItem item={obj} key={obj.path || obj.href} />
         )}
       <MenuSignoutButton />
     </React.Fragment>
@@ -108,13 +99,12 @@ MainMenu.defaultProps = {
 }
 
 MainMenu.propTypes = {
-  dispatch: PropTypes.func.isRequired,
   isVisible: PropTypes.bool.isRequired,
   user: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
 }
 
 const mapStateToProps = state => ({
-  isVisible: state.menu,
+  isVisible: true,
   user: state.user,
 })
 

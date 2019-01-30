@@ -1,10 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { connect } from 'react-redux'
+import { Link, withRouter } from 'react-router-dom'
 
-import { toggleMainMenu } from '../../reducers/menu'
-
-const NavigationFooter = ({ className, disabled, dispatch, theme }) => {
+const NavigationFooter = ({ className, disabled, location, theme }) => {
   const cssclass = `pc-theme-${theme} pc-footer flex-center flex-none ${className}`
   return (
     <footer className={cssclass}>
@@ -12,14 +10,15 @@ const NavigationFooter = ({ className, disabled, dispatch, theme }) => {
         type="button"
         disabled={disabled}
         id="open-menu-button"
-        onClick={() => dispatch(toggleMainMenu())}
         className="no-border no-background no-outline no-select"
       >
-        <span
-          aria-hidden
-          className="icon-legacy-user-circle-outline"
-          title="Afficher le menu de navigation"
-        />
+        <Link to={`${location.pathname}/menu${location.search}`}>
+          <span
+            aria-hidden
+            className="icon-legacy-user-circle-outline"
+            title="Afficher le menu de navigation"
+          />
+        </Link>
       </button>
     </footer>
   )
@@ -33,8 +32,8 @@ NavigationFooter.defaultProps = {
 NavigationFooter.propTypes = {
   className: PropTypes.string,
   disabled: PropTypes.bool,
-  dispatch: PropTypes.func.isRequired,
+  location: PropTypes.object.isRequired,
   theme: PropTypes.string.isRequired,
 }
 
-export default connect()(NavigationFooter)
+export default withRouter(NavigationFooter)

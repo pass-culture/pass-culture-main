@@ -70,6 +70,7 @@ $main-menu-height-with-padding: (592px + 24px); // 24 === padding (2 * 12)
   @extend .fs19;
   @extend .flex-columns;
   @extend .is-white-text;
+  cursor: pointer;
 
   .menu-icon {
     height: 100%;
