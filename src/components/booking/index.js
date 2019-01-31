@@ -18,6 +18,7 @@ import BookingLoader from './BookingLoader'
 import BookingHeader from './BookingHeader'
 import BookingSuccess from './BookingSuccess'
 import BookingActivation from './BookingActivation'
+import { priceIsDefined } from '../../helpers/getPrice'
 import { selectBookables } from '../../selectors/selectBookables'
 import { selectBookingById } from '../../selectors/selectBookings'
 import currentRecommendationSelector from '../../selectors/currentRecommendation'
@@ -196,7 +197,10 @@ class Booking extends React.PureComponent {
     const formInitialValues = {
       bookables,
       date: (initialDate && { date: initialDate }) || null,
-      price: (defaultBookable && defaultBookable.price) || null,
+      price:
+        defaultBookable && priceIsDefined(defaultBookable.price)
+          ? defaultBookable.price
+          : null,
       recommendationId: recommendation.id,
       stockId: (defaultBookable && defaultBookable.id) || null,
     }

@@ -35,7 +35,7 @@ const parsePriceArray = array => {
   return [result[0], result[result.length - 1]]
 }
 
-const priceIsDefined = value => {
+export const priceIsDefined = value => {
   const isDefined =
     value !== null &&
     value !== 'null' &&

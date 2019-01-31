@@ -187,7 +187,7 @@ const mapStateToProps = (state, { match }) => {
     booking,
     isFinished,
     offer: recommendation && recommendation.offer,
-    url,
+    url: url.replace(/\/$/, ''),
   }
 }
 
