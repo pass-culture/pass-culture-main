@@ -80,13 +80,13 @@ class PriceQuantityForm extends Component {
 
     showInfo(
       <Fragment>
-        <div className="mb12">
+        <div className="mb24 has-text-left">
           Vous avez saisi une offre payante. Pensez à demander à
           l'administrateur financier nommé pour votre structure de renseigner
           son IBAN. Sans IBAN, les réservations de vos offres éligibles ne vous
-          seront pas remboursées
+          seront pas remboursées.
         </div>
-        <div className="has-text-centered">
+        <div className="has-text-right">
           <button
             className="button is-primary"
             onClick={() => {
