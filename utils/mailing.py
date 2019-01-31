@@ -9,11 +9,12 @@ from flask import current_app as app, render_template
 
 from connectors import api_entreprises
 from models import RightsType, User
+from models.booking import generate_set_password_url
 from repository.booking_queries import find_all_ongoing_bookings_by_stock
 from repository.features import feature_send_mail_to_users_enabled
 from repository.user_offerer_queries import find_user_offerer_email
 from utils import logger
-from utils.config import API_URL, ENV
+from utils.config import API_URL, ENV, WEBAPP_URL
 from utils.date import format_datetime, utc_datetime_to_dept_timezone
 
 MAILJET_API_KEY = os.environ.get('MAILJET_API_KEY')
@@ -271,7 +272,11 @@ def make_activation_notification_email(user: User) -> dict:
         'FromEmail': 'passculture@beta.gouv.fr',
         'FromName': 'pass Culture',
         'Subject': 'ACTIVATION NOTIFICATION',
-        'Html-part': render_template('mails/activation_notification_email.html', user=user)
+        'Html-part': render_template(
+            'mails/activation_notification_email.html',
+            first_name=user.firstName.capitalize(),
+            set_password_link=generate_set_password_url(WEBAPP_URL, user)
+        )
     }
 
 

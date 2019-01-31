@@ -116,11 +116,7 @@ class ActivationUser:
         self.last_name = booking.user.lastName
         self.email = booking.user.email
         self.token = booking.token
-        self.password_url = '%s/activation/%s?%s' % (
-            app_domain,
-            booking.user.resetPasswordToken,
-            urlencode({'email': booking.user.email})
-        )
+        self.password_url = generate_set_password_url(app_domain, booking.user)
 
     def as_csv_row(self):
         return [
@@ -130,6 +126,14 @@ class ActivationUser:
             self.token,
             self.password_url
         ]
+
+
+def generate_set_password_url(app_domain, user):
+    return '%s/activation/%s?%s' % (
+        app_domain,
+        user.resetPasswordToken,
+        urlencode({'email': user.email})
+    )
 
 
 Booking.trig_ddl = """

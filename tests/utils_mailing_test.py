@@ -1057,7 +1057,7 @@ def test_make_venue_validation_email(app):
 @pytest.mark.standalone
 def test_make_activation_notification_email(app):
     # Given
-    user = create_user()
+    user = create_user(first_name='ISIDORE', reset_password_token='ABCD123')
 
     # When
     email = make_activation_notification_email(user)
@@ -1066,7 +1066,10 @@ def test_make_activation_notification_email(app):
     assert email["FromEmail"] == "passculture@beta.gouv.fr"
     assert email["FromName"] == "pass Culture"
     assert email["Subject"] == 'ACTIVATION NOTIFICATION'
-    assert email['Html-part'] == '500 €'
+    parsed_email = BeautifulSoup(email['Html-part'], 'html.parser')
+    assert parsed_email.find('strong', {'id': 'user-first-name'}).text == 'Bonjour Isidore,'
+    assert parsed_email.find('a', {'id': 'set-password-link'}).get('href') == \
+           'localhost:3000/activation/ABCD123?email=john.doe%40test.com'
 
 
 @pytest.mark.standalone
