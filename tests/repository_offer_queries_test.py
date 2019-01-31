@@ -475,3 +475,27 @@ def test_find_offers_with_filter_parameters_with_partial_keywords_and_filter_by_
     assert ko_offer2.id not in offers_id
     assert ko_offer3.id not in offers_id
     assert ko_offer4.id not in offers_id
+
+
+@clean_database
+@pytest.mark.standalone
+def test_get_active_offers_should_not_return_activation_offers(app):
+    # Given
+    offerer = create_offerer()
+    venue_93 = create_venue(offerer, postal_code='93000', departement_code='93', siret=offerer.siren + '33333')
+    offer_93 = create_event_offer(venue_93)
+    offer_activation_93 = create_event_offer(venue_93, event_type=EventType.ACTIVATION)
+    event_occurrence_93 = create_event_occurrence(offer_93)
+    event_occurrence_activation_93 = create_event_occurrence(offer_activation_93)
+    stock_93 = create_stock_from_event_occurrence(event_occurrence_93)
+    stock_activation_93 = create_stock_from_event_occurrence(event_occurrence_activation_93)
+
+    PcObject.check_and_save(stock_93, stock_activation_93)
+
+    # When
+    user = create_user(departement_code='00')
+    offers = get_active_offers_by_type(Event, user=user, department_codes=['00'], offer_id=None)
+
+    # Then
+    assert offer_93 in offers
+    assert offer_activation_93 not in offers
