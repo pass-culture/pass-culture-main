@@ -101,3 +101,7 @@ $main-menu-height-with-padding: (592px + 24px); // 24 === padding (2 * 12)
 #main-menu-logout-button {
   background-color: rgba(0, 0, 0, 0.2);
 }
+
+#open-menu-button a {
+  color: white;
+}
