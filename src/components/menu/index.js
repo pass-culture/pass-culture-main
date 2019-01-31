@@ -43,7 +43,8 @@ class MainMenu extends React.PureComponent {
   }
 
   toggleMainMenu = () => {
-    window.history.back()
+    const { history } = this.props
+    history.goBack()
   }
 
   renderCloseButton = () => (
@@ -51,7 +52,7 @@ class MainMenu extends React.PureComponent {
       type="button"
       id="main-menu-close-button"
       className="pc-text-button is-white-text is-absolute fs16"
-      onClick={() => window.history.back()}
+      onClick={() => this.toggleMainMenu()}
     >
       <span
         aria-hidden
@@ -111,6 +112,7 @@ MainMenu.defaultProps = {
 
 MainMenu.propTypes = {
   dispatch: PropTypes.func.isRequired,
+  history: PropTypes.object.isRequired,
   isVisible: PropTypes.bool.isRequired,
   user: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
 }
