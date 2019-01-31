@@ -89,6 +89,7 @@ MyBookingItem.propTypes = {
 export default connect((state, ownProps) => {
   const { booking } = ownProps || {}
   const { isCancelled, recommendationId, stock, token } = booking
+  const completedUrl = get(booking, 'completedUrl')
   const offerId = get(stock, 'resolvedOffer.id')
   const name = get(stock, 'resolvedOffer.eventOrThing.name')
   const date = get(stock, 'eventOccurrence.beginningDatetime')
@@ -96,13 +97,10 @@ export default connect((state, ownProps) => {
   const tz = getTimezone(departementCode)
   const dateString = getDateString(date, tz)
 
-  // recommendation
   const recommendation = selectRecommendation(state, recommendationId)
-  const { completedUrl, mediationId } = recommendation
-  // NOTE -> completedUrl peut il servir à faire la diff
-  // entre `thing` et `event` ?
-  // const isEvent = Boolean(completedUrl)
-  const isEvent = (get(recommendation, 'offer.eventId') && true) || false
+  const mediationId = get(recommendation, 'mediationId')
+
+  const isEvent = Boolean(get(stock, 'resolvedOffer.eventId'))
 
   // injected
   return {
