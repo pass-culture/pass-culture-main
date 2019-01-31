@@ -25,7 +25,7 @@ def test_save_handmade_sandbox(app):
             Mediation=5,
             Offer=7,
             Offerer=7,
-            Recommendation=8,
+            Recommendation=6,
             Stock=9,
             Thing=3,
             User=10,
