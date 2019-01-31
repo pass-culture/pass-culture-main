@@ -1153,6 +1153,7 @@ class MakeOfferCreationNotificationEmailTest:
         assert "Lien pour y accéder : " in link_html
         link = str(parsed_email.find('a', {'id': 'link'}))
         assert "test.url/offres/AE" in link
+        assert 'href="test.url/offres/AE"' in link
 
     def test_when_virtual_offer_returns_subject_with_virtual_information_and_dictionary_with_given_content(self, app):
         # When
