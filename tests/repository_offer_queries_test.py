@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 
 import pytest
+from freezegun import freeze_time
 
 from models import Thing, PcObject, Event
 from models.offer_type import EventType, ThingType
@@ -25,9 +26,10 @@ from utils.test_utils import create_booking, \
     create_user, \
     create_venue
 
+REFERENCE_DATE = '2017-10-15 09:21:34'
+
 
 @pytest.mark.standalone
-
 @clean_database
 def test_department_or_national_offers_with_national_thing_returns_national_thing(app):
     # Given
@@ -58,6 +60,8 @@ def test_department_or_national_offers_with_national_event_returns_national_even
 
     assert event in query.all()
 
+
+@freeze_time(REFERENCE_DATE)
 @pytest.mark.standalone
 class GetOffersForRecommendationsSearchTest:
     @clean_database
@@ -161,6 +165,7 @@ class GetOffersForRecommendationsSearchTest:
 
     @clean_database
     def test_search_by_datetime_only_returns_recommendations_starting_during_time_interval(self, app):
+        # Duplicate
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer)
@@ -239,8 +244,75 @@ class GetOffersForRecommendationsSearchTest:
         # When
         offers = get_offers_for_recommendations_search(keywords_string='deja')
 
-        # Then
+        #
         assert thing_ok_offer in offers
+
+    @clean_database
+    def test_search_does_not_return_offers_by_types_with_booking_limit_date_over(self, app):
+        # Given
+        three_hours_ago = datetime.utcnow() - timedelta(hours=3)
+        type_label = ThingType.JEUX_VIDEO
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_thing_offer(venue, thing_type=type_label)
+        outdated_stock = create_stock_from_offer(offer, booking_limit_datetime=three_hours_ago)
+
+        PcObject.check_and_save(outdated_stock)
+
+        # When
+        search_result_offers = get_offers_for_recommendations_search(type_values=[
+            str(type_label)
+        ], )
+
+        # Then
+        assert not search_result_offers
+
+    @clean_database
+    def test_search_does_not_return_offers_by_types_with_all_beginning_datetime_passed_and_no_booking_limit_datetime(self, app):
+        # Given
+        three_hours_ago = datetime.utcnow() - timedelta(hours=3)
+        type_label = EventType.MUSEES_PATRIMOINE
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_event_offer(venue, event_type=type_label)
+        outdated_event_occurrence = create_event_occurrence(offer, beginning_datetime=three_hours_ago, end_datetime=datetime.utcnow())
+        stock = create_stock_from_event_occurrence(outdated_event_occurrence, booking_limit_date=None)
+
+        PcObject.check_and_save(stock, outdated_event_occurrence)
+
+        # When
+        search_result_offers = get_offers_for_recommendations_search(type_values=[
+            str(type_label)
+        ], )
+
+        # Then
+        assert not search_result_offers
+
+    @clean_database
+    def test_search_return_offers_by_types_with_some_but_not_all_beginning_datetime_passed_and_no_booking_limit_datetime(self, app):
+        # Given
+        three_hours_ago = datetime.utcnow() - timedelta(hours=3)
+        in_three_hours = datetime.utcnow() + timedelta(hours=3)
+        in_four_hours = datetime.utcnow() + timedelta(hours=4)
+        type_label = EventType.MUSEES_PATRIMOINE
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_event_offer(venue, event_type=type_label)
+        outdated_event_occurrence = create_event_occurrence(offer, beginning_datetime=three_hours_ago, end_datetime=datetime.utcnow())
+        future_event_occurrence = create_event_occurrence(offer, beginning_datetime=in_three_hours, end_datetime=in_four_hours)
+        stock = create_stock_from_event_occurrence(future_event_occurrence, booking_limit_date=None)
+
+        PcObject.check_and_save(stock, future_event_occurrence, outdated_event_occurrence)
+
+        # When
+        search_result_offers = get_offers_for_recommendations_search(type_values=[
+            str(type_label)
+        ], )
+
+        # Then
+        assert offer in search_result_offers
+
+
 
 
 @clean_database
@@ -509,5 +581,5 @@ def _create_event_stock_and_offer_for_date(venue, date):
     event = create_event()
     offer = create_event_offer(venue, event)
     event_occurrence = create_event_occurrence(offer, beginning_datetime=date, end_datetime=date + timedelta(hours=1))
-    stock = create_stock_from_event_occurrence(event_occurrence)
+    stock = create_stock_from_event_occurrence(event_occurrence, booking_limit_date=date)
     return stock

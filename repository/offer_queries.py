@@ -1,25 +1,21 @@
 from datetime import datetime
+from sqlalchemy import func, and_, or_
 from typing import List
 
-from sqlalchemy import func, and_, or_
-from sqlalchemy.orm import aliased
-
 from domain.keywords import create_filter_matching_all_keywords_in_any_model, \
-                            create_get_filter_matching_ts_query_in_any_model, \
-                            get_first_matching_keywords_string_at_column
+    create_get_filter_matching_ts_query_in_any_model, \
+    get_first_matching_keywords_string_at_column
 from models import Booking, \
     Event, \
     EventType, \
     EventOccurrence, \
     Offer, \
-    Offerer, \
     Stock, \
     Offerer, \
     Recommendation, \
     Thing, \
     ThingType, \
     Venue
-from models.db import db
 from repository.user_offerer_queries import filter_query_where_user_is_user_offerer_and_is_validated
 from utils.config import ILE_DE_FRANCE_DEPT_CODES
 from utils.distance import get_sql_geo_distance_in_kilometers
@@ -28,9 +24,10 @@ from utils.logger import logger
 
 def build_offer_search_base_query():
     return Offer.query.outerjoin(Event) \
-                 .outerjoin(Thing) \
-                 .join(Venue) \
-                 .join(Offerer)
+        .outerjoin(Thing) \
+        .join(Venue) \
+        .join(Offerer)
+
 
 def department_or_national_offers(query, offer_type, department_codes):
     if '00' in department_codes:
@@ -105,7 +102,8 @@ def get_active_offers_by_type(offer_type, user=None, department_codes=None, offe
     logger.debug(lambda: '(reco) all ' + str(offer_type) + '.count ' + str(query.count()))
 
     query = department_or_national_offers(query, offer_type, department_codes)
-    logger.info('(reco) departement or national {} {} in {}'.format(offer_type.__name__, str(department_codes), query.count()))
+    logger.info(
+        '(reco) departement or national {} {} in {}'.format(offer_type.__name__, str(department_codes), query.count()))
     query = bookable_offers(query, offer_type)
     logger.info('(reco) bookable_offers {} {}'.format(offer_type.__name__, query.count()))
     query = with_active_and_validated_offerer(query)
@@ -115,6 +113,7 @@ def get_active_offers_by_type(offer_type, user=None, department_codes=None, offe
     query = query.distinct(offer_type.id)
     logger.info('(reco) distinct {} {}'.format(offer_type.__name__, query.count()))
     return query.all()
+
 
 def _date_interval_to_filter(date_interval):
     return ((EventOccurrence.beginningDatetime >= date_interval[0]) & \
@@ -173,15 +172,15 @@ def get_offers_for_recommendations_search(
         )
 
         query = query.filter(distance_instrument < max_distance) \
-                     .reset_joinpoint()
+            .reset_joinpoint()
 
     if days_intervals is not None:
         event_beginningdate_in_interval_filter = or_(*map(
             _date_interval_to_filter, days_intervals))
         query = query.filter(
-                        event_beginningdate_in_interval_filter |\
-                        (Offer.thing != None))\
-                     .reset_joinpoint()
+            event_beginningdate_in_interval_filter | \
+            (Offer.thing != None)) \
+            .reset_joinpoint()
 
     if keywords_string is not None:
         query = filter_offers_with_keywords_string(query, keywords_string)
@@ -195,7 +194,7 @@ def get_offers_for_recommendations_search(
 
     if page is not None:
         offers = query.paginate(page, per_page=10, error_out=False) \
-                     .items
+            .items
     else:
         offers = query.all()
 
@@ -232,21 +231,27 @@ def find_offers_with_filter_parameters(
 
 
 def find_searchable_offer(offer_id):
-    return Offer.query.filter_by(id=offer_id)\
-                      .join(Venue)\
-                      .filter(Venue.validationToken == None)\
-                      .first()
+    return Offer.query.filter_by(id=offer_id) \
+        .join(Venue) \
+        .filter(Venue.validationToken == None) \
+        .first()
 
 
 def _filter_recommendable_offers(offer_query):
     join_on_event_occurrence = Offer.id == EventOccurrence.offerId
     join_on_stock = (Stock.offerId == Offer.id) | (Stock.eventOccurrenceId == EventOccurrence.id)
 
+    stock_can_still_be_booked = (Stock.bookingLimitDatetime > datetime.utcnow()) | (Stock.bookingLimitDatetime == None)
+    event_has_not_began_yet = EventOccurrence.beginningDatetime > datetime.utcnow()
+    offer_is_on_a_thing = Stock.eventOccurrenceId == None
+
     offer_query = offer_query.reset_joinpoint() \
-        .filter_by(isActive=True) \
+        .filter(Offer.isActive == True) \
         .outerjoin(EventOccurrence, join_on_event_occurrence) \
         .join(Stock, join_on_stock) \
-        .filter_by(isSoftDeleted=False)
+        .filter(Stock.isSoftDeleted == False) \
+        .filter(stock_can_still_be_booked) \
+        .filter(event_has_not_began_yet | offer_is_on_a_thing)
 
     return offer_query
 
