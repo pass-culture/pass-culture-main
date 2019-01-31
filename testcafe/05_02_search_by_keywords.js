@@ -1,7 +1,7 @@
 import { Selector } from 'testcafe'
 
 import { createUserRole } from './helpers/roles'
-import { hasSignedUpUser } from './helpers/users'
+import { hasSignedUpUser93 } from './helpers/users'
 import { ROOT_PATH } from '../src/utils/config'
 
 const searchInput = Selector('#keywords')
@@ -12,7 +12,7 @@ const resultsTitle = Selector('#results-title')
 fixture("O5_02_01 Recherche | J'effectue une recherche par mot-clé").beforeEach(
   async t => {
     await t
-      .useRole(createUserRole(hasSignedUpUser))
+      .useRole(createUserRole(hasSignedUpUser93))
       .navigateTo(`${ROOT_PATH}recherche`)
   }
 )

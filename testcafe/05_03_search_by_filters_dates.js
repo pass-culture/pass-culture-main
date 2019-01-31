@@ -2,7 +2,7 @@ import { ClientFunction, Selector } from 'testcafe'
 
 import { ROOT_PATH } from '../src/utils/config'
 import { createUserRole } from './helpers/roles'
-import { hasSignedUpUser } from './helpers/users'
+import { hasSignedUpUser93 } from './helpers/users'
 
 const getPageUrl = ClientFunction(() => window.location.href.toString())
 
@@ -13,7 +13,7 @@ fixture(
   "O5_03_01 Recherche par Filtres | Je suis connecté·e | J'arrive sur la page de recherche | Icone open/close"
 ).beforeEach(async t => {
   await t
-    .useRole(createUserRole(hasSignedUpUser))
+    .useRole(createUserRole(hasSignedUpUser93))
     .navigateTo(`${ROOT_PATH}recherche`)
   const location = await t.eval(() => window.location)
   await t.expect(location.pathname).eql('/recherche')
@@ -56,7 +56,7 @@ test("Je peux ouvrir et fermer le filtre en cliquant sur l'icône", async t => {
 
 fixture('O5_03_02 Recherche par Filtres | Dates').beforeEach(async t => {
   await t
-    .useRole(createUserRole(hasSignedUpUser))
+    .useRole(createUserRole(hasSignedUpUser93))
     .navigateTo(`${ROOT_PATH}recherche`)
     .click(toogleFilterButton)
 })
@@ -242,7 +242,7 @@ test('Je peux réinitiliaser la date choisie via le date picker', async t => {
 
 fixture('O5_03_02 Recherche par Filtres | Distance ').beforeEach(async t => {
   await t
-    .useRole(createUserRole(hasSignedUpUser))
+    .useRole(createUserRole(hasSignedUpUser93))
     .navigateTo(`${ROOT_PATH}recherche`)
     .click(toogleFilterButton)
 })
@@ -258,7 +258,7 @@ fixture(
   "O5_03_02 Recherche par Filtres | Par Type d'offres / Catégories"
 ).beforeEach(async t => {
   await t
-    .useRole(createUserRole(hasSignedUpUser))
+    .useRole(createUserRole(hasSignedUpUser93))
     .navigateTo(`${ROOT_PATH}recherche`)
     .click(toogleFilterButton)
 })

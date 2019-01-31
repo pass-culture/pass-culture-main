@@ -1,6 +1,6 @@
 import { ClientFunction, Selector } from 'testcafe'
 
-import { hasSignedUpUser } from './helpers/users'
+import { hasSignedUpUser93 } from './helpers/users'
 import { ROOT_PATH } from '../src/utils/config'
 
 const getPageUrl = ClientFunction(() => window.location.href.toString())
@@ -27,15 +27,15 @@ fixture("02_01 SignInPage Component | J'ai un compte et je me connecte").page(
 
 test("Lorsque l'un des deux champs est manquant, le bouton connexion est désactivé", async t => {
   await t
-    .typeText(userIdentifier, hasSignedUpUser.email)
+    .typeText(userIdentifier, hasSignedUpUser93.email)
     .expect(signInButton.hasAttribute('disabled'))
     .ok()
 })
 
 test("J'ai un compte valide, je suis redirigé·e vers la page /decouverte sans erreurs", async t => {
   await t
-    .typeText(userIdentifier, hasSignedUpUser.email)
-    .typeText(userPassword, hasSignedUpUser.password)
+    .typeText(userIdentifier, hasSignedUpUser93.email)
+    .typeText(userPassword, hasSignedUpUser93.password)
     .click(signInButton)
     .wait(1000)
 
@@ -50,7 +50,7 @@ test("J'ai un compte valide, je suis redirigé·e vers la page /decouverte sans 
 test("J'ai un identifiant invalide, je vois un messages d'erreur et je reste sur la page /connection", async t => {
   await t
     .typeText(userIdentifier, 'wrongEmail@test.com')
-    .typeText(userPassword, hasSignedUpUser.password)
+    .typeText(userPassword, hasSignedUpUser93.password)
     .click(signInButton)
     .wait(1000)
 
@@ -67,14 +67,14 @@ test("J'ai un identifiant invalide, je vois un messages d'erreur et je reste sur
 test("J'ai un mot de passe vide, avant envoi à l'API, je vois un message d'erreur et je reste sur la page /connection", async t => {
   await t
     // saisi du mot de passe
-    .typeText(userPassword, hasSignedUpUser.password)
+    .typeText(userPassword, hasSignedUpUser93.password)
     // puis on l'efface
     // - prevent testcafe de warn sur une valeur vide
     // TODO -> trouver une solution pour Blue le password input
     // faire plus propre
     .selectText(userPassword)
     .pressKey('delete')
-    .typeText(userIdentifier, hasSignedUpUser.email)
+    .typeText(userIdentifier, hasSignedUpUser93.email)
     // .click(signInButton)
     .wait(1000)
 
@@ -90,7 +90,7 @@ test("J'ai un mot de passe vide, avant envoi à l'API, je vois un message d'erre
 
 test("J'ai un mot de passe invalide, je vois un message d'erreur et je reste sur la page /connection", async t => {
   await t
-    .typeText(userIdentifier, hasSignedUpUser.email)
+    .typeText(userIdentifier, hasSignedUpUser93.email)
     .typeText(userPassword, 'Pa$$word4242')
     .click(signInButton)
     .wait(1000)

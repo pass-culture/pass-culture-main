@@ -1,7 +1,7 @@
 import { ClientFunction, Selector } from 'testcafe'
 
 import { createUserRole } from './helpers/roles'
-import { hasSignedUpUser } from './helpers/users'
+import { hasSignedUpUser93 } from './helpers/users'
 import { ROOT_PATH, SUPPORT_EMAIL } from '../src/utils/config'
 
 const menuButton = Selector('#open-menu-button')
@@ -9,7 +9,7 @@ const mainMenu = Selector('#main-menu')
 
 fixture`12_01 Menu - Affichage de la modale`.beforeEach(async t => {
   await t
-    .useRole(createUserRole(hasSignedUpUser))
+    .useRole(createUserRole(hasSignedUpUser93))
     .navigateTo(`${ROOT_PATH}mentions-legales`)
     .wait(500)
     .click(menuButton)
@@ -43,7 +43,7 @@ test('Je vois le montant de mon pass dans le header', async t => {
 
 fixture`12_02 Modale Menu - Liens vers pages`.beforeEach(async t => {
   await t
-    .useRole(createUserRole(hasSignedUpUser))
+    .useRole(createUserRole(hasSignedUpUser93))
     .navigateTo(`${ROOT_PATH}mentions-legales`)
     .wait(500)
     .click(menuButton)

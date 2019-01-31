@@ -3,7 +3,7 @@ import { Selector, ClientFunction } from 'testcafe'
 import { ROOT_PATH } from '../src/utils/config'
 
 import { createUserRole, signinAs } from './helpers/roles'
-import { hasBookedSomeUser, hasSignedUpUser } from './helpers/users'
+import { hasBookedSomeUser93, hasSignedUpUser93 } from './helpers/users'
 
 const getPageUrl = ClientFunction(() => window.location.href.toString())
 
@@ -25,15 +25,15 @@ fixture('O3_01 Découverte | Je ne suis pas connecté·e').page(
   `${ROOT_PATH}decouverte`
 )
 
-  test('Je suis redirigé vers la page /connexion', async t => {
-    await t.expect(getPageUrl()).contains('/connexion', { timeout: 10000 })
-  })
+test('Je suis redirigé vers la page /connexion', async t => {
+  await t.expect(getPageUrl()).contains('/connexion', { timeout: 10000 })
+})
 
 fixture('O3_02 Découverte | A la première connexion')
 
 test('Je fais ma première visite sur découverte', async t => {
   await t.navigateTo(`${ROOT_PATH}connexion`)
-  await signinAs(hasSignedUpUser)(t)
+  await signinAs(hasSignedUpUser93)(t)
 
   await t
     .wait(500)
@@ -72,7 +72,7 @@ test('Je fais ma première visite sur découverte', async t => {
     .click(menuButton)
     .wait(100)
     .click(menuLogoutButton)
-  await signinAs(hasSignedUpUser)(t)
+  await signinAs(hasSignedUpUser93)(t)
   // or do a hard refresh
   // await t.eval(() => window.location.reload(true))
 
@@ -84,7 +84,7 @@ test('Je fais ma première visite sur découverte', async t => {
 
 fixture('O3_02 Découverte | exploration | Recommendations').beforeEach(
   async t => {
-    await t.useRole(createUserRole(hasBookedSomeUser))
+    await t.useRole(createUserRole(hasBookedSomeUser93))
   }
 )
 

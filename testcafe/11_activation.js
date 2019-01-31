@@ -1,7 +1,10 @@
 import { Selector } from 'testcafe'
 
 // testcafe chrome ./testcafe/11_activation.js
-import { hasBookedSomeUser, hasSignedUpUser } from './helpers/users'
+import {
+  futureActivatedSignedUpUser34,
+  hasBookedSomeUser93,
+} from './helpers/users'
 import { ROOT_PATH } from '../src/utils/config'
 
 const activationEmailSpan = Selector('#activation-email')
@@ -17,7 +20,10 @@ fixture("11 ActivationPage A | succès de l'activation")
 
 test('Je suis redirigé·e vers découverte', async t => {
   // given
-  const { email, password, resetPasswordToken } = hasSignedUpUser
+  // WATCH: hasSignedUpUser93 has been used already
+  // in decouverte tuto tests, so it cannot be used here
+  // (because it will be redirect to not tuto recos)
+  const { email, password, resetPasswordToken } = futureActivatedSignedUpUser34
   const url = `${ROOT_PATH}activation/${resetPasswordToken}?email=${email}`
 
   // when
@@ -61,7 +67,7 @@ test('Sans email en query, je suis redirigé·e vers /activation/error', async t
 
 test("Avec un email déjà activé, j'ai un message d'erreur", async t => {
   // given
-  const { email, password } = hasBookedSomeUser
+  const { email, password } = hasBookedSomeUser93
 
   // when
   await t.navigateTo(`${ROOT_PATH}activation/fake?email=${email}`)
