@@ -28,7 +28,7 @@ def test_save_handmade_sandbox(app):
             Recommendation=8,
             Stock=9,
             Thing=3,
-            User=9,
+            User=10,
             UserOfferer=7,
             Venue=8
         )
