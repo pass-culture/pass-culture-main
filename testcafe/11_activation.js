@@ -5,6 +5,7 @@ import { hasBookedSomeUser, hasSignedUpUser } from './helpers/users'
 import { ROOT_PATH } from '../src/utils/config'
 
 const activationEmailSpan = Selector('#activation-email')
+const cguInput = Selector("input[name='cguCheckBox']")
 const errorSpan = Selector('span.pc-error-message').withText(
   'Votre lien de changement de mot de passe est invalide.'
 )
@@ -29,6 +30,7 @@ test('Je suis redirigé·e vers découverte', async t => {
   await t
     .typeText(newPasswordInput, password)
     .typeText(newPasswordConfirm, password)
+    .click(cguInput)
     .click(submitButton)
     .wait(10000)
 
@@ -68,6 +70,7 @@ test("Avec un email déjà activé, j'ai un message d'erreur", async t => {
   await t
     .typeText(newPasswordInput, password)
     .typeText(newPasswordConfirm, password)
+    .click(cguInput)
     .click(submitButton)
     .wait(1000)
 
