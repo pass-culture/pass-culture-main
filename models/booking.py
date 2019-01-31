@@ -1,6 +1,5 @@
 """ booking model """
 from datetime import datetime, timedelta
-from urllib.parse import urlencode
 
 from sqlalchemy import BigInteger, \
     Boolean, \
@@ -107,33 +106,22 @@ class ActivationUser:
         'Prénom',
         'Nom',
         'Email',
-        'Contremarque d\'activation',
-        'Lien de création de mot de passe'
+        'Contremarque d\'activation'
     ]
 
-    def __init__(self, booking: Booking, app_domain: str):
+    def __init__(self, booking: Booking):
         self.first_name = booking.user.firstName
         self.last_name = booking.user.lastName
         self.email = booking.user.email
         self.token = booking.token
-        self.password_url = generate_set_password_url(app_domain, booking.user)
 
     def as_csv_row(self):
         return [
             self.first_name,
             self.last_name,
             self.email,
-            self.token,
-            self.password_url
+            self.token
         ]
-
-
-def generate_set_password_url(app_domain, user):
-    return '%s/activation/%s?%s' % (
-        app_domain,
-        user.resetPasswordToken,
-        urlencode({'email': user.email})
-    )
 
 
 Booking.trig_ddl = """

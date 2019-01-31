@@ -8,9 +8,9 @@ from typing import Dict, List
 from flask import current_app as app, render_template
 
 from connectors import api_entreprises
-from models import RightsType, Offer
+from domain.user_activation import generate_set_password_url
+from models import Offer
 from models import RightsType, User
-from models.booking import generate_set_password_url
 from repository.booking_queries import find_all_ongoing_bookings_by_stock
 from repository.features import feature_send_mail_to_users_enabled
 from repository.user_offerer_queries import find_user_offerer_email

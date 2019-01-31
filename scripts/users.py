@@ -13,7 +13,6 @@ from repository.booking_queries import user_has_booked_an_online_activation
 from repository.stock_queries import find_online_activation_stock
 from repository.user_queries import find_user_by_email
 from scripts.interact import app
-from utils.config import WEBAPP_URL
 from utils.logger import logger
 from utils.mailing import MailServiceException, parse_email_addresses
 from utils.token import random_token
@@ -114,7 +113,7 @@ def split_rows_in_chunks_with_no_duplicated_emails(csv_reader: Iterable, chunk_s
 
 
 def export_created_data(bookings: List[Booking]):
-    users = map(lambda b: ActivationUser(b, WEBAPP_URL), bookings)
+    users = map(lambda b: ActivationUser(b), bookings)
     csv = generate_activation_users_csv(users)
 
     try:

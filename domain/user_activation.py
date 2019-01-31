@@ -1,8 +1,9 @@
 import csv
 from io import StringIO
-from typing import List, Iterable
+from typing import Iterable
+from urllib.parse import urlencode
 
-from models import Deposit, EventType, ThingType, ApiErrors
+from models import Deposit, EventType, ThingType, ApiErrors, User
 from models.booking import ActivationUser
 
 
@@ -28,6 +29,14 @@ def generate_activation_users_csv(activation_users: Iterable[ActivationUser]) ->
     writer.writerow(ActivationUser.CSV_HEADER)
     writer.writerows(csv_lines)
     return output.getvalue()
+
+
+def generate_set_password_url(app_domain: str, user: User) -> str:
+    return '%s/activation/%s?%s' % (
+        app_domain,
+        user.resetPasswordToken,
+        urlencode({'email': user.email})
+    )
 
 
 def check_is_activation_booking(booking):

@@ -1,7 +1,6 @@
 from domain.user_activation import generate_activation_users_csv
 from models import ThingType
 from models.booking import ActivationUser
-from utils.config import WEBAPP_URL
 from utils.test_utils import create_booking, create_user, create_stock, create_thing_offer, create_venue, create_offerer
 
 
@@ -19,7 +18,7 @@ class GenerateActivationUsersCsvTest:
         booking1 = create_booking(user1, stock, token='abc')
         booking2 = create_booking(user2, stock, token='def')
         bookings = [booking1, booking2]
-        activation_users = map(lambda b: ActivationUser(b, WEBAPP_URL), bookings)
+        activation_users = map(lambda b: ActivationUser(b), bookings)
 
         # When
         csv = generate_activation_users_csv(activation_users)
@@ -27,14 +26,6 @@ class GenerateActivationUsersCsvTest:
         # Then
         csv_list_format = [row.split(',') for row in csv.split('\r\n')]
         csv_list_format = [row_list for row_list in csv_list_format if row_list[0]]
-        assert csv_list_format[0] == [
-            '"Prénom"', '"Nom"', '"Email"', '"Contremarque d\'activation"', '"Lien de création de mot de passe"'
-        ]
-        assert csv_list_format[1] == [
-            '"Pedro"', '"Gutierrez"', '"email1@test.com"', '"abc"',
-            '"http://localhost:3000/activation/AZERTY123?email=email1%40test.com"'
-        ]
-        assert csv_list_format[2] == [
-            '"Pablo"', '"Rodriguez"', '"email2+alias@test.com"', '"def"',
-            '"http://localhost:3000/activation/123AZERTY?email=email2%2Balias%40test.com"'
-        ]
+        assert csv_list_format[0] == ['"Prénom"', '"Nom"', '"Email"', '"Contremarque d\'activation"']
+        assert csv_list_format[1] == ['"Pedro"', '"Gutierrez"', '"email1@test.com"', '"abc"']
+        assert csv_list_format[2] == ['"Pablo"', '"Rodriguez"', '"email2+alias@test.com"', '"def"']
