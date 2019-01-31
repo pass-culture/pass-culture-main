@@ -8,6 +8,7 @@ export const hasSignedUpUser = {
   email: 'pctest.jeune93.has-signed-up@btmx.fr',
   password: 'pctest.Jeune93.has-signed-up',
   publicName: 'PC Test Jeune93 HSU',
+  resetPasswordToken: 'AZERTY125',
 }
 
 export const hasBookedSomeUser = {
