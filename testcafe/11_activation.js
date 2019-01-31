@@ -2,7 +2,7 @@ import { Selector } from 'testcafe'
 
 // testcafe chrome ./testcafe/11_activation.js
 import {
-  futureActivatedSignedUpUser34,
+  futureActivatedSignedUpUser97,
   hasBookedSomeUser93,
 } from './helpers/users'
 import { ROOT_PATH } from '../src/utils/config'
@@ -23,7 +23,7 @@ test('Je suis redirigé·e vers découverte', async t => {
   // WATCH: hasSignedUpUser93 has been used already
   // in decouverte tuto tests, so it cannot be used here
   // (because it will be redirect to not tuto recos)
-  const { email, password, resetPasswordToken } = futureActivatedSignedUpUser34
+  const { email, password, resetPasswordToken } = futureActivatedSignedUpUser97
   const url = `${ROOT_PATH}activation/${resetPasswordToken}?email=${email}`
 
   // when
