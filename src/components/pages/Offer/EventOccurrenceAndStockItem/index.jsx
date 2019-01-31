@@ -41,7 +41,7 @@ class EventOccurrenceAndStockItem extends Component {
       formBookingLimitDatetime,
       isStockOnly,
       isStockReadOnly,
-      stockPatch,
+      stockFormKey,
     } = this.props
     if (
       isStockOnly ||
@@ -52,7 +52,7 @@ class EventOccurrenceAndStockItem extends Component {
       return
     }
     dispatch(
-      mergeForm(`stock${get(stockPatch, 'id', '')}`, {
+      mergeForm(`stock${stockFormKey}`, {
         bookingLimitDatetime: moment(eventOccurrencePatch.beginningDatetime)
           .subtract(2, 'day')
           .toISOString(),
@@ -80,11 +80,11 @@ class EventOccurrenceAndStockItem extends Component {
   }
 
   handleInitPrice = () => {
-    const { dispatch, formPrice, stockPatch } = this.props
+    const { dispatch, formPrice, stockFormKey, stockPatch } = this.props
     if (get(stockPatch, 'id') || typeof formPrice !== 'undefined') {
       return
     }
-    dispatch(mergeForm(`stock${get(stockPatch, 'id', '')}`, { price: 0 }))
+    dispatch(mergeForm(`stock${stockFormKey}`, { price: 0 }))
   }
 
   handleNextDatetimes = () => {
@@ -177,6 +177,7 @@ class EventOccurrenceAndStockItem extends Component {
       isStockReadOnly,
       offer,
       showInfo,
+      stockFormKey,
       stockPatch,
       tz,
     } = this.props
@@ -211,6 +212,7 @@ class EventOccurrenceAndStockItem extends Component {
               isStockReadOnly={isStockReadOnly}
               offer={offer}
               showInfo={showInfo}
+              stockFormKey={stockFormKey}
               stockPatch={stockPatch}
             />
           )}

@@ -65,6 +65,10 @@ export default function mapStateToProps(state, ownProps) {
   const offerer = offererSelector(state, venue && venue.managingOffererId)
   const hasIban = (venue && venue.iban) || (offerer && offerer.iban)
 
+  const stockFormKey = ownProps.isStockOnly
+    ? (stockPatch && stockPatch.id) || ''
+    : stockPatch && stockPatch.eventOccurrenceId
+
   return {
     event: eventSelector(state, eventId),
     eventId,
@@ -89,6 +93,7 @@ export default function mapStateToProps(state, ownProps) {
     isEventOccurrenceReadOnly,
     isStockReadOnly,
     offer,
+    stockFormKey,
     stockPatch,
     stockIdOrNew,
     tz: timezoneSelector(state, venueId),
