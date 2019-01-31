@@ -81,7 +81,8 @@ def create_handmade_users():
         last_name="93 HSU",
         password="pctest.Jeune93.has-signed-up",
         postal_code="93100",
-        public_name="PC Test Jeune93 HSU"
+        public_name="PC Test Jeune93 HSU",
+        validation_token='AZERTY125'
     )
 
     users_by_name['jeune93 has-booked-some'] = create_user(
@@ -101,7 +102,8 @@ def create_handmade_users():
         last_name="34 has-signed-up",
         password="pctest.Jeune34.has-signed-up",
         postal_code="34080",
-        public_name="PC Test Jeune34 HSU"
+        public_name="PC Test Jeune34 HSU",
+        validation_token='AZERTY126'
     )
 
     users_by_name['jeune97 has-booked-some'] = create_user(
