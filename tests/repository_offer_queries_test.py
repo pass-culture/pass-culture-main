@@ -58,207 +58,189 @@ def test_department_or_national_offers_with_national_event_returns_national_even
 
     assert event in query.all()
 
-
 @pytest.mark.standalone
-@clean_database
-def test_get_offers_for_recommendations_search_by_one_event_type_returns_only_offers_on_events_of_that_type(app):
-    # Given
-    type_label = EventType.CONFERENCE_DEBAT_DEDICACE
-    other_type_label = EventType.MUSIQUE
+class GetOffersForRecommendationsSearchTest:
+    @clean_database
+    def test_search_by_one_event_type_returns_only_offers_on_events_of_that_type(self, app):
+        # Given
+        type_label = EventType.CONFERENCE_DEBAT_DEDICACE
+        other_type_label = EventType.MUSIQUE
 
-    conference_event1 = create_event('Rencontre avec Franck Lepage', event_type=type_label)
-    conference_event2 = create_event('Conférence ouverte', event_type=type_label)
-    concert_event = create_event('Concert de Gael Faye', event_type=other_type_label)
+        conference_event1 = create_event('Rencontre avec Franck Lepage', event_type=type_label)
+        conference_event2 = create_event('Conférence ouverte', event_type=type_label)
+        concert_event = create_event('Concert de Gael Faye', event_type=other_type_label)
 
-    offerer = create_offerer(
-        siren='507633576',
-        address='1 BD POISSONNIERE',
-        city='Paris',
-        postal_code='75002',
-        name='LE GRAND REX PARIS',
-        validation_token=None,
-        iban=None,
-        bic=None
-    )
-    venue = create_venue(
-        offerer,
-        name='LE GRAND REX PARIS',
-        address="1 BD POISSONNIERE",
-        postal_code='75002',
-        city="Paris",
-        departement_code='75',
-        is_virtual=False,
-        longitude="2.4002701",
-        latitude="48.8363788",
-        siret="50763357600016"
-    )
+        offerer = create_offerer(
+            siren='507633576',
+            address='1 BD POISSONNIERE',
+            city='Paris',
+            postal_code='75002',
+            name='LE GRAND REX PARIS',
+            validation_token=None,
+            iban=None,
+            bic=None
+        )
+        venue = create_venue(
+            offerer,
+            name='LE GRAND REX PARIS',
+            address="1 BD POISSONNIERE",
+            postal_code='75002',
+            city="Paris",
+            departement_code='75',
+            is_virtual=False,
+            longitude="2.4002701",
+            latitude="48.8363788",
+            siret="50763357600016"
+        )
 
-    conference_offer1 = create_event_offer(venue, conference_event1)
-    conference_offer2 = create_event_offer(venue, conference_event2)
-    concert_offer = create_event_offer(venue, concert_event)
+        conference_offer1 = create_event_offer(venue, conference_event1)
+        conference_offer2 = create_event_offer(venue, conference_event2)
+        concert_offer = create_event_offer(venue, concert_event)
 
-    conference_event_occurrence1 = create_event_occurrence(conference_offer1)
-    conference_event_occurrence2 = create_event_occurrence(conference_offer2)
-    concert_event_occurrence = create_event_occurrence(concert_offer)
+        conference_event_occurrence1 = create_event_occurrence(conference_offer1)
+        conference_event_occurrence2 = create_event_occurrence(conference_offer2)
+        concert_event_occurrence = create_event_occurrence(concert_offer)
 
-    conference_stock1 = create_stock_from_event_occurrence(conference_event_occurrence1)
-    conference_stock2 = create_stock_from_event_occurrence(conference_event_occurrence2)
-    concert_stock = create_stock_from_event_occurrence(concert_event_occurrence)
+        conference_stock1 = create_stock_from_event_occurrence(conference_event_occurrence1)
+        conference_stock2 = create_stock_from_event_occurrence(conference_event_occurrence2)
+        concert_stock = create_stock_from_event_occurrence(concert_event_occurrence)
 
-    PcObject.check_and_save(conference_stock1, conference_stock2, concert_stock)
+        PcObject.check_and_save(conference_stock1, conference_stock2, concert_stock)
 
-    # When
-    offers = get_offers_for_recommendations_search(
-        type_values=[
-            str(type_label)
-        ],
-    )
+        # When
+        offers = get_offers_for_recommendations_search(
+            type_values=[
+                str(type_label)
+            ],
+        )
 
-    # Then
-    assert conference_offer1 in offers
-    assert conference_offer2 in offers
-    assert concert_offer not in offers
+        # Then
+        assert conference_offer1 in offers
+        assert conference_offer2 in offers
+        assert concert_offer not in offers
 
+    @clean_database
+    def test_search_by_one_thing_type_returns_only_offers_on_things_of_that_type(self, app):
+        # Given
+        type_label_ok = ThingType.JEUX_VIDEO
+        type_label_ko = ThingType.LIVRE_EDITION
 
-@pytest.mark.standalone
-@clean_database
-def test_get_offers_for_recommendations_search_by_one_thing_type_returns_only_offers_on_things_of_that_type(app):
-    # Given
-    type_label_ok = ThingType.JEUX_VIDEO
-    type_label_ko = ThingType.LIVRE_EDITION
+        thing_ok1 = create_thing(thing_type=type_label_ok)
+        thing_ok2 = create_thing(thing_type=type_label_ok)
+        thing_ko = create_thing(thing_type=type_label_ko)
+        event_ko = create_event(event_type=EventType.CINEMA)
 
-    thing_ok1 = create_thing(thing_type=type_label_ok)
-    thing_ok2 = create_thing(thing_type=type_label_ok)
-    thing_ko = create_thing(thing_type=type_label_ko)
-    event_ko = create_event(event_type=EventType.CINEMA)
+        offerer = create_offerer()
+        venue = create_venue(offerer)
 
-    offerer = create_offerer()
-    venue = create_venue(offerer)
+        ok_offer_1 = create_thing_offer(venue, thing_ok1)
+        ok_offer_2 = create_thing_offer(venue, thing_ok2)
+        ko_offer = create_thing_offer(venue, thing_ko)
+        ko_event_offer = create_event_offer(venue, event_ko)
 
-    ok_offer_1 = create_thing_offer(venue, thing_ok1)
-    ok_offer_2 = create_thing_offer(venue, thing_ok2)
-    ko_offer = create_thing_offer(venue, thing_ko)
-    ko_event_offer = create_event_offer(venue, event_ko)
+        ko_event_occurrence = create_event_occurrence(ko_event_offer)
 
-    ko_event_occurrence = create_event_occurrence(ko_event_offer)
+        ok_stock1 = create_stock_from_offer(ok_offer_1)
+        ok_stock2 = create_stock_from_offer(ok_offer_2)
+        ko_stock1 = create_stock_from_offer(ko_offer)
+        ko_stock2 = create_stock_from_event_occurrence(ko_event_occurrence)
 
-    ok_stock1 = create_stock_from_offer(ok_offer_1)
-    ok_stock2 = create_stock_from_offer(ok_offer_2)
-    ko_stock1 = create_stock_from_offer(ko_offer)
-    ko_stock2 = create_stock_from_event_occurrence(ko_event_occurrence)
+        PcObject.check_and_save(ok_stock1, ok_stock2, ko_stock1, ko_stock2)
 
-    PcObject.check_and_save(ok_stock1, ok_stock2, ko_stock1, ko_stock2)
+        # When
+        offers = get_offers_for_recommendations_search(
+            type_values=[
+                str(type_label_ok)
+            ],
+        )
 
-    # When
-    offers = get_offers_for_recommendations_search(
-        type_values=[
-            str(type_label_ok)
-        ],
-    )
+        # Then
+        assert len(offers) == 2
+        assert ok_offer_1 in offers
+        assert ok_offer_2 in offers
 
-    # Then
-    assert len(offers) == 2
-    assert ok_offer_1 in offers
-    assert ok_offer_2 in offers
+    @clean_database
+    def test_search_by_datetime_only_returns_recommendations_starting_during_time_interval(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer)
 
+        ok_stock = _create_event_stock_and_offer_for_date(venue, datetime(2018, 1, 6, 12, 30))
+        ko_stock_before = _create_event_stock_and_offer_for_date(venue, datetime(2018, 1, 1, 12, 30))
+        ko_stock_after = _create_event_stock_and_offer_for_date(venue, datetime(2018, 1, 10, 12, 30))
+        ok_stock_thing = create_stock_with_thing_offer(offerer, venue, None)
 
-def create_event_stock_and_offer_for_date(venue, date):
-    event = create_event()
-    offer = create_event_offer(venue, event)
-    event_occurrence = create_event_occurrence(offer, beginning_datetime=date, end_datetime=date + timedelta(hours=1))
-    stock = create_stock_from_event_occurrence(event_occurrence)
-    return stock
+        PcObject.check_and_save(ok_stock, ko_stock_before, ko_stock_after)
 
+        # When
+        search_result_offers = get_offers_for_recommendations_search(
+            days_intervals=[
+                [datetime(2018, 1, 6, 12, 0), datetime(2018, 1, 6, 13, 0)]
+            ],
+        )
 
-@pytest.mark.standalone
-@clean_database
-def test_get_offers_for_recommendations_search_by_datetime(app):
-    # Given
-    offerer = create_offerer()
-    venue = create_venue(offerer)
+        # Then
+        assert ok_stock.resolvedOffer in search_result_offers
+        assert ok_stock_thing.resolvedOffer in search_result_offers
+        assert ko_stock_before.resolvedOffer not in search_result_offers
+        assert ko_stock_after.resolvedOffer not in search_result_offers
 
-    ok_stock = create_event_stock_and_offer_for_date(venue, datetime(2018, 1, 6, 12, 30))
-    ko_stock_before = create_event_stock_and_offer_for_date(venue, datetime(2018, 1, 1, 12, 30))
-    ko_stock_after = create_event_stock_and_offer_for_date(venue, datetime(2018, 1, 10, 12, 30))
-    ok_stock_thing = create_stock_with_thing_offer(offerer, venue, None)
+    @clean_database
+    def test_search_with_several_partial_keywords_returns_things_and_events_with_name_containing_keywords(self, app):
+        # Given
+        thing_ok = create_thing(thing_name='Rencontre de michel')
+        thing = create_thing(thing_name='Rencontre avec jean-luc')
+        event = create_event(event_name='Rencontre avec jean-mimi chelou')
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        thing_ok_offer = create_thing_offer(venue, thing_ok)
+        thing_ko_offer = create_thing_offer(venue, thing)
+        event_ko_offer = create_event_offer(venue, event)
+        event_ko_occurrence = create_event_occurrence(event_ko_offer)
+        event_ko_stock = create_stock_from_event_occurrence(event_ko_occurrence)
+        thing_ok_stock = create_stock_from_offer(thing_ok_offer)
+        thing_ko_stock = create_stock_from_offer(thing_ko_offer)
+        PcObject.check_and_save(event_ko_stock, thing_ok_stock, thing_ko_stock)
 
-    PcObject.check_and_save(ok_stock, ko_stock_before, ko_stock_after)
+        # When
+        offers = get_offers_for_recommendations_search(keywords_string='renc michel')
 
-    # When
-    search_result_offers = get_offers_for_recommendations_search(
-        days_intervals=[
-            [datetime(2018, 1, 6, 12, 0), datetime(2018, 1, 6, 13, 0)]
-        ],
-    )
+        # Then
+        assert thing_ok_offer in offers
+        assert thing_ko_offer not in offers
+        assert event_ko_offer not in offers
 
-    # Then
-    assert ok_stock.resolvedOffer in search_result_offers
-    assert ok_stock_thing.resolvedOffer in search_result_offers
-    assert ko_stock_before.resolvedOffer not in search_result_offers
-    assert ko_stock_after.resolvedOffer not in search_result_offers
+    @clean_database
+    def test_search_without_accents_matches_offer_with_accents_1(self, app):
+        # Given
+        thing_ok = create_thing(thing_name='Nez à nez')
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        thing_ok_offer = create_thing_offer(venue, thing_ok)
+        thing_ok_stock = create_stock_from_offer(thing_ok_offer)
+        PcObject.check_and_save(thing_ok_stock)
 
+        # When
+        offers = get_offers_for_recommendations_search(keywords_string='nez a')
 
-@clean_database
-@pytest.mark.standalone
-def test_get_offers_for_recommendations_search_with_several_partial_keywords(app):
-    # Given
-    thing_ok = create_thing(thing_name='Rencontre de michel')
-    thing = create_thing(thing_name='Rencontre avec jean-luc')
-    event = create_event(event_name='Rencontre avec jean-mimi chelou')
-    offerer = create_offerer()
-    venue = create_venue(offerer)
-    thing_ok_offer = create_thing_offer(venue, thing_ok)
-    thing_ko_offer = create_thing_offer(venue, thing)
-    event_ko_offer = create_event_offer(venue, event)
-    event_ko_occurrence = create_event_occurrence(event_ko_offer)
-    event_ko_stock = create_stock_from_event_occurrence(event_ko_occurrence)
-    thing_ok_stock = create_stock_from_offer(thing_ok_offer)
-    thing_ko_stock = create_stock_from_offer(thing_ko_offer)
-    PcObject.check_and_save(event_ko_stock, thing_ok_stock, thing_ko_stock)
+        # Then
+        assert thing_ok_offer in offers
 
-    # When
-    offers = get_offers_for_recommendations_search(keywords_string='renc michel')
+    @clean_database
+    def test_search_with_accents_matches_offer_without_accents_2(self, app):
+        # Given
+        thing_ok = create_thing(thing_name='Déjà')
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        thing_ok_offer = create_thing_offer(venue, thing_ok)
+        thing_ok_stock = create_stock_from_offer(thing_ok_offer)
+        PcObject.check_and_save(thing_ok_stock)
 
-    # Then
-    assert thing_ok_offer in offers
-    assert thing_ko_offer not in offers
-    assert event_ko_offer not in offers
+        # When
+        offers = get_offers_for_recommendations_search(keywords_string='deja')
 
-
-@clean_database
-@pytest.mark.standalone
-def test_get_offers_for_recommendations_search_without_accents_matches_offer_with_accents_1(app):
-    # Given
-    thing_ok = create_thing(thing_name='Nez à nez')
-    offerer = create_offerer()
-    venue = create_venue(offerer)
-    thing_ok_offer = create_thing_offer(venue, thing_ok)
-    thing_ok_stock = create_stock_from_offer(thing_ok_offer)
-    PcObject.check_and_save(thing_ok_stock)
-
-    # When
-    offers = get_offers_for_recommendations_search(keywords_string='nez a')
-
-    # Then
-    assert thing_ok_offer in offers
-
-
-@clean_database
-@pytest.mark.standalone
-def test_get_offers_for_recommendations_search_with_accents_matches_offer_without_accents_2(app):
-    # Given
-    thing_ok = create_thing(thing_name='Déjà')
-    offerer = create_offerer()
-    venue = create_venue(offerer)
-    thing_ok_offer = create_thing_offer(venue, thing_ok)
-    thing_ok_stock = create_stock_from_offer(thing_ok_offer)
-    PcObject.check_and_save(thing_ok_stock)
-
-    # When
-    offers = get_offers_for_recommendations_search(keywords_string='deja')
-
-    # Then
-    assert thing_ok_offer in offers
+        # Then
+        assert thing_ok_offer in offers
 
 
 @clean_database
@@ -521,3 +503,11 @@ def test_get_active_offers_should_not_return_activation_thing(app):
     # Then
     assert thing_93 in offers
     assert thing_activation_93 not in offers
+
+
+def _create_event_stock_and_offer_for_date(venue, date):
+    event = create_event()
+    offer = create_event_offer(venue, event)
+    event_occurrence = create_event_occurrence(offer, beginning_datetime=date, end_datetime=date + timedelta(hours=1))
+    stock = create_stock_from_event_occurrence(event_occurrence)
+    return stock
