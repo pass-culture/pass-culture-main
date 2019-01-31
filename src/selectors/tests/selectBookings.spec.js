@@ -79,13 +79,30 @@ describe('src | selectors | selectBookings', () => {
       const expected = true
       expect(result).toStrictEqual(expected)
     })
-    it('remove offer from bookings, is an activation type', () => {
+    it('remove offer from bookings, is an activation type (event)', () => {
       // given
       const booking = {
         stock: {
           resolvedOffer: {
             eventOrThing: {
               type: 'EventType.ACTIVATION',
+            },
+          },
+        },
+      }
+      // when
+      const result = filterValidBookings(booking)
+      // then
+      const expected = false
+      expect(result).toStrictEqual(expected)
+    })
+    it('remove offer from bookings, is an activation type (thing)', () => {
+      // given
+      const booking = {
+        stock: {
+          resolvedOffer: {
+            eventOrThing: {
+              type: 'ThingType.ACTIVATION',
             },
           },
         },
