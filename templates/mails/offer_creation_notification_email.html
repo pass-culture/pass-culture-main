@@ -1,7 +1,13 @@
 <html>
     <body>
-    <p id="offer">Une nouvelle offre "{{ offer.eventOrThing.name }}"</p>
-    <p id="offerer">Vient d'être créée par {{ offer.venue.managingOfferer.name }}</p>
-    <p id="give_link">Lien pour y accéder : <a href={{ link_to_offer }} id="link">{{ link_to_offer }}</a></p>
+    <p id="offer">
+        Une nouvelle offre "{{ offer.eventOrThing.name }}"
+    </p>
+    <p id="offerer">
+        Vient d'être créée par {{ offer.venue.managingOfferer.name }}
+    </p>
+    <p id="give_link">
+        Lien pour y accéder : <a href="{{ link_to_offer }}" id="link">{{ link_to_offer }}</a>
+    </p>
     </body>
 </html>

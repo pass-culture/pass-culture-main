@@ -3,8 +3,10 @@ import binascii
 from flask import current_app as app, jsonify, request
 from flask_login import current_user
 
+from domain.admin_emails import send_offer_creation_notification_to_support
 from models import ApiErrors, Event, Offer, PcObject, Venue, EventType
 from models.api_errors import ForbiddenError
+from utils.config import PRO_URL
 from utils.human_ids import dehumanize
 from utils.includes import EVENT_INCLUDES
 from utils.rest import expect_json_data, \
@@ -41,6 +43,9 @@ def post_event():
         raise api_errors
     offer.event = event
     PcObject.check_and_save(event, offer)
+
+    send_offer_creation_notification_to_support(offer, PRO_URL, app.mailjet_client.send.create)
+    
     return jsonify(
         event._asdict(include=EVENT_INCLUDES)
     ), 201

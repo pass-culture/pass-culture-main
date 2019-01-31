@@ -2,9 +2,11 @@
 import simplejson as json
 from flask import current_app as app, jsonify, request
 
+from domain.admin_emails import send_offer_creation_notification_to_support
 from models.offer import Offer
 from models.pc_object import PcObject
 from models.thing import Thing
+from utils.config import PRO_URL
 from utils.human_ids import dehumanize
 from utils.includes import THING_INCLUDES
 from utils.rest import expect_json_data, \
@@ -43,7 +45,10 @@ def post_thing():
     if thing.url:
         is_url_safe(thing.url)
         thing.isNational = True
+
     PcObject.check_and_save(thing, offer)
+    send_offer_creation_notification_to_support(offer, PRO_URL, app.mailjet_client.send.create)
+
     return jsonify(thing._asdict(
         include=THING_INCLUDES,
         has_dehumanized_id=True,

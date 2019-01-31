@@ -13,6 +13,7 @@ from models.db import db
 from repository import venue_queries, offer_queries
 from repository.offer_queries import find_activation_offers, \
                                      find_offers_with_filter_parameters
+from utils import logger
 from utils.config import PRO_URL
 from utils.human_ids import dehumanize
 from utils.includes import OFFER_INCLUDES
@@ -86,7 +87,6 @@ def post_offer():
             raise errors
 
     PcObject.check_and_save(offer)
-    send_offer_creation_notification_to_support(offer, PRO_URL, app.mailjet_client.send.create)
     return jsonify(offer._asdict(include=OFFER_INCLUDES)), 201
 
 
