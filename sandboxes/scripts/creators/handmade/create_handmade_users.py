@@ -74,6 +74,17 @@ def create_handmade_users():
     # JEUNES
     ######################################
 
+    users_by_name['jeune34 has-signed-up'] = create_user(
+        departement_code="34",
+        email="pctest.jeune34.has-signed-up@btmx.fr",
+        first_name="PC Test Jeune",
+        last_name="34 has-signed-up",
+        password="pctest.Jeune34.has-signed-up",
+        postal_code="34080",
+        public_name="PC Test Jeune34 HSU",
+        reset_password_token='AZERTY124'
+    )
+
     users_by_name['jeune93 has-signed-up'] = create_user(
         departement_code="93",
         email="pctest.jeune93.has-signed-up@btmx.fr",
@@ -85,6 +96,17 @@ def create_handmade_users():
         reset_password_token='AZERTY125'
     )
 
+    users_by_name['jeune97 has-signed-up'] = create_user(
+        departement_code="97",
+        email="pctest.jeune97.has-signed-up@btmx.fr",
+        first_name="PC Test Jeune",
+        last_name="97 HSU",
+        password="pctest.Jeune93.has-signed-up",
+        postal_code="97100",
+        public_name="PC Test Jeune93 HSU",
+        reset_password_token='AZERTY126'
+    )
+
     users_by_name['jeune93 has-booked-some'] = create_user(
         departement_code="93",
         email="pctest.jeune93.has-booked-some@btmx.fr",
@@ -93,17 +115,6 @@ def create_handmade_users():
         password="pctest.Jeune93.has-booked-some",
         postal_code="93100",
         public_name="PC Test Jeune93 HBS"
-    )
-
-    users_by_name['jeune34 0'] = create_user(
-        departement_code="34",
-        email="pctest.jeune34.has-signed-up@btmx.fr",
-        first_name="PC Test Jeune",
-        last_name="34 has-signed-up",
-        password="pctest.Jeune34.has-signed-up",
-        postal_code="34080",
-        public_name="PC Test Jeune34 HSU",
-        reset_password_token='AZERTY126'
     )
 
     users_by_name['jeune97 has-booked-some'] = create_user(
