@@ -32,7 +32,13 @@ const transitionStyles = {
 }
 
 class MainMenu extends React.PureComponent {
+  constructor(props) {
+    super(props)
+    this.state = { isVisible: false }
+  }
+
   componentDidMount() {
+    this.setState({ isVisible: true })
     const { dispatch } = this.props
     dispatch(toggleOverlay())
   }
@@ -43,8 +49,12 @@ class MainMenu extends React.PureComponent {
   }
 
   toggleMainMenu = () => {
+    this.setState({ isVisible: false })
     const { history } = this.props
-    history.goBack()
+
+    setTimeout(() => {
+      history.goBack()
+    }, transitionDuration)
   }
 
   renderCloseButton = () => (
@@ -73,7 +83,8 @@ class MainMenu extends React.PureComponent {
   )
 
   render() {
-    const { isVisible, user } = this.props
+    const { user } = this.props
+    const { isVisible } = this.state
     return (
       <Transition in={isVisible} timeout={transitionDelay}>
         {status => (
@@ -113,12 +124,10 @@ MainMenu.defaultProps = {
 MainMenu.propTypes = {
   dispatch: PropTypes.func.isRequired,
   history: PropTypes.object.isRequired,
-  isVisible: PropTypes.bool.isRequired,
   user: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
 }
 
 const mapStateToProps = state => ({
-  isVisible: true,
   user: state.user,
 })
 
