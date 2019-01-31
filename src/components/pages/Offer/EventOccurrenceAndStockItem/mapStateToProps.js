@@ -81,13 +81,13 @@ export default function mapStateToProps(state, ownProps) {
     ),
     formBookingLimitDatetime: get(
       state,
-      `form.stock${stockId || ''}.bookingLimitDatetime`
+      `form.stock${stockFormKey}.bookingLimitDatetime`
     ),
     formEndDatetime: get(
       state,
       `form.eventOccurrence${eventOccurrenceId || ''}.endDatetime`
     ),
-    formPrice: get(state, `form.stock${stockId || ''}.price`),
+    formPrice: get(state, `form.stock${stockFormKey}.price`),
     hasIban,
     isEditing,
     isEventOccurrenceReadOnly,
