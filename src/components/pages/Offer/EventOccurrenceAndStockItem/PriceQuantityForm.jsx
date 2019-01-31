@@ -1,6 +1,13 @@
-import { Field, Form, SubmitButton, Icon } from 'pass-culture-shared'
+import {
+  assignModalConfig,
+  Field,
+  Form,
+  Icon,
+  SubmitButton,
+} from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import React, { Component, Fragment } from 'react'
+import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
 import get from 'lodash.get'
 import ReactTooltip from 'react-tooltip'
@@ -55,6 +62,7 @@ class PriceQuantityForm extends Component {
 
     const {
       closeInfo,
+      dispatch,
       formPrice,
       hasIban,
       isStockReadOnly,
@@ -68,6 +76,8 @@ class PriceQuantityForm extends Component {
     priceInput.focus()
     this.isPriceInputDeactivate = true
 
+    dispatch(assignModalConfig({ extraClassName: 'modal-in-modal' }))
+
     showInfo(
       <Fragment>
         <div className="mb12">
@@ -80,6 +90,7 @@ class PriceQuantityForm extends Component {
           <button
             className="button is-primary"
             onClick={() => {
+              dispatch(assignModalConfig({ extraClassName: null }))
               closeInfo()
               this.isPriceInputDeactivate = false
             }}>
@@ -117,8 +128,6 @@ class PriceQuantityForm extends Component {
       action = '/stocks'
       stockId = null
     }
-
-    console.log('bookingLimitDatetime', stockPatch.bookingLimitDatetime)
 
     return (
       <Form
@@ -219,4 +228,4 @@ PriceQuantityForm.propTypes = {
   stockPatch: PropTypes.object,
 }
 
-export default PriceQuantityForm
+export default connect()(PriceQuantityForm)

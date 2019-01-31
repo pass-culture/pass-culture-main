@@ -1,0 +1,9 @@
+.modal {
+  &.modal-in-modal {
+    .modal-dialog {
+      .modal-content {
+        position: initial;
+      }
+    }
+  }
+}

@@ -1,11 +1,12 @@
 .event-occurrences-and-stocks-manager {
-  @extend .is-relative;
 
   .info {
     @extend .is-absolute;
     @extend .level;
 
+    background-color: rgba($black, 0.8);
     bottom: 0;
+    margin-bottom: 0 !important;
     left: 0;
     right: 0;
     top: 0;
@@ -15,8 +16,7 @@
       @extend .level-item;
       @extend .p24;
 
-      background-color: $blue;
-      color: white;
+      background-color: $white;
       margin: auto;
       min-height: 200px;
       max-width: 50%;
