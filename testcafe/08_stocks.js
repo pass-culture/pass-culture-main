@@ -295,3 +295,12 @@ test('Je peux modifier une occurrence et un stock', async t => {
   location = await t.eval(() => window.location)
   await t.expect(location.search).match(/\?gestion$/)
 })
+
+fixture.skip`TODO: OfferPage Gestion D | Effacer des dates et des stocks`
+
+test('Je peux effacer une date et son stock', async t => {
+  await navigateToOfferAs(
+    EXISTING_VALIDATED_UNREGISTERED_93_OFFERER_USER,
+    EXISTING_EVENT_OFFER_WITH_EVENT_OCCURRENCE_WITH_STOCK_WITH_MEDIATION_WITH_93_OFFERER_IBAN_WITH_NO_VENUE_IBAN
+  )(t)
+})

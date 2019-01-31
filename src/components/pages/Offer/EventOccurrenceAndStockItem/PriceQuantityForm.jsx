@@ -53,8 +53,14 @@ class PriceQuantityForm extends Component {
       return
     }
 
-    const { closeInfo, formPrice, hasIban, showInfo } = this.props
-    if (hasIban || !formPrice) {
+    const {
+      closeInfo,
+      formPrice,
+      hasIban,
+      isStockReadOnly,
+      showInfo,
+    } = this.props
+    if (isStockReadOnly || hasIban || !formPrice) {
       return
     }
 
@@ -112,6 +118,8 @@ class PriceQuantityForm extends Component {
       stockId = null
     }
 
+    console.log('bookingLimitDatetime', stockPatch.bookingLimitDatetime)
+
     return (
       <Form
         action={action}
@@ -145,9 +153,6 @@ class PriceQuantityForm extends Component {
               maxDate={isStockOnly ? undefined : beginningDatetime}
               name="bookingLimitDatetime"
               placeholder="Laissez vide si pas de limite"
-              ref={element => {
-                this.bookingLimitDatetimeField = element
-              }}
               type="date"
             />
           </td>
