@@ -5,7 +5,11 @@ import PropTypes from 'prop-types'
 
 import { FormError } from '../../../forms'
 import { validateMatchingFields } from '../../../forms/validators'
-import { HiddenField, PasswordField } from '../../../forms/inputs'
+import {
+  CheckBoxField,
+  HiddenField,
+  PasswordField,
+} from '../../../forms/inputs'
 
 const FormInputs = ({ formValues, formErrors, isLoading }) => {
   const { email } = formValues
@@ -52,6 +56,27 @@ const FormInputs = ({ formValues, formErrors, isLoading }) => {
             id="activation-newPasswordConfirm"
             label="Confirmez le mot de passe"
           />
+          <CheckBoxField
+            name="cguCheckBox"
+            id="activation-accept-CGU"
+            className="checkbox-accept-CGU"
+            required
+            theme="primary"
+          >
+            <span>
+              J’ai lu et accepte les{' '}
+              <a
+                id="accept-cgu-link"
+                href="https://pass.culture.fr/assets/docs/cgu-j.html"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="fs16"
+              >
+                Conditions générales d’utilisation
+              </a>{' '}
+              du pass Culture
+            </span>
+          </CheckBoxField>
           <HiddenField name="email" id="activation-email-hidden" />
           <HiddenField name="token" id="activation-token-hidden" />
           {/* gestion des retours erreurs de l'API */}
