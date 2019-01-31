@@ -275,11 +275,11 @@ def test_get_active_offers_by_type_when_departement_code_00(app):
     stock_34 = create_stock_from_offer(offer_34)
     stock_93 = create_stock_from_offer(offer_93)
     stock_75 = create_stock_from_offer(offer_75)
+    user = create_user(departement_code='00')
 
-    PcObject.check_and_save(stock_34, stock_93, stock_75)
+    PcObject.check_and_save(user, stock_34, stock_93, stock_75)
 
     # When
-    user = create_user(departement_code='00')
     offers = get_active_offers_by_type(Thing, user=user, department_codes=['00'], offer_id=None)
 
     # Then
@@ -479,7 +479,7 @@ def test_find_offers_with_filter_parameters_with_partial_keywords_and_filter_by_
 
 @clean_database
 @pytest.mark.standalone
-def test_get_active_offers_should_not_return_activation_offers(app):
+def test_get_active_offers_should_not_return_activation_event(app):
     # Given
     offerer = create_offerer()
     venue_93 = create_venue(offerer, postal_code='93000', departement_code='93', siret=offerer.siren + '33333')
@@ -489,13 +489,35 @@ def test_get_active_offers_should_not_return_activation_offers(app):
     event_occurrence_activation_93 = create_event_occurrence(offer_activation_93)
     stock_93 = create_stock_from_event_occurrence(event_occurrence_93)
     stock_activation_93 = create_stock_from_event_occurrence(event_occurrence_activation_93)
+    user = create_user(departement_code='00')
 
-    PcObject.check_and_save(stock_93, stock_activation_93)
+    PcObject.check_and_save(user, stock_93, stock_activation_93)
 
     # When
-    user = create_user(departement_code='00')
     offers = get_active_offers_by_type(Event, user=user, department_codes=['00'], offer_id=None)
 
     # Then
     assert offer_93 in offers
     assert offer_activation_93 not in offers
+
+
+@clean_database
+@pytest.mark.standalone
+def test_get_active_offers_should_not_return_activation_thing(app):
+    # Given
+    offerer = create_offerer()
+    venue_93 = create_venue(offerer, postal_code='93000', departement_code='93', siret=offerer.siren + '33333')
+    thing_93 = create_thing_offer(venue_93)
+    thing_activation_93 = create_thing_offer(venue_93, thing_type=ThingType.ACTIVATION)
+    stock_93 = create_stock_from_offer(thing_93)
+    stock_activation_93 = create_stock_from_offer(thing_activation_93)
+    user = create_user(departement_code='00')
+
+    PcObject.check_and_save(user, stock_93, stock_activation_93)
+
+    # When
+    offers = get_active_offers_by_type(Thing, user=user, department_codes=['00'], offer_id=None)
+
+    # Then
+    assert thing_93 in offers
+    assert thing_activation_93 not in offers
