@@ -72,10 +72,10 @@ def create_industrial_users():
             short_tag = "".join([chunk[0].upper() for chunk in tag.split('-')])
 
             if tag == "has-signed-up":
-                validation_token = '{}{}'.format(validation_prefix, validation_suffix)
+                reset_password_token = '{}{}'.format(validation_prefix, validation_suffix)
                 validation_suffix += 1
             else:
-                validation_token = None
+                reset_password_token = None
 
             users_by_name['jeune{} {}'.format(departement_code, tag)] = create_user(
                 departement_code=str(departement_code),
@@ -85,7 +85,7 @@ def create_industrial_users():
                 password="pctest.Jeune{}.{}".format(departement_code, tag),
                 postal_code="{}100".format(departement_code),
                 public_name="PC Test Jeune {} {}".format(departement_code, short_tag),
-                validation_token=validation_token
+                reset_password_token=reset_password_token
             )
 
     PcObject.check_and_save(*users_by_name.values())
