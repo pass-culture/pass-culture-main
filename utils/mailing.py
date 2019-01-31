@@ -21,6 +21,7 @@ from utils.human_ids import humanize
 
 MAILJET_API_KEY = os.environ.get('MAILJET_API_KEY')
 MAILJET_API_SECRET = os.environ.get('MAILJET_API_SECRET')
+OBJECT_STORAGE_URL = os.environ.get('OBJECT_STORAGE_URL')
 
 if MAILJET_API_KEY is None or MAILJET_API_KEY == '':
     raise ValueError("Missing environment variable MAILJET_API_KEY")
@@ -271,13 +272,14 @@ def make_venue_validation_email(venue):
 
 def make_activation_notification_email(user: User) -> dict:
     return {
-        'FromEmail': 'passculture@beta.gouv.fr',
-        'FromName': 'pass Culture',
-        'Subject': 'ACTIVATION NOTIFICATION',
+        'FromEmail': 'support.passculture@beta.gouv.fr',
+        'FromName': 'Équipe pass Culture',
+        'Subject': 'Votre pass Culture est disponible',
         'Html-part': render_template(
             'mails/activation_notification_email.html',
             first_name=user.firstName.capitalize(),
-            set_password_link=generate_set_password_url(WEBAPP_URL, user)
+            set_password_link=generate_set_password_url(WEBAPP_URL, user),
+            object_storage_url=OBJECT_STORAGE_URL
         )
     }
 
