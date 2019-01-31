@@ -143,7 +143,7 @@ test('Menu | Liens | Déconnexion', async t => {
 
 fixture`12_03 Modale Menu - gestion de l'historique`.beforeEach(async t => {
   await t
-    .useRole(createUserRole(hasSignedUpUser))
+    .useRole(createUserRole(hasSignedUpUser93))
     .navigateTo(`${ROOT_PATH}mentions-legales`)
     .wait(500)
     .click(menuButton)
