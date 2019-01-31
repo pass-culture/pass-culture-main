@@ -12,7 +12,10 @@ const NavigationFooter = ({ className, disabled, location, theme }) => {
         id="open-menu-button"
         className="no-border no-background no-outline no-select"
       >
-        <Link to={`${location.pathname}/menu${location.search}`}>
+        <Link
+          to={`${location.pathname}/menu${location.search}`}
+          className={`pc-theme-${theme}`}
+        >
           <span
             aria-hidden
             className="icon-legacy-user-circle-outline"
