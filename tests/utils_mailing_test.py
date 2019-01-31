@@ -392,14 +392,14 @@ def test_write_object_validation_email_should_have_some_specific_information(app
     div_offerer = html.select('div.offerer')[0]
     assert div_offerer.h2.text == 'Nouvelle structure :'
     assert div_offerer.h3.text == 'Infos API entreprise :'
-    assert div_offerer.strong.a['href'] == 'localhost/validate?modelNames=Offerer&token={}'.format(
+    assert div_offerer.strong.a['href'] == 'http://localhost/validate?modelNames=Offerer&token={}'.format(
         offerer.validationToken)
     assert div_offerer.strong.a.text == 'cliquez ici'
 
     div_user_offerer = html.select('div.user_offerer')[0]
     assert div_user_offerer.h2.text == 'Nouveau rattachement :'
     assert div_user_offerer.h3.text == 'Utilisateur :'
-    assert div_user_offerer.strong.a['href'] == 'localhost/validate?modelNames=UserOfferer&token={}'.format(
+    assert div_user_offerer.strong.a['href'] == 'http://localhost/validate?modelNames=UserOfferer&token={}'.format(
         user_offerer.validationToken)
     assert div_user_offerer.strong.a.text == 'cliquez ici'
 
@@ -1069,7 +1069,7 @@ def test_make_activation_notification_email(app):
     parsed_email = BeautifulSoup(email['Html-part'], 'html.parser')
     assert parsed_email.find('strong', {'id': 'user-first-name'}).text == 'Bonjour Isidore,'
     assert parsed_email.find('a', {'id': 'set-password-link'}).get('href') == \
-           'localhost:3000/activation/ABCD123?email=john.doe%40test.com'
+           'http://localhost:3000/activation/ABCD123?email=john.doe%40test.com'
 
 
 @pytest.mark.standalone

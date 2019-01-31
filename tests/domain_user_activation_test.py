@@ -32,9 +32,9 @@ class GenerateActivationUsersCsvTest:
         ]
         assert csv_list_format[1] == [
             '"Pedro"', '"Gutierrez"', '"email1@test.com"', '"abc"',
-            '"localhost:3000/activation/AZERTY123?email=email1%40test.com"'
+            '"http://localhost:3000/activation/AZERTY123?email=email1%40test.com"'
         ]
         assert csv_list_format[2] == [
             '"Pablo"', '"Rodriguez"', '"email2+alias@test.com"', '"def"',
-            '"localhost:3000/activation/123AZERTY?email=email2%2Balias%40test.com"'
+            '"http://localhost:3000/activation/123AZERTY?email=email2%2Balias%40test.com"'
         ]
