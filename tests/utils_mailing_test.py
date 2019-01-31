@@ -1066,6 +1066,7 @@ def test_make_activation_notification_email(app):
     assert email["FromEmail"] == 'support.passculture@beta.gouv.fr'
     assert email["FromName"] == 'Équipe pass Culture'
     assert email["Subject"] == 'Votre pass Culture est disponible'
+    assert email["Text-Part"] is not None
     parsed_email = BeautifulSoup(email['Html-part'], 'html.parser')
     assert parsed_email.find('strong', {'id': 'user-first-name'}).text == 'Bonjour Isidore,'
     assert parsed_email.find('a', {'id': 'set-password-link'}).get('href') == \

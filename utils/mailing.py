@@ -271,17 +271,87 @@ def make_venue_validation_email(venue):
 
 
 def make_activation_notification_email(user: User) -> dict:
+    first_name = user.firstName.capitalize()
+    set_password_url = generate_set_password_url(WEBAPP_URL, user)
+
     return {
         'FromEmail': 'support.passculture@beta.gouv.fr',
         'FromName': 'Équipe pass Culture',
         'Subject': 'Votre pass Culture est disponible',
+        'Text-Part': _make_activation_notification_email_as_plain_text(first_name, set_password_url),
         'Html-part': render_template(
             'mails/activation_notification_email.html',
-            first_name=user.firstName.capitalize(),
-            set_password_link=generate_set_password_url(WEBAPP_URL, user),
+            first_name=first_name,
+            set_password_link=set_password_url,
             object_storage_url=OBJECT_STORAGE_URL
         )
     }
+
+
+def _make_activation_notification_email_as_plain_text(first_name: str, set_password_link: str) -> str:
+    return f"""
+    * Vous pouvez télécharger votre pass culture *
+
+
+    Bonjour {first_name},
+
+    Félicitations !
+    Votre pass Culture est désormais activé et votre compte est crédité de 500 euros.
+
+    Cliquez ici pour accéder à l'application : 
+    {set_password_link}
+
+    ———
+
+    Le pass Culture, c’est l’application qui vous permettra d’accéder à toutes les sorties ou pratiques culturelles près de chez vous.
+
+    Spectacles, rencontres, visites particulières, abonnements cinéma… Soyez curieux !
+
+    Explorez les nombreuses propositions sur l’application pour vous adonner à vos passions ou tenter de nouvelles expériences.
+
+    Pour profiter au mieux de l’application sur smartphone, épinglez vous-même votre pass Culture à votre écran d’accueil ; tout est expliqué ici : https://pass.culture.fr/assets/docs/Tuto-app_passCulture-mobile.pdf
+
+    ———
+
+    Le pass Culture est dans sa phase d’expérimentation. Il est en construction permanente. Nous travaillons tous les jours à son amélioration. Mais vous pouvez aussi nous aider !
+
+    ———
+
+    * Le mot du ministre * 	
+
+    «Je vous remercie d’avoir répondu présents en si grand nombre pour prendre part à cette expérimentation sans précédent. Pour une fois, l’on ne vous dira pas que la curiosité est un vilain défaut. Je vous invite précisément à être curieux. Le pass Culture est une formidable chance d’explorer des domaines de la culture que vous ne connaissez pas encore, profitez-en. Faites-nous part également de tous vos retours, autant que possible, la période qui s’ouvre est faite pour cela. Nous avons le plaisir de construire ensemble le pass Culture dont des générations entières de jeunes de votre âge bénéficieront dans les années à venir. Gardez d’ailleurs en tête que la culture doit toujours rester associée au plaisir. Je vous souhaite donc de faire de belles découvertes sur le pass Culture et, surtout, de vous y amuser.»
+
+    Franck Riester
+    Ministre de la Culture
+
+    ———
+
+    * Écrivez-nous, nous sommes à votre écoute *
+
+    On adore vous lire alors n’hésitez pas à nous dire…
+    • ce que vous aimez,
+    • ce que vous aimez moins,
+    • si vous rencontrez un problème,
+    • si vous souhaitez nous donner des idées sur les nouvelles fonctionnalités que 
+    vous aimeriez que le pass Culture vous propose !
+
+    ———
+
+    Bonnes découvertes et à très vite !
+
+
+
+    L'équipe du pass Culture
+
+
+
+    Facebook : https://facebook.com/passCultureofficiel
+    Instagram : https://instagram.com/passCultureofficiel
+    Snapchat : https://www.snapchat.com/add/pass.culture
+    Twitter : https://twitter.com/pass_culture
+
+    support.passculture@beta.gouv.fr • pass.culture.fr
+    """
 
 
 def make_user_validation_email(user, app_origin_url, is_webapp):
