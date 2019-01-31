@@ -79,6 +79,9 @@ $main-menu-height-with-padding: (592px + 24px); // 24 === padding (2 * 12)
     width: 44px;
   }
 }
+#main-menu-navigation [disabled].navlink {
+  cursor: not-allowed;
+}
 
 #main-menu-navigation .navlink {
   height: 52px;

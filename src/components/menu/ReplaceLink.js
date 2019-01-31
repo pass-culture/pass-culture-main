@@ -4,18 +4,21 @@ import { withRouter } from 'react-router-dom'
 
 class ReplaceLink extends React.PureComponent {
   navigate() {
-    const { history, onClick, to } = this.props
-    if (onClick) {
-      onClick()
+    const { disabled, history, onClick, to } = this.props
+    if (!disabled) {
+      if (onClick) {
+        onClick()
+      }
+      history.replace(to)
     }
-    history.replace(to)
   }
 
   render() {
-    const { children, className } = this.props
+    const { children, className, disabled } = this.props
 
     return (
       <div
+        disabled={disabled}
         className={`${className} pointer`}
         onKeyPress={() => this.navigate()}
         onClick={() => this.navigate()}
@@ -30,12 +33,14 @@ class ReplaceLink extends React.PureComponent {
 
 ReplaceLink.defaultProps = {
   className: '',
+  disabled: false,
   onClick: null,
 }
 
 ReplaceLink.propTypes = {
   children: PropTypes.object.isRequired,
   className: PropTypes.string,
+  disabled: PropTypes.bool,
   history: PropTypes.object.isRequired,
   onClick: PropTypes.func,
   to: PropTypes.string.isRequired,
