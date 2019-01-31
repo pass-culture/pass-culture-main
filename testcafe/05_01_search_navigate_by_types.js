@@ -36,7 +36,7 @@ const toogleFilterButton = Selector('#search-filter-menu-toggle-button').find(
 )
 
 test('Je vois le titre de la page', async t => {
-  await t.expect(headerTitle.innerText).eql('Recherche\n')
+  await t.expect(headerTitle.textContent).eql('Recherche')
 })
 
 test('Je ne vois pas le bouton retour', async t => {
@@ -100,14 +100,13 @@ fixture(
 
 test("Je clique sur la vignette 'Lire' et je suis redirigé vers la page de résultats de la recherche", async t => {
   const backButton = Selector('button.back-button')
-
   await t
     .expect(getPageUrl())
     .contains('/recherche/resultats/Lire', { timeout: 3000 })
 
     // Le titre du header change
-    .expect(headerTitle.innerText)
-    .eql('Recherche : résultats\n')
+    .expect(headerTitle.textContent)
+    .eql('Recherche : résultats')
 
     // Le filtre apparaît comme activé
     .expect(toogleFilterButton.getAttribute('src'))
