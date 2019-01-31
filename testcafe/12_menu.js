@@ -1,4 +1,4 @@
-import { Selector } from 'testcafe'
+import { ClientFunction, Selector } from 'testcafe'
 
 import { createUserRole } from './helpers/roles'
 import { hasSignedUpUser } from './helpers/users'
@@ -30,7 +30,7 @@ test('Lorsque je clique sur la croix, la modale se referme', async t => {
     .wait(500)
     .click(closeButton)
     .wait(100)
-  await t.expect(mainMenu.hasClass('exited')).ok()
+  await t.expect(mainMenu.exists).notOk()
 })
 
 test('Je vois mon avatar dans le header', async t => {
@@ -139,4 +139,47 @@ test('Menu | Liens | Déconnexion', async t => {
     .wait(500)
   const location = await t.eval(() => window.location)
   await t.expect(location.pathname).eql('/connexion')
+})
+
+fixture`12_03 Modale Menu - gestion de l'historique`.beforeEach(async t => {
+  await t
+    .useRole(createUserRole(hasSignedUpUser))
+    .navigateTo(`${ROOT_PATH}mentions-legales`)
+    .wait(500)
+    .click(menuButton)
+    .wait(100)
+})
+
+test('Menu | Back button ferme le menu', async t => {
+  // When
+  const goBack = ClientFunction(() => window.history.back())
+  await goBack()
+  // Then
+  await t.expect(mainMenu.exists).notOk()
+})
+
+test("Menu | Le menu ne reste pas dans l'historique de navigation", async t => {
+  // given
+  let location
+  const goBack = ClientFunction(() => window.history.back())
+
+  // when
+  const menuProfil = Selector('.navlink').withText('Mon Profil')
+  await t
+    .expect(menuProfil.exists)
+    .ok()
+    .click(menuProfil)
+    .wait(500)
+
+  // then
+  location = await t.eval(() => window.location)
+  await t.expect(location.pathname).eql('/profil')
+
+  // when
+  await goBack()
+  await t.wait(500)
+
+  // then
+  location = await t.eval(() => window.location)
+  await t.expect(location.pathname).eql('/mentions-legales')
 })
