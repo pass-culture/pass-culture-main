@@ -4,6 +4,8 @@ import { Link, withRouter } from 'react-router-dom'
 
 const NavigationFooter = ({ className, disabled, location, theme }) => {
   const cssclass = `pc-theme-${theme} pc-footer flex-center flex-none ${className}`
+  const cleanPath = location.pathname.replace(/\/$/, '')
+  const menuUrl = `${cleanPath}/menu${location.search}`
   return (
     <footer className={cssclass}>
       <button
@@ -12,10 +14,7 @@ const NavigationFooter = ({ className, disabled, location, theme }) => {
         id="open-menu-button"
         className="no-border no-background no-outline no-select"
       >
-        <Link
-          to={`${location.pathname}/menu${location.search}`}
-          className={`pc-theme-${theme}`}
-        >
+        <Link to={menuUrl} className={`pc-theme-${theme}`}>
           <span
             aria-hidden
             className="icon-legacy-user-circle-outline"

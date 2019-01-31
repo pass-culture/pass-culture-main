@@ -20,11 +20,14 @@ const Footer = ({ borderTop, colored, areDetailsVisible, location, onTop }) => {
     colored,
     'on-top': onTop,
   })
+
+  const cleanPath = location.pathname.replace(/\/$/, '')
+  const menuUrl = `${cleanPath}/menu${location.search}`
   return (
     <footer className={cssclass} style={style}>
       <div className="button-wrapper">
         <button className="profile-button" type="button">
-          <Link to={`${location.pathname}/menu`}>
+          <Link to={menuUrl}>
             <ProfilePicture alt="Mon menu" {...maybeColored} />
           </Link>
         </button>
