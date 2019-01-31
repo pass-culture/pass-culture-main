@@ -8,6 +8,7 @@ from models.local_provider_event import LocalProviderEventType
 from models.thing import Thing, BookFormat
 from models import ThingType
 from repository import local_provider_event_queries
+from utils.ftp_titelive import connect_to_titelive_ftp, get_titelive_ftp
 from utils.string_processing import trim_with_elipsis
 
 import ftplib
@@ -15,9 +16,10 @@ from io import TextIOWrapper, BytesIO
 
 DATE_FORMAT = "%d/%m/%Y"
 DATETIME_FORMAT = "%d/%m/%Y %H:%M:%S"
-DATE_REGEXP = re.compile('Quotidien(\d+).tit')
-FTP_TITELIVE = ftplib.FTP(os.environ.get("FTP_TITELIVE_URI"))
-FOLDER_NAME_TITELIVE = 'livre3_11'
+DATE_REGEXP = re.compile('(\w+)(\d+).tit')
+THINGS_FOLDER_NAME_TITELIVE = 'livre3_11'
+
+INIT_FULL_TABLE = 'FullTable*.tit'
 
 
 def read_date(date):
@@ -33,13 +35,13 @@ def file_date(filename):
     if not match:
         raise ValueError('Invalid filename in titelive_works : '
                          + filename)
-    return int(match.group(1))
+    return int(match.group(2))
 
 
 def get_ordered_thing_files_from_sandbox_files():
     data_root_path = Path(os.path.dirname(os.path.realpath(__file__))) \
                      / '..' / 'sandboxes' / 'providers' / 'titelive_works'
-    data_thing_paths = data_root_path / FOLDER_NAME_TITELIVE
+    data_thing_paths = data_root_path / THINGS_FOLDER_NAME_TITELIVE
     all_thing_files = sorted(data_thing_paths.glob('Quotidien*.tit'))
     if not os.path.isdir(data_root_path):
         raise ValueError('File not found : '+str(data_root_path)
@@ -47,14 +49,17 @@ def get_ordered_thing_files_from_sandbox_files():
     return all_thing_files
 
 
-def get_ordered_thing_files_from_titelive_ftp():
-    ftp_titelive_user = os.environ.get("FTP_TITELIVE_USER")
-    ftp_titelive_pwd = os.environ.get("FTP_TITELIVE_PWD")
-    FTP_TITELIVE.login(ftp_titelive_user, ftp_titelive_pwd)
-    data_root_path = ''
-    data_thing_paths = data_root_path + FOLDER_NAME_TITELIVE
+def get_ordered_thing_files_from_init_file(file_to_import):
+    data_root_path = Path(os.path.dirname(os.path.realpath(__file__))) \
+                     / '..' / 'sandboxes' / 'providers' / 'titelive_works'
+    data_thing_paths = data_root_path
+    all_thing_files = sorted(data_thing_paths.glob(file_to_import))
+    return all_thing_files
 
-    files_list = FTP_TITELIVE.nlst(data_thing_paths)
+
+def get_ordered_thing_files_from_titelive_ftp():
+    ftp_titelive = connect_to_titelive_ftp()
+    files_list = ftp_titelive.nlst(THINGS_FOLDER_NAME_TITELIVE)
 
     files_list_final = [file_name for file_name in files_list if DATE_REGEXP.search(str(file_name))]
 
@@ -81,14 +86,13 @@ class TiteLiveThings(LocalProvider):
     def __init__(self, venueProvider, **options):
         super().__init__(venueProvider, **options)
         self.is_mock = 'mock' in options and options['mock']
+        self.file_to_import = 'file_to_import' in options and options['file_to_import']
 
         if self.is_mock:
             ordered_thing_files = get_ordered_thing_files_from_sandbox_files()
+        elif self.file_to_import:
+            ordered_thing_files = get_ordered_thing_files_from_init_file(self.file_to_import)
         else:
-            if not "FTP_TITELIVE_USER" in os.environ \
-                or not "FTP_TITELIVE_PWD" in os.environ:
-                raise ValueError('Information de connexion non spécifiée.')
-
             ordered_thing_files = get_ordered_thing_files_from_titelive_ftp()
 
         latest_sync_part_end_event = local_provider_event_queries.find_latest_sync_part_end_event(self.dbObject)
@@ -110,7 +114,7 @@ class TiteLiveThings(LocalProvider):
         self.thing_file = self.thing_files.__next__()
         print("  Importing things from file %s" % self.thing_file)
         self.logEvent(LocalProviderEventType.SyncPartStart, file_date(self.thing_file))
-        if self.is_mock:
+        if self.is_mock or self.file_to_import:
             with open(self.thing_file, 'r', encoding='iso-8859-1') as f:
                 self.data_lines = iter(f.readlines())
         else:
@@ -121,8 +125,8 @@ class TiteLiveThings(LocalProvider):
                 line_buffering=True,
             )
 
-            file_path = 'RETR '+ FOLDER_NAME_TITELIVE + '/' + str(self.thing_file)
-            FTP_TITELIVE.retrbinary(file_path, data_file.write)
+            file_path = 'RETR ' + THINGS_FOLDER_NAME_TITELIVE + '/' + str(self.thing_file)
+            get_titelive_ftp().retrbinary(file_path, data_file.write)
             data_wrapper.seek(0, 0)
             self.data_lines = iter(data_wrapper.readlines())
 
