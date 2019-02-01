@@ -1,9 +1,7 @@
-from datetime import datetime, timedelta
-from unittest.mock import patch
-from urllib.parse import urlencode
-
 import pytest
 import requests as req
+from datetime import datetime, timedelta
+from urllib.parse import urlencode
 
 from models import Offerer, PcObject, EventType, Deposit, ThingType
 from models.db import db
@@ -1324,7 +1322,8 @@ class GetBookingTest:
 @pytest.mark.standalone
 class PatchBookingByTokenForActivationOffersTest:
     @clean_database
-    def test_when_user_patching_admin_and_activation_event_returns_status_code_204_set_can_book_free_offers_true_for_booking_user(self, app):
+    def test_when_user_patching_admin_and_activation_event_returns_status_code_204_set_can_book_free_offers_true_for_booking_user(
+            self, app):
         # Given
         user = create_user(is_admin=False, can_book_free_offers=False)
         pro_user = create_user(email='pro@email.fr', password='P@55w0rd', is_admin=True, can_book_free_offers=False)
@@ -1395,7 +1394,8 @@ class PatchBookingByTokenForActivationOffersTest:
         assert user.canBookFreeOffers == True
 
     @clean_database
-    def test_when_user_patching_admin_and_deposit_for_booking_do_not_add_new_deposit_and_return_status_code_405(self, app):
+    def test_when_user_patching_admin_and_deposit_for_booking_do_not_add_new_deposit_and_return_status_code_405(self,
+                                                                                                                app):
         # Given
         user = create_user(is_admin=False, can_book_free_offers=False)
         pro_user = create_user(email='pro@email.fr', password='P@55w0rd', is_admin=True, can_book_free_offers=False)
