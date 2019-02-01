@@ -1,16 +1,20 @@
 import pytest
+from datetime import datetime
+from dateutil.tz import tzlocal
+from freezegun import freeze_time
 
 from models import PcObject
 from recommendations_engine import create_recommendations_for_discovery, \
-                                   create_recommendations_for_search
+    get_recommendation_search_params
 from tests.conftest import clean_database
+from utils.date import strftime
 from utils.human_ids import humanize
 from utils.test_utils import create_user, \
-                      create_offerer, \
-                      create_venue, \
-                      create_thing_offer, \
-                      create_stock_from_offer, \
-                      create_mediation
+    create_offerer, \
+    create_venue, \
+    create_thing_offer, \
+    create_stock_from_offer, \
+    create_mediation
 
 
 @clean_database
@@ -38,3 +42,41 @@ def test_create_recommendations_for_discovery_does_not_put_mediation_ids_of_inac
     assert mediation3.id in mediations
     assert humanize(mediation2.id) not in mediations
     assert humanize(mediation1.id) not in mediations
+
+
+@freeze_time('2019-01-31 12:00:00')
+@pytest.mark.standalone
+class GetRecommendationSearchParamsTest:
+    def setup_class(self):
+        self.now = datetime.utcnow()
+
+    def test_when_days_0_1_and_date_today_returns_dictionary_with_days_intervals_today_and_in_one_day(self):
+        # Given
+        request_args = {'days': '0-1', 'date': strftime(self.now)}
+        # When
+        search_params = get_recommendation_search_params(request_args)
+
+        # Then
+        assert search_params == {'days_intervals': [
+            [datetime(2019, 1, 31, 12, 0, tzinfo=tzlocal()), datetime(2019, 2, 1, 12, 0, tzinfo=tzlocal())]]}
+
+    def test_when_days_1_5_and_date_today_returns_dictionary_with_days_intervals_in_one_day_and_in_five_days(self):
+        # Given
+        request_args = {'days': '1-5', 'date': strftime(self.now)}
+        # When
+        search_params = get_recommendation_search_params(request_args)
+
+        # Then
+        assert search_params == {'days_intervals': [
+            [datetime(2019, 2, 1, 12, 0, tzinfo=tzlocal()), datetime(2019, 2, 5, 12, 0, tzinfo=tzlocal())]]}
+
+    def test_when_days_more_than_5_and_date_today_returns_dictionary_with_days_intervals_in_five_days_and_100000_days(self):
+        # Given
+        request_args = {'days': '5-100000', 'date': strftime(self.now)}
+        # When
+        search_params = get_recommendation_search_params(request_args)
+
+        # Then
+        assert search_params == {'days_intervals': [
+            [datetime(2019, 2, 5, 12, 0, tzinfo=tzlocal()), datetime(2292, 11, 15, 12, 0, tzinfo=tzlocal())]]}
+

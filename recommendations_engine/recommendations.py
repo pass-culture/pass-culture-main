@@ -181,42 +181,42 @@ def create_recommendations_for_search(user, **kwargs):
     return recommendations
 
 
-def get_recommendation_search_params(kwargs):
+def get_recommendation_search_params(request_args: dict) -> dict:
     search_params = {}
     api_errors = ApiErrors()
 
-    if 'page' in kwargs and kwargs['page']:
-        search_params['page'] = int(kwargs['page'])
+    if 'page' in request_args and request_args['page']:
+        search_params['page'] = int(request_args['page'])
 
-    if 'keywords' in kwargs and kwargs['keywords']:
-        search_params['keywords_string'] = kwargs['keywords']
+    if 'keywords' in request_args and request_args['keywords']:
+        search_params['keywords_string'] = request_args['keywords']
 
-    if 'categories' in kwargs and kwargs['categories']:
-        type_sublabels = kwargs['categories']
+    if 'categories' in request_args and request_args['categories']:
+        type_sublabels = request_args['categories']
         search_params['type_values'] = get_event_or_thing_type_values_from_sublabels(type_sublabels)
 
-    if 'date' in kwargs and kwargs['date']:
-        date = dateutil.parser.parse(kwargs['date'])
+    if 'date' in request_args and request_args['date']:
+        date = dateutil.parser.parse(request_args['date'])
         search_params['days_intervals'] = [[ date, date + timedelta(days=int(1)) ]]
 
-    if 'days' in kwargs and kwargs['days']:
-        date = dateutil.parser.parse(kwargs['date'])
-        days_intervals = kwargs['days'].split(',')
+    if 'days' in request_args and request_args['days']:
+        date = dateutil.parser.parse(request_args['date'])
+        days_intervals = request_args['days'].split(',')
         search_params['days_intervals'] = [
             [date + timedelta(days=int(day)) for day in days.split('-')]
             for days in days_intervals
         ]
 
-    if 'latitude' in kwargs and kwargs['latitude']:
-        search_params['latitude'] = float(kwargs['latitude'])
+    if 'latitude' in request_args and request_args['latitude']:
+        search_params['latitude'] = float(request_args['latitude'])
 
-    if 'longitude' in kwargs and kwargs['longitude']:
-        search_params['longitude'] = float(kwargs['longitude'])
+    if 'longitude' in request_args and request_args['longitude']:
+        search_params['longitude'] = float(request_args['longitude'])
 
-    if 'distance' in kwargs and kwargs['distance']:
-        if not kwargs['distance'].isdigit():
+    if 'distance' in request_args and request_args['distance']:
+        if not request_args['distance'].isdigit():
             api_errors.addError('distance', 'cela doit etre un nombre')
             raise api_errors
-        search_params['max_distance'] = float(kwargs['distance'])
+        search_params['max_distance'] = float(request_args['distance'])
 
     return search_params
