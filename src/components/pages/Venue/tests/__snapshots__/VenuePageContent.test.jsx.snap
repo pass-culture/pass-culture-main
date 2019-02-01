@@ -1,0 +1,2758 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`src | components | pages | Venue | VenuePageContent snapshot should match snapshot 1`] = `
+ShallowWrapper {
+  Symbol(enzyme.__root__): [Circular],
+  Symbol(enzyme.__unrendered__): <VenuePageContent
+    currentUser={Object {}}
+    dispatch={[Function]}
+    formComment={null}
+    formLatitude={5.15981}
+    formLongitude={-52.63452}
+    formSiret="22222222411111"
+    history={Object {}}
+    location={
+        Object {
+            "search": "",
+          }
+    }
+    match={
+        Object {
+            "params": Object {
+              "offererId": "APEQ",
+              "venueId": "AQYQ",
+            },
+          }
+    }
+    name="Maison de la Brique"
+    offerer={Object {}}
+    user={Object {}}
+    venuePatch={Object {}}
+/>,
+  Symbol(enzyme.__renderer__): Object {
+    "batchedUpdates": [Function],
+    "getNode": [Function],
+    "render": [Function],
+    "simulateError": [Function],
+    "simulateEvent": [Function],
+    "unmount": [Function],
+  },
+  Symbol(enzyme.__node__): Object {
+    "instance": null,
+    "key": undefined,
+    "nodeType": "function",
+    "props": Object {
+      "backTo": Object {
+        "label": "STRUCTURE",
+        "path": "/structures/APEQ",
+      },
+      "children": Array [
+        <HeroSection
+          subtitle={undefined}
+          title="Lieu"
+>
+          
+</HeroSection>,
+        <withRouter(Connect(ProviderManager))
+          venue={Object {}}
+/>,
+        <withRouter(Connect(_Form))
+          BlockComponent={null}
+          Tag="form"
+          action="/venues/"
+          className={null}
+          errorsPatch={Object {}}
+          failNotification="Formulaire non validé"
+          formPatch={Object {}}
+          formatPatch={[Function]}
+          handleFail={null}
+          handleFailNotification={null}
+          handleFailRedirect={null}
+          handleSuccess={[Function]}
+          handleSuccessNotification={null}
+          handleSuccessRedirect={null}
+          name="venue"
+          normalizer={
+                    Object {
+                              "eventOccurrences": Object {
+                                "key": "eventOccurrences",
+                                "normalizer": Object {
+                                  "event": "events",
+                                },
+                              },
+                              "managingOfferer": "offerers",
+                              "offers": Object {
+                                "key": "offers",
+                                "normalizer": Object {
+                                  "thing": "things",
+                                },
+                              },
+                              "venueProviders": "venueProviders",
+                            }
+          }
+          onEnterKey={null}
+          onEscapeKey={null}
+          onSubmit={null}
+          patch={Object {}}
+          readOnly={true}
+          successNotification="Formulaire non validé"
+>
+          <div
+                    className="section"
+          >
+                    <h2
+                              className="main-list-title is-relative"
+                    >
+                              IDENTIFIANTS
+                    </h2>
+                    <div
+                              className="field-group"
+                    >
+                              <Field
+                                        className=""
+                                        displayValue={[Function]}
+                                        label="SIRET (si applicable)"
+                                        layout="horizontal"
+                                        name="siret"
+                                        readOnly={undefined}
+                                        renderInfo={[Function]}
+                                        required={true}
+                                        size="normal"
+                                        storeValue={[Function]}
+                                        type="siret"
+                              />
+                              <Field
+                                        displayValue={[Function]}
+                                        isExpanded={true}
+                                        label="Nom"
+                                        layout="horizontal"
+                                        name="name"
+                                        readOnly={true}
+                                        required={true}
+                                        size="normal"
+                                        storeValue={[Function]}
+                              />
+                              <Field
+                                        displayValue={[Function]}
+                                        label="E-mail"
+                                        layout="horizontal"
+                                        name="bookingEmail"
+                                        renderInfo={[Function]}
+                                        required={true}
+                                        size="normal"
+                                        storeValue={[Function]}
+                                        type="email"
+                              />
+                    </div>
+          </div>
+          <div
+                    className="section"
+          >
+                    <h2
+                              className="main-list-title"
+                    >
+                              INFORMATIONS BANCAIRES
+                              <span
+                                        className="is-pulled-right is-size-7 has-text-grey"
+                              >
+                                        Vous avez besoin d'être administrateur de la structure pour editer ces informations.
+                              </span>
+                    </h2>
+                    <div
+                              className="field-group"
+                    >
+                              <Field
+                                        displayValue={[Function]}
+                                        label="BIC"
+                                        layout="horizontal"
+                                        name="bic"
+                                        readOnly={true}
+                                        size="normal"
+                                        storeValue={[Function]}
+                                        type="bic"
+                              />
+                              <Field
+                                        displayValue={[Function]}
+                                        isExpanded={true}
+                                        label="IBAN"
+                                        layout="horizontal"
+                                        name="iban"
+                                        readOnly={true}
+                                        size="normal"
+                                        storeValue={[Function]}
+                                        type="iban"
+                              />
+                    </div>
+          </div>
+          <div
+                    className="section"
+          >
+                    <h2
+                              className="main-list-title"
+                    >
+                              ADRESSE
+                    </h2>
+                    <div
+                              className="field-group"
+                    >
+                              <Field
+                                        displayValue={[Function]}
+                                        isExpanded={true}
+                                        label="Numéro et voie"
+                                        latitude={5.15981}
+                                        layout="horizontal"
+                                        longitude={-52.63452}
+                                        name="address"
+                                        readOnly={true}
+                                        required={true}
+                                        size="normal"
+                                        storeValue={[Function]}
+                                        type="geo"
+                                        withMap={true}
+                              />
+                              <Field
+                                        autocomplete="postal-code"
+                                        displayValue={[Function]}
+                                        label="Code postal"
+                                        layout="horizontal"
+                                        name="postalCode"
+                                        readOnly={true}
+                                        required={true}
+                                        size="normal"
+                                        storeValue={[Function]}
+                              />
+                              <Field
+                                        autocomplete="address-level2"
+                                        displayValue={[Function]}
+                                        label="Ville"
+                                        layout="horizontal"
+                                        name="city"
+                                        readOnly={true}
+                                        required={true}
+                                        size="normal"
+                                        storeValue={[Function]}
+                              />
+                              <Field
+                                        displayValue={[Function]}
+                                        label="Latitude"
+                                        layout="horizontal"
+                                        name="latitude"
+                                        readOnly={5.15981}
+                                        required={true}
+                                        size="normal"
+                                        storeValue={[Function]}
+                              />
+                              <Field
+                                        displayValue={[Function]}
+                                        label="Longitude"
+                                        layout="horizontal"
+                                        name="longitude"
+                                        readOnly={-52.63452}
+                                        required={true}
+                                        size="normal"
+                                        storeValue={[Function]}
+                              />
+                    </div>
+          </div>
+          <hr />
+          <div
+                    className="field is-grouped is-grouped-centered"
+                    style={
+                              Object {
+                                        "justifyContent": "space-between",
+                                      }
+                    }
+          >
+                    <div
+                              className="control"
+                    >
+                              <NavLink
+                                        activeClassName="active"
+                                        aria-current="page"
+                                        className="button is-secondary is-medium"
+                                        to="/structures/APEQ/lieux/AQYQ?modifie"
+                              >
+                                        Modifier le lieu
+                              </NavLink>
+                    </div>
+                    <div
+                              className="control"
+                    >
+                              <div
+                                        className="field is-grouped is-grouped-centered"
+                                        style={
+                                                  Object {
+                                                            "justifyContent": "space-between",
+                                                          }
+                                        }
+                              >
+                                        <div
+                                                  className="control"
+                                        >
+                                                  <NavLink
+                                                            activeClassName="active"
+                                                            aria-current="page"
+                                                            className="button is-primary is-medium"
+                                                            to="/structures/APEQ"
+                                                  >
+                                                            Terminer
+                                                  </NavLink>
+                                        </div>
+                              </div>
+                    </div>
+          </div>
+</withRouter(Connect(_Form))>,
+      ],
+      "handleDataRequest": [Function],
+      "name": "venue",
+    },
+    "ref": null,
+    "rendered": Array [
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "function",
+        "props": Object {
+          "children": Array [
+            false,
+            undefined,
+          ],
+          "subtitle": undefined,
+          "title": "Lieu",
+        },
+        "ref": null,
+        "rendered": Array [
+          false,
+          undefined,
+        ],
+        "type": [Function],
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "function",
+        "props": Object {
+          "venue": Object {},
+        },
+        "ref": null,
+        "rendered": null,
+        "type": [Function],
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "function",
+        "props": Object {
+          "BlockComponent": null,
+          "Tag": "form",
+          "action": "/venues/",
+          "children": Array [
+            false,
+            <div
+              className="section"
+>
+              <h2
+                            className="main-list-title is-relative"
+              >
+                            IDENTIFIANTS
+              </h2>
+              <div
+                            className="field-group"
+              >
+                            <Field
+                                          className=""
+                                          displayValue={[Function]}
+                                          label="SIRET (si applicable)"
+                                          layout="horizontal"
+                                          name="siret"
+                                          readOnly={undefined}
+                                          renderInfo={[Function]}
+                                          required={true}
+                                          size="normal"
+                                          storeValue={[Function]}
+                                          type="siret"
+                            />
+                            <Field
+                                          displayValue={[Function]}
+                                          isExpanded={true}
+                                          label="Nom"
+                                          layout="horizontal"
+                                          name="name"
+                                          readOnly={true}
+                                          required={true}
+                                          size="normal"
+                                          storeValue={[Function]}
+                            />
+                            <Field
+                                          displayValue={[Function]}
+                                          label="E-mail"
+                                          layout="horizontal"
+                                          name="bookingEmail"
+                                          renderInfo={[Function]}
+                                          required={true}
+                                          size="normal"
+                                          storeValue={[Function]}
+                                          type="email"
+                            />
+              </div>
+</div>,
+            <div
+              className="section"
+>
+              <h2
+                            className="main-list-title"
+              >
+                            INFORMATIONS BANCAIRES
+                            <span
+                                          className="is-pulled-right is-size-7 has-text-grey"
+                            >
+                                          Vous avez besoin d'être administrateur de la structure pour editer ces informations.
+                            </span>
+              </h2>
+              <div
+                            className="field-group"
+              >
+                            <Field
+                                          displayValue={[Function]}
+                                          label="BIC"
+                                          layout="horizontal"
+                                          name="bic"
+                                          readOnly={true}
+                                          size="normal"
+                                          storeValue={[Function]}
+                                          type="bic"
+                            />
+                            <Field
+                                          displayValue={[Function]}
+                                          isExpanded={true}
+                                          label="IBAN"
+                                          layout="horizontal"
+                                          name="iban"
+                                          readOnly={true}
+                                          size="normal"
+                                          storeValue={[Function]}
+                                          type="iban"
+                            />
+              </div>
+</div>,
+            <div
+              className="section"
+>
+              <h2
+                            className="main-list-title"
+              >
+                            ADRESSE
+              </h2>
+              <div
+                            className="field-group"
+              >
+                            <Field
+                                          displayValue={[Function]}
+                                          isExpanded={true}
+                                          label="Numéro et voie"
+                                          latitude={5.15981}
+                                          layout="horizontal"
+                                          longitude={-52.63452}
+                                          name="address"
+                                          readOnly={true}
+                                          required={true}
+                                          size="normal"
+                                          storeValue={[Function]}
+                                          type="geo"
+                                          withMap={true}
+                            />
+                            <Field
+                                          autocomplete="postal-code"
+                                          displayValue={[Function]}
+                                          label="Code postal"
+                                          layout="horizontal"
+                                          name="postalCode"
+                                          readOnly={true}
+                                          required={true}
+                                          size="normal"
+                                          storeValue={[Function]}
+                            />
+                            <Field
+                                          autocomplete="address-level2"
+                                          displayValue={[Function]}
+                                          label="Ville"
+                                          layout="horizontal"
+                                          name="city"
+                                          readOnly={true}
+                                          required={true}
+                                          size="normal"
+                                          storeValue={[Function]}
+                            />
+                            <Field
+                                          displayValue={[Function]}
+                                          label="Latitude"
+                                          layout="horizontal"
+                                          name="latitude"
+                                          readOnly={5.15981}
+                                          required={true}
+                                          size="normal"
+                                          storeValue={[Function]}
+                            />
+                            <Field
+                                          displayValue={[Function]}
+                                          label="Longitude"
+                                          layout="horizontal"
+                                          name="longitude"
+                                          readOnly={-52.63452}
+                                          required={true}
+                                          size="normal"
+                                          storeValue={[Function]}
+                            />
+              </div>
+</div>,
+            <hr />,
+            <div
+              className="field is-grouped is-grouped-centered"
+              style={
+                            Object {
+                                          "justifyContent": "space-between",
+                                        }
+              }
+>
+              <div
+                            className="control"
+              >
+                            <NavLink
+                                          activeClassName="active"
+                                          aria-current="page"
+                                          className="button is-secondary is-medium"
+                                          to="/structures/APEQ/lieux/AQYQ?modifie"
+                            >
+                                          Modifier le lieu
+                            </NavLink>
+              </div>
+              <div
+                            className="control"
+              >
+                            <div
+                                          className="field is-grouped is-grouped-centered"
+                                          style={
+                                                        Object {
+                                                                      "justifyContent": "space-between",
+                                                                    }
+                                          }
+                            >
+                                          <div
+                                                        className="control"
+                                          >
+                                                        <NavLink
+                                                                      activeClassName="active"
+                                                                      aria-current="page"
+                                                                      className="button is-primary is-medium"
+                                                                      to="/structures/APEQ"
+                                                        >
+                                                                      Terminer
+                                                        </NavLink>
+                                          </div>
+                            </div>
+              </div>
+</div>,
+          ],
+          "className": null,
+          "errorsPatch": Object {},
+          "failNotification": "Formulaire non validé",
+          "formPatch": Object {},
+          "formatPatch": [Function],
+          "handleFail": null,
+          "handleFailNotification": null,
+          "handleFailRedirect": null,
+          "handleSuccess": [Function],
+          "handleSuccessNotification": null,
+          "handleSuccessRedirect": null,
+          "name": "venue",
+          "normalizer": Object {
+            "eventOccurrences": Object {
+              "key": "eventOccurrences",
+              "normalizer": Object {
+                "event": "events",
+              },
+            },
+            "managingOfferer": "offerers",
+            "offers": Object {
+              "key": "offers",
+              "normalizer": Object {
+                "thing": "things",
+              },
+            },
+            "venueProviders": "venueProviders",
+          },
+          "onEnterKey": null,
+          "onEscapeKey": null,
+          "onSubmit": null,
+          "patch": Object {},
+          "readOnly": true,
+          "successNotification": "Formulaire non validé",
+        },
+        "ref": null,
+        "rendered": Array [
+          false,
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": Array [
+                <h2
+                  className="main-list-title is-relative"
+>
+                  IDENTIFIANTS
+</h2>,
+                <div
+                  className="field-group"
+>
+                  <Field
+                                    className=""
+                                    displayValue={[Function]}
+                                    label="SIRET (si applicable)"
+                                    layout="horizontal"
+                                    name="siret"
+                                    readOnly={undefined}
+                                    renderInfo={[Function]}
+                                    required={true}
+                                    size="normal"
+                                    storeValue={[Function]}
+                                    type="siret"
+                  />
+                  <Field
+                                    displayValue={[Function]}
+                                    isExpanded={true}
+                                    label="Nom"
+                                    layout="horizontal"
+                                    name="name"
+                                    readOnly={true}
+                                    required={true}
+                                    size="normal"
+                                    storeValue={[Function]}
+                  />
+                  <Field
+                                    displayValue={[Function]}
+                                    label="E-mail"
+                                    layout="horizontal"
+                                    name="bookingEmail"
+                                    renderInfo={[Function]}
+                                    required={true}
+                                    size="normal"
+                                    storeValue={[Function]}
+                                    type="email"
+                  />
+</div>,
+              ],
+              "className": "section",
+            },
+            "ref": null,
+            "rendered": Array [
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": Array [
+                    "IDENTIFIANTS",
+                    false,
+                  ],
+                  "className": "main-list-title is-relative",
+                },
+                "ref": null,
+                "rendered": Array [
+                  "IDENTIFIANTS",
+                  false,
+                ],
+                "type": "h2",
+              },
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": Array [
+                    <Field
+                      className=""
+                      displayValue={[Function]}
+                      label="SIRET (si applicable)"
+                      layout="horizontal"
+                      name="siret"
+                      readOnly={undefined}
+                      renderInfo={[Function]}
+                      required={true}
+                      size="normal"
+                      storeValue={[Function]}
+                      type="siret"
+/>,
+                    <Field
+                      displayValue={[Function]}
+                      isExpanded={true}
+                      label="Nom"
+                      layout="horizontal"
+                      name="name"
+                      readOnly={true}
+                      required={true}
+                      size="normal"
+                      storeValue={[Function]}
+/>,
+                    <Field
+                      displayValue={[Function]}
+                      label="E-mail"
+                      layout="horizontal"
+                      name="bookingEmail"
+                      renderInfo={[Function]}
+                      required={true}
+                      size="normal"
+                      storeValue={[Function]}
+                      type="email"
+/>,
+                    false,
+                  ],
+                  "className": "field-group",
+                },
+                "ref": null,
+                "rendered": Array [
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "class",
+                    "props": Object {
+                      "className": "",
+                      "displayValue": [Function],
+                      "label": "SIRET (si applicable)",
+                      "layout": "horizontal",
+                      "name": "siret",
+                      "readOnly": undefined,
+                      "renderInfo": [Function],
+                      "required": true,
+                      "size": "normal",
+                      "storeValue": [Function],
+                      "type": "siret",
+                    },
+                    "ref": null,
+                    "rendered": null,
+                    "type": [Function],
+                  },
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "class",
+                    "props": Object {
+                      "displayValue": [Function],
+                      "isExpanded": true,
+                      "label": "Nom",
+                      "layout": "horizontal",
+                      "name": "name",
+                      "readOnly": true,
+                      "required": true,
+                      "size": "normal",
+                      "storeValue": [Function],
+                    },
+                    "ref": null,
+                    "rendered": null,
+                    "type": [Function],
+                  },
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "class",
+                    "props": Object {
+                      "displayValue": [Function],
+                      "label": "E-mail",
+                      "layout": "horizontal",
+                      "name": "bookingEmail",
+                      "renderInfo": [Function],
+                      "required": true,
+                      "size": "normal",
+                      "storeValue": [Function],
+                      "type": "email",
+                    },
+                    "ref": null,
+                    "rendered": null,
+                    "type": [Function],
+                  },
+                  false,
+                ],
+                "type": "div",
+              },
+            ],
+            "type": "div",
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": Array [
+                <h2
+                  className="main-list-title"
+>
+                  INFORMATIONS BANCAIRES
+                  <span
+                                    className="is-pulled-right is-size-7 has-text-grey"
+                  >
+                                    Vous avez besoin d'être administrateur de la structure pour editer ces informations.
+                  </span>
+</h2>,
+                <div
+                  className="field-group"
+>
+                  <Field
+                                    displayValue={[Function]}
+                                    label="BIC"
+                                    layout="horizontal"
+                                    name="bic"
+                                    readOnly={true}
+                                    size="normal"
+                                    storeValue={[Function]}
+                                    type="bic"
+                  />
+                  <Field
+                                    displayValue={[Function]}
+                                    isExpanded={true}
+                                    label="IBAN"
+                                    layout="horizontal"
+                                    name="iban"
+                                    readOnly={true}
+                                    size="normal"
+                                    storeValue={[Function]}
+                                    type="iban"
+                  />
+</div>,
+              ],
+              "className": "section",
+            },
+            "ref": null,
+            "rendered": Array [
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": Array [
+                    "INFORMATIONS BANCAIRES",
+                    <span
+                      className="is-pulled-right is-size-7 has-text-grey"
+>
+                      Vous avez besoin d'être administrateur de la structure pour editer ces informations.
+</span>,
+                  ],
+                  "className": "main-list-title",
+                },
+                "ref": null,
+                "rendered": Array [
+                  "INFORMATIONS BANCAIRES",
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "host",
+                    "props": Object {
+                      "children": "Vous avez besoin d'être administrateur de la structure pour editer ces informations.",
+                      "className": "is-pulled-right is-size-7 has-text-grey",
+                    },
+                    "ref": null,
+                    "rendered": "Vous avez besoin d'être administrateur de la structure pour editer ces informations.",
+                    "type": "span",
+                  },
+                ],
+                "type": "h2",
+              },
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": Array [
+                    <Field
+                      displayValue={[Function]}
+                      label="BIC"
+                      layout="horizontal"
+                      name="bic"
+                      readOnly={true}
+                      size="normal"
+                      storeValue={[Function]}
+                      type="bic"
+/>,
+                    <Field
+                      displayValue={[Function]}
+                      isExpanded={true}
+                      label="IBAN"
+                      layout="horizontal"
+                      name="iban"
+                      readOnly={true}
+                      size="normal"
+                      storeValue={[Function]}
+                      type="iban"
+/>,
+                    false,
+                  ],
+                  "className": "field-group",
+                },
+                "ref": null,
+                "rendered": Array [
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "class",
+                    "props": Object {
+                      "displayValue": [Function],
+                      "label": "BIC",
+                      "layout": "horizontal",
+                      "name": "bic",
+                      "readOnly": true,
+                      "size": "normal",
+                      "storeValue": [Function],
+                      "type": "bic",
+                    },
+                    "ref": null,
+                    "rendered": null,
+                    "type": [Function],
+                  },
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "class",
+                    "props": Object {
+                      "displayValue": [Function],
+                      "isExpanded": true,
+                      "label": "IBAN",
+                      "layout": "horizontal",
+                      "name": "iban",
+                      "readOnly": true,
+                      "size": "normal",
+                      "storeValue": [Function],
+                      "type": "iban",
+                    },
+                    "ref": null,
+                    "rendered": null,
+                    "type": [Function],
+                  },
+                  false,
+                ],
+                "type": "div",
+              },
+            ],
+            "type": "div",
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": Array [
+                <h2
+                  className="main-list-title"
+>
+                  ADRESSE
+</h2>,
+                <div
+                  className="field-group"
+>
+                  <Field
+                                    displayValue={[Function]}
+                                    isExpanded={true}
+                                    label="Numéro et voie"
+                                    latitude={5.15981}
+                                    layout="horizontal"
+                                    longitude={-52.63452}
+                                    name="address"
+                                    readOnly={true}
+                                    required={true}
+                                    size="normal"
+                                    storeValue={[Function]}
+                                    type="geo"
+                                    withMap={true}
+                  />
+                  <Field
+                                    autocomplete="postal-code"
+                                    displayValue={[Function]}
+                                    label="Code postal"
+                                    layout="horizontal"
+                                    name="postalCode"
+                                    readOnly={true}
+                                    required={true}
+                                    size="normal"
+                                    storeValue={[Function]}
+                  />
+                  <Field
+                                    autocomplete="address-level2"
+                                    displayValue={[Function]}
+                                    label="Ville"
+                                    layout="horizontal"
+                                    name="city"
+                                    readOnly={true}
+                                    required={true}
+                                    size="normal"
+                                    storeValue={[Function]}
+                  />
+                  <Field
+                                    displayValue={[Function]}
+                                    label="Latitude"
+                                    layout="horizontal"
+                                    name="latitude"
+                                    readOnly={5.15981}
+                                    required={true}
+                                    size="normal"
+                                    storeValue={[Function]}
+                  />
+                  <Field
+                                    displayValue={[Function]}
+                                    label="Longitude"
+                                    layout="horizontal"
+                                    name="longitude"
+                                    readOnly={-52.63452}
+                                    required={true}
+                                    size="normal"
+                                    storeValue={[Function]}
+                  />
+</div>,
+              ],
+              "className": "section",
+            },
+            "ref": null,
+            "rendered": Array [
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": "ADRESSE",
+                  "className": "main-list-title",
+                },
+                "ref": null,
+                "rendered": "ADRESSE",
+                "type": "h2",
+              },
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": Array [
+                    <Field
+                      displayValue={[Function]}
+                      isExpanded={true}
+                      label="Numéro et voie"
+                      latitude={5.15981}
+                      layout="horizontal"
+                      longitude={-52.63452}
+                      name="address"
+                      readOnly={true}
+                      required={true}
+                      size="normal"
+                      storeValue={[Function]}
+                      type="geo"
+                      withMap={true}
+/>,
+                    <Field
+                      autocomplete="postal-code"
+                      displayValue={[Function]}
+                      label="Code postal"
+                      layout="horizontal"
+                      name="postalCode"
+                      readOnly={true}
+                      required={true}
+                      size="normal"
+                      storeValue={[Function]}
+/>,
+                    <Field
+                      autocomplete="address-level2"
+                      displayValue={[Function]}
+                      label="Ville"
+                      layout="horizontal"
+                      name="city"
+                      readOnly={true}
+                      required={true}
+                      size="normal"
+                      storeValue={[Function]}
+/>,
+                    <Field
+                      displayValue={[Function]}
+                      label="Latitude"
+                      layout="horizontal"
+                      name="latitude"
+                      readOnly={5.15981}
+                      required={true}
+                      size="normal"
+                      storeValue={[Function]}
+/>,
+                    <Field
+                      displayValue={[Function]}
+                      label="Longitude"
+                      layout="horizontal"
+                      name="longitude"
+                      readOnly={-52.63452}
+                      required={true}
+                      size="normal"
+                      storeValue={[Function]}
+/>,
+                  ],
+                  "className": "field-group",
+                },
+                "ref": null,
+                "rendered": Array [
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "class",
+                    "props": Object {
+                      "displayValue": [Function],
+                      "isExpanded": true,
+                      "label": "Numéro et voie",
+                      "latitude": 5.15981,
+                      "layout": "horizontal",
+                      "longitude": -52.63452,
+                      "name": "address",
+                      "readOnly": true,
+                      "required": true,
+                      "size": "normal",
+                      "storeValue": [Function],
+                      "type": "geo",
+                      "withMap": true,
+                    },
+                    "ref": null,
+                    "rendered": null,
+                    "type": [Function],
+                  },
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "class",
+                    "props": Object {
+                      "autocomplete": "postal-code",
+                      "displayValue": [Function],
+                      "label": "Code postal",
+                      "layout": "horizontal",
+                      "name": "postalCode",
+                      "readOnly": true,
+                      "required": true,
+                      "size": "normal",
+                      "storeValue": [Function],
+                    },
+                    "ref": null,
+                    "rendered": null,
+                    "type": [Function],
+                  },
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "class",
+                    "props": Object {
+                      "autocomplete": "address-level2",
+                      "displayValue": [Function],
+                      "label": "Ville",
+                      "layout": "horizontal",
+                      "name": "city",
+                      "readOnly": true,
+                      "required": true,
+                      "size": "normal",
+                      "storeValue": [Function],
+                    },
+                    "ref": null,
+                    "rendered": null,
+                    "type": [Function],
+                  },
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "class",
+                    "props": Object {
+                      "displayValue": [Function],
+                      "label": "Latitude",
+                      "layout": "horizontal",
+                      "name": "latitude",
+                      "readOnly": 5.15981,
+                      "required": true,
+                      "size": "normal",
+                      "storeValue": [Function],
+                    },
+                    "ref": null,
+                    "rendered": null,
+                    "type": [Function],
+                  },
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "class",
+                    "props": Object {
+                      "displayValue": [Function],
+                      "label": "Longitude",
+                      "layout": "horizontal",
+                      "name": "longitude",
+                      "readOnly": -52.63452,
+                      "required": true,
+                      "size": "normal",
+                      "storeValue": [Function],
+                    },
+                    "ref": null,
+                    "rendered": null,
+                    "type": [Function],
+                  },
+                ],
+                "type": "div",
+              },
+            ],
+            "type": "div",
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {},
+            "ref": null,
+            "rendered": null,
+            "type": "hr",
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": Array [
+                <div
+                  className="control"
+>
+                  <NavLink
+                                    activeClassName="active"
+                                    aria-current="page"
+                                    className="button is-secondary is-medium"
+                                    to="/structures/APEQ/lieux/AQYQ?modifie"
+                  >
+                                    Modifier le lieu
+                  </NavLink>
+</div>,
+                undefined,
+                <div
+                  className="control"
+>
+                  <div
+                                    className="field is-grouped is-grouped-centered"
+                                    style={
+                                                      Object {
+                                                                        "justifyContent": "space-between",
+                                                                      }
+                                    }
+                  >
+                                    <div
+                                                      className="control"
+                                    >
+                                                      <NavLink
+                                                                        activeClassName="active"
+                                                                        aria-current="page"
+                                                                        className="button is-primary is-medium"
+                                                                        to="/structures/APEQ"
+                                                      >
+                                                                        Terminer
+                                                      </NavLink>
+                                    </div>
+                  </div>
+</div>,
+              ],
+              "className": "field is-grouped is-grouped-centered",
+              "style": Object {
+                "justifyContent": "space-between",
+              },
+            },
+            "ref": null,
+            "rendered": Array [
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": <NavLink
+                    activeClassName="active"
+                    aria-current="page"
+                    className="button is-secondary is-medium"
+                    to="/structures/APEQ/lieux/AQYQ?modifie"
+>
+                    Modifier le lieu
+</NavLink>,
+                  "className": "control",
+                },
+                "ref": null,
+                "rendered": Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "function",
+                  "props": Object {
+                    "activeClassName": "active",
+                    "aria-current": "page",
+                    "children": "Modifier le lieu",
+                    "className": "button is-secondary is-medium",
+                    "to": "/structures/APEQ/lieux/AQYQ?modifie",
+                  },
+                  "ref": null,
+                  "rendered": "Modifier le lieu",
+                  "type": [Function],
+                },
+                "type": "div",
+              },
+              undefined,
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": <div
+                    className="field is-grouped is-grouped-centered"
+                    style={
+                                        Object {
+                                                            "justifyContent": "space-between",
+                                                          }
+                    }
+>
+                    <div
+                                        className="control"
+                    >
+                                        <NavLink
+                                                            activeClassName="active"
+                                                            aria-current="page"
+                                                            className="button is-primary is-medium"
+                                                            to="/structures/APEQ"
+                                        >
+                                                            Terminer
+                                        </NavLink>
+                    </div>
+</div>,
+                  "className": "control",
+                },
+                "ref": null,
+                "rendered": Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": <div
+                      className="control"
+>
+                      <NavLink
+                                            activeClassName="active"
+                                            aria-current="page"
+                                            className="button is-primary is-medium"
+                                            to="/structures/APEQ"
+                      >
+                                            Terminer
+                      </NavLink>
+</div>,
+                    "className": "field is-grouped is-grouped-centered",
+                    "style": Object {
+                      "justifyContent": "space-between",
+                    },
+                  },
+                  "ref": null,
+                  "rendered": Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "host",
+                    "props": Object {
+                      "children": <NavLink
+                        activeClassName="active"
+                        aria-current="page"
+                        className="button is-primary is-medium"
+                        to="/structures/APEQ"
+>
+                        Terminer
+</NavLink>,
+                      "className": "control",
+                    },
+                    "ref": null,
+                    "rendered": Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "function",
+                      "props": Object {
+                        "activeClassName": "active",
+                        "aria-current": "page",
+                        "children": "Terminer",
+                        "className": "button is-primary is-medium",
+                        "to": "/structures/APEQ",
+                      },
+                      "ref": null,
+                      "rendered": "Terminer",
+                      "type": [Function],
+                    },
+                    "type": "div",
+                  },
+                  "type": "div",
+                },
+                "type": "div",
+              },
+            ],
+            "type": "div",
+          },
+        ],
+        "type": [Function],
+      },
+    ],
+    "type": [Function],
+  },
+  Symbol(enzyme.__nodes__): Array [
+    Object {
+      "instance": null,
+      "key": undefined,
+      "nodeType": "function",
+      "props": Object {
+        "backTo": Object {
+          "label": "STRUCTURE",
+          "path": "/structures/APEQ",
+        },
+        "children": Array [
+          <HeroSection
+            subtitle={undefined}
+            title="Lieu"
+>
+            
+</HeroSection>,
+          <withRouter(Connect(ProviderManager))
+            venue={Object {}}
+/>,
+          <withRouter(Connect(_Form))
+            BlockComponent={null}
+            Tag="form"
+            action="/venues/"
+            className={null}
+            errorsPatch={Object {}}
+            failNotification="Formulaire non validé"
+            formPatch={Object {}}
+            formatPatch={[Function]}
+            handleFail={null}
+            handleFailNotification={null}
+            handleFailRedirect={null}
+            handleSuccess={[Function]}
+            handleSuccessNotification={null}
+            handleSuccessRedirect={null}
+            name="venue"
+            normalizer={
+                        Object {
+                                    "eventOccurrences": Object {
+                                      "key": "eventOccurrences",
+                                      "normalizer": Object {
+                                        "event": "events",
+                                      },
+                                    },
+                                    "managingOfferer": "offerers",
+                                    "offers": Object {
+                                      "key": "offers",
+                                      "normalizer": Object {
+                                        "thing": "things",
+                                      },
+                                    },
+                                    "venueProviders": "venueProviders",
+                                  }
+            }
+            onEnterKey={null}
+            onEscapeKey={null}
+            onSubmit={null}
+            patch={Object {}}
+            readOnly={true}
+            successNotification="Formulaire non validé"
+>
+            <div
+                        className="section"
+            >
+                        <h2
+                                    className="main-list-title is-relative"
+                        >
+                                    IDENTIFIANTS
+                        </h2>
+                        <div
+                                    className="field-group"
+                        >
+                                    <Field
+                                                className=""
+                                                displayValue={[Function]}
+                                                label="SIRET (si applicable)"
+                                                layout="horizontal"
+                                                name="siret"
+                                                readOnly={undefined}
+                                                renderInfo={[Function]}
+                                                required={true}
+                                                size="normal"
+                                                storeValue={[Function]}
+                                                type="siret"
+                                    />
+                                    <Field
+                                                displayValue={[Function]}
+                                                isExpanded={true}
+                                                label="Nom"
+                                                layout="horizontal"
+                                                name="name"
+                                                readOnly={true}
+                                                required={true}
+                                                size="normal"
+                                                storeValue={[Function]}
+                                    />
+                                    <Field
+                                                displayValue={[Function]}
+                                                label="E-mail"
+                                                layout="horizontal"
+                                                name="bookingEmail"
+                                                renderInfo={[Function]}
+                                                required={true}
+                                                size="normal"
+                                                storeValue={[Function]}
+                                                type="email"
+                                    />
+                        </div>
+            </div>
+            <div
+                        className="section"
+            >
+                        <h2
+                                    className="main-list-title"
+                        >
+                                    INFORMATIONS BANCAIRES
+                                    <span
+                                                className="is-pulled-right is-size-7 has-text-grey"
+                                    >
+                                                Vous avez besoin d'être administrateur de la structure pour editer ces informations.
+                                    </span>
+                        </h2>
+                        <div
+                                    className="field-group"
+                        >
+                                    <Field
+                                                displayValue={[Function]}
+                                                label="BIC"
+                                                layout="horizontal"
+                                                name="bic"
+                                                readOnly={true}
+                                                size="normal"
+                                                storeValue={[Function]}
+                                                type="bic"
+                                    />
+                                    <Field
+                                                displayValue={[Function]}
+                                                isExpanded={true}
+                                                label="IBAN"
+                                                layout="horizontal"
+                                                name="iban"
+                                                readOnly={true}
+                                                size="normal"
+                                                storeValue={[Function]}
+                                                type="iban"
+                                    />
+                        </div>
+            </div>
+            <div
+                        className="section"
+            >
+                        <h2
+                                    className="main-list-title"
+                        >
+                                    ADRESSE
+                        </h2>
+                        <div
+                                    className="field-group"
+                        >
+                                    <Field
+                                                displayValue={[Function]}
+                                                isExpanded={true}
+                                                label="Numéro et voie"
+                                                latitude={5.15981}
+                                                layout="horizontal"
+                                                longitude={-52.63452}
+                                                name="address"
+                                                readOnly={true}
+                                                required={true}
+                                                size="normal"
+                                                storeValue={[Function]}
+                                                type="geo"
+                                                withMap={true}
+                                    />
+                                    <Field
+                                                autocomplete="postal-code"
+                                                displayValue={[Function]}
+                                                label="Code postal"
+                                                layout="horizontal"
+                                                name="postalCode"
+                                                readOnly={true}
+                                                required={true}
+                                                size="normal"
+                                                storeValue={[Function]}
+                                    />
+                                    <Field
+                                                autocomplete="address-level2"
+                                                displayValue={[Function]}
+                                                label="Ville"
+                                                layout="horizontal"
+                                                name="city"
+                                                readOnly={true}
+                                                required={true}
+                                                size="normal"
+                                                storeValue={[Function]}
+                                    />
+                                    <Field
+                                                displayValue={[Function]}
+                                                label="Latitude"
+                                                layout="horizontal"
+                                                name="latitude"
+                                                readOnly={5.15981}
+                                                required={true}
+                                                size="normal"
+                                                storeValue={[Function]}
+                                    />
+                                    <Field
+                                                displayValue={[Function]}
+                                                label="Longitude"
+                                                layout="horizontal"
+                                                name="longitude"
+                                                readOnly={-52.63452}
+                                                required={true}
+                                                size="normal"
+                                                storeValue={[Function]}
+                                    />
+                        </div>
+            </div>
+            <hr />
+            <div
+                        className="field is-grouped is-grouped-centered"
+                        style={
+                                    Object {
+                                                "justifyContent": "space-between",
+                                              }
+                        }
+            >
+                        <div
+                                    className="control"
+                        >
+                                    <NavLink
+                                                activeClassName="active"
+                                                aria-current="page"
+                                                className="button is-secondary is-medium"
+                                                to="/structures/APEQ/lieux/AQYQ?modifie"
+                                    >
+                                                Modifier le lieu
+                                    </NavLink>
+                        </div>
+                        <div
+                                    className="control"
+                        >
+                                    <div
+                                                className="field is-grouped is-grouped-centered"
+                                                style={
+                                                            Object {
+                                                                        "justifyContent": "space-between",
+                                                                      }
+                                                }
+                                    >
+                                                <div
+                                                            className="control"
+                                                >
+                                                            <NavLink
+                                                                        activeClassName="active"
+                                                                        aria-current="page"
+                                                                        className="button is-primary is-medium"
+                                                                        to="/structures/APEQ"
+                                                            >
+                                                                        Terminer
+                                                            </NavLink>
+                                                </div>
+                                    </div>
+                        </div>
+            </div>
+</withRouter(Connect(_Form))>,
+        ],
+        "handleDataRequest": [Function],
+        "name": "venue",
+      },
+      "ref": null,
+      "rendered": Array [
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "function",
+          "props": Object {
+            "children": Array [
+              false,
+              undefined,
+            ],
+            "subtitle": undefined,
+            "title": "Lieu",
+          },
+          "ref": null,
+          "rendered": Array [
+            false,
+            undefined,
+          ],
+          "type": [Function],
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "function",
+          "props": Object {
+            "venue": Object {},
+          },
+          "ref": null,
+          "rendered": null,
+          "type": [Function],
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "function",
+          "props": Object {
+            "BlockComponent": null,
+            "Tag": "form",
+            "action": "/venues/",
+            "children": Array [
+              false,
+              <div
+                className="section"
+>
+                <h2
+                                className="main-list-title is-relative"
+                >
+                                IDENTIFIANTS
+                </h2>
+                <div
+                                className="field-group"
+                >
+                                <Field
+                                                className=""
+                                                displayValue={[Function]}
+                                                label="SIRET (si applicable)"
+                                                layout="horizontal"
+                                                name="siret"
+                                                readOnly={undefined}
+                                                renderInfo={[Function]}
+                                                required={true}
+                                                size="normal"
+                                                storeValue={[Function]}
+                                                type="siret"
+                                />
+                                <Field
+                                                displayValue={[Function]}
+                                                isExpanded={true}
+                                                label="Nom"
+                                                layout="horizontal"
+                                                name="name"
+                                                readOnly={true}
+                                                required={true}
+                                                size="normal"
+                                                storeValue={[Function]}
+                                />
+                                <Field
+                                                displayValue={[Function]}
+                                                label="E-mail"
+                                                layout="horizontal"
+                                                name="bookingEmail"
+                                                renderInfo={[Function]}
+                                                required={true}
+                                                size="normal"
+                                                storeValue={[Function]}
+                                                type="email"
+                                />
+                </div>
+</div>,
+              <div
+                className="section"
+>
+                <h2
+                                className="main-list-title"
+                >
+                                INFORMATIONS BANCAIRES
+                                <span
+                                                className="is-pulled-right is-size-7 has-text-grey"
+                                >
+                                                Vous avez besoin d'être administrateur de la structure pour editer ces informations.
+                                </span>
+                </h2>
+                <div
+                                className="field-group"
+                >
+                                <Field
+                                                displayValue={[Function]}
+                                                label="BIC"
+                                                layout="horizontal"
+                                                name="bic"
+                                                readOnly={true}
+                                                size="normal"
+                                                storeValue={[Function]}
+                                                type="bic"
+                                />
+                                <Field
+                                                displayValue={[Function]}
+                                                isExpanded={true}
+                                                label="IBAN"
+                                                layout="horizontal"
+                                                name="iban"
+                                                readOnly={true}
+                                                size="normal"
+                                                storeValue={[Function]}
+                                                type="iban"
+                                />
+                </div>
+</div>,
+              <div
+                className="section"
+>
+                <h2
+                                className="main-list-title"
+                >
+                                ADRESSE
+                </h2>
+                <div
+                                className="field-group"
+                >
+                                <Field
+                                                displayValue={[Function]}
+                                                isExpanded={true}
+                                                label="Numéro et voie"
+                                                latitude={5.15981}
+                                                layout="horizontal"
+                                                longitude={-52.63452}
+                                                name="address"
+                                                readOnly={true}
+                                                required={true}
+                                                size="normal"
+                                                storeValue={[Function]}
+                                                type="geo"
+                                                withMap={true}
+                                />
+                                <Field
+                                                autocomplete="postal-code"
+                                                displayValue={[Function]}
+                                                label="Code postal"
+                                                layout="horizontal"
+                                                name="postalCode"
+                                                readOnly={true}
+                                                required={true}
+                                                size="normal"
+                                                storeValue={[Function]}
+                                />
+                                <Field
+                                                autocomplete="address-level2"
+                                                displayValue={[Function]}
+                                                label="Ville"
+                                                layout="horizontal"
+                                                name="city"
+                                                readOnly={true}
+                                                required={true}
+                                                size="normal"
+                                                storeValue={[Function]}
+                                />
+                                <Field
+                                                displayValue={[Function]}
+                                                label="Latitude"
+                                                layout="horizontal"
+                                                name="latitude"
+                                                readOnly={5.15981}
+                                                required={true}
+                                                size="normal"
+                                                storeValue={[Function]}
+                                />
+                                <Field
+                                                displayValue={[Function]}
+                                                label="Longitude"
+                                                layout="horizontal"
+                                                name="longitude"
+                                                readOnly={-52.63452}
+                                                required={true}
+                                                size="normal"
+                                                storeValue={[Function]}
+                                />
+                </div>
+</div>,
+              <hr />,
+              <div
+                className="field is-grouped is-grouped-centered"
+                style={
+                                Object {
+                                                "justifyContent": "space-between",
+                                              }
+                }
+>
+                <div
+                                className="control"
+                >
+                                <NavLink
+                                                activeClassName="active"
+                                                aria-current="page"
+                                                className="button is-secondary is-medium"
+                                                to="/structures/APEQ/lieux/AQYQ?modifie"
+                                >
+                                                Modifier le lieu
+                                </NavLink>
+                </div>
+                <div
+                                className="control"
+                >
+                                <div
+                                                className="field is-grouped is-grouped-centered"
+                                                style={
+                                                                Object {
+                                                                                "justifyContent": "space-between",
+                                                                              }
+                                                }
+                                >
+                                                <div
+                                                                className="control"
+                                                >
+                                                                <NavLink
+                                                                                activeClassName="active"
+                                                                                aria-current="page"
+                                                                                className="button is-primary is-medium"
+                                                                                to="/structures/APEQ"
+                                                                >
+                                                                                Terminer
+                                                                </NavLink>
+                                                </div>
+                                </div>
+                </div>
+</div>,
+            ],
+            "className": null,
+            "errorsPatch": Object {},
+            "failNotification": "Formulaire non validé",
+            "formPatch": Object {},
+            "formatPatch": [Function],
+            "handleFail": null,
+            "handleFailNotification": null,
+            "handleFailRedirect": null,
+            "handleSuccess": [Function],
+            "handleSuccessNotification": null,
+            "handleSuccessRedirect": null,
+            "name": "venue",
+            "normalizer": Object {
+              "eventOccurrences": Object {
+                "key": "eventOccurrences",
+                "normalizer": Object {
+                  "event": "events",
+                },
+              },
+              "managingOfferer": "offerers",
+              "offers": Object {
+                "key": "offers",
+                "normalizer": Object {
+                  "thing": "things",
+                },
+              },
+              "venueProviders": "venueProviders",
+            },
+            "onEnterKey": null,
+            "onEscapeKey": null,
+            "onSubmit": null,
+            "patch": Object {},
+            "readOnly": true,
+            "successNotification": "Formulaire non validé",
+          },
+          "ref": null,
+          "rendered": Array [
+            false,
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": Array [
+                  <h2
+                    className="main-list-title is-relative"
+>
+                    IDENTIFIANTS
+</h2>,
+                  <div
+                    className="field-group"
+>
+                    <Field
+                                        className=""
+                                        displayValue={[Function]}
+                                        label="SIRET (si applicable)"
+                                        layout="horizontal"
+                                        name="siret"
+                                        readOnly={undefined}
+                                        renderInfo={[Function]}
+                                        required={true}
+                                        size="normal"
+                                        storeValue={[Function]}
+                                        type="siret"
+                    />
+                    <Field
+                                        displayValue={[Function]}
+                                        isExpanded={true}
+                                        label="Nom"
+                                        layout="horizontal"
+                                        name="name"
+                                        readOnly={true}
+                                        required={true}
+                                        size="normal"
+                                        storeValue={[Function]}
+                    />
+                    <Field
+                                        displayValue={[Function]}
+                                        label="E-mail"
+                                        layout="horizontal"
+                                        name="bookingEmail"
+                                        renderInfo={[Function]}
+                                        required={true}
+                                        size="normal"
+                                        storeValue={[Function]}
+                                        type="email"
+                    />
+</div>,
+                ],
+                "className": "section",
+              },
+              "ref": null,
+              "rendered": Array [
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": Array [
+                      "IDENTIFIANTS",
+                      false,
+                    ],
+                    "className": "main-list-title is-relative",
+                  },
+                  "ref": null,
+                  "rendered": Array [
+                    "IDENTIFIANTS",
+                    false,
+                  ],
+                  "type": "h2",
+                },
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": Array [
+                      <Field
+                        className=""
+                        displayValue={[Function]}
+                        label="SIRET (si applicable)"
+                        layout="horizontal"
+                        name="siret"
+                        readOnly={undefined}
+                        renderInfo={[Function]}
+                        required={true}
+                        size="normal"
+                        storeValue={[Function]}
+                        type="siret"
+/>,
+                      <Field
+                        displayValue={[Function]}
+                        isExpanded={true}
+                        label="Nom"
+                        layout="horizontal"
+                        name="name"
+                        readOnly={true}
+                        required={true}
+                        size="normal"
+                        storeValue={[Function]}
+/>,
+                      <Field
+                        displayValue={[Function]}
+                        label="E-mail"
+                        layout="horizontal"
+                        name="bookingEmail"
+                        renderInfo={[Function]}
+                        required={true}
+                        size="normal"
+                        storeValue={[Function]}
+                        type="email"
+/>,
+                      false,
+                    ],
+                    "className": "field-group",
+                  },
+                  "ref": null,
+                  "rendered": Array [
+                    Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "class",
+                      "props": Object {
+                        "className": "",
+                        "displayValue": [Function],
+                        "label": "SIRET (si applicable)",
+                        "layout": "horizontal",
+                        "name": "siret",
+                        "readOnly": undefined,
+                        "renderInfo": [Function],
+                        "required": true,
+                        "size": "normal",
+                        "storeValue": [Function],
+                        "type": "siret",
+                      },
+                      "ref": null,
+                      "rendered": null,
+                      "type": [Function],
+                    },
+                    Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "class",
+                      "props": Object {
+                        "displayValue": [Function],
+                        "isExpanded": true,
+                        "label": "Nom",
+                        "layout": "horizontal",
+                        "name": "name",
+                        "readOnly": true,
+                        "required": true,
+                        "size": "normal",
+                        "storeValue": [Function],
+                      },
+                      "ref": null,
+                      "rendered": null,
+                      "type": [Function],
+                    },
+                    Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "class",
+                      "props": Object {
+                        "displayValue": [Function],
+                        "label": "E-mail",
+                        "layout": "horizontal",
+                        "name": "bookingEmail",
+                        "renderInfo": [Function],
+                        "required": true,
+                        "size": "normal",
+                        "storeValue": [Function],
+                        "type": "email",
+                      },
+                      "ref": null,
+                      "rendered": null,
+                      "type": [Function],
+                    },
+                    false,
+                  ],
+                  "type": "div",
+                },
+              ],
+              "type": "div",
+            },
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": Array [
+                  <h2
+                    className="main-list-title"
+>
+                    INFORMATIONS BANCAIRES
+                    <span
+                                        className="is-pulled-right is-size-7 has-text-grey"
+                    >
+                                        Vous avez besoin d'être administrateur de la structure pour editer ces informations.
+                    </span>
+</h2>,
+                  <div
+                    className="field-group"
+>
+                    <Field
+                                        displayValue={[Function]}
+                                        label="BIC"
+                                        layout="horizontal"
+                                        name="bic"
+                                        readOnly={true}
+                                        size="normal"
+                                        storeValue={[Function]}
+                                        type="bic"
+                    />
+                    <Field
+                                        displayValue={[Function]}
+                                        isExpanded={true}
+                                        label="IBAN"
+                                        layout="horizontal"
+                                        name="iban"
+                                        readOnly={true}
+                                        size="normal"
+                                        storeValue={[Function]}
+                                        type="iban"
+                    />
+</div>,
+                ],
+                "className": "section",
+              },
+              "ref": null,
+              "rendered": Array [
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": Array [
+                      "INFORMATIONS BANCAIRES",
+                      <span
+                        className="is-pulled-right is-size-7 has-text-grey"
+>
+                        Vous avez besoin d'être administrateur de la structure pour editer ces informations.
+</span>,
+                    ],
+                    "className": "main-list-title",
+                  },
+                  "ref": null,
+                  "rendered": Array [
+                    "INFORMATIONS BANCAIRES",
+                    Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "host",
+                      "props": Object {
+                        "children": "Vous avez besoin d'être administrateur de la structure pour editer ces informations.",
+                        "className": "is-pulled-right is-size-7 has-text-grey",
+                      },
+                      "ref": null,
+                      "rendered": "Vous avez besoin d'être administrateur de la structure pour editer ces informations.",
+                      "type": "span",
+                    },
+                  ],
+                  "type": "h2",
+                },
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": Array [
+                      <Field
+                        displayValue={[Function]}
+                        label="BIC"
+                        layout="horizontal"
+                        name="bic"
+                        readOnly={true}
+                        size="normal"
+                        storeValue={[Function]}
+                        type="bic"
+/>,
+                      <Field
+                        displayValue={[Function]}
+                        isExpanded={true}
+                        label="IBAN"
+                        layout="horizontal"
+                        name="iban"
+                        readOnly={true}
+                        size="normal"
+                        storeValue={[Function]}
+                        type="iban"
+/>,
+                      false,
+                    ],
+                    "className": "field-group",
+                  },
+                  "ref": null,
+                  "rendered": Array [
+                    Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "class",
+                      "props": Object {
+                        "displayValue": [Function],
+                        "label": "BIC",
+                        "layout": "horizontal",
+                        "name": "bic",
+                        "readOnly": true,
+                        "size": "normal",
+                        "storeValue": [Function],
+                        "type": "bic",
+                      },
+                      "ref": null,
+                      "rendered": null,
+                      "type": [Function],
+                    },
+                    Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "class",
+                      "props": Object {
+                        "displayValue": [Function],
+                        "isExpanded": true,
+                        "label": "IBAN",
+                        "layout": "horizontal",
+                        "name": "iban",
+                        "readOnly": true,
+                        "size": "normal",
+                        "storeValue": [Function],
+                        "type": "iban",
+                      },
+                      "ref": null,
+                      "rendered": null,
+                      "type": [Function],
+                    },
+                    false,
+                  ],
+                  "type": "div",
+                },
+              ],
+              "type": "div",
+            },
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": Array [
+                  <h2
+                    className="main-list-title"
+>
+                    ADRESSE
+</h2>,
+                  <div
+                    className="field-group"
+>
+                    <Field
+                                        displayValue={[Function]}
+                                        isExpanded={true}
+                                        label="Numéro et voie"
+                                        latitude={5.15981}
+                                        layout="horizontal"
+                                        longitude={-52.63452}
+                                        name="address"
+                                        readOnly={true}
+                                        required={true}
+                                        size="normal"
+                                        storeValue={[Function]}
+                                        type="geo"
+                                        withMap={true}
+                    />
+                    <Field
+                                        autocomplete="postal-code"
+                                        displayValue={[Function]}
+                                        label="Code postal"
+                                        layout="horizontal"
+                                        name="postalCode"
+                                        readOnly={true}
+                                        required={true}
+                                        size="normal"
+                                        storeValue={[Function]}
+                    />
+                    <Field
+                                        autocomplete="address-level2"
+                                        displayValue={[Function]}
+                                        label="Ville"
+                                        layout="horizontal"
+                                        name="city"
+                                        readOnly={true}
+                                        required={true}
+                                        size="normal"
+                                        storeValue={[Function]}
+                    />
+                    <Field
+                                        displayValue={[Function]}
+                                        label="Latitude"
+                                        layout="horizontal"
+                                        name="latitude"
+                                        readOnly={5.15981}
+                                        required={true}
+                                        size="normal"
+                                        storeValue={[Function]}
+                    />
+                    <Field
+                                        displayValue={[Function]}
+                                        label="Longitude"
+                                        layout="horizontal"
+                                        name="longitude"
+                                        readOnly={-52.63452}
+                                        required={true}
+                                        size="normal"
+                                        storeValue={[Function]}
+                    />
+</div>,
+                ],
+                "className": "section",
+              },
+              "ref": null,
+              "rendered": Array [
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": "ADRESSE",
+                    "className": "main-list-title",
+                  },
+                  "ref": null,
+                  "rendered": "ADRESSE",
+                  "type": "h2",
+                },
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": Array [
+                      <Field
+                        displayValue={[Function]}
+                        isExpanded={true}
+                        label="Numéro et voie"
+                        latitude={5.15981}
+                        layout="horizontal"
+                        longitude={-52.63452}
+                        name="address"
+                        readOnly={true}
+                        required={true}
+                        size="normal"
+                        storeValue={[Function]}
+                        type="geo"
+                        withMap={true}
+/>,
+                      <Field
+                        autocomplete="postal-code"
+                        displayValue={[Function]}
+                        label="Code postal"
+                        layout="horizontal"
+                        name="postalCode"
+                        readOnly={true}
+                        required={true}
+                        size="normal"
+                        storeValue={[Function]}
+/>,
+                      <Field
+                        autocomplete="address-level2"
+                        displayValue={[Function]}
+                        label="Ville"
+                        layout="horizontal"
+                        name="city"
+                        readOnly={true}
+                        required={true}
+                        size="normal"
+                        storeValue={[Function]}
+/>,
+                      <Field
+                        displayValue={[Function]}
+                        label="Latitude"
+                        layout="horizontal"
+                        name="latitude"
+                        readOnly={5.15981}
+                        required={true}
+                        size="normal"
+                        storeValue={[Function]}
+/>,
+                      <Field
+                        displayValue={[Function]}
+                        label="Longitude"
+                        layout="horizontal"
+                        name="longitude"
+                        readOnly={-52.63452}
+                        required={true}
+                        size="normal"
+                        storeValue={[Function]}
+/>,
+                    ],
+                    "className": "field-group",
+                  },
+                  "ref": null,
+                  "rendered": Array [
+                    Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "class",
+                      "props": Object {
+                        "displayValue": [Function],
+                        "isExpanded": true,
+                        "label": "Numéro et voie",
+                        "latitude": 5.15981,
+                        "layout": "horizontal",
+                        "longitude": -52.63452,
+                        "name": "address",
+                        "readOnly": true,
+                        "required": true,
+                        "size": "normal",
+                        "storeValue": [Function],
+                        "type": "geo",
+                        "withMap": true,
+                      },
+                      "ref": null,
+                      "rendered": null,
+                      "type": [Function],
+                    },
+                    Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "class",
+                      "props": Object {
+                        "autocomplete": "postal-code",
+                        "displayValue": [Function],
+                        "label": "Code postal",
+                        "layout": "horizontal",
+                        "name": "postalCode",
+                        "readOnly": true,
+                        "required": true,
+                        "size": "normal",
+                        "storeValue": [Function],
+                      },
+                      "ref": null,
+                      "rendered": null,
+                      "type": [Function],
+                    },
+                    Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "class",
+                      "props": Object {
+                        "autocomplete": "address-level2",
+                        "displayValue": [Function],
+                        "label": "Ville",
+                        "layout": "horizontal",
+                        "name": "city",
+                        "readOnly": true,
+                        "required": true,
+                        "size": "normal",
+                        "storeValue": [Function],
+                      },
+                      "ref": null,
+                      "rendered": null,
+                      "type": [Function],
+                    },
+                    Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "class",
+                      "props": Object {
+                        "displayValue": [Function],
+                        "label": "Latitude",
+                        "layout": "horizontal",
+                        "name": "latitude",
+                        "readOnly": 5.15981,
+                        "required": true,
+                        "size": "normal",
+                        "storeValue": [Function],
+                      },
+                      "ref": null,
+                      "rendered": null,
+                      "type": [Function],
+                    },
+                    Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "class",
+                      "props": Object {
+                        "displayValue": [Function],
+                        "label": "Longitude",
+                        "layout": "horizontal",
+                        "name": "longitude",
+                        "readOnly": -52.63452,
+                        "required": true,
+                        "size": "normal",
+                        "storeValue": [Function],
+                      },
+                      "ref": null,
+                      "rendered": null,
+                      "type": [Function],
+                    },
+                  ],
+                  "type": "div",
+                },
+              ],
+              "type": "div",
+            },
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {},
+              "ref": null,
+              "rendered": null,
+              "type": "hr",
+            },
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": Array [
+                  <div
+                    className="control"
+>
+                    <NavLink
+                                        activeClassName="active"
+                                        aria-current="page"
+                                        className="button is-secondary is-medium"
+                                        to="/structures/APEQ/lieux/AQYQ?modifie"
+                    >
+                                        Modifier le lieu
+                    </NavLink>
+</div>,
+                  undefined,
+                  <div
+                    className="control"
+>
+                    <div
+                                        className="field is-grouped is-grouped-centered"
+                                        style={
+                                                            Object {
+                                                                                "justifyContent": "space-between",
+                                                                              }
+                                        }
+                    >
+                                        <div
+                                                            className="control"
+                                        >
+                                                            <NavLink
+                                                                                activeClassName="active"
+                                                                                aria-current="page"
+                                                                                className="button is-primary is-medium"
+                                                                                to="/structures/APEQ"
+                                                            >
+                                                                                Terminer
+                                                            </NavLink>
+                                        </div>
+                    </div>
+</div>,
+                ],
+                "className": "field is-grouped is-grouped-centered",
+                "style": Object {
+                  "justifyContent": "space-between",
+                },
+              },
+              "ref": null,
+              "rendered": Array [
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": <NavLink
+                      activeClassName="active"
+                      aria-current="page"
+                      className="button is-secondary is-medium"
+                      to="/structures/APEQ/lieux/AQYQ?modifie"
+>
+                      Modifier le lieu
+</NavLink>,
+                    "className": "control",
+                  },
+                  "ref": null,
+                  "rendered": Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "function",
+                    "props": Object {
+                      "activeClassName": "active",
+                      "aria-current": "page",
+                      "children": "Modifier le lieu",
+                      "className": "button is-secondary is-medium",
+                      "to": "/structures/APEQ/lieux/AQYQ?modifie",
+                    },
+                    "ref": null,
+                    "rendered": "Modifier le lieu",
+                    "type": [Function],
+                  },
+                  "type": "div",
+                },
+                undefined,
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": <div
+                      className="field is-grouped is-grouped-centered"
+                      style={
+                                            Object {
+                                                                  "justifyContent": "space-between",
+                                                                }
+                      }
+>
+                      <div
+                                            className="control"
+                      >
+                                            <NavLink
+                                                                  activeClassName="active"
+                                                                  aria-current="page"
+                                                                  className="button is-primary is-medium"
+                                                                  to="/structures/APEQ"
+                                            >
+                                                                  Terminer
+                                            </NavLink>
+                      </div>
+</div>,
+                    "className": "control",
+                  },
+                  "ref": null,
+                  "rendered": Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "host",
+                    "props": Object {
+                      "children": <div
+                        className="control"
+>
+                        <NavLink
+                                                activeClassName="active"
+                                                aria-current="page"
+                                                className="button is-primary is-medium"
+                                                to="/structures/APEQ"
+                        >
+                                                Terminer
+                        </NavLink>
+</div>,
+                      "className": "field is-grouped is-grouped-centered",
+                      "style": Object {
+                        "justifyContent": "space-between",
+                      },
+                    },
+                    "ref": null,
+                    "rendered": Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "host",
+                      "props": Object {
+                        "children": <NavLink
+                          activeClassName="active"
+                          aria-current="page"
+                          className="button is-primary is-medium"
+                          to="/structures/APEQ"
+>
+                          Terminer
+</NavLink>,
+                        "className": "control",
+                      },
+                      "ref": null,
+                      "rendered": Object {
+                        "instance": null,
+                        "key": undefined,
+                        "nodeType": "function",
+                        "props": Object {
+                          "activeClassName": "active",
+                          "aria-current": "page",
+                          "children": "Terminer",
+                          "className": "button is-primary is-medium",
+                          "to": "/structures/APEQ",
+                        },
+                        "ref": null,
+                        "rendered": "Terminer",
+                        "type": [Function],
+                      },
+                      "type": "div",
+                    },
+                    "type": "div",
+                  },
+                  "type": "div",
+                },
+              ],
+              "type": "div",
+            },
+          ],
+          "type": [Function],
+        },
+      ],
+      "type": [Function],
+    },
+  ],
+  Symbol(enzyme.__options__): Object {
+    "adapter": ReactSixteenAdapter {
+      "options": Object {
+        "enableComponentDidUpdateOnSetState": true,
+        "lifecycles": Object {
+          "componentDidUpdate": Object {
+            "onSetState": true,
+          },
+          "getDerivedStateFromProps": true,
+          "getSnapshotBeforeUpdate": true,
+          "setState": Object {
+            "skipsComponentDidUpdateOnNullish": true,
+          },
+        },
+      },
+    },
+  },
+}
+`;
