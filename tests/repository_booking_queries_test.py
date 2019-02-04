@@ -6,7 +6,7 @@ import pytest
 from models import PcObject, ThingType
 from repository.booking_queries import find_all_ongoing_bookings_by_stock, \
     find_offerer_bookings, find_all_bookings_for_stock, find_all_bookings_for_event_occurrence, \
-    find_final_offerer_bookings, find_date_used, user_has_booked_an_online_activation, get_existing_tokens
+    find_final_offerer_bookings, find_date_used, find_user_activation_booking, get_existing_tokens
 from tests.conftest import clean_database
 from utils.test_utils import create_booking, \
     create_deposit, \
@@ -277,7 +277,7 @@ def test_find_date_used_on_booking_returns_none_if_no_activity_with_is_used_chan
 
 
 @pytest.mark.standalone
-class UserHasBookedAnOnlineActivationTest:
+class FindUserActivationBookingTest:
     @clean_database
     def test_returns_true_is_a_booking_exists_on_such_stock(self, app):
         # given
@@ -290,10 +290,10 @@ class UserHasBookedAnOnlineActivationTest:
         PcObject.check_and_save(activation_booking)
 
         # when
-        has_booked = user_has_booked_an_online_activation(user)
+        booking = find_user_activation_booking(user)
 
         # then
-        assert has_booked is True
+        assert booking == activation_booking
 
     @clean_database
     def test_returns_false_is_no_booking_exists_on_such_stock(self, app):
@@ -307,10 +307,10 @@ class UserHasBookedAnOnlineActivationTest:
         PcObject.check_and_save(book_booking)
 
         # when
-        has_booked = user_has_booked_an_online_activation(user)
+        booking = find_user_activation_booking(user)
 
         # then
-        assert has_booked is False
+        assert booking is None
 
 
 @pytest.mark.standalone

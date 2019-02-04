@@ -9,7 +9,7 @@ from domain.password import generate_reset_token
 from domain.user_activation import generate_activation_users_csv
 from models import User, Booking, Stock, PcObject
 from models.booking import ActivationUser
-from repository.booking_queries import user_has_booked_an_online_activation, get_existing_tokens
+from repository.booking_queries import find_user_activation_booking, get_existing_tokens
 from repository.stock_queries import find_online_activation_stock
 from repository.user_queries import find_user_by_email
 from scripts.interact import app
@@ -33,7 +33,7 @@ ACTIVATION_USER_RECIPIENTS = parse_email_addresses(os.environ.get('ACTIVATION_US
 def create_users_with_activation_bookings(
         csv_rows: List[List[str]], stock: Stock, existing_tokens: Set[str],
         find_user: Callable = find_user_by_email,
-        user_has_booking: Callable = user_has_booked_an_online_activation
+        find_activation_booking: Callable = find_user_activation_booking
 ) -> List[Booking]:
     bookings = []
     for row in csv_rows:
@@ -47,10 +47,12 @@ def create_users_with_activation_bookings(
         while token in existing_tokens:
             token = random_token()
 
-        if not user_has_booking(user):
+        booking = find_activation_booking(user)
+        if not booking:
             booking = create_booking_for(filled_user, stock, token)
-            existing_tokens.add(token)
-            bookings.append(booking)
+
+        existing_tokens.add(token)
+        bookings.append(booking)
 
     return bookings
 
@@ -155,10 +157,10 @@ def run(csv_file_path: str) -> None:
     logger.info('Enregistrement des comptes utilisateur terminé\n')
 
     logger.info('[STEP 3] Décompte des objets')
-    logger.info('Users créés ou mis à jour -> %s' % total)
     logger.info('Users en BDD -> %s' % User.query.count())
-    logger.info('Bookings créés -> %s' % len(existing_tokens))
+    logger.info('Users créés ou mis à jour -> %s' % total)
     logger.info('Bookings en BDD -> %s\n' % Booking.query.count())
+    logger.info('Bookings créés ou existants -> %s' % len(existing_tokens))
 
     logger.info('[STEP 4] Envoi des comptes créés par mail')
     export_created_data(all_bookings)
