@@ -23,7 +23,7 @@ def maybe_send_offerer_validation_email(offerer, user_offerer, send_create_email
     if offerer.isValidated and user_offerer.isValidated:
         return
     email = write_object_validation_email(offerer, user_offerer)
-    recipients = ['passculture@beta.gouv.fr']
+    recipients = ['support.passculture@beta.gouv.fr']
     email['Html-part'], email['To'] = compute_email_html_part_and_recipients(email['Html-part'], recipients)
     mail_result = send_create_email(data=email)
 
@@ -69,7 +69,7 @@ def send_payments_report_emails(not_processable_payments_csv: str, error_payment
 
 def send_venue_validation_email(venue, send_create_email: Callable[..., None]):
     email = make_venue_validation_email(venue)
-    recipients = ['passculture@beta.gouv.fr']
+    recipients = ['support.passculture@beta.gouv.fr']
     email['Html-part'], email['To'] = compute_email_html_part_and_recipients(email['Html-part'], recipients)
     mail_result = send_create_email(data=email)
     check_if_email_sent(mail_result)

@@ -341,7 +341,7 @@ def test_send_booking_recap_emails_sends_email_to_offer_booking_email_if_feature
     mocked_send_create_email.assert_called_once()
     args = mocked_send_create_email.call_args
     assert 'offer.booking.email@test.com' in args[1]['data']['To']
-    assert 'passculture@beta.gouv.fr' in args[1]['data']['To']
+    assert 'support.passculture@beta.gouv.fr' in args[1]['data']['To']
 
 
 @pytest.mark.standalone
@@ -367,7 +367,7 @@ def test_send_booking_recap_emails_email_sends_email_only_to_passculture_if_feat
     # then
     mocked_send_create_email.assert_called_once()
     args = mocked_send_create_email.call_args
-    assert args[1]['data']['To'] == 'passculture@beta.gouv.fr'
+    assert args[1]['data']['To'] == 'support.passculture@beta.gouv.fr'
 
 
 @pytest.mark.standalone
@@ -415,7 +415,7 @@ def test_send_final_booking_recap_email_sends_email_to_offer_booking_email_if_fe
     mocked_send_create_email.assert_called_once()
     args = mocked_send_create_email.call_args
     assert 'offer.booking.email@test.com' in args[1]['data']['To']
-    assert 'passculture@beta.gouv.fr' in args[1]['data']['To']
+    assert 'support.passculture@beta.gouv.fr' in args[1]['data']['To']
     set_booking_recap_sent_and_save.assert_called_once_with(stock)
 
 
@@ -440,7 +440,7 @@ def test_send_final_booking_recap_email_sends_email_only_to_passculture_if_featu
         # then
         mocked_send_create_email.assert_called_once()
     args = mocked_send_create_email.call_args
-    assert args[1]['data']['To'] == 'passculture@beta.gouv.fr'
+    assert args[1]['data']['To'] == 'support.passculture@beta.gouv.fr'
     set_booking_recap_sent_and_save.assert_called_once_with(stock)
 
 

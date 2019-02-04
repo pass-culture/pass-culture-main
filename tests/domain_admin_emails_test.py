@@ -36,7 +36,7 @@ def test_maybe_send_offerer_validation_email_sends_email_to_pass_culture_when_ob
     mocked_send_create_email.assert_called_once()
     args = mocked_send_create_email.call_args
     email = args[1]['data']
-    assert email['To'] == 'passculture@beta.gouv.fr'
+    assert email['To'] == 'support.passculture@beta.gouv.fr'
     assert 'This is a test' not in email['Html-part']
 
 
@@ -136,7 +136,7 @@ def test_send_venue_validation_email_when_mailjet_status_code_200_sends_email_to
     mocked_send_create_email.assert_called_once()
     args = mocked_send_create_email.call_args
     email = args[1]['data']
-    assert email['To'] == 'passculture@beta.gouv.fr'
+    assert email['To'] == 'support.passculture@beta.gouv.fr'
     assert 'This is a test' not in email['Html-part']
 
 

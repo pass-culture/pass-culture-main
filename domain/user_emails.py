@@ -19,7 +19,7 @@ def send_final_booking_recap_email(stock, send_create_email):
         logger.info("Not sending recap for  " + str(stock) + " as it has no bookings")
     email = make_final_recap_email_for_stock_with_event(stock)
 
-    recipients = ['passculture@beta.gouv.fr']
+    recipients = ['support.passculture@beta.gouv.fr']
     if stock.resolvedOffer.bookingEmail:
         recipients.append(stock.resolvedOffer.bookingEmail)
 
@@ -34,7 +34,7 @@ def send_final_booking_recap_email(stock, send_create_email):
 def send_booking_recap_emails(booking, send_create_email):
     email = make_offerer_booking_recap_email_after_user_action(booking)
 
-    recipients = ['passculture@beta.gouv.fr']
+    recipients = ['support.passculture@beta.gouv.fr']
     if booking.stock.resolvedOffer.bookingEmail:
         recipients.append(booking.stock.resolvedOffer.bookingEmail)
 
