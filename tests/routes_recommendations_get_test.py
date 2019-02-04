@@ -644,9 +644,6 @@ class GetRecommendationsSearchTest:
         stock13 = create_stock_from_event_occurrence(event_occurrence13)
         stock75 = create_stock_from_event_occurrence(event_occurrence75)
         stock973 = create_stock_from_event_occurrence(event_occurrence973)
-        print(stock13.bookingLimitDatetime > self.now)
-        print(stock75.bookingLimitDatetime > self.now)
-        print(stock973.bookingLimitDatetime > self.now)
 
         PcObject.check_and_save(stock13, recommendation13, stock75, recommendation75, stock973, recommendation973)
 
