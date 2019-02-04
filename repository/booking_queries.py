@@ -171,9 +171,10 @@ def find_date_used(booking: Booking) -> datetime:
     return activity.issued_at if activity else None
 
 
-def find_user_activation_booking(user: User) -> bool:
+def find_user_activation_booking(user: User) -> User:
     return Booking.query \
-        .join(Stock) \
+        .join(User) \
+        .join(Stock, Booking.stockId == Stock.id) \
         .join(Offer) \
         .join(Thing) \
         .filter(Thing.type == str(ThingType.ACTIVATION)) \
