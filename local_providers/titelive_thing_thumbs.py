@@ -6,7 +6,6 @@ from zipfile import ZipFile
 
 from io import BytesIO
 
-from models.db import db
 from models.local_provider import LocalProvider, ProvidableInfo
 from models.local_provider_event import LocalProviderEventType
 from models.thing import Thing
@@ -63,7 +62,7 @@ class TiteLiveThingThumbs(LocalProvider):
         if self.is_mock:
             data_root_path = Path(os.path.dirname(os.path.realpath(__file__)))\
                             / '..' / 'sandboxes' / 'providers' / 'titelive_works'
-            data_thumbs_path = data_root_path / 'Atoo'
+            data_thumbs_path = data_root_path / THUMB_FOLDER_NAME_TITELIVE
             print(data_thumbs_path)
             all_zips = list(sorted(data_thumbs_path.glob('livres_tl*.zip')))
         else:
@@ -86,10 +85,6 @@ class TiteLiveThingThumbs(LocalProvider):
         next_zip_file_name = str(self.zips.__next__())
         if self.is_mock:
             self.zip = ZipFile(next_zip_file_name)
-            print("  Importing thumbs from file "+str(self.zip))
-            self.thumb_zipinfos = iter(filter(lambda f: f.filename.lower().endswith('.jpg'),
-                                              sorted(self.zip.infolist(),
-                                                     key=lambda f: f.filename)))
         else:
             data_file = BytesIO()
             data_file.name = next_zip_file_name
@@ -97,11 +92,11 @@ class TiteLiveThingThumbs(LocalProvider):
             print("  Downloading file " + file_path)
             get_titelive_ftp().retrbinary(file_path, data_file.write)
             self.zip = ZipFile(data_file, 'r')
-            print("  Importing thumbs from file " + str(self.zip))
-            self.thumb_zipinfos = iter(filter(lambda f: f.filename.lower().endswith('.jpg'),
-                                              sorted(self.zip.infolist(),
-                                                     key=lambda f: f.filename)))
 
+        print("  Importing thumbs from file " + str(self.zip))
+        self.thumb_zipinfos = iter(filter(lambda f: f.filename.lower().endswith('.jpg'),
+                                          sorted(self.zip.infolist(),
+                                                 key=lambda f: f.filename)))
         self.logEvent(LocalProviderEventType.SyncPartStart, file_date(self.zip))
 
 
