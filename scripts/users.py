@@ -9,7 +9,7 @@ from domain.password import generate_reset_token
 from domain.user_activation import generate_activation_users_csv
 from models import User, Booking, Stock, PcObject
 from models.booking import ActivationUser
-from repository.booking_queries import user_has_booked_an_online_activation
+from repository.booking_queries import user_has_booked_an_online_activation, get_existing_tokens
 from repository.stock_queries import find_online_activation_stock
 from repository.user_queries import find_user_by_email
 from scripts.interact import app
@@ -142,7 +142,7 @@ def run(csv_file_path: str) -> None:
     chunked_file = split_rows_in_chunks_with_no_duplicated_emails(csv_reader, CHUNK_SIZE)
 
     logger.info('[STEP 2] Enregistrement des comptes et contremarques d\'activation')
-    existing_tokens = set()
+    existing_tokens = get_existing_tokens()
     all_bookings = []
     total = 0
     for chunk in chunked_file:

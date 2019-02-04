@@ -6,7 +6,7 @@ import pytest
 from models import PcObject, ThingType
 from repository.booking_queries import find_all_ongoing_bookings_by_stock, \
     find_offerer_bookings, find_all_bookings_for_stock, find_all_bookings_for_event_occurrence, \
-    find_final_offerer_bookings, find_date_used, user_has_booked_an_online_activation
+    find_final_offerer_bookings, find_date_used, user_has_booked_an_online_activation, get_existing_tokens
 from tests.conftest import clean_database
 from utils.test_utils import create_booking, \
     create_deposit, \
@@ -311,3 +311,33 @@ class UserHasBookedAnOnlineActivationTest:
 
         # then
         assert has_booked is False
+
+
+@pytest.mark.standalone
+class GetExistingTokensTest:
+    @clean_database
+    def test_returns_a_set_of_tokens(self, app):
+        # given
+        user = create_user()
+        offerer = create_offerer(siren='123456789', name='pass Culture')
+        venue_online = create_venue(offerer, siret=None, is_virtual=True)
+        book_offer = create_thing_offer(venue_online, thing_type=ThingType.LIVRE_EDITION)
+        book_stock = create_stock_from_offer(book_offer, available=200, price=0)
+        booking1 = create_booking(user, stock=book_stock, venue=venue_online)
+        booking2 = create_booking(user, stock=book_stock, venue=venue_online)
+        booking3 = create_booking(user, stock=book_stock, venue=venue_online)
+        PcObject.check_and_save(booking1, booking2, booking3)
+
+        # when
+        tokens = get_existing_tokens()
+
+        # then
+        assert tokens == {booking1.token, booking2.token, booking3.token}
+
+    @clean_database
+    def test_returns_an_empty_set_if_no_bookings(self, app):
+        # when
+        tokens = get_existing_tokens()
+
+        # then
+        assert tokens == set()

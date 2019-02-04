@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from typing import Set
 
 from postgresql_audit.flask import versioning_manager
 from sqlalchemy import and_, text
@@ -18,6 +19,7 @@ from models import ApiErrors, \
     User, \
     Venue, Offerer, ThingType
 from models.api_errors import ResourceNotFound
+from models.db import db
 from utils.rest import query_with_order_by
 
 get_filter_matching_ts_query_for_booking = create_get_filter_matching_ts_query_in_any_model(
@@ -171,10 +173,14 @@ def find_date_used(booking: Booking) -> datetime:
 
 def user_has_booked_an_online_activation(user: User) -> bool:
     return User.query \
-        .join(Booking) \
-        .join(Stock) \
-        .join(Offer) \
-        .join(Thing) \
-        .filter(Thing.type == str(ThingType.ACTIVATION)) \
-        .filter(User.id == user.id) \
-        .count() > 0
+               .join(Booking) \
+               .join(Stock) \
+               .join(Offer) \
+               .join(Thing) \
+               .filter(Thing.type == str(ThingType.ACTIVATION)) \
+               .filter(User.id == user.id) \
+               .count() > 0
+
+
+def get_existing_tokens() -> Set[str]:
+    return set(map(lambda t: t[0], db.session.query(Booking.token).all()))
