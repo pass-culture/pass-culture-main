@@ -259,6 +259,7 @@ class EventOccurrencesAndStocksManager extends Component {
         </div>
         <button
           className="button is-secondary is-pulled-right"
+          id="close-manager"
           onClick={this.onCloseClick}>
           Fermer
         </button>

@@ -11,7 +11,9 @@ import {
 import { EXISTING_VALIDATED_UNREGISTERED_93_OFFERER_USER } from './helpers/users'
 
 const addAnchor = Selector('#add-occurrence-or-stock')
+const backButton = Selector('a.back-button')
 const availableInput = Selector('input[name="available"]')
+const closeManagerButton = Selector('#close-manager')
 const manageStockAnchor = Selector('a.manage-stock')
 const submitButton = Selector('button.button.submitStep')
 const priceInput = Selector('input[name="price"]')
@@ -294,6 +296,27 @@ test('Je peux modifier une occurrence et un stock', async t => {
   // then
   location = await t.eval(() => window.location)
   await t.expect(location.search).match(/\?gestion$/)
+})
+
+test('Je peux aller sur le stock manager et revenir aux offres pour chercher une nouvelle offre sans bug de modal en appuyant sur enter', async t => {
+  // given
+  await navigateToOfferAs(
+    EXISTING_VALIDATED_UNREGISTERED_93_OFFERER_USER,
+    EXISTING_EVENT_OFFER_WITH_EVENT_OCCURRENCE_WITH_STOCK_WITH_MEDIATION_WITH_93_OFFERER_IBAN_WITH_NO_VENUE_IBAN
+  )(t)
+  const searchInput = Selector('#search')
+  await t
+    .click(manageStockAnchor)
+    .click(closeManagerButton)
+    .click(backButton)
+    .typeText(searchInput, 'blabla')
+
+  // when
+  await t.pressKey('Enter')
+
+  // then
+  const location = await t.eval(() => window.location)
+  await t.expect(location.pathname).eql('/offres')
 })
 
 fixture.skip`TODO: OfferPage Gestion D | Effacer des dates et des stocks`
