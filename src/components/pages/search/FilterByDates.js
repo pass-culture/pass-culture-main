@@ -77,7 +77,6 @@ class FilterByDates extends PureComponent {
     const { pickedDate } = this.state
     const { filterState, minDate, title } = this.props
     const pickedDaysInQuery = decodeURI(filterState.params.jours || '')
-
     return (
       <div id="filter-by-dates" className="pt18">
         <h2 className="fs15 is-italic is-medium is-uppercase text-center mb12">
@@ -133,14 +132,18 @@ class FilterByDates extends PureComponent {
 }
 
 FilterByDates.defaultProps = {
-  minDate: moment().format('MMM Do YY'),
+  minDate: moment(),
 }
 
 FilterByDates.propTypes = {
   filterActions: PropTypes.object.isRequired,
   filterState: PropTypes.object.isRequired,
   initialDateParams: PropTypes.bool.isRequired,
-  minDate: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
+  minDate: PropTypes.oneOfType([
+    PropTypes.bool,
+    PropTypes.object,
+    PropTypes.string,
+  ]),
   title: PropTypes.string.isRequired,
 }
 export default FilterByDates

@@ -1,3 +1,4 @@
+// jest --env=jsdom ./src/components/pages/search/tests/FilterByDistance --watch
 import configureStore from 'redux-mock-store'
 import { Provider } from 'react-redux'
 import React from 'react'

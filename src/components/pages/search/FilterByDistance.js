@@ -48,11 +48,8 @@ class FilterByDistance extends PureComponent {
     // THE IN PUT WITH A SYNCED DEFAULT VALUE
     const distanceKey =
       filterState.params.distance === null ? 'empty' : 'not-empty'
-
     const distanceValue = filterState.params.distance || 20000
-
     const isSelected = value => (distanceValue === value ? 'selected' : null)
-
     return (
       <div key={distanceKey} id="filter-by-distance" className="pt18">
         <h2 className="fs15 is-italic is-medium is-uppercase text-center mb12">
@@ -66,6 +63,7 @@ class FilterByDistance extends PureComponent {
             name="distance"
           >
             {options.map(({ label, value }) => (
+              // NOTE: https://reactjs.org/docs/forms.html#the-select-tag
               <option key={value} value={value} selected={isSelected(value)}>
                 {label}
               </option>

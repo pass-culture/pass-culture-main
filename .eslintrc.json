@@ -17,29 +17,34 @@
     "fixture": true
   },
   "rules": {
+    "jsx-a11y/label-has-for": [ 2, {
+      "components": [ "Label" ],
+      "required": { "every": [ "nesting", "id" ] },
+      "allowChildren": true
+    }],
     "import/no-extraneous-dependencies": [2, {
       "devDependencies": true,
       "optionalDependencies": false,
       "peerDependencies": false
     }],
-    "jsx-a11y/aria-role": 1,
-    "jsx-a11y/click-events-have-key-events": 1,
-    "jsx-a11y/label-has-for": 0,
-    "jsx-a11y/no-static-element-interactions": 1,
-    "jsx-a11y/no-noninteractive-element-interactions": 1,
-    "no-param-reassign": 1,
-    "no-underscore-dangle": [2, { "allow": ["__modifiers__"] }],
-    "no-restricted-syntax": 1,
-    "prefer-destructuring": 1,
+    "no-underscore-dangle": [2, {
+      "allow": ["__modifiers__"]
+    }],
+    "react/forbid-prop-types": [2, {
+      "forbid": ["any"]
+    }],
     "react/button-has-type": [2, {
-      "button": true,
-      "cancel": true,
-      "submit": true,
       "reset": true
     }],
-    "react/forbid-prop-types": [2, { "forbid": ["any"] }],
-    "react/jsx-filename-extension": [2, { "extensions": [".js", ".jsx"] }],
-    "sort-keys": [1, "asc", { "caseSensitive": true, "natural": false }],
-    "sort-vars": [1, { "ignoreCase": true }]
+    "react/jsx-filename-extension": [2, {
+      "extensions": [".js", ".jsx"]
+    }],
+    "sort-keys": [2, "asc", {
+      "caseSensitive": true,
+      "natural": false
+    }],
+    "sort-vars": [2, {
+      "ignoreCase": true
+    }]
   }
 }

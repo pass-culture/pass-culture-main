@@ -11,16 +11,20 @@ describe('src | components | verso | RawVersoWrapper', () => {
     it('should match snapshot', () => {
       // given
       const props = {
+        areDetailsVisible: true,
         children: jest.mock(),
         className: 'className',
         dispatchMakeDraggable: dispatchMakeDraggableMock,
         dispatchMakeUndraggable: dispatchMakeUndraggableMock,
         draggable: true,
-        areDetailsVisible: true,
       }
 
       // when
-      const wrapper = shallow(<RawVersoWrapper {...props} />)
+      const wrapper = shallow(
+        <RawVersoWrapper {...props}>
+          <div id="fake-required-child-element" />
+        </RawVersoWrapper>
+      )
 
       // then
       expect(wrapper).toBeDefined()
@@ -33,16 +37,20 @@ describe('src | components | verso | RawVersoWrapper', () => {
         it('should render black by default', () => {
           // given
           const props = {
+            areDetailsVisible: true,
             children: jest.mock(),
             className: 'className',
             dispatchMakeDraggable: dispatchMakeDraggableMock,
             dispatchMakeUndraggable: dispatchMakeUndraggableMock,
             draggable: true,
-            areDetailsVisible: true,
           }
 
           // when
-          const wrapper = shallow(<RawVersoWrapper {...props} />)
+          const wrapper = shallow(
+            <RawVersoWrapper {...props}>
+              <div id="fake-required-child-element" />
+            </RawVersoWrapper>
+          )
           const header = wrapper.find('.verso-header')
 
           // then
@@ -53,6 +61,7 @@ describe('src | components | verso | RawVersoWrapper', () => {
         it('should render associate color', () => {
           // given
           const props = {
+            areDetailsVisible: true,
             children: jest.mock(),
             className: 'className',
             currentRecommendation: {
@@ -61,11 +70,14 @@ describe('src | components | verso | RawVersoWrapper', () => {
             dispatchMakeDraggable: dispatchMakeDraggableMock,
             dispatchMakeUndraggable: dispatchMakeUndraggableMock,
             draggable: true,
-            areDetailsVisible: true,
           }
 
           // when
-          const wrapper = shallow(<RawVersoWrapper {...props} />)
+          const wrapper = shallow(
+            <RawVersoWrapper {...props}>
+              <div id="fake-required-child-element" />
+            </RawVersoWrapper>
+          )
           const header = wrapper.find('.verso-header')
 
           // then

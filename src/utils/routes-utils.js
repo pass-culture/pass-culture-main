@@ -12,15 +12,17 @@ export const filterRoutes = items =>
       return { ...obj, ...extend }
     })
 
-export const addMenuRoutes = routes =>
+export const addMenuViewToRoutesWithPath = routes =>
   routes.map(route => {
-    if (route.path) {
-      route.path = `${route.path}/:menu(menu)?`
+    const clone = { ...route }
+    if (clone.path) {
+      clone.path = `${clone.path}/:menu(menu)?`
     }
-    return route
+    return clone
   })
 
-export const getReactRoutes = routes => filterRoutes(addMenuRoutes(routes))
+export const getReactRoutes = routes =>
+  filterRoutes(addMenuViewToRoutesWithPath(routes))
 
 export const getMainMenuItems = items =>
   items

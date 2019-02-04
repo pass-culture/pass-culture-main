@@ -15,6 +15,7 @@ function registerValidSW(swUrl) {
   navigator.serviceWorker
     .register(swUrl)
     .then(registration => {
+      // eslint-disable-next-line
       registration.onupdatefound = () => {
         const installingWorker = registration.installing
         installingWorker.onstatechange = () => {
@@ -23,6 +24,7 @@ function registerValidSW(swUrl) {
               if (
                 window.location.pathname === '/decouverte' ||
                 window.location.pathname === '/' ||
+                // eslint-disable-next-line
                 window.confirm(
                   "Une nouvelle version a été téléchargée. Redémarrer pour l'utiliser ?"
                 )

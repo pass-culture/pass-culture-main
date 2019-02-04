@@ -1,3 +1,4 @@
+// jest --env=jsdom ./src/components/pages/search/tests/SearchFilter --watch
 import { createBrowserHistory } from 'history'
 import React from 'react'
 import { Provider } from 'react-redux'

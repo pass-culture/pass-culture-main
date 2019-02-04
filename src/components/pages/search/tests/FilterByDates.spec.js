@@ -209,6 +209,7 @@ describe('src | components | pages | search | FilterByDates', () => {
                 orderBy: 'offer.id+desc',
               },
             },
+            initialDateParams: false,
             title: 'Fake title',
           }
 
@@ -240,6 +241,7 @@ describe('src | components | pages | search | FilterByDates', () => {
                 orderBy: 'offer.id+desc',
               },
             },
+            initialDateParams: false,
             title: 'Fake title',
           }
 
@@ -271,6 +273,7 @@ describe('src | components | pages | search | FilterByDates', () => {
                 orderBy: 'offer.id+desc',
               },
             },
+            initialDateParams: false,
             title: 'Fake title',
           }
 
@@ -308,6 +311,7 @@ describe('src | components | pages | search | FilterByDates', () => {
                 orderBy: 'offer.id+desc',
               },
             },
+            initialDateParams: false,
             title: 'Fake title',
           }
 

@@ -75,8 +75,8 @@ class ShareButtonContent extends React.PureComponent {
           getCopyToClipboardButton(url, this.onCopyHandler),
           getMailToLinkButton(email, headers),
         ],
-        title: offerName,
         text: 'Comment souhaitez-vous partager cette offre ?',
+        title: offerName,
       }
 
       const { iscopied } = this.state

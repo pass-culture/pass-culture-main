@@ -57,14 +57,15 @@ const DatePickerField = ({
     moreprops.todayButton = `Aujourd'hui`
   }
   const isClearable = !readOnly && clearable
+  const inputName = id || name
   return (
     <div className={`${className}`}>
-      <label htmlFor={id || name} className="pc-final-form-datepicker">
+      <label htmlFor={inputName} className="pc-final-form-datepicker">
         {label && <InputLabel label={label} required={required} />}
         <div className="pc-final-form-inner">
           <DatePicker
             shouldCloseOnSelect
-            id={id || name}
+            id={inputName}
             locale={locale}
             readOnly={readOnly}
             onChange={onChange}

@@ -63,6 +63,11 @@ class Debug extends React.PureComponent {
   render() {
     const { children, className } = this.props
     return (
+      // NOTE: c'est quoi le comportement attendu par ce composant
+      // actuellement il sert de container
+      // or sur des raisons d'accessibilité il n'est pas valide
+      // FIXME: ce composant doit être remplacé
+      // eslint-disable-next-line
       <div
         className={className}
         onTouchStart={this.handleTouchPress}

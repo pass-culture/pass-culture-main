@@ -66,8 +66,12 @@ module.exports = {
           {
             loader: require.resolve('eslint-loader'),
             options: {
+              // https://github.com/webpack-contrib/eslint-loader#emiterror-default-false
+              emitError: false,
               emitWarning: true,
               eslintPath: require.resolve('eslint'),
+              failOnError: false,
+              failOnWarning: false,
               formatter: eslintFormatter,
             },
           },

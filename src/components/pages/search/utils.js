@@ -98,15 +98,14 @@ const formatDate = (date, tz) =>
 
 export const getRecommendationDateString = offer => {
   if (offer.eventId === null) return 'permanent'
-  const departementCode = offer.venue.departementCode
+  const { departementCode } = offer.venue
   const tz = getTimezone(departementCode)
 
-  const fromDate = offer.dateRange[0]
-  const toDate = offer.dateRange[1]
-  const formatedDate = `du ${formatDate(fromDate, tz)} au ${formatDate(
-    toDate,
-    tz
-  )}`
+  const fromDate = new Date(offer.dateRange[0])
+  const toDate = new Date(offer.dateRange[1])
+  const fromFormated = formatDate(fromDate, tz)
+  const toFormated = formatDate(toDate, tz)
+  const formatedDate = `du ${fromFormated} au ${toFormated}`
   return formatedDate
 }
 

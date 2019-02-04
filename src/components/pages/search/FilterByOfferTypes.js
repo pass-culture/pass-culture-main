@@ -33,16 +33,19 @@ class FilterByOfferTypes extends PureComponent {
         </h2>
         <div className="pc-scroll-horizontal is-relative">
           <div className="pc-list flex-columns pt7">
-            {typeSublabels.map(typeSublabel => {
+            {typeSublabels.map((typeSublabel, index) => {
               const ischecked = typesValue.includes(typeSublabel)
               const className = ischecked ? 'checked' : ''
+              const inputName = `search-image-checkbox-${index}`
               return (
                 <label
+                  htmlFor={inputName}
                   key={typeSublabel}
                   className={`item p3 is-relative ${className}`}
                 >
                   <SearchPicture searchType={typeSublabel} />
                   <input
+                    id={inputName}
                     checked={ischecked}
                     className="is-hidden"
                     onChange={() => this.onChange(typeSublabel)}

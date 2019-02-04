@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import { stringify } from 'query-string'
 import React, { PureComponent } from 'react'
 import { withRouter } from 'react-router-dom'
+import { Logger } from 'pass-culture-shared'
 
 import { selectQueryParamsFromQueryString } from '../../helpers/selectQueryParamsFromQueryString'
 
@@ -65,7 +66,7 @@ export const withQueryRouter = WrappedComponent => {
         args.sort()
         nextValue = args.join(',')
       } else if (typeof previousValue === 'undefined') {
-        console.warn(
+        Logger.warn(
           `Weird did you forget to mention this ${key} query param in your withQueryRouter hoc?`
         )
       }
@@ -91,7 +92,7 @@ export const withQueryRouter = WrappedComponent => {
         }
         this.change({ [key]: nextValue })
       } else if (typeof previousValue === 'undefined') {
-        console.warn(
+        Logger.warn(
           `Weird did you forget to mention this ${key} query param in your withQueryRouter hoc?`
         )
       }

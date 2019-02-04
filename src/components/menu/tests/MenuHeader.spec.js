@@ -9,6 +9,7 @@ describe('src | components | menu | MenuHeader', () => {
     it('should match snapshot', () => {
       // given
       const props = {
+        toggleMainMenu: jest.fn(),
         user: true,
       }
 

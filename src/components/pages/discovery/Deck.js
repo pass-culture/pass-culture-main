@@ -282,8 +282,6 @@ RawDeck.propTypes = {
   nextRecommendation: PropTypes.object,
   noDataTimeout: PropTypes.number,
   previousRecommendation: PropTypes.object,
-  // flipRatio: PropTypes.number,
-  // isDebug: PropTypes.bool,
   readTimeout: PropTypes.number,
   recommendations: PropTypes.array.isRequired,
   unFlippable: PropTypes.bool.isRequired,

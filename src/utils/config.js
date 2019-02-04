@@ -51,9 +51,10 @@ if (typeof window !== 'undefined' && window.cordova) {
   } else if (MOBILE_OS === 'ios') {
     // TODO
     document.body.className += ' cordova-ios'
-    // FIXME -> Si ici on applique pas la regle des ';'
+    // NOTE: Si ici on applique pas la regle des ';'
     // L'application plante en respectant la regle eslint.prefer-destructuring
-    CALC_ROOT_PATH = window.location.href.match(/file:\/\/(.*)\/www/)[0] // eslint-disable-line
+    // eslint-disable-next-line
+    CALC_ROOT_PATH = window.location.href.match(/file:\/\/(.*)\/www/)[0]
   }
   window.addEventListener('keyboardWillShow', () => {
     window.log('Keyboard show')
