@@ -662,8 +662,8 @@ class OfferPage extends Component {
               <div className="control">
                 {isReadOnly ? (
                   <NavLink
-                    to={`/offres/${offerId}?modifie`}
-                    className="button is-secondary is-medium">
+                    className="button is-secondary is-medium"
+                    to={`/offres/${offerId}?modifie`}>
                     Modifier l'offre
                   </NavLink>
                 ) : (

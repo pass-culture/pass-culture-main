@@ -39,10 +39,22 @@ class EventOccurrencesAndStocksManager extends Component {
     this.state = { info: null }
   }
 
-  onCloseClick = e => {
-    const { dispatch, offer, history } = this.props
-    dispatch(closeModal())
-    history.push(`/offres/${get(offer, 'id')}`)
+  componentDidMount() {
+    this.elem.focus()
+    document.addEventListener('keydown', this.onKeydown)
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener('keydown', this.onKeydown)
+  }
+
+  handleEscKey() {
+    if (!this.props.isEditing) {
+      this.onCloseClick()
+    } else {
+      const cancelButton = document.getElementsByClassName('cancel-step')[0]
+      cancelButton.click()
+    }
   }
 
   handleEnterKey() {
@@ -64,15 +76,6 @@ class EventOccurrencesAndStocksManager extends Component {
     }
   }
 
-  handleEscKey() {
-    if (!this.props.isEditing) {
-      this.onCloseClick()
-    } else {
-      const cancelButton = document.getElementsByClassName('cancel-step')[0]
-      cancelButton.click()
-    }
-  }
-
   getAddUrl(isEditing, isStockOnly) {
     return getAddUrl(
       isEditing,
@@ -91,19 +94,18 @@ class EventOccurrencesAndStocksManager extends Component {
     this.setState({ info })
   }
 
-  componentDidMount() {
-    this.elem.focus()
-    document.onkeydown = event => {
-      if (event.key === 'Enter') {
-        this.handleEnterKey()
-      } else if (event.key === 'Escape') {
-        this.handleEscKey()
-      }
-    }
+  onCloseClick = e => {
+    const { dispatch, offer, history } = this.props
+    dispatch(closeModal())
+    history.push(`/offres/${get(offer, 'id')}`)
   }
 
-  componentWillUnmount() {
-    document.onkeydown = null
+  onKeydown = event => {
+    if (event.key === 'Enter') {
+      this.handleEnterKey()
+    } else if (event.key === 'Escape') {
+      this.handleEscKey()
+    }
   }
 
   render() {
