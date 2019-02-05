@@ -8,6 +8,7 @@ export const VENUE_NEW_PATCH_KEYS = [
   'iban',
   'latitude',
   'longitude',
+  'managingOffererId',
   'name',
   'postalCode',
   'siret',
