@@ -2,6 +2,10 @@
 
 $toaster-height: rem(44px);
 
+.Toastify__toast {
+  @extend .is-barlow-font;
+}
+
 .react-toastify-container {
   width: auto !important;
   margin-left: 0 !important;
@@ -19,6 +23,7 @@ $toaster-height: rem(44px);
 .react-toastify-body {
   @extend .fs16;
   @extend .is-black-text;
+  @extend .is-barlow-font;
 
   margin: rem(14px 0) !important;
 }

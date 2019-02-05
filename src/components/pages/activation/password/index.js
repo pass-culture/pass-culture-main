@@ -38,7 +38,7 @@ class ActivationPassword extends React.PureComponent {
     this.setState(nextstate, () => {
       // resolve form without errors
       formResolver()
-      history.replace('/decouverte')
+      history.replace('/decouverte?from=password')
     })
   }
 

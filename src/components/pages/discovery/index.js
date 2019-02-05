@@ -5,13 +5,14 @@ import get from 'lodash.get'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { Route } from 'react-router-dom'
+import { toast } from 'react-toastify'
 
 import Deck from './Deck'
 import Booking from '../../booking'
 import BackButton from '../../layout/BackButton'
 import Loader from '../../layout/Loader'
 import Footer from '../../layout/Footer'
-import { getQueryParams } from '../../../helpers'
+import { getQueryParams, getRouterQueryByKey } from '../../../helpers'
 import { recommendationNormalizer } from '../../../utils/normalizers'
 
 export class RawDiscoveryPage extends React.PureComponent {
@@ -26,6 +27,12 @@ export class RawDiscoveryPage extends React.PureComponent {
 
   componentDidMount() {
     this.handleDataRequest()
+    const { fromPassword } = this.props
+    if (!fromPassword) return
+    const delay = 1000
+    const autoClose = 3000
+    const message = 'Votre mot de passe a bien été enregistré.'
+    setTimeout(() => toast(message, { autoClose }), delay)
   }
 
   componentWillUnmount() {
@@ -142,6 +149,7 @@ RawDiscoveryPage.defaultProps = {
 
 RawDiscoveryPage.propTypes = {
   dispatch: PropTypes.func.isRequired,
+  fromPassword: PropTypes.bool.isRequired,
   history: PropTypes.object.isRequired,
   location: PropTypes.object.isRequired,
   match: PropTypes.object.isRequired,
@@ -149,10 +157,15 @@ RawDiscoveryPage.propTypes = {
   seenRecommendations: PropTypes.array,
 }
 
-const mapStateToProps = state => ({
-  readRecommendations: state.data.readRecommendations,
-  seenRecommendations: state.data.seenRecommendations,
-})
+const mapStateToProps = (state, { location }) => {
+  const from = getRouterQueryByKey(location, 'from')
+  const fromPassword = from === 'password'
+  return {
+    fromPassword,
+    readRecommendations: state.data.readRecommendations,
+    seenRecommendations: state.data.seenRecommendations,
+  }
+}
 
 const DiscoveryPage = compose(
   withLogin({ failRedirect: '/connexion' }),
