@@ -67,7 +67,7 @@ test('Je fais ma première visite sur découverte', async t => {
 
   // to emulate a disconnection, signout et re signin
   await t
-    .navigateTo(`${ROOT_PATH}mentions-legales`)
+    .navigateTo(`${ROOT_PATH}profil`)
     .wait(500)
     .click(menuButton)
     .wait(100)

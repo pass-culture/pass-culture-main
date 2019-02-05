@@ -10,7 +10,7 @@ const mainMenu = Selector('#main-menu')
 fixture`12_01 Menu - Affichage de la modale`.beforeEach(async t => {
   await t
     .useRole(createUserRole(hasSignedUpUser93))
-    .navigateTo(`${ROOT_PATH}mentions-legales`)
+    .navigateTo(`${ROOT_PATH}profil`)
     .wait(500)
     .click(menuButton)
     .wait(100)
@@ -44,7 +44,7 @@ test('Je vois le montant de mon pass dans le header', async t => {
 fixture`12_02 Modale Menu - Liens vers pages`.beforeEach(async t => {
   await t
     .useRole(createUserRole(hasSignedUpUser93))
-    .navigateTo(`${ROOT_PATH}mentions-legales`)
+    .navigateTo(`${ROOT_PATH}profil`)
     .wait(500)
     .click(menuButton)
     .wait(100)
@@ -124,7 +124,11 @@ test('Menu | Liens | Mentions légales', async t => {
     .click(menuMentionsLegales)
     .wait(100)
   const location = await t.eval(() => window.location)
-  await t.expect(location.pathname).eql('/mentions-legales')
+  await t
+    .expect(location.href)
+    .eql(
+      'https://pass-culture.gitbook.io/documents/textes-normatifs/mentions-legales-et-conditions-generales-dutilisation-de-lapplication-pass-culture'
+    )
 })
 
 test('Menu | Liens | Déconnexion', async t => {
@@ -144,7 +148,7 @@ test('Menu | Liens | Déconnexion', async t => {
 fixture`12_03 Modale Menu - gestion de l'historique`.beforeEach(async t => {
   await t
     .useRole(createUserRole(hasSignedUpUser93))
-    .navigateTo(`${ROOT_PATH}mentions-legales`)
+    .navigateTo(`${ROOT_PATH}profil`)
     .wait(500)
     .click(menuButton)
     .wait(100)
@@ -181,5 +185,5 @@ test("Menu | Le menu ne reste pas dans l'historique de navigation", async t => {
 
   // then
   location = await t.eval(() => window.location)
-  await t.expect(location.pathname).eql('/mentions-legales')
+  await t.expect(location.pathname).eql('/profil')
 })

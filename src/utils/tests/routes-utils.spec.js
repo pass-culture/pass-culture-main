@@ -8,7 +8,6 @@ import MyBookingsPage from '../../components/pages/my-bookings'
 import DiscoveryPage from '../../components/pages/discovery'
 import FavoritesPage from '../../components/pages/FavoritesPage'
 import ProfilePage from '../../components/pages/profile'
-import TermsPage from '../../components/pages/TermsPage'
 import { SUPPORT_EMAIL } from '../config'
 
 describe('filterRoutes', () => {
@@ -107,7 +106,6 @@ describe('getMainMenuItems', () => {
         path: '/profil',
         title: 'Mon Profil',
       },
-
       {
         disabled: false,
         href: `mailto:${SUPPORT_EMAIL}`,
@@ -115,10 +113,11 @@ describe('getMainMenuItems', () => {
         title: 'Nous contacter',
       },
       {
-        component: TermsPage,
         disabled: false,
+        href:
+          'https://pass-culture.gitbook.io/documents/textes-normatifs/mentions-legales-et-conditions-generales-dutilisation-de-lapplication-pass-culture',
         icon: 'txt-w',
-        path: '/mentions-legales',
+        target: '_blank',
         title: 'Mentions Légales',
       },
     ]

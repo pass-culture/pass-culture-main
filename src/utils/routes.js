@@ -11,7 +11,6 @@ import ProfilePage from '../components/pages/profile'
 import SearchPage from '../components/pages/SearchPage'
 import { Signin } from '../components/pages/signin'
 import SignupPage from '../components/pages/SignupPage'
-import TermsPage from '../components/pages/TermsPage'
 
 import { SUPPORT_EMAIL } from './config'
 
@@ -99,10 +98,11 @@ const routes = [
     title: 'Nous contacter',
   },
   {
-    component: TermsPage,
     disabled: false,
+    href:
+      'https://pass-culture.gitbook.io/documents/textes-normatifs/mentions-legales-et-conditions-generales-dutilisation-de-lapplication-pass-culture',
     icon: 'txt-w',
-    path: '/mentions-legales',
+    target: '_blank',
     title: 'Mentions Légales',
   },
 ]

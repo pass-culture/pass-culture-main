@@ -41,13 +41,15 @@ export class MenuItemContent extends React.PureComponent {
 
   renderSimpleLink = opts => {
     const { item } = this.props
-    const { title, icon, disabled, href } = item
+    const { disabled, href, icon, target, title } = item
     return (
       <a
-        key={href}
-        href={href}
-        disabled={disabled}
         className={`navlink mx12 flex-columns ${opts.cssclass}`}
+        disabled={disabled}
+        href={href}
+        key={href}
+        rel={target === '_blank' && 'noopener noreferer'}
+        target={target}
       >
         {renderLinkContent(icon, title)}
       </a>
