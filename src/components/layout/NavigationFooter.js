@@ -8,20 +8,18 @@ const NavigationFooter = ({ className, disabled, location, theme }) => {
   const menuUrl = `${cleanPath}/menu${location.search}`
   return (
     <footer className={cssclass}>
-      <button
-        type="button"
+      <Link
+        to={menuUrl}
         disabled={disabled}
         id="open-menu-button"
-        className="no-border no-background no-outline no-select"
+        className={`no-border no-background no-outline no-select pc-theme-${theme}`}
       >
-        <Link to={menuUrl} className={`pc-theme-${theme}`}>
-          <span
-            aria-hidden
-            className="icon-legacy-user-circle-outline"
-            title="Afficher le menu de navigation"
-          />
-        </Link>
-      </button>
+        <span
+          aria-hidden
+          className="icon-legacy-user-circle-outline"
+          title="Afficher le menu de navigation"
+        />
+      </Link>
     </footer>
   )
 }

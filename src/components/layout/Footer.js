@@ -25,12 +25,14 @@ const Footer = ({ borderTop, colored, areDetailsVisible, location, onTop }) => {
   const menuUrl = `${cleanPath}/menu${location.search}`
   return (
     <footer className={cssclass} style={style}>
-      <div className="button-wrapper">
-        <button className="profile-button" type="button">
-          <Link to={menuUrl}>
-            <ProfilePicture alt="Mon menu" {...maybeColored} />
-          </Link>
-        </button>
+      <div className="button-wrapper flex-center">
+        <Link
+          to={menuUrl}
+          className="profile-button is-block text-center"
+          style={{ paddingTop: '0.4rem' }}
+        >
+          <ProfilePicture alt="Mon menu" {...maybeColored} />
+        </Link>
       </div>
     </footer>
   )
