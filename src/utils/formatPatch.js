@@ -5,6 +5,7 @@ export const VENUE_NEW_PATCH_KEYS = [
   'bic',
   'bookingEmail',
   'city',
+  'comment',
   'iban',
   'latitude',
   'longitude',
