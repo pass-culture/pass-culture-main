@@ -5,6 +5,7 @@ from mailjet_rest import Client
 from apscheduler.schedulers.blocking import BlockingScheduler
 
 from models.db import db
+from repository.features import feature_cron_send_final_booking_recaps_enabled, feature_cron_generate_and_send_payments
 from utils.mailing import MAILJET_API_KEY, MAILJET_API_SECRET
 from utils.logger import logger
 
@@ -15,18 +16,14 @@ app.config['DEBUG'] = True
 db.init_app(app)
 
 
-CRON_SEND_FINAL_BOOKING_RECAPS = os.environ.get('CRON_SEND_FINAL_BOOKING', False)
-CRON_GENERATE_AND_SEND_PAYMENTS = os.environ.get('CRON_GENERATE_AND_SEND_PAYMENTS', False)
-
-
 def pc_send_final_booking_recaps():
-    print("Cron send_final_booking_recaps: START")
+    print("[BATCH] Cron send_final_booking_recaps: START")
     with app.app_context():
         from scripts.send_final_booking_recaps import send_final_booking_recaps
         app.mailjet_client = Client(auth=(MAILJET_API_KEY, MAILJET_API_SECRET), version='v3')
         send_final_booking_recaps()
 
-    print("Cron send_final_booking_recaps: END")
+    print("[BATCH] Cron send_final_booking_recaps: END")
 
 
 def pc_generate_and_send_payments():
@@ -42,8 +39,8 @@ def pc_generate_and_send_payments():
 
 if __name__ == '__main__':
     scheduler = BlockingScheduler()
-    if CRON_SEND_FINAL_BOOKING_RECAPS:
+    if feature_cron_send_final_booking_recaps_enabled():
         scheduler.add_job(pc_send_final_booking_recaps, 'cron', id='send_final_booking_recaps', day='*')
-    if CRON_GENERATE_AND_SEND_PAYMENTS:
+    if feature_cron_generate_and_send_payments():
         scheduler.add_job(pc_generate_and_send_payments, 'cron', id='generate_and_send_payments', day='1,15')
     scheduler.start()
