@@ -1,3 +1,4 @@
+// jest --env=jsdom ./src/components/pages/discovery/tests/DeckNavigation --watch
 import React from 'react'
 import { shallow } from 'enzyme'
 
@@ -8,6 +9,21 @@ describe('src | components | pages | discovery | RawDeckNavigation', () => {
     it('should match snapshot', () => {
       // given
       const props = {
+        height: 500,
+        recommendation: {},
+      }
+
+      // when
+      const wrapper = shallow(<RawDeckNavigation {...props} />)
+
+      // then
+      expect(wrapper).toBeDefined()
+      expect(wrapper).toMatchSnapshot()
+    })
+    it('should match snapshot with flipHandler', () => {
+      // given
+      const props = {
+        flipHandler: jest.fn(),
         height: 500,
         recommendation: {},
       }

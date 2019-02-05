@@ -14,7 +14,7 @@ fi
 
 for FILE in $STAGED_FILES
 do
-  eslint --quiet "$FILE"
+  eslint --quiet --max-warnings 0 "$FILE"
   if [[ "$?" == 0 ]]; then
     echo "\t\033[32mESLint Passed: $FILE\033[0m"
   else

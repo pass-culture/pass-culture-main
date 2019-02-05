@@ -44,9 +44,19 @@ const BookingSuccess = ({ isEvent, data }) => {
       </p>
       {/* <!-- CODE / LIEN --> */}
       <p className="my28">
-        {!onlineOfferUrl && <b className="is-block is-size-1">{token}</b>}
+        {!onlineOfferUrl && (
+          <b
+            data-token={token}
+            id="booking-booked-token"
+            className="is-block is-size-1"
+          >
+            {token}
+          </b>
+        )}
         {onlineOfferUrl && (
           <a
+            data-token={token}
+            id="booking-online-booked-button"
             className="is-primary-text is-primary-border px12 py8"
             href={onlineOfferUrl}
             rel="noopener noreferrer"

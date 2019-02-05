@@ -1,10 +1,7 @@
-/* eslint no-param-reassign: ["error", { "props": false }] */
-import { ClientFunction, Selector } from 'testcafe'
-
+import { Selector } from 'testcafe'
+import getPageUrl from './helpers/getPageUrl'
 import { fetchSandbox } from './helpers/sandboxes'
 import { ROOT_PATH } from '../src/utils/config'
-
-const getPageUrl = ClientFunction(() => window.location.href.toString())
 
 const userId = '#user-identifier'
 const passId = '#user-password'

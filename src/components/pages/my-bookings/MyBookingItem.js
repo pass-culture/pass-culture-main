@@ -34,6 +34,7 @@ const MyBookingItem = ({
   mediationId,
   name,
   offerId,
+  timezone,
   token,
 }) => {
   const cssclass = (isEvent && 'event') || 'thing'
@@ -41,7 +42,12 @@ const MyBookingItem = ({
   const linkURL = `/decouverte/${queryURL}/verso`
   const thumbUrl = `${THUMBS_URL}/mediations/${mediationId}`
   return (
-    <li className={`booking-item mb16 ${cssclass}`}>
+    <li
+      data-token={token}
+      data-booked-date={date}
+      data-booked-timezone={timezone}
+      className={`booking-item mb16 ${cssclass}`}
+    >
       {isCancelled && <Ribbon />}
       <Link to={linkURL}>
         <Thumb src={thumbUrl} />
@@ -83,6 +89,7 @@ MyBookingItem.propTypes = {
   mediationId: PropTypes.string,
   name: PropTypes.string,
   offerId: PropTypes.string,
+  timezone: PropTypes.string.isRequired,
   token: PropTypes.string,
 }
 
@@ -94,8 +101,8 @@ export default connect((state, ownProps) => {
   const name = get(stock, 'resolvedOffer.eventOrThing.name')
   const date = get(stock, 'eventOccurrence.beginningDatetime')
   const departementCode = get(stock, 'resolvedOffer.venue.departementCode')
-  const tz = getTimezone(departementCode)
-  const dateString = getDateString(date, tz)
+  const timezone = getTimezone(departementCode)
+  const dateString = getDateString(date, timezone)
 
   const recommendation = selectRecommendation(state, recommendationId)
   const mediationId = get(recommendation, 'mediationId')
@@ -113,6 +120,7 @@ export default connect((state, ownProps) => {
     name,
     offerId,
     recommendation,
+    timezone,
     token,
   }
 })(MyBookingItem)

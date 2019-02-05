@@ -1,12 +1,12 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | pages | search | BookingFooter snapshot should match snapshot 1`] = `
+exports[`src | components | pages | search | BookingFooter snapshot can not submit, is not booked, is not submitting 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <BookingFooter
-    canSubmitForm={true}
-    isBooked={true}
-    isSubmitting={true}
+    canSubmitForm={false}
+    isBooked={false}
+    isSubmitting={false}
     onCancel={[MockFunction]}
     onSubmit={[MockFunction]}
   />,
@@ -25,34 +25,32 @@ ShallowWrapper {
     "nodeType": "function",
     "props": Object {
       "children": Array [
-        false,
-        false,
         <button
           className="text-center my5"
           onClick={[MockFunction]}
-          type="button"
+          type="reset"
         >
-          <b>
-            OK
-          </b>
+          <span>
+            Annuler
+          </span>
         </button>,
+        false,
+        false,
       ],
     },
     "ref": null,
     "rendered": Array [
-      false,
-      false,
       Object {
         "instance": null,
         "key": undefined,
         "nodeType": "host",
         "props": Object {
-          "children": <b>
-            OK
-          </b>,
+          "children": <span>
+            Annuler
+          </span>,
           "className": "text-center my5",
           "onClick": [MockFunction],
-          "type": "button",
+          "type": "reset",
         },
         "ref": null,
         "rendered": Object {
@@ -60,14 +58,16 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "host",
           "props": Object {
-            "children": "OK",
+            "children": "Annuler",
           },
           "ref": null,
-          "rendered": "OK",
-          "type": "b",
+          "rendered": "Annuler",
+          "type": "span",
         },
         "type": "button",
       },
+      false,
+      false,
     ],
     "type": Symbol(react.fragment),
   },
@@ -78,34 +78,32 @@ ShallowWrapper {
       "nodeType": "function",
       "props": Object {
         "children": Array [
-          false,
-          false,
           <button
             className="text-center my5"
             onClick={[MockFunction]}
-            type="button"
+            type="reset"
           >
-            <b>
-              OK
-            </b>
+            <span>
+              Annuler
+            </span>
           </button>,
+          false,
+          false,
         ],
       },
       "ref": null,
       "rendered": Array [
-        false,
-        false,
         Object {
           "instance": null,
           "key": undefined,
           "nodeType": "host",
           "props": Object {
-            "children": <b>
-              OK
-            </b>,
+            "children": <span>
+              Annuler
+            </span>,
             "className": "text-center my5",
             "onClick": [MockFunction],
-            "type": "button",
+            "type": "reset",
           },
           "ref": null,
           "rendered": Object {
@@ -113,14 +111,16 @@ ShallowWrapper {
             "key": undefined,
             "nodeType": "host",
             "props": Object {
-              "children": "OK",
+              "children": "Annuler",
             },
             "ref": null,
-            "rendered": "OK",
-            "type": "b",
+            "rendered": "Annuler",
+            "type": "span",
           },
           "type": "button",
         },
+        false,
+        false,
       ],
       "type": Symbol(react.fragment),
     },

@@ -51,7 +51,11 @@ class VersoBookingButton extends React.PureComponent {
     const to = `${url}/booking${search}`
 
     return (
-      <Link to={to} className="button is-primary is-medium">
+      <Link
+        to={to}
+        id="verso-booking-button"
+        className="button is-primary is-medium"
+      >
         <Price free="——" value={priceValue} />
         <span>J&apos;y vais!</span>
       </Link>
@@ -130,7 +134,11 @@ class VersoBookingButton extends React.PureComponent {
   )
 
   renderOfflineNotCancelableButton = () => (
-    <Link to="/reservations" className="button is-primary is-medium">
+    <Link
+      id="verso-already-booked-button"
+      to="/reservations"
+      className="button is-primary is-medium"
+    >
       Réservé
     </Link>
   )
@@ -148,6 +156,7 @@ class VersoBookingButton extends React.PureComponent {
     const onlineOfferUrl = get(booking, 'completedUrl')
     return (
       <a
+        id="verso-online-booked-button"
         href={`${onlineOfferUrl}`}
         target="_blank"
         rel="noopener noreferrer"

@@ -14,10 +14,10 @@ class ReplaceLink extends React.PureComponent {
   }
 
   render() {
-    const { children, className, disabled } = this.props
-
+    const { children, className, disabled, id } = this.props
     return (
       <div
+        id={id}
         disabled={disabled}
         className={`${className} pointer`}
         onKeyPress={() => this.navigate()}
@@ -42,6 +42,7 @@ ReplaceLink.propTypes = {
   className: PropTypes.string,
   disabled: PropTypes.bool,
   history: PropTypes.object.isRequired,
+  id: PropTypes.string.isRequired,
   onClick: PropTypes.func,
   to: PropTypes.string.isRequired,
 }

@@ -24,6 +24,7 @@ class SelectField extends React.PureComponent {
     const {
       label,
       help,
+      id,
       name,
       disabled,
       provider,
@@ -33,6 +34,11 @@ class SelectField extends React.PureComponent {
       readOnly,
       ...rest
     } = this.props
+    const isdisabled =
+      readOnly || disabled || !provider.length || provider.length === 1
+
+    const moreprops = { disabled: isdisabled }
+    if (id) moreprops.id = id
     return (
       <Form.Item
         {...rest}
@@ -43,6 +49,7 @@ class SelectField extends React.PureComponent {
           name={name}
           render={({ input }) => (
             <Select
+              {...moreprops}
               size="large"
               showSearch={canSearch}
               onChange={input.onChange}
@@ -51,12 +58,6 @@ class SelectField extends React.PureComponent {
               filterOption={filterOption}
               value={input.value || undefined}
               getPopupContainer={() => this.popupContainer}
-              disabled={
-                readOnly ||
-                disabled ||
-                !provider.length ||
-                provider.length === 1
-              }
             >
               {provider &&
                 provider.map(obj => (
@@ -81,6 +82,7 @@ SelectField.defaultProps = {
   className: '',
   disabled: false,
   help: null,
+  id: null,
   label: null,
   placeholder: null,
   readOnly: false,
@@ -91,6 +93,7 @@ SelectField.propTypes = {
   className: PropTypes.string,
   disabled: PropTypes.bool,
   help: PropTypes.string,
+  id: PropTypes.string,
   label: PropTypes.string,
   name: PropTypes.string.isRequired,
   placeholder: PropTypes.string,

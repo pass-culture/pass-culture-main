@@ -3,7 +3,7 @@
   "parser": "babel-eslint",
   "settings": {
     "react": {
-      "version": "15"
+      "version": "detect"
     }
   },
   "env": {
@@ -34,6 +34,10 @@
       "peerDependencies": false
     }],
     "import/prefer-default-export": 0,
+    "no-param-reassign": [2, {
+      "props": true,
+      "ignorePropertyModificationsFor": ["t"]
+    }],
     "no-underscore-dangle": [2, {
       "allow": ["__modifiers__"]
     }],

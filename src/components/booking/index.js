@@ -24,6 +24,8 @@ import { selectBookingById } from '../../selectors/selectBookings'
 import currentRecommendationSelector from '../../selectors/currentRecommendation'
 import { ROOT_PATH } from '../../utils/config'
 
+const BOOKING_FORM_ID = 'form-create-booking'
+
 const duration = 250
 const backgroundImage = `url('${ROOT_PATH}/mosaic-k.png')`
 
@@ -41,7 +43,6 @@ const transitionStyles = {
 class Booking extends PureComponent {
   constructor(props) {
     super(props)
-    this.formId = 'form-create-booking'
     const actions = { requestData }
     this.actions = bindActionCreators(actions, props.dispatch)
     this.state = {
@@ -90,8 +91,7 @@ class Booking extends PureComponent {
   }
 
   updateUserFromStore = (state, action) => {
-    const { payload } = action
-    const bookedPayload = payload.datum
+    const bookedPayload = get(action, 'payload.datum')
     this.actions.requestData({
       apiPath: '/users/current',
       body: {},
@@ -149,6 +149,7 @@ class Booking extends PureComponent {
         {showCancelButton && (
           <button
             type="reset"
+            id="booking-close-button"
             className="text-center my5"
             onClick={this.cancelBookingHandler}
           >
@@ -158,8 +159,9 @@ class Booking extends PureComponent {
         {showSubmitButton && (
           <button
             type="submit"
+            id="booking-validation-button"
             className="has-text-centered my5"
-            onClick={() => externalSubmitForm(this.formId)}
+            onClick={() => externalSubmitForm(BOOKING_FORM_ID)}
           >
             <b>Valider</b>
           </button>
@@ -167,6 +169,7 @@ class Booking extends PureComponent {
         {bookedPayload && (
           <button
             type="button"
+            id="booking-success-ok-button"
             className="text-center my5"
             onClick={this.cancelBookingHandler}
           >
@@ -176,6 +179,7 @@ class Booking extends PureComponent {
         {isCancelled && (
           <button
             type="button"
+            id="booking-cancel-ok-button"
             className="text-center my5"
             onClick={this.getBackToBookings}
           >
@@ -254,7 +258,7 @@ class Booking extends PureComponent {
                   {showForm && (
                     <BookingForm
                       className="flex-1 flex-rows flex-center items-center"
-                      formId={this.formId}
+                      formId={BOOKING_FORM_ID}
                       initialValues={formInitialValues}
                       isEvent={isEvent}
                       isReadOnly={isReadOnly}

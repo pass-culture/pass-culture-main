@@ -1,8 +1,7 @@
-import { ClientFunction, Selector } from 'testcafe'
+import { Selector } from 'testcafe'
 
+import getPageUrl from './helpers/getPageUrl'
 import { ROOT_PATH } from '../src/utils/config'
-
-const getPageUrl = ClientFunction(() => window.location.href.toString())
 
 const userContactOk = Selector('#user-contact_ok')
 const userEmail = Selector('#user-email')

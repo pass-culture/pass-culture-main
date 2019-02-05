@@ -85,6 +85,7 @@ const BookingForm = ({
                       <DatePickerField
                         hideToday
                         name="date"
+                        id="booking-form-date-picker-field"
                         label={calendarLabel}
                         readOnly={calendarReadOnly}
                         className="text-center mb36"
@@ -106,6 +107,7 @@ const BookingForm = ({
                 {hoursAndPrices && (
                   <SelectField
                     name="time"
+                    id="booking-form-time-picker-field"
                     readOnly={hourReadOnly}
                     provider={hoursAndPrices}
                     placeholder="Heure et prix"

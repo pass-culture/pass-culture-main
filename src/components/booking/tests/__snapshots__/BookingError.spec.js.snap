@@ -23,20 +23,9 @@ ShallowWrapper {
       "children": Array [
         <h3
           className="mb16"
-          style={
-            Object {
-              "fontSize": "22px",
-            }
-          }
         >
           <span
             className="is-block"
-            style={
-              Object {
-                "color": "#E60039",
-                "fontSize": "4.5rem",
-              }
-            }
           >
             <Icon
               alt="erreur"
@@ -45,11 +34,8 @@ ShallowWrapper {
           </span>
         </h3>,
         <div
-          style={
-            Object {
-              "fontSize": "20px",
-            }
-          }
+          className="fs20"
+          id="booking-error-reasons"
         >
           <p
             className="mb36"
@@ -69,12 +55,6 @@ ShallowWrapper {
         "props": Object {
           "children": <span
             className="is-block"
-            style={
-              Object {
-                "color": "#E60039",
-                "fontSize": "4.5rem",
-              }
-            }
           >
             <Icon
               alt="erreur"
@@ -82,9 +62,6 @@ ShallowWrapper {
             />
           </span>,
           "className": "mb16",
-          "style": Object {
-            "fontSize": "22px",
-          },
         },
         "ref": null,
         "rendered": Object {
@@ -97,10 +74,6 @@ ShallowWrapper {
               svg="picto-echec"
             />,
             "className": "is-block",
-            "style": Object {
-              "color": "#E60039",
-              "fontSize": "4.5rem",
-            },
           },
           "ref": null,
           "rendered": Object {
@@ -132,9 +105,8 @@ ShallowWrapper {
             </p>,
             Array [],
           ],
-          "style": Object {
-            "fontSize": "20px",
-          },
+          "className": "fs20",
+          "id": "booking-error-reasons",
         },
         "ref": null,
         "rendered": Array [
@@ -165,20 +137,9 @@ ShallowWrapper {
         "children": Array [
           <h3
             className="mb16"
-            style={
-              Object {
-                "fontSize": "22px",
-              }
-            }
           >
             <span
               className="is-block"
-              style={
-                Object {
-                  "color": "#E60039",
-                  "fontSize": "4.5rem",
-                }
-              }
             >
               <Icon
                 alt="erreur"
@@ -187,11 +148,8 @@ ShallowWrapper {
             </span>
           </h3>,
           <div
-            style={
-              Object {
-                "fontSize": "20px",
-              }
-            }
+            className="fs20"
+            id="booking-error-reasons"
           >
             <p
               className="mb36"
@@ -211,12 +169,6 @@ ShallowWrapper {
           "props": Object {
             "children": <span
               className="is-block"
-              style={
-                Object {
-                  "color": "#E60039",
-                  "fontSize": "4.5rem",
-                }
-              }
             >
               <Icon
                 alt="erreur"
@@ -224,9 +176,6 @@ ShallowWrapper {
               />
             </span>,
             "className": "mb16",
-            "style": Object {
-              "fontSize": "22px",
-            },
           },
           "ref": null,
           "rendered": Object {
@@ -239,10 +188,6 @@ ShallowWrapper {
                 svg="picto-echec"
               />,
               "className": "is-block",
-              "style": Object {
-                "color": "#E60039",
-                "fontSize": "4.5rem",
-              },
             },
             "ref": null,
             "rendered": Object {
@@ -274,9 +219,8 @@ ShallowWrapper {
               </p>,
               Array [],
             ],
-            "style": Object {
-              "fontSize": "20px",
-            },
+            "className": "fs20",
+            "id": "booking-error-reasons",
           },
           "ref": null,
           "rendered": Array [

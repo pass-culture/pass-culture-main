@@ -62,6 +62,7 @@ ShallowWrapper {
         >
           <b
             className="is-block is-size-1"
+            id="booking-booked-token"
           />
         </p>,
         <p>
@@ -233,6 +234,7 @@ ShallowWrapper {
           "children": Array [
             <b
               className="is-block is-size-1"
+              id="booking-booked-token"
             />,
             undefined,
           ],
@@ -247,6 +249,8 @@ ShallowWrapper {
             "props": Object {
               "children": undefined,
               "className": "is-block is-size-1",
+              "data-token": undefined,
+              "id": "booking-booked-token",
             },
             "ref": null,
             "rendered": null,
@@ -442,6 +446,7 @@ ShallowWrapper {
           >
             <b
               className="is-block is-size-1"
+              id="booking-booked-token"
             />
           </p>,
           <p>
@@ -613,6 +618,7 @@ ShallowWrapper {
             "children": Array [
               <b
                 className="is-block is-size-1"
+                id="booking-booked-token"
               />,
               undefined,
             ],
@@ -627,6 +633,8 @@ ShallowWrapper {
               "props": Object {
                 "children": undefined,
                 "className": "is-block is-size-1",
+                "data-token": undefined,
+                "id": "booking-booked-token",
               },
               "ref": null,
               "rendered": null,

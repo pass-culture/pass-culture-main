@@ -1,10 +1,9 @@
-import { ClientFunction, Selector } from 'testcafe'
+import { Selector } from 'testcafe'
 
+import getPageUrl from './helpers/getPageUrl'
 import { ROOT_PATH } from '../src/utils/config'
 import { fetchSandbox } from './helpers/sandboxes'
 import { createUserRole } from './helpers/roles'
-
-const getPageUrl = ClientFunction(() => window.location.href.toString())
 
 const filterButton = Selector('#filter-button')
 const resetButton = Selector('#search-filter-reset-button')

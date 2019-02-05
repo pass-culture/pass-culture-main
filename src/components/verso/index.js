@@ -33,7 +33,11 @@ const Verso = ({
         {!isTuto && <VersoInfo />}
         {isTuto && <StaticVerso mediationId={mediation.id} />}
       </VersoWrapper>
-      <Footer borderTop colored={typeof tutoIndex !== 'number'} />
+      <Footer
+        id="verso-footer"
+        borderTop
+        colored={typeof tutoIndex !== 'number'}
+      />
     </div>
   )
 }

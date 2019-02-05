@@ -2,7 +2,9 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Icon } from 'pass-culture-shared'
 import { matchPath, withRouter } from 'react-router-dom'
+
 import ReplaceLink from './ReplaceLink'
+import { getMenuItemIdFromPathname } from './utils'
 
 const renderLinkContent = (icon, title, styles) => (
   <React.Fragment>
@@ -25,10 +27,12 @@ export class MenuItemContent extends React.PureComponent {
     const currentpath = location.pathname
     const isactive = matchPath(currentpath, item)
     const pathto = isactive ? currentpath.replace('/menu', '') : path
+    const itemid = getMenuItemIdFromPathname(pathto, 'main-menu')
     return (
       <ReplaceLink
         key={path}
         to={pathto}
+        id={itemid}
         disabled={disabled}
         action="replace"
         activeClassName={opts.activeClass}

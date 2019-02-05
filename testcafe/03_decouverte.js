@@ -3,7 +3,6 @@ import { ClientFunction, Selector } from 'testcafe'
 
 import { fetchSandbox } from './helpers/sandboxes'
 import getPageUrl from './helpers/getPageUrl'
-import { mockBackendRequest } from './helpers/mockBackendRequest'
 import { createUserRole, signinAs } from './helpers/roles'
 import { ROOT_PATH } from '../src/utils/config'
 
