@@ -15,6 +15,10 @@ app.config['DEBUG'] = True
 db.init_app(app)
 
 
+CRON_SEND_FINAL_BOOKING_RECAPS = os.environ.get('CRON_SEND_FINAL_BOOKING', False)
+CRON_GENERATE_AND_SEND_PAYMENTS = os.environ.get('CRON_GENERATE_AND_SEND_PAYMENTS', False)
+
+
 def pc_send_final_booking_recaps():
     print("Cron send_final_booking_recaps: START")
     with app.app_context():
@@ -38,6 +42,8 @@ def pc_generate_and_send_payments():
 
 if __name__ == '__main__':
     scheduler = BlockingScheduler()
-    scheduler.add_job(pc_send_final_booking_recaps, 'cron', id='send_final_booking_recaps', day='*')
-    scheduler.add_job(pc_generate_and_send_payments, 'cron', id='generate_and_send_payments', day='1,15')
+    if CRON_SEND_FINAL_BOOKING_RECAPS:
+        scheduler.add_job(pc_send_final_booking_recaps, 'cron', id='send_final_booking_recaps', day='*')
+    if CRON_GENERATE_AND_SEND_PAYMENTS:
+        scheduler.add_job(pc_generate_and_send_payments, 'cron', id='generate_and_send_payments', day='1,15')
     scheduler.start()
