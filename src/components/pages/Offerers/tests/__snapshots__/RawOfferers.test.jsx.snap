@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | pages | Offerers | IndexSearch snapshot should match snapshot 1`] = `
+exports[`src | components | pages | RawOfferers | snapshot should match snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <RawOfferers
@@ -40,9 +40,9 @@ ShallowWrapper {
                     className="subtitle"
           >
                     Pour présenter vos offres, vous devez d'abord créer un
-                     
+
                     <b>
-                               nouveau lieu 
+                               nouveau lieu
                     </b>
                      lié à une structure.
                     <br />
@@ -89,7 +89,7 @@ ShallowWrapper {
                               >
                                         OK
                               </button>
-                               
+
                               <button
                                         className="button is-secondary"
                                         disabled={true}
@@ -142,9 +142,9 @@ ShallowWrapper {
               className="subtitle"
 >
               Pour présenter vos offres, vous devez d'abord créer un
-               
+
               <b>
-                             nouveau lieu 
+                             nouveau lieu
               </b>
                lié à une structure.
               <br />
@@ -172,7 +172,7 @@ ShallowWrapper {
                 "Pour présenter vos offres, vous devez d'abord créer un",
                 " ",
                 <b>
-                   nouveau lieu 
+                   nouveau lieu
 </b>,
                 " lié à une structure.",
                 <br />,
@@ -261,7 +261,7 @@ ShallowWrapper {
                             >
                                           OK
                             </button>
-                             
+
                             <button
                                           className="button is-secondary"
                                           disabled={true}
@@ -318,7 +318,7 @@ ShallowWrapper {
                   >
                                     OK
                   </button>
-                   
+
                   <button
                                     className="button is-secondary"
                                     disabled={true}
@@ -510,9 +510,9 @@ ShallowWrapper {
                         className="subtitle"
             >
                         Pour présenter vos offres, vous devez d'abord créer un
-                         
+
                         <b>
-                                     nouveau lieu 
+                                     nouveau lieu
                         </b>
                          lié à une structure.
                         <br />
@@ -559,7 +559,7 @@ ShallowWrapper {
                                     >
                                                 OK
                                     </button>
-                                     
+
                                     <button
                                                 className="button is-secondary"
                                                 disabled={true}
@@ -612,9 +612,9 @@ ShallowWrapper {
                 className="subtitle"
 >
                 Pour présenter vos offres, vous devez d'abord créer un
-                 
+
                 <b>
-                                 nouveau lieu 
+                                 nouveau lieu
                 </b>
                  lié à une structure.
                 <br />
@@ -642,7 +642,7 @@ ShallowWrapper {
                   "Pour présenter vos offres, vous devez d'abord créer un",
                   " ",
                   <b>
-                     nouveau lieu 
+                     nouveau lieu
 </b>,
                   " lié à une structure.",
                   <br />,
@@ -731,7 +731,7 @@ ShallowWrapper {
                                 >
                                                 OK
                                 </button>
-                                 
+
                                 <button
                                                 className="button is-secondary"
                                                 disabled={true}
@@ -788,7 +788,7 @@ ShallowWrapper {
                     >
                                         OK
                     </button>
-                     
+
                     <button
                                         className="button is-secondary"
                                         disabled={true}

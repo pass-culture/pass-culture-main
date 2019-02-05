@@ -23,9 +23,8 @@ export const navigateToNewOffererAs = user => async t => {
 }
 
 export const navigateToOffererAs = (user, offerer) => async t => {
-  const searchInput = Selector('#search')
+  const searchInput = Selector('#search').find('input')
   const submitButton = Selector('button[type="submit"]')
-
   const offererAnchor = Selector('li.offerer-item').find(
     `a[href^="/structures/${offerer.id}"]`
   )

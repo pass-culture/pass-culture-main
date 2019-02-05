@@ -76,6 +76,7 @@ export function typeToTag(type) {
       return type
   }
 }
+
 export function getObjectWithMappedKeys(obj, keysMap) {
   const mappedObj = {}
   Object.keys(obj).forEach(objKey => {

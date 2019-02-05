@@ -1,9 +1,9 @@
 import React from 'react'
 import { shallow } from 'enzyme'
 
-import RawOfferers from '../RawIndex'
+import RawOfferers from '../RawOfferers'
 
-describe('src | components | pages | Offerers | IndexSearch', () => {
+describe('src | components | pages | RawOfferers', () => {
   describe('snapshot', () => {
     it('should match snapshot', () => {
       // given

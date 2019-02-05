@@ -1,0 +1,299 @@
+.field-sep {
+  @extend .is-absolute;
+
+  border-top: 1px solid $grey-light;
+  height: 16px;
+  left: 0;
+  right: 0;
+  position: absolute;
+}
+
+.field-group {
+  display: table;
+  margin-bottom: 1rem;
+  width: 100%;
+
+  .field-group-title {
+    @extend .fs16;
+    @extend .mb16;
+
+    color: $blue-light;
+    font-weight: 400;
+  }
+}
+
+.field-control {
+  @extend .pb8;
+  @extend .pt8;
+}
+
+.form {
+  @extend .box;
+  @extend .p36;
+  @extend .is-relative;
+
+  &.flex-columns {
+    .field-group {
+      margin-bottom: 0;
+
+      .field-control {
+        @extend .col-50;
+
+        margin-left: auto;
+        margin-right: auto;
+        padding-bottom: 0;
+        padding-top: 0;
+
+        @media (min-width: $tablet) {
+          margin-left: inherit;
+          margin-right: inherit;
+          width: 100%;
+        }
+      }
+    }
+  }
+}
+
+.form-footer {
+  height: $footer-height;
+  min-height: $footer-height;
+  max-height: $footer-height;
+
+  button {
+    @extend .no-border;
+    @extend .no-outline;
+    @extend .no-background;
+  }
+}
+
+.field-label {
+  @extend .mb12;
+  @extend .pb6;
+  @extend .pr12;
+  @extend .fs16;
+
+  .field-asterisk {
+    @extend .ml2;
+
+    color: $primary;
+  }
+
+  &.empty {
+    margin: 0;
+    min-height: 0;
+    padding: 0;
+  }
+}
+
+.field-inner {
+  background-color: $white;
+  overflow: hidden;
+}
+
+.checkbox-field,
+.checkboxes-field {
+  .field-inner {
+    color: black;
+    padding-left: 4px;
+    border: none;
+    border-radius: 0;
+    font-weight: 500;
+  }
+}
+
+.field-select {
+  @extend .no-outline;
+  @extend .no-background;
+  @extend .pl24;
+  @extend .fs16;
+
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-repeat: no-repeat;
+  background-position: 97.5% 50%;
+  background-image: url('/icons/dropdown-disclosure-down.svg');
+  border-radius: rem(16px);
+  border: none;
+  font-weight: 500;
+  height: 36px;
+  min-width: 250px;
+  min-height: 36px;
+  width: 250px;
+}
+
+.field-textarea,
+.field-texteditor {
+  min-height: 100px;
+  resize: none;
+  width: 100%;
+}
+
+.field-input {
+  height: 36px;
+}
+
+.field-input,
+.field-textarea,
+.field-texteditor {
+  @extend .py6;
+  @extend .px18;
+  @extend .fs16;
+  @extend .flex-1;
+  @extend .is-medium;
+  @extend .no-outline;
+
+  border-radius: $control-radius;
+  border: $control-border-width solid $grey-light;
+
+  &:focus {
+    border-color: $red;
+  }
+
+
+  &::placeholder {
+    color: $grey-darker;
+  }
+  &::-webkit-input-placeholder{
+    color: $grey-darker;
+  }
+  &::-moz-placeholder {
+    color: $grey-darker;
+  }
+  &:-moz-placeholder {
+    color: $grey-darker;
+  }
+}
+
+.field-checkbox,
+.field-checkboxes,
+.field-input,
+.field-textarea,
+.field-texteditor,
+.field-select {
+  color: $text;
+}
+
+.textarea-field,
+.texteditor-field {
+  .field-inner {
+    width: 100%;
+  }
+}
+
+.texteditor-field {
+  .controls-bar {
+    margin-bottom: 0.5rem;
+    overflow-y: hidden;
+
+    button {
+      border: 2px solid $grey-light;
+      border-radius: 0;
+      margin-right: 0;
+
+      &:first-child {
+        border-right: 0;
+        border-radius: rem(5px) 0 0 rem(5px);
+      }
+
+      &:last-child {
+        border-left: 0;
+        border-radius: 0 rem(5px) rem(5px) 0;
+      }
+
+      .icon {
+        height: 30px;
+        width: 30px;
+      }
+
+      &.clicked {
+        background-color: $grey-light;
+      }
+    }
+  }
+
+  .field-texteditor {
+    .texteditor {
+      &:focus {
+        outline: 0;
+      }
+    }
+  }
+
+  &.readonly {
+    .field-texteditor {
+      .texteditor {
+        img[class*='draftJsEmojiPlugin__image'] {
+          border-radius: 0;
+          box-shadow: none;
+        }
+      }
+    }
+  }
+}
+
+.field {
+  &.readonly {
+    .field-inner {
+      border: none;
+      background-color: transparent;
+      padding-left: 4px;
+      resize: none;
+
+      .field-checkbox,
+      .field-checkboxes,
+      .field-input,
+      .field-textarea,
+      .field-texteditor,
+      .field-select {
+        color: $blue-light;
+        opacity: 1;
+      }
+
+      .field-checkbox,
+      .field-checkboxes {
+        input[type="checkbox"] {
+          opacity: 1;
+        }
+      }
+
+      .field-select {
+        background-image: none;
+        cursor: default;
+        opacity: 1;
+      }
+    }
+  }
+}
+
+.label-aligned-with-control {
+  display: table-row;
+
+  .field-label,
+  .field-value {
+    display: table-cell;
+  }
+}
+
+.form .label-aligned-with-control {
+  .field {
+    @extend .label-aligned-with-control;
+  }
+}
+
+.field .label-aligned-with-control {
+  @extend .label-aligned-with-control;
+}
+
+.field-errors {
+  color: $red;
+  min-height: 24px;
+
+  &:empty {
+    min-height: 0;
+  }
+
+  &.field-error-message + .field-error-message {
+    // si on a plusieurs erreurs pour un seul champ
+    @extend .pl12;
+  }
+}

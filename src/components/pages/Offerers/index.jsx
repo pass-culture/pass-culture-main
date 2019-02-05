@@ -1,12 +1,12 @@
-import { withLogin, withPagination } from 'pass-culture-shared'
+import { withLogin } from 'pass-culture-shared'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
+import withQueryRouter from 'with-query-router'
 
-import RawOfferers from './RawIndex'
+import RawOfferers from './RawOfferers'
 import offerersSelector, {
   getPendingOfferers,
 } from '../../../selectors/offerers'
-import { mapApiToWindow, windowToApiQuery } from '../../../utils/pagination'
 
 function mapStateToProps(state, ownProps) {
   return {
@@ -18,12 +18,6 @@ function mapStateToProps(state, ownProps) {
 
 export default compose(
   withLogin({ failRedirect: '/connexion' }),
-  withPagination({
-    dataKey: 'offerers',
-    defaultWindowQuery: {
-      [mapApiToWindow.keywords]: null,
-    },
-    windowToApiQuery,
-  }),
+  withQueryRouter,
   connect(mapStateToProps)
 )(RawOfferers)
