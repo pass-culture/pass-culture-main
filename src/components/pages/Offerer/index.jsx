@@ -22,31 +22,11 @@ import selectUserOffererByOffererIdAndUserIdAndRightsType from '../../../selecto
 import selectPhysicalVenuesByOffererId from '../../../selectors/selectPhysicalVenuesByOffererId'
 import { offererNormalizer } from '../../../utils/normalizers'
 
-const OFFERER_NEW_PATCH_KEYS = [
-  'address',
-  'city',
-  'name',
-  'siren',
-  'postalCode',
-]
-const OFFERER_EDIT_PATCH_KEYS = ['bic', 'iban', 'rib']
-
-const formatOffererPatch = (patch, config) => {
-  const { isNew } = config || {}
-  const formPatch = {}
-
-  let patchKeys = OFFERER_EDIT_PATCH_KEYS
-  if (isNew) {
-    patchKeys = OFFERER_NEW_PATCH_KEYS
-  }
-
-  patchKeys.forEach(key => {
-    if (patch[key]) {
-      formPatch[key] = patch[key]
-    }
-  })
-  return formPatch
-}
+import {
+  formatPatch,
+  OFFERER_NEW_PATCH_KEYS,
+  OFFERER_EDIT_PATCH_KEYS,
+} from '../../../utils/formatPatch'
 
 class OffererPage extends Component {
   constructor() {
@@ -128,6 +108,8 @@ class OffererPage extends Component {
     const { id } = offerer || {}
     const areSirenFieldsVisible = get(offerer, 'id') || sirenName
     const areBankInfosReadOnly = isReadOnly || !adminUserOfferer
+
+    const patchConfig = { isNew, isEdit }
 
     const $newControl = (
       <div
@@ -211,7 +193,14 @@ class OffererPage extends Component {
           action={`/offerers/${get(offerer, 'id') || ''}`}
           name="offerer"
           className="section"
-          formatPatch={patch => formatOffererPatch(patch, { isNew, isEdit })}
+          formatPatch={patch =>
+            formatPatch(
+              patch,
+              patchConfig,
+              OFFERER_NEW_PATCH_KEYS,
+              OFFERER_EDIT_PATCH_KEYS
+            )
+          }
           handleSuccess={this.handleSuccess}
           patch={offerer}
           readOnly={isReadOnly}>

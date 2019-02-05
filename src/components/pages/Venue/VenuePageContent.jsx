@@ -18,6 +18,12 @@ import Main from '../../layout/Main'
 import VenueProvidersManager from './VenueProvidersManager'
 import { offererNormalizer, venueNormalizer } from '../../../utils/normalizers'
 
+import {
+  formatPatch,
+  VENUE_EDIT_PATCH_KEYS,
+  VENUE_NEW_PATCH_KEYS,
+} from '../../../utils/formatPatch'
+
 class VenuePageContent extends Component {
   constructor() {
     super()
@@ -133,8 +139,7 @@ class VenuePageContent extends Component {
     } = this.props
 
     const { isEdit, isNew, isReadOnly } = this.state
-
-    console.log('VENUE PATCH', venuePatch)
+    const patchConfig = { isNew, isEdit }
 
     const savedVenueId = get(venuePatch, 'id')
     const siretVenue = get(venuePatch, 'siret')
@@ -158,8 +163,6 @@ class VenuePageContent extends Component {
 
     const isLongitudeReadOnlyFromGeoOrSiren =
       formGeo || (isFieldReadOnlyBecauseFrozenFormSiret && formLongitude)
-
-    console.log('siretVenue', siretVenue)
 
     return (
       <Main
@@ -194,6 +197,14 @@ class VenuePageContent extends Component {
         {!get(venuePatch, 'isVirtual') && (
           <Form
             action={`/venues/${savedVenueId || ''}`}
+            formatPatch={patch =>
+              formatPatch(
+                patch,
+                patchConfig,
+                VENUE_NEW_PATCH_KEYS,
+                VENUE_EDIT_PATCH_KEYS
+              )
+            }
             handleSuccess={this.handleSuccess}
             name="venue"
             normalizer={venueNormalizer}
