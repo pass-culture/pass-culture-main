@@ -323,3 +323,6 @@ def filter_offerers_with_keywords_string(query, keywords_string):
     query = query.filter(keywords_filter)
     return query
 
+
+def check_if_siren_already_exists(siren):
+    return Offerer.query.filter_by(siren=siren).count() > 0

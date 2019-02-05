@@ -1,16 +1,17 @@
 from models.pc_object import PcObject
+from repository.offerer_queries import check_if_siren_already_exists
 from sandboxes.scripts.utils.offerer_mocks import MOCK_NAMES
 from utils.logger import logger
 from utils.test_utils import create_offerer
 
 OFFERERS_WITH_IBAN_REMOVE_MODULO = 2
 
+
 def create_industrial_offerers(
         locations,
         needs_validation=False,
         starting_index=0,
-        starting_siren=222222222
-):
+        starting_siren=222222222):
     logger.info('create_industrial_offerers {}'.format(
         'not validated' if needs_validation else 'validated'
     ))
@@ -20,14 +21,17 @@ def create_industrial_offerers(
     offerers_by_name = {}
 
     # add a real offerer just for the inscription/validation API
-    if not needs_validation:
+    real_siren="784340093"
+    if not needs_validation \
+            and not check_if_siren_already_exists(real_siren):
         name = '784340093 lat:48.8 lon:1.48'
+
         offerers_by_name[name] = create_offerer(
             address="LIEU DIT CARTOUCHERIE",
             city="Paris 12",
             name="THEATRE DU SOLEIL",
             postal_code="75012",
-            siren="784340093"
+            siren=real_siren
         )
 
     # loop on locations
