@@ -10,7 +10,7 @@ from local_providers.install import install_local_providers
 from models.db import db
 from models.install import install_models
 from repository.clean_database import clean_all_database
-from utils.test_utils import TestRequest
+from utils.test_utils import TestClient
 
 items_by_category = {'first': [], 'last': []}
 
@@ -25,8 +25,12 @@ def pytest_addoption(parser):
 
 def pytest_configure(config):
     if config.getoption('spec'):
-        TestRequest.with_doc = True
+        TestClient.with_doc = True
 
+def pytest_collectreport(report):
+    print('///////////////')
+    print(report)
+    print('///////////////')
 
 def pytest_collection_modifyitems(config, items):
     """

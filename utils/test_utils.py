@@ -1,6 +1,5 @@
 """ test utils """
 import random
-import requests
 import string
 import uuid
 from datetime import datetime, timedelta, timezone
@@ -11,6 +10,7 @@ from inspect import isclass
 from pprint import pprint
 from unittest.mock import Mock
 
+import requests
 import requests as req
 from postgresql_audit.flask import versioning_manager
 
@@ -39,50 +39,79 @@ from models.pc_object import PcObject
 from utils.object_storage import STORAGE_DIR
 from utils.token import random_token
 
-savedCounts = {}
+LOCAL_ORIGIN_HEADER = {'origin': 'http://localhost:3000'}
+
+saved_counts = {}
 
 USER_TEST_ADMIN_EMAIL = "pctest.admin93.0@btmx.fr"
 USER_TEST_ADMIN_PASSWORD = "pctest.Admin93.0"
 API_URL = "http://localhost:5000"
 
 
-class TestRequest:
-
+class TestClient:
     with_doc = False
 
     def __init__(self):
         self.session = None
 
-    def with_auth(self, email=None, password=None, headers={'origin': 'http://localhost:3000'}):
+    def with_auth(self, email: str = None, password: str = None, headers: dict = LOCAL_ORIGIN_HEADER):
         self.session = req.Session()
         self.session.headers = headers
 
-        if email is None:
+        if email is None or password is None:
             self.session.auth = (USER_TEST_ADMIN_EMAIL, USER_TEST_ADMIN_PASSWORD)
-        elif password is not None:
+        else:
             self.session.auth = (email, password)
 
         return self
 
-    def post(self, route: str, json: dict, headers={'origin': 'http://localhost:3000'}):
+    def get(self, route: str, headers=LOCAL_ORIGIN_HEADER):
+        if self.session:
+            result = self.session.get(route)
+        else:
+            result = requests.post(route, headers=headers)
+
+        if TestClient.with_doc:
+            self._print_spec('GET', route, None, result.json(), result.status_code)
+
+        return result
+
+    def post(self, route: str, json: dict = None, headers=LOCAL_ORIGIN_HEADER):
         if self.session:
             result = self.session.post(route, json=json)
         else:
             result = requests.post(route, json=json, headers=headers)
 
-        if TestRequest.with_doc:
-            print('\n')
-            print('===========================================')
-            print('\nPOST :: %s' % route)
-            print('\nSTATUS CODE :: %s' % result.status_code)
-            print('\nREQUEST BODY')
-            pprint(json, indent=4)
-            print('\nRESPONSE BODY')
-            pprint(result.json())
-            print('===========================================')
-            print('\n')
+        if TestClient.with_doc:
+            self._print_spec('POST', route, json, result.json(), result.status_code)
 
         return result
+
+    def patch(self, route: str, json: dict = None, headers=LOCAL_ORIGIN_HEADER):
+        if self.session:
+            result = self.session.patch(route, json=json)
+        else:
+            result = requests.patch(route, json=json, headers=headers)
+
+        if TestClient.with_doc:
+            self._print_spec('PATCH', route, json, result.json(), result.status_code)
+
+        return result
+
+    def _print_spec(self, verb: str, route: str, request_body: dict, response_body: dict, status_code: int):
+        print('\n===========================================')
+        print('%s :: %s' % (verb, route))
+        print('STATUS CODE :: %s' % status_code)
+
+        if request_body:
+            print('REQUEST BODY')
+            pprint(request_body)
+
+        if response_body:
+            print('RESPONSE BODY')
+            pprint(response_body)
+
+        print('===========================================\n')
 
 
 def req_with_auth(email=None, password=None, headers={'origin': 'http://localhost:3000'}):
@@ -683,13 +712,13 @@ def saveCounts(app):
         if isclass(model) \
                 and issubclass(model, PcObject) \
                 and modelName != "PcObject":
-            savedCounts[modelName] = model.query.count()
+            saved_counts[modelName] = model.query.count()
 
 
 def assertCreatedCounts(app, **counts):
     for modelName in counts:
         model = getattr(models, modelName)
-        assert model.query.count() - savedCounts[modelName] \
+        assert model.query.count() - saved_counts[modelName] \
                == counts[modelName]
 
 
