@@ -2,17 +2,16 @@ from datetime import datetime, timedelta
 from urllib.parse import urlencode
 
 import pytest
-import requests as req
 
 from models import Offerer, PcObject, EventType, Deposit, ThingType
 from models.db import db
 from models.pc_object import serialize
-from tests.conftest import clean_database
+from tests.conftest import clean_database, TestClient
 from utils.human_ids import humanize
 from utils.test_utils import API_URL, create_stock_with_thing_offer, \
     create_thing_offer, create_deposit, create_stock_with_event_offer, create_venue, create_offerer, \
     create_recommendation, create_user, create_booking, create_event_offer, \
-    create_event_occurrence, create_stock_from_event_occurrence, create_user_offerer, TestClient
+    create_event_occurrence, create_stock_from_event_occurrence, create_user_offerer
 
 
 @pytest.mark.standalone
@@ -812,7 +811,7 @@ class GetBookingByTokenTest:
 
         url = API_URL + '/bookings/token/{}?email={}'.format(booking.token, 'user@email.fr')
         # When
-        response = req.get(url, headers={'origin': 'http://localhost:3000'})
+        response = TestClient().get(url)
         # Then
         assert response.status_code == 204
 
@@ -833,7 +832,8 @@ class GetBookingByTokenTest:
                                                                          humanize(offer.id))
 
         # When
-        response = req.get(url, headers={'origin': 'http://localhost:3000'})
+        response = TestClient().get(url)
+
         # Then
         assert response.status_code == 204
 
@@ -852,7 +852,7 @@ class GetBookingByTokenTest:
                                                                          humanize(stock.offerId))
 
         # When
-        response = req.get(url, headers={'origin': 'http://localhost:3000'})
+        response = TestClient().get(url)
         # Then
         assert response.status_code == 204
 
@@ -904,7 +904,8 @@ class GetBookingByTokenTest:
         url = API_URL + '/bookings/token/{}?email={}&offer_id={}'.format(booking.token, 'user@email.fr', humanize(123))
 
         # When
-        response = req.get(url, headers={'origin': 'http://localhost:3000'})
+        response = TestClient().get(url)
+
         # Then
         assert response.status_code == 404
         assert response.json()['global'] == ["Cette contremarque n'a pas été trouvée"]
@@ -946,7 +947,7 @@ class GetBookingByTokenTest:
 
         url = API_URL + '/bookings/token/{}'.format(booking.token)
         # When
-        response = req.get(url, headers={'origin': 'http://localhost:3000'})
+        response = TestClient().get(url)
         # Then
         assert response.status_code == 400
         error_message = response.json()
@@ -969,7 +970,7 @@ class GetBookingByTokenTest:
                                                                          humanize(stock.offerId))
 
         # When
-        response = req.get(url, headers={'origin': 'http://localhost:3000'})
+        response = TestClient().get(url)
         # Then
         assert response.status_code == 410
         assert response.json()['booking'] == ['Cette réservation a déjà été validée']
@@ -990,7 +991,7 @@ class GetBookingByTokenTest:
                                                                          humanize(stock.offerId))
 
         # When
-        response = req.get(url, headers={'origin': 'http://localhost:3000'})
+        response = TestClient().get(url)
         # Then
         assert response.status_code == 410
         assert response.json()['booking'] == ['Cette réservation a été annulée']
@@ -1011,7 +1012,7 @@ class PatchBookingAsAnonymousUserTest:
                                                                          humanize(stock.resolvedOffer.id))
 
         # When
-        response = req.patch(url, headers={'origin': 'http://localhost:3000'})
+        response = TestClient().patch(url)
 
         # Then
         assert response.status_code == 204
@@ -1030,7 +1031,7 @@ class PatchBookingAsAnonymousUserTest:
         url = API_URL + '/bookings/token/{}?&offer_id={}'.format(booking.token, humanize(stock.resolvedOffer.id))
 
         # When
-        response = req.patch(url, headers={'origin': 'http://localhost:3000'})
+        response = TestClient().patch(url)
 
         # Then
         assert response.status_code == 400
@@ -1049,7 +1050,7 @@ class PatchBookingAsAnonymousUserTest:
         url = API_URL + '/bookings/token/{}?email={}'.format(booking.token, user.email)
 
         # When
-        response = req.patch(url, headers={'origin': 'http://localhost:3000'})
+        response = TestClient().patch(url)
 
         # Then
         assert response.status_code == 400
@@ -1067,7 +1068,7 @@ class PatchBookingAsAnonymousUserTest:
         url = API_URL + '/bookings/token/{}'.format(booking.token, user.email)
 
         # When
-        response = req.patch(url, headers={'origin': 'http://localhost:3000'})
+        response = TestClient().patch(url)
 
         # Then
         assert response.status_code == 400
@@ -1088,7 +1089,7 @@ class PatchBookingAsAnonymousUserTest:
                                                                          humanize(stock.resolvedOffer.id))
 
         # When
-        response = req.patch(url, headers={'origin': 'http://localhost:3000'})
+        response = TestClient().patch(url)
 
         # Then
         assert response.status_code == 404

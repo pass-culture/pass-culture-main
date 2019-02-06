@@ -1,8 +1,10 @@
 import os
 from functools import wraps
+from pprint import pprint
 from unittest.mock import Mock
 
 import pytest
+import requests
 from flask import Flask
 from mailjet_rest import Client
 
@@ -10,7 +12,6 @@ from local_providers.install import install_local_providers
 from models.db import db
 from models.install import install_models
 from repository.clean_database import clean_all_database
-from utils.test_utils import TestClient
 
 items_by_category = {'first': [], 'last': []}
 
@@ -19,18 +20,10 @@ def _sort_alphabetically(category):
     return sorted(items_by_category[category], key=lambda item: item.location)
 
 
-def pytest_addoption(parser):
-    parser.addoption('--spec', action='store_true', help='Print REST API spec')
-
-
 def pytest_configure(config):
-    if config.getoption('spec'):
-        TestClient.with_doc = True
+    if config.getoption('capture') == 'no':
+        TestClient.WITH_DOC = True
 
-def pytest_collectreport(report):
-    print('///////////////')
-    print(report)
-    print('///////////////')
 
 def pytest_collection_modifyitems(config, items):
     """
@@ -83,3 +76,72 @@ def clean_database(f):
         return f(*args, **kwargs)
 
     return decorated_function
+
+
+class TestClient:
+    WITH_DOC = False
+    USER_TEST_ADMIN_EMAIL = "pctest.admin93.0@btmx.fr"
+    USER_TEST_ADMIN_PASSWORD = "pctest.Admin93.0"
+    LOCAL_ORIGIN_HEADER = {'origin': 'http://localhost:3000'}
+
+    def __init__(self):
+        self.session = None
+
+    def with_auth(self, email: str = None, password: str = None, headers: dict = LOCAL_ORIGIN_HEADER):
+        self.session = requests.Session()
+        self.session.headers = headers
+
+        if email is None or password is None:
+            self.session.auth = (TestClient.USER_TEST_ADMIN_EMAIL, TestClient.USER_TEST_ADMIN_PASSWORD)
+        else:
+            self.session.auth = (email, password)
+
+        return self
+
+    def get(self, route: str, headers=LOCAL_ORIGIN_HEADER):
+        if self.session:
+            result = self.session.get(route)
+        else:
+            result = requests.get(route, headers=headers)
+
+        if TestClient.WITH_DOC:
+            self._print_spec('GET', route, None, result.json(), result.status_code)
+
+        return result
+
+    def post(self, route: str, json: dict = None, headers=LOCAL_ORIGIN_HEADER):
+        if self.session:
+            result = self.session.post(route, json=json)
+        else:
+            result = requests.post(route, json=json, headers=headers)
+
+        if TestClient.WITH_DOC:
+            self._print_spec('POST', route, json, result.json(), result.status_code)
+
+        return result
+
+    def patch(self, route: str, json: dict = None, headers=LOCAL_ORIGIN_HEADER):
+        if self.session:
+            result = self.session.patch(route, json=json)
+        else:
+            result = requests.patch(route, json=json, headers=headers)
+
+        if TestClient.WITH_DOC:
+            self._print_spec('PATCH', route, json, result.json(), result.status_code)
+
+        return result
+
+    def _print_spec(self, verb: str, route: str, request_body: dict, response_body: dict, status_code: int):
+        print('\n===========================================')
+        print('%s :: %s' % (verb, route))
+        print('STATUS CODE :: %s' % status_code)
+
+        if request_body:
+            print('REQUEST BODY')
+            pprint(request_body)
+
+        if response_body:
+            print('RESPONSE BODY')
+            pprint(response_body)
+
+        print('===========================================\n')
