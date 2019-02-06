@@ -11,7 +11,7 @@ from utils.human_ids import humanize
 from utils.test_utils import API_URL, req_with_auth, create_stock_with_thing_offer, \
     create_thing_offer, create_deposit, create_stock_with_event_offer, create_venue, create_offerer, \
     create_recommendation, create_user, create_booking, create_event_offer, \
-    create_event_occurrence, create_stock_from_event_occurrence, create_user_offerer
+    create_event_occurrence, create_stock_from_event_occurrence, create_user_offerer, TestRequest
 
 
 @pytest.mark.standalone
@@ -36,7 +36,7 @@ class PostTest:
             }
 
             # When
-            r_create = req_with_auth(user.email, user.clearTextPassword).post(API_URL + '/bookings', json=booking_json)
+            r_create = TestRequest().with_auth(user.email, user.clearTextPassword).post(API_URL + '/bookings', json=booking_json)
 
             # Then
             assert r_create.status_code == 400

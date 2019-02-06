@@ -1,5 +1,6 @@
 """ test utils """
 import random
+import requests
 import string
 import uuid
 from datetime import datetime, timedelta, timezone
@@ -7,6 +8,7 @@ from decimal import Decimal
 from glob import glob
 from hashlib import sha256
 from inspect import isclass
+from pprint import pprint
 from unittest.mock import Mock
 
 import requests as req
@@ -42,6 +44,45 @@ savedCounts = {}
 USER_TEST_ADMIN_EMAIL = "pctest.admin93.0@btmx.fr"
 USER_TEST_ADMIN_PASSWORD = "pctest.Admin93.0"
 API_URL = "http://localhost:5000"
+
+
+class TestRequest:
+
+    with_doc = False
+
+    def __init__(self):
+        self.session = None
+
+    def with_auth(self, email=None, password=None, headers={'origin': 'http://localhost:3000'}):
+        self.session = req.Session()
+        self.session.headers = headers
+
+        if email is None:
+            self.session.auth = (USER_TEST_ADMIN_EMAIL, USER_TEST_ADMIN_PASSWORD)
+        elif password is not None:
+            self.session.auth = (email, password)
+
+        return self
+
+    def post(self, route: str, json: dict, headers={'origin': 'http://localhost:3000'}):
+        if self.session:
+            result = self.session.post(route, json=json)
+        else:
+            result = requests.post(route, json=json, headers=headers)
+
+        if TestRequest.with_doc:
+            print('\n')
+            print('===========================================')
+            print('\nPOST :: %s' % route)
+            print('\nSTATUS CODE :: %s' % result.status_code)
+            print('\nREQUEST BODY')
+            pprint(json, indent=4)
+            print('\nRESPONSE BODY')
+            pprint(result.json())
+            print('===========================================')
+            print('\n')
+
+        return result
 
 
 def req_with_auth(email=None, password=None, headers={'origin': 'http://localhost:3000'}):

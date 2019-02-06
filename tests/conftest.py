@@ -10,12 +10,22 @@ from local_providers.install import install_local_providers
 from models.db import db
 from models.install import install_models
 from repository.clean_database import clean_all_database
+from utils.test_utils import TestRequest
 
 items_by_category = {'first': [], 'last': []}
 
 
 def _sort_alphabetically(category):
     return sorted(items_by_category[category], key=lambda item: item.location)
+
+
+def pytest_addoption(parser):
+    parser.addoption('--spec', action='store_true', help='Print REST API spec')
+
+
+def pytest_configure(config):
+    if config.getoption('spec'):
+        TestRequest.with_doc = True
 
 
 def pytest_collection_modifyitems(config, items):
