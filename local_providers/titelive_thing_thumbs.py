@@ -81,7 +81,7 @@ class TiteLiveThingThumbs(LocalProvider):
 
     def open_next_file(self):
         if self.zip:
-            self.logEvent(LocalProviderEventType.SyncPartEnd, file_date(self.zip))
+            self.logProviderEvent(LocalProviderEventType.SyncPartEnd, file_date(self.zip))
         next_zip_file_name = str(self.zips.__next__())
         if self.is_mock:
             self.zip = ZipFile(next_zip_file_name)
@@ -97,7 +97,7 @@ class TiteLiveThingThumbs(LocalProvider):
         self.thumb_zipinfos = iter(filter(lambda f: f.filename.lower().endswith('.jpg'),
                                           sorted(self.zip.infolist(),
                                                  key=lambda f: f.filename)))
-        self.logEvent(LocalProviderEventType.SyncPartStart, file_date(self.zip))
+        self.logProviderEvent(LocalProviderEventType.SyncPartStart, file_date(self.zip))
 
 
     def __next__(self):

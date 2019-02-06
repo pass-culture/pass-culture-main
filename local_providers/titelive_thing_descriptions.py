@@ -86,7 +86,7 @@ class TiteLiveThingDescriptions(LocalProvider):
 
     def open_next_file(self):
         if self.zip:
-            self.logEvent(LocalProviderEventType.SyncPartEnd, file_date(self.zip))
+            self.logProviderEvent(LocalProviderEventType.SyncPartEnd, file_date(self.zip))
 
         next_zip_file_name = str(self.zips.__next__())
         if self.is_mock:
@@ -103,7 +103,7 @@ class TiteLiveThingDescriptions(LocalProvider):
         self.desc_zipinfos = iter(filter(lambda f: f.filename.lower().endswith('_p.txt'),
                                          sorted(self.zip.infolist(),
                                                 key=lambda f: f.filename)))
-        self.logEvent(LocalProviderEventType.SyncPartStart, file_date(self.zip))
+        self.logProviderEvent(LocalProviderEventType.SyncPartStart, file_date(self.zip))
         desc_filenames = filter(lambda f: f.filename.lower()
                                                     .endswith('_p.txt'),
                                 self.zip.infolist())

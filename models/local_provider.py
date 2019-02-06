@@ -133,7 +133,7 @@ class LocalProvider(Iterator):
             if need_save:
                 PcObject.check_and_save(obj)
         except Exception as e:
-            self.logEvent(LocalProviderEventType.SyncError, e.__class__.__name__)
+            self.logProviderEvent(LocalProviderEventType.SyncError, e.__class__.__name__)
             self.erroredThumbs += 1
             print('ERROR during handleThumb: '
                   + e.__class__.__name__ + ' ' + str(e))
@@ -185,17 +185,17 @@ class LocalProvider(Iterator):
         except Exception as e:
             print('ERROR during updateObject: '
                   + e.__class__.__name__+' '+str(e))
-            self.logEvent(LocalProviderEventType.SyncError, e.__class__.__name__)
+            self.logProviderEvent(LocalProviderEventType.SyncError, e.__class__.__name__)
             self.erroredObjects += 1
             traceback.print_tb(e.__traceback__)
             pprint(vars(e))
 
-    def logEvent(self, eventType, eventPayload=None):
-        pe = LocalProviderEvent()
-        pe.type = eventType
-        pe.payload = str(eventPayload)
-        pe.provider = self.dbObject
-        db.session.add(pe)
+    def logProviderEvent(self, event_type, event_payload=None):
+        local_provider_event = LocalProviderEvent()
+        local_provider_event.type = event_type
+        local_provider_event.payload = str(event_payload)
+        local_provider_event.provider = self.dbObject
+        db.session.add(local_provider_event)
         db.session.commit()
 
     def updateObjects(self, limit=None):
@@ -212,7 +212,7 @@ class LocalProvider(Iterator):
         sys.stdout.write("Updating "
                          + inflect_engine.plural(self.objectType.__name__)
                          + " from provider " + self.name)
-        self.logEvent(LocalProviderEventType.SyncStart)
+        self.logProviderEvent(LocalProviderEventType.SyncStart)
         if self.venueProvider is not None:
             print(" for venue " + self.venueProvider.venue.name
                   + " (#" + str(self.venueProvider.venueId) + " / "
@@ -282,7 +282,7 @@ class LocalProvider(Iterator):
         print("  Created " + str(self.createdThumbs) + " thumbs")
         print("  Updated " + str(self.updatedThumbs) + " thumbs")
         print("  " + str(self.erroredThumbs) + " errors in thumb creations/updates")
-        self.logEvent(LocalProviderEventType.SyncEnd)
+        self.logProviderEvent(LocalProviderEventType.SyncEnd)
         if self.venueProvider is not None:
             self.venueProvider.lastSyncDate = datetime.utcnow()
             PcObject.check_and_save(self.venueProvider)
