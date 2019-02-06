@@ -5,7 +5,6 @@ from local_providers.spreadsheet_exp_stocks import SpreadsheetExpStocks
 from local_providers.spreadsheet_exp_thing_stocks import SpreadsheetExpThingStocks
 from local_providers.spreadsheet_exp_venues import SpreadsheetExpVenues
 from local_providers.titelive_stocks import TiteLiveStocks
-from local_providers.titelive_venues import TiteLiveVenues
 from local_providers.titelive_things import TiteLiveThings
 from local_providers.titelive_thing_descriptions import TiteLiveThingDescriptions
 from local_providers.titelive_thing_thumbs import TiteLiveThingThumbs
@@ -18,7 +17,6 @@ __all__ = (
     'SpreadsheetExpThingStocks',
     'SpreadsheetExpVenues',
     'TiteLiveStocks',
-    'TiteLiveVenues',
     'TiteLiveThings',
     'TiteLiveThingDescriptions',
     'TiteLiveThingThumbs',
