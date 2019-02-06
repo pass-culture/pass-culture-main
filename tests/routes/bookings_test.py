@@ -15,545 +15,510 @@ from utils.test_utils import API_URL, req_with_auth, create_stock_with_thing_off
 
 
 @pytest.mark.standalone
-class CreateBookingTest:
-    @clean_database
-    def test_returns_status_code_400_and_stock_id_in_error_with_non_validated_venue(self, app):
-        # Given
-        user = create_user(email='test@email.com', password='testpsswd')
-        deposit = create_deposit(user, datetime.utcnow())
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        venue.generate_validation_token()
-        thing_offer = create_thing_offer(venue)
-        stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=10)
-        PcObject.check_and_save(stock, user, deposit)
+class PostTest:
+    class Returns400Test:
+        @clean_database
+        def test_when_non_validated_venue(self, app):
+            # Given
+            user = create_user(email='test@email.com', password='testpsswd')
+            deposit = create_deposit(user, datetime.utcnow())
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            venue.generate_validation_token()
+            thing_offer = create_thing_offer(venue)
+            stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=10)
+            PcObject.check_and_save(stock, user, deposit)
 
-        booking_json = {
-            'stockId': humanize(stock.id),
-            'recommendationId': None,
-            'quantity': 1
-        }
+            booking_json = {
+                'stockId': humanize(stock.id),
+                'recommendationId': None,
+                'quantity': 1
+            }
 
-        # When
-        r_create = req_with_auth(user.email, user.clearTextPassword).post(API_URL + '/bookings', json=booking_json)
+            # When
+            r_create = req_with_auth(user.email, user.clearTextPassword).post(API_URL + '/bookings', json=booking_json)
 
-        # Then
-        assert r_create.status_code == 400
-        assert r_create.json()['stockId'] == [
-            'Vous ne pouvez pas encore réserver cette offre, son lieu est en attente de validation']
+            # Then
+            assert r_create.status_code == 400
+            assert r_create.json()['stockId'] == [
+                'Vous ne pouvez pas encore réserver cette offre, son lieu est en attente de validation']
 
-    @clean_database
-    def test_should_not_work_past_limit_date(self, app):
-        offerer = create_offerer('987654321', 'Test address', 'Test city', '93000', 'Test name')
+        @clean_database
+        def test_when_booking_limit_datetime_has_passed(self, app):
+            offerer = create_offerer('987654321', 'Test address', 'Test city', '93000', 'Test name')
 
-        venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city',
-                             '93')
+            venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city',
+                                 '93')
 
-        thing_offer = create_thing_offer(venue)
+            thing_offer = create_thing_offer(venue)
 
-        expired_stock = create_stock_with_thing_offer(offerer=offerer, venue=venue, thing_offer=thing_offer, price=0)
-        expired_stock.bookingLimitDatetime = datetime.utcnow() - timedelta(seconds=1)
-        PcObject.check_and_save(expired_stock)
+            expired_stock = create_stock_with_thing_offer(offerer=offerer, venue=venue, thing_offer=thing_offer,
+                                                          price=0)
+            expired_stock.bookingLimitDatetime = datetime.utcnow() - timedelta(seconds=1)
+            PcObject.check_and_save(expired_stock)
 
-        user = create_user(email='test@mail.com', password='psswd123')
-        PcObject.check_and_save(user)
+            user = create_user(email='test@mail.com', password='psswd123')
+            PcObject.check_and_save(user)
 
-        recommendation = create_recommendation(thing_offer, user)
+            recommendation = create_recommendation(thing_offer, user)
 
-        booking_json = {
-            'stockId': humanize(expired_stock.id),
-            'recommendationId': humanize(recommendation.id),
-            'quantity': 1
-        }
+            booking_json = {
+                'stockId': humanize(expired_stock.id),
+                'recommendationId': humanize(recommendation.id),
+                'quantity': 1
+            }
 
-        r_create = req_with_auth('test@mail.com', password='psswd123').post(API_URL + '/bookings', json=booking_json)
-        assert r_create.status_code == 400
-        assert 'global' in r_create.json()
-        assert 'date limite' in r_create.json()['global'][0]
+            r_create = req_with_auth('test@mail.com', password='psswd123').post(API_URL + '/bookings',
+                                                                                json=booking_json)
+            assert r_create.status_code == 400
+            assert 'global' in r_create.json()
+            assert 'date limite' in r_create.json()['global'][0]
 
-    @clean_database
-    def test_should_work_before_limit_date(self, app):
-        offerer = create_offerer('987654321', 'Test address', 'Test city', '93000', 'Test name')
-        venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city',
-                             '93')
-        ok_stock = create_stock_with_event_offer(offerer=offerer,
-                                                 venue=venue, price=0)
-        ok_stock.bookingLimitDatetime = datetime.utcnow() + timedelta(minutes=2)
-        ok_stock.bookingLimitDatetime = datetime.utcnow() + timedelta(minutes=2)
-        PcObject.check_and_save(ok_stock)
+        @clean_database
+        def test_when_too_many_bookings(self, app):
+            offerer = create_offerer('987654321', 'Test address', 'Test city', '93000', 'Test name')
+            venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city',
+                                 '93')
+            too_many_bookings_stock = create_stock_with_thing_offer(offerer=Offerer(), venue=venue, thing_offer=None,
+                                                                    available=2)
 
-        user = create_user(email='test@mail.com', password='psswd123')
-        PcObject.check_and_save(user)
+            user = create_user(email='test@email.com', password='mdppsswd')
 
-        recommendation = create_recommendation(offer=ok_stock.offer, user=user)
-        PcObject.check_and_save(recommendation)
+            deposit = create_deposit(user, datetime.utcnow(), amount=50)
 
-        booking_json = {
-            'stockId': humanize(ok_stock.id),
-            'recommendationId': humanize(recommendation.id),
-            'quantity': 1
-        }
+            recommendation = create_recommendation(offer=too_many_bookings_stock.offer, user=user)
+            booking = create_booking(user, too_many_bookings_stock, venue, quantity=2)
 
-        r_create = req_with_auth(email='test@mail.com', password='psswd123').post(API_URL + '/bookings',
-                                                                                  json=booking_json)
-        assert r_create.status_code == 201
-        id = r_create.json()['id']
-        r_check = req_with_auth(email='test@mail.com', password='psswd123').get(API_URL + '/bookings/' + id)
-        created_booking_json = r_check.json()
-        for (key, value) in booking_json.items():
-            assert created_booking_json[key] == booking_json[key]
+            PcObject.check_and_save(booking, recommendation, user, deposit)
 
-    @clean_database
-    def test_should_not_work_if_too_many_bookings(self, app):
-        offerer = create_offerer('987654321', 'Test address', 'Test city', '93000', 'Test name')
-        venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city',
-                             '93')
-        too_many_bookings_stock = create_stock_with_thing_offer(offerer=Offerer(), venue=venue, thing_offer=None,
-                                                                available=2)
+            booking_json = {
+                'stockId': humanize(too_many_bookings_stock.id),
+                'recommendationId': humanize(recommendation.id),
+                'quantity': 1
+            }
 
-        user = create_user(email='test@email.com', password='mdppsswd')
+            r_create = req_with_auth('test@email.com', 'mdppsswd').post(API_URL + '/bookings', json=booking_json)
 
-        deposit = create_deposit(user, datetime.utcnow(), amount=50)
+            assert r_create.status_code == 400
+            assert 'global' in r_create.json()
+            assert 'quantité disponible' in r_create.json()['global'][0]
 
-        recommendation = create_recommendation(offer=too_many_bookings_stock.offer, user=user)
-        booking = create_booking(user, too_many_bookings_stock, venue, quantity=2)
+        @clean_database
+        def test_when_user_cannot_book_free_offers_and_free_offer(self, app):
+            # Given
+            user = create_user(email='cannotBook_freeOffers@email.com', can_book_free_offers=False,
+                               password='testpsswd')
+            PcObject.check_and_save(user)
 
-        PcObject.check_and_save(booking, recommendation, user, deposit)
+            offerer = create_offerer(siren='899999768', address='2 Test adress', city='Test city', postal_code='93000',
+                                     name='Test offerer')
+            PcObject.check_and_save(offerer)
 
-        booking_json = {
-            'stockId': humanize(too_many_bookings_stock.id),
-            'recommendationId': humanize(recommendation.id),
-            'quantity': 1
-        }
+            venue = create_venue(offerer=offerer, name='Venue name', booking_email='booking@email.com',
+                                 address='1 Test address', postal_code='93000', city='Test city', departement_code='93')
+            PcObject.check_and_save(venue)
 
-        r_create = req_with_auth('test@email.com', 'mdppsswd').post(API_URL + '/bookings', json=booking_json)
+            thing_offer = create_thing_offer(venue)
+            PcObject.check_and_save(thing_offer)
 
-        assert r_create.status_code == 400
-        assert 'global' in r_create.json()
-        assert 'quantité disponible' in r_create.json()['global'][0]
+            stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=0)
+            PcObject.check_and_save(stock)
 
-    @clean_database
-    def test_should_work_if_user_can_book_and_enough_credit(self, app):
-        # Given
-        offerer = create_offerer('819202819', '1 Fake Address', 'Fake city', '93000', 'Fake offerer')
-        venue = create_venue(offerer, 'venue name', 'booking@email.com', '1 fake street', '93000', 'False city', '93')
-        thing_offer = create_thing_offer(venue)
+            recommendation = create_recommendation(thing_offer, user)
+            PcObject.check_and_save(recommendation)
 
-        user = create_user(email='test@email.com', password='mdppsswd')
-        PcObject.check_and_save(user)
+            deposit_date = datetime.utcnow() - timedelta(minutes=2)
+            deposit = create_deposit(user, deposit_date, amount=500)
+            PcObject.check_and_save(deposit)
 
-        stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=50, available=1)
-        PcObject.check_and_save(stock)
+            booking_json = {
+                'stockId': humanize(stock.id),
+                'recommendationId': humanize(recommendation.id),
+                'quantity': 1
+            }
 
-        recommendation = create_recommendation(thing_offer, user)
-        PcObject.check_and_save(recommendation)
+            # When
+            r_create = req_with_auth('cannotBook_freeOffers@email.com', 'testpsswd').post(API_URL + '/bookings',
+                                                                                          json=booking_json)
 
-        deposit = create_deposit(user, datetime.utcnow(), amount=50)
-        PcObject.check_and_save(deposit)
+            # Then
+            assert r_create.status_code == 400
+            assert 'cannotBookFreeOffers' in r_create.json()
+            assert r_create.json()['cannotBookFreeOffers'] == [
+                "Votre compte ne vous permet pas de faire de réservation."]
 
-        booking_json = {
-            'stockId': humanize(stock.id),
-            'recommendationId': humanize(recommendation.id),
-            'quantity': 1
-        }
-        r_create = req_with_auth('test@email.com', 'mdppsswd').post(API_URL + '/bookings', json=booking_json)
-        assert r_create.status_code == 201
+        @clean_database
+        def test_when_user_has_not_enough_credit(self, app):
+            # Given
+            user = create_user(email='insufficient_funds_test@email.com', password='testpsswd')
+            offerer = create_offerer(siren='899999768', address='2 Test adress', city='Test city', postal_code='93000',
+                                     name='Test offerer')
+            venue = create_venue(offerer=offerer, name='Venue name', booking_email='booking@email.com',
+                                 address='1 Test address', postal_code='93000', city='Test city', departement_code='93')
+            stock = create_stock_with_event_offer(offerer, venue, price=200)
+            event_offer = stock.resolvedOffer
+            recommendation = create_recommendation(event_offer, user)
+            deposit_date = datetime.utcnow() - timedelta(minutes=2)
+            deposit = create_deposit(user, deposit_date, amount=0)
 
-    @clean_database
-    def test_should_work_if_canceled_bookings_user_can_book_and_enough_credit(self, app):
-        # Given
-        offerer = create_offerer('819202819', '1 Fake Address', 'Fake city', '93000', 'Fake offerer')
-        venue = create_venue(offerer, 'venue name', 'booking@email.com', '1 fake street', '93000', 'False city', '93')
-        event_offer = create_event_offer(venue)
+            PcObject.check_and_save(recommendation)
+            PcObject.check_and_save(stock)
+            PcObject.check_and_save(deposit)
 
-        user = create_user(email='test@email.com', password='mdppsswd')
-        PcObject.check_and_save(user)
+            booking_json = {
+                "stockId": humanize(stock.id),
+                "recommendationId": humanize(recommendation.id),
+                "quantity": 1
+            }
 
-        stock = create_stock_with_event_offer(offerer, venue, event_offer, price=50, available=1)
-        PcObject.check_and_save(stock)
+            # When
+            r_create = req_with_auth('insufficient_funds_test@email.com', 'testpsswd').post(API_URL + '/bookings',
+                                                                                            json=booking_json)
 
-        booking = create_booking(user, stock, venue, is_cancelled=True)
-        PcObject.check_and_save(booking)
+            # Then
+            assert r_create.status_code == 400
+            assert 'insufficientFunds' in r_create.json()
+            assert r_create.json()['insufficientFunds'] == [
+                "Le solde de votre pass n'est pas suffisant pour effectuer cette réservation."]
 
-        recommendation = create_recommendation(event_offer, user)
-        PcObject.check_and_save(recommendation)
+        @clean_database
+        def test_when_only_public_credit_and_limit_of_physical_thing_reached(self, app):
+            # Given
+            user = create_user(email='test@email.com', password='testpsswd')
+            PcObject.check_and_save(user)
 
-        deposit = create_deposit(user, datetime.utcnow(), amount=50)
-        PcObject.check_and_save(deposit)
+            offerer = create_offerer()
+            PcObject.check_and_save(offerer)
 
-        booking_json = {
-            'stockId': humanize(stock.id),
-            'recommendationId': humanize(recommendation.id),
-            'quantity': 1
-        }
-        r_create = req_with_auth('test@email.com', 'mdppsswd').post(API_URL + '/bookings', json=booking_json)
-        assert r_create.status_code == 201
+            venue = create_venue(offerer)
+            PcObject.check_and_save(venue)
 
-    @clean_database
-    def test_should_not_work_for_free_offer_if_not_userCanBookFreeOffers(self, app):
-        # Given
-        user = create_user(email='cannotBook_freeOffers@email.com', can_book_free_offers=False, password='testpsswd')
-        PcObject.check_and_save(user)
+            thing_offer = create_thing_offer(venue)
+            PcObject.check_and_save(thing_offer)
 
-        offerer = create_offerer(siren='899999768', address='2 Test adress', city='Test city', postal_code='93000',
-                                 name='Test offerer')
-        PcObject.check_and_save(offerer)
+            stock_1 = create_stock_with_thing_offer(offerer, venue, thing_offer, price=190)
+            stock_2 = create_stock_with_thing_offer(offerer, venue, thing_offer, price=6)
+            PcObject.check_and_save(stock_1, stock_2)
 
-        venue = create_venue(offerer=offerer, name='Venue name', booking_email='booking@email.com',
-                             address='1 Test address', postal_code='93000', city='Test city', departement_code='93')
-        PcObject.check_and_save(venue)
+            deposit_date = datetime.utcnow() - timedelta(minutes=2)
+            deposit = create_deposit(user, deposit_date, amount=500, source='public')
+            PcObject.check_and_save(deposit)
 
-        thing_offer = create_thing_offer(venue)
-        PcObject.check_and_save(thing_offer)
+            booking_1 = create_booking(user, stock_1, venue, recommendation=None)
+            PcObject.check_and_save(booking_1)
 
-        stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=0)
-        PcObject.check_and_save(stock)
+            recommendation = create_recommendation(thing_offer, user)
+            PcObject.check_and_save(recommendation)
 
-        recommendation = create_recommendation(thing_offer, user)
-        PcObject.check_and_save(recommendation)
+            booking_json = {
+                "stockId": humanize(stock_2.id),
+                "recommendationId": humanize(recommendation.id),
+                "quantity": 2
+            }
 
-        deposit_date = datetime.utcnow() - timedelta(minutes=2)
-        deposit = create_deposit(user, deposit_date, amount=500)
-        PcObject.check_and_save(deposit)
+            # When
+            response = req_with_auth('test@email.com', 'testpsswd').post(API_URL + '/bookings',
+                                                                         json=booking_json)
+            # Then
+            error_message = response.json()
+            assert response.status_code == 400
+            assert error_message['global'] == ['La limite de 200 € pour les biens culturels ' \
+                                               'ne vous permet pas de réserver']
 
-        booking_json = {
-            'stockId': humanize(stock.id),
-            'recommendationId': humanize(recommendation.id),
-            'quantity': 1
-        }
+        @clean_database
+        def test_when_missing_stock_id(self, app):
+            # Given
+            user = create_user(email='test@email.com', password='testpsswd')
+            PcObject.check_and_save(user)
+            booking_json = {
+                'stockId': None,
+                'recommendationId': 'AFQA',
+                'quantity': 2
+            }
 
-        # When
-        r_create = req_with_auth('cannotBook_freeOffers@email.com', 'testpsswd').post(API_URL + '/bookings',
+            # When
+            response = req_with_auth('test@email.com', 'testpsswd').post(API_URL + '/bookings',
+                                                                         json=booking_json)
+            # Then
+            error_message = response.json()
+            assert response.status_code == 400
+            assert error_message['stockId'] == ['Vous devez préciser un identifiant d\'offre']
+
+        @clean_database
+        def test_when_missing_quantity(self, app):
+            # Given
+            user = create_user(email='test@email.com', password='testpsswd')
+            PcObject.check_and_save(user)
+            booking_json = {
+                'stockId': 'AE',
+                'recommendationId': 'AFQA',
+                'quantity': None
+            }
+
+            # When
+            response = req_with_auth('test@email.com', 'testpsswd').post(API_URL + '/bookings',
+                                                                         json=booking_json)
+            # Then
+            error_message = response.json()
+            assert response.status_code == 400
+            assert error_message['quantity'] == ['Vous devez préciser une quantité pour la réservation']
+
+        @clean_database
+        def test_when_negative_quantity(self, app):
+            # Given
+            user = create_user(email='test@email.com', password='testpsswd')
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            thing_offer = create_thing_offer(venue)
+            stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=90)
+            PcObject.check_and_save(stock, user)
+
+            booking_json = {
+                'stockId': humanize(stock.id),
+                'recommendationId': None,
+                'quantity': -3
+            }
+
+            # When
+            response = req_with_auth('test@email.com', 'testpsswd').post(API_URL + '/bookings',
+                                                                         json=booking_json)
+            # Then
+            error_message = response.json()
+            assert response.status_code == 400
+            assert error_message['quantity'] == ['Vous devez préciser une quantité pour la réservation']
+
+        @clean_database
+        def test_when_offer_is_inactive(self, app):
+            # Given
+            user = create_user(email='test@email.com', password='testpsswd')
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            thing_offer = create_thing_offer(venue)
+            thing_offer.isActive = False
+            stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=90)
+            PcObject.check_and_save(stock, user)
+
+            booking_json = {
+                'stockId': humanize(stock.id),
+                'recommendationId': None,
+                'quantity': 1,
+            }
+
+            # When
+            response = req_with_auth('test@email.com', 'testpsswd').post(API_URL + '/bookings',
+                                                                         json=booking_json)
+            # Then
+            error_message = response.json()
+            assert response.status_code == 400
+            assert error_message['stockId'] == ["Cette offre a été retirée. Elle n'est plus valable."]
+
+        @clean_database
+        def test_when_offerer_is_inactive(self, app):
+            # Given
+            user = create_user(email='test@email.com', password='testpsswd')
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            thing_offer = create_thing_offer(venue)
+            offerer.isActive = False
+            stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=90)
+            PcObject.check_and_save(stock, user)
+
+            booking_json = {
+                'stockId': humanize(stock.id),
+                'recommendationId': None,
+                'quantity': 1,
+            }
+
+            # When
+            response = req_with_auth('test@email.com', 'testpsswd').post(API_URL + '/bookings',
+                                                                         json=booking_json)
+            # Then
+            error_message = response.json()
+            assert response.status_code == 400
+            assert error_message['stockId'] == ["Cette offre a été retirée. Elle n'est plus valable."]
+
+        @clean_database
+        def test_when_stock_is_soft_deleted(self, app):
+            # Given
+            user = create_user(email='test@email.com', password='testpsswd')
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            thing_offer = create_thing_offer(venue)
+            stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=90)
+            stock.isSoftDeleted = True
+            PcObject.check_and_save(stock, user)
+
+            booking_json = {
+                'stockId': humanize(stock.id),
+                'recommendationId': None,
+                'quantity': 1,
+            }
+
+            # When
+            response = req_with_auth('test@email.com', 'testpsswd').post(API_URL + '/bookings',
+                                                                         json=booking_json)
+            # Then
+            error_message = response.json()
+            assert response.status_code == 400
+            assert error_message['stockId'] == ["Cette date a été retirée. Elle n'est plus disponible."]
+
+        @clean_database
+        def test_when_null_quantity(self, app):
+            # Given
+            user = create_user(email='test@email.com', password='testpsswd')
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            thing_offer = create_thing_offer(venue)
+            stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=90)
+            PcObject.check_and_save(stock, user)
+
+            booking_json = {
+                'stockId': humanize(stock.id),
+                'recommendationId': None,
+                'quantity': 0
+            }
+
+            # When
+            response = req_with_auth('test@email.com', 'testpsswd').post(API_URL + '/bookings',
+                                                                         json=booking_json)
+            # Then
+            error_message = response.json()
+            assert response.status_code == 400
+            assert error_message['quantity'] == ['Vous devez préciser une quantité pour la réservation']
+
+    class Returns201Test:
+        @clean_database
+        def test_when_limit_date_is_in_the_future_and_offer_is_free(self, app):
+            offerer = create_offerer('987654321', 'Test address', 'Test city', '93000', 'Test name')
+            venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city',
+                                 '93')
+            ok_stock = create_stock_with_event_offer(offerer=offerer,
+                                                     venue=venue, price=0)
+            ok_stock.bookingLimitDatetime = datetime.utcnow() + timedelta(minutes=2)
+            ok_stock.bookingLimitDatetime = datetime.utcnow() + timedelta(minutes=2)
+            PcObject.check_and_save(ok_stock)
+
+            user = create_user(email='test@mail.com', password='psswd123')
+            PcObject.check_and_save(user)
+
+            recommendation = create_recommendation(offer=ok_stock.offer, user=user)
+            PcObject.check_and_save(recommendation)
+
+            booking_json = {
+                'stockId': humanize(ok_stock.id),
+                'recommendationId': humanize(recommendation.id),
+                'quantity': 1
+            }
+
+            r_create = req_with_auth(email='test@mail.com', password='psswd123').post(API_URL + '/bookings',
                                                                                       json=booking_json)
+            assert r_create.status_code == 201
+            id = r_create.json()['id']
+            r_check = req_with_auth(email='test@mail.com', password='psswd123').get(API_URL + '/bookings/' + id)
+            created_booking_json = r_check.json()
+            for (key, value) in booking_json.items():
+                assert created_booking_json[key] == booking_json[key]
 
-        # Then
-        assert r_create.status_code == 400
-        assert 'cannotBookFreeOffers' in r_create.json()
-        assert r_create.json()['cannotBookFreeOffers'] == ["Votre compte ne vous permet pas de faire de réservation."]
+        @clean_database
+        def test_when_user_has_enough_credit(self, app):
+            # Given
+            offerer = create_offerer('819202819', '1 Fake Address', 'Fake city', '93000', 'Fake offerer')
+            venue = create_venue(offerer, 'venue name', 'booking@email.com', '1 fake street', '93000', 'False city',
+                                 '93')
+            thing_offer = create_thing_offer(venue)
 
-    @clean_database
-    def test_should_not_work_if_not_enough_credit(self, app):
-        # Given
-        user = create_user(email='insufficient_funds_test@email.com', password='testpsswd')
-        offerer = create_offerer(siren='899999768', address='2 Test adress', city='Test city', postal_code='93000',
-                                 name='Test offerer')
-        venue = create_venue(offerer=offerer, name='Venue name', booking_email='booking@email.com',
-                             address='1 Test address', postal_code='93000', city='Test city', departement_code='93')
-        stock = create_stock_with_event_offer(offerer, venue, price=200)
-        event_offer = stock.resolvedOffer
-        recommendation = create_recommendation(event_offer, user)
-        deposit_date = datetime.utcnow() - timedelta(minutes=2)
-        deposit = create_deposit(user, deposit_date, amount=0)
+            user = create_user(email='test@email.com', password='mdppsswd')
+            PcObject.check_and_save(user)
 
-        PcObject.check_and_save(recommendation)
-        PcObject.check_and_save(stock)
-        PcObject.check_and_save(deposit)
+            stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=50, available=1)
+            PcObject.check_and_save(stock)
 
-        booking_json = {
-            "stockId": humanize(stock.id),
-            "recommendationId": humanize(recommendation.id),
-            "quantity": 1
-        }
+            recommendation = create_recommendation(thing_offer, user)
+            PcObject.check_and_save(recommendation)
 
-        # When
-        r_create = req_with_auth('insufficient_funds_test@email.com', 'testpsswd').post(API_URL + '/bookings',
-                                                                                        json=booking_json)
+            deposit = create_deposit(user, datetime.utcnow(), amount=50)
+            PcObject.check_and_save(deposit)
 
-        # Then
-        assert r_create.status_code == 400
-        assert 'insufficientFunds' in r_create.json()
-        assert r_create.json()['insufficientFunds'] == [
-            "Le solde de votre pass n'est pas suffisant pour effectuer cette réservation."]
+            booking_json = {
+                'stockId': humanize(stock.id),
+                'recommendationId': humanize(recommendation.id),
+                'quantity': 1
+            }
+            r_create = req_with_auth('test@email.com', 'mdppsswd').post(API_URL + '/bookings', json=booking_json)
+            assert r_create.status_code == 201
 
-    @clean_database
-    def test_should_work_if_enough_credit_when_userCanBookFreeOffers(self, app):
-        # Given
-        user = create_user(email='sufficient_funds@email.com', password='testpsswd')
-        PcObject.check_and_save(user)
+        @clean_database
+        def test_when_user_has_enough_credit_after_cancelling_booking(self, app):
+            # Given
+            offerer = create_offerer('819202819', '1 Fake Address', 'Fake city', '93000', 'Fake offerer')
+            venue = create_venue(offerer, 'venue name', 'booking@email.com', '1 fake street', '93000', 'False city',
+                                 '93')
+            event_offer = create_event_offer(venue)
 
-        offerer = create_offerer(siren='899999768', address='2 Test adress', city='Test city', postal_code='93000',
-                                 name='Test offerer')
-        PcObject.check_and_save(offerer)
+            user = create_user(email='test@email.com', password='mdppsswd')
+            PcObject.check_and_save(user)
 
-        venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city',
-                             '93')
-        PcObject.check_and_save(venue)
+            stock = create_stock_with_event_offer(offerer, venue, event_offer, price=50, available=1)
+            PcObject.check_and_save(stock)
 
-        thing_offer = create_thing_offer(venue)
-        PcObject.check_and_save(thing_offer)
+            booking = create_booking(user, stock, venue, is_cancelled=True)
+            PcObject.check_and_save(booking)
 
-        stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=5)
-        PcObject.check_and_save(stock)
+            recommendation = create_recommendation(event_offer, user)
+            PcObject.check_and_save(recommendation)
 
-        recommendation = create_recommendation(thing_offer, user)
-        PcObject.check_and_save(recommendation)
+            deposit = create_deposit(user, datetime.utcnow(), amount=50)
+            PcObject.check_and_save(deposit)
 
-        deposit_date = datetime.utcnow() - timedelta(minutes=2)
-        deposit = create_deposit(user, deposit_date, amount=9)
-        PcObject.check_and_save(deposit)
+            booking_json = {
+                'stockId': humanize(stock.id),
+                'recommendationId': humanize(recommendation.id),
+                'quantity': 1
+            }
+            r_create = req_with_auth('test@email.com', 'mdppsswd').post(API_URL + '/bookings', json=booking_json)
+            assert r_create.status_code == 201
 
-        booking_json = {
-            "stockId": humanize(stock.id),
-            "recommendationId": humanize(recommendation.id),
-            "quantity": 1
-        }
+        @clean_database
+        def test_when_user_cannot_book_free_offers_but_has_enough_credit_for_paid_offer(self, app):
+            user = create_user(email='can_book_paid_offers@email.com', can_book_free_offers=False, password='testpsswd')
+            PcObject.check_and_save(user)
 
-        # When
-        r_create = req_with_auth('sufficient_funds@email.com', 'testpsswd').post(API_URL + '/bookings',
-                                                                                 json=booking_json)
+            offerer = create_offerer(siren='899999768', address='2 Test adress', city='Test city', postal_code='93000',
+                                     name='Test offerer')
+            PcObject.check_and_save(offerer)
 
-        # Then
-        r_create_json = r_create.json()
-        assert r_create.status_code == 201
-        assert r_create_json['amount'] == 5.0
-        assert r_create_json['quantity'] == 1
+            venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city',
+                                 '93')
+            PcObject.check_and_save(venue)
 
-    @clean_database
-    def test_should_work_for_paid_offer_if_user_can_not_book_but_has_enough_credit(self, app):
-        user = create_user(email='can_book_paid_offers@email.com', can_book_free_offers=False, password='testpsswd')
-        PcObject.check_and_save(user)
+            thing_offer = create_thing_offer(venue)
+            PcObject.check_and_save(thing_offer)
 
-        offerer = create_offerer(siren='899999768', address='2 Test adress', city='Test city', postal_code='93000',
-                                 name='Test offerer')
-        PcObject.check_and_save(offerer)
+            stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=10)
+            PcObject.check_and_save(stock)
 
-        venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city',
-                             '93')
-        PcObject.check_and_save(venue)
+            recommendation = create_recommendation(thing_offer, user)
+            PcObject.check_and_save(recommendation)
 
-        thing_offer = create_thing_offer(venue)
-        PcObject.check_and_save(thing_offer)
+            deposit_date = datetime.utcnow() - timedelta(minutes=2)
+            deposit = create_deposit(user, deposit_date, amount=500)
+            PcObject.check_and_save(deposit)
 
-        stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=10)
-        PcObject.check_and_save(stock)
+            booking_json = {
+                "stockId": humanize(stock.id),
+                "recommendationId": humanize(recommendation.id),
+                "quantity": 1
+            }
 
-        recommendation = create_recommendation(thing_offer, user)
-        PcObject.check_and_save(recommendation)
+            # When
+            r_create = req_with_auth('can_book_paid_offers@email.com', 'testpsswd').post(API_URL + '/bookings',
+                                                                                         json=booking_json)
+            r_create_json = r_create.json()
 
-        deposit_date = datetime.utcnow() - timedelta(minutes=2)
-        deposit = create_deposit(user, deposit_date, amount=500)
-        PcObject.check_and_save(deposit)
-
-        booking_json = {
-            "stockId": humanize(stock.id),
-            "recommendationId": humanize(recommendation.id),
-            "quantity": 1
-        }
-
-        # When
-        r_create = req_with_auth('can_book_paid_offers@email.com', 'testpsswd').post(API_URL + '/bookings',
-                                                                                     json=booking_json)
-        r_create_json = r_create.json()
-
-        # Then
-        assert r_create.status_code == 201
-        assert r_create_json['amount'] == 10.0
-        assert r_create_json['quantity'] == 1
-
-    @clean_database
-    def test_should_not_work_if_only_public_credit_and_limit_of_physical_thing_reached(self, app):
-        # Given
-        user = create_user(email='test@email.com', password='testpsswd')
-        PcObject.check_and_save(user)
-
-        offerer = create_offerer()
-        PcObject.check_and_save(offerer)
-
-        venue = create_venue(offerer)
-        PcObject.check_and_save(venue)
-
-        thing_offer = create_thing_offer(venue)
-        PcObject.check_and_save(thing_offer)
-
-        stock_1 = create_stock_with_thing_offer(offerer, venue, thing_offer, price=190)
-        stock_2 = create_stock_with_thing_offer(offerer, venue, thing_offer, price=6)
-        PcObject.check_and_save(stock_1, stock_2)
-
-        deposit_date = datetime.utcnow() - timedelta(minutes=2)
-        deposit = create_deposit(user, deposit_date, amount=500, source='public')
-        PcObject.check_and_save(deposit)
-
-        booking_1 = create_booking(user, stock_1, venue, recommendation=None)
-        PcObject.check_and_save(booking_1)
-
-        recommendation = create_recommendation(thing_offer, user)
-        PcObject.check_and_save(recommendation)
-
-        booking_json = {
-            "stockId": humanize(stock_2.id),
-            "recommendationId": humanize(recommendation.id),
-            "quantity": 2
-        }
-
-        # When
-        response = req_with_auth('test@email.com', 'testpsswd').post(API_URL + '/bookings',
-                                                                     json=booking_json)
-        # Then
-        error_message = response.json()
-        assert response.status_code == 400
-        assert error_message['global'] == ['La limite de 200 € pour les biens culturels ' \
-                                           'ne vous permet pas de réserver']
-
-    @clean_database
-    def test_returns_bad_request_if_no_stock_id_is_given(self, app):
-        # Given
-        user = create_user(email='test@email.com', password='testpsswd')
-        PcObject.check_and_save(user)
-        booking_json = {
-            'stockId': None,
-            'recommendationId': 'AFQA',
-            'quantity': 2
-        }
-
-        # When
-        response = req_with_auth('test@email.com', 'testpsswd').post(API_URL + '/bookings',
-                                                                     json=booking_json)
-        # Then
-        error_message = response.json()
-        assert response.status_code == 400
-        assert error_message['stockId'] == ['Vous devez préciser un identifiant d\'offre']
-
-    @clean_database
-    def test_returns_bad_request_if_no_quantity_is_given(self, app):
-        # Given
-        user = create_user(email='test@email.com', password='testpsswd')
-        PcObject.check_and_save(user)
-        booking_json = {
-            'stockId': 'AE',
-            'recommendationId': 'AFQA',
-            'quantity': None
-        }
-
-        # When
-        response = req_with_auth('test@email.com', 'testpsswd').post(API_URL + '/bookings',
-                                                                     json=booking_json)
-        # Then
-        error_message = response.json()
-        assert response.status_code == 400
-        assert error_message['quantity'] == ['Vous devez préciser une quantité pour la réservation']
-
-    @clean_database
-    def test_returns_bad_request_if_negative_quantity_is_given(self, app):
-        # Given
-        user = create_user(email='test@email.com', password='testpsswd')
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        thing_offer = create_thing_offer(venue)
-        stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=90)
-        PcObject.check_and_save(stock, user)
-
-        booking_json = {
-            'stockId': humanize(stock.id),
-            'recommendationId': None,
-            'quantity': -3
-        }
-
-        # When
-        response = req_with_auth('test@email.com', 'testpsswd').post(API_URL + '/bookings',
-                                                                     json=booking_json)
-        # Then
-        error_message = response.json()
-        assert response.status_code == 400
-        assert error_message['quantity'] == ['Vous devez préciser une quantité pour la réservation']
-
-    @clean_database
-    def test_returns_bad_request_if_offer_is_inactive(self, app):
-        # Given
-        user = create_user(email='test@email.com', password='testpsswd')
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        thing_offer = create_thing_offer(venue)
-        thing_offer.isActive = False
-        stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=90)
-        PcObject.check_and_save(stock, user)
-
-        booking_json = {
-            'stockId': humanize(stock.id),
-            'recommendationId': None,
-            'quantity': 1,
-        }
-
-        # When
-        response = req_with_auth('test@email.com', 'testpsswd').post(API_URL + '/bookings',
-                                                                     json=booking_json)
-        # Then
-        error_message = response.json()
-        assert response.status_code == 400
-        assert error_message['stockId'] == ["Cette offre a été retirée. Elle n'est plus valable."]
-
-    @clean_database
-    def test_returns_bad_request_if_offerer_is_inactive(self, app):
-        # Given
-        user = create_user(email='test@email.com', password='testpsswd')
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        thing_offer = create_thing_offer(venue)
-        offerer.isActive = False
-        stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=90)
-        PcObject.check_and_save(stock, user)
-
-        booking_json = {
-            'stockId': humanize(stock.id),
-            'recommendationId': None,
-            'quantity': 1,
-        }
-
-        # When
-        response = req_with_auth('test@email.com', 'testpsswd').post(API_URL + '/bookings',
-                                                                     json=booking_json)
-        # Then
-        error_message = response.json()
-        assert response.status_code == 400
-        assert error_message['stockId'] == ["Cette offre a été retirée. Elle n'est plus valable."]
-
-    @clean_database
-    def test_returns_bad_request_if_stock_is_soft_deleted(self, app):
-        # Given
-        user = create_user(email='test@email.com', password='testpsswd')
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        thing_offer = create_thing_offer(venue)
-        stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=90)
-        stock.isSoftDeleted = True
-        PcObject.check_and_save(stock, user)
-
-        booking_json = {
-            'stockId': humanize(stock.id),
-            'recommendationId': None,
-            'quantity': 1,
-        }
-
-        # When
-        response = req_with_auth('test@email.com', 'testpsswd').post(API_URL + '/bookings',
-                                                                     json=booking_json)
-        # Then
-        error_message = response.json()
-        assert response.status_code == 400
-        assert error_message['stockId'] == ["Cette date a été retirée. Elle n'est plus disponible."]
-
-    @clean_database
-    def test_returns_bad_request_if_null_quantity_is_given(self, app):
-        # Given
-        user = create_user(email='test@email.com', password='testpsswd')
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        thing_offer = create_thing_offer(venue)
-        stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=90)
-        PcObject.check_and_save(stock, user)
-
-        booking_json = {
-            'stockId': humanize(stock.id),
-            'recommendationId': None,
-            'quantity': 0
-        }
-
-        # When
-        response = req_with_auth('test@email.com', 'testpsswd').post(API_URL + '/bookings',
-                                                                     json=booking_json)
-        # Then
-        error_message = response.json()
-        assert response.status_code == 400
-        assert error_message['quantity'] == ['Vous devez préciser une quantité pour la réservation']
+            # Then
+            assert r_create.status_code == 201
+            assert r_create_json['amount'] == 10.0
+            assert r_create_json['quantity'] == 1
 
 
 @pytest.mark.standalone
