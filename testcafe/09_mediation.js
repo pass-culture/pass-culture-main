@@ -1,8 +1,7 @@
 import { Selector } from 'testcafe'
 
+import { fetchSandbox } from './helpers/sandboxes'
 import { navigateToNewMediationAs } from './helpers/navigations'
-import { EXISTING_EVENT_OFFER_WITH_NO_EVENT_OCCURRENCE_WITH_NO_STOCK_WITH_NO_MEDIATION_WITH_93_OFFERER_IBAN_WITH_NO_VENUE_IBAN } from './helpers/offers'
-import { EXISTING_VALIDATED_UNREGISTERED_93_OFFERER_USER } from './helpers/users'
 
 const creditInput = Selector('#mediation-credit')
 const dropZoneDiv = Selector('div.dropzone').filterVisible()
@@ -10,14 +9,15 @@ const submitButton = Selector('button.button.is-primary').withText('Valider')
 const urlInput = Selector("input[placeholder='URL du fichier']")
 const urlButton = Selector('button.is-primary').withText('OK')
 
-fixture(`MediationPage A | Naviguer vers ajouter une accroche`)
+fixture('MediationPage A | Naviguer vers ajouter une accroche')
 
 test("Lorsque je clique sur le bouton créer une accroche sur la page d'une offre, j'accède au formulaire de création d'une accroche", async t => {
   // when
-  await navigateToNewMediationAs(
-    EXISTING_VALIDATED_UNREGISTERED_93_OFFERER_USER,
-    EXISTING_EVENT_OFFER_WITH_NO_EVENT_OCCURRENCE_WITH_NO_STOCK_WITH_NO_MEDIATION_WITH_93_OFFERER_IBAN_WITH_NO_VENUE_IBAN
-  )(t)
+  const { offer, user } = await fetchSandbox(
+    'pro_09_mediation',
+    'get_existing_pro_validated_user_with_at_least_one_visible_offer_with_no_mediation'
+  )
+  await navigateToNewMediationAs(user, offer)(t)
 
   // then
   const location = await t.eval(() => window.location)
@@ -26,14 +26,15 @@ test("Lorsque je clique sur le bouton créer une accroche sur la page d'une offr
     .match(/offres\/([A-Z0-9]*)\/accroches\/nouveau$/)
 })
 
-fixture(`MediationPage B | Charger des images de l'url input`)
+fixture("MediationPage B | Charger des images de l'url input")
 
 test('Je peux charger une image same origin', async t => {
   // given
-  await navigateToNewMediationAs(
-    EXISTING_VALIDATED_UNREGISTERED_93_OFFERER_USER,
-    EXISTING_EVENT_OFFER_WITH_NO_EVENT_OCCURRENCE_WITH_NO_STOCK_WITH_NO_MEDIATION_WITH_93_OFFERER_IBAN_WITH_NO_VENUE_IBAN
-  )(t)
+  const { offer, user } = await fetchSandbox(
+    'pro_09_mediation',
+    'get_existing_pro_validated_user_with_at_least_one_visible_offer_with_no_mediation'
+  )
+  await navigateToNewMediationAs(user, offer)(t)
 
   // when
   await t.typeText(urlInput, '/images/mediation-test.jpg').click(urlButton)
@@ -44,10 +45,11 @@ test('Je peux charger une image same origin', async t => {
 
 test('Je peux charger une cors image', async t => {
   // given
-  await navigateToNewMediationAs(
-    EXISTING_VALIDATED_UNREGISTERED_93_OFFERER_USER,
-    EXISTING_EVENT_OFFER_WITH_NO_EVENT_OCCURRENCE_WITH_NO_STOCK_WITH_NO_MEDIATION_WITH_93_OFFERER_IBAN_WITH_NO_VENUE_IBAN
-  )(t)
+  const { offer, user } = await fetchSandbox(
+    'pro_09_mediation',
+    'get_existing_pro_validated_user_with_at_least_one_visible_offer_with_no_mediation'
+  )
+  await navigateToNewMediationAs(user, offer)(t)
 
   // when
   await t
@@ -63,10 +65,11 @@ test('Je peux charger une cors image', async t => {
 
 test('Je peux changer d image chargee', async t => {
   // given
-  await navigateToNewMediationAs(
-    EXISTING_VALIDATED_UNREGISTERED_93_OFFERER_USER,
-    EXISTING_EVENT_OFFER_WITH_NO_EVENT_OCCURRENCE_WITH_NO_STOCK_WITH_NO_MEDIATION_WITH_93_OFFERER_IBAN_WITH_NO_VENUE_IBAN
-  )(t)
+  const { offer, user } = await fetchSandbox(
+    'pro_09_mediation',
+    'get_existing_pro_validated_user_with_at_least_one_visible_offer_with_no_mediation'
+  )
+  await navigateToNewMediationAs(user, offer)(t)
   await t.typeText(urlInput, '/images/mediation-test.jpg').click(urlButton)
 
   // when
@@ -82,17 +85,17 @@ test('Je peux changer d image chargee', async t => {
   await t.expect(dropZoneDiv.exists).ok()
 })
 
-fixture`MediationPage C | Créer une accroche`
+fixture('MediationPage C | Créer une accroche')
 
 test('Je peux créer une accroche', async t => {
   // given
   const mediationsListItems = Selector('.mediations-list li')
   const successBanner = Selector('.notification.is-success')
-  const initialMediationCount = await mediationsListItems.count
-  await navigateToNewMediationAs(
-    EXISTING_VALIDATED_UNREGISTERED_93_OFFERER_USER,
-    EXISTING_EVENT_OFFER_WITH_NO_EVENT_OCCURRENCE_WITH_NO_STOCK_WITH_NO_MEDIATION_WITH_93_OFFERER_IBAN_WITH_NO_VENUE_IBAN
-  )(t)
+  const { offer, user } = await fetchSandbox(
+    'pro_09_mediation',
+    'get_existing_pro_validated_user_with_at_least_one_visible_offer_with_no_mediation'
+  )
+  await navigateToNewMediationAs(user, offer)(t)
   await t
     .typeText(
       urlInput,
@@ -108,7 +111,7 @@ test('Je peux créer une accroche', async t => {
   // then
   await t
     .expect(mediationsListItems.count)
-    .eql(initialMediationCount + 1)
+    .eql(1)
     .expect(successBanner.exists)
     .ok()
 })

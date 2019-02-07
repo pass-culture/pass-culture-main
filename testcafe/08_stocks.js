@@ -1,14 +1,7 @@
 import { Selector } from 'testcafe'
 
+import { fetchSandbox } from './helpers/sandboxes'
 import { navigateToOfferAs } from './helpers/navigations'
-import {
-  EXISTING_EVENT_OFFER_WITH_EVENT_OCCURRENCE_WITH_STOCK_WITH_MEDIATION_WITH_NO_93_OFFERER_IBAN_WITH_NO_VENUE_IBAN,
-  EXISTING_EVENT_OFFER_WITH_EVENT_OCCURRENCE_WITH_STOCK_WITH_MEDIATION_WITH_93_OFFERER_IBAN_WITH_NO_VENUE_IBAN,
-  EXISTING_EVENT_OFFER_WITH_NO_EVENT_OCCURRENCE_WITH_NO_STOCK_WITH_NO_MEDIATION_WITH_93_OFFERER_IBAN_WITH_NO_VENUE_IBAN,
-  EXISTING_THING_OFFER_WITH_STOCK_WITH_MEDIATION_WITH_93_OFFERER_IBAN_WITH_NO_VENUE_IBAN,
-  EXISTING_VIRTUAL_THING_OFFER_WITH_NO_STOCK_WITH_NO_MEDIATION_WITH_NO_93_OFFERER_IBAN_WITH_NO_VENUE_IBAN,
-} from './helpers/offers'
-import { EXISTING_VALIDATED_UNREGISTERED_93_OFFERER_USER } from './helpers/users'
 
 const addAnchor = Selector('#add-occurrence-or-stock')
 const backButton = Selector('a.back-button')
@@ -18,14 +11,19 @@ const manageStockAnchor = Selector('a.manage-stock')
 const submitButton = Selector('button.button.submitStep')
 const priceInput = Selector('input[name="price"]')
 
-fixture(`OfferPage Gestion A | Créer des dates et des stocks`)
+fixture('OfferPage Gestion A | Créer des dates et des stocks')
+
+// TODO: // then
+// const infoForManagerSpan = Selector('span.nb-dates')
+// await t.expect(infoForManagerSpan.innerText).eql('1 stock')
 
 test("Je peux créer une occurrence et un stock d'événement d'une offre vide", async t => {
   // given
-  await navigateToOfferAs(
-    EXISTING_VALIDATED_UNREGISTERED_93_OFFERER_USER,
-    EXISTING_EVENT_OFFER_WITH_NO_EVENT_OCCURRENCE_WITH_NO_STOCK_WITH_NO_MEDIATION_WITH_93_OFFERER_IBAN_WITH_NO_VENUE_IBAN
-  )(t)
+  const { offer, user } = await fetchSandbox(
+    'pro_08_stocks',
+    'get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_user_offerer_with_event_offer_no_occurrence'
+  )
+  await navigateToOfferAs(user, offer)(t)
 
   // when
   await t.click(manageStockAnchor).click(addAnchor)
@@ -54,10 +52,11 @@ test("Je peux créer une occurrence et un stock d'événement d'une offre vide",
 
 test('Je peux créer une autre occurrence et un autre stock', async t => {
   // given
-  await navigateToOfferAs(
-    EXISTING_VALIDATED_UNREGISTERED_93_OFFERER_USER,
-    EXISTING_EVENT_OFFER_WITH_EVENT_OCCURRENCE_WITH_STOCK_WITH_MEDIATION_WITH_93_OFFERER_IBAN_WITH_NO_VENUE_IBAN
-  )(t)
+  const { offer, user } = await fetchSandbox(
+    'pro_08_stocks',
+    'get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_user_offerer_with_event_offer_with_occurrence'
+  )
+  await navigateToOfferAs(user, offer)(t)
 
   // when
   await t.click(manageStockAnchor).click(addAnchor)
@@ -86,10 +85,11 @@ test('Je peux créer une autre occurrence et un autre stock', async t => {
 
 test('Je peux créer une occurrence en utilisant la touche Entrée', async t => {
   // given
-  await navigateToOfferAs(
-    EXISTING_VALIDATED_UNREGISTERED_93_OFFERER_USER,
-    EXISTING_EVENT_OFFER_WITH_EVENT_OCCURRENCE_WITH_STOCK_WITH_MEDIATION_WITH_93_OFFERER_IBAN_WITH_NO_VENUE_IBAN
-  )(t)
+  const { offer, user } = await fetchSandbox(
+    'pro_08_stocks',
+    'get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_user_offerer_with_event_offer_with_occurrence'
+  )
+  await navigateToOfferAs(user, offer)(t)
 
   // when
   await t.click(manageStockAnchor).pressKey('Enter')
@@ -117,10 +117,11 @@ test('Je peux créer une occurrence en utilisant la touche Entrée', async t => 
 
 test('Je peux femer la fenêtre en utilisant la touche Escape', async t => {
   // given
-  await navigateToOfferAs(
-    EXISTING_VALIDATED_UNREGISTERED_93_OFFERER_USER,
-    EXISTING_EVENT_OFFER_WITH_EVENT_OCCURRENCE_WITH_STOCK_WITH_MEDIATION_WITH_93_OFFERER_IBAN_WITH_NO_VENUE_IBAN
-  )(t)
+  const { offer, user } = await fetchSandbox(
+    'pro_08_stocks',
+    'get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_user_offerer_with_event_offer_with_occurrence'
+  )
+  await navigateToOfferAs(user, offer)(t)
 
   // when
   await t.click(manageStockAnchor).pressKey('esc')
@@ -137,10 +138,11 @@ test('Je peux femer la fenêtre en utilisant la touche Escape', async t => {
 test('Je peux femer la fenêtre en cliquant sur le bouton', async t => {
   // given
   const scheduleCloseButton = Selector('button.button').withText('Fermer')
-  await navigateToOfferAs(
-    EXISTING_VALIDATED_UNREGISTERED_93_OFFERER_USER,
-    EXISTING_EVENT_OFFER_WITH_EVENT_OCCURRENCE_WITH_STOCK_WITH_MEDIATION_WITH_93_OFFERER_IBAN_WITH_NO_VENUE_IBAN
-  )(t)
+  const { offer, user } = await fetchSandbox(
+    'pro_08_stocks',
+    'get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_user_offerer_with_event_offer_with_occurrence'
+  )
+  await navigateToOfferAs(user, offer)(t)
 
   // when
   await t.click(manageStockAnchor).click(scheduleCloseButton)
@@ -156,10 +158,11 @@ test('Je peux femer la fenêtre en cliquant sur le bouton', async t => {
 
 test('Je peux interrompre la saisie en utilisant la touche Escape', async t => {
   // given
-  await navigateToOfferAs(
-    EXISTING_VALIDATED_UNREGISTERED_93_OFFERER_USER,
-    EXISTING_EVENT_OFFER_WITH_EVENT_OCCURRENCE_WITH_STOCK_WITH_MEDIATION_WITH_93_OFFERER_IBAN_WITH_NO_VENUE_IBAN
-  )(t)
+  const { offer, user } = await fetchSandbox(
+    'pro_08_stocks',
+    'get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_user_offerer_with_event_offer_with_occurrence'
+  )
+  await navigateToOfferAs(user, offer)(t)
 
   // when
   await t.click(manageStockAnchor).pressKey('Enter')
@@ -180,12 +183,14 @@ test('Je peux interrompre la saisie en utilisant la touche Escape', async t => {
     .match(/offres\/[A-Z0-9]+/i)
 })
 
-test('Je ne peux pas de rentrer un nouveau stock pour un objet avec déjà un stock', async t => {
+test('Je ne peux pas rentrer un nouveau stock pour un objet avec déjà un stock', async t => {
   // given
-  await navigateToOfferAs(
-    EXISTING_VALIDATED_UNREGISTERED_93_OFFERER_USER,
-    EXISTING_THING_OFFER_WITH_STOCK_WITH_MEDIATION_WITH_93_OFFERER_IBAN_WITH_NO_VENUE_IBAN
-  )(t)
+  const { offer, user } = await fetchSandbox(
+    'pro_08_stocks',
+    'get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_user_offerer_with_thing_offer_with_stock'
+  )
+
+  await navigateToOfferAs(user, offer)(t)
 
   // when
   await t.click(manageStockAnchor)
@@ -194,17 +199,18 @@ test('Je ne peux pas de rentrer un nouveau stock pour un objet avec déjà un st
   await t.expect(addAnchor.visible).notOk()
 })
 
-fixture(`OfferPage Gestion B | Avertissement pour les offres sans iban`)
+fixture('OfferPage Gestion B | Avertissement pour les offres sans iban')
 
 const infoDiv = Selector('div.info')
 const confirmationButton = infoDiv.find('button')
 
 test("J'ai une info quand je rentre un prix non nul pour l'objet d'une structure et un lieu sans iban", async t => {
   // given
-  await navigateToOfferAs(
-    EXISTING_VALIDATED_UNREGISTERED_93_OFFERER_USER,
-    EXISTING_VIRTUAL_THING_OFFER_WITH_NO_STOCK_WITH_NO_MEDIATION_WITH_NO_93_OFFERER_IBAN_WITH_NO_VENUE_IBAN
-  )(t)
+  const { offer, user } = await fetchSandbox(
+    'pro_08_stocks',
+    'get_existing_pro_validated_user_with_validated_offerer_with_no_iban_validated_user_offerer_with_thing_offer_with_no_stock'
+  )
+  await navigateToOfferAs(user, offer)(t)
   await t.click(manageStockAnchor).click(addAnchor)
 
   // when
@@ -224,10 +230,11 @@ test("J'ai une info quand je rentre un prix non nul pour l'objet d'une structure
 
 test("J'ai une info quand je rentre un prix non nul pour l'évènement d'une structure et un lieu sans iban", async t => {
   // given
-  await navigateToOfferAs(
-    EXISTING_VALIDATED_UNREGISTERED_93_OFFERER_USER,
-    EXISTING_EVENT_OFFER_WITH_EVENT_OCCURRENCE_WITH_STOCK_WITH_MEDIATION_WITH_NO_93_OFFERER_IBAN_WITH_NO_VENUE_IBAN
-  )(t)
+  const { offer, user } = await fetchSandbox(
+    'pro_08_stocks',
+    'get_existing_pro_validated_user_with_validated_offerer_with_no_iban_validated_user_offerer_with_event_offer'
+  )
+  await navigateToOfferAs(user, offer)(t)
   await t.click(manageStockAnchor).click(addAnchor)
   await t.click(submitButton)
 
@@ -246,7 +253,7 @@ test("J'ai une info quand je rentre un prix non nul pour l'évènement d'une str
   await t.expect(location.search).match(/\?gestion$/)
 })
 
-fixture`OfferPage Gestion C | Modifier des dates et des stocks`
+fixture('OfferPage Gestion C | Modifier des dates et des stocks')
 
 test('Je peux modifier une occurrence et un stock', async t => {
   // given
@@ -256,10 +263,11 @@ test('Je peux modifier une occurrence et un stock', async t => {
   const datePickerLastDay = Selector(
     '.react-datepicker__week:last-child .react-datepicker__day:last-child'
   )
-  await navigateToOfferAs(
-    EXISTING_VALIDATED_UNREGISTERED_93_OFFERER_USER,
-    EXISTING_EVENT_OFFER_WITH_EVENT_OCCURRENCE_WITH_STOCK_WITH_MEDIATION_WITH_93_OFFERER_IBAN_WITH_NO_VENUE_IBAN
-  )(t)
+  const { offer, user } = await fetchSandbox(
+    'pro_08_stocks',
+    'get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_user_offerer_with_event_offer_with_occurrence'
+  )
+  await navigateToOfferAs(user, offer)(t)
   await t.click(manageStockAnchor)
 
   // when
@@ -300,10 +308,11 @@ test('Je peux modifier une occurrence et un stock', async t => {
 
 test('Je peux aller sur le stock manager et revenir aux offres pour chercher une nouvelle offre sans bug de modal en appuyant sur enter', async t => {
   // given
-  await navigateToOfferAs(
-    EXISTING_VALIDATED_UNREGISTERED_93_OFFERER_USER,
-    EXISTING_EVENT_OFFER_WITH_EVENT_OCCURRENCE_WITH_STOCK_WITH_MEDIATION_WITH_93_OFFERER_IBAN_WITH_NO_VENUE_IBAN
-  )(t)
+  const { offer, user } = await fetchSandbox(
+    'pro_08_stocks',
+    'get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_user_offerer_with_event_offer_with_occurrence'
+  )
+  await navigateToOfferAs(user, offer)(t)
   const searchInput = Selector('#search')
   await t
     .click(manageStockAnchor)
@@ -319,11 +328,12 @@ test('Je peux aller sur le stock manager et revenir aux offres pour chercher une
   await t.expect(location.pathname).eql('/offres')
 })
 
-fixture.skip`TODO: OfferPage Gestion D | Effacer des dates et des stocks`
+fixture.skip('TODO: OfferPage Gestion D | Effacer des dates et des stocks')
 
 test('Je peux effacer une date et son stock', async t => {
-  await navigateToOfferAs(
-    EXISTING_VALIDATED_UNREGISTERED_93_OFFERER_USER,
-    EXISTING_EVENT_OFFER_WITH_EVENT_OCCURRENCE_WITH_STOCK_WITH_MEDIATION_WITH_93_OFFERER_IBAN_WITH_NO_VENUE_IBAN
-  )(t)
+  const { offer, user } = await fetchSandbox(
+    'pro_08_stocks',
+    'get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_user_offerer_with_event_offer_with_occurrence'
+  )
+  await navigateToOfferAs(user, offer)(t)
 })

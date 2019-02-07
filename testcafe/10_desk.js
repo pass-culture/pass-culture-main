@@ -1,11 +1,7 @@
 import { Selector } from 'testcafe'
 
-import {
-  EXISTING_BOOKING_VALID_NOT_USED,
-  BOOKING_BAD_CODE,
-} from './helpers/bookings'
+import { fetchSandbox } from './helpers/sandboxes'
 import { createUserRole } from './helpers/roles'
-import { EXISTING_ADMIN_0_USER } from './helpers/users'
 import { ROOT_PATH } from '../src/utils/config'
 
 const pageTitleHeader = Selector('h1')
@@ -19,10 +15,15 @@ const stateText = Selector('.form .state span')
 const exitlink = Selector('#exitlink')
 const registerButton = Selector('.form button[type="submit"]')
 
-fixture`DeskPage A | Saisir un code`.page`${ROOT_PATH}guichet`
+fixture('DeskPage A | Saisir un code').page(`${ROOT_PATH}guichet`)
 
 test("L'état de départ de la page /guichet est conforme", async t => {
-  await t.useRole(createUserRole(EXISTING_ADMIN_0_USER))
+  const { booking, user } = await fetchSandbox(
+    'pro_10_desk',
+    'get_existing_pro_validated_user_with_validated_offerer_with_validated_user_offerer_with_thing_offer_with_stock_with_not_used_booking'
+  )
+  const { token } = booking
+  await t.useRole(createUserRole(user))
   // Navigation
   await t.click(navbarAnchor).click(deskLink)
 
@@ -40,7 +41,7 @@ test("L'état de départ de la page /guichet est conforme", async t => {
   t.selectText(codeInput).pressKey('delete')
 
   // typed + verified (beware of real validation lag)
-  await t.typeText(codeInput, EXISTING_BOOKING_VALID_NOT_USED.token)
+  await t.typeText(codeInput, token)
   await t
     .expect(stateText.innerText)
     .eql('Coupon vérifié, cliquez sur OK pour enregistrer')
@@ -62,12 +63,12 @@ test("L'état de départ de la page /guichet est conforme", async t => {
   t.selectText(codeInput).pressKey('delete')
 
   // Registration success
-  await t.typeText(codeInput, EXISTING_BOOKING_VALID_NOT_USED.token)
+  await t.typeText(codeInput, token)
   await t.click(registerButton)
   await t.expect(state.classNames).contains('success')
 
   // Registration failure
-  await t.typeText(codeInput, BOOKING_BAD_CODE.token)
+  await t.typeText(codeInput, 'ABC123')
   await t.click(registerButton)
   await t.expect(state.classNames).contains('error')
 

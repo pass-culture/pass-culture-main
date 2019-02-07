@@ -1,7 +1,7 @@
 import { Selector } from 'testcafe'
 
+import { fetchSandbox } from './helpers/sandboxes'
 import { ROOT_PATH } from '../src/utils/config'
-import { FUTURE_USER_WITH_UNREGISTERED_OFFERER } from './helpers/users'
 
 const inputUsersEmail = Selector('#user-email')
 const forgotPasswordLink = Selector('#lostPasswordLink')
@@ -11,10 +11,16 @@ const passwordInput = Selector('#user-newPassword')
 const pageH1 = Selector('h1')
 const errorsDiv = Selector('.errors')
 
-fixture`LostPasswordPage A | La page de connexion propose un lien pour changer de mot de passe`
-  .page`${ROOT_PATH + 'connexion'}`
+fixture(
+  'LostPasswordPage A | La page de connexion propose un lien pour changer de mot de passe'
+).page(`${ROOT_PATH + 'connexion'}`)
 
 test('Je peux cliquer sur lien mot de passe oublié', async t => {
+  const { user } = await fetchSandbox(
+    'pro_11_lost_password',
+    'get_pro_not_validated_user'
+  )
+  const { email } = user
   await t.click(forgotPasswordLink)
   let location = await t.eval(() => window.location)
   await t
@@ -23,9 +29,7 @@ test('Je peux cliquer sur lien mot de passe oublié', async t => {
     .expect(pageH1.innerText)
     .eql('Mot de passe égaré ?')
 
-  await t
-    .typeText(inputUsersEmail, FUTURE_USER_WITH_UNREGISTERED_OFFERER.email)
-    .click(sendTokenButton)
+  await t.typeText(inputUsersEmail, email).click(sendTokenButton)
 
   location = await t.eval(() => window.location)
   await t
@@ -37,8 +41,9 @@ test('Je peux cliquer sur lien mot de passe oublié', async t => {
     .eql('Merci !')
 })
 
-fixture`LostPasswordPage B | La page de changement de mot de passe vérifie le token`
-  .page`${ROOT_PATH + 'mot-de-passe-perdu?token=ABCD'}`
+fixture(
+  'LostPasswordPage B | La page de changement de mot de passe vérifie le token'
+).page(`${ROOT_PATH + 'mot-de-passe-perdu?token=ABCD'}`)
 
 test('Je ne peux pas changer mon mot de passe de sans token valide', async t => {
   await t.expect(pageH1.innerText).eql('Créer un nouveau mot de passe')

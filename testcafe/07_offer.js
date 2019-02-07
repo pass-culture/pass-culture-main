@@ -1,26 +1,21 @@
 import { Selector } from 'testcafe'
 
+import { fetchSandbox } from './helpers/sandboxes'
 import {
   navigateToNewOfferAs,
   navigateToOfferAs,
   navigateToVenueAs,
 } from './helpers/navigations'
-import {
-  EXISTING_EVENT_OFFER_WITH_NO_EVENT_OCCURRENCE_WITH_NO_STOCK_WITH_NO_MEDIATION_WITH_93_OFFERER_IBAN_WITH_NO_VENUE_IBAN,
-  EXISTING_THING_OFFER_WITH_STOCK_WITH_MEDIATION_WITH_93_OFFERER_IBAN_WITH_NO_VENUE_IBAN,
-  FUTURE_EVENT_OFFER_WITH_93_OFFERER_IBAN_WITH_NO_VENUE_IBAN,
-  FUTURE_MUSIC_EVENT_OFFER_WITH_93_OFFERER_IBAN_WITH_NO_VENUE_IBAN,
-  FUTURE_VIRTUAL_THING_OFFER_WITH_93_OFFERER_IBAN_WITH_NO_VENUE_IBAN,
-} from './helpers/offers'
-import { EXISTING_93_OFFERER_WITH_PHYSICAL_VENUE_WITH_IBAN } from './helpers/offerers'
-import { EXISTING_VALIDATED_UNREGISTERED_93_OFFERER_USER } from './helpers/users'
-import { EXISTING_PHYSICAL_VENUE_WITH_SIRET_WITH_93_OFFERER_IBAN_WITH_NO_IBAN } from './helpers/venues'
 
-fixture(`OfferPage A | Naviguer vers creer une offre et revenir au précédent`)
+fixture('OfferPage A | Naviguer vers creer une offre et revenir au précédent')
 
 test("Lorsque je clique sur le bouton créer une offre sur la page des offres, j'accède au formulaire de création d'offre", async t => {
   // given
-  await navigateToNewOfferAs(EXISTING_VALIDATED_UNREGISTERED_93_OFFERER_USER)(t)
+  const { user } = await fetchSandbox(
+    'pro_07_offer',
+    'get_existing_pro_validated_user_with_at_least_one_visible_offer'
+  )
+  await navigateToNewOfferAs(user)(t)
 
   // then
   const location = await t.eval(() => window.location)
@@ -29,10 +24,11 @@ test("Lorsque je clique sur le bouton créer une offre sur la page des offres, j
 
 test("Lorsque je clique sur le bouton créer une offre d'un item structure dans la page structures, j'accède au formulaire de création d'offre", async t => {
   // given
-  await navigateToNewOfferAs(
-    EXISTING_VALIDATED_UNREGISTERED_93_OFFERER_USER,
-    EXISTING_93_OFFERER_WITH_PHYSICAL_VENUE_WITH_IBAN
-  )(t)
+  const { offerer, user } = await fetchSandbox(
+    'pro_07_offer',
+    'get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_with_physical_venue'
+  )
+  await navigateToNewOfferAs(user, offerer)(t)
 
   // then
   const location = await t.eval(() => window.location)
@@ -41,11 +37,11 @@ test("Lorsque je clique sur le bouton créer une offre d'un item structure dans 
 
 test("Lorsque je clique sur le bouton créer une offre d'un item lieu dans la page d'une structure, j'accède au formulaire de création d'offre", async t => {
   // when
-  await navigateToNewOfferAs(
-    EXISTING_VALIDATED_UNREGISTERED_93_OFFERER_USER,
-    EXISTING_93_OFFERER_WITH_PHYSICAL_VENUE_WITH_IBAN,
-    EXISTING_PHYSICAL_VENUE_WITH_SIRET_WITH_93_OFFERER_IBAN_WITH_NO_IBAN
-  )(t)
+  const { offerer, user, venue } = await fetchSandbox(
+    'pro_07_offer',
+    'get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_with_physical_venue'
+  )
+  await navigateToNewOfferAs(user, offerer, venue)(t)
 
   // then
   const location = await t.eval(() => window.location)
@@ -54,12 +50,12 @@ test("Lorsque je clique sur le bouton créer une offre d'un item lieu dans la pa
 
 test("Lorsque je clique sur le bouton créer une offre sur la page d'un lieu, j'accède au formulaire de création d'offre", async t => {
   // given
+  const { offerer, user, venue } = await fetchSandbox(
+    'pro_07_offer',
+    'get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_with_physical_venue'
+  )
   const newOfferAnchor = Selector("a[href^='/offres/nouveau?lieu=']")
-  await navigateToVenueAs(
-    EXISTING_VALIDATED_UNREGISTERED_93_OFFERER_USER,
-    EXISTING_93_OFFERER_WITH_PHYSICAL_VENUE_WITH_IBAN,
-    EXISTING_PHYSICAL_VENUE_WITH_SIRET_WITH_93_OFFERER_IBAN_WITH_NO_IBAN
-  )(t)
+  await navigateToVenueAs(user, offerer, venue)(t)
 
   // when
   await t.click(newOfferAnchor)
@@ -71,8 +67,12 @@ test("Lorsque je clique sur le bouton créer une offre sur la page d'un lieu, j'
 
 test('Lorsque je clique sur le bouton annuler une offre sur la page des offres, je reviens aux offres', async t => {
   // given
+  const { user } = await fetchSandbox(
+    'pro_07_offer',
+    'get_existing_pro_validated_user_with_at_least_one_visible_offer'
+  )
   const cancelAnchor = Selector('button.button').withText('Annuler')
-  await navigateToNewOfferAs(EXISTING_VALIDATED_UNREGISTERED_93_OFFERER_USER)(t)
+  await navigateToNewOfferAs(user)(t)
 
   // when
   await t.click(cancelAnchor)
@@ -96,37 +96,38 @@ const descriptionInput = Selector('#offer-description')
 const submitButton = Selector('button.button.is-primary').withText(
   'Enregistrer'
 )
-fixture`OfferPage B | Créer une nouvelle offre`
+fixture('OfferPage B | Créer une nouvelle offre')
 
 test('Je peux créer une offre événement', async t => {
   // given
-  await navigateToNewOfferAs(EXISTING_VALIDATED_UNREGISTERED_93_OFFERER_USER)(t)
-  const {
-    eventDescription,
-    eventDurationMinutes,
-    eventName,
-    eventType,
-  } = FUTURE_EVENT_OFFER_WITH_93_OFFERER_IBAN_WITH_NO_VENUE_IBAN
-  const {
-    name: offererName,
-  } = EXISTING_93_OFFERER_WITH_PHYSICAL_VENUE_WITH_IBAN
-  const {
-    name: venueName,
-  } = EXISTING_PHYSICAL_VENUE_WITH_SIRET_WITH_93_OFFERER_IBAN_WITH_NO_IBAN
+  const { offerer, user, venue } = await fetchSandbox(
+    'pro_07_offer',
+    'get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_with_physical_venue'
+  )
+  await navigateToNewOfferAs(user)(t)
+  const eventDescription = [
+    'Alors que les licenciements sont devenus des plans de sauvegarde de l’emploi, ',
+    'ou que votre banquier se veut votre partenaire, ',
+    'il est temps de se poser certaines questions. ',
+    'Avec d’autres travailleurs socioculturels, ',
+    'lassés des euphémismes et des mensonges du langage du pouvoir, ',
+    'Franck Lepage s’est lancé dans cette bataille très politique : celle des mots. ',
+    "Atelier d'initiation pour reconnaître tout ce qui est du pipotron dans vos lectures de tous les jours. ",
+    "Suivi d'une séance de dédicaces.",
+  ].join('')
+  const eventDurationMinutes = '120'
+  const eventName = 'Rencontre avec Franck Lepage'
+  const eventType = 'Conférence — Débat — Dédicace'
+  const { name: offererName } = offerer
+  const { name: venueName } = venue
 
   // when
   await t.typeText(nameInput, eventName)
-
   await t.click(typeInput).click(typeOption.withText(eventType))
-
   await t.click(offererInput).click(offererOption.withText(offererName))
-
   await t.click(venueInput).click(venueOption.withText(venueName))
-
   await t.typeText(durationMinutesInput, eventDurationMinutes)
-
   await t.typeText(descriptionInput, eventDescription)
-
   await t.click(submitButton)
 
   // then
@@ -140,33 +141,25 @@ test('Je peux créer une offre événement', async t => {
 
 test('Je peux créer une offre numérique', async t => {
   // given
-  await navigateToNewOfferAs(EXISTING_VALIDATED_UNREGISTERED_93_OFFERER_USER)(t)
-  const {
-    thingDescription,
-    thingName,
-    thingType,
-    thingUrl,
-  } = FUTURE_VIRTUAL_THING_OFFER_WITH_93_OFFERER_IBAN_WITH_NO_VENUE_IBAN
-  const {
-    name: offererName,
-  } = EXISTING_93_OFFERER_WITH_PHYSICAL_VENUE_WITH_IBAN
-  const {
-    name: venueName,
-  } = EXISTING_PHYSICAL_VENUE_WITH_SIRET_WITH_93_OFFERER_IBAN_WITH_NO_IBAN
+  const { offerer, user, venue } = await fetchSandbox(
+    'pro_07_offer',
+    'get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_with_virtual_venue'
+  )
+  await navigateToNewOfferAs(user)(t)
+  const thingDescription = 'Jeux vidéo de test'
+  const thingName = 'Jeux vidéo abonnement de test'
+  const thingType = 'Jeux Vidéo'
+  const thingUrl = 'http://www.example.com'
+  const { name: offererName } = offerer
+  const { name: venueName } = venue
 
   // when
   await t.typeText(nameInput, thingName)
-
   await t.click(typeInput).click(typeOption.withText(thingType))
-
   await t.click(offererInput).click(offererOption.withText(offererName))
-
   await t.click(venueInput).click(venueOption.withText(venueName))
-
   await t.typeText(urlInput, thingUrl)
-
   await t.typeText(descriptionInput, thingDescription)
-
   await t.click(submitButton)
 
   // then
@@ -178,47 +171,38 @@ test('Je peux créer une offre numérique', async t => {
     .eql('?gestion')
 })
 
-test(`Créer des offres avec des sous-types`, async t => {
+test('Créer des offres avec des sous-types', async t => {
   // given
+  const { offerer, user, venue } = await fetchSandbox(
+    'pro_07_offer',
+    'get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_with_physical_venue'
+  )
   const musicTypeInput = Selector('#offer-musicType')
   const musicTypeOption = Selector('#offer-musicType option')
   const musicSubTypeInput = Selector('#offer-musicSubType')
   const musicSubTypeOption = Selector('#offer-musicSubType option')
-  await navigateToNewOfferAs(EXISTING_VALIDATED_UNREGISTERED_93_OFFERER_USER)(t)
-  const {
-    eventDescription,
-    eventDurationMinutes,
-    eventMusicType,
-    eventMusicSubType,
-    eventName,
-    eventType,
-  } = FUTURE_MUSIC_EVENT_OFFER_WITH_93_OFFERER_IBAN_WITH_NO_VENUE_IBAN
-  const {
-    name: offererName,
-  } = EXISTING_93_OFFERER_WITH_PHYSICAL_VENUE_WITH_IBAN
-  const {
-    name: venueName,
-  } = EXISTING_PHYSICAL_VENUE_WITH_SIRET_WITH_93_OFFERER_IBAN_WITH_NO_IBAN
+  const eventDescription =
+    'Venez re découvrir PNL en accoustique, sans auto-tune'
+  const eventDurationMinutes = '90'
+  const eventName = 'Concert de PNL Unplugged'
+  const eventType = 'Musique (Concerts, Festivals)'
+  const eventMusicType = 'Hip-Hop/Rap'
+  const eventMusicSubType = 'Rap Alternatif'
+  const { name: offererName } = offerer
+  const { name: venueName } = venue
+  await navigateToNewOfferAs(user)(t)
 
   // when
   await t.typeText(nameInput, eventName)
-
   await t.click(typeInput).click(typeOption.withText(eventType))
-
   await t.click(musicTypeInput).click(musicTypeOption.withText(eventMusicType))
-
   await t
     .click(musicSubTypeInput)
     .click(musicSubTypeOption.withText(eventMusicSubType))
-
   await t.click(offererInput).click(offererOption.withText(offererName))
-
   await t.click(venueInput).click(venueOption.withText(venueName))
-
   await t.typeText(durationMinutesInput, eventDurationMinutes)
-
   await t.typeText(descriptionInput, eventDescription)
-
   await t.click(submitButton)
 
   // then
@@ -239,26 +223,22 @@ test(`Créer des offres avec des sous-types`, async t => {
     .ok()
 })
 
-fixture`OfferPage B | Modifier nouvelle offre`
+fixture.skip('*TODO* OfferPage B | Modifier nouvelle offre')
 
-test("Je vois les détails d'une offre d'object avec 1 stock", async t => {
+test('Je peux modifier un objet', async t => {
   // given
-  const infoForManagerSpan = Selector('span.nb-dates')
-
-  // when
-  await navigateToOfferAs(
-    EXISTING_VALIDATED_UNREGISTERED_93_OFFERER_USER,
-    EXISTING_THING_OFFER_WITH_STOCK_WITH_MEDIATION_WITH_93_OFFERER_IBAN_WITH_NO_VENUE_IBAN
-  )(t)
-
-  // then
-  await t.expect(infoForManagerSpan.innerText).eql('1 stock')
+  const { offer, user } = await fetchSandbox(
+    'pro_07_offer',
+    'get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_with_thing_offer_with_one_stock'
+  )
+  await navigateToOfferAs(user, offer)(t)
 })
 
-test.skip('*TODO* Je peux modifier un événement', async t => {
+test('Je peux modifier un événement', async t => {
   // given
-  await navigateToOfferAs(
-    EXISTING_VALIDATED_UNREGISTERED_93_OFFERER_USER,
-    EXISTING_EVENT_OFFER_WITH_NO_EVENT_OCCURRENCE_WITH_NO_STOCK_WITH_NO_MEDIATION_WITH_93_OFFERER_IBAN_WITH_NO_VENUE_IBAN
-  )(t)
+  const { offer, user } = await fetchSandbox(
+    'pro_07_offer',
+    'get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_with_event_offer'
+  )
+  await navigateToOfferAs(user, offer)(t)
 })

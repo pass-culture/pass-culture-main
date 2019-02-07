@@ -1,9 +1,8 @@
 import { Selector } from 'testcafe'
 
+import { fetchSandbox } from './helpers/sandboxes'
 import { navigateToOfferAs } from './helpers/navigations'
-import { EXISTING_EVENT_OFFER_WITH_NO_EVENT_OCCURRENCE_WITH_NO_STOCK_WITH_NO_MEDIATION_WITH_93_OFFERER_IBAN_WITH_NO_VENUE_IBAN } from './helpers/offers'
 import { createUserRole } from './helpers/roles'
-import { EXISTING_VALIDATED_UNREGISTERED_93_OFFERER_USER } from './helpers/users'
 
 async function trimed(selector, lol) {
   return await selector.innerText.then(value => value.trim())
@@ -11,13 +10,17 @@ async function trimed(selector, lol) {
 
 const offerActivSwitchText = () => trimed(Selector('.offer-item .activ-switch'))
 
-fixture`OffersList A | Lister les offres`
+fixture('OffersList A | Lister les offres').beforeEach(async t => {
+  t.ctx.sandbox = await fetchSandbox(
+    'pro_06_offers',
+    'get_existing_pro_validated_user_with_at_least_one_visible_activated_offer'
+  )
+})
 
 test("Lorsque je cliques sur `Mes offres`, j'accès de à la liste des offres", async t => {
   // given
-  await t
-    .useRole(createUserRole(EXISTING_VALIDATED_UNREGISTERED_93_OFFERER_USER))
-    .wait(1000)
+  const { user } = t.ctx.sandbox
+  await t.useRole(createUserRole(user)).wait(1000)
   // then
   const location = await t.eval(() => window.location)
   await t.expect(location.pathname).eql('/offres')
@@ -26,10 +29,9 @@ test("Lorsque je cliques sur `Mes offres`, j'accès de à la liste des offres", 
 
 test('Je peux désactiver ou activer des offres', async t => {
   // given
+  const { user } = t.ctx.sandbox
   const offerActivSwitch = Selector('.offer-item .activ-switch')
-  await t.useRole(
-    createUserRole(EXISTING_VALIDATED_UNREGISTERED_93_OFFERER_USER)
-  )
+  await t.useRole(createUserRole(user))
 
   // when
   await t.click(offerActivSwitch)
@@ -46,10 +48,8 @@ test('Je peux désactiver ou activer des offres', async t => {
 
 test('Je peux chercher une offre et aller sur sa page', async t => {
   // when
-  await navigateToOfferAs(
-    EXISTING_VALIDATED_UNREGISTERED_93_OFFERER_USER,
-    EXISTING_EVENT_OFFER_WITH_NO_EVENT_OCCURRENCE_WITH_NO_STOCK_WITH_NO_MEDIATION_WITH_93_OFFERER_IBAN_WITH_NO_VENUE_IBAN
-  )(t)
+  const { offer, user } = t.ctx.sandbox
+  await navigateToOfferAs(user, offer)(t)
 
   // then
   const location = await t.eval(() => window.location)
