@@ -55,3 +55,18 @@ class FillBookingEmailTest:
         # Then
         db.session.refresh(offer)
         assert offer.bookingEmail == 'offer@email.com'
+
+    @clean_database
+    def test_should_do_nothing_if_no_user_offerer(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer, booking_email=None)
+        offer = create_thing_offer(venue, booking_email=None)
+        PcObject.check_and_save(offer)
+
+        # When
+        fill_booking_email([offer])
+
+        # Then
+        db.session.refresh(offer)
+        assert offer.bookingEmail == None
