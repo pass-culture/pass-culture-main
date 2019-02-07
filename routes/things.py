@@ -45,7 +45,7 @@ def post_thing():
     if thing.url:
         is_url_safe(thing.url)
         thing.isNational = True
-
+    offer.bookingEmail = request.json.get('bookingEmail', None)
     PcObject.check_and_save(thing, offer)
     send_offer_creation_notification_to_support(offer, PRO_URL, app.mailjet_client.send.create)
 

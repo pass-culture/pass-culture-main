@@ -42,6 +42,7 @@ def post_event():
         api_errors.addError('venueId', 'le lieu est invalide')
         raise api_errors
     offer.event = event
+    offer.bookingEmail = request.json.get('bookingEmail', None)
     PcObject.check_and_save(event, offer)
 
     send_offer_creation_notification_to_support(offer, PRO_URL, app.mailjet_client.send.create)

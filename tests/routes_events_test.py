@@ -1,8 +1,8 @@
 import pytest
 
-from models import PcObject, EventType
+from models import PcObject, EventType, Thing, Offer
 from tests.conftest import clean_database
-from utils.human_ids import humanize
+from utils.human_ids import humanize, dehumanize
 from utils.test_utils import req_with_auth, create_user, API_URL, create_venue, create_offerer, create_user_offerer
 
 
@@ -51,7 +51,8 @@ def test_post_event_returns_201_when_creating_a_new_event(app):
         'name': 'La pièce de théâtre',
         'durationMinutes': 60,
         'venueId': humanize(venue.id),
-        'type': str(EventType.SPECTACLE_VIVANT)
+        'type': str(EventType.SPECTACLE_VIVANT),
+        'bookingEmail': 'offer@email.com'
     }
 
     # When
@@ -74,6 +75,35 @@ def test_post_event_returns_201_when_creating_a_new_event(app):
         'type': 'Event',
         'value': 'EventType.SPECTACLE_VIVANT'
     }
+    event_id = dehumanize(request.json()['id'])
+    offer = Offer.query.filter(Offer.eventId == event_id).first()
+    assert offer.bookingEmail == 'offer@email.com'
+
+
+@clean_database
+@pytest.mark.standalone
+def test_post_event_returns_201_when_creating_a_new_event_without_booking_email(app):
+    # Given
+    user = create_user(email='test@email.com', password='P@55w0rd')
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    PcObject.check_and_save(user, venue)
+
+    json = {
+        'name': 'La pièce de théâtre',
+        'durationMinutes': 60,
+        'venueId': humanize(venue.id),
+        'type': str(EventType.SPECTACLE_VIVANT)
+    }
+
+    # When
+    request = req_with_auth('test@email.com', 'P@55w0rd').post(API_URL + '/events', json=json)
+
+    # Then
+    assert request.status_code == 201
+    event_id = dehumanize(request.json()['id'])
+    offer = Offer.query.filter(Offer.eventId == event_id).first()
+    assert offer.bookingEmail == None
 
 
 @clean_database
