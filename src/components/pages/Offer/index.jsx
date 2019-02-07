@@ -233,9 +233,23 @@ class OfferPage extends Component {
       : dispatch(closeModal())
   }
 
+  setDefaultBookingEmailIfNew(prevProps) {
+    if (!this.state.isNew) return
+    const { dispatch, user, venue } = this.props
+    if (!venue) return
+    if (!prevProps || !prevProps.venue || venue.id !== prevProps.venue.id) {
+      dispatch(
+        mergeForm('offer', {
+          bookingEmail: (venue && venue.bookingEmail) || user.email,
+        })
+      )
+    }
+  }
+
   componentDidMount() {
     this.handleOffererRedirect()
     this.handleShowManagerModal()
+    this.setDefaultBookingEmailIfNew()
   }
 
   componentDidUpdate(prevProps) {
@@ -286,6 +300,8 @@ class OfferPage extends Component {
         })
       )
     }
+
+    this.setDefaultBookingEmailIfNew(prevProps)
 
     if (
       get(eventOrThingPatch, 'type') &&
@@ -559,6 +575,12 @@ class OfferPage extends Component {
                       type="number"
                     />
                   )}
+                  <Field
+                    label="Email auquel envoyer les réservations"
+                    name="bookingEmail"
+                    type="email"
+                    sublabel="Merci de laisser ce champ vide si vous ne souhaitez pas recevoir d'email lors des réservations"
+                  />
                 </div>
                 <h2 className="main-list-title">Infos artistiques</h2>
                 <div className="field-group">
