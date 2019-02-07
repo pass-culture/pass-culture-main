@@ -1,16 +1,15 @@
 """ local providers test """
-from pathlib import Path
 from unittest.mock import patch
 
-import os
 import pytest
 
 from local_providers import TiteLiveThings
-from local_providers.titelive_things import THINGS_FOLDER_NAME_TITELIVE
 from models.pc_object import PcObject
 from models.provider import Provider
 from models.venue_provider import VenueProvider
 from tests.conftest import clean_database
+from tests.local_provider_titelive_test import get_ordered_thing_files_from_sandbox_files, \
+    get_lines_from_thing_file_sandboxes
 from utils.test_utils import create_offerer, create_venue, \
     provider_test_whithout_mock
 
@@ -28,7 +27,6 @@ class TiteliveThingsTest:
         # mock
         files_list = list()
         files_list.append('Quotidien30.tit')
-        files_list.append('Quotidien31.tit')
 
         get_ordered_thing_files_from_titelive_ftp.return_value = files_list
 
@@ -116,12 +114,12 @@ class TiteliveThingsTest:
                                                  get_ordered_thing_files_from_titelive_ftp,
                                                  app):
         # mock
-        files = self.get_ordered_thing_files_from_sandbox_files()
+        files = get_ordered_thing_files_from_sandbox_files()
         get_ordered_thing_files_from_titelive_ftp.return_value = files
 
         files_content = []
         for file in files:
-            content = self.get_lines_from_thing_file_sandboxes(file)
+            content = get_lines_from_thing_file_sandboxes(file)
             files_content.append(content)
 
         get_lines_from_thing_file.side_effect = files_content
@@ -152,19 +150,3 @@ class TiteliveThingsTest:
                                     erroredThumbs=0,
                                     Thing=355
                                     )
-
-    def get_ordered_thing_files_from_sandbox_files(self):
-        data_root_path = Path(os.path.dirname(os.path.realpath(__file__))) \
-                         / '..' / 'sandboxes' / 'providers' / 'titelive_works'
-
-        data_thing_paths = data_root_path / THINGS_FOLDER_NAME_TITELIVE
-        all_thing_files = sorted(data_thing_paths.glob('Quotidien*.tit'))
-        if not os.path.isdir(data_root_path):
-            raise ValueError('File not found : ' + str(data_root_path)
-                             + '\nDid you run "pc ftp_mirrors" ?')
-        return all_thing_files
-
-    def get_lines_from_thing_file_sandboxes(self, file):
-        with open(file, 'r', encoding='iso-8859-1') as f:
-            data_lines = iter(f.readlines())
-        return data_lines

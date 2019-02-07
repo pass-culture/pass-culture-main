@@ -28,7 +28,8 @@ from models import Booking, \
     ThingType, \
     User, \
     UserOfferer, \
-    Venue, PaymentTransaction, BankInformation
+    BankInformation, \
+    Venue, PaymentTransaction, VenueProvider, Provider
 from models.db import db
 from models.payment import PaymentDetails
 from models.payment_status import PaymentStatus, TransactionStatus
@@ -764,3 +765,18 @@ def get_price_by_short_name(occurrence_short_name=None):
       return 0
     else:
       return sum(map(ord, occurrence_short_name)) % 50
+
+def create_venue_provider(venue, provider, siren='77567146400110', is_active=True):
+    venue_provider = VenueProvider()
+    venue_provider.venue = venue
+    venue_provider.isActive = is_active
+    venue_provider.provider = provider
+    venue_provider.venueIdAtOfferProvider = siren
+    return venue_provider
+
+
+def activate_provider(provider_classname):
+    provider = Provider.getByClassName(provider_classname)
+    provider.isActive = True
+    PcObject.check_and_save(provider)
+    return provider
