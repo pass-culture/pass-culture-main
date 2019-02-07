@@ -75,7 +75,10 @@ class ActivationPassword extends React.PureComponent {
       return <Redirect to="/activation/error" />
     }
     return (
-      <div id="activation-password-page" className="flex-rows">
+      <div
+        id="activation-password-page"
+        className="pc-scroll-container flex-rows"
+      >
         <Form
           onSubmit={this.onFormSubmit}
           initialValues={initialValues}
