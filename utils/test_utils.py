@@ -5,9 +5,9 @@ import uuid
 from datetime import datetime, timedelta, timezone
 from decimal import Decimal
 from glob import glob
+from hashlib import sha256
 from inspect import isclass
 from unittest.mock import Mock
-from hashlib import sha256
 
 import requests as req
 from postgresql_audit.flask import versioning_manager
@@ -86,8 +86,16 @@ def create_booking(user, stock=None, venue=None, recommendation=None, quantity=1
     return booking
 
 
-def create_booking_for_thing(url=None, amount=50, quantity=1, user=None, date_created=datetime.utcnow()):
-    thing = Thing(from_dict={'url': url})
+def create_booking_for_thing(
+        url=None,
+        amount=50,
+        quantity=1,
+        user=None,
+        isCancelled=False,
+        type=ThingType.JEUX,
+        date_created=datetime.utcnow()
+):
+    thing = Thing(from_dict={'url': url, 'type': str(type)})
     offer = Offer()
     stock = Stock()
     booking = Booking(from_dict={'amount': amount})
@@ -96,6 +104,7 @@ def create_booking_for_thing(url=None, amount=50, quantity=1, user=None, date_cr
     booking.stock = stock
     booking.quantity = quantity
     booking.user = user
+    booking.isCancelled = isCancelled
     booking.dateCreated = date_created
     return booking
 
@@ -105,9 +114,10 @@ def create_booking_for_event(
         quantity=1,
         user=None,
         isCancelled=False,
+        type=EventType.CINEMA,
         date_created=datetime.utcnow()
 ):
-    event = Event()
+    event = Event(from_dict={'type': str(type)})
     offer = Offer()
     stock = Stock()
     booking = Booking(from_dict={'amount': amount})
