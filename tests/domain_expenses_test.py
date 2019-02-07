@@ -337,10 +337,11 @@ class ExpensesTest:
             def test_max_200_and_actual_50(self):
                 # Given
                 user = create_user()
-                booking_1 = create_booking_for_thing(amount=50)
-                booking_2 = create_booking_for_thing(url='http://test.com', amount=60)
+                physical_cap_booking = create_booking_for_thing(amount=50, type=ThingType.AUDIOVISUEL)
+                digital_cap_booking = create_booking_for_thing(url='http://test.com', amount=60,
+                                                               type=ThingType.AUDIOVISUEL)
 
-                find_bookings_by_user_id = Mock(return_value=[booking_1, booking_2])
+                find_bookings_by_user_id = Mock(return_value=[physical_cap_booking, digital_cap_booking])
 
                 # When
                 expenses = get_expenses(user, find_bookings_by_user_id=find_bookings_by_user_id)
@@ -364,10 +365,11 @@ class ExpensesTest:
             def test_returns_max_200_and_actual_110(self):
                 # Given
                 user = create_user()
-                booking_1 = create_booking_for_thing(amount=50, type=ThingType.CINEMA_ABO)
-                booking_2 = create_booking_for_thing(url='http://test.com', amount=110, type=ThingType.MUSIQUE)
+                physical_cap_booking = create_booking_for_thing(amount=50, type=ThingType.CINEMA_ABO)
+                digital_cap_booking = create_booking_for_thing(url='http://test.com', amount=110,
+                                                               type=ThingType.MUSIQUE)
 
-                find_bookings_by_user_id = Mock(return_value=[booking_1, booking_2])
+                find_bookings_by_user_id = Mock(return_value=[physical_cap_booking, digital_cap_booking])
 
                 # When
                 expenses = get_expenses(user, find_bookings_by_user_id=find_bookings_by_user_id)
