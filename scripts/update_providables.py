@@ -5,9 +5,7 @@ from pprint import pprint
 from flask import current_app as app
 
 import local_providers
-import models
-from models import db, Event, Offerer, Stock, Thing, Venue, VenueProvider, BankInformation, Provider
-from models.db import db
+from models import VenueProvider
 
 
 @app.manager.option('-p',
@@ -15,7 +13,7 @@ from models.db import db
                     help='Limit update to this provider name')
 @app.manager.option('-l',
                     '--limit',
-                    help='Limit update to n items per provider/venue'
+                    help='Limit update to n items per providerName/venueId'
                          + ' (for test purposes)', type=int)
 @app.manager.option('-w',
                     '--venue-provider-id',
@@ -47,3 +45,4 @@ def do_update(provider, limit):
 
 def get_class_by_name(class_name: str):
     return getattr(local_providers, class_name)
+
