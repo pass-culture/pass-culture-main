@@ -1,3 +1,4 @@
+from models import Offerer
 from models.pc_object import PcObject
 from repository.offerer_queries import check_if_siren_already_exists
 from sandboxes.scripts.utils.offerer_mocks import MOCK_NAMES
@@ -21,18 +22,17 @@ def create_industrial_offerers(
     offerers_by_name = {}
 
     # add a real offerer just for the inscription/validation API
-    real_siren="784340093"
-    if not needs_validation \
-            and not check_if_siren_already_exists(real_siren):
-        name = '784340093 lat:48.8 lon:1.48'
-
-        offerers_by_name[name] = create_offerer(
+    real_siren="414819409"
+    if not needs_validation:
+        real_offerer = create_offerer(
             address="LIEU DIT CARTOUCHERIE",
             city="Paris 12",
             name="THEATRE DU SOLEIL",
             postal_code="75012",
             siren=real_siren
         )
+        name = '414819409 lat:48.8 lon:1.48'
+        offerers_by_name[name] = real_offerer
 
     # loop on locations
     iban_prefix = 'FR7630001007941234567890185'

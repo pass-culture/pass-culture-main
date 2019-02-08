@@ -9,8 +9,8 @@ def create_industrial_user_offerers(users_by_name, offerers_by_name):
 
     # special validation
     user = users_by_name['pro93 real-validation']
-    offerer = offerers_by_name['784340093 lat:48.8 lon:1.48']
-    user_offerers_by_name['pro93 real-validation / 784340093 lat:48.8 lon:1.48'] = create_user_offerer(
+    offerer = offerers_by_name['414819409 lat:48.8 lon:1.48']
+    user_offerers_by_name['pro93 real-validation / 414819409 lat:48.8 lon:1.48'] = create_user_offerer(
         offerer=offerer,
         user=user
     )
