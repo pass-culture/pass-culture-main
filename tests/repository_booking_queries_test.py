@@ -6,7 +6,8 @@ import pytest
 from models import PcObject, ThingType
 from repository.booking_queries import find_all_ongoing_bookings_by_stock, \
     find_offerer_bookings, find_all_bookings_for_stock, find_all_bookings_for_event_occurrence, \
-    find_final_offerer_bookings, find_date_used, find_user_activation_booking, get_existing_tokens
+    find_final_offerer_bookings, find_date_used, find_user_activation_booking, get_existing_tokens, \
+    find_all_active_by_user_id
 from tests.conftest import clean_database
 from utils.test_utils import create_booking, \
     create_deposit, \
@@ -341,3 +342,26 @@ class GetExistingTokensTest:
 
         # then
         assert tokens == set()
+
+
+@pytest.mark.standalone
+class FindAllActiveByUserIdTest:
+    @clean_database
+    def test_returns_a_list_of_not_cancelled_bookings(self, app):
+        # given
+        user = create_user()
+        offerer = create_offerer(siren='123456789', name='pass Culture')
+        venue_online = create_venue(offerer, siret=None, is_virtual=True)
+        book_offer = create_thing_offer(venue_online, thing_type=ThingType.LIVRE_EDITION)
+        book_stock = create_stock_from_offer(book_offer, available=200, price=0)
+        booking1 = create_booking(user, stock=book_stock, venue=venue_online, is_cancelled=True)
+        booking2 = create_booking(user, stock=book_stock, venue=venue_online, is_used=True)
+        booking3 = create_booking(user, stock=book_stock, venue=venue_online)
+        PcObject.check_and_save(booking1, booking2, booking3)
+
+        # when
+        bookings = find_all_active_by_user_id(user.id)
+
+        # then
+        assert len(bookings) == 2
+        assert booking1 not in bookings

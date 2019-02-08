@@ -1,7 +1,6 @@
 from decimal import Decimal
 
 from models import ThingType
-from repository.booking_queries import find_all_by_user_id
 
 PHYSICAL_EXPENSES_CAPPED_TYPES = [ThingType.LIVRE_EDITION, ThingType.AUDIOVISUEL, ThingType.MUSIQUE, ThingType.JEUX]
 DIGITAL_EXPENSES_CAPPED_TYPES = [ThingType.AUDIOVISUEL, ThingType.JEUX_VIDEO, ThingType.MUSIQUE, ThingType.PRESSE_ABO]

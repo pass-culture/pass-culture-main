@@ -29,8 +29,11 @@ get_filter_matching_ts_query_for_booking = create_get_filter_matching_ts_query_i
 )
 
 
-def find_all_by_user_id(user_id):
-    return Booking.query.filter_by(userId=user_id).all()
+def find_all_active_by_user_id(user_id):
+    return Booking.query \
+        .filter_by(userId=user_id) \
+        .filter_by(isCancelled=False) \
+        .all()
 
 
 def find_all_by_stock_id(stock):
