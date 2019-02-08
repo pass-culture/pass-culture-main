@@ -7,14 +7,14 @@ from models.local_provider_event import LocalProviderEventType
 from models.thing import Thing, BookFormat
 from models import ThingType
 from repository import local_provider_event_queries
-from utils.ftp_titelive import get_titelive_ftp, get_ordered_thing_files_from_titelive_ftp, \
-    get_date_from_thing_filename, read_date
+from utils.ftp_titelive import get_titelive_ftp, get_ordered_files_from_titelive_ftp, \
+    get_date_from_filename, read_date
 from utils.logger import logger
 from utils.string_processing import trim_with_elipsis
 
 from io import TextIOWrapper, BytesIO
 
-DATE_REGEXP = re.compile('(\w+)(\d+).tit')
+DATE_REGEXP = re.compile('([a-zA-Z]+)(\d+).tit')
 THINGS_FOLDER_NAME_TITELIVE = 'livre3_11'
 INIT_FULL_TABLE = 'FullTable*.tit'
 
@@ -30,28 +30,21 @@ class TiteLiveThings(LocalProvider):
 
     def __init__(self, venueProvider, **options):
         super().__init__(venueProvider, **options)
-        self.is_mock = 'mock' in options and options['mock']
-        self.file_to_import = 'file_to_import' in options and options['file_to_import']
 
-        logger.info("In __init__")
-        if self.file_to_import:
-            ordered_thing_files = get_ordered_thing_files_from_init_file(self.file_to_import)
-        else:
-            ordered_thing_files = get_ordered_thing_files_from_titelive_ftp(THINGS_FOLDER_NAME_TITELIVE, DATE_REGEXP)
+        ordered_thing_files = get_ordered_files_from_titelive_ftp(THINGS_FOLDER_NAME_TITELIVE, DATE_REGEXP)
 
         self.thing_files = self.get_remaining_files_to_check(ordered_thing_files)
         self.data_lines = None
         self.thing_file = None
 
     def open_next_file(self):
-        logger.info("In open_next")
         if self.thing_file:
             self.logProviderEvent(LocalProviderEventType.SyncPartEnd,
-                                  get_date_from_thing_filename(self.thing_file, DATE_REGEXP))
+                                  get_date_from_filename(self.thing_file, DATE_REGEXP))
         self.thing_file = self.thing_files.__next__()
         logger.info("  Importing things from file %s" % self.thing_file)
         self.logProviderEvent(LocalProviderEventType.SyncPartStart,
-                              get_date_from_thing_filename(self.thing_file, DATE_REGEXP))
+                              get_date_from_filename(self.thing_file, DATE_REGEXP))
 
         self.data_lines = get_lines_from_thing_file(str(self.thing_file))
 
@@ -189,7 +182,7 @@ class TiteLiveThings(LocalProvider):
             return iter(ordered_thing_files)
         else:
             for index, filename in enumerate(ordered_thing_files):
-                if get_date_from_thing_filename(filename, DATE_REGEXP) == int(latest_sync_part_end_event.payload):
+                if get_date_from_filename(filename, DATE_REGEXP) == int(latest_sync_part_end_event.payload):
                     return iter(ordered_thing_files[index + 1:0])
 
 
@@ -204,14 +197,6 @@ def get_lines_from_thing_file(thing_file: str):
     get_titelive_ftp().retrbinary(file_path, data_file.write)
     data_wrapper.seek(0, 0)
     return iter(data_wrapper.readlines())
-
-
-def get_ordered_thing_files_from_init_file(file_to_import):
-    data_root_path = Path(os.path.dirname(os.path.realpath(__file__))) \
-                     / '..' / 'sandboxes' / 'providers' / 'titelive_works'
-    data_thing_paths = data_root_path
-    all_thing_files = sorted(data_thing_paths.glob(file_to_import))
-    return all_thing_files
 
 
 def get_thing_type_and_extra_data_from_titelive_type(titelive_type):

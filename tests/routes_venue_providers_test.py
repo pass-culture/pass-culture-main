@@ -169,7 +169,6 @@ class Post:
             # then
             assert response.status_code == 201
 
-            # TODO: WHATE DE FUCK
             json_response = response.json()
             assert 'id' in json_response
             venue_provider_id = json_response['id']
