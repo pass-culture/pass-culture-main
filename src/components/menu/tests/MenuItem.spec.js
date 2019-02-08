@@ -31,11 +31,25 @@ describe('src | components | menu | MenuItemContent', () => {
 
 describe('src | components | menu | MenuItem', () => {
   describe('snapshot', () => {
-    it('should match snapshot', () => {
+    it('should match snapshot with in-app link', () => {
       // given
       const props = {
         ...routerProps,
         item: { path: '/decouverte' },
+      }
+
+      // when
+      const wrapper = shallow(<MenuItem {...props} />)
+
+      // then
+      expect(wrapper).toBeDefined()
+      expect(wrapper).toMatchSnapshot()
+    })
+    it('should match snapshot with external link', () => {
+      // given
+      const props = {
+        ...routerProps,
+        item: { href: 'http://www.external.link', target: '_blank' },
       }
 
       // when

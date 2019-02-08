@@ -48,7 +48,7 @@ export class MenuItemContent extends React.PureComponent {
         disabled={disabled}
         href={href}
         key={href}
-        rel={target === '_blank' && 'noopener noreferer'}
+        rel={(target === '_blank' && 'noopener noreferer') || null}
         target={target}
       >
         {renderLinkContent(icon, title)}
