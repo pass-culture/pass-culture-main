@@ -29,7 +29,7 @@ get_filter_matching_ts_query_for_booking = create_get_filter_matching_ts_query_i
 )
 
 
-def find_all_active_by_user_id(user_id):
+def find_active_bookings_by_user_id(user_id):
     return Booking.query \
         .filter_by(userId=user_id) \
         .filter_by(isCancelled=False) \

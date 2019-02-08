@@ -7,7 +7,7 @@ from models import PcObject, ThingType
 from repository.booking_queries import find_all_ongoing_bookings_by_stock, \
     find_offerer_bookings, find_all_bookings_for_stock, find_all_bookings_for_event_occurrence, \
     find_final_offerer_bookings, find_date_used, find_user_activation_booking, get_existing_tokens, \
-    find_all_active_by_user_id
+    find_active_bookings_by_user_id
 from tests.conftest import clean_database
 from utils.test_utils import create_booking, \
     create_deposit, \
@@ -360,7 +360,7 @@ class FindAllActiveByUserIdTest:
         PcObject.check_and_save(booking1, booking2, booking3)
 
         # when
-        bookings = find_all_active_by_user_id(user.id)
+        bookings = find_active_bookings_by_user_id(user.id)
 
         # then
         assert len(bookings) == 2

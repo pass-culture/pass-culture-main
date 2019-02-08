@@ -3,8 +3,7 @@ import pytest
 from domain.expenses import get_expenses
 from models import ThingType, EventType
 from utils.test_utils import create_booking_for_event, \
-    create_booking_for_thing, \
-    create_user
+    create_booking_for_thing
 
 
 @pytest.mark.standalone
@@ -306,7 +305,6 @@ class ExpensesTest:
         class MaxTest:
             def test_returns_max_500_and_actual_210(self):
                 # Given
-                user = create_user()
                 booking_1 = create_booking_for_thing(amount=90)
                 booking_2 = create_booking_for_event(amount=60, quantity=2)
                 booking_3 = create_booking_for_event(amount=20, isCancelled=True)
@@ -320,7 +318,6 @@ class ExpensesTest:
 
             def test_returns_max_500_and_actual_0(self):
                 # Given
-                user = create_user()
                 bookings = []
 
                 # When
@@ -332,7 +329,6 @@ class ExpensesTest:
         class PhysicalCapTest:
             def test_max_200_and_actual_50(self):
                 # Given
-                user = create_user()
                 physical_cap_booking = create_booking_for_thing(amount=50, type=ThingType.AUDIOVISUEL)
                 digital_cap_booking = create_booking_for_thing(url='http://test.com', amount=60,
                                                                type=ThingType.AUDIOVISUEL)
@@ -347,7 +343,6 @@ class ExpensesTest:
 
             def test_max_200_and_actual_0(self):
                 # Given
-                user = create_user()
                 booking_1 = create_booking_for_thing(url='http://test.com', amount=60)
                 bookings = [booking_1]
 
@@ -360,7 +355,6 @@ class ExpensesTest:
         class DigitalCapTest:
             def test_returns_max_200_and_actual_110(self):
                 # Given
-                user = create_user()
                 physical_cap_booking = create_booking_for_thing(amount=50, type=ThingType.CINEMA_ABO)
                 digital_cap_booking = create_booking_for_thing(url='http://test.com', amount=110,
                                                                type=ThingType.MUSIQUE)
@@ -375,7 +369,6 @@ class ExpensesTest:
 
             def test_returns_max_200_and_actual_0(self):
                 # Given
-                user = create_user()
                 booking_1 = create_booking_for_thing(amount=50)
                 bookings = [booking_1]
 

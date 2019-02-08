@@ -7,10 +7,8 @@ from models import Stock, Offerer, User, ApiErrors, PcObject, EventOccurrence, O
 from utils.human_ids import dehumanize
 
 
-def _check_offerer_user(query, user):
-    return query.filter(
-        Offerer.users.any(User.id == user.id)
-    ).first_or_404()
+def find_stock_by_id(id: int) -> Stock:
+    return Stock.query.get(id)
 
 
 def find_stocks_with_possible_filters(filters, user):
@@ -65,3 +63,9 @@ def find_online_activation_stock():
         .join(Thing, Offer.thingId == Thing.id) \
         .filter_by(type=str(ThingType.ACTIVATION)) \
         .first()
+
+
+def _check_offerer_user(query, user):
+    return query.filter(
+        Offerer.users.any(User.id == user.id)
+    ).first_or_404()

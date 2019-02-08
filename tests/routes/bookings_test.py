@@ -463,9 +463,48 @@ class Post:
                 'recommendationId': humanize(recommendation.id),
                 'quantity': 1
             }
-            r_create = TestClient().with_auth('test@email.com', 'mdppsswd').post(API_URL + '/bookings',
-                                                                                 json=booking_json)
-            assert r_create.status_code == 201
+
+            # when
+            response = TestClient() \
+                .with_auth('test@email.com', 'mdppsswd') \
+                .post(API_URL + '/bookings', json=booking_json)
+
+            # then
+            assert response.status_code == 201
+
+        @clean_database
+        def when_user_respects_expenses_limits(self, app):
+            # Given
+            offerer = create_offerer('819202819', '1 Fake Address', 'Fake city', '93000', 'Fake offerer')
+            venue = create_venue(offerer, 'venue name', 'booking@email.com', '1 fake street', '93000', 'False city',
+                                 '93')
+            thing_offer = create_thing_offer(venue, thing_type=ThingType.JEUX_ABO)
+
+            user = create_user(email='test@email.com', password='mdppsswd')
+            PcObject.check_and_save(user)
+
+            stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=210, available=1)
+            PcObject.check_and_save(stock)
+
+            recommendation = create_recommendation(thing_offer, user)
+            PcObject.check_and_save(recommendation)
+
+            deposit = create_deposit(user, datetime.utcnow(), amount=500)
+            PcObject.check_and_save(deposit)
+
+            booking_json = {
+                'stockId': humanize(stock.id),
+                'recommendationId': humanize(recommendation.id),
+                'quantity': 1
+            }
+
+            # when
+            response = TestClient() \
+                .with_auth('test@email.com', 'mdppsswd') \
+                .post(API_URL + '/bookings', json=booking_json)
+
+            # then
+            assert response.status_code == 201
 
         @clean_database
         def when_user_has_enough_credit_after_cancelling_booking(self, app):

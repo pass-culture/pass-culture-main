@@ -19,7 +19,7 @@ from models.versioned_mixin import VersionedMixin
 from utils.human_ids import humanize
 
 
-class Booking(PcObject,
+class   Booking(PcObject,
               Model,
               VersionedMixin):
     id = Column(BigInteger,

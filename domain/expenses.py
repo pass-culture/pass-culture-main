@@ -1,6 +1,7 @@
 from decimal import Decimal
+from typing import List, Union
 
-from models import ThingType
+from models import ThingType, Booking, Event, Thing
 
 PHYSICAL_EXPENSES_CAPPED_TYPES = [ThingType.LIVRE_EDITION, ThingType.AUDIOVISUEL, ThingType.MUSIQUE, ThingType.JEUX]
 DIGITAL_EXPENSES_CAPPED_TYPES = [ThingType.AUDIOVISUEL, ThingType.JEUX_VIDEO, ThingType.MUSIQUE, ThingType.PRESSE_ABO]
@@ -10,7 +11,7 @@ SUBVENTION_PHYSICAL_THINGS = Decimal(200)
 SUBVENTION_DIGITAL_THINGS = Decimal(200)
 
 
-def get_expenses(bookings):
+def get_expenses(bookings: List[Booking]) -> dict:
     total_expenses = _compute_booking_expenses(bookings)
     physical_expenses = _compute_booking_expenses(bookings, _get_bookings_of_physical_things)
     digital_expenses = _compute_booking_expenses(bookings, _get_bookings_of_digital_things)
@@ -22,33 +23,50 @@ def get_expenses(bookings):
     }
 
 
-def _compute_booking_expenses(bookings, get_bookings=lambda b: b):
-    bookings_to_sum = filter(lambda b: not b.isCancelled,
-                             get_bookings(bookings))
-    expenses = map(lambda x: x.amount * x.quantity, bookings_to_sum)
+def _compute_booking_expenses(bookings: List[Booking], get_bookings=lambda b: b) -> Decimal:
+    bookings_to_sum = filter(lambda b: not b.isCancelled, get_bookings(bookings))
+    expenses = map(lambda b: b.value, bookings_to_sum)
     return Decimal(sum(expenses))
 
 
-def _get_bookings_of_digital_things(bookings):
+def _get_bookings_of_digital_things(bookings: List[Booking]) -> List[Booking]:
     match = []
     for booking in bookings:
-        thing = booking.stock.resolvedOffer.thing
-        if thing and thing.isDigital and thing.type in map(str, DIGITAL_EXPENSES_CAPPED_TYPES):
+        thing_or_event = booking.stock.resolvedOffer.eventOrThing
+        if is_eligible_to_digital_things_capping(thing_or_event):
             match.append(booking)
+
     return match
 
 
-def _get_bookings_of_physical_things(bookings):
+def _get_bookings_of_physical_things(bookings: List[Booking]) -> List[Booking]:
     match = []
     for booking in bookings:
-        thing = booking.stock.resolvedOffer.thing
-        if not thing:
-            continue
-
-        if thing.isDigital and thing.type == str(ThingType.LIVRE_EDITION):
-            match.append(booking)
-
-        if not thing.isDigital and thing.type in map(str, PHYSICAL_EXPENSES_CAPPED_TYPES):
+        thing_or_event = booking.stock.resolvedOffer.eventOrThing
+        if is_eligible_to_physical_things_capping(thing_or_event):
             match.append(booking)
 
     return match
+
+
+def is_eligible_to_digital_things_capping(thing_or_event: Union[Thing, Event]) -> bool:
+    if type(thing_or_event) == Event:
+        return False
+
+    if thing_or_event.isDigital and thing_or_event.type in map(str, DIGITAL_EXPENSES_CAPPED_TYPES):
+        return True
+
+    return False
+
+
+def is_eligible_to_physical_things_capping(thing_or_event: Union[Thing, Event]) -> bool:
+    if type(thing_or_event) == Event:
+        return False
+
+    if thing_or_event.isDigital and thing_or_event.type == str(ThingType.LIVRE_EDITION):
+        return True
+
+    if not thing_or_event.isDigital and thing_or_event.type in map(str, PHYSICAL_EXPENSES_CAPPED_TYPES):
+        return True
+
+    return False

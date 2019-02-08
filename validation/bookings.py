@@ -1,7 +1,9 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 
-from models import ApiErrors, EventType
+from domain.expenses import is_eligible_to_physical_things_capping, is_eligible_to_digital_things_capping
+from models import ApiErrors, Booking
 from models.api_errors import ResourceGoneError, ForbiddenError
+from repository.stock_queries import find_stock_by_id
 
 
 def check_has_stock_id(stock_id):
@@ -68,14 +70,23 @@ def check_stock_booking_limit_date(stock):
         raise api_errors
 
 
-def check_expenses_limits(expenses, booking, stock):
-    if stock.resolvedOffer.event:
-        return None
+def check_expenses_limits(expenses: dict, booking: Booking, find_stock=find_stock_by_id):
+    stock = find_stock(booking.stockId)
+    event_or_thing = stock.resolvedOffer.eventOrThing
 
-    if stock.resolvedOffer.thing.isDigital:
-        _check_digital_expense_limit(booking, expenses)
-    else:
-        _check_physical_expense_limit(booking, expenses)
+    if is_eligible_to_physical_things_capping(event_or_thing):
+        if (expenses['physical']['actual'] + booking.value) > expenses['physical']['max']:
+            raise ApiErrors(
+                {'global': ['La limite de %s € pour les biens culturels ne vous permet pas ' \
+                            'de réserver' % expenses['physical']['max']]}
+            )
+
+    if is_eligible_to_digital_things_capping(event_or_thing):
+        if (expenses['digital']['actual'] + booking.value) > expenses['digital']['max']:
+            raise ApiErrors(
+                {'global': ['La limite de %s € pour les offres numériques ne vous permet pas ' \
+                            'de réserver' % expenses['digital']['max']]}
+            )
 
 
 def check_user_is_logged_in_or_email_is_provided(user, email):
@@ -126,21 +137,3 @@ def check_email_and_offer_id_for_anonymous_user(email, offer_id):
 def check_rights_for_activation_offer(user):
     if not user.isAdmin:
         raise ForbiddenError
-
-
-def _check_physical_expense_limit(booking, expenses):
-    new_expenses = expenses['physical']['actual'] + booking.amount * booking.quantity
-    if new_expenses > expenses['physical']['max']:
-        api_errors = ApiErrors()
-        api_errors.addError('global', 'La limite de %s € pour les biens culturels ne vous permet pas ' \
-                                      'de réserver' % expenses['physical']['max'])
-        raise api_errors
-
-
-def _check_digital_expense_limit(booking, expenses):
-    new_expenses = expenses['digital']['actual'] + booking.amount * booking.quantity
-    if new_expenses > expenses['digital']['max']:
-        api_errors = ApiErrors()
-        api_errors.addError('global', 'La limite de %s € pour les offres numériques ne vous permet pas ' \
-                                      'de réserver' % expenses['digital']['max'])
-        raise api_errors
