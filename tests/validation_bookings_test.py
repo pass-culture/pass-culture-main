@@ -9,7 +9,7 @@ from validation.bookings import check_expenses_limits, check_booking_is_cancella
 
 
 @pytest.mark.standalone
-class CheckExpenseLimitTest:
+class CheckExpenseLimitsTest:
     def test_raises_an_error_when_physical_limit_is_reached_for_things(self):
         # given
         expenses = {

@@ -11,9 +11,7 @@ SUBVENTION_PHYSICAL_THINGS = Decimal(200)
 SUBVENTION_DIGITAL_THINGS = Decimal(200)
 
 
-def get_expenses(user, find_bookings_by_user_id=find_all_by_user_id):
-    bookings = find_bookings_by_user_id(user.id)
-
+def get_expenses(bookings):
     total_expenses = _compute_booking_expenses(bookings)
     physical_expenses = _compute_booking_expenses(bookings, _get_bookings_of_physical_things)
     digital_expenses = _compute_booking_expenses(bookings, _get_bookings_of_digital_things)

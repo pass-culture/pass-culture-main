@@ -10,6 +10,7 @@ from domain.user_emails import send_booking_recap_emails, \
 from models import ApiErrors, Booking, PcObject, Stock, RightsType, EventType
 from models.pc_object import serialize
 from repository import booking_queries
+from repository.booking_queries import find_all_by_user_id
 from utils.human_ids import dehumanize, humanize
 from utils.includes import BOOKING_INCLUDES
 from utils.mailing import MailServiceException
@@ -76,7 +77,8 @@ def create_booking():
         'recommendationId': recommendation_id if recommendation_id else None
     })
 
-    expenses = get_expenses(current_user)
+    bookings = find_all_by_user_id(current_user.id)
+    expenses = get_expenses(bookings)
 
     check_expenses_limits(expenses, new_booking, stock)
     booking_queries.save_booking(new_booking)
