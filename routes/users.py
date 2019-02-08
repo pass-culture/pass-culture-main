@@ -33,7 +33,7 @@ def is_pro_signup(json_user):
 @login_required
 def get_profile():
     user = current_user._asdict(include=USER_INCLUDES)
-    user['expenses'] = get_expenses(current_user)
+    user['expenses'] = get_expenses(current_user.userBookings)
     return jsonify(user)
 
 
@@ -46,7 +46,7 @@ def patch_profile():
     current_user.populateFromDict(request.json)
     PcObject.check_and_save(current_user)
     user = current_user._asdict(include=USER_INCLUDES)
-    user['expenses'] = get_expenses(current_user)
+    user['expenses'] = get_expenses(current_user.userBookings)
     return jsonify(user), 200
 
 
@@ -116,7 +116,7 @@ def signin():
     login_user(user, remember=True)
     stamp_session(user)
     user_dict = user._asdict(include=USER_INCLUDES)
-    user_dict['expenses'] = get_expenses(user)
+    user_dict['expenses'] = get_expenses(user.userBookings)
     return jsonify(user_dict), 200
 
 
