@@ -6,10 +6,9 @@ from models.db import db
 from models.local_provider import LocalProvider, ProvidableInfo
 from models.stock import Stock
 from repository import thing_queries, local_provider_event_queries, venue_queries
+from utils.ftp_titelive import read_stock_datetime
 from utils.logger import logger
 
-DATE_FORMAT = "%d/%m/%Y"
-DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 URL_TITELIVE_WEBSERVICE_STOCKS = "https://stock.epagine.fr/stocks/"
 NB_DATA_LIMIT_PER_REQUEST = 5000
 
@@ -28,13 +27,6 @@ def get_data(last_seen_isbn, last_date_checked, venue_siret):
     req_result = requests.get(page_url)
     return req_result.json()
 
-
-def read_date(date):
-    return datetime.strptime(date, DATE_FORMAT)
-
-
-def read_datetime(date):
-    return datetime.strptime(date, DATETIME_FORMAT)
 
 
 class TiteLiveStocks(LocalProvider):
@@ -114,7 +106,7 @@ class TiteLiveStocks(LocalProvider):
             logger.info("Create stock for thing: %s" % self.titelive_stock['ref'])
             obj.price = int(self.titelive_stock['price'])
             obj.available = int(self.titelive_stock['available'])
-            obj.bookingLimitDatetime = read_datetime(self.titelive_stock['validUntil'])
+            obj.bookingLimitDatetime = read_stock_datetime(self.titelive_stock['validUntil'])
             obj.offer = self.providables[0]
         elif isinstance(obj, Offer):
             obj.venue = self.venue
