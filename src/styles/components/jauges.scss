@@ -1,7 +1,7 @@
 .jauges {
   .text-containers {
-    width: 200px;
-    min-width: 200px;
+    // width: 200px;
+    // min-width: 200px;
   }
 
   .text.overall {
@@ -36,18 +36,20 @@
   }
 
   .jauge.physical {
-    background-image: linear-gradient(
-      90deg,
-      rgba(255, 92, 214, 1) 0%,
-      rgba(255, 151, 0, 1) 100%
-    );
+    background-image:
+      linear-gradient(
+        90deg,
+        rgba(255, 92, 214, 1) 0%,
+        rgba(255, 151, 0, 1) 100%
+      );
   }
 
   .jauge.digital {
-    background-image: linear-gradient(
-      90deg,
-      rgba(0, 210, 230, 1) 0%,
-      rgba(176, 222, 0, 1) 100%
-    );
+    background-image:
+      linear-gradient(
+        90deg,
+        rgba(0, 210, 230, 1) 0%,
+        rgba(176, 222, 0, 1) 100%
+      );
   }
 }

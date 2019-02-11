@@ -4,7 +4,6 @@ import React from 'react'
 import PropTypes from 'prop-types'
 
 const MonPassCulture = ({ user }) => {
-  console.log('user', user)
   const { expenses } = user
   const allWallet = expenses.all.max - expenses.all.actual
   const digitalWallet = expenses.digital.max - expenses.digital.actual
@@ -18,15 +17,13 @@ const MonPassCulture = ({ user }) => {
       <div className="text-containers flex-0 mt12 py12 mr8">
         <div className="fs14">
           <span className="is-block">
-            jusqu&apos;à <b>{physicalWallet} €</b>
+            Jusqu&apos;à <b>{physicalWallet} €</b> pour les biens culturels
           </span>
-          <span className="is-block">pour les biens culturels</span>
         </div>
         <div className="fs14 mt12">
           <span className="is-block">
-            jusqu&apos;à <b>{digitalWallet} €</b>
+            Jusqu&apos;à <b>{digitalWallet} €</b> pour les offres numériques
           </span>
-          <span className="is-block">pour les offres numériques</span>
         </div>
       </div>
     </div>
