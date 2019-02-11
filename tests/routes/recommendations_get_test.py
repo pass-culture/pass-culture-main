@@ -4,7 +4,7 @@ import pytest
 
 from models import PcObject, \
     EventType
-from tests.conftest import clean_database
+from tests.conftest import clean_database, TestClient
 from utils.date import strftime
 from utils.test_utils import API_URL, \
     create_event_occurrence, \
@@ -17,9 +17,7 @@ from utils.test_utils import API_URL, \
     create_thing, \
     create_thing_offer, \
     create_user, \
-    create_venue, \
-    req, \
-    req_with_auth
+    create_venue
 
 RECOMMENDATION_URL = API_URL + '/recommendations'
 
@@ -30,7 +28,7 @@ class Get:
         def test_when_no_user_is_logged_in(self):
             # when
             url = RECOMMENDATION_URL + '?keywords=Training'
-            response = req.get(url, headers={'origin': 'http://localhost:3000'})
+            response = TestClient().get(url, headers={'origin': 'http://localhost:3000'})
 
             # then
             assert response.status_code == 401
@@ -93,10 +91,10 @@ class Get:
             recommendation = create_recommendation(offer, user, search=search)
             stock = create_stock_from_offer(offer)
             PcObject.check_and_save(stock, recommendation)
-            auth_request = req_with_auth(user.email, user.clearTextPassword)
 
             # when
-            response = auth_request.get(RECOMMENDATION_URL + '?keywords={}'.format(keywords_string))
+            response = TestClient().with_auth(user.email, user.clearTextPassword).get(
+                RECOMMENDATION_URL + '?keywords={}'.format(keywords_string))
 
             # then
             assert response.status_code == 200
@@ -113,8 +111,9 @@ class Get:
             offer = create_event_offer(venue, event_name="L'histoire sans fin")
             stock = create_stock_from_offer(offer)
             PcObject.check_and_save(stock, user)
+
             # when
-            response = req_with_auth(user.email, user.clearTextPassword) \
+            response = TestClient().with_auth(user.email, user.clearTextPassword) \
                 .get(RECOMMENDATION_URL + '?keywords=l%27histoire')
 
             # then
@@ -136,10 +135,10 @@ class Get:
             recommendation = create_recommendation(offer, user, search=search)
             stock = create_stock_from_offer(offer)
             PcObject.check_and_save(stock, recommendation)
-            auth_request = req_with_auth(user.email, user.clearTextPassword)
 
             # when
-            response = auth_request.get(RECOMMENDATION_URL + '?keywords={}'.format("rencontres"))
+            response = TestClient().with_auth(user.email, user.clearTextPassword).get(
+                RECOMMENDATION_URL + '?keywords={}'.format("rencontres"))
 
             # then
             assert response.status_code == 200
@@ -158,10 +157,10 @@ class Get:
             recommendation = create_recommendation(offer, user, search=search)
             stock = create_stock_from_offer(offer)
             PcObject.check_and_save(stock, recommendation)
-            auth_request = req_with_auth(user.email, user.clearTextPassword)
 
             # when
-            response = auth_request.get(RECOMMENDATION_URL + '?keywords={}'.format(" rencontres avec auteurs "))
+            response = TestClient().with_auth(user.email, user.clearTextPassword).get(
+                RECOMMENDATION_URL + '?keywords={}'.format(" rencontres avec auteurs "))
 
             # then
             assert response.status_code == 200
@@ -179,10 +178,10 @@ class Get:
             recommendation = create_recommendation(offer, user, search=search)
             stock = create_stock_from_offer(offer)
             PcObject.check_and_save(stock, recommendation)
-            auth_request = req_with_auth(user.email, user.clearTextPassword)
 
             # when
-            response = auth_request.get(RECOMMENDATION_URL + '?keywords={}'.format("rencon"))
+            response = TestClient().with_auth(user.email, user.clearTextPassword).get(
+                RECOMMENDATION_URL + '?keywords={}'.format("rencon"))
 
             # then
             assert response.status_code == 200
@@ -213,10 +212,10 @@ class Get:
             stock3 = create_stock_from_event_occurrence(event_occurrence3, price=30, soft_deleted=True)
 
             PcObject.check_and_save(stock1, stock2, stock3, recommendation1, recommendation2)
-            auth_request = req_with_auth(user.email, user.clearTextPassword)
 
             # when
-            response = auth_request.get(RECOMMENDATION_URL + '?keywords={}'.format('rencontres'))
+            response = TestClient().with_auth(user.email, user.clearTextPassword).get(
+                RECOMMENDATION_URL + '?keywords={}'.format('rencontres'))
 
             # then
             assert response.status_code == 200
@@ -232,10 +231,10 @@ class Get:
             recommendation = create_recommendation(offer, user)
             stock = create_stock_from_offer(offer)
             PcObject.check_and_save(stock, recommendation)
-            auth_request = req_with_auth(user.email, user.clearTextPassword)
 
             # when
-            response = auth_request.get(RECOMMENDATION_URL + '?%categories=Applaudir')
+            response = TestClient().with_auth(user.email, user.clearTextPassword).get(
+                RECOMMENDATION_URL + '?%categories=Applaudir')
 
             # then
             assert response.status_code == 200
@@ -254,10 +253,10 @@ class Get:
             stock = create_stock_from_offer(offer1)
             stock2 = create_stock_from_offer(offer2)
             PcObject.check_and_save(stock, recommendation, stock2, recommendation2)
-            auth_request = req_with_auth(user.email, user.clearTextPassword)
 
             # when
-            response = auth_request.get(RECOMMENDATION_URL + '?categories=Applaudir%2CRegarder')
+            response = TestClient().with_auth(user.email, user.clearTextPassword).get(
+                RECOMMENDATION_URL + '?categories=Applaudir%2CRegarder')
 
             # then
             assert response.status_code == 200
@@ -280,10 +279,9 @@ class Get:
             stock2 = create_stock_from_offer(offer2)
             stock3 = create_stock_from_offer(offer3)
             PcObject.check_and_save(stock, recommendation, stock2, recommendation2, stock3, recommendation3)
-            auth_request = req_with_auth(user.email, user.clearTextPassword)
 
             # when
-            response = auth_request.get(
+            response = TestClient().with_auth(user.email, user.clearTextPassword).get(
                 RECOMMENDATION_URL + '?categories=%25C3%2589couter%2CApplaudir%2CJouer%2CLire%2CPratiquer%2CRegarder%2CRencontrer'
             )
 
@@ -306,10 +304,10 @@ class Get:
             recommendation = create_recommendation(offer, user)
             stock = create_stock_from_event_occurrence(event_occurrence)
             PcObject.check_and_save(stock, recommendation)
-            auth_request = req_with_auth(user.email, user.clearTextPassword)
 
             # When
-            response = auth_request.get(RECOMMENDATION_URL + '?date=%s&days=1-5' % strftime(self.now))
+            response = TestClient().with_auth(user.email, user.clearTextPassword).get(
+                RECOMMENDATION_URL + '?date=%s&days=1-5' % strftime(self.now))
 
             # Then
             recommendations = response.json()
@@ -341,10 +339,9 @@ class Get:
             stock1 = create_stock_from_offer(offer2)
             thingStock = create_stock(price=12, available=5, offer=thingOffer)
             PcObject.check_and_save(stock, recommendation, recommendation2, recommendation3, thingStock, stock1)
-            auth_request = req_with_auth(user.email, user.clearTextPassword)
 
             # When
-            response = auth_request.get(
+            response = TestClient().with_auth(user.email, user.clearTextPassword).get(
                 RECOMMENDATION_URL + '?categories=Lire%2CRegarder' + '&date=%s&days=1-5' % strftime(self.now)
             )
 
@@ -369,10 +366,9 @@ class Get:
             recommendation = create_recommendation(offer, user)
             stock = create_stock_from_event_occurrence(event_occurrence)
             PcObject.check_and_save(stock, recommendation)
-            auth_request = req_with_auth(user.email, user.clearTextPassword)
 
             # When
-            response = auth_request.get(
+            response = TestClient().with_auth(user.email, user.clearTextPassword).get(
                 RECOMMENDATION_URL + '?date=%s&keywords=Jazz' % strftime(self.ten_days_from_now)
             )
 
@@ -409,10 +405,9 @@ class Get:
 
             PcObject.check_and_save(stock13, recommendation13, stock75, recommendation75, stock973, recommendation973)
 
-            auth_request = req_with_auth(user.email, user.clearTextPassword)
-
             # When
-            response = auth_request.get(RECOMMENDATION_URL + '?distance=1&keywords=funky')
+            response = TestClient().with_auth(user.email, user.clearTextPassword).get(
+                RECOMMENDATION_URL + '?distance=1&keywords=funky')
 
             # Then
             assert len(response.json()) == 2
@@ -445,10 +440,8 @@ class Get:
 
             PcObject.check_and_save(stock13, recommendation13, stock75, recommendation75, stock973, recommendation973)
 
-            auth_request = req_with_auth(user.email, user.clearTextPassword)
-
             # When
-            response = auth_request.get(
+            response = TestClient().with_auth(user.email, user.clearTextPassword).get(
                 RECOMMENDATION_URL + '?distance=20000&latitude=48.8363788&longitude=2.4002701&keywords=Macouria')
 
             # Then
@@ -470,10 +463,10 @@ class Get:
             recommendation = create_recommendation(offer, user)
             stock = create_stock_from_event_occurrence(event_occurrence)
             PcObject.check_and_save(stock, recommendation)
-            auth_request = req_with_auth(user.email, user.clearTextPassword)
 
             # When
-            response = auth_request.get(RECOMMENDATION_URL + '?date=%s&days=1-5' % strftime(self.ten_days_from_now))
+            response = TestClient().with_auth(user.email, user.clearTextPassword).get(
+                RECOMMENDATION_URL + '?date=%s&days=1-5' % strftime(self.ten_days_from_now))
 
             # Then
             assert response.status_code == 200
@@ -496,10 +489,10 @@ class Get:
             stock = create_stock_from_event_occurrence(event_occurrence)
             stock1 = create_stock_from_offer(offer1)
             PcObject.check_and_save(stock, stock1, recommendation, recommendation1)
-            auth_request = req_with_auth(user.email, user.clearTextPassword)
 
             # When
-            response = auth_request.get(RECOMMENDATION_URL + '?categories=Activation%2CLire%2CRegarder')
+            response = TestClient().with_auth(user.email, user.clearTextPassword).get(
+                RECOMMENDATION_URL + '?categories=Activation%2CLire%2CRegarder')
 
             # Then
             assert response.status_code == 200
@@ -534,10 +527,10 @@ class Get:
             stock1 = create_stock_from_offer(offer2)
             thingStock = create_stock(price=12, available=5, offer=thingOffer)
             PcObject.check_and_save(stock, recommendation, recommendation2, recommendation3, thingStock, stock1)
-            auth_request = req_with_auth(user.email, user.clearTextPassword)
 
             # When
-            response = auth_request.get(RECOMMENDATION_URL + '?%s' % category_and_date_search)
+            response = TestClient().with_auth(user.email, user.clearTextPassword).get(
+                RECOMMENDATION_URL + '?%s' % category_and_date_search)
 
             # Then
             assert response.status_code == 200
@@ -561,10 +554,9 @@ class Get:
             recommendation = create_recommendation(offer, user)
             stock = create_stock_from_event_occurrence(event_occurrence)
             PcObject.check_and_save(stock, recommendation)
-            auth_request = req_with_auth(user.email, user.clearTextPassword)
 
             # When
-            response = auth_request.get(
+            response = TestClient().with_auth(user.email, user.clearTextPassword).get(
                 RECOMMENDATION_URL + '?date=%s&keywords=Jazz' % strftime(self.thirty_days_from_now)
             )
 
@@ -592,10 +584,9 @@ class Get:
             stock = create_stock_from_event_occurrence(event_occurrence)
             thingStock = create_stock(price=12, available=5, offer=thingOffer)
             PcObject.check_and_save(stock, recommendation, recommendation2, thingStock)
-            auth_request = req_with_auth(user.email, user.clearTextPassword)
 
             # When
-            response = auth_request.get(
+            response = TestClient().with_auth(user.email, user.clearTextPassword).get(
                 RECOMMENDATION_URL + '?categories=Lire%2CRegarder&days=1-5&page=2' + '&date=%s' % strftime(self.now)
             )
 
@@ -631,10 +622,8 @@ class Get:
 
             PcObject.check_and_save(stock13, recommendation13, stock75, recommendation75, stock973, recommendation973)
 
-            auth_request = req_with_auth(user.email, user.clearTextPassword)
-
             # When
-            response = auth_request.get(
+            response = TestClient().with_auth(user.email, user.clearTextPassword).get(
                 RECOMMENDATION_URL + '?distance=1&latitude=48.8363788&longitude=2.4002701&keywords=Funky'
             )
 
@@ -656,10 +645,9 @@ class Get:
             recommendation = create_recommendation(offer, user)
             stock = create_stock_from_event_occurrence(event_occurrence)
             PcObject.check_and_save(stock, recommendation)
-            auth_request = req_with_auth(user.email, user.clearTextPassword)
 
             # When
-            response = auth_request.get(
+            response = TestClient().with_auth(user.email, user.clearTextPassword).get(
                 RECOMMENDATION_URL + '?date=%s&keywords=nekfeu' % strftime(self.ten_days_from_now)
             )
 
