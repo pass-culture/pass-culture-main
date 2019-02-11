@@ -8,7 +8,7 @@ import offererSelector from '../../../selectors/offerer'
 import selectUserOffererByOffererIdAndUserIdAndRightsType from '../../../selectors/selectUserOffererByOffererIdAndUserIdAndRightsType'
 import selectVenuePatchByVenueIdByOffererId from '../../../selectors/selectVenuePatchByVenueIdByOffererId'
 
-import VenuePageContent from './VenuePageContent'
+import RawVenuePage from './RawVenuePage'
 
 function mapStateToProps(state, ownProps) {
   const { offererId, venueId } = ownProps.match.params
@@ -37,4 +37,4 @@ export default compose(
   withLogin({ failRedirect: '/connexion' }),
   withRouter,
   connect(mapStateToProps)
-)(VenuePageContent)
+)(RawVenuePage)

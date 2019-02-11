@@ -24,11 +24,13 @@ const backAnchor = Selector('a.back-button')
 const cityInput = Selector('#venue-city')
 const closeAnchor = Selector('button.close').withText('OK')
 
+const emailInput = Selector('#venue-bookingEmail')
 const latitudeInput = Selector('#venue-latitude')
 const longitudeInput = Selector('#venue-longitude')
 const nameInput = Selector('#venue-name')
 const postalCodeInput = Selector('#venue-postalCode')
 const notificationError = Selector('.notification.is-danger')
+const notificationSuccess = Selector('.notification.is-success.columns')
 const siretInput = Selector('#venue-siret')
 const commentInput = Selector('#venue-comment')
 const siretInputError = Selector('#venue-siret-error')
@@ -252,7 +254,18 @@ test('Je peux revenir en arrière', async t => {
   await t.expect(location.pathname).match(/\/structures\/([A-Z0-9]*)$/)
 })
 
-test.skip('Je peux modifier le lieu', async t => {
-  // TODO
-  await t.click(updateAnchor)
+test("Je peux modifier l'email de contact du lieu", async t => {
+  // Given
+  await t.expect(emailInput.value).eql('fake@email.com')
+  // When
+  await t
+    .click(updateAnchor)
+    .typeText(emailInput, 'fake')
+    .click(submitButton)
+    .wait(500)
+    // Then
+    .expect(emailInput.value)
+    .eql('fake@email.comfake')
+    .expect(notificationSuccess.innerText)
+    .contains('Lieu modifié avec succès !')
 })

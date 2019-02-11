@@ -24,7 +24,7 @@ import {
   VENUE_NEW_PATCH_KEYS,
 } from '../../../utils/formatPatch'
 
-class VenuePageContent extends Component {
+class RawVenuePage extends Component {
   constructor() {
     super()
     this.state = {
@@ -83,16 +83,17 @@ class VenuePageContent extends Component {
   handleSuccess = (state, action) => {
     const { dispatch, history, offerer } = this.props
     const venueId = get(action, 'data.id')
+
     if (!venueId) {
       console.warn('You should have a venueId here')
       return
     }
 
-    // const redirectPathname = `/structures/${offerer.id}`
     const redirectPathname =
-      get(action, 'method') === 'POST'
+      get(action, 'method') === 'POST' || get(action, 'method') === 'PATCH'
         ? `/structures/${get(offerer, 'id')}/lieux/${venueId}`
         : `/structures/${get(offerer, 'id')}`
+
     history.push(redirectPathname)
 
     const createOfferPathname = `/offres/nouveau?lieu=${venueId}`
@@ -442,4 +443,4 @@ class VenuePageContent extends Component {
   }
 }
 
-export default VenuePageContent
+export default RawVenuePage

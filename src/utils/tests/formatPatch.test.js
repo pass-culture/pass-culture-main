@@ -50,6 +50,7 @@ describe('formatPatch', () => {
         iban: 'FR7630001007941234567890185',
         latitude: 48.92071,
         longitude: 2.48371,
+        managingOffererId: 'APWA',
         name: 'Cinéma de la fin',
         postalCode: '93600',
         siret: '22222222911111',
