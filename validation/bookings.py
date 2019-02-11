@@ -70,6 +70,15 @@ def check_stock_booking_limit_date(stock):
         raise api_errors
 
 
+def check_offer_date(date):
+    stock_has_expired = date is not None and date < datetime.utcnow()
+
+    if stock_has_expired:
+        api_errors = ApiErrors()
+        api_errors.addError('date', "La date n'est plus valable")
+        raise api_errors
+
+
 def check_expenses_limits(expenses: dict, booking: Booking, find_stock=find_stock_by_id):
     stock = find_stock(booking.stockId)
     event_or_thing = stock.resolvedOffer.eventOrThing

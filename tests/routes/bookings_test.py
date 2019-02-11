@@ -404,6 +404,8 @@ class Post:
             assert response.status_code == 400
             assert error_message['quantity'] == ['Vous devez préciser une quantité pour la réservation']
 
+
+
     class Returns201:
         @clean_database
         def when_limit_date_is_in_the_future_and_offer_is_free(self, app):
@@ -437,6 +439,32 @@ class Post:
             created_booking_json = r_check.json()
             for (key, value) in booking_json.items():
                 assert created_booking_json[key] == booking_json[key]
+
+        @clean_database
+        def when_null_date(self, app):
+            # Given
+            user = create_user(email='test@email.com', password='testpsswd')
+            offerer = create_offerer()
+            deposit_date = datetime.utcnow() - timedelta(minutes=2)
+            deposit = create_deposit(user, deposit_date, amount=200)
+            venue = create_venue(offerer)
+            thing_offer = create_thing_offer(venue)
+            stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=20)
+            PcObject.check_and_save(deposit, stock, user)
+
+            booking_json = {
+                'date': None,
+                'stockId': humanize(stock.id),
+                'recommendationId': None,
+                'quantity': 1
+            }
+
+            # When
+            response = TestClient().with_auth('test@email.com', 'testpsswd').post(API_URL + '/bookings',
+                                                                                  json=booking_json)
+            # Then
+            error_message = response.json()
+            assert response.status_code == 201
 
         @clean_database
         def when_user_has_enough_credit(self, app):

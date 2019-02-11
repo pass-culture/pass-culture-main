@@ -24,6 +24,7 @@ from validation.bookings import check_booking_is_usable, \
     check_has_quantity, \
     check_has_stock_id, \
     check_not_soft_deleted_stock, \
+    check_offer_date, \
     check_offer_is_active, \
     check_stock_booking_limit_date, \
     check_user_is_logged_in_or_email_is_provided, check_email_and_offer_id_for_anonymous_user, \
@@ -49,15 +50,20 @@ def get_booking(booking_id):
 @login_required
 @expect_json_data
 def create_booking():
+    date = request.json.get('date')
     stock_id = request.json.get('stockId')
     recommendation_id = request.json.get('recommendationId')
     quantity = request.json.get('quantity')
+
+    print('date ---->', date)
 
     try:
         check_has_stock_id(stock_id)
         check_has_quantity(quantity)
 
         stock = Stock.query.filter_by(id=dehumanize(stock_id)).first()
+
+        check_offer_date(date)
         check_existing_stock(stock)
         check_not_soft_deleted_stock(stock)
 
