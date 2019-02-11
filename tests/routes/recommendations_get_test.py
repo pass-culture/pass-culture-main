@@ -105,6 +105,25 @@ class Get:
             assert recommendations[0]['search'] == search
 
         @clean_database
+        def test_when_searching_by_keywords_containing_an_apostrophe(self, app):
+            # given
+            user = create_user(email='test@email.com', password='P@55w0rd')
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            offer = create_event_offer(venue, event_name="L'histoire sans fin")
+            stock = create_stock_from_offer(offer)
+            PcObject.check_and_save(stock, user)
+            # when
+            response = req_with_auth(user.email, user.clearTextPassword) \
+                .get(RECOMMENDATION_URL + '?keywords=l%27histoire')
+
+            # then
+            assert response.status_code == 200
+            recommendations = response.json()
+            assert recommendations[0]['offer']['eventOrThing']['name'] == "L'histoire sans fin"
+            assert len(recommendations) == 1
+
+        @clean_database
         def test_when_searching_by_keywords_with_non_matching_case(self, app):
             # given
             search = "keywords_string={}".format("rencontres")
