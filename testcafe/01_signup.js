@@ -9,12 +9,14 @@ import {
   FUTURE_USER_WITH_UNREGISTERED_OFFERER,
 } from './helpers/users'
 
+const cguLink = Selector('#accept-cgu-link')
 const contactOkInput = Selector('#user-contact_ok')
 const emailInput = Selector('#user-email')
 const emailInputError = Selector('#user-email-error')
 const firstNameInput = Selector('#user-firstName')
 const lastNameInput = Selector('#user-lastName')
 const newsletterOkInput = Selector('#user-newsletter_ok')
+const cguOkInput = Selector('#user-cgu_ok')
 const passwordInput = Selector('#user-password')
 const passwordInputError = Selector('#user-password-error')
 const signInButton = Selector('.is-secondary').withText("J'ai déjà un compte")
@@ -33,6 +35,7 @@ test("Je peux cliquer sur lien pour me connecter si j'ai déja un compte", async
 
 test("Lorsque l'un des champs obligatoire est manquant, le bouton créer est desactivé", async t => {
   await t.typeText(emailInput, 'email@email.test')
+  await t.click(cguOkInput)
   await t.expect(signUpButton.innerText).eql('Créer')
   await t.expect(signUpButton.hasAttribute('disabled')).ok()
 })
@@ -56,6 +59,7 @@ test('Je créé un compte avec un nouveau siren, je suis redirigé·e vers la pa
     .expect(signUpButton.hasAttribute('disabled'))
     .ok()
     .click(contactOkInput)
+    .click(cguOkInput)
     .click(newsletterOkInput)
 
   await t.click(signUpButton)
@@ -85,6 +89,7 @@ test.requestHooks(SIREN_ALREADY_IN_DATABASE)(
       .typeText(firstNameInput, firstName)
       .typeText(sirenInput, siren)
       .click(contactOkInput)
+      .click(cguOkInput)
     await t.click(signUpButton).wait(5000)
 
     await t.expect(emailInputError.innerText).match(/.*\S.*/)
@@ -108,6 +113,7 @@ test.requestHooks(SIREN_ALREADY_IN_DATABASE)(
       .typeText(firstNameInput, firstName)
       .typeText(sirenInput, siren)
       .click(contactOkInput)
+      .click(cguOkInput)
 
     await t.click(signUpButton)
 
@@ -136,9 +142,12 @@ test.requestHooks(SIREN_ALREADY_IN_DATABASE)(
       .typeText(firstNameInput, firstName)
       .typeText(sirenInput, siren)
 
+      .expect(cguLink.getAttribute('href')).contains('https://pass-culture.gitbook.io/documents/textes-normatifs')
+
       .expect(signUpButton.hasAttribute('disabled'))
       .ok()
       .click(contactOkInput)
+      .click(cguOkInput)
       .click(newsletterOkInput)
 
     await t.click(signUpButton)
@@ -151,7 +160,7 @@ test.requestHooks(SIREN_ALREADY_IN_DATABASE)(
 fixture`SignupPage D | Clique sur le lien de validation de compte reçu par email`
   .page`${ROOT_PATH + 'inscription'}`
 
-test('Je suis redirigé sur la page de connexion avec un message de confirmation', async t => {
+test('Je suis redirigé·e vers la page de connexion avec un message de confirmation', async t => {
   // given
   const { validationToken } = EXISTING_REAL_VALIDATION_USER
 

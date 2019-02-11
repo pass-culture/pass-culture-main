@@ -116,7 +116,12 @@
     }
     a {
       text-decoration: underline;
+      color: $black;
     }
+  }
+
+  .cgu-field {
+    font-weight: $weight-bold;
   }
 
   .buttons-field {

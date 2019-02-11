@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react'
+import React, { Fragment, PureComponent } from 'react'
 import { NavLink, withRouter } from 'react-router-dom'
 import { Field, Form, SubmitButton } from 'pass-culture-shared'
 import { compose } from 'redux'
@@ -17,7 +17,8 @@ class SignupForm extends PureComponent {
             <a
               className="is-secondary"
               href="https://pass.culture.fr/assets/docs/Pas_a_pas_pass_Culture.pdf"
-              target="_blank">
+              target="_blank"
+              rel="noreferrer noopener">
               modalités de fonctionnement en cliquant ici
             </a>{' '}
             avant de renseigner les champs suivants.
@@ -98,6 +99,24 @@ class SignupForm extends PureComponent {
               <Field
                 label="J'accepte d'être contacté par mail pour donner mon avis sur le Pass Culture."
                 name="contact_ok"
+                type="checkbox"
+                required
+              />
+              <Field
+                className="cgu-field"
+                label={
+                  <Fragment>
+                    J’ai lu et j’accepte les{' '}
+                    <a
+                      href="https://pass-culture.gitbook.io/documents/textes-normatifs"
+                      id="accept-cgu-link"
+                      target="_blank"
+                      rel="noopener noreferrer">
+                      Conditions Générales d’Utilisation
+                    </a>
+                  </Fragment>
+                }
+                name="cgu_ok"
                 type="checkbox"
                 required
               />
