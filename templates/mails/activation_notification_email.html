@@ -76,6 +76,8 @@
          width: 2% !important;
          }
 
+
+
     </style>
 </head>
 <body leftmargin="0" topmargin="0" marginwidth="0" marginheight="0" id="body"
@@ -86,10 +88,16 @@
             <table width="600" border="0" cellspacing="0" cellpadding="0" bgcolor="#ffffff">
                 <tr>
                     <td width="600" style="font-size:0; line-height:1px">
-                        <img src="{{ object_storage_url }}/mailing/header.jpg"
-                             alt="vous êtes aujourd'hui à portée de clic de votre pass Culture !" width="600"
-                             height="296" style="border:0;text-decoration:none; display:block;"
-                        />
+                        <a id="installation-how-to"
+                           href="https://pass-culture.gitbook.io/documents/tutoriels/experimentateurs/telecharger-et-installer-lapplication"
+                           style="border: none;text-decoration: none; color:#FFF;"
+                           target="_blank"
+                           title="Comment télécharger et installer le pass Culture">
+                            <img src="{{ object_storage_url }}/mailing/header.jpg"
+                                 alt="vous êtes aujourd'hui à portée de clic de votre pass Culture !" width="600"
+                                 height="296" style="border:0;text-decoration:none; display:block;"
+                            />
+                        </a>
                     </td>
                 </tr>
             </table>
@@ -128,7 +136,7 @@
                     <td width="570"
                         style="letter-spacing:-0.5px;font-family:Arial,sans-serif;text-align: left; font-size:16px; line-height:16px !important; color:#48008e; margin:0;">
                         <p style="font-family:Arial,sans-serif;text-align: left; font-size:16px; line-height:16px!important; color:#48008e;">
-                            <strong id="user-first-name">Bonjour {{ first_name }},</strong>
+                            <strong id="user-first-name">Bonjour {{ first_name }},</strong>
                         </p>
                     </td>
                 </tr>
@@ -225,6 +233,43 @@
         </td>
     </tr>
     <tr>
+        <td height="10" width="600" bgcolor="#ffffff" style="height:10px;font-size: 1px;">
+            &nbsp;
+        </td>
+    </tr>
+
+    <tr>
+        <td height="10" width="600" bgcolor="#ffffff" style="height:10px;font-size: 1px;">
+            &nbsp;
+        </td>
+    </tr>
+
+    <tr>
+        <td width="600">
+            <table width="600" border="0" cellspacing="0" cellpadding="0" bgcolor="#ffffff">
+                <tr>
+                    <td width="30" style="font-size:1px; height:20px;">&nbsp;</td>
+                    <td width="530"
+                        style="font-family:Arial,sans-serif;text-align: left; font-size:13px; line-height:15px !important; color:#48008e; margin:0;">
+                        <p style="letter-spacing:-0.5px;font-family:Arial,sans-serif;text-align: left; font-size:13px; line-height:15px!important; color:#48008e;">
+                            Pour profiter au mieux de l’application sur smartphone,
+                            <br/>
+                            <strong> épinglez votre pass Culture à votre écran d’accueil :
+                                <a
+                                        href="https://pass.culture.fr/assets/docs/Tuto-app_passCulture-mobile.pdf"
+                                        target="_blank" title="Tout est expliqué ici"
+                                        style="border: none;text-decoration: underline; color:#48008e;">tout est
+                                    expliqué ici</a>.</strong>
+                        </p>
+                    </td>
+                    <td width="40" style="font-size:1px; height:20px;">&nbsp;</td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+
+
+    <tr>
 
         <td height="30" width="600" bgcolor="#ffffff" style="height:30px;font-size: 1px;">
             &nbsp;
@@ -237,6 +282,7 @@
                     <td width="30" style="font-size:1px; height:20px;">&nbsp;</td>
                     <td width="530"
                         style="font-family:Arial,sans-serif;text-align: left; font-size:13px; line-height:15px !important; color:#48008e; margin:0;">
+                        <br/>
                         <p style="letter-spacing:-0.5px;font-family:Arial,sans-serif;text-align: left; font-size:13px; line-height:15px!important; color:#48008e;">
                             <strong>Le pass Culture, c’est l’application qui vous permettra d’accéder à toutes les
                                 sorties ou pratiques culturelles près de chez vous.</strong>
@@ -250,14 +296,6 @@
                         <p style="letter-spacing:-0.5px;font-family:Arial,sans-serif;text-align: left; font-size:13px; line-height:15px!important; color:#48008e;">
                             <strong>Explorez les nombreuses propositions sur l’application pour vous adonner à vos
                                 passions ou tenter de nouvelles expériences.</strong>
-                        </p>
-                        <br/>
-                        <p style="letter-spacing:-0.5px;font-family:Arial,sans-serif;text-align: left; font-size:13px; line-height:15px!important; color:#48008e;">
-                            <strong>Pour profiter au mieux de l’application sur smartphone, épinglez vous-même votre
-                                pass Culture à votre écran d’accueil : tout est expliqué <a
-                                        href="https://pass.culture.fr/assets/docs/Tuto-app_passCulture-mobile.pdf"
-                                        target="_blank" title="Tout est expliqué ici"
-                                        style="border: none;text-decoration: underline; color:#48008e;">ici</a>.</strong>
                         </p>
                         <br/>
                     </td>
@@ -289,44 +327,21 @@
             &nbsp;
         </td>
     </tr>
-    <tr>
-        <td width="600">
-            <table width="600" border="0" cellspacing="0" cellpadding="0" bgcolor="#ffffff">
-                <tr>
-                    <td width="30" style="font-size:1px; height:20px;">&nbsp;</td>
-                    <td width="530"
-                        style="font-family:Arial,sans-serif;text-align: justify; font-size:13px; line-height:15px !important; color:#48008e; margin:0;">
-                        <p style="letter-spacing:-0.5px;font-family:Arial,sans-serif;text-align: left; font-size:13px; line-height:15px!important; color:#48008e;">
-                            <strong>Le pass Culture est dans sa phase d’expérimentation. Il est en construction
-                                permanente. Nous travaillons tous les jours à son amélioration. Mais vous pouvez aussi
-                                nous aider !</strong>
-                        </p>
-                    </td>
-                    <td width="40" style="font-size:1px; height:20px;">&nbsp;</td>
-                </tr>
-            </table>
-        </td>
-    </tr>
-    <tr>
-        <td height="50" width="600" bgcolor="#ffffff" style="height:50px;font-size: 1px;">
-            &nbsp;
-        </td>
-    </tr>
-    <tr>
-        <td width="600">
-            <table width="600" border="0" cellspacing="0" cellpadding="0" bgcolor="#ffffff">
-                <tr>
-                    <td width="30" style="font-size:1px; height:20px;">&nbsp;</td>
-                    <td width="530"
-                        style="font-family:Arial,sans-serif;text-align: justify; font-size:13px; line-height:15px !important; color:#48008e; margin:0;">
-                        <p style="letter-spacing:-0.5px;font-family:Arial,sans-serif;text-align: left; font-size:13px; line-height:15px!important; color:#48008e;">
-                            <strong>Le mot du ministre</strong>
-                        </p>
-                    </td>
-                    <td width="40" style="font-size:1px; height:20px;">&nbsp;</td>
-                </tr>
-            </table>
-        </td>
+
+    <td width="600">
+        <table width="600" border="0" cellspacing="0" cellpadding="0" bgcolor="#ffffff">
+            <tr>
+                <td width="30" style="font-size:1px; height:20px;">&nbsp;</td>
+                <td width="530"
+                    style="font-family:Arial,sans-serif;text-align: justify; font-size:13px; line-height:15px !important; color:#48008e; margin:0;">
+                    <p style="letter-spacing:-0.5px;font-family:Arial,sans-serif;text-align: left; font-size:13px; line-height:15px!important; color:#48008e;">
+                        <strong>Le mot du ministre</strong>
+                    </p>
+                </td>
+                <td width="40" style="font-size:1px; height:20px;">&nbsp;</td>
+            </tr>
+        </table>
+    </td>
     </tr>
     <tr>
         <td width="600">
@@ -336,14 +351,19 @@
                     <td width="530"
                         style="font-family:Arial,sans-serif;text-align: justify; font-size:13px; line-height:15px !important; color:#48008e; margin:0;">
                         <p style="letter-spacing:-0.5px;font-family:Arial,sans-serif;text-align: justify; font-size:13px; line-height:15px!important; color:#48008e;">
-                            «Je vous remercie d’avoir répondu présents en si grand nombre pour prendre part à cette expérimentation sans précédent.
+                            «Je vous remercie d’avoir répondu présents en si grand nombre pour prendre part à cette
+                            expérimentation sans précédent.
                             Pour une fois, l’on ne vous dira pas que la curiosité est un vilain défaut.
                             Je vous invite précisément à être curieux.
-                            Le pass Culture est une formidable chance d’explorer des domaines de la culture que vous ne connaissez pas encore, profitez-en.
-                            Faites-nous part également de tous vos retours, autant que possible, la période qui s’ouvre est faite pour cela.
-                            Nous avons le plaisir de construire ensemble le pass Culture dont des générations entières de jeunes de votre âge bénéficieront dans les années à venir.
+                            Le pass Culture est une formidable chance d’explorer des domaines de la culture que vous ne
+                            connaissez pas encore, profitez-en.
+                            Faites-nous part également de tous vos retours, autant que possible, la période qui s’ouvre
+                            est faite pour cela.
+                            Nous avons le plaisir de construire ensemble le pass Culture dont des générations entières
+                            de jeunes de votre âge bénéficieront dans les années à venir.
                             Gardez d’ailleurs en tête que la culture doit toujours rester associée au plaisir.
-                            Je vous souhaite donc de faire de belles découvertes sur le pass Culture et, surtout, de vous y amuser.»
+                            Je vous souhaite donc de faire de belles découvertes sur le pass Culture et, surtout, de
+                            vous y amuser.»
                         </p>
                     </td>
 
@@ -360,7 +380,7 @@
                     <td width="530"
                         style="font-family:Arial,sans-serif;text-align: right; font-size:13px; line-height:15px !important; color:#48008e; margin:0;">
                         <p style="letter-spacing:-0.5px;font-family:Arial,sans-serif;text-align: right; font-size:13px; line-height:15px!important; color:#48008e;">
-                        <strong>Franck Riester</strong>
+                            <strong>Franck Riester</strong>
                         </p>
                         <p>Ministre de la Culture</p>
                     </td>
@@ -408,7 +428,21 @@
                     <td width="530"
                         style="font-family:Arial,sans-serif;text-align: left; font-size:13px; line-height:15px !important; color:#48008e; margin:0;">
                         <p style="letter-spacing:-0.5px;font-family:Arial,sans-serif;text-align: left; font-size:13px; line-height:15px!important; color:#48008e;">
-                            <strong>On adore vous lire alors n’hésitez pas à nous dire… </strong>
+                            <strong>Le pass Culture est dans sa phase d’expérimentation.</strong>
+                        </p>
+                        <br/>
+                        <p style="letter-spacing:-0.5px;font-family:Arial,sans-serif;text-align: left; font-size:13px; line-height:15px!important; color:#48008e;">
+                            <strong>Nous travaillons tous les jours à son amélioration, mais vous pouvez aussi nous
+                                aider : n’hésitez pas à nous dire ce que vous aimez, ce que vous aimez moins, si vous
+                                rencontrez un problème, et toutes vos idées !</strong>
+                        </p>
+                        <br/>
+                        <p style="letter-spacing:-0.5px;font-family:Arial,sans-serif;text-align: left; font-size:13px; line-height:15px!important; color:#48008e;">
+                            <strong>Pour cela, écrivez-nous à
+                                <a href="mailto:support.passculture@beta.gouv.fr" target="_blank" title="Support"
+                                   style="border: none; color:#48008e;"><strong>
+                                    support.passculture@beta.gouv.fr</strong>
+                                </a>
                         </p>
                     </td>
                     <td width="40" style="font-size:1px; height:20px;">&nbsp;</td>
@@ -416,34 +450,9 @@
             </table>
         </td>
     </tr>
+
     <tr>
-        <td width="600">
-            <table width="600" border="0" cellspacing="0" cellpadding="0" bgcolor="#ffffff">
-                <tr>
-                    <td width="70" style="font-size:1px; height:20px;">&nbsp;</td>
-                    <td width="530"
-                        style="font-family:Arial,sans-serif;text-align: left; font-size:13px; line-height:15px !important; color:#48008e; margin:0;">
-                        <p style="letter-spacing:-0.5px;font-family:Arial,sans-serif;text-align: left; font-size:13px; line-height:15px!important; color:#48008e;">
-                            <strong>• ce que vous aimez,</strong>
-                        </p>
-                        <p style="letter-spacing:-0.5px;font-family:Arial,sans-serif;text-align: left; font-size:13px; line-height:15px!important; color:#48008e;">
-                            <strong>• ce que vous aimez moins,</strong>
-                        </p>
-                        <p style="letter-spacing:-0.5px;font-family:Arial,sans-serif;text-align: left; font-size:13px; line-height:15px!important; color:#48008e;">
-                            <strong>• si vous rencontrez un problème,</strong>
-                        </p>
-                        <p style="letter-spacing:-0.5px;font-family:Arial,sans-serif;text-align: left; font-size:13px; line-height:15px!important; color:#48008e;">
-                            <strong>• si vous souhaitez nous donner des idées sur les nouvelles fonctionnalités que
-                                <br/>
-                                vous aimeriez que le pass Culture vous propose !</strong>
-                        </p>
-                    </td>
-                </tr>
-            </table>
-        </td>
-    </tr>
-    <tr>
-        <td height="20" width="600" bgcolor="#ffffff" style="height:20px;font-size: 1px;">
+        <td height="50" width="600" bgcolor="#ffffff" style="height:50px;font-size: 1px;">
             &nbsp;
         </td>
     </tr>
