@@ -327,18 +327,18 @@ class Get:
             offer2 = create_event_offer(venue, event_name='Spectacle', event_type=EventType.SPECTACLE_VIVANT)
             thing = create_thing(thing_name='Lire un livre', is_national=True)
 
-            thingOffer = create_thing_offer(venue, thing)
+            thing_offer = create_thing_offer(venue, thing)
 
             event_occurrence = create_event_occurrence(offer, beginning_datetime=self.three_days_from_now,
                                                        end_datetime=self.three_days_and_one_hour_from_now)
 
             recommendation = create_recommendation(offer, user)
-            recommendation2 = create_recommendation(thingOffer, user)
+            recommendation2 = create_recommendation(thing_offer, user)
             recommendation3 = create_recommendation(offer2, user)
             stock = create_stock_from_event_occurrence(event_occurrence)
             stock1 = create_stock_from_offer(offer2)
-            thingStock = create_stock(price=12, available=5, offer=thingOffer)
-            PcObject.check_and_save(stock, recommendation, recommendation2, recommendation3, thingStock, stock1)
+            thing_stock = create_stock(price=12, available=5, offer=thing_offer)
+            PcObject.check_and_save(stock, recommendation, recommendation2, recommendation3, thing_stock, stock1)
 
             # When
             response = TestClient().with_auth(user.email, user.clearTextPassword).get(
@@ -445,6 +445,7 @@ class Get:
                 RECOMMENDATION_URL + '?distance=20000&latitude=48.8363788&longitude=2.4002701&keywords=Macouria')
 
             # Then
+            assert response.status_code == 200
             offers = response.json()
             assert len(offers) == 1
             assert 'Kiwi' in offers[0]['offer']['eventOrThing']['name']
@@ -515,18 +516,18 @@ class Get:
                                         event_type=EventType.ACTIVATION)
             thing = create_thing(thing_name='Lire un livre', is_national=True)
 
-            thingOffer = create_thing_offer(venue, thing)
+            thing_offer = create_thing_offer(venue, thing)
 
             event_occurrence = create_event_occurrence(offer, beginning_datetime=self.three_days_from_now,
                                                        end_datetime=self.three_days_and_one_hour_from_now)
 
             recommendation = create_recommendation(offer, user)
-            recommendation2 = create_recommendation(thingOffer, user)
+            recommendation2 = create_recommendation(thing_offer, user)
             recommendation3 = create_recommendation(offer2, user)
             stock = create_stock_from_event_occurrence(event_occurrence)
             stock1 = create_stock_from_offer(offer2)
-            thingStock = create_stock(price=12, available=5, offer=thingOffer)
-            PcObject.check_and_save(stock, recommendation, recommendation2, recommendation3, thingStock, stock1)
+            thing_stock = create_stock(price=12, available=5, offer=thing_offer)
+            PcObject.check_and_save(stock, recommendation, recommendation2, recommendation3, thing_stock, stock1)
 
             # When
             response = TestClient().with_auth(user.email, user.clearTextPassword).get(
@@ -582,8 +583,8 @@ class Get:
             recommendation = create_recommendation(offer, user)
             recommendation2 = create_recommendation(thingOffer, user)
             stock = create_stock_from_event_occurrence(event_occurrence)
-            thingStock = create_stock(price=12, available=5, offer=thingOffer)
-            PcObject.check_and_save(stock, recommendation, recommendation2, thingStock)
+            thing_stock = create_stock(price=12, available=5, offer=thingOffer)
+            PcObject.check_and_save(stock, recommendation, recommendation2, thing_stock)
 
             # When
             response = TestClient().with_auth(user.email, user.clearTextPassword).get(
@@ -628,6 +629,7 @@ class Get:
             )
 
             # Then
+            assert response.status_code == 200
             assert len(response.json()) == 0
 
         @clean_database
