@@ -17,7 +17,10 @@ $toaster-height: rem(44px);
 
 .react-toastify-toast {
   min-height: $toaster-height;
-  padding: rem(0 12px) !important;
+  padding-top: 0 !important;
+  padding-right: 0 !important;
+  padding-bottom: 0 !important;
+  padding-left: rem(12px) !important;
 }
 
 .react-toastify-body {
@@ -25,7 +28,10 @@ $toaster-height: rem(44px);
   @extend .is-black-text;
   @extend .is-barlow-font;
 
-  margin: rem(14px 0) !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  margin-top: rem(12px) !important;
+  margin-bottom: rem(12px) !important;
 }
 
 .react-toastify-custom-close-button {
