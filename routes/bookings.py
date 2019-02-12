@@ -10,7 +10,8 @@ from domain.user_emails import send_booking_recap_emails, \
 from models import ApiErrors, Booking, PcObject, Stock, RightsType, EventType
 from models.pc_object import serialize
 from repository import booking_queries
-from repository.booking_queries import find_active_bookings_by_user_id
+from repository.booking_queries import find_active_bookings_by_user_id, \
+find_all_bookings_for_stock_and_user
 from utils.human_ids import dehumanize, humanize
 from utils.includes import BOOKING_INCLUDES
 from utils.mailing import MailServiceException
@@ -23,6 +24,8 @@ from validation.bookings import check_booking_is_usable, \
     check_expenses_limits, \
     check_has_quantity, \
     check_has_stock_id, \
+    check_already_booked, \
+    check_has_more_than_one_quantity, \
     check_not_soft_deleted_stock, \
     check_offer_date, \
     check_offer_is_active, \
@@ -54,22 +57,25 @@ def create_booking():
     recommendation_id = request.json.get('recommendationId')
     quantity = request.json.get('quantity')
 
+    stock = Stock.query.filter_by(id=dehumanize(stock_id)).first()
+
+    user_bookings = find_all_bookings_for_stock_and_user(stock, current_user)
+
     try:
         check_has_stock_id(stock_id)
+        check_already_booked(user_bookings)
         check_has_quantity(quantity)
-
-        stock = Stock.query.filter_by(id=dehumanize(stock_id)).first()
-
+        check_has_more_than_one_quantity(quantity)
         check_offer_date(stock)
         check_existing_stock(stock)
         check_not_soft_deleted_stock(stock)
-
         check_can_book_free_offer(stock, current_user)
         check_offer_is_active(stock)
         check_stock_booking_limit_date(stock)
         check_stock_venue_is_validated(stock)
     except ApiErrors as api_errors:
         return jsonify(api_errors.errors), 400
+
 
     new_booking = Booking(from_dict={
         'stockId': stock_id,
@@ -81,6 +87,7 @@ def create_booking():
     })
 
     bookings = find_active_bookings_by_user_id(current_user.id)
+
     expenses = get_expenses(bookings)
     check_expenses_limits(expenses, new_booking)
     booking_queries.save_booking(new_booking)

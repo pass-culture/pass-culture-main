@@ -405,6 +405,30 @@ class Post:
             assert error_message['quantity'] == ['Vous devez préciser une quantité pour la réservation']
 
         @clean_database
+        def when_more_than_one_quantity(self, app):
+            # Given
+            user = create_user(email='test@email.com', password='testpsswd')
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            thing_offer = create_thing_offer(venue)
+            stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=90)
+            PcObject.check_and_save(stock, user)
+
+            booking_json = {
+                'stockId': humanize(stock.id),
+                'recommendationId': None,
+                'quantity': 5
+            }
+
+            # When
+            response = TestClient().with_auth('test@email.com', 'testpsswd').post(API_URL + '/bookings',
+                                                                                  json=booking_json)
+            # Then
+            error_message = response.json()
+            assert response.status_code == 400
+            assert error_message['quantity'] == ["Vous ne pouvez pas réservez plus d'une offre à la fois"]
+
+        @clean_database
         def when_event_occurrence_beginning_datetime_has_passed(self, app):
             # Given
             four_days_ago = datetime.utcnow() - timedelta(days=4)
@@ -464,6 +488,34 @@ class Post:
             error_message = response.json()
             assert response.status_code == 400
             assert error_message['global'] == ["La date limite de réservation de cette offre est dépassée"]
+
+        @clean_database
+        def when_already_booked_by_user(self, app):
+            # Given
+            user = create_user(email='test@email.com', password='testpsswd')
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            thing_offer = create_thing_offer(venue)
+            deposit_date = datetime.utcnow() - timedelta(minutes=2)
+            deposit = create_deposit(user, deposit_date, amount=200)
+            stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=90)
+            booking = create_booking(user, stock, venue, is_cancelled=False)
+            PcObject.check_and_save(stock, user, booking)
+
+            booking_json = {
+                'stockId': humanize(stock.id),
+                'recommendationId': None,
+                'quantity': 1
+            }
+
+            # When
+            response = TestClient().with_auth('test@email.com', 'testpsswd').post(API_URL + '/bookings',
+                                                                                  json=booking_json)
+
+            # Then
+            assert response.status_code == 400
+            error_message = response.json()
+            assert error_message['stockId'] == ["Cette offre a déja été reservée par l'utilisateur"]
 
 
     class Returns201:
@@ -673,6 +725,31 @@ class Post:
             assert r_create.status_code == 201
             assert r_create_json['amount'] == 10.0
             assert r_create_json['quantity'] == 1
+
+        @clean_database
+        def when_already_booked_by_user_but_cancelled(self, app):
+            # Given
+            user = create_user(email='test@email.com', password='testpsswd')
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            thing_offer = create_thing_offer(venue)
+            deposit_date = datetime.utcnow() - timedelta(minutes=2)
+            deposit = create_deposit(user, deposit_date, amount=200)
+            stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=90)
+            booking = create_booking(user, stock, venue, is_cancelled=True)
+            PcObject.check_and_save(stock, user, booking)
+
+            booking_json = {
+                'stockId': humanize(stock.id),
+                'recommendationId': None,
+                'quantity': 1
+            }
+
+            # When
+            response = TestClient().with_auth('test@email.com', 'testpsswd').post(API_URL + '/bookings',
+                                                                                  json=booking_json)
+            # Then
+            assert response.status_code == 201
 
 
 @pytest.mark.standalone

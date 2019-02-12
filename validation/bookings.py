@@ -20,6 +20,13 @@ def check_has_quantity(quantity):
         raise api_errors
 
 
+def check_has_more_than_one_quantity(quantity):
+    if quantity > 1:
+        api_errors = ApiErrors()
+        api_errors.addError('quantity', "Vous ne pouvez pas réservez plus d'une offre à la fois")
+        raise api_errors
+
+
 def check_existing_stock(stock):
     if stock is None:
         api_errors = ApiErrors()
@@ -50,6 +57,14 @@ def check_offer_is_active(stock):
     if soft_deleted_stock or inactive_offerer or inactive_offer or soft_deleted_event_occurrence:
         api_errors = ApiErrors()
         api_errors.addError('stockId', "Cette offre a été retirée. Elle n'est plus valable.")
+        raise api_errors
+
+
+def check_already_booked(user_bookings):
+    already_booked = len(user_bookings) > 0
+    if already_booked:
+        api_errors = ApiErrors()
+        api_errors.addError('stockId', "Cette offre a déja été reservée par l'utilisateur")
         raise api_errors
 
 

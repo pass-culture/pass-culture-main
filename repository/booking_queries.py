@@ -91,6 +91,15 @@ def find_all_bookings_for_stock(stock):
     return Booking.query.join(Stock).filter_by(id=stock.id).all()
 
 
+def find_all_bookings_for_stock_and_user(stock, current_user):
+    return Booking.query \
+        .filter_by(userId=current_user.id) \
+        .filter_by(isCancelled=False) \
+        .join(Stock) \
+        .filter_by(id=stock.id) \
+        .all() \
+
+
 def find_by(token: str, email: str = None, offer_id: int = None) -> Booking:
     query = Booking.query.filter_by(token=token)
 
