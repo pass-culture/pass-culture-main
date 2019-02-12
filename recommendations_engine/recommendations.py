@@ -24,7 +24,7 @@ def give_requested_recommendation_to_user(user, offer_id, mediation_id):
         recommendation = _find_recommendation(offer_id, mediation_id)
         if recommendation is None:
             recommendation = _create_recommendation_from_ids(user, offer_id, mediation_id=mediation_id)
-            logger.info('Creating Recommendation with offer_id=%s mediation_id=%s' % (offer_id, mediation_id))
+            logger.debug(lambda: 'Creating Recommendation with offer_id=%s mediation_id=%s' % (offer_id, mediation_id))
 
     return recommendation
 
@@ -83,7 +83,7 @@ def _no_mediation_or_mediation_does_not_match_offer(mediation, offer_id):
 
 
 def _find_recommendation(offer_id, mediation_id):
-    logger.info('Requested Recommendation with offer_id=%s mediation_id=%s' % (offer_id, mediation_id))
+    logger.debug(lambda: 'Requested Recommendation with offer_id=%s mediation_id=%s' % (offer_id, mediation_id))
     query = Recommendation.query.filter(Recommendation.validUntilDate > datetime.utcnow())
     if offer_id:
         query = query.join(Offer)
@@ -92,7 +92,7 @@ def _find_recommendation(offer_id, mediation_id):
 
     if mediation_id:
         if _no_mediation_or_mediation_does_not_match_offer(mediation, offer_id):
-            logger.info('Mediation not found or found but not matching offer for offer_id=%s mediation_id=%s'
+            logger.debug(lambda: 'Mediation not found or found but not matching offer for offer_id=%s mediation_id=%s'
                         % (offer_id, mediation_id))
             raise OfferNotFoundException()
 
@@ -100,7 +100,7 @@ def _find_recommendation(offer_id, mediation_id):
 
     if offer_id:
         if offer is None:
-            logger.info('Offer not found for offer_id=%s' % (offer_id,))
+            logger.debug(lambda: 'Offer not found for offer_id=%s' % (offer_id,))
             raise OfferNotFoundException()
 
         query = query.filter(Offer.id == offer_id)

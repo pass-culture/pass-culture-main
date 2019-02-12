@@ -22,7 +22,7 @@ def build_mixed_recommendations(created_recommendations, read_recommendations, u
 def move_tutorial_recommendations_first(recos, seen_recommendation_ids, user):
     tutorial_recommendations = find_unseen_tutorials_for_user(seen_recommendation_ids, user)
 
-    logger.info('(tuto recos) count %i', len(tutorial_recommendations))
+    logger.debug(lambda: '(tuto recos) count %i', len(tutorial_recommendations))
 
     tutos_read = 0
     for reco in tutorial_recommendations:

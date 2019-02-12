@@ -117,17 +117,14 @@ def get_offers_for_recommendations_discovery(limit=3, user=None, coords=None) ->
     department_codes = get_department_codes_from_user(user)
 
     event_offers = get_active_offers_by_type(Event, user=user, department_codes=department_codes)
-    logger.info('(reco) event_offers count (%i)',
-                len(event_offers))
+    logger.debug(lambda: '(reco) event_offers count (%i)', len(event_offers))
 
     thing_offers = get_active_offers_by_type(Thing, user=user, department_codes=department_codes)
-    logger.info('(reco) thing_offers count (%i)',
-                len(thing_offers))
+    logger.debug(lambda: '(reco) thing_offers count (%i)', len(thing_offers))
 
     offers = sort_by_score(event_offers + thing_offers)
     offers = remove_duplicate_things_or_events(offers)
-    logger.info('(reco) final offers (events + things) count (%i)',
-                len(offers))
+    logger.debug(lambda: '(reco) final offers (events + things) count (%i)', len(offers))
 
     return roundrobin(offers, limit)
 

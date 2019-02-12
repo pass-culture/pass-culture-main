@@ -80,13 +80,13 @@ def not_currently_recommended_offers(query, user):
 
 def get_active_offers_by_type(offer_type, user=None, department_codes=None, offer_id=None):
     query = Offer.query.filter_by(isActive=True)
-    logger.info('(reco) {} active offers count {}'.format(offer_type.__name__, query.count()))
+    logger.debug(lambda: '(reco) {} active offers count {}'.format(offer_type.__name__, query.count()))
     if offer_type == Event:
         query = query.join(EventOccurrence)
         query = query.join(Stock, and_(EventOccurrence.id == Stock.eventOccurrenceId))
     else:
         query = query.join(Stock, and_(Offer.id == Stock.offerId))
-    logger.info('(reco) {} offers with stock count {}'.format(offer_type.__name__, query.count()))
+    logger.debug(lambda: '(reco) {} offers with stock count {}'.format(offer_type.__name__, query.count()))
 
     query = query.join(Venue, and_(Offer.venueId == Venue.id))
     query = query.filter(Venue.validationToken == None)
@@ -95,23 +95,23 @@ def get_active_offers_by_type(offer_type, user=None, department_codes=None, offe
         query = query.join(Event, and_(Offer.eventId == Event.id))
     else:
         query = query.join(Thing, and_(Offer.thingId == Thing.id))
-    logger.info('(reco) {} offers with venue offerer {}'.format(offer_type.__name__, query.count()))
+    logger.debug(lambda: '(reco) {} offers with venue offerer {}'.format(offer_type.__name__, query.count()))
 
     if offer_id is not None:
         query = query.filter(Offer.id == offer_id)
     logger.debug(lambda: '(reco) all ' + str(offer_type) + '.count ' + str(query.count()))
 
     query = department_or_national_offers(query, offer_type, department_codes)
-    logger.info(
+    logger.debug(lambda:
         '(reco) departement or national {} {} in {}'.format(offer_type.__name__, str(department_codes), query.count()))
     query = bookable_offers(query, offer_type)
-    logger.info('(reco) bookable_offers {} {}'.format(offer_type.__name__, query.count()))
+    logger.debug(lambda: '(reco) bookable_offers {} {}'.format(offer_type.__name__, query.count()))
     query = with_active_and_validated_offerer(query)
-    logger.info('(reco) active and validated {} {}'.format(offer_type.__name__, query.count()))
+    logger.debug(lambda: '(reco) active and validated {} {}'.format(offer_type.__name__, query.count()))
     query = not_currently_recommended_offers(query, user)
     query = not_activation_offers(query, offer_type)
     query = query.distinct(offer_type.id)
-    logger.info('(reco) distinct {} {}'.format(offer_type.__name__, query.count()))
+    logger.debug(lambda: '(reco) distinct {} {}'.format(offer_type.__name__, query.count()))
     return query.all()
 
 

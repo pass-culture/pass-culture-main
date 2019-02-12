@@ -91,7 +91,7 @@ def put_recommendations():
     except OfferNotFoundException:
         return "Offer or mediation not found", 404
 
-    logger.info('(special) requested_recommendation %s' % (requested_recommendation,))
+    logger.debug(lambda: '(special) requested_recommendation %s' % requested_recommendation)
 
     # we get more read+unread recos than needed in case we can't make enough new recos
     unread_recos = find_all_unread_recommendations(current_user, seen_recommendation_ids)
@@ -106,25 +106,23 @@ def put_recommendations():
         user=current_user
     )
 
-    logger.info('(unread reco) count %i', len(unread_recos))
-    logger.info('(read reco) count %i', len(read_recos))
-    logger.info('(needed new recos) count %i', needed_new_recos)
-    logger.info('(new recos)' + str([(reco, reco.mediation, reco.dateRead) for reco in created_recommendations]))
-    logger.info('(new reco) count %i', len(created_recommendations))
+    logger.debug(lambda: '(unread reco) count %i', len(unread_recos))
+    logger.debug(lambda: '(read reco) count %i', len(read_recos))
+    logger.debug(lambda: '(needed new recos) count %i', needed_new_recos)
+    logger.debug(lambda: '(new recos)' + str([(reco, reco.mediation, reco.dateRead) for reco in created_recommendations]))
+    logger.debug(lambda: '(new reco) count %i', len(created_recommendations))
 
     recommendations = build_mixed_recommendations(created_recommendations, read_recos, unread_recos)
     shuffle(recommendations)
 
-    all_read_recos_count = count_read_recommendations_for_user(current_user)
-
-    logger.info('(all read recos) count %i', all_read_recos_count)
+    logger.debug(lambda: '(all read recos) count %i', count_read_recommendations_for_user(current_user))
 
     if requested_recommendation:
         recommendations = move_requested_recommendation_first(recommendations, requested_recommendation)
     else:
         recommendations = move_tutorial_recommendations_first(recommendations, seen_recommendation_ids, current_user)
 
-    logger.info('(recap reco) '
+    logger.debug(lambda: '(recap reco) '
                 + str([(reco, reco.mediation, reco.dateRead, reco.offer) for reco in recommendations])
                 + str(len(recommendations)))
 
