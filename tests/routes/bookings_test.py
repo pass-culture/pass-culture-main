@@ -404,6 +404,36 @@ class Post:
             assert response.status_code == 400
             assert error_message['quantity'] == ['Vous devez préciser une quantité pour la réservation']
 
+        @clean_database
+        def when_expired_date(self, app):
+            # Given
+            four_days_ago = datetime.utcnow() - timedelta(days=4)
+            five_days_ago = datetime.utcnow() - timedelta(days=5)
+            user = create_user(email='test@email.com', password='testpsswd')
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            deposit_date = datetime.utcnow() - timedelta(minutes=2)
+            deposit = create_deposit(user, deposit_date, amount=200)
+            offer = create_event_offer(venue, event_name='Event Name', event_type=EventType.CINEMA)
+            event_occurrence = create_event_occurrence(offer, beginning_datetime=five_days_ago, end_datetime=four_days_ago)
+            stock = create_stock_from_event_occurrence(event_occurrence, price=20)
+
+            PcObject.check_and_save(deposit, stock, user)
+
+            booking_json = {
+                'stockId': humanize(stock.id),
+                'recommendationId': None,
+                'quantity': 1
+            }
+
+            # When
+            response = TestClient().with_auth('test@email.com', 'testpsswd').post(API_URL + '/bookings',
+                                                                                  json=booking_json)
+
+            # Then
+            error_message = response.json()
+            assert response.status_code == 400
+            assert error_message['date'] == ["La date n'est plus valable"]
 
 
     class Returns201:

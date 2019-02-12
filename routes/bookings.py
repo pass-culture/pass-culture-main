@@ -55,15 +55,13 @@ def create_booking():
     recommendation_id = request.json.get('recommendationId')
     quantity = request.json.get('quantity')
 
-    print('date ---->', date)
-
     try:
         check_has_stock_id(stock_id)
         check_has_quantity(quantity)
 
         stock = Stock.query.filter_by(id=dehumanize(stock_id)).first()
 
-        check_offer_date(date)
+        check_offer_date(stock)
         check_existing_stock(stock)
         check_not_soft_deleted_stock(stock)
 

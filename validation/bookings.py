@@ -70,7 +70,8 @@ def check_stock_booking_limit_date(stock):
         raise api_errors
 
 
-def check_offer_date(date):
+def check_offer_date(stock):
+    date = stock.eventOccurrence and stock.eventOccurrence.beginningDatetime
     stock_has_expired = date is not None and date < datetime.utcnow()
 
     if stock_has_expired:
