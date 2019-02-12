@@ -1,8 +1,7 @@
 from datetime import datetime
-from sqlalchemy import func, and_, or_
 from typing import List
 
-from sqlalchemy.orm import aliased
+from sqlalchemy import func, and_, or_
 
 from domain.keywords import create_filter_matching_all_keywords_in_any_model, \
     create_get_filter_matching_ts_query_in_any_model, \
@@ -105,7 +104,8 @@ def get_active_offers_by_type(offer_type, user=None, department_codes=None, offe
 
     query = department_or_national_offers(query, offer_type, department_codes)
     logger.debug(lambda:
-        '(reco) departement or national {} {} in {}'.format(offer_type.__name__, str(department_codes), query.count()))
+                 '(reco) departement or national {} {} in {}'.format(offer_type.__name__, str(department_codes),
+                                                                     query.count()))
     query = bookable_offers(query, offer_type)
     logger.debug(lambda: '(reco) bookable_offers {} {}'.format(offer_type.__name__, query.count()))
     query = with_active_and_validated_offerer(query)

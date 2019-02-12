@@ -25,7 +25,7 @@ RECOMMENDATION_URL = API_URL + '/recommendations'
 @pytest.mark.standalone
 class Get:
     class Returns401:
-        def test_when_no_user_is_logged_in(self):
+        def when_no_user_is_logged_in(self):
             # when
             url = RECOMMENDATION_URL + '?keywords=Training'
             response = TestClient().get(url, headers={'origin': 'http://localhost:3000'})
@@ -80,7 +80,7 @@ class Get:
             )
 
         @clean_database
-        def test_when_searching_by_keywords_with_matching_case(self, app):
+        def when_searching_by_keywords_with_matching_case(self, app):
             # given
             keywords_string = "Training"
             search = "keywords_string={}".format(keywords_string)
@@ -103,7 +103,7 @@ class Get:
             assert recommendations[0]['search'] == search
 
         @clean_database
-        def test_when_searching_by_keywords_on_unvalidated_offerer(self, app):
+        def when_searching_by_keywords_on_unvalidated_offerer(self, app):
             # given
             keywords_string = "Training"
             search = "keywords_string={}".format(keywords_string)
@@ -124,7 +124,7 @@ class Get:
             assert len(response.json()) == 0
 
         @clean_database
-        def test_when_searching_by_keywords_on_inactive_offerer(self, app):
+        def when_searching_by_keywords_on_inactive_offerer(self, app):
             # given
             keywords_string = "Training"
             search = "keywords_string={}".format(keywords_string)
@@ -145,7 +145,7 @@ class Get:
             assert len(response.json()) == 0
 
         @clean_database
-        def test_when_searching_by_keywords_containing_an_apostrophe(self, app):
+        def when_searching_by_keywords_containing_an_apostrophe(self, app):
             # given
             user = create_user(email='test@email.com', password='P@55w0rd')
             offerer = create_offerer()
@@ -165,7 +165,7 @@ class Get:
             assert len(recommendations) == 1
 
         @clean_database
-        def test_when_searching_by_keywords_with_non_matching_case(self, app):
+        def when_searching_by_keywords_with_non_matching_case(self, app):
             # given
             search = "keywords_string={}".format("rencontres")
             user = create_user(email='test@email.com', password='P@55w0rd')
@@ -189,7 +189,7 @@ class Get:
             assert recommendations[0]['search'] == search
 
         @clean_database
-        def test_when_searching_by_keywords_with_trailing_whitespaces(self, app):
+        def when_searching_by_keywords_with_trailing_whitespaces(self, app):
             # given
             search = "keywords_string={}".format(" rencontres avec auteurs ")
             user = create_user(email='test@email.com', password='P@55w0rd')
@@ -210,7 +210,7 @@ class Get:
             assert 'Rencontres' in recommendations[0]['offer']['eventOrThing']['name']
 
         @clean_database
-        def test_when_searching_by_keywords_with_partial_keyword(self, app):
+        def when_searching_by_keywords_with_partial_keyword(self, app):
             # given
             search = "keywords_string={}".format("rencon")
             user = create_user(email='test@email.com', password='P@55w0rd')
@@ -232,7 +232,7 @@ class Get:
             assert recommendations[0]['search'] == search
 
         @clean_database
-        def test_when_searching_by_keywords_ignores_soft_deleted_stocks(self, app):
+        def when_searching_by_keywords_ignores_soft_deleted_stocks(self, app):
             # given
             search = 'keywords={}'.format('rencontres')
             user = create_user(email='test@email.com', password='P@55w0rd')
@@ -264,26 +264,7 @@ class Get:
             assert len(response.json()) == 1
 
         @clean_database
-        def test_when_searching_by_type(self, app):
-            # given
-            user = create_user(email='test@email.com', password='P@55w0rd')
-            offerer = create_offerer()
-            venue = create_venue(offerer)
-            offer = create_event_offer(venue, event_name='Training in Modern Jazz')
-            recommendation = create_recommendation(offer, user)
-            stock = create_stock_from_offer(offer)
-            PcObject.check_and_save(stock, recommendation)
-
-            # when
-            response = TestClient().with_auth(user.email, user.clearTextPassword).get(
-                RECOMMENDATION_URL + '?%categories=Applaudir')
-
-            # then
-            assert response.status_code == 200
-            assert len(response.json()) == 1
-
-        @clean_database
-        def test_when_searching_by_type_with_two_types(self, app):
+        def when_searching_by_type_with_two_types(self, app):
             # given
             user = create_user(email='test@email.com', password='P@55w0rd')
             offerer = create_offerer()
@@ -305,7 +286,7 @@ class Get:
             assert len(response.json()) == 2
 
         @clean_database
-        def test_when_searching_by_type_with_all_types(self, app):
+        def when_searching_by_type_with_all_types(self, app):
             # given
             user = create_user(email='test@email.com', password='P@55w0rd')
             offerer = create_offerer()
@@ -332,7 +313,7 @@ class Get:
             assert len(response.json()) == 3
 
         @clean_database
-        def test_when_searching_by_date_and_date_range(self, app):
+        def when_searching_by_date_and_date_range(self, app):
             # Given
             user = create_user(email='test@email.com', password='P@55w0rd')
             offerer = create_offerer()
@@ -360,7 +341,7 @@ class Get:
             assert len(response.json()) == 1
 
         @clean_database
-        def test_when_searching_by_date_and_date_range_and_type(self, app):
+        def when_searching_by_date_and_date_range_and_type(self, app):
             # Given
             user = create_user(email='test@email.com', password='P@55w0rd')
             offerer = create_offerer()
@@ -395,7 +376,7 @@ class Get:
             assert recommendations[1]['offer']['eventOrThing']['name'] == 'Lire un livre'
 
         @clean_database
-        def test_when_searching_by_keywords_and_date(self, app):
+        def when_searching_by_keywords_and_date(self, app):
             # Given
             user = create_user(email='test@email.com', password='P@55w0rd')
             offerer = create_offerer()
@@ -419,8 +400,7 @@ class Get:
             assert len(response.json()) == 1
 
         @clean_database
-        def test_when_searching_by_keywords_and_distance(
-                self, app):
+        def when_searching_by_keywords_and_distance(self, app):
             # Given
             user = create_user(email='test@email.com', password='P@55w0rd')
 
@@ -455,7 +435,7 @@ class Get:
             assert len(response.json()) == 2
 
         @clean_database
-        def test_when_searching_by_keywords_and_distance_and_latitude_longitude(self, app):
+        def when_searching_by_keywords_and_distance_and_latitude_longitude(self, app):
             # Given
             user = create_user(email='test@email.com', password='P@55w0rd')
 
@@ -493,7 +473,7 @@ class Get:
             assert 'Kiwi' in offers[0]['offer']['eventOrThing']['name']
 
         @clean_database
-        def test_when_searching_by_non_matching_date_range(self, app):
+        def when_searching_by_non_matching_date_range(self, app):
             # Given
             user = create_user(email='test@email.com', password='P@55w0rd')
             offerer = create_offerer()
@@ -516,7 +496,7 @@ class Get:
             assert len(response.json()) == 0
 
         @clean_database
-        def test_when_searching_by_type_including_activation_type(self, app):
+        def when_searching_by_type_including_activation_type(self, app):
             # Given
             user = create_user(email='test@email.com', password='P@55w0rd')
             offerer = create_offerer()
@@ -545,8 +525,7 @@ class Get:
                    {'The new film', 'Activation de votre Pass Culture'}
 
         @clean_database
-        def test_when_searching_by_date_and_type_except_if_it_is_activation_type(
-                self, app):
+        def when_searching_by_date_and_type_except_if_it_is_activation_type(self, app):
             # Given
             category_and_date_search = "categories=Lire%2CRegarder%2CActivation&date=" + strftime(
                 self.now) + "&days=1-5"
@@ -583,8 +562,7 @@ class Get:
             assert recommendations[1]['offer']['eventOrThing']['name'] == 'Lire un livre'
 
         @clean_database
-        def test_when_searching_by_non_matching_date_and_matching_keywords(
-                self, app):
+        def when_searching_by_non_matching_date_and_matching_keywords(self, app):
             # Given
             user = create_user(email='test@email.com', password='P@55w0rd')
             offerer = create_offerer()
@@ -608,8 +586,7 @@ class Get:
             assert len(response.json()) == 0
 
         @clean_database
-        def test_when_searching_by_date_and_type_and_pagination_not_in_range(
-                self, app):
+        def when_searching_by_date_and_type_and_pagination_not_in_range(self, app):
             # Given
             user = create_user(email='test@email.com', password='P@55w0rd')
             offerer = create_offerer()
@@ -638,7 +615,7 @@ class Get:
             assert len(response.json()) == 0
 
         @clean_database
-        def test_when_searching_by_not_exact_match_for_keywords_and_distance(self, app):
+        def when_searching_by_not_exact_match_for_keywords_and_distance(self, app):
             # Given
             user = create_user(email='test@email.com', password='P@55w0rd')
 
@@ -675,8 +652,7 @@ class Get:
             assert len(response.json()) == 0
 
         @clean_database
-        def test_when_searching_by_matching_date_and_non_matching_keywords(self,
-                                                                           app):
+        def when_searching_by_matching_date_and_non_matching_keywords(self, app):
             # Given
             user = create_user(email='test@email.com', password='P@55w0rd')
             offerer = create_offerer()
