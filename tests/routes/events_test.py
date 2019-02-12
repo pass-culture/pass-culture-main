@@ -1,9 +1,59 @@
 import pytest
 
-from models import PcObject, EventType, Thing, Offer
-from tests.conftest import clean_database
+from models import PcObject, EventType, Offer
+from models.db import db
+from tests.conftest import clean_database, TestClient
 from utils.human_ids import humanize, dehumanize
-from utils.test_utils import req_with_auth, create_user, API_URL, create_venue, create_offerer, create_user_offerer
+from utils.test_utils import req_with_auth, create_user, API_URL, create_venue, create_offerer, create_user_offerer, \
+    create_event, create_event_offer
+
+
+@pytest.mark.standalone
+class Patch:
+    class Returns200:
+        @clean_database
+        def when_updating_offer_booking_email(self, app):
+            # Given
+            user = create_user()
+            event = create_event()
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            offer = create_event_offer(venue, event, booking_email='old@email.com')
+
+            PcObject.check_and_save(offer, user)
+
+            json = {'bookingEmail': 'offer@email.com'}
+
+            # When
+            response = TestClient().with_auth(user.email, user.clearTextPassword).patch(
+                f'{API_URL}/events/{humanize(event.id)}',
+                json=json)
+
+            # Then
+            assert response.status_code == 200
+            db.session.refresh(offer)
+            offer = Offer.query.filter_by(id=offer.id).first()
+            assert offer.bookingEmail == 'offer@email.com'
+
+        @clean_database
+        def when_updating_thing_attributes(self, app):
+            # Given
+            user = create_user()
+            event = create_event(event_name='Old name')
+
+            PcObject.check_and_save(event, user)
+
+            json = {'name': 'New name'}
+
+            # When
+            response = TestClient().with_auth(user.email, user.clearTextPassword).patch(
+                f'{API_URL}/events/{humanize(event.id)}',
+                json=json)
+
+            # Then
+            assert response.status_code == 200
+            db.session.refresh(event)
+            assert event.name == 'New name'
 
 
 @clean_database

@@ -58,7 +58,13 @@ def post_event():
 def patch_event(id):
     event = load_or_404(Event, id)
     event.populateFromDict(request.json)
-    PcObject.check_and_save(event)
+    offer_booking_email = request.json.get('bookingEmail', None)
+    objects_to_save = [event]
+    if offer_booking_email:
+        offer = Offer.query.join(Event).filter_by(id=event.id).first()
+        offer.bookingEmail = offer_booking_email
+        objects_to_save.append(offer)
+    PcObject.check_and_save(*objects_to_save)
     return jsonify(
         event._asdict(include=EVENT_INCLUDES)
     ), 200

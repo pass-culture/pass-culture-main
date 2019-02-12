@@ -63,7 +63,13 @@ def patch_thing(id):
     thing = load_or_404(Thing, id)
     thing.populateFromDict(request.json)
     is_url_safe(thing.url)
-    PcObject.check_and_save(thing)
+    offer_booking_email = request.json.get('bookingEmail', None)
+    objects_to_save = [thing]
+    if offer_booking_email:
+        offer = Offer.query.join(Thing).filter_by(id=thing.id).first()
+        offer.bookingEmail = offer_booking_email
+        objects_to_save.append(offer)
+    PcObject.check_and_save(*objects_to_save)
     return jsonify(
         thing._asdict(
             include=THING_INCLUDES,
