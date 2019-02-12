@@ -525,10 +525,10 @@ class Get:
                    {'The new film', 'Activation de votre Pass Culture'}
 
         @clean_database
-        def when_searching_by_date_and_type_except_if_it_is_activation_type(self, app):
-            # Given
-            category_and_date_search = "categories=Lire%2CRegarder%2CActivation&date=" + strftime(
-                self.now) + "&days=1-5"
+        def when_searching_by_date_and_type_even_if_it_is_activation_type(
+            self, app):
+              # Given
+            category_and_date_search = "categories=Lire%2CRegarder%2CActivation&date=" + strftime(self.now) + "&days=1-5"
             user = create_user(email='test@email.com', password='P@55w0rd')
             offerer = create_offerer()
             venue = create_venue(offerer)
@@ -541,25 +541,29 @@ class Get:
 
             event_occurrence = create_event_occurrence(offer, beginning_datetime=self.three_days_from_now,
                                                        end_datetime=self.three_days_and_one_hour_from_now)
+            event_occurrence2 = create_event_occurrence(offer2, beginning_datetime=self.three_days_from_now,
+                                                       end_datetime=self.three_days_and_one_hour_from_now)
 
             recommendation = create_recommendation(offer, user)
             recommendation2 = create_recommendation(thing_offer, user)
             recommendation3 = create_recommendation(offer2, user)
             stock = create_stock_from_event_occurrence(event_occurrence)
             stock1 = create_stock_from_offer(offer2)
+            stock2 = create_stock_from_event_occurrence(event_occurrence2)
             thing_stock = create_stock(price=12, available=5, offer=thing_offer)
-            PcObject.check_and_save(stock, recommendation, recommendation2, recommendation3, thing_stock, stock1)
+            PcObject.check_and_save(stock, recommendation, recommendation2, recommendation3, thing_stock, stock1, stock2)
 
             # When
-            response = TestClient().with_auth(user.email, user.clearTextPassword).get(
-                RECOMMENDATION_URL + '?%s' % category_and_date_search)
+
+            response = TestClient().with_auth(user.email, user.clearTextPassword).get(RECOMMENDATION_URL + '?%s' % category_and_date_search)
 
             # Then
             assert response.status_code == 200
-            assert len(response.json()) == 2
+            assert len(response.json()) == 3
             recommendations = response.json()
-            assert recommendations[0]['offer']['eventOrThing']['name'] == 'The new film'
-            assert recommendations[1]['offer']['eventOrThing']['name'] == 'Lire un livre'
+            recommendation_names = [recommendation['offer']['eventOrThing']['name'] for recommendation in recommendations]
+            assert 'Activation de votre Pass Culture' in recommendation_names
+
 
         @clean_database
         def when_searching_by_non_matching_date_and_matching_keywords(self, app):
