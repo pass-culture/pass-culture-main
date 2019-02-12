@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from connectors.api_demarches_simplifiees import get_application_details
 from domain.retrieve_bank_account_information_for_offerers import \
     get_all_application_ids_from_demarches_simplifiees_procedure
@@ -5,6 +7,11 @@ from models import BankInformation
 from models.local_provider import LocalProvider, ProvidableInfo
 from models.local_provider_event import LocalProviderEventType
 from repository import offerer_queries, venue_queries
+from utils.date import DATE_ISO_FORMAT
+
+
+class UnknownRIBAffiliation(Exception):
+    pass
 
 
 class BankInformationProvider(LocalProvider):
@@ -23,6 +30,8 @@ class BankInformationProvider(LocalProvider):
         self.application_id = None
 
     def __next__(self):
+        self.application_details = None
+
         self.application_id = self.application_ids.__next__()
 
         if self.application_details is None:
@@ -38,10 +47,18 @@ class BankInformationProvider(LocalProvider):
 
         providable_info = ProvidableInfo()
         providable_info.type = BankInformation
-        bank_information_for_offerer = (_find_value_in_fields(self.application_details['dossier']["champs"],
-                                        "Je souhaite renseigner") == "Le RIB par défaut pour toute structure liée à mon SIREN")
-        providable_info.idAtProviders = self.siren if bank_information_for_offerer else self.siret
-        providable_info.dateModifiedAtProvider = self.application_details['dossier']['updated_at']
+        rib_affiliation = _find_value_in_fields(self.application_details['dossier']["champs"],
+                                        "Je souhaite renseigner")
+        if rib_affiliation  == "Le RIB par défaut pour toute structure liée à mon SIREN":
+            providable_info.idAtProviders = self.siren
+        elif rib_affiliation == "Le RIB lié à un unique SIRET":
+            providable_info.idAtProviders = self.siret
+        else:
+            self.logEvent(LocalProviderEventType.SyncError, f'unknown RIB affiliation for application id {self.application_id}')
+            return None
+        
+        providable_info.dateModifiedAtProvider = datetime.strptime(self.application_details['dossier']['updated_at'], DATE_ISO_FORMAT)
+
         return providable_info
 
     def get_next_application_details(self):

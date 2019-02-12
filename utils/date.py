@@ -7,6 +7,7 @@ from dateutil import tz
 from utils.string_processing import parse_timedelta
 
 today = datetime.combine(datetime.utcnow(), time(hour=20))
+DATE_ISO_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 
 
 class DateTimes:
@@ -22,7 +23,7 @@ def read_json_date(date):
     return datetime.strptime(date, "%Y-%m-%dT%H:%M:%S.%f")
 
 def strftime(date):
-    return date.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+    return date.strftime(DATE_ISO_FORMAT)
 
 def match_format(value: str, format: str):
     try:

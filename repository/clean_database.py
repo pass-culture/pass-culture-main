@@ -16,12 +16,13 @@ from models import Booking, \
     UserOfferer, \
     UserSession, \
     Venue, \
-    VenueProvider, PaymentTransaction, BankInformation
+    VenueProvider, PaymentTransaction, BankInformation, LocalProviderEvent
 
 
 def clean_all_database(*args, **kwargs):
     """ Order of deletions matters because of foreign key constraints """
     Activity = load_activity()
+    LocalProviderEvent.query.delete()
     VenueProvider.query.delete()
     PaymentStatus.query.delete()
     Payment.query.delete()
