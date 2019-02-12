@@ -31,7 +31,8 @@ class   Booking(PcObject,
                          default=datetime.utcnow)
 
     recommendationId = Column(BigInteger,
-                              ForeignKey("recommendation.id"))
+                              ForeignKey("recommendation.id"),
+                              index=True)
 
     recommendation = relationship('Recommendation',
                                   foreign_keys=[recommendationId],

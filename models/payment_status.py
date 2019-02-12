@@ -28,6 +28,7 @@ class PaymentStatus(PcObject, Model):
 
     paymentId = Column(BigInteger,
                        ForeignKey("payment.id"),
+                       index=True,
                        nullable=False)
 
     payment = relationship('Payment',

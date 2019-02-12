@@ -56,6 +56,7 @@ class Payment(PcObject, Model):
 
     transactionId = Column(BigInteger,
                            ForeignKey('payment_transaction.id'),
+                           index=True,
                            nullable=True)
 
     transaction = relationship('PaymentTransaction',

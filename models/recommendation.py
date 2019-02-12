@@ -50,8 +50,9 @@ class Recommendation(PcObject, Model):
                          nullable=True)
 
     inviteforEventOccurrenceId = Column(BigInteger,
-                                       ForeignKey('event_occurrence.id'),
-                                       nullable=True)
+                                        ForeignKey('event_occurrence.id'),
+                                        index=True,
+                                        nullable=True)
 
     inviteforEventOccurrence = relationship('EventOccurrence',
                                            foreign_keys=[inviteforEventOccurrenceId],

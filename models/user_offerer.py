@@ -27,6 +27,7 @@ class UserOfferer(PcObject,
 
     offererId = Column(BigInteger,
                        ForeignKey('offerer.id'),
+                       index=True,
                        primary_key=True)
 
     offerer = relationship('Offerer',

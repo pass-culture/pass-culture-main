@@ -28,6 +28,7 @@ class Offer(PcObject,
 
     thingId = Column(BigInteger,
                      ForeignKey("thing.id"),
+                     index=True,
                      nullable=True)
 
     thing = relationship('Thing',
@@ -40,6 +41,7 @@ class Offer(PcObject,
                          '("eventId" IS NOT NULL AND "thingId" IS NULL)' + \
                          'OR ("eventId" IS NULL AND "thingId" IS NOT NULL)',
                          name='check_offer_has_thing_xor_event'),
+                     index=True,
                      nullable=True)
 
     event = relationship('Event',
