@@ -1,4 +1,5 @@
 from models.api_errors import ApiErrors
+from models.bank_information import BankInformation
 from models.booking import Booking
 from models.deactivable_mixin import DeactivableMixin
 from models.deposit import Deposit
@@ -36,6 +37,7 @@ from models.versioned_mixin import VersionedMixin
 __all__ = (
     'VersionedMixin',
     'ApiErrors',
+    'BankInformation',
     'PcObject',
     'DeactivableMixin',
     'Deposit',

@@ -23,6 +23,10 @@ def find_by_id(venue_id):
     return Venue.query.filter_by(id=venue_id).first()
 
 
+def find_by_siret(siret):
+    return Venue.query.filter_by(siret=siret).first()
+
+
 def find_filtered_venues(sirens=None,
                          dpts=None,
                          zip_codes=None,

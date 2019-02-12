@@ -689,6 +689,26 @@ def provider_test(app, provider, venueProvider, **counts):
     assertCreatedCounts(app, **counts)
 
 
+def provider_test_without_mock(app, provider, **counts):
+    providerObj = provider()
+    providerObj.dbObject.isActive = True
+    PcObject.check_and_save(providerObj.dbObject)
+    saveCounts(app)
+    providerObj.updateObjects()
+
+    for countName in ['updatedObjects',
+                      'createdObjects',
+                      'checkedObjects',
+                      'erroredObjects',
+                      'createdThumbs',
+                      'updatedThumbs',
+                      'checkedThumbs',
+                      'erroredThumbs']:
+        assert getattr(providerObj, countName) == counts[countName]
+        del counts[countName]
+    assertCreatedCounts(app, **counts)
+
+
 def save_all_activities(*objects):
     for obj in objects:
         db.session.add(obj)

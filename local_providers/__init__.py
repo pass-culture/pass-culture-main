@@ -9,6 +9,7 @@ from local_providers.titelive_venues import TiteLiveVenues
 from local_providers.titelive_things import TiteLiveThings
 from local_providers.titelive_thing_descriptions import TiteLiveThingDescriptions
 from local_providers.titelive_thing_thumbs import TiteLiveThingThumbs
+from local_providers.demarches_simplifiees_bank_information import BankInformationProvider
 
 __all__ = (
     'OpenAgendaEvents',
@@ -20,5 +21,6 @@ __all__ = (
     'TiteLiveVenues',
     'TiteLiveThings',
     'TiteLiveThingDescriptions',
-    'TiteLiveThingThumbs'
+    'TiteLiveThingThumbs',
+    'BankInformationProvider'
 )

@@ -16,7 +16,7 @@ from models import Booking, \
     UserOfferer, \
     UserSession, \
     Venue, \
-    VenueProvider, PaymentTransaction
+    VenueProvider, PaymentTransaction, BankInformation
 
 
 def clean_all_database(*args, **kwargs):
@@ -34,6 +34,7 @@ def clean_all_database(*args, **kwargs):
     Offer.query.delete()
     Thing.query.delete()
     Event.query.delete()
+    BankInformation.query.delete()
     Venue.query.delete()
     UserOfferer.query.delete()
     Offerer.query.delete()

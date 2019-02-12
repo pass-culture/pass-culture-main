@@ -1,16 +1,20 @@
-from sqlalchemy import or_
 from datetime import datetime
+from sqlalchemy import or_
 
 from domain.keywords import create_filter_matching_all_keywords_in_any_model, \
-                            create_get_filter_matching_ts_query_in_any_model
-from models import Offerer, Venue, Offer, EventOccurrence, UserOfferer, User, Event, Booking, Stock, Recommendation
+    create_get_filter_matching_ts_query_in_any_model
+from models import Offerer, Venue, Offer, EventOccurrence, UserOfferer, User, Stock, Recommendation
 from models import RightsType
-from models.activity import load_activity
 from models.db import db
 
 get_filter_matching_ts_query_for_offerer = create_get_filter_matching_ts_query_in_any_model(
     Offerer
 )
+
+
+def find_by_siren(siren):
+    return Offerer.query.filter_by(siren=siren).first()
+
 
 def get_by_offer_id(offer_id):
     return Offerer.query.join(Venue).join(Offer).filter_by(id=offer_id).first()
@@ -21,8 +25,10 @@ def get_by_event_occurrence_id(event_occurrence_id):
 
 
 def find_all_admin_offerer_emails(offerer_id):
-    return [result.email for result in Offerer.query.filter_by(id=offerer_id).join(UserOfferer).filter_by(rights=RightsType.admin).filter_by(validationToken=None).join(
-        User).with_entities(User.email)]
+    return [result.email for result in
+            Offerer.query.filter_by(id=offerer_id).join(UserOfferer).filter_by(rights=RightsType.admin).filter_by(
+                validationToken=None).join(
+                User).with_entities(User.email)]
 
 
 def find_all_recommendations_for_offerer(offerer):
@@ -82,10 +88,12 @@ def find_all_pending_validation():
         .join(UserOfferer) \
         .join(Venue) \
         .join(User) \
-        .filter(or_(user_offerer_pending_validation, offerer_pending_validation, venue_pending_validation, user_pending_validation)) \
+        .filter(or_(user_offerer_pending_validation, offerer_pending_validation, venue_pending_validation,
+                    user_pending_validation)) \
         .order_by(Offerer.id).all()
 
     return result
+
 
 def find_first_by_user_offerer_id(user_offerer_id):
     return Offerer.query.join(UserOfferer).filter_by(id=user_offerer_id).first()
@@ -106,7 +114,6 @@ def find_filtered_offerers(sirens=None,
                            offer_status=None,
                            has_validated_user=None,
                            has_validated_user_offerer=None):
-
     query = db.session.query(Offerer)
     if sirens is not None:
         query = _filter_by_sirens(query, sirens)
@@ -133,7 +140,7 @@ def find_filtered_offerers(sirens=None,
         query = _filter_by_is_active(query, is_active)
 
     if has_not_virtual_venue is not None or has_validated_venue is not None \
-     or offer_status is not None or has_venue_with_siret is not None:
+            or offer_status is not None or has_venue_with_siret is not None:
         query = query.join(Venue)
 
     if has_not_virtual_venue is not None:
@@ -158,7 +165,6 @@ def find_filtered_offerers(sirens=None,
         query = query.join(User)
         query = _filter_by_has_validated_user(query, has_validated_user)
 
-
     result = query.all()
     return result
 
@@ -174,7 +180,7 @@ def _filter_by_dpts(query, dpts):
     return query
 
 
-def  _create_filter_from_dpts_list(dpts):
+def _create_filter_from_dpts_list(dpts):
     previous_dpts_filter = None
     dpts_filter = None
     final_dpts_filter = None
@@ -275,7 +281,7 @@ def _filter_by_offer_status(query, offer_status):
         can_still_be_booked_event = Stock.bookingLimitDatetime >= datetime.utcnow()
         is_not_soft_deleted_thing = Stock.isSoftDeleted == False
         can_still_be_booked_thing = ((Stock.bookingLimitDatetime == None)
-         | (Stock.bookingLimitDatetime >= datetime.utcnow()))
+                                     | (Stock.bookingLimitDatetime >= datetime.utcnow()))
         is_available_thing = ((Stock.available == None) | (Stock.available > 0))
 
         query_1 = query.join(EventOccurrence).join(Stock)
@@ -283,16 +289,16 @@ def _filter_by_offer_status(query, offer_status):
 
     if offer_status == "VALID":
         query_with_valid_event = query_1.filter(is_not_soft_deleted_thing
-            & can_still_be_booked_thing & is_available_thing)
+                                                & can_still_be_booked_thing & is_available_thing)
         query_with_valid_thing = query_2.filter(is_not_soft_deleted_thing
-         & can_still_be_booked_thing & is_available_thing)
+                                                & can_still_be_booked_thing & is_available_thing)
         query = query_with_valid_event.union_all(query_with_valid_thing)
 
     if offer_status == "EXPIRED":
         query_with_expired_event = query_1.filter(~(is_not_soft_deleted_thing
-         & can_still_be_booked_thing & is_available_thing))
+                                                    & can_still_be_booked_thing & is_available_thing))
         query_with_expired_thing = query_2.filter(~(is_not_soft_deleted_thing
-         & can_still_be_booked_thing & is_available_thing))
+                                                    & can_still_be_booked_thing & is_available_thing))
         query = query_with_expired_event.union_all(query_with_expired_thing)
 
     return query
@@ -314,6 +320,7 @@ def _filter_by_has_validated_user(query, has_validated_user):
     else:
         query = query.filter(~Offerer.users.any(is_valid))
     return query
+
 
 def filter_offerers_with_keywords_string(query, keywords_string):
     keywords_filter = create_filter_matching_all_keywords_in_any_model(
