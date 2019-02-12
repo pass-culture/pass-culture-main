@@ -76,7 +76,7 @@ def check_offer_date(stock):
 
     if stock_has_expired:
         api_errors = ApiErrors()
-        api_errors.addError('date', "La date n'est plus valable")
+        api_errors.addError('date', "Cette offre n'est plus valable car sa date est passée")
         raise api_errors
 
 

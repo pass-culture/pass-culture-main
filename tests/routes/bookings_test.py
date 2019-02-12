@@ -405,7 +405,7 @@ class Post:
             assert error_message['quantity'] == ['Vous devez préciser une quantité pour la réservation']
 
         @clean_database
-        def when_expired_date(self, app):
+        def when_event_expired_date(self, app):
             # Given
             four_days_ago = datetime.utcnow() - timedelta(days=4)
             five_days_ago = datetime.utcnow() - timedelta(days=5)
@@ -433,7 +433,37 @@ class Post:
             # Then
             error_message = response.json()
             assert response.status_code == 400
-            assert error_message['date'] == ["La date n'est plus valable"]
+            assert error_message['date'] == ["Cette offre n'est plus valable car sa date est passée"]
+
+        @clean_database
+        def when_thing_expired_booking_date(self, app):
+            # Given
+            four_days_ago = datetime.utcnow() - timedelta(days=4)
+            five_days_ago = datetime.utcnow() - timedelta(days=5)
+            user = create_user(email='test@email.com', password='testpsswd')
+            offerer = create_offerer()
+            deposit_date = datetime.utcnow() - timedelta(minutes=2)
+            deposit = create_deposit(user, deposit_date, amount=200)
+            venue = create_venue(offerer)
+
+            stock = create_stock_with_thing_offer(offerer, venue, price=20, booking_limit_datetime=four_days_ago)
+
+            PcObject.check_and_save(deposit, stock, user)
+
+            booking_json = {
+                'stockId': humanize(stock.id),
+                'recommendationId': None,
+                'quantity': 1
+            }
+
+            # When
+            response = TestClient().with_auth('test@email.com', 'testpsswd').post(API_URL + '/bookings',
+                                                                                  json=booking_json)
+
+            # Then
+            error_message = response.json()
+            assert response.status_code == 400
+            assert error_message['global'] == ["La date limite de réservation de cette offre est dépassée"]
 
 
     class Returns201:
@@ -480,10 +510,10 @@ class Post:
             venue = create_venue(offerer)
             thing_offer = create_thing_offer(venue)
             stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=20)
+
             PcObject.check_and_save(deposit, stock, user)
 
             booking_json = {
-                'date': None,
                 'stockId': humanize(stock.id),
                 'recommendationId': None,
                 'quantity': 1
