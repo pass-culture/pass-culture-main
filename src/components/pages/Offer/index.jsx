@@ -752,6 +752,7 @@ function mapStateToProps(state, ownProps) {
     state,
     event,
     thing,
+    offer,
     offerer,
     venue
   )
