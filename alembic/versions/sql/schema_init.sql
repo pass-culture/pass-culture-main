@@ -170,6 +170,45 @@ SET default_tablespace = '';
 
 SET default_with_oids = false;
 
+
+--
+-- Name: activity; Type: TABLE; Schema: public; Owner: pass_culture
+--
+
+CREATE TABLE activity (
+    id bigint NOT NULL,
+    schema_name text,
+    table_name text,
+    relid integer,
+    issued_at timestamp without time zone,
+    native_transaction_id bigint,
+    verb text,
+    old_data jsonb DEFAULT '{}'::jsonb,
+    changed_data jsonb DEFAULT '{}'::jsonb,
+    transaction_id bigint
+);
+
+
+--
+-- Name: activity_id_seq; Type: SEQUENCE; Schema: public; Owner: pass_culture
+--
+
+CREATE SEQUENCE activity_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: activity_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pass_culture
+--
+
+ALTER SEQUENCE activity_id_seq OWNED BY activity.id;
+
+
+
 --
 -- Name: booking; Type: TABLE; Schema: public; 
 --
