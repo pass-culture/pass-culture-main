@@ -103,6 +103,48 @@ class Get:
             assert recommendations[0]['search'] == search
 
         @clean_database
+        def test_when_searching_by_keywords_on_unvalidated_offerer(self, app):
+            # given
+            keywords_string = "Training"
+            search = "keywords_string={}".format(keywords_string)
+            user = create_user(email='test@email.com', password='P@55w0rd')
+            offerer = create_offerer(validation_token='ABC123')
+            venue = create_venue(offerer)
+            offer = create_event_offer(venue, event_name='Training in Modern Jazz')
+            recommendation = create_recommendation(offer, user, search=search)
+            stock = create_stock_from_offer(offer)
+            PcObject.check_and_save(stock, recommendation)
+
+            # when
+            response = TestClient().with_auth(user.email, user.clearTextPassword).get(
+                RECOMMENDATION_URL + '?keywords={}'.format(keywords_string))
+
+            # then
+            assert response.status_code == 200
+            assert len(response.json()) == 0
+
+        @clean_database
+        def test_when_searching_by_keywords_on_inactive_offerer(self, app):
+            # given
+            keywords_string = "Training"
+            search = "keywords_string={}".format(keywords_string)
+            user = create_user(email='test@email.com', password='P@55w0rd')
+            offerer = create_offerer(is_active=False)
+            venue = create_venue(offerer)
+            offer = create_event_offer(venue, event_name='Training in Modern Jazz')
+            recommendation = create_recommendation(offer, user, search=search)
+            stock = create_stock_from_offer(offer)
+            PcObject.check_and_save(stock, recommendation)
+
+            # when
+            response = TestClient().with_auth(user.email, user.clearTextPassword).get(
+                RECOMMENDATION_URL + '?keywords={}'.format(keywords_string))
+
+            # then
+            assert response.status_code == 200
+            assert len(response.json()) == 0
+
+        @clean_database
         def test_when_searching_by_keywords_containing_an_apostrophe(self, app):
             # given
             user = create_user(email='test@email.com', password='P@55w0rd')

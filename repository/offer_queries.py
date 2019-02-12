@@ -2,6 +2,8 @@ from datetime import datetime
 from sqlalchemy import func, and_, or_
 from typing import List
 
+from sqlalchemy.orm import aliased
+
 from domain.keywords import create_filter_matching_all_keywords_in_any_model, \
     create_get_filter_matching_ts_query_in_any_model, \
     get_first_matching_keywords_string_at_column
@@ -251,7 +253,8 @@ def _filter_recommendable_offers(offer_query):
         .join(Stock, join_on_stock) \
         .filter(Stock.isSoftDeleted == False) \
         .filter(stock_can_still_be_booked) \
-        .filter(event_has_not_began_yet | offer_is_on_a_thing)
+        .filter(event_has_not_began_yet | offer_is_on_a_thing) \
+        .filter((Offerer.validationToken == None) & (Offerer.isActive == True))
 
     return offer_query
 
