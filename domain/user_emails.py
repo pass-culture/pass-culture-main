@@ -66,7 +66,7 @@ def send_user_driven_cancellation_email_to_user(booking, send_create_email):
 
 def send_user_driven_cancellation_email_to_offerer(booking, send_create_email):
     email = make_offerer_booking_recap_email_after_user_action(booking, is_cancellation=True)
-    recipients = [booking.stock.resolvedOffer.venue.bookingEmail]
+    recipients = [booking.stock.resolvedOffer.bookingEmail, 'support.passculture@beta.gouv.fr']
     email['Html-part'], email['To'] = compute_email_html_part_and_recipients(email['Html-part'], recipients)
     mail_result = send_create_email(data=email)
     check_if_email_sent(mail_result)
@@ -81,13 +81,15 @@ def send_offerer_driven_cancellation_email_to_user(booking, send_create_email):
 
 
 def send_offerer_driven_cancellation_email_to_offerer(booking, send_create_email):
-    offerer_email = booking.stock.resolvedOffer.venue.bookingEmail
+    offerer_email = booking.stock.resolvedOffer.bookingEmail
+    recipients = []
     if offerer_email:
-        recipients = [offerer_email]
-        email = make_offerer_driven_cancellation_email_for_offerer(booking)
-        email['Html-part'], email['To'] = compute_email_html_part_and_recipients(email['Html-part'], recipients)
-        mail_result = send_create_email(data=email)
-        check_if_email_sent(mail_result)
+        recipients.append(offerer_email)
+    recipients.append('support.passculture@beta.gouv.fr')
+    email = make_offerer_driven_cancellation_email_for_offerer(booking)
+    email['Html-part'], email['To'] = compute_email_html_part_and_recipients(email['Html-part'], recipients)
+    mail_result = send_create_email(data=email)
+    check_if_email_sent(mail_result)
 
 
 def send_reset_password_email(user, send_create_email, app_origin_url):
@@ -114,13 +116,15 @@ def send_batch_cancellation_emails_to_users(bookings, send_create_email):
 
 def send_batch_cancellation_email_to_offerer(bookings, cancellation_case, send_create_email):
     booking = bookings[0] if bookings else None
-    offerer_email = booking.stock.resolvedOffer.venue.bookingEmail
+    offerer_email = booking.stock.resolvedOffer.bookingEmail
+    recipients = []
     if offerer_email:
-        recipients = [offerer_email]
-        email = make_batch_cancellation_email(bookings, cancellation_case)
-        email['Html-part'], email['To'] = compute_email_html_part_and_recipients(email['Html-part'], recipients)
-        mail_result = send_create_email(data=email)
-        check_if_email_sent(mail_result)
+        recipients.append(offerer_email)
+    recipients.append('support.passculture@beta.gouv.fr')
+    email = make_batch_cancellation_email(bookings, cancellation_case)
+    email['Html-part'], email['To'] = compute_email_html_part_and_recipients(email['Html-part'], recipients)
+    mail_result = send_create_email(data=email)
+    check_if_email_sent(mail_result)
 
 
 def send_cancellation_emails_to_user_and_offerer(booking, is_offerer_cancellation, is_user_cancellation,

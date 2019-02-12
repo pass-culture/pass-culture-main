@@ -89,6 +89,7 @@ def test_send_user_driven_cancellation_email_to_offerer_when_feature_send_mail_t
     offerer = create_offerer()
     venue = create_venue(offerer, booking_email='booking@email.fr')
     stock = create_stock_with_event_offer(offerer, venue)
+    stock.resolvedOffer.bookingEmail = 'offer@email.fr'
     booking = create_booking(user, stock, venue)
     mocked_send_create_email = Mock()
     return_value = Mock()
@@ -105,7 +106,7 @@ def test_send_user_driven_cancellation_email_to_offerer_when_feature_send_mail_t
         make_offerer_recap_email.assert_called_once_with(booking, is_cancellation=True)
     mocked_send_create_email.assert_called_once()
     args = mocked_send_create_email.call_args
-    assert args[1]['data']['To'] == 'booking@email.fr'
+    assert args[1]['data']['To'] == 'offer@email.fr, support.passculture@beta.gouv.fr'
 
 
 @pytest.mark.standalone
@@ -203,6 +204,7 @@ def test_send_offerer_driven_cancellation_email_to_offerer_when_booking_email(ap
     venue = create_venue(offerer)
     venue.bookingEmail = 'booking@email.fr'
     stock = create_stock_with_event_offer(offerer, venue)
+    stock.resolvedOffer.bookingEmail = 'offer@email.com'
     booking = create_booking(user, stock)
     mocked_send_create_email = Mock()
     return_value = Mock()
@@ -219,17 +221,17 @@ def test_send_offerer_driven_cancellation_email_to_offerer_when_booking_email(ap
         make_cancellation_email.assert_called_once_with(booking)
     mocked_send_create_email.assert_called_once()
     args = mocked_send_create_email.call_args
-    assert args[1]['data']['To'] == 'booking@email.fr'
+    assert args[1]['data']['To'] == 'offer@email.com, support.passculture@beta.gouv.fr'
 
 
 @pytest.mark.standalone
-def test_send_offerer_driven_cancellation_email_to_offerer_when_no_booking_email(app):
+def test_send_offerer_driven_cancellation_email_to_offerer_when_no_booking_email_sends_email_to_pass_culture_support(app):
     # Given
     user = create_user(email='user@email.fr')
     offerer = create_offerer()
     venue = create_venue(offerer)
-    venue.bookingEmail = None
     stock = create_stock_with_event_offer(offerer, venue)
+    stock.resolvedOffer.bookingEmail = None
     booking = create_booking(user, stock)
     mocked_send_create_email = Mock()
     return_value = Mock()
@@ -243,8 +245,10 @@ def test_send_offerer_driven_cancellation_email_to_offerer_when_no_booking_email
         send_offerer_driven_cancellation_email_to_offerer(booking, mocked_send_create_email)
 
         # Then
-        make_cancellation_email.assert_not_called()
-    mocked_send_create_email.assert_not_called()
+        make_cancellation_email.assert_called_once_with(booking)
+    mocked_send_create_email.assert_called_once()
+    args = mocked_send_create_email.call_args
+    assert args[1]['data']['To'] == 'support.passculture@beta.gouv.fr'
 
 
 @pytest.mark.standalone
@@ -536,7 +540,7 @@ def test_send_batch_cancellation_email_to_offerer():
 
     mocked_send_create_email.assert_called_once()
     args = mocked_send_create_email.call_args
-    assert args[1]['data']['To'] == 'offerer@email.com'
+    assert args[1]['data']['To'] == 'offerer@email.com, support.passculture@beta.gouv.fr'
 
 
 @pytest.mark.standalone
@@ -561,7 +565,7 @@ def test_send_batch_cancellation_email_to_offerer_event_occurrence_case():
 
     mocked_send_create_email.assert_called_once()
     args = mocked_send_create_email.call_args
-    assert args[1]['data']['To'] == 'offerer@email.com'
+    assert args[1]['data']['To'] == 'offerer@email.com, support.passculture@beta.gouv.fr'
 
 
 @pytest.mark.standalone
@@ -608,7 +612,7 @@ def test_send_batch_cancellation_email_to_offerer_feature_send_mail_to_users_ena
 
 
 @pytest.mark.standalone
-def test_send_batch_cancellation_email_to_offerer_no_venue_email():
+def test_send_batch_cancellation_email_to_offerer_send_to_pass_culture_support_if_no_offer_email():
     # Given
     num_bookings = 5
     bookings = create_mocked_bookings(num_bookings, None)
@@ -620,12 +624,16 @@ def test_send_batch_cancellation_email_to_offerer_no_venue_email():
     # When
     with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True), patch(
             'domain.user_emails.make_batch_cancellation_email',
-            return_value={'Html-part': ''}):
+            return_value={'Html-part': ''}) as make_cancellation_email:
         # When
-        send_batch_cancellation_email_to_offerer(bookings, 'stock', mocked_send_create_email)
+        send_batch_cancellation_email_to_offerer(bookings, 'event_occurrence', mocked_send_create_email)
 
     # Then
-    mocked_send_create_email.assert_not_called()
+    make_cancellation_email.assert_called_once_with(bookings, 'event_occurrence')
+
+    mocked_send_create_email.assert_called_once()
+    args = mocked_send_create_email.call_args
+    assert args[1]['data']['To'] == 'support.passculture@beta.gouv.fr'
 
 
 @pytest.mark.standalone
