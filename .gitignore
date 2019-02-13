@@ -34,3 +34,6 @@ env_file
 # IDEA
 .idea/
 *.iml
+
+# licenses
+licenses.json

@@ -112,6 +112,7 @@
   },
   "scripts": {
     "build": "node scripts/build.js && ./scripts/build_redirects.sh",
+    "licenses": "node_modules/.bin/license-reporter save --json licenses.json && rm -rf licenses",
     "testunit": "jest --env=jsdom",
     "testcafe": "testcafe 'chrome:headless' testcafe",
     "precommit": "pretty-quick --staged",
