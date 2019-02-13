@@ -6,6 +6,7 @@ from domain.admin_emails import send_offer_creation_notification_to_support
 from models.offer import Offer
 from models.pc_object import PcObject
 from models.thing import Thing
+from repository import offer_queries
 from utils.config import PRO_URL
 from utils.human_ids import dehumanize
 from utils.includes import THING_INCLUDES
@@ -66,7 +67,7 @@ def patch_thing(id):
     offer_booking_email = request.json.get('bookingEmail', None)
     objects_to_save = [thing]
     if offer_booking_email:
-        offer = Offer.query.join(Thing).filter_by(id=thing.id).first()
+        offer = offer_queries.find_first_offer_linked_to_thing(thing)
         offer.bookingEmail = offer_booking_email
         objects_to_save.append(offer)
     PcObject.check_and_save(*objects_to_save)

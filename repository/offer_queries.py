@@ -310,3 +310,11 @@ def find_offer_by_id(offer_id):
     return Offer.query \
         .filter(Offer.id == offer_id) \
         .first()
+
+
+def find_first_offer_linked_to_event(event):
+    return Offer.query.join(Event).filter_by(id=event.id).first()
+
+
+def find_first_offer_linked_to_thing(thing):
+    return Offer.query.join(Thing).filter_by(id=thing.id).first()

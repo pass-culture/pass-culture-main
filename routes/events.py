@@ -6,6 +6,7 @@ from flask_login import current_user
 from domain.admin_emails import send_offer_creation_notification_to_support
 from models import ApiErrors, Event, Offer, PcObject, Venue, EventType
 from models.api_errors import ForbiddenError
+from repository import offer_queries
 from utils.config import PRO_URL
 from utils.human_ids import dehumanize
 from utils.includes import EVENT_INCLUDES
@@ -61,10 +62,13 @@ def patch_event(id):
     offer_booking_email = request.json.get('bookingEmail', None)
     objects_to_save = [event]
     if offer_booking_email:
-        offer = Offer.query.join(Event).filter_by(id=event.id).first()
+        offer = offer_queries.find_first_offer_linked_to_event(event)
         offer.bookingEmail = offer_booking_email
         objects_to_save.append(offer)
     PcObject.check_and_save(*objects_to_save)
     return jsonify(
         event._asdict(include=EVENT_INCLUDES)
     ), 200
+
+
+
