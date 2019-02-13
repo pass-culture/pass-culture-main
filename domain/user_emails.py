@@ -66,7 +66,11 @@ def send_user_driven_cancellation_email_to_user(booking, send_create_email):
 
 def send_user_driven_cancellation_email_to_offerer(booking, send_create_email):
     email = make_offerer_booking_recap_email_after_user_action(booking, is_cancellation=True)
-    recipients = [booking.stock.resolvedOffer.bookingEmail, 'support.passculture@beta.gouv.fr']
+    recipients = []
+    offerer_booking_email = booking.stock.resolvedOffer.bookingEmail
+    if offerer_booking_email:
+        recipients.append(offerer_booking_email)
+    recipients.append('support.passculture@beta.gouv.fr')
     email['Html-part'], email['To'] = compute_email_html_part_and_recipients(email['Html-part'], recipients)
     mail_result = send_create_email(data=email)
     check_if_email_sent(mail_result)
