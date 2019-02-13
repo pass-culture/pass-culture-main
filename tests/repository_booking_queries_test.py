@@ -128,7 +128,7 @@ def test_find_all_bookings_for_event_occurrence(app):
 @pytest.mark.standalone
 class FindFinalOffererBookingsTest:
     @clean_database
-    def test_find_final_offerer_bookings_returns_bookings_for_given_offerer(self, app):
+    def test_returns_bookings_for_given_offerer(self, app):
         # Given
         user = create_user()
         deposit = create_deposit(user, datetime.utcnow(), amount=500)
@@ -156,9 +156,8 @@ class FindFinalOffererBookingsTest:
         assert booking1 in bookings
         assert booking2 in bookings
 
-    @pytest.mark.standalone
     @clean_database
-    def test_find_final_offerer_bookings_returns_not_cancelled_bookings_for_offerer(self, app):
+    def test_returns_not_cancelled_bookings_for_offerer(self, app):
         # Given
         user = create_user()
         deposit = create_deposit(user, datetime.utcnow(), amount=500)
@@ -179,9 +178,8 @@ class FindFinalOffererBookingsTest:
         assert len(bookings) == 1
         assert booking1 in bookings
 
-    @pytest.mark.standalone
     @clean_database
-    def test_find_final_offerer_bookings_returns_only_used_bookings(self, app):
+    def test_returns_only_used_bookings(self, app):
         # Given
         user = create_user()
         deposit = create_deposit(user, datetime.utcnow(), amount=500)
@@ -202,9 +200,8 @@ class FindFinalOffererBookingsTest:
         assert len(bookings) == 1
         assert booking1 in bookings
 
-    @pytest.mark.standalone
     @clean_database
-    def test_find_final_offerer_bookings_returns_only_bookings_on_events_older_than_two_days(self, app):
+    def test_returns_only_bookings_on_events_older_than_two_days(self, app):
         # Given
         user = create_user()
         deposit = create_deposit(user, datetime.utcnow(), amount=500)
@@ -234,7 +231,7 @@ class FindFinalOffererBookingsTest:
 @pytest.mark.standalone
 class FindDateUsedTest:
     @clean_database
-    def test_find_date_used_on_booking_returns_issued_date_of_matching_activity(self, app):
+    def test_returns_issued_date_of_matching_activity(self, app):
         # given
         user = create_user()
         deposit = create_deposit(user, datetime.utcnow(), amount=500)
