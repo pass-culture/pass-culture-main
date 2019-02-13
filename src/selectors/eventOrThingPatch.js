@@ -9,8 +9,8 @@ export default createCachedSelector(
   (state, event) => event,
   (state, event, thing) => thing,
   (state, event, thing, offer) => offer,
-  (state, event, thing, offerer) => offerer,
-  (state, event, thing, offerer, venue) => venue,
+  (state, event, thing, offer, offerer) => offerer,
+  (state, event, thing, offer, offerer, venue) => venue,
   (event, thing, offer, offerer, venue) =>
     Object.assign(
       {
