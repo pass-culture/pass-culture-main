@@ -4,10 +4,11 @@ from datetime import datetime, timedelta
 import pytest
 
 from models import PcObject, ThingType
+from models.api_errors import ResourceNotFound
 from repository.booking_queries import find_all_ongoing_bookings_by_stock, \
     find_offerer_bookings, find_all_bookings_for_stock, find_all_bookings_for_event_occurrence, \
     find_final_offerer_bookings, find_date_used, find_user_activation_booking, get_existing_tokens, \
-    find_active_bookings_by_user_id
+    find_active_bookings_by_user_id, find_by
 from tests.conftest import clean_database
 from utils.test_utils import create_booking, \
     create_deposit, \
@@ -125,134 +126,135 @@ def test_find_all_bookings_for_event_occurrence(app):
 
 
 @pytest.mark.standalone
-@clean_database
-def test_find_final_offerer_bookings_returns_bookings_for_given_offerer(app):
-    # Given
-    user = create_user()
-    deposit = create_deposit(user, datetime.utcnow(), amount=500)
+class FindFinalOffererBookingsTest:
+    @clean_database
+    def test_find_final_offerer_bookings_returns_bookings_for_given_offerer(self, app):
+        # Given
+        user = create_user()
+        deposit = create_deposit(user, datetime.utcnow(), amount=500)
 
-    offerer1 = create_offerer(siren='123456789')
-    venue = create_venue(offerer1, siret=offerer1.siren + '12345')
-    offer = create_thing_offer(venue)
-    stock = create_stock_with_thing_offer(offerer1, venue, offer)
-    booking1 = create_booking(user, stock=stock, venue=venue, is_used=True)
-    booking2 = create_booking(user, stock=stock, venue=venue, is_used=True)
+        offerer1 = create_offerer(siren='123456789')
+        venue = create_venue(offerer1, siret=offerer1.siren + '12345')
+        offer = create_thing_offer(venue)
+        stock = create_stock_with_thing_offer(offerer1, venue, offer)
+        booking1 = create_booking(user, stock=stock, venue=venue, is_used=True)
+        booking2 = create_booking(user, stock=stock, venue=venue, is_used=True)
 
-    offerer2 = create_offerer(siren='987654321')
-    venue = create_venue(offerer2, siret=offerer2.siren + '12345')
-    offer = create_thing_offer(venue)
-    stock = create_stock_with_thing_offer(offerer2, venue, offer)
-    booking3 = create_booking(user, stock=stock, venue=venue, is_used=True)
+        offerer2 = create_offerer(siren='987654321')
+        venue = create_venue(offerer2, siret=offerer2.siren + '12345')
+        offer = create_thing_offer(venue)
+        stock = create_stock_with_thing_offer(offerer2, venue, offer)
+        booking3 = create_booking(user, stock=stock, venue=venue, is_used=True)
 
-    PcObject.check_and_save(deposit, booking1, booking2, booking3)
+        PcObject.check_and_save(deposit, booking1, booking2, booking3)
 
-    # When
-    bookings = find_final_offerer_bookings(offerer1.id)
+        # When
+        bookings = find_final_offerer_bookings(offerer1.id)
 
-    # Then
-    assert len(bookings) == 2
-    assert booking1 in bookings
-    assert booking2 in bookings
+        # Then
+        assert len(bookings) == 2
+        assert booking1 in bookings
+        assert booking2 in bookings
+
+    @pytest.mark.standalone
+    @clean_database
+    def test_find_final_offerer_bookings_returns_not_cancelled_bookings_for_offerer(self, app):
+        # Given
+        user = create_user()
+        deposit = create_deposit(user, datetime.utcnow(), amount=500)
+
+        offerer1 = create_offerer(siren='123456789')
+        venue = create_venue(offerer1)
+        offer = create_thing_offer(venue)
+        stock = create_stock_with_thing_offer(offerer1, venue, offer)
+        booking1 = create_booking(user, stock=stock, venue=venue, is_used=True)
+        booking2 = create_booking(user, stock=stock, venue=venue, is_cancelled=True, is_used=True)
+
+        PcObject.check_and_save(deposit, booking1, booking2)
+
+        # When
+        bookings = find_final_offerer_bookings(offerer1.id)
+
+        # Then
+        assert len(bookings) == 1
+        assert booking1 in bookings
+
+    @pytest.mark.standalone
+    @clean_database
+    def test_find_final_offerer_bookings_returns_only_used_bookings(self, app):
+        # Given
+        user = create_user()
+        deposit = create_deposit(user, datetime.utcnow(), amount=500)
+
+        offerer1 = create_offerer(siren='123456789')
+        venue = create_venue(offerer1)
+        offer = create_thing_offer(venue)
+        stock = create_stock_with_thing_offer(offerer1, venue, offer)
+        booking1 = create_booking(user, stock=stock, venue=venue, is_used=True)
+        booking2 = create_booking(user, stock=stock, venue=venue, is_used=False)
+
+        PcObject.check_and_save(deposit, booking1, booking2)
+
+        # When
+        bookings = find_final_offerer_bookings(offerer1.id)
+
+        # Then
+        assert len(bookings) == 1
+        assert booking1 in bookings
+
+    @pytest.mark.standalone
+    @clean_database
+    def test_find_final_offerer_bookings_returns_only_bookings_on_events_older_than_two_days(self, app):
+        # Given
+        user = create_user()
+        deposit = create_deposit(user, datetime.utcnow(), amount=500)
+
+        offerer1 = create_offerer(siren='123456789')
+        venue = create_venue(offerer1)
+        offer = create_event_offer(venue)
+        old_event_occurrence = create_event_occurrence(offer,
+                                                       beginning_datetime=datetime.utcnow() - timedelta(hours=49))
+        recent_event_occurrence = create_event_occurrence(offer,
+                                                          beginning_datetime=datetime.utcnow() - timedelta(hours=2))
+        stock1 = create_stock_from_event_occurrence(old_event_occurrence)
+        stock2 = create_stock_from_event_occurrence(recent_event_occurrence)
+        booking1 = create_booking(user, stock=stock1, venue=venue, is_used=False)
+        booking2 = create_booking(user, stock=stock2, venue=venue, is_used=False)
+
+        PcObject.check_and_save(deposit, booking1, booking2)
+
+        # When
+        bookings = find_final_offerer_bookings(offerer1.id)
+
+        # Then
+        assert len(bookings) == 1
+        assert booking1 in bookings
 
 
 @pytest.mark.standalone
-@clean_database
-def test_find_final_offerer_bookings_returns_not_cancelled_bookings_for_offerer(app):
-    # Given
-    user = create_user()
-    deposit = create_deposit(user, datetime.utcnow(), amount=500)
+class FindDateUsedTest:
+    @clean_database
+    def test_find_date_used_on_booking_returns_issued_date_of_matching_activity(self, app):
+        # given
+        user = create_user()
+        deposit = create_deposit(user, datetime.utcnow(), amount=500)
+        booking = create_booking(user)
+        PcObject.check_and_save(user, deposit, booking)
 
-    offerer1 = create_offerer(siren='123456789')
-    venue = create_venue(offerer1)
-    offer = create_thing_offer(venue)
-    stock = create_stock_with_thing_offer(offerer1, venue, offer)
-    booking1 = create_booking(user, stock=stock, venue=venue, is_used=True)
-    booking2 = create_booking(user, stock=stock, venue=venue, is_cancelled=True, is_used=True)
+        activity_insert = create_booking_activity(
+            booking, 'booking', 'insert', issued_at=datetime(2018, 1, 28)
+        )
+        activity_update = create_booking_activity(
+            booking, 'booking', 'update', issued_at=datetime(2018, 2, 12),
+            data={'isUsed': True}
+        )
+        save_all_activities(activity_insert, activity_update)
 
-    PcObject.check_and_save(deposit, booking1, booking2)
+        # when
+        date_used = find_date_used(booking)
 
-    # When
-    bookings = find_final_offerer_bookings(offerer1.id)
-
-    # Then
-    assert len(bookings) == 1
-    assert booking1 in bookings
-
-
-@pytest.mark.standalone
-@clean_database
-def test_find_final_offerer_bookings_returns_only_used_bookings(app):
-    # Given
-    user = create_user()
-    deposit = create_deposit(user, datetime.utcnow(), amount=500)
-
-    offerer1 = create_offerer(siren='123456789')
-    venue = create_venue(offerer1)
-    offer = create_thing_offer(venue)
-    stock = create_stock_with_thing_offer(offerer1, venue, offer)
-    booking1 = create_booking(user, stock=stock, venue=venue, is_used=True)
-    booking2 = create_booking(user, stock=stock, venue=venue, is_used=False)
-
-    PcObject.check_and_save(deposit, booking1, booking2)
-
-    # When
-    bookings = find_final_offerer_bookings(offerer1.id)
-
-    # Then
-    assert len(bookings) == 1
-    assert booking1 in bookings
-
-
-@pytest.mark.standalone
-@clean_database
-def test_find_final_offerer_bookings_returns_only_bookings_on_events_older_than_two_days(app):
-    # Given
-    user = create_user()
-    deposit = create_deposit(user, datetime.utcnow(), amount=500)
-
-    offerer1 = create_offerer(siren='123456789')
-    venue = create_venue(offerer1)
-    offer = create_event_offer(venue)
-    old_event_occurrence = create_event_occurrence(offer, beginning_datetime=datetime.utcnow() - timedelta(hours=49))
-    recent_event_occurrence = create_event_occurrence(offer, beginning_datetime=datetime.utcnow() - timedelta(hours=2))
-    stock1 = create_stock_from_event_occurrence(old_event_occurrence)
-    stock2 = create_stock_from_event_occurrence(recent_event_occurrence)
-    booking1 = create_booking(user, stock=stock1, venue=venue, is_used=False)
-    booking2 = create_booking(user, stock=stock2, venue=venue, is_used=False)
-
-    PcObject.check_and_save(deposit, booking1, booking2)
-
-    # When
-    bookings = find_final_offerer_bookings(offerer1.id)
-
-    # Then
-    assert len(bookings) == 1
-    assert booking1 in bookings
-
-
-@pytest.mark.standalone
-@clean_database
-def test_find_date_used_on_booking_returns_issued_date_of_matching_activity(app):
-    # given
-    user = create_user()
-    deposit = create_deposit(user, datetime.utcnow(), amount=500)
-    booking = create_booking(user)
-    PcObject.check_and_save(user, deposit, booking)
-
-    activity_insert = create_booking_activity(
-        booking, 'booking', 'insert', issued_at=datetime(2018, 1, 28)
-    )
-    activity_update = create_booking_activity(
-        booking, 'booking', 'update', issued_at=datetime(2018, 2, 12),
-        data={'isUsed': True}
-    )
-    save_all_activities(activity_insert, activity_update)
-
-    # when
-    date_used = find_date_used(booking)
-
-    # then
-    assert date_used == datetime(2018, 2, 12)
+        # then
+        assert date_used == datetime(2018, 2, 12)
 
 
 @pytest.mark.standalone
@@ -365,3 +367,156 @@ class FindAllActiveByUserIdTest:
         # then
         assert len(bookings) == 2
         assert booking1 not in bookings
+
+
+@pytest.mark.standalone
+class FindByTest:
+    class ByTokenTest:
+        @clean_database
+        def test_returns_booking_if_token_is_known(self, app):
+            # given
+            user = create_user()
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            stock = create_stock_with_thing_offer(offerer, venue, price=0)
+            booking = create_booking(user, stock=stock)
+            PcObject.check_and_save(booking)
+
+            # when
+            result = find_by(booking.token)
+
+            # then
+            assert result.id == booking.id
+
+        @clean_database
+        def test_raises_an_exception_if_token_is_unknown(self, app):
+            # given
+            user = create_user()
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            stock = create_stock_with_thing_offer(offerer, venue, price=0)
+            booking = create_booking(user, stock=stock)
+            PcObject.check_and_save(booking)
+
+            # when
+            with pytest.raises(ResourceNotFound) as e:
+                find_by('UNKNOWN')
+
+            # then
+            assert e.value.errors['global'] == ["Cette contremarque n'a pas été trouvée"]
+
+    class ByTokenAndEmailTest:
+        @clean_database
+        def test_returns_booking_if_token_and_email_are_known(self, app):
+            # given
+            user = create_user(email='user@example.com')
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            stock = create_stock_with_thing_offer(offerer, venue, price=0)
+            booking = create_booking(user, stock=stock)
+            PcObject.check_and_save(booking)
+
+            # when
+            result = find_by(booking.token, email='user@example.com')
+
+            # then
+            assert result.id == booking.id
+
+        @clean_database
+        def test_returns_booking_if_token_is_known_and_email_is_known_case_insensitively(self, app):
+            # given
+            user = create_user(email='USer@eXAMple.COm')
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            stock = create_stock_with_thing_offer(offerer, venue, price=0)
+            booking = create_booking(user, stock=stock)
+            PcObject.check_and_save(booking)
+
+            # when
+            result = find_by(booking.token, email='USER@example.COM')
+
+            # then
+            assert result.id == booking.id
+
+        @clean_database
+        def test_returns_booking_if_token_is_known_and_email_is_known_with_trailing_spaces(self, app):
+            # given
+            user = create_user(email='user@example.com')
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            stock = create_stock_with_thing_offer(offerer, venue, price=0)
+            booking = create_booking(user, stock=stock)
+            PcObject.check_and_save(booking)
+
+            # when
+            result = find_by(booking.token, email='   user@example.com  ')
+
+            # then
+            assert result.id == booking.id
+
+        @clean_database
+        def test_raises_an_exception_if_token_is_known_but_email_is_unknown(self, app):
+            # given
+            user = create_user(email='user@example.com')
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            stock = create_stock_with_thing_offer(offerer, venue, price=0)
+            booking = create_booking(user, stock=stock)
+            PcObject.check_and_save(booking)
+
+            # when
+            with pytest.raises(ResourceNotFound) as e:
+                find_by(booking.token, email='other.user@example.com')
+
+            # then
+            assert e.value.errors['global'] == ["Cette contremarque n'a pas été trouvée"]
+
+    class ByTokenAndEmailAndOfferIdTest:
+        @clean_database
+        def test_returns_booking_if_token_and_email_and_offer_id_for_thing_are_known(self, app):
+            # given
+            user = create_user(email='user@example.com')
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            stock = create_stock_with_thing_offer(offerer, venue, price=0)
+            booking = create_booking(user, stock=stock)
+            PcObject.check_and_save(booking)
+
+            # when
+            result = find_by(booking.token, email='user@example.com', offer_id=stock.resolvedOffer.id)
+
+            # then
+            assert result.id == booking.id
+
+        @clean_database
+        def test_returns_booking_if_token_and_email_and_offer_id_for_event_are_known(self, app):
+            # given
+            user = create_user(email='user@example.com')
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            stock = create_stock_with_event_offer(offerer, venue, price=0)
+            booking = create_booking(user, venue=venue, stock=stock)
+            PcObject.check_and_save(booking)
+
+            # when
+            result = find_by(booking.token, email='user@example.com', offer_id=stock.resolvedOffer.id)
+
+            # then
+            assert result.id == booking.id
+
+        @clean_database
+        def test_returns_booking_if_token_and_email_are_known_but_offer_id_is_unknown(self, app):
+            # given
+            user = create_user(email='user@example.com')
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            stock = create_stock_with_thing_offer(offerer, venue, price=0)
+            booking = create_booking(user, stock=stock)
+            PcObject.check_and_save(booking)
+
+            # when
+            with pytest.raises(ResourceNotFound) as e:
+                result = find_by(booking.token, email='user@example.com', offer_id=1234)
+
+            # then
+            assert e.value.errors['global'] == ["Cette contremarque n'a pas été trouvée"]

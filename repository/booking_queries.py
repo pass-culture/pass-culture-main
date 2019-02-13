@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from typing import Set
 
 from postgresql_audit.flask import versioning_manager
-from sqlalchemy import and_, text
+from sqlalchemy import and_, text, func
 from sqlalchemy.exc import InternalError
 from sqlalchemy.orm import aliased
 
@@ -91,11 +91,12 @@ def find_all_bookings_for_stock(stock):
     return Booking.query.join(Stock).filter_by(id=stock.id).all()
 
 
-def find_by(token, email=None, offer_id=None):
+def find_by(token: str, email: str = None, offer_id: int = None) -> Booking:
     query = Booking.query.filter_by(token=token)
 
     if email:
-        query = query.join(User).filter_by(email=email)
+        query = query.join(User) \
+            .filter(func.lower(User.email) == email.strip().lower())
 
     if offer_id:
         query_offer_1 = Booking.query.join(Stock) \
