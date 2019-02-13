@@ -13,7 +13,7 @@ def get_user_offerer(offererId):
         user=current_user,
         offererId=dehumanize(offererId)
     )
-    return jsonify(user_offerer), 201
+    return jsonify(user_offerer), 200
 
 
 @app.route('/userOfferers', methods=['POST'])

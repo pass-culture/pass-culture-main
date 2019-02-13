@@ -1,7 +1,4 @@
 """ routes offerer """
-import secrets
-from datetime import timedelta, datetime
-from pprint import pprint
 
 import pytest
 
@@ -9,8 +6,9 @@ from models import PcObject
 from tests.conftest import clean_database
 from utils.human_ids import humanize
 from utils.test_utils import create_user, \
-                             create_user_offerer, \
-                             req_with_auth
+    create_user_offerer, \
+    req_with_auth, create_offerer, API_URL
+
 
 @pytest.mark.standalone
 @clean_database
@@ -32,6 +30,5 @@ def test_get_user_offerer_should_return_only_user_offerer_from_current_user(app)
     response = auth_request.get(url)
 
     # then
-    user_offerer_dict = response.json()
     assert response.status_code == 200
-    assert user_offerer_dict['userId'] == humanize(user1.id)
+    assert response.json()[0]['userId'] == humanize(user1.id)

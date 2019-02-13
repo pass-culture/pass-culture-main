@@ -43,7 +43,7 @@ BASE_DATA_PRO = {
 @pytest.mark.standalone
 class WebappSignupTest:
     @clean_database
-    def test_post_signup_webapp_create_user_with_validation_token(app):
+    def test_post_signup_webapp_create_user_with_validation_token(self, app):
         # Given
         user_data = BASE_DATA
 

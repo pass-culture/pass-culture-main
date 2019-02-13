@@ -10,8 +10,6 @@ import routes.offerers
 import routes.stocks
 import routes.providers
 import routes.recommendations
-# TODO
-# if IS_DEV:
 import routes.storage
 import routes.things
 import routes.types
@@ -21,3 +19,5 @@ import routes.validate
 import routes.venue_providers
 import routes.venues
 import routes.health_check
+import routes.passwords
+import routes.signup
