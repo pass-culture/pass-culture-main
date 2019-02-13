@@ -59,15 +59,14 @@ def create_booking():
 
     stock = Stock.query.filter_by(id=dehumanize(stock_id)).first()
 
-    user_bookings = find_all_bookings_for_stock_and_user(stock, current_user)
-
     try:
         check_has_stock_id(stock_id)
+        check_existing_stock(stock)
+        user_bookings = find_all_bookings_for_stock_and_user(stock, current_user)
         check_already_booked(user_bookings)
         check_has_quantity(quantity)
         check_has_more_than_one_quantity(quantity)
         check_offer_date(stock)
-        check_existing_stock(stock)
         check_not_soft_deleted_stock(stock)
         check_can_book_free_offer(stock, current_user)
         check_offer_is_active(stock)
@@ -75,7 +74,6 @@ def create_booking():
         check_stock_venue_is_validated(stock)
     except ApiErrors as api_errors:
         return jsonify(api_errors.errors), 400
-
 
     new_booking = Booking(from_dict={
         'stockId': stock_id,

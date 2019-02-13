@@ -91,13 +91,16 @@ class Post:
                                                                     available=2)
 
             user = create_user(email='test@email.com', password='mdppsswd')
+            user2 = create_user(email='test2@email.com', password='testpsswd')
 
-            deposit = create_deposit(user, datetime.utcnow(), amount=50)
+            deposit = create_deposit(user, datetime.utcnow(), amount=500)
+            deposit2 = create_deposit(user2, datetime.utcnow(), amount=500)
 
             recommendation = create_recommendation(offer=too_many_bookings_stock.offer, user=user)
-            booking = create_booking(user, too_many_bookings_stock, venue, quantity=2)
 
-            PcObject.check_and_save(booking, recommendation, user, deposit)
+            booking = create_booking(user2, too_many_bookings_stock, venue, quantity=2)
+
+            PcObject.check_and_save(booking, recommendation, user, deposit, deposit2, too_many_bookings_stock)
 
             booking_json = {
                 'stockId': humanize(too_many_bookings_stock.id),
@@ -210,30 +213,34 @@ class Post:
             thing_offer = create_thing_offer(venue)
             PcObject.check_and_save(thing_offer)
 
-            stock_1 = create_stock_with_thing_offer(offerer, venue, thing_offer, price=190)
-            stock_2 = create_stock_with_thing_offer(offerer, venue, thing_offer, price=6)
-            PcObject.check_and_save(stock_1, stock_2)
+            thing_stock_price_190 = create_stock_with_thing_offer(offerer, venue, thing_offer, price=190)
+
+            thing_stock_price_12 = create_stock_with_thing_offer(offerer, venue, thing_offer, price=12)
+
+            PcObject.check_and_save(thing_stock_price_190, thing_stock_price_12)
 
             deposit_date = datetime.utcnow() - timedelta(minutes=2)
+
             deposit = create_deposit(user, deposit_date, amount=500, source='public')
+
             PcObject.check_and_save(deposit)
 
-            booking_1 = create_booking(user, stock_1, venue, recommendation=None)
-            PcObject.check_and_save(booking_1)
+            booking_thing_price_190 = create_booking(user, thing_stock_price_190, venue, recommendation=None)
+            PcObject.check_and_save(booking_thing_price_190)
 
             recommendation = create_recommendation(thing_offer, user)
             PcObject.check_and_save(recommendation)
 
-            booking_json = {
-                "stockId": humanize(stock_2.id),
+            booking_thing_price_12_json = {
+                "stockId": humanize(thing_stock_price_12.id),
                 "recommendationId": humanize(recommendation.id),
-                "quantity": 2
+                "quantity": 1
             }
 
             # When
             response = TestClient() \
                 .with_auth('test@email.com', 'testpsswd') \
-                .post(API_URL + '/bookings', json=booking_json)
+                .post(API_URL + '/bookings', json=booking_thing_price_12_json)
 
             # Then
             error_message = response.json()
@@ -245,7 +252,12 @@ class Post:
         def when_missing_stock_id(self, app):
             # Given
             user = create_user(email='test@email.com', password='testpsswd')
-            PcObject.check_and_save(user)
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            stock = create_stock_with_event_offer(offerer, venue, price=0)
+
+            PcObject.check_and_save(user, stock)
+
             booking_json = {
                 'stockId': None,
                 'recommendationId': 'AFQA',
@@ -266,9 +278,13 @@ class Post:
         def when_missing_quantity(self, app):
             # Given
             user = create_user(email='test@email.com', password='testpsswd')
-            PcObject.check_and_save(user)
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            stock = create_stock_with_event_offer(offerer, venue, price=0)
+
+            PcObject.check_and_save(user, stock)
             booking_json = {
-                'stockId': 'AE',
+                'stockId': humanize(stock.id),
                 'recommendationId': 'AFQA',
                 'quantity': None
             }
