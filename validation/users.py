@@ -31,6 +31,18 @@ def check_valid_signup(request):
         raise errors
 
 
+def check_valid_signin(identifier: str, password: str):
+    errors = ApiErrors()
+    errors.status_code = 401
+
+    if identifier is None:
+        errors.addError('identifier', 'Identifiant manquant')
+    if password is None:
+        errors.addError('password', 'Mot de passe manquant')
+
+    errors.maybeRaise()
+
+
 def _contact_ok_is_not_checked(contact_ok):
     contact_ok_is_not_checked_as_bool = contact_ok is not True
     contact_ok_is_not_checked_as_str = str(contact_ok).lower() != 'true'

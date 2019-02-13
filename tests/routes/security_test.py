@@ -4,7 +4,6 @@ import pytest
 
 from models import PcObject, UserSession
 from tests.conftest import clean_database
-from utils.human_ids import dehumanize
 from utils.test_utils import create_user, API_URL, req, req_with_auth
 
 

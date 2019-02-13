@@ -561,8 +561,7 @@ class ProSignupTest:
             .first()
         assert offerer is not None
         user_offerer = UserOfferer.query \
-            .filter_by(user=user,
-                       offerer=offerer) \
+            .filter_by(user=user, offerer=offerer) \
             .first()
         assert user_offerer is not None
         assert user_offerer.validationToken is not None
@@ -649,25 +648,6 @@ def test_get_profile_should_return_the_users_profile_without_password_hash_and_p
     assert 'resetPasswordToken' not in user_json
     assert 'resetPasswordTokenValidityLimit' not in user_json
 
-
-@pytest.mark.standalone
-@clean_database
-def test_signin_should_return_the_signed_in_user_with_his_expenses(app):
-    # given
-    user = create_user(email='user@example.com', password='toto123456789')
-    PcObject.check_and_save(user)
-    data = {'identifier': user.email, 'password': user.clearTextPassword}
-
-    # when
-    response = req.post(API_URL + '/users/signin', json=data, headers={'origin': 'http://localhost:3000'})
-
-    # then
-    assert response.status_code == 200
-    assert response.json()['expenses'] == {
-        'all': {'actual': 0, 'max': 500},
-        'digital': {'actual': 0, 'max': 200},
-        'physical': {'actual': 0, 'max': 200}
-    }
 
 
 @clean_database
@@ -1130,18 +1110,3 @@ def test_post_signup_webapp_create_user_with_validation_token(app):
     created_user = User.query.filter_by(email=user_data['email']).first()
     assert 'validationToken' not in response.json()
     assert created_user.validationToken is not None
-
-
-@pytest.mark.standalone
-@clean_database
-def test_post_signin_should_not_work_if_user_not_validated(app):
-    # Given
-    user = create_user()
-    user.generate_validation_token()
-    PcObject.check_and_save(user)
-    data = {'identifier': user.email, 'password': user.clearTextPassword}
-    # When
-    response = requests.post(API_URL + '/users/signin', json=data, headers={'origin': 'http://localhost:3000'})
-    # Then
-    assert response.status_code == 401
-    assert response.json()['identifier'] == ['Ce compte n\'est pas validé.']

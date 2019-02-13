@@ -8,7 +8,7 @@ from models.user import WalletBalance
 
 
 def find_user_by_email(email: str) -> User:
-    return User.query.filter_by(email=email).first()
+    return User.query.filter_by(email=email.strip().lower()).first()
 
 
 def find_user_by_reset_password_token(token: str) -> User:

@@ -1,22 +1,17 @@
 """ credentials """
 from flask import session
-from flask_login import login_user
 
 from models.api_errors import ApiErrors
 from models.pc_object import PcObject
 from models.user import User
+from repository.user_queries import find_user_by_email
 
-def get_user_with_credentials(identifier, password):
+
+def get_user_with_credentials(identifier: str, password: str) -> User:
+    user = find_user_by_email(identifier)
+
     errors = ApiErrors()
     errors.status_code = 401
-
-    if identifier is None:
-        errors.addError('identifier', 'Identifiant manquant')
-    if password is None:
-        errors.addError('password', 'Mot de passe manquant')
-    errors.maybeRaise()
-
-    user = User.query.filter_by(email=identifier).first()
 
     if not user:
         errors.addError('identifier', 'Identifiant incorrect')
@@ -29,6 +24,7 @@ def get_user_with_credentials(identifier, password):
         raise errors
 
     return user
+
 
 def change_password(user, password):
     if type(user) != User:

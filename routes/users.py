@@ -22,7 +22,7 @@ from utils.mailing import \
     subscribe_newsletter, MailServiceException
 from utils.rest import expect_json_data, \
     login_or_api_key_required
-from validation.users import check_allowed_changes_for_user, check_valid_signup
+from validation.users import check_allowed_changes_for_user, check_valid_signup, check_valid_signin
 
 
 def is_pro_signup(json_user):
@@ -112,6 +112,7 @@ def signin():
     json = request.get_json()
     identifier = json.get("identifier")
     password = json.get("password")
+    check_valid_signin(identifier, password)
     user = get_user_with_credentials(identifier, password)
     login_user(user, remember=True)
     stamp_session(user)
