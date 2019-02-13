@@ -7,7 +7,7 @@ import { ROOT_PATH, SUPPORT_EMAIL } from '../src/utils/config'
 const menuButton = Selector('#open-menu-button')
 const mainMenu = Selector('#main-menu')
 
-fixture`12_01 Menu - Affichage de la modale`.beforeEach(async t => {
+fixture`10_01 Menu - Affichage de la modale`.beforeEach(async t => {
   await t
     .useRole(createUserRole(hasSignedUpUser93))
     .navigateTo(`${ROOT_PATH}profil`)
@@ -41,7 +41,7 @@ test('Je vois le montant de mon pass dans le header', async t => {
   await t.expect(Selector('#main-menu-header-wallet-value').exists).ok()
 })
 
-fixture`12_02 Modale Menu - Liens vers pages`.beforeEach(async t => {
+fixture`10_02 Modale Menu - Liens vers pages`.beforeEach(async t => {
   await t
     .useRole(createUserRole(hasSignedUpUser93))
     .navigateTo(`${ROOT_PATH}profil`)
@@ -145,7 +145,7 @@ test('Menu | Liens | Déconnexion', async t => {
   await t.expect(location.pathname).eql('/connexion')
 })
 
-fixture`12_03 Modale Menu - gestion de l'historique`.beforeEach(async t => {
+fixture`10_03 Modale Menu - gestion de l'historique`.beforeEach(async t => {
   await t
     .useRole(createUserRole(hasSignedUpUser93))
     .navigateTo(`${ROOT_PATH}profil`)

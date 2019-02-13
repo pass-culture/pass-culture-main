@@ -1,7 +1,7 @@
 import { ClientFunction, Selector } from 'testcafe'
 
 import { ROOT_PATH } from '../src/utils/config'
-import { newUser } from './helpers/users'
+import { newSignupUser } from './helpers/users'
 
 const getPageUrl = ClientFunction(() => window.location.href.toString())
 
@@ -26,7 +26,7 @@ test.skip("Je peux cliquer sur lien pour me connecter si j'ai déja un compte", 
 
 test.skip("Lorsque l'un des champs obligatoire est manquant, le bouton créer est desactivé", async t => {
   await t
-    .typeText(userEmail, newUser.email)
+    .typeText(userEmail, newSignupUser.email)
     .wait(500)
     .expect(signUpButton.innerText)
     .eql('Créer')
@@ -35,9 +35,9 @@ test.skip("Lorsque l'un des champs obligatoire est manquant, le bouton créer es
 
 test.skip('Je crée un compte et je suis redirigé·e vers la page /découverte', async t => {
   await t
-    .typeText(userPublicName, newUser.publicName)
-    .typeText(userEmail, newUser.email)
-    .typeText(userPassword, newUser.password)
+    .typeText(userPublicName, newSignupUser.publicName)
+    .typeText(userEmail, newSignupUser.email)
+    .typeText(userPassword, newSignupUser.password)
   await t
     .click(userContactOk)
     .wait(1000)
@@ -55,8 +55,8 @@ fixture
 
 test.skip('E-mail déjà présent dans la base et mot de passe invalide', async t => {
   await t
-    .typeText(userPublicName, newUser.publicName)
-    .typeText(userEmail, newUser.email)
+    .typeText(userPublicName, newSignupUser.publicName)
+    .typeText(userEmail, newSignupUser.email)
     .typeText(userPassword, 'pas')
     .wait(1000)
     .click(userContactOk)
@@ -78,9 +78,9 @@ test.skip('E-mail déjà présent dans la base et mot de passe invalide', async 
 
 test.skip('E-mail non autorisé', async t => {
   await t
-    .typeText(userPublicName, newUser.publicName)
+    .typeText(userPublicName, newSignupUser.publicName)
     .typeText(userEmail, 'test@test.fr')
-    .typeText(userPassword, newUser.password)
+    .typeText(userPassword, newSignupUser.password)
     .wait(1000)
     .click(userContactOk)
     .wait(1000)

@@ -1,10 +1,9 @@
-import { ClientFunction, Selector, RequestMock } from 'testcafe'
+import { Selector, RequestMock } from 'testcafe'
 
+import getPageUrl from './helpers/getPageUrl'
 import { createUserRole } from './helpers/roles'
 import { hasSignedUpUser93 } from './helpers/users'
 import { ROOT_PATH } from '../src/utils/config'
-
-const getPageUrl = ClientFunction(() => window.location.href.toString())
 
 const getSearchResultsHook = RequestMock()
   .onRequestTo(`${ROOT_PATH}recherche/resultats/Applaudir?categories=Applaudir`)
@@ -162,7 +161,7 @@ test('Je vois les résultats de la page de résultats de la catégorie Lire', as
     .expect(Selector('#recommendation-date').exists)
     .ok()
     .expect(imgResult.getAttribute('src'))
-    .contains('/storage/thumbs/mediations/')
+    .match(/\/storage\/thumbs\/(mediations|things)/)
 
     .click(linkResult)
 
@@ -199,14 +198,14 @@ test('Je vois le header de la page de résultats de la catégorie Lire', async t
     )
 })
 
-test("Je vois un titre de la section des résultats qui m'informe qu'il n'y a pas de résultats", async t => {
+test.skip("Je vois un titre de la section des résultats qui m'informe qu'il n'y a pas de résultats", async t => {
   await t
     .useRole(createUserRole(hasSignedUpUser93))
     .navigateTo(`${ROOT_PATH}recherche/`)
     .click(button)
     .wait(500)
     .expect(getPageUrl())
-    .contains('/recherche/resultats/Applaudir?categories=Applaudir', {
+    .contains('/recherche/resultats/Fake?categories=Fake', {
       timeout: 3000,
     })
 

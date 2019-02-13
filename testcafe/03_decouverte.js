@@ -1,11 +1,10 @@
-import { Selector, ClientFunction } from 'testcafe'
+import { Selector } from 'testcafe'
 
 import { ROOT_PATH } from '../src/utils/config'
 
+import getPageUrl from './helpers/getPageUrl'
 import { createUserRole, signinAs } from './helpers/roles'
 import { hasBookedSomeUser93, hasSignedUpUser93 } from './helpers/users'
-
-const getPageUrl = ClientFunction(() => window.location.href.toString())
 
 const nextButton = Selector('button.button.after')
 const showVerso = Selector('button.button.to-recto')

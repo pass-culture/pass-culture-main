@@ -1,11 +1,8 @@
 import { Selector } from 'testcafe'
 
-// testcafe chrome ./testcafe/11_activation.js
-import {
-  futureActivatedSignedUpUser97,
-  hasBookedSomeUser93,
-} from './helpers/users'
+import getPageUrl from './helpers/getPageUrl'
 import { ROOT_PATH } from '../src/utils/config'
+import { hasSignedUpUser93 } from './helpers/users'
 
 const activationEmailSpan = Selector('#activation-email')
 const cguInput = Selector("input[name='cguCheckBox']")
@@ -16,15 +13,14 @@ const newPasswordInput = Selector('#activation-newPassword')
 const newPasswordConfirm = Selector('#activation-newPasswordConfirm')
 const submitButton = Selector("button[type='submit']")
 
-fixture("11 ActivationPage A | succès de l'activation")
+const baseURL = `${ROOT_PATH}activation`
+
+fixture(`01 ActivationPage A | succès de l'activation`)
 
 test('Je suis redirigé·e vers découverte', async t => {
   // given
-  // WATCH: hasSignedUpUser93 has been used already
-  // in decouverte tuto tests, so it cannot be used here
-  // (because it will be redirect to not tuto recos)
-  const { email, password, resetPasswordToken } = futureActivatedSignedUpUser97
-  const url = `${ROOT_PATH}activation/${resetPasswordToken}?email=${email}`
+  const { email, password, resetPasswordToken } = hasSignedUpUser93
+  const url = `${baseURL}/${resetPasswordToken}?email=${email}`
 
   // when
   await t.navigateTo(url)
@@ -39,38 +35,32 @@ test('Je suis redirigé·e vers découverte', async t => {
     .click(cguInput)
     .click(submitButton)
     .wait(10000)
-
-  // then
-  const location = await t.eval(() => window.location)
-  await t.expect(location.pathname).match(/\/decouverte\/tuto\/([A-Z0-9]*)$/)
+    .expect(getPageUrl())
+    .match(/\/decouverte\/tuto\/([A-Z0-9]*)$/)
 })
 
-fixture("11 ActivationPage B | erreurs avec l'activation")
+fixture("01 ActivationPage B | erreurs avec l'activation")
 
 test('Sans token, je suis redirigé·e vers /activation/error', async t => {
-  // when
-  await t.navigateTo(`${ROOT_PATH}activation`)
-
-  // then
-  const location = await t.eval(() => window.location)
-  await t.expect(location.pathname).eql('/activation/error')
+  await t
+    .navigateTo(`${baseURL}`)
+    .expect(getPageUrl())
+    .eql(`${baseURL}/error`)
 })
 
 test('Sans email en query, je suis redirigé·e vers /activation/error', async t => {
-  // when
-  await t.navigateTo(`${ROOT_PATH}activation/fake`)
-
-  // then
-  const location = await t.eval(() => window.location)
-  await t.expect(location.pathname).eql('/activation/error')
+  await t
+    .navigateTo(`${baseURL}/missing_email`)
+    .expect(getPageUrl())
+    .eql(`${baseURL}/error`)
 })
 
 test("Avec un email déjà activé, j'ai un message d'erreur", async t => {
   // given
-  const { email, password } = hasBookedSomeUser93
+  const { email, password } = hasSignedUpUser93
 
   // when
-  await t.navigateTo(`${ROOT_PATH}activation/fake?email=${email}`)
+  await t.navigateTo(`${baseURL}/is_activated?email=${email}`)
 
   // when
   await t

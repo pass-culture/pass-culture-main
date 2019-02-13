@@ -31,37 +31,23 @@ yarn test:unit
 
 Lancer un seul fichier en mode watch
 ```bash
-./node_modules/.bin/jest --env=jsdom ./path/to/file.spec.js --watch
+./node_modules/.bin/jest --env=jsdom ./<path>/tests/<fichier> --watch
 # yarn test:unit ./path/to/file.spec.js --watch
 ```
 
-#### Tests Fonctionnels (Testcafe)
+#### Tests Fonctionnels/E2E (Testcafe)
 
 Lancer tous les tests
 ```bash
+pc reset-all-db
+pc sandbox --name=industrial
 yarn test:cafe
 ```
 
 Lancer un seul fichier en ligne de commande depuis un environnement local
 ```bash
-./node_modules/.bin/testcafe chrome ./testcafe/02_signin.js --env=local
+./node_modules/.bin/testcafe chrome ./testcafe/02_signin.js
 ```
-
-#### Tests Visuels (Testcafe/RessembleJS)
-
-Pour ajouter un test visuel, voir le fichier `testcafe/visuals.json`
-
-Lancer tous les tests
-```bash
-yarn test:visual
-```
-> Cette commande permet comparer et créer les screenshots manquants
-
-Force la mise à jour des images
-```bash
-yarn test:visual --force
-```
-> Cette commande écrase et remplace tous les screenshots de tests
 
 ## Upgrade de la version
 
