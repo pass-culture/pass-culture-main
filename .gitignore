@@ -36,4 +36,5 @@ env_file
 *.iml
 
 # licenses
+licenses
 licenses.json
