@@ -85,13 +85,14 @@ def make_offerer_booking_recap_email_after_user_action(booking, is_cancellation=
     stock_name = booking.stock.resolvedOffer.eventOrThing.name
     booking_is_on_event = booking.stock.eventOccurrence is not None
 
+    email_subject = f'[Réservations] {"Annulation de réservation" if is_cancellation else "Nouvelle réservation"}' \
+                    f' pour {stock_name}'
+
     if booking_is_on_event:
         date_in_tz = _get_event_datetime(booking.stock)
         formatted_datetime = format_datetime(date_in_tz)
-        email_subject = '[Réservations] Nouvelle réservation pour {} - {}'.format(stock_name,
-                                                                                  formatted_datetime)
+        email_subject += f' - {formatted_datetime}'
     else:
-        email_subject = '[Réservations] Nouvelle réservation pour {}'.format(stock_name)
         formatted_datetime = None
     email_html = render_template('mails/offerer_recap_email_after_user_action.html',
                                  is_final=False,

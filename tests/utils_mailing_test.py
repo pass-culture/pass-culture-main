@@ -810,7 +810,7 @@ def test_make_offerer_booking_user_cancellation_email_when_virtual_venue_does_no
     # Given
     offerer = create_offerer()
     venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', is_virtual=True, siret=None)
-    thing_offer = create_thing_offer(venue)
+    thing_offer = create_thing_offer(venue, thing_name='Test')
     stock = create_stock_from_offer(thing_offer, price=0)
     user_1 = create_user('Test1', departement_code='93', email='test1@email.com')
     user_2 = create_user('Test2', departement_code='93', email='test2@email.com')
@@ -827,6 +827,52 @@ def test_make_offerer_booking_user_cancellation_email_when_virtual_venue_does_no
         email_html = BeautifulSoup(recap_email['Html-part'], 'html.parser')
     assert 'offre numérique proposée par Test offerer' in str(email_html.find('p', {'id': 'action'}))
     assert '(Adresse:' not in str(email_html.find('p', {'id': 'action'}))
+
+@clean_database
+@pytest.mark.standalone
+def test_make_offerer_booking_user_cancellation_email_for_thing_has_cancellation_subject_without_date(app):
+    # Given
+    offerer = create_offerer()
+    venue = create_venue(offerer, 'Test offerer')
+    thing_offer = create_thing_offer(venue, thing_name='Test')
+    stock = create_stock_from_offer(thing_offer, price=0)
+    user_1 = create_user('Test1', departement_code='93', email='test1@email.com')
+    user_2 = create_user('Test2', departement_code='93', email='test2@email.com')
+    booking_1 = create_booking(user_1, stock, venue)
+    booking_2 = create_booking(user_2, stock, venue)
+    booking_2.isCancelled = True
+    PcObject.check_and_save(booking_1, booking_2)
+
+    # When
+    with patch('utils.mailing.find_all_ongoing_bookings_by_stock', return_value=[booking_1]):
+        recap_email = make_offerer_booking_recap_email_after_user_action(booking_2, is_cancellation=True)
+
+    # Then
+    assert recap_email['Subject'] == '[Réservations] Annulation de réservation pour Test'
+
+@freeze_time('2018-10-15 09:21:34')
+@clean_database
+@pytest.mark.standalone
+def test_make_offerer_booking_user_cancellation_email_for_event_has_cancellation_subject_with_date(app):
+    # Given
+    offerer = create_offerer()
+    venue = create_venue(offerer, 'Test offerer')
+    event_offer = create_event_offer(venue, event_name='Test')
+    event_occurrence = create_event_occurrence(event_offer, beginning_datetime=datetime.utcnow())
+    stock = create_stock_from_event_occurrence(event_occurrence, price=0)
+    user_1 = create_user('Test1', departement_code='93', email='test1@email.com')
+    user_2 = create_user('Test2', departement_code='93', email='test2@email.com')
+    booking_1 = create_booking(user_1, stock, venue)
+    booking_2 = create_booking(user_2, stock, venue)
+    booking_2.isCancelled = True
+    PcObject.check_and_save(booking_1, booking_2)
+
+    # When
+    with patch('utils.mailing.find_all_ongoing_bookings_by_stock', return_value=[booking_1]):
+        recap_email = make_offerer_booking_recap_email_after_user_action(booking_2, is_cancellation=True)
+
+    # Then
+    assert recap_email['Subject'] == '[Réservations] Annulation de réservation pour Test - 15 octobre 2018 à 11:21'
 
 
 @clean_database
