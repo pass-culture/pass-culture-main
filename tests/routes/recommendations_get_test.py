@@ -525,33 +525,36 @@ class Get:
                    {'The new film', 'Activation de votre Pass Culture'}
 
         @clean_database
-        def when_searching_by_date_and_type_even_if_it_is_activation_type(
+        def when_searching_by_date_and_type_activation(
             self, app):
               # Given
             category_and_date_search = "categories=Lire%2CRegarder%2CActivation&date=" + strftime(self.now) + "&days=1-5"
             user = create_user(email='test@email.com', password='P@55w0rd')
+
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer = create_event_offer(venue, event_name='The new film', event_type=EventType.CINEMA)
-            offer2 = create_event_offer(venue, event_name='Activation de votre Pass Culture',
+
+            cinema_event_offer = create_event_offer(venue, event_name='The new film', event_type=EventType.CINEMA)
+
+            activation_event_offer = create_event_offer(venue, event_name='Activation de votre Pass Culture',
                                         event_type=EventType.ACTIVATION)
-            thing = create_thing(thing_name='Lire un livre', is_national=True)
 
-            thing_offer = create_thing_offer(venue, thing)
-
-            event_occurrence = create_event_occurrence(offer, beginning_datetime=self.three_days_from_now,
+            book_thing = create_thing(thing_name='Lire un livre', is_national=True)
+            book_thing_offer = create_thing_offer(venue, book_thing)
+            cinema_event_occurrence = create_event_occurrence(cinema_event_offer, beginning_datetime=self.three_days_from_now,
                                                        end_datetime=self.three_days_and_one_hour_from_now)
-            event_occurrence2 = create_event_occurrence(offer2, beginning_datetime=self.three_days_from_now,
+            activation_event_occurrence = create_event_occurrence(activation_event_offer, beginning_datetime=self.three_days_from_now,
                                                        end_datetime=self.three_days_and_one_hour_from_now)
 
-            recommendation = create_recommendation(offer, user)
-            recommendation2 = create_recommendation(thing_offer, user)
-            recommendation3 = create_recommendation(offer2, user)
-            stock = create_stock_from_event_occurrence(event_occurrence)
-            stock1 = create_stock_from_offer(offer2)
-            stock2 = create_stock_from_event_occurrence(event_occurrence2)
-            thing_stock = create_stock(price=12, available=5, offer=thing_offer)
-            PcObject.check_and_save(stock, recommendation, recommendation2, recommendation3, thing_stock, stock1, stock2)
+            cinema_recommendation = create_recommendation(cinema_event_offer, user)
+            book_recommendation = create_recommendation(book_thing_offer, user)
+            activation_recommendation = create_recommendation(activation_event_offer, user)
+
+            cinema_event_occurence_stock = create_stock_from_event_occurrence(cinema_event_occurrence)
+            activation_event_occurence_stock = create_stock_from_event_occurrence(activation_event_occurrence)
+            book_thing_stock = create_stock(price=12, available=5, offer=book_thing_offer)
+
+            PcObject.check_and_save(cinema_recommendation, book_recommendation, activation_recommendation, cinema_event_occurence_stock, activation_event_occurence_stock, book_thing_stock)
 
             # When
 
