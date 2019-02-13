@@ -405,7 +405,7 @@ class Post:
             assert error_message['quantity'] == ['Vous devez préciser une quantité pour la réservation']
 
         @clean_database
-        def when_event_expired_date(self, app):
+        def when_event_occurrence_beginning_datetime_has_passed(self, app):
             # Given
             four_days_ago = datetime.utcnow() - timedelta(days=4)
             five_days_ago = datetime.utcnow() - timedelta(days=5)
@@ -436,7 +436,7 @@ class Post:
             assert error_message['date'] == ["Cette offre n'est plus valable car sa date est passée"]
 
         @clean_database
-        def when_thing_expired_booking_date(self, app):
+        def when_thing_booking_limit_datetime_has_expired(self, app):
             # Given
             four_days_ago = datetime.utcnow() - timedelta(days=4)
             five_days_ago = datetime.utcnow() - timedelta(days=5)
@@ -501,7 +501,7 @@ class Post:
                 assert created_booking_json[key] == booking_json[key]
 
         @clean_database
-        def when_null_date(self, app):
+        def when_booking_limit_datetime_is_None(self, app):
             # Given
             user = create_user(email='test@email.com', password='testpsswd')
             offerer = create_offerer()
@@ -509,7 +509,7 @@ class Post:
             deposit = create_deposit(user, deposit_date, amount=200)
             venue = create_venue(offerer)
             thing_offer = create_thing_offer(venue)
-            stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=20)
+            stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=20, booking_limit_datetime=None)
 
             PcObject.check_and_save(deposit, stock, user)
 

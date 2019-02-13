@@ -50,7 +50,6 @@ def get_booking(booking_id):
 @login_required
 @expect_json_data
 def create_booking():
-    date = request.json.get('date')
     stock_id = request.json.get('stockId')
     recommendation_id = request.json.get('recommendationId')
     quantity = request.json.get('quantity')
