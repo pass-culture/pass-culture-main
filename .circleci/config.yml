@@ -68,7 +68,7 @@ jobs: # a collection of steps
             . venv/bin/activate
             ./scripts/check-pip-dependencies.sh
             
-  functional-tests:
+  functional-tests-webapp:
     machine:
       image: circleci/classic:latest
     working_directory: ~/
@@ -80,7 +80,6 @@ jobs: # a collection of steps
             cd pass-culture-main
             rm -rf shared
             git clone https://github.com/betagouv/pass-culture-browser.git webapp
-            git clone https://github.com/betagouv/pass-culture-pro.git pro
             ./install_lib_ci.sh
       - checkout:
           path: ~/pass-culture-main/api
@@ -116,6 +115,56 @@ jobs: # a collection of steps
             yarn start
           background: true
       - run:
+          name: Running Sandbox
+          command: |
+            cd pass-culture-main
+            dockerize -wait http://localhost/health -timeout 5m -wait-retry-interval 5s
+            ./pc sandbox --name=webapp
+      - run:
+          name: Running tests Webapp
+          command: |
+            export PATH=${PATH:44}
+            export NVM_BIN=/usr/bin/nodejs
+            export PATH=$NVM_BIN:$PATH
+            cd ~/pass-culture-main/webapp
+            yarn test:cafe
+
+  functional-tests-pro:
+    machine:
+      image: circleci/classic:latest
+    working_directory: ~/
+    steps: # a collection of executable commands
+      - run:
+          name: Init env
+          command: |
+            git clone https://github.com/betagouv/pass-culture-main.git
+            cd pass-culture-main
+            rm -rf shared
+            git clone https://github.com/betagouv/pass-culture-pro.git pro
+            ./install_lib_ci.sh
+      - checkout:
+          path: ~/pass-culture-main/api
+      - run:
+          name: Install dockerize
+          command: |
+            wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
+            sudo tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
+            rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
+          environment:
+            DOCKERIZE_VERSION: v0.6.1
+      - run:
+          name: Running API server
+          command: |
+            export PC_GPG_PRIVATE=$PASS_PRIVATE
+            cd ~/pass-culture-main/api
+            rm -rf private
+            gpg --passphrase $PC_GPG_PRIVATE --batch --output private.tar.gz -d private.tar.gz.gpg
+            tar xf private.tar.gz
+            rm private.tar.gz
+            cd ~/pass-culture-main
+            ./pc start-backend
+          background: true
+      - run:
           name: Run Frontend Pro (Prod version)
           command: |
             export PATH=${PATH:44}
@@ -123,7 +172,6 @@ jobs: # a collection of steps
             export PATH=$NVM_BIN:$PATH
             cd ~/pass-culture-main/pro
             git checkout staging
-            dockerize -wait http://localhost:3000 -timeout 3m -wait-retry-interval 5s
             yarn install
             yarn start
           background: true
@@ -141,27 +189,22 @@ jobs: # a collection of steps
             export PATH=$NVM_BIN:$PATH
             cd ~/pass-culture-main/pro
             yarn testcafe
-      - run:
-          name: Reset all data
-          command: |
-            cd ~/pass-culture-main
-            ./pc reset-all-db
-            ./pc sandbox --name=webapp
-      - run:
-          name: Running tests Webapp
-          command: |
-            export PATH=${PATH:44}
-            export NVM_BIN=/usr/bin/nodejs
-            export PATH=$NVM_BIN:$PATH
-            cd ~/pass-culture-main/webapp
-            yarn test:cafe
 
 workflows:
   version: 2
   commit:
     jobs:
-      - build
-      - functional-tests:
+      - build:
+          filters:
+            branches:
+              ignore:
+                - production
+      - functional-tests-webapp:
+          filters:
+            branches:
+              only:
+                - staging
+      - functional-tests-pro:
           filters:
             branches:
               only:
