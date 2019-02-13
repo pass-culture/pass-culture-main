@@ -144,7 +144,7 @@ test.requestHooks(SIRET_ALREADY_IN_DATABASE)(
     // close notification div
     await t
       .click(closeAnchor)
-      .wait(2000)
+      .wait(3000)
       .expect(notificationError.exists)
       .notOk()
   }
