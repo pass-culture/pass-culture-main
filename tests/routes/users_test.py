@@ -1,5 +1,4 @@
 from datetime import datetime, timedelta
-from pprint import pprint
 from unittest.mock import patch
 
 import pytest
@@ -227,7 +226,6 @@ class WebappSignupTest:
         assert r_signup.status_code == 201
         assert 'Set-Cookie' not in r_signup.headers
         json = r_signup.json()
-        pprint(json)
         for key, value in expected_response_json.items():
             if key != 'dateCreated':
                 assert json[key] == value
@@ -439,7 +437,6 @@ class ProSignupTest:
         assert 'Set-Cookie' not in r_signup.headers
 
         json = r_signup.json()
-        pprint(json)
         assert 'dateCreated' in json
         for key, value in expected_response_json.items():
             if key != 'dateCreated':
@@ -647,7 +644,6 @@ def test_get_profile_should_return_the_users_profile_without_password_hash_and_p
     assert 'password' not in user_json
     assert 'resetPasswordToken' not in user_json
     assert 'resetPasswordTokenValidityLimit' not in user_json
-
 
 
 @clean_database
