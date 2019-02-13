@@ -775,7 +775,7 @@ def test_make_make_batch_cancellation_email_for_case_event_occurrence(app):
         assert '<td>%s</td>' % booking.user.email in html_recap
         assert '<td>%s</td>' % booking.user.firstName in html_recap
         assert '<td>%s</td>' % booking.user.lastName in html_recap
-    assert email['FromEmail'] == 'passculture@beta.gouv.fr'
+    assert email['FromEmail'] == 'support.passculture@beta.gouv.fr'
     assert email['FromName'] == 'pass Culture pro'
     assert email['Subject'] == 'Annulation de réservations pour Le récit de voyage'
 
@@ -799,7 +799,7 @@ def test_make_make_batch_cancellation_email_for_case_stock(app):
         assert '<td>%s</td>' % booking.user.email in html_recap
         assert '<td>%s</td>' % booking.user.firstName in html_recap
         assert '<td>%s</td>' % booking.user.lastName in html_recap
-    assert email['FromEmail'] == 'passculture@beta.gouv.fr'
+    assert email['FromEmail'] == 'support.passculture@beta.gouv.fr'
     assert email['FromName'] == 'pass Culture pro'
     assert email['Subject'] == 'Annulation de réservations pour Le récit de voyage'
 
@@ -864,7 +864,7 @@ def test_make_payment_transaction_email_sends_a_xml_file_with_its_checksum_in_em
     email = make_payment_transaction_email(xml, checksum)
 
     # Then
-    assert email["FromEmail"] == "passculture@beta.gouv.fr"
+    assert email["FromEmail"] == 'support.passculture@beta.gouv.fr'
     assert email["FromName"] == "pass Culture Pro"
     assert email["Subject"] == "Virements XML pass Culture Pro - 2018-10-15"
     assert email["Attachments"] == [{"ContentType": "text/xml",
@@ -888,7 +888,7 @@ def test_make_payment_details_email():
     email = make_payment_details_email(csv)
 
     # Then
-    assert email["FromEmail"] == "passculture@beta.gouv.fr"
+    assert email["FromEmail"] == 'support.passculture@beta.gouv.fr'
     assert email["FromName"] == "pass Culture Pro"
     assert email["Subject"] == "Détails des paiements pass Culture Pro - 2018-10-15"
     assert email["Html-part"] == ""
@@ -908,7 +908,7 @@ def test_make_wallet_balances_email():
     email = make_wallet_balances_email(csv)
 
     # Then
-    assert email["FromEmail"] == "passculture@beta.gouv.fr"
+    assert email["FromEmail"] == 'support.passculture@beta.gouv.fr'
     assert email["FromName"] == "pass Culture Pro"
     assert email["Subject"] == "Soldes des utilisateurs pass Culture - 2018-10-15"
     assert email["Html-part"] == ""
@@ -958,7 +958,7 @@ class MakePaymentsReportEmailTest:
         email = make_payments_report_email(self.not_processable_csv, self.error_csv, self.grouped_payments)
 
         # Then
-        assert email["FromEmail"] == "passculture@beta.gouv.fr"
+        assert email["FromEmail"] == 'support.passculture@beta.gouv.fr'
         assert email["FromName"] == "pass Culture Pro"
         assert email["Subject"] == "Récapitulatif des paiements pass Culture Pro - 2018-10-15"
 
@@ -1003,7 +1003,7 @@ class UserValidationEmailsTest:
         assert email['To'] == user.email
         assert email['FromName'] == 'pass Culture'
         assert email['Subject'] == 'Validation de votre adresse email pour le pass Culture'
-        assert email['FromEmail'] == 'passculture@beta.gouv.fr'
+        assert email['FromEmail'] == 'support.passculture@beta.gouv.fr'
 
     def test_make_pro_user_validation_email_includes_validation_url_with_token_and_user_email(self, app):
         # Given
@@ -1039,7 +1039,7 @@ def test_make_venue_validation_email(app):
     email = make_venue_validation_email(venue)
 
     # Then
-    assert email["FromEmail"] == "passculture@beta.gouv.fr"
+    assert email["FromEmail"] == 'support.passculture@beta.gouv.fr'
     assert email["FromName"] == "pass Culture"
     assert email["Subject"] == "{} - rattachement de lieu pro à valider : {}".format(venue.departementCode, venue.name)
     email_html = remove_whitespaces(email['Html-part'])
@@ -1084,7 +1084,7 @@ def test_make_venue_validation_confirmation_email(app):
 
     # Then
     assert email['Subject'] == 'Validation du rattachement du lieu "Le Lieu" à votre structure "La Structure"'
-    assert email["FromEmail"] == "passculture@beta.gouv.fr"
+    assert email["FromEmail"] == 'support.passculture@beta.gouv.fr'
     assert email["FromName"] == "pass Culture pro"
     email_html = remove_whitespaces(email['Html-part'])
     parsed_email = BeautifulSoup(email_html, 'html.parser')
@@ -1137,7 +1137,7 @@ class MakeOfferCreationNotificationEmailTest:
         # When
         email = make_offer_creation_notification_email(self.physical_offer93, 'test.url')
         # Then
-        assert email["FromEmail"] == "passculture@beta.gouv.fr"
+        assert email["FromEmail"] == 'support.passculture@beta.gouv.fr'
         assert email["FromName"] == "pass Culture"
         assert email["Subject"] == "[Création d’offre - 93] Le vent se lève"
 
@@ -1160,7 +1160,7 @@ class MakeOfferCreationNotificationEmailTest:
         # When
         email = make_offer_creation_notification_email(self.virtual_offer, 'test.url')
         # Then
-        assert email["FromEmail"] == "passculture@beta.gouv.fr"
+        assert email["FromEmail"] == 'support.passculture@beta.gouv.fr'
         assert email["FromName"] == "pass Culture"
         assert email["Subject"] == "[Création d’offre - numérique] Les lapins crétins"
 
