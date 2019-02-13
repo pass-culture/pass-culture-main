@@ -116,3 +116,6 @@ dev_env_file
 
 # No data should be versioned
 *.csv
+
+# licenses
+licenses.html
