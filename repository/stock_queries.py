@@ -27,6 +27,7 @@ def set_booking_recap_sent_and_save(stock):
 
 
 def save_stock(stock):
+    print('save_stock inside >>>>>>>>>>>>>')
     try:
         PcObject.check_and_save(stock)
     except InternalError as ie:
@@ -39,7 +40,7 @@ def save_stock(stock):
                                     + ' au nombre de réservations existantes.')
             elif 'bookingLimitDatetime_too_late' in str(ie.orig):
                 api_errors.addError('bookingLimitDatetime',
-                                    'la date limite de réservation pour cette offre est postérieure à la date de début de l\'évènement')
+                                    'La date limite de réservation pour cette offre est postérieure à la date de début de l\'évènement')
             else:
                 app.log.error("Unexpected error in patch stocks: " + pformat(ie))
 
