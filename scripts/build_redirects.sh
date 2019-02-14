@@ -29,3 +29,13 @@ echo "/:path1/:path2/:path3/:path4/:path5/:path6/static/css/* /$JSPATH 301" >> b
 cat "public/_redirects" >> build/_redirects
 
 echo "Redirects created."
+
+echo "" > build/version.txt
+
+if [[ command -v jq 2>/dev/null ]];then
+  cat package.json | grep -E '"version": "[0-9]+.[0-9]+.[0-9]+"' | grep -Eo '[0-9]+.[0-9]+.[0-9]+'
+else
+  jq '.version' package.json | tr -d \" >> build/version.txt
+fi
+
+echo "Version copied to _version."
