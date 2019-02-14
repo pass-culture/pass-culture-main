@@ -187,6 +187,31 @@ def test_booking_recap_email_html_should_have_place_and_structure(app):
 @mocked_mail
 @clean_database
 @pytest.mark.standalone
+def test_booking_recap_email_html_should_have_unsubscribe_option(app):
+    # Given
+    venue = create_venue(None, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
+    stock = create_stock_with_event_offer(offerer=None,
+                                          venue=venue)
+    user = create_user('Test', departement_code='93', email='test@email.com', can_book_free_offers=True)
+    booking = create_booking(user, stock, venue, None)
+    booking.token = '56789'
+
+    # When
+    with patch('utils.mailing.find_all_ongoing_bookings_by_stock', return_value=[booking]):
+        recap_email = make_offerer_booking_recap_email_after_user_action(booking)
+
+    # Then
+    email_html = remove_whitespaces(recap_email['Html-part'])
+    recap_email_soup = BeautifulSoup(email_html, 'html.parser')
+    assert 'Vous recevez ce message parce que votre adresse e-mail est renseignée comme adresse de contact sur votre offre.' in recap_email_soup.find('p', {'id': 'unsubscribe-option'}).text
+    assert 'Si vous souhaitez modifier l’adresse de contact cliquez ici : être notifié des réservations à une autre adresse e-mail.' in recap_email_soup.find('p', {'id': 'unsubscribe-option'}).text
+    assert 'Si vous ne souhaitez plus recevoir de notifications de réservations par e-mail, cliquez ici : ne plus recevoir les notifications de réservations.' in recap_email_soup.find('p', {'id': 'unsubscribe-option'}).text
+    assert 'mailto:support.passculture@beta.gouv.fr?subject=Changer%20l%27adresse%20e-mail%20de%20notification%20des%20r%C3%A9servations' == recap_email_soup.find('a', {'id': 'change-email'})['href']
+    assert 'mailto:support.passculture@beta.gouv.fr?subject=Ne%20plus%20recevoir%20les%20notifications%20de%20r%C3%A9servations' == recap_email_soup.find('a', {'id': 'remove-email'})['href']
+
+@mocked_mail
+@clean_database
+@pytest.mark.standalone
 def test_booking_recap_email_html_should_not_have_cancelled_or_used_bookings(app):
     # Given
     venue = create_venue(Offerer(), 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
@@ -298,6 +323,37 @@ def test_offerer_recap_email_does_not_send_cancelled_or_used_booking(app):
     assert '<td>Test2</td>' in html_recap_table
     assert '<td>Cancelled</td>' not in html_recap_table
     assert '<td>Used</td>' not in html_recap_table
+
+
+@mocked_mail
+@clean_database
+@pytest.mark.standalone
+def test_offerer_recap_email_has_unsubscribe_options(app):
+    # Given
+    venue = create_venue(Offerer(), 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
+    stock = create_stock_with_event_offer(offerer=Offerer(),
+                                          venue=venue)
+
+    user1 = create_user('Test1', departement_code='93', email='test@email.com', can_book_free_offers=True)
+    booking1 = create_booking(user1, stock)
+
+    user2 = create_user('Test2', departement_code='93', email='test@email.com', can_book_free_offers=True)
+    booking2 = create_booking(user2, stock)
+
+    ongoing_bookings = [booking1, booking2]
+
+    # When
+    with patch('utils.mailing.find_all_ongoing_bookings_by_stock', return_value=ongoing_bookings):
+        recap_email = make_final_recap_email_for_stock_with_event(stock)
+
+    # Then
+    email_html = remove_whitespaces(recap_email['Html-part'])
+    recap_email_soup = BeautifulSoup(email_html, 'html.parser')
+    assert 'Vous recevez ce message parce que votre adresse e-mail est renseignée comme adresse de contact sur votre offre.' in recap_email_soup.find('p', {'id': 'unsubscribe-option'}).text
+    assert 'Si vous souhaitez modifier l’adresse de contact cliquez ici : être notifié des réservations à une autre adresse e-mail.' in recap_email_soup.find('p', {'id': 'unsubscribe-option'}).text
+    assert 'Si vous ne souhaitez plus recevoir de notifications de réservations par e-mail, cliquez ici : ne plus recevoir les notifications de réservations.' in recap_email_soup.find('p', {'id': 'unsubscribe-option'}).text
+    assert 'mailto:support.passculture@beta.gouv.fr?subject=Changer%20l%27adresse%20e-mail%20de%20notification%20des%20r%C3%A9servations' == recap_email_soup.find('a', {'id': 'change-email'})['href']
+    assert 'mailto:support.passculture@beta.gouv.fr?subject=Ne%20plus%20recevoir%20les%20notifications%20de%20r%C3%A9servations' == recap_email_soup.find('a', {'id': 'remove-email'})['href']
 
 
 @mocked_mail
@@ -542,6 +598,43 @@ def test_make_offerer_booking_user_cancellation_email_for_physical_venue(app):
     assert "<td>Test2</td>" not in str(parsed_email.find("table", {"id": "recap-table"}))
     assert "<td>test1@email.com</td>" in str(parsed_email.find("table", {"id": "recap-table"}))
     assert "<td>{token}</td>".format(token=booking_1.token) in str(parsed_email.find("table", {"id": "recap-table"}))
+
+
+@freeze_time('2018-10-15 09:21:34')
+@clean_database
+@pytest.mark.standalone
+def test_make_offerer_booking_recap_email_after_user_cancellation_should_have_unsubscribe_option(app):
+    # Given
+    offerer = create_offerer()
+    venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
+    event_offer = create_event_offer(venue, event_name='Test Event')
+    now = datetime.utcnow() + timedelta()
+    event_occurrence = create_event_occurrence(event_offer, beginning_datetime=now)
+    stock = create_stock_from_event_occurrence(event_occurrence, price=0)
+    user_1 = create_user('Test1', departement_code='93', email='test1@email.com')
+    user_2 = create_user('Test2', departement_code='93', email='test2@email.com')
+    booking_1 = create_booking(user_1, stock, venue)
+    booking_2 = create_booking(user_2, stock, venue)
+    booking_2.isCancelled = True
+    PcObject.check_and_save(booking_1, booking_2)
+
+    # When
+    with patch('utils.mailing.find_all_ongoing_bookings_by_stock', return_value=[booking_1]):
+        recap_email = make_offerer_booking_recap_email_after_user_action(booking_2, is_cancellation=True)
+
+    # Then
+    email_html = remove_whitespaces(recap_email['Html-part'])
+    parsed_email = BeautifulSoup(email_html, 'html.parser')
+
+
+    # Then
+    email_html = remove_whitespaces(recap_email['Html-part'])
+    recap_email_soup = BeautifulSoup(email_html, 'html.parser')
+    assert 'Vous recevez ce message parce que votre adresse e-mail est renseignée comme adresse de contact sur votre offre.' in recap_email_soup.find('p', {'id': 'unsubscribe-option'}).text
+    assert 'Si vous souhaitez modifier l’adresse de contact cliquez ici : être notifié des réservations à une autre adresse e-mail.' in recap_email_soup.find('p', {'id': 'unsubscribe-option'}).text
+    assert 'Si vous ne souhaitez plus recevoir de notifications de réservations par e-mail, cliquez ici : ne plus recevoir les notifications de réservations.' in recap_email_soup.find('p', {'id': 'unsubscribe-option'}).text
+    assert 'mailto:support.passculture@beta.gouv.fr?subject=Changer%20l%27adresse%20e-mail%20de%20notification%20des%20r%C3%A9servations' == recap_email_soup.find('a', {'id': 'change-email'})['href']
+    assert 'mailto:support.passculture@beta.gouv.fr?subject=Ne%20plus%20recevoir%20les%20notifications%20de%20r%C3%A9servations' == recap_email_soup.find('a', {'id': 'remove-email'})['href']
 
 
 @clean_database
