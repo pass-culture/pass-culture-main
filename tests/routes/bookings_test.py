@@ -252,11 +252,7 @@ class Post:
         def when_missing_stock_id(self, app):
             # Given
             user = create_user(email='test@email.com', password='testpsswd')
-            offerer = create_offerer()
-            venue = create_venue(offerer)
-            stock = create_stock_with_event_offer(offerer, venue, price=0)
-
-            PcObject.check_and_save(user, stock)
+            PcObject.check_and_save(user)
 
             booking_json = {
                 'stockId': None,
@@ -442,7 +438,7 @@ class Post:
             # Then
             error_message = response.json()
             assert response.status_code == 400
-            assert error_message['quantity'] == ["Vous ne pouvez pas réservez plus d'une offre à la fois"]
+            assert error_message['quantity'] == ["Vous ne pouvez pas réserver plus d'une offre à la fois"]
 
         @clean_database
         def when_event_occurrence_beginning_datetime_has_passed(self, app):

@@ -95,8 +95,7 @@ def find_all_bookings_for_stock_and_user(stock, current_user):
     return Booking.query \
         .filter_by(userId=current_user.id) \
         .filter_by(isCancelled=False) \
-        .join(Stock) \
-        .filter_by(id=stock.id) \
+        .filter_by(stockId=stock.id) \
         .all() \
 
 

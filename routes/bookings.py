@@ -25,7 +25,7 @@ from validation.bookings import check_booking_is_usable, \
     check_has_quantity, \
     check_has_stock_id, \
     check_already_booked, \
-    check_has_more_than_one_quantity, \
+    check_booking_quantity_limit, \
     check_not_soft_deleted_stock, \
     check_offer_date, \
     check_offer_is_active, \
@@ -65,7 +65,7 @@ def create_booking():
         user_bookings = find_all_bookings_for_stock_and_user(stock, current_user)
         check_already_booked(user_bookings)
         check_has_quantity(quantity)
-        check_has_more_than_one_quantity(quantity)
+        check_booking_quantity_limit(quantity)
         check_offer_date(stock)
         check_not_soft_deleted_stock(stock)
         check_can_book_free_offer(stock, current_user)

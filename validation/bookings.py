@@ -20,10 +20,10 @@ def check_has_quantity(quantity):
         raise api_errors
 
 
-def check_has_more_than_one_quantity(quantity):
+def check_booking_quantity_limit(quantity):
     if quantity > 1:
         api_errors = ApiErrors()
-        api_errors.addError('quantity', "Vous ne pouvez pas réservez plus d'une offre à la fois")
+        api_errors.addError('quantity', "Vous ne pouvez pas réserver plus d'une offre à la fois")
         raise api_errors
 
 
