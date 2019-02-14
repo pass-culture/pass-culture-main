@@ -25,7 +25,6 @@ const ProfileMainView = ({ config, user }) => (
     >
       <div className="pc-scroll-container">
         {user && <MonAvatar user={user} />}
-        {/* <!-- Wallet + Activation --> */}
         <div id="profile-page-user-passculture">
           <h3 className="dotted-bottom-primary pb8 px12">
             <span className="is-italic is-uppercase is-primary-text">

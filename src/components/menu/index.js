@@ -100,10 +100,7 @@ class MainMenu extends React.PureComponent {
                   className="pc-theme-red is-relative"
                 >
                   {this.renderCloseButton()}
-                  <MenuHeader
-                    user={user}
-                    toggleMainMenu={this.toggleMainMenu}
-                  />
+                  <MenuHeader user={user} />
                   <nav id="main-menu-navigation" className="flex-rows mt16 pb0">
                     {this.renderNavigationLinks()}
                   </nav>
