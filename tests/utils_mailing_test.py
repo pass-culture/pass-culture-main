@@ -851,7 +851,8 @@ def test_make_offerer_booking_user_cancellation_for_event_email_when_virtual_ven
 
         # Then
         email_html = BeautifulSoup(recap_email['Html-part'], 'html.parser')
-    assert 'offre numérique proposée par Test offerer' in str(email_html.find('p', {'id': 'action'}))
+    assert 'Offre numérique proposée par Test offerer.' in str(email_html.find('p', {'id': 'recap'}))
+    assert 'annuler sa réservation' in str(email_html.find('p', {'id': 'action'}))
     assert '(Adresse:' not in str(email_html.find('p', {'id': 'action'}))
 
 
