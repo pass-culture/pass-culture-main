@@ -98,6 +98,17 @@ class TestClient:
 
         return self
 
+    def delete(self, route: str, headers=LOCAL_ORIGIN_HEADER):
+        if self.session:
+            result = self.session.get(route)
+        else:
+            result = requests.delete(route, headers=headers)
+
+        if TestClient.WITH_DOC:
+            self._print_spec('DELETE', route, None, result.json(), result.status_code)
+
+        return result
+
     def get(self, route: str, headers=LOCAL_ORIGIN_HEADER):
         if self.session:
             result = self.session.get(route)

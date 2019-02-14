@@ -4,9 +4,9 @@ import pytest
 
 from models.db import db
 from models.pc_object import PcObject, serialize
-from tests.conftest import clean_database
+from tests.conftest import clean_database, TestClient
 from utils.human_ids import humanize
-from utils.test_utils import req_with_auth, API_URL, create_user, create_offerer, create_venue, \
+from utils.test_utils import API_URL, create_user, create_offerer, create_venue, \
     create_stock_with_event_offer, create_booking, create_event_offer, create_user_offerer, create_event_occurrence, \
     create_recommendation, create_stock_from_event_occurrence
 
@@ -14,7 +14,7 @@ from utils.test_utils import req_with_auth, API_URL, create_user, create_offerer
 class Get:
     class Returns200:
         @clean_database
-        def test_get_stocks_should_return_a_list_of_stocks(app):
+        def test_get_stocks_should_return_a_list_of_stocks(self, app):
             # Given
             user = create_user(email='test@email.com', can_book_free_offers=False, password='P@55w0rd', is_admin=True)
             offerer = create_offerer()
@@ -25,7 +25,7 @@ class Get:
             PcObject.check_and_save(user, stock_1, stock_2, stock_3)
 
             # When
-            request = req_with_auth('test@email.com', 'P@55w0rd').get(API_URL + '/stocks')
+            request = TestClient().with_auth('test@email.com', 'P@55w0rd').get(API_URL + '/stocks')
 
             # Then
             assert request.status_code == 200
@@ -33,7 +33,7 @@ class Get:
             assert len(stocks) == 3
 
         @clean_database
-        def test_getting_stocks_with_admin(app):
+        def test_getting_stocks_with_admin(self, app):
             # Given
             user = create_user(email='test@email.com', can_book_free_offers=False, password='P@55w0rd', is_admin=True)
             offerer = create_offerer()
@@ -43,7 +43,7 @@ class Get:
             humanized_stock_id = humanize(stock.id)
 
             # When
-            request = req_with_auth('test@email.com', 'P@55w0rd').get(API_URL + '/stocks/' + humanized_stock_id)
+            request = TestClient().with_auth('test@email.com', 'P@55w0rd').get(API_URL + '/stocks/' + humanized_stock_id)
 
             # Then
             assert request.status_code == 200
@@ -51,7 +51,7 @@ class Get:
             assert request.json()['price'] == 10
 
         @clean_database
-        def test_patching_stocks_with_admin(app):
+        def test_patching_stocks_with_admin(self, app):
             # Given
             user = create_user(email='test@email.com', can_book_free_offers=False, password='P@55w0rd', is_admin=True)
             offerer = create_offerer()
@@ -61,12 +61,12 @@ class Get:
             humanized_stock_id = humanize(stock.id)
 
             # When
-            request_update = req_with_auth('test@email.com', 'P@55w0rd').patch(API_URL + '/stocks/' + humanized_stock_id,
+            request_update = TestClient().with_auth('test@email.com', 'P@55w0rd').patch(API_URL + '/stocks/' + humanized_stock_id,
                                                                                json={'available': 5, 'price': 20})
 
             # Then
             assert request_update.status_code == 200
-            request_after_update = req_with_auth('test@email.com', 'P@55w0rd').get(API_URL + '/stocks/' + humanized_stock_id)
+            request_after_update = TestClient().with_auth('test@email.com', 'P@55w0rd').get(API_URL + '/stocks/' + humanized_stock_id)
             assert request_after_update.json()['available'] == 5
             assert request_after_update.json()['price'] == 20
 
@@ -74,7 +74,7 @@ class Get:
 class Patch:
     class Returns200:
         @clean_database
-        def test_patching_stocks_with_editor_rights(app):
+        def test_patching_stocks_with_editor_rights(self, app):
             # Given
             user = create_user(email='test@email.com', password='P@55w0rd')
             offerer = create_offerer()
@@ -85,17 +85,17 @@ class Patch:
             humanized_stock_id = humanize(stock.id)
 
             # When
-            request_update = req_with_auth('test@email.com', 'P@55w0rd').patch(API_URL + '/stocks/' + humanized_stock_id,
+            request_update = TestClient().with_auth('test@email.com', 'P@55w0rd').patch(API_URL + '/stocks/' + humanized_stock_id,
                                                                                json={'available': 5, 'price': 20})
 
             # Then
             assert request_update.status_code == 200
-            request_after_update = req_with_auth('test@email.com', 'P@55w0rd').get(API_URL + '/stocks/' + humanized_stock_id)
+            request_after_update = TestClient().with_auth('test@email.com', 'P@55w0rd').get(API_URL + '/stocks/' + humanized_stock_id)
             assert request_after_update.json()['available'] == 5
             assert request_after_update.json()['price'] == 20
 
         @clean_database
-        def test_number_of_available_stocks_cannot_be_updated_below_number_of_already_existing_bookings(app):
+        def test_number_of_available_stocks_cannot_be_updated_below_number_of_already_existing_bookings(self, app):
             # Given
             user = create_user()
             user_admin = create_user(email='email@test.com', can_book_free_offers=False, password='P@55w0rd', is_admin=True)
@@ -107,7 +107,7 @@ class Patch:
             PcObject.check_and_save(booking, user_admin)
 
             # When
-            response = req_with_auth('email@test.com', 'P@55w0rd').patch(API_URL + '/stocks/' + humanize(stock.id),
+            response = TestClient().with_auth('email@test.com', 'P@55w0rd').patch(API_URL + '/stocks/' + humanize(stock.id),
                                                                          json={'available': 0})
 
             # Then
@@ -117,7 +117,7 @@ class Patch:
 
     class Returns400:
         @clean_database
-        def test_patch_stock_putting_wrong_type_on_available_returns_status_code_400_and_available_in_error(app):
+        def test_patch_stock_putting_wrong_type_on_available_returns_status_code_400_and_available_in_error(self, app):
             # Given
             user = create_user()
             user_admin = create_user(email='email@test.com', can_book_free_offers=False, password='P@55w0rd', is_admin=True)
@@ -129,7 +129,7 @@ class Patch:
             PcObject.check_and_save(booking, user_admin)
 
             # When
-            response = req_with_auth('email@test.com', 'P@55w0rd').patch(API_URL + '/stocks/' + humanize(stock.id),
+            response = TestClient().with_auth('email@test.com', 'P@55w0rd').patch(API_URL + '/stocks/' + humanize(stock.id),
                                                                          json={'available': ' '})
 
             # Then
@@ -137,7 +137,7 @@ class Patch:
             assert response.json()['available'] == ['Saisissez un nombre valide']
 
         @clean_database
-        def test_should_not_update_stock_if_booking_limit_datetime_after_event_occurrence(app):
+        def test_should_not_update_stock_if_booking_limit_datetime_after_event_occurrence(self, app):
             # Given
             from models.pc_object import serialize
             user = create_user(email='email@test.com', can_book_free_offers=False, password='P@55w0rd', is_admin=True)
@@ -151,7 +151,7 @@ class Patch:
             serialized_date = serialize(stock.eventOccurrence.beginningDatetime + timedelta(days=1))
             print(serialized_date)
             # When
-            response = req_with_auth('email@test.com', 'P@55w0rd').patch(API_URL + '/stocks/' + humanize(stockId),
+            response = TestClient().with_auth('email@test.com', 'P@55w0rd').patch(API_URL + '/stocks/' + humanize(stockId),
                                                                          json={'bookingLimitDatetime': serialized_date})
 
             # Then
@@ -163,7 +163,7 @@ class Patch:
 
     class Returns403:
         @clean_database
-        def test_user_with_no_rights_should_not_be_able_to_patch_stocks(app):
+        def test_user_with_no_rights_should_not_be_able_to_patch_stocks(self, app):
             # Given
             user = create_user(email='test@email.com', password='P@55w0rd')
             offerer = create_offerer()
@@ -172,7 +172,7 @@ class Patch:
             PcObject.check_and_save(user, stock)
 
             # When
-            response = req_with_auth('test@email.com', 'P@55w0rd').patch(API_URL + '/stocks/' + humanize(stock.id),
+            response = TestClient().with_auth('test@email.com', 'P@55w0rd').patch(API_URL + '/stocks/' + humanize(stock.id),
                                                                          json={'available': 5})
 
             # Then
@@ -184,7 +184,7 @@ class Patch:
 class Post:
     class Returns201:
         @clean_database
-        def test_user_having_rights_can_create_stock(app):
+        def test_user_having_rights_can_create_stock(self, app):
             # Given
             user = create_user(email='test@email.fr', password='P@55w0rd')
             offerer = create_offerer()
@@ -197,12 +197,12 @@ class Post:
             PcObject.check_and_save(user)
 
             # When
-            r_create = req_with_auth('test@email.fr', 'P@55w0rd').post(API_URL + '/stocks/', json=stock_data)
+            r_create = TestClient().with_auth('test@email.fr', 'P@55w0rd').post(API_URL + '/stocks/', json=stock_data)
 
             # Then
             assert r_create.status_code == 201
             id = r_create.json()['id']
-            r_check = req_with_auth('test@email.fr', 'P@55w0rd').get(API_URL + '/stocks/' + id)
+            r_check = TestClient().with_auth('test@email.fr', 'P@55w0rd').get(API_URL + '/stocks/' + id)
             assert r_check.status_code == 200
             created_stock_data = r_check.json()
             for (key, value) in stock_data.items():
@@ -211,7 +211,7 @@ class Post:
 
     class Returns400:
         @clean_database
-        def test_if_no_event_occurrence_id_or_offer(app):
+        def test_if_no_event_occurrence_id_or_offer(self, app):
             # Given
             user = create_user(email='test@email.fr', can_book_free_offers=False, password='P@55w0rd', is_admin=True)
             offerer = create_offerer()
@@ -224,7 +224,7 @@ class Post:
             PcObject.check_and_save(user)
 
             # When
-            response = req_with_auth('test@email.fr', 'P@55w0rd').post(API_URL + '/stocks/', json=stock_data)
+            response = TestClient().with_auth('test@email.fr', 'P@55w0rd').post(API_URL + '/stocks/', json=stock_data)
 
             # Then
             assert response.status_code == 400
@@ -233,7 +233,7 @@ class Post:
             assert r_create_json["eventOccurrenceId"] == ["cette entrée est obligatoire en absence de offerId"]
 
         @clean_database
-        def test_should_not_create_stock_if_booking_limit_datetime_after_event_occurrence(app):
+        def test_should_not_create_stock_if_booking_limit_datetime_after_event_occurrence(self, app):
             # Given
             from models.pc_object import serialize
             user = create_user(email='email@test.com', can_book_free_offers=False, password='P@55w0rd', is_admin=True)
@@ -249,7 +249,7 @@ class Post:
             }
 
             # When
-            response = req_with_auth('email@test.com', 'P@55w0rd').post(API_URL + '/stocks/', json=data)
+            response = TestClient().with_auth('email@test.com', 'P@55w0rd').post(API_URL + '/stocks/', json=data)
 
             # Then
             assert response.status_code == 400
@@ -260,7 +260,7 @@ class Post:
 
     class Returns403:
         @clean_database
-        def test_user_with_no_rights_cannot_create_stock_from_offer(app):
+        def test_user_with_no_rights_cannot_create_stock_from_offer(self, app):
             # Given
             user = create_user(email='test@email.fr', password='P@55w0rd')
             offerer = create_offerer()
@@ -272,14 +272,14 @@ class Post:
             PcObject.check_and_save(user)
 
             # When
-            response = req_with_auth('test@email.fr', 'P@55w0rd').post(API_URL + '/stocks/', json=stock_data)
+            response = TestClient().with_auth('test@email.fr', 'P@55w0rd').post(API_URL + '/stocks/', json=stock_data)
 
             # Then
             assert response.status_code == 403
             assert response.json()["global"] == ["Cette structure n'est pas enregistrée chez cet utilisateur."]
 
         @clean_database
-        def test_user_with_no_rights_cannot_create_stock_from_event_occurrence(app):
+        def test_user_with_no_rights_cannot_create_stock_from_event_occurrence(self, app):
             # Given
             user = create_user(email='test@email.fr', password='P@55w0rd')
             offerer = create_offerer()
@@ -292,7 +292,7 @@ class Post:
             PcObject.check_and_save(user)
 
             # When
-            response = req_with_auth('test@email.fr', 'P@55w0rd').post(API_URL + '/stocks/', json=stock_data)
+            response = TestClient().with_auth('test@email.fr', 'P@55w0rd').post(API_URL + '/stocks/', json=stock_data)
 
             # Then
             assert response.status_code == 403
@@ -302,7 +302,7 @@ class Post:
 class Delete:
     class Returns200:
         @clean_database
-        def test_delete_should_keep_stock_in_base_with_is_soft_deleted_true(app):
+        def test_delete_should_keep_stock_in_base_with_is_soft_deleted_true(self, app):
             # Given
             user = create_user(email='email@test.fr', can_book_free_offers=False, password='P@55w0rd', is_admin=True)
             offerer = create_offerer()
@@ -311,18 +311,18 @@ class Delete:
             PcObject.check_and_save(user, stock)
 
             # When
-            r_delete = req_with_auth('email@test.fr', 'P@55w0rd').delete(API_URL + '/stocks/' + humanize(stock.id))
+            r_delete = TestClient().with_auth('email@test.fr', 'P@55w0rd').delete(API_URL + '/stocks/' + humanize(stock.id))
 
             # Then
             assert r_delete.status_code == 200
             assert r_delete.json()['isSoftDeleted'] is True
-            request = req_with_auth('email@test.fr', 'P@55w0rd').get(API_URL + '/stocks/' + humanize(stock.id))
+            request = TestClient().with_auth('email@test.fr', 'P@55w0rd').get(API_URL + '/stocks/' + humanize(stock.id))
             assert request.status_code == 404
             db.session.refresh(stock)
             assert stock.isSoftDeleted is True
 
         @clean_database
-        def test_when_deleted_stock_only_all_bookings_related_to_soft_deleted_stock_are_cancelled(app):
+        def test_when_deleted_stock_only_all_bookings_related_to_soft_deleted_stock_are_cancelled(self, app):
             # Given
             user1 = create_user(email='user1@test.fr')
             user2 = create_user(email='user2@test.fr')
@@ -343,7 +343,7 @@ class Delete:
             PcObject.check_and_save(booking1, booking2, booking3, user_offerer)
 
             # When
-            response = req_with_auth('email@test.fr', 'P@55w0rd').delete(API_URL + '/stocks/' + humanize(stock1.id))
+            response = TestClient().with_auth('email@test.fr', 'P@55w0rd').delete(API_URL + '/stocks/' + humanize(stock1.id))
 
             # Then
             assert response.status_code == 200
@@ -357,7 +357,7 @@ class Delete:
 
         class Returns400:
             @clean_database
-            def test_post_stock_with_dictionary_in_bookingLimitDatetime_raises_400_and_bookingLimitDatetime_in_error(app):
+            def test_post_stock_with_dictionary_in_bookingLimitDatetime_raises_400_and_bookingLimitDatetime_in_error(self, app):
                 # Given
                 user = create_user(email='test@email.fr', can_book_free_offers=False, password='P@55w0rd', is_admin=True)
                 offerer = create_offerer()
@@ -371,7 +371,7 @@ class Delete:
                 PcObject.check_and_save(user)
 
                  # When
-                response = req_with_auth('test@email.fr', 'P@55w0rd').post(API_URL + '/stocks/', json=stock_data)
+                response = TestClient().with_auth('test@email.fr', 'P@55w0rd').post(API_URL + '/stocks/', json=stock_data)
 
                  # Then
                 assert response.status_code == 400
@@ -381,7 +381,7 @@ class Delete:
 
         class Returns403:
             @clean_database
-            def test_user_should_not_be_able_to_delete_stock_if_does_not_have_rights(app):
+            def test_user_should_not_be_able_to_delete_stock_if_does_not_have_rights(self, app):
                 # Given
                 user = create_user(email='email@test.fr', password='P@55w0rd')
                 offerer = create_offerer()
@@ -390,7 +390,7 @@ class Delete:
                 PcObject.check_and_save(user, stock)
 
                 # When
-                response = req_with_auth('email@test.fr', 'P@55w0rd').delete(API_URL + '/stocks/' + humanize(stock.id))
+                response = TestClient().with_auth('email@test.fr', 'P@55w0rd').delete(API_URL + '/stocks/' + humanize(stock.id))
 
                 # Then
                 assert response.status_code == 403

@@ -27,7 +27,6 @@ def set_booking_recap_sent_and_save(stock):
 
 
 def save_stock(stock):
-    print('save_stock inside >>>>>>>>>>>>>')
     try:
         PcObject.check_and_save(stock)
     except InternalError as ie:
