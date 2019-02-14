@@ -299,7 +299,7 @@ def _make_activation_notification_email_as_plain_text(first_name: str, set_passw
     Félicitations !
     Votre pass Culture est désormais activé et votre compte est crédité de 500 euros.
 
-    Cliquez ici pour accéder à l'application : 
+    Cliquez ici pour accéder à l'application :
     {set_password_link}
 
     ———
@@ -318,7 +318,7 @@ def _make_activation_notification_email_as_plain_text(first_name: str, set_passw
 
     ———
 
-    * Le mot du ministre * 	
+    * Le mot du ministre *
 
     «Je vous remercie d’avoir répondu présents en si grand nombre pour prendre part à cette expérimentation sans précédent. Pour une fois, l’on ne vous dira pas que la curiosité est un vilain défaut. Je vous invite précisément à être curieux. Le pass Culture est une formidable chance d’explorer des domaines de la culture que vous ne connaissez pas encore, profitez-en. Faites-nous part également de tous vos retours, autant que possible, la période qui s’ouvre est faite pour cela. Nous avons le plaisir de construire ensemble le pass Culture dont des générations entières de jeunes de votre âge bénéficieront dans les années à venir. Gardez d’ailleurs en tête que la culture doit toujours rester associée au plaisir. Je vous souhaite donc de faire de belles découvertes sur le pass Culture et, surtout, de vous y amuser.»
 
@@ -333,7 +333,7 @@ def _make_activation_notification_email_as_plain_text(first_name: str, set_passw
     • ce que vous aimez,
     • ce que vous aimez moins,
     • si vous rencontrez un problème,
-    • si vous souhaitez nous donner des idées sur les nouvelles fonctionnalités que 
+    • si vous souhaitez nous donner des idées sur les nouvelles fonctionnalités que
     vous aimeriez que le pass Culture vous propose !
 
     ———
@@ -602,9 +602,12 @@ def _generate_user_driven_cancellation_email_for_user(user, stock):
 
 
 def _get_event_datetime(stock):
+    print('stock.eventOccurrence.offer.venue.departementCode', stock.eventOccurrence.offer.venue.departementCode)
     date_in_utc = stock.eventOccurrence.beginningDatetime
     date_in_tz = utc_datetime_to_dept_timezone(date_in_utc,
                                                stock.eventOccurrence.offer.venue.departementCode)
+
+    print('********* date_in_tz ****** ')
     return date_in_tz
 
 

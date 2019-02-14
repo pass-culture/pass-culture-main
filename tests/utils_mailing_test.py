@@ -806,10 +806,10 @@ def test_make_make_batch_cancellation_email_for_case_stock(app):
 
 @clean_database
 @pytest.mark.standalone
-def test_make_offerer_booking_user_cancellation_email_when_virtual_venue_does_not_show_address(app):
+def test_make_offerer_booking_user_cancellation_for_thing_email_when_virtual_venue_does_not_show_address(app):
     # Given
     offerer = create_offerer()
-    venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', is_virtual=True, siret=None)
+    venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', is_virtual=True, siret=None, postal_code=None, departement_code=None, address=None)
     thing_offer = create_thing_offer(venue, thing_name='Test')
     stock = create_stock_from_offer(thing_offer, price=0)
     user_1 = create_user('Test1', departement_code='93', email='test1@email.com')
@@ -827,6 +827,33 @@ def test_make_offerer_booking_user_cancellation_email_when_virtual_venue_does_no
         email_html = BeautifulSoup(recap_email['Html-part'], 'html.parser')
     assert 'offre numérique proposée par Test offerer' in str(email_html.find('p', {'id': 'action'}))
     assert '(Adresse:' not in str(email_html.find('p', {'id': 'action'}))
+
+
+@clean_database
+@pytest.mark.standalone
+def test_make_offerer_booking_user_cancellation_for_event_email_when_virtual_venue_does_not_show_address(app):
+    # Given
+    offerer = create_offerer()
+    venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', is_virtual=True, siret=None, postal_code=None, departement_code=None, address=None)
+    event_offer = create_event_offer(venue, event_name='Test')
+    event_occurrence = create_event_occurrence(event_offer, beginning_datetime=datetime.utcnow())
+    stock = create_stock_from_event_occurrence(event_occurrence, price=0)
+    user_1 = create_user('Test1', departement_code='93', email='test1@email.com')
+    user_2 = create_user('Test2', departement_code='93', email='test2@email.com')
+    booking_1 = create_booking(user_1, stock, venue)
+    booking_2 = create_booking(user_2, stock, venue)
+    booking_2.isCancelled = True
+    PcObject.check_and_save(booking_1, booking_2)
+
+    # When
+    with patch('utils.mailing.find_all_ongoing_bookings_by_stock', return_value=[booking_1]):
+        recap_email = make_offerer_booking_recap_email_after_user_action(booking_2, is_cancellation=True)
+
+        # Then
+        email_html = BeautifulSoup(recap_email['Html-part'], 'html.parser')
+    assert 'offre numérique proposée par Test offerer' in str(email_html.find('p', {'id': 'action'}))
+    assert '(Adresse:' not in str(email_html.find('p', {'id': 'action'}))
+
 
 @clean_database
 @pytest.mark.standalone
