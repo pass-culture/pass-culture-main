@@ -1,0 +1,16 @@
+{
+  "name": "Pass Culture API",
+  "description": "Serveur API du Pass Culture",
+  "repository": "https://github.com/betagouv/pass-culture-api",
+  "addons": ["postgresql:free"],
+  "formation": {
+    "web": {
+      "amount": 1,
+      "size": "S"
+    },
+    "clock": {
+      "amount": 0,
+      "size": "S"
+    }
+  }
+}
