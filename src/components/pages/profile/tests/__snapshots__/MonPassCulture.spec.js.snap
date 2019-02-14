@@ -1,0 +1,611 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`src | components | MonPassCulture snapshot should match snapshot with required props 1`] = `
+ShallowWrapper {
+  Symbol(enzyme.__root__): [Circular],
+  Symbol(enzyme.__unrendered__): <MonPassCulture
+    user={
+      Object {
+        "expenses": Object {
+          "digital": Object {
+            "actual": 0,
+            "max": 200,
+          },
+          "physical": Object {
+            "actual": 0,
+            "max": 200,
+          },
+        },
+        "wallet_balance": 500,
+      }
+    }
+  />,
+  Symbol(enzyme.__renderer__): Object {
+    "batchedUpdates": [Function],
+    "getNode": [Function],
+    "render": [Function],
+    "simulateError": [Function],
+    "simulateEvent": [Function],
+    "unmount": [Function],
+  },
+  Symbol(enzyme.__node__): Object {
+    "instance": null,
+    "key": undefined,
+    "nodeType": "host",
+    "props": Object {
+      "children": Array [
+        <div
+          className="text overall flex-1"
+        >
+          <b
+            className="is-block"
+            id="profile-wallet-balance-value"
+          >
+            Il reste 500 €
+          </b>
+          <span
+            className="is-block fs14"
+          >
+            sur votre Pass Culture
+          </span>
+        </div>,
+        <div
+          className="text-containers flex-0 mt12 py12 mr8"
+        >
+          <div
+            className="fs14"
+          >
+            <span
+              className="is-block"
+              id="profile-physical-wallet-value"
+            >
+              Jusqu'à 
+              <b>
+                200
+                 €
+              </b>
+               pour les biens culturels
+            </span>
+          </div>
+          <div
+            className="fs14 mt12"
+          >
+            <span
+              className="is-block"
+              id="profile-digital-wallet-value"
+            >
+              Jusqu'à 
+              <b>
+                200
+                 €
+              </b>
+               pour les offres numériques
+            </span>
+          </div>
+        </div>,
+      ],
+      "className": "jauges padded",
+      "id": "profile-page-user-wallet",
+    },
+    "ref": null,
+    "rendered": Array [
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": Array [
+            <b
+              className="is-block"
+              id="profile-wallet-balance-value"
+            >
+              Il reste 500 €
+            </b>,
+            <span
+              className="is-block fs14"
+            >
+              sur votre Pass Culture
+            </span>,
+          ],
+          "className": "text overall flex-1",
+        },
+        "ref": null,
+        "rendered": Array [
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": "Il reste 500 €",
+              "className": "is-block",
+              "id": "profile-wallet-balance-value",
+            },
+            "ref": null,
+            "rendered": "Il reste 500 €",
+            "type": "b",
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": "sur votre Pass Culture",
+              "className": "is-block fs14",
+            },
+            "ref": null,
+            "rendered": "sur votre Pass Culture",
+            "type": "span",
+          },
+        ],
+        "type": "div",
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": Array [
+            <div
+              className="fs14"
+            >
+              <span
+                className="is-block"
+                id="profile-physical-wallet-value"
+              >
+                Jusqu'à 
+                <b>
+                  200
+                   €
+                </b>
+                 pour les biens culturels
+              </span>
+            </div>,
+            <div
+              className="fs14 mt12"
+            >
+              <span
+                className="is-block"
+                id="profile-digital-wallet-value"
+              >
+                Jusqu'à 
+                <b>
+                  200
+                   €
+                </b>
+                 pour les offres numériques
+              </span>
+            </div>,
+          ],
+          "className": "text-containers flex-0 mt12 py12 mr8",
+        },
+        "ref": null,
+        "rendered": Array [
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": <span
+                className="is-block"
+                id="profile-physical-wallet-value"
+              >
+                Jusqu'à 
+                <b>
+                  200
+                   €
+                </b>
+                 pour les biens culturels
+              </span>,
+              "className": "fs14",
+            },
+            "ref": null,
+            "rendered": Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": Array [
+                  "Jusqu'à ",
+                  <b>
+                    200
+                     €
+                  </b>,
+                  " pour les biens culturels",
+                ],
+                "className": "is-block",
+                "id": "profile-physical-wallet-value",
+              },
+              "ref": null,
+              "rendered": Array [
+                "Jusqu'à ",
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": Array [
+                      200,
+                      " €",
+                    ],
+                  },
+                  "ref": null,
+                  "rendered": Array [
+                    200,
+                    " €",
+                  ],
+                  "type": "b",
+                },
+                " pour les biens culturels",
+              ],
+              "type": "span",
+            },
+            "type": "div",
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": <span
+                className="is-block"
+                id="profile-digital-wallet-value"
+              >
+                Jusqu'à 
+                <b>
+                  200
+                   €
+                </b>
+                 pour les offres numériques
+              </span>,
+              "className": "fs14 mt12",
+            },
+            "ref": null,
+            "rendered": Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": Array [
+                  "Jusqu'à ",
+                  <b>
+                    200
+                     €
+                  </b>,
+                  " pour les offres numériques",
+                ],
+                "className": "is-block",
+                "id": "profile-digital-wallet-value",
+              },
+              "ref": null,
+              "rendered": Array [
+                "Jusqu'à ",
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": Array [
+                      200,
+                      " €",
+                    ],
+                  },
+                  "ref": null,
+                  "rendered": Array [
+                    200,
+                    " €",
+                  ],
+                  "type": "b",
+                },
+                " pour les offres numériques",
+              ],
+              "type": "span",
+            },
+            "type": "div",
+          },
+        ],
+        "type": "div",
+      },
+    ],
+    "type": "div",
+  },
+  Symbol(enzyme.__nodes__): Array [
+    Object {
+      "instance": null,
+      "key": undefined,
+      "nodeType": "host",
+      "props": Object {
+        "children": Array [
+          <div
+            className="text overall flex-1"
+          >
+            <b
+              className="is-block"
+              id="profile-wallet-balance-value"
+            >
+              Il reste 500 €
+            </b>
+            <span
+              className="is-block fs14"
+            >
+              sur votre Pass Culture
+            </span>
+          </div>,
+          <div
+            className="text-containers flex-0 mt12 py12 mr8"
+          >
+            <div
+              className="fs14"
+            >
+              <span
+                className="is-block"
+                id="profile-physical-wallet-value"
+              >
+                Jusqu'à 
+                <b>
+                  200
+                   €
+                </b>
+                 pour les biens culturels
+              </span>
+            </div>
+            <div
+              className="fs14 mt12"
+            >
+              <span
+                className="is-block"
+                id="profile-digital-wallet-value"
+              >
+                Jusqu'à 
+                <b>
+                  200
+                   €
+                </b>
+                 pour les offres numériques
+              </span>
+            </div>
+          </div>,
+        ],
+        "className": "jauges padded",
+        "id": "profile-page-user-wallet",
+      },
+      "ref": null,
+      "rendered": Array [
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": Array [
+              <b
+                className="is-block"
+                id="profile-wallet-balance-value"
+              >
+                Il reste 500 €
+              </b>,
+              <span
+                className="is-block fs14"
+              >
+                sur votre Pass Culture
+              </span>,
+            ],
+            "className": "text overall flex-1",
+          },
+          "ref": null,
+          "rendered": Array [
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": "Il reste 500 €",
+                "className": "is-block",
+                "id": "profile-wallet-balance-value",
+              },
+              "ref": null,
+              "rendered": "Il reste 500 €",
+              "type": "b",
+            },
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": "sur votre Pass Culture",
+                "className": "is-block fs14",
+              },
+              "ref": null,
+              "rendered": "sur votre Pass Culture",
+              "type": "span",
+            },
+          ],
+          "type": "div",
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": Array [
+              <div
+                className="fs14"
+              >
+                <span
+                  className="is-block"
+                  id="profile-physical-wallet-value"
+                >
+                  Jusqu'à 
+                  <b>
+                    200
+                     €
+                  </b>
+                   pour les biens culturels
+                </span>
+              </div>,
+              <div
+                className="fs14 mt12"
+              >
+                <span
+                  className="is-block"
+                  id="profile-digital-wallet-value"
+                >
+                  Jusqu'à 
+                  <b>
+                    200
+                     €
+                  </b>
+                   pour les offres numériques
+                </span>
+              </div>,
+            ],
+            "className": "text-containers flex-0 mt12 py12 mr8",
+          },
+          "ref": null,
+          "rendered": Array [
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": <span
+                  className="is-block"
+                  id="profile-physical-wallet-value"
+                >
+                  Jusqu'à 
+                  <b>
+                    200
+                     €
+                  </b>
+                   pour les biens culturels
+                </span>,
+                "className": "fs14",
+              },
+              "ref": null,
+              "rendered": Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": Array [
+                    "Jusqu'à ",
+                    <b>
+                      200
+                       €
+                    </b>,
+                    " pour les biens culturels",
+                  ],
+                  "className": "is-block",
+                  "id": "profile-physical-wallet-value",
+                },
+                "ref": null,
+                "rendered": Array [
+                  "Jusqu'à ",
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "host",
+                    "props": Object {
+                      "children": Array [
+                        200,
+                        " €",
+                      ],
+                    },
+                    "ref": null,
+                    "rendered": Array [
+                      200,
+                      " €",
+                    ],
+                    "type": "b",
+                  },
+                  " pour les biens culturels",
+                ],
+                "type": "span",
+              },
+              "type": "div",
+            },
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": <span
+                  className="is-block"
+                  id="profile-digital-wallet-value"
+                >
+                  Jusqu'à 
+                  <b>
+                    200
+                     €
+                  </b>
+                   pour les offres numériques
+                </span>,
+                "className": "fs14 mt12",
+              },
+              "ref": null,
+              "rendered": Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": Array [
+                    "Jusqu'à ",
+                    <b>
+                      200
+                       €
+                    </b>,
+                    " pour les offres numériques",
+                  ],
+                  "className": "is-block",
+                  "id": "profile-digital-wallet-value",
+                },
+                "ref": null,
+                "rendered": Array [
+                  "Jusqu'à ",
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "host",
+                    "props": Object {
+                      "children": Array [
+                        200,
+                        " €",
+                      ],
+                    },
+                    "ref": null,
+                    "rendered": Array [
+                      200,
+                      " €",
+                    ],
+                    "type": "b",
+                  },
+                  " pour les offres numériques",
+                ],
+                "type": "span",
+              },
+              "type": "div",
+            },
+          ],
+          "type": "div",
+        },
+      ],
+      "type": "div",
+    },
+  ],
+  Symbol(enzyme.__options__): Object {
+    "adapter": ReactSixteenAdapter {
+      "options": Object {
+        "enableComponentDidUpdateOnSetState": true,
+        "lifecycles": Object {
+          "componentDidUpdate": Object {
+            "onSetState": true,
+          },
+          "getDerivedStateFromProps": true,
+          "getSnapshotBeforeUpdate": true,
+          "setState": Object {
+            "skipsComponentDidUpdateOnNullish": true,
+          },
+        },
+      },
+    },
+  },
+}
+`;
