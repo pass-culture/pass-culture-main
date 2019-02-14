@@ -106,32 +106,47 @@ Exemple d'une commande test en dev sur chrome pour un fichier test particulier:
 pc test-cafe-pro -b chrome:headless -f signup.js
 ```
 
+## Tagging des versions
 
+La politique de tagging de versions est la suivante :
+* on n'utilise pas de _semantic versioning_
+* on utilise le format `I.P.S`
+  * I => incrément d'__Itération__
+  * P => incrément de _fix_ en __Production__
+  * S => incrément de _fix_ en __Staging__
+
+### Exemple
+
+* Je livre une nouvelle version en staging en fin d'itération n°20 => `20.0.0`
+* Je m'aperçois qu'il y a un bug en staging => `20.0.1`
+* Le bug est corrigé, je livre en production => `20.0.1`
+* On détecte un bug en production, je livre en staging => `20.1.0`
+* Tout se passe bien en staging, je livre en production => `20.1.0`
+* On détecte un autre bug en production, je livre en staging => `20.2.0`
+* Je m'aperçois que mon fix est lui-même buggé, je relivre un fix en staging => `20.2.1`
+* Mes deux fix sont cette fois OK, je livre en production => `20.2.1`
 
 ## Deploy
 
 ### FRONTEND WEB
 
 Pour déployer une nouvelle version web, par exemple en staging:
-**(Attention de ne pas déployer sur la prod sans authorisation !)**
-```bash
-pc -t X.Y.Z tag-version-webapp
-pc -e staging -t X.Y.Z deploy-frontend-webapp
-```
-Et pour pro sur staging, il suffit de remplacer la dernière commande par celle-ci:
+**(Attention de ne pas déployer sur la production sans concertation !)**
 
 ```bash
-pc -t X.Y.Z tag-version-pro
-pc -e staging -t X.Y.Z deploy-frontend-pro
+pc -t I.P.S tag-version-webapp
+pc -e staging -t I.P.S deploy-frontend-webapp
 ```
 
-Lors du tag de version, vous devrez respecter le semantic versionning (https://semver.org/) : vX.Y.Z
-X est le numéro de l'itération et Y un autoincrément qui démarre à 0 et est changé en cas de hotfix en cours d'itération.
+Et pour pro sur staging, il suffit de remplacer la dernière commande par celle-ci :
+```bash
+pc -t I.P.S tag-version-pro
+pc -e staging -t I.P.S deploy-frontend-pro
+```
 
 Pour déployer en production ensuite :
-
 ```bash
-pc -e production -t X.Y.Z deploy-frontend-webapp
+pc -e production -t I.P.S deploy-frontend-webapp
 ```
 
 #### Publier shared sur npm
@@ -162,15 +177,15 @@ Pour déployer une nouvelle version de l'API, par exemple en staging:
 **(Attention de ne pas déployer sur la prod sans autorisation !)**
 
 ```bash
-pc -t X.Y.Z tag-version-backend
-pc -e staging -t X.Y.Z deploy-backend
+pc -t I.P.S tag-version-backend
+pc -e staging -t I.P.S deploy-backend
 ```
 
-Avec vX.Y.Z, le tag de la version à déployer.
+Avec vI.P.S, le tag de la version à déployer.
 Ensuite pour mettre en production le tag qui a été déployé sur l'environnement staging :
 
 ```bash
-pc -e production -t X.Y.Z deploy-backend
+pc -e production -t I.P.S deploy-backend
 ```
 
 
