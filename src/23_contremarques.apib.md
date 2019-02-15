@@ -63,7 +63,7 @@ L'utilisation des deux API de vérification de validité et de validation d'une 
              "booking": [ "Cette réservation a déjà été validée" ]
           }
           
-#### Valider une contremarque [PATCH /bookings/token/<token>?email=\<email\>&offer_id=\<offer_id\>]
+#### Valider une contremarque [PATCH /bookings/token/\<token\>?email=\<email\>&offer_id=\<offer_id\>]
 
 Valide une contremarque (et la transaction associée). Le partenaire doit renseigner les paramètres <email> et <offer_id>.
 
