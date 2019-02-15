@@ -33,12 +33,10 @@ def build_offer_search_base_query():
 def department_or_national_offers(query, offer_type, department_codes):
     if '00' in department_codes:
         return query
-    condition = Venue.departementCode.in_(department_codes)
-    if offer_type == Event:
-        condition = (condition | (Event.isNational == True))
-    if offer_type == Thing:
-        condition = (condition | (Thing.isNational == True))
-    query = query.filter(condition)
+
+    query = query.filter(
+        Venue.departementCode.in_(department_codes) | (offer_type.isNational == True)
+    )
     logger.debug(lambda: '(reco) departement .count ' + str(query.count()))
     return query
 

@@ -225,7 +225,7 @@ class Put:
         @clean_database
         def when_user_has_no_offer_in_his_department(self, app):
             # given
-            user = create_user(is_admin=False, can_book_free_offers=True, departement_code='93')
+            user = create_user(is_admin=False, can_book_free_offers=True, departement_code='973')
             offerer = create_offerer()
             venue29 = create_venue(offerer, siret=offerer.siren + '98765', postal_code='29000', departement_code='29')
             venue34 = create_venue(offerer, siret=offerer.siren + '12345', postal_code='34000', departement_code='34')
@@ -247,8 +247,7 @@ class Put:
 
             # then
             assert response.status_code == 200
-            print([r['offer']['eventOrThing']['name'] for r in response.json()])
-            assert len(response.json()) == 1
+            assert len(response.json()) == 0
 
         @clean_database
         def when_offers_have_soft_deleted_stocks(self, app):
