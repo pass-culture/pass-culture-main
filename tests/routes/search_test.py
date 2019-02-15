@@ -565,9 +565,10 @@ class Get:
 
         @clean_database
         def when_searching_by_date_and_type_activation(
-            self, app):
-              # Given
-            category_and_date_search = "categories=Lire%2CRegarder%2CActivation&date=" + strftime(self.now) + "&days=1-5"
+                self, app):
+            # Given
+            category_and_date_search = "categories=Lire%2CRegarder%2CActivation&date=" + strftime(
+                self.now) + "&days=1-5"
             user = create_user(email='test@email.com', password='P@55w0rd')
 
             offerer = create_offerer()
@@ -576,14 +577,16 @@ class Get:
             cinema_event_offer = create_event_offer(venue, event_name='The new film', event_type=EventType.CINEMA)
 
             activation_event_offer = create_event_offer(venue, event_name='Activation de votre Pass Culture',
-                                        event_type=EventType.ACTIVATION)
+                                                        event_type=EventType.ACTIVATION)
 
             book_thing = create_thing(thing_name='Lire un livre', is_national=True)
             book_thing_offer = create_thing_offer(venue, book_thing)
-            cinema_event_occurrence = create_event_occurrence(cinema_event_offer, beginning_datetime=self.three_days_from_now,
-                                                       end_datetime=self.three_days_and_one_hour_from_now)
-            activation_event_occurrence = create_event_occurrence(activation_event_offer, beginning_datetime=self.three_days_from_now,
-                                                       end_datetime=self.three_days_and_one_hour_from_now)
+            cinema_event_occurrence = create_event_occurrence(cinema_event_offer,
+                                                              beginning_datetime=self.three_days_from_now,
+                                                              end_datetime=self.three_days_and_one_hour_from_now)
+            activation_event_occurrence = create_event_occurrence(activation_event_offer,
+                                                                  beginning_datetime=self.three_days_from_now,
+                                                                  end_datetime=self.three_days_and_one_hour_from_now)
 
             cinema_recommendation = create_recommendation(cinema_event_offer, user)
             book_recommendation = create_recommendation(book_thing_offer, user)
@@ -593,19 +596,21 @@ class Get:
             activation_event_occurence_stock = create_stock_from_event_occurrence(activation_event_occurrence)
             book_thing_stock = create_stock(price=12, available=5, offer=book_thing_offer)
 
-            PcObject.check_and_save(cinema_recommendation, book_recommendation, activation_recommendation, cinema_event_occurence_stock, activation_event_occurence_stock, book_thing_stock)
+            PcObject.check_and_save(cinema_recommendation, book_recommendation, activation_recommendation,
+                                    cinema_event_occurence_stock, activation_event_occurence_stock, book_thing_stock)
 
             # When
 
-            response = TestClient().with_auth(user.email, user.clearTextPassword).get(RECOMMENDATION_URL + '?%s' % category_and_date_search)
+            response = TestClient().with_auth(user.email, user.clearTextPassword).get(
+                RECOMMENDATION_URL + '?%s' % category_and_date_search)
 
             # Then
             assert response.status_code == 200
             assert len(response.json()) == 3
             recommendations = response.json()
-            recommendation_names = [recommendation['offer']['eventOrThing']['name'] for recommendation in recommendations]
+            recommendation_names = [recommendation['offer']['eventOrThing']['name'] for recommendation in
+                                    recommendations]
             assert 'Activation de votre Pass Culture' in recommendation_names
-
 
         @clean_database
         def when_searching_by_non_matching_date_and_matching_keywords(self, app):
