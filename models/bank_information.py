@@ -1,9 +1,9 @@
 from sqlalchemy import Column, BigInteger, ForeignKey, String, Integer
 from sqlalchemy.orm import relationship
 
-from models.providable_mixin import ProvidableMixin
-from models.pc_object import PcObject
 from models.db import Model
+from models.pc_object import PcObject
+from models.providable_mixin import ProvidableMixin
 
 
 class BankInformation(PcObject,

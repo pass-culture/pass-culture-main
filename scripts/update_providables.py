@@ -6,7 +6,7 @@ from flask import current_app as app
 
 import local_providers
 import models
-from models import db, Event, Offerer, Stock, Thing, Venue, VenueProvider
+from models import db, Event, Offerer, Stock, Thing, Venue, VenueProvider, BankInformation
 from models.db import db
 
 
@@ -48,7 +48,7 @@ def update_providables(provider, venue, venueProvider, limit, objectType, mock=F
                                                   .filter_by(id=venueProvider)\
                                                   .first()
         provider_class = getattr(local_providers, venueProviderObj.provider.localClass)
-        venueProviderProvider = provider_class(venueProviderObj, mock=mock)
+        venueProviderProvider = provider_class(venueProviderObj)
         return do_update(venueProviderProvider, limit)
 
     # order matters ! An item appears later in this list
@@ -58,7 +58,8 @@ def update_providables(provider, venue, venueProvider, limit, objectType, mock=F
                         Venue,
                         Event,
                         Thing,
-                        Stock]
+                        Stock,
+                        BankInformation]
     if not venue:
         if objectType:
             model = getattr(models, objectType.capitalize())
@@ -71,7 +72,7 @@ def update_providables(provider, venue, venueProvider, limit, objectType, mock=F
                 provider_type = getattr(local_providers, provider_name)
                 if provider_type.identifierRegexp is None\
                    and provider_type.objectType == providable_type:
-                    providerObj = provider_type(None, mock=mock)
+                    providerObj = provider_type()
                     do_update(providerObj, limit)
 
     venueProviderQuery = VenueProvider.query
@@ -93,5 +94,5 @@ def update_providables(provider, venue, venueProvider, limit, objectType, mock=F
                 continue
             if provider_type.objectType != providable_type:
                 continue
-            venueProviderProvider = provider_type(venueProviderObj, mock=mock)
+            venueProviderProvider = provider_type(venueProviderObj)
             do_update(venueProviderProvider, limit)
