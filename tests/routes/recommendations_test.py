@@ -4,7 +4,7 @@ import pytest
 
 from models import PcObject
 from models.mediation import Mediation, upsertTutoMediations
-from tests.conftest import clean_database
+from tests.conftest import clean_database, TestClient
 from utils.human_ids import humanize
 from utils.test_utils import API_URL, \
     create_event_occurrence, \
@@ -24,15 +24,18 @@ RECOMMENDATION_URL = API_URL + '/recommendations'
 
 
 @pytest.mark.standalone
-def test_put_recommendations_works_only_when_logged_in():
-    # when
-    response = req.put(
-        RECOMMENDATION_URL,
-        headers={'origin': 'http://localhost:3000'}
-    )
+class Put:
+    class Returns401:
+        def when_not_logged_in(self):
+            # when
+            response = TestClient().put(
+                RECOMMENDATION_URL,
+                headers={'origin': 'http://localhost:3000'}
+            )
 
-    # then
-    assert response.status_code == 401
+            # then
+            assert response.status_code == 401
+
 
 @clean_database
 @pytest.mark.standalone
@@ -71,9 +74,9 @@ def test_put_read_recommendations(app):
     ]
 
     read_recommendations_url = '{}/read'.format(RECOMMENDATION_URL)
-    response = req_with_auth('test@email.com', 'P@55w0rd')\
-                         .put(read_recommendations_url,
-                              json=read_recommendation_data)
+    response = req_with_auth('test@email.com', 'P@55w0rd') \
+        .put(read_recommendations_url,
+             json=read_recommendation_data)
 
     # Then
     read_recommendation_date_reads = [r['dateRead'] for r in response.json()]
@@ -686,7 +689,8 @@ def test_put_recommendations_returns_active_mediation_only(app):
 
 @clean_database
 @pytest.mark.standalone
-def test_put_recommendations_returns_new_recommendation_with_active_mediation_for_already_existing_but_invalid_recommendations(app):
+def test_put_recommendations_returns_new_recommendation_with_active_mediation_for_already_existing_but_invalid_recommendations(
+        app):
     # given
     user = create_user()
     offerer = create_offerer()
@@ -696,7 +700,7 @@ def test_put_recommendations_returns_new_recommendation_with_active_mediation_fo
     inactive_mediation = create_mediation(offer1, is_active=False)
     active_mediation = create_mediation(offer1, is_active=True)
     invalid_recommendation = create_recommendation(offer1, user, inactive_mediation,
-                                           valid_until_date=datetime.utcnow() - timedelta(hours=2))
+                                                   valid_until_date=datetime.utcnow() - timedelta(hours=2))
     PcObject.check_and_save(user, stock1, inactive_mediation, active_mediation, invalid_recommendation)
     auth_request = req_with_auth(user.email, user.clearTextPassword)
 
@@ -710,6 +714,7 @@ def test_put_recommendations_returns_new_recommendation_with_active_mediation_fo
     mediation_ids = list(map(lambda x: x['mediationId'], json))
     assert humanize(active_mediation.id) in mediation_ids
     assert humanize(inactive_mediation.id) not in mediation_ids
+
 
 @clean_database
 @pytest.mark.standalone
@@ -735,9 +740,9 @@ def test_put_recommendations_updates_read_recommendations(app):
     auth_request = req_with_auth(user.email, user.clearTextPassword)
 
     reads = [
-        { "id": humanize(recommendation1.id), "dateRead": "2018-12-17T15:59:11.689000Z" },
-        { "id": humanize(recommendation2.id), "dateRead": "2018-12-17T15:59:15.689000Z" },
-        { "id": humanize(recommendation3.id), "dateRead": "2018-12-17T15:59:21.689000Z" },
+        {"id": humanize(recommendation1.id), "dateRead": "2018-12-17T15:59:11.689000Z"},
+        {"id": humanize(recommendation2.id), "dateRead": "2018-12-17T15:59:15.689000Z"},
+        {"id": humanize(recommendation3.id), "dateRead": "2018-12-17T15:59:21.689000Z"},
     ]
     data = {'readRecommendations': reads}
     # when
@@ -748,6 +753,7 @@ def test_put_recommendations_updates_read_recommendations(app):
     previous_date_reads = set([r['dateRead'] for r in reads])
     next_date_reads = set([r['dateRead'] for r in response.json()])
     assert previous_date_reads.issubset(next_date_reads)
+
 
 @clean_database
 @pytest.mark.standalone
@@ -777,6 +783,7 @@ def test_put_recommendations_at_first_request_returns_tutos(app):
     recommendations = response.json()
     assert recommendations[0]['mediation']['tutoIndex'] == 0
     assert recommendations[1]['mediation']['tutoIndex'] == 1
+
 
 @clean_database
 @pytest.mark.standalone
@@ -812,14 +819,14 @@ def test_put_recommendations_with_read_tuto_recommendations_returns_recommendati
     reads = [
         {
             "id": humanized_tuto_recommendation0_id,
-            "dateRead":  "2018-12-17T15:59:11.689Z"
+            "dateRead": "2018-12-17T15:59:11.689Z"
         },
         {
             "id": humanized_tuto_recommendation1_id,
-            "dateRead":  "2018-12-17T15:59:15.689Z"
+            "dateRead": "2018-12-17T15:59:15.689Z"
         }
     ]
-    data = { 'readRecommendations': reads }
+    data = {'readRecommendations': reads}
     auth_request = req_with_auth(user.email, user.clearTextPassword)
 
     # when

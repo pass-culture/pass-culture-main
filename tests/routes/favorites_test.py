@@ -57,7 +57,7 @@ class Get:
             offer1 = create_event_offer(venue)
             recommendation1 = create_recommendation(offer1, user1, is_favorite=False)
             PcObject.check_and_save(user1, user2, recommendation1)
-            
+
             # when
             response = TestClient().with_auth(user1.email, user1.clearTextPassword) \
                 .get(RECOMMENDATION_URL + '/favorites')
