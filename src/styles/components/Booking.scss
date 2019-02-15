@@ -1,18 +1,3 @@
-/*
-
- Fichier CSS de la page permettant à l'user
- de réserver une offre
-
- Ne pas confondre avec la page my-booking qui permet à l'user
- de visualiser les offres qu'il a réservé@
-
-*/
-#booking-card {
-  z-index: $zindex-booking-card;
-  color: $black;
-  background: $white;
-}
-
 #booking-card header {
   color: $white;
   background: #261801;
@@ -46,13 +31,6 @@
   }
 }
 
-#booking-card .main {
-  .views-container {
-    overflow-y: auto;
-    padding: 36px 12px;
-  }
-}
-
 /* ------------------------------------------------
 
  Avant retro-compatibilité avec le search
@@ -60,6 +38,10 @@
 ------------------------------------------------ */
 
 #booking-card {
+  z-index: $zindex-booking-card;
+  color: $black;
+  background: $white;
+
   .pc-final-form-label {
     @extend .fs22;
   }

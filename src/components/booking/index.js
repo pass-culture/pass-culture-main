@@ -208,33 +208,35 @@ class Booking extends React.PureComponent {
             className="is-overlay is-clipped flex-rows"
             style={{ ...defaultStyle, ...transitionStyles[state] }}
           >
-            <BookingHeader recommendation={recommendation} />
-            <div
-              className="main flex-1 items-center is-clipped is-relative"
-              style={{ backgroundImage }}
-            >
-              <div className="views-container is-overlay">
-                {isSubmitting && <BookingLoader />}
-                {bookedPayload && (
-                  <BookingSuccess isEvent={isEvent} data={bookedPayload} />
-                )}
-                {isCancelled && (
-                  <BookingCancel isEvent={isEvent} data={booking} />
-                )}
-                {isErrored && <BookingError {...isErrored} />}
-                {showForm && (
-                  <BookingForm
-                    className="flex-rows items-center"
-                    isEvent={isEvent}
-                    formId={this.formId}
-                    isReadOnly={isReadOnly}
-                    disabled={userConnected}
-                    onSubmit={this.onFormSubmit}
-                    onMutation={this.onFormMutation}
-                    initialValues={formInitialValues}
-                    onValidation={this.onFormValidation}
-                  />
-                )}
+            <div className="main flex-rows flex-1 scroll-y">
+              <BookingHeader recommendation={recommendation} />
+              <div
+                className="flex-1 flex-center items-center"
+                style={{ backgroundImage, minHeight: '450px' }}
+              >
+                <div className="py36 px12 flex-rows">
+                  {isSubmitting && <BookingLoader />}
+                  {bookedPayload && (
+                    <BookingSuccess isEvent={isEvent} data={bookedPayload} />
+                  )}
+                  {isCancelled && (
+                    <BookingCancel isEvent={isEvent} data={booking} />
+                  )}
+                  {isErrored && <BookingError {...isErrored} />}
+                  {showForm && (
+                    <BookingForm
+                      className="flex-1 flex-rows flex-center items-center"
+                      isEvent={isEvent}
+                      formId={this.formId}
+                      isReadOnly={isReadOnly}
+                      disabled={userConnected}
+                      onSubmit={this.onFormSubmit}
+                      onMutation={this.onFormMutation}
+                      initialValues={formInitialValues}
+                      onValidation={this.onFormValidation}
+                    />
+                  )}
+                </div>
               </div>
             </div>
             <div className="form-footer flex-columns flex-0 flex-center">

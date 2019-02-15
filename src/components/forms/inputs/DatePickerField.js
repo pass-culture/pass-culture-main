@@ -106,7 +106,7 @@ DatePickerField.propTypes = {
   hideToday: PropTypes.bool,
   icon: PropTypes.string,
   id: PropTypes.string,
-  label: PropTypes.string,
+  label: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
   locale: PropTypes.string,
   name: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,

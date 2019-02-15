@@ -54,7 +54,7 @@ const BookingForm = ({
       const { stockId, price } = values
       const calendarDates = getCalendarProvider(values)
       const hoursAndPrices = parseHoursByStockId(values)
-      //
+
       const hourReadOnly = hoursAndPrices.length === 1
       const hourLabel = hourReadOnly ? false : 'Choisissez une heure'
 
