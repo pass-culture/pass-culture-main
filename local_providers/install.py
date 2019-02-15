@@ -17,3 +17,4 @@ def install_local_providers():
             db.session.add(p)
 
     db.session.commit()
+

@@ -14,7 +14,7 @@ from alembic import op
 from sqlalchemy import ForeignKey
 
 revision = '4462a541eeed'
-down_revision = '3f915af15e86'
+down_revision = 'dd92867bde82'
 branch_labels = None
 depends_on = None
 

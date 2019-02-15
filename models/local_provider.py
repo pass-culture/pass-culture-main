@@ -170,8 +170,6 @@ class LocalProvider(Iterator):
         try:
             self.updateObject(obj)
             # FIXME: keep this until we make type an ENUM again
-            print("==============================")
-            print("In handleUpdate ")
             if isinstance(obj, Thing)\
                or isinstance(obj, Event):
                 type_elems = str(obj.type).split('.')
@@ -184,8 +182,6 @@ class LocalProvider(Iterator):
             if self.venueProvider is not None:
                 obj.venue = self.venueProvider.venue
             PcObject.check_and_save(obj)
-            print("==============================")
-            print("End of handleUpdate ")
         except Exception as e:
             print('ERROR during updateObject: '
                   + e.__class__.__name__+' '+str(e))
@@ -225,7 +221,6 @@ class LocalProvider(Iterator):
                   + self.venueProvider.venueIdAtOfferProvider)
         else:
             print("venueProvider not found")
-        print("==========================")
         for providable_infos in self:
             if isinstance(providable_infos, ProvidableInfo)\
                or providable_infos is None:

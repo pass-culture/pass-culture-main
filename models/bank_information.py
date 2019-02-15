@@ -12,7 +12,7 @@ class BankInformation(PcObject,
     offererId = Column(BigInteger,
                        ForeignKey("offerer.id"),
                        index=True,
-                       nullable=False)
+                       nullable=True)
 
     offerer = relationship('Offerer',
                            foreign_keys=[offererId],
@@ -21,7 +21,7 @@ class BankInformation(PcObject,
     venueId = Column(BigInteger,
                      ForeignKey("venue.id"),
                      index=True,
-                     nullable=False)
+                     nullable=True)
 
     venue = relationship('Venue',
                          foreign_keys=[venueId],
