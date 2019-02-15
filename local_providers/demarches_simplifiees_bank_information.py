@@ -12,8 +12,6 @@ from repository import offerer_queries, venue_queries
 from utils.date import DATE_ISO_FORMAT
 
 
-PROCEDURE_ID = os.environ['DEMARCHES_SIMPLIFIEES_PROCEDURE_ID']
-TOKEN = os.environ['DEMARCHES_SIMPLIFIEES_TOKEN']
 
 
 class UnknownRIBAffiliation(Exception):
@@ -30,18 +28,20 @@ class BankInformationProvider(LocalProvider):
 
     def __init__(self):
         super().__init__()
+        self.PROCEDURE_ID = os.environ['DEMARCHES_SIMPLIFIEES_PROCEDURE_ID']
+        self.TOKEN = os.environ['DEMARCHES_SIMPLIFIEES_TOKEN']
 
         last_bank_information_retrieved = BankInformation.query.order_by(BankInformation.dateModifiedAtLastProvider.desc()).first()
         if last_bank_information_retrieved:
             last_update = last_bank_information_retrieved.dateModifiedAtLastProvider
         else:
             last_update = datetime.strptime("1900-01-01T00:00:00.000Z", DATE_ISO_FORMAT)
-        self.application_ids = iter(get_all_application_ids_from_demarches_simplifiees_procedure(PROCEDURE_ID, TOKEN, last_update))
+        self.application_ids = iter(get_all_application_ids_from_demarches_simplifiees_procedure(self.PROCEDURE_ID, self.TOKEN, last_update))
 
     def __next__(self):
         self.application_id = self.application_ids.__next__()
 
-        self.application_details = get_application_details(self.application_id, PROCEDURE_ID, TOKEN)
+        self.application_details = get_application_details(self.application_id, self.PROCEDURE_ID, self.TOKEN)
 
         if not self.application_details:
             return None
