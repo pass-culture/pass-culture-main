@@ -223,6 +223,34 @@ class Put:
             assert previous_date_reads.issubset(next_date_reads)
 
         @clean_database
+        def when_user_has_no_offer_in_his_department(self, app):
+            # given
+            user = create_user(is_admin=False, can_book_free_offers=True, departement_code='93')
+            offerer = create_offerer()
+            venue29 = create_venue(offerer, siret=offerer.siren + '98765', postal_code='29000', departement_code='29')
+            venue34 = create_venue(offerer, siret=offerer.siren + '12345', postal_code='34000', departement_code='34')
+            venue93 = create_venue(offerer, siret=offerer.siren + '54321', postal_code='93000', departement_code='93')
+            venue67 = create_venue(offerer, siret=offerer.siren + '56789', postal_code='67000', departement_code='67')
+            thing_offer1 = create_thing_offer(venue93, thing_name='thing 93', url=None, is_national=False)
+            thing_offer2 = create_thing_offer(venue67, thing_name='thing 67', url=None, is_national=False)
+            thing_offer3 = create_thing_offer(venue29, thing_name='thing 29', url=None, is_national=False)
+            thing_offer4 = create_thing_offer(venue34, thing_name='thing 34', url=None, is_national=False)
+            stock1 = create_stock_from_offer(thing_offer1)
+            stock2 = create_stock_from_offer(thing_offer2)
+            stock3 = create_stock_from_offer(thing_offer3)
+            stock4 = create_stock_from_offer(thing_offer4)
+            PcObject.check_and_save(user, stock1, stock2, stock3, stock4)
+
+            # when
+            response = TestClient().with_auth(user.email, user.clearTextPassword) \
+                .put(RECOMMENDATION_URL, json={'readRecommendations': []})
+
+            # then
+            assert response.status_code == 200
+            print([r['offer']['eventOrThing']['name'] for r in response.json()])
+            assert len(response.json()) == 1
+
+        @clean_database
         def when_offers_have_soft_deleted_stocks(self, app):
             # Given
             offerer = create_offerer()

@@ -6,10 +6,10 @@ from freezegun import freeze_time
 from models import Thing, PcObject, Event
 from models.offer_type import EventType, ThingType
 from repository.offer_queries import department_or_national_offers, \
-                                     find_activation_offers, \
-                                     find_offers_with_filter_parameters, \
-                                     get_offers_for_recommendations_search, \
-                                     get_active_offers_by_type
+    find_activation_offers, \
+    find_offers_with_filter_parameters, \
+    get_offers_for_recommendations_search, \
+    get_active_offers_by_type
 from tests.conftest import clean_database
 from utils.test_utils import create_booking, \
     create_event, \
@@ -30,35 +30,86 @@ REFERENCE_DATE = '2017-10-15 09:21:34'
 
 
 @pytest.mark.standalone
-@clean_database
-def test_department_or_national_offers_with_national_thing_returns_national_thing(app):
-    # Given
-    thing = create_thing(thing_name='Lire un livre', is_national=True)
-    offerer = create_offerer()
-    venue = create_venue(offerer, departement_code='34')
-    offer = create_thing_offer(venue, thing)
-    PcObject.check_and_save(offer)
-    query = Thing.query.filter_by(name='Lire un livre')
-    # When
-    query = department_or_national_offers(query, Thing, ['93'])
+class DepartmentOrNationalOffersTest:
+    @clean_database
+    def test_returns_national_thing_with_different_department(self, app):
+        # given
+        thing = create_thing(thing_name='Lire un livre', is_national=True)
+        offerer = create_offerer()
+        venue = create_venue(offerer, postal_code='34000', departement_code='34')
+        offer = create_thing_offer(venue, thing)
+        PcObject.check_and_save(offer)
+        query = Thing.query.filter_by(name='Lire un livre')
 
-    assert thing in query.all()
+        # when
+        query = department_or_national_offers(query, Thing, ['93'])
 
+        # then
+        assert thing in query.all()
 
-@pytest.mark.standalone
-@clean_database
-def test_department_or_national_offers_with_national_event_returns_national_event(app):
-    # Given
-    event = create_event('Voir une pièce', is_national=True)
-    offerer = create_offerer()
-    venue = create_venue(offerer)
-    offer = create_event_offer(venue, event)
-    PcObject.check_and_save(offer)
-    query = Event.query.filter_by(name='Voir une pièce')
-    # When
-    query = department_or_national_offers(query, Event, ['93'])
+    @clean_database
+    def test_returns_national_event_with_different_department(self, app):
+        # given
+        event = create_event('Voir une pièce', is_national=True)
+        offerer = create_offerer()
+        venue = create_venue(offerer, is_virtual=False, postal_code='29000', departement_code='29')
+        offer = create_event_offer(venue, event)
+        PcObject.check_and_save(offer)
+        query = Event.query.filter_by(name='Voir une pièce')
 
-    assert event in query.all()
+        # when
+        query = department_or_national_offers(query, Event, ['93'])
+
+        # then
+        assert event in query.all()
+
+    @clean_database
+    def test_returns_nothing_if_event_is_not_in_given_department_list(self, app):
+        # given
+        event = create_event('Voir une pièce', is_national=False)
+        offerer = create_offerer()
+        venue = create_venue(offerer, is_virtual=False, postal_code='29000', departement_code='29')
+        offer = create_event_offer(venue, event)
+        PcObject.check_and_save(offer)
+        query = Event.query.filter_by(name='Voir une pièce')
+
+        # when
+        query = department_or_national_offers(query, Event, ['34'])
+
+        # then
+        assert query.count() == 0
+
+    @clean_database
+    def test_returns_an_event_if_department_list_is_00(self, app):
+        # given
+        event = create_event('Voir une pièce', is_national=False)
+        offerer = create_offerer()
+        venue = create_venue(offerer, is_virtual=False, postal_code='29000', departement_code='29')
+        offer = create_event_offer(venue, event)
+        PcObject.check_and_save(offer)
+        query = Event.query.filter_by(name='Voir une pièce')
+
+        # when
+        query = department_or_national_offers(query, Event, ['00'])
+
+        # then
+        assert query.count() == 1
+
+    @clean_database
+    def test_returns_an_event_if_it_is_given_in_department_list(self, app):
+        # given
+        event = create_event('Voir une pièce', is_national=False)
+        offerer = create_offerer()
+        venue = create_venue(offerer, is_virtual=False, postal_code='29000', departement_code='29')
+        offer = create_event_offer(venue, event)
+        PcObject.check_and_save(offer)
+        query = Event.query.filter_by(name='Voir une pièce')
+
+        # when
+        query = department_or_national_offers(query, Event, ['29'])
+
+        # then
+        assert query.count() == 1
 
 
 @freeze_time(REFERENCE_DATE)
@@ -268,14 +319,16 @@ class GetOffersForRecommendationsSearchTest:
         assert not search_result_offers
 
     @clean_database
-    def test_search_does_not_return_offers_by_types_with_all_beginning_datetime_passed_and_no_booking_limit_datetime(self, app):
+    def test_search_does_not_return_offers_by_types_with_all_beginning_datetime_passed_and_no_booking_limit_datetime(
+            self, app):
         # Given
         three_hours_ago = datetime.utcnow() - timedelta(hours=3)
         type_label = EventType.MUSEES_PATRIMOINE
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_event_offer(venue, event_type=type_label)
-        outdated_event_occurrence = create_event_occurrence(offer, beginning_datetime=three_hours_ago, end_datetime=datetime.utcnow())
+        outdated_event_occurrence = create_event_occurrence(offer, beginning_datetime=three_hours_ago,
+                                                            end_datetime=datetime.utcnow())
         stock = create_stock_from_event_occurrence(outdated_event_occurrence, booking_limit_date=None)
 
         PcObject.check_and_save(stock, outdated_event_occurrence)
@@ -289,7 +342,8 @@ class GetOffersForRecommendationsSearchTest:
         assert not search_result_offers
 
     @clean_database
-    def test_search_return_offers_by_types_with_some_but_not_all_beginning_datetime_passed_and_no_booking_limit_datetime(self, app):
+    def test_search_return_offers_by_types_with_some_but_not_all_beginning_datetime_passed_and_no_booking_limit_datetime(
+            self, app):
         # Given
         three_hours_ago = datetime.utcnow() - timedelta(hours=3)
         in_three_hours = datetime.utcnow() + timedelta(hours=3)
@@ -298,8 +352,10 @@ class GetOffersForRecommendationsSearchTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_event_offer(venue, event_type=type_label)
-        outdated_event_occurrence = create_event_occurrence(offer, beginning_datetime=three_hours_ago, end_datetime=datetime.utcnow())
-        future_event_occurrence = create_event_occurrence(offer, beginning_datetime=in_three_hours, end_datetime=in_four_hours)
+        outdated_event_occurrence = create_event_occurrence(offer, beginning_datetime=three_hours_ago,
+                                                            end_datetime=datetime.utcnow())
+        future_event_occurrence = create_event_occurrence(offer, beginning_datetime=in_three_hours,
+                                                          end_datetime=in_four_hours)
         stock = create_stock_from_event_occurrence(future_event_occurrence, booking_limit_date=None)
 
         PcObject.check_and_save(stock, future_event_occurrence, outdated_event_occurrence)
@@ -311,8 +367,6 @@ class GetOffersForRecommendationsSearchTest:
 
         # Then
         assert offer in search_result_offers
-
-
 
 
 @clean_database
@@ -486,6 +540,7 @@ def test_find_activation_offers_returns_activation_offers_with_future_booking_li
     # then
     assert len(offers) == 2
 
+
 @clean_database
 @pytest.mark.standalone
 def test_find_offers_with_filter_parameters_with_partial_keywords_and_filter_by_venue(app):
@@ -504,7 +559,8 @@ def test_find_offers_with_filter_parameters_with_partial_keywords_and_filter_by_
     offerer = create_offerer()
     venue1 = create_venue(offerer1, name='Bataclan', city='Paris', siret=offerer.siren + '12345')
     venue2 = create_venue(offerer2, name='Librairie la Rencontre', city='Saint Denis', siret=offerer.siren + '54321')
-    ko_venue3 = create_venue(ko_offerer3, name='Une librairie du méchant concurrent gripsou', city='Saint Denis', siret=ko_offerer3.siren + '54321')
+    ko_venue3 = create_venue(ko_offerer3, name='Une librairie du méchant concurrent gripsou', city='Saint Denis',
+                             siret=ko_offerer3.siren + '54321')
     ok_offer1 = create_event_offer(venue1, ok_event1)
     ok_offer2 = create_thing_offer(venue1, ok_thing)
     ko_offer2 = create_event_offer(venue1, event2)
