@@ -164,7 +164,8 @@ def create_stock_with_event_offer(
         beginning_datetime_future=True,
         price=10,
         booking_email='offer.booking.email@test.com',
-        available=10
+        available=10,
+        is_soft_deleted=False
 ):
     stock = Stock()
     stock.offerer = offerer
@@ -186,6 +187,7 @@ def create_stock_with_event_offer(
         from_dict={'isNational': False, 'durationMinutes': 10, 'name': 'Mains, sorts et papiers'}
     )
     stock.eventOccurrence.offer.venue = venue
+    stock.isSoftDeleted = is_soft_deleted
 
     return stock
 

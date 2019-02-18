@@ -100,7 +100,7 @@ class TestClient:
 
     def delete(self, route: str, headers=LOCAL_ORIGIN_HEADER):
         if self.session:
-            result = self.session.get(route)
+            result = self.session.delete(route)
         else:
             result = requests.delete(route, headers=headers)
 
@@ -116,7 +116,12 @@ class TestClient:
             result = requests.get(route, headers=headers)
 
         if TestClient.WITH_DOC:
-            self._print_spec('GET', route, None, result.json(), result.status_code)
+            if result.status_code == 404:
+                result_json = None
+            else:
+                result_json = result.json()
+
+            self._print_spec('GET', route, None, result_json, result.status_code)
 
         return result
 
