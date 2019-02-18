@@ -29,7 +29,6 @@ from utils.rest import expect_json_data
 @login_required
 def list_recommendations():
     search_params = get_recommendation_search_params(request.args)
-    
     recommendations = create_recommendations_for_search(
         current_user,
         **search_params

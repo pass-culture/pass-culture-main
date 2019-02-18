@@ -124,6 +124,25 @@ class Get:
             assert len(response.json()) == 0
 
         @clean_database
+        def when_keywords_contains_special_char(self, app):
+            # given
+            user = create_user(email='test@email.com', password='P@55w0rd')
+            offerer = create_offerer(validation_token='ABC123')
+            venue = create_venue(offerer)
+            offer = create_event_offer(venue, event_name='www.test.fr event')
+            recommendation = create_recommendation(offer, user)
+            stock = create_stock_from_offer(offer)
+            PcObject.check_and_save(stock, recommendation)
+
+            # when
+            response = TestClient().with_auth(user.email, user.clearTextPassword).get(
+                RECOMMENDATION_URL + '?keywords=https%3A%2F%2Fwww.test.fr%2F')
+
+            # then
+            assert response.status_code == 200
+            assert len(response.json()) == 0
+
+        @clean_database
         def when_searching_by_keywords_on_inactive_offerer(self, app):
             # given
             keywords_string = "Training"
