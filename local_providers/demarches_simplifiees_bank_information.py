@@ -18,6 +18,15 @@ class UnknownRIBAffiliation(Exception):
     pass
 
 
+def get_last_update_from_bank_information():
+    last_bank_information_retrieved = BankInformation.query.order_by(
+        BankInformation.dateModifiedAtLastProvider.desc()).first()
+    if last_bank_information_retrieved:
+        return last_bank_information_retrieved.dateModifiedAtLastProvider
+    else:
+        return datetime.strptime("1900-01-01T00:00:00.000Z", DATE_ISO_FORMAT)
+
+
 class BankInformationProvider(LocalProvider):
     help = ""
     identifierDescription = "siren / siret"
@@ -31,11 +40,8 @@ class BankInformationProvider(LocalProvider):
         self.PROCEDURE_ID = os.environ['DEMARCHES_SIMPLIFIEES_PROCEDURE_ID']
         self.TOKEN = os.environ['DEMARCHES_SIMPLIFIEES_TOKEN']
 
-        last_bank_information_retrieved = BankInformation.query.order_by(BankInformation.dateModifiedAtLastProvider.desc()).first()
-        if last_bank_information_retrieved:
-            last_update = last_bank_information_retrieved.dateModifiedAtLastProvider
-        else:
-            last_update = datetime.strptime("1900-01-01T00:00:00.000Z", DATE_ISO_FORMAT)
+        last_update = get_last_update_from_bank_information()
+
         self.application_ids = iter(get_all_application_ids_from_demarches_simplifiees_procedure(self.PROCEDURE_ID, self.TOKEN, last_update))
 
     def __next__(self):

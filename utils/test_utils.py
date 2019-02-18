@@ -1,5 +1,6 @@
 """ test utils """
 import random
+import requests as req
 import string
 import uuid
 from datetime import datetime, timedelta, timezone
@@ -7,10 +8,8 @@ from decimal import Decimal
 from glob import glob
 from hashlib import sha256
 from inspect import isclass
-from unittest.mock import Mock
-
-import requests as req
 from postgresql_audit.flask import versioning_manager
+from unittest.mock import Mock
 
 import models
 from models import Booking, \
@@ -29,7 +28,7 @@ from models import Booking, \
     ThingType, \
     User, \
     UserOfferer, \
-    Venue, PaymentTransaction
+    Venue, PaymentTransaction, BankInformation
 from models.db import db
 from models.payment import PaymentDetails
 from models.payment_status import PaymentStatus, TransactionStatus
@@ -227,7 +226,9 @@ def create_stock(price=10, available=10, booking_limit_datetime=None, offer=None
     return stock
 
 
-def create_stock_with_thing_offer(offerer, venue, thing_offer=None, price=10, available=50, booking_email='offer.booking.email@test.com', soft_deleted=False, booking_limit_datetime=None):
+def create_stock_with_thing_offer(offerer, venue, thing_offer=None, price=10, available=50,
+                                  booking_email='offer.booking.email@test.com', soft_deleted=False,
+                                  booking_limit_datetime=None):
     stock = Stock()
     stock.offerer = offerer
     stock.price = price
@@ -637,6 +638,20 @@ def create_payment_details(
     details.reimbursement_rate = reimbursement_rate
     details.reimbursed_amount = reimbursed_amount
     return details
+
+
+def create_bank_information(application_id=1, bic='BIC', iban='IBAN', id_at_providers='234567891', date_modified_at_last_provider=datetime(2019, 1, 1), offerer_id=None,
+                            venue_id=None):
+    bank_information = BankInformation()
+    bank_information.venueId = venue_id
+    bank_information.offererId = offerer_id
+    bank_information.application_id = application_id
+    bank_information.bic = bic
+    bank_information.iban = iban
+    bank_information.idAtProviders = id_at_providers
+    bank_information.dateModifiedAtLastProvider = date_modified_at_last_provider
+    return bank_information
+
 
 
 def saveCounts(app):
