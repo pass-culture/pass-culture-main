@@ -21,3 +21,7 @@ def feature_cron_generate_and_send_payments():
 
 def feature_cron_send_wallet_balances():
     return os.environ.get('CRON_SEND_WALLET_BALANCES', False)
+
+
+def feature_cron_retrieve_offerers_bank_information():
+    return os.environ.get('CRON_RETRIEVE_OFFERERS_BANK_INFORMATION', False)
