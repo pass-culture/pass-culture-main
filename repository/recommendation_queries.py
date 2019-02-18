@@ -89,9 +89,11 @@ def filter_unseen_valid_recommendations_for_user(query, user, seen_recommendatio
                 (Recommendation.validUntilDate == None) | (Recommendation.validUntilDate > datetime.utcnow()))
     mediation_is_not_tuto = (Mediation.tutoIndex == None)
     recommendation_is_not_seen = ~Recommendation.id.in_(seen_recommendation_ids)
+    recommendation_is_not_from_search = (Recommendation.search == None)
     new_query = query \
         .outerjoin(Mediation) \
         .filter((Recommendation.user == user)
+                & recommendation_is_not_from_search
                 & recommendation_is_not_seen
                 & mediation_is_not_tuto
                 & recommendation_is_valid)

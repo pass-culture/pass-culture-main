@@ -69,6 +69,7 @@ def not_activation_offers(query, offer_type):
 
 def not_currently_recommended_offers(query, user):
     valid_recommendation_for_user = (Recommendation.userId == user.id) \
+                                    & (Recommendation.search == None) \
                                     & (Recommendation.validUntilDate > datetime.utcnow())
 
     query = query.filter(~(Offer.recommendations.any(valid_recommendation_for_user)))

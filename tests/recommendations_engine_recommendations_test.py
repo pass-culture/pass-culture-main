@@ -4,17 +4,19 @@ from dateutil.tz import tzlocal
 from freezegun import freeze_time
 
 from models import PcObject
+from models.db import db
 from recommendations_engine import create_recommendations_for_discovery, \
     get_recommendation_search_params
 from tests.conftest import clean_database
 from utils.date import strftime
 from utils.human_ids import humanize
-from utils.test_utils import create_user, \
+from utils.test_utils import create_mediation, \
     create_offerer, \
-    create_venue, \
-    create_thing_offer, \
+    create_recommendation, \
     create_stock_from_offer, \
-    create_mediation
+    create_thing_offer, \
+    create_user, \
+    create_venue
 
 
 @clean_database
@@ -80,3 +82,28 @@ class GetRecommendationSearchParamsTest:
         assert search_params == {'days_intervals': [
             [datetime(2019, 2, 5, 12, 0, tzinfo=tzlocal()), datetime(2292, 11, 15, 12, 0, tzinfo=tzlocal())]]}
 
+
+@clean_database
+@pytest.mark.standalone
+def test_create_recommendations_for_discovery_should_include_recommendations_on_offers_previously_displayed_in_search_results(app):
+    # Given
+    user = create_user()
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    offer1 = create_thing_offer(venue, thumb_count=0)
+    stock1 = create_stock_from_offer(offer1, price=0)
+    mediation1 = create_mediation(offer1, is_active=True)
+    offer2 = create_thing_offer(venue, thumb_count=0)
+    stock2 = create_stock_from_offer(offer2, price=0)
+    mediation2 = create_mediation(offer2, is_active=True)
+
+    recommendation = create_recommendation(offer=offer2, user=user, mediation=mediation2, search="bla")
+
+    PcObject.check_and_save(user, stock1, mediation1, stock2, mediation2, recommendation)
+    db.session.refresh(offer2)
+
+    # When
+    recommendations = create_recommendations_for_discovery(user=user)
+
+    # Then
+    assert len(recommendations) == 2

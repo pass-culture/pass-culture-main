@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 import pytest
 
 from models import PcObject
+from models.db import db
 from models.mediation import Mediation, upsertTutoMediations
 from tests.conftest import clean_database, TestClient
 from utils.human_ids import humanize
@@ -531,7 +532,7 @@ class Put:
             assert humanize(offer3.id) in offer_ids
             assert humanize(recommendation_offer4.id) in recommendation_ids
             assert humanize(recommendation_offer3.id) in recommendation_ids
-
+    
         @clean_database
         def when_existing_recommendations_are_invalid(self, app):
             # given
@@ -602,6 +603,37 @@ class Put:
             # then
             assert response.status_code == 200
             assert len(response.json()) == 2
+
+        @clean_database
+        def test_carousel_recommendations_should_not_include_search_recommendations(app):
+            # Given
+            user = create_user()
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            venue_outside_dept = create_venue(offerer, postal_code='29100', siret='12345678912341')
+            offer1 = create_thing_offer(venue, thumb_count=0)
+            stock1 = create_stock_from_offer(offer1, price=0)
+            mediation1 = create_mediation(offer1, is_active=True)
+            offer2 = create_thing_offer(venue_outside_dept, thumb_count=0)
+            stock2 = create_stock_from_offer(offer2, price=0)
+            mediation2 = create_mediation(offer2, is_active=True)
+        
+            recommendation = create_recommendation(offer=offer2, user=user, mediation=mediation2, search="bla")
+        
+            PcObject.check_and_save(user, stock1, mediation1, stock2, mediation2, recommendation)
+            db.session.refresh(offer2)
+            db.session.refresh(recommendation)
+            auth_request = TestClient().with_auth(user.email, user.clearTextPassword)
+        
+            # When
+            recommendations_req = auth_request.put(RECOMMENDATION_URL, json={})
+        
+            # Then
+            assert recommendations_req.status_code == 200
+            recommendations = recommendations_req.json()
+            assert len(recommendations) == 1
+            assert recommendations[0]['id'] != recommendation.id
+            assert recommendations[0]['offerId'] != offer2.id
 
         @clean_database
         def when_a_recommendation_with_an_offer_and_a_mediation_is_requested(self, app):
