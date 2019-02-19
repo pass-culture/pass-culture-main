@@ -75,8 +75,9 @@ def send_venue_validation_email(venue, send_create_email: Callable[..., None]):
     check_if_email_sent(mail_result)
 
 
-def send_offer_creation_notification_to_support(offer: Offer, creator: User, app_origin_url: str, send_create_email: Callable[..., None]):
-    email = make_offer_creation_notification_email(offer, creator, app_origin_url)
+def send_offer_creation_notification_to_support(offer: Offer, author: User, app_origin_url: str,
+                                                send_create_email: Callable[..., None]):
+    email = make_offer_creation_notification_email(offer, author, app_origin_url)
     email['Html-part'], email['To'] = compute_email_html_part_and_recipients(email['Html-part'], email['To'])
     mail_result = send_create_email(data=email)
     check_if_email_sent(mail_result)

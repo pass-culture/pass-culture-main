@@ -536,10 +536,10 @@ def parse_email_addresses(addresses: str) -> List[str]:
     return [a for a in addresses if a]
 
 
-def make_offer_creation_notification_email(offer: Offer, creator: User, pro_origin_url: str) -> dict:
+def make_offer_creation_notification_email(offer: Offer, author: User, pro_origin_url: str) -> dict:
     humanized_offer_id = humanize(offer.id)
     link_to_offer = f'{pro_origin_url}/offres/{humanized_offer_id}'
-    html = render_template('mails/offer_creation_notification_email.html', offer=offer, creator=creator, link_to_offer=link_to_offer)
+    html = render_template('mails/offer_creation_notification_email.html', offer=offer, author=author, link_to_offer=link_to_offer)
     location_information = offer.venue.departementCode or 'numérique'
     return {'Html-part': html,
             'To': ['support.passculture@beta.gouv.fr'],

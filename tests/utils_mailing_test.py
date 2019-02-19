@@ -1302,8 +1302,8 @@ class MakeOfferCreationNotificationEmailTest:
 
     def test_when_physical_offer_returns_subject_with_departement_information_and_dictionary_with_given_content(self, app):
         # When
-        creator = create_user(email='user@email.com')
-        email = make_offer_creation_notification_email(self.physical_offer93, creator, 'test.url')
+        author = create_user(email='user@email.com')
+        email = make_offer_creation_notification_email(self.physical_offer93, author, 'test.url')
         # Then
         assert email["FromEmail"] == 'support.passculture@beta.gouv.fr'
         assert email["FromName"] == "pass Culture"
@@ -1320,14 +1320,15 @@ class MakeOfferCreationNotificationEmailTest:
 
         link_html = str(parsed_email.find('p', {'id': 'give_link'}))
         assert "Lien pour y accéder : " in link_html
-        assert "Cette offre a été créée par user@email.com." in str(parsed_email.find('p', {'id': 'creator'}))
+        assert "Cette offre a été créée par user@email.com." in str(parsed_email.find('p', {'id': 'author'}))
         link = str(parsed_email.find('a', {'id': 'link'}))
         assert "test.url/offres/AE" in link
         assert 'href="test.url/offres/AE"' in link
 
     def test_when_virtual_offer_returns_subject_with_virtual_information_and_dictionary_with_given_content(self, app):
         # When
-        email = make_offer_creation_notification_email(self.virtual_offer, create_user('creator@email.com'), 'test.url')
+        author = create_user('author@email.com')
+        email = make_offer_creation_notification_email(self.virtual_offer, author, 'test.url')
         # Then
         assert email["FromEmail"] == 'support.passculture@beta.gouv.fr'
         assert email["FromName"] == "pass Culture"
