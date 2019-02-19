@@ -1,6 +1,8 @@
 import os
 from functools import wraps
 from pprint import pprint
+from requests import Response
+from typing import Callable
 from unittest.mock import Mock
 
 import pytest
@@ -105,7 +107,7 @@ class TestClient:
             result = requests.delete(route, headers=headers)
 
         if TestClient.WITH_DOC:
-            self._print_spec('DELETE', route, None, result.json(), result.status_code)
+            self._print_spec('DELETE', route, None, result)
 
         return result
 
@@ -116,12 +118,7 @@ class TestClient:
             result = requests.get(route, headers=headers)
 
         if TestClient.WITH_DOC:
-            if result.status_code == 404:
-                result_json = None
-            else:
-                result_json = result.json()
-
-            self._print_spec('GET', route, None, result_json, result.status_code)
+            self._print_spec('GET', route, None, result)
 
         return result
 
@@ -132,7 +129,7 @@ class TestClient:
             result = requests.post(route, json=json, headers=headers)
 
         if TestClient.WITH_DOC:
-            self._print_spec('POST', route, json, result.json(), result.status_code)
+            self._print_spec('POST', route, json, result)
 
         return result
 
@@ -143,21 +140,21 @@ class TestClient:
             result = requests.patch(route, json=json, headers=headers)
 
         if TestClient.WITH_DOC:
-            self._print_spec('PATCH', route, json, result.json(), result.status_code)
+            self._print_spec('PATCH', route, json, result)
 
         return result
 
-    def _print_spec(self, verb: str, route: str, request_body: dict, response_body: dict, status_code: int):
+    def _print_spec(self, verb: str, route: str, request_body: dict, result: Response):
         print('\n===========================================')
         print('%s :: %s' % (verb, route))
-        print('STATUS CODE :: %s' % status_code)
+        print('STATUS CODE :: %s' % result.status_code)
 
         if request_body:
             print('REQUEST BODY')
             pprint(request_body)
 
-        if response_body:
+        if result:
             print('RESPONSE BODY')
-            pprint(response_body)
+            pprint(result.json())
 
         print('===========================================\n')
