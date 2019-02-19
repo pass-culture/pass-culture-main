@@ -131,10 +131,8 @@ def get_price_value(price_string):
     else:
         return 0
 
-def get_camel_string (string):
+def get_camel_string(string):
     return ''.join(word.capitalize() for word in string.split('_'))
 
-def parse_string(text):
-    text_without_url = re.sub('http://|https://', '', text)
-    text_without_s =  re.sub("['s]+$", '', text_without_url)
-    return text_without_s
+def tokenize_for_search(string):
+    return re.split('[^0-9a-zÀ-ÿ]+', string.lower())

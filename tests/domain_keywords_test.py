@@ -12,7 +12,7 @@ def test_get_ts_queries_from_keywords_string_parses_keywords_string_into_list_of
     keywords_result = get_ts_queries_from_keywords_string(keywords_string)
 
     # then
-    assert keywords_result == ['PNL:*', 'chante:*', 'Marx:*']
+    assert keywords_result == ['pnl:*', 'chante:*', 'marx:*']
 
 
 @pytest.mark.standalone
@@ -24,7 +24,7 @@ def test_get_ts_queries_from_keywords_string_with_double_space_parses_keywords_s
     keywords_result = get_ts_queries_from_keywords_string(keywords_string)
 
     # then
-    assert keywords_result == ['PNL:*', 'chante:*', 'Marx:*']
+    assert keywords_result == ['pnl:*', 'chante:*', 'marx:*']
 
 @pytest.mark.standalone
 def test_get_ts_queries_from_keywords_string_with_double_space_parses_keywords_string_ignoring_stop_words():
@@ -35,7 +35,7 @@ def test_get_ts_queries_from_keywords_string_with_double_space_parses_keywords_s
     keywords_result = get_ts_queries_from_keywords_string(keywords_string)
 
     # then
-    assert keywords_result == ['PNL:*', 'chante:*', 'Marx:*']
+    assert keywords_result == ['pnl:*', 'chante:*', 'marx:*']
 
 @pytest.mark.standalone
 def test_get_ts_queries_from_keywords_string_with_double_space_parses_keywords_string_ignoring_stop_words_with_capital_letter():
@@ -47,3 +47,14 @@ def test_get_ts_queries_from_keywords_string_with_double_space_parses_keywords_s
 
     # then
     assert keywords_result == ['lit:*', 'sous:*', 'rivière:*']
+
+@pytest.mark.standalone
+def test_get_ts_queries_from_keywords_string_with_double_space_parses_keywords_string_ignoring_words_with_less_than_one_char():
+    # given
+    keywords_string = "Læetitia a mangé's'"
+
+    # when
+    keywords_result = get_ts_queries_from_keywords_string(keywords_string)
+
+    # then
+    assert keywords_result == ['læetitia:*', 'mangé:*']

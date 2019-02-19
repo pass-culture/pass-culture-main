@@ -1,8 +1,11 @@
 from nltk.corpus import stopwords
-from nltk.tokenize import word_tokenize
+# from nltk.tokenize import word_tokenize
 from sqlalchemy import and_, func, TEXT
 from sqlalchemy.sql.expression import cast, or_
 from sqlalchemy.sql.functions import coalesce
+
+from utils.string_processing import tokenize_for_search
+
 
 LANGUAGE = 'french'
 STOP_WORDS = set(stopwords.words(LANGUAGE))
@@ -14,10 +17,11 @@ def create_tsvector(*args):
         exp += ' ' + e
     return func.to_tsvector(LANGUAGE+'_unaccent', exp)
 
-
 def get_ts_queries_from_keywords_string(keywords_string):
+    keywords = tokenize_for_search(keywords_string)
 
-    keywords = word_tokenize(keywords_string)
+    keywords = filter(lambda k: len(k) > 1, keywords)
+
     keywords_without_stop_words = [
         keyword
         for keyword in keywords

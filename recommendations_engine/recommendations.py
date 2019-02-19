@@ -11,8 +11,6 @@ from repository import offer_queries
 from repository.offer_queries import get_offers_for_recommendations_search, find_searchable_offer
 from repository.recommendation_queries import find_recommendations_for_user_matching_offers_and_search
 from utils.logger import logger
-from utils.string_processing import parse_string
-
 
 class OfferNotFoundException(Exception):
     pass
@@ -191,7 +189,7 @@ def get_recommendation_search_params(request_args: dict) -> dict:
         search_params['page'] = int(request_args['page'])
 
     if 'keywords' in request_args and request_args['keywords']:
-        search_params['keywords_string'] = parse_string(request_args['keywords'])
+        search_params['keywords_string'] = request_args['keywords']
 
     if 'categories' in request_args and request_args['categories']:
         type_sublabels = request_args['categories']
