@@ -46,7 +46,7 @@ def post_event():
     offer.bookingEmail = request.json.get('bookingEmail', None)
     PcObject.check_and_save(event, offer)
 
-    send_offer_creation_notification_to_support(offer, PRO_URL, app.mailjet_client.send.create)
+    send_offer_creation_notification_to_support(offer, current_user, PRO_URL, app.mailjet_client.send.create)
     
     return jsonify(
         event._asdict(include=EVENT_INCLUDES)

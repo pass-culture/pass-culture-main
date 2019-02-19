@@ -387,10 +387,10 @@ class SendOfferCreationNotificationToSupportTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_thing_offer(venue)
-
+        creator = create_user(email='creator@email.com')
         # When
         with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True):
-            send_offer_creation_notification_to_support(offer, 'http://test.url', mocked_send_create_email)
+            send_offer_creation_notification_to_support(offer, creator, 'http://test.url', mocked_send_create_email)
 
         # Then
         mocked_send_create_email.assert_called_once()
@@ -407,10 +407,10 @@ class SendOfferCreationNotificationToSupportTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_thing_offer(venue)
-
+        creator = create_user(email='creator@email.com')
         # When
         with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=False):
-            send_offer_creation_notification_to_support(offer, 'http://test.url', mocked_send_create_email)
+            send_offer_creation_notification_to_support(offer, creator, 'http://test.url', mocked_send_create_email)
 
         # Then
         mocked_send_create_email.assert_called_once()
@@ -427,7 +427,7 @@ class SendOfferCreationNotificationToSupportTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_thing_offer(venue)
-
+        creator = create_user(email='creator@email.com')
         # When
         with pytest.raises(MailServiceException):
-            send_offer_creation_notification_to_support(offer, 'http://test.url', mocked_send_create_email)
+            send_offer_creation_notification_to_support(offer, creator, 'http://test.url', mocked_send_create_email)

@@ -1,6 +1,7 @@
 """ things """
 import simplejson as json
 from flask import current_app as app, jsonify, request
+from flask_login import current_user
 
 from domain.admin_emails import send_offer_creation_notification_to_support
 from models.offer import Offer
@@ -48,7 +49,7 @@ def post_thing():
         thing.isNational = True
     offer.bookingEmail = request.json.get('bookingEmail', None)
     PcObject.check_and_save(thing, offer)
-    send_offer_creation_notification_to_support(offer, PRO_URL, app.mailjet_client.send.create)
+    send_offer_creation_notification_to_support(offer, current_user, PRO_URL, app.mailjet_client.send.create)
 
     return jsonify(thing._asdict(
         include=THING_INCLUDES,
