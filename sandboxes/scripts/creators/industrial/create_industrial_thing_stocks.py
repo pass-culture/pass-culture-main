@@ -1,7 +1,7 @@
 from models.pc_object import PcObject
 from sandboxes.scripts.utils.select import remove_every
 from utils.logger import logger
-from tests.test_utils import create_stock_from_offer
+from tests.test_utils import create_stock_from_offer, get_price_by_short_name, get_occurrence_short_name
 
 THING_OFFERS_WITH_STOCK_REMOVE_MODULO = 3
 
@@ -9,6 +9,7 @@ def create_industrial_thing_stocks(thing_offers_by_name):
     logger.info('create_industrial_thing_stocks')
 
     thing_stocks_by_name = {}
+    short_names_to_increase_price = []
 
     thing_offer_items = list(thing_offers_by_name.items())
 
@@ -20,7 +21,17 @@ def create_industrial_thing_stocks(thing_offers_by_name):
     for thing_offer_item_with_stocks in thing_offer_items_with_stocks:
         (thing_offer_with_stocks_name, thing_offer_with_stocks) = thing_offer_item_with_stocks
         available = 10
-        price = 10
+
+        short_name = get_occurrence_short_name(
+          thing_offer_with_stocks_name
+        )
+        price = get_price_by_short_name(short_name)
+        fcount = short_names_to_increase_price.count(short_name)
+        if (fcount > 2):
+          price = price + fcount
+        short_names_to_increase_price.append(short_name)
+        # price = 10
+
         name = thing_offer_with_stocks_name + " / " + str(available) + " / " + str(price)
         thing_stocks_by_name[name] = create_stock_from_offer(
             thing_offer_with_stocks,

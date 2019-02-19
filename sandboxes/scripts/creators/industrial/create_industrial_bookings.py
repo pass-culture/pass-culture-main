@@ -4,6 +4,8 @@ from sandboxes.scripts.utils.select import remove_every
 from utils.logger import logger
 from tests.test_utils import create_booking
 
+from pprint import pprint
+
 RECOMMENDATIONS_WITH_BOOKINGS_REMOVE_RATIO = 3
 RECOMMENDATIONS_WITH_SEVERAL_STOCKS_REMOVE_MODULO = 2
 BOOKINGS_USED_REMOVE_MODULO = 3
@@ -15,6 +17,8 @@ def create_industrial_bookings(
     logger.info('create_industrial_bookings')
 
     bookings_by_name = {}
+
+    list_of_users_with_no_more_money = []
 
     token = 100000
 
@@ -31,6 +35,8 @@ def create_industrial_bookings(
 
         offer = recommendation.offer
         user = recommendation.user
+
+        user_should_have_no_more_money = "has-no-more-money" in user.email
 
         not_bookable_recommendation = offer is None
         if not_bookable_recommendation:
@@ -75,19 +81,27 @@ def create_industrial_bookings(
                 # (BOOKINGS_USED_REMOVE_MODULO-1)/BOOKINGS_USED_REMOVE_MODULO are used
                 is_used = recommendation_index%BOOKINGS_USED_REMOVE_MODULO != 0
 
+            if user_should_have_no_more_money and user not in list_of_users_with_no_more_money:
+                booking_amount = 500
+                list_of_users_with_no_more_money.append(user)
+            elif user_should_have_no_more_money and user in list_of_users_with_no_more_money:
+                booking_amount = 0
+            else:
+                booking_amount = None
+
             booking = create_booking(
                 user,
                 is_used=is_used,
                 recommendation=recommendation,
                 stock=stock,
                 token=str(token),
-                venue=recommendation.offer.venue
+                venue=recommendation.offer.venue,
+                amount=booking_amount
             )
 
             token += 1
 
             bookings_by_name[booking_name] = booking
-
 
     PcObject.check_and_save(*bookings_by_name.values())
 

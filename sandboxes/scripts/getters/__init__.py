@@ -14,6 +14,7 @@ import sandboxes.scripts.getters.webapp_01_activation
 import sandboxes.scripts.getters.webapp_02_signin
 import sandboxes.scripts.getters.webapp_02_signup
 import sandboxes.scripts.getters.webapp_03_decouverte
+import sandboxes.scripts.getters.webapp_04_verso
 import sandboxes.scripts.getters.webapp_05_search
 import sandboxes.scripts.getters.webapp_06_profile
 import sandboxes.scripts.getters.webapp_10_menu
