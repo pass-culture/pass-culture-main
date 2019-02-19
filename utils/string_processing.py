@@ -134,5 +134,7 @@ def get_price_value(price_string):
 def get_camel_string (string):
     return ''.join(word.capitalize() for word in string.split('_'))
 
-def parse_string(url):
-    return re.sub('http://|https://', '', url)
+def parse_string(text):
+    text_without_url = re.sub('http://|https://', '', text)
+    text_without_s =  re.sub("['s]+$", '', text_without_url)
+    return text_without_s

@@ -184,6 +184,26 @@ class Get:
             assert len(recommendations) == 1
 
         @clean_database
+        def when_special_character(self, app):
+            # given
+            user = create_user(email='test@email.com', password='P@55w0rd')
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            offer = create_event_offer(venue, event_name="Vortek's")
+            stock = create_stock_from_offer(offer)
+            PcObject.check_and_save(stock, user)
+
+            # when
+            response = TestClient().with_auth(user.email, user.clearTextPassword) \
+                .get(RECOMMENDATION_URL + '?keywords=vortek%27s')
+
+            # then
+            assert response.status_code == 200
+            recommendations = response.json()
+            assert recommendations[0]['offer']['eventOrThing']['name'] == "Vortek's"
+            assert len(recommendations) == 1
+
+        @clean_database
         def when_searching_by_keywords_with_non_matching_case(self, app):
             # given
             search = "keywords_string={}".format("rencontres")

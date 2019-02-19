@@ -19,3 +19,7 @@ def test_get_price_value():
 @pytest.mark.standalone
 def test_remove_http_from_url():
     assert parse_string('http://www.test.fr') == 'www.test.fr'
+
+@pytest.mark.standalone
+def test_remove_special_character():
+    assert parse_string("Vortek's") == 'Vortek'
