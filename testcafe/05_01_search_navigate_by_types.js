@@ -2,7 +2,7 @@ import { Selector, RequestMock } from 'testcafe'
 
 import getPageUrl from './helpers/getPageUrl'
 import { createUserRole } from './helpers/roles'
-import { hasSignedUpUser93 } from './helpers/users'
+import { fetchSandbox } from './helpers/sandboxes'
 import { ROOT_PATH } from '../src/utils/config'
 
 const getSearchResultsHook = RequestMock()
@@ -11,20 +11,24 @@ const getSearchResultsHook = RequestMock()
 
 const searchResultsTitle = Selector('#results-title')
 
-fixture('O5_01_01 Recherche | Je ne suis pas connecté·e').page(
-  `${ROOT_PATH}recherche`
-)
+fixture('O5_01_01 Recherche | Je ne suis pas connecté·e')
 
 test('Je suis redirigé vers la page /connexion', async t => {
+  // when
+  await t.navigateTo(`${ROOT_PATH}recherche`)
+
+  // then
   await t.expect(getPageUrl()).contains('/connexion', { timeout: 500 })
 })
 
 fixture(
   "O5_01_02 Recherche | Je me suis connecté·e | J'arrive sur la page de recherche | Header"
 ).beforeEach(async t => {
-  await t
-    .useRole(createUserRole(hasSignedUpUser93))
-    .navigateTo(`${ROOT_PATH}recherche`)
+  const { user } = await fetchSandbox(
+    'webapp_05_search',
+    'get_existing_webapp_validated_user'
+  )
+  await t.useRole(createUserRole(user)).navigateTo(`${ROOT_PATH}recherche`)
   const location = await t.eval(() => window.location)
   await t.expect(location.pathname).eql('/recherche')
 })
@@ -43,7 +47,6 @@ test('Je ne vois pas le bouton retour', async t => {
 })
 
 test('Je vois le champ de recherche par mot-clé', async t => {
-  await t
   await t.expect(Selector('#search-page-keywords-field').exists).ok()
 })
 
@@ -75,23 +78,28 @@ test('Je vois 1 vignette  ', async t => {
 })
 
 test('Lorsque je clique sur la croix, je reviens à la page des offres', async t => {
+  // given
   const closeButton = Selector('#search-close-button')
 
-  await t
-    .click(closeButton)
-    .wait(500)
-    .expect(getPageUrl())
-    .contains('/decouverte', { timeout: 3000 })
+  // when
+  await t.click(closeButton).wait(500)
+
+  // then
+  await t.expect(getPageUrl()).contains('/decouverte', { timeout: 3000 })
 })
 
 fixture(
   "O5_01_03 Recherche | Je cherche des offres par catégories et j'ai des résultats"
 ).beforeEach(async t => {
+  const { user } = await fetchSandbox(
+    'webapp_05_search',
+    'get_existing_webapp_validated_user'
+  )
   const buttonNavByOfferType = Selector('#button-nav-by-offer-type').withText(
     'Lire'
   )
   await t
-    .useRole(createUserRole(hasSignedUpUser93))
+    .useRole(createUserRole(user))
     .navigateTo(`${ROOT_PATH}recherche/`)
     .click(buttonNavByOfferType)
     .wait(500)
@@ -170,7 +178,15 @@ test('Je vois les résultats de la page de résultats de la catégorie Lire', as
 
 fixture(
   "O5_01_04 Recherche | Je cherche des offres par catégories et je n'ai de résultats"
-).requestHooks(getSearchResultsHook)
+)
+  .requestHooks(getSearchResultsHook)
+  .beforeEach(async t => {
+    const { user } = await fetchSandbox(
+      'webapp_05_search',
+      'get_existing_webapp_validated_user'
+    )
+    await t.useRole(createUserRole(user)).navigateTo(`${ROOT_PATH}recherche/`)
+  })
 
 const button = Selector('#button-nav-by-offer-type').withText('Applaudir')
 const resultsHeader = Selector('#nav-results-header')
@@ -180,12 +196,11 @@ const categoryTitle = category.find('h2')
 const categoryDescription = category.find('span')
 
 test('Je vois le header de la page de résultats de la catégorie Lire', async t => {
-  await t
-    .useRole(createUserRole(hasSignedUpUser93))
-    .navigateTo(`${ROOT_PATH}recherche/`)
-    .click(button)
-    .wait(500)
+  // when
+  await t.click(button).wait(500)
 
+  // then
+  await t
     .expect(resultsHeader.getStyleProperty('background-image'))
     .contains('/icons/img-Applaudir-L.jpg')
 
@@ -199,32 +214,37 @@ test('Je vois le header de la page de résultats de la catégorie Lire', async t
 })
 
 test.skip("Je vois un titre de la section des résultats qui m'informe qu'il n'y a pas de résultats", async t => {
+  // when
+  await t.click(button).wait(500)
+
+  // then
   await t
-    .useRole(createUserRole(hasSignedUpUser93))
-    .navigateTo(`${ROOT_PATH}recherche/`)
-    .click(button)
-    .wait(500)
     .expect(getPageUrl())
     .contains('/recherche/resultats/Fake?categories=Fake', {
       timeout: 3000,
     })
-
   await t
     .expect(searchResultsTitle.innerText)
     .eql("IL N'Y A PAS D'OFFRES DANS CETTE CATÉGORIE POUR LE MOMENT.")
 })
 
-fixture('O5_01_05 Recherche | Footer')
+fixture('O5_01_05 Recherche | Footer').beforeEach(async t => {
+  const { user } = await fetchSandbox(
+    'webapp_05_search',
+    'get_existing_webapp_validated_user'
+  )
+  await t.useRole(createUserRole(user)).navigateTo(`${ROOT_PATH}recherche/`)
+})
 
 const menuButton = Selector('#open-menu-button')
 const mainMenu = Selector('#main-menu')
 
 test("Lorsque je clique sur l'icône profil, la modale s'affiche", async t => {
+  // when
+  await t.click(menuButton).wait(100)
+
+  // then
   await t
-    .useRole(createUserRole(hasSignedUpUser93))
-    .navigateTo(`${ROOT_PATH}recherche/`)
-    .click(menuButton)
-    .wait(100)
     .expect(mainMenu.visible)
     .ok()
     .expect(mainMenu.hasClass('entered'))

@@ -1,15 +1,19 @@
 import { ClientFunction, Selector } from 'testcafe'
 
+import { fetchSandbox } from './helpers/sandboxes'
 import { createUserRole } from './helpers/roles'
-import { hasSignedUpUser93 } from './helpers/users'
 import { ROOT_PATH, SUPPORT_EMAIL } from '../src/utils/config'
 
 const menuButton = Selector('#open-menu-button')
 const mainMenu = Selector('#main-menu')
 
-fixture`10_01 Menu - Affichage de la modale`.beforeEach(async t => {
+fixture('10_01 Menu - Affichage de la modale').beforeEach(async t => {
+  const { user } = await fetchSandbox(
+    'webapp_10_menu',
+    'get_existing_webapp_validated_user'
+  )
   await t
-    .useRole(createUserRole(hasSignedUpUser93))
+    .useRole(createUserRole(user))
     .navigateTo(`${ROOT_PATH}profil`)
     .wait(500)
     .click(menuButton)
@@ -41,9 +45,13 @@ test('Je vois le montant de mon pass dans le header', async t => {
   await t.expect(Selector('#main-menu-header-wallet-value').exists).ok()
 })
 
-fixture`10_02 Modale Menu - Liens vers pages`.beforeEach(async t => {
+fixture('10_02 Modale Menu - Liens vers pages').beforeEach(async t => {
+  const { user } = await fetchSandbox(
+    'webapp_10_menu',
+    'get_existing_webapp_validated_user'
+  )
   await t
-    .useRole(createUserRole(hasSignedUpUser93))
+    .useRole(createUserRole(user))
     .navigateTo(`${ROOT_PATH}profil`)
     .wait(500)
     .click(menuButton)
@@ -145,9 +153,13 @@ test('Menu | Liens | Déconnexion', async t => {
   await t.expect(location.pathname).eql('/connexion')
 })
 
-fixture`10_03 Modale Menu - gestion de l'historique`.beforeEach(async t => {
+fixture("10_03 Modale Menu - gestion de l'historique").beforeEach(async t => {
+  const { user } = await fetchSandbox(
+    'webapp_10_menu',
+    'get_existing_webapp_validated_user'
+  )
   await t
-    .useRole(createUserRole(hasSignedUpUser93))
+    .useRole(createUserRole(user))
     .navigateTo(`${ROOT_PATH}profil`)
     .wait(500)
     .click(menuButton)

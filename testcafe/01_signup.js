@@ -1,7 +1,6 @@
 import { ClientFunction, Selector } from 'testcafe'
 
 import { ROOT_PATH } from '../src/utils/config'
-import { newSignupUser } from './helpers/users'
 
 const getPageUrl = ClientFunction(() => window.location.href.toString())
 
@@ -14,36 +13,49 @@ const userPublicName = Selector('#user-publicName')
 const signInButton = Selector('.is-secondary')
 const signUpButton = Selector('button.button.is-primary')
 
+const FUTURE_USER = {
+  email: 'pctest.jeune93.new@btmx.fr',
+  password: 'pctest.Jeune93.new',
+  publicName: 'PC Test Jeune93 NEW',
+}
+
 fixture
   .skip('01_01 SignupPage Component | Je crée un compte utilisatrice')
   .page(`${ROOT_PATH}inscription`)
 
-test.skip("Je peux cliquer sur lien pour me connecter si j'ai déja un compte", async t => {
+test("Je peux cliquer sur lien pour me connecter si j'ai déja un compte", async t => {
+  // when
   await t.click(signInButton)
+
+  // then
   const location = await t.eval(() => window.location)
   await t.expect(location.pathname).eql('/connexion')
 })
 
-test.skip("Lorsque l'un des champs obligatoire est manquant, le bouton créer est desactivé", async t => {
+test("Lorsque l'un des champs obligatoire est manquant, le bouton créer est desactivé", async t => {
+  // when
+  await t.typeText(userEmail, FUTURE_USER.email).wait(500)
+
+  // then
   await t
-    .typeText(userEmail, newSignupUser.email)
-    .wait(500)
     .expect(signUpButton.innerText)
     .eql('Créer')
-  await t.expect(signUpButton.hasAttribute('disabled')).ok()
+    .expect(signUpButton.hasAttribute('disabled'))
+    .ok()
 })
 
-test.skip('Je crée un compte et je suis redirigé·e vers la page /découverte', async t => {
+test('Je crée un compte et je suis redirigé·e vers la page /découverte', async t => {
+  // given
   await t
-    .typeText(userPublicName, newSignupUser.publicName)
-    .typeText(userEmail, newSignupUser.email)
-    .typeText(userPassword, newSignupUser.password)
-  await t
-    .click(userContactOk)
-    .wait(1000)
-    .click(signUpButton)
-    .wait(500)
+    .typeText(userPublicName, FUTURE_USER.publicName)
+    .typeText(userEmail, FUTURE_USER.email)
+    .typeText(userPassword, FUTURE_USER.password)
+  await t.click(userContactOk).wait(1000)
 
+  // when
+  await t.click(signUpButton).wait(500)
+
+  // then
   await t.expect(getPageUrl()).contains('/decouverte', { timeout: 3000 })
 })
 
@@ -53,39 +65,52 @@ fixture
   )
   .page(`${ROOT_PATH}inscription`)
 
-test.skip('E-mail déjà présent dans la base et mot de passe invalide', async t => {
+test('E-mail déjà présent dans la base et mot de passe invalide', async t => {
+  // given
   await t
-    .typeText(userPublicName, newSignupUser.publicName)
-    .typeText(userEmail, newSignupUser.email)
+    .typeText(userPublicName, FUTURE_USER.publicName)
+    .typeText(userEmail, FUTURE_USER.email)
     .typeText(userPassword, 'pas')
     .wait(1000)
     .click(userContactOk)
     .wait(1000)
-    .click(signUpButton)
-    .wait(1000)
+
+  // when
+  await t.click(signUpButton).wait(1000)
+
+  // then
   await t
     .expect(userPasswordError.innerText)
     .eql(
       '\nLe mot de passe doit faire au moins 12 caractères et contenir à minima 1 majuscule, 1 minuscule, 1 chiffre et 1 caractère spécial parmi _-&?~#|^@=+.$,<>%*!:;\n\n'
     )
+
+  // when
+  await t
     .typeText(userPassword, 'RTit.uioRZU.90')
     .click(signUpButton)
     .wait(2000)
+
+  // then
   await t
     .expect(userEmailError.innerText)
     .eql('\nUn compte lié à cet email existe déjà\n\n')
 })
 
-test.skip('E-mail non autorisé', async t => {
+test('E-mail non autorisé', async t => {
+  // given
   await t
-    .typeText(userPublicName, newSignupUser.publicName)
+    .typeText(userPublicName, FUTURE_USER.publicName)
     .typeText(userEmail, 'test@test.fr')
-    .typeText(userPassword, newSignupUser.password)
+    .typeText(userPassword, FUTURE_USER.password)
     .wait(1000)
     .click(userContactOk)
     .wait(1000)
-    .click(signUpButton)
-    .wait(1000)
+
+  // when
+  await t.click(signUpButton).wait(1000)
+
+  // then
   await t
     .expect(userEmailError.innerText)
     .eql("\nAdresse non autorisée pour l'expérimentation\n\n")

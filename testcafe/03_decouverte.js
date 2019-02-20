@@ -1,10 +1,9 @@
 import { Selector } from 'testcafe'
 
-import { ROOT_PATH } from '../src/utils/config'
-
+import { fetchSandbox } from './helpers/sandboxes'
 import getPageUrl from './helpers/getPageUrl'
 import { createUserRole, signinAs } from './helpers/roles'
-import { hasBookedSomeUser93, hasSignedUpUser93 } from './helpers/users'
+import { ROOT_PATH } from '../src/utils/config'
 
 const nextButton = Selector('button.button.after')
 const showVerso = Selector('button.button.to-recto')
@@ -20,50 +19,60 @@ const closeButton = Selector('.close-button')
 const menuButton = Selector('#open-menu-button')
 const menuLogoutButton = Selector('#main-menu-logout-button')
 
-fixture('O3_01 Découverte | Je ne suis pas connecté·e').page(
-  `${ROOT_PATH}decouverte`
-)
+fixture('O3_01 Découverte | Je ne suis pas connecté·e')
 
 test('Je suis redirigé vers la page /connexion', async t => {
+  // when
+  await t.navigateTo(`${ROOT_PATH}decouverte`)
+
+  // then
   await t.expect(getPageUrl()).contains('/connexion', { timeout: 10000 })
 })
 
 fixture('O3_02 Découverte | A la première connexion')
 
 test('Je fais ma première visite sur découverte', async t => {
-  await t.navigateTo(`${ROOT_PATH}connexion`)
-  await signinAs(hasSignedUpUser93)(t)
+  // given
+  const { user } = await fetchSandbox(
+    'webapp_03_decouverte',
+    'get_existing_webapp_user_with_no_date_read'
+  )
 
+  // when
+  await t.useRole(createUserRole(user))
+
+  // then
   await t
     .wait(500)
     .expect(Selector('#application-loader').innerText)
     .match(/Chargement des offres/)
-
-  await t
     .wait(5000)
     .expect(getPageUrl())
     .contains('/decouverte/tuto/', { timeout: 1000 })
 
-  await t
-    .click(nextButton)
-    .wait(1000)
-    .expect(getPageUrl())
-    .contains('/decouverte/tuto/', { timeout: 1000 })
+  // when
+  await t.click(nextButton).wait(1000)
 
+  // then
+  await t.expect(getPageUrl()).contains('/decouverte/tuto/', { timeout: 1000 })
+  await t.expect(clueDiv.visible).ok()
+
+  // when
+  await t.click(showVerso).wait(1000)
+  // then
+  await t.expect(versoDiv.hasClass('flipped')).ok()
+
+  // when
+  await t.click(closeButton)
+
+  // then
   await t
-    .expect(clueDiv.visible)
-    .ok()
-    .click(showVerso)
-    .wait(1000)
-    .expect(versoDiv.hasClass('flipped'))
-    .ok()
-    .click(closeButton)
     .expect(versoDiv.hasClass('flipped'))
     .notOk()
     .wait(1000)
 
+  // when
   await t.click(nextButton).wait(1000)
-
   // to emulate a disconnection, signout et re signin
   await t
     .navigateTo(`${ROOT_PATH}profil`)
@@ -71,10 +80,11 @@ test('Je fais ma première visite sur découverte', async t => {
     .click(menuButton)
     .wait(100)
     .click(menuLogoutButton)
-  await signinAs(hasSignedUpUser93)(t)
+  await signinAs(user)(t)
   // or do a hard refresh
   // await t.eval(() => window.location.reload(true))
 
+  // then
   await t
     .wait(5000)
     .expect(getPageUrl())
@@ -83,23 +93,28 @@ test('Je fais ma première visite sur découverte', async t => {
 
 fixture('O3_02 Découverte | exploration | Recommendations').beforeEach(
   async t => {
-    await t.useRole(createUserRole(hasBookedSomeUser93))
+    const { user } = await fetchSandbox(
+      'webapp_03_decouverte',
+      'get_existing_webapp_user_with_bookings'
+    )
+    return t.useRole(createUserRole(user))
   }
 )
 
 test('Je ne vois plus les cartes tutos', async t => {
+  // then
   await t
     .wait(2000)
     .expect(getPageUrl())
     .notContains('/decouverte/tuto/', { timeout: 1000 })
 })
 
-test.skip("Je vois les informations de l'accroche du recto", async t => {
+test.skip("*TODO* Je vois les informations de l'accroche du recto", async t => {
   await t
   // TODO
 })
 
-test.skip('Je vois le verso des cartes lorsque je fais glisser la carte vers le haut', async t => {
+test.skip('*TODO* Je vois le verso des cartes lorsque je fais glisser la carte vers le haut', async t => {
   await t.click(showVerso).wait(1000)
   await t.expect(versoDiv.find('h1').innerText).eql('Vhils')
   await t.expect(versoDiv.find('h2').innerText).eql('LE CENTQUATRE-PARIS')

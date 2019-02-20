@@ -34,6 +34,7 @@
     "moment": "^2.18.1",
     "moment-locale-fr": "^1.0.0",
     "moment-timezone": "^0.5.21",
+    "node-fetch": "^2.3.0",
     "object-assign": "4.1.1",
     "pass-culture-shared": "0.0.92",
     "phonegap-build-api": "^0.4.0",

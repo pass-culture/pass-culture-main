@@ -1,8 +1,8 @@
 import { Selector } from 'testcafe'
 
 import getPageUrl from './helpers/getPageUrl'
+import { fetchSandbox } from './helpers/sandboxes'
 import { ROOT_PATH } from '../src/utils/config'
-import { hasSignedUpUser93 } from './helpers/users'
 
 const activationEmailSpan = Selector('#activation-email')
 const cguInput = Selector("input[name='cguCheckBox']")
@@ -15,11 +15,15 @@ const submitButton = Selector("button[type='submit']")
 
 const baseURL = `${ROOT_PATH}activation`
 
-fixture(`01 ActivationPage A | succès de l'activation`)
+fixture(`01_01 ActivationPage | succès de l'activation`)
 
 test('Je suis redirigé·e vers découverte', async t => {
   // given
-  const { email, password, resetPasswordToken } = hasSignedUpUser93
+  const { user } = await fetchSandbox(
+    'webapp_01_activation',
+    'get_existing_webapp_not_validated_user'
+  )
+  const { email, password, resetPasswordToken } = user
   const url = `${baseURL}/${resetPasswordToken}?email=${email}`
 
   // when
@@ -39,7 +43,7 @@ test('Je suis redirigé·e vers découverte', async t => {
     .match(/\/decouverte\/tuto\/([A-Z0-9]*)$/)
 })
 
-fixture("01 ActivationPage B | erreurs avec l'activation")
+fixture("01_02 ActivationPage | erreurs avec l'activation")
 
 test('Sans token, je suis redirigé·e vers /activation/error', async t => {
   await t
@@ -57,7 +61,11 @@ test('Sans email en query, je suis redirigé·e vers /activation/error', async t
 
 test("Avec un email déjà activé, j'ai un message d'erreur", async t => {
   // given
-  const { email, password } = hasSignedUpUser93
+  const { user } = await fetchSandbox(
+    'webapp_01_activation',
+    'get_existing_webapp_validated_user'
+  )
+  const { email, password } = user
 
   // when
   await t.navigateTo(`${baseURL}/is_activated?email=${email}`)
