@@ -80,7 +80,7 @@ class DepartmentOrNationalOffersTest:
         assert query.count() == 0
 
     @clean_database
-    def test_returns_an_event_if_department_list_is_00(self, app):
+    def test_returns_an_event_regardless_of_department_if_department_list_contains_00(self, app):
         # given
         event = create_event('Voir une pièce', is_national=False)
         offerer = create_offerer()
