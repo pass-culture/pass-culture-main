@@ -136,3 +136,6 @@ def get_camel_string(string):
 
 def tokenize_for_search(string):
     return re.split('[^0-9a-zÀ-ÿ]+', string.lower())
+
+def remove_single_letters_for_search(array_of_keywords):
+    return list(filter(lambda k: len(k) > 1, array_of_keywords))

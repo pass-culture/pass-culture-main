@@ -184,7 +184,7 @@ class Get:
             assert len(recommendations) == 1
 
         @clean_database
-        def when_special_character(self, app):
+        def when_keywords_contain_single_quote(self, app):
             # given
             user = create_user(email='test@email.com', password='P@55w0rd')
             offerer = create_offerer()
