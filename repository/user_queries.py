@@ -27,10 +27,11 @@ def find_all_emails_of_user_offerers_admins(offerer_id: int) -> List[str]:
 
 
 def get_all_users_wallet_balances() -> List[WalletBalance]:
-    wallet_balances = db.session.query(User.id,
-                                       func.get_wallet_balance(User.id, False),
-                                       func.get_wallet_balance(User.id, True)
-                                       ) \
+    wallet_balances = db.session.query(
+        User.id,
+        func.get_wallet_balance(User.id, False),
+        func.get_wallet_balance(User.id, True)
+    ) \
         .filter(User.deposits != None) \
         .order_by(User.id) \
         .all()
