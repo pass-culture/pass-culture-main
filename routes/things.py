@@ -7,11 +7,14 @@ from domain.admin_emails import send_offer_creation_notification_to_support
 from models.offer import Offer
 from models.pc_object import PcObject
 from models.thing import Thing
+from models.venue import Venue
+from models.user_offerer import RightsType
 from repository import offer_queries
 from utils.config import PRO_URL
 from utils.human_ids import dehumanize
 from utils.includes import THING_INCLUDES
 from utils.rest import expect_json_data, \
+    ensure_current_user_has_rights, \
     load_or_404, \
     login_or_api_key_required, \
     handle_rest_get_list
@@ -20,6 +23,7 @@ from validation.url import is_url_safe
 
 @app.route('/things/<ofType>:<identifier>', methods=['GET'])
 @login_or_api_key_required
+
 def get_thing(ofType, identifier):
     query = Thing.query.filter(
         (Thing.type == ofType) &
@@ -39,10 +43,14 @@ def list_things():
 @login_or_api_key_required
 @expect_json_data
 def post_thing():
+    venueId = request.json['venueId']
+    venue = load_or_404(Venue, venueId)
+    ensure_current_user_has_rights(RightsType.editor, venue.managingOffererId)
+
     thing = Thing()
     thing.populateFromDict(request.json)
     offer = Offer()
-    offer.venueId = dehumanize(request.json['venueId'])
+    offer.venueId = dehumanize(venueId)
     offer.thing = thing
     if thing.url:
         is_url_safe(thing.url)
@@ -62,6 +70,10 @@ def post_thing():
 @login_or_api_key_required
 @expect_json_data
 def patch_thing(id):
+    venueId = request.json['venueId']
+    venue = load_or_404(Venue, venueId)
+    ensure_current_user_has_rights(RightsType.editor, venue.managingOffererId)
+    
     thing = load_or_404(Thing, id)
     thing.populateFromDict(request.json)
     is_url_safe(thing.url)
