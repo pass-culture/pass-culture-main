@@ -134,7 +134,7 @@ export class RawDiscoveryPage extends React.PureComponent {
               />
             </Fragment>
           )}
-          <Footer borderTop />
+          <Footer id="deck-footer" borderTop />
         </main>
         <Loader isempty={isempty} haserror={haserror} isloading={isloading} />
       </Fragment>

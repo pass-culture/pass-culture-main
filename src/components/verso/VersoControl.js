@@ -2,7 +2,7 @@
   react/jsx-one-expression-per-line: 0 */
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Logger, Icon, requestData } from 'pass-culture-shared'
+import { Icon, requestData } from 'pass-culture-shared'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import { compose, bindActionCreators } from 'redux'
@@ -19,14 +19,6 @@ class VersoControl extends React.PureComponent {
     this.actions = bindActionCreators(actions, dispatch)
   }
 
-  componentWillMount() {
-    Logger.fixme('VersoControl ---> componentWillMount')
-  }
-
-  componentWillUnmount() {
-    Logger.fixme('VersoControl ---> componentWillUnmount')
-  }
-
   onClickFavorite = () => {
     const { isFavorite, recommendationId } = this.props
     const url = `currentRecommendations/${recommendationId}`
@@ -38,12 +30,13 @@ class VersoControl extends React.PureComponent {
 
   render() {
     const { isFavorite, wallet } = this.props
-    const walletValue = wallet || '--'
     return (
       <ul className="verso-control">
         <li>
           <small className="pass-label">Mon Pass</small>
-          <span className="pass-value">{walletValue}€</span>
+          <span id="verso-wallet-value" className="pass-value">
+            {wallet}€
+          </span>
         </li>
         <li>
           <button
@@ -90,10 +83,12 @@ const mapStateToProps = (state, ownProps) => {
     offerId,
     mediationId
   )
+  const wallet =
+    user && typeof user.wallet_balance === 'number' ? user.wallet_balance : '--'
   return {
     isFavorite: recommendation && recommendation.isFavorite,
     recommendationId: recommendation && recommendation.id,
-    wallet: (user && user.wallet_balance) || null,
+    wallet,
   }
 }
 

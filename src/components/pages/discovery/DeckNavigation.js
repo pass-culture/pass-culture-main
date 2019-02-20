@@ -112,6 +112,7 @@ export class RawDeckNavigation extends React.PureComponent {
               >
                 <div id="dragButton">
                   <button
+                    id="deck-open-verso-button"
                     type="button"
                     onClick={flipHandler}
                     onDragLeave={flipHandler}

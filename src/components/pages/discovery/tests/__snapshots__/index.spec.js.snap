@@ -69,6 +69,7 @@ ShallowWrapper {
         >
           <withRouter(Connect(Footer))
             borderTop={true}
+            id="deck-footer"
           />
         </main>,
         <Loader
@@ -90,6 +91,7 @@ ShallowWrapper {
             false,
             <withRouter(Connect(Footer))
               borderTop={true}
+              id="deck-footer"
             />,
           ],
           "className": "discovery-page no-padding page with-footer",
@@ -105,6 +107,7 @@ ShallowWrapper {
             "nodeType": "function",
             "props": Object {
               "borderTop": true,
+              "id": "deck-footer",
             },
             "ref": null,
             "rendered": null,
@@ -142,6 +145,7 @@ ShallowWrapper {
           >
             <withRouter(Connect(Footer))
               borderTop={true}
+              id="deck-footer"
             />
           </main>,
           <Loader
@@ -163,6 +167,7 @@ ShallowWrapper {
               false,
               <withRouter(Connect(Footer))
                 borderTop={true}
+                id="deck-footer"
               />,
             ],
             "className": "discovery-page no-padding page with-footer",
@@ -178,6 +183,7 @@ ShallowWrapper {
               "nodeType": "function",
               "props": Object {
                 "borderTop": true,
+                "id": "deck-footer",
               },
               "ref": null,
               "rendered": null,
