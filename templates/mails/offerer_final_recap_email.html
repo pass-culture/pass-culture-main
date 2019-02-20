@@ -6,12 +6,7 @@
 
         {% if booking_is_on_event %}
             <p id="recap">
-                Voici le récapitulatif
-                {% if is_final %}
-                    final des réservations :
-                {% else %}
-                    des réservations à ce jour :
-                {% endif %}
+                Voici le récapitulatif final des réservations :
                 <br/> (total {{ number_of_bookings }}) pour {{ stock_name }}
                 {% if stock_date_time %}
                     <br/> le {{ stock_date_time }},

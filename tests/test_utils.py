@@ -164,8 +164,10 @@ def create_stock_with_event_offer(
         price=10,
         booking_email='offer.booking.email@test.com',
         available=10,
-        is_soft_deleted=False
-):
+        is_soft_deleted=False,
+        event_type=EventType.JEUX,
+        name='Mains, sorts et papiers',
+        offer_id=1):
     stock = Stock()
     stock.offerer = offerer
     stock.price = price
@@ -183,8 +185,13 @@ def create_stock_with_event_offer(
     stock.eventOccurrence.offer = Offer()
     stock.eventOccurrence.offer.bookingEmail = booking_email
     stock.eventOccurrence.offer.event = Event(
-        from_dict={'isNational': False, 'durationMinutes': 10, 'name': 'Mains, sorts et papiers'}
+        from_dict={
+            'isNational': False,
+            'durationMinutes': 10,
+            'name': name,
+            'type': str(event_type)}
     )
+    stock.eventOccurrence.offer.id = offer_id
     stock.eventOccurrence.offer.venue = venue
     stock.isSoftDeleted = is_soft_deleted
 

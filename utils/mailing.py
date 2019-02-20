@@ -15,7 +15,7 @@ from repository.booking_queries import find_all_ongoing_bookings_by_stock
 from repository.features import feature_send_mail_to_users_enabled
 from repository.user_offerer_queries import find_user_offerer_email
 from utils import logger
-from utils.config import API_URL, ENV, WEBAPP_URL
+from utils.config import API_URL, ENV, WEBAPP_URL, PRO_URL
 from utils.date import format_datetime, utc_datetime_to_dept_timezone
 from utils.human_ids import humanize
 
@@ -61,7 +61,7 @@ def make_final_recap_email_for_stock_with_event(stock):
     email_subject = '[Réservations] Récapitulatif pour {} le {}'.format(stock.eventOccurrence.offer.event.name,
                                                                         formatted_datetime)
     stock_bookings = find_all_ongoing_bookings_by_stock(stock)
-    email_html = render_template('mails/offerer_recap_email.html',
+    email_html = render_template('mails/offerer_final_recap_email.html',
                                  is_final=True,
                                  booking_is_on_event=booking_is_on_event,
                                  number_of_bookings=len(stock_bookings),
@@ -82,11 +82,14 @@ def make_offerer_booking_recap_email_after_user_action(booking, is_cancellation=
     venue = booking.stock.resolvedOffer.venue
     user = booking.user
     stock_bookings = find_all_ongoing_bookings_by_stock(booking.stock)
-    stock_name = booking.stock.resolvedOffer.eventOrThing.name
+    event_or_thing = booking.stock.resolvedOffer.eventOrThing
+    human_offer_id = humanize(booking.stock.resolvedOffer.id)
     booking_is_on_event = booking.stock.eventOccurrence is not None
 
-    email_subject = f'[Réservations] {"Annulation de réservation" if is_cancellation else "Nouvelle réservation"}' \
-                    f' pour {stock_name}'
+    if is_cancellation:
+        email_subject = f'[Réservations] Annulation de réservation pour {event_or_thing.name}'
+    else:
+        email_subject = f'[Réservations {venue.departementCode}] Nouvelle réservation pour {event_or_thing.name}'
 
     if booking_is_on_event:
         date_in_tz = _get_event_datetime(booking.stock)
@@ -99,12 +102,13 @@ def make_offerer_booking_recap_email_after_user_action(booking, is_cancellation=
                                  is_cancellation=is_cancellation,
                                  booking_is_on_event=booking_is_on_event,
                                  number_of_bookings=len(stock_bookings),
-                                 stock_name=stock_name,
+                                 event_or_thing=event_or_thing,
                                  stock_date_time=formatted_datetime,
                                  venue=venue,
                                  stock_bookings=stock_bookings,
-                                 user_name=user.publicName,
-                                 user_email=user.email)
+                                 user=user,
+                                 pro_url=PRO_URL,
+                                 human_offer_id=human_offer_id)
 
     return {
         'FromName': 'Pass Culture',
