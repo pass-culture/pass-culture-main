@@ -152,6 +152,7 @@ def get_is_offer_selected_by_keywords_string_at_column(offer, keywords_string, c
 def get_offers_for_recommendations_search(
         date=None,
         page=1,
+        page_size=10,
         keywords_string=None,
         type_values=None,
         latitude=None,
@@ -194,12 +195,11 @@ def get_offers_for_recommendations_search(
         query = event_query.union_all(thing_query)
 
     if page is not None:
-        offers = query.paginate(page, per_page=10, error_out=False) \
-            .items
-    else:
-        offers = query.all()
+        query = query \
+            .offset((page - 1) * page_size) \
+            .limit(page_size)
 
-    return offers
+    return query.all()
 
 
 def find_offers_with_filter_parameters(
