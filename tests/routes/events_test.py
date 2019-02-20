@@ -17,12 +17,16 @@ class Patch:
             user = create_user()
             event = create_event()
             offerer = create_offerer()
+            user_offerer = create_user_offerer(user, offerer)
             venue = create_venue(offerer)
             offer = create_event_offer(venue, event, booking_email='old@email.com')
 
-            PcObject.check_and_save(offer, user)
+            PcObject.check_and_save(offer, user, user_offerer, venue)
 
-            json = {'bookingEmail': 'offer@email.com'}
+            json = {
+                'bookingEmail': 'offer@email.com',
+                'venueId': humanize(venue.id)
+            }
 
             # When
             response = TestClient().with_auth(user.email, user.clearTextPassword).patch(
@@ -35,14 +39,21 @@ class Patch:
             assert offer.bookingEmail == 'offer@email.com'
 
         @clean_database
-        def when_updating_thing_attributes(self, app):
+        def when_updating_event_attributes(self, app):
             # Given
             user = create_user()
+            offerer = create_offerer()
             event = create_event(event_name='Old name')
+            user_offerer = create_user_offerer(user, offerer)
+            venue = create_venue(offerer)
+            offer = create_event_offer(venue, event)
 
-            PcObject.check_and_save(event, user)
+            PcObject.check_and_save(event, offer, user, user_offerer, venue)
 
-            json = {'name': 'New name'}
+            json = {
+                'name': 'New name',
+                'venueId': humanize(venue.id)
+            }
 
             # When
             response = TestClient().with_auth(user.email, user.clearTextPassword).patch(
@@ -54,6 +65,31 @@ class Patch:
             db.session.refresh(event)
             assert event.name == 'New name'
 
+    class Returns403:
+        @clean_database
+        def when_user_is_not_rattached_to_offerer(self, app):
+                # Given
+                user = create_user()
+                offerer = create_offerer()
+                event = create_event(event_name='Old name')
+                venue = create_venue(offerer)
+                offer = create_event_offer(venue, event)
+
+                PcObject.check_and_save(event, offer, user, venue)
+
+                json = {
+                    'name': 'New name',
+                    'venueId': humanize(venue.id)
+                }
+
+                # When
+                response = TestClient().with_auth(user.email, user.clearTextPassword).patch(
+                    f'{API_URL}/events/{humanize(event.id)}',
+                    json=json)
+
+                # Then
+                assert response.status_code == 403
+                assert response.json()['global'] == ["Cette structure n'est pas enregistrée chez cet utilisateur."]
 
 @pytest.mark.standalone
 class Post:
@@ -82,14 +118,14 @@ class Post:
             PcObject.check_and_save(user)
 
             # When
-            request = TestClient().with_auth(user.email, user.clearTextPassword).post(
+            request = TestClient().with_auth(user.email, 'P@55w0rd').post(
                 f'{API_URL}/events/',
                 json=json)
 
             # Then
+            print('RESQUEST', request)
             assert request.status_code == 400
-            assert request.json()['venueId'] == [
-                'Aucun objet ne correspond à cet identifiant dans notre base de données']
+            assert request.json()['venueId'] == ['Aucun objet ne correspond à cet identifiant dans notre base de données']
 
     class Returns201:
         @clean_database
@@ -98,7 +134,8 @@ class Post:
             user = create_user(email='test@email.com', password='P@55w0rd')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            PcObject.check_and_save(user, venue)
+            user_offerer = create_user_offerer(user, offerer)
+            PcObject.check_and_save(user, user_offerer, venue)
 
             json = {
                 'name': 'La pièce de théâtre',
@@ -140,7 +177,9 @@ class Post:
             user = create_user(email='test@email.com', password='P@55w0rd')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            PcObject.check_and_save(user, venue)
+            user_offerer = create_user_offerer(user, offerer)
+
+            PcObject.check_and_save(user, user_offerer, venue)
 
             json = {
                 'name': 'La pièce de théâtre',
@@ -236,3 +275,28 @@ class Post:
             assert request.status_code == 403
             assert request.json()['type'] == [
                 "Seuls les administrateurs du pass Culture peuvent créer des offres d'activation"]
+
+        @clean_database
+        def when_user_is_not_rattached_to_offerer(self, app):
+                # Given
+                user = create_user(email='test@email.com', password='P@55w0rd')
+                offerer = create_offerer()
+                venue = create_venue(offerer)
+                PcObject.check_and_save(user, venue)
+
+                json = {
+                    'name': 'La pièce de théâtre',
+                    'durationMinutes': 60,
+                    'venueId': humanize(venue.id),
+                    'type': str(EventType.SPECTACLE_VIVANT),
+                    'bookingEmail': 'offer@email.com'
+                }
+
+                # When
+                request = TestClient().with_auth(user.email, user.clearTextPassword).post(
+                    f'{API_URL}/events/',
+                    json=json)
+
+                # Then
+                assert request.status_code == 403
+                assert request.json()['global'] == ["Cette structure n'est pas enregistrée chez cet utilisateur."]

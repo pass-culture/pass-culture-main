@@ -43,14 +43,13 @@ def list_things():
 @login_or_api_key_required
 @expect_json_data
 def post_thing():
-    venueId = request.json['venueId']
-    venue = load_or_404(Venue, venueId)
+    venue_id = request.json['venueId']
+    venue = load_or_404(Venue, venue_id)
     ensure_current_user_has_rights(RightsType.editor, venue.managingOffererId)
-
     thing = Thing()
     thing.populateFromDict(request.json)
     offer = Offer()
-    offer.venueId = dehumanize(venueId)
+    offer.venueId = dehumanize(venue_id)
     offer.thing = thing
     if thing.url:
         is_url_safe(thing.url)
@@ -70,10 +69,9 @@ def post_thing():
 @login_or_api_key_required
 @expect_json_data
 def patch_thing(id):
-    venueId = request.json['venueId']
-    venue = load_or_404(Venue, venueId)
+    venue_id = request.json['venueId']
+    venue = load_or_404(Venue, venue_id)
     ensure_current_user_has_rights(RightsType.editor, venue.managingOffererId)
-    
     thing = load_or_404(Thing, id)
     thing.populateFromDict(request.json)
     is_url_safe(thing.url)
