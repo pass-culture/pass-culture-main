@@ -17,3 +17,7 @@ def feature_cron_send_final_booking_recaps_enabled():
 
 def feature_cron_generate_and_send_payments():
     return os.environ.get('CRON_GENERATE_AND_SEND_PAYMENTS', False)
+
+
+def feature_cron_send_wallet_balances():
+    return os.environ.get('CRON_SEND_WALLET_BALANCES', False)
