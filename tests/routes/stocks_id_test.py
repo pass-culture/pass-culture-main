@@ -123,7 +123,6 @@ class Patch:
             stockId = stock.id
 
             serialized_date = serialize(stock.eventOccurrence.beginningDatetime + timedelta(days=1))
-            print(serialized_date)
             # when
             response = TestClient().with_auth('email@test.com', 'P@55w0rd').patch(API_URL + '/stocks/' + humanize(stockId), json={'bookingLimitDatetime': serialized_date})
 
