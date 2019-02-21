@@ -44,6 +44,7 @@ jobs:
           command: |
             export PC_GPG_PRIVATE=$PASS_PRIVATE
             cd ~/pass-culture-main/api
+            git checkout pc-1560-still-fix-testcafe
             rm -rf private
             gpg --passphrase $PC_GPG_PRIVATE --batch --output private.tar.gz -d private.tar.gz.gpg
             tar xf private.tar.gz
