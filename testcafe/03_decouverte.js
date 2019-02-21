@@ -31,14 +31,12 @@ test('Je suis redirigé vers la page /connexion', async t => {
 
 fixture('O3_02 Découverte | A la première connexion')
 
-test('Je fais ma première visite sur découverte', async t => {
+test.skip('*TODO* Je fais ma première visite sur découverte', async t => {
   // given
   const { user } = await fetchSandbox(
     'webapp_03_decouverte',
     'get_existing_webapp_user_with_no_date_read'
   )
-
-  console.log('user', user)
 
   // when
   await t.useRole(createUserRole(user))
