@@ -1,6 +1,4 @@
-import os
 import re
-from pathlib import Path
 
 from models.local_provider import LocalProvider, ProvidableInfo
 from models.local_provider_event import LocalProviderEventType
@@ -28,12 +26,12 @@ class TiteLiveThings(LocalProvider):
     objectType = Thing
     canCreate = True
 
-    def __init__(self, venueProvider, **options):
-        super().__init__(venueProvider, **options)
+    def __init__(self):
+        super().__init__()
 
         ordered_thing_files = get_ordered_files_from_titelive_ftp(THINGS_FOLDER_NAME_TITELIVE, DATE_REGEXP)
-
         self.thing_files = self.get_remaining_files_to_check(ordered_thing_files)
+
         self.data_lines = None
         self.thing_file = None
 
@@ -41,7 +39,7 @@ class TiteLiveThings(LocalProvider):
         if self.thing_file:
             self.logProviderEvent(LocalProviderEventType.SyncPartEnd,
                                   get_date_from_filename(self.thing_file, DATE_REGEXP))
-        self.thing_file = self.thing_files.__next__()
+        self.thing_file = next(self.thing_files)
         logger.info("  Importing things from file %s" % self.thing_file)
         self.logProviderEvent(LocalProviderEventType.SyncPartStart,
                               get_date_from_filename(self.thing_file, DATE_REGEXP))
@@ -53,11 +51,11 @@ class TiteLiveThings(LocalProvider):
             self.open_next_file()
 
         try:
-            data_lines = self.data_lines.__next__()
+            data_lines = next(self.data_lines)
             elements = data_lines.split('~')
         except StopIteration:
             self.open_next_file()
-            elements = self.data_lines.__next__().split('~')
+            elements = next(self.data_lines).split('~')
 
         if len(elements) != 46:  # (45 elements from line + \n)
             logger.info("Did not find 45 elements as expected in titelive"
