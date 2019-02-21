@@ -232,6 +232,7 @@ export class RawDeck extends Component {
           <button
             type="button"
             className="close-button"
+            id="deck-close-verso-button"
             onClick={this.handleClosecardDetails}
             style={{ zIndex: 300 }}
           >

@@ -1,3 +1,5 @@
+/* eslint
+  react/jsx-one-expression-per-line: 0 */
 import PropTypes from 'prop-types'
 import get from 'lodash.get'
 import React, { Component } from 'react'
@@ -70,7 +72,10 @@ export class RawVersoWrapper extends Component {
       contentStyle.backgroundColor = headerColor
     }
 
+    const offerVenue = get(venue, 'name')
     const author = get(eventOrThing, 'extraData.author')
+    let offerName = get(eventOrThing, 'name')
+    if (author) offerName = `${offerName}, de ${author}`
     return (
       <div
         ref={$el => {
@@ -85,14 +90,15 @@ export class RawVersoWrapper extends Component {
             this.$header = $el
           }}
         >
-          <h1>
-            {' '}
-            {get(eventOrThing, 'name')}
-            {author && `, de ${author}`}
-            {' '}
+          <h1
+            id="verso-offer-name"
+            style={{ lineHeight: '2.7rem' }}
+            className="fs40 is-medium is-hyphens"
+          >
+            {offerName}
           </h1>
-          <h2>
-            {get(venue, 'name')}
+          <h2 id="verso-offer-venue" className="fs22 is-normal is-hyphens">
+            {offerVenue}
           </h2>
         </div>
         {typeof tutoIndex !== 'number' && <VersoControl />}

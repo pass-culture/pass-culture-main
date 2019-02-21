@@ -17,3 +17,9 @@
   box-shadow: none !important;
   box-shadow: 0 !important;
 }
+
+.is-hyphens {
+  -webkit-hyphens: none;
+  -ms-hyphens: none;
+  hyphens: auto;
+}

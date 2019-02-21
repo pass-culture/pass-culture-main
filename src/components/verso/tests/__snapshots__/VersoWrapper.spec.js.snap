@@ -37,11 +37,19 @@ ShallowWrapper {
             }
           }
         >
-          <h1>
-             
-             
-          </h1>
-          <h2 />
+          <h1
+            className="fs40 is-medium is-hyphens"
+            id="verso-offer-name"
+            style={
+              Object {
+                "lineHeight": "2.7rem",
+              }
+            }
+          />
+          <h2
+            className="fs22 is-normal is-hyphens"
+            id="verso-offer-venue"
+          />
         </div>,
         <withRouter(Connect(VersoControl)) />,
         <div
@@ -67,11 +75,19 @@ ShallowWrapper {
         "nodeType": "host",
         "props": Object {
           "children": Array [
-            <h1>
-               
-               
-            </h1>,
-            <h2 />,
+            <h1
+              className="fs40 is-medium is-hyphens"
+              id="verso-offer-name"
+              style={
+                Object {
+                  "lineHeight": "2.7rem",
+                }
+              }
+            />,
+            <h2
+              className="fs22 is-normal is-hyphens"
+              id="verso-offer-venue"
+            />,
           ],
           "className": "verso-header",
           "style": Object {
@@ -85,20 +101,15 @@ ShallowWrapper {
             "key": undefined,
             "nodeType": "host",
             "props": Object {
-              "children": Array [
-                " ",
-                undefined,
-                undefined,
-                " ",
-              ],
+              "children": undefined,
+              "className": "fs40 is-medium is-hyphens",
+              "id": "verso-offer-name",
+              "style": Object {
+                "lineHeight": "2.7rem",
+              },
             },
             "ref": null,
-            "rendered": Array [
-              " ",
-              undefined,
-              undefined,
-              " ",
-            ],
+            "rendered": null,
             "type": "h1",
           },
           Object {
@@ -107,6 +118,8 @@ ShallowWrapper {
             "nodeType": "host",
             "props": Object {
               "children": undefined,
+              "className": "fs22 is-normal is-hyphens",
+              "id": "verso-offer-venue",
             },
             "ref": null,
             "rendered": null,
@@ -169,11 +182,19 @@ ShallowWrapper {
               }
             }
           >
-            <h1>
-               
-               
-            </h1>
-            <h2 />
+            <h1
+              className="fs40 is-medium is-hyphens"
+              id="verso-offer-name"
+              style={
+                Object {
+                  "lineHeight": "2.7rem",
+                }
+              }
+            />
+            <h2
+              className="fs22 is-normal is-hyphens"
+              id="verso-offer-venue"
+            />
           </div>,
           <withRouter(Connect(VersoControl)) />,
           <div
@@ -199,11 +220,19 @@ ShallowWrapper {
           "nodeType": "host",
           "props": Object {
             "children": Array [
-              <h1>
-                 
-                 
-              </h1>,
-              <h2 />,
+              <h1
+                className="fs40 is-medium is-hyphens"
+                id="verso-offer-name"
+                style={
+                  Object {
+                    "lineHeight": "2.7rem",
+                  }
+                }
+              />,
+              <h2
+                className="fs22 is-normal is-hyphens"
+                id="verso-offer-venue"
+              />,
             ],
             "className": "verso-header",
             "style": Object {
@@ -217,20 +246,15 @@ ShallowWrapper {
               "key": undefined,
               "nodeType": "host",
               "props": Object {
-                "children": Array [
-                  " ",
-                  undefined,
-                  undefined,
-                  " ",
-                ],
+                "children": undefined,
+                "className": "fs40 is-medium is-hyphens",
+                "id": "verso-offer-name",
+                "style": Object {
+                  "lineHeight": "2.7rem",
+                },
               },
               "ref": null,
-              "rendered": Array [
-                " ",
-                undefined,
-                undefined,
-                " ",
-              ],
+              "rendered": null,
               "type": "h1",
             },
             Object {
@@ -239,6 +263,8 @@ ShallowWrapper {
               "nodeType": "host",
               "props": Object {
                 "children": undefined,
+                "className": "fs22 is-normal is-hyphens",
+                "id": "verso-offer-venue",
               },
               "ref": null,
               "rendered": null,
