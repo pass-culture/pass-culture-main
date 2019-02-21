@@ -1,2 +1,2 @@
-export { default as isUserActivated } from './isUserActivated'
+export { default as getWalletValue } from './getWalletValue'
 export { default as isUserValid } from './isUserValid'

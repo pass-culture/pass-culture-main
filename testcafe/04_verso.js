@@ -1,46 +1,56 @@
-// ./node_modules/.bin/testcafe chrome:headless ./testcafe/04_verso.js
+// $(yarn bin)/testcafe chrome ./testcafe/04_verso.js
+/* eslint
+  no-param-reassign: 0
+*/
 import { Selector } from 'testcafe'
 
+import { createUserRole } from './helpers/roles'
+import { fetchSandbox } from './helpers/sandboxes'
 import { getVersoWallet, getVersoWalletValue } from './helpers/getVersoWallet'
 import { ROOT_PATH } from '../src/utils/config'
-import { createUserRole } from './helpers/roles'
-import { hasBookedSomeUser93, hasSignedUpUser93 } from './helpers/users'
 
 const thingBaseURL = 'KU/F4'
 const discoverURL = `${ROOT_PATH}decouverte`
 const offerPage = `${discoverURL}/${thingBaseURL}`
 
-const openMenu = Selector('#deck-footer .profile-button')
 const openVerso = Selector('#deck-open-verso-button')
 
 fixture(`04_01 Verso, montant du porte-monnaie`)
 
 test(`La somme affichée est égale à 0`, async t => {
-  await t.click(openMenu).wait(500)
-  const versoWallet = await getVersoWallet()
+  // given
+  const { user } = await fetchSandbox(
+    'webapp_04_verso',
+    'get_existing_webapp_hnmm_user'
+  )
+  // when
   await t
-    .expect(versoWallet)
-    .contains('€')
-    .expect(versoWallet)
-    .eql('0€')
-}).before(async t => {
-  await t
-    .useRole(createUserRole(hasSignedUpUser93))
+    .useRole(createUserRole(user))
     .navigateTo(offerPage)
-    .wait(500)
+    .click(openVerso)
+  const versoWallet = await getVersoWallet()
+  const versoWalletValue = await getVersoWalletValue()
+  // then
+  await t.expect(versoWallet).contains('€')
+  await t.expect(versoWalletValue).eql(0)
 })
 
 test(`La somme affichée est supérieure à 0`, async t => {
-  await t.click(openVerso).wait(500)
-  const versoWallet = await getVersoWallet()
-  await t.expect(versoWallet).contains('€')
-  const versoWalletValue = await getVersoWalletValue()
-  await t.expect(versoWalletValue).gte(0)
-}).before(async t => {
+  // given
+  const { user } = await fetchSandbox(
+    'webapp_04_verso',
+    'get_existing_webapp_hbs_user'
+  )
   await t
-    .useRole(createUserRole(hasBookedSomeUser93))
+    .useRole(createUserRole(user))
     .navigateTo(offerPage)
-    .wait(500)
+    .click(openVerso)
+  // when
+  const versoWallet = await getVersoWallet()
+  const versoWalletValue = await getVersoWalletValue()
+  // then
+  await t.expect(versoWallet).contains('€')
+  await t.expect(versoWalletValue).gte(0)
 })
 
 // fixture(`04_02 Verso, autres fonctionnalités`)

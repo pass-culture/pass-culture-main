@@ -4,9 +4,10 @@ import React from 'react'
 import PropTypes from 'prop-types'
 
 import { ROOT_PATH } from '../../utils/config'
+import { getWalletValue } from '../../utils/user'
 
 const MenuHeader = ({ user }) => {
-  const wallet = user ? user.wallet_balance : '——'
+  const walletValue = getWalletValue(user)
   const avatar = `${ROOT_PATH}/icons/avatar-default-w-XL.svg`
   return (
     <div id="main-menu-header" className="flex-columns is-relative py16 fs18">
@@ -27,7 +28,7 @@ const MenuHeader = ({ user }) => {
         </p>
         <p id="main-menu-header-wallet-value">
           <span className="fs52 is-normal" style={{ lineHeight: '42px' }}>
-            {`${wallet}€`}
+            {walletValue}&nbsp;€
           </span>
         </p>
       </div>

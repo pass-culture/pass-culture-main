@@ -4,11 +4,11 @@ import React from 'react'
 import PropTypes from 'prop-types'
 
 import { getAvailableBalanceByType } from './utils'
+import { getWalletValue } from '../../../utils/user'
 
 const MonPassCulture = ({ user }) => {
   const { expenses } = user
-  const allWallet =
-    (typeof user.wallet_balance !== 'number' && '--') || user.wallet_balance
+  const allWallet = getWalletValue(user)
   const { digital, physical } = expenses
   const [digitalAvailable, physicalAvailable] = [digital, physical].map(
     getAvailableBalanceByType(allWallet)

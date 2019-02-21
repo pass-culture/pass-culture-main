@@ -7,6 +7,7 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import { compose, bindActionCreators } from 'redux'
 
+import { getWalletValue } from '../../utils/user'
 import { ShareButton } from '../share/ShareButton'
 import VersoBookingButton from './VersoBookingButton'
 import currentRecommendationSelector from '../../selectors/currentRecommendation'
@@ -29,13 +30,13 @@ class VersoControl extends React.PureComponent {
   }
 
   render() {
-    const { isFavorite, wallet } = this.props
+    const { isFavorite, walletValue } = this.props
     return (
       <ul className="verso-control">
         <li>
           <small className="pass-label">Mon Pass</small>
           <span id="verso-wallet-value" className="pass-value">
-            {wallet}€
+            {walletValue}&nbsp;€
           </span>
         </li>
         <li>
@@ -65,14 +66,13 @@ class VersoControl extends React.PureComponent {
 VersoControl.defaultProps = {
   isFavorite: false,
   recommendationId: null,
-  wallet: null,
 }
 
 VersoControl.propTypes = {
   dispatch: PropTypes.func.isRequired,
   isFavorite: PropTypes.bool,
   recommendationId: PropTypes.string,
-  wallet: PropTypes.number,
+  walletValue: PropTypes.number.isRequired,
 }
 
 const mapStateToProps = (state, ownProps) => {
@@ -83,12 +83,11 @@ const mapStateToProps = (state, ownProps) => {
     offerId,
     mediationId
   )
-  const wallet =
-    user && typeof user.wallet_balance === 'number' ? user.wallet_balance : '--'
+  const walletValue = getWalletValue(user)
   return {
     isFavorite: recommendation && recommendation.isFavorite,
     recommendationId: recommendation && recommendation.id,
-    wallet,
+    walletValue,
   }
 }
 

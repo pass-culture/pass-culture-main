@@ -4,8 +4,12 @@ exports[`src | components | menu | MenuHeader snapshot should match snapshot 1`]
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <MenuHeader
-    toggleMainMenu={[MockFunction]}
-    user={true}
+    user={
+      Object {
+        "publicName": "username",
+        "wallet_balance": 500,
+      }
+    }
   />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
@@ -37,7 +41,9 @@ ShallowWrapper {
             className="is-clipped text-ellipsis px5"
             id="main-menu-header-username"
           >
-            <span />
+            <span>
+              username
+            </span>
           </p>
         </div>,
         <div
@@ -61,7 +67,8 @@ ShallowWrapper {
                 }
               }
             >
-              undefined€
+              500
+               €
             </span>
           </p>
         </div>,
@@ -90,7 +97,9 @@ ShallowWrapper {
               className="is-clipped text-ellipsis px5"
               id="main-menu-header-username"
             >
-              <span />
+              <span>
+                username
+              </span>
             </p>,
           ],
           "className": "column-profile text-center",
@@ -130,7 +139,9 @@ ShallowWrapper {
             "key": undefined,
             "nodeType": "host",
             "props": Object {
-              "children": <span />,
+              "children": <span>
+                username
+              </span>,
               "className": "is-clipped text-ellipsis px5",
               "id": "main-menu-header-username",
             },
@@ -140,10 +151,10 @@ ShallowWrapper {
               "key": undefined,
               "nodeType": "host",
               "props": Object {
-                "children": undefined,
+                "children": "username",
               },
               "ref": null,
-              "rendered": null,
+              "rendered": "username",
               "type": "span",
             },
             "type": "p",
@@ -175,7 +186,8 @@ ShallowWrapper {
                   }
                 }
               >
-                undefined€
+                500
+                 €
               </span>
             </p>,
           ],
@@ -220,7 +232,8 @@ ShallowWrapper {
                   }
                 }
               >
-                undefined€
+                500
+                 €
               </span>,
               "id": "main-menu-header-wallet-value",
             },
@@ -230,14 +243,20 @@ ShallowWrapper {
               "key": undefined,
               "nodeType": "host",
               "props": Object {
-                "children": "undefined€",
+                "children": Array [
+                  500,
+                  " €",
+                ],
                 "className": "fs52 is-normal",
                 "style": Object {
                   "lineHeight": "42px",
                 },
               },
               "ref": null,
-              "rendered": "undefined€",
+              "rendered": Array [
+                500,
+                " €",
+              ],
               "type": "span",
             },
             "type": "p",
@@ -271,7 +290,9 @@ ShallowWrapper {
               className="is-clipped text-ellipsis px5"
               id="main-menu-header-username"
             >
-              <span />
+              <span>
+                username
+              </span>
             </p>
           </div>,
           <div
@@ -295,7 +316,8 @@ ShallowWrapper {
                   }
                 }
               >
-                undefined€
+                500
+                 €
               </span>
             </p>
           </div>,
@@ -324,7 +346,9 @@ ShallowWrapper {
                 className="is-clipped text-ellipsis px5"
                 id="main-menu-header-username"
               >
-                <span />
+                <span>
+                  username
+                </span>
               </p>,
             ],
             "className": "column-profile text-center",
@@ -364,7 +388,9 @@ ShallowWrapper {
               "key": undefined,
               "nodeType": "host",
               "props": Object {
-                "children": <span />,
+                "children": <span>
+                  username
+                </span>,
                 "className": "is-clipped text-ellipsis px5",
                 "id": "main-menu-header-username",
               },
@@ -374,10 +400,10 @@ ShallowWrapper {
                 "key": undefined,
                 "nodeType": "host",
                 "props": Object {
-                  "children": undefined,
+                  "children": "username",
                 },
                 "ref": null,
-                "rendered": null,
+                "rendered": "username",
                 "type": "span",
               },
               "type": "p",
@@ -409,7 +435,8 @@ ShallowWrapper {
                     }
                   }
                 >
-                  undefined€
+                  500
+                   €
                 </span>
               </p>,
             ],
@@ -454,7 +481,8 @@ ShallowWrapper {
                     }
                   }
                 >
-                  undefined€
+                  500
+                   €
                 </span>,
                 "id": "main-menu-header-wallet-value",
               },
@@ -464,14 +492,20 @@ ShallowWrapper {
                 "key": undefined,
                 "nodeType": "host",
                 "props": Object {
-                  "children": "undefined€",
+                  "children": Array [
+                    500,
+                    " €",
+                  ],
                   "className": "fs52 is-normal",
                   "style": Object {
                     "lineHeight": "42px",
                   },
                 },
                 "ref": null,
-                "rendered": "undefined€",
+                "rendered": Array [
+                  500,
+                  " €",
+                ],
                 "type": "span",
               },
               "type": "p",
