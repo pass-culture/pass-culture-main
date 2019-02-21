@@ -142,3 +142,17 @@ def delete(entity):
 def load_or_404(obj_class, human_id):
     return obj_class.query.filter_by(id=dehumanize(human_id))\
                           .first_or_404()
+
+
+def load_or_raise_error(obj_class, human_id):
+    data = obj_class.query.filter_by(id=dehumanize(human_id)).first()
+    if data is None:
+        errors = ApiErrors()
+        errors.addError(
+            'global',
+            'Aucun objet ne correspond à cet identifiant dans notre base de données'
+        )
+        errors.status_code = 400
+        raise errors
+    else:
+        return data

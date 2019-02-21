@@ -90,7 +90,7 @@ class Patch:
 
     class Returns403:
         @clean_database
-        def when_user_is_not_rattached_to_offerer(self, app):
+        def when_user_is_not_attached_to_offerer(self, app):
             # Given
             user = create_user()
             thing = create_thing()
@@ -245,7 +245,7 @@ class Post:
 
     class Returns403:
         @clean_database
-        def when_user_is_not_rattached_to_offerer(self, app):
+        def when_user_is_not_attached_to_offerer(self, app):
             # Given
             user = create_user(email='test@email.com', password='P@55W0rd!')
             offerer = create_offerer()

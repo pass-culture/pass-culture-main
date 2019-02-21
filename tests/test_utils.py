@@ -356,24 +356,6 @@ def create_event_offer(venue, event=None, event_name='Test event', duration_minu
     offer.id = idx
     return offer
 
-def create_offers_for(user, n, siren='123456789'):
-    offerer = create_offerer(siren=siren)
-    user_offerer = create_user_offerer(user, offerer)
-    venue = create_venue(offerer, siret=siren + '1345')
-    offers = create_n_mixed_offers_with_same_venue(venue, n=n)
-
-    PcObject.check_and_save(user_offerer)
-    PcObject.check_and_save(*offers)
-
-def create_n_mixed_offers_with_same_venue(venue, n=10):
-    offers = []
-    for i in range(n // 2, 0, -1):
-        date_created = datetime.utcnow() - timedelta(days=i)
-        offers.append(create_thing_offer(venue, date_created=date_created, thing_name='Thing Offer %s' % i))
-        offers.append(create_event_offer(venue, event_name='Event Offer %s' % i, date_created=date_created))
-    return offers
-
-
 def create_offerer(
         siren='123456789',
         address='123 rue de Paris',

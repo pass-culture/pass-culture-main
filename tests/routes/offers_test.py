@@ -11,7 +11,6 @@ from utils.human_ids import dehumanize, humanize
 from tests.test_utils import API_URL, \
     create_event, \
     create_event_offer, \
-    create_offers_for, \
     create_offerer, \
     create_recommendation, \
     create_thing, \
@@ -20,6 +19,23 @@ from tests.test_utils import API_URL, \
     create_user_offerer, \
     create_venue, \
     create_stock_from_offer
+
+def create_offers_for(user, n, siren='123456789'):
+    offerer = create_offerer(siren=siren)
+    user_offerer = create_user_offerer(user, offerer)
+    venue = create_venue(offerer, siret=siren + '1345')
+    offers = create_n_mixed_offers_with_same_venue(venue, n=n)
+
+    PcObject.check_and_save(user_offerer)
+    PcObject.check_and_save(*offers)
+
+def create_n_mixed_offers_with_same_venue(venue, n=10):
+    offers = []
+    for i in range(n // 2, 0, -1):
+        date_created = datetime.utcnow() - timedelta(days=i)
+        offers.append(create_thing_offer(venue, date_created=date_created, thing_name='Thing Offer %s' % i))
+        offers.append(create_event_offer(venue, event_name='Event Offer %s' % i, date_created=date_created))
+    return offers
 
 
 @pytest.mark.standalone
@@ -38,7 +54,6 @@ class Get:
             offers = response.json()
             assert response.status_code == 200
             assert len(offers) == 10
-
 
         @clean_database
         def test_get_offers_is_paginated_by_default_on_page_1(self, app):
@@ -73,7 +88,6 @@ class Get:
             offers_2 = response_2.json()
             assert offers_1[-1]['dateCreated'] > offers_2[0]['dateCreated']
 
-
         @clean_database
         def test_get_offers_is_filtered_by_given_venue_id(self, app):
             # given
@@ -92,7 +106,6 @@ class Get:
             for offer in offers:
                 assert offer['venueId'] == humanize(venue_id)
 
-
         @clean_database
         def test_get_offers_can_be_filtered_and_paginated_at_the_same_time(self, app):
             # given
@@ -109,7 +122,6 @@ class Get:
             assert response.status_code == 200
             for offer in offers:
                 assert offer['venueId'] == humanize(venue_id)
-
 
         @clean_database
         def test_get_offers_can_be_searched_and_filtered_and_paginated_at_the_same_time(self, app):
@@ -149,7 +161,6 @@ class Get:
             assert len([o for o in offers if 'thing' in o]) > 0
 
         @clean_database
-        @pytest.mark.standalone
         def test_list_activation_offers_returns_offers_of_event_type(self, app):
             # given
             user = create_user(password='p@55sw0rd')
@@ -182,7 +193,6 @@ class Get:
             assert humanize(offer3.eventId) in event_ids
 
         @clean_database
-        @pytest.mark.standalone
         def test_list_offers_returns_list_of_offers_with_thing_or_event_with_type_details(self, app):
             # given
             user = create_user(password='p@55sw0rd', is_admin=True, can_book_free_offers=False)
@@ -323,7 +333,7 @@ class Post:
 
     class Returns403:
         @clean_database
-        def when_user_is_not_rattached_to_offerer(self, app):
+        def when_user_is_not_attached_to_offerer(self, app):
             # given
             current_user = create_user(email='user@test.com', password='azerty123')
             other_user = create_user(email='jimmy@test.com', password='p@55sw0rd')
@@ -406,16 +416,16 @@ class Patch:
             assert error_message['global'] == ['Cette structure n\'est pas enregistrée chez cet utilisateur.']
 
 
-        class Returns404:
-            @clean_database
-            def test_patch_offer_returns_404_if_offer_does_not_exist(self, app):
-                # given
-                user = create_user(password='p@55sw0rd')
-                PcObject.check_and_save(user)
-                auth_request = TestClient().with_auth(email=user.email, password='p@55sw0rd')
+    class Returns404:
+        @clean_database
+        def test_patch_offer_returns_404_if_offer_does_not_exist(self, app):
+            # given
+            user = create_user(password='p@55sw0rd')
+            PcObject.check_and_save(user)
+            auth_request = TestClient().with_auth(email=user.email, password='p@55sw0rd')
 
-                # when
-                response = auth_request.patch(API_URL + '/offers/ADFGA', json={})
+            # when
+            response = auth_request.patch(API_URL + '/offers/ADFGA', json={})
 
-                # then
-                assert response.status_code == 404
+            # then
+            assert response.status_code == 404

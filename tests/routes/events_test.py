@@ -67,7 +67,7 @@ class Patch:
 
     class Returns403:
         @clean_database
-        def when_user_is_not_rattached_to_offerer(self, app):
+        def when_user_is_not_attached_to_offerer(self, app):
                 # Given
                 user = create_user()
                 offerer = create_offerer()
@@ -123,9 +123,8 @@ class Post:
                 json=json)
 
             # Then
-            print('RESQUEST', request)
             assert request.status_code == 400
-            assert request.json()['venueId'] == ['Aucun objet ne correspond à cet identifiant dans notre base de données']
+            assert request.json()['global'] == ['Aucun objet ne correspond à cet identifiant dans notre base de données']
 
     class Returns201:
         @clean_database
@@ -277,7 +276,7 @@ class Post:
                 "Seuls les administrateurs du pass Culture peuvent créer des offres d'activation"]
 
         @clean_database
-        def when_user_is_not_rattached_to_offerer(self, app):
+        def when_user_is_not_attached_to_offerer(self, app):
                 # Given
                 user = create_user(email='test@email.com', password='P@55w0rd')
                 offerer = create_offerer()
