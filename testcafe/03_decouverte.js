@@ -38,6 +38,8 @@ test('Je fais ma première visite sur découverte', async t => {
     'get_existing_webapp_user_with_no_date_read'
   )
 
+  console.log('user', user)
+
   // when
   await t.useRole(createUserRole(user))
 
