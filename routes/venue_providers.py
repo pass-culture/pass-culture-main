@@ -73,7 +73,7 @@ def create_venue_provider():
 
     # CALL THE PROVIDER SUB PROCESS
     p = subprocess.Popen('PYTHONPATH="." python scripts/pc.py update_providables'
-                         + ' --venueProvider ' + str(new_vp.id),
+                         + ' --venue_provider_id %s' % str(new_vp.id),
                          #stdout=subprocess.PIPE,
                          #stderr=subprocess.PIPE,
                          shell=True,
