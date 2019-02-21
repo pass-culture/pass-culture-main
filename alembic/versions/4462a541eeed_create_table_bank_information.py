@@ -27,7 +27,7 @@ def upgrade():
         sa.Column('venueId', sa.BigInteger, ForeignKey('venue.id'), nullable=True),
         sa.Column('iban', sa.String(27), nullable=False),
         sa.Column('bic', sa.String(11), nullable=False),
-        sa.Column('application_id', sa.Integer, nullable=False),
+        sa.Column('applicationId', sa.Integer, nullable=False),
         sa.Column('idAtProviders', sa.String(70), nullable=False, unique=True),
         sa.Column('dateModifiedAtLastProvider', sa.DateTime, nullable=True, default=datetime.utcnow),
         sa.Column('lastProviderId', sa.BigInteger, ForeignKey('provider.id'), nullable=True)

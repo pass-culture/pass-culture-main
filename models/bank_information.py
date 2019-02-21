@@ -16,7 +16,8 @@ class BankInformation(PcObject,
 
     offerer = relationship('Offerer',
                            foreign_keys=[offererId],
-                           backref='bank_information')
+                           uselist=False,
+                           backref='bankInformation')
 
     venueId = Column(BigInteger,
                      ForeignKey("venue.id"),
@@ -25,7 +26,8 @@ class BankInformation(PcObject,
 
     venue = relationship('Venue',
                          foreign_keys=[venueId],
-                         backref='bank_information')
+                         uselist=False,
+                         backref='bankInformation')
 
     iban = Column(String(27),
                   nullable=False)
@@ -33,5 +35,5 @@ class BankInformation(PcObject,
     bic = Column(String(11),
                  nullable=False)
 
-    application_id = Column(Integer,
-                            nullable=False)
+    applicationId = Column(Integer,
+                           nullable=False)

@@ -6,34 +6,13 @@ from domain.retrieve_bank_account_information_for_offerers import \
     get_all_application_ids_from_demarches_simplifiees_procedure
 
 
-
 class GetAllFileIdsFromDemarchesSimplifieesProcedureTest:
     def setup_class(self):
         self.PROCEDURE_ID = os.environ['DEMARCHES_SIMPLIFIEES_PROCEDURE_ID']
         self.TOKEN = os.environ['DEMARCHES_SIMPLIFIEES_TOKEN']
         self.mock_get_all_applications_for_procedure = Mock()
 
-    def test_returns_list_of_one_id_when_get_all_applications_from_procedure_returns_list_of_one_application_with_state_closed(
-            self):
-        # Given
-        self.mock_get_all_applications_for_procedure.return_value = {
-            "dossiers": [
-                {"id": 2,
-                 "updated_at": "2019-02-04T16:51:18.293Z",
-                 "initiated_at": "2019-01-12T10:43:18.735Z",
-                 "state": "closed"}
-            ]
-        }
-
-        # When
-        application_ids = get_all_application_ids_from_demarches_simplifiees_procedure(self.PROCEDURE_ID, self.TOKEN,
-                                                                                       datetime(2019, 1, 1),
-                                                                                       get_all_applications_for_procedure_in_demarches_simplifiees=self.mock_get_all_applications_for_procedure)
-
-        # Then
-        assert application_ids == [2]
-
-    def test_returns_list_of_one_id_when_get_all_applications_from_procedure_returns_list_of_one_application_with_state_closed_and_other_initiated(
+    def test_returns_applications_with_state_closed_only(
             self):
         # Given
         self.mock_get_all_applications_for_procedure.return_value = {
@@ -50,14 +29,15 @@ class GetAllFileIdsFromDemarchesSimplifieesProcedureTest:
         }
 
         # When
-        application_ids = get_all_application_ids_from_demarches_simplifiees_procedure(self.PROCEDURE_ID, self.TOKEN,
-                                                                                       datetime(2019, 1, 1),
-                                                                                       get_all_applications_for_procedure_in_demarches_simplifiees=self.mock_get_all_applications_for_procedure)
+        application_ids = get_all_application_ids_from_demarches_simplifiees_procedure(
+            self.PROCEDURE_ID, self.TOKEN, datetime(2019, 1, 1),
+            get_all_applications_for_procedure_in_demarches_simplifiees=self.mock_get_all_applications_for_procedure
+        )
 
         # Then
         assert application_ids == [2]
 
-    def test_returns_list_of_one_id_when_get_all_applications_from_procedure_returns_list_of_two_applications_closed_and_one_in_update_date_range(
+    def test_returns_applications_updated_after_last_update_in_database_only(
             self):
         # Given
         self.mock_get_all_applications_for_procedure.return_value = {
@@ -74,9 +54,41 @@ class GetAllFileIdsFromDemarchesSimplifieesProcedureTest:
         }
 
         # When
-        application_ids = get_all_application_ids_from_demarches_simplifiees_procedure(self.PROCEDURE_ID, self.TOKEN,
-                                                                                       datetime(2019, 1, 1),
-                                                                                       get_all_applications_for_procedure_in_demarches_simplifiees=self.mock_get_all_applications_for_procedure)
+        application_ids = get_all_application_ids_from_demarches_simplifiees_procedure(
+            self.PROCEDURE_ID, self.TOKEN, datetime(2019, 1, 1),
+            get_all_applications_for_procedure_in_demarches_simplifiees=self.mock_get_all_applications_for_procedure)
 
         # Then
         assert application_ids == [2]
+
+    def test_returns_list_of_ids_ordered_by_updated_at_asc(
+            self):
+        # Given
+        self.mock_get_all_applications_for_procedure.return_value = {
+            "dossiers": [
+                {"id": 1,
+                 "updated_at": "2019-02-04T16:51:18.293Z",
+                 "initiated_at": "2019-01-12T10:43:18.735Z",
+                 "state": "closed"},
+                {"id": 2,
+                 "updated_at": "2018-12-17T16:51:18.293Z",
+                 "initiated_at": "2018-12-11T10:43:18.735Z",
+                 "state": "closed"},
+                {"id": 3,
+                 "updated_at": "2018-11-17T16:51:18.293Z",
+                 "initiated_at": "2018-12-11T10:43:18.735Z",
+                 "state": "closed"},
+                {"id": 4,
+                 "updated_at": "2019-02-17T16:51:18.293Z",
+                 "initiated_at": "2018-12-11T10:43:18.735Z",
+                 "state": "closed"}
+            ]
+        }
+
+        # When
+        application_ids = get_all_application_ids_from_demarches_simplifiees_procedure(
+            self.PROCEDURE_ID, self.TOKEN, datetime(2018, 1, 1),
+                                                                                       get_all_applications_for_procedure_in_demarches_simplifiees=self.mock_get_all_applications_for_procedure)
+
+        # Then
+        assert application_ids == [3, 2, 1, 4]

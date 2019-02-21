@@ -640,18 +640,18 @@ def create_payment_details(
     return details
 
 
-def create_bank_information(application_id=1, bic='BIC', iban='IBAN', id_at_providers='234567891', date_modified_at_last_provider=datetime(2019, 1, 1), offerer_id=None,
+def create_bank_information(application_id=1, bic='QSDFGH8Z555', iban='CF13QSDFGH456789', id_at_providers='234567891',
+                            date_modified_at_last_provider=datetime(2019, 1, 1), offerer_id=None,
                             venue_id=None):
     bank_information = BankInformation()
     bank_information.venueId = venue_id
     bank_information.offererId = offerer_id
-    bank_information.application_id = application_id
+    bank_information.applicationId = application_id
     bank_information.bic = bic
     bank_information.iban = iban
     bank_information.idAtProviders = id_at_providers
     bank_information.dateModifiedAtLastProvider = date_modified_at_last_provider
     return bank_information
-
 
 
 def saveCounts(app):

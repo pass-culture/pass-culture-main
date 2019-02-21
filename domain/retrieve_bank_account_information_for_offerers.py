@@ -9,12 +9,13 @@ def get_all_application_ids_from_demarches_simplifiees_procedure(procedure_id: s
                                                                  get_all_applications_for_procedure_in_demarches_simplifiees:
                                                                  Callable[[str,
                                                                            str], dict] = get_all_applications_for_procedure):
-    applications = get_all_applications_for_procedure_in_demarches_simplifiees(procedure_id, token)
-    applications_to_process = [application['id'] for application in applications['dossiers'] if
+    api_response = get_all_applications_for_procedure_in_demarches_simplifiees(procedure_id, token)
+    applications = sorted(api_response['dossiers'], key=lambda k: datetime.strptime(k['updated_at'], DATE_ISO_FORMAT))
+    application_ids_to_process = [application['id'] for application in applications if
                                _needs_processing(application, last_update)]
-    return applications_to_process
+    return application_ids_to_process
 
 
 def _needs_processing(application: dict, last_update: datetime) -> dict:
     return application['state'] == 'closed' and (
-                datetime.strptime(application['updated_at'], DATE_ISO_FORMAT) > last_update)
+                datetime.strptime(application['updated_at'], DATE_ISO_FORMAT) >= last_update)

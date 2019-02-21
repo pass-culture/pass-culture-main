@@ -4,8 +4,7 @@ from datetime import datetime
 from unittest.mock import patch
 
 from local_providers import BankInformationProvider
-from local_providers.demarches_simplifiees_bank_information import retrieve_bank_information_dict_from, \
-    get_last_update_from_bank_information
+from local_providers.demarches_simplifiees_bank_information import UnknownRibAffiliation
 from models import BankInformation, PcObject, LocalProviderEvent
 from models.local_provider_event import LocalProviderEventType
 from tests.conftest import clean_database
@@ -106,7 +105,6 @@ class BankInformationProviderProviderTest:
         PcObject.check_and_save(venue)
 
         offerer_id = offerer.id
-        venue_id = venue.id
 
         # When Then
         provider_test_without_mock(app,
@@ -123,7 +121,7 @@ class BankInformationProviderProviderTest:
         bank_information = BankInformation.query.first()
         assert bank_information.iban == 'TEST IBAN'
         assert bank_information.bic == 'TEST BIC'
-        assert bank_information.application_id == 1
+        assert bank_information.applicationId == 1
         assert bank_information.offererId == offerer_id
         assert bank_information.venueId == None
         assert bank_information.idAtProviders == '793875030'
@@ -217,7 +215,7 @@ class BankInformationProviderProviderTest:
         bank_information = BankInformation.query.first()
         assert bank_information.iban == 'TEST IBAN'
         assert bank_information.bic == 'TEST BIC'
-        assert bank_information.application_id == 1
+        assert bank_information.applicationId == 1
         assert bank_information.offererId == None
         assert bank_information.venueId == venue_id
         assert bank_information.idAtProviders == '79387503000016'
@@ -226,97 +224,66 @@ class BankInformationProviderProviderTest:
         'local_providers.demarches_simplifiees_bank_information.get_all_application_ids_from_demarches_simplifiees_procedure')
     @patch('local_providers.demarches_simplifiees_bank_information.get_application_details')
     @clean_database
-    def test_provider_checks_bank_information_and_does_not_create_object_if_unknown_rib_affiliation(self,
-                                                                                                    get_application_details,
-                                                                                                    get_all_application_ids_from_demarches_simplifiees_procedure,
-                                                                                                    app):
+    def test_provider_raises_unknown_rib_affiliation_exception_when_rib_affiliation_unknown_but_saves_older_bank_information(
+            self,
+            get_application_details,
+            get_all_application_ids_from_demarches_simplifiees_procedure,
+            app):
         # Given
-        get_all_application_ids_from_demarches_simplifiees_procedure.return_value = [1]
-        get_application_details.return_value = {
-            "dossier":
-                {
-                    "id": 1,
-                    "updated_at": "2019-01-21T18:55:03.387Z",
-                    "state": "closed",
-                    "entreprise":
-                        {
-                            "siren": "793875030",
-                            "siret_siege_social": "79387503000017"
-                        },
-                    "etablissement":
-                        {
-                            "siret": "79387503000016"
-                        },
-                    "champs":
-                        [
-                            {
-                                "value": "Champ chelou auquel on n'a pas pensé",
-                                "type_de_champ": {
-                                    "id": 352721,
-                                    "libelle": "Je souhaite renseigner",
-                                    "type_champ": "drop_down_list",
-                                    "order_place": 6,
-                                    "description": ""
-                                }
-                            },
-                            {
-                                "value": "TEST BIC",
-                                "type_de_champ":
-                                    {
-                                        "id": 352727,
-                                        "libelle": "BIC",
-                                        "type_champ": "text",
-                                        "order_place": 8,
-                                        "description": ""
-                                    }
-                            },
-                            {
-                                "value": "TEST IBAN",
-                                "type_de_champ":
-                                    {
-                                        "id": 352722,
-                                        "libelle": "IBAN",
-                                        "type_champ": "text",
-                                        "order_place": 9,
-                                        "description": ""
-                                    }
-                            },
-                        ]
-                }
-        }
-        offerer = create_offerer(siren='793875030')
-        venue = create_venue(offerer, siret='79387503000016')
-
-        PcObject.check_and_save(venue)
-
-        providerObj = BankInformationProvider()
-        providerObj.dbObject.isActive = True
-        PcObject.check_and_save(providerObj.dbObject)
-
-        # When Then
-        provider_test_without_mock(app,
-                                   BankInformationProvider,
-                                   checkedObjects=1,
-                                   createdObjects=0,
-                                   updatedObjects=0,
-                                   erroredObjects=0,
-                                   checkedThumbs=0,
-                                   createdThumbs=0,
-                                   updatedThumbs=0,
-                                   erroredThumbs=0,
-                                   BankInformation=0)
-
-    @patch(
-        'local_providers.demarches_simplifiees_bank_information.get_all_application_ids_from_demarches_simplifiees_procedure')
-    @patch('local_providers.demarches_simplifiees_bank_information.get_application_details')
-    @clean_database
-    def test_provider_checks_two_objects_and_creates_one_when_one_rib_affiliation_known_and_one_unknown(self,
-                                                                                                        get_application_details,
-                                                                                                        get_all_application_ids_from_demarches_simplifiees_procedure,
-                                                                                                        app):
-        # Given
-        get_all_application_ids_from_demarches_simplifiees_procedure.return_value = [1, 2]
+        get_all_application_ids_from_demarches_simplifiees_procedure.return_value = [2, 1]
         get_application_details.side_effect = [
+            {
+                "dossier":
+                    {
+                        "id": 2,
+                        "updated_at": "2019-01-20T18:55:03.387Z",
+                        "state": "closed",
+                        "entreprise":
+                            {
+                                "siren": "793875030",
+                                "siret_siege_social": "79387503000017"
+                            },
+                        "etablissement":
+                            {
+                                "siret": "79387503000016"
+                            },
+                        "champs":
+                            [
+                                {
+                                    "value": "Le RIB lié à un unique SIRET",
+                                    "type_de_champ": {
+                                        "id": 352721,
+                                        "libelle": "Je souhaite renseigner",
+                                        "type_champ": "drop_down_list",
+                                        "order_place": 6,
+                                        "description": ""
+                                    }
+                                },
+                                {
+                                    "value": "TEST BIC",
+                                    "type_de_champ":
+                                        {
+                                            "id": 352727,
+                                            "libelle": "BIC",
+                                            "type_champ": "text",
+                                            "order_place": 8,
+                                            "description": ""
+                                        }
+                                },
+                                {
+                                    "value": "TEST IBAN",
+                                    "type_de_champ":
+                                        {
+                                            "id": 352722,
+                                            "libelle": "IBAN",
+                                            "type_champ": "text",
+                                            "order_place": 9,
+                                            "description": ""
+                                        }
+                                },
+                            ]
+                    }
+            },
             {
                 "dossier":
                     {
@@ -368,88 +335,25 @@ class BankInformationProviderProviderTest:
                                 },
                             ]
                     }
-            },
-            {
-                "dossier":
-                    {
-                        "id": 2,
-                        "updated_at": "2019-01-21T18:55:03.387Z",
-                        "state": "closed",
-                        "entreprise":
-                            {
-                                "siren": "793875030",
-                                "siret_siege_social": "79387503000017"
-                            },
-                        "etablissement":
-                            {
-                                "siret": "79387503000016"
-                            },
-                        "champs":
-                            [
-                                {
-                                    "value": "Le RIB lié à un unique SIRET",
-                                    "type_de_champ": {
-                                        "id": 352721,
-                                        "libelle": "Je souhaite renseigner",
-                                        "type_champ": "drop_down_list",
-                                        "order_place": 6,
-                                        "description": ""
-                                    }
-                                },
-                                {
-                                    "value": "TEST BIC",
-                                    "type_de_champ":
-                                        {
-                                            "id": 352727,
-                                            "libelle": "BIC",
-                                            "type_champ": "text",
-                                            "order_place": 8,
-                                            "description": ""
-                                        }
-                                },
-                                {
-                                    "value": "TEST IBAN",
-                                    "type_de_champ":
-                                        {
-                                            "id": 352722,
-                                            "libelle": "IBAN",
-                                            "type_champ": "text",
-                                            "order_place": 9,
-                                            "description": ""
-                                        }
-                                },
-                            ]
-                    }
             }
-
         ]
         offerer = create_offerer(siren='793875030')
         venue = create_venue(offerer, siret='79387503000016')
 
         PcObject.check_and_save(venue)
 
-        offerer_id = offerer.id
-        venue_id = venue.id
+        bank_information_provider = BankInformationProvider()
+        bank_information_provider.dbObject.isActive = True
+        PcObject.check_and_save(bank_information_provider.dbObject)
 
-        # When Then
-        provider_test_without_mock(app,
-                                   BankInformationProvider,
-                                   checkedObjects=2,
-                                   createdObjects=1,
-                                   updatedObjects=0,
-                                   erroredObjects=0,
-                                   checkedThumbs=0,
-                                   createdThumbs=0,
-                                   updatedThumbs=0,
-                                   erroredThumbs=0,
-                                   BankInformation=1)
-        bank_information = BankInformation.query.first()
-        assert bank_information.iban == 'TEST IBAN'
-        assert bank_information.bic == 'TEST BIC'
-        assert bank_information.application_id == 2
-        assert bank_information.offererId == None
-        assert bank_information.venueId == venue_id
-        assert bank_information.idAtProviders == '79387503000016'
+        # when
+        with pytest.raises(UnknownRibAffiliation):
+            bank_information_provider.updateObjects()
+
+        # Then
+        bank_information = BankInformation.query.all()
+        assert len(bank_information)
+        assert bank_information[0].idAtProviders == '79387503000016'
         sync_error = LocalProviderEvent.query.filter_by(type=LocalProviderEventType.SyncError).first()
         assert sync_error.payload == 'unknown RIB affiliation for application id 1'
 
@@ -593,17 +497,17 @@ class BankInformationProviderProviderTest:
                                    updatedThumbs=0,
                                    erroredThumbs=0,
                                    BankInformation=2)
-        bank_information1 = BankInformation.query.filter_by(application_id=1).first()
-        bank_information2 = BankInformation.query.filter_by(application_id=2).first()
+        bank_information1 = BankInformation.query.filter_by(applicationId=1).first()
+        bank_information2 = BankInformation.query.filter_by(applicationId=2).first()
         assert bank_information1.iban == 'TEST IBAN1'
         assert bank_information1.bic == 'TEST BIC1'
-        assert bank_information1.application_id == 1
+        assert bank_information1.applicationId == 1
         assert bank_information1.offererId == None
         assert bank_information1.venueId == venue1_id
         assert bank_information1.idAtProviders == '79387501900056'
         assert bank_information2.iban == 'TEST IBAN2'
         assert bank_information2.bic == 'TEST BIC2'
-        assert bank_information2.application_id == 2
+        assert bank_information2.applicationId == 2
         assert bank_information2.offererId == None
         assert bank_information2.venueId == venue2_id
         assert bank_information2.idAtProviders == '79387503000016'
@@ -779,7 +683,7 @@ class BankInformationProviderProviderTest:
                                    erroredThumbs=0)
 
         updated_bank_information = BankInformation.query.filter_by(idAtProviders="79387501900056").one()
-        assert updated_bank_information.application_id == 2
+        assert updated_bank_information.applicationId == 2
         assert updated_bank_information.iban == "TEST IBAN1"
         assert updated_bank_information.bic == "TEST BIC1"
 
@@ -948,7 +852,7 @@ class BankInformationProviderProviderTest:
                                                                                         datetime(2019, 1, 1))
 
 
-class CreateBankInformationWithTest:
+class RetrieveBankInformationTest:
     @clean_database
     def when_rib_affiliation_is_on_siret(self, app):
         # Given
@@ -993,14 +897,15 @@ class CreateBankInformationWithTest:
         venue = create_venue(offerer, siret="79387501900056")
         PcObject.check_and_save(venue)
         venue_id = venue.id
+        bank_information_provider = BankInformationProvider()
 
         # When
-        bank_information_dict = retrieve_bank_information_dict_from(application_details)
+        bank_information_dict = bank_information_provider.retrieve_bank_information(application_details)
 
         # Then
         assert bank_information_dict['iban'] == "TEST IBAN1"
         assert bank_information_dict['bic'] == "TEST BIC1"
-        assert bank_information_dict['application_id'] == 1
+        assert bank_information_dict['applicationId'] == 1
         assert 'offererId' not in bank_information_dict
         assert bank_information_dict['venueId'] == venue_id
 
@@ -1047,43 +952,14 @@ class CreateBankInformationWithTest:
         offerer = create_offerer(siren="793875019")
         PcObject.check_and_save(offerer)
         offerer_id = offerer.id
+        bank_information_provider = BankInformationProvider()
 
         # When
-        bank_information_dict = retrieve_bank_information_dict_from(application_details)
+        bank_information_dict = bank_information_provider.retrieve_bank_information(application_details)
 
         # Then
         assert bank_information_dict['iban'] == "TEST IBAN1"
         assert bank_information_dict['bic'] == "TEST BIC1"
-        assert bank_information_dict['application_id'] == 1
+        assert bank_information_dict['applicationId'] == 1
         assert bank_information_dict['offererId'] == offerer_id
         assert 'venueId' not in bank_information_dict
-
-
-@pytest.mark.standalone
-class GetLastUpdateForBankInformationTest:
-    @clean_database
-    def when_bank_information_table_is_empty_returns_1900_01_01(self, app):
-        # when
-        last_update = get_last_update_from_bank_information()
-
-        # then
-        assert last_update == datetime(1900, 1, 1)
-
-    @clean_database
-    def when_bank_information_table_has_max_update_2019_1_1_returns_2019_1_1(self, app):
-        # given
-        offerer = create_offerer(siren='793875019')
-        venue = create_venue(offerer, siret='79387501900056')
-
-        PcObject.check_and_save(venue)
-        venue_id = venue.id
-
-        bank_information = create_bank_information(date_modified_at_last_provider=datetime(2019, 1, 1),
-                                                   venue_id=venue_id, id_at_providers='79387501900056')
-        PcObject.check_and_save(bank_information)
-
-        # when
-        last_update = get_last_update_from_bank_information()
-
-        # then
-        assert last_update == datetime(2019, 1, 1)
