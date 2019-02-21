@@ -62,7 +62,6 @@ def make_final_recap_email_for_stock_with_event(stock):
                                                                         formatted_datetime)
     stock_bookings = find_all_ongoing_bookings_by_stock(stock)
     email_html = render_template('mails/offerer_final_recap_email.html',
-                                 is_final=True,
                                  booking_is_on_event=booking_is_on_event,
                                  number_of_bookings=len(stock_bookings),
                                  stock_name=stock.eventOccurrence.offer.event.name,
@@ -98,7 +97,6 @@ def make_offerer_booking_recap_email_after_user_action(booking, is_cancellation=
     else:
         formatted_datetime = None
     email_html = render_template('mails/offerer_recap_email_after_user_action.html',
-                                 is_final=False,
                                  is_cancellation=is_cancellation,
                                  booking_is_on_event=booking_is_on_event,
                                  number_of_bookings=len(stock_bookings),
@@ -186,7 +184,6 @@ def make_offerer_driven_cancellation_email_for_offerer(booking):
         date_in_tz = _get_event_datetime(booking.stock)
         stock_date_time = format_datetime(date_in_tz)
     email_html = render_template('mails/offerer_recap_email_after_offerer_cancellation.html',
-                                 is_final=False,
                                  booking_is_on_event=booking_is_on_event,
                                  user_name=user_name,
                                  user_email=user_email,
