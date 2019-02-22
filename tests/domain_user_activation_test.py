@@ -1,7 +1,7 @@
 from domain.user_activation import generate_activation_users_csv
 from models import ThingType
 from models.booking import ActivationUser
-from utils.test_utils import create_booking, create_user, create_stock, create_thing_offer, create_venue, create_offerer
+from tests.test_utils import create_booking, create_user, create_stock, create_thing_offer, create_venue, create_offerer
 
 
 class GenerateActivationUsersCsvTest:

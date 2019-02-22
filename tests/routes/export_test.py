@@ -7,10 +7,10 @@ import requests
 from models import PcObject
 from models.pc_object import serialize
 from tests.conftest import clean_database
-from utils.test_utils import API_URL, create_user, req_with_auth, create_user_offerer, \
+from tests.test_utils import API_URL, create_user, req_with_auth, create_user_offerer, \
     create_offerer, create_venue, create_event_occurrence, create_event_offer, \
     create_venue_activity, create_stock_with_thing_offer, create_stock_with_event_offer, \
-    create_offerer_activity, save_all_activities
+    save_all_activities
 from utils.human_ids import humanize
 
 

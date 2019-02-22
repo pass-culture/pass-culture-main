@@ -5,7 +5,7 @@ import pytest
 from models.pc_object import PcObject
 from tests.conftest import clean_database, TestClient
 from utils.human_ids import humanize
-from utils.test_utils import API_URL, create_booking, create_user, create_user_offerer, create_offerer, create_venue, create_stock_with_event_offer
+from tests.test_utils import API_URL, create_booking, create_user, create_user_offerer, create_offerer, create_venue, create_stock_with_event_offer
 
 
 @pytest.mark.standalone

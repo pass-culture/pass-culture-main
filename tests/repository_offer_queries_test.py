@@ -11,7 +11,7 @@ from repository.offer_queries import department_or_national_offers, \
     get_offers_for_recommendations_search, \
     get_active_offers_by_type
 from tests.conftest import clean_database
-from utils.test_utils import create_booking, \
+from tests.test_utils import create_booking, \
     create_event, \
     create_event_occurrence, \
     create_event_offer, \

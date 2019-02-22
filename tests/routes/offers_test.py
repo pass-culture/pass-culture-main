@@ -8,7 +8,7 @@ from models import PcObject, Venue, EventType, ThingType
 from models.db import db
 from tests.conftest import clean_database
 from utils.human_ids import dehumanize, humanize
-from utils.test_utils import API_URL, \
+from tests.test_utils import API_URL, \
     create_event, \
     create_event_offer, \
     create_n_mixed_offers_with_same_venue, \

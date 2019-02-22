@@ -4,8 +4,7 @@ from unittest.mock import patch, MagicMock
 import pytest
 
 from connectors.api_entreprises import ApiEntrepriseException, get_by_siren
-from tests.conftest import clean_database
-from utils.test_utils import create_offerer
+from tests.test_utils import create_offerer
 
 
 @pytest.mark.standalone

@@ -8,7 +8,7 @@ from local_providers.demarches_simplifiees_bank_information import UnknownRibAff
 from models import BankInformation, PcObject, LocalProviderEvent
 from models.local_provider_event import LocalProviderEventType
 from tests.conftest import clean_database
-from utils.test_utils import provider_test_without_mock, create_venue, create_offerer, create_bank_information
+from tests.test_utils import provider_test_without_mock, create_venue, create_offerer, create_bank_information
 
 
 @pytest.mark.standalone

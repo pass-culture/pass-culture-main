@@ -3,11 +3,10 @@ from datetime import datetime, timedelta
 import pytest
 
 from models import PcObject
-from models.db import db
 
 from repository.venue_queries import find_filtered_venues
 from tests.conftest import clean_database
-from utils.test_utils import create_venue, create_event_offer, create_venue_activity, \
+from tests.test_utils import create_venue, create_event_offer, create_venue_activity, \
     create_event_occurrence, create_offerer, create_thing_offer, create_stock_with_thing_offer, \
     create_user, create_user_offerer, create_stock_from_event_occurrence, save_all_activities
 

@@ -1,7 +1,7 @@
 from models.pc_object import PcObject
 from models.offer_type import EventType
 from utils.logger import logger
-from utils.test_utils import create_event
+from tests.test_utils import create_event
 
 def create_handmade_events():
     logger.info("create_handmade_events")

@@ -10,7 +10,7 @@ from recommendations_engine import create_recommendations_for_discovery, \
 from tests.conftest import clean_database
 from utils.date import strftime
 from utils.human_ids import humanize
-from utils.test_utils import create_mediation, \
+from tests.test_utils import create_mediation, \
     create_offerer, \
     create_recommendation, \
     create_stock_from_offer, \

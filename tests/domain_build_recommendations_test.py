@@ -4,7 +4,7 @@ import pytest
 
 from domain.build_recommendations import build_mixed_recommendations
 from models import Offer
-from utils.test_utils import create_recommendation, create_stock
+from tests.test_utils import create_recommendation, create_stock
 
 
 class MockedOffer(Offer):

@@ -7,7 +7,7 @@ from models import PcObject, ApiErrors
 from tests.conftest import clean_database
 from utils.human_ids import humanize
 from utils.includes import EVENT_OCCURRENCE_INCLUDES, OFFER_INCLUDES
-from utils.test_utils import create_event_occurrence, \
+from tests.test_utils import create_event_occurrence, \
                              create_event_offer, \
                              create_thing_offer, \
                              create_offerer, \

@@ -5,7 +5,7 @@ import pytest
 
 from domain.reimbursement import ReimbursementRules, find_all_booking_reimbursement, ReimbursementRule
 from models import Booking
-from utils.test_utils import create_booking_for_thing, create_booking_for_event
+from tests.test_utils import create_booking_for_thing, create_booking_for_event
 
 
 @pytest.mark.standalone

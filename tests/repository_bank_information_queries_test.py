@@ -5,7 +5,7 @@ import pytest
 from models import PcObject
 from repository.bank_information_queries import get_last_update_from_bank_information
 from tests.conftest import clean_database
-from utils.test_utils import create_offerer, create_venue, create_bank_information
+from tests.test_utils import create_offerer, create_venue, create_bank_information
 
 
 @pytest.mark.standalone

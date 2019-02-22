@@ -2,7 +2,7 @@ import secrets
 
 from models.pc_object import PcObject
 from utils.logger import logger
-from utils.test_utils import create_offerer
+from tests.test_utils import create_offerer
 
 def create_handmade_offerers():
     logger.info('create_handmade_offerers')

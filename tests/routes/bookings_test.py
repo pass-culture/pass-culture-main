@@ -8,7 +8,7 @@ from models.db import db
 from models.pc_object import serialize
 from tests.conftest import clean_database, TestClient
 from utils.human_ids import humanize
-from utils.test_utils import API_URL, create_stock_with_thing_offer, \
+from tests.test_utils import API_URL, create_stock_with_thing_offer, \
     create_thing_offer, create_deposit, create_stock_with_event_offer, create_venue, create_offerer, \
     create_recommendation, create_user, create_booking, create_event_offer, \
     create_event_occurrence, create_stock_from_event_occurrence, create_user_offerer

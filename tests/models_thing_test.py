@@ -2,7 +2,7 @@ import pytest
 
 from models import PcObject, ApiErrors, ThingType
 from tests.conftest import clean_database
-from utils.test_utils import create_thing, create_venue, create_offerer
+from tests.test_utils import create_thing
 
 
 def test_thing_type_find_from_sub_labels_returns_nothing_if_no_sub_labels():

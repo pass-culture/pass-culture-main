@@ -7,7 +7,7 @@ from recommendations_engine.offers import get_department_codes_from_user
 from repository.offer_queries import get_active_offers_by_type
 from sandboxes.scripts.utils.select import remove_every
 from utils.logger import logger
-from utils.test_utils import create_recommendation
+from tests.test_utils import create_recommendation
 
 ACTIVE_OFFERS_WITH_RECOMMENDATION_PER_USER_REMOVE_MODULO = 2
 

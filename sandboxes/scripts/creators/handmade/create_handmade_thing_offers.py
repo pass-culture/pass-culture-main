@@ -1,6 +1,6 @@
 from models.pc_object import PcObject
 from utils.logger import logger
-from utils.test_utils import create_thing_offer
+from tests.test_utils import create_thing_offer
 
 def create_handmade_thing_offers(things_by_name, venues_by_name):
     logger.info("create_handmade_thing_offers")

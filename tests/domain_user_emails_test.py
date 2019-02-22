@@ -10,7 +10,7 @@ from domain.user_emails import send_user_driven_cancellation_email_to_user, \
     send_reset_password_email, send_activation_notification_email
 from models import Offerer, UserOfferer, User, RightsType
 from utils.mailing import MailServiceException
-from utils.test_utils import create_user, create_booking, create_stock_with_event_offer, create_offerer, create_venue, \
+from tests.test_utils import create_user, create_booking, create_stock_with_event_offer, create_offerer, create_venue, \
     create_thing_offer, create_stock_with_thing_offer, create_mocked_bookings
 
 

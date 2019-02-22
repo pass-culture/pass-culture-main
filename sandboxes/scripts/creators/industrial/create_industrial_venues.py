@@ -3,7 +3,7 @@ import re
 from models.pc_object import PcObject
 from sandboxes.scripts.utils.venue_mocks import MOCK_NAMES
 from utils.logger import logger
-from utils.test_utils import create_venue
+from tests.test_utils import create_venue
 
 OFFERERS_WITH_PHYSICAL_VENUE_REMOVE_MODULO = 3
 OFFERERS_WITH_PHYSICAL_VENUE_WITH_SIRET_REMOVE_MODULO = OFFERERS_WITH_PHYSICAL_VENUE_REMOVE_MODULO * 2

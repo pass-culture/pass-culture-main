@@ -2,7 +2,7 @@ import pytest
 
 from domain.expenses import get_expenses
 from models import ThingType, EventType
-from utils.test_utils import create_booking_for_event, \
+from tests.test_utils import create_booking_for_event, \
     create_booking_for_thing
 
 

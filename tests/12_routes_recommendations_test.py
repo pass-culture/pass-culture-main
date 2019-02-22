@@ -5,7 +5,7 @@ from datetime import datetime
 from dateutil.parser import parse as parse_date
 
 from utils.config import BLOB_SIZE
-from utils.test_utils import API_URL, req_with_auth
+from tests.test_utils import API_URL, req_with_auth
 
 RECOMMENDATION_URL = API_URL + '/recommendations'
 

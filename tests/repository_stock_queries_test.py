@@ -6,7 +6,7 @@ from models import PcObject, ThingType
 from models.activity import load_activity
 from repository.stock_queries import find_stocks_of_finished_events_when_no_recap_sent, find_online_activation_stock
 from tests.conftest import clean_database
-from utils.test_utils import create_stock_from_event_occurrence, create_event_occurrence, create_event_offer, \
+from tests.test_utils import create_stock_from_event_occurrence, create_event_occurrence, create_event_offer, \
     create_venue, create_offerer, create_thing_offer, create_stock_from_offer
 
 

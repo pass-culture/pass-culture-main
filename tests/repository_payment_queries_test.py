@@ -6,7 +6,7 @@ from models import PcObject
 from models.payment_status import TransactionStatus, PaymentStatus
 from repository.payment_queries import find_transaction_checksum, find_error_payments
 from tests.conftest import clean_database
-from utils.test_utils import create_payment_transaction, create_payment, create_booking, create_user, create_deposit
+from tests.test_utils import create_payment_transaction, create_payment, create_booking, create_user, create_deposit
 
 
 @pytest.mark.standalone

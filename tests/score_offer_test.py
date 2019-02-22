@@ -2,7 +2,7 @@ from unittest.mock import patch
 
 from models import Offer, Event, Mediation
 from recommendations_engine.offers import score_offer
-from utils.test_utils import create_mediation
+from tests.test_utils import create_mediation
 
 
 def test_score_offer_returns_none_if_no_mediation_nor_thumbCount():

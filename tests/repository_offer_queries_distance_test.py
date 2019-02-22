@@ -5,7 +5,7 @@ from repository.offer_queries import get_offers_for_recommendations_search
 
 from tests.conftest import clean_database
 
-from utils.test_utils import create_offerer, \
+from tests.test_utils import create_offerer, \
     create_venue, \
     create_event, \
     create_event_offer, \

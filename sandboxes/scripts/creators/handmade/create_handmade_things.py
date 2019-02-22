@@ -1,7 +1,7 @@
 from models.offer_type import ThingType
 from models.pc_object import PcObject
 from utils.logger import logger
-from utils.test_utils import create_thing
+from tests.test_utils import create_thing
 
 def create_handmade_things():
     logger.info('create_handmade_things')

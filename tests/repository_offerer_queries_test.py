@@ -11,9 +11,9 @@ from repository.offerer_queries import find_all_offerers_with_managing_user_info
     find_filtered_offerers
 from repository.user_queries import find_all_emails_of_user_offerers_admins
 from tests.conftest import clean_database
-from utils.test_utils import create_user, create_offerer, create_user_offerer, create_venue, \
-    create_offerer_activity, create_event_offer, create_thing_offer, create_event_occurrence, \
-    create_stock_with_thing_offer, create_stock_from_event_occurrence, save_all_activities
+from tests.test_utils import create_user, create_offerer, create_user_offerer, create_venue, \
+    create_event_offer, create_thing_offer, create_event_occurrence, \
+    create_stock_with_thing_offer, create_stock_from_event_occurrence
 
 
 @pytest.mark.standalone

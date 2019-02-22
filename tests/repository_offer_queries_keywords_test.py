@@ -1,9 +1,9 @@
 import pytest
 
-from models import PcObject, Offer
+from models import PcObject
 from repository.offer_queries import filter_offers_with_keywords_string, build_offer_search_base_query
 from tests.conftest import clean_database
-from utils.test_utils import create_event, create_thing, create_offerer, create_venue, create_event_offer, \
+from tests.test_utils import create_event, create_thing, create_offerer, create_venue, create_event_offer, \
     create_thing_offer
 
 

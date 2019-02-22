@@ -11,7 +11,7 @@ from models.db import db
 from models.pc_object import serialize
 from tests.conftest import clean_database
 from utils.human_ids import dehumanize, humanize
-from utils.test_utils import API_URL, \
+from tests.test_utils import API_URL, \
     create_booking, \
     create_deposit, \
     create_event_offer, \

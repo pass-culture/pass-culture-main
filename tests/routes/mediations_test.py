@@ -9,7 +9,7 @@ from models import PcObject
 from models.db import db
 from tests.conftest import clean_database
 from utils.human_ids import humanize
-from utils.test_utils import API_URL, \
+from tests.test_utils import API_URL, \
     create_user, \
     req_with_auth, \
     create_event_offer, \

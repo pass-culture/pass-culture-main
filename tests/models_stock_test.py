@@ -3,7 +3,7 @@ import pytest
 from models import Stock, ApiErrors, PcObject
 from models.pc_object import DeletedRecordException
 from tests.conftest import clean_database
-from utils.test_utils import create_stock_with_event_offer, create_offerer, create_venue, create_event_offer, \
+from tests.test_utils import create_stock_with_event_offer, create_offerer, create_venue, create_event_offer, \
     create_event_occurrence, create_stock_from_offer, create_thing_offer
 
 

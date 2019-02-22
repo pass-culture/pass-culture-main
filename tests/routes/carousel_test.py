@@ -7,7 +7,7 @@ from models.db import db
 from models.mediation import Mediation, upsertTutoMediations
 from tests.conftest import clean_database, TestClient
 from utils.human_ids import humanize
-from utils.test_utils import API_URL, \
+from tests.test_utils import API_URL, \
     create_event_occurrence, \
     create_event_offer, \
     create_mediation, \

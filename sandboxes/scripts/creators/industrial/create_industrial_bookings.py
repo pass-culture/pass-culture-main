@@ -2,7 +2,7 @@ from models.offer_type import EventType
 from models.pc_object import PcObject
 from sandboxes.scripts.utils.select import remove_every
 from utils.logger import logger
-from utils.test_utils import create_booking
+from tests.test_utils import create_booking
 
 RECOMMENDATIONS_WITH_BOOKINGS_REMOVE_RATIO = 3
 RECOMMENDATIONS_WITH_SEVERAL_STOCKS_REMOVE_MODULO = 2

@@ -3,7 +3,7 @@ import pytest
 from models.pc_object import PcObject
 from repository.keywords_queries import get_keywords_analyzer
 from tests.conftest import clean_database
-from utils.test_utils import create_event, \
+from tests.test_utils import create_event, \
     create_event_offer, \
     create_offerer, \
     create_venue

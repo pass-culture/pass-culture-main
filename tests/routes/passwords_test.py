@@ -6,7 +6,7 @@ from domain.password import RESET_PASSWORD_TOKEN_LENGTH
 from models import PcObject
 from models.db import db
 from tests.conftest import clean_database
-from utils.test_utils import API_URL, req, req_with_auth, create_user
+from tests.test_utils import API_URL, req, req_with_auth, create_user
 
 
 @clean_database

@@ -17,7 +17,7 @@ from models.venue_provider import VenueProvider
 from sandboxes.scripts.creators.handmade import save_handmade_sandbox
 from utils.human_ids import dehumanize
 from utils.logger import logger
-from utils.test_utils import assertCreatedCounts, \
+from tests.test_utils import assertCreatedCounts, \
     assert_created_thumbs, \
     assertEmptyDb, \
     provider_test, \

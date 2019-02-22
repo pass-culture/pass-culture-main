@@ -8,7 +8,7 @@ from models.pc_object import PcObject
 from models.provider import Provider
 from models.venue_provider import VenueProvider
 from tests.conftest import clean_database
-from utils.test_utils import create_offerer, create_venue, create_thing, create_thing_offer, provider_test
+from tests.test_utils import create_offerer, create_venue, create_thing, create_thing_offer, provider_test
 import requests
 
 savedCounts = {}

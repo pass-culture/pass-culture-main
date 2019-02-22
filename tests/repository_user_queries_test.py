@@ -5,7 +5,7 @@ import pytest
 from models import PcObject
 from repository.user_queries import get_all_users_wallet_balances
 from tests.conftest import clean_database
-from utils.test_utils import create_user, create_offerer, create_venue, create_thing_offer, create_deposit, \
+from tests.test_utils import create_user, create_offerer, create_venue, create_thing_offer, create_deposit, \
     create_stock, create_booking
 
 

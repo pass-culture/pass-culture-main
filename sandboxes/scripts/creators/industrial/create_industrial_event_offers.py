@@ -1,6 +1,6 @@
 from models.pc_object import PcObject
 from utils.logger import logger
-from utils.test_utils import create_event_offer
+from tests.test_utils import create_event_offer
 
 EVENTS_PER_OFFERER_WITH_PHYSICAL_VENUE = 5
 

@@ -1,6 +1,6 @@
 from models.pc_object import PcObject
 from utils.logger import logger
-from utils.test_utils import create_booking
+from tests.test_utils import create_booking
 
 def create_handmade_bookings(recommendations_by_name, stocks_by_name, users_by_name):
     logger.info('create_handmade_bookings')

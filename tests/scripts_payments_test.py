@@ -11,7 +11,7 @@ from models.payment_status import TransactionStatus
 from scripts.payments import generate_new_payments, send_transactions, send_payments_details, send_wallet_balances, \
     send_payments_report
 from tests.conftest import clean_database, mocked_mail
-from utils.test_utils import create_offerer, create_venue, create_thing_offer, create_stock_from_offer, \
+from tests.test_utils import create_offerer, create_venue, create_thing_offer, create_stock_from_offer, \
     create_booking, create_user, create_deposit, create_payment
 
 

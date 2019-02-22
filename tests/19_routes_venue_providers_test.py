@@ -1,11 +1,10 @@
 from time import sleep
 
 import pytest
-import requests
 
 from models.provider import Provider
 from utils.human_ids import humanize
-from utils.test_utils import API_URL, req_with_auth, check_open_agenda_api_is_down
+from tests.test_utils import API_URL, req_with_auth, check_open_agenda_api_is_down
 
 
 def test_10_delete_venue_provider():

@@ -4,7 +4,7 @@ from models import PcObject, Offer
 from models.db import db
 from tests.conftest import clean_database, TestClient
 from utils.human_ids import humanize, dehumanize
-from utils.test_utils import create_user, API_URL, create_venue, create_offerer, create_thing, \
+from tests.test_utils import create_user, API_URL, create_venue, create_offerer, create_thing, \
     create_thing_offer
 
 

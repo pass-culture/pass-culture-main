@@ -1,13 +1,10 @@
-from pprint import pprint
-
 import pytest
-from flask import jsonify
 
 from models import Stock, PcObject
 from tests.conftest import clean_database
 from utils.human_ids import humanize
 from utils.rest import handle_rest_get_list
-from utils.test_utils import create_stock_from_event_occurrence, create_offerer, create_event_occurrence, \
+from tests.test_utils import create_stock_from_event_occurrence, create_offerer, create_event_occurrence, \
     create_event_offer, create_venue
 
 

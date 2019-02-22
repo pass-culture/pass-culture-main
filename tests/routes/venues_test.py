@@ -1,12 +1,10 @@
 import pytest
-from flask import session
 
-import requests
 from models import PcObject, Venue
 from models.db import db
 from tests.conftest import clean_database
 from utils.human_ids import humanize
-from utils.test_utils import API_URL, req_with_auth, create_venue, create_offerer, create_user, create_user_offerer
+from tests.test_utils import API_URL, req_with_auth, create_venue, create_offerer, create_user, create_user_offerer
 
 
 

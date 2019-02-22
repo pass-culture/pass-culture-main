@@ -1,6 +1,6 @@
 from models.pc_object import PcObject
 from utils.logger import logger
-from utils.test_utils import create_user,\
+from tests.test_utils import create_user,\
                              USER_TEST_ADMIN_EMAIL,\
                              USER_TEST_ADMIN_PASSWORD
 

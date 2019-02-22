@@ -1,8 +1,8 @@
 import pytest
 
-from models import Deposit, PcObject, User
+from models import Deposit, PcObject
 from tests.conftest import clean_database
-from utils.test_utils import create_user
+from tests.test_utils import create_user
 
 
 @pytest.mark.standalone

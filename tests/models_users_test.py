@@ -5,7 +5,7 @@ import pytest
 
 from models import ApiErrors, PcObject, RightsType
 from tests.conftest import clean_database
-from utils.test_utils import create_user, create_offerer, create_user_offerer, create_deposit, create_booking, \
+from tests.test_utils import create_user, create_offerer, create_user_offerer, create_deposit, create_booking, \
     create_stock, create_venue, create_thing_offer
 
 

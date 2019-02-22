@@ -6,7 +6,7 @@ from sandboxes.scripts.utils.event_mocks import MOCK_ACTIVATION_DESCRIPTION, \
                                                 MOCK_DESCRIPTIONS, \
                                                 MOCK_NAMES
 from utils.logger import logger
-from utils.test_utils import create_event
+from tests.test_utils import create_event
 
 
 EVENT_COUNTS_PER_TYPE = 7

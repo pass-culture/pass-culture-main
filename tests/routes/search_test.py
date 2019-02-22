@@ -6,7 +6,7 @@ from models import PcObject, \
     EventType
 from tests.conftest import clean_database, TestClient
 from utils.date import strftime
-from utils.test_utils import API_URL, \
+from tests.test_utils import API_URL, \
     create_event_occurrence, \
     create_stock_from_event_occurrence, \
     create_event_offer, \

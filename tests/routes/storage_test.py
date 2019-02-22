@@ -4,7 +4,7 @@ from models import PcObject
 from tests.conftest import clean_database
 from tests.files.images import ONE_PIXEL_PNG
 from utils.human_ids import humanize
-from utils.test_utils import API_URL, create_venue, create_offerer, create_user, req_with_auth, \
+from tests.test_utils import API_URL, create_venue, create_offerer, create_user, req_with_auth, \
     create_mediation, create_event_offer, create_user_offerer
 
 

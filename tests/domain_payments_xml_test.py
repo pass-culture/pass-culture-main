@@ -11,7 +11,7 @@ from lxml.etree import DocumentInvalid
 from domain.payments import validate_transaction_file_structure, generate_transaction_file, \
     read_message_id_in_transaction_file, \
     generate_file_checksum
-from utils.test_utils import create_payment, create_offerer, create_user, create_venue, create_stock_from_offer, \
+from tests.test_utils import create_payment, create_offerer, create_user, create_venue, create_stock_from_offer, \
     create_booking, create_thing_offer
 
 XML_NAMESPACE = {'ns': 'urn:iso:std:iso:20022:tech:xsd:pain.001.001.03'}

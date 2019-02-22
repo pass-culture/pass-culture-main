@@ -7,7 +7,7 @@ from models.db import db
 from models.pc_object import PcObject, serialize
 from tests.conftest import clean_database, TestClient
 from utils.human_ids import dehumanize, humanize
-from utils.test_utils import API_URL, create_user, create_offerer, create_venue, \
+from tests.test_utils import API_URL, create_user, create_offerer, create_venue, \
     create_stock_with_event_offer, create_booking, create_event_offer, create_user_offerer, create_event_occurrence, \
     create_recommendation, create_stock_from_event_occurrence
 

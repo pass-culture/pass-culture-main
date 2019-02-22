@@ -7,7 +7,7 @@ from repository.recommendation_queries import keep_only_bookable_stocks, \
     update_read_recommendations
 from tests.conftest import clean_database
 from utils.human_ids import humanize
-from utils.test_utils import create_recommendation, create_event_offer, create_offerer, \
+from tests.test_utils import create_recommendation, create_event_offer, create_offerer, \
     create_venue, create_user, create_stock_from_event_occurrence, create_event_occurrence, create_stock_from_offer, \
     create_thing_offer, create_mediation
 

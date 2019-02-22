@@ -10,7 +10,7 @@ from models.pc_object import serialize
 from models.user import User
 from models.user_offerer import UserOfferer, RightsType
 from tests.conftest import clean_database
-from utils.test_utils import API_URL, req, create_user, create_user_offerer
+from tests.test_utils import API_URL, req, create_user, create_user_offerer
 
 BASE_DATA = {
     'email': 'toto@btmx.fr',

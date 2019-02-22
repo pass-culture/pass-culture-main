@@ -10,7 +10,7 @@ from repository.booking_queries import find_all_ongoing_bookings_by_stock, \
     find_final_offerer_bookings, find_date_used, find_user_activation_booking, get_existing_tokens, \
     find_active_bookings_by_user_id, find_by
 from tests.conftest import clean_database
-from utils.test_utils import create_booking, \
+from tests.test_utils import create_booking, \
     create_deposit, \
     create_offerer, \
     create_stock_with_event_offer, \

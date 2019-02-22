@@ -1,7 +1,7 @@
 from models.pc_object import PcObject
 from sandboxes.scripts.utils.select import remove_every
 from utils.logger import logger
-from utils.test_utils import create_stock_from_offer
+from tests.test_utils import create_stock_from_offer
 
 THING_OFFERS_WITH_STOCK_REMOVE_MODULO = 3
 

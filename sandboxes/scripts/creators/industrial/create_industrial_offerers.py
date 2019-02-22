@@ -1,9 +1,7 @@
-from models import Offerer
 from models.pc_object import PcObject
-from repository.offerer_queries import check_if_siren_already_exists
 from sandboxes.scripts.utils.offerer_mocks import MOCK_NAMES
 from utils.logger import logger
-from utils.test_utils import create_offerer
+from tests.test_utils import create_offerer
 
 OFFERERS_WITH_IBAN_REMOVE_MODULO = 2
 

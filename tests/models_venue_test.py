@@ -3,7 +3,7 @@ import pytest
 from models import ApiErrors, PcObject
 from models.venue import TooManyVirtualVenuesException
 from tests.conftest import clean_database
-from utils.test_utils import create_offerer, create_venue, create_thing_offer, create_event_offer
+from tests.test_utils import create_offerer, create_venue, create_thing_offer, create_event_offer
 
 
 @clean_database

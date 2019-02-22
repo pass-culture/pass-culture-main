@@ -7,7 +7,7 @@ from domain.admin_emails import maybe_send_offerer_validation_email, send_venue_
     send_payment_details_email, send_wallet_balances_email, send_payments_report_emails, \
     send_offer_creation_notification_to_support
 from utils.mailing import MailServiceException
-from utils.test_utils import create_offerer, create_user, \
+from tests.test_utils import create_offerer, create_user, \
     create_user_offerer, create_venue, create_thing_offer
 
 

@@ -4,7 +4,7 @@ import pytest
 
 from models import PcObject, UserSession
 from tests.conftest import clean_database
-from utils.test_utils import create_user, API_URL, req, req_with_auth
+from tests.test_utils import create_user, API_URL, req, req_with_auth
 
 
 @clean_database

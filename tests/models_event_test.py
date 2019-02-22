@@ -1,5 +1,5 @@
 from models import Event, EventType
-from utils.test_utils import create_event
+from tests.test_utils import create_event
 
 
 def test_an_event_is_always_physical_and_cannot_be_digital():

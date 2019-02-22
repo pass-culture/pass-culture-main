@@ -5,7 +5,7 @@ import pytest
 from models import Offer, Thing, Event, PcObject, ApiErrors, EventOccurrence, ThingType
 from tests.conftest import clean_database
 from utils.date import DateTimes
-from utils.test_utils import create_event_occurrence, create_thing, create_thing_offer, create_offerer, create_venue
+from tests.test_utils import create_event_occurrence, create_thing, create_thing_offer, create_offerer, create_venue
 
 now = datetime.utcnow()
 two_days_ago = now - timedelta(days=2)

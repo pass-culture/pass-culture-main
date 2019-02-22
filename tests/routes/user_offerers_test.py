@@ -5,7 +5,7 @@ import pytest
 from models import PcObject
 from tests.conftest import clean_database
 from utils.human_ids import humanize
-from utils.test_utils import create_user, \
+from tests.test_utils import create_user, \
     create_user_offerer, \
     req_with_auth, create_offerer, API_URL
 

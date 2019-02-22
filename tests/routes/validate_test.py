@@ -5,9 +5,8 @@ import pytest
 from models import Offerer, PcObject
 from models.db import db
 from tests.conftest import clean_database
-from tests.files.transactions import VALID_TRANSACTION, INVALID_TRANSACTION, \
-    VALID_TRANSACTION_WITH_MALFORMED_XML_DECLARATION
-from utils.test_utils import req, create_user, req_with_auth, API_URL, create_offerer, create_user_offerer, \
+from tests.files.transactions import VALID_TRANSACTION
+from tests.test_utils import req, create_user, req_with_auth, API_URL, create_offerer, create_user_offerer, \
     create_venue, create_payment_transaction
 
 

@@ -6,7 +6,7 @@ import pytest
 from domain.expenses import SUBVENTION_PHYSICAL_THINGS, SUBVENTION_DIGITAL_THINGS
 from models import ApiErrors, Booking, Stock, EventOccurrence, Offer, Thing, ThingType
 from utils.human_ids import humanize
-from utils.test_utils import create_booking_for_thing
+from tests.test_utils import create_booking_for_thing
 from validation.bookings import check_expenses_limits, check_booking_is_cancellable
 
 

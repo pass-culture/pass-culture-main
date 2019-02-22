@@ -3,7 +3,7 @@ from tests.conftest import clean_database
 
 from sandboxes.scripts.save_sandbox import save_sandbox
 from utils.logger import logger
-from utils.test_utils import assertCreatedCounts, \
+from tests.test_utils import assertCreatedCounts, \
                              saveCounts
 
 @clean_database

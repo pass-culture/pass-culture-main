@@ -5,7 +5,7 @@ from repository.user_offerer_queries import find_first_by_user_id, \
                                             find_user_offerer_email, \
                                             filter_query_where_user_is_user_offerer_and_is_validated
 from tests.conftest import clean_database
-from utils.test_utils import create_event, \
+from tests.test_utils import create_event, \
                              create_event_offer, \
                              create_thing, \
                              create_thing_offer, \
