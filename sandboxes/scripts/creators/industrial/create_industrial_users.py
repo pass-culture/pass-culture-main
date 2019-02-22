@@ -1,6 +1,6 @@
 from models.pc_object import PcObject
 from utils.logger import logger
-from utils.test_utils import create_user
+from tests.test_utils import create_user
 from sandboxes.scripts.utils.user_tags import JEUNES_TAGS, PROS_TAGS
 
 ADMINS_COUNT = 1
