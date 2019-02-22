@@ -1,10 +1,12 @@
 from utils.config import API_URL, ENV
 
 
-def check_origin_header_validity(header, endpoint):
+def check_origin_header_validity(header, endpoint, path):
     endpoint_exceptions = _get_endpoint_exceptions()
-    if endpoint in endpoint_exceptions:
+
+    if endpoint in endpoint_exceptions or 'admin' in path:
         return True
+
     white_list = _get_origin_header_whitelist()
     return header in white_list
 

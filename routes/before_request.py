@@ -12,5 +12,6 @@ class InvalidOriginHeader(Exception):
 def check_valid_origin_header():
     header = request.headers.get('origin')
     endpoint = request.endpoint
-    if not check_origin_header_validity(header, endpoint):
+
+    if not check_origin_header_validity(header, endpoint, request.path):
         raise InvalidOriginHeader

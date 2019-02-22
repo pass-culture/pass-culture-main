@@ -10,7 +10,7 @@ def test_is_valid_header_when_is_dev_and_header_is_local_host_for_normal_endpoin
 
     # When
     with patch('validation.headers.ENV', 'development'):
-        is_valid_header = check_origin_header_validity(header_origin, endpoint)
+        is_valid_header = check_origin_header_validity(header_origin, endpoint, '/')
 
     # Then
     assert is_valid_header
@@ -22,7 +22,7 @@ def test_is_valid_header_when_is_testing_and_header_is_local_host_for_normal_end
 
     # When
     with patch('validation.headers.ENV', 'testing'):
-        is_valid_header = check_origin_header_validity(header_origin, endpoint)
+        is_valid_header = check_origin_header_validity(header_origin, endpoint, '/')
 
     # Then
     assert is_valid_header
@@ -35,7 +35,7 @@ def test_is_not_valid_header_when_is_staging_and_header_is_local_host_for_normal
     # When
     with patch('validation.headers.ENV', 'staging'), patch('validation.headers.API_URL',
                                                            'https://backend.passculture-staging.beta.gouv.fr'):
-        is_valid_header = check_origin_header_validity(header_origin, endpoint)
+        is_valid_header = check_origin_header_validity(header_origin, endpoint, '/')
 
     # Then
     assert not is_valid_header
@@ -49,7 +49,7 @@ def test_is_valid_header_when_header_not_in_whitelist_for_exception_endpoint():
     # When
     with patch('validation.headers.ENV', 'staging'), patch('validation.headers.API_URL',
                                                            'https://backend.passculture-staging.beta.gouv.fr'):
-        is_valid_header = check_origin_header_validity(header_origin, endpoint)
+        is_valid_header = check_origin_header_validity(header_origin, endpoint, '/')
 
     # Then
     assert is_valid_header
@@ -63,7 +63,7 @@ def test_is_valid_header_when_is_staging_and_header_is_pro_passculture_staging_f
     # When
     with patch('validation.headers.ENV', 'staging'), patch('validation.headers.API_URL',
                                                            'https://backend.passculture-staging.beta.gouv.fr'):
-        is_valid_header = check_origin_header_validity(header_origin, endpoint)
+        is_valid_header = check_origin_header_validity(header_origin, endpoint, '/')
 
     # Then
     assert is_valid_header
@@ -77,7 +77,7 @@ def test_is_valid_header_when_is_staging_and_header_is_app_passculture_staging_f
     # When
     with patch('validation.headers.ENV', 'staging'), patch('validation.headers.API_URL',
                                                            'https://backend.passculture-staging.beta.gouv.fr'):
-        is_valid_header = check_origin_header_validity(header_origin, endpoint)
+        is_valid_header = check_origin_header_validity(header_origin, endpoint, '/')
 
     # Then
     assert is_valid_header
@@ -91,7 +91,7 @@ def test_is_not_valid_header_when_not_staging_not_dev_and_header_is_app_passcult
     # When
     with patch('validation.headers.ENV', 'production'), patch('validation.headers.API_URL',
                                                               'https://backend.passculture.beta.gouv.fr'):
-        is_valid_header = check_origin_header_validity(header_origin, endpoint)
+        is_valid_header = check_origin_header_validity(header_origin, endpoint, '/')
 
     # Then
     assert not is_valid_header
@@ -105,7 +105,7 @@ def test_is_valid_header_when_not_staging_not_dev_for_exception_endpoint_and_exc
     # When
     with patch('validation.headers.ENV', 'production'), patch('validation.headers.API_URL',
                                                               'https://backend.passculture.beta.gouv.fr'):
-        is_valid_header = check_origin_header_validity(header_origin, endpoint)
+        is_valid_header = check_origin_header_validity(header_origin, endpoint, '/')
 
     # Then
     assert is_valid_header
@@ -119,7 +119,7 @@ def test_is_valid_header_when_not_staging_not_dev_and_header_is_app_passculture_
     # When
     with patch('validation.headers.ENV', 'production'), patch('validation.headers.API_URL',
                                                               'https://backend.passculture.beta.gouv.fr'):
-        is_valid_header = check_origin_header_validity(header_origin, endpoint)
+        is_valid_header = check_origin_header_validity(header_origin, endpoint, '/')
 
     # Then
     assert is_valid_header
@@ -133,7 +133,7 @@ def test_not_valid_header_when_not_staging_not_dev_and_header_is_pro_passculture
     # When
     with patch('validation.headers.ENV', 'production'), patch('validation.headers.API_URL',
                                                               'https://backend.passculture.beta.gouv.fr'):
-        is_valid_header = check_origin_header_validity(header_origin, endpoint)
+        is_valid_header = check_origin_header_validity(header_origin, endpoint, '/')
 
     # Then
     assert is_valid_header
@@ -147,7 +147,7 @@ def test_is_valid_header_when_not_staging_not_dev_and_header_is_pro_passculture_
     # When
     with patch('validation.headers.ENV', 'production'), patch('validation.headers.API_URL',
                                                               'https://backend.passculture.beta.gouv.fr'):
-        is_valid_header = check_origin_header_validity(header_origin, endpoint)
+        is_valid_header = check_origin_header_validity(header_origin, endpoint, '/')
 
     # Then
     assert is_valid_header
@@ -161,7 +161,7 @@ def test_any_origin_header_is_valid_on_endpoint_validate_venue():
     # When
     with patch('validation.headers.ENV', 'production'), patch('validation.headers.API_URL',
                                                               'https://backend.passculture.beta.gouv.fr'):
-        is_valid_header = check_origin_header_validity(header_origin, endpoint)
+        is_valid_header = check_origin_header_validity(header_origin, endpoint, '/')
 
     # Then
     assert is_valid_header

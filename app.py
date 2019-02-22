@@ -1,10 +1,13 @@
 import os
 
 from flask import Flask
+from flask_admin import Admin
+from flask_admin.contrib.sqla import ModelView
 from flask_cors import CORS
 from flask_login import LoginManager
 from mailjet_rest import Client
 
+from admin.configuration import install_admin_views
 from local_providers.install import install_local_providers
 from models.db import db
 from models.install import install_models
@@ -17,6 +20,7 @@ from utils.mailing import get_contact, \
 
 app = Flask(__name__, static_url_path='/static')
 login_manager = LoginManager()
+admin = Admin(name='pC Admin', url='/pc/admin', template_mode='bootstrap3')
 
 app.secret_key = os.environ.get('FLASK_SECRET', '+%+3Q23!zbc+!Dd@')
 app.json_encoder = EnumJSONEncoder
@@ -29,7 +33,9 @@ app.config['REMEMBER_COOKIE_DURATION'] = 90 * 24 * 3600
 app.config['PERMANENT_SESSION_LIFETIME'] = 90 * 24 * 3600
 app.config['REMEMBER_COOKIE_HTTPONLY'] = True
 app.config['REMEMBER_COOKIE_SECURE'] = True
+app.config['FLASK_ADMIN_SWATCH'] = 'flatly'
 
+admin.init_app(app)
 db.init_app(app)
 login_manager.init_app(app)
 cors = CORS(app,
@@ -45,11 +51,13 @@ with app.app_context():
     install_local_providers()
     import utils.login_manager
     import routes
+    install_admin_views(admin, db.session)
 
     app.mailjet_client = Client(auth=(MAILJET_API_KEY, MAILJET_API_SECRET), version='v3')
 
     app.get_contact = get_contact
     app.subscribe_newsletter = subscribe_newsletter
+
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))

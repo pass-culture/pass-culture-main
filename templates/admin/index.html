@@ -1,0 +1,13 @@
+{% extends 'admin/master.html' %}
+
+{% block body %}
+    {% if current_user.is_authenticated and current_user.isAdmin %}
+        <div class="alert alert-success" role="alert">
+            Bienvenue dans l'admin de pass Culture !
+        </div>
+    {% else %}
+        <div class="alert alert-danger" role="alert">
+            Vous n'avez pas les droits nécessaires pour accéder à cette page.
+        </div>
+    {% endif %}
+{% endblock %}
