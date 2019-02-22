@@ -167,7 +167,7 @@ def create_stock_with_event_offer(
         is_soft_deleted=False,
         event_type=EventType.JEUX,
         name='Mains, sorts et papiers',
-        offer_id=1):
+        offer_id=None):
     stock = Stock()
     stock.offerer = offerer
     stock.price = price
