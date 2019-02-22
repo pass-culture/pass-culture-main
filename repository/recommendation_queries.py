@@ -63,7 +63,7 @@ def find_recommendations_for_user_matching_offers_and_search(user_id=None, offer
 
     if search is not None:
         query = query.filter(Recommendation.search == search)
-
+        
     return query.all()
 
 

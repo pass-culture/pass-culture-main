@@ -725,3 +725,32 @@ class Get:
             # Then
             assert response.status_code == 200
             assert len(response.json()) == 0
+
+        @clean_database
+        def when_searching_by_matching_keywords_but_recommendations_has_no_stock(self, app):
+            # Given
+            user = create_user(email='test@email.com', password='P@55w0rd')
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            thing = create_thing(thing_name='Lire un livre de Jazz')
+            thing_offer = create_thing_offer(venue, thing)
+            offer = create_event_offer(venue, event_name='Training in Modern Jazz')
+
+            event_occurrence = create_event_occurrence(offer, beginning_datetime=self.in_one_hour,
+                                                       end_datetime=self.ten_days_from_now)
+
+            event_recommendation = create_recommendation(offer, user)
+            thing_recommendation = create_recommendation(thing_offer, user)
+            event_stock = create_stock_from_event_occurrence(event_occurrence, available=0)
+            thing_stock = create_stock(price=12, available=5, offer=thing_offer)
+
+            PcObject.check_and_save(event_stock, event_recommendation, thing_recommendation, thing_stock)
+
+            # When
+            response = TestClient().with_auth(user.email, user.clearTextPassword).get(
+                RECOMMENDATION_URL + '?keywords=Jazz'
+            )
+
+            # Then
+            assert response.status_code == 200
+            assert len(response.json()) == 1

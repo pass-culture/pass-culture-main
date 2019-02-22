@@ -47,7 +47,7 @@ def bookable_offers(query, offer_type):
         query = query.filter(Offer.eventOccurrences.any(EventOccurrence.beginningDatetime > datetime.utcnow()))
         logger.debug(lambda: '(reco) future events.count ' + str(query.count()))
 
-    query = _filter_bookable_offers(query)
+    query = _filter_bookable_offers_for_discovery(query)
     logger.debug(lambda: '(reco) bookable .count ' + str(query.count()))
     return query
 
@@ -162,7 +162,7 @@ def get_offers_for_recommendations_search(
     # the offer with event that has NO event occurrence
     # Do we exactly want this ?
 
-    query = _filter_recommendable_offers(build_offer_search_base_query())
+    query = _filter_recommendable_offers_for_search(build_offer_search_base_query())
 
     if max_distance is not None and latitude is not None and longitude is not None:
         distance_instrument = get_sql_geo_distance_in_kilometers(
@@ -229,6 +229,9 @@ def find_offers_with_filter_parameters(
 
     return query
 
+def _has_remaining_stock_predicate():
+    return (Stock.available == None) | (Stock.available > Booking.query.filter(Booking.stockId == Stock.id)
+        .statement.with_only_columns([func.coalesce(func.sum(Booking.quantity), 0)]))
 
 def find_searchable_offer(offer_id):
     return Offer.query.filter_by(id=offer_id) \
@@ -236,8 +239,7 @@ def find_searchable_offer(offer_id):
         .filter(Venue.validationToken == None) \
         .first()
 
-
-def _filter_recommendable_offers(offer_query):
+def _filter_recommendable_offers_for_search(offer_query):
     join_on_event_occurrence = Offer.id == EventOccurrence.offerId
     join_on_stock = (Stock.offerId == Offer.id) | (Stock.eventOccurrenceId == EventOccurrence.id)
 
@@ -252,7 +254,8 @@ def _filter_recommendable_offers(offer_query):
         .filter(Stock.isSoftDeleted == False) \
         .filter(stock_can_still_be_booked) \
         .filter(event_has_not_began_yet | offer_is_on_a_thing) \
-        .filter((Offerer.validationToken == None) & (Offerer.isActive == True))
+        .filter((Offerer.validationToken == None) & (Offerer.isActive == True)) \
+        .filter(_has_remaining_stock_predicate())
 
     return offer_query
 
@@ -274,18 +277,16 @@ def find_activation_offers(departement_code: str) -> List[Offer]:
         .filter(Event.type == str(EventType.ACTIVATION)) \
         .filter(match_department_or_is_national)
 
-    query = _filter_bookable_offers(query)
+    query = _filter_bookable_offers_for_discovery(query)
 
     return query
 
 
-def _filter_bookable_offers(query):
+def _filter_bookable_offers_for_discovery(query):
     return query.filter((Stock.isSoftDeleted == False)
                         & ((Stock.bookingLimitDatetime == None)
                            | (Stock.bookingLimitDatetime > datetime.utcnow()))
-                        & ((Stock.available == None) |
-                           (Stock.available > Booking.query.filter(Booking.stockId == Stock.id)
-                            .statement.with_only_columns([func.coalesce(func.sum(Booking.quantity), 0)]))))
+                        & _has_remaining_stock_predicate())
 
 
 def count_offers_for_things_only_by_venue_id(venue_id):

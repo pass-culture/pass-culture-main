@@ -532,7 +532,7 @@ class Put:
             assert humanize(offer3.id) in offer_ids
             assert humanize(recommendation_offer4.id) in recommendation_ids
             assert humanize(recommendation_offer3.id) in recommendation_ids
-    
+
         @clean_database
         def when_existing_recommendations_are_invalid(self, app):
             # given
@@ -605,7 +605,7 @@ class Put:
             assert len(response.json()) == 2
 
         @clean_database
-        def test_carousel_recommendations_should_not_include_search_recommendations(app):
+        def test_discovery_recommendations_should_not_include_search_recommendations(self, app):
             # Given
             user = create_user()
             offerer = create_offerer()
@@ -617,17 +617,17 @@ class Put:
             offer2 = create_thing_offer(venue_outside_dept, thumb_count=0)
             stock2 = create_stock_from_offer(offer2, price=0)
             mediation2 = create_mediation(offer2, is_active=True)
-        
+
             recommendation = create_recommendation(offer=offer2, user=user, mediation=mediation2, search="bla")
-        
+
             PcObject.check_and_save(user, stock1, mediation1, stock2, mediation2, recommendation)
             db.session.refresh(offer2)
             db.session.refresh(recommendation)
             auth_request = TestClient().with_auth(user.email, user.clearTextPassword)
-        
+
             # When
             recommendations_req = auth_request.put(RECOMMENDATION_URL, json={})
-        
+
             # Then
             assert recommendations_req.status_code == 200
             recommendations = recommendations_req.json()
