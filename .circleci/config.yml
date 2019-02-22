@@ -67,7 +67,7 @@ jobs: # a collection of steps
           command: |
             . venv/bin/activate
             ./scripts/check-pip-dependencies.sh
-            
+
   functional-tests-webapp:
     machine:
       image: circleci/classic:latest
@@ -119,7 +119,7 @@ jobs: # a collection of steps
           command: |
             cd pass-culture-main
             dockerize -wait http://localhost/health -timeout 5m -wait-retry-interval 5s
-            ./pc sandbox --name=webapp
+            ./pc sandbox --name=industrial
       - run:
           name: Running tests Webapp
           command: |
