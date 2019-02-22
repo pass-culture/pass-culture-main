@@ -19,7 +19,7 @@ from models.versioned_mixin import VersionedMixin
 from utils.human_ids import humanize
 
 
-class Booking(PcObject,
+class   Booking(PcObject,
               Model,
               VersionedMixin):
     id = Column(BigInteger,
@@ -138,7 +138,7 @@ Booking.trig_ddl = """
         INTO sum_deposits
         FROM deposit
         WHERE "userId"=user_id;
-
+        
         CASE
             only_used_bookings
         WHEN true THEN
@@ -152,11 +152,11 @@ Booking.trig_ddl = """
             FROM booking
             WHERE "userId"=user_id AND NOT "isCancelled";
         END CASE;
-
-        RETURN (sum_deposits - sum_bookings);
+        
+        RETURN (sum_deposits - sum_bookings);            
     END; $$
     LANGUAGE plpgsql;
-
+    
     CREATE OR REPLACE FUNCTION check_booking()
     RETURNS TRIGGER AS $$
     BEGIN
@@ -166,16 +166,16 @@ Booking.trig_ddl = """
           RAISE EXCEPTION 'tooManyBookings'
                 USING HINT = 'Number of bookings cannot exceed "stock.available"';
       END IF;
-
+      
       IF (SELECT get_wallet_balance(NEW."userId", false) < 0)
       THEN RAISE EXCEPTION 'insufficientFunds'
                  USING HINT = 'The user does not have enough credit to book';
       END IF;
-
+      
       RETURN NEW;
     END;
     $$ LANGUAGE plpgsql;
-
+    
     DROP TRIGGER IF EXISTS booking_update ON booking;
     CREATE CONSTRAINT TRIGGER booking_update AFTER INSERT OR UPDATE
     ON booking

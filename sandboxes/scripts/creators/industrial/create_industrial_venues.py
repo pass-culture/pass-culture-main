@@ -1,7 +1,7 @@
 import re
 
 from models.pc_object import PcObject
-from sandboxes.scripts.mocks.venue_mocks import MOCK_NAMES
+from sandboxes.scripts.utils.venue_mocks import MOCK_NAMES
 from utils.logger import logger
 from utils.test_utils import create_venue
 

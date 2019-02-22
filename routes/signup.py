@@ -29,8 +29,8 @@ def signup():
 
     new_user = User(from_dict=request.json)
     if need_for_authorisation_check:
-        authorized_emails, departement_codes = get_authorized_emails_and_dept_codes()
-        departement_code = _get_departement_code_when_authorized_or_error(authorized_emails, departement_codes)
+        authorized_emails, department_codes = get_authorized_emails_and_dept_codes()
+        departement_code = _get_departement_code_when_authorized_or_error(authorized_emails, department_codes)
         new_user.departementCode = departement_code
 
     if do_pro_signup:
@@ -85,8 +85,8 @@ def signup_webapp():
         new_user.departementCode = '00'
         objects_to_save.append(_create_initial_deposit(new_user))
     else:
-        authorized_emails, departement_codes = get_authorized_emails_and_dept_codes()
-        departement_code = _get_departement_code_when_authorized_or_error(authorized_emails, departement_codes)
+        authorized_emails, department_codes = get_authorized_emails_and_dept_codes()
+        departement_code = _get_departement_code_when_authorized_or_error(authorized_emails, department_codes)
         new_user.departementCode = departement_code
 
     new_user.generate_validation_token()
@@ -178,9 +178,9 @@ def _set_offerer_departement_code(new_user, offerer):
     return new_user
 
 
-def _get_departement_code_when_authorized_or_error(authorized_emails, departement_codes):
+def _get_departement_code_when_authorized_or_error(authorized_emails, department_codes):
     email_index = _get_email_index_in_spreadsheet_or_error(authorized_emails)
-    departement_code = departement_codes[email_index]
+    departement_code = department_codes[email_index]
     if departement_code.strip() == '':
         logger.error("[ERROR] Missing departement code in users spreadsheet for "
                      + request.json['email'])

@@ -2,7 +2,6 @@ from models.pc_object import PcObject
 from utils.logger import logger
 from utils.test_utils import create_event_offer
 
-DEACTIVATED_OFFERS_PICK_MODULO = 3
 EVENTS_PER_OFFERER_WITH_PHYSICAL_VENUE = 5
 
 def create_industrial_event_offers(
@@ -14,8 +13,6 @@ def create_industrial_event_offers(
     event_offers_by_name = {}
 
     event_index = 0
-    offer_index = 0
-
     event_items = list(events_by_name.items())
 
     for offerer in offerers_by_name.values():
@@ -37,17 +34,11 @@ def create_industrial_event_offers(
             (event_name, event) = event_items[rest_event_index]
 
             name = "{} / {}".format(event_name, event_venue.name)
-            if offer_index%DEACTIVATED_OFFERS_PICK_MODULO == 0:
-                is_active = False
-            else:
-                is_active = True
             event_offers_by_name[name] = create_event_offer(
                 event_venue,
                 event=event,
-                event_type=event.type,
-                is_active=is_active
+                event_type=event.type
             )
-            offer_index += 1
 
         event_index += EVENTS_PER_OFFERER_WITH_PHYSICAL_VENUE
 

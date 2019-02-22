@@ -9,29 +9,48 @@ from sandboxes.scripts.creators.industrial.create_industrial_recommendations imp
 from sandboxes.scripts.creators.industrial.create_industrial_thing_offers import *
 from sandboxes.scripts.creators.industrial.create_industrial_thing_stocks import *
 from sandboxes.scripts.creators.industrial.create_industrial_things import *
-from sandboxes.scripts.creators.industrial.create_industrial_offerers_with_pro_users import *
+from sandboxes.scripts.creators.industrial.create_industrial_offerers import *
 from sandboxes.scripts.creators.industrial.create_industrial_venues import *
-from sandboxes.scripts.creators.industrial.create_industrial_admin_users import *
-from sandboxes.scripts.creators.industrial.create_industrial_webapp_users import *
+from sandboxes.scripts.creators.industrial.create_industrial_user_offerers import *
+from sandboxes.scripts.creators.industrial.create_industrial_users import *
+
+from sandboxes.scripts.utils.locations import create_locations_from_places, \
+                                              NOT_VALIDATED_OFFERER_PLACES, \
+                                              VALIDATED_OFFERER_PLACES
 
 def save_industrial_sandbox():
 
-    (
-        offerers_by_name,
-        pro_users_by_name,
-        user_offerers_by_name
-    ) = create_industrial_offerers_with_pro_users()
-
-    admin_users_by_name = create_industrial_admin_users()
-    webapp_users_by_name = create_industrial_webapp_users()
-
-    users_by_name = dict(
-        pro_users_by_name,
-        **dict(admin_users_by_name, **webapp_users_by_name)
+    not_validated_offerer_locations = create_locations_from_places(
+        NOT_VALIDATED_OFFERER_PLACES,
+        max_location_per_place=2,
+    )
+    validated_offerer_locations = create_locations_from_places(
+        VALIDATED_OFFERER_PLACES,
+        max_location_per_place=4
     )
 
+    not_validated_offerers_by_name = create_industrial_offerers(
+        not_validated_offerer_locations,
+        needs_validation=True,
+    )
+
+    validated_offerers_by_name = create_industrial_offerers(
+        validated_offerer_locations,
+        starting_index=len(not_validated_offerers_by_name),
+        starting_siren=222222222 + len(not_validated_offerers_by_name)
+    )
+
+    offerers_by_name = dict(
+        not_validated_offerers_by_name,
+        **validated_offerers_by_name
+    )
+
+    users_by_name = create_industrial_users()
+
     create_industrial_deposits(users_by_name)
-    
+
+    create_industrial_user_offerers(users_by_name, offerers_by_name)
+
     venues_by_name = create_industrial_venues(offerers_by_name)
 
     events_by_name = create_industrial_events()

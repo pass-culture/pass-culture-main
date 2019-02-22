@@ -1,6 +1,6 @@
 from domain.types import get_formatted_event_or_thing_types
 from models.pc_object import PcObject
-from sandboxes.scripts.mocks.thing_mocks import MOCK_AUTHOR_NAMES, \
+from sandboxes.scripts.utils.thing_mocks import MOCK_AUTHOR_NAMES, \
                                                 MOCK_DESCRIPTIONS, \
                                                 MOCK_NAMES
 from utils.logger import logger

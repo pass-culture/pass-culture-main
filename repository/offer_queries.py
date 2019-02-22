@@ -30,11 +30,12 @@ def build_offer_search_base_query():
         .join(Offerer)
 
 
-def department_or_national_offers(query, offer_type, departement_codes):
-    if '00' in departement_codes:
+def department_or_national_offers(query, offer_type, department_codes):
+    if '00' in department_codes:
         return query
+
     query = query.filter(
-        Venue.departementCode.in_(departement_codes) | (offer_type.isNational == True)
+        Venue.departementCode.in_(department_codes) | (offer_type.isNational == True)
     )
     logger.debug(lambda: '(reco) departement .count ' + str(query.count()))
     return query
@@ -77,7 +78,7 @@ def not_currently_recommended_offers(query, user):
     return query
 
 
-def get_active_offers_by_type(offer_type, user=None, departement_codes=None, offer_id=None):
+def get_active_offers_by_type(offer_type, user=None, department_codes=None, offer_id=None):
     query = Offer.query.filter_by(isActive=True)
     logger.debug(lambda: '(reco) {} active offers count {}'.format(offer_type.__name__, query.count()))
     if offer_type == Event:
@@ -100,9 +101,9 @@ def get_active_offers_by_type(offer_type, user=None, departement_codes=None, off
         query = query.filter(Offer.id == offer_id)
     logger.debug(lambda: '(reco) all ' + str(offer_type) + '.count ' + str(query.count()))
 
-    query = department_or_national_offers(query, offer_type, departement_codes)
+    query = department_or_national_offers(query, offer_type, department_codes)
     logger.debug(lambda:
-                 '(reco) department or national {} {} in {}'.format(offer_type.__name__, str(departement_codes),
+                 '(reco) departement or national {} {} in {}'.format(offer_type.__name__, str(department_codes),
                                                                      query.count()))
     query = bookable_offers(query, offer_type)
     logger.debug(lambda: '(reco) bookable_offers {} {}'.format(offer_type.__name__, query.count()))
@@ -258,8 +259,8 @@ def _filter_recommendable_offers(offer_query):
 
 
 def find_activation_offers(departement_code: str) -> List[Offer]:
-    departement_codes = ILE_DE_FRANCE_DEPT_CODES if departement_code == '93' else [departement_code]
-    match_department_or_is_national = or_(Venue.departementCode.in_(departement_codes), Event.isNational == True,
+    department_codes = ILE_DE_FRANCE_DEPT_CODES if departement_code == '93' else [departement_code]
+    match_department_or_is_national = or_(Venue.departementCode.in_(department_codes), Event.isNational == True,
                                           Thing.isNational == True)
     join_on_stock = and_(or_(Offer.id == Stock.offerId, Stock.eventOccurrenceId == EventOccurrence.id))
     join_on_event_occurrence = and_(Offer.id == EventOccurrence.offerId)

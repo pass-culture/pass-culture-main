@@ -326,34 +326,3 @@ def filter_offerers_with_keywords_string(query, keywords_string):
 
 def check_if_siren_already_exists(siren):
     return Offerer.query.filter_by(siren=siren).count() > 0
-
-def keep_offerers_with_at_least_one_physical_venue(query):
-    return query.filter(Offerer.managedVenues.any(Venue.isVirtual == False))
-
-def keep_offerers_with_at_least_one_physical_venue_at_departement_code_with_has_iban(
-    query,
-    departement_code,
-    has_venue_iban
-):
-    if has_venue_iban:
-        iban_venue_condition = Venue.iban == None
-    else:
-        iban_venue_condition = Venue.iban != None
-
-    return query.join(Venue) \
-                .filter(
-                    Offerer.managedVenues.any(
-                        (Venue.isVirtual == False) & \
-                        (Venue.postalCode.startswith(departement_code)) &
-                        iban_venue_condition
-                    )
-                )
-
-def keep_offerers_with_no_physical_venue(query):
-    return _filter_by_has_not_virtual_venue(query, False)
-
-def keep_offerers_with_no_validated_users(query):
-    query = query.join(UserOfferer) \
-                 .join(User) \
-                 .filter(~Offerer.UserOfferers.any(User.validationToken == None))
-    return query

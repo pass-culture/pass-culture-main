@@ -1,7 +1,7 @@
 from domain.types import get_formatted_event_or_thing_types
 from models.offer_type import EventType
 from models.pc_object import PcObject
-from sandboxes.scripts.mocks.event_mocks import MOCK_ACTIVATION_DESCRIPTION, \
+from sandboxes.scripts.utils.event_mocks import MOCK_ACTIVATION_DESCRIPTION, \
                                                 MOCK_ACTIVATION_NAME, \
                                                 MOCK_DESCRIPTIONS, \
                                                 MOCK_NAMES

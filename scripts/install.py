@@ -28,10 +28,10 @@ def install_scripts():
     from models.user import User
     from models.venue import Venue
 
-    import scripts.clean_database
     import scripts.request
     import scripts.sandbox
     import scripts.send_final_booking_recaps
     import scripts.testcafe
     import scripts.update_providables
     import scripts.storage
+
