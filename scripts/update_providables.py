@@ -11,18 +11,18 @@ from models.db import db
 
 
 @app.manager.option('-p',
-                    '--provider_name',
+                    '--provider-name',
                     help='Limit update to this provider name')
 @app.manager.option('-l',
                     '--limit',
                     help='Limit update to n items per provider/venue'
                          + ' (for test purposes)', type=int)
 @app.manager.option('-w',
-                    '--venue_provider_id',
-                    help='Limit update to this venue_provider_id')
+                    '--venue-provider-id',
+                    help='Limit update to this venue provider id')
 def update_providables(provider_name: str, venue_provider_id: str, limit: int):
-    if provider_name and venue_provider_id:
-        raise ValueError('Call either with provider_name or venue_provider_id')
+    if (provider_name and venue_provider_id) or not (provider_name or venue_provider_id):
+        raise ValueError('Call either with provider-name or venue-provider-id')
     
     if provider_name:
         ProviderClass = get_class_by_name(provider_name)
