@@ -1,6 +1,5 @@
 """ offerer """
 from datetime import datetime
-
 from sqlalchemy import BigInteger, \
     Column, \
     DateTime, \
@@ -12,8 +11,6 @@ from sqlalchemy.sql.expression import cast
 from sqlalchemy.sql.functions import coalesce
 
 from domain.keywords import create_tsvector
-from models.has_bank_information_mixin import HasBankInformationMixin
-from models.versioned_mixin import VersionedMixin
 from models.db import Model
 from models.deactivable_mixin import DeactivableMixin
 from models.has_address_mixin import HasAddressMixin
@@ -22,6 +19,7 @@ from models.needs_validation_mixin import NeedsValidationMixin
 from models.pc_object import PcObject
 from models.providable_mixin import ProvidableMixin
 from models.user_offerer import UserOfferer
+from models.versioned_mixin import VersionedMixin
 
 
 class Offerer(PcObject,
@@ -31,7 +29,6 @@ class Offerer(PcObject,
               NeedsValidationMixin,
               DeactivableMixin,
               VersionedMixin,
-              HasBankInformationMixin,
               Model):
     id = Column(BigInteger, primary_key=True)
 
@@ -62,7 +59,6 @@ class Offerer(PcObject,
                 and (not len(self.siren) == 9):
             # TODO: or not verify_luhn(self.siren)):
             api_errors.addError('siren', 'Ce code SIREN est invalide')
-        self.check_bank_account_information(api_errors)
 
         return api_errors
 

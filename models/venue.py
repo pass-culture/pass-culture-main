@@ -13,16 +13,14 @@ from sqlalchemy.sql.expression import cast
 from sqlalchemy.sql.functions import coalesce
 
 from domain.keywords import create_tsvector
-from models.needs_validation_mixin import NeedsValidationMixin
 from models.db import Model
 from models.has_address_mixin import HasAddressMixin
-from models.has_bank_information_mixin import HasBankInformationMixin
 from models.has_thumb_mixin import HasThumbMixin
+from models.needs_validation_mixin import NeedsValidationMixin
 from models.offerer import Offerer
 from models.pc_object import PcObject
 from models.providable_mixin import ProvidableMixin
 from models.versioned_mixin import VersionedMixin
-
 
 CONSTRAINT_CHECK_IS_VIRTUAL_XOR_HAS_ADDRESS = """
 (
@@ -48,7 +46,6 @@ class Venue(PcObject,
             HasAddressMixin,
             ProvidableMixin,
             VersionedMixin,
-            HasBankInformationMixin,
             NeedsValidationMixin,
             Model):
     id = Column(BigInteger, primary_key=True)
@@ -128,7 +125,6 @@ class Venue(PcObject,
                     and managingOfferer is not None \
                     and not self.siret.startswith(managingOfferer.siren):
                 api_errors.addError('siret', 'Le code SIRET doit correspondre à un établissement de votre structure')
-        self.check_bank_account_information(api_errors)
 
         return api_errors
 
