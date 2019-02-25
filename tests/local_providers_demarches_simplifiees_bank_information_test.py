@@ -75,7 +75,7 @@ class BankInformationProviderProviderTest:
                                     }
                             },
                             {
-                                "value": "TEST BIC",
+                                "value": "BDFEFR2LCCB",
                                 "type_de_champ":
                                     {
                                         "id": 352727,
@@ -86,7 +86,7 @@ class BankInformationProviderProviderTest:
                                     }
                             },
                             {
-                                "value": "TEST IBAN",
+                                "value": "FR7630006000011234567890189",
                                 "type_de_champ":
                                     {
                                         "id": 352722,
@@ -119,8 +119,8 @@ class BankInformationProviderProviderTest:
                                    erroredThumbs=0,
                                    BankInformation=1)
         bank_information = BankInformation.query.first()
-        assert bank_information.iban == 'TEST IBAN'
-        assert bank_information.bic == 'TEST BIC'
+        assert bank_information.iban == 'FR7630006000011234567890189'
+        assert bank_information.bic == 'BDFEFR2LCCB'
         assert bank_information.applicationId == 1
         assert bank_information.offererId == offerer_id
         assert bank_information.venueId == None
@@ -168,7 +168,7 @@ class BankInformationProviderProviderTest:
                                 }
                             },
                             {
-                                "value": "TEST BIC",
+                                "value": "BDFEFR2LCCB",
                                 "type_de_champ":
                                     {
                                         "id": 352727,
@@ -179,7 +179,7 @@ class BankInformationProviderProviderTest:
                                     }
                             },
                             {
-                                "value": "TEST IBAN",
+                                "value": "FR7630006000011234567890189",
                                 "type_de_champ":
                                     {
                                         "id": 352722,
@@ -213,8 +213,8 @@ class BankInformationProviderProviderTest:
                                    erroredThumbs=0,
                                    BankInformation=1)
         bank_information = BankInformation.query.first()
-        assert bank_information.iban == 'TEST IBAN'
-        assert bank_information.bic == 'TEST BIC'
+        assert bank_information.iban == 'FR7630006000011234567890189'
+        assert bank_information.bic == 'BDFEFR2LCCB'
         assert bank_information.applicationId == 1
         assert bank_information.offererId == None
         assert bank_information.venueId == venue_id
@@ -260,7 +260,7 @@ class BankInformationProviderProviderTest:
                                     }
                                 },
                                 {
-                                    "value": "TEST BIC",
+                                    "value": "BDFEFR2LCCB",
                                     "type_de_champ":
                                         {
                                             "id": 352727,
@@ -271,7 +271,7 @@ class BankInformationProviderProviderTest:
                                         }
                                 },
                                 {
-                                    "value": "TEST IBAN",
+                                    "value": "FR7630006000011234567890189",
                                     "type_de_champ":
                                         {
                                             "id": 352722,
@@ -312,7 +312,7 @@ class BankInformationProviderProviderTest:
                                     }
                                 },
                                 {
-                                    "value": "TEST BIC",
+                                    "value": "BDFEFR2LCCB",
                                     "type_de_champ":
                                         {
                                             "id": 352727,
@@ -323,7 +323,7 @@ class BankInformationProviderProviderTest:
                                         }
                                 },
                                 {
-                                    "value": "TEST IBAN",
+                                    "value": "FR7630006000011234567890189",
                                     "type_de_champ":
                                         {
                                             "id": 352722,
@@ -397,7 +397,7 @@ class BankInformationProviderProviderTest:
                                     }
                                 },
                                 {
-                                    "value": "TEST BIC1",
+                                    "value": "BDFEFR2LCCB",
                                     "type_de_champ":
                                         {
                                             "id": 352727,
@@ -408,7 +408,7 @@ class BankInformationProviderProviderTest:
                                         }
                                 },
                                 {
-                                    "value": "TEST IBAN1",
+                                    "value": "FR7630006000011234567890189",
                                     "type_de_champ":
                                         {
                                             "id": 352722,
@@ -449,7 +449,7 @@ class BankInformationProviderProviderTest:
                                     }
                                 },
                                 {
-                                    "value": "TEST BIC2",
+                                    "value": "SOGEFRPP",
                                     "type_de_champ":
                                         {
                                             "id": 352727,
@@ -460,7 +460,7 @@ class BankInformationProviderProviderTest:
                                         }
                                 },
                                 {
-                                    "value": "TEST IBAN2",
+                                    "value": "FR7630007000111234567890144",
                                     "type_de_champ":
                                         {
                                             "id": 352722,
@@ -499,14 +499,14 @@ class BankInformationProviderProviderTest:
                                    BankInformation=2)
         bank_information1 = BankInformation.query.filter_by(applicationId=1).first()
         bank_information2 = BankInformation.query.filter_by(applicationId=2).first()
-        assert bank_information1.iban == 'TEST IBAN1'
-        assert bank_information1.bic == 'TEST BIC1'
+        assert bank_information1.iban == 'FR7630006000011234567890189'
+        assert bank_information1.bic == 'BDFEFR2LCCB'
         assert bank_information1.applicationId == 1
         assert bank_information1.offererId == None
         assert bank_information1.venueId == venue1_id
         assert bank_information1.idAtProviders == '79387501900056'
-        assert bank_information2.iban == 'TEST IBAN2'
-        assert bank_information2.bic == 'TEST BIC2'
+        assert bank_information2.iban == 'FR7630007000111234567890144'
+        assert bank_information2.bic == 'SOGEFRPP'
         assert bank_information2.applicationId == 2
         assert bank_information2.offererId == None
         assert bank_information2.venueId == venue2_id
@@ -552,7 +552,7 @@ class BankInformationProviderProviderTest:
                                     }
                                 },
                                 {
-                                    "value": "TEST BIC1",
+                                    "value": "BDFEFR2LCCB",
                                     "type_de_champ":
                                         {
                                             "id": 352727,
@@ -563,7 +563,7 @@ class BankInformationProviderProviderTest:
                                         }
                                 },
                                 {
-                                    "value": "TEST IBAN1",
+                                    "value": "FR7630006000011234567890189",
                                     "type_de_champ":
                                         {
                                             "id": 352722,
@@ -635,7 +635,7 @@ class BankInformationProviderProviderTest:
                                     }
                                 },
                                 {
-                                    "value": "TEST BIC1",
+                                    "value": "BDFEFR2LCCB",
                                     "type_de_champ":
                                         {
                                             "id": 352727,
@@ -646,7 +646,7 @@ class BankInformationProviderProviderTest:
                                         }
                                 },
                                 {
-                                    "value": "TEST IBAN1",
+                                    "value": "FR7630006000011234567890189",
                                     "type_de_champ":
                                         {
                                             "id": 352722,
@@ -684,8 +684,148 @@ class BankInformationProviderProviderTest:
 
         updated_bank_information = BankInformation.query.filter_by(idAtProviders="79387501900056").one()
         assert updated_bank_information.applicationId == 2
-        assert updated_bank_information.iban == "TEST IBAN1"
-        assert updated_bank_information.bic == "TEST BIC1"
+        assert updated_bank_information.iban == "FR7630006000011234567890189"
+        assert updated_bank_information.bic == "BDFEFR2LCCB"
+
+    @patch(
+        'local_providers.demarches_simplifiees_bank_information.get_all_application_ids_from_demarches_simplifiees_procedure')
+    @patch('local_providers.demarches_simplifiees_bank_information.get_application_details')
+    @clean_database
+    def test_provider_does_not_save_bank_information_if_wrong_bic_or_iban_but_continues_flow(
+            self,
+            get_application_details,
+            get_all_application_ids_from_demarches_simplifiees_procedure,
+            app):
+        # given
+        get_all_application_ids_from_demarches_simplifiees_procedure.return_value = [1, 2]
+        get_application_details.side_effect = [
+            {
+                "dossier":
+                    {
+                        "id": 1,
+                        "updated_at": "2019-01-20T18:55:03.387Z",
+                        "state": "closed",
+                        "entreprise":
+                            {
+                                "siren": "793875019",
+                                "siret_siege_social": "79387501900089"
+                            },
+                        "etablissement":
+                            {
+                                "siret": "79387501900056"
+                            },
+                        "champs":
+                            [
+                                {
+                                    "value": "Le RIB lié à un unique SIRET",
+                                    "type_de_champ": {
+                                        "id": 352721,
+                                        "libelle": "Je souhaite renseigner",
+                                        "type_champ": "drop_down_list",
+                                        "order_place": 6,
+                                        "description": ""
+                                    }
+                                },
+                                {
+                                    "value": "wrongbic",
+                                    "type_de_champ":
+                                        {
+                                            "id": 352727,
+                                            "libelle": "BIC",
+                                            "type_champ": "text",
+                                            "order_place": 8,
+                                            "description": ""
+                                        }
+                                },
+                                {
+                                    "value": "wrongsiren",
+                                    "type_de_champ":
+                                        {
+                                            "id": 352722,
+                                            "libelle": "IBAN",
+                                            "type_champ": "text",
+                                            "order_place": 9,
+                                            "description": ""
+                                        }
+                                }
+                            ]
+                    }
+            },
+            {
+                "dossier":
+                    {
+                        "id": 2,
+                        "updated_at": "2019-01-21T18:55:04.387Z",
+                        "state": "closed",
+                        "entreprise":
+                            {
+                                "siren": "793875030",
+                                "siret_siege_social": "79387503000017"
+                            },
+                        "etablissement":
+                            {
+                                "siret": "79387503000016"
+                            },
+                        "champs":
+                            [
+                                {
+                                    "value": "Le RIB lié à un unique SIRET",
+                                    "type_de_champ": {
+                                        "id": 352721,
+                                        "libelle": "Je souhaite renseigner",
+                                        "type_champ": "drop_down_list",
+                                        "order_place": 6,
+                                        "description": ""
+                                    }
+                                },
+                                {
+                                    "value": "SOGEFRPP",
+                                    "type_de_champ":
+                                        {
+                                            "id": 352727,
+                                            "libelle": "BIC",
+                                            "type_champ": "text",
+                                            "order_place": 8,
+                                            "description": ""
+                                        }
+                                },
+                                {
+                                    "value": "FR7630007000111234567890144",
+                                    "type_de_champ":
+                                        {
+                                            "id": 352722,
+                                            "libelle": "IBAN",
+                                            "type_champ": "text",
+                                            "order_place": 9,
+                                            "description": ""
+                                        }
+                                },
+                            ]
+                    }
+            }
+        ]
+
+        offerer_ko = create_offerer(siren='793875019')
+        venue_ko = create_venue(offerer_ko, siret='79387501900056')
+        offerer_ok = create_offerer(siren="793875030")
+        venue_ok = create_venue(offerer_ok, siret="79387503000016")
+
+        PcObject.check_and_save(venue_ko, venue_ok)
+
+        bank_information_provider = BankInformationProvider()
+        bank_information_provider.dbObject.isActive = True
+        PcObject.check_and_save(bank_information_provider.dbObject)
+
+        # when
+        bank_information_provider.updateObjects()
+
+        # then
+        bank_information = BankInformation.query.all()
+        assert len(bank_information) == 1
+        assert bank_information[0].applicationId == 2
+        local_provider_event = LocalProviderEvent.query.filter_by(type=LocalProviderEventType.SyncError).one()
+        assert local_provider_event.payload == 'ApiErrors'
+
 
     @patch(
         'local_providers.demarches_simplifiees_bank_information.get_all_application_ids_from_demarches_simplifiees_procedure')
@@ -726,7 +866,7 @@ class BankInformationProviderProviderTest:
                                 }
                             },
                             {
-                                "value": "TEST BIC1",
+                                "value": "BDFEFR2LCCB",
                                 "type_de_champ":
                                     {
                                         "id": 352727,
@@ -737,7 +877,7 @@ class BankInformationProviderProviderTest:
                                     }
                             },
                             {
-                                "value": "TEST IBAN1",
+                                "value": "FR7630006000011234567890189",
                                 "type_de_champ":
                                     {
                                         "id": 352722,
@@ -803,7 +943,7 @@ class BankInformationProviderProviderTest:
                                 }
                             },
                             {
-                                "value": "TEST BIC1",
+                                "value": "BDFEFR2LCCB",
                                 "type_de_champ":
                                     {
                                         "id": 352727,
@@ -814,7 +954,7 @@ class BankInformationProviderProviderTest:
                                     }
                             },
                             {
-                                "value": "TEST IBAN1",
+                                "value": "FR7630006000011234567890189",
                                 "type_de_champ":
                                     {
                                         "id": 352722,
@@ -877,14 +1017,14 @@ class RetrieveBankInformationTest:
                                 }
                             },
                             {
-                                "value": "TEST BIC1",
+                                "value": "BDFEFR2LCCB",
                                 "type_de_champ":
                                     {
                                         "libelle": "BIC",
                                     }
                             },
                             {
-                                "value": "TEST IBAN1",
+                                "value": "FR7630006000011234567890189",
                                 "type_de_champ":
                                     {
                                         "libelle": "IBAN",
@@ -903,8 +1043,8 @@ class RetrieveBankInformationTest:
         bank_information_dict = bank_information_provider.retrieve_bank_information(application_details)
 
         # Then
-        assert bank_information_dict['iban'] == "TEST IBAN1"
-        assert bank_information_dict['bic'] == "TEST BIC1"
+        assert bank_information_dict['iban'] == "FR7630006000011234567890189"
+        assert bank_information_dict['bic'] == "BDFEFR2LCCB"
         assert bank_information_dict['applicationId'] == 1
         assert 'offererId' not in bank_information_dict
         assert bank_information_dict['venueId'] == venue_id
@@ -933,14 +1073,14 @@ class RetrieveBankInformationTest:
                                 }
                             },
                             {
-                                "value": "TEST BIC1",
+                                "value": "BDFEFR2LCCB",
                                 "type_de_champ":
                                     {
                                         "libelle": "BIC",
                                     }
                             },
                             {
-                                "value": "TEST IBAN1",
+                                "value": "FR7630006000011234567890189",
                                 "type_de_champ":
                                     {
                                         "libelle": "IBAN",
@@ -958,8 +1098,8 @@ class RetrieveBankInformationTest:
         bank_information_dict = bank_information_provider.retrieve_bank_information(application_details)
 
         # Then
-        assert bank_information_dict['iban'] == "TEST IBAN1"
-        assert bank_information_dict['bic'] == "TEST BIC1"
+        assert bank_information_dict['iban'] == "FR7630006000011234567890189"
+        assert bank_information_dict['bic'] == "BDFEFR2LCCB"
         assert bank_information_dict['applicationId'] == 1
         assert bank_information_dict['offererId'] == offerer_id
         assert 'venueId' not in bank_information_dict

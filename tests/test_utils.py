@@ -643,7 +643,7 @@ def create_payment_details(
     return details
 
 
-def create_bank_information(application_id=1, bic='QSDFGH8Z555', iban='CF13QSDFGH456789', id_at_providers='234567891',
+def create_bank_information(application_id=1, bic='QSDFGH8Z555', iban='FR7630006000011234567890189', id_at_providers='234567891',
                             date_modified_at_last_provider=datetime(2019, 1, 1), offerer_id=None,
                             venue_id=None):
     bank_information = BankInformation()
