@@ -1,3 +1,4 @@
+from models.event_occurrence import EventOccurrence
 from models.event import Event
 from models.offer import Offer
 from models.offerer import Offerer
@@ -39,10 +40,9 @@ def get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_u
     query = User.query.filter(User.validationToken == None)
     query = filter_users_with_at_least_one_validated_offerer_validated_user_offerer(query)
     query = query.filter(Offerer.iban != None)
-    query = query.join(Venue).join(Offer).filter(
-        (Offer.eventId != None) & \
-        (Offer.eventOccurrences.any())
-    )
+    query = query.join(Venue) \
+                 .join(Offer) \
+                 .join(EventOccurrence)
     user = query.first()
 
     for uo in user.UserOfferers:
@@ -64,10 +64,9 @@ def get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_u
     query = User.query.filter(User.validationToken == None)
     query = filter_users_with_at_least_one_validated_offerer_validated_user_offerer(query)
     query = query.filter(Offerer.iban != None)
-    query = query.join(Venue).join(Offer).filter(
-        (Offer.thingId != None) & \
-        (Offer.thingStocks.any())
-    )
+    query = query.join(Venue) \
+                 .join(Offer) \
+                 .join(Offer.thingStocks)
     user = query.first()
 
     for uo in user.UserOfferers:

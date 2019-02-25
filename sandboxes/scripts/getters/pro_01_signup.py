@@ -4,7 +4,7 @@ from models.user_offerer import UserOfferer
 from sandboxes.scripts.utils.helpers import get_user_helper, get_offerer_helper
 
 def get_existing_pro_user_with_offerer():
-    query = User.query.filter(User.UserOfferers.any())
+    query = User.query.join(UserOfferer)
     user = query.first()
 
     offerer = [
@@ -17,9 +17,7 @@ def get_existing_pro_user_with_offerer():
     }
 
 def get_existing_pro_not_validated_user_with_real_offerer():
-    query = User.query.filter(
-        (User.validationToken != None)
-    )
+    query = User.query.filter(User.validationToken != None)
     query = query.join(UserOfferer) \
                  .join(Offerer) \
                  .filter(~Offerer.siren.startswith('222'))

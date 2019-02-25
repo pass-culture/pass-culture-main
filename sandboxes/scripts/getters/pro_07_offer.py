@@ -11,19 +11,20 @@ from sandboxes.scripts.utils.helpers import get_offer_helper, \
                                             get_venue_helper
 
 def get_existing_pro_validated_user_with_at_least_one_visible_offer():
-    query = User.query.filter(User.UserOfferers.any())
-    query = query.filter(User.validationToken == None)
+    query = User.query.filter(User.validationToken == None)
     query = filter_users_with_at_least_one_validated_offerer_validated_user_offerer(query)
-    query = query.join(Venue).filter(Venue.offers.any())
+    query = query.join(Venue).join(Offer)
     user = query.first()
 
     for uo in user.UserOfferers:
-        for venue in uo.offerer.managedVenues:
-            offer = venue.offers[0]
-            return {
-                "offer": get_offer_helper(offer),
-                "user": get_user_helper(user)
-            }
+        if uo.validationToken == None and uo.offerer.validationToken == None:
+            for venue in uo.offerer.managedVenues:
+                if venue.offers:
+                    offer = venue.offers[0]
+                    return {
+                        "offer": get_offer_helper(offer),
+                        "user": get_user_helper(user)
+                    }
 
 
 def get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_with_physical_venue():
