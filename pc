@@ -201,7 +201,7 @@ elif [[ "$CMD" == "restart-backend" ]]; then
 # Clear all data in postgresql database
 elif [[ "$CMD" == "reset-all-db" ]]; then
   RUN='docker exec -it `docker ps | grep flask | cut -d" " -f 1` bash -c "rm -rf /opt/services/flaskapp/src/static/object_store_data/*";
-       docker exec -it `docker ps | grep postgres | cut -d" " -f 1` bash -c "psql -U pass_culture pass_culture -c \"TRUNCATE \\\"user\\\",booking,offerer,event,mediation,offer,provider,recommendation,user_offerer,venue,thing RESTART IDENTITY CASCADE;\""'
+       docker exec `docker ps | grep flask | cut -d" " -f 1` bash -c "cd /opt/services/flaskapp/src/ && PYTHONPATH=. python scripts/pc.py clean"'
 
 # Remove all booking & reco from database
 elif [[ "$CMD" == "reset-reco-db" ]]; then
@@ -295,15 +295,13 @@ elif [[ "$CMD" == "test-backend-provider" ]]; then
 elif [[ "$CMD" == "test-cafe-webapp" ]] || [[ "$CMD" == "test-cafe-pro" ]]; then
 	if [[ "$CMD" == "test-cafe-webapp"  ]]; then
 		APP_PATH="$ROOT_PATH"/webapp
-		SANDBOX_NAME="webapp"
 	else
 		APP_PATH="$ROOT_PATH"/pro
-		SANDBOX_NAME="industrial"
 	fi
 	if [[ $# == 0 ]]; then
 		confirm "Warning: your database will be wiped. Is this OK ?"
 	 	"$ROOT_PATH"/pc -e "$ENV" reset-all-db
-		"$ROOT_PATH"/pc -e "$ENV" sandbox --name="$SANDBOX_NAME"
+		"$ROOT_PATH"/pc -e "$ENV" sandbox --name=industrial
 		RUN='cd $APP_PATH && ./scripts/manager.js testcafe -b chrome:headless'
 	else
   	RUN='cd $APP_PATH && ./scripts/manager.js testcafe '"$*"
