@@ -1,3 +1,5 @@
+import invert from 'lodash.invert'
+
 export function collectionToPath(collectionName) {
   switch (collectionName) {
     case 'events':
@@ -73,4 +75,29 @@ export function typeToTag(type) {
     default:
       return type
   }
+}
+export function getObjectWithMappedKeys(obj, keysMap) {
+  const mappedObj = {}
+  Object.keys(obj).forEach(objKey => {
+    let mappedKey = objKey
+    if (keysMap[objKey]) {
+      mappedKey = keysMap[objKey]
+    }
+    mappedObj[mappedKey] = obj[objKey]
+  })
+  return mappedObj
+}
+
+export const mapBrowserToApi = {
+  date: 'eventOccurrenceIdOrNew',
+  lieu: 'venueId',
+  [`mots-cles`]: 'keywords',
+  structure: 'offererId',
+  stock: 'stockIdOrNew',
+}
+
+export const mapApiToBrowser = invert(mapBrowserToApi)
+
+export function translateBrowserUrlToApiUrl(query) {
+  return getObjectWithMappedKeys(query, mapBrowserToApi)
 }

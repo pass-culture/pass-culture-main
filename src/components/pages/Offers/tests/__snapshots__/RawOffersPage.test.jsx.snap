@@ -1,22 +1,35 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | pages | Offerers | IndexSearch snapshot should match snapshot 1`] = `
+exports[`src | components | pages | Offers | RawOffers snapshot should match snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
-  Symbol(enzyme.__unrendered__): <RawOfferers
-    offerers={
-        Array [
-            Object {},
-          ]
+  Symbol(enzyme.__unrendered__): <RawOffers
+    dispatch={[Function]}
+    location={
+        Object {
+            "pathname": "/offres",
+          }
     }
+    offers={Array []}
     pagination={
         Object {
             "apiQuery": Object {
               "keywords": null,
+              "offererId": null,
+              "orderBy": "offer.id+desc",
+              "venueId": null,
             },
           }
     }
-    pendingOfferers={Array []}
+    query={
+        Object {
+            "change": [Function],
+            "parse": [Function],
+          }
+    }
+    search=""
+    types={Array []}
+    user={Object {}}
 />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
@@ -34,27 +47,24 @@ ShallowWrapper {
     "props": Object {
       "children": Array [
         <HeroSection
-          title="Votre structure juridique"
+          title="Vos offres"
 >
-          <p
-                    className="subtitle"
-          >
-                    Pour présenter vos offres, vous devez d'abord créer un
-                     
-                    <b>
-                               nouveau lieu 
-                    </b>
-                     lié à une structure.
-                    <br />
-                    Sans lieu, vous ne pouvez ajouter que des offres numériques.
-          </p>
           <NavLink
                     activeClassName="active"
                     aria-current="page"
-                    className="cta button is-primary is-outlined"
-                    to="/structures/nouveau"
+                    className="cta button is-primary"
+                    to="/offres/nouveau"
           >
-                    + Rattacher une structure supplémentaire
+                    <span
+                              className="icon"
+                    >
+                              <Icon
+                                        svg="ico-offres-w"
+                              />
+                    </span>
+                    <span>
+                              Créer une offre
+                    </span>
           </NavLink>
 </HeroSection>,
         <form
@@ -64,7 +74,7 @@ ShallowWrapper {
           <label
                     className="label"
           >
-                    Rechercher une structure :
+                    Rechercher une offre :
           </label>
           <div
                     className="field is-grouped"
@@ -73,7 +83,7 @@ ShallowWrapper {
                               className="control is-expanded"
                     >
                               <input
-                                        className="input search-input"
+                                        className="input"
                                         defaultValue={undefined}
                                         id="search"
                                         placeholder="Saisissez un ou plusieurs mots complets"
@@ -85,6 +95,7 @@ ShallowWrapper {
                     >
                               <button
                                         className="button is-primary is-outlined"
+                                        id="search-button"
                                         type="submit"
                               >
                                         OK
@@ -103,32 +114,34 @@ ShallowWrapper {
                     </p>
           </div>
 </form>,
-        false,
-        <InfiniteScroller
-          Tag="ul"
-          className="main-list offerers-list"
-          handleLoadMore={[Function]}
-          listeningScrollElement={null}
-          loadScrollRatio={0.9}
-          renderErrors={[Function]}
-          renderFinished={[Function]}
-          renderLoading={[Function]}
-          scrollingElement={
-                    <html>
-                              <head />
-                              <body
-                                        class=" web web"
-                              />
-                    </html>
-          }
+        <ul
+          className="section"
+/>,
+        <div
+          className="section"
 >
-          <Connect(OffererItem)
-                    offerer={Object {}}
-          />
-</InfiniteScroller>,
+          <withRouter(_withQueryRouter)
+                    className="offers-list main-list"
+                    element="ul"
+                    hasMore={false}
+                    isLoading={true}
+                    loader={
+                              <Spinner
+                                        Tag="div"
+                                        className={null}
+                                        dotFrequency={500}
+                                        label="Chargement"
+                                        style={null}
+                              />
+                    }
+                    useWindow={true}
+          >
+                    
+          </withRouter(_withQueryRouter)>
+</div>,
       ],
-      "handleDataRequest": [Function],
-      "name": "offerers",
+      "handleRequestData": [Function],
+      "name": "offers",
     },
     "ref": null,
     "rendered": Array [
@@ -137,94 +150,88 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "function",
         "props": Object {
-          "children": Array [
-            <p
-              className="subtitle"
+          "children": <NavLink
+            activeClassName="active"
+            aria-current="page"
+            className="cta button is-primary"
+            to="/offres/nouveau"
 >
-              Pour présenter vos offres, vous devez d'abord créer un
-               
-              <b>
-                             nouveau lieu 
-              </b>
-               lié à une structure.
-              <br />
-              Sans lieu, vous ne pouvez ajouter que des offres numériques.
-</p>,
-            <NavLink
-              activeClassName="active"
-              aria-current="page"
-              className="cta button is-primary is-outlined"
-              to="/structures/nouveau"
->
-              + Rattacher une structure supplémentaire
+            <span
+                        className="icon"
+            >
+                        <Icon
+                                    svg="ico-offres-w"
+                        />
+            </span>
+            <span>
+                        Créer une offre
+            </span>
 </NavLink>,
-          ],
-          "title": "Votre structure juridique",
+          "title": "Vos offres",
         },
         "ref": null,
-        "rendered": Array [
-          Object {
-            "instance": null,
-            "key": undefined,
-            "nodeType": "host",
-            "props": Object {
-              "children": Array [
-                "Pour présenter vos offres, vous devez d'abord créer un",
-                " ",
-                <b>
-                   nouveau lieu 
-</b>,
-                " lié à une structure.",
-                <br />,
-                "Sans lieu, vous ne pouvez ajouter que des offres numériques.",
-              ],
-              "className": "subtitle",
-            },
-            "ref": null,
-            "rendered": Array [
-              "Pour présenter vos offres, vous devez d'abord créer un",
-              " ",
-              Object {
+        "rendered": Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "function",
+          "props": Object {
+            "activeClassName": "active",
+            "aria-current": "page",
+            "children": Array [
+              <span
+                className="icon"
+>
+                <Icon
+                                svg="ico-offres-w"
+                />
+</span>,
+              <span>
+                Créer une offre
+</span>,
+            ],
+            "className": "cta button is-primary",
+            "to": "/offres/nouveau",
+          },
+          "ref": null,
+          "rendered": Array [
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": <Icon
+                  svg="ico-offres-w"
+/>,
+                "className": "icon",
+              },
+              "ref": null,
+              "rendered": Object {
                 "instance": null,
                 "key": undefined,
-                "nodeType": "host",
+                "nodeType": "function",
                 "props": Object {
-                  "children": " nouveau lieu ",
+                  "svg": "ico-offres-w",
                 },
                 "ref": null,
-                "rendered": " nouveau lieu ",
-                "type": "b",
-              },
-              " lié à une structure.",
-              Object {
-                "instance": null,
-                "key": undefined,
-                "nodeType": "host",
-                "props": Object {},
-                "ref": null,
                 "rendered": null,
-                "type": "br",
+                "type": [Function],
               },
-              "Sans lieu, vous ne pouvez ajouter que des offres numériques.",
-            ],
-            "type": "p",
-          },
-          Object {
-            "instance": null,
-            "key": undefined,
-            "nodeType": "function",
-            "props": Object {
-              "activeClassName": "active",
-              "aria-current": "page",
-              "children": "+ Rattacher une structure supplémentaire",
-              "className": "cta button is-primary is-outlined",
-              "to": "/structures/nouveau",
+              "type": "span",
             },
-            "ref": null,
-            "rendered": "+ Rattacher une structure supplémentaire",
-            "type": [Function],
-          },
-        ],
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": "Créer une offre",
+              },
+              "ref": null,
+              "rendered": "Créer une offre",
+              "type": "span",
+            },
+          ],
+          "type": [Function],
+        },
         "type": [Function],
       },
       Object {
@@ -236,7 +243,7 @@ ShallowWrapper {
             <label
               className="label"
 >
-              Rechercher une structure :
+              Rechercher une offre :
 </label>,
             <div
               className="field is-grouped"
@@ -245,7 +252,7 @@ ShallowWrapper {
                             className="control is-expanded"
               >
                             <input
-                                          className="input search-input"
+                                          className="input"
                                           defaultValue={undefined}
                                           id="search"
                                           placeholder="Saisissez un ou plusieurs mots complets"
@@ -257,6 +264,7 @@ ShallowWrapper {
               >
                             <button
                                           className="button is-primary is-outlined"
+                                          id="search-button"
                                           type="submit"
                             >
                                           OK
@@ -285,11 +293,11 @@ ShallowWrapper {
             "key": undefined,
             "nodeType": "host",
             "props": Object {
-              "children": "Rechercher une structure :",
+              "children": "Rechercher une offre :",
               "className": "label",
             },
             "ref": null,
-            "rendered": "Rechercher une structure :",
+            "rendered": "Rechercher une offre :",
             "type": "label",
           },
           Object {
@@ -302,7 +310,7 @@ ShallowWrapper {
                   className="control is-expanded"
 >
                   <input
-                                    className="input search-input"
+                                    className="input"
                                     defaultValue={undefined}
                                     id="search"
                                     placeholder="Saisissez un ou plusieurs mots complets"
@@ -314,6 +322,7 @@ ShallowWrapper {
 >
                   <button
                                     className="button is-primary is-outlined"
+                                    id="search-button"
                                     type="submit"
                   >
                                     OK
@@ -341,7 +350,7 @@ ShallowWrapper {
                 "nodeType": "host",
                 "props": Object {
                   "children": <input
-                    className="input search-input"
+                    className="input"
                     defaultValue={undefined}
                     id="search"
                     placeholder="Saisissez un ou plusieurs mots complets"
@@ -355,7 +364,7 @@ ShallowWrapper {
                   "key": undefined,
                   "nodeType": "host",
                   "props": Object {
-                    "className": "input search-input",
+                    "className": "input",
                     "defaultValue": undefined,
                     "id": "search",
                     "placeholder": "Saisissez un ou plusieurs mots complets",
@@ -375,6 +384,7 @@ ShallowWrapper {
                   "children": Array [
                     <button
                       className="button is-primary is-outlined"
+                      id="search-button"
                       type="submit"
 >
                       OK
@@ -402,6 +412,7 @@ ShallowWrapper {
                     "props": Object {
                       "children": "OK",
                       "className": "button is-primary is-outlined",
+                      "id": "search-button",
                       "type": "submit",
                     },
                     "ref": null,
@@ -451,47 +462,74 @@ ShallowWrapper {
         ],
         "type": "form",
       },
-      false,
       Object {
         "instance": null,
         "key": undefined,
-        "nodeType": "class",
+        "nodeType": "host",
         "props": Object {
-          "Tag": "ul",
+          "children": undefined,
+          "className": "section",
+        },
+        "ref": null,
+        "rendered": null,
+        "type": "ul",
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
           "children": Array [
-            <Connect(OffererItem)
-              offerer={Object {}}
-/>,
+            false,
+            <withRouter(_withQueryRouter)
+              className="offers-list main-list"
+              element="ul"
+              hasMore={false}
+              isLoading={true}
+              loader={
+                            <Spinner
+                                          Tag="div"
+                                          className={null}
+                                          dotFrequency={500}
+                                          label="Chargement"
+                                          style={null}
+                            />
+              }
+              useWindow={true}
+>
+              
+</withRouter(_withQueryRouter)>,
           ],
-          "className": "main-list offerers-list",
-          "handleLoadMore": [Function],
-          "listeningScrollElement": null,
-          "loadScrollRatio": 0.9,
-          "renderErrors": [Function],
-          "renderFinished": [Function],
-          "renderLoading": [Function],
-          "scrollingElement": <html>
-            <head />
-            <body
-                        class=" web web"
-            />
-</html>,
+          "className": "section",
         },
         "ref": null,
         "rendered": Array [
+          false,
           Object {
             "instance": null,
             "key": undefined,
-            "nodeType": "class",
+            "nodeType": "function",
             "props": Object {
-              "offerer": Object {},
+              "children": Array [],
+              "className": "offers-list main-list",
+              "element": "ul",
+              "hasMore": false,
+              "isLoading": true,
+              "loader": <Spinner
+                Tag="div"
+                className={null}
+                dotFrequency={500}
+                label="Chargement"
+                style={null}
+/>,
+              "useWindow": true,
             },
             "ref": null,
-            "rendered": null,
+            "rendered": Array [],
             "type": [Function],
           },
         ],
-        "type": [Function],
+        "type": "div",
       },
     ],
     "type": [Function],
@@ -504,27 +542,24 @@ ShallowWrapper {
       "props": Object {
         "children": Array [
           <HeroSection
-            title="Votre structure juridique"
+            title="Vos offres"
 >
-            <p
-                        className="subtitle"
-            >
-                        Pour présenter vos offres, vous devez d'abord créer un
-                         
-                        <b>
-                                     nouveau lieu 
-                        </b>
-                         lié à une structure.
-                        <br />
-                        Sans lieu, vous ne pouvez ajouter que des offres numériques.
-            </p>
             <NavLink
                         activeClassName="active"
                         aria-current="page"
-                        className="cta button is-primary is-outlined"
-                        to="/structures/nouveau"
+                        className="cta button is-primary"
+                        to="/offres/nouveau"
             >
-                        + Rattacher une structure supplémentaire
+                        <span
+                                    className="icon"
+                        >
+                                    <Icon
+                                                svg="ico-offres-w"
+                                    />
+                        </span>
+                        <span>
+                                    Créer une offre
+                        </span>
             </NavLink>
 </HeroSection>,
           <form
@@ -534,7 +569,7 @@ ShallowWrapper {
             <label
                         className="label"
             >
-                        Rechercher une structure :
+                        Rechercher une offre :
             </label>
             <div
                         className="field is-grouped"
@@ -543,7 +578,7 @@ ShallowWrapper {
                                     className="control is-expanded"
                         >
                                     <input
-                                                className="input search-input"
+                                                className="input"
                                                 defaultValue={undefined}
                                                 id="search"
                                                 placeholder="Saisissez un ou plusieurs mots complets"
@@ -555,6 +590,7 @@ ShallowWrapper {
                         >
                                     <button
                                                 className="button is-primary is-outlined"
+                                                id="search-button"
                                                 type="submit"
                                     >
                                                 OK
@@ -573,32 +609,34 @@ ShallowWrapper {
                         </p>
             </div>
 </form>,
-          false,
-          <InfiniteScroller
-            Tag="ul"
-            className="main-list offerers-list"
-            handleLoadMore={[Function]}
-            listeningScrollElement={null}
-            loadScrollRatio={0.9}
-            renderErrors={[Function]}
-            renderFinished={[Function]}
-            renderLoading={[Function]}
-            scrollingElement={
-                        <html>
-                                    <head />
-                                    <body
-                                                class=" web web"
-                                    />
-                        </html>
-            }
+          <ul
+            className="section"
+/>,
+          <div
+            className="section"
 >
-            <Connect(OffererItem)
-                        offerer={Object {}}
-            />
-</InfiniteScroller>,
+            <withRouter(_withQueryRouter)
+                        className="offers-list main-list"
+                        element="ul"
+                        hasMore={false}
+                        isLoading={true}
+                        loader={
+                                    <Spinner
+                                                Tag="div"
+                                                className={null}
+                                                dotFrequency={500}
+                                                label="Chargement"
+                                                style={null}
+                                    />
+                        }
+                        useWindow={true}
+            >
+                        
+            </withRouter(_withQueryRouter)>
+</div>,
         ],
-        "handleDataRequest": [Function],
-        "name": "offerers",
+        "handleRequestData": [Function],
+        "name": "offers",
       },
       "ref": null,
       "rendered": Array [
@@ -607,94 +645,88 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "function",
           "props": Object {
-            "children": Array [
-              <p
-                className="subtitle"
+            "children": <NavLink
+              activeClassName="active"
+              aria-current="page"
+              className="cta button is-primary"
+              to="/offres/nouveau"
 >
-                Pour présenter vos offres, vous devez d'abord créer un
-                 
-                <b>
-                                 nouveau lieu 
-                </b>
-                 lié à une structure.
-                <br />
-                Sans lieu, vous ne pouvez ajouter que des offres numériques.
-</p>,
-              <NavLink
-                activeClassName="active"
-                aria-current="page"
-                className="cta button is-primary is-outlined"
-                to="/structures/nouveau"
->
-                + Rattacher une structure supplémentaire
+              <span
+                            className="icon"
+              >
+                            <Icon
+                                          svg="ico-offres-w"
+                            />
+              </span>
+              <span>
+                            Créer une offre
+              </span>
 </NavLink>,
-            ],
-            "title": "Votre structure juridique",
+            "title": "Vos offres",
           },
           "ref": null,
-          "rendered": Array [
-            Object {
-              "instance": null,
-              "key": undefined,
-              "nodeType": "host",
-              "props": Object {
-                "children": Array [
-                  "Pour présenter vos offres, vous devez d'abord créer un",
-                  " ",
-                  <b>
-                     nouveau lieu 
-</b>,
-                  " lié à une structure.",
-                  <br />,
-                  "Sans lieu, vous ne pouvez ajouter que des offres numériques.",
-                ],
-                "className": "subtitle",
-              },
-              "ref": null,
-              "rendered": Array [
-                "Pour présenter vos offres, vous devez d'abord créer un",
-                " ",
-                Object {
+          "rendered": Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "function",
+            "props": Object {
+              "activeClassName": "active",
+              "aria-current": "page",
+              "children": Array [
+                <span
+                  className="icon"
+>
+                  <Icon
+                                    svg="ico-offres-w"
+                  />
+</span>,
+                <span>
+                  Créer une offre
+</span>,
+              ],
+              "className": "cta button is-primary",
+              "to": "/offres/nouveau",
+            },
+            "ref": null,
+            "rendered": Array [
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": <Icon
+                    svg="ico-offres-w"
+/>,
+                  "className": "icon",
+                },
+                "ref": null,
+                "rendered": Object {
                   "instance": null,
                   "key": undefined,
-                  "nodeType": "host",
+                  "nodeType": "function",
                   "props": Object {
-                    "children": " nouveau lieu ",
+                    "svg": "ico-offres-w",
                   },
                   "ref": null,
-                  "rendered": " nouveau lieu ",
-                  "type": "b",
-                },
-                " lié à une structure.",
-                Object {
-                  "instance": null,
-                  "key": undefined,
-                  "nodeType": "host",
-                  "props": Object {},
-                  "ref": null,
                   "rendered": null,
-                  "type": "br",
+                  "type": [Function],
                 },
-                "Sans lieu, vous ne pouvez ajouter que des offres numériques.",
-              ],
-              "type": "p",
-            },
-            Object {
-              "instance": null,
-              "key": undefined,
-              "nodeType": "function",
-              "props": Object {
-                "activeClassName": "active",
-                "aria-current": "page",
-                "children": "+ Rattacher une structure supplémentaire",
-                "className": "cta button is-primary is-outlined",
-                "to": "/structures/nouveau",
+                "type": "span",
               },
-              "ref": null,
-              "rendered": "+ Rattacher une structure supplémentaire",
-              "type": [Function],
-            },
-          ],
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": "Créer une offre",
+                },
+                "ref": null,
+                "rendered": "Créer une offre",
+                "type": "span",
+              },
+            ],
+            "type": [Function],
+          },
           "type": [Function],
         },
         Object {
@@ -706,7 +738,7 @@ ShallowWrapper {
               <label
                 className="label"
 >
-                Rechercher une structure :
+                Rechercher une offre :
 </label>,
               <div
                 className="field is-grouped"
@@ -715,7 +747,7 @@ ShallowWrapper {
                                 className="control is-expanded"
                 >
                                 <input
-                                                className="input search-input"
+                                                className="input"
                                                 defaultValue={undefined}
                                                 id="search"
                                                 placeholder="Saisissez un ou plusieurs mots complets"
@@ -727,6 +759,7 @@ ShallowWrapper {
                 >
                                 <button
                                                 className="button is-primary is-outlined"
+                                                id="search-button"
                                                 type="submit"
                                 >
                                                 OK
@@ -755,11 +788,11 @@ ShallowWrapper {
               "key": undefined,
               "nodeType": "host",
               "props": Object {
-                "children": "Rechercher une structure :",
+                "children": "Rechercher une offre :",
                 "className": "label",
               },
               "ref": null,
-              "rendered": "Rechercher une structure :",
+              "rendered": "Rechercher une offre :",
               "type": "label",
             },
             Object {
@@ -772,7 +805,7 @@ ShallowWrapper {
                     className="control is-expanded"
 >
                     <input
-                                        className="input search-input"
+                                        className="input"
                                         defaultValue={undefined}
                                         id="search"
                                         placeholder="Saisissez un ou plusieurs mots complets"
@@ -784,6 +817,7 @@ ShallowWrapper {
 >
                     <button
                                         className="button is-primary is-outlined"
+                                        id="search-button"
                                         type="submit"
                     >
                                         OK
@@ -811,7 +845,7 @@ ShallowWrapper {
                   "nodeType": "host",
                   "props": Object {
                     "children": <input
-                      className="input search-input"
+                      className="input"
                       defaultValue={undefined}
                       id="search"
                       placeholder="Saisissez un ou plusieurs mots complets"
@@ -825,7 +859,7 @@ ShallowWrapper {
                     "key": undefined,
                     "nodeType": "host",
                     "props": Object {
-                      "className": "input search-input",
+                      "className": "input",
                       "defaultValue": undefined,
                       "id": "search",
                       "placeholder": "Saisissez un ou plusieurs mots complets",
@@ -845,6 +879,7 @@ ShallowWrapper {
                     "children": Array [
                       <button
                         className="button is-primary is-outlined"
+                        id="search-button"
                         type="submit"
 >
                         OK
@@ -872,6 +907,7 @@ ShallowWrapper {
                       "props": Object {
                         "children": "OK",
                         "className": "button is-primary is-outlined",
+                        "id": "search-button",
                         "type": "submit",
                       },
                       "ref": null,
@@ -921,47 +957,74 @@ ShallowWrapper {
           ],
           "type": "form",
         },
-        false,
         Object {
           "instance": null,
           "key": undefined,
-          "nodeType": "class",
+          "nodeType": "host",
           "props": Object {
-            "Tag": "ul",
+            "children": undefined,
+            "className": "section",
+          },
+          "ref": null,
+          "rendered": null,
+          "type": "ul",
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
             "children": Array [
-              <Connect(OffererItem)
-                offerer={Object {}}
-/>,
+              false,
+              <withRouter(_withQueryRouter)
+                className="offers-list main-list"
+                element="ul"
+                hasMore={false}
+                isLoading={true}
+                loader={
+                                <Spinner
+                                                Tag="div"
+                                                className={null}
+                                                dotFrequency={500}
+                                                label="Chargement"
+                                                style={null}
+                                />
+                }
+                useWindow={true}
+>
+                
+</withRouter(_withQueryRouter)>,
             ],
-            "className": "main-list offerers-list",
-            "handleLoadMore": [Function],
-            "listeningScrollElement": null,
-            "loadScrollRatio": 0.9,
-            "renderErrors": [Function],
-            "renderFinished": [Function],
-            "renderLoading": [Function],
-            "scrollingElement": <html>
-              <head />
-              <body
-                            class=" web web"
-              />
-</html>,
+            "className": "section",
           },
           "ref": null,
           "rendered": Array [
+            false,
             Object {
               "instance": null,
               "key": undefined,
-              "nodeType": "class",
+              "nodeType": "function",
               "props": Object {
-                "offerer": Object {},
+                "children": Array [],
+                "className": "offers-list main-list",
+                "element": "ul",
+                "hasMore": false,
+                "isLoading": true,
+                "loader": <Spinner
+                  Tag="div"
+                  className={null}
+                  dotFrequency={500}
+                  label="Chargement"
+                  style={null}
+/>,
+                "useWindow": true,
               },
               "ref": null,
-              "rendered": null,
+              "rendered": Array [],
               "type": [Function],
             },
           ],
-          "type": [Function],
+          "type": "div",
         },
       ],
       "type": [Function],
