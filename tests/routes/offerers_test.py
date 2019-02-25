@@ -1,16 +1,14 @@
 """ routes offerer """
+import pytest
 import secrets
 from datetime import timedelta, datetime
 from pprint import pprint
-
-import pytest
 
 from domain.reimbursement import ReimbursementRules
 from models import PcObject, ThingType, EventType
 from models.db import db
 from models.pc_object import serialize
 from tests.conftest import clean_database
-from utils.human_ids import dehumanize, humanize
 from tests.test_utils import API_URL, \
     create_booking, \
     create_deposit, \
@@ -26,6 +24,7 @@ from tests.test_utils import API_URL, \
     create_venue, \
     req, \
     req_with_auth, create_thing, create_event, create_stock_from_event_occurrence, create_event_occurrence
+from utils.human_ids import dehumanize, humanize
 
 
 def _get_offer_type(response_json):
@@ -535,124 +534,6 @@ def test_get_offerer_bookings_should_work_only_when_logged_in(app):
 
     # then
     assert response.status_code == 401
-
-
-@clean_database
-@pytest.mark.standalone
-def test_post_offerer_with_iban_and_no_bic_raises_api_error(app):
-    # given
-    user = create_user(password='p@55sw0rd')
-    PcObject.check_and_save(user)
-    auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
-    body = {
-        'name': 'Test Offerer',
-        'siren': '418166096',
-        'address': '123 rue de Paris',
-        'postalCode': '93100',
-        'city': 'Montreuil',
-        'iban': 'FR7630006000011234567890189'
-    }
-
-    # when
-    response = auth_request.post(API_URL + '/offerers', json=body)
-
-    # then
-    assert response.status_code == 400
-    assert response.json()['bic'] == ["Le BIC es manquant"]
-
-
-@clean_database
-@pytest.mark.standalone
-def test_post_offerer_with_bic_and_no_iban_raises_api_error(app):
-    # given
-    user = create_user(password='p@55sw0rd')
-    PcObject.check_and_save(user)
-    auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
-    body = {
-        'name': 'Test Offerer',
-        'siren': '418166096',
-        'address': '123 rue de Paris',
-        'postalCode': '93100',
-        'city': 'Montreuil',
-        'bic': 'BDFEFR2LCCB'
-    }
-
-    # when
-    response = auth_request.post(API_URL + '/offerers', json=body)
-
-    # then
-    assert response.status_code == 400
-    assert response.json()['iban'] == ["L'IBAN es manquant"]
-
-
-@clean_database
-@pytest.mark.standalone
-def test_post_offerer_with_bic_and_iban_returns_status_code_201(app):
-    # given
-    user = create_user(password='p@55sw0rd')
-    PcObject.check_and_save(user)
-    auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
-    body = {
-        'name': 'Test Offerer',
-        'siren': '418166096',
-        'address': '123 rue de Paris',
-        'postalCode': '93100',
-        'city': 'Montreuil',
-        'bic': 'BDFEFR2LCCB',
-        'iban': 'FR7630006000011234567890189'
-
-    }
-
-    # when
-    response = auth_request.post(API_URL + '/offerers', json=body)
-
-    # then
-    assert response.status_code == 201
-    response_json = response.json()
-    assert response_json['bic'] == 'BDFEFR2LCCB'
-    assert response_json['iban'] == 'FR7630006000011234567890189'
-
-
-@clean_database
-@pytest.mark.standalone
-def test_patch_offerer_with_bic_and_iban_returns_status_code_200(app):
-    # given
-    user = create_user()
-    offerer = create_offerer(iban=None, bic=None)
-    user_offerer = create_user_offerer(user, offerer, is_admin=True)
-    PcObject.check_and_save(user_offerer)
-    auth_request = req_with_auth(email=user.email, password=user.clearTextPassword)
-    body = {'bic': 'BDFEFR2LCCB', 'iban': 'FR7630006000011234567890189'}
-
-    # when
-    response = auth_request.patch(API_URL + '/offerers/%s' % humanize(offerer.id), json=body)
-
-    # then
-    assert response.status_code == 200
-    response_json = response.json()
-    assert response_json['bic'] == 'BDFEFR2LCCB'
-    assert response_json['iban'] == 'FR7630006000011234567890189'
-
-
-@clean_database
-@pytest.mark.standalone
-def test_patch_offerer_with_none_bic_and_none_iban_returns_status_code_200(app):
-    # given
-    user = create_user()
-    offerer = create_offerer(iban='FR7630006000011234567890189', bic='BDFEFR2LCCB')
-    user_offerer = create_user_offerer(user, offerer, is_admin=True)
-    PcObject.check_and_save(user_offerer)
-    auth_request = req_with_auth(email=user.email, password=user.clearTextPassword)
-    body = {'bic': None, 'iban': None}
-
-    # when
-    response = auth_request.patch(API_URL + '/offerers/%s' % humanize(offerer.id), json=body)
-
-    # then
-    assert response.status_code == 200
-    response_json = response.json()
-    assert response_json['bic'] is None
-    assert response_json['iban'] is None
 
 
 @clean_database
