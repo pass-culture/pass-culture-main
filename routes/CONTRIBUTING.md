@@ -52,8 +52,6 @@ modules de `domain` ou de `repository` par exemple.
 
 Par exemple :
 ```python
-# tests/routes/offers_test.py
-
 class Get:
     class Returns200:
         @clean_database
