@@ -102,11 +102,11 @@ test('Je peux créer une accroche', async t => {
       'https://www.deridet.com/photo/art/grande/8682609-13705793.jpg?v=1450665370'
     )
     .click(urlButton)
-    .wait(5000)
+    .wait(1000)
     .typeText(creditInput, 'deridet')
 
   // when
-  await t.click(submitButton).wait(5000)
+  await t.click(submitButton)
 
   // then
   await t

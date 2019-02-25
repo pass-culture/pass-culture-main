@@ -101,7 +101,7 @@ test('E-mail déjà présent dans la base', async t => {
     .click(cguOkInput)
 
   // when
-  await t.click(signUpButton).wait(5000)
+  await t.click(signUpButton)
 
   // then
   await t.expect(emailInputError.innerText).match(/.*\S.*/)
@@ -179,7 +179,7 @@ test('Je suis redirigé·e vers la page de connexion avec un message de confirma
   const { validationToken } = user
 
   // when
-  await t.navigateTo(`/inscription/validation/${validationToken}`).wait(500)
+  await t.navigateTo(`/inscription/validation/${validationToken}`)
 
   // then
   const location = await t.eval(() => window.location)

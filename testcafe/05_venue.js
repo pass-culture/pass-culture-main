@@ -144,7 +144,7 @@ test('Une entrée avec cet identifiant existe déjà', async t => {
     .contains('Formulaire non validé\nOK')
 
   // when
-  await t.click(closeAnchor).wait(3000)
+  await t.click(closeAnchor)
 
   // then
   await t.expect(notificationError.exists).notOk()
@@ -288,7 +288,6 @@ test("Je peux modifier l'email de contact du lieu", async t => {
     .click(updateAnchor)
     .typeText(bookingEmailInput, 'fake')
     .click(submitButton)
-    .wait(500)
 
   // then
   await t

@@ -20,7 +20,7 @@ fixture('OffersList A | Lister les offres').beforeEach(async t => {
 test("Lorsque je cliques sur `Mes offres`, j'accès de à la liste des offres", async t => {
   // given
   const { user } = t.ctx.sandbox
-  await t.useRole(createUserRole(user)).wait(1000)
+  await t.useRole(createUserRole(user))
   // then
   const location = await t.eval(() => window.location)
   await t.expect(location.pathname).eql('/offres')
