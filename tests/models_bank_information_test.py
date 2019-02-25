@@ -1,0 +1,114 @@
+import pytest
+
+from tests.test_utils import create_bank_information
+
+
+@pytest.mark.standalone
+def test_offerer_errors_raises_an_error_if_both_iban_and_bic_are_empty():
+    # given
+    bank_information = create_bank_information(bic='', iban='')
+
+    # when
+    errors = bank_information.errors()
+
+    # then
+    assert errors.errors['iban'] == ["L'IBAN renseigné (\"\") est invalide"]
+    assert errors.errors['bic'] == ["Le BIC renseigné (\"\") est invalide"]
+
+
+@pytest.mark.standalone
+def test_offerer_errors_raises_an_error_if_both_iban_and_bic_are_none():
+    # given
+    bank_information = create_bank_information(bic=None, iban=None)
+
+    # when
+    errors = bank_information.errors()
+
+    # then
+    assert errors.errors['iban'] == ["Cette information est obligatoire"]
+    assert errors.errors['bic'] == ["Cette information est obligatoire"]
+
+
+@pytest.mark.standalone
+def test_validate_bank_information_raises_an_error_if_both_iban_and_bic_are_invalid():
+    # given
+    bank_information = create_bank_information(bic='dazdazdaz', iban='zefzezefzeffzef')
+    # when
+    errors = bank_information.errors()
+
+    # then
+    assert errors.errors['iban'] == ["L'IBAN renseigné (\"zefzezefzeffzef\") est invalide"]
+    assert errors.errors['bic'] == ["Le BIC renseigné (\"dazdazdaz\") est invalide"]
+
+
+@pytest.mark.standalone
+def test_validate_bank_information_raises_an_error_if_iban_is_valid_but_bic_is_not():
+    # given
+    bank_information = create_bank_information(bic='random bic', iban='FR7630006000011234567890189')
+    # when
+    errors = bank_information.errors()
+
+
+    # then
+    assert errors.errors['bic'] == ["Le BIC renseigné (\"random bic\") est invalide"]
+    assert 'iban' not in errors.errors
+
+
+@pytest.mark.standalone
+def test_validate_bank_information_raises_an_error_if_bic_is_valid_but_iban_is_not():
+    # given
+    bank_information = create_bank_information(bic='BDFEFR2LCCB', iban='random iban')
+    # when
+    errors = bank_information.errors()
+
+    # then
+    assert errors.errors['iban'] == ["L'IBAN renseigné (\"random iban\") est invalide"]
+    assert 'bic' not in errors.errors
+
+
+@pytest.mark.standalone
+def test_validate_bank_information_raises_an_error_if_iban_looks_correct_but_does_not_pass_validation_algorithm():
+    # given
+    bank_information = create_bank_information(bic='BDFEFR2LCCB', iban='FR7630006000011234567890180')
+
+    # when
+    errors = bank_information.errors()
+
+    # then
+    assert errors.errors['iban'] == ["L'IBAN renseigné (\"FR7630006000011234567890180\") est invalide"]
+
+
+@pytest.mark.standalone
+def test_validate_bank_information_raises_an_error_if_bic_has_correct_length_of_11_but_is_unknown():
+    # given
+    bank_information = create_bank_information(bic='CITCCWCUDSK', iban='FR7630006000011234567890189')
+
+    # when
+    errors = bank_information.errors()
+
+    # then
+    assert errors.errors['bic'] == ["Le BIC renseigné (\"CITCCWCUDSK\") est invalide"]
+
+
+@pytest.mark.standalone
+def test_validate_bank_information_raises_an_error_if_bic_has_correct_length_of_11_but_is_unknown():
+    # given
+    bank_information = create_bank_information(bic=None, iban='FR7630006000011234567890189')
+
+    # when
+    errors = bank_information.errors()
+
+    # then
+    assert errors.errors['bic'] == ["Cette information est obligatoire"]
+
+
+@pytest.mark.standalone
+def test_validate_bank_information_raises_an_error_if_bic_has_correct_length_of_11_but_is_unknown():
+    # given
+    bank_information = create_bank_information(bic='BDFEFR2LCCB', iban=None)
+
+    # when
+    errors = bank_information.errors()
+
+    # then
+    assert errors.errors['iban'] == ["Cette information est obligatoire"]
