@@ -5,3 +5,6 @@ development_env_file
 .idea/
 *.pgdump
 *.iml
+
+scripts/remove_doublons_of_tuto_recommendation.py
+scripts/recreate_where_not_first_tuto.py

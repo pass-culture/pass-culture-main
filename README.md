@@ -24,9 +24,14 @@ pc install
 Le script `pc` sera automatiquement lié dans votre dossier `/usr/local/bin`
 
 ### Init
-Pour verifier les tests et obtenir une db minimale:
+Pour verifier les tests:
 ```bash
 pc test-backend
+```
+
+Pour avoir une database de jeu:
+```bash
+pc sandbox -n industrial
 ```
 
 ### Démarrage
@@ -45,7 +50,6 @@ Pour lancer le portail pro:
 ```bash
 pc start-pro
 ```
-
 
 
 ## Développeurs.ses
@@ -114,10 +118,54 @@ Pour restorer un fichier de dump postgresql (file.pgdump) en local:
 pc restore-db file.pgdump
 ```
 
-Pour anonymiser les données après restauration, et changer le mot de passe pour tout les users : 
+Pour anonymiser les données après restauration, et changer le mot de passe pour tout les users :
 
 ```bash
 ./anonymize_database.sh -p PASSWORD
+```
+
+### Database de jeu
+
+Afin de naviguer/tester différentes situations de données et de "user stories" dans l'application, il existe dans api des scripts python permettant d'engendrer des bases de données "sandbox".
+
+La plus conséquente et se voulant la plus exhaustive possible est l'industrial, elle se crée via la commande:
+
+```bash
+pc sandbox -n industrial
+```
+
+Pour ensuite avoir les credentials des utilisateurs crées par cette sandbox, il y a deux moyens:
+
+  - on peut utiliser la commande sandbox_to_testcafe qui résume les objets utilisés de la sandbox dans les différents testcafés. Si on veut avoir tous les utilisateurs ds tests pro_07_offer dans l'application pro, il faut faire:
+  ```
+    pc sandbox_to_testcafe -n pro_07_offer
+  ```
+  - on peut utiliser un curl (ou postman) qui ping directement le server à l'url du getter que l'on souhaite:
+  ```
+  curl -H "Content-Type: application/json" \
+       -H "Origin: http://localhost:3000" \
+       GET http://localhost:80/sandboxes/pro_07_offer/get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_with_physical_venue
+  ```
+
+Il est important que votre server api local tourne.
+
+Pour les développeur.ses, quand vous écrivez un testcafé,
+il faut donc laplus part du temps écrire aussi un getter côté api dans
+sandboxes/scripts/getters/<moduleNameAvecleMêmeNomQueLeFichierTestcafe>, afin
+de récupérer les objets souhaités dans la sandbox.
+
+Si vous voulez avoir un aperçu global de l'application pro, vous pouvez tout de même vous connecter avec cet user toujours présent:
+
+```
+email: pctest.jeune93@btmx.fr
+password: pctest0.Jeune93
+```
+
+Pour l'application pro vous pouvez naviguer en tant qu'admin avec:
+
+```
+email: pctest.admin93.0@btmx.fr
+password: pctest0.Admin93.0
 ```
 
 ## Tagging des versions
@@ -178,7 +226,7 @@ npm publish
 Puis sur webapp et/ou pro, mettre à jour la version de pass-culture-shared dans le fichier `package.json` :
 
 ```bash
-yarn add pass-culture-shared@x.x.x 
+yarn add pass-culture-shared@x.x.x
 git add package.json yarn.lock
 ```
 
