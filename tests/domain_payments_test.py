@@ -1,11 +1,10 @@
+import pytest
 import uuid
 from datetime import datetime
 from decimal import Decimal
+from freezegun import freeze_time
 from pprint import pprint
 from unittest.mock import Mock
-
-import pytest
-from freezegun import freeze_time
 
 from domain.payments import create_payment_for_booking, filter_out_already_paid_for_bookings, create_payment_details, \
     create_all_payments_details, make_custom_message, group_payments_by_status, \
@@ -15,7 +14,7 @@ from models import Offer, Venue, Booking
 from models.payment import Payment
 from models.payment_status import TransactionStatus
 from tests.test_utils import create_booking, create_stock, create_user, create_offerer, create_venue, create_payment, \
-    create_thing_offer
+    create_thing_offer, create_bank_information
 
 
 @pytest.mark.standalone
@@ -27,7 +26,10 @@ def test_create_payment_for_booking_with_common_information():
     booking = create_booking(user, stock=stock, quantity=1)
     booking.stock.offer = Offer()
     booking.stock.offer.venue = Venue()
-    booking.stock.offer.venue.managingOfferer = create_offerer(iban='CF13QSDFGH456789', bic='QSDFGH8Z555')
+    offerer = create_offerer()
+    offerer_bank_information = create_bank_information(iban='CF13QSDFGH456789', bic='QSDFGH8Z555')
+    offerer_bank_information.offerer = offerer
+    booking.stock.offer.venue.managingOfferer = offerer
     booking_reimbursement = BookingReimbursement(booking, ReimbursementRules.PHYSICAL_OFFERS, Decimal(10))
 
     # when
@@ -48,16 +50,17 @@ def test_create_payment_for_booking_when_iban_is_on_venue_should_take_payment_in
     # given
     user = create_user()
     stock = create_stock(price=10, available=5)
+    offerer = create_offerer(name='Test Offerer')
+    venue = create_venue(offerer, name='Test Venue', )
     booking = create_booking(user, stock=stock, quantity=1)
+
+    offerer_bank_information = create_bank_information(iban='B135TGGEG532TG', bic='LAJR93')
+    venue_bank_information = create_bank_information(iban='KD98765RFGHZ788', bic='LOKIJU76')
+    offerer_bank_information.offerer = offerer
+    venue_bank_information.venue = venue
+
     booking.stock.offer = Offer()
-    offerer = create_offerer(name='Test Offerer', iban='B135TGGEG532TG', bic='LAJR93')
-    booking.stock.offer.venue = create_venue(
-        offerer,
-        siret='12345678912345',
-        name='Test Venue',
-        iban='KD98765RFGHZ788',
-        bic='LOKIJU76'
-    )
+    booking.stock.offer.venue = venue
     booking.stock.offer.venue.managingOfferer = offerer
     booking_reimbursement = BookingReimbursement(booking, ReimbursementRules.PHYSICAL_OFFERS, Decimal(10))
 
@@ -74,15 +77,17 @@ def test_create_payment_for_booking_when_no_iban_on_venue_should_take_payment_in
     # given
     user = create_user()
     stock = create_stock(price=10, available=5)
+    offerer = create_offerer(name='Test Offerer')
+    venue = create_venue(offerer, name='Test Venue')
+
+    offerer_bank_information = create_bank_information(iban='CF13QSDFGH456789', bic='QSDFGH8Z555')
+    venue_bank_information = create_bank_information(iban=None, bic=None)
+    offerer_bank_information.offerer = offerer
+    venue_bank_information.venue = venue
+
     booking = create_booking(user, stock=stock, quantity=1)
     booking.stock.offer = Offer()
-    offerer = create_offerer(
-        name='Test Offerer',
-        siren='123456789',
-        iban='CF13QSDFGH456789',
-        bic='QSDFGH8Z555'
-    )
-    booking.stock.offer.venue = create_venue(offerer, name='Test Venue', iban=None, bic=None)
+    booking.stock.offer.venue = venue
     booking.stock.offer.venue.managingOfferer = offerer
     booking_reimbursement = BookingReimbursement(booking, ReimbursementRules.PHYSICAL_OFFERS, Decimal(10))
 
@@ -101,13 +106,15 @@ def test_create_payment_for_booking_takes_recipient_name_and_siren_from_offerer(
     stock = create_stock(price=10, available=5)
     booking = create_booking(user, stock=stock, quantity=1)
     booking.stock.offer = Offer()
-    offerer = create_offerer(
-        name='Test Offerer',
-        siren='123456789',
-        iban='CF13QSDFGH456789',
-        bic='QSDFGH8Z555'
-    )
-    booking.stock.offer.venue = create_venue(offerer, name='Test Venue', iban=None, bic=None)
+    offerer = create_offerer(name='Test Offerer', siren='123456789')
+    venue = create_venue(offerer, name='Test Venue')
+
+    offerer_bank_information = create_bank_information(iban='CF13QSDFGH456789', bic='QSDFGH8Z555')
+    venue_bank_information = create_bank_information(iban=None, bic=None)
+    offerer_bank_information.offerer = offerer
+    venue_bank_information.venue = venue
+
+    booking.stock.offer.venue = venue
     booking.stock.offer.venue.managingOfferer = offerer
     booking_reimbursement = BookingReimbursement(booking, ReimbursementRules.PHYSICAL_OFFERS, Decimal(10))
 
@@ -120,14 +127,14 @@ def test_create_payment_for_booking_takes_recipient_name_and_siren_from_offerer(
 
 
 @pytest.mark.standalone
-def test_create_payment_for_booking_with_not_processable_status_when_iban_is_missing_on_offerer():
+def test_create_payment_for_booking_with_not_processable_status_when_no_bank_information_linked_to_venue_or_offerer():
     # given
     user = create_user()
     stock = create_stock(price=10, available=5)
     booking = create_booking(user, stock=stock, quantity=1)
     booking.stock.offer = Offer()
     booking.stock.offer.venue = Venue()
-    booking.stock.offer.venue.managingOfferer = create_offerer(name='Test Offerer', iban=None, bic=None)
+    booking.stock.offer.venue.managingOfferer = create_offerer(name='Test Offerer')
     booking_reimbursement = BookingReimbursement(booking, ReimbursementRules.PHYSICAL_OFFERS, Decimal(10))
 
     # when
@@ -148,7 +155,10 @@ def test_create_payment_for_booking_with_pending_status():
     booking = create_booking(user, stock=stock, quantity=1)
     booking.stock.offer = Offer()
     booking.stock.offer.venue = Venue()
-    booking.stock.offer.venue.managingOfferer = create_offerer(iban='CF13QSDFGH456789', bic='QSDFGH8Z555')
+    offerer = create_offerer()
+    booking.stock.offer.venue.managingOfferer = offerer
+    offerer_bank_information = create_bank_information(iban='CF13QSDFGH456789', bic='QSDFGH8Z555')
+    offerer_bank_information.offerer = offerer
     booking_reimbursement = BookingReimbursement(booking, ReimbursementRules.PHYSICAL_OFFERS, Decimal(10))
 
     # when
@@ -330,11 +340,13 @@ class KeepOnlyNotProcessablePaymentsTest:
 
 @pytest.mark.standalone
 class CreatePaymentDetailsTest:
-    def test_contains_info_on_bank_transaction(selfself):
+    def test_contains_info_on_bank_transaction(self):
         # given
         user = create_user()
         booking = create_booking(user)
-        offerer = create_offerer(iban='123456789')
+        offerer = create_offerer()
+        offerer_bank_information = create_bank_information(iban='123456789', bic=None)
+        offerer_bank_information.offerer = offerer
         payment = create_payment(
             booking, offerer, 35,
             transaction_message_id='1234',
@@ -356,7 +368,9 @@ class CreatePaymentDetailsTest:
         # given
         user = create_user(idx=3, email='jane.doe@test.com')
         booking = create_booking(user)
-        offerer = create_offerer(iban='123456789')
+        offerer = create_offerer()
+        offerer_bank_information = create_bank_information(iban='123456789', bic=None)
+        offerer_bank_information.offerer = offerer
         payment = create_payment(booking, offerer, 35)
 
         # when
@@ -370,7 +384,9 @@ class CreatePaymentDetailsTest:
     def test_contains_info_on_booking(self):
         # given
         user = create_user(idx=3, email='jane.doe@test.com')
-        offerer = create_offerer(iban='123456789', siren='987654321', name='Joe le Libraire')
+        offerer = create_offerer(siren='987654321', name='Joe le Libraire')
+        offerer_bank_information = create_bank_information(iban='123456789', bic=None)
+        offerer_bank_information.offerer = offerer
         venue = create_venue(offerer)
         offer = create_thing_offer(venue)
         stock = create_stock(price=12, available=5, offer=offer)
@@ -391,7 +407,9 @@ class CreatePaymentDetailsTest:
     def test_contains_info_on_offerer(self):
         # given
         user = create_user(idx=3, email='jane.doe@test.com')
-        offerer = create_offerer(iban='123456789', siren='987654321', name='Joe le Libraire')
+        offerer = create_offerer(siren='987654321', name='Joe le Libraire')
+        offerer_bank_information = create_bank_information(iban='123456789', bic=None)
+        offerer_bank_information.offerer = offerer
         venue = create_venue(offerer)
         offer = create_thing_offer(venue)
         stock = create_stock(price=12, available=5, offer=offer)
@@ -411,7 +429,9 @@ class CreatePaymentDetailsTest:
     def test_contains_info_on_venue(self):
         # given
         user = create_user(idx=3, email='jane.doe@test.com')
-        offerer = create_offerer(iban='123456789', siren='987654321', name='Joe le Libraire')
+        offerer = create_offerer(siren='987654321', name='Joe le Libraire')
+        offerer_bank_information = create_bank_information(iban='123456789', bic=None)
+        offerer_bank_information.offerer = offerer
         venue = create_venue(offerer, name='Jack le Sculpteur', siret='1234567891234')
         offer = create_thing_offer(venue)
         stock = create_stock(price=12, available=5, offer=offer)
@@ -431,7 +451,9 @@ class CreatePaymentDetailsTest:
     def test_contains_info_on_offer(self):
         # given
         user = create_user(idx=3, email='jane.doe@test.com')
-        offerer = create_offerer(iban='123456789', siren='987654321', name='Joe le Libraire')
+        offerer = create_offerer(siren='987654321', name='Joe le Libraire')
+        offerer_bank_information = create_bank_information(iban='123456789', bic=None)
+        offerer_bank_information.offerer = offerer
         venue = create_venue(offerer, name='Jack le Sculpteur', siret='1234567891234')
         offer = create_thing_offer(venue)
         stock = create_stock(price=12, available=5, offer=offer)
