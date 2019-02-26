@@ -22,8 +22,6 @@ def test_get_offers_for_recommendations_search_with_distance_less_than_1km_retur
         postal_code='75002',
         name='LE GRAND REX PARIS',
         validation_token=None,
-        iban=None,
-        bic=None
     )
     venue75 = create_venue(
         offerer75,
@@ -109,8 +107,6 @@ def test_get_offers_for_recommendations_search_with_all_distances_should_returns
             postal_code='75002',
             name='LE GRAND REX PARIS',
             validation_token=None,
-            iban=None,
-            bic=None
         )
         venue13 = create_venue(
         offerer75,
@@ -270,8 +266,6 @@ def test_get_offers_for_recommendations_search_with_distance_less_than_20kms_ret
             postal_code='75002',
             name='LE GRAND REX PARIS',
             validation_token=None,
-            iban=None,
-            bic=None
         )
         venue75 = create_venue(
             offerer75,
@@ -417,8 +411,6 @@ def test_get_offers_for_recommendations_search_with_distance_less_than_50kms_ret
             postal_code='75002',
             name='LE GRAND REX PARIS',
             validation_token=None,
-            iban=None,
-            bic=None
         )
         venue45 = create_venue(
             offerer75,
@@ -504,8 +496,6 @@ def test_get_offers_for_recommendations_search_with_distance_returns_offers_in_v
             postal_code='75002',
             name='LE GRAND REX PARIS',
             validation_token=None,
-            iban=None,
-            bic=None
         )
         venue45 = create_venue(
             offerer75,
@@ -575,8 +565,6 @@ def test_get_offers_for_recommendations_search_with_specific_distance_and_keywor
             postal_code='75002',
             name='LE GRAND REX PARIS',
             validation_token=None,
-            iban=None,
-            bic=None
         )
         venue45 = create_venue(
             offerer75,
@@ -663,8 +651,6 @@ def test_get_offers_for_recommendations_search_with_all_distance_and_keywords(ap
             postal_code='75002',
             name='LE GRAND REX PARIS',
             validation_token=None,
-            iban=None,
-            bic=None
         )
         venue45 = create_venue(
             offerer75,
