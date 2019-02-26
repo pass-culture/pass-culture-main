@@ -34,14 +34,14 @@ class TiteLiveThingThumbs(LocalProvider):
 
     def open_next_file(self):
         if self.zip:
-            self.logProviderEvent(LocalProviderEventType.SyncPartEnd,
-                                  get_date_from_filename(self.zip, DATE_REGEXP))
+            self.logEvent(LocalProviderEventType.SyncPartEnd,
+                          get_date_from_filename(self.zip, DATE_REGEXP))
         next_zip_file_name = str(self.zips.__next__())
         self.zip = get_zip_file_from_ftp(next_zip_file_name, THUMB_FOLDER_NAME_TITELIVE)
 
         logger.info("  Importing thumbs from file " + str(self.zip))
-        self.logProviderEvent(LocalProviderEventType.SyncPartStart,
-                              get_date_from_filename(self.zip, DATE_REGEXP))
+        self.logEvent(LocalProviderEventType.SyncPartStart,
+                      get_date_from_filename(self.zip, DATE_REGEXP))
 
         self.thumb_zipinfos = iter(filter(lambda f: f.filename.lower().endswith('.jpg'),
                                           sorted(self.zip.infolist(),

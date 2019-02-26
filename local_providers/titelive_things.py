@@ -37,12 +37,12 @@ class TiteLiveThings(LocalProvider):
 
     def open_next_file(self):
         if self.thing_file:
-            self.logProviderEvent(LocalProviderEventType.SyncPartEnd,
-                                  get_date_from_filename(self.thing_file, DATE_REGEXP))
+            self.logEvent(LocalProviderEventType.SyncPartEnd,
+                          get_date_from_filename(self.thing_file, DATE_REGEXP))
         self.thing_file = next(self.thing_files)
         logger.info("  Importing things from file %s" % self.thing_file)
-        self.logProviderEvent(LocalProviderEventType.SyncPartStart,
-                              get_date_from_filename(self.thing_file, DATE_REGEXP))
+        self.logEvent(LocalProviderEventType.SyncPartStart,
+                      get_date_from_filename(self.thing_file, DATE_REGEXP))
 
         self.data_lines = get_lines_from_thing_file(str(self.thing_file))
 

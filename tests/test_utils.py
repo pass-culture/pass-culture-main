@@ -680,8 +680,11 @@ def assert_created_thumbs():
     assert len(glob(str(STORAGE_DIR / "thumbs" / "*"))) == 1
 
 
-def provider_test_whithout_mock(app, provider, venue_provider, **counts):
-    provider_object = provider(venue_provider, limit=1)
+def provider_test_whithout_mock(app, provider, venue_provider=None, **counts):
+    if venue_provider is None:
+        provider_object = provider()
+    else:
+        provider_object = provider(venue_provider)
     provider_object.dbObject.isActive = True
     PcObject.check_and_save(provider_object.dbObject)
     saveCounts(app)

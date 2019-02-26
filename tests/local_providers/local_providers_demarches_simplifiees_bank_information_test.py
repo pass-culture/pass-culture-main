@@ -1,3 +1,4 @@
+""" local providers BankInformation test """
 import os
 import pytest
 from datetime import datetime
