@@ -2,14 +2,14 @@ import os
 from datetime import datetime
 from unittest.mock import Mock
 
-from domain.retrieve_bank_account_information_for_offerers import \
+from domain.bank_account import \
     get_all_application_ids_from_demarches_simplifiees_procedure
 
 
 class GetAllFileIdsFromDemarchesSimplifieesProcedureTest:
     def setup_class(self):
-        self.PROCEDURE_ID = os.environ['DEMARCHES_SIMPLIFIEES_PROCEDURE_ID']
-        self.TOKEN = os.environ['DEMARCHES_SIMPLIFIEES_TOKEN']
+        self.PROCEDURE_ID = '123456789'
+        self.TOKEN = 'AZERTY123/@.,!é'
         self.mock_get_all_applications_for_procedure = Mock()
 
     def test_returns_applications_with_state_closed_only(
@@ -31,7 +31,7 @@ class GetAllFileIdsFromDemarchesSimplifieesProcedureTest:
         # When
         application_ids = get_all_application_ids_from_demarches_simplifiees_procedure(
             self.PROCEDURE_ID, self.TOKEN, datetime(2019, 1, 1),
-            get_all_applications_for_procedure_in_demarches_simplifiees=self.mock_get_all_applications_for_procedure
+            get_all_applications=self.mock_get_all_applications_for_procedure
         )
 
         # Then
@@ -56,7 +56,8 @@ class GetAllFileIdsFromDemarchesSimplifieesProcedureTest:
         # When
         application_ids = get_all_application_ids_from_demarches_simplifiees_procedure(
             self.PROCEDURE_ID, self.TOKEN, datetime(2019, 1, 1),
-            get_all_applications_for_procedure_in_demarches_simplifiees=self.mock_get_all_applications_for_procedure)
+            get_all_applications=self.mock_get_all_applications_for_procedure
+        )
 
         # Then
         assert application_ids == [2]
@@ -88,7 +89,8 @@ class GetAllFileIdsFromDemarchesSimplifieesProcedureTest:
         # When
         application_ids = get_all_application_ids_from_demarches_simplifiees_procedure(
             self.PROCEDURE_ID, self.TOKEN, datetime(2018, 1, 1),
-                                                                                       get_all_applications_for_procedure_in_demarches_simplifiees=self.mock_get_all_applications_for_procedure)
+            get_all_applications=self.mock_get_all_applications_for_procedure
+        )
 
         # Then
         assert application_ids == [3, 2, 1, 4]

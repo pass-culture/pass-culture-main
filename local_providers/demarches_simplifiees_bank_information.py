@@ -2,8 +2,7 @@ import os
 from datetime import datetime
 
 from connectors.api_demarches_simplifiees import get_application_details
-from domain.retrieve_bank_account_information_for_offerers import \
-    get_all_application_ids_from_demarches_simplifiees_procedure
+from domain.bank_account import get_all_application_ids_from_demarches_simplifiees_procedure
 from models import BankInformation
 from models.local_provider import LocalProvider, ProvidableInfo
 from models.local_provider_event import LocalProviderEventType
