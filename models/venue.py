@@ -129,6 +129,14 @@ class Venue(PcObject,
         return api_errors
 
     @property
+    def bic(self):
+        return self.bankInformation.bic if self.bankInformation else None
+
+    @property
+    def iban(self):
+        return self.bankInformation.iban if self.bankInformation else None
+
+    @property
     def nOffers(self):
         return len(self.offers)
 

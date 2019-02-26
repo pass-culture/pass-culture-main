@@ -2,7 +2,8 @@ import pytest
 
 from models import PcObject, ApiErrors
 from tests.conftest import clean_database
-from tests.test_utils import create_offerer, create_venue, create_thing_offer, create_event_offer
+from tests.test_utils import create_offerer, create_venue, create_thing_offer, create_event_offer, \
+    create_bank_information
 
 
 @pytest.mark.standalone
@@ -39,3 +40,57 @@ def test_offerer_can_have_null_address(app):
     except ApiErrors:
         # then
         assert False
+
+@pytest.mark.standalone
+class OffererBankInformationTest:
+    @clean_database
+    def when_bank_information_with_offerer_id_exists_offerer_bic_returns_bank_information_bic(self, app):
+        # Given
+        offerer = create_offerer(siren='123456789')
+        PcObject.check_and_save(offerer)
+        bank_information = create_bank_information(bic='BDFEFR2LCCB', offerer_id=offerer.id, id_at_providers='123456789')
+        PcObject.check_and_save(bank_information)
+
+        # When
+        bic = offerer.bic
+
+        # Then
+        assert bic == 'BDFEFR2LCCB'
+
+    @clean_database
+    def when_bank_information_with_offerer_id_offerer_bic_does_not_exist_returns_none(self, app):
+        # Given
+        offerer = create_offerer(siren='123456789')
+        PcObject.check_and_save(offerer)
+
+        # When
+        bic = offerer.bic
+
+        # Then
+        assert bic is None
+
+    @clean_database
+    def when_bank_information_with_offerer_id_exists_offerer_iban_returns_bank_information_iban(self, app):
+        # Given
+        offerer = create_offerer(siren='123456789')
+        PcObject.check_and_save(offerer)
+        bank_information = create_bank_information(iban='FR7630007000111234567890144', offerer_id=offerer.id, id_at_providers='123456789')
+        PcObject.check_and_save(bank_information)
+
+        # When
+        iban = offerer.iban
+
+        # Then
+        assert iban == 'FR7630007000111234567890144'
+
+    @clean_database
+    def when_bank_information_with_offerer_id_offerer_iban_does_not_exist_returns_none(self, app):
+        # Given
+        offerer = create_offerer(siren='123456789')
+        PcObject.check_and_save(offerer)
+
+        # When
+        iban = offerer.iban
+
+        # Then
+        assert iban is None

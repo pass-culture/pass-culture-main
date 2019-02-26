@@ -3,7 +3,8 @@ import pytest
 from models import ApiErrors, PcObject
 from models.venue import TooManyVirtualVenuesException
 from tests.conftest import clean_database
-from tests.test_utils import create_offerer, create_venue, create_thing_offer, create_event_offer
+from tests.test_utils import create_offerer, create_venue, create_thing_offer, create_event_offer, \
+    create_bank_information
 
 
 @clean_database
@@ -123,3 +124,63 @@ def test_nOffers(app):
 
     # then
     assert n_offers == 4
+
+
+@pytest.mark.standalone
+class OffererBankInformationTest:
+    @clean_database
+    def when_bank_information_with_offerer_id_exists_offerer_bic_returns_bank_information_bic(self, app):
+        # Given
+        offerer = create_offerer(siren='123456789')
+        venue = create_venue(offerer, siret='12345678912345')
+        PcObject.check_and_save(venue)
+        bank_information = create_bank_information(bic='BDFEFR2LCCB', venue_id=venue.id, id_at_providers='12345678912345')
+        PcObject.check_and_save(bank_information)
+
+        # When
+        bic = venue.bic
+
+        # Then
+        assert bic == 'BDFEFR2LCCB'
+
+    @clean_database
+    def when_bank_information_with_offerer_id_offerer_bic_does_not_exist_returns_none(self, app):
+        # Given
+        offerer = create_offerer(siren='123456789')
+        venue = create_venue(offerer, siret='12345678912345')
+        PcObject.check_and_save(venue)
+
+        # When
+        bic = venue.bic
+
+        # Then
+        assert bic is None
+
+    @clean_database
+    def when_bank_information_with_offerer_id_exists_offerer_iban_returns_bank_information_iban(self, app):
+        # Given
+        offerer = create_offerer(siren='123456789')
+        venue = create_venue(offerer, siret='12345678912345')
+        PcObject.check_and_save(venue)
+        bank_information = create_bank_information(iban='FR7630007000111234567890144', venue_id=venue.id, id_at_providers='12345678912345')
+        PcObject.check_and_save(bank_information)
+
+        # When
+        iban = venue.iban
+
+        # Then
+        assert iban == 'FR7630007000111234567890144'
+
+    @clean_database
+    def when_bank_information_with_offerer_id_offerer_iban_does_not_exist_returns_none(self, app):
+        # Given
+        offerer = create_offerer(siren='123456789')
+        venue = create_venue(offerer, siret='12345678912345')
+        PcObject.check_and_save(venue)
+
+        # When
+        iban = venue.iban
+
+        # Then
+        assert iban is None
+

@@ -1,6 +1,6 @@
 from schwifty import IBAN, BIC
 from sqlalchemy import Column, BigInteger, ForeignKey, String, Integer
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, backref
 
 from models.api_errors import ApiErrors
 from models.offerer import Offerer
@@ -19,8 +19,7 @@ class BankInformation(PcObject,
 
     offerer = relationship('Offerer',
                            foreign_keys=[offererId],
-                           uselist=False,
-                           backref='bankInformation')
+                           backref=backref('bankInformation', uselist=False))
 
     venueId = Column(BigInteger,
                      ForeignKey("venue.id"),
@@ -29,8 +28,7 @@ class BankInformation(PcObject,
 
     venue = relationship('Venue',
                          foreign_keys=[venueId],
-                         uselist=False,
-                         backref='bankInformation')
+                         backref=backref('bankInformation', uselist=False))
 
     iban = Column(String(27),
                   nullable=False)
