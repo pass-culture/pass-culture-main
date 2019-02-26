@@ -667,7 +667,7 @@ def create_bank_information(application_id=1, bic='QSDFGH8Z555', iban='CF13QSDFG
     return bank_information
 
 
-def saveCounts(app):
+def saveCounts():
     for modelName in models.__all__:
         model = getattr(models, modelName)
         if isclass(model) \
@@ -676,14 +676,17 @@ def saveCounts(app):
             saved_counts[modelName] = model.query.count()
 
 
-def assertCreatedCounts(app, **counts):
+def assertCreatedCounts(**counts):
     for modelName in counts:
         model = getattr(models, modelName)
-        assert model.query.count() - saved_counts[modelName] \
-               == counts[modelName]
+        all_records_count = model.query.count()
+        previous_records_count = saved_counts[modelName]
+        last_created_count = all_records_count - previous_records_count
+        assert last_created_count == counts[modelName],\
+            'Model [%s], Actual [%s], Expected [%s]' % (modelName, last_created_count, counts[modelName])
 
 
-def assertEmptyDb(app):
+def assertEmptyDb():
     for modelName in models.__all__:
         model = getattr(models, modelName)
         if isinstance(model, PcObject):
@@ -701,7 +704,7 @@ def provider_test(app, provider, venueProvider, **counts):
     providerObj = provider(venueProvider, mock=True)
     providerObj.dbObject.isActive = True
     PcObject.check_and_save(providerObj.dbObject)
-    saveCounts(app)
+    saveCounts()
     providerObj.updateObjects()
 
     for countName in ['updatedObjects',
@@ -714,14 +717,14 @@ def provider_test(app, provider, venueProvider, **counts):
                       'erroredThumbs']:
         assert getattr(providerObj, countName) == counts[countName]
         del counts[countName]
-    assertCreatedCounts(app, **counts)
+    assertCreatedCounts(**counts)
 
 
 def provider_test_without_mock(app, provider, **counts):
     providerObj = provider()
     providerObj.dbObject.isActive = True
     PcObject.check_and_save(providerObj.dbObject)
-    saveCounts(app)
+    saveCounts()
     providerObj.updateObjects()
 
     for countName in ['updatedObjects',
@@ -734,7 +737,7 @@ def provider_test_without_mock(app, provider, **counts):
                       'erroredThumbs']:
         assert getattr(providerObj, countName) == counts[countName]
         del counts[countName]
-    assertCreatedCounts(app, **counts)
+    assertCreatedCounts(**counts)
 
 
 def save_all_activities(*objects):

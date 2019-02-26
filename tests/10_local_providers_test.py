@@ -28,7 +28,7 @@ savedCounts = {}
 
 
 def test_10_titelive_venues_provider(app):
-    assertEmptyDb(app)
+    assertEmptyDb()
     assert_created_thumbs()
     provider_test(app,
                   TiteLiveVenues,
@@ -171,10 +171,10 @@ def test_17_openagenda_events_provider(app):
 
 
 def test_99_init(app):
-    saveCounts(app)
+    saveCounts()
     with app.app_context():
         logger_info = logger.info
         logger.info = lambda o: None
         save_handmade_sandbox()
         logger.info = logger_info
-        assertCreatedCounts(app, User=10)
+        assertCreatedCounts(User=10)
