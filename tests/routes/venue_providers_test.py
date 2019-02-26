@@ -6,7 +6,7 @@ from models import PcObject, Provider
 from tests.conftest import clean_database
 from utils.human_ids import humanize
 from utils.logger import logger
-from utils.test_utils import API_URL, req_with_auth, create_offerer, create_venue, create_user, create_venue_provider, \
+from tests.test_utils import API_URL, req_with_auth, create_offerer, create_venue, create_user, create_venue_provider, \
     activate_provider, check_open_agenda_api_is_down
 
 

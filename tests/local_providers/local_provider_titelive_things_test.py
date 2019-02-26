@@ -8,9 +8,9 @@ from models.pc_object import PcObject
 from models.provider import Provider
 from models.venue_provider import VenueProvider
 from tests.conftest import clean_database
-from tests.local_provider_titelive_test import get_ordered_thing_files_from_sandbox_files, \
+from tests.local_providers.local_provider_titelive_test import get_ordered_thing_files_from_sandbox_files, \
     get_lines_from_thing_file_sandboxes
-from utils.test_utils import create_offerer, create_venue, \
+from tests.test_utils import create_offerer, create_venue, \
     provider_test_whithout_mock
 
 

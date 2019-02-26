@@ -19,7 +19,7 @@ from models.provider import Provider
 from models.venue_provider import VenueProvider
 from tests.conftest import clean_database
 from utils.logger import logger
-from utils.test_utils import create_offerer, create_venue, \
+from tests.test_utils import create_offerer, create_venue, \
     provider_test_whithout_mock, provider_test
 
 
