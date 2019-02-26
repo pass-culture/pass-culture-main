@@ -217,6 +217,29 @@ class Get:
             ]
 
         @clean_database
+        def when_param_validated_is_true_and_no_bank_information_for_offerer(self, app):
+            # given
+            user = create_user(password='p@55sw0rd')
+            offerer1 = create_offerer(siren='123456781', name='offreur C')
+            offerer2 = create_offerer(siren='123456782', name='offreur A')
+            offerer3 = create_offerer(siren='123456783', name='offreur B')
+            user_offerer1 = create_user_offerer(user, offerer1, validation_token=None)
+            user_offerer2 = create_user_offerer(user, offerer2, validation_token='AZE123')
+            user_offerer3 = create_user_offerer(user, offerer3, validation_token=None)
+            PcObject.check_and_save(user_offerer1, user_offerer2, user_offerer3)
+
+            # when
+            response = TestClient() \
+                .with_auth(user.email, user.clearTextPassword) \
+                .get(API_URL + '/offerers?validated=true')
+
+            # then
+            assert response.status_code == 200
+            assert len(response.json()) == 2
+            assert 'bic' not in response.json()[0]
+            assert 'iban' not in response.json()[0]
+
+        @clean_database
         @pytest.mark.standalone
         def when_user_offerer_is_not_validated_but_returns_no_offerer(self, app):
             # Given
