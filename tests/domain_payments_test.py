@@ -345,13 +345,8 @@ class CreatePaymentDetailsTest:
         user = create_user()
         booking = create_booking(user)
         offerer = create_offerer()
-        offerer_bank_information = create_bank_information(iban='123456789', bic=None)
-        offerer_bank_information.offerer = offerer
-        payment = create_payment(
-            booking, offerer, 35,
-            transaction_message_id='1234',
-            transaction_end_ot_end_id=uuid.uuid4()
-        )
+        payment = create_payment(booking, offerer, 35, transaction_message_id='1234',
+                                 transaction_end_ot_end_id=uuid.uuid4(), iban='123456789')
 
         # when
         details = create_payment_details(payment, find_booking_date_used=Mock())
@@ -369,8 +364,6 @@ class CreatePaymentDetailsTest:
         user = create_user(idx=3, email='jane.doe@test.com')
         booking = create_booking(user)
         offerer = create_offerer()
-        offerer_bank_information = create_bank_information(iban='123456789', bic=None)
-        offerer_bank_information.offerer = offerer
         payment = create_payment(booking, offerer, 35)
 
         # when
@@ -385,8 +378,6 @@ class CreatePaymentDetailsTest:
         # given
         user = create_user(idx=3, email='jane.doe@test.com')
         offerer = create_offerer(siren='987654321', name='Joe le Libraire')
-        offerer_bank_information = create_bank_information(iban='123456789', bic=None)
-        offerer_bank_information.offerer = offerer
         venue = create_venue(offerer)
         offer = create_thing_offer(venue)
         stock = create_stock(price=12, available=5, offer=offer)
@@ -408,8 +399,6 @@ class CreatePaymentDetailsTest:
         # given
         user = create_user(idx=3, email='jane.doe@test.com')
         offerer = create_offerer(siren='987654321', name='Joe le Libraire')
-        offerer_bank_information = create_bank_information(iban='123456789', bic=None)
-        offerer_bank_information.offerer = offerer
         venue = create_venue(offerer)
         offer = create_thing_offer(venue)
         stock = create_stock(price=12, available=5, offer=offer)
@@ -430,8 +419,6 @@ class CreatePaymentDetailsTest:
         # given
         user = create_user(idx=3, email='jane.doe@test.com')
         offerer = create_offerer(siren='987654321', name='Joe le Libraire')
-        offerer_bank_information = create_bank_information(iban='123456789', bic=None)
-        offerer_bank_information.offerer = offerer
         venue = create_venue(offerer, name='Jack le Sculpteur', siret='1234567891234')
         offer = create_thing_offer(venue)
         stock = create_stock(price=12, available=5, offer=offer)
@@ -452,8 +439,6 @@ class CreatePaymentDetailsTest:
         # given
         user = create_user(idx=3, email='jane.doe@test.com')
         offerer = create_offerer(siren='987654321', name='Joe le Libraire')
-        offerer_bank_information = create_bank_information(iban='123456789', bic=None)
-        offerer_bank_information.offerer = offerer
         venue = create_venue(offerer, name='Jack le Sculpteur', siret='1234567891234')
         offer = create_thing_offer(venue)
         stock = create_stock(price=12, available=5, offer=offer)

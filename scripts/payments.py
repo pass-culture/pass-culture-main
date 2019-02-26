@@ -13,6 +13,7 @@ from domain.payments import filter_out_already_paid_for_bookings, create_payment
     keep_only_pending_payments, keep_only_not_processable_payments
 from domain.reimbursement import find_all_booking_reimbursement
 from models import Offerer, PcObject
+from models.db import db
 from models.payment import Payment
 from models.payment_status import TransactionStatus
 from repository import payment_queries
@@ -82,7 +83,8 @@ def generate_new_payments() -> Tuple[List[Payment], List[Payment]]:
         booking_reimbursements_to_pay = filter_out_already_paid_for_bookings(
             filter_out_bookings_without_cost(booking_reimbursements)
         )
-        payments = list(map(create_payment_for_booking, booking_reimbursements_to_pay))
+        with db.session.no_autoflush:
+            payments = list(map(create_payment_for_booking, booking_reimbursements_to_pay))
 
         if payments:
             PcObject.check_and_save(*payments)

@@ -557,18 +557,15 @@ def create_mocked_bookings(num_bookings, venue_email, name='Offer name'):
 
 
 def create_payment(booking, offerer, amount, author='test author', reimbursement_rule='remboursement à 100%',
-                   reimbursement_rate=Decimal(0.5),
-                   transaction_message_id=None,
-                   transaction_end_ot_end_id=None,
+                   reimbursement_rate=Decimal(0.5), transaction_message_id=None, transaction_end_ot_end_id=None,
                    custom_message='pass Culture Pro - remboursement 2nde quinzaine 07-2018',
-                   status=TransactionStatus.PENDING,
-                   idx=None):
+                   status=TransactionStatus.PENDING, idx=None, iban='FR7630007000111234567890144', bic='BDFEFR2LCCB'):
     payment = Payment()
     payment.booking = booking
     payment.amount = amount
     payment.author = author
-    payment.iban = offerer.iban
-    payment.bic = offerer.bic
+    payment.iban = iban
+    payment.bic = bic
     payment.recipientName = offerer.name
     payment.recipientSiren = offerer.siren
     payment_status = PaymentStatus()

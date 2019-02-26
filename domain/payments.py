@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 from decimal import Decimal
 from hashlib import sha256
 from io import BytesIO, StringIO
+from sqlalchemy.orm import make_transient, make_transient_to_detached
 from typing import List, Dict
 from uuid import UUID
 
@@ -13,6 +14,7 @@ from lxml import etree
 
 from domain.reimbursement import BookingReimbursement
 from models import PaymentTransaction
+from models.db import db
 from models.payment import Payment, PaymentDetails
 from models.payment_status import TransactionStatus
 from models.user import WalletBalance
@@ -55,6 +57,7 @@ def create_payment_for_booking(booking_reimbursement: BookingReimbursement) -> P
         offerer = venue.managingOfferer
         payment.iban = offerer.iban
         payment.bic = offerer.bic
+
 
     payment.recipientName = venue.managingOfferer.name
     payment.recipientSiren = venue.managingOfferer.siren
