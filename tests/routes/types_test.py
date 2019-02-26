@@ -1,7 +1,6 @@
 import pytest
 
 from models import PcObject
-
 from tests.conftest import clean_database, TestClient
 from tests.test_utils import API_URL, create_user
 
@@ -35,12 +34,15 @@ class Get:
 
             # then
             assert response.status_code == 200
-            assert len(types) == 18
+            types_values = [type['value'] for type in types]
+            assert 'ThingType.ACTIVATION' not in types_values
+            assert 'EventType.ACTIVATION' not in types_values
 
         @clean_database
         def when_user_is_admin(self, app):
             # given
-            admin_user = create_user(email='pctest.admin93.0@btmx.fr', password='pctest.Admin93.0', is_admin=True, can_book_free_offers=False)
+            admin_user = create_user(email='pctest.admin93.0@btmx.fr', password='pctest.Admin93.0', is_admin=True,
+                                     can_book_free_offers=False)
             PcObject.check_and_save(admin_user)
 
             # when
@@ -52,7 +54,6 @@ class Get:
 
             # then
             assert response.status_code == 200
-            assert len(types) == 20
             types_values = [type['value'] for type in types]
             assert 'ThingType.ACTIVATION' in types_values
             assert 'EventType.ACTIVATION' in types_values
