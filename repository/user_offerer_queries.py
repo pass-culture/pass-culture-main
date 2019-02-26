@@ -13,7 +13,7 @@ def filter_query_where_user_is_user_offerer_and_is_validated(query, user):
     return query \
         .join(UserOfferer) \
         .filter_by(user=user) \
-        .filter_by(validationToken=None)
+        .filter(UserOfferer.validationToken == None)
 
 
 def filter_query_where_user_is_user_offerer_and_is_not_validated(query, user):

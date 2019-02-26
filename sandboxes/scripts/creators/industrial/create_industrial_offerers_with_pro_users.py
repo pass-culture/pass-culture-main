@@ -7,6 +7,7 @@ from sandboxes.scripts.mocks.user_mocks import MOCK_DOMAINS, \
 from sandboxes.scripts.utils.helpers import get_email, get_password_from_email
 from sandboxes.scripts.utils.locations import create_locations_from_places, \
                                               OFFERER_PLACES
+from sandboxes.scripts.utils.select import pick_every
 from tests.test_utils import create_offerer, \
                              create_user, \
                              create_user_offerer
@@ -18,7 +19,8 @@ VALIDATED_OFFERERS_REMOVE_MODULO = 5
 VALIDATED_USER_OFFERER_REMOVE_MODULO = 2
 VALIDATED_USER_REMOVE_MODULO = 4
 OFFERERS_WITH_IBAN_REMOVE_MODULO = 2
-
+USERS_WITH_SEVERAL_OFFERERS_PICK_MODULO = 2
+OFFERERS_WITH_THREE_ATTACHED_USERS_PICK_MODULO = 3
 
 def create_industrial_offerers_with_pro_users():
 
@@ -89,7 +91,7 @@ def create_industrial_offerers_with_pro_users():
 
         departement_code = location['postalCode'][:2]
 
-        name = '{} lat:{} lon:{}'.format(
+        offerer_name = '{} lat:{} lon:{}'.format(
             incremented_siren,
             location['latitude'],
             location['longitude']
@@ -113,7 +115,7 @@ def create_industrial_offerers_with_pro_users():
             siren=str(incremented_siren),
         )
 
-        offerers_by_name[name] = offerer
+        offerers_by_name[offerer_name] = offerer
 
         incremented_siren += 1
         bic_suffix += 1
@@ -200,6 +202,41 @@ def create_industrial_offerers_with_pro_users():
                 validation_token=user_offerer_validation_token
             )
             user_offerer_validation_suffix += 1
+
+    # loop on users to make some of them with several attached offerers
+    user_items_with_several_offerers = pick_every(
+        users_by_name.items(),
+        USERS_WITH_SEVERAL_OFFERERS_PICK_MODULO
+    )
+    user_offerer_index = 0
+
+    for (user_name, user) in user_items_with_several_offerers:
+        offerer_items_with_three_attached_users = pick_every(
+            offerers_by_name.items(),
+            OFFERERS_WITH_THREE_ATTACHED_USERS_PICK_MODULO
+        )
+        for (offerer_name, offerer) in offerer_items_with_three_attached_users:
+            user_offerer_name = '{} / {}'.format(user_name, offerer_name)
+
+            if user_offerer_name in user_offerers_by_name:
+                continue
+
+            if offerer.validationToken == None \
+                and user_offerer_index%VALIDATED_USER_OFFERER_REMOVE_MODULO == 0:
+                user_offerer_validation_token = None
+            else:
+                user_offerer_validation_token = '{}{}'.format(
+                    user_offerer_validation_prefix,
+                    user_offerer_validation_suffix
+                )
+            user_offerers_by_name['{} / {}'.format(user_name, offerer_name)] = create_user_offerer(
+                offerer=offerer,
+                user=user,
+                validation_token=user_offerer_validation_token
+            )
+            user_offerer_index += 1
+            user_offerer_validation_suffix += 1
+
 
     objects_to_save = list(offerers_by_name.values()) + \
         list(users_by_name.values()) + \
