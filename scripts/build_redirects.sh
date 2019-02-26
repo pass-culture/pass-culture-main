@@ -24,3 +24,6 @@ echo "/:path1/:path2/:path3/:path4/:path5/:path6/main.$CSSHASH.css /$CSSPATH 301
 cat "public/_redirects" >> build/_redirects
 
 echo "Redirects created."
+
+cat package.json | grep -E '"version": "[0-9]+.[0-9]+.[0-9]+"' | grep -Eo '[0-9]+.[0-9]+.[0-9]+' > build/version.txt
+echo "Version copied to version.txt."
