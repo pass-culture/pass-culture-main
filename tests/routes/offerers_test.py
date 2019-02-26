@@ -23,7 +23,8 @@ from tests.test_utils import API_URL, \
     create_user_offerer, \
     create_venue, \
     req, \
-    req_with_auth, create_thing, create_event, create_stock_from_event_occurrence, create_event_occurrence
+    req_with_auth, create_thing, create_event, create_stock_from_event_occurrence, create_event_occurrence, \
+    create_bank_information
 from utils.human_ids import dehumanize, humanize
 
 
@@ -142,10 +143,13 @@ def test_get_offerers_should_return_all_info_of_all_offerers_if_current_user_is_
     offerer2 = create_offerer(siren='123456782', name='offreur A')
     offerer3 = create_offerer(siren='123456783', name='offreur B')
     PcObject.check_and_save(offerer1, offerer3, offerer2)
+    bank_information1 = create_bank_information(offerer_id=offerer1.id, id_at_providers='123456781')
+    bank_information2 = create_bank_information(offerer_id=offerer2.id, id_at_providers='123456782')
+    bank_information3 = create_bank_information(offerer_id=offerer3.id, id_at_providers='123456783')
 
     user = create_user(can_book_free_offers=False, password='p@55sw0rd', is_admin=True)
     user.offerers = [offerer1, offerer2]
-    PcObject.check_and_save(user)
+    PcObject.check_and_save(user, bank_information1, bank_information2, bank_information3)
     auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
 
     # when
@@ -153,12 +157,12 @@ def test_get_offerers_should_return_all_info_of_all_offerers_if_current_user_is_
 
     # then
     assert response.status_code == 200
-    assert list(response.json()[0].keys()) == [
+    assert set(response.json()[0].keys()) == {
         'address', 'bic', 'city', 'dateCreated', 'dateModifiedAtLastProvider',
         'firstThumbDominantColor', 'iban', 'id', 'idAtProviders', 'isActive',
         'isValidated', 'lastProviderId', 'managedVenues', 'modelName', 'nOffers',
         'name', 'postalCode', 'siren', 'thumbCount'
-    ]
+    }
 
 
 @pytest.mark.standalone
@@ -242,6 +246,10 @@ def test_get_offerers_should_return_all_info_of_validated_offerers_if_param_vali
     user_offerer2 = create_user_offerer(user, offerer2, validation_token='AZE123')
     user_offerer3 = create_user_offerer(user, offerer3, validation_token=None)
     PcObject.check_and_save(user_offerer1, user_offerer2, user_offerer3)
+    bank_information1 = create_bank_information(offerer_id=offerer1.id, id_at_providers='123456781')
+    bank_information2 = create_bank_information(offerer_id=offerer2.id, id_at_providers='123456782')
+    bank_information3 = create_bank_information(offerer_id=offerer3.id, id_at_providers='123456783')
+    PcObject.check_and_save(bank_information1, bank_information2, bank_information3)
     auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
 
     # when
@@ -597,11 +605,11 @@ def test_post_offerers_when_admin(app):
 def test_patch_offerer_when_not_admin_status_code_403(app):
     # given
     user = create_user()
-    offerer = create_offerer(iban='FR7630006000011234567890189', bic='BDFEFR2LCCB')
+    offerer = create_offerer()
     user_offerer = create_user_offerer(user, offerer, is_admin=False)
     PcObject.check_and_save(user_offerer)
     auth_request = req_with_auth(email=user.email, password=user.clearTextPassword)
-    body = {'bic': "ATELFRPP", 'iban': 'FR7630001007941234567890185'}
+    body = {'isActive': False}
 
     # when
     response = auth_request.patch(API_URL + '/offerers/%s' % humanize(offerer.id), json=body)
@@ -615,7 +623,7 @@ def test_patch_offerer_when_not_admin_status_code_403(app):
 def test_patch_offerer_for_non_authorised_fields_status_code_400(app):
     # given
     user = create_user()
-    offerer = create_offerer(iban='FR7630006000011234567890189', bic='BDFEFR2LCCB')
+    offerer = create_offerer()
     user_offerer = create_user_offerer(user, offerer, is_admin=True)
     PcObject.check_and_save(user_offerer)
     auth_request = req_with_auth(email=user.email, password=user.clearTextPassword)

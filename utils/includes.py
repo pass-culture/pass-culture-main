@@ -9,6 +9,8 @@ OFFERER_INCLUDES = [
     },
     "nOffers",
     "isValidated",
+    "bic",
+    "iban",
     "-validationToken"
 ]
 
@@ -16,12 +18,10 @@ NOT_VALIDATED_OFFERER_INCLUDES = [
     "name",
     "siren",
     "-address",
-    "-bic",
     "-city",
     "-dateCreated",
     "-dateModifiedAtLastProvider",
     "-firstThumbDominantColor",
-    "-iban",
     "-id",
     "-idAtProviders",
     "-isActive",
@@ -218,8 +218,6 @@ OFFERER_FOR_PENDING_VALIDATION_INCLUDES = [
     "validationToken",
     "-firstThumbDominantColor",
     "-thumbCount",
-    "-iban",
-    "-bic",
     "-idAtProviders",
     {
         "key": "UserOfferers",
