@@ -443,9 +443,9 @@ def test_find_filtered_offerers_with_has_bank_information_param_return_filtered_
 
     PcObject.check_and_save(offerer_with_bank_information, offerer_without_bank_information)
 
-    bank_information = create_bank_information(offerer_id=offerer_with_bank_information.id,
-                                          id_at_providers=offerer_with_bank_information.siren, iban='DE89370400440532013000',
-                                          bic="AGRIFRPP")
+    bank_information = create_bank_information(bic="AGRIFRPP", iban='DE89370400440532013000',
+                                               id_at_providers=offerer_with_bank_information.siren,
+                                               offerer_id=offerer_with_bank_information.id)
 
     PcObject.check_and_save(bank_information)
 
@@ -1196,9 +1196,9 @@ def test_find_filtered_offerers_with_default_param_return_all_offerers(app):
 
     PcObject.check_and_save(offerer_with_bank_information)
 
-    bank_information = create_bank_information(offerer_id=offerer_with_bank_information.id,
-                                          id_at_providers=offerer_with_bank_information.siren, iban='DE89370400440532013000',
-                                          bic="AGRIFRPP")
+    bank_information = create_bank_information(bic="AGRIFRPP", iban='DE89370400440532013000',
+                                               id_at_providers=offerer_with_bank_information.siren,
+                                               offerer_id=offerer_with_bank_information.id)
 
     PcObject.check_and_save(bank_information)
 

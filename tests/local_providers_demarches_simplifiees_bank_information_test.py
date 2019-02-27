@@ -667,7 +667,7 @@ class BankInformationProviderProviderTest:
         PcObject.check_and_save(venue)
         venue_id = venue.id
 
-        bank_information = create_bank_information(venue_id=venue_id, id_at_providers="79387501900056")
+        bank_information = create_bank_information(id_at_providers="79387501900056", venue_id=venue_id)
         PcObject.check_and_save(bank_information)
 
         # When Then
@@ -974,8 +974,9 @@ class BankInformationProviderProviderTest:
         PcObject.check_and_save(venue)
         venue_id = venue.id
 
-        bank_information = create_bank_information(date_modified_at_last_provider=datetime(2019, 1, 1),
-                                                   venue_id=venue_id, id_at_providers='79387501900056')
+        bank_information = create_bank_information(id_at_providers='79387501900056',
+                                                   date_modified_at_last_provider=datetime(2019, 1, 1),
+                                                   venue_id=venue_id)
         PcObject.check_and_save(bank_information)
 
         bank_information_provider = BankInformationProvider()

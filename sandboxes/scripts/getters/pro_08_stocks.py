@@ -1,5 +1,6 @@
-from models.event_occurrence import EventOccurrence
+from models import BankInformation
 from models.event import Event
+from models.event_occurrence import EventOccurrence
 from models.offer import Offer
 from models.offerer import Offerer
 from models.thing import Thing
@@ -7,15 +8,16 @@ from models.user import User
 from models.venue import Venue
 from repository.user_queries import filter_users_with_at_least_one_validated_offerer_validated_user_offerer
 from sandboxes.scripts.utils.helpers import get_offer_helper, \
-                                            get_offerer_helper, \
-                                            get_user_helper, \
-                                            get_venue_helper
+    get_offerer_helper, \
+    get_user_helper, \
+    get_venue_helper
+
 
 def get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_user_offerer_with_event_offer_no_occurrence():
     query = User.query.filter(User.validationToken == None)
     query = filter_users_with_at_least_one_validated_offerer_validated_user_offerer(query)
-    query = query.filter(Offerer.iban != None)
-    query = query.join(Venue).join(Offer).filter(
+    query = query.join(BankInformation)
+    query = query.join(Venue, Venue.managingOffererId == Offerer.id).join(Offer).filter(
         (Offer.eventId != None) & \
         (~Offer.eventOccurrences.any())
     )
@@ -23,36 +25,37 @@ def get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_u
 
     for uo in user.UserOfferers:
         if uo.validationToken == None \
-            and uo.offerer.validationToken == None \
-            and uo.offerer.iban:
+                and uo.offerer.validationToken == None \
+                and uo.offerer.iban:
             for venue in uo.offerer.managedVenues:
                 for offer in venue.offers:
                     if isinstance(offer.eventOrThing, Event) \
-                       and len(offer.eventOccurrences) == 0:
+                            and len(offer.eventOccurrences) == 0:
                         return {
                             "offer": get_offer_helper(offer),
                             "offerer": get_offerer_helper(uo.offerer),
                             "user": get_user_helper(user),
                             "venue": get_venue_helper(venue)
                         }
+
 
 def get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_user_offerer_with_event_offer_with_occurrence():
     query = User.query.filter(User.validationToken == None)
     query = filter_users_with_at_least_one_validated_offerer_validated_user_offerer(query)
-    query = query.filter(Offerer.iban != None)
-    query = query.join(Venue) \
-                 .join(Offer) \
-                 .join(EventOccurrence)
+    query = query.join(BankInformation)
+    query = query.join(Venue, Venue.managingOffererId == Offerer.id) \
+        .join(Offer) \
+        .join(EventOccurrence)
     user = query.first()
 
     for uo in user.UserOfferers:
         if uo.validationToken == None \
-            and uo.offerer.validationToken == None \
-            and uo.offerer.iban:
+                and uo.offerer.validationToken == None \
+                and uo.offerer.iban:
             for venue in uo.offerer.managedVenues:
                 for offer in venue.offers:
                     if isinstance(offer.eventOrThing, Event) \
-                       and offer.eventOccurrences:
+                            and offer.eventOccurrences:
                         return {
                             "offer": get_offer_helper(offer),
                             "offerer": get_offerer_helper(uo.offerer),
@@ -60,23 +63,24 @@ def get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_u
                             "venue": get_venue_helper(venue)
                         }
 
+
 def get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_user_offerer_with_thing_offer_with_stock():
     query = User.query.filter(User.validationToken == None)
     query = filter_users_with_at_least_one_validated_offerer_validated_user_offerer(query)
-    query = query.filter(Offerer.iban != None)
-    query = query.join(Venue) \
-                 .join(Offer) \
-                 .join(Offer.thingStocks)
+    query = query.join(BankInformation)
+    query = query.join(Venue, Venue.managingOffererId == Offerer.id) \
+        .join(Offer) \
+        .join(Offer.thingStocks)
     user = query.first()
 
     for uo in user.UserOfferers:
         if uo.validationToken == None \
-            and uo.offerer.validationToken == None \
-            and uo.offerer.iban:
+                and uo.offerer.validationToken == None \
+                and uo.offerer.iban:
             for venue in uo.offerer.managedVenues:
                 for offer in venue.offers:
                     if isinstance(offer.eventOrThing, Thing) \
-                       and offer.thingStocks:
+                            and offer.thingStocks:
                         return {
                             "offer": get_offer_helper(offer),
                             "offerer": get_offerer_helper(uo.offerer),
@@ -88,7 +92,7 @@ def get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_u
 def get_existing_pro_validated_user_with_validated_offerer_with_no_iban_validated_user_offerer_with_thing_offer_with_no_stock():
     query = User.query.filter(User.validationToken == None)
     query = filter_users_with_at_least_one_validated_offerer_validated_user_offerer(query)
-    query = query.filter(Offerer.iban == None)
+    query = query.filter(Offerer.bankInformation == None)
     query = query.join(Venue).filter(Venue.offers.any(
         (Offer.thingId != None) & \
         (~Offer.thingStocks.any())
@@ -97,8 +101,8 @@ def get_existing_pro_validated_user_with_validated_offerer_with_no_iban_validate
 
     for uo in user.UserOfferers:
         if uo.validationToken == None \
-            and uo.offerer.validationToken == None \
-            and not uo.offerer.iban:
+                and uo.offerer.validationToken == None \
+                and not uo.offerer.iban:
             for venue in uo.offerer.managedVenues:
                 for offer in venue.offers:
                     if offer.thingId and len(offer.thingStocks) == 0:
@@ -113,14 +117,14 @@ def get_existing_pro_validated_user_with_validated_offerer_with_no_iban_validate
 def get_existing_pro_validated_user_with_validated_offerer_with_no_iban_validated_user_offerer_with_event_offer():
     query = User.query.filter(User.validationToken == None)
     query = filter_users_with_at_least_one_validated_offerer_validated_user_offerer(query)
-    query = query.filter(Offerer.iban == None)
+    query = query.filter(Offerer.bankInformation == None)
     query = query.join(Venue).join(Offer).filter(Offer.eventId != None)
     user = query.first()
 
     for uo in user.UserOfferers:
         if uo.validationToken == None \
-            and uo.offerer.validationToken == None \
-            and not uo.offerer.iban:
+                and uo.offerer.validationToken == None \
+                and not uo.offerer.iban:
             for venue in uo.offerer.managedVenues:
                 if not venue.isVirtual:
                     for offer in venue.offers:

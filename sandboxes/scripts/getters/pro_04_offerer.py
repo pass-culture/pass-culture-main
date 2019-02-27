@@ -20,7 +20,7 @@ def get_existing_pro_validated_user_with_first_offerer():
 def get_existing_pro_validated_user_with_offerer_with_no_iban():
     query = User.query.join(UserOfferer) \
                       .join(Offerer) \
-                      .filter(User.UserOfferers.any(Offerer.iban == None))
+                      .filter(User.UserOfferers.any(Offerer.bankInformation == None))
     query = query.filter(User.validationToken == None)
     user = query.first()
 

@@ -48,7 +48,8 @@ class OffererBankInformationTest:
         # Given
         offerer = create_offerer(siren='123456789')
         PcObject.check_and_save(offerer)
-        bank_information = create_bank_information(bic='BDFEFR2LCCB', offerer_id=offerer.id, id_at_providers='123456789')
+        bank_information = create_bank_information(bic='BDFEFR2LCCB', id_at_providers='123456789',
+                                                   offerer_id=offerer.id)
         PcObject.check_and_save(bank_information)
 
         # When
@@ -74,7 +75,8 @@ class OffererBankInformationTest:
         # Given
         offerer = create_offerer(siren='123456789')
         PcObject.check_and_save(offerer)
-        bank_information = create_bank_information(iban='FR7630007000111234567890144', offerer_id=offerer.id, id_at_providers='123456789')
+        bank_information = create_bank_information(iban='FR7630007000111234567890144', id_at_providers='123456789',
+                                                   offerer_id=offerer.id)
         PcObject.check_and_save(bank_information)
 
         # When

@@ -2,17 +2,18 @@ from models.pc_object import PcObject
 from repository.offerer_queries import check_if_siren_already_exists
 from sandboxes.scripts.mocks.offerer_mocks import MOCK_NAMES
 from sandboxes.scripts.mocks.user_mocks import MOCK_DOMAINS, \
-                                               MOCK_FIRST_NAMES, \
-                                               MOCK_LAST_NAMES
+    MOCK_FIRST_NAMES, \
+    MOCK_LAST_NAMES
 from sandboxes.scripts.utils.helpers import get_email, get_password_from_email
 from sandboxes.scripts.utils.locations import create_locations_from_places, \
-                                              OFFERER_PLACES
+    OFFERER_PLACES
+
+OFFERER_PLACES
 from sandboxes.scripts.utils.select import pick_every
 from tests.test_utils import create_offerer, \
-                             create_user, \
-                             create_user_offerer
+    create_user, \
+    create_user_offerer, create_bank_information
 from utils.logger import logger
-
 
 ATTACHED_PRO_USERS_COUNT = 2
 VALIDATED_OFFERERS_REMOVE_MODULO = 5
@@ -22,8 +23,8 @@ OFFERERS_WITH_IBAN_REMOVE_MODULO = 2
 USERS_WITH_SEVERAL_OFFERERS_PICK_MODULO = 2
 OFFERERS_WITH_THREE_ATTACHED_USERS_PICK_MODULO = 3
 
-def create_industrial_offerers_with_pro_users():
 
+def create_industrial_offerers_with_pro_users():
     logger.info('create_industrial_offerers_with_pro_users')
 
     locations = create_locations_from_places(OFFERER_PLACES, max_location_per_place=3)
@@ -38,7 +39,6 @@ def create_industrial_offerers_with_pro_users():
     # add a real offerer just for the inscription/validation API
     real_siren = "784340093"
     if not check_if_siren_already_exists(real_siren):
-
         offerer_name = '784340093 lat:48.8 lon:1.48'
         offerer = create_offerer(
             address="LIEU DIT CARTOUCHERIE",
@@ -97,23 +97,18 @@ def create_industrial_offerers_with_pro_users():
             location['longitude']
         )
 
-        # create every OFFERERS_WITH_IBAN_REMOVE_MODULO an offerer with no iban
-        if location_index%OFFERERS_WITH_IBAN_REMOVE_MODULO:
-            iban = iban_prefix
-            bic = bic_prefix + str(bic_suffix)
-        else:
-            iban = None
-            bic = None
-
         offerer = create_offerer(
             address=location['address'].upper(),
-            bic=bic,
             city=location['city'],
-            iban=iban,
             name=MOCK_NAMES[mock_index],
             postal_code=location['postalCode'],
             siren=str(incremented_siren),
         )
+
+        # create every OFFERERS_WITH_IBAN_REMOVE_MODULO an offerer with no iban
+        if location_index % OFFERERS_WITH_IBAN_REMOVE_MODULO:
+            bank_information = create_bank_information(bic=bic_prefix + str(bic_suffix), iban=iban_prefix,
+                                                       id_at_providers=offerer.siren, offerer=offerer)
 
         offerers_by_name[offerer_name] = offerer
 
@@ -121,13 +116,13 @@ def create_industrial_offerers_with_pro_users():
         bic_suffix += 1
 
         # special user that signed up with this offerer
-        domain = MOCK_DOMAINS[user_index%len(MOCK_DOMAINS)]
-        first_name = MOCK_FIRST_NAMES[user_index%len(MOCK_FIRST_NAMES)]
-        last_name = MOCK_LAST_NAMES[user_index%len(MOCK_LAST_NAMES)]
+        domain = MOCK_DOMAINS[user_index % len(MOCK_DOMAINS)]
+        first_name = MOCK_FIRST_NAMES[user_index % len(MOCK_FIRST_NAMES)]
+        last_name = MOCK_LAST_NAMES[user_index % len(MOCK_LAST_NAMES)]
         email = get_email(first_name, last_name, domain)
         user_name = '{} {}'.format(first_name, last_name)
 
-        if location_index%VALIDATED_USER_REMOVE_MODULO:
+        if location_index % VALIDATED_USER_REMOVE_MODULO:
             user_validation_token = None
         else:
             user_validation_token = '{}{}'.format(
@@ -135,7 +130,7 @@ def create_industrial_offerers_with_pro_users():
                 user_validation_suffix
             )
 
-        if location_index%VALIDATED_OFFERERS_REMOVE_MODULO == 0:
+        if location_index % VALIDATED_OFFERERS_REMOVE_MODULO == 0:
             offerer.generate_validation_token()
 
         user = create_user(
@@ -162,12 +157,12 @@ def create_industrial_offerers_with_pro_users():
         # create also users that are attached to this offerer
         for attached_user_index in range(ATTACHED_PRO_USERS_COUNT):
             # special user that signed up with this offerer
-            domain = MOCK_DOMAINS[user_index%len(MOCK_DOMAINS)]
-            first_name = MOCK_FIRST_NAMES[user_index%len(MOCK_FIRST_NAMES)]
-            last_name = MOCK_LAST_NAMES[user_index%len(MOCK_LAST_NAMES)]
+            domain = MOCK_DOMAINS[user_index % len(MOCK_DOMAINS)]
+            first_name = MOCK_FIRST_NAMES[user_index % len(MOCK_FIRST_NAMES)]
+            last_name = MOCK_LAST_NAMES[user_index % len(MOCK_LAST_NAMES)]
             email = get_email(first_name, last_name, domain)
             user_name = '{} {}'.format(first_name, last_name)
-            if location_index%VALIDATED_USER_REMOVE_MODULO:
+            if location_index % VALIDATED_USER_REMOVE_MODULO:
                 user_validation_token = None
             else:
                 user_validation_token = '{}{}'.format(
@@ -189,7 +184,7 @@ def create_industrial_offerers_with_pro_users():
             user_index += 1
             user_validation_suffix += 1
 
-            if location_index%VALIDATED_USER_OFFERER_REMOVE_MODULO:
+            if location_index % VALIDATED_USER_OFFERER_REMOVE_MODULO:
                 user_offerer_validation_token = None
             else:
                 user_offerer_validation_token = '{}{}'.format(
@@ -222,7 +217,7 @@ def create_industrial_offerers_with_pro_users():
                 continue
 
             if offerer.validationToken == None \
-                and user_offerer_index%VALIDATED_USER_OFFERER_REMOVE_MODULO == 0:
+                    and user_offerer_index % VALIDATED_USER_OFFERER_REMOVE_MODULO == 0:
                 user_offerer_validation_token = None
             else:
                 user_offerer_validation_token = '{}{}'.format(
@@ -237,10 +232,9 @@ def create_industrial_offerers_with_pro_users():
             user_offerer_index += 1
             user_offerer_validation_suffix += 1
 
-
     objects_to_save = list(offerers_by_name.values()) + \
-        list(users_by_name.values()) + \
-        list(user_offerers_by_name.values())
+                      list(users_by_name.values()) + \
+                      list(user_offerers_by_name.values())
 
     PcObject.check_and_save(*objects_to_save)
 

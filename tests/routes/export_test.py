@@ -784,9 +784,9 @@ def test_get_offerers_with_params_for_pc_reporting_return_200_and_filtered_offer
                             user_offerer_not_validated, user_offerer_not_validated_user, user_offerer_bank_information,
                             user_offerer_not_active, user_offerer_ok)
 
-    bank_information = create_bank_information(iban='DE89370400440532013000', bic="AGRIFRPP",
-                                          id_at_providers=offerer_bank_information.siren,
-                                          offerer_id=offerer_bank_information.id)
+    bank_information = create_bank_information(bic="AGRIFRPP", iban='DE89370400440532013000',
+                                               id_at_providers=offerer_bank_information.siren,
+                                               offerer_id=offerer_bank_information.id)
 
     PcObject.check_and_save(bank_information)
 

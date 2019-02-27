@@ -96,9 +96,9 @@ class Get:
             offerer2 = create_offerer(siren='123456782', name='offreur A')
             offerer3 = create_offerer(siren='123456783', name='offreur B')
             PcObject.check_and_save(offerer1, offerer3, offerer2)
-            bank_information1 = create_bank_information(offerer_id=offerer1.id, id_at_providers='123456781')
-            bank_information2 = create_bank_information(offerer_id=offerer2.id, id_at_providers='123456782')
-            bank_information3 = create_bank_information(offerer_id=offerer3.id, id_at_providers='123456783')
+            bank_information1 = create_bank_information(id_at_providers='123456781', offerer_id=offerer1.id)
+            bank_information2 = create_bank_information(id_at_providers='123456782', offerer_id=offerer2.id)
+            bank_information3 = create_bank_information(id_at_providers='123456783', offerer_id=offerer3.id)
 
             user = create_user(can_book_free_offers=False, password='p@55sw0rd', is_admin=True)
             user.offerers = [offerer1, offerer2]
@@ -196,9 +196,9 @@ class Get:
             user_offerer2 = create_user_offerer(user, offerer2, validation_token='AZE123')
             user_offerer3 = create_user_offerer(user, offerer3, validation_token=None)
             PcObject.check_and_save(user_offerer1, user_offerer2, user_offerer3)
-            bank_information1 = create_bank_information(offerer_id=offerer1.id, id_at_providers='123456781')
-            bank_information2 = create_bank_information(offerer_id=offerer2.id, id_at_providers='123456782')
-            bank_information3 = create_bank_information(offerer_id=offerer3.id, id_at_providers='123456783')
+            bank_information1 = create_bank_information(id_at_providers='123456781', offerer_id=offerer1.id)
+            bank_information2 = create_bank_information(id_at_providers='123456782', offerer_id=offerer2.id)
+            bank_information3 = create_bank_information(id_at_providers='123456783', offerer_id=offerer3.id)
             PcObject.check_and_save(bank_information1, bank_information2, bank_information3)
 
             # when

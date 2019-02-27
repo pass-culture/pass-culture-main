@@ -3,7 +3,7 @@ import re
 from models.pc_object import PcObject
 from sandboxes.scripts.mocks.venue_mocks import MOCK_NAMES
 from utils.logger import logger
-from tests.test_utils import create_venue
+from tests.test_utils import create_venue, create_bank_information
 
 OFFERERS_WITH_PHYSICAL_VENUE_REMOVE_MODULO = 3
 OFFERERS_WITH_PHYSICAL_VENUE_WITH_SIRET_REMOVE_MODULO = OFFERERS_WITH_PHYSICAL_VENUE_REMOVE_MODULO * 2
@@ -56,17 +56,18 @@ def create_industrial_venues(offerers_by_name):
             venue_by_name[venue_name] = create_venue(
                 offerer,
                 address=offerer.address,
-                bic=bic,
                 booking_email="fake@email.com",
                 city=offerer.city,
                 comment=comment,
-                iban=iban,
                 latitude=float(geoloc_match.group(2)),
                 longitude=float(geoloc_match.group(3)),
                 name=venue_name,
                 postal_code=offerer.postalCode,
                 siret=siret
             )
+            if iban and venue_by_name[venue_name].siret:
+                bank_information = create_bank_information(bic=bic, iban=iban, venue=venue_by_name[venue_name],
+                                                      id_at_providers=venue_by_name[venue_name].siret)
 
         bic_suffix += 1
         mock_index += 1

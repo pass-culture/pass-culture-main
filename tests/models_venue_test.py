@@ -134,7 +134,8 @@ class OffererBankInformationTest:
         offerer = create_offerer(siren='123456789')
         venue = create_venue(offerer, siret='12345678912345')
         PcObject.check_and_save(venue)
-        bank_information = create_bank_information(bic='BDFEFR2LCCB', venue_id=venue.id, id_at_providers='12345678912345')
+        bank_information = create_bank_information(bic='BDFEFR2LCCB', id_at_providers='12345678912345',
+                                                   venue_id=venue.id)
         PcObject.check_and_save(bank_information)
 
         # When
@@ -162,7 +163,8 @@ class OffererBankInformationTest:
         offerer = create_offerer(siren='123456789')
         venue = create_venue(offerer, siret='12345678912345')
         PcObject.check_and_save(venue)
-        bank_information = create_bank_information(iban='FR7630007000111234567890144', venue_id=venue.id, id_at_providers='12345678912345')
+        bank_information = create_bank_information(iban='FR7630007000111234567890144', id_at_providers='12345678912345',
+                                                   venue_id=venue.id)
         PcObject.check_and_save(bank_information)
 
         # When

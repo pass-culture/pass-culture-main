@@ -50,8 +50,8 @@ def test_generate_new_payments_returns_a_tuple_of_pending_and_not_processable_pa
     offerer1 = create_offerer(siren='123456789')
     offerer2 = create_offerer(siren='987654321')
     PcObject.check_and_save(offerer1)
-    bank_information = create_bank_information(id_at_providers='123456789', offerer_id=offerer1.id,
-                                               iban='FR7630006000011234567890189', bic='BDFEFR2LCCB')
+    bank_information = create_bank_information(bic='BDFEFR2LCCB', iban='FR7630006000011234567890189',
+                                               id_at_providers='123456789', offerer_id=offerer1.id)
     venue1 = create_venue(offerer1, siret='12345678912345')
     venue2 = create_venue(offerer2, siret='98765432154321')
     offer1 = create_thing_offer(venue1)
