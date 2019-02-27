@@ -3,7 +3,7 @@ from sqlalchemy import or_
 
 from domain.keywords import create_filter_matching_all_keywords_in_any_model, \
     create_get_filter_matching_ts_query_in_any_model
-from models import Offerer, Venue, Offer, EventOccurrence, UserOfferer, User, Stock, Recommendation, BankInformation
+from models import Offerer, Venue, Offer, EventOccurrence, UserOfferer, User, Stock, Recommendation
 from models import RightsType
 from models.db import db
 
@@ -229,9 +229,9 @@ def _filter_by_is_validated(query, is_validated):
 
 def _filter_by_has_bank_information(query, has_bank_information):
     if has_bank_information:
-        query = query.join(BankInformation).filter(Offerer.bic != None)
+        query = query.filter(Offerer.bankInformation != None)
     else:
-        query = query.join(BankInformation).filter(Offerer.bic != None)
+        query = query.filter(Offerer.bankInformation == None)
     return query
 
 
@@ -334,13 +334,15 @@ def filter_offerers_with_keywords_string(query, keywords_string):
 def check_if_siren_already_exists(siren):
     return Offerer.query.filter_by(siren=siren).count() > 0
 
+
 def keep_offerers_with_at_least_one_physical_venue(query):
     return query.filter(Offerer.managedVenues.any(Venue.isVirtual == False))
 
+
 def keep_offerers_with_at_least_one_physical_venue_at_departement_code_with_has_iban(
-    query,
-    departement_code,
-    has_venue_iban
+        query,
+        departement_code,
+        has_venue_iban
 ):
     if has_venue_iban:
         iban_venue_condition = Venue.iban == None
@@ -348,19 +350,21 @@ def keep_offerers_with_at_least_one_physical_venue_at_departement_code_with_has_
         iban_venue_condition = Venue.iban != None
 
     return query.join(Venue) \
-                .filter(
-                    Offerer.managedVenues.any(
-                        (Venue.isVirtual == False) & \
-                        (Venue.postalCode.startswith(departement_code)) &
-                        iban_venue_condition
-                    )
-                )
+        .filter(
+        Offerer.managedVenues.any(
+            (Venue.isVirtual == False) & \
+            (Venue.postalCode.startswith(departement_code)) &
+            iban_venue_condition
+        )
+    )
+
 
 def keep_offerers_with_no_physical_venue(query):
     return _filter_by_has_not_virtual_venue(query, False)
 
+
 def keep_offerers_with_no_validated_users(query):
     query = query.join(UserOfferer) \
-                 .join(User) \
-                 .filter(~Offerer.UserOfferers.any(User.validationToken == None))
+        .join(User) \
+        .filter(~Offerer.UserOfferers.any(User.validationToken == None))
     return query
