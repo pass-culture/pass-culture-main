@@ -66,8 +66,9 @@ def create_industrial_venues(offerers_by_name):
                 siret=siret
             )
             if iban and venue_by_name[venue_name].siret:
-                bank_information = create_bank_information(bic=bic, iban=iban, venue=venue_by_name[venue_name],
-                                                      id_at_providers=venue_by_name[venue_name].siret)
+                bank_information = create_bank_information(bic=bic, iban=iban,
+                                                           id_at_providers=venue_by_name[venue_name].siret,
+                                                           venue=venue_by_name[venue_name])
 
         bic_suffix += 1
         mock_index += 1

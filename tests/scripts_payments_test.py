@@ -51,7 +51,7 @@ def test_generate_new_payments_returns_a_tuple_of_pending_and_not_processable_pa
     offerer2 = create_offerer(siren='987654321')
     PcObject.check_and_save(offerer1)
     bank_information = create_bank_information(bic='BDFEFR2LCCB', iban='FR7630006000011234567890189',
-                                               id_at_providers='123456789', offerer_id=offerer1.id)
+                                               id_at_providers='123456789', offerer=offerer1)
     venue1 = create_venue(offerer1, siret='12345678912345')
     venue2 = create_venue(offerer2, siret='98765432154321')
     offer1 = create_thing_offer(venue1)
@@ -247,7 +247,7 @@ def test_send_transactions_set_status_to_sent_if_email_was_sent_properly(app):
     updated_payments = Payment.query.all()
     for payment in updated_payments:
         assert len(payment.statuses) == 2
-        assert payment.statuses[1].status == TransactionStatus.SENT
+        assert payment.currentStatus.status == TransactionStatus.SENT
 
 
 @pytest.mark.standalone
@@ -283,8 +283,8 @@ def test_send_transactions_set_status_to_error_with_details_if_email_was_not_sen
     updated_payments = Payment.query.all()
     for payment in updated_payments:
         assert len(payment.statuses) == 2
-        assert payment.statuses[1].status == TransactionStatus.ERROR
-        assert payment.statuses[1].detail == "Erreur d'envoi à MailJet"
+        assert payment.currentStatus.status == TransactionStatus.ERROR
+        assert payment.currentStatus.detail == "Erreur d'envoi à MailJet"
 
 
 @pytest.mark.standalone

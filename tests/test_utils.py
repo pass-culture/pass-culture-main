@@ -634,10 +634,8 @@ def create_payment_details(
 
 def create_bank_information(application_id=1, bic='QSDFGH8Z555', iban='FR7630006000011234567890189',
                             id_at_providers='234567891', date_modified_at_last_provider=datetime(2019, 1, 1),
-                            offerer_id=None, venue_id=None, offerer=None, venue=None):
+                            offerer=None, venue=None):
     bank_information = BankInformation()
-    bank_information.venueId = venue_id
-    bank_information.offererId = offerer_id
     bank_information.offerer = offerer
     bank_information.venue = venue
     bank_information.applicationId = application_id

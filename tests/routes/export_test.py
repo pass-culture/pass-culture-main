@@ -251,7 +251,8 @@ def test_pending_validation_returns_offerers_venues_user_and_user_offerer_with_r
     assert response_json[1]['validationToken'] == offerer2.validationToken
     assert response_json[1]['UserOfferers'][0]['validationToken'] == None
     assert response_json[2]['validationToken'] == None
-    user_offerers_validation_token = [user_offerer_dict['validationToken'] for user_offerer_dict in response_json[2]['UserOfferers']]
+    user_offerers_validation_token = [user_offerer_dict['validationToken'] for user_offerer_dict in
+                                      response_json[2]['UserOfferers']]
     assert user_offerer3.validationToken in user_offerers_validation_token
     assert user_offerer5.validationToken in user_offerers_validation_token
 
@@ -786,7 +787,7 @@ def test_get_offerers_with_params_for_pc_reporting_return_200_and_filtered_offer
 
     bank_information = create_bank_information(bic="AGRIFRPP", iban='DE89370400440532013000',
                                                id_at_providers=offerer_bank_information.siren,
-                                               offerer_id=offerer_bank_information.id)
+                                               offerer=offerer_bank_information)
 
     PcObject.check_and_save(bank_information)
 

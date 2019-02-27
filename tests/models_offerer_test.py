@@ -41,15 +41,14 @@ def test_offerer_can_have_null_address(app):
         # then
         assert False
 
+
 @pytest.mark.standalone
 class OffererBankInformationTest:
     @clean_database
     def when_bank_information_with_offerer_id_exists_offerer_bic_returns_bank_information_bic(self, app):
         # Given
         offerer = create_offerer(siren='123456789')
-        PcObject.check_and_save(offerer)
-        bank_information = create_bank_information(bic='BDFEFR2LCCB', id_at_providers='123456789',
-                                                   offerer_id=offerer.id)
+        bank_information = create_bank_information(bic='BDFEFR2LCCB', id_at_providers='123456789', offerer=offerer)
         PcObject.check_and_save(bank_information)
 
         # When
@@ -74,9 +73,8 @@ class OffererBankInformationTest:
     def when_bank_information_with_offerer_id_exists_offerer_iban_returns_bank_information_iban(self, app):
         # Given
         offerer = create_offerer(siren='123456789')
-        PcObject.check_and_save(offerer)
         bank_information = create_bank_information(iban='FR7630007000111234567890144', id_at_providers='123456789',
-                                                   offerer_id=offerer.id)
+                                                   offerer=offerer)
         PcObject.check_and_save(bank_information)
 
         # When

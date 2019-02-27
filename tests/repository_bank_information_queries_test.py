@@ -24,12 +24,8 @@ class GetLastUpdateForBankInformationTest:
         offerer = create_offerer(siren='793875019')
         venue = create_venue(offerer, siret='79387501900056')
 
-        PcObject.check_and_save(venue)
-        venue_id = venue.id
-
         bank_information = create_bank_information(id_at_providers='79387501900056',
-                                                   date_modified_at_last_provider=datetime(2019, 1, 1),
-                                                   venue_id=venue_id)
+                                                   date_modified_at_last_provider=datetime(2019, 1, 1), venue=venue)
         PcObject.check_and_save(bank_information)
 
         # when

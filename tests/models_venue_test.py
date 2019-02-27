@@ -133,9 +133,7 @@ class OffererBankInformationTest:
         # Given
         offerer = create_offerer(siren='123456789')
         venue = create_venue(offerer, siret='12345678912345')
-        PcObject.check_and_save(venue)
-        bank_information = create_bank_information(bic='BDFEFR2LCCB', id_at_providers='12345678912345',
-                                                   venue_id=venue.id)
+        bank_information = create_bank_information(bic='BDFEFR2LCCB', id_at_providers='12345678912345', venue=venue)
         PcObject.check_and_save(bank_information)
 
         # When
@@ -162,9 +160,8 @@ class OffererBankInformationTest:
         # Given
         offerer = create_offerer(siren='123456789')
         venue = create_venue(offerer, siret='12345678912345')
-        PcObject.check_and_save(venue)
         bank_information = create_bank_information(iban='FR7630007000111234567890144', id_at_providers='12345678912345',
-                                                   venue_id=venue.id)
+                                                   venue=venue)
         PcObject.check_and_save(bank_information)
 
         # When
@@ -185,4 +182,3 @@ class OffererBankInformationTest:
 
         # Then
         assert iban is None
-

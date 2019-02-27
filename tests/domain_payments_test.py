@@ -27,8 +27,7 @@ def test_create_payment_for_booking_with_common_information():
     booking.stock.offer = Offer()
     booking.stock.offer.venue = Venue()
     offerer = create_offerer()
-    offerer_bank_information = create_bank_information(bic='QSDFGH8Z555', iban='CF13QSDFGH456789')
-    offerer_bank_information.offerer = offerer
+    offerer_bank_information = create_bank_information(bic='QSDFGH8Z555', iban='CF13QSDFGH456789', offerer=offerer)
     booking.stock.offer.venue.managingOfferer = offerer
     booking_reimbursement = BookingReimbursement(booking, ReimbursementRules.PHYSICAL_OFFERS, Decimal(10))
 
@@ -54,10 +53,8 @@ def test_create_payment_for_booking_when_iban_is_on_venue_should_take_payment_in
     venue = create_venue(offerer, name='Test Venue', )
     booking = create_booking(user, stock=stock, quantity=1)
 
-    offerer_bank_information = create_bank_information(bic='LAJR93', iban='B135TGGEG532TG')
-    venue_bank_information = create_bank_information(bic='LOKIJU76', iban='KD98765RFGHZ788')
-    offerer_bank_information.offerer = offerer
-    venue_bank_information.venue = venue
+    offerer_bank_information = create_bank_information(bic='LAJR93', iban='B135TGGEG532TG', offerer=offerer)
+    venue_bank_information = create_bank_information(bic='LOKIJU76', iban='KD98765RFGHZ788', venue=venue)
 
     booking.stock.offer = Offer()
     booking.stock.offer.venue = venue
@@ -80,10 +77,8 @@ def test_create_payment_for_booking_when_no_iban_on_venue_should_take_payment_in
     offerer = create_offerer(name='Test Offerer')
     venue = create_venue(offerer, name='Test Venue')
 
-    offerer_bank_information = create_bank_information(bic='QSDFGH8Z555', iban='CF13QSDFGH456789')
-    venue_bank_information = create_bank_information(bic=None, iban=None)
-    offerer_bank_information.offerer = offerer
-    venue_bank_information.venue = venue
+    offerer_bank_information = create_bank_information(bic='QSDFGH8Z555', iban='CF13QSDFGH456789', offerer=offerer)
+    venue_bank_information = create_bank_information(bic=None, iban=None, venue=venue)
 
     booking = create_booking(user, stock=stock, quantity=1)
     booking.stock.offer = Offer()
@@ -109,10 +104,8 @@ def test_create_payment_for_booking_takes_recipient_name_and_siren_from_offerer(
     offerer = create_offerer(name='Test Offerer', siren='123456789')
     venue = create_venue(offerer, name='Test Venue')
 
-    offerer_bank_information = create_bank_information(bic='QSDFGH8Z555', iban='CF13QSDFGH456789')
-    venue_bank_information = create_bank_information(bic=None, iban=None)
-    offerer_bank_information.offerer = offerer
-    venue_bank_information.venue = venue
+    offerer_bank_information = create_bank_information(bic='QSDFGH8Z555', iban='CF13QSDFGH456789', offerer=offerer)
+    venue_bank_information = create_bank_information(bic=None, iban=None, venue=venue)
 
     booking.stock.offer.venue = venue
     booking.stock.offer.venue.managingOfferer = offerer
@@ -157,8 +150,7 @@ def test_create_payment_for_booking_with_pending_status():
     booking.stock.offer.venue = Venue()
     offerer = create_offerer()
     booking.stock.offer.venue.managingOfferer = offerer
-    offerer_bank_information = create_bank_information(bic='QSDFGH8Z555', iban='CF13QSDFGH456789')
-    offerer_bank_information.offerer = offerer
+    offerer_bank_information = create_bank_information(bic='QSDFGH8Z555', iban='CF13QSDFGH456789', offerer=offerer)
     booking_reimbursement = BookingReimbursement(booking, ReimbursementRules.PHYSICAL_OFFERS, Decimal(10))
 
     # when
