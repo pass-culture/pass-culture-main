@@ -2,6 +2,7 @@
 
 set -o nounset
 
+# =============================================
 #  Helper that describes all functionalities
 # =============================================
 
@@ -91,6 +92,15 @@ while [ -h "$PRG" ] ; do
 		PRG=$(dirname "$PRG")"/$link"
 	fi
 done
+
+UNAME_OUT="$(uname -s)"
+case "${UNAME_OUT}" in
+    Linux*)     MACHINE=Linux;;
+    Darwin*)    MACHINE=Mac;;
+    CYGWIN*)    MACHINE=Cygwin;;
+    MINGW*)     MACHINE=MinGw;;
+    *)          MACHINE="UNKNOWN:${UNAME_OUT}"
+esac
 
 ROOT_PATH=$(realpath "$(dirname "$PRG")")
 
@@ -299,10 +309,15 @@ elif [[ "$CMD" == "test-cafe-webapp" ]] || [[ "$CMD" == "test-cafe-pro" ]]; then
 		APP_PATH="$ROOT_PATH"/pro
 	fi
 	if [[ $# == 0 ]]; then
+    if [[ "$MACHINE" == "Mac" ]]; then
+      BROWSER="chrome"
+    else
+      BROWSER="chromium"
+    fi
 		confirm "Warning: your database will be wiped. Is this OK ?"
 	 	"$ROOT_PATH"/pc -e "$ENV" reset-all-db
 		"$ROOT_PATH"/pc -e "$ENV" sandbox --name=industrial
-		RUN='cd $APP_PATH && ./scripts/manager.js testcafe -b chromium:headless'
+		RUN='cd $APP_PATH && ./scripts/manager.js testcafe -b $BROWSER:headless'
 	else
   	RUN='cd $APP_PATH && ./scripts/manager.js testcafe '"$*"
 	fi
