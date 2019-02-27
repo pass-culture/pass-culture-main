@@ -110,7 +110,7 @@ jobs: # a collection of steps
             export NVM_BIN=/usr/bin/nodejs
             export PATH=$NVM_BIN:$PATH
             cd ~/pass-culture-main/webapp
-            git checkout staging
+            git checkout "${CIRCLE_BRANCH}"
             yarn install
             yarn start
           background: true
@@ -171,7 +171,7 @@ jobs: # a collection of steps
             export NVM_BIN=/usr/bin/nodejs
             export PATH=$NVM_BIN:$PATH
             cd ~/pass-culture-main/pro
-            git checkout staging
+            git checkout "${CIRCLE_BRANCH}"
             yarn install
             yarn start
           background: true
@@ -209,7 +209,18 @@ workflows:
             branches:
               only:
                 - staging
-  schedule:
+  nightly:
+    triggers:
+      - schedule:
+          cron: "0 0 * * *"
+          filters:
+            branches:
+              only:
+                - master
+    jobs:
+      - functional-tests-webapp
+      - functional-tests-pro
+  weekly:
     triggers: #use the triggers key to indicate a scheduled build
       - schedule:
           cron: "0 1 * * 1" # run every monday at 1 am !!!! UTC TIME !!!!
