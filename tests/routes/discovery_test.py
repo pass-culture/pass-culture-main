@@ -831,3 +831,41 @@ class Put:
             # Then
             assert recommendations.status_code == 200
             assert not recommendations.json()
+
+        @clean_database
+        def test_returns_same_quantity_of_recommendations_in_different_orders(self, app):
+            # given
+            now = datetime.utcnow()
+            four_days_from_now = now + timedelta(days=4)
+            eight_days_from_now = now + timedelta(days=8)
+            user = create_user(email='user1@user.fr', password='P@55w0rd')
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            PcObject.check_and_save(user)
+
+            for i in range(0, 10):
+                offer_event = create_event_offer(venue, thumb_count=1, dominant_color=b'123')
+                event_occurrence = create_event_occurrence(
+                    offer_event,
+                    beginning_datetime=four_days_from_now,
+                    end_datetime=eight_days_from_now
+                )
+                event_stock = create_stock_from_event_occurrence(event_occurrence, price=0, available=20)
+                offer_thing = create_thing_offer(venue, thumb_count=1, dominant_color=b'123')
+                stock_thing = create_stock_with_thing_offer(offerer, venue, offer_thing, price=0)
+                PcObject.check_and_save(event_stock, stock_thing)
+
+            auth_request = TestClient().with_auth(user.email, user.clearTextPassword)
+
+            # when
+            recommendations1 = auth_request.put(RECOMMENDATION_URL, json={'seenRecommendationIds': []})
+            recommendations2 = auth_request.put(RECOMMENDATION_URL, json={'seenRecommendationIds': []})
+
+            # then
+            assert recommendations1.status_code == 200
+            assert recommendations2.status_code == 200
+            assert len(recommendations1.json()) == 20
+            assert len(recommendations1.json()) == len(recommendations2.json())
+            assert any(
+                [recommendations1.json()[i]['id'] != recommendations2.json()[i]['id'] for i in
+                 range(0, len(recommendations1.json()))])

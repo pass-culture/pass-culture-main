@@ -137,7 +137,7 @@ class TiteliveTest:
 
 def get_ordered_thing_files_from_sandbox_files():
     data_root_path = Path(os.path.dirname(os.path.realpath(__file__))) \
-                     / '..' / 'sandboxes' / 'providers' / 'titelive_works'
+                     / '..' / '..' / 'sandboxes' / 'providers' / 'titelive_works'
 
     data_thing_paths = data_root_path / THINGS_FOLDER_NAME_TITELIVE
     all_thing_files = sorted(data_thing_paths.glob('Quotidien*.tit'))
@@ -152,7 +152,7 @@ def get_lines_from_thing_file_sandboxes(file):
 
 def get_ordered_zip_thumbs_files_from_sandbox_files():
     data_root_path = Path(os.path.dirname(os.path.realpath(__file__))) \
-                     / '..' / 'sandboxes' / 'providers' / 'titelive_works'
+                     / '..' / '..' / 'sandboxes' / 'providers' / 'titelive_works'
     data_thumbs_path = data_root_path / THUMB_FOLDER_NAME_TITELIVE
     all_zips = list(sorted(data_thumbs_path.glob('livres_tl*.zip')))
     return all_zips
@@ -164,7 +164,7 @@ def get_zip_file_from_sandbox(file):
 
 def get_ordered_zip_description_files_from_sandbox_files():
     data_root_path = Path(os.path.dirname(os.path.realpath(__file__))) \
-                     / '..' / 'sandboxes' / 'providers' / 'titelive_works'
+                     / '..' / '..' / 'sandboxes' / 'providers' / 'titelive_works'
     data_thumbs_path = data_root_path / DESCRIPTION_FOLDER_NAME_TITELIVE
     all_zips = list(sorted(data_thumbs_path.glob('Resume*.zip')))
     return all_zips

@@ -14,7 +14,6 @@ from io import TextIOWrapper, BytesIO
 
 DATE_REGEXP = re.compile('([a-zA-Z]+)(\d+).tit')
 THINGS_FOLDER_NAME_TITELIVE = 'livre3_11'
-INIT_FULL_TABLE = 'FullTable*.tit'
 
 
 class TiteLiveThings(LocalProvider):
@@ -26,8 +25,8 @@ class TiteLiveThings(LocalProvider):
     objectType = Thing
     canCreate = True
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, venue_provider):
+        super().__init__(venue_provider)
 
         ordered_thing_files = get_ordered_files_from_titelive_ftp(THINGS_FOLDER_NAME_TITELIVE, DATE_REGEXP)
         self.thing_files = self.get_remaining_files_to_check(ordered_thing_files)

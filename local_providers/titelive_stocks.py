@@ -28,7 +28,6 @@ def get_data(last_seen_isbn, last_date_checked, venue_siret):
     return req_result.json()
 
 
-
 class TiteLiveStocks(LocalProvider):
 
     help = ""
@@ -38,8 +37,8 @@ class TiteLiveStocks(LocalProvider):
     objectType = Stock
     canCreate = True
 
-    def __init__(self, venueProvider, **options):
-        super().__init__(venueProvider, **options)
+    def __init__(self, venue_provider, **options):
+        super().__init__(venue_provider, **options)
         self.venueId = self.venueProvider.venueId
         self.venue = venue_queries.find_by_id(self.venueId)
         assert self.venue is not None

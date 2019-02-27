@@ -1,9 +1,9 @@
 """ local provider """
 import sys
 import traceback
-from abc import abstractproperty, abstractmethod
+from abc import abstractmethod
 from collections import Iterator
-from datetime import datetime, timedelta
+from datetime import datetime
 from pprint import pprint
 from sqlalchemy import text
 from postgresql_audit.flask import versioning_manager
