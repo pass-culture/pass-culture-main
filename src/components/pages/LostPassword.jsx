@@ -101,53 +101,51 @@ const LostPasswordPage = ({ change, envoye, errors, token }) => {
                 </div>
               </section>
             )}
-            {!token &&
-              !envoye &&
-              !change && (
-                <section className="hero has-text-grey">
-                  <div className="hero-body">
-                    <h1 className="title is-spaced is-1">
-                      <span className="has-text-weight-normal">
-                        Mot de passe égaré ?
-                      </span>
-                    </h1>
-                    <h2 className="subtitle is-2">
-                      Indiquez ci-dessous l’adresse e-mail avec laquelle vous
-                      avez créé votre compte.
-                    </h2>
-                    <span className="has-text-grey">
-                      {' '}
-                      <span className="required-legend"> * </span> Champs
-                      obligatoires
+            {!token && !envoye && !change && (
+              <section className="hero has-text-grey">
+                <div className="hero-body">
+                  <h1 className="title is-spaced is-1">
+                    <span className="has-text-weight-normal">
+                      Mot de passe égaré ?
                     </span>
-                    <Form
-                      action="/users/reset-password"
-                      BlockComponent={null}
-                      layout="vertical"
-                      name="user"
-                      handleSuccessNotification={null}
-                      handleSuccessRedirect={() =>
-                        '/mot-de-passe-perdu?envoye=1'
-                      }>
-                      <Field
-                        label="Adresse e-mail"
-                        name="email"
-                        placeholder="Identifiant (email)"
-                        required
-                        type="email"
-                      />
+                  </h1>
+                  <h2 className="subtitle is-2">
+                    Indiquez ci-dessous l’adresse e-mail avec laquelle vous avez
+                    créé votre compte.
+                  </h2>
+                  <span className="has-text-grey">
+                    {' '}
+                    <span className="required-legend"> * </span> Champs
+                    obligatoires
+                  </span>
+                  <Form
+                    action="/users/reset-password"
+                    BlockComponent={null}
+                    layout="vertical"
+                    name="user"
+                    handleSuccessNotification={null}
+                    handleSuccessRedirect={() =>
+                      '/mot-de-passe-perdu?envoye=1'
+                    }>
+                    <Field
+                      label="Adresse e-mail"
+                      name="email"
+                      placeholder="Identifiant (email)"
+                      required
+                      type="email"
+                    />
 
-                      <div className="field buttons-field">
-                        <SubmitButton
-                          id="sendTokenByMail"
-                          className="button is-primary is-outlined">
-                          Envoyer
-                        </SubmitButton>
-                      </div>
-                    </Form>
-                  </div>
-                </section>
-              )}
+                    <div className="field buttons-field">
+                      <SubmitButton
+                        id="sendTokenByMail"
+                        className="button is-primary is-outlined">
+                        Envoyer
+                      </SubmitButton>
+                    </div>
+                  </Form>
+                </div>
+              </section>
+            )}
           </div>
         </div>
       </div>

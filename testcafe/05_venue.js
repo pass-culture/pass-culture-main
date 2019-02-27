@@ -144,7 +144,12 @@ test('Une entrée avec cet identifiant existe déjà', async t => {
     .contains('Formulaire non validé\nOK')
 
   // when
-  await t.click(closeAnchor)
+  await t
+    .click(closeAnchor)
+    // please be careful, this wait prevents is necessary
+    // to pass every time, otherwise succes of this test is
+    // kind of random!
+    .wait(3000)
 
   // then
   await t.expect(notificationError.exists).notOk()
@@ -281,7 +286,10 @@ test('Je peux revenir en arrière', async t => {
 
 test("Je peux modifier l'email de contact du lieu", async t => {
   // given
+  // const { user } = t.ctx.sandbox
+  await t.wait(5000)
   await t.expect(bookingEmailInput.value).eql('fake@email.com')
+  // .eql(user.email)
 
   // when
   await t
@@ -293,6 +301,7 @@ test("Je peux modifier l'email de contact du lieu", async t => {
   await t
     .expect(bookingEmailInput.value)
     .eql('fake@email.comfake')
+    // .eql(`${user.email}fake`)
     .expect(notificationSuccess.innerText)
     .contains('Lieu modifié avec succès !')
 })

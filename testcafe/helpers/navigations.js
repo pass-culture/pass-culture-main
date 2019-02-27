@@ -26,9 +26,9 @@ export const navigateToOffererAs = (user, offerer) => async t => {
   const searchInput = Selector('#search')
   const submitButton = Selector('button[type="submit"]')
 
-  const offererAnchor = Selector('li.offerer-item')
-    .nth(0)
-    .find("a[href^='/structures/']")
+  const offererAnchor = Selector('li.offerer-item').find(
+    `a[href^="/structures/${offerer.id}"]`
+  )
 
   await navigateToOfferersAs(user)(t)
 
@@ -115,9 +115,9 @@ export const navigateToNewOfferAs = (user, offerer, venue) => async t => {
 export const navigateToOfferAs = (user, offer) => async t => {
   const searchInput = Selector('#search')
   const submitButton = Selector('button[type="submit"]')
-  const offerAnchor = Selector('li.offer-item')
-    .nth(0)
-    .find('.name')
+  const offerAnchor = Selector('li.offer-item').find(
+    `a[href^="/offres/${offer.id}"]`
+  )
 
   await t.useRole(createUserRole(user))
 

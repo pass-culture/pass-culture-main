@@ -179,7 +179,12 @@ test('Je suis redirigé·e vers la page de connexion avec un message de confirma
   const { validationToken } = user
 
   // when
-  await t.navigateTo(`/inscription/validation/${validationToken}`)
+  await t
+    .navigateTo(`/inscription/validation/${validationToken}`)
+    // please be careful, this wait prevents is necessary
+    // to pass every time, otherwise succes of this test is
+    // kind of random!
+    .wait(5000)
 
   // then
   const location = await t.eval(() => window.location)

@@ -6,8 +6,6 @@ import {
   navigateToOfferersAs,
 } from './helpers/navigations'
 
-const arrow = Selector('.caret a')
-const firstArrow = arrow.nth(0)
 const subTitleHeader = Selector('h2')
 
 fixture(`OfferersPage A | Voir la liste de mes structures`)
@@ -19,18 +17,19 @@ test("L'utilisateur a au moins une structure validé, on peut aller dessus", asy
     'get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer'
   )
   const { id: offererId } = offerer
+  const activationOffererItem = Selector('.offerer-item')
+    .find(`a[href="/structures/${offererId}"]`)
+    .parent('.offerer-item')
+  const arrow = activationOffererItem.find('div.caret').find('a')
 
   // when
   await navigateToOfferersAs(user)(t)
 
   // then
-  const activationOffererItem = Selector('.offerer-item')
-    .find(`a[href="/structures/${offererId}"]`)
-    .parent('.offerer-item')
   await t.expect(activationOffererItem.exists).ok()
 
   // when
-  await t.click(firstArrow)
+  await t.click(arrow)
 
   // then
   const location = await t.eval(() => window.location)
@@ -45,19 +44,22 @@ test("L'utilisateur a au moins une structure en cours de validation, mais on peu
     'get_existing_pro_validated_user_with_not_validated_offerer_validated_user_offerer'
   )
   const { id: offererId } = offerer
+  const activationOffererItem = Selector('.offerer-item')
+    .find(`a[href="/structures/${offererId}"]`)
+    .parent('.offerer-item')
+  const activationOffererItemValidation = activationOffererItem.find(
+    '#offerer-item-validation'
+  )
+  const arrow = activationOffererItem.find('div.caret').find('a')
 
   // when
   await navigateToOfferersAs(user)(t)
 
   // then
-  const activationOffererItemValidation = Selector('.offerer-item')
-    .find(`a[href="/structures/${offererId}"]`)
-    .parent('.offerer-item')
-    .find('#offerer-item-validation')
   await t.expect(activationOffererItemValidation.exists).ok()
 
   // when
-  await t.click(firstArrow)
+  await t.click(arrow)
 
   // then
   const location = await t.eval(() => window.location)
@@ -71,20 +73,20 @@ test("L'utilisateur a au moins un rattachement à une structure en cours de vali
     'pro_03_offerers',
     'get_existing_pro_validated_user_with_validated_offerer_not_validated_user_offerer'
   )
-
   const { name: offererName } = offerer
+  const pendingOffererItem = Selector('.offerer-item.pending').withText(
+    offererName
+  )
+  const arrow = pendingOffererItem.find('div.caret').find('a')
 
   // when
   await navigateToOfferersAs(user)(t)
 
   // then
-  const pendingOffererItem = Selector('.offerer-item.pending').withText(
-    offererName
-  )
   await t.expect(pendingOffererItem.exists).ok()
 
   // when
-  await t.expect(firstArrow.exists).notOk()
+  await t.expect(arrow.exists).notOk()
 })
 
 fixture('OfferersPage B | Recherche')
