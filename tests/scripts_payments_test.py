@@ -218,7 +218,6 @@ def test_send_transactions_creates_a_new_payment_transaction_if_email_was_sent_p
 @pytest.mark.standalone
 @clean_database
 @mocked_mail
-@freeze_time('2018-10-15 09:21:34')
 def test_send_transactions_set_status_to_sent_if_email_was_sent_properly(app):
     # given
     offerer1 = create_offerer(name='first offerer')
@@ -253,7 +252,6 @@ def test_send_transactions_set_status_to_sent_if_email_was_sent_properly(app):
 @pytest.mark.standalone
 @clean_database
 @mocked_mail
-@freeze_time('2018-10-15 09:21:34')
 def test_send_transactions_set_status_to_error_with_details_if_email_was_not_sent_properly(
         app):
     # given
