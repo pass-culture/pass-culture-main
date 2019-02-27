@@ -3,7 +3,7 @@ from sqlalchemy import or_
 
 from domain.keywords import create_filter_matching_all_keywords_in_any_model, \
     create_get_filter_matching_ts_query_in_any_model
-from models import Offerer, Venue, Offer, EventOccurrence, UserOfferer, User, Stock, Recommendation
+from models import Offerer, Venue, Offer, EventOccurrence, UserOfferer, User, Stock, Recommendation, BankInformation
 from models import RightsType
 from models.db import db
 
@@ -229,9 +229,9 @@ def _filter_by_is_validated(query, is_validated):
 
 def _filter_by_has_bank_information(query, has_bank_information):
     if has_bank_information:
-        query = query.filter(Offerer.bic != None)
+        query = query.join(BankInformation).filter(Offerer.bic != None)
     else:
-        query = query.filter(Offerer.bic == None)
+        query = query.join(BankInformation).filter(Offerer.bic != None)
     return query
 
 

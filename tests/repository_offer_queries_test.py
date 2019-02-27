@@ -132,8 +132,6 @@ class GetOffersForRecommendationsSearchTest:
             postal_code='75002',
             name='LE GRAND REX PARIS',
             validation_token=None,
-            iban=None,
-            bic=None
         )
         venue = create_venue(
             offerer,
