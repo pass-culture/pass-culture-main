@@ -23,8 +23,8 @@ class TiteLiveThingThumbs(LocalProvider):
     objectType = Thing
     canCreate = False
 
-    def __init__(self, offerer, **options):
-        super().__init__(offerer, **options)
+    def __init__(self):
+        super().__init__()
 
         all_zips = get_ordered_files_from_titelive_ftp(THUMB_FOLDER_NAME_TITELIVE, DATE_REGEXP)
 

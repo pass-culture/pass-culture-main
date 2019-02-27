@@ -20,7 +20,7 @@ from models.venue_provider import VenueProvider
 from tests.conftest import clean_database
 from utils.logger import logger
 from tests.test_utils import create_offerer, create_venue, \
-    provider_test_whithout_mock, provider_test
+    provider_test_without_mock
 
 
 @pytest.mark.standalone
@@ -66,19 +66,19 @@ class TiteliveTest:
         PcObject.check_and_save(venue_provider)
 
         # Import things
-        provider_test_whithout_mock(app,
-                                    TiteLiveThings,
-                                    venue_provider,
-                                    checkedObjects=422,
-                                    createdObjects=355,
-                                    updatedObjects=13,
-                                    erroredObjects=0,
-                                    checkedThumbs=0,
-                                    createdThumbs=0,
-                                    updatedThumbs=0,
-                                    erroredThumbs=0,
-                                    Thing=355
-                                    )
+        provider_test_without_mock(app,
+                                   TiteLiveThings,
+                                   venue_provider,
+                                   checkedObjects=422,
+                                   createdObjects=355,
+                                   updatedObjects=13,
+                                   erroredObjects=0,
+                                   checkedThumbs=0,
+                                   createdThumbs=0,
+                                   updatedThumbs=0,
+                                   erroredThumbs=0,
+                                   Thing=355
+                                   )
 
         # mock TiteliveThingThumb
         files = get_ordered_zip_thumbs_files_from_sandbox_files()
@@ -91,19 +91,19 @@ class TiteliveTest:
         get_thumbs_zip_file_from_ftp.side_effect = zip_files
 
         # Import thumbs for existing things
-        provider_test(app,
-                      TiteLiveThingThumbs,
-                      None,
-                      checkedObjects=106,
-                      createdObjects=0,
-                      updatedObjects=0,
-                      erroredObjects=0,
-                      checkedThumbs=166,
-                      createdThumbs=92,
-                      updatedThumbs=0,
-                      erroredThumbs=0,
-                      Thing=0
-                      )
+        provider_test_without_mock(app,
+                                   TiteLiveThingThumbs,
+                                   None,
+                                   checkedObjects=106,
+                                   createdObjects=0,
+                                   updatedObjects=0,
+                                   erroredObjects=0,
+                                   checkedThumbs=166,
+                                   createdThumbs=92,
+                                   updatedThumbs=0,
+                                   erroredThumbs=0,
+                                   Thing=0
+                                   )
 
         assert db.session.query(func.sum(Thing.thumbCount)).scalar() == 92
 
@@ -120,19 +120,19 @@ class TiteliveTest:
         get_description_zip_file_from_ftp.side_effect = zip_files
 
         # Import description for existing things
-        provider_test_whithout_mock(app,
-                                    TiteLiveThingDescriptions,
-                                    None,
-                                    checkedObjects=6,
-                                    createdObjects=0,
-                                    updatedObjects=6,
-                                    erroredObjects=0,
-                                    checkedThumbs=0,
-                                    createdThumbs=0,
-                                    updatedThumbs=0,
-                                    erroredThumbs=0,
-                                    Thing=0
-                                    )
+        provider_test_without_mock(app,
+                                   TiteLiveThingDescriptions,
+                                   None,
+                                   checkedObjects=6,
+                                   createdObjects=0,
+                                   updatedObjects=6,
+                                   erroredObjects=0,
+                                   checkedThumbs=0,
+                                   createdThumbs=0,
+                                   updatedThumbs=0,
+                                   erroredThumbs=0,
+                                   Thing=0
+                                   )
 
 
 def get_ordered_thing_files_from_sandbox_files():

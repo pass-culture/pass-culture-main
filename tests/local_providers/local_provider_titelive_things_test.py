@@ -10,8 +10,7 @@ from models.venue_provider import VenueProvider
 from tests.conftest import clean_database
 from tests.local_providers.local_provider_titelive_test import get_ordered_thing_files_from_sandbox_files, \
     get_lines_from_thing_file_sandboxes
-from tests.test_utils import create_offerer, create_venue, \
-    provider_test_whithout_mock
+from tests.test_utils import create_offerer, create_venue, provider_test_without_mock
 
 
 @pytest.mark.standalone
@@ -92,19 +91,19 @@ class TiteliveThingsTest:
         venue_provider.venueIdAtOfferProvider = '77567146400110'
         PcObject.check_and_save(venue_provider)
 
-        provider_test_whithout_mock(app,
-                                    TiteLiveThings,
-                                    venue_provider,
-                                    checkedObjects=1,
-                                    createdObjects=1,
-                                    updatedObjects=0,
-                                    erroredObjects=0,
-                                    checkedThumbs=0,
-                                    createdThumbs=0,
-                                    updatedThumbs=0,
-                                    erroredThumbs=0,
-                                    Thing=1
-                                    )
+        provider_test_without_mock(app,
+                                   TiteLiveThings,
+                                   venue_provider,
+                                   checkedObjects=1,
+                                   createdObjects=1,
+                                   updatedObjects=0,
+                                   erroredObjects=0,
+                                   checkedThumbs=0,
+                                   createdThumbs=0,
+                                   updatedThumbs=0,
+                                   erroredThumbs=0,
+                                   Thing=1
+                                   )
 
     @clean_database
     @patch('local_providers.titelive_things.get_ordered_files_from_titelive_ftp')
@@ -137,19 +136,19 @@ class TiteliveThingsTest:
         venue_provider.venueIdAtOfferProvider = '77567146400110'
         PcObject.check_and_save(venue_provider)
 
-        provider_test_whithout_mock(app,
-                                    TiteLiveThings,
-                                    venue_provider,
-                                    checkedObjects=422,
-                                    createdObjects=355,
-                                    updatedObjects=13,
-                                    erroredObjects=0,
-                                    checkedThumbs=0,
-                                    createdThumbs=0,
-                                    updatedThumbs=0,
-                                    erroredThumbs=0,
-                                    Thing=355
-                                    )
+        provider_test_without_mock(app,
+                                   TiteLiveThings,
+                                   venue_provider,
+                                   checkedObjects=422,
+                                   createdObjects=355,
+                                   updatedObjects=13,
+                                   erroredObjects=0,
+                                   checkedThumbs=0,
+                                   createdThumbs=0,
+                                   updatedThumbs=0,
+                                   erroredThumbs=0,
+                                   Thing=355
+                                   )
 
     @clean_database
     @patch('local_providers.titelive_things.get_ordered_files_from_titelive_ftp')
@@ -173,19 +172,19 @@ class TiteliveThingsTest:
         venue_provider.venueIdAtOfferProvider = '77567146400110'
         PcObject.check_and_save(venue_provider)
 
-        provider_test_whithout_mock(app,
-                                    TiteLiveThings,
-                                    venue_provider,
-                                    checkedObjects=0,
-                                    createdObjects=0,
-                                    updatedObjects=0,
-                                    erroredObjects=0,
-                                    checkedThumbs=0,
-                                    createdThumbs=0,
-                                    updatedThumbs=0,
-                                    erroredThumbs=0,
-                                    Thing=0
-                                    )
+        provider_test_without_mock(app,
+                                   TiteLiveThings,
+                                   venue_provider,
+                                   checkedObjects=0,
+                                   createdObjects=0,
+                                   updatedObjects=0,
+                                   erroredObjects=0,
+                                   checkedThumbs=0,
+                                   createdThumbs=0,
+                                   updatedThumbs=0,
+                                   erroredThumbs=0,
+                                   Thing=0
+                                   )
 
     @clean_database
     @patch('local_providers.titelive_things.get_ordered_files_from_titelive_ftp')
@@ -218,19 +217,19 @@ class TiteliveThingsTest:
         venue_provider.venueIdAtOfferProvider = '77567146400110'
         PcObject.check_and_save(venue_provider)
 
-        provider_test_whithout_mock(app,
-                                    TiteLiveThings,
-                                    venue_provider,
-                                    checkedObjects=1,
-                                    createdObjects=0,
-                                    updatedObjects=0,
-                                    erroredObjects=0,
-                                    checkedThumbs=0,
-                                    createdThumbs=0,
-                                    updatedThumbs=0,
-                                    erroredThumbs=0,
-                                    Thing=0
-                                    )
+        provider_test_without_mock(app,
+                                   TiteLiveThings,
+                                   venue_provider,
+                                   checkedObjects=1,
+                                   createdObjects=0,
+                                   updatedObjects=0,
+                                   erroredObjects=0,
+                                   checkedThumbs=0,
+                                   createdThumbs=0,
+                                   updatedThumbs=0,
+                                   erroredThumbs=0,
+                                   Thing=0
+                                   )
 
     @clean_database
     @patch('local_providers.titelive_things.get_ordered_files_from_titelive_ftp')
@@ -311,16 +310,16 @@ class TiteliveThingsTest:
         venue_provider.venueIdAtOfferProvider = '77567146400110'
         PcObject.check_and_save(venue_provider)
 
-        provider_test_whithout_mock(app,
-                                    TiteLiveThings,
-                                    venue_provider,
-                                    checkedObjects=1,
-                                    createdObjects=0,
-                                    updatedObjects=0,
-                                    erroredObjects=0,
-                                    checkedThumbs=0,
-                                    createdThumbs=0,
-                                    updatedThumbs=0,
-                                    erroredThumbs=0,
-                                    Thing=0
-                                    )
+        provider_test_without_mock(app,
+                                   TiteLiveThings,
+                                   venue_provider,
+                                   checkedObjects=1,
+                                   createdObjects=0,
+                                   updatedObjects=0,
+                                   erroredObjects=0,
+                                   checkedThumbs=0,
+                                   createdThumbs=0,
+                                   updatedThumbs=0,
+                                   erroredThumbs=0,
+                                   Thing=0
+                                   )

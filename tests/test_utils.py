@@ -680,36 +680,16 @@ def assert_created_thumbs():
     assert len(glob(str(STORAGE_DIR / "thumbs" / "*"))) == 1
 
 
-def provider_test_whithout_mock(app, provider, venue_provider, **counts):
+def provider_test_without_mock(app, provider, venue_provider, **counts):
     if venue_provider is None:
         provider_object = provider()
     else:
         provider_object = provider(venue_provider)
     provider_object.dbObject.isActive = True
     PcObject.check_and_save(provider_object.dbObject)
-    saveCounts(app)
+    saveCounts()
     provider_object.updateObjects()
 
-    for count_name in ['updatedObjects',
-                       'createdObjects',
-                       'checkedObjects',
-                       'erroredObjects',
-                       'createdThumbs',
-                       'updatedThumbs',
-                       'checkedThumbs',
-                       'erroredThumbs']:
-        assert getattr(provider_object, count_name) == counts[count_name]
-        del counts[count_name]
-    assertCreatedCounts(app, **counts)
-
-
-def provider_test(app, provider, venueProvider, **counts):
-    providerObj = provider(venueProvider, mock=True)
-    providerObj.dbObject.isActive = True
-    PcObject.check_and_save(providerObj.dbObject)
-    saveCounts()
-    providerObj.updateObjects()
-
     for countName in ['updatedObjects',
                       'createdObjects',
                       'checkedObjects',
@@ -718,27 +698,7 @@ def provider_test(app, provider, venueProvider, **counts):
                       'updatedThumbs',
                       'checkedThumbs',
                       'erroredThumbs']:
-        assert getattr(providerObj, countName) == counts[countName]
-        del counts[countName]
-    assertCreatedCounts(**counts)
-
-
-def provider_test_without_mock(app, provider, **counts):
-    providerObj = provider()
-    providerObj.dbObject.isActive = True
-    PcObject.check_and_save(providerObj.dbObject)
-    saveCounts()
-    providerObj.updateObjects()
-
-    for countName in ['updatedObjects',
-                      'createdObjects',
-                      'checkedObjects',
-                      'erroredObjects',
-                      'createdThumbs',
-                      'updatedThumbs',
-                      'checkedThumbs',
-                      'erroredThumbs']:
-        assert getattr(providerObj, countName) == counts[countName]
+        assert getattr(provider_object, countName) == counts[countName]
         del counts[countName]
     assertCreatedCounts(**counts)
 

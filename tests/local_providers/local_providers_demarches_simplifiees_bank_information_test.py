@@ -27,6 +27,7 @@ class BankInformationProviderProviderTest:
         # When Then
         provider_test_without_mock(app,
                                    BankInformationProvider,
+                                   None,
                                    checkedObjects=0,
                                    createdObjects=0,
                                    updatedObjects=0,
@@ -110,6 +111,7 @@ class BankInformationProviderProviderTest:
         # When Then
         provider_test_without_mock(app,
                                    BankInformationProvider,
+                                   None,
                                    checkedObjects=1,
                                    createdObjects=1,
                                    updatedObjects=0,
@@ -204,6 +206,7 @@ class BankInformationProviderProviderTest:
         # When Then
         provider_test_without_mock(app,
                                    BankInformationProvider,
+                                   None,
                                    checkedObjects=1,
                                    createdObjects=1,
                                    updatedObjects=0,
@@ -489,6 +492,7 @@ class BankInformationProviderProviderTest:
         # When Then
         provider_test_without_mock(app,
                                    BankInformationProvider,
+                                   None,
                                    checkedObjects=2,
                                    createdObjects=2,
                                    updatedObjects=0,
@@ -582,6 +586,7 @@ class BankInformationProviderProviderTest:
         # When Then
         provider_test_without_mock(app,
                                    BankInformationProvider,
+                                   None,
                                    checkedObjects=1,
                                    createdObjects=0,
                                    updatedObjects=0,
@@ -671,6 +676,7 @@ class BankInformationProviderProviderTest:
         # When Then
         provider_test_without_mock(app,
                                    BankInformationProvider,
+                                   None,
                                    checkedObjects=1,
                                    createdObjects=0,
                                    updatedObjects=1,
