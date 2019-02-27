@@ -5,8 +5,11 @@ dépendance externe au système).
 
 ## Do
 Ces fonctions doivent contenir uniquement des requêtes vers la base de donnée qui retournent soit des tuples de données
-"primitives" (e.g. une liste d'adresses emails), soit des instances de modèles SQL Alchemy. On utilisera des indications de type
-dans les signatures des fonctions pour indiquer quelles sont les données attendues en entrée et en sortie.
+"primitives" (e.g. une liste d'adresses email), soit des instances de modèles SQL Alchemy. On pourra aussi avoir des
+fonctions qui retournent des "morceaux" de queries, c'est à dire des fonctions qui construisent de queries qui ne sont
+pas déclenchées (i.e. qui n'ont pas de `.all()` ou `.first()`).
+On utilisera des indications de type dans les signatures des fonctions pour indiquer quelles sont les données attendues
+en entrée et en sortie.
 
 Par exemple :
 ```python

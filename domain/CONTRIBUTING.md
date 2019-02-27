@@ -1,7 +1,13 @@
 # Package `domain`
-Les modules de ce package contiennent des fonctions **pures**, c'est à dire qui offrent une transparence réferentielle
-et qui sont sans effets de bord. Elles ont pour but d'implémenter des règles de gestion qui modélisent le "domaine métier"
-du pass Culture.
+Les modules de ce package contiennent des fonctions de deux natures différentes :
+* cas n°1 : ce sont des fonctions **pures**, c'est à dire qui offrent une transparence réferentielle
+* cas n°2 : ce sont des fonctions **impures**, qui font appel à des fonctions de `connectors` ou `repository` passées
+en paramètre (`arg` ou `kwarg`)
+
+C'est à dire que pour deux appels avec les mêmes valeurs retournées par les fonctions de `connectors` ou `repository`,
+les fonctions de `domain` doivent retourner les mêmes resultats.
+
+Elles ont toujours pour but d'implémenter des règles de gestion qui modélisent le "domaine métier" du pass Culture.
 
 ## Do
 Ces fonctions doivent contenir : des appels à des fontions de `domain`, `connectors` ou `repository` ainsi que
@@ -70,3 +76,10 @@ class DigitalThingsReimbursementTest:
 
 ## Pour en savoir plus
 * https://fr.wikipedia.org/wiki/Transparence_r%C3%A9f%C3%A9rentielle
+* On appelle une `I/O function` toute fonction qui dépend d'un système externe à son contexte d'exécution. Par exemple :
+  * un système de fichier
+  * une base de donnée
+  * l'horloge du serveur
+  * le réseau
+  * un capteur de luminosité
+  * etc.

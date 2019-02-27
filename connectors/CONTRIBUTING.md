@@ -9,8 +9,7 @@ que retournent ces _web services_ et qu'on voudrait éventuellement transformer 
 Par exemple :
 ```python
 def get_by_siren(offerer: Offerer) -> dict:
-    response = requests.get("https://sirene.entreprise.api.gouv.fr/v1/siren/" + offerer.siren,
-                            verify=False)  # FIXME: add root cerficate on docker image ?
+    response = requests.get("https://sirene.entreprise.api.gouv.fr/v1/siren/" + offerer.siren, verify=False)
 
     if response.status_code != 200:
         raise ApiEntrepriseException('Error getting API entreprise DATA for SIREN : {}'.format(offerer.siren))
@@ -19,8 +18,8 @@ def get_by_siren(offerer: Offerer) -> dict:
 ```
 
 ## Don't
-Ces fonctions ne doivent pas contenir : des règles de gestion, des _queries_ vers la base de données une quelconque notion
-liée au _routing_ de l'API du pas Culture.
+Ces fonctions ne doivent pas contenir : des règles de gestion (qui appartiennent au `domain`), des _queries_ vers la
+base de données une quelconque notion liée au _routing_ de l'API du pas Culture.
 
 ## Testing
 Ces fonctions sont testées de manière unitaire mais en coupant la dépendance vers le _web service_ : on utilise un mécanisme

@@ -12,7 +12,7 @@ migration de schéma relationnel avec Alembic. Les deux modifications (classes d
 merged simultanément dans la branche master.
 
 ## Testing
-Les classes présentes dans ce package ne sont pas testable puisque composées, dans leur forme la plus simple, uniquement
+Les classes présentes dans ce package ne sont pas testables puisque composées, dans leur forme la plus simple, uniquement
 de déclaration de champs. Toutefois, si on souhaite leur donner des comportements ou de la logique (e.g. via des méthodes
 d'instance ou des _properties_) il est possible de les tester unitairement.
 
