@@ -20,29 +20,11 @@ from tests.test_utils import API_URL, \
     create_venue, \
     create_stock_from_offer
 
-def create_offers_for(user, n, siren='123456789'):
-    offerer = create_offerer(siren=siren)
-    user_offerer = create_user_offerer(user, offerer)
-    venue = create_venue(offerer, siret=siren + '1345')
-    offers = create_n_mixed_offers_with_same_venue(venue, n=n)
-
-    PcObject.check_and_save(user_offerer)
-    PcObject.check_and_save(*offers)
-
-def create_n_mixed_offers_with_same_venue(venue, n=10):
-    offers = []
-    for i in range(n // 2, 0, -1):
-        date_created = datetime.utcnow() - timedelta(days=i)
-        offers.append(create_thing_offer(venue, date_created=date_created, thing_name='Thing Offer %s' % i))
-        offers.append(create_event_offer(venue, event_name='Event Offer %s' % i, date_created=date_created))
-    return offers
-
-
 @pytest.mark.standalone
 class Get:
     class Returns200:
         @clean_database
-        def test_get_offers_are_paginated_by_chunks_of_10(self, app):
+        def test_results_are_paginated_by_chunks_of_10(self, app):
             # Given
             user = create_user(email='user@test.com', password='azerty123')
             create_offers_for(user, 20)
@@ -56,7 +38,7 @@ class Get:
             assert len(offers) == 10
 
         @clean_database
-        def test_get_offers_is_paginated_by_default_on_page_1(self, app):
+        def test_results_are_paginated_by_default_on_page_1(self, app):
             # given
             user = create_user(email='user@test.com', password='azerty123')
             create_offers_for(user, 20)
@@ -73,7 +55,7 @@ class Get:
             assert dehumanize(result[0]['id']) == first_id
 
         @clean_database
-        def test_get_offers_returns_offers_sorted_by_id_desc(self, app):
+        def test_returns_offers_sorted_by_id_desc(self, app):
             # given
             user = create_user(email='user@test.com', password='azerty123')
             create_offers_for(user, 20)
@@ -89,7 +71,7 @@ class Get:
             assert offers_1[-1]['dateCreated'] > offers_2[0]['dateCreated']
 
         @clean_database
-        def test_get_offers_is_filtered_by_given_venue_id(self, app):
+        def test_results_are_filtered_by_given_venue_id(self, app):
             # given
             user = create_user(email='user@test.com', password='azerty123')
             create_offers_for(user, 20, siren='123456789')
@@ -107,7 +89,7 @@ class Get:
                 assert offer['venueId'] == humanize(venue_id)
 
         @clean_database
-        def test_get_offers_can_be_filtered_and_paginated_at_the_same_time(self, app):
+        def test_can_be_filtered_and_paginated_at_the_same_time(self, app):
             # given
             user = create_user(email='user@test.com', password='azerty123')
             create_offers_for(user, 20, siren='987654321')
@@ -124,7 +106,7 @@ class Get:
                 assert offer['venueId'] == humanize(venue_id)
 
         @clean_database
-        def test_get_offers_can_be_searched_and_filtered_and_paginated_at_the_same_time(self, app):
+        def test_can_be_searched_and_filtered_and_paginated_at_the_same_time(self, app):
             # given
             user = create_user(email='user@test.com', password='azerty123')
             create_offers_for(user, 20, siren='987654321')
@@ -143,7 +125,7 @@ class Get:
                 assert 'event' in offer['event']['name'].lower()
 
         @clean_database
-        def test_get_offers_can_be_searched_using_multiple_search_terms(self, app):
+        def test_can_be_searched_using_multiple_search_terms(self, app):
             # given
             user = create_user(email='user@test.com', password='azerty123')
             create_offers_for(user, 20, siren='987654321')
@@ -193,7 +175,7 @@ class Get:
             assert humanize(offer3.eventId) in event_ids
 
         @clean_database
-        def test_list_offers_returns_list_of_offers_with_thing_or_event_with_type_details(self, app):
+        def test_returns_list_of_offers_with_thing_or_event_with_type_details(self, app):
             # given
             user = create_user(password='p@55sw0rd', is_admin=True, can_book_free_offers=False)
             offerer = create_offerer()
@@ -238,7 +220,7 @@ class Get:
             assert "type" not in thing_or_event_keys
 
         @clean_database
-        def test_get_offers_doesnt_show_anything_to_user_offerer_when_not_validated(self, app):
+        def test_does_not_show_anything_to_user_offerer_when_not_validated(self, app):
             # Given
             user = create_user(password='azerty123')
             offerer = create_offerer()
@@ -364,7 +346,7 @@ class Post:
 class Patch:
     class Returns200:
         @clean_database
-        def test_patch_offer_returns_200_and_expires_recos(self, app):
+        def test_returns_200_and_expires_recos(self, app):
             # given
             user = create_user(password='p@55sw0rd')
             offerer = create_offerer()
@@ -395,7 +377,7 @@ class Patch:
 
     class Returns403:
         @clean_database
-        def test_patch_offer_returns_403_if_user_is_not_attached_to_offerer_of_offer(self, app):
+        def test_returns_403_if_user_is_not_attached_to_offerer_of_offer(self, app):
             # given
             current_user = create_user(email='bobby@test.com', password='p@55sw0rd')
             other_user = create_user(email='jimmy@test.com', password='p@55sw0rd')
@@ -418,7 +400,7 @@ class Patch:
 
     class Returns404:
         @clean_database
-        def test_patch_offer_returns_404_if_offer_does_not_exist(self, app):
+        def test_returns_404_if_offer_does_not_exist(self, app):
             # given
             user = create_user(password='p@55sw0rd')
             PcObject.check_and_save(user)
@@ -429,3 +411,23 @@ class Patch:
 
             # then
             assert response.status_code == 404
+
+
+
+def create_offers_for(user, n, siren='123456789'):
+    offerer = create_offerer(siren=siren)
+    user_offerer = create_user_offerer(user, offerer)
+    venue = create_venue(offerer, siret=siren + '1345')
+    offers = create_n_mixed_offers_with_same_venue(venue, n=n)
+
+    PcObject.check_and_save(user_offerer)
+    PcObject.check_and_save(*offers)
+
+def create_n_mixed_offers_with_same_venue(venue, n=10):
+    offers = []
+    for i in range(n // 2, 0, -1):
+        date_created = datetime.utcnow() - timedelta(days=i)
+        offers.append(create_thing_offer(venue, date_created=date_created, thing_name='Thing Offer %s' % i))
+        offers.append(create_event_offer(venue, event_name='Event Offer %s' % i, date_created=date_created))
+    return offers
+
