@@ -82,7 +82,7 @@ def test_send_transactions_should_not_send_an_email_if_pass_culture_iban_is_miss
     # given
     offerer1 = create_offerer(name='first offerer')
     user = create_user()
-    venue1 = create_venue(offerer1, idx=4)
+    venue1 = create_venue(offerer1)
     stock1 = create_stock_from_offer(create_thing_offer(venue1))
     booking1 = create_booking(user, stock1)
     booking2 = create_booking(user, stock1)
@@ -107,7 +107,7 @@ def test_send_transactions_should_not_send_an_email_if_pass_culture_bic_is_missi
     # given
     offerer1 = create_offerer(name='first offerer')
     user = create_user()
-    venue1 = create_venue(offerer1, idx=4)
+    venue1 = create_venue(offerer1)
     stock1 = create_stock_from_offer(create_thing_offer(venue1))
     booking1 = create_booking(user, stock1)
     booking2 = create_booking(user, stock1)
@@ -132,7 +132,7 @@ def test_send_transactions_should_not_send_an_email_if_pass_culture_id_is_missin
     # given
     offerer1 = create_offerer(name='first offerer')
     user = create_user()
-    venue1 = create_venue(offerer1, idx=4)
+    venue1 = create_venue(offerer1)
     stock1 = create_stock_from_offer(create_thing_offer(venue1))
     booking1 = create_booking(user, stock1)
     booking2 = create_booking(user, stock1)
@@ -157,7 +157,7 @@ def test_send_transactions_should_send_an_email_with_xml_attachment(app):
     # given
     offerer1 = create_offerer(name='first offerer')
     user = create_user()
-    venue1 = create_venue(offerer1, idx=4)
+    venue1 = create_venue(offerer1)
     stock1 = create_stock_from_offer(create_thing_offer(venue1))
     booking1 = create_booking(user, stock1)
     booking2 = create_booking(user, stock1)
@@ -186,10 +186,10 @@ def test_send_transactions_should_send_an_email_with_xml_attachment(app):
 @mocked_mail
 @freeze_time('2018-10-15 09:21:34')
 def test_send_transactions_creates_a_new_payment_transaction_if_email_was_sent_properly(app):
-    # given
+    # given@
     offerer1 = create_offerer(name='first offerer')
     user = create_user()
-    venue1 = create_venue(offerer1, idx=4)
+    venue1 = create_venue(offerer1)
     stock1 = create_stock_from_offer(create_thing_offer(venue1))
     booking1 = create_booking(user, stock1)
     booking2 = create_booking(user, stock1)
@@ -257,7 +257,7 @@ def test_send_transactions_set_status_to_error_with_details_if_email_was_not_sen
     # given
     offerer1 = create_offerer(name='first offerer')
     user = create_user()
-    venue1 = create_venue(offerer1, idx=4)
+    venue1 = create_venue(offerer1)
     stock1 = create_stock_from_offer(create_thing_offer(venue1))
     booking1 = create_booking(user, stock1)
     booking2 = create_booking(user, stock1)
@@ -288,12 +288,11 @@ def test_send_transactions_set_status_to_error_with_details_if_email_was_not_sen
 @pytest.mark.standalone
 @clean_database
 @mocked_mail
-@freeze_time('2018-10-15 09:21:34')
 def test_send_payment_details_sends_a_csv_attachment(app):
     # given
     offerer1 = create_offerer(name='first offerer')
     user = create_user()
-    venue1 = create_venue(offerer1, idx=4)
+    venue1 = create_venue(offerer1)
     stock1 = create_stock_from_offer(create_thing_offer(venue1))
     booking1 = create_booking(user, stock1)
     booking2 = create_booking(user, stock1)
@@ -333,9 +332,12 @@ def test_send_payment_details_does_not_send_anything_if_all_payment_have_error_s
     booking3 = create_booking(user, stock1)
 
     payments = [
-        create_payment(booking1, offerer1, Decimal(10), status=TransactionStatus.ERROR, iban='CF13QSDFGH456789', bic='QSDFGH8Z555'),
-        create_payment(booking2, offerer1, Decimal(20), status=TransactionStatus.ERROR, iban='CF13QSDFGH456789', bic='QSDFGH8Z555'),
-        create_payment(booking3, offerer1, Decimal(20), status=TransactionStatus.ERROR, iban='CF13QSDFGH456789', bic='QSDFGH8Z555')
+        create_payment(booking1, offerer1, Decimal(10), status=TransactionStatus.ERROR, iban='CF13QSDFGH456789',
+                       bic='QSDFGH8Z555'),
+        create_payment(booking2, offerer1, Decimal(20), status=TransactionStatus.ERROR, iban='CF13QSDFGH456789',
+                       bic='QSDFGH8Z555'),
+        create_payment(booking3, offerer1, Decimal(20), status=TransactionStatus.ERROR, iban='CF13QSDFGH456789',
+                       bic='QSDFGH8Z555')
     ]
 
     # when
@@ -361,7 +363,6 @@ def test_send_payment_details_does_not_send_anything_if_recipients_are_missing(a
 @pytest.mark.standalone
 @clean_database
 @mocked_mail
-@freeze_time('2018-10-15 09:21:34')
 def test_send_wallet_balances_sends_a_csv_attachment(app):
     # given
     app.mailjet_client.send.create.return_value = Mock(status_code=200)
@@ -400,9 +401,12 @@ def test_send_payments_report_sends_two_csv_attachments_if_some_payments_are_not
     booking3 = create_booking(user, stock1)
     deposit = create_deposit(user, datetime.utcnow(), amount=500)
     payments = [
-        create_payment(booking1, offerer1, Decimal(10), status=TransactionStatus.SENT, iban='CF13QSDFGH456789', bic='QSDFGH8Z555'),
-        create_payment(booking2, offerer1, Decimal(20), status=TransactionStatus.ERROR, iban='CF13QSDFGH456789', bic='QSDFGH8Z555'),
-        create_payment(booking3, offerer1, Decimal(20), status=TransactionStatus.NOT_PROCESSABLE, iban='CF13QSDFGH456789', bic='QSDFGH8Z555')
+        create_payment(booking1, offerer1, Decimal(10), status=TransactionStatus.SENT, iban='CF13QSDFGH456789',
+                       bic='QSDFGH8Z555'),
+        create_payment(booking2, offerer1, Decimal(20), status=TransactionStatus.ERROR, iban='CF13QSDFGH456789',
+                       bic='QSDFGH8Z555'),
+        create_payment(booking3, offerer1, Decimal(20), status=TransactionStatus.NOT_PROCESSABLE,
+                       iban='CF13QSDFGH456789', bic='QSDFGH8Z555')
     ]
 
     PcObject.check_and_save(deposit)
@@ -435,9 +439,12 @@ def test_send_payments_report_sends_two_csv_attachments_if_no_payments_are_in_er
     booking3 = create_booking(user, stock1)
     deposit = create_deposit(user, datetime.utcnow(), amount=500)
     payments = [
-        create_payment(booking1, offerer1, Decimal(10), status=TransactionStatus.SENT, iban='CF13QSDFGH456789', bic='QSDFGH8Z555'),
-        create_payment(booking2, offerer1, Decimal(20), status=TransactionStatus.SENT, iban='CF13QSDFGH456789', bic='QSDFGH8Z555'),
-        create_payment(booking3, offerer1, Decimal(20), status=TransactionStatus.SENT, iban='CF13QSDFGH456789', bic='QSDFGH8Z555')
+        create_payment(booking1, offerer1, Decimal(10), status=TransactionStatus.SENT, iban='CF13QSDFGH456789',
+                       bic='QSDFGH8Z555'),
+        create_payment(booking2, offerer1, Decimal(20), status=TransactionStatus.SENT, iban='CF13QSDFGH456789',
+                       bic='QSDFGH8Z555'),
+        create_payment(booking3, offerer1, Decimal(20), status=TransactionStatus.SENT, iban='CF13QSDFGH456789',
+                       bic='QSDFGH8Z555')
     ]
 
     PcObject.check_and_save(deposit)

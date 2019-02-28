@@ -797,6 +797,7 @@ def test_get_offerers_with_params_for_pc_reporting_return_200_and_filtered_offer
     response = auth_request.post(API_URL + '/exports/offerers', json=data)
 
     # then
+    assert response.status_code == 200
     response_json = response.json()
     assert len(response_json) == 1
     assert response_json[0]['siren'] == '123456784'
