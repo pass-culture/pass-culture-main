@@ -1,13 +1,12 @@
-from datetime import datetime, timedelta
-
 import pytest
+from datetime import datetime, timedelta
 
 from domain.password import RESET_PASSWORD_TOKEN_LENGTH
 from models import PcObject
 from models.db import db
-
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import API_URL, req, create_user
+from tests.test_utils import API_URL, create_user
+
 
 @pytest.mark.standalone
 class PostChangePassword:
@@ -17,17 +16,17 @@ class PostChangePassword:
             # given
             user = create_user(email='user@test.com', password='testpsswd')
             PcObject.check_and_save(user)
-            auth = TestClient().with_auth(user.email, user.clearTextPassword)
             data = {'oldPassword': 'testpsswd', 'newPassword': 'N3W_p4ssw0rd'}
 
             # when
-            response = auth.post(API_URL + '/users/current/change-password', json=data)
+            response = TestClient() \
+                .with_auth(user.email, user.clearTextPassword).post(API_URL + '/users/current/change-password',
+                                                                    json=data)
 
             # then
             db.session.refresh(user)
             assert user.checkPassword('N3W_p4ssw0rd') is True
             assert response.status_code == 204
-
 
     class Returns400:
         @clean_database
@@ -35,11 +34,12 @@ class PostChangePassword:
             # given
             user = create_user(email='user@test.com', password='testpsswd')
             PcObject.check_and_save(user)
-            auth = TestClient().with_auth(user.email, user.clearTextPassword)
             data = {'newPassword': 'N3W_p4ssw0rd'}
 
             # when
-            response = auth.post(API_URL + '/users/current/change-password', json=data)
+            response = TestClient() \
+                .with_auth(user.email, user.clearTextPassword).post(API_URL + '/users/current/change-password',
+                                                                    json=data)
 
             # then
             assert response.status_code == 400
@@ -50,11 +50,12 @@ class PostChangePassword:
             # given
             user = create_user(email='user@test.com', password='testpsswd')
             PcObject.check_and_save(user)
-            auth = TestClient().with_auth(user.email, user.clearTextPassword)
             data = {'oldPassword': '0ldp4ssw0rd'}
 
             # when
-            response = auth.post(API_URL + '/users/current/change-password', json=data)
+            response = TestClient() \
+                .with_auth(user.email, user.clearTextPassword).post(API_URL + '/users/current/change-password',
+                                                                    json=data)
 
             # then
             assert response.status_code == 400
@@ -65,11 +66,12 @@ class PostChangePassword:
             # given
             user = create_user(email='user@test.com', password='testpsswd')
             PcObject.check_and_save(user)
-            auth = TestClient().with_auth(user.email, user.clearTextPassword)
             data = {'oldPassword': '0ldp4ssw0rd', 'newPassword': 'weakpassword'}
 
             # when
-            response = auth.post(API_URL + '/users/current/change-password', json=data)
+            response = TestClient() \
+                .with_auth(user.email, user.clearTextPassword).post(API_URL + '/users/current/change-password',
+                                                                    json=data)
 
             # then
             assert response.status_code == 400
@@ -88,7 +90,8 @@ class PostResetPassword:
             data = {'email': ''}
 
             # when
-            response = req.post(API_URL + '/users/reset-password', json=data, headers={'origin': 'http://localhost:3000'})
+            response = TestClient().post(API_URL + '/users/reset-password', json=data,
+                                         headers={'origin': 'http://localhost:3000'})
 
             # then
             assert response.status_code == 400
@@ -100,7 +103,8 @@ class PostResetPassword:
             data = {}
 
             # when
-            response = req.post(API_URL + '/users/reset-password', json=data, headers={'origin': 'http://localhost:3000'})
+            response = TestClient().post(API_URL + '/users/reset-password', json=data,
+                                         headers={'origin': 'http://localhost:3000'})
 
             # then
             assert response.status_code == 400
@@ -113,7 +117,8 @@ class PostResetPassword:
             data = {'email': 'unknown.user@test.com'}
 
             # when
-            response = req.post(API_URL + '/users/reset-password', json=data, headers={'origin': 'http://localhost:3000'})
+            response = TestClient().post(API_URL + '/users/reset-password', json=data,
+                                         headers={'origin': 'http://localhost:3000'})
 
             # then
             assert response.status_code == 204
@@ -126,7 +131,8 @@ class PostResetPassword:
             PcObject.check_and_save(user)
 
             # when
-            response = req.post(API_URL + '/users/reset-password', json=data, headers={'origin': 'http://localhost:3000'})
+            response = TestClient().post(API_URL + '/users/reset-password', json=data,
+                                         headers={'origin': 'http://localhost:3000'})
 
             # then
             db.session.refresh(user)
@@ -152,7 +158,8 @@ class PostNewPassword:
             }
 
             # when
-            response = req.post(API_URL + '/users/new-password', json=data, headers={'origin': 'http://localhost:3000'})
+            response = TestClient().post(API_URL + '/users/new-password', json=data,
+                                         headers={'origin': 'http://localhost:3000'})
 
             # then
             assert response.status_code == 400
@@ -172,7 +179,8 @@ class PostNewPassword:
             }
 
             # when
-            response = req.post(API_URL + '/users/new-password', json=data, headers={'origin': 'http://localhost:3000'})
+            response = TestClient().post(API_URL + '/users/new-password', json=data,
+                                         headers={'origin': 'http://localhost:3000'})
 
             # then
             assert response.status_code == 400
@@ -189,12 +197,13 @@ class PostNewPassword:
             data = {'newPassword': 'N3W_p4ssw0rd'}
 
             # when
-            response = req.post(API_URL + '/users/new-password', json=data, headers={'origin': 'http://localhost:3000'})
+            response = TestClient().post(API_URL + '/users/new-password', json=data,
+                                         headers={'origin': 'http://localhost:3000'})
 
             # then
             assert response.status_code == 400
             assert response.json()['token'] == [
-            'Votre lien de changement de mot de passe est invalide.'
+                'Votre lien de changement de mot de passe est invalide.'
             ]
 
         @clean_database
@@ -206,7 +215,8 @@ class PostNewPassword:
             data = {'token': 'KL89PBNG51'}
 
             # when
-            response = req.post(API_URL + '/users/new-password', json=data, headers={'origin': 'http://localhost:3000'})
+            response = TestClient().post(API_URL + '/users/new-password', json=data,
+                                         headers={'origin': 'http://localhost:3000'})
 
             # then
             assert response.status_code == 400
@@ -223,7 +233,8 @@ class PostNewPassword:
             data = {'token': 'KL89PBNG51', 'newPassword': 'weak_password'}
 
             # when
-            response = req.post(API_URL + '/users/new-password', json=data, headers={'origin': 'http://localhost:3000'})
+            response = TestClient().post(API_URL + '/users/new-password', json=data,
+                                         headers={'origin': 'http://localhost:3000'})
 
             # then
             assert response.status_code == 400
@@ -232,10 +243,9 @@ class PostNewPassword:
                 '1 majuscule, 1 minuscule, 1 chiffre et 1 caractère spécial parmi _-&?~#|^@=+.$,<>%*!:;'
             ]
 
-
     class Returns204:
         @clean_database
-        def when_new_password(self, app):
+        def when_new_password_is_valid(self, app):
             # given
             user = create_user(password='0ld_p455w0rd', reset_password_token='KL89PBNG51')
             PcObject.check_and_save(user)
@@ -246,29 +256,12 @@ class PostNewPassword:
             }
 
             # when
-            response = req.post(API_URL + '/users/new-password', json=data, headers={'origin': 'http://localhost:3000'})
+            response = TestClient().post(API_URL + '/users/new-password', json=data,
+                                         headers={'origin': 'http://localhost:3000'})
 
             # then
             db.session.refresh(user)
             assert response.status_code == 204
             assert user.checkPassword('N3W_p4ssw0rd')
-
-        @clean_database
-        def when_remove_the_reset_token_and_the_validity_date(self, app):
-            # given
-            user = create_user(password='0ld_p455w0rd', reset_password_token='KL89PBNG51')
-            PcObject.check_and_save(user)
-
-            data = {
-                'token': 'KL89PBNG51',
-                'newPassword': 'N3W_p4ssw0rd'
-            }
-
-            # when
-            response = req.post(API_URL + '/users/new-password', json=data, headers={'origin': 'http://localhost:3000'})
-
-            # then
-            assert response.status_code == 204
-            db.session.refresh(user)
             assert user.resetPasswordToken is None
             assert user.resetPasswordTokenValidityLimit is None
