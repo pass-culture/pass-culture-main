@@ -189,6 +189,8 @@ USER_INCLUDES = [
 
 VENUE_INCLUDES = [
     'isValidated',
+    'bic',
+    'iban',
     "-validationToken",
     {
         "key": "eventOccurrences",
