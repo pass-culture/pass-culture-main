@@ -1,4 +1,4 @@
-from flask import current_app as app, request
+from flask import current_app as app, request, jsonify
 from flask_login import current_user, login_required
 
 from domain.password import validate_reset_request, check_reset_token_validity, validate_new_password_request, \
@@ -23,7 +23,7 @@ def post_change_password():
     check_new_password_validity(current_user, old_password, new_password)
     current_user.setPassword(new_password)
     PcObject.check_and_save(current_user)
-    return '', 204
+    return jsonify({}), 204
 
 
 @app.route("/users/reset-password", methods=['POST'])
@@ -34,7 +34,7 @@ def post_for_password_token():
     user = find_user_by_email(email)
 
     if not user:
-        return '', 204
+        return jsonify({}), 204
 
     generate_reset_token(user)
     PcObject.check_and_save(user)
@@ -45,7 +45,7 @@ def post_for_password_token():
     except MailServiceException as e:
         app.logger.error('Mail service failure', e)
 
-    return '', 204
+    return jsonify({}), 204
 
 
 @app.route("/users/new-password", methods=['POST'])
@@ -65,5 +65,5 @@ def post_new_password():
     check_password_strength('newPassword', new_password)
     user.setPassword(new_password)
     PcObject.check_and_save(user)
-    return '', 204
+    return jsonify({}), 204
 

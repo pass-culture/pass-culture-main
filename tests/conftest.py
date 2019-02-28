@@ -163,7 +163,7 @@ class TestClient:
             print('REQUEST BODY')
             pprint(request_body)
 
-        if result:
+        if result.content:
             print('RESPONSE BODY')
             pprint(result.json())
 
