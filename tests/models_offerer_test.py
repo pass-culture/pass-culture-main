@@ -45,7 +45,7 @@ def test_offerer_can_have_null_address(app):
 @pytest.mark.standalone
 class OffererBankInformationTest:
     @clean_database
-    def when_bank_information_with_offerer_id_exists_offerer_bic_returns_bank_information_bic(self, app):
+    def test_bic_property_returns_bank_information_bic_when_offerer_has_bank_information(self, app):
         # Given
         offerer = create_offerer(siren='123456789')
         bank_information = create_bank_information(bic='BDFEFR2LCCB', id_at_providers='123456789', offerer=offerer)
@@ -58,7 +58,7 @@ class OffererBankInformationTest:
         assert bic == 'BDFEFR2LCCB'
 
     @clean_database
-    def when_bank_information_with_offerer_id_offerer_bic_does_not_exist_returns_none(self, app):
+    def test_bic_property_returns_none_when_offerer_does_not_have_bank_information(self, app):
         # Given
         offerer = create_offerer(siren='123456789')
         PcObject.check_and_save(offerer)
@@ -70,7 +70,7 @@ class OffererBankInformationTest:
         assert bic is None
 
     @clean_database
-    def when_bank_information_with_offerer_id_exists_offerer_iban_returns_bank_information_iban(self, app):
+    def test_iban_property_returns_bank_information_iban_when_offerer_has_bank_information(self, app):
         # Given
         offerer = create_offerer(siren='123456789')
         bank_information = create_bank_information(iban='FR7630007000111234567890144', id_at_providers='123456789',
@@ -84,7 +84,7 @@ class OffererBankInformationTest:
         assert iban == 'FR7630007000111234567890144'
 
     @clean_database
-    def when_bank_information_with_offerer_id_offerer_iban_does_not_exist_returns_none(self, app):
+    def test_iban_property_returns_none_when_offerer_does_not_have_bank_information(self, app):
         # Given
         offerer = create_offerer(siren='123456789')
         PcObject.check_and_save(offerer)

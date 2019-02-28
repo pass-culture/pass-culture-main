@@ -129,7 +129,7 @@ def test_nOffers(app):
 @pytest.mark.standalone
 class VenueBankInformationTest:
     @clean_database
-    def when_bank_information_with_venue_id_exists_venue_bic_returns_bank_information_bic(self, app):
+    def test_bic_property_returns_bank_information_bic_when_venue_has_bank_information(self, app):
         # Given
         offerer = create_offerer(siren='123456789')
         venue = create_venue(offerer, siret='12345678912345')
@@ -143,7 +143,7 @@ class VenueBankInformationTest:
         assert bic == 'BDFEFR2LCCB'
 
     @clean_database
-    def when_bank_information_with_venue_id_venue_bic_does_not_exist_returns_none(self, app):
+    def test_bic_property_returns_none_when_does_not_have_bank_information(self, app):
         # Given
         offerer = create_offerer(siren='123456789')
         venue = create_venue(offerer, siret='12345678912345')
@@ -156,7 +156,7 @@ class VenueBankInformationTest:
         assert bic is None
 
     @clean_database
-    def when_bank_information_with_venue_id_exists_venue_iban_returns_bank_information_iban(self, app):
+    def test_iban_property_returns_bank_information_iban_when_venue_has_bank_information(self, app):
         # Given
         offerer = create_offerer(siren='123456789')
         venue = create_venue(offerer, siret='12345678912345')
@@ -171,7 +171,7 @@ class VenueBankInformationTest:
         assert iban == 'FR7630007000111234567890144'
 
     @clean_database
-    def when_bank_information_with_venue_id_venue_iban_does_not_exist_returns_none(self, app):
+    def test_iban_property_returns_none_when_venue_has_bank_information(self, app):
         # Given
         offerer = create_offerer(siren='123456789')
         venue = create_venue(offerer, siret='12345678912345')

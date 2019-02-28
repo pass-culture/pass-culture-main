@@ -119,7 +119,6 @@ class Get:
                 'lastName': user.lastName
             }
 
-        @pytest.mark.standalone
         @clean_database
         def when_user_managing_offerer_and_returns_bookings_with_their_reimbursements_infos(self, app):
             # given
@@ -150,7 +149,6 @@ class Get:
             assert response.json()[0]['reimbursement_rule'] == ReimbursementRules.PHYSICAL_OFFERS.value.description
             assert response.json()[0]['reimbursed_amount'] == booking.value
 
-        @pytest.mark.standalone
         @clean_database
         def when_user_managing_offerer_and_returns_bookings_with_thing_or_event_offer_type(self, app):
             # given
@@ -207,7 +205,6 @@ class Get:
             assert expected_audiovisuel_offer_type in offer_types
             assert expected_musees_patrimoine_offer_type in offer_types
 
-        @pytest.mark.standalone
         @clean_database
         def when_ordered_by_venue_name_desc(self, app):
             # given
@@ -244,7 +241,6 @@ class Get:
             assert elements[1]['stock']['resolvedOffer']['venueId'] == humanize(venue_2.id)
             assert elements[2]['stock']['resolvedOffer']['venueId'] == humanize(venue_2.id)
 
-        @pytest.mark.standalone
         @clean_database
         def when_ordered_by_venue_name_asc(self, app):
             # given
@@ -280,7 +276,6 @@ class Get:
             assert elements[1]['stock']['resolvedOffer']['venueId'] == humanize(venue_2.id)
             assert elements[2]['stock']['resolvedOffer']['venueId'] == humanize(venue_1.id)
 
-        @pytest.mark.standalone
         @clean_database
         def when_ordered_by_date_asc(self, app):
             # given
@@ -353,7 +348,6 @@ class Get:
             assert elements[1]['dateCreated'].startswith('2018-10-03')
             assert elements[2]['dateCreated'].startswith('2018-10-01')
 
-        @pytest.mark.standalone
         @clean_database
         def when_ordered_by_category_asc(self, app):
             # given
