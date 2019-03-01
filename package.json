@@ -166,5 +166,8 @@
       "react-app"
     ]
   },
-  "homepage": "."
+  "homepage": ".",
+  "engines": {
+    "node": ">=8.12.0 <8.16"
+  }
 }
