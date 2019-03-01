@@ -8,7 +8,7 @@ from sqlalchemy.orm import aliased
 
 from models import Event, EventOccurrence, Offer, Thing
 from repository.offer_queries import get_active_offers_by_type
-from utils.config import ILE_DE_FRANCE_DEPT_CODES
+from utils.config import ILE_DE_FRANCE_DEPT_CODES, DEPT_CODES_29
 from utils.logger import logger
 
 roundrobin_predicates = [
@@ -105,10 +105,12 @@ def remove_duplicate_things_or_events(offers: List[Offer]) -> List[Offer]:
     return result
 
 def get_departement_codes_from_user(user):
-    departement_codes = ILE_DE_FRANCE_DEPT_CODES \
-        if user.departementCode == '93' \
-        else [user.departementCode]
-    return departement_codes
+    if user.departementCode == '93':
+        return ILE_DE_FRANCE_DEPT_CODES
+    elif user.departementCode == '29':
+        return DEPT_CODES_29
+    else:
+        return [user.departementCode]
 
 def get_offers_for_recommendations_discovery(limit=3, user=None, coords=None) -> List[Offer]:
     if not user or not user.is_authenticated():
