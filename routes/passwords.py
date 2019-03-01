@@ -65,4 +65,5 @@ def post_new_password():
     check_password_strength('newPassword', new_password)
     user.setPassword(new_password)
     PcObject.check_and_save(user)
+
     return '', 204

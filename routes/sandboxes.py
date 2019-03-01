@@ -4,17 +4,40 @@ from sandboxes.scripts import getters
 
 @app.route('/sandboxes/<module_name>/<getter_name>', methods=['GET'])
 def get_sandbox(module_name, getter_name):
+
+    if not hasattr(getters, module_name):
+        errors = ApiErrors()
+        errors.addError(
+            'module',
+            'Il n\'existe pas de tel \"{}\" module de getters pour la sandbox'.format(
+                module_name
+            )
+        )
+        raise errors
+
+    testcafes_module = getattr(getters, module_name)
+
+    if not hasattr(testcafes_module, getter_name):
+        errors = ApiErrors()
+        errors.addError(
+            'getter',
+            'Il n\'existe pas de tel \"{} {}\" getter pour la sandbox'.format(
+                module_name,
+                getter_name
+            )
+        )
+        raise errors
+
+    getter = getattr(testcafes_module, getter_name)
+
     try:
-        print(module_name, getter_name)
-        testcafes_module = getattr(getters, module_name)
-        getter = getattr(testcafes_module, getter_name)
         obj = getter()
         return jsonify(obj)
     except:
         errors = ApiErrors()
         errors.addError(
-            'getter',
-            'Il n\'existe pas de tel \"{}/{}\" getter pour la sandbox'.format(
+            'query',
+            'Une erreur s\'est produite lors du calcul de \"{} {}\" pour la sandbox'.format(
                 module_name,
                 getter_name
             )
