@@ -49,13 +49,13 @@ test("Je fais une recherche par mots-clés et j'ai plusieurs résultats", async 
     .wait(500)
 
   // then
-  const expected = `"${keywordUpper}" : 3 RÉSULTATS`
+  const expected = `"${keywordUpper}" : 4 RÉSULTATS`
   await t.expect(resultsTitle.innerText).eql(expected)
 })
 
 test("Je fais une recherche par mots-clés et j'ai un seul résultat", async t => {
   // given
-  const keyword = 'funky'
+  const keyword = 'narval'
   const keywordUpper = keyword.toLocaleUpperCase()
 
   // when
