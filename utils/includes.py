@@ -102,10 +102,14 @@ OFFER_INCLUDES = [
                 "key": "managingOfferer",
                 "sub_joins": [
                     "nOffers",
-                    "isValidated"
+                    "isValidated",
+                    "bic",
+                    "iban"
                 ]
             },
-            "isValidated"
+            "isValidated",
+            "bic",
+            "iban"
         ]
     }
 ]
