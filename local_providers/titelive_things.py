@@ -5,7 +5,7 @@ from models.local_provider_event import LocalProviderEventType
 from models.thing import Thing, BookFormat
 from models import ThingType
 from repository import local_provider_event_queries
-from utils.ftp_titelive import get_titelive_ftp, get_ordered_files_from_titelive_ftp, \
+from utils.ftp_titelive import get_titelive_ftp, get_files_to_process_from_titelive_ftp, \
     get_date_from_filename, read_date
 from utils.logger import logger
 from utils.string_processing import trim_with_elipsis
@@ -14,6 +14,7 @@ from io import TextIOWrapper, BytesIO
 
 DATE_REGEXP = re.compile('([a-zA-Z]+)(\d+).tit')
 THINGS_FOLDER_NAME_TITELIVE = 'livre3_11'
+NUMBER_OF_ELEMENTS_PER_LINE = 46  # (45 elements from line + \n)
 
 
 class TiteLiveThings(LocalProvider):
@@ -28,7 +29,7 @@ class TiteLiveThings(LocalProvider):
     def __init__(self, venue_provider):
         super().__init__(venue_provider)
 
-        ordered_thing_files = get_ordered_files_from_titelive_ftp(THINGS_FOLDER_NAME_TITELIVE, DATE_REGEXP)
+        ordered_thing_files = get_files_to_process_from_titelive_ftp(THINGS_FOLDER_NAME_TITELIVE, DATE_REGEXP)
         self.thing_files = self.get_remaining_files_to_check(ordered_thing_files)
 
         self.data_lines = None
@@ -56,7 +57,7 @@ class TiteLiveThings(LocalProvider):
             self.open_next_file()
             elements = next(self.data_lines).split('~')
 
-        if len(elements) != 46:  # (45 elements from line + \n)
+        if len(elements) != NUMBER_OF_ELEMENTS_PER_LINE:
             logger.info("Did not find 45 elements as expected in titelive"
                         + " line. Skipping line")
             return None
@@ -113,64 +114,44 @@ class TiteLiveThings(LocalProvider):
     def get_infos_from_data_line(self, elts: []):
         infos = {}
         infos['ean13'] = elts[0]
-        infos['isbn'] = elts[1]  # Facultatif
-        infos['titre'] = elts[2]  # long max 250, Obligatoire, En minuscules accentuées
-        infos['titre_court'] = elts[3]  # Variable/max 250	Obligatoire	inutile pour exploitation sur un site marchand
-        infos['code_csr'] = elts[4]  # Obligatoire	Il s'agit des codes RAYON (voir table de correspondance)
-        infos['code_dispo'] = elts[5]  # Obligatoire
-        # 2 = Pas encore paru donc à paraître
-        # 3 = Réimpression en cours en revanche nous ne disposons pas d’info sur la date de réimpression
-        # 4 = Non disponible provisoirement il peut s’agir d’une rupture de stock très brève chez le distributeur
-        # et la référence doit donc en principe être à nouveau disponible dans un délai assez court
-        # 5 = Ne sera plus distribué par nous un distributeur annonce ainsi que cette référence va être bientôt distribué par une autre société. Dès que l’on a l’information l’ouvrage passe en disponible avec le nom du nouveau distributeur)
-        # 6 = Arrêt définitif de commercialisation
-        # 7 = Manque sans date code très peu utilisé
-        # et équivalent au code 4
-        # 8 = A reparaître donc réédition en cours (NB : en principe la référence est alors rééditée sous un nouveau gencode)
-        # 9 = Abandon de parution
-        infos['collection'] = elts[6]  # Variable/max 160	Oui si collection	En minuscules accentuées
-        infos['num_in_collection'] = elts[
-            7]  # Variable/max 5	facultatif ( vide )	Numéro du titre au sein de la collection (pour le poche et les revues)
-        infos['prix'] = elts[9]  # décimal / 2 chiffres après la virgule	Obligatoire	Prix public éditeur (TTC)
-        infos['editeur'] = elts[10]  # Variable /max 40	Obligatoire	En capitales sans accent
-        infos['distributeur'] = elts[11]  # Obligatoire	En capitales sans accent
-        infos['date_parution'] = elts[12]  # jj/mm/aaaa	Obligatoire	01/01/2070 si inconnue
-        infos['code_support'] = elts[
-            13]  # Variable/max 2 caractères Obligatoire	voir table de correspondance SUPPORT (par exemple, poche). Le support TL correspond au format par défaut (c'est-à-dire sans indication précise de l'éditeur)
-        infos['code_tva'] = elts[14]  # entier sur un chiffre	Obligatoire	voir table de correspondance TVA
-        infos['n_pages'] = elts[15]  # entier	Facultatif ( par défaut 0 )
-        infos['longueur'] = elts[16]  # décimal / 1 chiffre après la virgule	Facultatif ( par défaut 0 )	en centimètres
-        infos['largeur'] = elts[17]  # décimal / 1 chiffre après la virgule	Facultatif ( par défaut 0 )	en centimètres
-        infos['epaisseur'] = elts[18]  # décimal / 1 chiffre après la virgule	Facultatif ( par défaut 0 )	en centimètres
-        infos['poids'] = elts[19]  # entier	Facultatif ( par défaut 0 )	en grammes
-        infos['is_update'] = elts[
-            21]  # entier de valeur 0 ou 1	0=Création,1=Modif	indique s'il s'agit d'un nouvelle fiche ou d'une fiche mise-à-jour mais déjà connue
-        infos['auteurs'] = elts[23]  # Obligatoire	En minuscules accentuées
-        infos['datetime_created'] = elts[
-            24]  # jj/mm/aaaa hh:mm:ss	Obligatoire	création de la fiche (inutile pour exploitation de l'info sur un site marchand)
-        infos['date_updated'] = elts[
-            25]  # jj/mm/aaaa hh:mm:ss	Obligatoire	dernière mise à jour de la fiche (inutile pour exploitation de l'info sur un site marchand)
-        infos['taux_tva'] = elts[26]  # décimal / deux chiffres après la virgule	Obligatoire
-        infos['libelle_csr'] = elts[27]  # Variable  / max 80	Obligatoire	Libellé du rayon
-        infos['traducteur'] = elts[28]  # Facultatif ( par défaut vide )	En minuscules accentuées
-        infos['langue_orig'] = elts[29]  # Facultatif ( par défaut vide )
-        infos['commentaire'] = elts[
-            31]  # Facultatif	information qui complète le titre (sous-titre, edition collector, etc.)
-        infos['classement_top'] = elts[
-            32]  # Entier	Toujours si au Top 200	indication relative aux meilleures ventes de livre en France (1 signifie que le titre est classé n°1 au Top 200 de la semaine).
-        infos['has_image'] = elts[33]  # entier de valeur 0 ou 1	Obligatoire	1 si référence avec image
-        infos['code_edi_fournisseur'] = elts[34]  # 13 caractères	Obligatoire	numéro utile pour les commande EDI
-        infos['libelle_serie_bd'] = elts[35]  # Facultatif
-        infos['ref_editeur'] = elts[38]  # 12 caractères	Facultatif	référence interne aux éditeurs, utilisé en scolaire
-        infos['is_scolaire'] = elts[
-            39]  # entier de valeur 0 ou 1	Toujours	permet d'identifier les ouvrages scolaires ; 0 : non ; 1 : oui
-        infos['n_extraits_mp3'] = elts[40]  # Entier	Toujours	nombre d'extraits sonores associés à la réf
-        infos['url_extrait_pdf'] = elts[41]  # Facultatif ( par défaut vide )	extrait pdf de l'oeuvre
-        infos['id_auteur'] = elts[
-            42]  # Entier	Facultatif ( par défaut vide )	permet de faire le lien entre l'auteur et sa biographie
-        infos['indice_dewey'] = elts[43]  # Facultatif ( par défaut vide )
-        infos['code_regroupement'] = elts[
-            44]  # Entier	Obligatoire	permet de faire le lien entre les mêmes œuvres ; 0 si non regroupé
+        infos['isbn'] = elts[1]
+        infos['titre'] = elts[2]
+        infos['titre_court'] = elts[3]
+        infos['code_csr'] = elts[4]
+        infos['code_dispo'] = elts[5]
+        infos['collection'] = elts[6]
+        infos['num_in_collection'] = elts[7]
+        infos['prix'] = elts[9]
+        infos['editeur'] = elts[10]
+        infos['distributeur'] = elts[11]
+        infos['date_parution'] = elts[12]
+        infos['code_support'] = elts[13]
+        infos['code_tva'] = elts[14]
+        infos['n_pages'] = elts[15]
+        infos['longueur'] = elts[16]
+        infos['largeur'] = elts[17]
+        infos['epaisseur'] = elts[18]
+        infos['poids'] = elts[19]
+        infos['is_update'] = elts[21]
+        infos['auteurs'] = elts[23]
+        infos['datetime_created'] = elts[24]
+        infos['date_updated'] = elts[25]
+        infos['taux_tva'] = elts[26]
+        infos['libelle_csr'] = elts[27]
+        infos['traducteur'] = elts[28]
+        infos['langue_orig'] = elts[29]
+        infos['commentaire'] = elts[31]
+        infos['classement_top'] = elts[32]
+        infos['has_image'] = elts[33]
+        infos['code_edi_fournisseur'] = elts[34]
+        infos['libelle_serie_bd'] = elts[35]
+        infos['ref_editeur'] = elts[38]
+        infos['is_scolaire'] = elts[39]
+        infos['n_extraits_mp3'] = elts[40]
+        infos['url_extrait_pdf'] = elts[41]
+        infos['id_auteur'] = elts[42]
+        infos['indice_dewey'] = elts[43]
+        infos['code_regroupement'] = elts[44]
         return infos
 
     def get_remaining_files_to_check(self, ordered_thing_files):
@@ -197,61 +178,58 @@ def get_lines_from_thing_file(thing_file: str):
 
 
 def get_thing_type_and_extra_data_from_titelive_type(titelive_type):
-    if titelive_type == 'A':  # AUTRE SUPPORT
+    if titelive_type == 'A':
         return None, None
-    elif titelive_type == 'BD':  # BANDE DESSINEE
+    elif titelive_type == 'BD':
         return str(ThingType.LIVRE_EDITION), None
-    elif titelive_type == 'BL':  # BEAUX LIVRES
+    elif titelive_type == 'BL':
         return str(ThingType.LIVRE_EDITION), BookFormat.Hardcover.value
-    elif titelive_type == 'C':  # CARTE & PLAN
-        # self.thing_type = ThingType.Map
+    elif titelive_type == 'C':
         return None, None
-    elif titelive_type == 'CA':  # CD AUDIO
-        # return ThingType.MusicRecording
+    elif titelive_type == 'CA':
         return None, None
-    elif titelive_type == 'CB':  # COFFRET / BOITE
+    elif titelive_type == 'CB':
         return None, None
-    elif titelive_type == 'CD':  # CD-ROM
+    elif titelive_type == 'CD':
         return None, None
-    elif titelive_type == 'CL':  # CALENDRIER
+    elif titelive_type == 'CL':
         return None, None
-    elif titelive_type == 'DV':  # DVD
-        # return ThingType.Movie
+    elif titelive_type == 'DV':
         return None, None
-    elif titelive_type == 'EB':  # CONTENU NUMERIQUE
+    elif titelive_type == 'EB':
         return None, None
-    elif titelive_type == 'K7':  # CASSETTE AUDIO VIDEO
+    elif titelive_type == 'K7':
         return None, None
-    elif titelive_type == 'LA':  # LIVRE ANCIEN
+    elif titelive_type == 'LA':
         return str(ThingType.LIVRE_EDITION), None
-    elif titelive_type == 'LC':  # LIVRE + CASSETTE
+    elif titelive_type == 'LC':
         return None, None
-    elif titelive_type == 'LD':  # LIVRE + CD AUDIO
+    elif titelive_type == 'LD':
         return None, None
-    elif titelive_type == 'LE':  # LIVRE NUMERIQUE
+    elif titelive_type == 'LE':
         return str(ThingType.LIVRE_EDITION), BookFormat.EBook.value
-    elif titelive_type == 'LR':  # LIVRE + CD-ROM
+    elif titelive_type == 'LR':
         return None, None
-    elif titelive_type == 'LT':  # LISEUSES & TABLETTES
+    elif titelive_type == 'LT':
         return None, None
-    elif titelive_type == 'LV':  # LIVRE+DVD
+    elif titelive_type == 'LV':
         return None, None
-    elif titelive_type == 'M':  # MOYEN FORMAT
+    elif titelive_type == 'M':
         return None, None
-    elif titelive_type == 'O':  # OBJET
+    elif titelive_type == 'O':
         return None, None
-    elif titelive_type == 'P':  # POCHE
+    elif titelive_type == 'P':
         return str(ThingType.LIVRE_EDITION), BookFormat.Paperback.value
-    elif titelive_type == 'PC':  # PAPETERIE COLORIAGE
+    elif titelive_type == 'PC':
         return None, None
-    elif titelive_type == 'PS':  # POSTER
+    elif titelive_type == 'PS':
         return None, None
-    elif titelive_type == 'R':  # REVUE
+    elif titelive_type == 'R':
         return None, None
     elif titelive_type == 'T' \
-            or titelive_type == 'TL':  # TL  Le support TL correspond au format par défaut (c'est-à-dire sans indication précise de l'éditeur)
-        return str(ThingType.LIVRE_EDITION), None  # (hopefully)
-    elif titelive_type == 'TR':  # TRANSPARENTS
+            or titelive_type == 'TL':
+        return str(ThingType.LIVRE_EDITION), None
+    elif titelive_type == 'TR':
         return None, None
     else:
         logger.info(" WARNING: Unknown titelive_type: " + titelive_type)

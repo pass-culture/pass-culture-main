@@ -3,7 +3,7 @@ from time import sleep
 import pytest
 
 from models import PcObject, Provider
-from tests.conftest import clean_database
+from tests.conftest import clean_database, TestClient
 from utils.human_ids import humanize
 from utils.logger import logger
 from tests.test_utils import API_URL, req_with_auth, create_offerer, create_venue, create_user, create_venue_provider, \
@@ -25,7 +25,8 @@ class Get:
 
             user = create_user(password='p@55sw0rd')
             PcObject.check_and_save(user)
-            auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
+            auth_request = TestClient() \
+                .with_auth(email=user.email, password='p@55sw0rd')
             humanized_venue_provider_id = humanize(venue_provider.id)
 
             # when
@@ -45,7 +46,8 @@ class Get:
 
             user = create_user(password='p@55sw0rd')
             PcObject.check_and_save(user)
-            auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
+            auth_request = TestClient() \
+                .with_auth(email=user.email, password='p@55sw0rd')
 
             # when
             response = auth_request.get(API_URL + '/venueProviders?venueId=' + humanize(venue.id))
@@ -68,7 +70,8 @@ class Get:
 
             user = create_user(password='p@55sw0rd')
             PcObject.check_and_save(user)
-            auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
+            auth_request = TestClient() \
+                .with_auth(email=user.email, password='p@55sw0rd')
 
             # when
             response = auth_request.get(API_URL + '/venueProviders')
@@ -88,7 +91,8 @@ class Get:
 
             user = create_user(password='p@55sw0rd')
             PcObject.check_and_save(user)
-            auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
+            auth_request = TestClient() \
+                .with_auth(email=user.email, password='p@55sw0rd')
             non_existing_venue_provider_id = 'ABCDEF'
 
             # when
@@ -100,7 +104,6 @@ class Get:
 
 @pytest.mark.standalone
 class Delete:
-
     class Returns200:
         @clean_database
         def when_venue_provider_exists(self, app):
@@ -113,7 +116,8 @@ class Delete:
 
             user = create_user(password='p@55sw0rd', is_admin=True, can_book_free_offers=False)
             PcObject.check_and_save(user)
-            auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
+            auth_request = TestClient() \
+                .with_auth(email=user.email, password='p@55sw0rd')
 
             # when
             response = auth_request.delete(API_URL + '/venueProviders/' + humanize(venue_provider.id))
@@ -133,7 +137,8 @@ class Delete:
 
             user = create_user(password='p@55sw0rd', is_admin=True, can_book_free_offers=False)
             PcObject.check_and_save(user)
-            auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
+            auth_request = TestClient() \
+                .with_auth(email=user.email, password='p@55sw0rd')
 
             # when
             response = auth_request.delete(API_URL + '/venueProviders/ABCDEF')
@@ -160,7 +165,8 @@ class Post:
                                    'venueIdAtOfferProvider': '775671464'}
             user = create_user(password='p@55sw0rd', is_admin=True, can_book_free_offers=False)
             PcObject.check_and_save(user)
-            auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
+            auth_request = TestClient() \
+                .with_auth(email=user.email, password='p@55sw0rd')
 
             # when
             response = auth_request.post(API_URL + '/venueProviders',
@@ -179,7 +185,8 @@ class Post:
             tries = 0
             while read_json['lastSyncDate'] is None:
                 assert tries < 30
-                response_check = auth_request.get(API_URL + '/venueProviders/' + venue_provider_id)
+                response_check = req_with_auth(email=user.email, password='p@55sw0rd')\
+                    .get(API_URL + '/venueProviders/' + venue_provider_id)
                 assert response_check.status_code == 200
                 read_json = response_check.json()
                 tries += 1
@@ -201,7 +208,8 @@ class Patch:
 
             user = create_user(password='p@55sw0rd')
             PcObject.check_and_save(user)
-            auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
+            auth_request = TestClient() \
+                .with_auth(email=user.email, password='p@55sw0rd')
             humanized_venue_provider_id = humanize(venue_provider.id)
 
             # when

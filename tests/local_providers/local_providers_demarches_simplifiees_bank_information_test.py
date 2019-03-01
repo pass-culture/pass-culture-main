@@ -9,7 +9,7 @@ from local_providers.demarches_simplifiees_bank_information import UnknownRibAff
 from models import BankInformation, PcObject, LocalProviderEvent
 from models.local_provider_event import LocalProviderEventType
 from tests.conftest import clean_database
-from tests.test_utils import provider_test_without_mock, create_venue, create_offerer, create_bank_information
+from tests.test_utils import provider_test, create_venue, create_offerer, create_bank_information
 
 
 @pytest.mark.standalone
@@ -25,18 +25,18 @@ class BankInformationProviderProviderTest:
         get_all_application_ids_from_demarches_simplifiees_procedure.return_value = []
 
         # When Then
-        provider_test_without_mock(app,
-                                   BankInformationProvider,
-                                   None,
-                                   checkedObjects=0,
-                                   createdObjects=0,
-                                   updatedObjects=0,
-                                   erroredObjects=0,
-                                   checkedThumbs=0,
-                                   createdThumbs=0,
-                                   updatedThumbs=0,
-                                   erroredThumbs=0,
-                                   BankInformation=0)
+        provider_test(app,
+                      BankInformationProvider,
+                      None,
+                      checkedObjects=0,
+                      createdObjects=0,
+                      updatedObjects=0,
+                      erroredObjects=0,
+                      checkedThumbs=0,
+                      createdThumbs=0,
+                      updatedThumbs=0,
+                      erroredThumbs=0,
+                      BankInformation=0)
 
     @patch(
         'local_providers.demarches_simplifiees_bank_information.get_all_application_ids_from_demarches_simplifiees_procedure')
@@ -109,18 +109,18 @@ class BankInformationProviderProviderTest:
         offerer_id = offerer.id
 
         # When Then
-        provider_test_without_mock(app,
-                                   BankInformationProvider,
-                                   None,
-                                   checkedObjects=1,
-                                   createdObjects=1,
-                                   updatedObjects=0,
-                                   erroredObjects=0,
-                                   checkedThumbs=0,
-                                   createdThumbs=0,
-                                   updatedThumbs=0,
-                                   erroredThumbs=0,
-                                   BankInformation=1)
+        provider_test(app,
+                      BankInformationProvider,
+                      None,
+                      checkedObjects=1,
+                      createdObjects=1,
+                      updatedObjects=0,
+                      erroredObjects=0,
+                      checkedThumbs=0,
+                      createdThumbs=0,
+                      updatedThumbs=0,
+                      erroredThumbs=0,
+                      BankInformation=1)
         bank_information = BankInformation.query.first()
         assert bank_information.iban == 'FR7630006000011234567890189'
         assert bank_information.bic == 'BDFEFR2LCCB'
@@ -204,18 +204,18 @@ class BankInformationProviderProviderTest:
         venue_id = venue.id
 
         # When Then
-        provider_test_without_mock(app,
-                                   BankInformationProvider,
-                                   None,
-                                   checkedObjects=1,
-                                   createdObjects=1,
-                                   updatedObjects=0,
-                                   erroredObjects=0,
-                                   checkedThumbs=0,
-                                   createdThumbs=0,
-                                   updatedThumbs=0,
-                                   erroredThumbs=0,
-                                   BankInformation=1)
+        provider_test(app,
+                      BankInformationProvider,
+                      None,
+                      checkedObjects=1,
+                      createdObjects=1,
+                      updatedObjects=0,
+                      erroredObjects=0,
+                      checkedThumbs=0,
+                      createdThumbs=0,
+                      updatedThumbs=0,
+                      erroredThumbs=0,
+                      BankInformation=1)
         bank_information = BankInformation.query.first()
         assert bank_information.iban == 'FR7630006000011234567890189'
         assert bank_information.bic == 'BDFEFR2LCCB'
@@ -490,18 +490,18 @@ class BankInformationProviderProviderTest:
         venue2_id = venue2.id
 
         # When Then
-        provider_test_without_mock(app,
-                                   BankInformationProvider,
-                                   None,
-                                   checkedObjects=2,
-                                   createdObjects=2,
-                                   updatedObjects=0,
-                                   erroredObjects=0,
-                                   checkedThumbs=0,
-                                   createdThumbs=0,
-                                   updatedThumbs=0,
-                                   erroredThumbs=0,
-                                   BankInformation=2)
+        provider_test(app,
+                      BankInformationProvider,
+                      None,
+                      checkedObjects=2,
+                      createdObjects=2,
+                      updatedObjects=0,
+                      erroredObjects=0,
+                      checkedThumbs=0,
+                      createdThumbs=0,
+                      updatedThumbs=0,
+                      erroredThumbs=0,
+                      BankInformation=2)
         bank_information1 = BankInformation.query.filter_by(applicationId=1).first()
         bank_information2 = BankInformation.query.filter_by(applicationId=2).first()
         assert bank_information1.iban == 'FR7630006000011234567890189'
@@ -584,18 +584,18 @@ class BankInformationProviderProviderTest:
         ]
 
         # When Then
-        provider_test_without_mock(app,
-                                   BankInformationProvider,
-                                   None,
-                                   checkedObjects=1,
-                                   createdObjects=0,
-                                   updatedObjects=0,
-                                   erroredObjects=0,
-                                   checkedThumbs=0,
-                                   createdThumbs=0,
-                                   updatedThumbs=0,
-                                   erroredThumbs=0,
-                                   BankInformation=0)
+        provider_test(app,
+                      BankInformationProvider,
+                      None,
+                      checkedObjects=1,
+                      createdObjects=0,
+                      updatedObjects=0,
+                      erroredObjects=0,
+                      checkedThumbs=0,
+                      createdThumbs=0,
+                      updatedThumbs=0,
+                      erroredThumbs=0,
+                      BankInformation=0)
 
         sync_error = LocalProviderEvent.query.filter_by(type=LocalProviderEventType.SyncError).first()
         assert sync_error.payload == 'unknown siret or siren for application id 1'
@@ -674,17 +674,17 @@ class BankInformationProviderProviderTest:
         PcObject.check_and_save(bank_information)
 
         # When Then
-        provider_test_without_mock(app,
-                                   BankInformationProvider,
-                                   None,
-                                   checkedObjects=1,
-                                   createdObjects=0,
-                                   updatedObjects=1,
-                                   erroredObjects=0,
-                                   checkedThumbs=0,
-                                   createdThumbs=0,
-                                   updatedThumbs=0,
-                                   erroredThumbs=0)
+        provider_test(app,
+                      BankInformationProvider,
+                      None,
+                      checkedObjects=1,
+                      createdObjects=0,
+                      updatedObjects=1,
+                      erroredObjects=0,
+                      checkedThumbs=0,
+                      createdThumbs=0,
+                      updatedThumbs=0,
+                      erroredThumbs=0)
 
         updated_bank_information = BankInformation.query.filter_by(idAtProviders="79387501900056").one()
         assert updated_bank_information.applicationId == 2

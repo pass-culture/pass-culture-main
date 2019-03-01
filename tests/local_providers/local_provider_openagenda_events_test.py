@@ -13,7 +13,7 @@ from models.provider import Provider
 from models.venue_provider import VenueProvider
 from tests.conftest import clean_database
 
-from tests.test_utils import provider_test_without_mock, check_open_agenda_api_is_down, create_offerer, create_venue
+from tests.test_utils import provider_test, check_open_agenda_api_is_down, create_offerer, create_venue
 
 
 def get_data_from_sandbox_files(page):
@@ -55,20 +55,20 @@ class OpenAgendaEventsTest:
         venue_provider = VenueProvider.query \
             .filter_by(venueIdAtOfferProvider='49050769') \
             .one_or_none()
-        provider_test_without_mock(app,
-                                   OpenAgendaEvents,
-                                   venue_provider,
-                                   checkedObjects=18,
-                                   createdObjects=18,
-                                   updatedObjects=0,
-                                   erroredObjects=0,
-                                   checkedThumbs=3,
-                                   createdThumbs=3,
-                                   updatedThumbs=0,
-                                   erroredThumbs=0,
-                                   Event=3,
-                                   EventOccurrence=12,
-                                   Offer=3,
-                                   Stock=0,
-                                   Venue=0,
-                                   Offerer=0)
+        provider_test(app,
+                      OpenAgendaEvents,
+                      venue_provider,
+                      checkedObjects=18,
+                      createdObjects=18,
+                      updatedObjects=0,
+                      erroredObjects=0,
+                      checkedThumbs=3,
+                      createdThumbs=3,
+                      updatedThumbs=0,
+                      erroredThumbs=0,
+                      Event=3,
+                      EventOccurrence=12,
+                      Offer=3,
+                      Stock=0,
+                      Venue=0,
+                      Offerer=0)

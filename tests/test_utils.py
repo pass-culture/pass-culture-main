@@ -680,7 +680,7 @@ def assert_created_thumbs():
     assert len(glob(str(STORAGE_DIR / "thumbs" / "*"))) == 1
 
 
-def provider_test_without_mock(app, provider, venue_provider, **counts):
+def provider_test(app, provider, venue_provider, **counts):
     if venue_provider is None:
         provider_object = provider()
     else:

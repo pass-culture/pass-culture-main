@@ -8,7 +8,7 @@ from models.pc_object import PcObject
 from models.provider import Provider
 from models.venue_provider import VenueProvider
 from tests.conftest import clean_database
-from tests.test_utils import create_offerer, create_venue, create_thing, create_thing_offer, provider_test_without_mock
+from tests.test_utils import create_offerer, create_venue, create_thing, create_thing_offer, provider_test
 import requests
 
 savedCounts = {}
@@ -60,20 +60,20 @@ def test_titelive_stock_provider_create_1_stock_and_1_offer(get_data, app):
 
     PcObject.check_and_save(thing)
 
-    provider_test_without_mock(app,
-                               TiteLiveStocks,
-                               venueProvider,
-                               checkedObjects=2,
-                               createdObjects=2,
-                               updatedObjects=0,
-                               erroredObjects=0,
-                               checkedThumbs=0,
-                               createdThumbs=0,
-                               updatedThumbs=0,
-                               erroredThumbs=0,
-                               Stock=1,
-                               Offer=1
-                               )
+    provider_test(app,
+                  TiteLiveStocks,
+                  venueProvider,
+                  checkedObjects=2,
+                  createdObjects=2,
+                  updatedObjects=0,
+                  erroredObjects=0,
+                  checkedThumbs=0,
+                  createdThumbs=0,
+                  updatedThumbs=0,
+                  erroredThumbs=0,
+                  Stock=1,
+                  Offer=1
+                  )
 
 
 @pytest.mark.standalone
@@ -115,19 +115,19 @@ def test_titelive_stock_provider_create_1_stock_and_udpate_1_offer(get_data, app
 
     PcObject.check_and_save(thing, offer)
 
-    provider_test_without_mock(app,
-                               TiteLiveStocks,
-                               venueProvider,
-                               checkedObjects=2,
-                               createdObjects=1,
-                               updatedObjects=1,
-                               erroredObjects=0,
-                               checkedThumbs=0,
-                               createdThumbs=0,
-                               updatedThumbs=0,
-                               erroredThumbs=0,
-                               Stock=1
-                               )
+    provider_test(app,
+                  TiteLiveStocks,
+                  venueProvider,
+                  checkedObjects=2,
+                  createdObjects=1,
+                  updatedObjects=1,
+                  erroredObjects=0,
+                  checkedThumbs=0,
+                  createdThumbs=0,
+                  updatedThumbs=0,
+                  erroredThumbs=0,
+                  Stock=1
+                  )
 
 
 @pytest.mark.standalone
@@ -176,20 +176,20 @@ def test_titelive_stock_provider_create_2_stock_and_1_offer_and_udpate_1_offer(g
 
     PcObject.check_and_save(thing_1, offer, thing_2)
 
-    provider_test_without_mock(app,
-                               TiteLiveStocks,
-                               venueProvider,
-                               checkedObjects=4,
-                               createdObjects=3,
-                               updatedObjects=1,
-                               erroredObjects=0,
-                               checkedThumbs=0,
-                               createdThumbs=0,
-                               updatedThumbs=0,
-                               erroredThumbs=0,
-                               Stock=2,
-                               Offer=1
-                               )
+    provider_test(app,
+                  TiteLiveStocks,
+                  venueProvider,
+                  checkedObjects=4,
+                  createdObjects=3,
+                  updatedObjects=1,
+                  erroredObjects=0,
+                  checkedThumbs=0,
+                  createdThumbs=0,
+                  updatedThumbs=0,
+                  erroredThumbs=0,
+                  Stock=2,
+                  Offer=1
+                  )
 
 
 @pytest.mark.standalone
@@ -219,16 +219,16 @@ def test_titelive_stock_provider_create_nothing_if_siret_is_not_in_titelive_data
 
     PcObject.check_and_save(thing, offer)
 
-    provider_test_without_mock(app,
-                               TiteLiveStocks,
-                               venueProvider,
-                               checkedObjects=0,
-                               createdObjects=0,
-                               updatedObjects=0,
-                               erroredObjects=0,
-                               checkedThumbs=0,
-                               createdThumbs=0,
-                               updatedThumbs=0,
-                               erroredThumbs=0,
-                               Stock=0
-                               )
+    provider_test(app,
+                  TiteLiveStocks,
+                  venueProvider,
+                  checkedObjects=0,
+                  createdObjects=0,
+                  updatedObjects=0,
+                  erroredObjects=0,
+                  checkedThumbs=0,
+                  createdThumbs=0,
+                  updatedThumbs=0,
+                  erroredThumbs=0,
+                  Stock=0
+                  )

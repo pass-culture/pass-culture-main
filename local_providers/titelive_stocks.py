@@ -82,7 +82,7 @@ class TiteLiveStocks(LocalProvider):
         self.thing = thing_queries.find_thing_by_isbn_only_for_type_book(self.titelive_stock['ref'])
 
         if self.thing is None:
-            return self.__next__()
+            return next(self)
 
         # Refresh data before using it
         db.session.add(self.venue)

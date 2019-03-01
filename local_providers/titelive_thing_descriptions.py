@@ -5,12 +5,13 @@ from models.local_provider import LocalProvider, ProvidableInfo
 from models.local_provider_event import LocalProviderEventType
 from models.thing import Thing
 from repository import local_provider_event_queries
-from utils.ftp_titelive import get_ordered_files_from_titelive_ftp, \
+from utils.ftp_titelive import get_files_to_process_from_titelive_ftp, \
     get_date_from_filename, read_description_date, get_zip_file_from_ftp
 from utils.logger import logger
 
 DATE_REGEXP = re.compile('Resume(\d{6}).zip')
 DESCRIPTION_FOLDER_NAME_TITELIVE = 'ResumesLivres'
+END_FILE_IDENTIFIER = '_p.txt'
 
 
 class TiteLiveThingDescriptions(LocalProvider):
@@ -25,7 +26,7 @@ class TiteLiveThingDescriptions(LocalProvider):
     def __init__(self):
         super().__init__()
 
-        all_zips = get_ordered_files_from_titelive_ftp()
+        all_zips = get_files_to_process_from_titelive_ftp()
 
         self.zips = self.get_remaining_files_to_check(all_zips)
         self.desc_zipinfos = None
@@ -36,19 +37,15 @@ class TiteLiveThingDescriptions(LocalProvider):
         if self.zip:
             self.logEvent(LocalProviderEventType.SyncPartEnd,
                           get_date_from_filename(self.zip, DATE_REGEXP))
-        next_zip_file_name = str(self.zips.__next__())
+        next_zip_file_name = str(next(self.zips))
         self.zip = get_zip_file_from_ftp(next_zip_file_name, DESCRIPTION_FOLDER_NAME_TITELIVE)
 
         logger.info("  Importing descriptions from file " + str(self.zip))
         self.logEvent(LocalProviderEventType.SyncPartStart,
                       get_date_from_filename(self.zip, DATE_REGEXP))
 
-        self.desc_zipinfos = iter(filter(lambda f: f.filename.lower().endswith('_p.txt'),
-                                         sorted(self.zip.infolist(),
-                                                key=lambda f: f.filename)))
-        self.desc_zipinfos = iter(filter(lambda f: f.filename.lower()
-                                         .endswith('_p.txt'),
-                                         self.zip.infolist()))
+        self.desc_zipinfos = self.get_description_files_from_zip_info()
+
         self.dateModified = read_description_date(str(get_date_from_filename(self.zip, DATE_REGEXP)))
 
     def __next__(self):
@@ -56,10 +53,10 @@ class TiteLiveThingDescriptions(LocalProvider):
             self.open_next_file()
 
         try:
-            self.desc_zipinfo = self.desc_zipinfos.__next__()
+            self.desc_zipinfo = next(self.desc_zipinfos)
         except StopIteration:
             self.open_next_file()
-            self.desc_zipinfo = self.desc_zipinfos.__next__()
+            self.desc_zipinfo = next(self.desc_zipinfos)
 
         providable_info = ProvidableInfo()
         providable_info.type = Thing
@@ -83,3 +80,8 @@ class TiteLiveThingDescriptions(LocalProvider):
             return iter(
                 filter(lambda z: get_date_from_filename(z, DATE_REGEXP) > int(latest_sync_part_end_event.payload),
                        all_zips))
+
+    def get_description_files_from_zip_info(self):
+        sorted_files = sorted(self.zip.infolist(), key=lambda f: f.filename)
+        filtered_files = filter(lambda f: f.filename.lower().endswith(END_FILE_IDENTIFIER), sorted_files)
+        return iter(filtered_files)

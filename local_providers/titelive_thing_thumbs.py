@@ -6,7 +6,7 @@ from models.local_provider import LocalProvider, ProvidableInfo
 from models.local_provider_event import LocalProviderEventType
 from models.thing import Thing
 from repository import local_provider_event_queries
-from utils.ftp_titelive import get_ordered_files_from_titelive_ftp, get_date_from_filename, \
+from utils.ftp_titelive import get_files_to_process_from_titelive_ftp, get_date_from_filename, \
     get_zip_file_from_ftp
 from utils.logger import logger
 
@@ -26,7 +26,7 @@ class TiteLiveThingThumbs(LocalProvider):
     def __init__(self):
         super().__init__()
 
-        all_zips = get_ordered_files_from_titelive_ftp(THUMB_FOLDER_NAME_TITELIVE, DATE_REGEXP)
+        all_zips = get_files_to_process_from_titelive_ftp(THUMB_FOLDER_NAME_TITELIVE, DATE_REGEXP)
 
         self.zips = self.get_remaining_files_to_check(all_zips)
         self.thumb_zipinfos = None
@@ -36,7 +36,7 @@ class TiteLiveThingThumbs(LocalProvider):
         if self.zip:
             self.logEvent(LocalProviderEventType.SyncPartEnd,
                           get_date_from_filename(self.zip, DATE_REGEXP))
-        next_zip_file_name = str(self.zips.__next__())
+        next_zip_file_name = str(next(self.zips))
         self.zip = get_zip_file_from_ftp(next_zip_file_name, THUMB_FOLDER_NAME_TITELIVE)
 
         logger.info("  Importing thumbs from file " + str(self.zip))
@@ -52,10 +52,10 @@ class TiteLiveThingThumbs(LocalProvider):
             self.open_next_file()
 
         try:
-            self.thumb_zipinfo = self.thumb_zipinfos.__next__()
+            self.thumb_zipinfo = next(self.thumb_zipinfos)
         except StopIteration:
             self.open_next_file()
-            self.thumb_zipinfo = self.thumb_zipinfos.__next__()
+            self.thumb_zipinfo = next(self.thumb_zipinfos)
 
         providable_info = ProvidableInfo()
         providable_info.type = Thing

@@ -88,7 +88,7 @@ class OpenAgendaEvents(LocalProvider):
 
         if self.venueLocationUid is not None and\
            self.oa_event['location']['uid'] != self.venueLocationUid:
-            return self.__next__()
+            return next(self)
 
         p_info_event = ProvidableInfo()
         p_info_event.type = Event
