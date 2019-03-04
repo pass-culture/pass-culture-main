@@ -126,17 +126,17 @@ Pour anonymiser les données après restauration, et changer le mot de passe pou
 
 ### Database de jeu
 
-Afin de naviguer/tester différentes situations de données et de "user stories" dans l'application, il existe dans api des scripts python permettant d'engendrer des bases de données "sandbox".
+Afin de naviguer/tester différentes situations de données, il existe dans api des scripts permettant d'engendrer des bases de données "sandbox".
 
-La plus conséquente et se voulant la plus exhaustive possible est l'industrial, elle se crée via la commande:
+La plus conséquente est l'industrial, elle se crée via la commande:
 
 ```bash
 pc sandbox -n industrial
 ```
 
-Pour ensuite avoir les credentials des utilisateurs crées par cette sandbox, il y a deux moyens:
+Cette commande faite, pour avoir les crédentials des utilisateurs crées par cette sandbox, il y a deux moyens:
 
-  - on peut utiliser la commande sandbox_to_testcafe qui résume les objets utilisés de la sandbox dans les différents testcafés. Si on veut avoir tous les utilisateurs ds tests pro_07_offer dans l'application pro, il faut faire:
+  - on peut utiliser la commande sandbox_to_testcafe qui résume les objets utilisés de la sandbox dans les différents testcafés. Si on veut avoir tous les utilisateurs des tests pro_07_offer dans l'application pro, il faut faire:
   ```
     pc sandbox_to_testcafe -n pro_07_offer
   ```
@@ -150,18 +150,18 @@ Pour ensuite avoir les credentials des utilisateurs crées par cette sandbox, il
 Il est important que votre server api local tourne.
 
 Pour les développeur.ses, quand vous écrivez un testcafé,
-il faut donc laplus part du temps écrire aussi un getter côté api dans
+il faut donc la pluspart du temps écrire aussi un getter côté api dans
 sandboxes/scripts/getters/<moduleNameAvecleMêmeNomQueLeFichierTestcafe>, afin
 de récupérer les objets souhaités dans la sandbox.
 
-Si vous voulez avoir un aperçu global de l'application pro, vous pouvez tout de même vous connecter avec cet user toujours présent:
+Si vous voulez avoir un aperçu global de l'application webapp, vous pouvez tout de même vous connecter avec cet user toujours présent:
 
 ```
-email: pctest.jeune93@btmx.fr
-password: pctest0.Jeune93
+email: pctest.jeune93.has-booked-some@btmx.fr
+password: pctest0.Jeune93.has-booked-some
 ```
 
-Pour l'application pro vous pouvez naviguer en tant qu'admin avec:
+Pour l'application pro, vous pouvez naviguer en tant qu'admin avec:
 
 ```
 email: pctest.admin93.0@btmx.fr
