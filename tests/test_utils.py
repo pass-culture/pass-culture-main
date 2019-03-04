@@ -144,7 +144,7 @@ def create_booking_for_event(
     return booking
 
 
-def create_user(public_name='John Doe', first_name='John', last_name='Doe', postal_code='93100', departement_code='93',
+def create_user(public_name='John Doe', password=None, first_name='John', last_name='Doe', postal_code='93100', departement_code='93',
                 email='john.doe@test.com', can_book_free_offers=True, validation_token=None, is_admin=False,
                 reset_password_token=None, reset_password_token_validity_limit=datetime.utcnow() + timedelta(hours=24),
                 date_created=datetime.utcnow(), phone_number='0612345678', date_of_birth=datetime(2001, 1, 1),
@@ -158,8 +158,13 @@ def create_user(public_name='John Doe', first_name='John', last_name='Doe', post
     user.postalCode = postal_code
     user.departementCode = departement_code
     user.validationToken = validation_token
-    user.clearTextPassword = BASE_PLAIN_PASSWORD
-    user.password = BASE_HASHED_PASSWORD
+
+    if password:
+        user.setPassword(password)
+    else:
+        user.clearTextPassword = BASE_PLAIN_PASSWORD
+        user.password = BASE_HASHED_PASSWORD
+
     user.isAdmin = is_admin
     user.resetPasswordToken = reset_password_token
     user.resetPasswordTokenValidityLimit = reset_password_token_validity_limit

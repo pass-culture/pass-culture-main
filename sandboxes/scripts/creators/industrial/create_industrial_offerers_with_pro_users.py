@@ -56,12 +56,19 @@ def create_industrial_offerers_with_pro_users():
         last_name = MOCK_LAST_NAMES[user_index]
         email = get_email(first_name, last_name, domain)
         user_name = '{} {}'.format(first_name, last_name)
-        user = create_user(public_name="{} {}".format(first_name, last_name), first_name=first_name,
-                           last_name=last_name, postal_code="{}100".format(departement_code),
-                           departement_code=str(departement_code), email=email, validation_token='{}{}'.format(
+        user = create_user(
+            departement_code=str(departement_code),
+            email=email,
+            first_name=first_name,
+            last_name=last_name,
+            password=get_password_from_email(email),
+            postal_code="{}100".format(departement_code),
+            public_name="{} {}".format(first_name, last_name),
+            validation_token='{}{}'.format(
                 user_validation_prefix,
                 user_validation_suffix
-            ))
+            )
+        )
         users_by_name[user_name] = user
         user_index += 1
         user_validation_suffix += 1
@@ -126,9 +133,16 @@ def create_industrial_offerers_with_pro_users():
         if location_index % VALIDATED_OFFERERS_REMOVE_MODULO == 0:
             offerer.generate_validation_token()
 
-        user = create_user(public_name="{} {}".format(first_name, last_name), first_name=first_name,
-                           last_name=last_name, postal_code="{}100".format(departement_code),
-                           departement_code=str(departement_code), email=email, validation_token=user_validation_token)
+        user = create_user(
+            departement_code=str(departement_code),
+            email=email,
+            first_name=first_name,
+            last_name=last_name,
+            password=get_password_from_email(email),
+            postal_code="{}100".format(departement_code),
+            public_name="{} {}".format(first_name, last_name),
+            validation_token=user_validation_token
+        )
         users_by_name[user_name] = user
         user_validation_suffix += 1
         user_index += 1
@@ -156,10 +170,16 @@ def create_industrial_offerers_with_pro_users():
                     user_validation_suffix
                 )
             user_name = '{} {}'.format(first_name, last_name)
-            user = create_user(public_name="{} {}".format(first_name, last_name), first_name=first_name,
-                               last_name=last_name, postal_code="{}100".format(departement_code),
-                               departement_code=str(departement_code), email=email,
-                               validation_token=user_validation_token)
+            user = create_user(
+                departement_code=str(departement_code),
+                email=email,
+                first_name=first_name,
+                last_name=last_name,
+                password=get_password_from_email(email),
+                postal_code="{}100".format(departement_code),
+                public_name="{} {}".format(first_name, last_name),
+                validation_token=user_validation_token
+            )
             users_by_name[user_name] = user
             user_index += 1
             user_validation_suffix += 1

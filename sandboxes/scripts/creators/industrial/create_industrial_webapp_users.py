@@ -35,9 +35,15 @@ def create_industrial_webapp_users():
 
             email = "pctest.jeune{}.{}@btmx.fr".format(departement_code, tag)
             users_by_name['jeune{} {}'.format(departement_code, tag)] = create_user(
-                public_name="PC Test Jeune {} {}".format(departement_code, short_tag), first_name="PC Test Jeune",
-                last_name="{} {}".format(departement_code, short_tag), postal_code="{}100".format(departement_code),
-                departement_code=str(departement_code), email=email, reset_password_token=reset_password_token)
+                departement_code=str(departement_code),
+                email=email,
+                first_name="PC Test Jeune",
+                last_name="{} {}".format(departement_code, short_tag),
+                password=get_password_from_email(email),
+                postal_code="{}100".format(departement_code),
+                public_name="PC Test Jeune {} {}".format(departement_code, short_tag),
+                reset_password_token=reset_password_token
+            )
 
     PcObject.check_and_save(*users_by_name.values())
 
