@@ -6,6 +6,7 @@ from flask_login import current_user, login_required
 from domain.build_recommendations import build_mixed_recommendations, \
     move_requested_recommendation_first, \
     move_tutorial_recommendations_first
+from models.api_errors import ResourceNotFound
 from models import PcObject, Recommendation
 from recommendations_engine import create_recommendations_for_discovery, \
                                    create_recommendations_for_search, \
@@ -35,6 +36,23 @@ def list_recommendations():
     )
 
     return jsonify(_serialize_recommendations(recommendations)), 200
+
+
+@app.route('/recommendations/offers/<offer_id>', methods=['GET'])
+@login_required
+def get_recommendation(offer_id):
+    try:
+        recommendation = give_requested_recommendation_to_user(
+            current_user,
+            dehumanize(offer_id),
+            dehumanize(request.args.get('mediationId'))
+        )
+    except OfferNotFoundException:
+        errors = ResourceNotFound()
+        errors.addError('global', "Offre ou médiation introuvable")
+        raise errors
+
+    return jsonify(_serialize_recommendation(recommendation)), 200
 
 
 @app.route('/recommendations/<recommendationId>', methods=['PATCH'])
