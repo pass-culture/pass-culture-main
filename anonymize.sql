@@ -18,11 +18,6 @@ UPDATE offerer SET "siren" = pg_temp.generate_random_between(999999999,100000000
 UPDATE offerer SET "address" = '1 Avenue de la Libération',
   "postalCode" = substring("postalCode",1,2) || pg_temp.generate_random_between(999,100)::text,
   "city" = 'Cultureville' WHERE "address" is not null;
-UPDATE offerer SET "iban" = pg_temp.generate_random_between(999999999,100000000)::text WHERE "iban" is not null;
-UPDATE offerer SET "bic" = pg_temp.generate_random_between(999999999,100000000)::text WHERE "bic" is not null;
-
-UPDATE event SET "name" = 'event_' || "id",
-  "description" = 'Type d''évènement : ' || "type";
 
 UPDATE booking SET "token" = substring(md5(random()::text),1 , 6) WHERE "token" is not null;
 
@@ -48,6 +43,9 @@ UPDATE "user" SET "resetPasswordToken" = substring(md5(random()::text),1 , 10) W
 
 UPDATE user_offerer SET "validationToken" = substring(md5(random()::text),1 , 27) WHERE "validationToken" is not null;
 
+UPDATE bank_information SET "iban" = pg_temp.generate_random_between(999999999,100000000)::text,
+  "bic" = pg_temp.generate_random_between(999999999,100000000)::text  WHERE "iban" is not null;
+
 UPDATE venue SET "name" = 'Venue' || "id",
   "bookingEmail" = 'ano@nym.ized',
   "address" = '1 Avenue de la Libération',
@@ -61,8 +59,6 @@ FROM offerer
 WHERE venue."managingOffererId" = offerer.id
 AND venue.siret is not null;
 
-UPDATE venue SET "iban" = pg_temp.generate_random_between(999999999,100000000)::text,
-  "bic" = pg_temp.generate_random_between(999999999,100000000)::text  WHERE "iban" is not null;
 UPDATE venue SET "comment" = 'comment for venue' WHERE "comment" is not null;
 UPDATE venue SET "validationToken" = substring(md5(random()::text),1 , 27) WHERE "validationToken" is not null;
 
