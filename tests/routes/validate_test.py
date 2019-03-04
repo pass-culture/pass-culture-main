@@ -13,7 +13,7 @@ from tests.test_utils import req, create_user, req_with_auth, API_URL, create_of
 @clean_database
 @pytest.mark.standalone
 def test_should_not_be_able_to_validate_offerer_with_non_existing_token(app):
-    r = req_with_auth(email='toto_pro@btmx.fr', password='toto12345678') \
+    r = req_with_auth(email='toto_pro@btmx.fr') \
         .get(API_URL + '/validate?modelNames=Offerer&token=123')
     assert r.status_code == 404
 
@@ -125,14 +125,14 @@ class CertifyTransactionFileAuthenticityTest:
     @clean_database
     def test_returns_ok_with_checksum_if_file_authenticity_is_certified(self, app):
         # given
-        user = create_user(password='p@55sw0rd', is_admin=True, can_book_free_offers=False)
+        user = create_user(can_book_free_offers=False, is_admin=True)
         transaction = create_payment_transaction(
             transaction_message_id='passCulture-SCT-20181015-114356',
             checksum=b'\x86\x05[(j\xfd\x111l\xd7\xca\xcd\x00\xe6\x104\xfd\xde\xdd\xa5\x0c#L\x01W\xa8\xf0\xdan0\x93\x1e'
         )
         PcObject.check_and_save(user, transaction)
 
-        auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
+        auth_request = req_with_auth(email=user.email)
 
         # when
         response = auth_request.post(
@@ -148,14 +148,14 @@ class CertifyTransactionFileAuthenticityTest:
     @clean_database
     def test_returns_bad_request_if_file_checksum_does_not_match_known_checksum(self, app):
         # given
-        user = create_user(password='p@55sw0rd', is_admin=True, can_book_free_offers=False)
+        user = create_user(can_book_free_offers=False, is_admin=True)
         transaction = create_payment_transaction(
             transaction_message_id='passCulture-SCT-20181015-114356',
             checksum=b'FAKE_CHECKSUM'
         )
         PcObject.check_and_save(user, transaction)
 
-        auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
+        auth_request = req_with_auth(email=user.email)
 
         # when
         response = auth_request.post(
@@ -187,14 +187,14 @@ class CertifyTransactionFileAuthenticityTest:
     @clean_database
     def test_returns_forbidden_if_current_user_is_not_admin(self, app):
         # given
-        user = create_user(password='p@55sw0rd', is_admin=False, can_book_free_offers=True)
+        user = create_user(can_book_free_offers=True, is_admin=False)
         transaction = create_payment_transaction(
             transaction_message_id='passCulture-SCT-20181015-114356',
             checksum=b'\x86\x05[(j\xfd\x111l\xd7\xca\xcd\x00\xe6\x104\xfd\xde\xdd\xa5\x0c#L\x01W\xa8\xf0\xdan0\x93\x1e'
         )
         PcObject.check_and_save(user, transaction)
 
-        auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
+        auth_request = req_with_auth(email=user.email)
 
         # when
         response = auth_request.post(
@@ -209,10 +209,10 @@ class CertifyTransactionFileAuthenticityTest:
     @clean_database
     def test_returns_not_found_if_message_id_from_file_is_unknown(self, app):
         # given
-        user = create_user(password='p@55sw0rd', is_admin=True, can_book_free_offers=False)
+        user = create_user(can_book_free_offers=False, is_admin=True)
         PcObject.check_and_save(user)
 
-        auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
+        auth_request = req_with_auth(email=user.email)
 
         # when
         response = auth_request.post(

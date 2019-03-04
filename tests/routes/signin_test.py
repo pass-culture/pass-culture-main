@@ -11,7 +11,7 @@ class Post:
         @clean_database
         def when_account_is_known(self, app):
             # given
-            user = create_user(email='user@example.com', password='toto123456789')
+            user = create_user(email='user@example.com')
             PcObject.check_and_save(user)
             data = {'identifier': user.email, 'password': user.clearTextPassword}
 
@@ -29,7 +29,7 @@ class Post:
         @clean_database
         def when_account_is_known_with_mixed_case_email(self, app):
             # given
-            user = create_user(email='USER@example.COM', password='toto123456789')
+            user = create_user(email='USER@example.COM')
             PcObject.check_and_save(user)
             data = {'identifier': 'uSeR@EXAmplE.cOm', 'password': user.clearTextPassword}
 
@@ -42,7 +42,7 @@ class Post:
         @clean_database
         def when_account_is_known_with_trailing_spaces_in_email(self, app):
             # given
-            user = create_user(email='user@example.com', password='toto123456789')
+            user = create_user(email='user@example.com')
             PcObject.check_and_save(user)
             data = {'identifier': '  user@example.com  ', 'password': user.clearTextPassword}
 

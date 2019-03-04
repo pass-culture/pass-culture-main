@@ -21,7 +21,7 @@ class Patch:
         @clean_database
         def test_returns_200_and_expires_recos(self, app):
             # given
-            user = create_user(password='p@55sw0rd')
+            user = create_user()
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_event_offer(venue)
@@ -29,7 +29,7 @@ class Patch:
             recommendation = create_recommendation(offer, user, valid_until_date=datetime.utcnow() + timedelta(days=7))
             PcObject.check_and_save(offer, user, venue, offerer, recommendation, user_offerer)
 
-            auth_request = TestClient().with_auth(email=user.email, password='p@55sw0rd')
+            auth_request = TestClient().with_auth(email=user.email)
             data = {'eventId': 'AE', 'isActive': False}
 
             # when
@@ -51,15 +51,15 @@ class Patch:
         @clean_database
         def test_returns_403_if_user_is_not_attached_to_offerer_of_offer(self, app):
             # given
-            current_user = create_user(email='bobby@test.com', password='p@55sw0rd')
-            other_user = create_user(email='jimmy@test.com', password='p@55sw0rd')
+            current_user = create_user(email='bobby@test.com')
+            other_user = create_user(email='jimmy@test.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_event_offer(venue)
             user_offerer = create_user_offerer(other_user, offerer)
             PcObject.check_and_save(offer, other_user, current_user, venue, offerer, user_offerer)
 
-            auth_request = TestClient().with_auth(email=current_user.email, password='p@55sw0rd')
+            auth_request = TestClient().with_auth(email=current_user.email)
 
             # when
             response = auth_request.patch(API_URL + '/offers/%s' % humanize(offer.id), json={})
@@ -73,9 +73,9 @@ class Patch:
         @clean_database
         def test_returns_404_if_offer_does_not_exist(self, app):
             # given
-            user = create_user(password='p@55sw0rd')
+            user = create_user()
             PcObject.check_and_save(user)
-            auth_request = TestClient().with_auth(email=user.email, password='p@55sw0rd')
+            auth_request = TestClient().with_auth(email=user.email)
 
             # when
             response = auth_request.patch(API_URL + '/offers/ADFGA', json={})
@@ -90,7 +90,7 @@ class Get:
         @clean_database
         def when_user_has_rights_on_managing_offerer(self, app):
             # Given
-            user = create_user(email='user@test.com', password='azerty123')
+            user = create_user(email='user@test.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_thing_offer(venue)
@@ -100,7 +100,7 @@ class Get:
             PcObject.check_and_save(user, offer)
 
             # when
-            response = TestClient().with_auth(email='user@test.com', password='azerty123').get(API_URL + f'/offers/{humanize(offer.id)}')
+            response = TestClient().with_auth(email='user@test.com').get(API_URL + f'/offers/{humanize(offer.id)}')
 
             # then
             response_json = response.json()

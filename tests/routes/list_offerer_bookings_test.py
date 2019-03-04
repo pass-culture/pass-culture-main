@@ -29,7 +29,7 @@ class Get:
                                                                                                                app):
             # given
             now = datetime.utcnow()
-            user_pro = create_user(can_book_free_offers=False, password='p@55sw0rd')
+            user_pro = create_user(can_book_free_offers=False)
             user = create_user(email='test@email.com')
             deposit = create_deposit(user, now, amount=24000)
             PcObject.check_and_save(deposit)
@@ -48,7 +48,7 @@ class Get:
 
             # when
             response = TestClient() \
-                .with_auth(user_pro.email, user_pro.clearTextPassword) \
+                .with_auth(user_pro.email) \
                 .get(
                 API_URL + '/offerers/%s/bookings?order_by_column=booking_id&order=desc' % humanize(offerer.id))
 
@@ -63,7 +63,7 @@ class Get:
         def when_user_managing_offerer_and_returns_bookings_with_only_public_user_info_and_none_token(self, app):
             # given
             now = datetime.utcnow()
-            user_pro = create_user(can_book_free_offers=False, password='p@55sw0rd')
+            user_pro = create_user(can_book_free_offers=False)
             user = create_user(first_name='Jean', last_name='Aimarx', email='jean.aimarx@disrupflux.fr')
             deposit = create_deposit(user, now, amount=24000)
             offerer = create_offerer()
@@ -76,7 +76,7 @@ class Get:
 
             # when
             response = TestClient() \
-                .with_auth(user_pro.email, user_pro.clearTextPassword).get(
+                .with_auth(user_pro.email).get(
                 API_URL + '/offerers/%s/bookings' % humanize(offerer.id))
 
             # then
@@ -93,7 +93,7 @@ class Get:
         def when_user_managing_offerer_and_returns_bookings_with_public_user_info_and_token_when_it_is_used(self, app):
             # given
             now = datetime.utcnow()
-            user_pro = create_user(can_book_free_offers=False, password='p@55sw0rd')
+            user_pro = create_user(can_book_free_offers=False)
             user = create_user(first_name='Jean', last_name='Aimarx', email='jean.aimarx@disrupflux.fr')
             deposit = create_deposit(user, now, amount=24000)
             offerer = create_offerer()
@@ -106,7 +106,7 @@ class Get:
 
             # when
             response = TestClient() \
-                .with_auth(user_pro.email, user_pro.clearTextPassword) \
+                .with_auth(user_pro.email) \
                 .get(API_URL + '/offerers/%s/bookings' % humanize(offerer.id))
 
             # then
@@ -123,7 +123,7 @@ class Get:
         def when_user_managing_offerer_and_returns_bookings_with_their_reimbursements_infos(self, app):
             # given
             now = datetime.utcnow()
-            user_pro = create_user(can_book_free_offers=False, password='p@55sw0rd')
+            user_pro = create_user(can_book_free_offers=False)
             user = create_user(email='test@email.com')
             deposit = create_deposit(user, now, amount=500)
             PcObject.check_and_save(deposit)
@@ -140,7 +140,7 @@ class Get:
 
             # when
             response = TestClient() \
-                .with_auth(user_pro.email, user_pro.clearTextPassword) \
+                .with_auth(user_pro.email) \
                 .get(API_URL + '/offerers/%s/bookings' % humanize(offerer.id))
 
             # then
@@ -153,7 +153,7 @@ class Get:
         def when_user_managing_offerer_and_returns_bookings_with_thing_or_event_offer_type(self, app):
             # given
             now = datetime.utcnow()
-            user_pro = create_user(can_book_free_offers=False, password='p@55sw0rd')
+            user_pro = create_user(can_book_free_offers=False)
             user = create_user(email='test@email.com')
             offerer = create_offerer()
             user_offerer = create_user_offerer(user_pro, offerer)
@@ -197,7 +197,7 @@ class Get:
 
             # when
             response = TestClient() \
-                .with_auth(user_pro.email, user_pro.clearTextPassword) \
+                .with_auth(user_pro.email) \
                 .get(API_URL + '/offerers/%s/bookings' % humanize(offerer.id))
 
             # then
@@ -209,7 +209,7 @@ class Get:
         def when_ordered_by_venue_name_desc(self, app):
             # given
             now = datetime.utcnow()
-            user_pro = create_user(can_book_free_offers=False, password='p@55sw0rd')
+            user_pro = create_user(can_book_free_offers=False)
             user = create_user(email='test@email.com')
             deposit = create_deposit(user, now, amount=500)
             offerer = create_offerer()
@@ -229,7 +229,7 @@ class Get:
 
             # when
             response = TestClient() \
-                .with_auth(user_pro.email, user_pro.clearTextPassword) \
+                .with_auth(user_pro.email) \
                 .get(
                 API_URL + '/offerers/%s/bookings?order_by_column=venue_name&order=desc' % humanize(offerer.id)
             )
@@ -245,7 +245,7 @@ class Get:
         def when_ordered_by_venue_name_asc(self, app):
             # given
             now = datetime.utcnow()
-            user_pro = create_user(can_book_free_offers=False, password='p@55sw0rd')
+            user_pro = create_user(can_book_free_offers=False)
             user = create_user(email='test@email.com')
             deposit = create_deposit(user, now, amount=500)
             offerer = create_offerer()
@@ -265,7 +265,7 @@ class Get:
 
             # when
             response = TestClient() \
-                .with_auth(user_pro.email, user_pro.clearTextPassword) \
+                .with_auth(user_pro.email) \
                 .get(
                 API_URL + '/offerers/%s/bookings?order_by_column=venue_name&order=asc' % humanize(offerer.id))
 
@@ -280,7 +280,7 @@ class Get:
         def when_ordered_by_date_asc(self, app):
             # given
             now = datetime.utcnow()
-            user_pro = create_user(can_book_free_offers=False, password='p@55sw0rd')
+            user_pro = create_user(can_book_free_offers=False)
             user = create_user(email='test@email.com')
             deposit = create_deposit(user, now, amount=500)
             offerer = create_offerer()
@@ -301,7 +301,7 @@ class Get:
 
             # when
             response = TestClient() \
-                .with_auth(user_pro.email, user_pro.clearTextPassword) \
+                .with_auth(user_pro.email) \
                 .get(
                 API_URL + '/offerers/%s/bookings?order_by_column=date&order=asc' % humanize(offerer.id))
 
@@ -316,7 +316,7 @@ class Get:
         def when_ordered_by_date_desc(self, app):
             # given
             now = datetime.utcnow()
-            user_pro = create_user(can_book_free_offers=False, password='p@55sw0rd')
+            user_pro = create_user(can_book_free_offers=False)
             user = create_user(email='test@email.com')
             deposit = create_deposit(user, now, amount=500)
             offerer = create_offerer()
@@ -337,7 +337,7 @@ class Get:
 
             # when
             response = TestClient() \
-                .with_auth(user_pro.email, user_pro.clearTextPassword) \
+                .with_auth(user_pro.email) \
                 .get(
                 API_URL + '/offerers/%s/bookings?order_by_column=date&order=desc' % humanize(offerer.id))
 
@@ -352,7 +352,7 @@ class Get:
         def when_ordered_by_category_asc(self, app):
             # given
             now = datetime.utcnow()
-            user_pro = create_user(can_book_free_offers=False, password='p@55sw0rd')
+            user_pro = create_user(can_book_free_offers=False)
             user = create_user(email='test@email.com')
             deposit = create_deposit(user, now, amount=500)
             offerer = create_offerer()
@@ -372,7 +372,7 @@ class Get:
 
             # when
             response = TestClient() \
-                .with_auth(user_pro.email, user_pro.clearTextPassword) \
+                .with_auth(user_pro.email) \
                 .get(
                 API_URL + '/offerers/%s/bookings?order_by_column=category&order=asc' % humanize(offerer.id))
 
@@ -387,7 +387,7 @@ class Get:
         def when_ordered_by_category_desc(self, app):
             # given
             now = datetime.utcnow()
-            user_pro = create_user(can_book_free_offers=False, password='p@55sw0rd')
+            user_pro = create_user(can_book_free_offers=False)
             user = create_user(email='test@email.com')
             deposit = create_deposit(user, now, amount=500)
             offerer = create_offerer()
@@ -407,7 +407,7 @@ class Get:
 
             # when
             response = TestClient() \
-                .with_auth(user_pro.email, user_pro.clearTextPassword) \
+                .with_auth(user_pro.email) \
                 .get(
                 API_URL + '/offerers/%s/bookings?order_by_column=category&order=desc' % humanize(offerer.id))
 
@@ -422,7 +422,7 @@ class Get:
         def when_ordered_by_amount_desc(self, app):
             # given
             now = datetime.utcnow()
-            user_pro = create_user(can_book_free_offers=False, password='p@55sw0rd')
+            user_pro = create_user(can_book_free_offers=False)
             user = create_user(email='test@email.com')
             deposit = create_deposit(user, now, amount=500)
             offerer = create_offerer()
@@ -442,7 +442,7 @@ class Get:
 
             # when
             response = TestClient() \
-                .with_auth(user_pro.email, user_pro.clearTextPassword) \
+                .with_auth(user_pro.email) \
                 .get(
                 API_URL + '/offerers/%s/bookings?order_by_column=amount&order=desc' % humanize(offerer.id))
 
@@ -457,7 +457,7 @@ class Get:
         def when_ordered_by_amount_asc(self, app):
             # given
             now = datetime.utcnow()
-            user_pro = create_user(can_book_free_offers=False, password='p@55sw0rd')
+            user_pro = create_user(can_book_free_offers=False)
             user = create_user(email='test@email.com')
             deposit = create_deposit(user, now, amount=500)
             offerer = create_offerer()
@@ -477,7 +477,7 @@ class Get:
 
             # when
             response = TestClient() \
-                .with_auth(user_pro.email, user_pro.clearTextPassword).get(
+                .with_auth(user_pro.email).get(
                 API_URL + '/offerers/%s/bookings?order_by_column=amount&order=asc' % humanize(offerer.id))
 
             # then
@@ -492,7 +492,7 @@ class Get:
         def when_user_has_no_rights_on_offerer(self, app):
             # given
             now = datetime.utcnow()
-            user = create_user(email='test@email.com', password='p@55sw0rd!')
+            user = create_user(email='test@email.com')
             deposit = create_deposit(user, now, amount='500')
             PcObject.check_and_save(deposit)
             offerer = create_offerer()
@@ -510,7 +510,7 @@ class Get:
 
             # when
             response = TestClient() \
-                .with_auth(user.email, user.clearTextPassword) \
+                .with_auth(user.email) \
                 .get(API_URL + '/offerers/%s/bookings' % humanize(offerer.id))
 
             # then

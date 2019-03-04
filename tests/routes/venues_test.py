@@ -19,7 +19,7 @@ class Patch:
             venue = create_venue(offerer, name='L\'encre et la plume')
             user_offerer = create_user_offerer(user, offerer)
             PcObject.check_and_save(user_offerer, venue)
-            auth_request = TestClient().with_auth(email=user.email, password=user.clearTextPassword)
+            auth_request = TestClient().with_auth(email=user.email)
 
             # when
             response = auth_request.patch(API_URL + '/venues/%s' % humanize(venue.id), json={'name': 'Ma librairie'})
@@ -46,7 +46,7 @@ class Patch:
             venue_data = {
                 'siret': offerer.siren + '12345',
             }
-            auth_request = TestClient().with_auth(email=user.email, password=user.clearTextPassword)
+            auth_request = TestClient().with_auth(email=user.email)
 
             # when
             response = auth_request.patch(API_URL + '/venues/%s' % humanize(venue.id), json=venue_data)
@@ -64,7 +64,7 @@ class Patch:
             venue2 = create_venue(offerer, name='L\'encre et la plume', is_virtual=False)
             user_offerer = create_user_offerer(user, offerer)
             PcObject.check_and_save(user_offerer, venue1, venue2)
-            auth_request = TestClient().with_auth(email=user.email, password=user.clearTextPassword)
+            auth_request = TestClient().with_auth(email=user.email)
 
             # when
             response = auth_request.patch(API_URL + '/venues/%s' % humanize(venue2.id), json={'isVirtual': True})
@@ -82,7 +82,7 @@ class Patch:
             venue = create_venue(offerer, name='Les petits papiers', is_virtual=False)
             user_offerer = create_user_offerer(user, offerer)
             PcObject.check_and_save(user_offerer, venue)
-            auth_request = TestClient().with_auth(email=user.email, password=user.clearTextPassword)
+            auth_request = TestClient().with_auth(email=user.email)
             data = {'latitude': -98.82387, 'longitude': '112°3534'}
 
             # when
@@ -102,7 +102,7 @@ class Patch:
             venue = create_venue(offerer, name='Les petits papiers', is_virtual=False)
             user_offerer = create_user_offerer(user, offerer)
             PcObject.check_and_save(user_offerer, venue, other_offerer)
-            auth_request = TestClient().with_auth(email=user.email, password=user.clearTextPassword)
+            auth_request = TestClient().with_auth(email=user.email)
 
             # When
             response = auth_request.patch(API_URL + '/venues/%s' % humanize(venue.id),
@@ -122,7 +122,7 @@ class Post:
             user = create_user(email='user.pro@test.com')
             user_offerer = create_user_offerer(user, offerer)
             PcObject.check_and_save(user_offerer)
-            auth_request = TestClient().with_auth(email=user.email, password=user.clearTextPassword)
+            auth_request = TestClient().with_auth(email=user.email)
             venue_data = {
                 'name': 'Ma venue',
                 'siret': '30255917810045',
@@ -165,7 +165,7 @@ class Post:
                 'latitude': 48.82387,
                 'longitude': 2.35284
             }
-            auth_request = TestClient().with_auth(email=user.email, password=user.clearTextPassword)
+            auth_request = TestClient().with_auth(email=user.email)
 
             # when
             response = auth_request.post(API_URL + '/venues/', json=venue_data)
@@ -201,7 +201,7 @@ class Post:
                 'isVirtual': True
             }
 
-            auth_request = TestClient().with_auth(email=user.email, password=user.clearTextPassword)
+            auth_request = TestClient().with_auth(email=user.email)
 
             # when
             response = auth_request.post(API_URL + '/venues/', json=venue_data)
@@ -232,7 +232,7 @@ class Post:
                 'isVirtual': False
             }
 
-            auth_request = TestClient().with_auth(email=user.email, password=user.clearTextPassword)
+            auth_request = TestClient().with_auth(email=user.email)
 
             # when
             response = auth_request.post(API_URL + '/venues/', json=data)
@@ -254,7 +254,7 @@ class Get:
             venue = create_venue(offerer, name='L\'encre et la plume')
             bank_information = create_bank_information(bic='QSDFGH8Z555', iban='FR7630006000011234567890189', venue=venue)
             PcObject.check_and_save(user_offerer, bank_information)
-            auth_request = TestClient().with_auth(email=user.email, password=user.clearTextPassword)
+            auth_request = TestClient().with_auth(email=user.email)
 
             # when
             response = auth_request.get(API_URL + '/venues/%s' % humanize(venue.id))
@@ -274,7 +274,7 @@ class Get:
             user = create_user(email='user.pro@test.com')
             venue = create_venue(offerer, name='L\'encre et la plume')
             PcObject.check_and_save(user, venue)
-            auth_request = TestClient().with_auth(email=user.email, password=user.clearTextPassword)
+            auth_request = TestClient().with_auth(email=user.email)
 
             # when
             response = auth_request.get(API_URL + '/venues/%s' % humanize(venue.id))

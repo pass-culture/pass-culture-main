@@ -29,7 +29,7 @@ class Patch:
             }
 
             # When
-            response = TestClient().with_auth(user.email, user.clearTextPassword).patch(
+            response = TestClient().with_auth(user.email).patch(
                 f'{API_URL}/events/{humanize(event.id)}',
                 json=json)
 
@@ -56,7 +56,7 @@ class Patch:
             }
 
             # When
-            response = TestClient().with_auth(user.email, user.clearTextPassword).patch(
+            response = TestClient().with_auth(user.email).patch(
                 f'{API_URL}/events/{humanize(event.id)}',
                 json=json)
 
@@ -83,7 +83,7 @@ class Patch:
                 }
 
                 # When
-                response = TestClient().with_auth(user.email, user.clearTextPassword).patch(
+                response = TestClient().with_auth(user.email).patch(
                     f'{API_URL}/events/{humanize(event.id)}',
                     json=json)
 
@@ -97,12 +97,12 @@ class Post:
         @clean_database
         def when_no_venue_id(self, app):
             # Given
-            user = create_user(email='test@email.com', password='P@55w0rd')
+            user = create_user(email='test@email.com')
             json = {'name': 'La pièce de théâtre', 'durationMinutes': 60}
             PcObject.check_and_save(user)
 
             # When
-            request = TestClient().with_auth(user.email, user.clearTextPassword).post(
+            request = TestClient().with_auth(user.email).post(
                 f'{API_URL}/events/',
                 json=json)
 
@@ -113,12 +113,12 @@ class Post:
         @clean_database
         def when_no_venue_with_that_id(self, app):
             # Given
-            user = create_user(email='test@email.com', password='P@55w0rd')
+            user = create_user(email='test@email.com')
             json = {'name': 'La pièce de théâtre', 'durationMinutes': 60, 'venueId': humanize(123)}
             PcObject.check_and_save(user)
 
             # When
-            request = TestClient().with_auth(user.email, 'P@55w0rd').post(
+            request = TestClient().with_auth(user.email).post(
                 f'{API_URL}/events/',
                 json=json)
 
@@ -130,7 +130,7 @@ class Post:
         @clean_database
         def when_creating_a_new_event(self, app):
             # Given
-            user = create_user(email='test@email.com', password='P@55w0rd')
+            user = create_user(email='test@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
             user_offerer = create_user_offerer(user, offerer)
@@ -145,7 +145,7 @@ class Post:
             }
 
             # When
-            request = TestClient().with_auth(user.email, user.clearTextPassword).post(
+            request = TestClient().with_auth(user.email).post(
                 f'{API_URL}/events/',
                 json=json)
 
@@ -173,7 +173,7 @@ class Post:
         @clean_database
         def when_creating_a_new_event_without_booking_email(self, app):
             # Given
-            user = create_user(email='test@email.com', password='P@55w0rd')
+            user = create_user(email='test@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
             user_offerer = create_user_offerer(user, offerer)
@@ -188,7 +188,7 @@ class Post:
             }
 
             # When
-            request = TestClient().with_auth(user.email, user.clearTextPassword).post(
+            request = TestClient().with_auth(user.email).post(
                 f'{API_URL}/events/',
                 json=json)
 
@@ -201,7 +201,7 @@ class Post:
         @clean_database
         def when_creating_a_new_activation_event_as_a_global_admin(self, app):
             # Given
-            user = create_user(email='test@email.com', can_book_free_offers=False, password='P@55w0rd', is_admin=True)
+            user = create_user(email='test@email.com', can_book_free_offers=False, is_admin=True)
             offerer = create_offerer()
             venue = create_venue(offerer)
             PcObject.check_and_save(user, venue)
@@ -214,7 +214,7 @@ class Post:
             }
 
             # When
-            request = TestClient().with_auth(user.email, user.clearTextPassword).post(
+            request = TestClient().with_auth(user.email).post(
                 f'{API_URL}/events/',
                 json=json)
 
@@ -225,7 +225,7 @@ class Post:
         @clean_database
         def when_creating_a_new_activation_event_as_an_offerer_editor(self, app):
             # Given
-            user = create_user(email='test@email.com', password='P@55w0rd', is_admin=False)
+            user = create_user(email='test@email.com', is_admin=False)
             offerer = create_offerer()
             user_offerer = create_user_offerer(user, offerer, is_admin=False)
             venue = create_venue(offerer)
@@ -239,7 +239,7 @@ class Post:
             }
 
             # When
-            request = TestClient().with_auth(user.email, user.clearTextPassword).post(
+            request = TestClient().with_auth(user.email).post(
                 f'{API_URL}/events/',
                 json=json)
 
@@ -252,7 +252,7 @@ class Post:
         @pytest.mark.standalone
         def when_creating_a_new_activation_event_as_an_offerer_admin(self, app):
             # Given
-            user = create_user(email='test@email.com', password='P@55w0rd', is_admin=False)
+            user = create_user(email='test@email.com', is_admin=False)
             offerer = create_offerer()
             user_offerer = create_user_offerer(user, offerer, is_admin=True)
             venue = create_venue(offerer)
@@ -266,7 +266,7 @@ class Post:
             }
 
             # When
-            request = TestClient().with_auth(user.email, user.clearTextPassword).post(
+            request = TestClient().with_auth(user.email).post(
                 f'{API_URL}/events/',
                 json=json)
 
@@ -278,7 +278,7 @@ class Post:
         @clean_database
         def when_user_is_not_attached_to_offerer(self, app):
                 # Given
-                user = create_user(email='test@email.com', password='P@55w0rd')
+                user = create_user(email='test@email.com')
                 offerer = create_offerer()
                 venue = create_venue(offerer)
                 PcObject.check_and_save(user, venue)
@@ -292,7 +292,7 @@ class Post:
                 }
 
                 # When
-                request = TestClient().with_auth(user.email, user.clearTextPassword).post(
+                request = TestClient().with_auth(user.email).post(
                     f'{API_URL}/events/',
                     json=json)
 

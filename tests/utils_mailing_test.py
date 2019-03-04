@@ -225,10 +225,12 @@ def test_booking_recap_email_html_should_not_have_cancelled_or_used_bookings(app
     stock = create_stock_with_event_offer(offerer=Offerer(),
                                           venue=venue)
 
-    user1 = create_user(public_name='Test1', first_name='First1', last_name='Last1', departement_code='93', email='test@email.com', can_book_free_offers=True)
+    user1 = create_user(public_name='Test1', first_name='First1', last_name='Last1', departement_code='93',
+                        email='test@email.com', can_book_free_offers=True)
     booking1 = create_booking(user1, stock)
 
-    user2 = create_user(public_name='Test2', first_name='First2', last_name='Last2', departement_code='93', email='test@email.com', can_book_free_offers=True)
+    user2 = create_user(public_name='Test2', first_name='First2', last_name='Last2', departement_code='93',
+                        email='test@email.com', can_book_free_offers=True)
     booking2 = create_booking(user2, stock)
 
     ongoing_bookings = [booking1, booking2]
@@ -377,8 +379,10 @@ def test_offerer_recap_email_future_offer_when_new_booking_with_old_booking(app)
     stock = create_stock_with_event_offer(offerer=None,
                                           venue=venue,
                                           beginning_datetime_future=True)
-    user_1 = create_user('Test', first_name='John', last_name='Doe', departement_code='93', email='test@email.com', can_book_free_offers=True)
-    user_2 = create_user('Test 2', first_name='Jane', last_name='Doe',  departement_code='93', email='test@email.com', can_book_free_offers=True)
+    user_1 = create_user('Test', first_name='John', last_name='Doe', departement_code='93', email='test@email.com',
+                         can_book_free_offers=True)
+    user_2 = create_user('Test 2', first_name='Jane', last_name='Doe', departement_code='93', email='test@email.com',
+                         can_book_free_offers=True)
     user_2.email = 'other_test@email.com'
     booking_1 = create_booking(user_1, stock, venue, None)
     booking_1.token = '56789'
@@ -545,7 +549,7 @@ def test_validation_email_should_not_return_clearTextPassword(app):
                              name='Accenture', validation_token=validation_token)
 
     user = create_user(public_name='Test', departement_code='75', email='user@accenture.com',
-                       can_book_free_offers=False, password='totallysafepsswd', validation_token=validation_token)
+                       can_book_free_offers=False, validation_token=validation_token)
 
     user_offerer = create_user_offerer(user, offerer, validation_token)
 

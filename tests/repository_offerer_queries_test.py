@@ -177,8 +177,8 @@ def test_get_all_pending_offerers_return_requested_tokens_in_case_only_venue_not
 @clean_database
 def test_get_all_pending_offerers_return_requested_tokens_in_case_only_user_not_validated(app):
     # given
-    user_not_validated = create_user(email="user@user.pro", can_book_free_offers=False, is_admin=False,
-                                     validation_token="token_for_user")
+    user_not_validated = create_user(email="user@user.pro", can_book_free_offers=False,
+                                     validation_token="token_for_user", is_admin=False)
     offerer_validated = create_offerer()
     user_offerer_validated = create_user_offerer(user_not_validated, offerer_validated)
     venue_validated = create_venue(offerer_validated)

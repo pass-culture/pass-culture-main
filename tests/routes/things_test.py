@@ -29,7 +29,7 @@ class Patch:
             }
 
             # When
-            response = TestClient().with_auth(user.email, user.clearTextPassword).patch(
+            response = TestClient().with_auth(user.email).patch(
                 f'{API_URL}/things/{humanize(thing.id)}',
                 json=json)
 
@@ -55,7 +55,7 @@ class Patch:
             }
 
             # When
-            response = TestClient().with_auth(user.email, user.clearTextPassword).patch(
+            response = TestClient().with_auth(user.email).patch(
                 f'{API_URL}/things/{humanize(thing.id)}',
                 json=json)
 
@@ -68,7 +68,7 @@ class Patch:
         @clean_database
         def when_thing_with_invalid_url(self, app):
             # Given
-            user = create_user(email='test@email.com', password='P@55W0rd!')
+            user = create_user(email='test@email.com')
             offerer = create_offerer()
             user_offerer = create_user_offerer(user, offerer)
             venue = create_venue(offerer, is_virtual=True, siret=None)
@@ -80,7 +80,7 @@ class Patch:
             }
 
             # When
-            response = TestClient().with_auth(user.email, user.clearTextPassword).patch(
+            response = TestClient().with_auth(user.email).patch(
                 f'{API_URL}/things/{humanize(thing.id)}',
                 json=json)
 
@@ -106,7 +106,7 @@ class Patch:
             }
 
             # When
-            response = TestClient().with_auth(user.email, user.clearTextPassword).patch(
+            response = TestClient().with_auth(user.email).patch(
                 f'{API_URL}/things/{humanize(thing.id)}',
                 json=json)
 
@@ -121,7 +121,7 @@ class Post:
         @clean_database
         def when_thing_with_urls_and_type_offline_only(self, app):
             # Given
-            user = create_user(email='test@email.com', password='P@55W0rd!')
+            user = create_user(email='test@email.com')
             offerer = create_offerer()
             user_offerer = create_user_offerer(user, offerer)
             venue = create_venue(offerer, is_virtual=True, siret=None)
@@ -131,7 +131,7 @@ class Post:
                     'url': 'http://jeux_abo.fr/offre', 'isNational': False, 'venueId': humanize(venue.id)}
 
             # When
-            response = TestClient().with_auth(user.email, user.clearTextPassword).post(
+            response = TestClient().with_auth(user.email).post(
                 f'{API_URL}/things/',
                 json=json)
 
@@ -142,7 +142,7 @@ class Post:
         @clean_database
         def when_thing_with_invalid_url(self, app):
             # Given
-            user = create_user(email='test@email.com', password='P@55W0rd!')
+            user = create_user(email='test@email.com')
             offerer = create_offerer()
             user_offerer = create_user_offerer(user, offerer)
             venue = create_venue(offerer, is_virtual=True, siret=None)
@@ -152,7 +152,7 @@ class Post:
                     'url': 'ftp://invalid.url', 'isNational': False, 'venueId': humanize(venue.id)}
 
             # When
-            response = TestClient().with_auth(user.email, user.clearTextPassword).post(
+            response = TestClient().with_auth(user.email).post(
                 f'{API_URL}/things/',
                 json=json)
 
@@ -163,7 +163,7 @@ class Post:
         @clean_database
         def when_thing_with_url_and_physical_venue(self, app):
             # Given
-            user = create_user(email='test@email.com', password='P@55W0rd!')
+            user = create_user(email='test@email.com')
             offerer = create_offerer()
             user_offerer = create_user_offerer(user, offerer)
             venue = create_venue(offerer, is_virtual=False)
@@ -173,7 +173,7 @@ class Post:
                     'url': 'http://jeux.fr/offre', 'isNational': False, 'venueId': humanize(venue.id)}
 
             # When
-            response = TestClient().with_auth(user.email, user.clearTextPassword).post(
+            response = TestClient().with_auth(user.email).post(
                 f'{API_URL}/things/',
                 json=json)
 
@@ -187,7 +187,7 @@ class Post:
         @clean_database
         def when_creating_new_thing(self, app):
             # Given
-            user = create_user(email='test@email.com', password='P@55W0rd!')
+            user = create_user(email='test@email.com')
             offerer = create_offerer()
             user_offerer = create_user_offerer(user, offerer)
             venue = create_venue(offerer, is_virtual=True, siret=None)
@@ -204,7 +204,7 @@ class Post:
                     }
 
             # When
-            response = TestClient().with_auth(user.email, user.clearTextPassword).post(
+            response = TestClient().with_auth(user.email).post(
                 f'{API_URL}/things/',
                 json=json)
 
@@ -217,7 +217,7 @@ class Post:
         @clean_database
         def when_creating_new_thing_without_booking_email(self, app):
             # Given
-            user = create_user(email='test@email.com', password='P@55W0rd!')
+            user = create_user(email='test@email.com')
             offerer = create_offerer()
             user_offerer = create_user_offerer(user, offerer)
             venue = create_venue(offerer, is_virtual=True, siret=None)
@@ -233,7 +233,7 @@ class Post:
                     }
 
             # When
-            response = TestClient().with_auth(user.email, 'P@55W0rd!').post(
+            response = TestClient().with_auth(user.email).post(
                 f'{API_URL}/things/',
                 json=json)
 
@@ -247,7 +247,7 @@ class Post:
         @clean_database
         def when_user_is_not_attached_to_offerer(self, app):
             # Given
-            user = create_user(email='test@email.com', password='P@55W0rd!')
+            user = create_user(email='test@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer, is_virtual=True, siret=None)
             thing = create_thing()
@@ -263,7 +263,7 @@ class Post:
                     }
 
             # When
-            response = TestClient().with_auth(user.email, user.clearTextPassword).post(
+            response = TestClient().with_auth(user.email).post(
                 f'{API_URL}/things/',
                 json=json)
 

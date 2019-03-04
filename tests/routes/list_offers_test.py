@@ -24,11 +24,11 @@ class Get:
         @clean_database
         def test_results_are_paginated_by_chunks_of_10(self, app):
             # Given
-            user = create_user(email='user@test.com', password='azerty123')
+            user = create_user(email='user@test.com')
             create_offers_for(user, 20)
 
             # when
-            response = TestClient().with_auth(email='user@test.com', password='azerty123').get(API_URL + '/offers')
+            response = TestClient().with_auth(email='user@test.com').get(API_URL + '/offers')
 
             # then
             offers = response.json()
@@ -38,9 +38,9 @@ class Get:
         @clean_database
         def test_results_are_paginated_by_default_on_page_1(self, app):
             # given
-            user = create_user(email='user@test.com', password='azerty123')
+            user = create_user(email='user@test.com')
             create_offers_for(user, 20)
-            auth_request = TestClient().with_auth(email='user@test.com', password='azerty123')
+            auth_request = TestClient().with_auth(email='user@test.com')
             offers = auth_request.get(API_URL + '/offers').json()
             first_id = dehumanize(offers[0]['id'])
 
@@ -55,9 +55,9 @@ class Get:
         @clean_database
         def test_returns_offers_sorted_by_id_desc(self, app):
             # given
-            user = create_user(email='user@test.com', password='azerty123')
+            user = create_user(email='user@test.com')
             create_offers_for(user, 20)
-            auth_request = TestClient().with_auth(email='user@test.com', password='azerty123')
+            auth_request = TestClient().with_auth(email='user@test.com')
             response_1 = auth_request.get(API_URL + '/offers?page=1')
 
             # when
@@ -71,10 +71,10 @@ class Get:
         @clean_database
         def test_results_are_filtered_by_given_venue_id(self, app):
             # given
-            user = create_user(email='user@test.com', password='azerty123')
+            user = create_user(email='user@test.com')
             create_offers_for(user, 20, siren='123456789')
             create_offers_for(user, 20, siren='987654321')
-            auth_request = TestClient().with_auth(email='user@test.com', password='azerty123')
+            auth_request = TestClient().with_auth(email='user@test.com')
             venue_id = Venue.query.first().id
 
             # when
@@ -89,9 +89,9 @@ class Get:
         @clean_database
         def test_can_be_filtered_and_paginated_at_the_same_time(self, app):
             # given
-            user = create_user(email='user@test.com', password='azerty123')
+            user = create_user(email='user@test.com')
             create_offers_for(user, 20, siren='987654321')
-            auth_request = TestClient().with_auth(email='user@test.com', password='azerty123')
+            auth_request = TestClient().with_auth(email='user@test.com')
             venue_id = Venue.query.first().id
 
             # when
@@ -106,9 +106,9 @@ class Get:
         @clean_database
         def test_can_be_searched_and_filtered_and_paginated_at_the_same_time(self, app):
             # given
-            user = create_user(email='user@test.com', password='azerty123')
+            user = create_user(email='user@test.com')
             create_offers_for(user, 20, siren='987654321')
-            auth_request = TestClient().with_auth(email='user@test.com', password='azerty123')
+            auth_request = TestClient().with_auth(email='user@test.com')
             venue_id = Venue.query.first().id
 
             # when
@@ -125,9 +125,9 @@ class Get:
         @clean_database
         def test_can_be_searched_using_multiple_search_terms(self, app):
             # given
-            user = create_user(email='user@test.com', password='azerty123')
+            user = create_user(email='user@test.com')
             create_offers_for(user, 20, siren='987654321')
-            auth_request = TestClient().with_auth(email='user@test.com', password='azerty123')
+            auth_request = TestClient().with_auth(email='user@test.com')
             venue_id = Venue.query.first().id
 
             # when
@@ -144,9 +144,9 @@ class Get:
         @clean_database
         def test_list_activation_offers_returns_offers_of_event_type(self, app):
             # given
-            user = create_user(password='p@55sw0rd')
+            user = create_user()
             PcObject.check_and_save(user)
-            auth_request = TestClient().with_auth(email=user.email, password='p@55sw0rd')
+            auth_request = TestClient().with_auth(email=user.email)
             now = datetime.utcnow()
             five_days_ago = now - timedelta(days=5)
             next_week = now + timedelta(days=7)
@@ -176,7 +176,7 @@ class Get:
         @clean_database
         def test_returns_list_of_offers_with_thing_or_event_with_type_details(self, app):
             # given
-            user = create_user(password='p@55sw0rd', is_admin=True, can_book_free_offers=False)
+            user = create_user(can_book_free_offers=False, is_admin=True)
             offerer = create_offerer()
             venue = create_venue(offerer, siret=offerer.siren + '12345', postal_code='93000', departement_code='93')
             event_offer = create_event_offer(venue, event_type=EventType.SPECTACLE_VIVANT)
@@ -204,7 +204,7 @@ class Get:
                 'value': 'EventType.SPECTACLE_VIVANT'
             }
 
-            auth_request = TestClient().with_auth(email=user.email, password='p@55sw0rd')
+            auth_request = TestClient().with_auth(email=user.email)
 
             # when
             response = auth_request.get(API_URL + '/offers')
@@ -221,13 +221,13 @@ class Get:
         @clean_database
         def test_does_not_show_anything_to_user_offerer_when_not_validated(self, app):
             # Given
-            user = create_user(password='azerty123')
+            user = create_user()
             offerer = create_offerer()
             venue = create_venue(offerer)
             user_offerer = create_user_offerer(user, offerer, validation_token=secrets.token_urlsafe(20))
             offer = create_thing_offer(venue)
             PcObject.check_and_save(user_offerer, offer)
-            auth_request = TestClient().with_auth(email=user.email, password='azerty123')
+            auth_request = TestClient().with_auth(email=user.email)
             # When
             response = auth_request.get(API_URL + '/offers')
 
@@ -242,7 +242,7 @@ class Post:
         @clean_database
         def test_create_thing_offer(self, app):
             # given
-            user = create_user(email='user@test.com', password='azerty123')
+            user = create_user(email='user@test.com')
             offerer = create_offerer()
             user_offerer = create_user_offerer(user, offerer)
             venue = create_venue(offerer)
@@ -253,7 +253,7 @@ class Post:
                 'venueId': humanize(venue.id),
                 'thingId': humanize(thing.id)
             }
-            auth_request = TestClient().with_auth(email='user@test.com', password='azerty123')
+            auth_request = TestClient().with_auth(email='user@test.com')
 
             # when
             response = auth_request.post(API_URL + '/offers', json=data)
@@ -264,7 +264,7 @@ class Post:
         @clean_database
         def test_create_event_offer(self, app):
             # given
-            user = create_user(email='user@test.com', password='azerty123')
+            user = create_user(email='user@test.com')
             offerer = create_offerer()
             user_offerer = create_user_offerer(user, offerer)
             venue = create_venue(offerer)
@@ -275,7 +275,7 @@ class Post:
                 'venueId': humanize(venue.id),
                 'eventId': humanize(event.id)
             }
-            auth_request = TestClient().with_auth(email='user@test.com', password='azerty123')
+            auth_request = TestClient().with_auth(email='user@test.com')
 
             # when
             response = auth_request.post(API_URL + '/offers', json=data)
@@ -287,7 +287,7 @@ class Post:
         @clean_database
         def test_create_thing_offer_returns_bad_request_if_thing_is_physical_and_venue_is_virtual(self, app):
             # given
-            user = create_user(email='user@test.com', password='azerty123')
+            user = create_user(email='user@test.com')
             offerer = create_offerer()
             user_offerer = create_user_offerer(user, offerer)
             venue = create_venue(offerer, is_virtual=True, siret=None)
@@ -298,7 +298,7 @@ class Post:
                 'venueId': humanize(venue.id),
                 'thingId': humanize(thing.id)
             }
-            auth_request = TestClient().with_auth(email='user@test.com', password='azerty123')
+            auth_request = TestClient().with_auth(email='user@test.com')
 
             # when
             response = auth_request.post(API_URL + '/offers', json=data)
@@ -314,8 +314,8 @@ class Post:
         @clean_database
         def when_user_is_not_attached_to_offerer(self, app):
             # given
-            current_user = create_user(email='user@test.com', password='azerty123')
-            other_user = create_user(email='jimmy@test.com', password='p@55sw0rd')
+            current_user = create_user(email='user@test.com')
+            other_user = create_user(email='jimmy@test.com')
             offerer = create_offerer()
 
             other_user_offerer = create_user_offerer(other_user, offerer)
@@ -328,7 +328,7 @@ class Post:
                 'venueId': humanize(venue.id),
                 'eventId': humanize(event.id)
             }
-            auth_request = TestClient().with_auth(email=current_user.email, password='azerty123')
+            auth_request = TestClient().with_auth(email=current_user.email)
 
             # when
             response = auth_request.post(API_URL + '/offers', json=data)

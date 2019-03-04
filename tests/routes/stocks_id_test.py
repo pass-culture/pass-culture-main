@@ -14,7 +14,7 @@ class Get:
         @clean_database
         def when_user_is_admin(self, app):
             # given
-            user = create_user(email='test@email.com', can_book_free_offers=False, password='P@55w0rd', is_admin=True)
+            user = create_user(email='test@email.com', can_book_free_offers=False, is_admin=True)
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue, price=10, available=10)
@@ -22,7 +22,7 @@ class Get:
             humanized_stock_id = humanize(stock.id)
 
             # when
-            request = TestClient().with_auth('test@email.com', 'P@55w0rd').get(API_URL + '/stocks/' + humanized_stock_id)
+            request = TestClient().with_auth('test@email.com').get(API_URL + '/stocks/' + humanized_stock_id)
             # then
             assert request.status_code == 200
             assert request.json()['available'] == 10
@@ -33,7 +33,7 @@ class Get:
         @clean_database
         def when_stock_is_soft_deleted(self, app):
             # given
-            user = create_user(email='test@email.com', can_book_free_offers=False, password='P@55w0rd', is_admin=True)
+            user = create_user(email='test@email.com', can_book_free_offers=False, is_admin=True)
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue, price=10, available=10, is_soft_deleted=True)
@@ -41,7 +41,7 @@ class Get:
             humanized_stock_id = humanize(stock.id)
 
             # when
-            request = TestClient().with_auth('test@email.com', 'P@55w0rd').get(API_URL + '/stocks/' + humanized_stock_id)
+            request = TestClient().with_auth('test@email.com').get(API_URL + '/stocks/' + humanized_stock_id)
 
             # then
             assert request.status_code == 404
@@ -53,7 +53,7 @@ class Patch:
         @clean_database
         def when_user_has_editor_rights_on_offerer(self, app):
             # given
-            user = create_user(email='test@email.com', password='P@55w0rd')
+            user = create_user(email='test@email.com')
             offerer = create_offerer()
             user_offerer = create_user_offerer(user, offerer)
             venue = create_venue(offerer)
@@ -62,18 +62,18 @@ class Patch:
             humanized_stock_id = humanize(stock.id)
 
             # when
-            request_update = TestClient().with_auth('test@email.com', 'P@55w0rd').patch(API_URL + '/stocks/' + humanized_stock_id, json={'available': 5, 'price': 20})
+            request_update = TestClient().with_auth('test@email.com').patch(API_URL + '/stocks/' + humanized_stock_id, json={'available': 5, 'price': 20})
 
             # then
             assert request_update.status_code == 200
-            request_after_update = TestClient().with_auth('test@email.com', 'P@55w0rd').get(API_URL + '/stocks/' + humanized_stock_id)
+            request_after_update = TestClient().with_auth('test@email.com').get(API_URL + '/stocks/' + humanized_stock_id)
             assert request_after_update.json()['available'] == 5
             assert request_after_update.json()['price'] == 20
 
         @clean_database
         def when_user_is_admin(self, app):
             # given
-            user = create_user(email='test@email.com', can_book_free_offers=False, password='P@55w0rd', is_admin=True)
+            user = create_user(email='test@email.com', can_book_free_offers=False, is_admin=True)
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue, price=10, available=10)
@@ -81,11 +81,11 @@ class Patch:
             humanized_stock_id = humanize(stock.id)
 
             # when
-            request_update = TestClient().with_auth('test@email.com', 'P@55w0rd').patch(API_URL + '/stocks/' + humanized_stock_id, json={'available': 5, 'price': 20})
+            request_update = TestClient().with_auth('test@email.com').patch(API_URL + '/stocks/' + humanized_stock_id, json={'available': 5, 'price': 20})
 
             # then
             assert request_update.status_code == 200
-            request_after_update = TestClient().with_auth('test@email.com', 'P@55w0rd').get(API_URL + '/stocks/' + humanized_stock_id)
+            request_after_update = TestClient().with_auth('test@email.com').get(API_URL + '/stocks/' + humanized_stock_id)
             assert request_after_update.json()['available'] == 5
             assert request_after_update.json()['price'] == 20
 
@@ -95,7 +95,7 @@ class Patch:
         def when_wrong_type_for_available(self, app):
             # given
             user = create_user()
-            user_admin = create_user(email='email@test.com', can_book_free_offers=False, password='P@55w0rd', is_admin=True)
+            user_admin = create_user(email='email@test.com', can_book_free_offers=False, is_admin=True)
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue, price=0)
@@ -104,7 +104,7 @@ class Patch:
             PcObject.check_and_save(booking, user_admin)
 
             # when
-            response = TestClient().with_auth('email@test.com', 'P@55w0rd').patch(API_URL + '/stocks/' + humanize(stock.id), json={'available': ' '})
+            response = TestClient().with_auth('email@test.com').patch(API_URL + '/stocks/' + humanize(stock.id), json={'available': ' '})
 
             # then
             assert response.status_code == 400
@@ -114,7 +114,7 @@ class Patch:
         def when_booking_limit_datetime_after_event_occurrence(self, app):
             # given
             from models.pc_object import serialize
-            user = create_user(email='email@test.com', can_book_free_offers=False, password='P@55w0rd', is_admin=True)
+            user = create_user(email='email@test.com', can_book_free_offers=False, is_admin=True)
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue)
@@ -124,7 +124,7 @@ class Patch:
 
             serialized_date = serialize(stock.eventOccurrence.beginningDatetime + timedelta(days=1))
             # when
-            response = TestClient().with_auth('email@test.com', 'P@55w0rd').patch(API_URL + '/stocks/' + humanize(stockId), json={'bookingLimitDatetime': serialized_date})
+            response = TestClient().with_auth('email@test.com').patch(API_URL + '/stocks/' + humanize(stockId), json={'bookingLimitDatetime': serialized_date})
 
             # then
             assert response.status_code == 400
@@ -136,7 +136,7 @@ class Patch:
         def when_available_below_number_of_already_existing_bookings(self, app):
             # given
             user = create_user()
-            user_admin = create_user(email='email@test.com', can_book_free_offers=False, password='P@55w0rd', is_admin=True)
+            user_admin = create_user(email='email@test.com', can_book_free_offers=False, is_admin=True)
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue, price=0)
@@ -145,7 +145,7 @@ class Patch:
             PcObject.check_and_save(booking, user_admin)
 
             # when
-            response = TestClient().with_auth('email@test.com', 'P@55w0rd').patch(API_URL + '/stocks/' + humanize(stock.id), json={'available': 0})
+            response = TestClient().with_auth('email@test.com').patch(API_URL + '/stocks/' + humanize(stock.id), json={'available': 0})
 
             # then
             assert response.status_code == 400
@@ -156,14 +156,14 @@ class Patch:
         @clean_database
         def when_user_has_no_rights(self, app):
             # given
-            user = create_user(email='test@email.com', password='P@55w0rd')
+            user = create_user(email='test@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue)
             PcObject.check_and_save(user, stock)
 
             # when
-            response = TestClient().with_auth('test@email.com', 'P@55w0rd').patch(API_URL + '/stocks/' + humanize(stock.id), json={'available': 5})
+            response = TestClient().with_auth('test@email.com').patch(API_URL + '/stocks/' + humanize(stock.id), json={'available': 5})
 
             # then
             assert response.status_code == 403

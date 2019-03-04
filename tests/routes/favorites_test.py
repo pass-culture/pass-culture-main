@@ -40,7 +40,7 @@ class Get:
             PcObject.check_and_save(user1, user2, recommendation1, recommendation2, recommendation3, recommendation4)
 
             # when
-            response = TestClient().with_auth(user1.email, user1.clearTextPassword) \
+            response = TestClient().with_auth(user1.email) \
                 .get(RECOMMENDATION_URL + '/favorites')
 
             # then
@@ -59,7 +59,7 @@ class Get:
             PcObject.check_and_save(user1, user2, recommendation1)
 
             # when
-            response = TestClient().with_auth(user1.email, user1.clearTextPassword) \
+            response = TestClient().with_auth(user1.email) \
                 .get(RECOMMENDATION_URL + '/favorites')
 
             # then

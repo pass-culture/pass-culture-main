@@ -270,8 +270,8 @@ def test_find_filtered_venues_with_False_has_validated_user_offerer_param_return
 def test_find_filtered_venues_with_True_has_validated_user_param_return_filtered_venues(app):
     # Given
     validated_user = create_user()
-    not_validated_user1= create_user(email= "mail1@mail.com", validation_token="hello token")
-    not_validated_user2 = create_user(email= "mail2@mail.com", validation_token="other token")
+    not_validated_user1= create_user(email="mail1@mail.com", validation_token="hello token")
+    not_validated_user2 = create_user(email="mail2@mail.com", validation_token="other token")
     offerer1 = create_offerer()
     offerer2 = create_offerer(siren="123456781")
     offerer3 = create_offerer(siren="123456782")
@@ -300,8 +300,8 @@ def test_find_filtered_venues_with_True_has_validated_user_param_return_filtered
 def test_find_filtered_venues_with_False_has_validated_user_param_return_filtered_venues(app):
     # Given
     validated_user = create_user()
-    not_validated_user1= create_user(email= "mail1@mail.com", validation_token="hello token")
-    not_validated_user2 = create_user(email= "mail2@mail.com", validation_token="other token")
+    not_validated_user1= create_user(email="mail1@mail.com", validation_token="hello token")
+    not_validated_user2 = create_user(email="mail2@mail.com", validation_token="other token")
     offerer1 = create_offerer()
     offerer2 = create_offerer(siren="123456781")
     offerer3 = create_offerer(siren="123456782")

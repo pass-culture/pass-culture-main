@@ -23,7 +23,7 @@ from tests.test_utils import API_URL, \
 @pytest.mark.standalone
 def test_create_mediation_with_thumb_url(app):
     # given
-    user = create_user(password='p@55sw0rd')
+    user = create_user()
     offerer = create_offerer()
     venue = create_venue(offerer)
     offer = create_event_offer(venue)
@@ -32,7 +32,7 @@ def test_create_mediation_with_thumb_url(app):
     PcObject.check_and_save(offer)
     PcObject.check_and_save(user, venue, offerer, user_offerer)
 
-    auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
+    auth_request = req_with_auth(email=user.email)
 
     data = {
         'offerId': humanize(offer.id),
@@ -51,14 +51,14 @@ def test_create_mediation_with_thumb_url(app):
 @pytest.mark.standalone
 def test_create_mediation_with_thumb_url_returns_400_if_url_is_not_an_image(app):
     # given
-    user = create_user(password='p@55sw0rd')
+    user = create_user()
     offerer = create_offerer()
     venue = create_venue(offerer)
     offer = create_event_offer(venue)
     user_offerer = create_user_offerer(user, offerer)
     PcObject.check_and_save(user, venue, user_offerer)
 
-    auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
+    auth_request = req_with_auth(email=user.email)
 
     data = {
         'offerId': humanize(offer.id),
@@ -78,7 +78,7 @@ def test_create_mediation_with_thumb_url_returns_400_if_url_is_not_an_image(app)
 @pytest.mark.standalone
 def test_create_mediation_with_thumb_file(app):
     # given
-    user = create_user(password='p@55sw0rd')
+    user = create_user()
     offerer = create_offerer()
     venue = create_venue(offerer)
     offer = create_event_offer(venue)
@@ -87,7 +87,7 @@ def test_create_mediation_with_thumb_file(app):
     PcObject.check_and_save(offer)
     PcObject.check_and_save(user, venue, offerer, user_offerer)
 
-    auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
+    auth_request = req_with_auth(email=user.email)
 
     with open(Path(path.dirname(path.realpath(__file__))) / '..' / '..'
               / 'sandboxes' / 'thumbs' / 'mediations' / 'FranckLepage', 'rb') as thumb_file:
@@ -110,7 +110,7 @@ def test_create_mediation_with_thumb_file(app):
 @clean_database
 def test_patch_mediation_returns_200(app):
     # given
-    user = create_user(password='p@55sw0rd')
+    user = create_user()
     offerer = create_offerer()
     venue = create_venue(offerer)
     offer = create_event_offer(venue)
@@ -119,7 +119,7 @@ def test_patch_mediation_returns_200(app):
     PcObject.check_and_save(mediation)
     PcObject.check_and_save(user, venue, offerer, user_offerer)
 
-    auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
+    auth_request = req_with_auth(email=user.email)
     data = {'frontText': 'new front text', 'backText': 'new back text', 'isActive': False}
 
     # when
@@ -141,8 +141,8 @@ def test_patch_mediation_returns_200(app):
 @pytest.mark.standalone
 def test_patch_mediation_returns_403_if_user_is_not_attached_to_offerer_of_mediation(app):
     # given
-    current_user = create_user(email='bobby@test.com', password='p@55sw0rd')
-    other_user = create_user(email='jimmy@test.com', password='p@55sw0rd')
+    current_user = create_user(email='bobby@test.com')
+    other_user = create_user(email='jimmy@test.com')
     offerer = create_offerer()
     venue = create_venue(offerer)
     offer = create_event_offer(venue)
@@ -151,7 +151,7 @@ def test_patch_mediation_returns_403_if_user_is_not_attached_to_offerer_of_media
     PcObject.check_and_save(mediation)
     PcObject.check_and_save(other_user, current_user, venue, offerer, user_offerer)
 
-    auth_request = req_with_auth(email=current_user.email, password='p@55sw0rd')
+    auth_request = req_with_auth(email=current_user.email)
 
     # when
     response = auth_request.patch(API_URL + '/mediations/%s' % humanize(mediation.id), json={})
@@ -164,9 +164,9 @@ def test_patch_mediation_returns_403_if_user_is_not_attached_to_offerer_of_media
 @pytest.mark.standalone
 def test_patch_mediation_returns_404_if_mediation_does_not_exist(app):
     # given
-    user = create_user(password='p@55sw0rd')
+    user = create_user()
     PcObject.check_and_save(user)
-    auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
+    auth_request = req_with_auth(email=user.email)
 
     # when
     response = auth_request.patch(API_URL + '/mediations/ADFGA', json={})
@@ -179,7 +179,7 @@ def test_patch_mediation_returns_404_if_mediation_does_not_exist(app):
 @pytest.mark.standalone
 def test_get_mediation_returns_200_and_the_mediation_as_json(app):
     # given
-    user = create_user(password='p@55sw0rd')
+    user = create_user()
     offerer = create_offerer()
     venue = create_venue(offerer)
     offer = create_event_offer(venue)
@@ -189,7 +189,7 @@ def test_get_mediation_returns_200_and_the_mediation_as_json(app):
     PcObject.check_and_save(offer)
     PcObject.check_and_save(user, venue, offerer, user_offerer)
 
-    auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
+    auth_request = req_with_auth(email=user.email)
 
     # when
     response = auth_request.get(API_URL + '/mediations/%s' % humanize(mediation.id))
@@ -205,9 +205,9 @@ def test_get_mediation_returns_200_and_the_mediation_as_json(app):
 @pytest.mark.standalone
 def test_get_mediation_returns_404_if_mediation_does_not_exist(app):
     # given
-    user = create_user(password='p@55sw0rd')
+    user = create_user()
     PcObject.check_and_save(user)
-    auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
+    auth_request = req_with_auth(email=user.email)
 
     # when
     response = auth_request.get(API_URL + '/mediations/AE')
@@ -220,7 +220,7 @@ def test_get_mediation_returns_404_if_mediation_does_not_exist(app):
 @clean_database
 def test_patch_mediation_make_mediations_invalid_for_all_users_when_deactivating_mediation(app):
     # given
-    user_pro = create_user(password='p@55sw0rd')
+    user_pro = create_user()
     other_user = create_user(email='other@email.com')
     offerer = create_offerer()
     venue = create_venue(offerer)
@@ -234,7 +234,7 @@ def test_patch_mediation_make_mediations_invalid_for_all_users_when_deactivating
     other_recommendation = create_recommendation(offer, other_user, mediation2, valid_until_date=original_validity_date)
     PcObject.check_and_save(other_user,  user_offerer, recommendation1, recommendation2, other_recommendation)
 
-    auth_request = req_with_auth(email=user_pro.email, password='p@55sw0rd')
+    auth_request = req_with_auth(email=user_pro.email)
     data = {'isActive': False}
 
     # when

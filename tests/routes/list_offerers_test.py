@@ -30,13 +30,13 @@ class Get:
             offerer3 = create_offerer(siren='123456783', name='offreur B')
             PcObject.check_and_save(offerer1, offerer3, offerer2)
 
-            user = create_user(password='p@55sw0rd')
+            user = create_user()
             user.offerers = [offerer1, offerer2, offerer3]
             PcObject.check_and_save(user)
 
             # when
             response = TestClient() \
-                .with_auth(user.email, user.clearTextPassword) \
+                .with_auth(user.email) \
                 .get(API_URL + '/offerers')
 
             # then
@@ -54,13 +54,13 @@ class Get:
             offerer3 = create_offerer(siren='123456783', name='offreur B')
             PcObject.check_and_save(offerer1, offerer3, offerer2)
 
-            user = create_user(can_book_free_offers=True, password='p@55sw0rd', is_admin=False)
+            user = create_user(can_book_free_offers=True, is_admin=False)
             user.offerers = [offerer1, offerer2]
             PcObject.check_and_save(user)
 
             # when
             response = TestClient() \
-                .with_auth(user.email, user.clearTextPassword) \
+                .with_auth(user.email) \
                 .get(API_URL + '/offerers')
 
             # then
@@ -75,13 +75,13 @@ class Get:
             offerer3 = create_offerer(siren='123456783', name='offreur B')
             PcObject.check_and_save(offerer1, offerer3, offerer2)
 
-            user = create_user(can_book_free_offers=False, password='p@55sw0rd', is_admin=True)
+            user = create_user(can_book_free_offers=False, is_admin=True)
             user.offerers = [offerer1, offerer2]
             PcObject.check_and_save(user)
 
             # when
             response = TestClient() \
-                .with_auth(user.email, user.clearTextPassword) \
+                .with_auth(user.email) \
                 .get(API_URL + '/offerers')
 
             # then
@@ -99,13 +99,13 @@ class Get:
             bank_information2 = create_bank_information(id_at_providers='123456782', offerer=offerer2)
             bank_information3 = create_bank_information(id_at_providers='123456783', offerer=offerer3)
 
-            user = create_user(can_book_free_offers=False, password='p@55sw0rd', is_admin=True)
+            user = create_user(can_book_free_offers=False, is_admin=True)
             user.offerers = [offerer1, offerer2]
             PcObject.check_and_save(user, bank_information1, bank_information2, bank_information3)
 
             # when
             response = TestClient() \
-                .with_auth(user.email, user.clearTextPassword) \
+                .with_auth(user.email) \
                 .get(API_URL + '/offerers?validated=false')
 
             # then
@@ -120,7 +120,7 @@ class Get:
         @clean_database
         def when_param_validated_is_false_and_returns_only_not_validated_offerers(self, app):
             # given
-            user = create_user(password='p@55sw0rd')
+            user = create_user()
             offerer1 = create_offerer(siren='123456781', name='offreur C')
             offerer2 = create_offerer(siren='123456782', name='offreur A')
             offerer3 = create_offerer(siren='123456783', name='offreur B')
@@ -131,7 +131,7 @@ class Get:
 
             # when
             response = TestClient() \
-                .with_auth(user.email, user.clearTextPassword) \
+                .with_auth(user.email) \
                 .get(API_URL + '/offerers?validated=false')
 
             # then
@@ -142,7 +142,7 @@ class Get:
         def when_param_validated_is_false_and_returns_only_name_and_siren_of_not_validated_offerers(
                 self, app):
             # given
-            user = create_user(password='p@55sw0rd')
+            user = create_user()
             offerer1 = create_offerer(siren='123456781', name='offreur C')
             offerer2 = create_offerer(siren='123456782', name='offreur A')
             offerer3 = create_offerer(siren='123456783', name='offreur B')
@@ -153,7 +153,7 @@ class Get:
 
             # when
             response = TestClient() \
-                .with_auth(user.email, user.clearTextPassword) \
+                .with_auth(user.email) \
                 .get(API_URL + '/offerers?validated=false')
 
             # then
@@ -164,7 +164,7 @@ class Get:
         @clean_database
         def when_param_validated_is_true_and_returns_only_validated_offerers_if(self, app):
             # given
-            user = create_user(password='p@55sw0rd')
+            user = create_user()
             offerer1 = create_offerer(siren='123456781', name='offreur C')
             offerer2 = create_offerer(siren='123456782', name='offreur A')
             offerer3 = create_offerer(siren='123456783', name='offreur B')
@@ -175,7 +175,7 @@ class Get:
 
             # when
             response = TestClient() \
-                .with_auth(user.email, user.clearTextPassword) \
+                .with_auth(user.email) \
                 .get(API_URL + '/offerers?validated=true')
 
             # then
@@ -187,7 +187,7 @@ class Get:
         @clean_database
         def when_param_validated_is_true_returns_all_info_of_validated_offerers(self, app):
             # given
-            user = create_user(password='p@55sw0rd')
+            user = create_user()
             offerer1 = create_offerer(siren='123456781', name='offreur C')
             offerer2 = create_offerer(siren='123456782', name='offreur A')
             offerer3 = create_offerer(siren='123456783', name='offreur B')
@@ -202,7 +202,7 @@ class Get:
 
             # when
             response = TestClient() \
-                .with_auth(user.email, user.clearTextPassword) \
+                .with_auth(user.email) \
                 .get(API_URL + '/offerers?validated=true')
 
             # then
@@ -218,7 +218,7 @@ class Get:
         @clean_database
         def when_param_validated_is_true_and_no_bank_information_for_offerer(self, app):
             # given
-            user = create_user(password='p@55sw0rd')
+            user = create_user()
             offerer1 = create_offerer(siren='123456781', name='offreur C')
             offerer2 = create_offerer(siren='123456782', name='offreur A')
             offerer3 = create_offerer(siren='123456783', name='offreur B')
@@ -229,7 +229,7 @@ class Get:
 
             # when
             response = TestClient() \
-                .with_auth(user.email, user.clearTextPassword) \
+                .with_auth(user.email) \
                 .get(API_URL + '/offerers?validated=true')
 
             # then
@@ -243,10 +243,10 @@ class Get:
         def when_user_offerer_is_not_validated_but_returns_no_offerer(self, app):
             # Given
             offerer = create_offerer()
-            user = create_user(password='p@55sw0rd!')
+            user = create_user()
             user_offerer = create_user_offerer(user, offerer, validation_token=secrets.token_urlsafe(20))
             PcObject.check_and_save(user_offerer)
-            auth_request = req_with_auth(email=user.email, password='p@55sw0rd!')
+            auth_request = req_with_auth(email=user.email)
 
             # When
             response = auth_request.get(API_URL + '/offerers/')
@@ -264,13 +264,13 @@ class Get:
             offerer3 = create_offerer(siren='123456783', name='offreur B')
             PcObject.check_and_save(offerer1, offerer3, offerer2)
 
-            user = create_user(can_book_free_offers=False, password='p@55sw0rd', is_admin=True)
+            user = create_user(can_book_free_offers=False, is_admin=True)
             user.offerers = [offerer1, offerer2]
             PcObject.check_and_save(user)
 
             # when
             response = TestClient() \
-                .with_auth(user.email, user.clearTextPassword) \
+                .with_auth(user.email) \
                 .get(API_URL + '/offerers?validated=blabla')
 
             # then

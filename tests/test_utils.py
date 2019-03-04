@@ -42,15 +42,21 @@ saved_counts = {}
 USER_TEST_ADMIN_EMAIL = "pctest.admin93.0@btmx.fr"
 USER_TEST_ADMIN_PASSWORD = "pctest.Admin93.0"
 API_URL = "http://localhost:5000"
+user = User()
+BASE_PLAIN_PASSWORD = 'AZERTY123'
+user.setPassword(BASE_PLAIN_PASSWORD)
+BASE_HASHED_PASSWORD = user.password
 
 
-def req_with_auth(email=None, password=None, headers={'origin': 'http://localhost:3000'}):
+def req_with_auth(email=None, headers={'origin': 'http://localhost:3000'}):
     request = req.Session()
     request.headers = headers
-    if email is None:
-        request.auth = (USER_TEST_ADMIN_EMAIL, USER_TEST_ADMIN_PASSWORD)
-    elif password is not None:
-        request.auth = (email, password)
+
+    if email:
+        request.auth = (email, BASE_PLAIN_PASSWORD)
+    else:
+        request.auth = (USER_TEST_ADMIN_EMAIL, BASE_PLAIN_PASSWORD)
+
     return request
 
 
@@ -139,9 +145,8 @@ def create_booking_for_event(
 
 
 def create_user(public_name='John Doe', first_name='John', last_name='Doe', postal_code='93100', departement_code='93',
-                email='john.doe@test.com', can_book_free_offers=True, password='totallysafepsswd',
-                validation_token=None, is_admin=False, reset_password_token=None,
-                reset_password_token_validity_limit=datetime.utcnow() + timedelta(hours=24),
+                email='john.doe@test.com', can_book_free_offers=True, validation_token=None, is_admin=False,
+                reset_password_token=None, reset_password_token_validity_limit=datetime.utcnow() + timedelta(hours=24),
                 date_created=datetime.utcnow(), phone_number='0612345678', date_of_birth=datetime(2001, 1, 1),
                 idx=None):
     user = User()
@@ -153,7 +158,8 @@ def create_user(public_name='John Doe', first_name='John', last_name='Doe', post
     user.postalCode = postal_code
     user.departementCode = departement_code
     user.validationToken = validation_token
-    user.setPassword(password)
+    user.clearTextPassword = BASE_PLAIN_PASSWORD
+    user.password = BASE_HASHED_PASSWORD
     user.isAdmin = is_admin
     user.resetPasswordToken = reset_password_token
     user.resetPasswordTokenValidityLimit = reset_password_token_validity_limit

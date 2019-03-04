@@ -40,7 +40,7 @@ class Put:
         @clean_database
         def when_given_mediation_does_not_match_given_offer(self, app):
             # given
-            user = create_user(email='user1@user.fr', password='P@55w0rd')
+            user = create_user(email='user1@user.fr')
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer_thing_1 = create_thing_offer(venue, thumb_count=1, dominant_color=b'123')
@@ -50,7 +50,7 @@ class Put:
             mediation_1 = create_mediation(offer_thing_1)
             mediation_2 = create_mediation(offer_thing_2)
             PcObject.check_and_save(user, stock_thing_1, stock_thing_2, mediation_1, mediation_2)
-            auth_request = TestClient().with_auth(user.email, user.clearTextPassword)
+            auth_request = TestClient().with_auth(user.email)
 
             # when
             response = auth_request.put(RECOMMENDATION_URL +
@@ -65,14 +65,14 @@ class Put:
         @clean_database
         def when_offer_is_unknown_and_mediation_is_known(self, app):
             # given
-            user = create_user(email='user1@user.fr', password='P@55w0rd')
+            user = create_user(email='user1@user.fr')
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer_thing = create_thing_offer(venue, thumb_count=1, dominant_color=b'123')
             stock_thing = create_stock_with_thing_offer(offerer, venue, offer_thing, price=0)
             mediation = create_mediation(offer_thing)
             PcObject.check_and_save(user, stock_thing, mediation)
-            auth_request = TestClient().with_auth(user.email, user.clearTextPassword)
+            auth_request = TestClient().with_auth(user.email)
 
             # when
             response = auth_request.put(RECOMMENDATION_URL +
@@ -87,14 +87,14 @@ class Put:
         @clean_database
         def when_offer_is_known_and_mediation_is_unknown(self, app):
             # given
-            user = create_user(email='user1@user.fr', password='P@55w0rd')
+            user = create_user(email='user1@user.fr')
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer_thing = create_thing_offer(venue, thumb_count=1, dominant_color=b'123')
             stock_thing = create_stock_with_thing_offer(offerer, venue, offer_thing, price=0)
             mediation = create_mediation(offer_thing)
             PcObject.check_and_save(user, stock_thing, mediation)
-            auth_request = TestClient().with_auth(user.email, user.clearTextPassword)
+            auth_request = TestClient().with_auth(user.email)
 
             # when
             response = auth_request.put(RECOMMENDATION_URL +
@@ -109,9 +109,9 @@ class Put:
         @clean_database
         def when_offer_is_unknown_and_mediation_is_unknown(self, app):
             # given
-            user = create_user(email='user1@user.fr', password='P@55w0rd')
+            user = create_user(email='user1@user.fr')
             PcObject.check_and_save(user)
-            auth_request = TestClient().with_auth(user.email, user.clearTextPassword)
+            auth_request = TestClient().with_auth(user.email)
 
             # when
             response = auth_request.put(RECOMMENDATION_URL +
@@ -126,14 +126,14 @@ class Put:
         @clean_database
         def when_venue_of_given_offer_is_not_validated(self, app):
             # given
-            user = create_user(email='weird.bug@email.com', password='P@55w0rd')
+            user = create_user(email='weird.bug@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
             venue.generate_validation_token()
             offer1 = create_thing_offer(venue, thumb_count=1)
             stock1 = create_stock_from_offer(offer1, price=0)
             PcObject.check_and_save(user, stock1)
-            auth_request = TestClient().with_auth(user.email, user.clearTextPassword)
+            auth_request = TestClient().with_auth(user.email)
 
             data = {'seenRecommendationIds': []}
             # when
@@ -149,7 +149,7 @@ class Put:
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_event_offer(venue)
-            user = create_user(email='test@email.com', password='P@55w0rd')
+            user = create_user(email='test@email.com')
             event_occurrence1 = create_event_occurrence(offer)
             event_occurrence2 = create_event_occurrence(offer)
             stock1 = create_stock_from_event_occurrence(event_occurrence1, soft_deleted=True)
@@ -178,7 +178,7 @@ class Put:
             ]
 
             # When
-            response = TestClient().with_auth('test@email.com', 'P@55w0rd') \
+            response = TestClient().with_auth('test@email.com') \
                 .put('{}/read'.format(RECOMMENDATION_URL), json=read_recommendation_data)
 
             # Then
@@ -206,7 +206,7 @@ class Put:
             recommendation3 = create_recommendation(thing_offer2, user)
             PcObject.check_and_save(stock1, stock2, stock3, stock4, recommendation1, recommendation2, recommendation3)
 
-            auth_request = TestClient().with_auth(user.email, user.clearTextPassword)
+            auth_request = TestClient().with_auth(user.email)
 
             reads = [
                 {"id": humanize(recommendation1.id), "dateRead": "2018-12-17T15:59:11.689000Z"},
@@ -226,7 +226,7 @@ class Put:
         @clean_database
         def when_user_has_no_offer_in_his_department(self, app):
             # given
-            user = create_user(is_admin=False, can_book_free_offers=True, departement_code='973')
+            user = create_user(departement_code='973', can_book_free_offers=True, is_admin=False)
             offerer = create_offerer()
             venue29 = create_venue(offerer, siret=offerer.siren + '98765', postal_code='29000', departement_code='29')
             venue34 = create_venue(offerer, siret=offerer.siren + '12345', postal_code='34000', departement_code='34')
@@ -243,7 +243,7 @@ class Put:
             PcObject.check_and_save(user, stock1, stock2, stock3, stock4)
 
             # when
-            response = TestClient().with_auth(user.email, user.clearTextPassword) \
+            response = TestClient().with_auth(user.email) \
                 .put(RECOMMENDATION_URL, json={'readRecommendations': []})
 
             # then
@@ -256,7 +256,7 @@ class Put:
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_event_offer(venue)
-            user = create_user(email='test@email.com', password='P@55w0rd')
+            user = create_user(email='test@email.com')
             event_occurrence1 = create_event_occurrence(offer)
             event_occurrence2 = create_event_occurrence(offer)
             stock1 = create_stock_from_event_occurrence(event_occurrence1, soft_deleted=True)
@@ -271,7 +271,7 @@ class Put:
             PcObject.check_and_save(stock1, stock2, stock3, stock4, recommendation1, recommendation2, recommendation3)
 
             # When
-            response = TestClient().with_auth('test@email.com', 'P@55w0rd').put(RECOMMENDATION_URL, json={})
+            response = TestClient().with_auth('test@email.com').put(RECOMMENDATION_URL, json={})
 
             # Then
             recommendation_ids = [r['id'] for r in (response.json())]
@@ -282,12 +282,12 @@ class Put:
         @clean_database
         def when_offers_have_no_stocks(self, app):
             # given
-            user = create_user(email='weird.bug@email.com', password='P@55w0rd')
+            user = create_user(email='weird.bug@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_event_offer(venue)
             PcObject.check_and_save(user, offer)
-            auth_request = TestClient().with_auth(user.email, user.clearTextPassword)
+            auth_request = TestClient().with_auth(user.email)
 
             # when
             response = auth_request.put(RECOMMENDATION_URL, json={'seenRecommendationIds': []})
@@ -299,13 +299,13 @@ class Put:
         @clean_database
         def when_offers_have_a_thumb_count_for_thing_and_no_mediation(self, app):
             # given
-            user = create_user(email='weird.bug@email.com', password='P@55w0rd')
+            user = create_user(email='weird.bug@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_thing_offer(venue, thumb_count=1)
             stock = create_stock_from_offer(offer, price=0)
             PcObject.check_and_save(user, stock)
-            auth_request = TestClient().with_auth(user.email, user.clearTextPassword)
+            auth_request = TestClient().with_auth(user.email)
 
             # when
             response = auth_request.put(RECOMMENDATION_URL, json={'seenRecommendationIds': []})
@@ -317,13 +317,13 @@ class Put:
         @clean_database
         def when_offers_have_no_thumb_count_for_thing_and_no_mediation(self, app):
             # given
-            user = create_user(email='weird.bug@email.com', password='P@55w0rd')
+            user = create_user(email='weird.bug@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_thing_offer(venue, thumb_count=0)
             stock = create_stock_from_offer(offer, price=0)
             PcObject.check_and_save(user, stock)
-            auth_request = TestClient().with_auth(user.email, user.clearTextPassword)
+            auth_request = TestClient().with_auth(user.email)
 
             # when
             response = auth_request.put(RECOMMENDATION_URL, json={'seenRecommendationIds': []})
@@ -336,14 +336,14 @@ class Put:
         def when_offers_have_no_thumb_count_for_thing_and_a_mediation(
                 self, app):
             # given
-            user = create_user(email='weird.bug@email.com', password='P@55w0rd')
+            user = create_user(email='weird.bug@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_thing_offer(venue, thumb_count=0)
             stock = create_stock_from_offer(offer, price=0)
             mediation = create_mediation(offer)
             PcObject.check_and_save(user, stock, mediation)
-            auth_request = TestClient().with_auth(user.email, user.clearTextPassword)
+            auth_request = TestClient().with_auth(user.email)
 
             # when
             response = auth_request.put(RECOMMENDATION_URL, json={'seenRecommendationIds': []})
@@ -359,7 +359,7 @@ class Put:
             four_days_from_now = now + timedelta(days=4)
             eight_days_from_now = now + timedelta(days=8)
 
-            user = create_user(email='weird.bug@email.com', password='P@55w0rd')
+            user = create_user(email='weird.bug@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_event_offer(venue)
@@ -370,7 +370,7 @@ class Put:
             )
             stock = create_stock_from_event_occurrence(event_occurrence, price=0, available=20)
             PcObject.check_and_save(user, stock)
-            auth_request = TestClient().with_auth(user.email, user.clearTextPassword)
+            auth_request = TestClient().with_auth(user.email)
 
             # when
             response = auth_request.put(RECOMMENDATION_URL, json={'seenRecommendationIds': []})
@@ -387,7 +387,7 @@ class Put:
             four_days_from_now = now + timedelta(days=4)
             eight_days_from_now = now + timedelta(days=8)
 
-            user = create_user(email='weird.bug@email.com', password='P@55w0rd')
+            user = create_user(email='weird.bug@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_event_offer(venue)
@@ -399,7 +399,7 @@ class Put:
             mediation = create_mediation(offer)
             stock = create_stock_from_event_occurrence(event_occurrence, price=0, available=20)
             PcObject.check_and_save(user, stock, mediation)
-            auth_request = TestClient().with_auth(user.email, user.clearTextPassword)
+            auth_request = TestClient().with_auth(user.email)
 
             # when
             response = auth_request.put(RECOMMENDATION_URL, json={'seenRecommendationIds': []})
@@ -416,7 +416,7 @@ class Put:
             four_days_from_now = now + timedelta(days=4)
             eight_days_from_now = now + timedelta(days=8)
 
-            user = create_user(email='weird.bug@email.com', password='P@55w0rd')
+            user = create_user(email='weird.bug@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_event_offer(venue, thumb_count=1, dominant_color=b'123')
@@ -427,7 +427,7 @@ class Put:
             )
             stock = create_stock_from_event_occurrence(event_occurrence, price=0, available=20)
             PcObject.check_and_save(user, stock)
-            auth_request = TestClient().with_auth(user.email, user.clearTextPassword)
+            auth_request = TestClient().with_auth(user.email)
 
             # when
             response = auth_request.put(RECOMMENDATION_URL, json={'seenRecommendationIds': []})
@@ -447,9 +447,9 @@ class Put:
             offer_venue_validated = create_thing_offer(venue_validated, thumb_count=1)
             stock_venue_not_validated = create_stock_from_offer(offer_venue_not_validated)
             stock_venue_validated = create_stock_from_offer(offer_venue_validated)
-            user = create_user(email='test@email.com', password='P@55w0rd')
+            user = create_user(email='test@email.com')
             PcObject.check_and_save(stock_venue_not_validated, stock_venue_validated, user)
-            auth_request = TestClient().with_auth(user.email, user.clearTextPassword)
+            auth_request = TestClient().with_auth(user.email)
             data = {'seenRecommendationIds': []}
             # when
             response = auth_request.put(RECOMMENDATION_URL, json=data)
@@ -475,7 +475,7 @@ class Put:
             mediation2 = create_mediation(offer2, is_active=False)
             mediation3 = create_mediation(offer2, is_active=True)
             PcObject.check_and_save(user, stock1, mediation1, stock2, mediation2, mediation3)
-            auth_request = TestClient().with_auth(user.email, user.clearTextPassword)
+            auth_request = TestClient().with_auth(user.email)
 
             data = {'seenRecommendationIds': []}
             # when
@@ -492,7 +492,7 @@ class Put:
         @clean_database
         def when_a_recommendation_is_requested(self, app):
             # given
-            user = create_user(email='weird.bug@email.com', password='P@55w0rd')
+            user = create_user(email='weird.bug@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer1 = create_thing_offer(venue, thumb_count=1)
@@ -513,7 +513,7 @@ class Put:
             PcObject.check_and_save(user, stock1, stock2, stock3, stock4, mediation, event_occurrence,
                                     recommendation_offer3,
                                     recommendation_offer4)
-            auth_request = TestClient().with_auth(user.email, user.clearTextPassword)
+            auth_request = TestClient().with_auth(user.email)
 
             data = {'seenRecommendationIds': []}
 
@@ -538,7 +538,7 @@ class Put:
             # given
             now = datetime.utcnow()
             fifteen_min_ago = now - timedelta(minutes=15)
-            user = create_user(email='test@email.com', password='P@55w0rd')
+            user = create_user(email='test@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer1 = create_thing_offer(venue, thumb_count=1)
@@ -560,7 +560,7 @@ class Put:
                                                           valid_until_date=fifteen_min_ago)
             PcObject.check_and_save(stock1, stock2, stock3, stock4, mediation, event_occurrence, recommendation_offer3,
                                     recommendation_offer4, recommendation_offer1, recommendation_offer2)
-            auth_request = TestClient().with_auth(user.email, user.clearTextPassword)
+            auth_request = TestClient().with_auth(user.email)
 
             data = {'seenRecommendationIds': []}
             # when
@@ -582,7 +582,7 @@ class Put:
             now = datetime.utcnow()
             four_days_from_now = now + timedelta(days=4)
             eight_days_from_now = now + timedelta(days=8)
-            user = create_user(email='user1@user.fr', password='P@55w0rd')
+            user = create_user(email='user1@user.fr')
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer_event = create_event_offer(venue, thumb_count=1, dominant_color=b'123')
@@ -595,7 +595,7 @@ class Put:
             offer_thing = create_thing_offer(venue, thumb_count=1, dominant_color=b'123')
             stock_thing = create_stock_with_thing_offer(offerer, venue, offer_thing, price=0)
             PcObject.check_and_save(user, event_stock, stock_thing)
-            auth_request = TestClient().with_auth(user.email, user.clearTextPassword)
+            auth_request = TestClient().with_auth(user.email)
 
             # when
             response = auth_request.put(RECOMMENDATION_URL, json={'seenRecommendationIds': []})
@@ -623,7 +623,7 @@ class Put:
             PcObject.check_and_save(user, stock1, mediation1, stock2, mediation2, recommendation)
             db.session.refresh(offer2)
             db.session.refresh(recommendation)
-            auth_request = TestClient().with_auth(user.email, user.clearTextPassword)
+            auth_request = TestClient().with_auth(user.email)
 
             # When
             recommendations_req = auth_request.put(RECOMMENDATION_URL, json={})
@@ -638,14 +638,14 @@ class Put:
         @clean_database
         def when_a_recommendation_with_an_offer_and_a_mediation_is_requested(self, app):
             # given
-            user = create_user(email='user1@user.fr', password='P@55w0rd')
+            user = create_user(email='user1@user.fr')
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer_thing = create_thing_offer(venue, thumb_count=1, dominant_color=b'123')
             stock_thing = create_stock_with_thing_offer(offerer, venue, offer_thing, price=0)
             mediation = create_mediation(offer_thing)
             PcObject.check_and_save(user, stock_thing, mediation)
-            auth_request = TestClient().with_auth(user.email, user.clearTextPassword)
+            auth_request = TestClient().with_auth(user.email)
 
             # when
             response = auth_request.put(RECOMMENDATION_URL +
@@ -661,14 +661,14 @@ class Put:
         @clean_database
         def when_a_recommendation_with_an_offer_and_no_mediation_is_requested(self, app):
             # given
-            user = create_user(email='user1@user.fr', password='P@55w0rd')
+            user = create_user(email='user1@user.fr')
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer_thing = create_thing_offer(venue, thumb_count=1, dominant_color=b'123')
             stock_thing = create_stock_with_thing_offer(offerer, venue, offer_thing, price=0)
             mediation = create_mediation(offer_thing)
             PcObject.check_and_save(user, stock_thing, mediation)
-            auth_request = TestClient().with_auth(user.email, user.clearTextPassword)
+            auth_request = TestClient().with_auth(user.email)
 
             # when
             response = auth_request.put(RECOMMENDATION_URL +
@@ -683,14 +683,14 @@ class Put:
         @clean_database
         def when_a_recommendation_with_no_offer_and_a_mediation_is_requested(self, app):
             # given
-            user = create_user(email='user1@user.fr', password='P@55w0rd')
+            user = create_user(email='user1@user.fr')
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer_thing = create_thing_offer(venue, thumb_count=1, dominant_color=b'123')
             stock_thing = create_stock_with_thing_offer(offerer, venue, offer_thing, price=0)
             mediation = create_mediation(offer_thing)
             PcObject.check_and_save(user, stock_thing, mediation)
-            auth_request = TestClient().with_auth(user.email, user.clearTextPassword)
+            auth_request = TestClient().with_auth(user.email)
 
             # when
             response = auth_request.put(RECOMMENDATION_URL +
@@ -716,7 +716,7 @@ class Put:
             invalid_recommendation = create_recommendation(offer1, user, inactive_mediation,
                                                            valid_until_date=datetime.utcnow() - timedelta(hours=2))
             PcObject.check_and_save(user, stock1, inactive_mediation, active_mediation, invalid_recommendation)
-            auth_request = TestClient().with_auth(user.email, user.clearTextPassword)
+            auth_request = TestClient().with_auth(user.email)
 
             data = {'seenRecommendationIds': []}
             # when
@@ -748,7 +748,7 @@ class Put:
             upsertTutoMediations()
 
             # when
-            auth_request = TestClient().with_auth(user.email, user.clearTextPassword)
+            auth_request = TestClient().with_auth(user.email)
             response = auth_request.put(RECOMMENDATION_URL, json={})
 
             # then
@@ -798,7 +798,7 @@ class Put:
                 }
             ]
             data = {'readRecommendations': reads}
-            auth_request = TestClient().with_auth(user.email, user.clearTextPassword)
+            auth_request = TestClient().with_auth(user.email)
 
             # when
             response = auth_request.put(RECOMMENDATION_URL, json=data)
@@ -825,8 +825,8 @@ class Put:
             PcObject.check_and_save(stock, recommendation)
 
             # When
-            recommendations = TestClient().with_auth(user.email, user.clearTextPassword).put(RECOMMENDATION_URL,
-                                                                                             json={})
+            recommendations = TestClient().with_auth(user.email).put(RECOMMENDATION_URL,
+                                                                     json={})
 
             # Then
             assert recommendations.status_code == 200

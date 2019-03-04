@@ -32,7 +32,7 @@ class Patch:
 
             # when
             response = TestClient() \
-                .with_auth(user.email, user.clearTextPassword) \
+                .with_auth(user.email) \
                 .patch(API_URL + '/offerers/%s' % humanize(offerer.id), json=body)
 
             # then
@@ -55,7 +55,7 @@ class Patch:
 
             # when
             response = TestClient() \
-                .with_auth(user.email, user.clearTextPassword) \
+                .with_auth(user.email) \
                 .patch(API_URL + '/offerers/%s' % humanize(offerer.id), json=body)
 
             # then
@@ -67,7 +67,7 @@ class Patch:
         @clean_database
         def when_deactivating_offerer_and_expires_recos(self, app):
             # given
-            user = create_user(password='p@55sw0rd')
+            user = create_user()
             other_user = create_user(email='other@email.fr')
             offerer = create_offerer(siren='987654321')
             other_offerer = create_offerer()
@@ -89,12 +89,12 @@ class Patch:
                                     other_recommendation,
                                     user_offerer)
 
-            auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
+            auth_request = req_with_auth(email=user.email)
             data = {'isActive': False}
 
             # when
             response = TestClient() \
-                .with_auth(user.email, user.clearTextPassword) \
+                .with_auth(user.email) \
                 .patch(API_URL + '/offerers/%s' % humanize(offerer.id), json=data)
 
             # then

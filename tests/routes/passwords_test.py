@@ -14,14 +14,14 @@ class PostChangePassword:
         @clean_database
         def when_current_user_changes_password(self, app):
             # given
-            user = create_user(email='user@test.com', password='testpsswd')
+            user = create_user(email='user@test.com')
             PcObject.check_and_save(user)
-            data = {'oldPassword': 'testpsswd', 'newPassword': 'N3W_p4ssw0rd'}
+            data = {'oldPassword': user.clearTextPassword, 'newPassword': 'N3W_p4ssw0rd'}
 
             # when
             response = TestClient() \
-                .with_auth(user.email, user.clearTextPassword).post(API_URL + '/users/current/change-password',
-                                                                    json=data)
+                .with_auth(user.email).post(API_URL + '/users/current/change-password',
+                                            json=data)
 
             # then
             db.session.refresh(user)
@@ -32,14 +32,14 @@ class PostChangePassword:
         @clean_database
         def when_old_password_is_missing(self, app):
             # given
-            user = create_user(email='user@test.com', password='testpsswd')
+            user = create_user(email='user@test.com')
             PcObject.check_and_save(user)
             data = {'newPassword': 'N3W_p4ssw0rd'}
 
             # when
             response = TestClient() \
-                .with_auth(user.email, user.clearTextPassword).post(API_URL + '/users/current/change-password',
-                                                                    json=data)
+                .with_auth(user.email).post(API_URL + '/users/current/change-password',
+                                            json=data)
 
             # then
             assert response.status_code == 400
@@ -48,14 +48,14 @@ class PostChangePassword:
         @clean_database
         def when_new_password_is_missing(self, app):
             # given
-            user = create_user(email='user@test.com', password='testpsswd')
+            user = create_user(email='user@test.com')
             PcObject.check_and_save(user)
             data = {'oldPassword': '0ldp4ssw0rd'}
 
             # when
             response = TestClient() \
-                .with_auth(user.email, user.clearTextPassword).post(API_URL + '/users/current/change-password',
-                                                                    json=data)
+                .with_auth(user.email).post(API_URL + '/users/current/change-password',
+                                            json=data)
 
             # then
             assert response.status_code == 400
@@ -64,14 +64,14 @@ class PostChangePassword:
         @clean_database
         def when_new_password_is_not_strong_enough(self, app):
             # given
-            user = create_user(email='user@test.com', password='testpsswd')
+            user = create_user(email='user@test.com')
             PcObject.check_and_save(user)
             data = {'oldPassword': '0ldp4ssw0rd', 'newPassword': 'weakpassword'}
 
             # when
             response = TestClient() \
-                .with_auth(user.email, user.clearTextPassword).post(API_URL + '/users/current/change-password',
-                                                                    json=data)
+                .with_auth(user.email).post(API_URL + '/users/current/change-password',
+                                            json=data)
 
             # then
             assert response.status_code == 400
@@ -148,7 +148,7 @@ class PostNewPassword:
         @clean_database
         def when_the_token_is_outdated(self, app):
             # given
-            user = create_user(password='0ld_p455w0rd', reset_password_token='KL89PBNG51',
+            user = create_user(reset_password_token='KL89PBNG51',
                                reset_password_token_validity_limit=datetime.utcnow() - timedelta(days=2))
             PcObject.check_and_save(user)
 
@@ -170,7 +170,7 @@ class PostNewPassword:
         @clean_database
         def when_the_token_is_unknown(self, app):
             # given
-            user = create_user(password='0ld_p455w0rd', reset_password_token='KL89PBNG51')
+            user = create_user(reset_password_token='KL89PBNG51')
             PcObject.check_and_save(user)
 
             data = {
@@ -191,7 +191,7 @@ class PostNewPassword:
         @clean_database
         def when_the_token_is_missing(self, app):
             # given
-            user = create_user(password='0ld_p455w0rd', reset_password_token='KL89PBNG51')
+            user = create_user(reset_password_token='KL89PBNG51')
             PcObject.check_and_save(user)
 
             data = {'newPassword': 'N3W_p4ssw0rd'}
@@ -209,7 +209,7 @@ class PostNewPassword:
         @clean_database
         def when_new_password_is_missing(self, app):
             # given
-            user = create_user(password='0ld_p455w0rd', reset_password_token='KL89PBNG51')
+            user = create_user(reset_password_token='KL89PBNG51')
             PcObject.check_and_save(user)
 
             data = {'token': 'KL89PBNG51'}
@@ -227,7 +227,7 @@ class PostNewPassword:
         @clean_database
         def when_new_password_is_not_strong_enough(self, app):
             # given
-            user = create_user(password='0ld_p455w0rd', reset_password_token='KL89PBNG51')
+            user = create_user(reset_password_token='KL89PBNG51')
             PcObject.check_and_save(user)
 
             data = {'token': 'KL89PBNG51', 'newPassword': 'weak_password'}
@@ -247,7 +247,7 @@ class PostNewPassword:
         @clean_database
         def when_new_password_is_valid(self, app):
             # given
-            user = create_user(password='0ld_p455w0rd', reset_password_token='KL89PBNG51')
+            user = create_user(reset_password_token='KL89PBNG51')
             PcObject.check_and_save(user)
 
             data = {

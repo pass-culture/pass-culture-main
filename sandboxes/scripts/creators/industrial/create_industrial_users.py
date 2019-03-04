@@ -21,15 +21,10 @@ def create_industrial_users():
     tag = 'real-validation'
     short_tag = "".join([chunk[0].upper() for chunk in tag.split('-')])
     users_by_name['pro{} {}'.format(departement_code, tag)] = create_user(
-        departement_code=str(departement_code),
-        email="pctest.pro{}.{}@btmx.fr".format(departement_code, tag),
-        first_name="PC Test Pro {}",
-        last_name="{} {}".format(departement_code, short_tag),
-        password="pctest.Pro{}.{}".format(departement_code, tag),
-        postal_code="{}100".format(departement_code),
-        public_name="PC Test Pro {} {}".format(departement_code, short_tag),
-        validation_token=validation_token
-    )
+        public_name="PC Test Pro {} {}".format(departement_code, short_tag), first_name="PC Test Pro {}",
+        last_name="{} {}".format(departement_code, short_tag), postal_code="{}100".format(departement_code),
+        departement_code=str(departement_code), email="pctest.pro{}.{}@btmx.fr".format(departement_code, tag),
+        validation_token=validation_token)
     validation_suffix += 1
 
     # loop on department and tags
@@ -37,16 +32,11 @@ def create_industrial_users():
 
         for admin_count in range(ADMINS_COUNT):
             users_by_name['admin{} {}'.format(departement_code, admin_count)] = create_user(
-                can_book_free_offers=False,
+                public_name="PC Test Admin {} {}".format(departement_code, admin_count), first_name="PC Test Admin",
+                last_name="{} {}".format(departement_code, admin_count), postal_code="{}100".format(departement_code),
                 departement_code=str(departement_code),
-                email="pctest.admin{}.{}@btmx.fr".format(departement_code, admin_count),
-                first_name="PC Test Admin",
-                is_admin=True,
-                last_name="{} {}".format(departement_code, admin_count),
-                password="pctest.Admin{}.{}".format(departement_code, admin_count),
-                postal_code="{}100".format(departement_code),
-                public_name="PC Test Admin {} {}".format(departement_code, admin_count)
-            )
+                email="pctest.admin{}.{}@btmx.fr".format(departement_code, admin_count), can_book_free_offers=False,
+                is_admin=True)
 
         for tag in PROS_TAGS:
             short_tag = "".join([chunk[0].upper() for chunk in tag.split('-')])
@@ -58,15 +48,10 @@ def create_industrial_users():
                 validation_token = None
 
             users_by_name['pro{} {}'.format(departement_code, tag)] = create_user(
-                departement_code=str(departement_code),
-                email="pctest.pro{}.{}@btmx.fr".format(departement_code, tag),
-                first_name="PC Test Pro",
-                last_name="{} {}".format(departement_code, short_tag),
-                password="pctest.Pro{}.{}".format(departement_code, tag),
-                postal_code="{}100".format(departement_code),
-                public_name="PC Test Pro {} {}".format(departement_code, short_tag),
-                validation_token=validation_token
-            )
+                public_name="PC Test Pro {} {}".format(departement_code, short_tag), first_name="PC Test Pro",
+                last_name="{} {}".format(departement_code, short_tag), postal_code="{}100".format(departement_code),
+                departement_code=str(departement_code), email="pctest.pro{}.{}@btmx.fr".format(departement_code, tag),
+                validation_token=validation_token)
 
         for tag in JEUNES_TAGS:
             short_tag = "".join([chunk[0].upper() for chunk in tag.split('-')])
@@ -78,15 +63,10 @@ def create_industrial_users():
                 reset_password_token = None
 
             users_by_name['jeune{} {}'.format(departement_code, tag)] = create_user(
-                departement_code=str(departement_code),
-                email="pctest.jeune{}.{}@btmx.fr".format(departement_code, tag),
-                first_name="PC Test Jeune",
-                last_name="{} {}".format(departement_code, short_tag),
-                password="pctest.Jeune{}.{}".format(departement_code, tag),
-                postal_code="{}100".format(departement_code),
-                public_name="PC Test Jeune {} {}".format(departement_code, short_tag),
-                reset_password_token=reset_password_token
-            )
+                public_name="PC Test Jeune {} {}".format(departement_code, short_tag), first_name="PC Test Jeune",
+                last_name="{} {}".format(departement_code, short_tag), postal_code="{}100".format(departement_code),
+                departement_code=str(departement_code), email="pctest.jeune{}.{}@btmx.fr".format(departement_code, tag),
+                reset_password_token=reset_password_token)
 
     PcObject.check_and_save(*users_by_name.values())
 

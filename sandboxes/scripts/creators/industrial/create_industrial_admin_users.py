@@ -17,16 +17,9 @@ def create_industrial_admin_users():
         for admin_count in range(ADMINS_COUNT):
             email = "pctest.admin{}.{}@btmx.fr".format(departement_code, admin_count)
             users_by_name['admin{} {}'.format(departement_code, admin_count)] = create_user(
-                can_book_free_offers=False,
-                departement_code=str(departement_code),
-                email=email,
-                first_name="PC Test Admin",
-                is_admin=True,
-                last_name="{} {}".format(departement_code, admin_count),
-                password=get_password_from_email(email),
-                postal_code="{}100".format(departement_code),
-                public_name="PC Test Admin {} {}".format(departement_code, admin_count)
-            )
+                public_name="PC Test Admin {} {}".format(departement_code, admin_count), first_name="PC Test Admin",
+                last_name="{} {}".format(departement_code, admin_count), postal_code="{}100".format(departement_code),
+                departement_code=str(departement_code), email=email, can_book_free_offers=False, is_admin=True)
 
     PcObject.check_and_save(*users_by_name.values())
 

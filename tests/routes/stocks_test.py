@@ -17,7 +17,7 @@ class Get:
         @clean_database
         def when_user_is_admin(self, app):
             # Given
-            user = create_user(email='test@email.com', can_book_free_offers=False, password='P@55w0rd', is_admin=True)
+            user = create_user(email='test@email.com', can_book_free_offers=False, is_admin=True)
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock_1 = create_stock_with_event_offer(offerer, venue, price=10, available=10)
@@ -26,7 +26,7 @@ class Get:
             PcObject.check_and_save(user, stock_1, stock_2, stock_3)
 
             # When
-            request = TestClient().with_auth('test@email.com', 'P@55w0rd').get(API_URL + '/stocks')
+            request = TestClient().with_auth('test@email.com').get(API_URL + '/stocks')
 
             # Then
             assert request.status_code == 200
@@ -39,7 +39,7 @@ class Post:
         @clean_database
         def when_user_has_rights(self, app):
             # Given
-            user = create_user(email='test@email.fr', password='P@55w0rd')
+            user = create_user(email='test@email.fr')
             offerer = create_offerer()
             user_offerer = create_user_offerer(user, offerer)
             venue = create_venue(offerer)
@@ -50,7 +50,7 @@ class Post:
             PcObject.check_and_save(user)
 
             # When
-            r_create = TestClient().with_auth('test@email.fr', 'P@55w0rd').post(API_URL + '/stocks/', json=stock_data)
+            r_create = TestClient().with_auth('test@email.fr').post(API_URL + '/stocks/', json=stock_data)
 
             # Then
             assert r_create.status_code == 201
@@ -64,7 +64,7 @@ class Post:
         @clean_database
         def when_missing_event_occurrence_id_or_offer_id(self, app):
             # Given
-            user = create_user(email='test@email.fr', can_book_free_offers=False, password='P@55w0rd', is_admin=True)
+            user = create_user(email='test@email.fr', can_book_free_offers=False, is_admin=True)
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_event_offer(venue)
@@ -75,7 +75,7 @@ class Post:
             PcObject.check_and_save(user)
 
             # When
-            response = TestClient().with_auth('test@email.fr', 'P@55w0rd').post(API_URL + '/stocks/', json=stock_data)
+            response = TestClient().with_auth('test@email.fr').post(API_URL + '/stocks/', json=stock_data)
 
             # Then
             assert response.status_code == 400
@@ -87,7 +87,7 @@ class Post:
         def when_booking_limit_datetime_after_event_occurrence_beginning_datetime(self, app):
             # Given
             from models.pc_object import serialize
-            user = create_user(email='email@test.com', can_book_free_offers=False, password='P@55w0rd', is_admin=True)
+            user = create_user(email='email@test.com', can_book_free_offers=False, is_admin=True)
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_event_offer(venue)
@@ -100,7 +100,7 @@ class Post:
             }
 
             # When
-            response = TestClient().with_auth('email@test.com', 'P@55w0rd').post(API_URL + '/stocks/', json=data)
+            response = TestClient().with_auth('email@test.com').post(API_URL + '/stocks/', json=data)
 
             # Then
             assert response.status_code == 400
@@ -111,7 +111,7 @@ class Post:
         @clean_database
         def when_invalid_format_for_booking_limit_datetime(self, app):
             # Given
-            user = create_user(email='test@email.fr', can_book_free_offers=False, password='P@55w0rd', is_admin=True)
+            user = create_user(email='test@email.fr', can_book_free_offers=False, is_admin=True)
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_event_offer(venue)
@@ -130,7 +130,7 @@ class Post:
             PcObject.check_and_save(user)
 
              # When
-            response = TestClient().with_auth('test@email.fr', 'P@55w0rd').post(API_URL + '/stocks/', json=stock_data)
+            response = TestClient().with_auth('test@email.fr').post(API_URL + '/stocks/', json=stock_data)
 
              # Then
             assert response.status_code == 400
@@ -142,7 +142,7 @@ class Post:
         @clean_database
         def when_user_has_no_rights_and_creating_stock_from_offer_id(self, app):
             # Given
-            user = create_user(email='test@email.fr', password='P@55w0rd')
+            user = create_user(email='test@email.fr')
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_event_offer(venue)
@@ -152,7 +152,7 @@ class Post:
             PcObject.check_and_save(user)
 
             # When
-            response = TestClient().with_auth('test@email.fr', 'P@55w0rd').post(API_URL + '/stocks/', json=stock_data)
+            response = TestClient().with_auth('test@email.fr').post(API_URL + '/stocks/', json=stock_data)
 
             # Then
             assert response.status_code == 403
@@ -161,7 +161,7 @@ class Post:
         @clean_database
         def when_user_has_no_rights_and_creating_stock_from_event_occurrence(self, app):
             # Given
-            user = create_user(email='test@email.fr', password='P@55w0rd')
+            user = create_user(email='test@email.fr')
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_event_offer(venue)
@@ -172,7 +172,7 @@ class Post:
             PcObject.check_and_save(user)
 
             # When
-            response = TestClient().with_auth('test@email.fr', 'P@55w0rd').post(API_URL + '/stocks/', json=stock_data)
+            response = TestClient().with_auth('test@email.fr').post(API_URL + '/stocks/', json=stock_data)
 
             # Then
             assert response.status_code == 403
@@ -184,14 +184,14 @@ class Delete:
         @clean_database
         def when_user_is_admin(self, app):
             # Given
-            user = create_user(email='email@test.fr', can_book_free_offers=False, password='P@55w0rd', is_admin=True)
+            user = create_user(email='email@test.fr', can_book_free_offers=False, is_admin=True)
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue)
             PcObject.check_and_save(user, stock)
 
             # When
-            r_delete = TestClient().with_auth('email@test.fr', 'P@55w0rd').delete(API_URL + '/stocks/' + humanize(stock.id))
+            r_delete = TestClient().with_auth('email@test.fr').delete(API_URL + '/stocks/' + humanize(stock.id))
 
             # Then
             assert r_delete.status_code == 200
@@ -206,7 +206,7 @@ class Delete:
             # Given
             user1 = create_user(email='user1@test.fr')
             user2 = create_user(email='user2@test.fr')
-            user_admin = create_user(email='email@test.fr', password='P@55w0rd')
+            user_admin = create_user(email='email@test.fr')
             offerer = create_offerer()
             user_offerer = create_user_offerer(user_admin, offerer)
             venue = create_venue(offerer)
@@ -223,7 +223,7 @@ class Delete:
             PcObject.check_and_save(booking1, booking2, booking3, user_offerer)
 
             # When
-            response = TestClient().with_auth('email@test.fr', 'P@55w0rd').delete(API_URL + '/stocks/' + humanize(stock1.id))
+            response = TestClient().with_auth('email@test.fr').delete(API_URL + '/stocks/' + humanize(stock1.id))
 
             # Then
             assert response.status_code == 200
@@ -239,14 +239,14 @@ class Delete:
         @clean_database
         def when_user_has_no_rights(self, app):
             # Given
-            user = create_user(email='email@test.fr', password='P@55w0rd')
+            user = create_user(email='email@test.fr')
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue)
             PcObject.check_and_save(user, stock)
 
             # When
-            response = TestClient().with_auth('email@test.fr', 'P@55w0rd').delete(API_URL + '/stocks/' + humanize(stock.id))
+            response = TestClient().with_auth('email@test.fr').delete(API_URL + '/stocks/' + humanize(stock.id))
 
             # Then
             assert response.status_code == 403

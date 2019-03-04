@@ -20,7 +20,7 @@ class Post:
         @clean_database
         def when_non_validated_venue(self, app):
             # Given
-            user = create_user(email='test@email.com', password='testpsswd')
+            user = create_user(email='test@email.com')
             deposit = create_deposit(user, datetime.utcnow())
             offerer = create_offerer()
             venue = create_venue(offerer)
@@ -37,7 +37,7 @@ class Post:
 
             # When
             r_create = TestClient() \
-                .with_auth(user.email, user.clearTextPassword) \
+                .with_auth(user.email) \
                 .post(API_URL + '/bookings', json=booking_json)
 
             # Then
@@ -60,7 +60,7 @@ class Post:
             expired_stock.bookingLimitDatetime = datetime.utcnow() - timedelta(seconds=1)
             PcObject.check_and_save(expired_stock)
 
-            user = create_user(email='test@mail.com', password='psswd123')
+            user = create_user(email='test@mail.com')
             PcObject.check_and_save(user)
 
             recommendation = create_recommendation(thing_offer, user)
@@ -73,7 +73,7 @@ class Post:
 
             # when
             r_create = TestClient() \
-                .with_auth('test@mail.com', 'psswd123') \
+                .with_auth('test@mail.com') \
                 .post(API_URL + '/bookings', json=booking_json)
 
             # then
@@ -90,8 +90,8 @@ class Post:
             too_many_bookings_stock = create_stock_with_thing_offer(offerer=Offerer(), venue=venue, thing_offer=None,
                                                                     available=2)
 
-            user = create_user(email='test@email.com', password='mdppsswd')
-            user2 = create_user(email='test2@email.com', password='testpsswd')
+            user = create_user(email='test@email.com')
+            user2 = create_user(email='test2@email.com')
 
             deposit = create_deposit(user, datetime.utcnow(), amount=500)
             deposit2 = create_deposit(user2, datetime.utcnow(), amount=500)
@@ -110,7 +110,7 @@ class Post:
 
             # when
             r_create = TestClient() \
-                .with_auth('test@email.com', 'mdppsswd') \
+                .with_auth('test@email.com') \
                 .post(API_URL + '/bookings', json=booking_json)
 
             # then
@@ -121,8 +121,7 @@ class Post:
         @clean_database
         def when_user_cannot_book_free_offers_and_free_offer(self, app):
             # Given
-            user = create_user(email='cannotBook_freeOffers@email.com', can_book_free_offers=False,
-                               password='testpsswd')
+            user = create_user(email='cannotBook_freeOffers@email.com', can_book_free_offers=False)
             PcObject.check_and_save(user)
 
             offerer = create_offerer(siren='899999768', address='2 Test adress', city='Test city', postal_code='93000',
@@ -154,7 +153,7 @@ class Post:
 
             # When
             r_create = TestClient() \
-                .with_auth('cannotBook_freeOffers@email.com', 'testpsswd') \
+                .with_auth('cannotBook_freeOffers@email.com') \
                 .post(API_URL + '/bookings', json=booking_json)
 
             # Then
@@ -166,7 +165,7 @@ class Post:
         @clean_database
         def when_user_has_not_enough_credit(self, app):
             # Given
-            user = create_user(email='insufficient_funds_test@email.com', password='testpsswd')
+            user = create_user(email='insufficient_funds_test@email.com')
             offerer = create_offerer(siren='899999768', address='2 Test adress', city='Test city', postal_code='93000',
                                      name='Test offerer')
             venue = create_venue(offerer=offerer, name='Venue name', booking_email='booking@email.com',
@@ -189,7 +188,7 @@ class Post:
 
             # When
             r_create = TestClient() \
-                .with_auth('insufficient_funds_test@email.com', 'testpsswd') \
+                .with_auth('insufficient_funds_test@email.com') \
                 .post(API_URL + '/bookings', json=booking_json)
 
             # Then
@@ -201,7 +200,7 @@ class Post:
         @clean_database
         def when_only_public_credit_and_limit_of_physical_thing_reached(self, app):
             # Given
-            user = create_user(email='test@email.com', password='testpsswd')
+            user = create_user(email='test@email.com')
             PcObject.check_and_save(user)
 
             offerer = create_offerer()
@@ -239,7 +238,7 @@ class Post:
 
             # When
             response = TestClient() \
-                .with_auth('test@email.com', 'testpsswd') \
+                .with_auth('test@email.com') \
                 .post(API_URL + '/bookings', json=booking_thing_price_12_json)
 
             # Then
@@ -251,7 +250,7 @@ class Post:
         @clean_database
         def when_missing_stock_id(self, app):
             # Given
-            user = create_user(email='test@email.com', password='testpsswd')
+            user = create_user(email='test@email.com')
             PcObject.check_and_save(user)
 
             booking_json = {
@@ -262,7 +261,7 @@ class Post:
 
             # When
             response = TestClient() \
-                .with_auth('test@email.com', 'testpsswd') \
+                .with_auth('test@email.com') \
                 .post(API_URL + '/bookings', json=booking_json)
 
             # Then
@@ -273,7 +272,7 @@ class Post:
         @clean_database
         def when_missing_quantity(self, app):
             # Given
-            user = create_user(email='test@email.com', password='testpsswd')
+            user = create_user(email='test@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue, price=0)
@@ -286,8 +285,8 @@ class Post:
             }
 
             # When
-            response = TestClient().with_auth('test@email.com', 'testpsswd').post(API_URL + '/bookings',
-                                                                                  json=booking_json)
+            response = TestClient().with_auth('test@email.com').post(API_URL + '/bookings',
+                                                                     json=booking_json)
             # Then
             error_message = response.json()
             assert response.status_code == 400
@@ -296,7 +295,7 @@ class Post:
         @clean_database
         def when_negative_quantity(self, app):
             # Given
-            user = create_user(email='test@email.com', password='testpsswd')
+            user = create_user(email='test@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
             thing_offer = create_thing_offer(venue)
@@ -310,8 +309,8 @@ class Post:
             }
 
             # When
-            response = TestClient().with_auth('test@email.com', 'testpsswd').post(API_URL + '/bookings',
-                                                                                  json=booking_json)
+            response = TestClient().with_auth('test@email.com').post(API_URL + '/bookings',
+                                                                     json=booking_json)
             # Then
             error_message = response.json()
             assert response.status_code == 400
@@ -320,7 +319,7 @@ class Post:
         @clean_database
         def when_offer_is_inactive(self, app):
             # Given
-            user = create_user(email='test@email.com', password='testpsswd')
+            user = create_user(email='test@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
             thing_offer = create_thing_offer(venue)
@@ -335,8 +334,8 @@ class Post:
             }
 
             # When
-            response = TestClient().with_auth('test@email.com', 'testpsswd').post(API_URL + '/bookings',
-                                                                                  json=booking_json)
+            response = TestClient().with_auth('test@email.com').post(API_URL + '/bookings',
+                                                                     json=booking_json)
             # Then
             error_message = response.json()
             assert response.status_code == 400
@@ -345,7 +344,7 @@ class Post:
         @clean_database
         def when_offerer_is_inactive(self, app):
             # Given
-            user = create_user(email='test@email.com', password='testpsswd')
+            user = create_user(email='test@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
             thing_offer = create_thing_offer(venue)
@@ -360,8 +359,8 @@ class Post:
             }
 
             # When
-            response = TestClient().with_auth('test@email.com', 'testpsswd').post(API_URL + '/bookings',
-                                                                                  json=booking_json)
+            response = TestClient().with_auth('test@email.com').post(API_URL + '/bookings',
+                                                                     json=booking_json)
             # Then
             error_message = response.json()
             assert response.status_code == 400
@@ -370,7 +369,7 @@ class Post:
         @clean_database
         def when_stock_is_soft_deleted(self, app):
             # Given
-            user = create_user(email='test@email.com', password='testpsswd')
+            user = create_user(email='test@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
             thing_offer = create_thing_offer(venue)
@@ -385,8 +384,8 @@ class Post:
             }
 
             # When
-            response = TestClient().with_auth('test@email.com', 'testpsswd').post(API_URL + '/bookings',
-                                                                                  json=booking_json)
+            response = TestClient().with_auth('test@email.com').post(API_URL + '/bookings',
+                                                                     json=booking_json)
             # Then
             error_message = response.json()
             assert response.status_code == 400
@@ -395,7 +394,7 @@ class Post:
         @clean_database
         def when_null_quantity(self, app):
             # Given
-            user = create_user(email='test@email.com', password='testpsswd')
+            user = create_user(email='test@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
             thing_offer = create_thing_offer(venue)
@@ -409,8 +408,8 @@ class Post:
             }
 
             # When
-            response = TestClient().with_auth('test@email.com', 'testpsswd').post(API_URL + '/bookings',
-                                                                                  json=booking_json)
+            response = TestClient().with_auth('test@email.com').post(API_URL + '/bookings',
+                                                                     json=booking_json)
             # Then
             error_message = response.json()
             assert response.status_code == 400
@@ -419,7 +418,7 @@ class Post:
         @clean_database
         def when_more_than_one_quantity(self, app):
             # Given
-            user = create_user(email='test@email.com', password='testpsswd')
+            user = create_user(email='test@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
             thing_offer = create_thing_offer(venue)
@@ -433,8 +432,8 @@ class Post:
             }
 
             # When
-            response = TestClient().with_auth('test@email.com', 'testpsswd').post(API_URL + '/bookings',
-                                                                                  json=booking_json)
+            response = TestClient().with_auth('test@email.com').post(API_URL + '/bookings',
+                                                                     json=booking_json)
             # Then
             error_message = response.json()
             assert response.status_code == 400
@@ -445,7 +444,7 @@ class Post:
             # Given
             four_days_ago = datetime.utcnow() - timedelta(days=4)
             five_days_ago = datetime.utcnow() - timedelta(days=5)
-            user = create_user(email='test@email.com', password='testpsswd')
+            user = create_user(email='test@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
             deposit_date = datetime.utcnow() - timedelta(minutes=2)
@@ -463,8 +462,8 @@ class Post:
             }
 
             # When
-            response = TestClient().with_auth('test@email.com', 'testpsswd').post(API_URL + '/bookings',
-                                                                                  json=booking_json)
+            response = TestClient().with_auth('test@email.com').post(API_URL + '/bookings',
+                                                                     json=booking_json)
 
             # Then
             error_message = response.json()
@@ -476,7 +475,7 @@ class Post:
             # Given
             four_days_ago = datetime.utcnow() - timedelta(days=4)
             five_days_ago = datetime.utcnow() - timedelta(days=5)
-            user = create_user(email='test@email.com', password='testpsswd')
+            user = create_user(email='test@email.com')
             offerer = create_offerer()
             deposit_date = datetime.utcnow() - timedelta(minutes=2)
             deposit = create_deposit(user, deposit_date, amount=200)
@@ -493,8 +492,8 @@ class Post:
             }
 
             # When
-            response = TestClient().with_auth('test@email.com', 'testpsswd').post(API_URL + '/bookings',
-                                                                                  json=booking_json)
+            response = TestClient().with_auth('test@email.com').post(API_URL + '/bookings',
+                                                                     json=booking_json)
 
             # Then
             error_message = response.json()
@@ -504,7 +503,7 @@ class Post:
         @clean_database
         def when_already_booked_by_user(self, app):
             # Given
-            user = create_user(email='test@email.com', password='testpsswd')
+            user = create_user(email='test@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
             thing_offer = create_thing_offer(venue)
@@ -521,8 +520,8 @@ class Post:
             }
 
             # When
-            response = TestClient().with_auth('test@email.com', 'testpsswd').post(API_URL + '/bookings',
-                                                                                  json=booking_json)
+            response = TestClient().with_auth('test@email.com').post(API_URL + '/bookings',
+                                                                     json=booking_json)
 
             # Then
             assert response.status_code == 400
@@ -542,7 +541,7 @@ class Post:
             ok_stock.bookingLimitDatetime = datetime.utcnow() + timedelta(minutes=2)
             PcObject.check_and_save(ok_stock)
 
-            user = create_user(email='test@mail.com', password='psswd123')
+            user = create_user(email='test@mail.com')
             PcObject.check_and_save(user)
 
             recommendation = create_recommendation(offer=ok_stock.offer, user=user)
@@ -554,11 +553,11 @@ class Post:
                 'quantity': 1
             }
 
-            r_create = TestClient().with_auth(email='test@mail.com', password='psswd123').post(API_URL + '/bookings',
-                                                                                               json=booking_json)
+            r_create = TestClient().with_auth(email='test@mail.com').post(API_URL + '/bookings',
+                                                                          json=booking_json)
             assert r_create.status_code == 201
             id = r_create.json()['id']
-            r_check = TestClient().with_auth(email='test@mail.com', password='psswd123').get(
+            r_check = TestClient().with_auth(email='test@mail.com').get(
                 API_URL + '/bookings/' + id)
             created_booking_json = r_check.json()
             for (key, value) in booking_json.items():
@@ -567,7 +566,7 @@ class Post:
         @clean_database
         def when_booking_limit_datetime_is_None(self, app):
             # Given
-            user = create_user(email='test@email.com', password='testpsswd')
+            user = create_user(email='test@email.com')
             offerer = create_offerer()
             deposit_date = datetime.utcnow() - timedelta(minutes=2)
             deposit = create_deposit(user, deposit_date, amount=200)
@@ -584,8 +583,8 @@ class Post:
             }
 
             # When
-            response = TestClient().with_auth('test@email.com', 'testpsswd').post(API_URL + '/bookings',
-                                                                                  json=booking_json)
+            response = TestClient().with_auth('test@email.com').post(API_URL + '/bookings',
+                                                                     json=booking_json)
             # Then
             error_message = response.json()
             assert response.status_code == 201
@@ -598,7 +597,7 @@ class Post:
                                  '93')
             thing_offer = create_thing_offer(venue)
 
-            user = create_user(email='test@email.com', password='mdppsswd')
+            user = create_user(email='test@email.com')
             PcObject.check_and_save(user)
 
             stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=50, available=1)
@@ -618,7 +617,7 @@ class Post:
 
             # when
             response = TestClient() \
-                .with_auth('test@email.com', 'mdppsswd') \
+                .with_auth('test@email.com') \
                 .post(API_URL + '/bookings', json=booking_json)
 
             # then
@@ -632,7 +631,7 @@ class Post:
                                  '93')
             thing_offer = create_thing_offer(venue, thing_type=ThingType.JEUX_ABO)
 
-            user = create_user(email='test@email.com', password='mdppsswd')
+            user = create_user(email='test@email.com')
             PcObject.check_and_save(user)
 
             stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=210, available=1)
@@ -652,7 +651,7 @@ class Post:
 
             # when
             response = TestClient() \
-                .with_auth('test@email.com', 'mdppsswd') \
+                .with_auth('test@email.com') \
                 .post(API_URL + '/bookings', json=booking_json)
 
             # then
@@ -666,7 +665,7 @@ class Post:
                                  '93')
             event_offer = create_event_offer(venue)
 
-            user = create_user(email='test@email.com', password='mdppsswd')
+            user = create_user(email='test@email.com')
             PcObject.check_and_save(user)
 
             stock = create_stock_with_event_offer(offerer, venue, event_offer, price=50, available=1)
@@ -689,7 +688,7 @@ class Post:
 
             # when
             r_create = TestClient() \
-                .with_auth('test@email.com', 'mdppsswd') \
+                .with_auth('test@email.com') \
                 .post(API_URL + '/bookings', json=booking_json)
 
             # then
@@ -697,7 +696,7 @@ class Post:
 
         @clean_database
         def when_user_cannot_book_free_offers_but_has_enough_credit_for_paid_offer(self, app):
-            user = create_user(email='can_book_paid_offers@email.com', can_book_free_offers=False, password='testpsswd')
+            user = create_user(email='can_book_paid_offers@email.com', can_book_free_offers=False)
             PcObject.check_and_save(user)
 
             offerer = create_offerer(siren='899999768', address='2 Test adress', city='Test city', postal_code='93000',
@@ -729,7 +728,7 @@ class Post:
 
             # When
             r_create = TestClient() \
-                .with_auth('can_book_paid_offers@email.com', 'testpsswd') \
+                .with_auth('can_book_paid_offers@email.com') \
                 .post(API_URL + '/bookings', json=booking_json)
 
             # Then
@@ -741,7 +740,7 @@ class Post:
         @clean_database
         def when_already_booked_by_user_but_cancelled(self, app):
             # Given
-            user = create_user(email='test@email.com', password='testpsswd')
+            user = create_user(email='test@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
             thing_offer = create_thing_offer(venue)
@@ -758,8 +757,8 @@ class Post:
             }
 
             # When
-            response = TestClient().with_auth('test@email.com', 'testpsswd').post(API_URL + '/bookings',
-                                                                                  json=booking_json)
+            response = TestClient().with_auth('test@email.com').post(API_URL + '/bookings',
+                                                                     json=booking_json)
             # Then
             assert response.status_code == 201
 
@@ -769,7 +768,7 @@ class PatchBookingTest:
     @clean_database
     def test_cannot_cancel_used_booking(self, app):
         # Given
-        user = create_user(email='test@email.com', password='testpsswd')
+        user = create_user(email='test@email.com')
         deposit_date = datetime.utcnow() - timedelta(minutes=2)
         deposit = create_deposit(user, deposit_date, amount=500)
         booking = create_booking(user, is_used=True)
@@ -777,7 +776,7 @@ class PatchBookingTest:
         url = API_URL + '/bookings/' + humanize(booking.id)
 
         # When
-        response = TestClient().with_auth(user.email, user.clearTextPassword) \
+        response = TestClient().with_auth(user.email) \
             .patch(API_URL + '/bookings/' + humanize(booking.id), json={"isCancelled": True})
 
         # Then
@@ -789,14 +788,14 @@ class PatchBookingTest:
     @clean_database
     def test_returns_400_when_trying_to_patch_something_else_than_is_cancelled(self, app):
         # Given
-        user = create_user(email='test@email.com', password='testpsswd')
+        user = create_user(email='test@email.com')
         deposit_date = datetime.utcnow() - timedelta(minutes=2)
         deposit = create_deposit(user, deposit_date, amount=500)
         booking = create_booking(user, quantity=1)
         PcObject.check_and_save(user, deposit, booking)
 
         # When
-        response = TestClient().with_auth(user.email, user.clearTextPassword) \
+        response = TestClient().with_auth(user.email) \
             .patch(API_URL + '/bookings/' + humanize(booking.id), json={"quantity": 3})
 
         # Then
@@ -807,7 +806,7 @@ class PatchBookingTest:
     @clean_database
     def test_returns_400_when_trying_to_set_is_cancelled_to_false(self, app):
         # Given
-        user = create_user(email='test@email.com', password='testpsswd')
+        user = create_user(email='test@email.com')
         deposit_date = datetime.utcnow() - timedelta(minutes=2)
         deposit = create_deposit(user, deposit_date, amount=500)
         booking = create_booking(user)
@@ -815,7 +814,7 @@ class PatchBookingTest:
         PcObject.check_and_save(user, deposit, booking)
 
         # When
-        response = TestClient().with_auth(user.email, user.clearTextPassword) \
+        response = TestClient().with_auth(user.email) \
             .patch(API_URL + '/bookings/' + humanize(booking.id), json={"isCancelled": False})
 
         # Then
@@ -828,7 +827,7 @@ class PatchBookingTest:
         # Given
         in_four_days = datetime.utcnow() + timedelta(days=4)
         in_five_days = datetime.utcnow() + timedelta(days=5)
-        user = create_user(email='test@email.com', password='testpsswd')
+        user = create_user(email='test@email.com')
         deposit_date = datetime.utcnow() - timedelta(minutes=2)
         deposit = create_deposit(user, deposit_date, amount=500)
         offerer = create_offerer()
@@ -840,7 +839,7 @@ class PatchBookingTest:
         PcObject.check_and_save(user, deposit, booking)
 
         # When
-        response = TestClient().with_auth(user.email, user.clearTextPassword) \
+        response = TestClient().with_auth(user.email) \
             .patch(API_URL + '/bookings/' + humanize(booking.id), json={"isCancelled": True})
 
         # Then
@@ -851,11 +850,11 @@ class PatchBookingTest:
     @clean_database
     def test_returns_404_if_booking_does_not_exist(self, app):
         # Given
-        user = create_user(email='test@email.com', password='testpsswd')
+        user = create_user(email='test@email.com')
         PcObject.check_and_save(user)
 
         # When
-        response = TestClient().with_auth(user.email, user.clearTextPassword) \
+        response = TestClient().with_auth(user.email) \
             .patch(API_URL + '/bookings/AX', json={"isCancelled": True})
 
         # Then
@@ -864,15 +863,15 @@ class PatchBookingTest:
     @clean_database
     def test_returns_403_and_does_not_mark_the_booking_as_cancelled_when_cancelling_for_other_user(self, app):
         # Given
-        other_user = create_user(email='test2@email.com', password='testpsswd')
+        other_user = create_user(email='test2@email.com')
         deposit_date = datetime.utcnow() - timedelta(minutes=2)
         deposit = create_deposit(other_user, deposit_date, amount=500)
         booking = create_booking(other_user)
-        user = create_user(email='test@email.com', password='testpsswd')
+        user = create_user(email='test@email.com')
         PcObject.check_and_save(user, other_user, deposit, booking)
 
         # When
-        response = TestClient().with_auth(user.email, user.clearTextPassword) \
+        response = TestClient().with_auth(user.email) \
             .patch(API_URL + '/bookings/' + humanize(booking.id), json={"isCancelled": True})
 
         # Then
@@ -883,16 +882,15 @@ class PatchBookingTest:
     @clean_database
     def test_returns_200_and_effectively_marks_the_booking_as_cancelled_when_cancelling_for_other_as_admin(self, app):
         # Given
-        admin_user = create_user(email='test@email.com', can_book_free_offers=False, password='testpsswd',
-                                 is_admin=True)
-        other_user = create_user(email='test2@email.com', password='testpsswd')
+        admin_user = create_user(email='test@email.com', can_book_free_offers=False, is_admin=True)
+        other_user = create_user(email='test2@email.com')
         deposit_date = datetime.utcnow() - timedelta(minutes=2)
         deposit = create_deposit(other_user, deposit_date, amount=500)
         booking = create_booking(other_user)
         PcObject.check_and_save(admin_user, other_user, deposit, booking)
 
         # When
-        response = TestClient().with_auth(admin_user.email, admin_user.clearTextPassword) \
+        response = TestClient().with_auth(admin_user.email) \
             .patch(API_URL + '/bookings/' + humanize(booking.id), json={"isCancelled": True})
 
         # Then
@@ -907,7 +905,7 @@ class GetBookingByTokenTest:
     def test_when_user_has_rights_and_regular_offer_returns_status_code_200_user_and_booking_data(self, app):
         # Given
         user = create_user(public_name='John Doe', email='user@email.fr')
-        admin_user = create_user(email='admin@email.fr', password='P@55w0rd')
+        admin_user = create_user(email='admin@email.fr')
         offerer = create_offerer()
         user_offerer = create_user_offerer(admin_user, offerer)
         venue = create_venue(offerer)
@@ -927,7 +925,7 @@ class GetBookingByTokenTest:
                          'venueDepartementCode': '93'}
 
         # When
-        response = TestClient().with_auth('admin@email.fr', 'P@55w0rd').get(
+        response = TestClient().with_auth('admin@email.fr').get(
             API_URL + '/bookings/token/{}'.format(booking.token))
         # Then
         assert response.status_code == 200
@@ -939,7 +937,7 @@ class GetBookingByTokenTest:
             self, app):
         # Given
         user = create_user(email='user@email.fr', phone_number='0698765432', date_of_birth=datetime(2001, 2, 1))
-        admin_user = create_user(email='admin@email.fr', password='P@55w0rd', is_admin=True, can_book_free_offers=False)
+        admin_user = create_user(email='admin@email.fr', can_book_free_offers=False, is_admin=True)
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_event_offer(venue, event_name='Offre d\'activation', event_type=EventType.ACTIVATION)
@@ -961,7 +959,7 @@ class GetBookingByTokenTest:
 
         # When
         response = TestClient() \
-            .with_auth('admin@email.fr', 'P@55w0rd') \
+            .with_auth('admin@email.fr') \
             .get(API_URL + '/bookings/token/{}'.format(booking.token))
 
         # Then
@@ -973,7 +971,7 @@ class GetBookingByTokenTest:
     def test_when_user_has_rights_and_email_with_special_characters_url_encoded_returns_status_code_200(self, app):
         # Given
         user = create_user(email='user+plus@email.fr')
-        user_admin = create_user(email='admin@email.fr', password='P@55w0rd')
+        user_admin = create_user(email='admin@email.fr')
         offerer = create_offerer()
         user_offerer = create_user_offerer(user_admin, offerer, is_admin=True)
         venue = create_venue(offerer)
@@ -987,7 +985,7 @@ class GetBookingByTokenTest:
         url = API_URL + '/bookings/token/{}?{}'.format(booking.token, url_email)
 
         # When
-        response = TestClient().with_auth('admin@email.fr', 'P@55w0rd').get(url)
+        response = TestClient().with_auth('admin@email.fr').get(url)
         # Then
         assert response.status_code == 200
 
@@ -995,7 +993,7 @@ class GetBookingByTokenTest:
     def test_when_user_doesnt_have_rights_returns_status_code_204(self, app):
         # Given
         user = create_user(email='user@email.fr')
-        querying_user = create_user(email='querying@email.fr', password='P@55w0rd')
+        querying_user = create_user(email='querying@email.fr')
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_event_offer(venue, event_name='Event Name')
@@ -1006,7 +1004,7 @@ class GetBookingByTokenTest:
         PcObject.check_and_save(querying_user, booking, event_occurrence)
 
         # When
-        response = TestClient().with_auth('querying@email.fr', 'P@55w0rd').get(
+        response = TestClient().with_auth('querying@email.fr').get(
             API_URL + '/bookings/token/{}'.format(booking.token))
         # Then
         assert response.status_code == 204
@@ -1015,7 +1013,7 @@ class GetBookingByTokenTest:
     def test_when_user_not_logged_in_and_gives_right_email_returns_204(self, app):
         # Given
         user = create_user(email='user@email.fr')
-        admin_user = create_user(email='admin@email.fr', password='P@55w0rd')
+        admin_user = create_user(email='admin@email.fr')
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_event_offer(venue, event_name='Event Name')
@@ -1035,7 +1033,7 @@ class GetBookingByTokenTest:
     def test_when_user_not_logged_in_and_give_right_email_and_event_offer_id_returns_204(self, app):
         # Given
         user = create_user(email='user@email.fr')
-        admin_user = create_user(email='admin@email.fr', password='P@55w0rd')
+        admin_user = create_user(email='admin@email.fr')
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_event_offer(venue, event_name='Event Name')
@@ -1057,7 +1055,7 @@ class GetBookingByTokenTest:
     def test_when_not_logged_in_and_give_right_email_and_offer_id_thing_returns_204(self, app):
         # Given
         user = create_user(email='user@email.fr')
-        admin_user = create_user(email='admin@email.fr', password='P@55w0rd')
+        admin_user = create_user(email='admin@email.fr')
         offerer = create_offerer()
         venue = create_venue(offerer)
         stock = create_stock_with_thing_offer(offerer, venue, thing_offer=None, price=0)
@@ -1075,11 +1073,11 @@ class GetBookingByTokenTest:
     @clean_database
     def test_when_token_user_has_rights_but_token_not_found_returns_status_code_404_and_global_error(self, app):
         # Given
-        admin_user = create_user(email='admin@email.fr', password='P@55w0rd')
+        admin_user = create_user(email='admin@email.fr')
         PcObject.check_and_save(admin_user)
 
         # When
-        response = TestClient().with_auth('admin@email.fr', 'P@55w0rd').get(
+        response = TestClient().with_auth('admin@email.fr').get(
             API_URL + '/bookings/token/{}'.format('12345'))
         # Then
         assert response.status_code == 404
@@ -1089,7 +1087,7 @@ class GetBookingByTokenTest:
     def test_when_user_not_logged_in_and_wrong_email_returns_404_and_global_in_error(self, app):
         # Given
         user = create_user(email='user@email.fr')
-        admin_user = create_user(email='admin@email.fr', password='P@55w0rd')
+        admin_user = create_user(email='admin@email.fr')
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_event_offer(venue, event_name='Event Name')
@@ -1101,7 +1099,7 @@ class GetBookingByTokenTest:
 
         # When
         url = API_URL + '/bookings/token/{}?email={}'.format(booking.token, 'toto@email.fr')
-        response = TestClient().with_auth('admin@email.fr', 'P@55w0rd').get(url)
+        response = TestClient().with_auth('admin@email.fr').get(url)
         # Then
         assert response.status_code == 404
         assert response.json()['global'] == ["Cette contremarque n'a pas été trouvée"]
@@ -1110,7 +1108,7 @@ class GetBookingByTokenTest:
     def test_when_user_not_logged_in_right_email_and_wrong_offer_returns_404_and_global_in_error(self, app):
         # Given
         user = create_user(email='user@email.fr')
-        admin_user = create_user(email='admin@email.fr', password='P@55w0rd')
+        admin_user = create_user(email='admin@email.fr')
         offerer = create_offerer()
         venue = create_venue(offerer)
         stock = create_stock_with_thing_offer(offerer, venue, thing_offer=None, price=0)
@@ -1130,7 +1128,7 @@ class GetBookingByTokenTest:
     def test_when_user_has_rights_and_email_with_special_characters_not_url_encoded_returns_404(self, app):
         # Given
         user = create_user(email='user+plus@email.fr')
-        user_admin = create_user(email='admin@email.fr', password='P@55w0rd')
+        user_admin = create_user(email='admin@email.fr')
         offerer = create_offerer()
         user_offerer = create_user_offerer(user_admin, offerer, is_admin=True)
         venue = create_venue(offerer)
@@ -1143,7 +1141,7 @@ class GetBookingByTokenTest:
         url = API_URL + '/bookings/token/{}?email={}'.format(booking.token, user.email)
 
         # When
-        response = TestClient().with_auth('admin@email.fr', 'P@55w0rd').get(url)
+        response = TestClient().with_auth('admin@email.fr').get(url)
         # Then
         assert response.status_code == 404
 
@@ -1151,7 +1149,7 @@ class GetBookingByTokenTest:
     def test_when_user_not_logged_in_and_doesnt_give_email_returns_400_and_email_in_error(self, app):
         # Given
         user = create_user(email='user@email.fr')
-        admin_user = create_user(email='admin@email.fr', password='P@55w0rd')
+        admin_user = create_user(email='admin@email.fr')
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_event_offer(venue, event_name='Event Name')
@@ -1175,7 +1173,7 @@ class GetBookingByTokenTest:
             self, app):
         # Given
         user = create_user(email='user@email.fr')
-        admin_user = create_user(email='admin@email.fr', password='P@55w0rd')
+        admin_user = create_user(email='admin@email.fr')
         offerer = create_offerer()
         venue = create_venue(offerer)
         stock = create_stock_with_thing_offer(offerer, venue, thing_offer=None, price=0)
@@ -1196,7 +1194,7 @@ class GetBookingByTokenTest:
             self, app):
         # Given
         user = create_user(email='user@email.fr')
-        admin_user = create_user(email='admin@email.fr', password='P@55w0rd')
+        admin_user = create_user(email='admin@email.fr')
         offerer = create_offerer()
         venue = create_venue(offerer)
         stock = create_stock_with_thing_offer(offerer, venue, thing_offer=None, price=0)
@@ -1318,7 +1316,7 @@ class PatchBookingByTokenAsLoggedInUserTest:
     def test_when_has_rights_returns_204_and_is_used_is_true(self, app):
         # Given
         user = create_user()
-        admin_user = create_user(email='admin@email.fr', password='P@55w0rd')
+        admin_user = create_user(email='admin@email.fr')
         offerer = create_offerer()
         user_offerer = create_user_offerer(admin_user, offerer)
         venue = create_venue(offerer)
@@ -1328,7 +1326,7 @@ class PatchBookingByTokenAsLoggedInUserTest:
         url = API_URL + '/bookings/token/{}'.format(booking.token)
 
         # When
-        response = TestClient().with_auth('admin@email.fr', 'P@55w0rd').patch(url)
+        response = TestClient().with_auth('admin@email.fr').patch(url)
 
         # Then
         assert response.status_code == 204
@@ -1339,7 +1337,7 @@ class PatchBookingByTokenAsLoggedInUserTest:
     def test_valid_request_with_non_standard_header_returns_204_and_is_used_is_true(self, app):
         # Given
         user = create_user()
-        admin_user = create_user(email='admin@email.fr', password='P@55w0rd')
+        admin_user = create_user(email='admin@email.fr')
         offerer = create_offerer()
         user_offerer = create_user_offerer(admin_user, offerer)
         venue = create_venue(offerer)
@@ -1349,8 +1347,7 @@ class PatchBookingByTokenAsLoggedInUserTest:
         url = API_URL + '/bookings/token/{}'.format(booking.token)
 
         # When
-        response = TestClient().with_auth('admin@email.fr', 'P@55w0rd',
-                                          headers={'origin': 'http://random_header.fr'}).patch(url)
+        response = TestClient().with_auth('admin@email.fr', headers={'origin': 'http://random_header.fr'}).patch(url)
 
         # Then
         assert response.status_code == 204
@@ -1361,7 +1358,7 @@ class PatchBookingByTokenAsLoggedInUserTest:
     def test_valid_request_and_email_with_special_character_url_encoded_returns_204(self, app):
         # Given
         user = create_user(email='user+plus@email.fr')
-        user_admin = create_user(email='admin@email.fr', password='P@55w0rd')
+        user_admin = create_user(email='admin@email.fr')
         offerer = create_offerer()
         user_offerer = create_user_offerer(user_admin, offerer, is_admin=True)
         venue = create_venue(offerer)
@@ -1375,7 +1372,7 @@ class PatchBookingByTokenAsLoggedInUserTest:
         url = API_URL + '/bookings/token/{}?{}'.format(booking.token, url_email)
 
         # When
-        response = TestClient().with_auth('admin@email.fr', 'P@55w0rd').patch(url)
+        response = TestClient().with_auth('admin@email.fr').patch(url)
         # Then
         assert response.status_code == 204
 
@@ -1383,7 +1380,7 @@ class PatchBookingByTokenAsLoggedInUserTest:
     def test_when_user_not_editor_and_valid_email_returns_403_global_in_error_and_is_used_is_false(self, app):
         # Given
         user = create_user()
-        admin_user = create_user(email='admin@email.fr', password='P@55w0rd')
+        admin_user = create_user(email='admin@email.fr')
         offerer = create_offerer()
         venue = create_venue(offerer)
         stock = create_stock_with_event_offer(offerer, venue, price=0)
@@ -1392,7 +1389,7 @@ class PatchBookingByTokenAsLoggedInUserTest:
         url = API_URL + '/bookings/token/{}?email={}'.format(booking.token, user.email)
 
         # When
-        response = TestClient().with_auth('admin@email.fr', 'P@55w0rd').patch(url)
+        response = TestClient().with_auth('admin@email.fr').patch(url)
 
         # Then
         assert response.status_code == 403
@@ -1404,7 +1401,7 @@ class PatchBookingByTokenAsLoggedInUserTest:
     def test_when_user_not_editor_and_invalid_email_returns_404_and_is_used_is_false(self, app):
         # Given
         user = create_user()
-        admin_user = create_user(email='admin@email.fr', password='P@55w0rd')
+        admin_user = create_user(email='admin@email.fr')
         offerer = create_offerer()
         venue = create_venue(offerer)
         stock = create_stock_with_event_offer(offerer, venue, price=0)
@@ -1413,7 +1410,7 @@ class PatchBookingByTokenAsLoggedInUserTest:
         url = API_URL + '/bookings/token/{}?email={}'.format(booking.token, 'wrong@email.fr')
 
         # When
-        response = TestClient().with_auth('admin@email.fr', 'P@55w0rd').patch(url)
+        response = TestClient().with_auth('admin@email.fr').patch(url)
 
         # Then
         assert response.status_code == 404
@@ -1424,7 +1421,7 @@ class PatchBookingByTokenAsLoggedInUserTest:
     def test_email_with_special_character_not_url_encoded_returns_404(self, app):
         # Given
         user = create_user(email='user+plus@email.fr')
-        user_admin = create_user(email='admin@email.fr', password='P@55w0rd')
+        user_admin = create_user(email='admin@email.fr')
         offerer = create_offerer()
         user_offerer = create_user_offerer(user_admin, offerer, is_admin=True)
         venue = create_venue(offerer)
@@ -1437,7 +1434,7 @@ class PatchBookingByTokenAsLoggedInUserTest:
         url = API_URL + '/bookings/token/{}?email={}'.format(booking.token, user.email)
 
         # When
-        response = TestClient().with_auth('admin@email.fr', 'P@55w0rd').patch(url)
+        response = TestClient().with_auth('admin@email.fr').patch(url)
         # Then
         assert response.status_code == 404
 
@@ -1445,7 +1442,7 @@ class PatchBookingByTokenAsLoggedInUserTest:
     def test_when_user_not_editor_and_valid_email_but_invalid_offer_id_returns_404_and_is_used_false(self, app):
         # Given
         user = create_user()
-        admin_user = create_user(email='admin@email.fr', password='P@55w0rd')
+        admin_user = create_user(email='admin@email.fr')
         offerer = create_offerer()
         venue = create_venue(offerer)
         stock = create_stock_with_event_offer(offerer, venue, price=0)
@@ -1454,7 +1451,7 @@ class PatchBookingByTokenAsLoggedInUserTest:
         url = API_URL + '/bookings/token/{}?email={}&offer_id={}'.format(booking.token, user.email, humanize(123))
 
         # When
-        response = TestClient().with_auth('admin@email.fr', 'P@55w0rd').patch(url)
+        response = TestClient().with_auth('admin@email.fr').patch(url)
 
         # Then
         assert response.status_code == 404
@@ -1465,7 +1462,7 @@ class PatchBookingByTokenAsLoggedInUserTest:
     def test_valid_request_when_booking_is_cancelled_returns_410_and_booking_in_error_and_is_used_is_false(self, app):
         # Given
         user = create_user()
-        admin_user = create_user(email='admin@email.fr', password='P@55w0rd')
+        admin_user = create_user(email='admin@email.fr')
         offerer = create_offerer()
         user_offerer = create_user_offerer(admin_user, offerer)
         venue = create_venue(offerer)
@@ -1476,7 +1473,7 @@ class PatchBookingByTokenAsLoggedInUserTest:
         url = API_URL + '/bookings/token/{}'.format(booking.token)
 
         # When
-        response = TestClient().with_auth('admin@email.fr', 'P@55w0rd').patch(url)
+        response = TestClient().with_auth('admin@email.fr').patch(url)
 
         # Then
         assert response.status_code == 410
@@ -1489,7 +1486,7 @@ class PatchBookingByTokenAsLoggedInUserTest:
                                                                                                                 app):
         # Given
         user = create_user()
-        admin_user = create_user(email='admin@email.fr', password='P@55w0rd')
+        admin_user = create_user(email='admin@email.fr')
         offerer = create_offerer()
         user_offerer = create_user_offerer(admin_user, offerer)
         venue = create_venue(offerer)
@@ -1500,7 +1497,7 @@ class PatchBookingByTokenAsLoggedInUserTest:
         url = API_URL + '/bookings/token/{}'.format(booking.token)
 
         # When
-        response = TestClient().with_auth('admin@email.fr', 'P@55w0rd').patch(url)
+        response = TestClient().with_auth('admin@email.fr').patch(url)
 
         # Then
         assert response.status_code == 410
@@ -1524,7 +1521,7 @@ class GetBookingTest:
         PcObject.check_and_save(booking)
 
         # When
-        response = TestClient().with_auth(user.email, 'totallysafepsswd').get(
+        response = TestClient().with_auth(user.email).get(
             API_URL + '/bookings/' + humanize(booking.id))
 
         # Then
@@ -1541,8 +1538,8 @@ class PatchBookingByTokenForActivationOffersTest:
     def test_when_user_patching_admin_and_activation_event_returns_status_code_204_set_can_book_free_offers_true_for_booking_user(
             self, app):
         # Given
-        user = create_user(is_admin=False, can_book_free_offers=False)
-        pro_user = create_user(email='pro@email.fr', password='P@55w0rd', is_admin=True, can_book_free_offers=False)
+        user = create_user(can_book_free_offers=False, is_admin=False)
+        pro_user = create_user(email='pro@email.fr', can_book_free_offers=False, is_admin=True)
         offerer = create_offerer()
         user_offerer = create_user_offerer(pro_user, offerer)
         venue = create_venue(offerer)
@@ -1554,7 +1551,7 @@ class PatchBookingByTokenForActivationOffersTest:
         url = API_URL + '/bookings/token/{}'.format(booking.token)
 
         # When
-        response = TestClient().with_auth('pro@email.fr', 'P@55w0rd').patch(url)
+        response = TestClient().with_auth('pro@email.fr').patch(url)
 
         # Then
         db.session.refresh(user)
@@ -1564,8 +1561,8 @@ class PatchBookingByTokenForActivationOffersTest:
     @clean_database
     def test_when_user_patching_admin_and_activation_thing_set_can_book_free_offers_true_for_booking_user(self, app):
         # Given
-        user = create_user(is_admin=False, can_book_free_offers=False)
-        pro_user = create_user(email='pro@email.fr', password='P@55w0rd', is_admin=True, can_book_free_offers=False)
+        user = create_user(can_book_free_offers=False, is_admin=False)
+        pro_user = create_user(email='pro@email.fr', can_book_free_offers=False, is_admin=True)
         offerer = create_offerer()
         user_offerer = create_user_offerer(pro_user, offerer)
         venue = create_venue(offerer)
@@ -1577,7 +1574,7 @@ class PatchBookingByTokenForActivationOffersTest:
         url = API_URL + '/bookings/token/{}'.format(booking.token)
 
         # When
-        response = TestClient().with_auth('pro@email.fr', 'P@55w0rd').patch(url)
+        response = TestClient().with_auth('pro@email.fr').patch(url)
 
         # Then
         db.session.refresh(user)
@@ -1587,8 +1584,8 @@ class PatchBookingByTokenForActivationOffersTest:
     @clean_database
     def test_when_user_patching_admin_and_no_deposit_for_booking_user_add_500_eur_deposit(self, app):
         # Given
-        user = create_user(is_admin=False, can_book_free_offers=False)
-        pro_user = create_user(email='pro@email.fr', password='P@55w0rd', is_admin=True, can_book_free_offers=False)
+        user = create_user(can_book_free_offers=False, is_admin=False)
+        pro_user = create_user(email='pro@email.fr', can_book_free_offers=False, is_admin=True)
         offerer = create_offerer()
         user_offerer = create_user_offerer(pro_user, offerer)
         venue = create_venue(offerer)
@@ -1600,7 +1597,7 @@ class PatchBookingByTokenForActivationOffersTest:
         url = API_URL + '/bookings/token/{}'.format(booking.token)
 
         # When
-        response = TestClient().with_auth('pro@email.fr', 'P@55w0rd').patch(url)
+        response = TestClient().with_auth('pro@email.fr').patch(url)
 
         # Then
         deposits_for_user = Deposit.query.filter_by(userId=user.id).all()
@@ -1613,8 +1610,8 @@ class PatchBookingByTokenForActivationOffersTest:
     def test_when_user_patching_admin_and_deposit_for_booking_do_not_add_new_deposit_and_return_status_code_405(self,
                                                                                                                 app):
         # Given
-        user = create_user(is_admin=False, can_book_free_offers=False)
-        pro_user = create_user(email='pro@email.fr', password='P@55w0rd', is_admin=True, can_book_free_offers=False)
+        user = create_user(can_book_free_offers=False, is_admin=False)
+        pro_user = create_user(email='pro@email.fr', can_book_free_offers=False, is_admin=True)
         offerer = create_offerer()
         user_offerer = create_user_offerer(pro_user, offerer)
         venue = create_venue(offerer)
@@ -1627,7 +1624,7 @@ class PatchBookingByTokenForActivationOffersTest:
         url = API_URL + '/bookings/token/{}'.format(booking.token)
 
         # When
-        response = TestClient().with_auth('pro@email.fr', 'P@55w0rd').patch(url)
+        response = TestClient().with_auth('pro@email.fr').patch(url)
 
         # Then
         deposits_for_user = Deposit.query.filter_by(userId=user.id).all()
@@ -1639,7 +1636,7 @@ class PatchBookingByTokenForActivationOffersTest:
     def test_when_user_patching_not_admin_status_code_403(self, app):
         # Given
         user = create_user()
-        pro_user = create_user(email='pro@email.fr', password='P@55w0rd', is_admin=False)
+        pro_user = create_user(email='pro@email.fr', is_admin=False)
         offerer = create_offerer()
         user_offerer = create_user_offerer(pro_user, offerer)
         venue = create_venue(offerer)
@@ -1651,7 +1648,7 @@ class PatchBookingByTokenForActivationOffersTest:
         url = API_URL + '/bookings/token/{}'.format(booking.token)
 
         # When
-        response = TestClient().with_auth('pro@email.fr', 'P@55w0rd').patch(url)
+        response = TestClient().with_auth('pro@email.fr').patch(url)
 
         # Then
         assert response.status_code == 403

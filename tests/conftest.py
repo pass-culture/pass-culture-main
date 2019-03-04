@@ -9,10 +9,9 @@ from flask import Flask
 from mailjet_rest import Client
 from requests import Response
 
-from local_providers.install import install_local_providers
 from models.db import db
-from models.install import install_models
 from repository.clean_database import clean_all_database
+from tests.test_utils import BASE_PLAIN_PASSWORD
 
 items_by_category = {'first': [], 'last': []}
 
@@ -52,11 +51,6 @@ def app():
     app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     db.init_app(app)
-
-    with app.app_context():
-        install_models()
-        install_local_providers()
-
     return app
 
 
@@ -88,14 +82,14 @@ class TestClient:
     def __init__(self):
         self.session = None
 
-    def with_auth(self, email: str = None, password: str = None, headers: dict = LOCAL_ORIGIN_HEADER):
+    def with_auth(self, email: str = None, headers: dict = LOCAL_ORIGIN_HEADER):
         self.session = requests.Session()
         self.session.headers = headers
 
-        if email is None or password is None:
-            self.session.auth = (TestClient.USER_TEST_ADMIN_EMAIL, TestClient.USER_TEST_ADMIN_PASSWORD)
+        if email is None:
+            self.session.auth = (TestClient.USER_TEST_ADMIN_EMAIL, BASE_PLAIN_PASSWORD)
         else:
-            self.session.auth = (email, password)
+            self.session.auth = (email, BASE_PLAIN_PASSWORD)
 
         return self
 

@@ -21,13 +21,13 @@ class Get:
         @clean_database
         def when_user_is_logged(self, app):
             # given
-            user = create_user(email='test@email.com', password='testpsswd')
+            user = create_user(email='test@email.com')
 
             PcObject.check_and_save(user)
 
             # when
             response = TestClient() \
-                .with_auth('test@email.com', 'testpsswd') \
+                .with_auth('test@email.com') \
                 .get(
                 API_URL + '/types/')
             types = response.json()
@@ -41,13 +41,12 @@ class Get:
         @clean_database
         def when_user_is_admin(self, app):
             # given
-            admin_user = create_user(email='pctest.admin93.0@btmx.fr', password='pctest.Admin93.0', is_admin=True,
-                                     can_book_free_offers=False)
+            admin_user = create_user(email='pctest.admin93.0@btmx.fr', can_book_free_offers=False, is_admin=True)
             PcObject.check_and_save(admin_user)
 
             # when
             response = TestClient() \
-                .with_auth('pctest.admin93.0@btmx.fr', 'pctest.Admin93.0') \
+                .with_auth('pctest.admin93.0@btmx.fr') \
                 .get(
                 API_URL + '/types/')
             types = response.json()

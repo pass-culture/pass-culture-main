@@ -84,7 +84,7 @@ class Get:
             # given
             keywords_string = "Training"
             search = "keywords_string={}".format(keywords_string)
-            user = create_user(email='test@email.com', password='P@55w0rd')
+            user = create_user(email='test@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_event_offer(venue, event_name='Training in Modern Jazz')
@@ -93,7 +93,7 @@ class Get:
             PcObject.check_and_save(stock, recommendation)
 
             # when
-            response = TestClient().with_auth(user.email, user.clearTextPassword).get(
+            response = TestClient().with_auth(user.email).get(
                 RECOMMENDATION_URL + '?keywords={}'.format(keywords_string))
 
             # then
@@ -107,7 +107,7 @@ class Get:
             # given
             keywords_string = "Training"
             search = "keywords_string={}".format(keywords_string)
-            user = create_user(email='test@email.com', password='P@55w0rd')
+            user = create_user(email='test@email.com')
             offerer = create_offerer(validation_token='ABC123')
             venue = create_venue(offerer)
             offer = create_event_offer(venue, event_name='Training in Modern Jazz')
@@ -116,7 +116,7 @@ class Get:
             PcObject.check_and_save(stock, recommendation)
 
             # when
-            response = TestClient().with_auth(user.email, user.clearTextPassword).get(
+            response = TestClient().with_auth(user.email).get(
                 RECOMMENDATION_URL + '?keywords={}'.format(keywords_string))
 
             # then
@@ -126,7 +126,7 @@ class Get:
         @clean_database
         def when_keywords_contains_special_char(self, app):
             # given
-            user = create_user(email='test@email.com', password='P@55w0rd')
+            user = create_user(email='test@email.com')
             offerer = create_offerer(validation_token='ABC123')
             venue = create_venue(offerer)
             offer = create_event_offer(venue, event_name='www.test.fr event')
@@ -135,7 +135,7 @@ class Get:
             PcObject.check_and_save(stock, recommendation)
 
             # when
-            response = TestClient().with_auth(user.email, user.clearTextPassword).get(
+            response = TestClient().with_auth(user.email).get(
                 RECOMMENDATION_URL + '?keywords=https%3A%2F%2Fwww.test.fr%2F')
 
             # then
@@ -147,7 +147,7 @@ class Get:
             # given
             keywords_string = "Training"
             search = "keywords_string={}".format(keywords_string)
-            user = create_user(email='test@email.com', password='P@55w0rd')
+            user = create_user(email='test@email.com')
             offerer = create_offerer(is_active=False)
             venue = create_venue(offerer)
             offer = create_event_offer(venue, event_name='Training in Modern Jazz')
@@ -156,7 +156,7 @@ class Get:
             PcObject.check_and_save(stock, recommendation)
 
             # when
-            response = TestClient().with_auth(user.email, user.clearTextPassword).get(
+            response = TestClient().with_auth(user.email).get(
                 RECOMMENDATION_URL + '?keywords={}'.format(keywords_string))
 
             # then
@@ -166,7 +166,7 @@ class Get:
         @clean_database
         def when_searching_by_keywords_containing_an_apostrophe(self, app):
             # given
-            user = create_user(email='test@email.com', password='P@55w0rd')
+            user = create_user(email='test@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_event_offer(venue, event_name="L'histoire sans fin")
@@ -174,7 +174,7 @@ class Get:
             PcObject.check_and_save(stock, user)
 
             # when
-            response = TestClient().with_auth(user.email, user.clearTextPassword) \
+            response = TestClient().with_auth(user.email) \
                 .get(RECOMMENDATION_URL + '?keywords=l%27histoire')
 
             # then
@@ -186,7 +186,7 @@ class Get:
         @clean_database
         def when_keywords_contain_single_quote(self, app):
             # given
-            user = create_user(email='test@email.com', password='P@55w0rd')
+            user = create_user(email='test@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_event_offer(venue, event_name="Vortek's")
@@ -194,7 +194,7 @@ class Get:
             PcObject.check_and_save(stock, user)
 
             # when
-            response = TestClient().with_auth(user.email, user.clearTextPassword) \
+            response = TestClient().with_auth(user.email) \
                 .get(RECOMMENDATION_URL + '?keywords=vortek%27s')
 
             # then
@@ -207,7 +207,7 @@ class Get:
         def when_searching_by_keywords_with_non_matching_case(self, app):
             # given
             search = "keywords_string={}".format("rencontres")
-            user = create_user(email='test@email.com', password='P@55w0rd')
+            user = create_user(email='test@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_event_offer(venue, event_name='Rencontres avec des auteurs')
@@ -218,7 +218,7 @@ class Get:
             PcObject.check_and_save(stock, recommendation)
 
             # when
-            response = TestClient().with_auth(user.email, user.clearTextPassword).get(
+            response = TestClient().with_auth(user.email).get(
                 RECOMMENDATION_URL + '?keywords={}'.format("rencontres"))
 
             # then
@@ -231,7 +231,7 @@ class Get:
         def when_searching_by_keywords_with_trailing_whitespaces(self, app):
             # given
             search = "keywords_string={}".format(" rencontres avec auteurs ")
-            user = create_user(email='test@email.com', password='P@55w0rd')
+            user = create_user(email='test@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_event_offer(venue, event_name='Rencontres avec des auteurs')
@@ -240,7 +240,7 @@ class Get:
             PcObject.check_and_save(stock, recommendation)
 
             # when
-            response = TestClient().with_auth(user.email, user.clearTextPassword).get(
+            response = TestClient().with_auth(user.email).get(
                 RECOMMENDATION_URL + '?keywords={}'.format(" rencontres avec auteurs "))
 
             # then
@@ -252,7 +252,7 @@ class Get:
         def when_searching_by_keywords_with_partial_keyword(self, app):
             # given
             search = "keywords_string={}".format("rencon")
-            user = create_user(email='test@email.com', password='P@55w0rd')
+            user = create_user(email='test@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_event_offer(venue, event_name='Rencontres avec des auteurs')
@@ -261,7 +261,7 @@ class Get:
             PcObject.check_and_save(stock, recommendation)
 
             # when
-            response = TestClient().with_auth(user.email, user.clearTextPassword).get(
+            response = TestClient().with_auth(user.email).get(
                 RECOMMENDATION_URL + '?keywords={}'.format("rencon"))
 
             # then
@@ -274,7 +274,7 @@ class Get:
         def when_searching_by_keywords_ignores_soft_deleted_stocks(self, app):
             # given
             search = 'keywords={}'.format('rencontres')
-            user = create_user(email='test@email.com', password='P@55w0rd')
+            user = create_user(email='test@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer1 = create_event_offer(venue, event_name='Rencontres avec des peintres')
@@ -295,7 +295,7 @@ class Get:
             PcObject.check_and_save(stock1, stock2, stock3, recommendation1, recommendation2)
 
             # when
-            response = TestClient().with_auth(user.email, user.clearTextPassword).get(
+            response = TestClient().with_auth(user.email).get(
                 RECOMMENDATION_URL + '?keywords={}'.format('rencontres'))
 
             # then
@@ -305,7 +305,7 @@ class Get:
         @clean_database
         def when_searching_by_type_with_two_types(self, app):
             # given
-            user = create_user(email='test@email.com', password='P@55w0rd')
+            user = create_user(email='test@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer1 = create_event_offer(venue, event_name='Training in Modern Jazz')
@@ -317,7 +317,7 @@ class Get:
             PcObject.check_and_save(stock, recommendation, stock2, recommendation2)
 
             # when
-            response = TestClient().with_auth(user.email, user.clearTextPassword).get(
+            response = TestClient().with_auth(user.email).get(
                 RECOMMENDATION_URL + '?categories=Applaudir%2CRegarder')
 
             # then
@@ -327,7 +327,7 @@ class Get:
         @clean_database
         def when_searching_by_type_with_all_types(self, app):
             # given
-            user = create_user(email='test@email.com', password='P@55w0rd')
+            user = create_user(email='test@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer1 = create_event_offer(venue, event_name='Training in Modern Jazz')
@@ -343,7 +343,7 @@ class Get:
             PcObject.check_and_save(stock, recommendation, stock2, recommendation2, stock3, recommendation3)
 
             # when
-            response = TestClient().with_auth(user.email, user.clearTextPassword).get(
+            response = TestClient().with_auth(user.email).get(
                 RECOMMENDATION_URL + '?categories=%25C3%2589couter%2CApplaudir%2CJouer%2CLire%2CPratiquer%2CRegarder%2CRencontrer'
             )
 
@@ -354,7 +354,7 @@ class Get:
         @clean_database
         def when_searching_by_date_and_date_range(self, app):
             # Given
-            user = create_user(email='test@email.com', password='P@55w0rd')
+            user = create_user(email='test@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_event_offer(venue, event_name='Training in Modern Jazz')
@@ -368,7 +368,7 @@ class Get:
             PcObject.check_and_save(stock, recommendation)
 
             # When
-            response = TestClient().with_auth(user.email, user.clearTextPassword).get(
+            response = TestClient().with_auth(user.email).get(
                 RECOMMENDATION_URL + '?date=%s&days=1-5' % strftime(self.now))
 
             # Then
@@ -382,7 +382,7 @@ class Get:
         @clean_database
         def when_searching_by_date_and_date_range_and_type(self, app):
             # Given
-            user = create_user(email='test@email.com', password='P@55w0rd')
+            user = create_user(email='test@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_event_offer(venue, event_name='The new film', event_type=EventType.CINEMA)
@@ -403,7 +403,7 @@ class Get:
             PcObject.check_and_save(stock, recommendation, recommendation2, recommendation3, thing_stock, stock1)
 
             # When
-            response = TestClient().with_auth(user.email, user.clearTextPassword).get(
+            response = TestClient().with_auth(user.email).get(
                 RECOMMENDATION_URL + '?categories=Lire%2CRegarder' + '&date=%s&days=1-5' % strftime(self.now)
             )
 
@@ -417,7 +417,7 @@ class Get:
         @clean_database
         def when_searching_by_keywords_and_date(self, app):
             # Given
-            user = create_user(email='test@email.com', password='P@55w0rd')
+            user = create_user(email='test@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_event_offer(venue, event_name='Training in Modern Jazz', event_type=EventType.CINEMA)
@@ -430,7 +430,7 @@ class Get:
             PcObject.check_and_save(stock, recommendation)
 
             # When
-            response = TestClient().with_auth(user.email, user.clearTextPassword).get(
+            response = TestClient().with_auth(user.email).get(
                 RECOMMENDATION_URL + '?date=%s&keywords=Jazz' % strftime(self.ten_days_from_now)
             )
 
@@ -441,7 +441,7 @@ class Get:
         @clean_database
         def when_searching_by_keywords_and_distance(self, app):
             # Given
-            user = create_user(email='test@email.com', password='P@55w0rd')
+            user = create_user(email='test@email.com')
 
             concert_offer13 = create_event_offer(self.venue13, event_name='Funky Concert de Gael Faye',
                                                  event_type=EventType.MUSIQUE)
@@ -467,7 +467,7 @@ class Get:
             PcObject.check_and_save(stock13, recommendation13, stock75, recommendation75, stock973, recommendation973)
 
             # When
-            response = TestClient().with_auth(user.email, user.clearTextPassword).get(
+            response = TestClient().with_auth(user.email).get(
                 RECOMMENDATION_URL + '?distance=1&keywords=funky')
 
             # Then
@@ -476,7 +476,7 @@ class Get:
         @clean_database
         def when_searching_by_keywords_and_distance_and_latitude_longitude(self, app):
             # Given
-            user = create_user(email='test@email.com', password='P@55w0rd')
+            user = create_user(email='test@email.com')
 
             concert_offer13 = create_event_offer(self.venue13, event_name='Funky Concert de Gael Faye',
                                                  event_type=EventType.MUSIQUE)
@@ -502,7 +502,7 @@ class Get:
             PcObject.check_and_save(stock13, recommendation13, stock75, recommendation75, stock973, recommendation973)
 
             # When
-            response = TestClient().with_auth(user.email, user.clearTextPassword).get(
+            response = TestClient().with_auth(user.email).get(
                 RECOMMENDATION_URL + '?distance=20000&latitude=48.8363788&longitude=2.4002701&keywords=Macouria')
 
             # Then
@@ -514,7 +514,7 @@ class Get:
         @clean_database
         def when_searching_by_non_matching_date_range(self, app):
             # Given
-            user = create_user(email='test@email.com', password='P@55w0rd')
+            user = create_user(email='test@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_event_offer(venue, event_name='Training in Modern Jazz')
@@ -527,7 +527,7 @@ class Get:
             PcObject.check_and_save(stock, recommendation)
 
             # When
-            response = TestClient().with_auth(user.email, user.clearTextPassword).get(
+            response = TestClient().with_auth(user.email).get(
                 RECOMMENDATION_URL + '?date=%s&days=1-5' % strftime(self.ten_days_from_now))
 
             # Then
@@ -537,7 +537,7 @@ class Get:
         @clean_database
         def when_searching_by_type_including_activation_type(self, app):
             # Given
-            user = create_user(email='test@email.com', password='P@55w0rd')
+            user = create_user(email='test@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_event_offer(venue, event_name='The new film', event_type=EventType.CINEMA)
@@ -553,7 +553,7 @@ class Get:
             PcObject.check_and_save(stock, stock1, recommendation, recommendation1)
 
             # When
-            response = TestClient().with_auth(user.email, user.clearTextPassword).get(
+            response = TestClient().with_auth(user.email).get(
                 RECOMMENDATION_URL + '?categories=Activation%2CLire%2CRegarder')
 
             # Then
@@ -569,7 +569,7 @@ class Get:
             # Given
             category_and_date_search = "categories=Lire%2CRegarder%2CActivation&date=" + strftime(
                 self.now) + "&days=1-5"
-            user = create_user(email='test@email.com', password='P@55w0rd')
+            user = create_user(email='test@email.com')
 
             offerer = create_offerer()
             venue = create_venue(offerer)
@@ -601,7 +601,7 @@ class Get:
 
             # When
 
-            response = TestClient().with_auth(user.email, user.clearTextPassword).get(
+            response = TestClient().with_auth(user.email).get(
                 RECOMMENDATION_URL + '?%s' % category_and_date_search)
 
             # Then
@@ -615,7 +615,7 @@ class Get:
         @clean_database
         def when_searching_by_non_matching_date_and_matching_keywords(self, app):
             # Given
-            user = create_user(email='test@email.com', password='P@55w0rd')
+            user = create_user(email='test@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_event_offer(venue, event_name='Training in Modern Jazz', event_type=EventType.CINEMA)
@@ -628,7 +628,7 @@ class Get:
             PcObject.check_and_save(stock, recommendation)
 
             # When
-            response = TestClient().with_auth(user.email, user.clearTextPassword).get(
+            response = TestClient().with_auth(user.email).get(
                 RECOMMENDATION_URL + '?date=%s&keywords=Jazz' % strftime(self.thirty_days_from_now)
             )
 
@@ -639,7 +639,7 @@ class Get:
         @clean_database
         def when_searching_by_date_and_type_and_pagination_not_in_range(self, app):
             # Given
-            user = create_user(email='test@email.com', password='P@55w0rd')
+            user = create_user(email='test@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_event_offer(venue, event_name='The new film', event_type=EventType.CINEMA)
@@ -657,7 +657,7 @@ class Get:
             PcObject.check_and_save(stock, recommendation, recommendation2, thing_stock)
 
             # When
-            response = TestClient().with_auth(user.email, user.clearTextPassword).get(
+            response = TestClient().with_auth(user.email).get(
                 RECOMMENDATION_URL + '?categories=Lire%2CRegarder&days=1-5&page=2' + '&date=%s' % strftime(self.now)
             )
 
@@ -668,7 +668,7 @@ class Get:
         @clean_database
         def when_searching_by_not_exact_match_for_keywords_and_distance(self, app):
             # Given
-            user = create_user(email='test@email.com', password='P@55w0rd')
+            user = create_user(email='test@email.com')
 
             concert_offer13 = create_event_offer(self.venue13, event_name='Funky Concert de Gael Faye',
                                                  event_type=EventType.MUSIQUE)
@@ -694,7 +694,7 @@ class Get:
             PcObject.check_and_save(stock13, recommendation13, stock75, recommendation75, stock973, recommendation973)
 
             # When
-            response = TestClient().with_auth(user.email, user.clearTextPassword).get(
+            response = TestClient().with_auth(user.email).get(
                 RECOMMENDATION_URL + '?distance=1&latitude=48.8363788&longitude=2.4002701&keywords=Funky'
             )
 
@@ -705,7 +705,7 @@ class Get:
         @clean_database
         def when_searching_by_matching_date_and_non_matching_keywords(self, app):
             # Given
-            user = create_user(email='test@email.com', password='P@55w0rd')
+            user = create_user(email='test@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_event_offer(venue, event_name='Training in Modern Jazz')
@@ -718,7 +718,7 @@ class Get:
             PcObject.check_and_save(stock, recommendation)
 
             # When
-            response = TestClient().with_auth(user.email, user.clearTextPassword).get(
+            response = TestClient().with_auth(user.email).get(
                 RECOMMENDATION_URL + '?date=%s&keywords=nekfeu' % strftime(self.ten_days_from_now)
             )
 

@@ -7,9 +7,9 @@ from tests.test_utils import create_booking, create_user, create_stock, create_t
 class GenerateActivationUsersCsvTest:
     def test_generate_activation_users_csv(self):
         # Given
-        user1 = create_user(email='email1@test.com', first_name='Pedro', last_name='Gutierrez',
+        user1 = create_user(first_name='Pedro', last_name='Gutierrez', email='email1@test.com',
                             reset_password_token='AZERTY123')
-        user2 = create_user(email='email2+alias@test.com', first_name='Pablo', last_name='Rodriguez',
+        user2 = create_user(first_name='Pablo', last_name='Rodriguez', email='email2+alias@test.com',
                             reset_password_token='123AZERTY')
         offerer = create_offerer()
         venue = create_venue(offerer, is_virtual=True, address=None, postal_code=None, departement_code=None)

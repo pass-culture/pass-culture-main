@@ -11,7 +11,7 @@ class Post:
         @clean_database
         def when_any_user_and_creates_one_virtual_venue(self, app):
             # given
-            user = create_user(password='p@55sw0rd')
+            user = create_user()
             PcObject.check_and_save(user)
             body = {
                 'name': 'Test Offerer',
@@ -23,7 +23,7 @@ class Post:
 
             # when
             response = TestClient() \
-                .with_auth(user.email, user.clearTextPassword) \
+                .with_auth(user.email) \
                 .post(API_URL + '/offerers', json=body)
 
             # then
@@ -37,7 +37,7 @@ class Post:
         @clean_database
         def when_json_without_address_creates_an_offerer(self, app):
             # given
-            user = create_user(password='p@55sw0rd')
+            user = create_user()
             PcObject.check_and_save(user)
             body = {
                 'name': 'Test Offerer',
@@ -48,7 +48,7 @@ class Post:
 
             # when
             response = TestClient() \
-                .with_auth(user.email, user.clearTextPassword) \
+                .with_auth(user.email) \
                 .post(API_URL + '/offerers', json=body)
 
             # then
@@ -60,7 +60,7 @@ class Post:
         @pytest.mark.standalone
         def when_admin(self, app):
             # Given
-            user = create_user(can_book_free_offers=False, password='p@55sw0rd!', is_admin=True)
+            user = create_user(can_book_free_offers=False, is_admin=True)
             PcObject.check_and_save(user)
 
             # When
@@ -72,7 +72,7 @@ class Post:
                 'city': 'Montreuil'
             }
             response = TestClient() \
-                .with_auth(user.email, user.clearTextPassword) \
+                .with_auth(user.email) \
                 .post(API_URL + '/offerers', json=body)
 
             # then

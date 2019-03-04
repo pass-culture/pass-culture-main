@@ -13,13 +13,13 @@ class Get:
         @clean_database
         def when_user_offerer_does_not_exist(self, app):
             # Given
-            user = create_user(password='p@55sw0rd!')
+            user = create_user()
             PcObject.check_and_save(user)
             invalid_id = 12
 
             # When
             response = TestClient() \
-                .with_auth(user.email, user.clearTextPassword) \
+                .with_auth(user.email) \
                 .get(API_URL + '/offerers/%s' % invalid_id)
 
             # then
@@ -30,7 +30,7 @@ class Get:
         @clean_database
         def when_user_has_rights_on_offerer(self, app):
             # given
-            user = create_user(password='p@55sw0rd!')
+            user = create_user()
             offerer = create_offerer()
             venue = create_venue(offerer)
             create_bank_information(venue=venue, id_at_providers=venue.siret)
@@ -38,7 +38,7 @@ class Get:
             PcObject.check_and_save(user_offerer, venue)
             # when
             response = TestClient() \
-                .with_auth(user.email, user.clearTextPassword) \
+                .with_auth(user.email) \
                 .get(API_URL + f'/offerers/{humanize(offerer.id)}')
 
             # then

@@ -23,7 +23,7 @@ from tests.test_utils import API_URL,\
 @pytest.mark.standalone
 def test_get_event_occurences_should_return_a_list_of_event_occurences(app):
     # Given
-    user = create_user(email='test@email.com', can_book_free_offers=False, password='P@55w0rd', is_admin=True)
+    user = create_user(email='test@email.com', can_book_free_offers=False, is_admin=True)
     offerer = create_offerer()
     venue = create_venue(offerer)
     offer = create_event_offer(venue)
@@ -34,7 +34,7 @@ def test_get_event_occurences_should_return_a_list_of_event_occurences(app):
     PcObject.check_and_save(user, eo1, eo2, eo3)
 
     # When
-    request = req_with_auth('test@email.com', 'P@55w0rd').get(API_URL + '/eventOccurrences')
+    request = req_with_auth('test@email.com').get(API_URL + '/eventOccurrences')
 
     # Then
     assert request.status_code == 200
@@ -48,7 +48,7 @@ def test_route_delete_event_occurrence_deletes_event_occurrence_stocks_and_cance
     # Given
     user1 = create_user(email='user1@test.fr')
     user2 = create_user(email='user2@test.fr')
-    user_admin = create_user(email='email@test.fr', password='P@55w0rd')
+    user_admin = create_user(email='email@test.fr')
     offerer = create_offerer()
     user_offerer = create_user_offerer(user_admin, offerer)
     venue = create_venue(offerer)
@@ -66,7 +66,7 @@ def test_route_delete_event_occurrence_deletes_event_occurrence_stocks_and_cance
     PcObject.check_and_save(event_occurrence1, event_occurrence2, booking1, booking2, booking3, user_offerer)
 
     # When
-    response = req_with_auth('email@test.fr', 'P@55w0rd').delete(
+    response = req_with_auth('email@test.fr').delete(
         API_URL + '/eventOccurrences/' + humanize(event_occurrence1.id))
 
     # Then

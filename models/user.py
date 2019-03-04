@@ -110,8 +110,7 @@ class User(PcObject,
 
     def setPassword(self, newpass):
         self.clearTextPassword = newpass
-        self.password = bcrypt.hashpw(newpass.encode('utf-8'),
-                                      bcrypt.gensalt())
+        self.password = bcrypt.hashpw(newpass.encode('utf-8'), bcrypt.gensalt())
         self.resetPasswordToken = None
         self.resetPasswordTokenValidityLimit = None
 

@@ -19,9 +19,9 @@ TOKEN = os.environ.get('EXPORT_TOKEN')
 @clean_database
 def test_export_model_returns_200_when_given_model_is_known(app):
     # given
-    user = create_user(password='p@55sw0rd')
+    user = create_user()
     PcObject.check_and_save(user)
-    auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
+    auth_request = req_with_auth(email=user.email)
 
     # when
     response = auth_request.get(API_URL + '/exports/models/%s?token=%s' % ('Venue', TOKEN))
@@ -34,9 +34,9 @@ def test_export_model_returns_200_when_given_model_is_known(app):
 @clean_database
 def test_export_model_returns_400_when_given_model_is_not_exportable(app):
     # given
-    user = create_user(password='p@55sw0rd')
+    user = create_user()
     PcObject.check_and_save(user)
-    auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
+    auth_request = req_with_auth(email=user.email)
 
     # when
     response = auth_request.get(API_URL + '/exports/models/%s?token=%s' % ('VersionedMixin', TOKEN))
@@ -61,9 +61,9 @@ def test_export_model_returns_bad_request_if_no_token_provided(app):
 @clean_database
 def test_export_model_returns_400_when_given_model_is_unknown(app):
     # given
-    user = create_user(password='p@55sw0rd')
+    user = create_user()
     PcObject.check_and_save(user)
-    auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
+    auth_request = req_with_auth(email=user.email)
 
     # when
     response = auth_request.get(API_URL + '/exports/models/%s?token=%s' % ('RandomStuff', TOKEN))
@@ -77,9 +77,9 @@ def test_export_model_returns_400_when_given_model_is_unknown(app):
 @clean_database
 def test_pending_validation_returns_403_when_user_is_not_admin(app):
     # given
-    user = create_user(password='p@55sw0rd', is_admin=False)
+    user = create_user(is_admin=False)
     PcObject.check_and_save(user)
-    auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
+    auth_request = req_with_auth(email=user.email)
 
     # when
     response = auth_request.get(API_URL + '/exports/pending_validation')
@@ -92,9 +92,9 @@ def test_pending_validation_returns_403_when_user_is_not_admin(app):
 @clean_database
 def test_pending_validation_returns_200_when_user_is_admin(app):
     # given
-    user = create_user(can_book_free_offers=False, password='p@55sw0rd', is_admin=True)
+    user = create_user(can_book_free_offers=False, is_admin=True)
     PcObject.check_and_save(user)
-    auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
+    auth_request = req_with_auth(email=user.email)
 
     # when
     response = auth_request.get(API_URL + '/exports/pending_validation')
@@ -107,11 +107,11 @@ def test_pending_validation_returns_200_when_user_is_admin(app):
 @clean_database
 def test_pending_validation_returns_403_when_user_is_structure_admin_but_not_admin(app):
     # given
-    user = create_user(can_book_free_offers=False, password='p@55sw0rd', is_admin=False)
+    user = create_user(can_book_free_offers=False, is_admin=False)
     offerer = create_offerer()
     user_offerer = create_user_offerer(user, offerer, is_admin=True)
     PcObject.check_and_save(user_offerer)
-    auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
+    auth_request = req_with_auth(email=user.email)
 
     # when
     response = auth_request.get(API_URL + '/exports/pending_validation')
@@ -124,15 +124,15 @@ def test_pending_validation_returns_403_when_user_is_structure_admin_but_not_adm
 @clean_database
 def test_pending_validation_return_200_and_validation_token(app):
     # given
-    user = create_user(can_book_free_offers=False, password='p@55sw0rd', is_admin=True)
-    user_pro = create_user(email='user0@test.com', can_book_free_offers=False, password='p@55sw0rd', is_admin=False)
+    user = create_user(can_book_free_offers=False, is_admin=True)
+    user_pro = create_user(email='user0@test.com', can_book_free_offers=False, is_admin=False)
     offerer = create_offerer(validation_token="first_token")
     user_offerer = create_user_offerer(user_pro, offerer, is_admin=True, validation_token="a_token")
     venue = create_venue(offerer, siret=None, comment="comment because no siret",
                          validation_token="venue_validation_token")
 
     PcObject.check_and_save(user_offerer, user)
-    auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
+    auth_request = req_with_auth(email=user.email)
 
     # when
     response = auth_request.get(API_URL + '/exports/pending_validation')
@@ -147,8 +147,8 @@ def test_pending_validation_return_200_and_validation_token(app):
 @clean_database
 def test_pending_validation_return_only_requested_data(app):
     # given
-    user = create_user(can_book_free_offers=False, password='p@55sw0rd', is_admin=True)
-    user_pro = create_user(email='user0@test.com', can_book_free_offers=False, password='p@55sw0rd', is_admin=False)
+    user = create_user(can_book_free_offers=False, is_admin=True)
+    user_pro = create_user(email='user0@test.com', can_book_free_offers=False, is_admin=False)
     offerer = create_offerer(validation_token="first_token")
     user_offerer = create_user_offerer(user_pro, offerer, is_admin=True)
     venue = create_venue(offerer, siret=None, comment="comment because no siret",
@@ -202,7 +202,7 @@ def test_pending_validation_return_only_requested_data(app):
               }]
     }
 
-    auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
+    auth_request = req_with_auth(email=user.email)
     # when
     response = auth_request.get(API_URL + '/exports/pending_validation')
 
@@ -215,7 +215,7 @@ def test_pending_validation_return_only_requested_data(app):
 @clean_database
 def test_pending_validation_returns_offerers_venues_user_and_user_offerer_with_requested_data(app):
     # given
-    connexion_user = create_user(can_book_free_offers=False, password='p@55sw0rd', is_admin=True)
+    connexion_user = create_user(can_book_free_offers=False, is_admin=True)
     offerer1 = create_offerer(name='offerer1', validation_token="a_token")
     offerer2 = create_offerer(name='offerer2', siren='789456123', validation_token="some_token")
     offerer3 = create_offerer(name='offerer3', siren='789456124')
@@ -236,7 +236,7 @@ def test_pending_validation_returns_offerers_venues_user_and_user_offerer_with_r
 
     PcObject.check_and_save(connexion_user, user_offerer1, user_offerer2, user_offerer3, user_offerer4)
 
-    auth_request = req_with_auth(email=connexion_user.email, password='p@55sw0rd')
+    auth_request = req_with_auth(email=connexion_user.email)
     # when
     response = auth_request.get(API_URL + '/exports/pending_validation')
 
@@ -262,9 +262,9 @@ def test_pending_validation_returns_offerers_venues_user_and_user_offerer_with_r
 def test_get_venues_returns_403_when_user_is_not_admin(app):
     # given
     data = {}
-    user = create_user(password='p@55sw0rd', is_admin=False)
+    user = create_user(is_admin=False)
     PcObject.check_and_save(user)
-    auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
+    auth_request = req_with_auth(email=user.email)
 
     # when
     response = auth_request.post(API_URL + '/exports/venues', json=data)
@@ -278,12 +278,12 @@ def test_get_venues_returns_403_when_user_is_not_admin(app):
 def test_get_venues_returns_403_when_user_is_structure_admin_but_not_admin(app):
     # given
     data = {}
-    user = create_user(is_admin=False, can_book_free_offers=False)
+    user = create_user(can_book_free_offers=False, is_admin=False)
     offerer = create_offerer()
     user_offerer = create_user_offerer(user, offerer, is_admin=True)
     venue = create_venue(offerer)
     PcObject.check_and_save(user_offerer, venue)
-    auth_request = req_with_auth(email=user.email, password=user.clearTextPassword)
+    auth_request = req_with_auth(email=user.email)
 
     # when
     response = auth_request.post(API_URL + '/exports/venues', json=data)
@@ -307,7 +307,7 @@ def test_get_venues_return_200_and_filtered_venues(app):
         "offer_status": "ALL"
     }
 
-    user = create_user(password='p@55sw0rd', is_admin=True, can_book_free_offers=False)
+    user = create_user(can_book_free_offers=False, is_admin=True)
     validated_offerer = create_offerer()
     not_validated_offerer = create_offerer(validation_token="here is a token", siren="123456798")
 
@@ -398,7 +398,7 @@ def test_get_venues_return_200_and_filtered_venues(app):
                         activity_in_date_range7, activity_before_date_range1, activity_before_date_range2,
                         activity_after_date_range)
 
-    auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
+    auth_request = req_with_auth(email=user.email)
 
     # when
     response = auth_request.post(API_URL + '/exports/venues', json=data)
@@ -430,11 +430,10 @@ def test_get_venues_with_params_for_pc_reporting_return_200_and_filtered_venues(
         "has_validated_user_offerer": True,
         "has_validated_user": True
     }
-    query_user = create_user(password='p@55sw0rd', is_admin=True, can_book_free_offers=False)
+    query_user = create_user(can_book_free_offers=False, is_admin=True)
 
     validated_user = create_user(email="another@mail.com", can_book_free_offers=False)
-    not_validated_user = create_user(email="a@mail.com", can_book_free_offers=False,
-                                     validation_token="a_token")
+    not_validated_user = create_user(email="a@mail.com", can_book_free_offers=False, validation_token="a_token")
 
     validated_offerer_with_siren1 = create_offerer()
     validated_offerer_with_siren2 = create_offerer(siren='123456782')
@@ -485,7 +484,7 @@ def test_get_venues_with_params_for_pc_reporting_return_200_and_filtered_venues(
                             validated_user_offerer_with_validated_user_with_validated_offerer_without_siren,
                             not_validated_user_offerer_with_validated_user_with_validated_offerer_with_siren)
 
-    auth_request = req_with_auth(email=query_user.email, password='p@55sw0rd')
+    auth_request = req_with_auth(email=query_user.email)
 
     # when
     response = auth_request.post(API_URL + '/exports/venues', json=data)
@@ -509,7 +508,7 @@ def test_get_venues_with_sirens_params_return_200_and_filtered_venues(app):
         "sirens": ["123456781", "123456782", "123456783"]
     }
 
-    query_user = create_user(password='p@55sw0rd', is_admin=True, can_book_free_offers=False)
+    query_user = create_user(can_book_free_offers=False, is_admin=True)
 
     offerer_123456789 = create_offerer(name="offerer_123456789", siren="123456789")
     offerer_123456781 = create_offerer(name="offerer_123456781", siren="123456781")
@@ -525,7 +524,7 @@ def test_get_venues_with_sirens_params_return_200_and_filtered_venues(app):
 
     PcObject.check_and_save(query_user, venue_123456789, venue_123456781, venue_123456782, venue_123456783,
                             venue_123456784)
-    auth_request = req_with_auth(email=query_user.email, password='p@55sw0rd')
+    auth_request = req_with_auth(email=query_user.email)
 
     # when
     response = auth_request.post(API_URL + '/exports/venues', json=data)
@@ -547,10 +546,10 @@ def test_get_venues_return_error_when_date_param_is_wrong(app):
     # given
     wrong_date = "I\'m not a valid date"
     data = {'from_date': wrong_date}
-    user = create_user(password='p@55sw0rd', is_admin=True, can_book_free_offers=False)
+    user = create_user(can_book_free_offers=False, is_admin=True)
 
     PcObject.check_and_save(user)
-    auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
+    auth_request = req_with_auth(email=user.email)
 
     # when
     response = auth_request.post(API_URL + '/exports/venues', json=data)
@@ -565,9 +564,9 @@ def test_get_venues_return_error_when_date_param_is_wrong(app):
 def test_get_offerers_returns_403_when_user_is_not_admin(app):
     # given
     data = {}
-    user = create_user(password='p@55sw0rd', is_admin=False)
+    user = create_user(is_admin=False)
     PcObject.check_and_save(user)
-    auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
+    auth_request = req_with_auth(email=user.email)
 
     # when
     response = auth_request.post(API_URL + '/exports/offerers', json=data)
@@ -581,11 +580,11 @@ def test_get_offerers_returns_403_when_user_is_not_admin(app):
 def test_get_offerers_returns_403_when_user_is_structure_admin_but_not_admin(app):
     # given
     data = {}
-    user = create_user(is_admin=False, can_book_free_offers=False)
+    user = create_user(can_book_free_offers=False, is_admin=False)
     offerer = create_offerer()
     user_offerer = create_user_offerer(user, offerer, is_admin=True)
     PcObject.check_and_save(user_offerer)
-    auth_request = req_with_auth(email=user.email, password=user.clearTextPassword)
+    auth_request = req_with_auth(email=user.email)
 
     # when
     response = auth_request.post(API_URL + '/exports/offerers', json=data)
@@ -608,7 +607,7 @@ def test_get_offerers_return_200_and_filtered_offerers(app):
         "offer_status": "ALL"
     }
 
-    query_user = create_user(password='p@55sw0rd', is_admin=True, can_book_free_offers=False)
+    query_user = create_user(can_book_free_offers=False, is_admin=True)
 
     offerer_93100_in_date_range_with_validated_venue_with_siret_with_offer = create_offerer(
         name="offerer_93100_in_date_range_with_validated_venue_with_siret_with_offer",
@@ -721,7 +720,7 @@ def test_get_offerers_return_200_and_filtered_offerers(app):
                             stock_offer_8, stock_offer_9, stock_offer_10, stock_active_offer_thing,
                             stock_expired_offer_thing, validated_venue_with_siret_without_offer)
 
-    auth_request = req_with_auth(email=query_user.email, password='p@55sw0rd')
+    auth_request = req_with_auth(email=query_user.email)
 
     # when
     response = auth_request.post(API_URL + '/exports/offerers', json=data)
@@ -757,7 +756,7 @@ def test_get_offerers_with_params_for_pc_reporting_return_200_and_filtered_offer
         "has_bank_information": False,
         "is_active": True
     }
-    user_querying = create_user(password='p@55sw0rd', is_admin=True, can_book_free_offers=False)
+    user_querying = create_user(can_book_free_offers=False, is_admin=True)
 
     offerer_no_siren = create_offerer(siren=None, is_active=True, validation_token=None)
     offerer_not_validated = create_offerer(siren='123456789', is_active=True, validation_token='blabla')
@@ -767,8 +766,8 @@ def test_get_offerers_with_params_for_pc_reporting_return_200_and_filtered_offer
     offerer_not_active = create_offerer(siren='123456783', is_active=False, validation_token=None)
     offerer_ok = create_offerer(siren='123456784', is_active=True, validation_token=None)
 
-    user_validated = create_user(validation_token=None, email='email1@test.com')
-    user_not_validated = create_user(validation_token='blabla', email='email2@test.com')
+    user_validated = create_user(email='email1@test.com', validation_token=None)
+    user_not_validated = create_user(email='email2@test.com', validation_token='blabla')
 
     user_offerer_no_siren = create_user_offerer(user_validated, offerer_no_siren, validation_token=None)
     user_offerer_not_validated_offerer = create_user_offerer(user_validated, offerer_not_validated,
@@ -791,7 +790,7 @@ def test_get_offerers_with_params_for_pc_reporting_return_200_and_filtered_offer
 
     PcObject.check_and_save(bank_information)
 
-    auth_request = req_with_auth(email=user_querying.email, password='p@55sw0rd')
+    auth_request = req_with_auth(email=user_querying.email)
 
     # when
     response = auth_request.post(API_URL + '/exports/offerers', json=data)
@@ -811,7 +810,7 @@ def test_get_offerers_with_sirens_params_return_200_and_filtered_offerers(app):
         "sirens": ["123456781", "123456782", "123456783"]
     }
 
-    query_user = create_user(password='p@55sw0rd', is_admin=True, can_book_free_offers=False)
+    query_user = create_user(can_book_free_offers=False, is_admin=True)
 
     offerer_123456789 = create_offerer(name="offerer_123456789", siren="123456789")
     offerer_123456781 = create_offerer(name="offerer_123456781", siren="123456781")
@@ -821,7 +820,7 @@ def test_get_offerers_with_sirens_params_return_200_and_filtered_offerers(app):
 
     PcObject.check_and_save(query_user, offerer_123456789, offerer_123456781, offerer_123456782, offerer_123456783,
                             offerer_123456784)
-    auth_request = req_with_auth(email=query_user.email, password='p@55sw0rd')
+    auth_request = req_with_auth(email=query_user.email)
 
     # when
     response = auth_request.post(API_URL + '/exports/offerers', json=data)
@@ -843,10 +842,10 @@ def test_get_offerers_return_error_when_date_param_is_wrong(app):
     # given
     wrong_date = "I\'m not a valid date"
     data = {'from_date': wrong_date}
-    user = create_user(password='p@55sw0rd', is_admin=True, can_book_free_offers=False)
+    user = create_user(can_book_free_offers=False, is_admin=True)
 
     PcObject.check_and_save(user)
-    auth_request = req_with_auth(email=user.email, password='p@55sw0rd')
+    auth_request = req_with_auth(email=user.email)
 
     # when
     response = auth_request.post(API_URL + '/exports/offerers', json=data)
