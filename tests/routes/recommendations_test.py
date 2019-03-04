@@ -1,100 +1,29 @@
+""" recommendations """
 import pytest
+
+
 from collections import Counter
 from datetime import datetime
 
 from dateutil.parser import parse as parse_date
 
 from models import PcObject
-from repository.clean_database import clean_all_database
+from repository.clean_database import clean_all_database, TestClient
 from sandboxes.scripts.save_sandbox import save_sandbox
-from tests.conftest import TestClient
 from tests.test_utils import API_URL, \
-                             create_event_occurrence, \
-                             create_event_offer, \
-                             create_mediation, \
-                             create_thing_offer, \
-                             create_offerer, \
-                             create_recommendation, \
-                             create_user, \
-                             create_venue
+    create_event_offer, \
+    create_mediation, \
+    create_offerer, \
+    create_recommendation, \
+    create_user, \
+    create_venue
 from utils.config import BLOB_SIZE
 from utils.human_ids import humanize
-
-
 
 RECOMMENDATION_URL = API_URL + '/recommendations'
 
 savedCounts = {}
 
-
-@pytest.mark.standalone
-class Get:
-    class Returns200:
-        @clean_all_database
-        def when_mediation_id_is_not_given(self, app):
-            # Given
-            offerer = create_offerer()
-            venue = create_venue(offerer)
-            offer = create_event_offer(venue)
-            user = create_user(email='user@test.com', password='azerty123')
-            recommendation = create_recommendation(offer, user)
-            PcObject.check_and_save(recommendation)
-
-            # When
-            path = '/recommendations/offers/{}'.format(humanize(offer.id))
-            response = TestClient() \
-                        .with_auth(email='user@test.com', password='azerty123') \
-                        .get(API_URL + path)
-
-            # Then
-            assert response.status_code == 200
-            assert response.json()['id'] == humanize(recommendation.id)
-            assert response.json()['offerId'] == humanize(offer.id)
-
-        @clean_all_database
-        def when_mediation_id_is_given(self, app):
-            # Given
-            offerer = create_offerer()
-            venue = create_venue(offerer)
-            offer = create_event_offer(venue)
-            mediation1 = create_mediation(offer)
-            mediation2 = create_mediation(offer)
-            user = create_user(email='user@test.com', password='azerty123')
-            recommendation1 = create_recommendation(offer, user, mediation=mediation1)
-            recommendation2 = create_recommendation(offer, user, mediation=mediation2)
-            PcObject.check_and_save(recommendation1, recommendation2)
-
-            # When
-            path = '/recommendations/offers/{}?mediationId={}'.format(
-                humanize(offer.id),
-                humanize(recommendation1.mediationId)
-            )
-            response = TestClient() \
-                        .with_auth(email='user@test.com', password='azerty123') \
-                        .get(API_URL + path)
-
-            # Then
-            assert response.status_code == 200
-            assert response.json()['id'] == humanize(recommendation1.id)
-            assert response.json()['offerId'] == humanize(offer.id)
-            assert response.json()['mediationId'] == humanize(mediation1.id)
-
-    class Returns404:
-        @clean_all_database
-        def when_recommendation_is_not_found(self, app):
-            # Given
-            user = create_user(email='user@test.com', password='azerty123')
-            PcObject.check_and_save(user)
-
-            # When
-            path = '/recommendations/offers/AE'
-            response = TestClient() \
-                        .with_auth(email='user@test.com', password='azerty123') \
-                        .get(API_URL + path)
-
-            # Then
-            assert response.status_code == 404
-            assert response.json()['global'] == ["Offre ou médiation introuvable"]
 
 class Put:
     class Returns200:
@@ -226,6 +155,76 @@ class Patch:
             # then
             assert r_update.status_code == 200
             assert r_update.json()['isClicked']
+
+
+@pytest.mark.standalone
+class Get:
+    class Returns200:
+        @clean_database
+        def when_mediation_id_is_not_given(self, app):
+            # Given
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            offer = create_event_offer(venue)
+            user = create_user(email='user@test.com')
+            recommendation = create_recommendation(offer, user)
+            PcObject.check_and_save(recommendation)
+
+            # When
+            path = '/recommendations/offers/{}'.format(humanize(offer.id))
+            response = TestClient() \
+                .with_auth(email='user@test.com') \
+                .get(API_URL + path)
+
+            # Then
+            assert response.status_code == 200
+            assert response.json()['id'] == humanize(recommendation.id)
+            assert response.json()['offerId'] == humanize(offer.id)
+
+        @clean_database
+        def when_mediation_id_is_given(self, app):
+            # Given
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            offer = create_event_offer(venue)
+            mediation1 = create_mediation(offer)
+            mediation2 = create_mediation(offer)
+            user = create_user(email='user@test.com')
+            recommendation1 = create_recommendation(offer, user, mediation=mediation1)
+            recommendation2 = create_recommendation(offer, user, mediation=mediation2)
+            PcObject.check_and_save(recommendation1, recommendation2)
+
+            # When
+            path = '/recommendations/offers/{}?mediationId={}'.format(
+                humanize(offer.id),
+                humanize(recommendation1.mediationId)
+            )
+            response = TestClient() \
+                .with_auth(email='user@test.com') \
+                .get(API_URL + path)
+
+            # Then
+            assert response.status_code == 200
+            assert response.json()['id'] == humanize(recommendation1.id)
+            assert response.json()['offerId'] == humanize(offer.id)
+            assert response.json()['mediationId'] == humanize(mediation1.id)
+
+    class Returns401:
+        @clean_database
+        def when_recommendation_is_not_found(self, app):
+            # Given
+            user = create_user(email='user@test.com')
+            PcObject.check_and_save(user)
+
+            # When
+            path = '/recommendations/offers/AE'
+            response = TestClient() \
+                .with_auth(email='user@test.com') \
+                .get(API_URL + path)
+
+            # Then
+            assert response.status_code == 404
+            assert response.json()['global'] == ["Offre ou médiation introuvable"]
 
 
 def assert_no_duplicate_mediations(recos):
