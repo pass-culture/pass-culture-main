@@ -1,14 +1,14 @@
 """ recommendations stocks """
-from datetime import datetime
 from itertools import cycle
-from random import randint
-from typing import Optional, List, Tuple
 
+from datetime import datetime
+from random import randint
 from sqlalchemy.orm import aliased
+from typing import Optional, List, Tuple
 
 from models import Event, EventOccurrence, Offer, Thing
 from repository.offer_queries import get_active_offers_by_type
-from utils.config import ILE_DE_FRANCE_DEPT_CODES, DEPT_CODES_29
+from utils.config import DEPT_CODE_VISIBILITY
 from utils.logger import logger
 
 roundrobin_predicates = [
@@ -104,13 +104,13 @@ def remove_duplicate_things_or_events(offers: List[Offer]) -> List[Offer]:
             result.append(offer)
     return result
 
+
 def get_departement_codes_from_user(user):
-    if user.departementCode == '93':
-        return ILE_DE_FRANCE_DEPT_CODES
-    elif user.departementCode == '29':
-        return DEPT_CODES_29
+    if user.departementCode in DEPT_CODE_VISIBILITY:
+        return DEPT_CODE_VISIBILITY[user.departementCode]
     else:
         return [user.departementCode]
+
 
 def get_offers_for_recommendations_discovery(limit=3, user=None, coords=None) -> List[Offer]:
     if not user or not user.is_authenticated():

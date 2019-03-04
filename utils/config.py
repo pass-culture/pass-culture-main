@@ -27,8 +27,12 @@ else:
     PRO_URL = 'https://pro.passculture-%s.beta.gouv.fr' % ENV
 
 BLOB_SIZE = 80
-BLOB_UNREAD_NUMBER = int(BLOB_SIZE/5)
-BLOB_READ_NUMBER = int(BLOB_SIZE/5)
+BLOB_UNREAD_NUMBER = int(BLOB_SIZE / 5)
+BLOB_READ_NUMBER = int(BLOB_SIZE / 5)
 
+DEPT_CODE_VISIBILITY = {'93': ['75', '77', '78', '91', '92', '93', '94', '95'],
+                        '29': ['22', '25', '29', '56'],
+                        '67': ['54', '55', '57', '67', '68', '88'],
+                        '34': ['11', '12', '30', '34', '48', '81'],
+                        '97': ['97', '971', '972', '973']}
 ILE_DE_FRANCE_DEPT_CODES = ['75', '77', '78', '91', '92', '93', '94', '95']
-DEPT_CODES_29 = ['22', '25', '29', '56']
