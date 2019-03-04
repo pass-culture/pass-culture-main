@@ -3,8 +3,9 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
+import withQueryRouter from 'with-query-router'
+
 import SearchPicture from './SearchPicture'
-import { withQueryRouter } from '../../hocs/withQueryRouter'
 
 const NavByOfferType = ({ dispatch, query, title, typeSublabels }) => (
   <div id="nav-by-offer-type">

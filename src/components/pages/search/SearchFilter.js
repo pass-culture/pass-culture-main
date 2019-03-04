@@ -5,12 +5,12 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Transition } from 'react-transition-group'
 import { compose } from 'redux'
+import withQueryRouter from 'with-query-router'
 
 import FilterByDates from './FilterByDates'
 import FilterByDistance from './FilterByDistance'
 import FilterByOfferTypes from './FilterByOfferTypes'
 import { getFirstChangingKey, INITIAL_FILTER_PARAMS } from './utils'
-import { withQueryRouter } from '../../hocs/withQueryRouter'
 
 const filtersPanelHeight = 475
 const transitionDelay = 0

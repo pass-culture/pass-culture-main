@@ -11,14 +11,22 @@ import VersoWrapper from './VersoWrapper'
 import currentRecommendationSelector from '../../selectors/currentRecommendation'
 import StaticVerso from './StaticVerso'
 
-const Verso = ({ currentRecommendation, areDetailsVisible }) => {
+const Verso = ({
+  areDetailsVisible,
+  forceDetailsVisible,
+  className,
+  currentRecommendation,
+}) => {
   const { mediation } = currentRecommendation || {}
   const { tutoIndex } = mediation || {}
   const isTuto = typeof tutoIndex === 'number' && mediation
+
+  const flipped = forceDetailsVisible || areDetailsVisible
+
   return (
     <div
-      className={classnames('verso', {
-        flipped: areDetailsVisible,
+      className={classnames('verso', className, {
+        flipped,
       })}
     >
       <VersoWrapper className="with-padding-top">
@@ -31,18 +39,26 @@ const Verso = ({ currentRecommendation, areDetailsVisible }) => {
 }
 
 Verso.defaultProps = {
+  className: null,
   currentRecommendation: null,
+  forceDetailsVisible: false,
 }
 
 Verso.propTypes = {
   areDetailsVisible: PropTypes.bool.isRequired,
+  className: PropTypes.string,
   currentRecommendation: PropTypes.object,
+  forceDetailsVisible: PropTypes.bool,
 }
 
 export default compose(
   withRouter,
   connect((state, ownProps) => {
-    const { mediationId, offerId } = ownProps.match.params
+    const { match } = ownProps
+    const {
+      params: { mediationId, offerId },
+    } = match
+
     return {
       areDetailsVisible: state.card.areDetailsVisible,
       currentRecommendation: currentRecommendationSelector(

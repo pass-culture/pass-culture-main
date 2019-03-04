@@ -8,7 +8,7 @@ import DiscoveryPage from '../components/pages/discovery'
 import FavoritesPage from '../components/pages/FavoritesPage'
 import ForgotPasswordPage from '../components/pages/ForgotPasswordPage'
 import ProfilePage from '../components/pages/profile'
-import SearchPage from '../components/pages/SearchPage'
+import Search from '../components/pages/search'
 import { Signin } from '../components/pages/signin'
 import SignupPage from '../components/pages/SignupPage'
 
@@ -64,10 +64,11 @@ const routes = [
     title: 'Les offres',
   },
   {
-    component: SearchPage,
+    component: Search,
     disabled: false,
     icon: 'search-w',
-    path: '/recherche/:view(resultats)?/:categorie?',
+    path:
+      '/recherche/:view(resultats)?/:option?/:subOption?/:offerId?/:mediationId?',
     title: 'Recherche',
   },
   {

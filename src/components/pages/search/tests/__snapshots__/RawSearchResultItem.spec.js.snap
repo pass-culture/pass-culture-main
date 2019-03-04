@@ -1,9 +1,15 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | pages | SearchResultItem snapshot should match snapshot 1`] = `
+exports[`src | components | pages | RawSearchResultItem snapshot should match snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
-  Symbol(enzyme.__unrendered__): <SearchResultItem
+  Symbol(enzyme.__unrendered__): <RawSearchResultItem
+    location={
+      Object {
+        "pathname": "/recherche/Applaudir",
+        "search": "",
+      }
+    }
     recommendation={
       Object {
         "bookingsIds": Array [],
@@ -148,7 +154,7 @@ ShallowWrapper {
         <Link
           className="flex-columns"
           replace={false}
-          to="/decouverte/X9"
+          to="/recherche/Applaudir/item/X9"
         >
           <div
             className="image flex-0 dotted-right-primary flex-rows flex-center"
@@ -184,7 +190,7 @@ ShallowWrapper {
             </React.Fragment>
           </div>
           <div
-            className="flex-0 is-primary-text"
+            className="flex-center items-center is-primary-text"
           >
             <span
               aria-hidden={true}
@@ -249,7 +255,7 @@ ShallowWrapper {
               </React.Fragment>
             </div>,
             <div
-              className="flex-0 is-primary-text"
+              className="flex-center items-center is-primary-text"
             >
               <span
                 aria-hidden={true}
@@ -260,7 +266,7 @@ ShallowWrapper {
           ],
           "className": "flex-columns",
           "replace": false,
-          "to": "/decouverte/X9",
+          "to": "/recherche/Applaudir/item/X9",
         },
         "ref": null,
         "rendered": Array [
@@ -410,7 +416,7 @@ ShallowWrapper {
                 className="icon-legacy-next"
                 title=""
               />,
-              "className": "flex-0 is-primary-text",
+              "className": "flex-center items-center is-primary-text",
             },
             "ref": null,
             "rendered": Object {
@@ -447,7 +453,7 @@ ShallowWrapper {
           <Link
             className="flex-columns"
             replace={false}
-            to="/decouverte/X9"
+            to="/recherche/Applaudir/item/X9"
           >
             <div
               className="image flex-0 dotted-right-primary flex-rows flex-center"
@@ -483,7 +489,7 @@ ShallowWrapper {
               </React.Fragment>
             </div>
             <div
-              className="flex-0 is-primary-text"
+              className="flex-center items-center is-primary-text"
             >
               <span
                 aria-hidden={true}
@@ -548,7 +554,7 @@ ShallowWrapper {
                 </React.Fragment>
               </div>,
               <div
-                className="flex-0 is-primary-text"
+                className="flex-center items-center is-primary-text"
               >
                 <span
                   aria-hidden={true}
@@ -559,7 +565,7 @@ ShallowWrapper {
             ],
             "className": "flex-columns",
             "replace": false,
-            "to": "/decouverte/X9",
+            "to": "/recherche/Applaudir/item/X9",
           },
           "ref": null,
           "rendered": Array [
@@ -709,7 +715,7 @@ ShallowWrapper {
                   className="icon-legacy-next"
                   title=""
                 />,
-                "className": "flex-0 is-primary-text",
+                "className": "flex-center items-center is-primary-text",
               },
               "ref": null,
               "rendered": Object {

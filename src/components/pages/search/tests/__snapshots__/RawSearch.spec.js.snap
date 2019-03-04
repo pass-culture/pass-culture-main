@@ -1,0 +1,676 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`src | components | pages | RawSearch snapshot should match snapshot 1`] = `
+ShallowWrapper {
+  Symbol(enzyme.__root__): [Circular],
+  Symbol(enzyme.__unrendered__): <RawSearch
+    dispatch={
+      [MockFunction] {
+        "calls": Array [
+          Array [
+            Object {
+              "patch": Object {
+                "recommendations": Array [],
+              },
+              "type": "ASSIGN_DATA",
+            },
+          ],
+          Array [
+            Object {
+              "config": Object {},
+              "method": "GET",
+              "path": "types",
+              "type": "REQUEST_DATA_GET_TYPES",
+            },
+          ],
+          Array [
+            Object {
+              "patch": Object {
+                "recommendations": Array [],
+              },
+              "type": "ASSIGN_DATA",
+            },
+          ],
+          Array [
+            Object {
+              "config": Object {},
+              "method": "GET",
+              "path": "types",
+              "type": "REQUEST_DATA_GET_TYPES",
+            },
+          ],
+          Array [
+            Object {
+              "patch": Object {
+                "recommendations": Array [],
+              },
+              "type": "ASSIGN_DATA",
+            },
+          ],
+          Array [
+            Object {
+              "config": Object {},
+              "method": "GET",
+              "path": "types",
+              "type": "REQUEST_DATA_GET_TYPES",
+            },
+          ],
+          Array [
+            Object {
+              "config": Object {
+                "handleSuccess": [Function],
+              },
+              "method": "GET",
+              "path": "recommendations?categories=Jouer&keywords=Fake",
+              "type": "REQUEST_DATA_GET_RECOMMENDATIONS?CATEGORIES=JOUER&KEYWORDS=FAKE",
+            },
+          ],
+          Array [
+            Object {
+              "patch": Object {
+                "recommendations": Array [],
+              },
+              "type": "ASSIGN_DATA",
+            },
+          ],
+          Array [
+            Object {
+              "config": Object {},
+              "method": "GET",
+              "path": "types",
+              "type": "REQUEST_DATA_GET_TYPES",
+            },
+          ],
+          Array [
+            Object {
+              "patch": Object {
+                "recommendations": Array [],
+              },
+              "type": "ASSIGN_DATA",
+            },
+          ],
+          Array [
+            Object {
+              "config": Object {},
+              "method": "GET",
+              "path": "types",
+              "type": "REQUEST_DATA_GET_TYPES",
+            },
+          ],
+          Array [
+            Object {
+              "patch": Object {
+                "recommendations": Array [],
+              },
+              "type": "ASSIGN_DATA",
+            },
+          ],
+          Array [
+            Object {
+              "config": Object {},
+              "method": "GET",
+              "path": "types",
+              "type": "REQUEST_DATA_GET_TYPES",
+            },
+          ],
+          Array [
+            Object {
+              "patch": Object {
+                "recommendations": Array [],
+              },
+              "type": "ASSIGN_DATA",
+            },
+          ],
+          Array [
+            Object {
+              "config": Object {},
+              "method": "GET",
+              "path": "types",
+              "type": "REQUEST_DATA_GET_TYPES",
+            },
+          ],
+          Array [
+            Object {
+              "patch": Object {
+                "recommendations": Array [],
+              },
+              "type": "ASSIGN_DATA",
+            },
+          ],
+          Array [
+            Object {
+              "config": Object {},
+              "method": "GET",
+              "path": "types",
+              "type": "REQUEST_DATA_GET_TYPES",
+            },
+          ],
+          Array [
+            Object {
+              "patch": Object {
+                "recommendations": Array [],
+              },
+              "type": "ASSIGN_DATA",
+            },
+          ],
+          Array [
+            Object {
+              "config": Object {},
+              "method": "GET",
+              "path": "types",
+              "type": "REQUEST_DATA_GET_TYPES",
+            },
+          ],
+        ],
+        "results": Array [
+          Object {
+            "isThrow": false,
+            "value": undefined,
+          },
+          Object {
+            "isThrow": false,
+            "value": undefined,
+          },
+          Object {
+            "isThrow": false,
+            "value": undefined,
+          },
+          Object {
+            "isThrow": false,
+            "value": undefined,
+          },
+          Object {
+            "isThrow": false,
+            "value": undefined,
+          },
+          Object {
+            "isThrow": false,
+            "value": undefined,
+          },
+          Object {
+            "isThrow": false,
+            "value": undefined,
+          },
+          Object {
+            "isThrow": false,
+            "value": undefined,
+          },
+          Object {
+            "isThrow": false,
+            "value": undefined,
+          },
+          Object {
+            "isThrow": false,
+            "value": undefined,
+          },
+          Object {
+            "isThrow": false,
+            "value": undefined,
+          },
+          Object {
+            "isThrow": false,
+            "value": undefined,
+          },
+          Object {
+            "isThrow": false,
+            "value": undefined,
+          },
+          Object {
+            "isThrow": false,
+            "value": undefined,
+          },
+          Object {
+            "isThrow": false,
+            "value": undefined,
+          },
+          Object {
+            "isThrow": false,
+            "value": undefined,
+          },
+          Object {
+            "isThrow": false,
+            "value": undefined,
+          },
+          Object {
+            "isThrow": false,
+            "value": undefined,
+          },
+          Object {
+            "isThrow": false,
+            "value": undefined,
+          },
+        ],
+      }
+    }
+    history={
+      Object {
+        "push": [MockFunction],
+      }
+    }
+    location={
+      Object {
+        "hash": "",
+        "key": "lxn6vp",
+        "pathname": "/recherche",
+        "search": "?orderBy=offer.id+desc",
+        "state": undefined,
+      }
+    }
+    match={
+      Object {
+        "params": Object {
+          "option": undefined,
+          "subOption": undefined,
+          "view": undefined,
+        },
+      }
+    }
+    query={
+      Object {
+        "change": [MockFunction] {
+          "calls": Array [
+            Array [
+              Object {
+                "page": null,
+              },
+            ],
+            Array [
+              Object {
+                "page": null,
+              },
+            ],
+            Array [
+              Object {
+                "page": null,
+              },
+            ],
+            Array [
+              Object {
+                "page": null,
+              },
+            ],
+            Array [
+              Object {
+                "page": null,
+              },
+            ],
+            Array [
+              Object {
+                "page": null,
+              },
+            ],
+            Array [
+              Object {
+                "page": null,
+              },
+            ],
+            Array [
+              Object {
+                "page": null,
+              },
+            ],
+          ],
+          "results": Array [
+            Object {
+              "isThrow": false,
+              "value": undefined,
+            },
+            Object {
+              "isThrow": false,
+              "value": undefined,
+            },
+            Object {
+              "isThrow": false,
+              "value": undefined,
+            },
+            Object {
+              "isThrow": false,
+              "value": undefined,
+            },
+            Object {
+              "isThrow": false,
+              "value": undefined,
+            },
+            Object {
+              "isThrow": false,
+              "value": undefined,
+            },
+            Object {
+              "isThrow": false,
+              "value": undefined,
+            },
+            Object {
+              "isThrow": false,
+              "value": undefined,
+            },
+          ],
+        },
+        "parse": [Function],
+      }
+    }
+    recommendations={Array []}
+    search={Object {}}
+    typeSublabels={Array []}
+    typeSublabelsAndDescription={Array []}
+  />,
+  Symbol(enzyme.__renderer__): Object {
+    "batchedUpdates": [Function],
+    "getNode": [Function],
+    "render": [Function],
+    "simulateError": [Function],
+    "simulateEvent": [Function],
+    "unmount": [Function],
+  },
+  Symbol(enzyme.__node__): Object {
+    "instance": null,
+    "key": undefined,
+    "nodeType": "host",
+    "props": Object {
+      "children": Array [
+        <Header
+          title="Recherche"
+        />,
+        undefined,
+        <button
+          className="pc-text-button is-absolute fs16"
+          id="search-close-button"
+          onClick={[Function]}
+          type="button"
+        >
+          <span
+            aria-hidden={true}
+            className="icon-legacy-close is-white-text"
+            title="Retour sur la page découverte"
+          />
+        </button>,
+        <Switch
+          location={
+            Object {
+              "hash": "",
+              "key": "lxn6vp",
+              "pathname": "/recherche",
+              "search": "?orderBy=offer.id+desc",
+              "state": undefined,
+            }
+          }
+        >
+          <Route
+            path="/recherche/resultats/:option?/item/:offerId([A-Z0-9]+)/:mediationId([A-Z0-9]+)?"
+            render={[Function]}
+          />
+          <Route
+            path="/recherche/(resultats)?/:option?/:subOption(menu)?"
+            render={[Function]}
+          />
+        </Switch>,
+      ],
+      "className": "search-page page with-footer with-header",
+      "role": "main",
+    },
+    "ref": null,
+    "rendered": Array [
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "function",
+        "props": Object {
+          "title": "Recherche",
+        },
+        "ref": null,
+        "rendered": null,
+        "type": [Function],
+      },
+      undefined,
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": <span
+            aria-hidden={true}
+            className="icon-legacy-close is-white-text"
+            title="Retour sur la page découverte"
+          />,
+          "className": "pc-text-button is-absolute fs16",
+          "id": "search-close-button",
+          "onClick": [Function],
+          "type": "button",
+        },
+        "ref": null,
+        "rendered": Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "aria-hidden": true,
+            "className": "icon-legacy-close is-white-text",
+            "title": "Retour sur la page découverte",
+          },
+          "ref": null,
+          "rendered": null,
+          "type": "span",
+        },
+        "type": "button",
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "class",
+        "props": Object {
+          "children": Array [
+            <Route
+              path="/recherche/resultats/:option?/item/:offerId([A-Z0-9]+)/:mediationId([A-Z0-9]+)?"
+              render={[Function]}
+            />,
+            <Route
+              path="/recherche/(resultats)?/:option?/:subOption(menu)?"
+              render={[Function]}
+            />,
+          ],
+          "location": Object {
+            "hash": "",
+            "key": "lxn6vp",
+            "pathname": "/recherche",
+            "search": "?orderBy=offer.id+desc",
+            "state": undefined,
+          },
+        },
+        "ref": null,
+        "rendered": Array [
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "class",
+            "props": Object {
+              "path": "/recherche/resultats/:option?/item/:offerId([A-Z0-9]+)/:mediationId([A-Z0-9]+)?",
+              "render": [Function],
+            },
+            "ref": null,
+            "rendered": null,
+            "type": [Function],
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "class",
+            "props": Object {
+              "path": "/recherche/(resultats)?/:option?/:subOption(menu)?",
+              "render": [Function],
+            },
+            "ref": null,
+            "rendered": null,
+            "type": [Function],
+          },
+        ],
+        "type": [Function],
+      },
+    ],
+    "type": "main",
+  },
+  Symbol(enzyme.__nodes__): Array [
+    Object {
+      "instance": null,
+      "key": undefined,
+      "nodeType": "host",
+      "props": Object {
+        "children": Array [
+          <Header
+            title="Recherche"
+          />,
+          undefined,
+          <button
+            className="pc-text-button is-absolute fs16"
+            id="search-close-button"
+            onClick={[Function]}
+            type="button"
+          >
+            <span
+              aria-hidden={true}
+              className="icon-legacy-close is-white-text"
+              title="Retour sur la page découverte"
+            />
+          </button>,
+          <Switch
+            location={
+              Object {
+                "hash": "",
+                "key": "lxn6vp",
+                "pathname": "/recherche",
+                "search": "?orderBy=offer.id+desc",
+                "state": undefined,
+              }
+            }
+          >
+            <Route
+              path="/recherche/resultats/:option?/item/:offerId([A-Z0-9]+)/:mediationId([A-Z0-9]+)?"
+              render={[Function]}
+            />
+            <Route
+              path="/recherche/(resultats)?/:option?/:subOption(menu)?"
+              render={[Function]}
+            />
+          </Switch>,
+        ],
+        "className": "search-page page with-footer with-header",
+        "role": "main",
+      },
+      "ref": null,
+      "rendered": Array [
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "function",
+          "props": Object {
+            "title": "Recherche",
+          },
+          "ref": null,
+          "rendered": null,
+          "type": [Function],
+        },
+        undefined,
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": <span
+              aria-hidden={true}
+              className="icon-legacy-close is-white-text"
+              title="Retour sur la page découverte"
+            />,
+            "className": "pc-text-button is-absolute fs16",
+            "id": "search-close-button",
+            "onClick": [Function],
+            "type": "button",
+          },
+          "ref": null,
+          "rendered": Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "aria-hidden": true,
+              "className": "icon-legacy-close is-white-text",
+              "title": "Retour sur la page découverte",
+            },
+            "ref": null,
+            "rendered": null,
+            "type": "span",
+          },
+          "type": "button",
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "class",
+          "props": Object {
+            "children": Array [
+              <Route
+                path="/recherche/resultats/:option?/item/:offerId([A-Z0-9]+)/:mediationId([A-Z0-9]+)?"
+                render={[Function]}
+              />,
+              <Route
+                path="/recherche/(resultats)?/:option?/:subOption(menu)?"
+                render={[Function]}
+              />,
+            ],
+            "location": Object {
+              "hash": "",
+              "key": "lxn6vp",
+              "pathname": "/recherche",
+              "search": "?orderBy=offer.id+desc",
+              "state": undefined,
+            },
+          },
+          "ref": null,
+          "rendered": Array [
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "class",
+              "props": Object {
+                "path": "/recherche/resultats/:option?/item/:offerId([A-Z0-9]+)/:mediationId([A-Z0-9]+)?",
+                "render": [Function],
+              },
+              "ref": null,
+              "rendered": null,
+              "type": [Function],
+            },
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "class",
+              "props": Object {
+                "path": "/recherche/(resultats)?/:option?/:subOption(menu)?",
+                "render": [Function],
+              },
+              "ref": null,
+              "rendered": null,
+              "type": [Function],
+            },
+          ],
+          "type": [Function],
+        },
+      ],
+      "type": "main",
+    },
+  ],
+  Symbol(enzyme.__options__): Object {
+    "adapter": ReactSixteenAdapter {
+      "options": Object {
+        "enableComponentDidUpdateOnSetState": true,
+        "lifecycles": Object {
+          "componentDidUpdate": Object {
+            "onSetState": true,
+          },
+          "getDerivedStateFromProps": true,
+          "getSnapshotBeforeUpdate": true,
+          "setState": Object {
+            "skipsComponentDidUpdateOnNullish": true,
+          },
+        },
+      },
+    },
+  },
+}
+`;

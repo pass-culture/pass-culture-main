@@ -3,14 +3,14 @@ import React from 'react'
 import configureStore from 'redux-mock-store'
 import { shallow } from 'enzyme'
 
-import REDUX_STATE from '../../../mocks/reduxState'
+import REDUX_STATE from '../../../../mocks/reduxState'
 
-import SearchPage from '../SearchPage'
+import Search from '../index'
 
 const middlewares = []
 const mockStore = configureStore(middlewares)
 
-describe('src | components | pages | SearchPage', () => {
+describe('src | components | pages | Search', () => {
   describe('snapshot', () => {
     it('should match snapshot', () => {
       // given
@@ -20,7 +20,7 @@ describe('src | components | pages | SearchPage', () => {
       // when
       const wrapper = shallow(
         <Provider store={store}>
-          <SearchPage />
+          <Search />
         </Provider>
       )
 

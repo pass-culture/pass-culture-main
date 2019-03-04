@@ -73,7 +73,8 @@
     "reselect": "^3.0.1",
     "testcafe": "^0.20.4",
     "typeface-barlow": "^0.0.54",
-    "util.promisify": "^1.0.0"
+    "util.promisify": "^1.0.0",
+    "with-query-router": "^0.1.1"
   },
   "devDependencies": {
     "archiver": "^2.1.1",

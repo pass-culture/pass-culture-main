@@ -1,11 +1,11 @@
+import find from 'lodash.find'
+import get from 'lodash.get'
+import moment from 'moment'
 import {
   capitalize,
   pluralize,
   getObjectWithMappedKeys,
 } from 'pass-culture-shared'
-import find from 'lodash.find'
-import get from 'lodash.get'
-import moment from 'moment'
 
 import { getTimezone } from '../../../utils/timezone'
 import { isEmpty } from '../../../utils/strings'

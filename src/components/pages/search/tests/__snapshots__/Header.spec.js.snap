@@ -3,7 +3,7 @@
 exports[`src | components | pages | search | Header snapshot should match snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
-  Symbol(enzyme.__unrendered__): <renderPageHeader />,
+  Symbol(enzyme.__unrendered__): <Header />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
     "getNode": [Function],
@@ -19,9 +19,7 @@ ShallowWrapper {
     "props": Object {
       "children": <h1
         className="is-normal fs19"
-      >
-        Object {}
-      </h1>,
+      />,
       "className": "no-dotted-border",
     },
     "ref": null,
@@ -30,11 +28,11 @@ ShallowWrapper {
       "key": undefined,
       "nodeType": "host",
       "props": Object {
-        "children": Object {},
+        "children": undefined,
         "className": "is-normal fs19",
       },
       "ref": null,
-      "rendered": Object {},
+      "rendered": null,
       "type": "h1",
     },
     "type": "header",
@@ -47,9 +45,7 @@ ShallowWrapper {
       "props": Object {
         "children": <h1
           className="is-normal fs19"
-        >
-          Object {}
-        </h1>,
+        />,
         "className": "no-dotted-border",
       },
       "ref": null,
@@ -58,11 +54,11 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "host",
         "props": Object {
-          "children": Object {},
+          "children": undefined,
           "className": "is-normal fs19",
         },
         "ref": null,
-        "rendered": Object {},
+        "rendered": null,
         "type": "h1",
       },
       "type": "header",

@@ -173,7 +173,7 @@ test('Je vois les résultats de la page de résultats de la catégorie Lire', as
 
     .click(linkResult)
 
-  await t.expect(getPageUrl()).contains('/decouverte', { timeout: 500 })
+  await t.expect(getPageUrl()).contains('/item', { timeout: 500 })
 })
 
 fixture(

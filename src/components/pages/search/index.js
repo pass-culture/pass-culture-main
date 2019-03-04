@@ -1,11 +1,11 @@
 import { withLogin } from 'pass-culture-shared'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
+import withQueryRouter from 'with-query-router'
 
-import SearchPageContent from './SearchPageContent'
-import { withQueryRouter } from '../hocs/withQueryRouter'
-import { selectRecommendations } from '../../selectors'
-import selectTypeSublabels, { selectTypes } from '../../selectors/selectTypes'
+import RawSearch from './RawSearch'
+import { selectRecommendations } from '../../../selectors'
+import selectTypeSublabels, { selectTypes } from '../../../selectors/selectTypes'
 
 const mapStateToProps = state => {
   const recommendations = selectRecommendations(state)
@@ -24,4 +24,4 @@ export default compose(
   withLogin({ failRedirect: '/connexion' }),
   withQueryRouter,
   connect(mapStateToProps)
-)(SearchPageContent)
+)(RawSearch)

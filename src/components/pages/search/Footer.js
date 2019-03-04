@@ -2,7 +2,7 @@ import React from 'react'
 
 import NavigationFooter from '../../layout/NavigationFooter'
 
-const renderPageFooter = () => (
+const Footer = () => (
   <NavigationFooter theme="white" className="dotted-top-red" />
 )
-export default renderPageFooter
+export default Footer

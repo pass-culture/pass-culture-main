@@ -3,11 +3,11 @@ import { filterRoutes, getMainMenuItems } from '../routes-utils'
 
 import routes from '../routes'
 
-import SearchPage from '../../components/pages/SearchPage'
-import MyBookingsPage from '../../components/pages/my-bookings'
 import DiscoveryPage from '../../components/pages/discovery'
 import FavoritesPage from '../../components/pages/FavoritesPage'
+import MyBookingsPage from '../../components/pages/my-bookings'
 import ProfilePage from '../../components/pages/profile'
+import Search from '../../components/pages/search'
 import { SUPPORT_EMAIL } from '../config'
 
 describe('filterRoutes', () => {
@@ -79,7 +79,7 @@ describe('getMainMenuItems', () => {
         title: 'Les offres',
       },
       {
-        component: SearchPage,
+        component: Search,
         disabled: false,
         icon: 'search-w',
         path: '/recherche',

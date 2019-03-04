@@ -14,7 +14,12 @@
     transform: translate(0, 0);
   }
 
+  &.with-header {
+    margin-top: $header-height;
+  }
+
   .over-wrapper {
     margin-top: 50%;
   }
+
 }

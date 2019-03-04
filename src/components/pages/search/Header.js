@@ -1,11 +1,16 @@
+import PropTypes from 'prop-types'
 import React from 'react'
 
-const renderPageHeader = searchPageTitle => (
+const Header = ({ title }) => (
   <header className="no-dotted-border">
     <h1 className="is-normal fs19">
-      {searchPageTitle}
+      {title}
     </h1>
   </header>
 )
 
-export default renderPageHeader
+Header.propTypes = {
+  title: PropTypes.string.isRequired,
+}
+
+export default Header

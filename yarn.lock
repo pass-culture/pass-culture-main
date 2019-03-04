@@ -7106,6 +7106,10 @@ node-fetch@^1.0.1:
     encoding "^0.1.11"
     is-stream "^1.0.1"
 
+node-fetch@^2.3.0:
+  version "2.3.0"
+  resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-2.3.0.tgz#1a1d940bbfb916a1d3e0219f037e89e71f8c5fa5"
+
 node-forge@0.7.5:
   version "0.7.5"
   resolved "https://registry.yarnpkg.com/node-forge/-/node-forge-0.7.5.tgz#6c152c345ce11c52f465c2abd957e8639cd674df"
@@ -8567,6 +8571,14 @@ query-string@4.3.4, query-string@^4.1.0:
     object-assign "^4.1.0"
     strict-uri-encode "^1.0.0"
 
+query-string@^5.1.1:
+  version "5.1.1"
+  resolved "https://registry.yarnpkg.com/query-string/-/query-string-5.1.1.tgz#a78c012b71c17e05f2e3fa2319dd330682efb3cb"
+  dependencies:
+    decode-uri-component "^0.2.0"
+    object-assign "^4.1.0"
+    strict-uri-encode "^1.0.0"
+
 querystring-es3@^0.2.0:
   version "0.2.1"
   resolved "https://registry.yarnpkg.com/querystring-es3/-/querystring-es3-0.2.1.tgz#9ec61f79049875707d69414596fd907a4d711e73"
@@ -9293,7 +9305,6 @@ react-timeago@^3.4.3:
 react-toastify@^4.5.2:
   version "4.5.2"
   resolved "https://registry.yarnpkg.com/react-toastify/-/react-toastify-4.5.2.tgz#a75b5f8b6219f62d4aacd0455d578a53341e37ca"
-  integrity sha512-KymDDhkcX5EvFht17nO0MCsegM/Kdhyfxhi+WQl2tE3IxJrueOhY6TUnALTfvz7eDRUjPYBGb+ywWqWrGyvBnw==
   dependencies:
     classnames "^2.2.6"
     prop-types "^15.6.0"
@@ -12058,6 +12069,22 @@ widest-line@^2.0.0:
 window-size@0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/window-size/-/window-size-0.1.0.tgz#5438cd2ea93b202efa3a19fe8887aee7c94f9c9d"
+
+with-query-router@^0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/with-query-router/-/with-query-router-0.1.1.tgz#3e8292f19728b37307f9cdb77437d7060e6736fb"
+  dependencies:
+    classnames "2.2.5"
+    eslint "^5.8.0"
+    lodash.uniq "^4.5.0"
+    prop-types "^15.6.2"
+    query-string "^5.1.1"
+    re-reselect "^2.1.0"
+    react "^16.5.2"
+    react-dom "^16.5.2"
+    react-router-dom "^4.3.1"
+    redux "^4.0.0"
+    reselect "^3.0.1"
 
 wordwrap@0.0.2:
   version "0.0.2"

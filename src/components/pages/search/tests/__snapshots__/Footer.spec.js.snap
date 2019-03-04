@@ -3,7 +3,7 @@
 exports[`src | components | pages | search | Footer snapshot should match snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
-  Symbol(enzyme.__unrendered__): <renderPageFooter />,
+  Symbol(enzyme.__unrendered__): <Footer />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
     "getNode": [Function],
