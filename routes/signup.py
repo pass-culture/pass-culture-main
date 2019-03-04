@@ -3,13 +3,14 @@ from flask_login import login_user
 
 from connectors.google_spreadsheet import get_authorized_emails_and_dept_codes
 from domain.admin_emails import maybe_send_offerer_validation_email
+from domain.departments import ILE_DE_FRANCE_DEPT_CODES
 from domain.password import check_password_strength
 from domain.user_emails import send_user_validation_email
 from models import ApiErrors, Deposit, Offerer, PcObject, User
 from models.user_offerer import RightsType
 from models.venue import create_digital_venue
 from utils.logger import logger
-from utils.config import ILE_DE_FRANCE_DEPT_CODES, IS_INTEGRATION
+from utils.config import IS_INTEGRATION
 from utils.includes import USER_INCLUDES
 from utils.login_manager import stamp_session
 from utils.mailing import \

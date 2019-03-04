@@ -6,9 +6,9 @@ from random import randint
 from sqlalchemy.orm import aliased
 from typing import Optional, List, Tuple
 
+from domain.departments import get_departement_codes_from_user
 from models import Event, EventOccurrence, Offer, Thing
 from repository.offer_queries import get_active_offers_by_type
-from utils.config import DEPT_CODE_VISIBILITY
 from utils.logger import logger
 
 roundrobin_predicates = [
@@ -103,13 +103,6 @@ def remove_duplicate_things_or_events(offers: List[Offer]) -> List[Offer]:
                 seen_event_ids[offer.eventId] = True
             result.append(offer)
     return result
-
-
-def get_departement_codes_from_user(user):
-    if user.departementCode in DEPT_CODE_VISIBILITY:
-        return DEPT_CODE_VISIBILITY[user.departementCode]
-    else:
-        return [user.departementCode]
 
 
 def get_offers_for_recommendations_discovery(limit=3, user=None, coords=None) -> List[Offer]:
