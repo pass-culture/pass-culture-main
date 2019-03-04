@@ -1,17 +1,16 @@
+import pytest
 from datetime import datetime, timedelta
 from urllib.parse import urlencode
 
-import pytest
-
-from models import Offerer, PcObject, EventType, Deposit, ThingType
+from models import Offerer, PcObject, EventType, ThingType, Deposit
 from models.db import db
 from models.pc_object import serialize
 from tests.conftest import clean_database, TestClient
-from utils.human_ids import humanize
 from tests.test_utils import API_URL, create_stock_with_thing_offer, \
     create_thing_offer, create_deposit, create_stock_with_event_offer, create_venue, create_offerer, \
     create_recommendation, create_user, create_booking, create_event_offer, \
     create_event_occurrence, create_stock_from_event_occurrence, create_user_offerer
+from utils.human_ids import humanize
 
 
 @pytest.mark.standalone
@@ -450,7 +449,8 @@ class Post:
             deposit_date = datetime.utcnow() - timedelta(minutes=2)
             deposit = create_deposit(user, deposit_date, amount=200)
             offer = create_event_offer(venue, event_name='Event Name', event_type=EventType.CINEMA)
-            event_occurrence = create_event_occurrence(offer, beginning_datetime=five_days_ago, end_datetime=four_days_ago)
+            event_occurrence = create_event_occurrence(offer, beginning_datetime=five_days_ago,
+                                                       end_datetime=four_days_ago)
             stock = create_stock_from_event_occurrence(event_occurrence, price=20)
 
             PcObject.check_and_save(deposit, stock, user)
@@ -527,7 +527,6 @@ class Post:
             assert response.status_code == 400
             error_message = response.json()
             assert error_message['stockId'] == ["Cette offre a déja été reservée par l'utilisateur"]
-
 
     class Returns201:
         @clean_database
