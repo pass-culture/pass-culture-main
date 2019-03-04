@@ -20,7 +20,7 @@ import nextRecommendationSelector from '../../../selectors/nextRecommendation'
 import previousRecommendationSelector from '../../../selectors/previousRecommendation'
 import recommendationsSelector from '../../../selectors/recommendations'
 import {
-  PREVIOUS_NEXT_LIMIT,
+  NB_CARDS_REMAINING_THAT_TRIGGERS_LOAD,
   // isRecommendations,
   // isCurrentRecommendation,
   // isNewRecommendations,
@@ -130,16 +130,10 @@ export class RawDeck extends Component {
   }
 
   handleRefreshNext = () => {
-    const {
-      currentRecommendation,
-      handleDataRequest,
-      nextLimit,
-      recommendations,
-    } = this.props
+    const { currentRecommendation, handleDataRequest, nextLimit } = this.props
 
-    if (currentRecommendation.index >= nextLimit) {
-      const seenRecommendationIds = recommendations.map(r => r.id)
-      handleDataRequest(seenRecommendationIds)
+    if (nextLimit && currentRecommendation.index === nextLimit) {
+      handleDataRequest()
     }
   }
 
@@ -171,8 +165,8 @@ export class RawDeck extends Component {
 
   renderDraggableCards() {
     const {
-      currentRecommendation,
       areDetailsVisible,
+      currentRecommendation,
       nextRecommendation,
       previousRecommendation,
       width,
@@ -220,6 +214,7 @@ export class RawDeck extends Component {
       isFlipDisabled,
       areDetailsVisible,
       previousRecommendation,
+      recommendations,
       unFlippable,
     } = this.props
 
@@ -227,7 +222,11 @@ export class RawDeck extends Component {
     const showNavigation = !areDetailsVisible || isFlipDisabled
 
     return (
-      <div id="deck" className="is-clipped is-relative">
+      <div
+        id="deck"
+        className="is-clipped is-relative"
+        data-nb-recos={recommendations.length}
+      >
         {showCloseButton && (
           <button
             type="button"
@@ -303,19 +302,20 @@ const mapStateToProps = (state, ownProps) => {
   const recommendations = recommendationsSelector(state)
 
   const isFlipDisabled =
-    !currentRecommendation ||
-    (typeof tutoIndex === 'number' && thumbCount === 1)
+    !currentRecommendation || (typeof tutoIndex === 'number' && thumbCount <= 1)
 
   const nextLimit =
     recommendations &&
-    (PREVIOUS_NEXT_LIMIT >= recommendations.length - 1
+    recommendations.length > 0 &&
+    (NB_CARDS_REMAINING_THAT_TRIGGERS_LOAD >= recommendations.length - 1
       ? recommendations.length - 1
-      : recommendations.length - 1 - PREVIOUS_NEXT_LIMIT)
+      : recommendations.length - 1 - NB_CARDS_REMAINING_THAT_TRIGGERS_LOAD)
 
   const previousLimit =
     recommendations &&
-    (PREVIOUS_NEXT_LIMIT < recommendations.length - 1
-      ? PREVIOUS_NEXT_LIMIT + 1
+    recommendations.length > 0 &&
+    (NB_CARDS_REMAINING_THAT_TRIGGERS_LOAD < recommendations.length - 1
+      ? NB_CARDS_REMAINING_THAT_TRIGGERS_LOAD + 1
       : 0)
 
   return {

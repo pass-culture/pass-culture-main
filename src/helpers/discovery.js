@@ -1,6 +1,6 @@
 import filterAvailableStocks from './filterAvailableStocks'
 
-export const PREVIOUS_NEXT_LIMIT = 2
+export const NB_CARDS_REMAINING_THAT_TRIGGERS_LOAD = 5
 
 export const isRecommendations = (recommendations, previousProps) =>
   !recommendations || !previousProps.recommendations

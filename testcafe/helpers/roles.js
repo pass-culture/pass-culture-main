@@ -1,17 +1,16 @@
 import { Role, Selector } from 'testcafe'
 
+import getPageUrl from './getPageUrl'
 import { ROOT_PATH } from '../../src/utils/config'
 
-const signInButton = Selector('#signin-submit-button')
+const signInButton = Selector('#signin-submit-button:enabled')
 
 export const signinAs = user => async t => {
   await t
     .typeText('#user-identifier', user.email)
-    .wait(100)
     .typeText('#user-password', user.password)
-    .wait(100)
     .click(signInButton)
-    .wait(1000)
+  await t.expect(getPageUrl()).notContains('/connexion', { timeout: 10000 })
 }
 
 export const createUserRole = user =>

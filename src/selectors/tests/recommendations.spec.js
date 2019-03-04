@@ -14,7 +14,7 @@ describe('selectRecommendations', () => {
     })
   })
 
-  it('should return an empty array if there are no recommendations', () => {
+  it('should return an array with just the fake end reco if there are no recommendations', () => {
     // given
     const state = {
       data: {
@@ -31,7 +31,8 @@ describe('selectRecommendations', () => {
     const result = selectRecommendations(state)
 
     // then
-    expect(result).toEqual([])
+    expect(result.length).toEqual(1)
+    expect(result[0].uniqId).toEqual('tuto_-1')
   })
 
   it('should return recommendations', () => {
@@ -170,7 +171,7 @@ describe('selectRecommendations', () => {
 
     // then
     expect(result[0]).toEqual(expected)
-    expect(result.length).toEqual(46)
+    expect(result.length).toEqual(47)
   })
 
   describe('computes rounded distances', () => {

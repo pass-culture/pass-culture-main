@@ -55,7 +55,6 @@ export const mapDispatchToProps = dispatch => ({
     dispatch(
       mergeData({
         readRecommendations: [readRecommendation],
-        seenRecommendations: [{ id: readRecommendation.id }],
       })
     )
   },

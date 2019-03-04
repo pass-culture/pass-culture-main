@@ -33,6 +33,7 @@
       "optionalDependencies": false,
       "peerDependencies": false
     }],
+    "import/prefer-default-export": 0,
     "no-underscore-dangle": [2, {
       "allow": ["__modifiers__"]
     }],

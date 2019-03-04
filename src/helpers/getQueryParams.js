@@ -2,7 +2,7 @@ const URL_SPLITTER = '/'
 const QUERY_SPLITTER = '&'
 export const DEFAULT_VIEW_IDENTIFIERS = ['booking', 'verso', 'tuto']
 
-export const getQueryParams = match => {
+export const getQueryParams = (match, currentRecommendation) => {
   const isValid = match && typeof match === 'object' && !Array.isArray(match)
   if (!isValid) return ''
 
@@ -22,6 +22,13 @@ export const getQueryParams = match => {
     pMediationId.trim() !== '' &&
     !DEFAULT_VIEW_IDENTIFIERS.includes(pMediationId) &&
     pMediationId
+
+  if (
+    currentRecommendation &&
+    currentRecommendation.mediationId === mediationId &&
+    currentRecommendation.offerId === offerId
+  )
+    return ''
 
   const params = [
     // si il ne s'agit pas d'un tuto alors is s'agit d'une offre

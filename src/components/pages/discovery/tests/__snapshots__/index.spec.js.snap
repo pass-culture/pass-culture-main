@@ -5,6 +5,7 @@ ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <RawDiscoveryPage
     backButton={true}
+    currentRecommendation={null}
     dispatch={
       [MockFunction] {
         "calls": Array [
@@ -47,7 +48,7 @@ ShallowWrapper {
       }
     }
     readRecommendations={null}
-    seenRecommendations={null}
+    recommendations={null}
   />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
@@ -68,15 +69,25 @@ ShallowWrapper {
           className="discovery-page no-padding page with-footer"
           role="main"
         >
+          <React.Fragment>
+            <Route
+              path="/decouverte/:offerId([A-Z0-9]+)/:mediationId([A-Z0-9]+)?/:view(booking)/:menu(menu)?"
+              render={[Function]}
+            />
+            <Route
+              path="/decouverte/:offerId([A-Z0-9]+)/:mediationId([A-Z0-9]+)?/:view(verso|cancelled)?/:bookingId?/:menu(menu)?"
+              render={[Function]}
+            />
+          </React.Fragment>
           <withRouter(Connect(Footer))
             borderTop={true}
             id="deck-footer"
           />
         </main>,
-        <Loader
-          haserror={false}
-          isempty={false}
-          isloading={true}
+        <withRouter(RawLoader)
+          hasError={false}
+          isEmpty={null}
+          isLoading={true}
         />,
       ],
     },
@@ -89,7 +100,16 @@ ShallowWrapper {
         "props": Object {
           "children": Array [
             false,
-            false,
+            <React.Fragment>
+              <Route
+                path="/decouverte/:offerId([A-Z0-9]+)/:mediationId([A-Z0-9]+)?/:view(booking)/:menu(menu)?"
+                render={[Function]}
+              />
+              <Route
+                path="/decouverte/:offerId([A-Z0-9]+)/:mediationId([A-Z0-9]+)?/:view(verso|cancelled)?/:bookingId?/:menu(menu)?"
+                render={[Function]}
+              />
+            </React.Fragment>,
             <withRouter(Connect(Footer))
               borderTop={true}
               id="deck-footer"
@@ -101,7 +121,51 @@ ShallowWrapper {
         "ref": null,
         "rendered": Array [
           false,
-          false,
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "function",
+            "props": Object {
+              "children": Array [
+                <Route
+                  path="/decouverte/:offerId([A-Z0-9]+)/:mediationId([A-Z0-9]+)?/:view(booking)/:menu(menu)?"
+                  render={[Function]}
+                />,
+                <Route
+                  path="/decouverte/:offerId([A-Z0-9]+)/:mediationId([A-Z0-9]+)?/:view(verso|cancelled)?/:bookingId?/:menu(menu)?"
+                  render={[Function]}
+                />,
+              ],
+            },
+            "ref": null,
+            "rendered": Array [
+              Object {
+                "instance": null,
+                "key": "route-discovery-booking",
+                "nodeType": "class",
+                "props": Object {
+                  "path": "/decouverte/:offerId([A-Z0-9]+)/:mediationId([A-Z0-9]+)?/:view(booking)/:menu(menu)?",
+                  "render": [Function],
+                },
+                "ref": null,
+                "rendered": null,
+                "type": [Function],
+              },
+              Object {
+                "instance": null,
+                "key": "route-discovery-deck",
+                "nodeType": "class",
+                "props": Object {
+                  "path": "/decouverte/:offerId([A-Z0-9]+)/:mediationId([A-Z0-9]+)?/:view(verso|cancelled)?/:bookingId?/:menu(menu)?",
+                  "render": [Function],
+                },
+                "ref": null,
+                "rendered": null,
+                "type": [Function],
+              },
+            ],
+            "type": Symbol(react.fragment),
+          },
           Object {
             "instance": null,
             "key": undefined,
@@ -122,9 +186,9 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "function",
         "props": Object {
-          "haserror": false,
-          "isempty": false,
-          "isloading": true,
+          "hasError": false,
+          "isEmpty": null,
+          "isLoading": true,
         },
         "ref": null,
         "rendered": null,
@@ -144,15 +208,25 @@ ShallowWrapper {
             className="discovery-page no-padding page with-footer"
             role="main"
           >
+            <React.Fragment>
+              <Route
+                path="/decouverte/:offerId([A-Z0-9]+)/:mediationId([A-Z0-9]+)?/:view(booking)/:menu(menu)?"
+                render={[Function]}
+              />
+              <Route
+                path="/decouverte/:offerId([A-Z0-9]+)/:mediationId([A-Z0-9]+)?/:view(verso|cancelled)?/:bookingId?/:menu(menu)?"
+                render={[Function]}
+              />
+            </React.Fragment>
             <withRouter(Connect(Footer))
               borderTop={true}
               id="deck-footer"
             />
           </main>,
-          <Loader
-            haserror={false}
-            isempty={false}
-            isloading={true}
+          <withRouter(RawLoader)
+            hasError={false}
+            isEmpty={null}
+            isLoading={true}
           />,
         ],
       },
@@ -165,7 +239,16 @@ ShallowWrapper {
           "props": Object {
             "children": Array [
               false,
-              false,
+              <React.Fragment>
+                <Route
+                  path="/decouverte/:offerId([A-Z0-9]+)/:mediationId([A-Z0-9]+)?/:view(booking)/:menu(menu)?"
+                  render={[Function]}
+                />
+                <Route
+                  path="/decouverte/:offerId([A-Z0-9]+)/:mediationId([A-Z0-9]+)?/:view(verso|cancelled)?/:bookingId?/:menu(menu)?"
+                  render={[Function]}
+                />
+              </React.Fragment>,
               <withRouter(Connect(Footer))
                 borderTop={true}
                 id="deck-footer"
@@ -177,7 +260,51 @@ ShallowWrapper {
           "ref": null,
           "rendered": Array [
             false,
-            false,
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "function",
+              "props": Object {
+                "children": Array [
+                  <Route
+                    path="/decouverte/:offerId([A-Z0-9]+)/:mediationId([A-Z0-9]+)?/:view(booking)/:menu(menu)?"
+                    render={[Function]}
+                  />,
+                  <Route
+                    path="/decouverte/:offerId([A-Z0-9]+)/:mediationId([A-Z0-9]+)?/:view(verso|cancelled)?/:bookingId?/:menu(menu)?"
+                    render={[Function]}
+                  />,
+                ],
+              },
+              "ref": null,
+              "rendered": Array [
+                Object {
+                  "instance": null,
+                  "key": "route-discovery-booking",
+                  "nodeType": "class",
+                  "props": Object {
+                    "path": "/decouverte/:offerId([A-Z0-9]+)/:mediationId([A-Z0-9]+)?/:view(booking)/:menu(menu)?",
+                    "render": [Function],
+                  },
+                  "ref": null,
+                  "rendered": null,
+                  "type": [Function],
+                },
+                Object {
+                  "instance": null,
+                  "key": "route-discovery-deck",
+                  "nodeType": "class",
+                  "props": Object {
+                    "path": "/decouverte/:offerId([A-Z0-9]+)/:mediationId([A-Z0-9]+)?/:view(verso|cancelled)?/:bookingId?/:menu(menu)?",
+                    "render": [Function],
+                  },
+                  "ref": null,
+                  "rendered": null,
+                  "type": [Function],
+                },
+              ],
+              "type": Symbol(react.fragment),
+            },
             Object {
               "instance": null,
               "key": undefined,
@@ -198,9 +325,9 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "function",
           "props": Object {
-            "haserror": false,
-            "isempty": false,
-            "isloading": true,
+            "hasError": false,
+            "isEmpty": null,
+            "isLoading": true,
           },
           "ref": null,
           "rendered": null,

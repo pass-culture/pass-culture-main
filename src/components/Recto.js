@@ -25,11 +25,18 @@ const Recto = ({ areDetailsVisible, extraClassName, recommendation }) => {
   }
   return (
     <div className={classnames('recto', extraClassName)}>
-      <Thumb
-        src={thumbUrl}
-        withMediation={mediation}
-        translated={areDetailsVisible}
-      />
+      {thumbUrl && (
+        <Thumb
+          src={thumbUrl}
+          withMediation={mediation}
+          translated={areDetailsVisible}
+        />
+      )}
+      {mediation && mediation.frontText && (
+        <div className="mediation-front-text fs20">
+          {mediation.frontText}
+        </div>
+      )}
       {IS_DEV && (
         <div className="debug debug-recto">
           <div>

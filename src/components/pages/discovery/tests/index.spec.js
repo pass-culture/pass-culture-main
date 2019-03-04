@@ -46,9 +46,10 @@ describe('src | components | pages | discovery | Index | DiscoveryPage', () => 
         // when
         const wrapper = shallow(<RawDiscoveryPage {...props} />)
         const expected = {
-          haserror: false,
-          isempty: false,
-          isloading: true,
+          atWorldsEnd: false,
+          hasError: false,
+          isEmpty: null,
+          isLoading: true,
         }
 
         // then

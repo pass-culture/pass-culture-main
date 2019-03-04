@@ -10,8 +10,9 @@ import Deck from './Deck'
 import Booking from '../../booking'
 import { withRedirectToSigninWhenNotAuthenticated } from '../../hocs'
 import BackButton from '../../layout/BackButton'
-import Loader from '../../layout/Loader'
+import { Loader } from '../../layout/Loader'
 import Footer from '../../layout/Footer'
+import selectCurrentRecommendation from '../../../selectors/currentRecommendation'
 import { getQueryParams, getRouterQueryByKey } from '../../../helpers'
 import { recommendationNormalizer } from '../../../utils/normalizers'
 
@@ -19,9 +20,10 @@ export class RawDiscoveryPage extends React.PureComponent {
   constructor(props) {
     super(props)
     this.state = {
-      haserror: false,
-      isempty: false,
-      isloading: true,
+      atWorldsEnd: false,
+      hasError: false,
+      isEmpty: null,
+      isLoading: false,
     }
   }
 
@@ -37,11 +39,11 @@ export class RawDiscoveryPage extends React.PureComponent {
 
   componentWillUnmount() {
     const { dispatch } = this.props
-    dispatch(assignData({ recommendations: [], seenRecommendations: [] }))
+    dispatch(assignData({ recommendations: [] }))
   }
 
   handleRequestFail = () => {
-    this.setState({ haserror: true, isloading: true }, () => {
+    this.setState({ hasError: true, isLoading: true }, () => {
       const { history } = this.props
       const delayBeforeRedirect = 2000
       setTimeout(() => history.replace('/connexion'), delayBeforeRedirect)
@@ -49,24 +51,35 @@ export class RawDiscoveryPage extends React.PureComponent {
   }
 
   handleRequestSuccess = (state, action) => {
-    const { dispatch, history, match } = this.props
+    const { dispatch, history, match, recommendations } = this.props
     const { offerId, mediationId } = match.params
     const {
       payload: { data },
     } = action
-    const len = data.length
-    const isempty = !(len && len > 0)
-    // loading
-    this.setState({ isempty, isloading: false })
-    // clear the cache of seen cards
-    dispatch(assignData({ readRecommendations: [] }))
-    // NOTE -> on recharge pas la page
-    // si l'URL contient déjà une offer et une mediation
-    // car il s'agit alors d'une URL partagée
-    const shouldNotReloadPage = isempty || (offerId && mediationId)
 
-    if (shouldNotReloadPage) return
+    const newRecosNb = data ? data.length : 0
+    const pathnameWithoutTrailingSlash = document.location.pathname.replace(
+      /\/$/,
+      ''
+    )
+    const weAreNotViewingACard =
+      pathnameWithoutTrailingSlash === '/decouverte' ||
+      pathnameWithoutTrailingSlash === '/decouverte/tuto/fin'
+    const shouldReloadPage = newRecosNb > 0 && weAreNotViewingACard
+
+    this.setState({
+      atWorldsEnd: newRecosNb === 0,
+      isEmpty:
+        (!recommendations || recommendations.length === 0) && newRecosNb === 0,
+      isLoading: false,
+    })
+
+    dispatch(assignData({ readRecommendations: [] }))
+
+    if (!shouldReloadPage) return
+
     const firstRecommendation = data[0] || {}
+
     // NOTE -> si la premiere carte n'a pas d'offerid
     // alors il s'agit d'une carte tuto
     const firstOfferId =
@@ -83,13 +96,19 @@ export class RawDiscoveryPage extends React.PureComponent {
     const {
       dispatch,
       match,
+      currentRecommendation,
+      recommendations,
       readRecommendations,
-      seenRecommendations,
     } = this.props
 
-    this.setState({ isloading: true })
+    const { atWorldsEnd, isLoading } = this.state
+
+    if (atWorldsEnd || isLoading) return
+
+    this.setState({ isLoading: true })
     // recupere les arguments depuis l'URL
     // l'API renvoi cette première carte avant les autres recommendations
+
     const queryString = getQueryParams(match, readRecommendations)
     const apiPath = `/recommendations?${queryString}`
 
@@ -99,7 +118,7 @@ export class RawDiscoveryPage extends React.PureComponent {
         body: {
           readRecommendations,
           seenRecommendationIds:
-            seenRecommendations && seenRecommendations.map(r => r.id),
+            recommendations && recommendations.map(r => r.id),
         },
         handleFail: this.handleRequestFail,
         handleSuccess: this.handleRequestSuccess,
@@ -111,7 +130,7 @@ export class RawDiscoveryPage extends React.PureComponent {
 
   render() {
     const { match } = this.props
-    const { haserror, isempty, isloading } = this.state
+    const { hasError, isEmpty, isLoading } = this.state
 
     const withBackButton = match.params.view === 'verso'
 
@@ -122,8 +141,7 @@ export class RawDiscoveryPage extends React.PureComponent {
           className="discovery-page no-padding page with-footer"
         >
           {withBackButton && <BackButton />}
-          {!isloading && (
-            // do not mount components if its loading
+          {!isEmpty && (
             <Fragment>
               <Route
                 key="route-discovery-booking"
@@ -141,34 +159,43 @@ export class RawDiscoveryPage extends React.PureComponent {
           )}
           <Footer id="deck-footer" borderTop />
         </main>
-        <Loader isempty={isempty} haserror={haserror} isloading={isloading} />
+        <Loader isEmpty={isEmpty} hasError={hasError} isLoading={isLoading} />
       </Fragment>
     )
   }
 }
 
 RawDiscoveryPage.defaultProps = {
+  currentRecommendation: null,
   readRecommendations: null,
-  seenRecommendations: null,
+  recommendations: null,
 }
 
 RawDiscoveryPage.propTypes = {
+  currentRecommendation: PropTypes.object,
   dispatch: PropTypes.func.isRequired,
   fromPassword: PropTypes.bool.isRequired,
   history: PropTypes.object.isRequired,
   location: PropTypes.object.isRequired,
   match: PropTypes.object.isRequired,
   readRecommendations: PropTypes.array,
-  seenRecommendations: PropTypes.array,
+  recommendations: PropTypes.array,
 }
 
-const mapStateToProps = (state, { location }) => {
+const mapStateToProps = (state, ownProps) => {
+  const { location, match } = ownProps
+  const { mediationId, offerId } = match.params
   const from = getRouterQueryByKey(location, 'from')
   const fromPassword = from === 'password'
   return {
+    currentRecommendation: selectCurrentRecommendation(
+      state,
+      offerId,
+      mediationId
+    ),
     fromPassword,
     readRecommendations: state.data.readRecommendations,
-    seenRecommendations: state.data.seenRecommendations,
+    recommendations: state.data.recommendations,
   }
 }
 
