@@ -181,7 +181,7 @@ class RawOfferers extends Component {
           className="main-list offerers-list"
           element="ul"
           hasMore={hasMore}
-          loader={<Spinner />}
+          loader={<Spinner key="spinner" />}
           isLoading={isLoading}
           useWindow>
           {offerers.map(offerer => (
