@@ -1,12 +1,12 @@
 import requests
 from datetime import datetime
 
-from models import Offer
+from domain.titelive import read_stock_datetime
+from models import Offer, VenueProvider
 from models.db import db
 from models.local_provider import LocalProvider, ProvidableInfo
 from models.stock import Stock
 from repository import thing_queries, local_provider_event_queries, venue_queries
-from utils.ftp_titelive import read_stock_datetime
 from utils.logger import logger
 
 URL_TITELIVE_WEBSERVICE_STOCKS = "https://stock.epagine.fr/stocks/"
@@ -37,7 +37,7 @@ class TiteLiveStocks(LocalProvider):
     objectType = Stock
     canCreate = True
 
-    def __init__(self, venue_provider, **options):
+    def __init__(self, venue_provider: VenueProvider, **options):
         super().__init__(venue_provider, **options)
         self.venueId = self.venueProvider.venueId
         self.venue = venue_queries.find_by_id(self.venueId)

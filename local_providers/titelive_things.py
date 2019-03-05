@@ -1,12 +1,12 @@
 import re
 
+from connectors.ftp_titelive import get_files_to_process_from_titelive_ftp, get_titelive_ftp
+from domain.titelive import get_date_from_filename, read_date
 from models.local_provider import LocalProvider, ProvidableInfo
 from models.local_provider_event import LocalProviderEventType
 from models.thing import Thing, BookFormat
-from models import ThingType
+from models import ThingType, VenueProvider
 from repository import local_provider_event_queries
-from utils.ftp_titelive import get_titelive_ftp, get_files_to_process_from_titelive_ftp, \
-    get_date_from_filename, read_date
 from utils.logger import logger
 from utils.string_processing import trim_with_elipsis
 
@@ -26,7 +26,7 @@ class TiteLiveThings(LocalProvider):
     objectType = Thing
     canCreate = True
 
-    def __init__(self, venue_provider):
+    def __init__(self, venue_provider: VenueProvider):
         super().__init__(venue_provider)
 
         ordered_thing_files = get_files_to_process_from_titelive_ftp(THINGS_FOLDER_NAME_TITELIVE, DATE_REGEXP)

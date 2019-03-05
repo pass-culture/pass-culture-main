@@ -2,7 +2,8 @@ import pytest
 import re
 
 from freezegun import freeze_time
-from utils.ftp_titelive import put_today_file_at_end_of_list
+
+from domain.titelive import put_today_file_at_end_of_list
 
 
 @pytest.mark.standalone

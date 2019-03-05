@@ -7,6 +7,7 @@ from datetime import datetime
 from pathlib import Path
 import requests
 
+from models import VenueProvider
 from models.db import db
 from models.event import Event
 from models.event_occurrence import EventOccurrence
@@ -47,7 +48,7 @@ class OpenAgendaEvents(LocalProvider):
     objectType = Event
     canCreate = True
 
-    def __init__(self, venueProvider, **options):
+    def __init__(self, venueProvider: VenueProvider, **options):
         super().__init__(venueProvider, **options)
         self.venue = Venue.query\
                           .filter_by(id=self.venueProvider.venueId)\

@@ -6,7 +6,7 @@ Description des données récupérées depuis Titelive.
 ## Titelive Things
 
 Sur le FTP Titelive sont déposés chaque jour un fichier contenant plusieurs informations sur les oeuvres disponibles dans le réseau de librairies.
-Chaque fichier reste dispponible pour une durée de 26 jours sur le serveur.
+Chaque fichier reste disponible pour une durée de 26 jours sur le serveur.
 Les fichiers sont tous nommés selon le format : QuotidienJJ.tit (avec JJ le jour de dépôt du fichier).
 
 Voici la liste des informations disponibles dans ces fichiers :
