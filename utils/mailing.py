@@ -2,15 +2,15 @@
 import base64
 import os
 from datetime import datetime
+from flask import current_app as app, render_template
 from pprint import pformat
 from typing import Dict, List
-
-from flask import current_app as app, render_template
 
 from connectors import api_entreprises
 from domain.user_activation import generate_set_password_url
 from models import Offer
 from models import RightsType, User
+from repository import email_failed_queries
 from repository.booking_queries import find_all_ongoing_bookings_by_stock
 from repository.features import feature_send_mail_to_users_enabled
 from repository.user_offerer_queries import find_user_offerer_email
@@ -34,9 +34,9 @@ class MailServiceException(Exception):
     pass
 
 
-def check_if_email_sent(mail_result):
+def save_email_information_if_send_create_failed(mail_result, email):
     if mail_result.status_code != 200:
-        raise MailServiceException("Email send failed: " + pformat(vars(mail_result)))
+        email_failed_queries.save(email)
 
 
 def make_batch_cancellation_email(bookings, cancellation_case):
@@ -540,7 +540,8 @@ def parse_email_addresses(addresses: str) -> List[str]:
 def make_offer_creation_notification_email(offer: Offer, author: User, pro_origin_url: str) -> dict:
     humanized_offer_id = humanize(offer.id)
     link_to_offer = f'{pro_origin_url}/offres/{humanized_offer_id}'
-    html = render_template('mails/offer_creation_notification_email.html', offer=offer, author=author, link_to_offer=link_to_offer)
+    html = render_template('mails/offer_creation_notification_email.html', offer=offer, author=author,
+                           link_to_offer=link_to_offer)
     location_information = offer.venue.departementCode or 'numérique'
     return {'Html-part': html,
             'To': ['support.passculture@beta.gouv.fr'],

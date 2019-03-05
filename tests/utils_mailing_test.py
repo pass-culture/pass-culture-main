@@ -7,8 +7,13 @@ from freezegun import freeze_time
 from unittest.mock import MagicMock, patch, Mock
 
 from models import PcObject, Offerer, ThingType, EventType
+from models.email_failed import EmailFailed
 from tests.conftest import clean_database, mocked_mail
 from tests.files.api_entreprise import MOCKED_SIREN_ENTREPRISES_API_RETURN
+from tests.test_utils import create_stock_with_event_offer, create_stock_with_thing_offer, \
+    create_user, create_booking, create_user_offerer, \
+    create_offerer, create_venue, create_thing_offer, create_event_offer, create_stock_from_offer, \
+    create_stock_from_event_occurrence, create_event_occurrence, create_thing, create_mocked_bookings
 from utils.mailing import make_user_booking_recap_email, \
     make_offerer_booking_recap_email_after_user_action, make_final_recap_email_for_stock_with_event, \
     write_object_validation_email, make_offerer_driven_cancellation_email_for_user, \
@@ -18,11 +23,8 @@ from utils.mailing import make_user_booking_recap_email, \
     make_venue_validation_confirmation_email, \
     make_batch_cancellation_email, make_payment_transaction_email, make_user_validation_email, \
     make_payment_details_email, make_wallet_balances_email, make_payments_report_email, parse_email_addresses, \
-    make_activation_notification_email, make_offer_creation_notification_email
-from tests.test_utils import create_stock_with_event_offer, create_stock_with_thing_offer, \
-    create_user, create_booking, create_user_offerer, \
-    create_offerer, create_venue, create_thing_offer, create_event_offer, create_stock_from_offer, \
-    create_stock_from_event_occurrence, create_event_occurrence, create_thing, create_mocked_bookings
+    make_activation_notification_email, make_offer_creation_notification_email, \
+    save_email_information_if_send_create_failed
 
 SUBJECT_USER_EVENT_BOOKING_CONFIRMATION_EMAIL = \
     'Confirmation de votre réservation pour Mains, sorts et papiers le 20 juillet 2019 à 14:00'
@@ -1363,6 +1365,54 @@ class MakeOfferCreationNotificationEmailTest:
         assert email["FromEmail"] == 'support.passculture@beta.gouv.fr'
         assert email["FromName"] == "pass Culture"
         assert email["Subject"] == "[Création d’offre - numérique] Les lapins crétins"
+
+
+@pytest.mark.standalone
+class CheckIfEmailSentTest:
+    @freeze_time('2019-01-01 12:00:00')
+    @clean_database
+    def when_mail_result_status_code_500_creates_entry_in_email_table(self, app):
+        # given
+        email = {
+            'FromEmail': 'test@email.fr',
+            'FromName': 'Test From',
+            'Subject': 'Test subject',
+            'Text-Part': 'Hello world',
+            'Html-part': '<html><body>Hello World</body></html>'
+        }
+        mail_result = MagicMock()
+        mail_result.status_code = 500
+
+        # when
+        save_email_information_if_send_create_failed(mail_result, email)
+
+        # then
+        emails_failed = EmailFailed.query.all()
+        assert len(emails_failed) == 1
+        email_failed = emails_failed[0]
+        assert email_failed.json == email
+        assert email_failed.status == 'ERROR'
+        assert email_failed.datetime == datetime(2019, 1, 1, 12, 0, 0)
+
+    @clean_database
+    def when_mail_result_status_code_200_does_not_create_entry_in_email_table(self, app):
+        # given
+        email = {
+            'FromEmail': 'test@email.fr',
+            'FromName': 'Test From',
+            'Subject': 'Test subject',
+            'Text-Part': 'Hello world',
+            'Html-part': '<html><body>Hello World</body></html>'
+        }
+        mail_result = MagicMock()
+        mail_result.status_code = 200
+
+        # when
+        save_email_information_if_send_create_failed(mail_result, email)
+
+        # then
+        emails_failed = EmailFailed.query.all()
+        assert len(emails_failed) == 0
 
 
 def remove_whitespaces(text):

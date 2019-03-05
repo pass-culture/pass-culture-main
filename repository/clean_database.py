@@ -17,6 +17,7 @@ from models import Booking, \
     UserSession, \
     Venue, \
     VenueProvider, PaymentTransaction, BankInformation, LocalProviderEvent
+from models.email_failed import EmailFailed
 
 
 def clean_all_database(*args, **kwargs):
@@ -43,5 +44,6 @@ def clean_all_database(*args, **kwargs):
     User.query.delete()
     Activity.query.delete()
     UserSession.query.delete()
+    EmailFailed.query.delete()
     LocalProviderEvent.query.delete()
     db.session.commit()

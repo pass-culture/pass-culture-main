@@ -9,7 +9,6 @@ from domain.user_emails import send_user_driven_cancellation_email_to_user, \
     send_batch_cancellation_email_to_offerer, send_user_validation_email, send_venue_validation_confirmation_email, \
     send_reset_password_email, send_activation_notification_email
 from models import Offerer, UserOfferer, User, RightsType
-from utils.mailing import MailServiceException
 from tests.test_utils import create_user, create_booking, create_stock_with_event_offer, create_offerer, create_venue, \
     create_thing_offer, create_stock_with_thing_offer, create_mocked_bookings
 
@@ -58,24 +57,6 @@ class SendUserDrivenCancellationEmailToUserTest:
         args = mocked_send_create_email.call_args
         assert args[1]['data']['To'] == 'passculture-dev@beta.gouv.fr'
         assert 'This is a test' in args[1]['data']['Html-part']
-
-    def when_status_code_400_raises_mail_service_exception(self, app):
-        # Given
-        user = create_user(email='user@email.fr')
-        offerer = create_offerer()
-        venue = create_venue(offerer, booking_email='booking@email.fr')
-        stock = create_stock_with_event_offer(offerer, venue)
-        booking = create_booking(user, stock, venue)
-        mocked_send_create_email = Mock()
-        return_value = Mock()
-        return_value.status_code = 400
-        mocked_send_create_email.return_value = return_value
-
-        # When
-        with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=False), patch(
-                'domain.user_emails.make_offerer_booking_recap_email_after_user_action',
-                return_value={'Html-part': ''}), pytest.raises(MailServiceException):
-            send_user_driven_cancellation_email_to_user(booking, mocked_send_create_email)
 
 
 @pytest.mark.standalone
@@ -156,24 +137,6 @@ class SendUserDrivenCancellationEmailToOffererTest:
         assert args[1]['data']['To'] == 'passculture-dev@beta.gouv.fr'
         assert 'This is a test' in args[1]['data']['Html-part']
 
-    def when_send_create_email_status_code_400_raises_mail_service_exception(self, app):
-        # Given
-        user = create_user(email='user@email.fr')
-        offerer = create_offerer()
-        venue = create_venue(offerer, booking_email='booking@email.fr')
-        stock = create_stock_with_event_offer(offerer, venue)
-        booking = create_booking(user, stock, venue)
-        mocked_send_create_email = Mock()
-        return_value = Mock()
-        return_value.status_code = 400
-        mocked_send_create_email.return_value = return_value
-
-        # When
-        with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=False), patch(
-                'domain.user_emails.make_offerer_booking_recap_email_after_user_action',
-                return_value={'Html-part': ''}), pytest.raises(MailServiceException):
-            send_user_driven_cancellation_email_to_offerer(booking, mocked_send_create_email)
-
 
 @pytest.mark.standalone
 class SendOffererDrivenCancellationEmailToUserTest:
@@ -197,21 +160,6 @@ class SendOffererDrivenCancellationEmailToUserTest:
         mocked_send_create_email.assert_called_once()
         args = mocked_send_create_email.call_args
         assert args[1]['data']['To'] == 'user@email.fr'
-
-    def when_status_code_400_raises_mail_service_exception(self, app):
-        # Given
-        user = create_user(email='user@email.fr')
-        booking = create_booking(user)
-        mocked_send_create_email = Mock()
-        return_value = Mock()
-        return_value.status_code = 400
-        mocked_send_create_email.return_value = return_value
-
-        # When
-        with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True), patch(
-                'domain.user_emails.make_offerer_driven_cancellation_email_for_user',
-                return_value={'Html-part': ''}), pytest.raises(MailServiceException):
-            send_offerer_driven_cancellation_email_to_user(booking, mocked_send_create_email)
 
 
 @pytest.mark.standalone
@@ -267,21 +215,6 @@ class SendOffererDrivenCancellationEmailToOffererTest:
         mocked_send_create_email.assert_called_once()
         args = mocked_send_create_email.call_args
         assert args[1]['data']['To'] == 'support.passculture@beta.gouv.fr'
-
-    def when_status_code_400_raises_mail_service_exception(self, app):
-        # Given
-        user = create_user(email='user@email.fr')
-        booking = create_booking(user)
-        mocked_send_create_email = Mock()
-        return_value = Mock()
-        return_value.status_code = 400
-        mocked_send_create_email.return_value = return_value
-
-        # When
-        with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True), patch(
-                'domain.user_emails.make_offerer_driven_cancellation_email_for_offerer',
-                return_value={'Html-part': ''}), pytest.raises(MailServiceException):
-            send_offerer_driven_cancellation_email_to_offerer(booking, mocked_send_create_email)
 
 
 @pytest.mark.standalone
@@ -487,24 +420,6 @@ class SendValidationConfirmationEmailTest:
         args = mocked_send_create_email.call_args
         assert args[1]['data']['To'] == 'admin1@email.com, admin2@email.com'
 
-    def when_send_create_email_status_code_400_raises_mail_service_exception(self, app):
-        # Given
-        offerer = Offerer()
-        user_offerer = UserOfferer()
-        user_offerer.user = User(email='test@email.com')
-        mocked_send_create_email = Mock()
-        return_value = Mock()
-        return_value.status_code = 400
-        mocked_send_create_email.return_value = return_value
-
-        with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True), patch(
-                'domain.user_emails.make_validation_confirmation_email', return_value={'Html-part': ''}), patch(
-            'domain.user_emails.find_all_emails_of_user_offerers_admins',
-            return_value=['test@email.com']), pytest.raises(
-            MailServiceException):
-            # When
-            send_validation_confirmation_email(user_offerer, offerer, mocked_send_create_email)
-
 
 @pytest.mark.standalone
 class SendCancellationEmailOneUserTest:
@@ -578,23 +493,6 @@ class SendBatchCancellationEmailToOffererTest:
         mocked_send_create_email.assert_called_once()
         args = mocked_send_create_email.call_args
         assert args[1]['data']['To'] == 'offerer@email.com, support.passculture@beta.gouv.fr'
-
-    def when_send_create_email_status_code_500_raises_mail_service_exception(self):
-        # Given
-        num_bookings = 5
-        bookings = create_mocked_bookings(num_bookings, 'offerer@email.com')
-        mocked_send_create_email = Mock()
-        return_value = Mock()
-        return_value.status_code = 500
-        mocked_send_create_email.return_value = return_value
-
-        # When
-        with pytest.raises(MailServiceException), patch('utils.mailing.feature_send_mail_to_users_enabled',
-                                                        return_value=True), patch(
-            'domain.user_emails.make_batch_cancellation_email',
-            return_value={'Html-part': ''}):
-            # When
-            send_batch_cancellation_email_to_offerer(bookings, 'stock', mocked_send_create_email)
 
     def when_feature_send_mail_to_users_disabled_sends_email_to_pass_culture_dev(self):
         # Given
@@ -692,23 +590,6 @@ class SendVenueValidationConfirmationEmailTest:
         args = mocked_send_create_email.call_args
         assert args[1]['data']['To'] == 'passculture-dev@beta.gouv.fr'
 
-    def when_send_create_email_status_code_400_raises_mail_service_exception(self, app):
-        # Given
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        mocked_send_create_email = Mock()
-        return_value = Mock()
-        return_value.status_code = 400
-        mocked_send_create_email.return_value = return_value
-
-        with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True), patch(
-                'domain.user_emails.make_venue_validation_confirmation_email', return_value={'Html-part': ''}), patch(
-            'domain.user_emails.find_all_emails_of_user_offerers_admins',
-            return_value=['test@email.com']), pytest.raises(
-            MailServiceException):
-            # When
-            send_venue_validation_confirmation_email(venue, mocked_send_create_email)
-
 
 @pytest.mark.standalone
 class SendUserValidationEmailTest:
@@ -730,24 +611,6 @@ class SendUserValidationEmailTest:
         mocked_send_create_email.assert_called_once()
         make_email.assert_called_once()
         mocked_send_create_email.call_args[1]['To'] = user.email
-
-    def when_send_create_email_status_code_400_raises_mail_service_exception(self):
-        # Given
-        user = create_user()
-        user.generate_validation_token()
-        mocked_send_create_email = Mock()
-        return_value = Mock()
-        return_value.status_code = 400
-        mocked_send_create_email.return_value = return_value
-
-        # When
-        with pytest.raises(MailServiceException), patch('domain.user_emails.make_user_validation_email',
-                                                        return_value={'Html-part': ''}) as make_email, patch(
-            'utils.mailing.feature_send_mail_to_users_enabled', return_value=True):
-            send_user_validation_email(user, mocked_send_create_email, 'localhost-test', True)
-        # Then
-        mocked_send_create_email.assert_called_once()
-        make_email.assert_called_once()
 
 
 @pytest.mark.standalone
@@ -792,18 +655,6 @@ class SendResetPasswordEmailTest:
         assert email['To'] == 'passculture-dev@beta.gouv.fr'
         assert 'This is a test' in email['Html-part']
 
-    def when_send_create_email_status_code_400_raises_mail_service_exception(self, app):
-        # given
-        user = create_user(public_name='bobby', email='bobby@test.com', reset_password_token='AZ45KNB99H')
-        mocked_send_create_email = Mock()
-        return_value = Mock()
-        return_value.status_code = 400
-        mocked_send_create_email.return_value = return_value
-
-        # when
-        with pytest.raises(MailServiceException):
-            send_reset_password_email(user, mocked_send_create_email, 'localhost')
-
 
 @pytest.mark.standalone
 class SendActivationNotificationEmailTest:
@@ -843,15 +694,3 @@ class SendActivationNotificationEmailTest:
         email = args[1]['data']
         assert email['To'] == 'passculture-dev@beta.gouv.fr'
         assert 'This is a test' in email['Html-part']
-
-    def test_raises_an_exception_if_mailjet_failed(self, app):
-        # given
-        user = create_user(public_name='bobby', email='bobby@test.com', reset_password_token='AZ45KNB99H')
-        mocked_send_create_email = Mock()
-        return_value = Mock()
-        return_value.status_code = 400
-        mocked_send_create_email.return_value = return_value
-
-        # when
-        with pytest.raises(MailServiceException):
-            send_activation_notification_email(user, mocked_send_create_email)
