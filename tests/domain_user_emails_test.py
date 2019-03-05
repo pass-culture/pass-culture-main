@@ -15,7 +15,7 @@ from tests.test_utils import create_user, create_booking, create_stock_with_even
 
 @pytest.mark.standalone
 class SendUserDrivenCancellationEmailToUserTest:
-    def when_feature_send_mail_to_users_enabled_sends_email_to_user(self, app):
+    def when_feature_send_mail_to_users_enabled_sends_email_to_user(self):
         # Given
         user = create_user(email='user@email.fr')
         booking = create_booking(user)

@@ -24,7 +24,7 @@ from utils.mailing import make_user_booking_recap_email, \
     make_batch_cancellation_email, make_payment_transaction_email, make_user_validation_email, \
     make_payment_details_email, make_wallet_balances_email, make_payments_report_email, parse_email_addresses, \
     make_activation_notification_email, make_offer_creation_notification_email, \
-    email_was_sent_or_save_error
+    check_email_was_sent_and_save_content
 
 SUBJECT_USER_EVENT_BOOKING_CONFIRMATION_EMAIL = \
     'Confirmation de votre réservation pour Mains, sorts et papiers le 20 juillet 2019 à 14:00'
@@ -1384,7 +1384,7 @@ class EmailWasSentTest:
         mail_result.status_code = 500
 
         # when
-        is_successfully_sent = email_was_sent_or_save_error(mail_result, email)
+        is_successfully_sent = check_email_was_sent_and_save_content(mail_result, email)
 
         # then
         emails_failed = EmailFailed.query.all()
@@ -1409,7 +1409,7 @@ class EmailWasSentTest:
         mail_result.status_code = 200
 
         # when
-        is_successfully_sent = email_was_sent_or_save_error(mail_result, email)
+        is_successfully_sent = check_email_was_sent_and_save_content(mail_result, email)
 
         # then
         emails_failed = EmailFailed.query.all()

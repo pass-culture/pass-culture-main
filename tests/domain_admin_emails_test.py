@@ -326,7 +326,7 @@ class SendOfferCreationNotificationToSupportTest:
 
 
 class SendPaymentTransactionEmailTest:
-    @patch('domain.admin_emails.email_was_sent_or_save_error', return_value=True)
+    @patch('domain.admin_emails.check_email_was_sent_and_save_content', return_value=True)
     @patch('domain.admin_emails.make_payment_transaction_email', return_value={'Html-part': '<html><body></body></html>', 'To': 'em@ail.com'})
     def test_returns_true_if_email_was_sent(self, make_payment_transaction_email, email_was_sent_or_save_error):
         # given
@@ -343,7 +343,7 @@ class SendPaymentTransactionEmailTest:
         # then
         assert successfully_sent
 
-    @patch('domain.admin_emails.email_was_sent_or_save_error', return_value=False)
+    @patch('domain.admin_emails.check_email_was_sent_and_save_content', return_value=False)
     @patch('domain.admin_emails.make_payment_transaction_email', return_value={'Html-part': '<html><body></body></html>', 'To': 'em@ail.com'})
     def test_returns_false_if_not_email_was_sent(self, make_payment_transaction_email, email_was_sent_or_save_error):
         # given

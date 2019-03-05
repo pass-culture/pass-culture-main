@@ -34,7 +34,7 @@ class MailServiceException(Exception):
     pass
 
 
-def email_was_sent_or_save_error(mail_result, email):
+def check_email_was_sent_and_save_content(mail_result, email):
     if mail_result.status_code != 200:
         email_failed_queries.save(email)
         return False
