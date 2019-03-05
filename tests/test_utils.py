@@ -31,6 +31,7 @@ from models import Booking, \
     BankInformation, \
     Venue, PaymentTransaction, VenueProvider, Provider
 from models.db import db
+from models.email_failed import EmailFailed
 from models.payment import PaymentDetails
 from models.payment_status import PaymentStatus, TransactionStatus
 from models.pc_object import PcObject
@@ -660,6 +661,15 @@ def create_bank_information(application_id=1, bic='QSDFGH8Z555', iban='FR7630006
     bank_information.idAtProviders = id_at_providers
     bank_information.dateModifiedAtLastProvider = date_modified_at_last_provider
     return bank_information
+
+
+def create_email_failed(email, status='ERROR', time=datetime.utcnow()):
+    email_failed = EmailFailed()
+    email_failed.email = email
+    email_failed.status = status
+    email_failed.datetime = time
+    return email_failed
+
 
 
 def saveCounts():

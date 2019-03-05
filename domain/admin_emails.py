@@ -1,7 +1,7 @@
 from typing import Dict, List, Callable
 
 from models import Offer, User
-from utils.mailing import write_object_validation_email, save_email_information_if_send_create_failed, make_payment_transaction_email, \
+from utils.mailing import write_object_validation_email, email_was_sent_or_save_error, make_payment_transaction_email, \
     make_venue_validation_email, compute_email_html_part_and_recipients, make_payment_details_email, \
     make_payments_report_email, make_wallet_balances_email, make_offer_creation_notification_email, \
     make_activation_users_email
@@ -16,7 +16,7 @@ def send_dev_email(subject, html_text, send_create_email: Callable[..., None]):
         'To': 'passculture-dev@beta.gouv.fr'
     }
     mail_result = send_create_email(data=email)
-    save_email_information_if_send_create_failed(mail_result, email)
+    email_was_sent_or_save_error(mail_result, email)
 
 
 def maybe_send_offerer_validation_email(offerer, user_offerer, send_create_email: Callable[..., None]):
@@ -27,7 +27,7 @@ def maybe_send_offerer_validation_email(offerer, user_offerer, send_create_email
     email['Html-part'], email['To'] = compute_email_html_part_and_recipients(email['Html-part'], recipients)
     mail_result = send_create_email(data=email)
 
-    save_email_information_if_send_create_failed(mail_result, email)
+    email_was_sent_or_save_error(mail_result, email)
 
 
 def send_payment_transaction_email(xml_attachment: str, checksum: bytes, recipients: List[str],
@@ -35,28 +35,28 @@ def send_payment_transaction_email(xml_attachment: str, checksum: bytes, recipie
     email = make_payment_transaction_email(xml_attachment, checksum)
     email['Html-part'], email['To'] = compute_email_html_part_and_recipients(email['Html-part'], recipients)
     mail_result = send_create_email(data=email)
-    save_email_information_if_send_create_failed(mail_result, email)
+    return email_was_sent_or_save_error(mail_result, email)
 
 
 def send_payment_details_email(csv_attachment: str, recipients: List[str], send_create_email: Callable[..., None]):
     email = make_payment_details_email(csv_attachment)
     email['Html-part'], email['To'] = compute_email_html_part_and_recipients("", recipients)
     mail_result = send_create_email(data=email)
-    save_email_information_if_send_create_failed(mail_result, email)
+    email_was_sent_or_save_error(mail_result, email)
 
 
 def send_wallet_balances_email(csv_attachment: str, recipients: List[str], send_create_email: Callable[..., None]):
     email = make_wallet_balances_email(csv_attachment)
     email['Html-part'], email['To'] = compute_email_html_part_and_recipients("", recipients)
     mail_result = send_create_email(data=email)
-    save_email_information_if_send_create_failed(mail_result, email)
+    email_was_sent_or_save_error(mail_result, email)
 
 
 def send_users_activation_report(csv_attachment: str, recipients: List[str], send_create_email: Callable[..., None]):
     email = make_activation_users_email(csv_attachment)
     email['Html-part'], email['To'] = compute_email_html_part_and_recipients("", recipients)
     mail_result = send_create_email(data=email)
-    save_email_information_if_send_create_failed(mail_result, email)
+    email_was_sent_or_save_error(mail_result, email)
 
 
 def send_payments_report_emails(not_processable_payments_csv: str, error_payments_csv: str, grouped_payments: Dict,
@@ -64,7 +64,7 @@ def send_payments_report_emails(not_processable_payments_csv: str, error_payment
     email = make_payments_report_email(not_processable_payments_csv, error_payments_csv, grouped_payments)
     email['Html-part'], email['To'] = compute_email_html_part_and_recipients(email['Html-part'], recipients)
     mail_result = send_create_email(data=email)
-    save_email_information_if_send_create_failed(mail_result, email)
+    email_was_sent_or_save_error(mail_result, email)
 
 
 def send_venue_validation_email(venue, send_create_email: Callable[..., None]):
@@ -72,7 +72,7 @@ def send_venue_validation_email(venue, send_create_email: Callable[..., None]):
     recipients = ['support.passculture@beta.gouv.fr']
     email['Html-part'], email['To'] = compute_email_html_part_and_recipients(email['Html-part'], recipients)
     mail_result = send_create_email(data=email)
-    save_email_information_if_send_create_failed(mail_result, email)
+    email_was_sent_or_save_error(mail_result, email)
 
 
 def send_offer_creation_notification_to_support(offer: Offer, author: User, app_origin_url: str,
@@ -80,4 +80,4 @@ def send_offer_creation_notification_to_support(offer: Offer, author: User, app_
     email = make_offer_creation_notification_email(offer, author, app_origin_url)
     email['Html-part'], email['To'] = compute_email_html_part_and_recipients(email['Html-part'], email['To'])
     mail_result = send_create_email(data=email)
-    save_email_information_if_send_create_failed(mail_result, email)
+    email_was_sent_or_save_error(mail_result, email)

@@ -24,7 +24,7 @@ from utils.mailing import make_user_booking_recap_email, \
     make_batch_cancellation_email, make_payment_transaction_email, make_user_validation_email, \
     make_payment_details_email, make_wallet_balances_email, make_payments_report_email, parse_email_addresses, \
     make_activation_notification_email, make_offer_creation_notification_email, \
-    save_email_information_if_send_create_failed
+    email_was_sent_or_save_error
 
 SUBJECT_USER_EVENT_BOOKING_CONFIRMATION_EMAIL = \
     'Confirmation de votre réservation pour Mains, sorts et papiers le 20 juillet 2019 à 14:00'
@@ -1368,7 +1368,7 @@ class MakeOfferCreationNotificationEmailTest:
 
 
 @pytest.mark.standalone
-class CheckIfEmailSentTest:
+class EmailWasSentTest:
     @freeze_time('2019-01-01 12:00:00')
     @clean_database
     def when_mail_result_status_code_500_creates_entry_in_email_table(self, app):
@@ -1384,13 +1384,14 @@ class CheckIfEmailSentTest:
         mail_result.status_code = 500
 
         # when
-        save_email_information_if_send_create_failed(mail_result, email)
+        is_successfully_sent = email_was_sent_or_save_error(mail_result, email)
 
         # then
         emails_failed = EmailFailed.query.all()
+        assert not is_successfully_sent
         assert len(emails_failed) == 1
         email_failed = emails_failed[0]
-        assert email_failed.json == email
+        assert email_failed.email == email
         assert email_failed.status == 'ERROR'
         assert email_failed.datetime == datetime(2019, 1, 1, 12, 0, 0)
 
@@ -1408,10 +1409,11 @@ class CheckIfEmailSentTest:
         mail_result.status_code = 200
 
         # when
-        save_email_information_if_send_create_failed(mail_result, email)
+        is_successfully_sent = email_was_sent_or_save_error(mail_result, email)
 
         # then
         emails_failed = EmailFailed.query.all()
+        assert is_successfully_sent
         assert len(emails_failed) == 0
 
 

@@ -119,17 +119,14 @@ def send_transactions(payments: List[Payment], pass_culture_iban: str, pass_cult
         )
         logger.info('[BATCH][PAYMENTS] Recipients of email : %s' % recipients)
 
-        try:
-            send_payment_transaction_email(xml_file, checksum, recipients, app.mailjet_client.send.create)
-        except MailServiceException as e:
-            logger.error('[BATCH][PAYMENTS] Error while sending payment transaction email to MailJet', e)
-            for payment in payments:
-                payment.setStatus(TransactionStatus.ERROR, detail="Erreur d'envoi à MailJet")
-        else:
+        successfully_sent_payments = send_payment_transaction_email(xml_file, checksum, recipients, app.mailjet_client.send.create)
+        if successfully_sent_payments:
             for payment in payments:
                 payment.setStatus(TransactionStatus.SENT)
-        finally:
-            PcObject.check_and_save(transaction, *payments)
+        else:
+            for payment in payments:
+                payment.setStatus(TransactionStatus.ERROR, detail="Erreur d'envoi à MailJet")
+        PcObject.check_and_save(transaction, *payments)
 
 
 def send_payments_details(payments: List[Payment], recipients: List[str]) -> None:

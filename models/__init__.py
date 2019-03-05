@@ -3,6 +3,7 @@ from models.bank_information import BankInformation
 from models.booking import Booking
 from models.deactivable_mixin import DeactivableMixin
 from models.deposit import Deposit
+from models.email_failed import EmailFailed
 from models.event import Event
 from models.event_occurrence import EventOccurrence
 from models.extra_data_mixin import ExtraDataMixin
@@ -14,8 +15,8 @@ from models.mediation import Mediation
 from models.needs_validation_mixin import NeedsValidationMixin
 from models.offer import Offer
 from models.stock import Stock
-from models.offerer import Offerer
 from models.offer_type import ThingType, EventType
+from models.offerer import Offerer
 from models.payment import Payment
 from models.payment_status import PaymentStatus
 from models.payment_transaction import PaymentTransaction
@@ -41,6 +42,7 @@ __all__ = (
     'PcObject',
     'DeactivableMixin',
     'Deposit',
+    'EmailFailed',
     'EventType',
     'ExtraDataMixin',
     'HasAddressMixin',

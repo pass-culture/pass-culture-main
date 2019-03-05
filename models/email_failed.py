@@ -11,7 +11,7 @@ class EmailFailed(PcObject,
     id = Column(BigInteger,
                 primary_key=True,
                 autoincrement=True)
-    json = Column(JSON,
+    email = Column(JSON,
                   nullable=False)
     status = Column(String(12),
                     nullable=False)

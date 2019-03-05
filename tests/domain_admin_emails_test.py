@@ -3,7 +3,7 @@ from unittest.mock import Mock, patch
 
 from domain.admin_emails import maybe_send_offerer_validation_email, send_venue_validation_email, \
     send_payment_details_email, send_wallet_balances_email, send_payments_report_emails, \
-    send_offer_creation_notification_to_support
+    send_offer_creation_notification_to_support, send_payment_transaction_email
 from tests.test_utils import create_offerer, create_user, \
     create_user_offerer, create_venue, create_thing_offer
 from utils.mailing import MailServiceException
@@ -323,3 +323,40 @@ class SendOfferCreationNotificationToSupportTest:
         args = mocked_send_create_email.call_args
         email = args[1]['data']
         assert email['To'] == 'passculture-dev@beta.gouv.fr'
+
+
+class SendPaymentTransactionEmailTest:
+    @patch('domain.admin_emails.email_was_sent_or_save_error', return_value=True)
+    @patch('domain.admin_emails.make_payment_transaction_email', return_value={'Html-part': '<html><body></body></html>', 'To': 'em@ail.com'})
+    def test_returns_true_if_email_was_sent(self, make_payment_transaction_email, email_was_sent_or_save_error):
+        # given
+        xml = '<?xml version="1.0" encoding="UTF-8"?><Document xmlns="urn:iso:std:iso:20022:tech:xsd:pain.001.001.03"></Document>'
+        checksum = b'\x16\x91\x0c\x11~Hs\xc5\x1a\xa3W1\x13\xbf!jq@\xea  <h&\xef\x1f\xaf\xfc\x7fO\xc8\x82'
+        recipients = ['test@email']
+        mocked_send_create_email = Mock()
+        return_value = Mock()
+        return_value.status_code = 200
+        mocked_send_create_email.return_value = return_value
+        # when
+        successfully_sent = send_payment_transaction_email(xml, checksum, recipients, mocked_send_create_email)
+
+        # then
+        assert successfully_sent
+
+    @patch('domain.admin_emails.email_was_sent_or_save_error', return_value=False)
+    @patch('domain.admin_emails.make_payment_transaction_email', return_value={'Html-part': '<html><body></body></html>', 'To': 'em@ail.com'})
+    def test_returns_false_if_not_email_was_sent(self, make_payment_transaction_email, email_was_sent_or_save_error):
+        # given
+        xml = '<?xml version="1.0" encoding="UTF-8"?><Document xmlns="urn:iso:std:iso:20022:tech:xsd:pain.001.001.03"></Document>'
+        checksum = b'\x16\x91\x0c\x11~Hs\xc5\x1a\xa3W1\x13\xbf!jq@\xea  <h&\xef\x1f\xaf\xfc\x7fO\xc8\x82'
+        recipients = ['test@email']
+        mocked_send_create_email = Mock()
+        return_value = Mock()
+        return_value.status_code = 200
+        mocked_send_create_email.return_value = return_value
+        # when
+        successfully_sent = send_payment_transaction_email(xml, checksum, recipients, mocked_send_create_email)
+
+        # then
+        assert not successfully_sent
+

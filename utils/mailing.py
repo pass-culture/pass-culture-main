@@ -34,9 +34,11 @@ class MailServiceException(Exception):
     pass
 
 
-def save_email_information_if_send_create_failed(mail_result, email):
+def email_was_sent_or_save_error(mail_result, email):
     if mail_result.status_code != 200:
         email_failed_queries.save(email)
+        return False
+    return True
 
 
 def make_batch_cancellation_email(bookings, cancellation_case):

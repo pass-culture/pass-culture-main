@@ -20,7 +20,7 @@ def upgrade():
     op.create_table(
         'email_failed',
         sa.Column('id', sa.BigInteger, primary_key=True, autoincrement=True),
-        sa.Column('json', sa.JSON, nullable=False),
+        sa.Column('email', sa.JSON, nullable=False),
         sa.Column('status', sa.String(12), nullable=False),
         sa.Column('datetime', sa.DateTime, nullable=True, default=datetime.utcnow),
     )

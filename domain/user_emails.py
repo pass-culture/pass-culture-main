@@ -8,7 +8,7 @@ from utils.logger import logger
 from utils.mailing import make_user_booking_recap_email, \
     make_offerer_booking_recap_email_after_user_action, make_offerer_driven_cancellation_email_for_user, \
     make_offerer_driven_cancellation_email_for_offerer, make_final_recap_email_for_stock_with_event, \
-    save_email_information_if_send_create_failed, make_reset_password_email, make_validation_confirmation_email, make_batch_cancellation_email, \
+    email_was_sent_or_save_error, make_reset_password_email, make_validation_confirmation_email, make_batch_cancellation_email, \
     make_user_validation_email, make_venue_validation_confirmation_email, compute_email_html_part_and_recipients, \
     make_activation_notification_email
 
@@ -26,7 +26,7 @@ def send_final_booking_recap_email(stock, send_create_email):
     email['Html-part'], email['To'] = compute_email_html_part_and_recipients(email['Html-part'], recipients)
 
     mail_result = send_create_email(data=email)
-    save_email_information_if_send_create_failed(mail_result, email)
+    email_was_sent_or_save_error(mail_result, email)
 
     set_booking_recap_sent_and_save(stock)
 
@@ -41,7 +41,7 @@ def send_booking_recap_emails(booking, send_create_email):
     email['Html-part'], email['To'] = compute_email_html_part_and_recipients(email['Html-part'], recipients)
 
     mail_result = send_create_email(data=email)
-    save_email_information_if_send_create_failed(mail_result, email)
+    email_was_sent_or_save_error(mail_result, email)
 
 
 def send_booking_confirmation_email_to_user(booking, send_create_email, is_cancellation=False):
@@ -51,7 +51,7 @@ def send_booking_confirmation_email_to_user(booking, send_create_email, is_cance
     email['Html-part'], email['To'] = compute_email_html_part_and_recipients(email['Html-part'], recipients)
 
     mail_result = send_create_email(data=email)
-    save_email_information_if_send_create_failed(mail_result, email)
+    email_was_sent_or_save_error(mail_result, email)
 
 
 def send_user_driven_cancellation_email_to_user(booking, send_create_email):
@@ -61,7 +61,7 @@ def send_user_driven_cancellation_email_to_user(booking, send_create_email):
     email['Html-part'], email['To'] = compute_email_html_part_and_recipients(email['Html-part'], recipients)
 
     mail_result = send_create_email(data=email)
-    save_email_information_if_send_create_failed(mail_result, email)
+    email_was_sent_or_save_error(mail_result, email)
 
 
 def send_user_driven_cancellation_email_to_offerer(booking, send_create_email):
@@ -73,7 +73,7 @@ def send_user_driven_cancellation_email_to_offerer(booking, send_create_email):
     recipients.append('support.passculture@beta.gouv.fr')
     email['Html-part'], email['To'] = compute_email_html_part_and_recipients(email['Html-part'], recipients)
     mail_result = send_create_email(data=email)
-    save_email_information_if_send_create_failed(mail_result, email)
+    email_was_sent_or_save_error(mail_result, email)
 
 
 def send_offerer_driven_cancellation_email_to_user(booking, send_create_email):
@@ -81,7 +81,7 @@ def send_offerer_driven_cancellation_email_to_user(booking, send_create_email):
     recipients = [booking.user.email]
     email['Html-part'], email['To'] = compute_email_html_part_and_recipients(email['Html-part'], recipients)
     mail_result = send_create_email(data=email)
-    save_email_information_if_send_create_failed(mail_result, email)
+    email_was_sent_or_save_error(mail_result, email)
 
 
 def send_offerer_driven_cancellation_email_to_offerer(booking, send_create_email):
@@ -93,7 +93,7 @@ def send_offerer_driven_cancellation_email_to_offerer(booking, send_create_email
     email = make_offerer_driven_cancellation_email_for_offerer(booking)
     email['Html-part'], email['To'] = compute_email_html_part_and_recipients(email['Html-part'], recipients)
     mail_result = send_create_email(data=email)
-    save_email_information_if_send_create_failed(mail_result, email)
+    email_was_sent_or_save_error(mail_result, email)
 
 
 def send_reset_password_email(user, send_create_email, app_origin_url):
@@ -101,7 +101,7 @@ def send_reset_password_email(user, send_create_email, app_origin_url):
     recipients = [user.email]
     email['Html-part'], email['To'] = compute_email_html_part_and_recipients(email['Html-part'], recipients)
     mail_result = send_create_email(data=email)
-    save_email_information_if_send_create_failed(mail_result, email)
+    email_was_sent_or_save_error(mail_result, email)
 
 
 def send_validation_confirmation_email(user_offerer, offerer, send_create_email):
@@ -110,7 +110,7 @@ def send_validation_confirmation_email(user_offerer, offerer, send_create_email)
     email = make_validation_confirmation_email(user_offerer, offerer)
     email['Html-part'], email['To'] = compute_email_html_part_and_recipients(email['Html-part'], recipients)
     mail_result = send_create_email(data=email)
-    save_email_information_if_send_create_failed(mail_result, email)
+    email_was_sent_or_save_error(mail_result, email)
 
 
 def send_batch_cancellation_emails_to_users(bookings, send_create_email):
@@ -128,7 +128,7 @@ def send_batch_cancellation_email_to_offerer(bookings, cancellation_case, send_c
     email = make_batch_cancellation_email(bookings, cancellation_case)
     email['Html-part'], email['To'] = compute_email_html_part_and_recipients(email['Html-part'], recipients)
     mail_result = send_create_email(data=email)
-    save_email_information_if_send_create_failed(mail_result, email)
+    email_was_sent_or_save_error(mail_result, email)
 
 
 def send_cancellation_emails_to_user_and_offerer(booking, is_offerer_cancellation, is_user_cancellation,
@@ -146,20 +146,20 @@ def send_venue_validation_confirmation_email(venue, send_create_email):
     email = make_venue_validation_confirmation_email(venue)
     email['Html-part'], email['To'] = compute_email_html_part_and_recipients(email['Html-part'], recipients)
     mail_result = send_create_email(data=email)
-    save_email_information_if_send_create_failed(mail_result, email)
+    email_was_sent_or_save_error(mail_result, email)
 
 
 def send_user_validation_email(user, send_create_email, app_origin_url, is_webapp):
     email = make_user_validation_email(user, app_origin_url, is_webapp)
     mail_result = send_create_email(data=email)
-    save_email_information_if_send_create_failed(mail_result, email)
+    email_was_sent_or_save_error(mail_result, email)
 
 
 def send_activation_notification_email(user: User, send_create_email: Callable) -> None:
     email = make_activation_notification_email(user)
     email['Html-part'], email['To'] = compute_email_html_part_and_recipients(email['Html-part'], [user.email])
     mail_result = send_create_email(data=email)
-    save_email_information_if_send_create_failed(mail_result, email)
+    email_was_sent_or_save_error(mail_result, email)
 
 
 def _get_offerer_id(offerer, user_offerer):
