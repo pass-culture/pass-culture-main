@@ -3,6 +3,7 @@ import { ClientFunction, Selector } from 'testcafe'
 import { fetchSandbox } from './helpers/sandboxes'
 import { createUserRole } from './helpers/roles'
 import { ROOT_PATH, SUPPORT_EMAIL } from '../src/utils/config'
+import getPageUrl from './helpers/getPageUrl'
 
 const menuButton = Selector('#open-menu-button')
 const mainMenu = Selector('#main-menu')
@@ -130,12 +131,12 @@ test('Menu | Liens | Mentions légales', async t => {
     .expect(menuMentionsLegales.exists)
     .ok()
     .click(menuMentionsLegales)
-    .wait(100)
-  const location = await t.eval(() => window.location)
   await t
-    .expect(location.href)
+    .expect(getPageUrl())
     .eql(
-      'https://pass-culture.gitbook.io/documents/textes-normatifs/mentions-legales-et-conditions-generales-dutilisation-de-lapplication-pass-culture'
+      'https://pass-culture.gitbook.io/documents/textes-normatifs/mentions-legales-et-conditions-generales-dutilisation-de-lapplication-pass-culture',
+      'On est redirigé vers gitbook',
+      { timeout: 10000 }
     )
 })
 
