@@ -35,7 +35,7 @@ def get_first_matching_any_ts_queries_at_column(query, ts_queries, column):
     ts_vector = func.to_tsvector(cast(coalesce(column, ''), TEXT))
     ts_queries_filter = or_(
         *[
-            ts_vector.match(ts_query, postgresql_regconfig=LANGUAGE)
+            ts_vector.match(ts_query, postgresql_regconfig=LANGUAGE+'_unaccent')
             for ts_query in ts_queries
         ]
     )
