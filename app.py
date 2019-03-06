@@ -2,12 +2,11 @@ import os
 
 from flask import Flask
 from flask_admin import Admin
-from flask_admin.contrib.sqla import ModelView
 from flask_cors import CORS
 from flask_login import LoginManager
 from mailjet_rest import Client
 
-from admin.configuration import install_admin_views
+from admin.install import install_admin_views
 from local_providers.install import install_local_providers
 from models.db import db
 from models.install import install_models
@@ -20,7 +19,7 @@ from utils.mailing import get_contact, \
 
 app = Flask(__name__, static_url_path='/static')
 login_manager = LoginManager()
-admin = Admin(name='pC Admin', url='/pc/admin', template_mode='bootstrap3')
+admin = Admin(name='pc Admin', url='/pc/back-office/admin', template_mode='bootstrap3')
 
 app.secret_key = os.environ.get('FLASK_SECRET', '+%+3Q23!zbc+!Dd@')
 app.json_encoder = EnumJSONEncoder
@@ -34,6 +33,7 @@ app.config['PERMANENT_SESSION_LIFETIME'] = 90 * 24 * 3600
 app.config['REMEMBER_COOKIE_HTTPONLY'] = True
 app.config['REMEMBER_COOKIE_SECURE'] = True
 app.config['FLASK_ADMIN_SWATCH'] = 'flatly'
+app.config['FLASK_ADMIN_FLUID_LAYOUT'] = True
 
 admin.init_app(app)
 db.init_app(app)
