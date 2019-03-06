@@ -39,10 +39,10 @@ def list_offers():
 
     return handle_rest_get_list(Offer,
                                 include=OFFER_INCLUDES,
-                                query=query,
                                 page=request.args.get('page'),
                                 paginate=10,
-                                order_by='offer.id desc')
+                                order_by='offer.id desc',
+                                query=query)
 
 
 @app.route('/offers/activation', methods=['GET'])

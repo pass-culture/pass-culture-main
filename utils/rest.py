@@ -8,6 +8,7 @@ from sqlalchemy.exc import ProgrammingError
 from models.api_errors import ApiErrors
 from models.db import db
 from models.soft_deletable_mixin import SoftDeletableMixin
+from sqlalchemy import text
 from utils.human_ids import dehumanize, humanize
 from utils.string_processing import dashify
 
@@ -57,6 +58,8 @@ def add_table_if_missing(sql_identifier, modelClass):
 
 def query_with_order_by(query, order_by):
     if order_by:
+        if type(order_by) == str:
+            order_by = text(order_by)
         try:
             order_by = [order_by] if not isinstance(order_by, list)\
                        else order_by
