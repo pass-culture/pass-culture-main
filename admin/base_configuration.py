@@ -12,7 +12,6 @@ class BaseAdminView(ModelView):
     can_create = False
     can_edit = False
     can_delete = False
-    can_export = False
 
     def is_accessible(self):
         authorized = current_user.is_authenticated and current_user.isAdmin
