@@ -18,13 +18,13 @@ depends_on = None
 
 def upgrade():
     op.create_table(
-        'email_failed',
+        'email',
         sa.Column('id', sa.BigInteger, primary_key=True, autoincrement=True),
-        sa.Column('email', sa.JSON, nullable=False),
+        sa.Column('content', sa.JSON, nullable=False),
         sa.Column('status', sa.String(12), nullable=False),
         sa.Column('datetime', sa.DateTime, nullable=True, default=datetime.utcnow),
     )
 
 
 def downgrade():
-    op.drop_table('email_failed')
+    op.drop_table('email')

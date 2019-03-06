@@ -10,7 +10,7 @@ from connectors import api_entreprises
 from domain.user_activation import generate_set_password_url
 from models import Offer
 from models import RightsType, User
-from repository import email_failed_queries
+from repository import email_queries
 from repository.booking_queries import find_all_ongoing_bookings_by_stock
 from repository.features import feature_send_mail_to_users_enabled
 from repository.user_offerer_queries import find_user_offerer_email
@@ -34,9 +34,12 @@ class MailServiceException(Exception):
     pass
 
 
+def save_and_send(email_content: dict) -> bool:
+    email_queries.save(email_content)
+
 def check_email_was_sent_and_save_content(mail_result, email):
     if mail_result.status_code != 200:
-        email_failed_queries.save(email)
+        email_queries.save(email)
         return False
     return True
 

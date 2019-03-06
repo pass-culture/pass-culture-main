@@ -7,7 +7,7 @@ from freezegun import freeze_time
 from unittest.mock import MagicMock, patch, Mock
 
 from models import PcObject, Offerer, ThingType, EventType
-from models.email_failed import EmailFailed
+from models.email import Email
 from tests.conftest import clean_database, mocked_mail
 from tests.files.api_entreprise import MOCKED_SIREN_ENTREPRISES_API_RETURN
 from tests.test_utils import create_stock_with_event_offer, create_stock_with_thing_offer, \
@@ -24,7 +24,7 @@ from utils.mailing import make_user_booking_recap_email, \
     make_batch_cancellation_email, make_payment_transaction_email, make_user_validation_email, \
     make_payment_details_email, make_wallet_balances_email, make_payments_report_email, parse_email_addresses, \
     make_activation_notification_email, make_offer_creation_notification_email, \
-    check_email_was_sent_and_save_content
+    check_email_was_sent_and_save_content, save_and_send
 
 SUBJECT_USER_EVENT_BOOKING_CONFIRMATION_EMAIL = \
     'Confirmation de votre réservation pour Mains, sorts et papiers le 20 juillet 2019 à 14:00'
@@ -1373,7 +1373,7 @@ class EmailWasSentTest:
     @clean_database
     def when_mail_result_status_code_500_creates_entry_in_email_table(self, app):
         # given
-        email = {
+        content = {
             'FromEmail': 'test@email.fr',
             'FromName': 'Test From',
             'Subject': 'Test subject',
@@ -1384,21 +1384,21 @@ class EmailWasSentTest:
         mail_result.status_code = 500
 
         # when
-        is_successfully_sent = check_email_was_sent_and_save_content(mail_result, email)
+        is_successfully_sent = check_email_was_sent_and_save_content(mail_result, content)
 
         # then
-        emails_failed = EmailFailed.query.all()
+        emails = Email.query.all()
         assert not is_successfully_sent
-        assert len(emails_failed) == 1
-        email_failed = emails_failed[0]
-        assert email_failed.email == email
-        assert email_failed.status == 'ERROR'
-        assert email_failed.datetime == datetime(2019, 1, 1, 12, 0, 0)
+        assert len(emails) == 1
+        email = emails[0]
+        assert email.content == content
+        assert email.status == 'ERROR'
+        assert email.datetime == datetime(2019, 1, 1, 12, 0, 0)
 
     @clean_database
     def when_mail_result_status_code_200_does_not_create_entry_in_email_table(self, app):
         # given
-        email = {
+        content = {
             'FromEmail': 'test@email.fr',
             'FromName': 'Test From',
             'Subject': 'Test subject',
@@ -1409,12 +1409,38 @@ class EmailWasSentTest:
         mail_result.status_code = 200
 
         # when
-        is_successfully_sent = check_email_was_sent_and_save_content(mail_result, email)
+        is_successfully_sent = check_email_was_sent_and_save_content(mail_result, content)
 
         # then
-        emails_failed = EmailFailed.query.all()
+        emails = Email.query.all()
         assert is_successfully_sent
-        assert len(emails_failed) == 0
+        assert len(emails) == 0
+
+
+class SaveAndSendTest:
+    @mocked_mail
+    @freeze_time('2019-01-01 12:00:00')
+    def test_creates_an_entry_in_email_with_given_content(self, app):
+        # given
+        email_content = {
+            'FromEmail': 'test@email.fr',
+            'FromName': 'Test From',
+            'Subject': 'Test subject',
+            'Text-Part': 'Hello world',
+            'Html-part': '<html><body>Hello World</body></html>'
+        }
+        app.mailjet_client.send.create.status_code = 200
+
+        # when
+        save_and_send(email_content)
+
+        # then
+        emails = Email.query.all()
+        assert len(emails) == 1
+        email = emails[0]
+        assert email.content == email_content
+        assert email.status == 'SENT'
+        assert email.datetime == datetime(2019, 1, 1, 12, 0, 0)
 
 
 def remove_whitespaces(text):

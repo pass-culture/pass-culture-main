@@ -5,14 +5,14 @@ from models.db import Model
 from models.pc_object import PcObject
 
 
-class EmailFailed(PcObject,
-                  Model,
-                  ):
+class Email(PcObject,
+            Model,
+            ):
     id = Column(BigInteger,
                 primary_key=True,
                 autoincrement=True)
-    email = Column(JSON,
-                  nullable=False)
+    content = Column(JSON,
+                     nullable=False)
     status = Column(String(12),
                     nullable=False)
 

@@ -3,7 +3,7 @@ from models.bank_information import BankInformation
 from models.booking import Booking
 from models.deactivable_mixin import DeactivableMixin
 from models.deposit import Deposit
-from models.email_failed import EmailFailed
+from models.email import Email
 from models.event import Event
 from models.event_occurrence import EventOccurrence
 from models.extra_data_mixin import ExtraDataMixin
@@ -42,7 +42,7 @@ __all__ = (
     'PcObject',
     'DeactivableMixin',
     'Deposit',
-    'EmailFailed',
+    'Email',
     'EventType',
     'ExtraDataMixin',
     'HasAddressMixin',

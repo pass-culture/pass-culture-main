@@ -1,7 +1,7 @@
 import pytest
 
 from models import PcObject
-from repository.email_failed_queries import find_all_in_error
+from repository.email_queries import find_all_in_error
 from tests.conftest import clean_database
 from tests.test_utils import create_email_failed
 
