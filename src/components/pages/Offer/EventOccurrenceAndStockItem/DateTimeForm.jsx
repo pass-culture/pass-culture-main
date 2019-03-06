@@ -2,6 +2,7 @@ import React, { Component, Fragment } from 'react'
 import { NavLink } from 'react-router-dom'
 import get from 'lodash.get'
 import { Field, Form, SubmitButton } from 'pass-culture-shared'
+import PropTypes from 'prop-types'
 
 class DateTimeForm extends Component {
   handleEventOccurrenceSuccessData = (state, action) => {
@@ -99,6 +100,14 @@ class DateTimeForm extends Component {
       </Form>
     )
   }
+}
+
+DateTimeForm.defaultProps = {
+  eventOccurrences: [],
+}
+
+DateTimeForm.propTypes = {
+  eventOccurrences: PropTypes.array,
 }
 
 export default DateTimeForm

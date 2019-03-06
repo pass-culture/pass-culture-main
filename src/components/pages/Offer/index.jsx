@@ -11,6 +11,7 @@ import {
   showModal,
   SubmitButton,
 } from 'pass-culture-shared'
+
 import React, { Component, Fragment } from 'react'
 import { connect } from 'react-redux'
 import { NavLink, withRouter } from 'react-router-dom'

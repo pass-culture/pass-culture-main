@@ -5,6 +5,7 @@ import {
   Icon,
   SubmitButton,
 } from 'pass-culture-shared'
+
 import PropTypes from 'prop-types'
 import React, { Component, Fragment } from 'react'
 import { connect } from 'react-redux'
