@@ -1,21 +1,21 @@
 [submodule "api"]
 	path = api
-	url = git@github.com:betagouv/pass-culture-api.git
+	url = https://github.com/betagouv/pass-culture-api.git
 [submodule "doc"]
 	path = doc
-	url = git@github.com:betagouv/pass-culture-doc.git
+	url = https://github.com/betagouv/pass-culture-doc.git
 [submodule "shared"]
 	path = shared
-	url = git@github.com:betagouv/pass-culture-shared.git
+	url = https://github.com/betagouv/pass-culture-shared.git
 [submodule "pro"]
 	path = pro
-	url = git@github.com:betagouv/pass-culture-pro.git
+	url = https://github.com/betagouv/pass-culture-pro.git
 [submodule "pro-packed-staging"]
 	path = pro-packed-staging
-	url = git@github.com:betagouv/pass-culture-pro-staging.git
+	url = https://github.com/betagouv/pass-culture-pro-staging.git
 [submodule "webapp"]
 	path = webapp
-	url = git@github.com:betagouv/pass-culture-browser.git
+	url = https://github.com/betagouv/pass-culture-browser.git
 [submodule "webapp-packed-staging"]
 	path = webapp-packed-staging
-	url = git@github.com:betagouv/pass-culture-app-staging.git
+	url = https://github.com/betagouv/pass-culture-app-staging.git
