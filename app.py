@@ -19,7 +19,7 @@ from utils.mailing import get_contact, \
 
 app = Flask(__name__, static_url_path='/static')
 login_manager = LoginManager()
-admin = Admin(name='pc Admin', url='/pc/back-office/admin', template_mode='bootstrap3')
+admin = Admin(name='pc Back Office', url='/pc/back-office', template_mode='bootstrap3')
 
 app.secret_key = os.environ.get('FLASK_SECRET', '+%+3Q23!zbc+!Dd@')
 app.json_encoder = EnumJSONEncoder

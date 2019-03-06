@@ -3,7 +3,7 @@
 {% block body %}
     {% if current_user.is_authenticated and current_user.isAdmin %}
         <div class="alert alert-info" role="alert">
-            Bonjour <strong>{{ current_user.publicName }}</strong>, bienvenue dans l'interface d'administration du pass Culture !
+            Bonjour <strong>{{ current_user.publicName }}</strong>, bienvenue dans le back office du pass Culture !
         </div>
     {% else %}
         <div class="alert alert-danger" role="alert">
