@@ -36,6 +36,7 @@ python-keystoneclient==3.18.0
 python-swiftclient==3.6.0
 requests==2.20.1
 schwifty==2018.9.1
+SQLAlchemy==1.2.11
 simplejson==3.16.0
 wetransferpy==0.2.3
 xlrd==1.1.0
