@@ -838,7 +838,7 @@ class Put:
             now = datetime.utcnow()
             four_days_from_now = now + timedelta(days=4)
             eight_days_from_now = now + timedelta(days=8)
-            user = create_user(email='user1@user.fr', password='P@55w0rd')
+            user = create_user(email='user1@user.fr')
             offerer = create_offerer()
             venue = create_venue(offerer)
             PcObject.check_and_save(user)
@@ -855,7 +855,7 @@ class Put:
                 stock_thing = create_stock_with_thing_offer(offerer, venue, offer_thing, price=0)
                 PcObject.check_and_save(event_stock, stock_thing)
 
-            auth_request = TestClient().with_auth(user.email, user.clearTextPassword)
+            auth_request = TestClient().with_auth(user.email)
 
             # when
             recommendations1 = auth_request.put(RECOMMENDATION_URL, json={'seenRecommendationIds': []})

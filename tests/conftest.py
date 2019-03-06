@@ -11,7 +11,7 @@ from requests import Response
 
 from models.db import db
 from repository.clean_database import clean_all_database
-from tests.test_utils import BASE_PLAIN_PASSWORD
+from tests.test_utils import PLAIN_DEFAULT_TESTING_PASSWORD
 
 items_by_category = {'first': [], 'last': []}
 
@@ -76,7 +76,6 @@ def clean_database(f):
 class TestClient:
     WITH_DOC = False
     USER_TEST_ADMIN_EMAIL = "pctest.admin93.0@btmx.fr"
-    USER_TEST_ADMIN_PASSWORD = "pctest.Admin93.0"
     LOCAL_ORIGIN_HEADER = {'origin': 'http://localhost:3000'}
 
     def __init__(self):
@@ -87,9 +86,9 @@ class TestClient:
         self.session.headers = headers
 
         if email is None:
-            self.session.auth = (TestClient.USER_TEST_ADMIN_EMAIL, BASE_PLAIN_PASSWORD)
+            self.session.auth = (TestClient.USER_TEST_ADMIN_EMAIL, PLAIN_DEFAULT_TESTING_PASSWORD)
         else:
-            self.session.auth = (email, BASE_PLAIN_PASSWORD)
+            self.session.auth = (email, PLAIN_DEFAULT_TESTING_PASSWORD)
 
         return self
 

@@ -1,32 +1,31 @@
 """ recommendations """
 from collections import Counter
 from datetime import datetime
-from flask import current_app as app
 
-import pytest
 from dateutil.parser import parse as parse_date
 
+from models import PcObject
 from repository.clean_database import clean_all_database
 from sandboxes.scripts.save_sandbox import save_sandbox
-from tests.conftest import clean_database, TestClient
-from utils.config import BLOB_SIZE
+from tests.conftest import TestClient
 from tests.test_utils import API_URL, create_user
+from utils.config import BLOB_SIZE
 
 RECOMMENDATION_URL = API_URL + '/recommendations'
 
 savedCounts = {}
-
 
 class Put:
     class Returns200:
         def test_00_init(self, app):
             clean_all_database()
             save_sandbox("handmade", "true")
+            PcObject.check_and_save(create_user(email='put.reco@test.com'))
 
         def test_put_recommendations_returns_a_list_of_recos_starting_with_two_tutos(self, app):
             # when
             response = TestClient() \
-                .with_auth() \
+                .with_auth('put.reco@test.com') \
                 .put(RECOMMENDATION_URL, json={'seenRecommendationIds': []})
 
             # then
@@ -41,11 +40,11 @@ class Put:
 
         def test_put_recommendations_returns_no_duplicate_mediations_in_recos(self):
             # given
-            user = create_user(email='test@email.com', password='testpsswd')
+            user = create_user(email='test@email.com')
 
             # when
             response = TestClient() \
-                .with_auth() \
+                .with_auth('put.reco@test.com') \
                 .put(RECOMMENDATION_URL, json={'seenRecommendationIds': []})
 
             # then
@@ -55,7 +54,7 @@ class Put:
         def test_put_recommendations_returns_no_recos_with_mediations_with_stock_past_their_booking_limit(self):
             # when
             response = TestClient() \
-                .with_auth() \
+                .with_auth('put.reco@test.com') \
                 .put(RECOMMENDATION_URL, json={'seenRecommendationIds': []})
 
             # then
@@ -65,7 +64,7 @@ class Put:
         def test_put_recommendations_returns_recos_with_venues_in_93_if_event_is_not_national(self):
             # when
             response = TestClient() \
-                .with_auth() \
+                .with_auth('put.reco@test.com') \
                 .put(RECOMMENDATION_URL, json={'seenRecommendationIds': []})
 
             # then
@@ -75,7 +74,7 @@ class Put:
         def test_put_recommendations_returns_at_least_one_reco_with_mediation_and_offer(self):
             # when
             response = TestClient() \
-                .with_auth() \
+                .with_auth('put.reco@test.com') \
                 .put(RECOMMENDATION_URL, json={'seenRecommendationIds': []})
 
             # then
@@ -85,7 +84,7 @@ class Put:
         def test_put_recommendations_returns_no_tutos_once_they_are_marked_as_read(self):
             # given
             response = TestClient() \
-                .with_auth() \
+                .with_auth('put.reco@test.com') \
                 .put(RECOMMENDATION_URL, json={})
             recos_before = response.json()
             assert recos_before[0]['mediation']['tutoIndex'] == 0
@@ -94,13 +93,13 @@ class Put:
 
             # when
             response_patch = TestClient() \
-                .with_auth() \
+                .with_auth('put.reco@test.com') \
                 .patch(API_URL + '/recommendations/' + recos_before[0]['id'], json=payload)
 
             # then
             assert response_patch.status_code == 200
             response = TestClient() \
-                .with_auth() \
+                .with_auth('put.reco@test.com') \
                 .put(RECOMMENDATION_URL, json={})
             recos_after = response.json()
             assert recos_after[0]['mediation']['tutoIndex'] == 1
@@ -109,13 +108,13 @@ class Put:
         def test_put_recommendations_does_not_return_already_seen_recos(self):
             # given
             response = TestClient() \
-                .with_auth() \
+                .with_auth('put.reco@test.com') \
                 .put(RECOMMENDATION_URL, json={})
             seen_recommendations_ids = list(map(lambda x: x['id'], response.json()[:20]))
 
             # when
             response = TestClient() \
-                .with_auth() \
+                .with_auth('put.reco@test.com') \
                 .put(RECOMMENDATION_URL, json={'seenRecommendationIds': seen_recommendations_ids})
 
             # then
@@ -129,17 +128,18 @@ class Patch:
         def test_00_init(self, app):
             clean_all_database()
             save_sandbox("handmade", "true")
+            PcObject.check_and_save(create_user(email='patch.reco@test.com'))
 
         def test_patch_recommendations_returns_is_clicked_true(self):
             # given
             response = TestClient() \
-                .with_auth() \
+                .with_auth('patch.reco@test.com') \
                 .put(RECOMMENDATION_URL, json={})
             reco_id = response.json()[0]['id']
 
             # when
             r_update = TestClient() \
-                .with_auth() \
+                .with_auth('patch.reco@test.com') \
                 .patch(API_URL + '/recommendations/' + reco_id, json={'isClicked': True})
 
             # then

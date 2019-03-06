@@ -43,9 +43,9 @@ USER_TEST_ADMIN_EMAIL = "pctest.admin93.0@btmx.fr"
 USER_TEST_ADMIN_PASSWORD = "pctest.Admin93.0"
 API_URL = "http://localhost:5000"
 user = User()
-BASE_PLAIN_PASSWORD = 'AZERTY123'
-user.setPassword(BASE_PLAIN_PASSWORD)
-BASE_HASHED_PASSWORD = user.password
+PLAIN_DEFAULT_TESTING_PASSWORD = 'AZERTY123'
+user.setPassword(PLAIN_DEFAULT_TESTING_PASSWORD)
+HASHED_DEFAULT_TESTING_PASSWORD = user.password
 
 
 def req_with_auth(email=None, headers={'origin': 'http://localhost:3000'}):
@@ -53,9 +53,9 @@ def req_with_auth(email=None, headers={'origin': 'http://localhost:3000'}):
     request.headers = headers
 
     if email:
-        request.auth = (email, BASE_PLAIN_PASSWORD)
+        request.auth = (email, PLAIN_DEFAULT_TESTING_PASSWORD)
     else:
-        request.auth = (USER_TEST_ADMIN_EMAIL, BASE_PLAIN_PASSWORD)
+        request.auth = (USER_TEST_ADMIN_EMAIL, PLAIN_DEFAULT_TESTING_PASSWORD)
 
     return request
 
@@ -162,8 +162,8 @@ def create_user(public_name='John Doe', password=None, first_name='John', last_n
     if password:
         user.setPassword(password)
     else:
-        user.clearTextPassword = BASE_PLAIN_PASSWORD
-        user.password = BASE_HASHED_PASSWORD
+        user.clearTextPassword = PLAIN_DEFAULT_TESTING_PASSWORD
+        user.password = HASHED_DEFAULT_TESTING_PASSWORD
 
     user.isAdmin = is_admin
     user.resetPasswordToken = reset_password_token
