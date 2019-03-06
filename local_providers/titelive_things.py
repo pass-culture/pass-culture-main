@@ -1,7 +1,7 @@
 import re
 
 from connectors.ftp_titelive import get_files_to_process_from_titelive_ftp, get_titelive_ftp
-from domain.titelive import get_date_from_filename, read_date
+from domain.titelive import get_date_from_filename, read_things_date
 from models.local_provider import LocalProvider, ProvidableInfo
 from models.local_provider_event import LocalProviderEventType
 from models.thing import Thing, BookFormat
@@ -74,14 +74,14 @@ class TiteLiveThings(LocalProvider):
         providable_info = ProvidableInfo()
         providable_info.type = Thing
         providable_info.idAtProviders = self.infos['ean13']
-        providable_info.dateModifiedAtProvider = read_date(self.infos['date_updated'])
+        providable_info.dateModifiedAtProvider = read_things_date(self.infos['date_updated'])
         return providable_info
 
     def updateObject(self, thing):
         assert thing.idAtProviders == self.infos['ean13']
 
         thing.name = trim_with_elipsis(self.infos['titre'], 140)
-        thing.datePublished = read_date(self.infos['date_parution'])
+        thing.datePublished = read_things_date(self.infos['date_parution'])
         thing.type = self.thing_type
         thing.extraData = self.get_extraData_from_infos()
 

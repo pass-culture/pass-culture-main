@@ -4,6 +4,7 @@ import os
 from io import BytesIO
 from zipfile import ZipFile
 
+from domain.titelive import put_today_file_at_end_of_list
 from utils.logger import logger
 
 FTP_TITELIVE_URI = os.environ.get("FTP_TITELIVE_URI")

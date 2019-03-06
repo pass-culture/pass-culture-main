@@ -17,7 +17,6 @@ RECOMMENDATION_URL = API_URL + '/recommendations'
 savedCounts = {}
 
 
-@pytest.mark.standalone
 class Put:
     class Returns200:
         def test_00_init(self, app):
@@ -125,7 +124,6 @@ class Put:
             assert not intersection_between_seen_and_recommended
 
 
-@pytest.mark.standalone
 class Patch:
     class Returns200:
         def test_00_init(self, app):

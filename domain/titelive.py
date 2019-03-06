@@ -10,7 +10,7 @@ def read_description_date(date):
     return datetime.strptime(date, TITELIVE_DESCRIPTION_DATE_FORMAT)
 
 
-def read_date(date):
+def read_things_date(date):
     return datetime.strptime(date, TITELIVE_THINGS_DATE_FORMAT)
 
 
