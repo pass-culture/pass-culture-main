@@ -14,7 +14,7 @@ from repository.booking_queries import find_active_bookings_by_user_id, \
 find_all_bookings_for_stock_and_user
 from utils.human_ids import dehumanize, humanize
 from utils.includes import BOOKING_INCLUDES
-from utils.mailing import MailServiceException
+from utils.mailing import MailServiceException, save_and_send
 from utils.rest import ensure_current_user_has_rights, \
     expect_json_data
 from utils.token import random_token
@@ -91,11 +91,11 @@ def create_booking():
     booking_queries.save_booking(new_booking)
 
     try:
-        send_booking_recap_emails(new_booking, app.mailjet_client.send.create)
+        send_booking_recap_emails(new_booking, save_and_send)
     except MailServiceException as e:
         app.logger.error('Mail service failure', e)
     try:
-        send_booking_confirmation_email_to_user(new_booking, app.mailjet_client.send.create)
+        send_booking_confirmation_email_to_user(new_booking, save_and_send)
     except MailServiceException as e:
         app.logger.error('Mail service failure', e)
 
@@ -130,7 +130,7 @@ def patch_booking(booking_id):
 
     try:
         send_cancellation_emails_to_user_and_offerer(booking, is_offerer_cancellation, is_user_cancellation,
-                                                     app.mailjet_client.send.create)
+                                                     save_and_send)
     except MailServiceException as e:
         app.logger.error('Mail service failure', e)
 
@@ -173,7 +173,7 @@ def patch_booking_by_token(token):
 
     if check_is_activation_booking(booking):
         activate_user(booking.user)
-        send_activation_notification_email(booking.user, app.mailjet_client.send.create)
+        send_activation_notification_email(booking.user, save_and_send)
 
     PcObject.check_and_save(booking)
     return '', 204

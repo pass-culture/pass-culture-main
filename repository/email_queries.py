@@ -4,10 +4,10 @@ from models import PcObject
 from models.email import Email
 
 
-def save(content):
+def save(content, status):
     email = Email()
     email.content = content
-    email.status = 'ERROR'
+    email.status = status
     email.datetime = datetime.utcnow()
     PcObject.check_and_save(email)
 

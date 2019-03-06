@@ -15,7 +15,7 @@ from models.user_offerer import RightsType
 from models.venue import Venue
 from repository import stock_queries, booking_queries
 from utils.human_ids import dehumanize
-from utils.mailing import MailServiceException
+from utils.mailing import MailServiceException, save_and_send
 from utils.rest import ensure_current_user_has_rights, \
     expect_json_data, \
     handle_rest_get_list, \
@@ -127,8 +127,8 @@ def delete_stock(id):
     bookings = cancel_bookings(*bookings)
     if bookings:
         try:
-            send_batch_cancellation_emails_to_users(bookings, app.mailjet_client.send.create)
-            send_batch_cancellation_email_to_offerer(bookings, 'stock', app.mailjet_client.send.create)
+            send_batch_cancellation_emails_to_users(bookings, save_and_send)
+            send_batch_cancellation_email_to_offerer(bookings, 'stock', save_and_send)
         except MailServiceException as e:
             app.logger.error('Mail service failure', e)
 

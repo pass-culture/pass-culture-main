@@ -13,6 +13,7 @@ from repository import offer_queries
 from utils.config import PRO_URL
 from utils.human_ids import dehumanize
 from utils.includes import THING_INCLUDES
+from utils.mailing import save_and_send
 from utils.rest import expect_json_data, \
     ensure_current_user_has_rights, \
     load_or_404, \
@@ -56,7 +57,7 @@ def post_thing():
         thing.isNational = True
     offer.bookingEmail = request.json.get('bookingEmail', None)
     PcObject.check_and_save(thing, offer)
-    send_offer_creation_notification_to_support(offer, current_user, PRO_URL, app.mailjet_client.send.create)
+    send_offer_creation_notification_to_support(offer, current_user, PRO_URL, save_and_send)
 
     return jsonify(thing._asdict(
         include=THING_INCLUDES,

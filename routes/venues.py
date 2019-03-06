@@ -8,7 +8,7 @@ from models.user_offerer import RightsType
 from models.venue import Venue
 from repository.venue_queries import save_venue
 from utils.includes import VENUE_INCLUDES
-from utils.mailing import MailServiceException
+from utils.mailing import MailServiceException, save_and_send
 from utils.rest import ensure_current_user_has_rights, \
                        expect_json_data, \
                        load_or_404
@@ -38,7 +38,7 @@ def create_venue():
 
     if not venue.isValidated:
         try:
-            send_venue_validation_email(venue, app.mailjet_client.send.create)
+            send_venue_validation_email(venue, save_and_send)
         except MailServiceException as e:
             app.logger.error('Mail service failure', e)
 

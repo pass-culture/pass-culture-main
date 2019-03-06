@@ -14,7 +14,7 @@ from repository.stock_queries import find_online_activation_stock
 from repository.user_queries import find_user_by_email
 from scripts.interact import app
 from utils.logger import logger
-from utils.mailing import MailServiceException, parse_email_addresses
+from utils.mailing import MailServiceException, parse_email_addresses, save_and_send
 from utils.token import random_token
 
 LAST_NAME_COLUMN_INDEX = 1
@@ -119,7 +119,7 @@ def export_created_data(bookings: List[Booking]):
     csv = generate_activation_users_csv(users)
 
     try:
-        send_users_activation_report(csv, ACTIVATION_USER_RECIPIENTS, app.mailjet_client.send.create)
+        send_users_activation_report(csv, ACTIVATION_USER_RECIPIENTS, save_and_send)
     except MailServiceException as e:
         logger.error('Error while sending activation users report email to MailJet', e)
 

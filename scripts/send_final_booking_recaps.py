@@ -5,6 +5,7 @@ from flask import current_app as app
 
 from domain.user_emails import send_final_booking_recap_email
 from repository.stock_queries import find_stocks_of_finished_events_when_no_recap_sent
+from utils.mailing import save_and_send
 
 
 def send_final_booking_recaps():
@@ -19,4 +20,4 @@ def send_final_booking_recaps():
 def do_send_final_booking_recaps():
     for stock in find_stocks_of_finished_events_when_no_recap_sent():
         print('Sending booking recap for ' + str(stock))
-        send_final_booking_recap_email(stock, app.mailjet_client.send.create)
+        send_final_booking_recap_email(stock, save_and_send)

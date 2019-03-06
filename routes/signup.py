@@ -14,7 +14,7 @@ from utils.config import IS_INTEGRATION
 from utils.includes import USER_INCLUDES
 from utils.login_manager import stamp_session
 from utils.mailing import \
-    subscribe_newsletter, MailServiceException
+    subscribe_newsletter, MailServiceException, save_and_send
 from validation.users import check_valid_signup
 
 
@@ -59,7 +59,7 @@ def signup():
 
     if do_pro_signup:
         try:
-            maybe_send_offerer_validation_email(offerer, user_offerer, app.mailjet_client.send.create)
+            maybe_send_offerer_validation_email(offerer, user_offerer, save_and_send)
         except MailServiceException as e:
             app.logger.error('Mail service failure', e)
 
@@ -95,7 +95,7 @@ def signup_webapp():
 
     PcObject.check_and_save(*objects_to_save)
     try:
-        send_user_validation_email(new_user, app.mailjet_client.send.create, app_origin_url, is_webapp=True)
+        send_user_validation_email(new_user, save_and_send, app_origin_url, is_webapp=True)
     except MailServiceException as e:
         app.logger.error('Mail service failure', e)
 
@@ -134,7 +134,7 @@ def signup_pro():
     PcObject.check_and_save(*objects_to_save)
 
     try:
-        send_user_validation_email(new_user, app.mailjet_client.send.create, app_origin_url, is_webapp=False)
+        send_user_validation_email(new_user, save_and_send, app_origin_url, is_webapp=False)
         subscribe_newsletter(new_user)
     except MailServiceException as e:
         app.logger.error('Mail service failure', e)

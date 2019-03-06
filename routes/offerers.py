@@ -13,7 +13,7 @@ from repository.user_offerer_queries import filter_query_where_user_is_user_offe
                                             filter_query_where_user_is_user_offerer_and_is_validated
 from utils.human_ids import dehumanize
 from utils.includes import PRO_BOOKING_INCLUDES, OFFERER_INCLUDES, NOT_VALIDATED_OFFERER_INCLUDES
-from utils.mailing import MailServiceException
+from utils.mailing import MailServiceException, save_and_send
 from utils.rest import ensure_current_user_has_rights, \
     expect_json_data, \
     handle_rest_get_list, \
@@ -101,7 +101,7 @@ def create_offerer():
                                            RightsType.admin)
         PcObject.check_and_save(offerer, user_offerer)
         try:
-            maybe_send_offerer_validation_email(offerer, user_offerer, app.mailjet_client.send.create)
+            maybe_send_offerer_validation_email(offerer, user_offerer, save_and_send)
         except MailServiceException as e:
             app.logger.error('Mail service failure', e)
     return jsonify(get_dict_offerer(offerer)), 201

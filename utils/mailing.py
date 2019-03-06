@@ -34,14 +34,12 @@ class MailServiceException(Exception):
     pass
 
 
-def save_and_send(email_content: dict) -> bool:
-    email_queries.save(email_content)
-
-def check_email_was_sent_and_save_content(mail_result, email):
-    if mail_result.status_code != 200:
-        email_queries.save(email)
-        return False
-    return True
+def save_and_send(data: dict) -> bool:
+    response = app.mailjet_client.send.create(data=data)
+    successfully_sent_email = response.status_code == 200
+    status = 'SENT' if successfully_sent_email else 'ERROR'
+    email_queries.save(data, status)
+    return successfully_sent_email
 
 
 def make_batch_cancellation_email(bookings, cancellation_case):

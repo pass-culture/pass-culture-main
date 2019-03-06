@@ -20,7 +20,7 @@ from repository import payment_queries
 from repository.booking_queries import find_final_offerer_bookings
 from repository.user_queries import get_all_users_wallet_balances
 from utils.logger import logger
-from utils.mailing import MailServiceException, parse_email_addresses
+from utils.mailing import MailServiceException, parse_email_addresses, save_and_send
 
 PASS_CULTURE_IBAN = os.environ.get('PASS_CULTURE_IBAN', None)
 PASS_CULTURE_BIC = os.environ.get('PASS_CULTURE_BIC', None)
@@ -119,7 +119,7 @@ def send_transactions(payments: List[Payment], pass_culture_iban: str, pass_cult
         )
         logger.info('[BATCH][PAYMENTS] Recipients of email : %s' % recipients)
 
-        successfully_sent_payments = send_payment_transaction_email(xml_file, checksum, recipients, app.mailjet_client.send.create)
+        successfully_sent_payments = send_payment_transaction_email(xml_file, checksum, recipients, save_and_send)
         if successfully_sent_payments:
             for payment in payments:
                 payment.setStatus(TransactionStatus.SENT)
@@ -140,7 +140,7 @@ def send_payments_details(payments: List[Payment], recipients: List[str]) -> Non
         logger.info('[BATCH][PAYMENTS] Sending %s details of %s payments' % (len(details), len(payments)))
         logger.info('[BATCH][PAYMENTS] Recipients of email : %s' % recipients)
         try:
-            send_payment_details_email(csv, recipients, app.mailjet_client.send.create)
+            send_payment_details_email(csv, recipients, save_and_send)
         except MailServiceException as e:
             logger.error('[BATCH][PAYMENTS] Error while sending payment details email to MailJet', e)
 
@@ -154,7 +154,7 @@ def send_wallet_balances(recipients: List[str]) -> None:
         logger.info('[BATCH][PAYMENTS] Sending %s wallet balances' % len(balances))
         logger.info('[BATCH][PAYMENTS] Recipients of email : %s' % recipients)
         try:
-            send_wallet_balances_email(csv, recipients, app.mailjet_client.send.create)
+            send_wallet_balances_email(csv, recipients, save_and_send)
         except MailServiceException as e:
             logger.error('[BATCH][PAYMENTS] Error while sending users wallet balances email to MailJet', e)
 
@@ -178,7 +178,7 @@ def send_payments_report(payments: List[Payment], recipients: List[str]) -> None
 
         try:
             send_payments_report_emails(not_processable_csv, error_csv, groups, recipients,
-                                        app.mailjet_client.send.create)
+                                        save_and_send)
         except MailServiceException as e:
             logger.error('[BATCH][PAYMENTS] Error while sending payments reports to MailJet', e)
     else:
