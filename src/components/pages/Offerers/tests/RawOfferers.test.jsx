@@ -3,11 +3,16 @@ import { shallow } from 'enzyme'
 
 import RawOfferers from '../RawOfferers'
 
+const dispatchMock = jest.fn()
+const parseMock = () => ({ 'mots-cles': null })
+const queryChangeMock = jest.fn()
+
 describe('src | components | pages | RawOfferers', () => {
   describe('snapshot', () => {
     it('should match snapshot', () => {
       // given
       const props = {
+        dispatch: dispatchMock,
         offerers: [{}],
         pendingOfferers: [],
         pagination: {
@@ -15,6 +20,14 @@ describe('src | components | pages | RawOfferers', () => {
             keywords: null,
           },
         },
+        query: {
+          change: queryChangeMock,
+          parse: parseMock,
+        },
+        location: {
+          search: '',
+        },
+        user: {},
       }
 
       // when
@@ -31,6 +44,7 @@ describe('src | components | pages | RawOfferers', () => {
       it('should display Votre structure when one offerer', () => {
         // given
         const props = {
+          dispatch: dispatchMock,
           offerers: [{}],
           pendingOfferers: [],
           pagination: {
@@ -38,6 +52,14 @@ describe('src | components | pages | RawOfferers', () => {
               keywords: null,
             },
           },
+          query: {
+            change: queryChangeMock,
+            parse: parseMock,
+          },
+          location: {
+            search: '',
+          },
+          user: {},
         }
 
         // when
@@ -51,6 +73,7 @@ describe('src | components | pages | RawOfferers', () => {
       it('should display Vos structures when many offerers', () => {
         // given
         const props = {
+          dispatch: dispatchMock,
           offerers: [{}, {}],
           pendingOfferers: [],
           pagination: {
@@ -58,6 +81,14 @@ describe('src | components | pages | RawOfferers', () => {
               keywords: null,
             },
           },
+          query: {
+            change: queryChangeMock,
+            parse: parseMock,
+          },
+          location: {
+            search: '',
+          },
+          user: {},
         }
 
         // when

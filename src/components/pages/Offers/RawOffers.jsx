@@ -104,7 +104,6 @@ class RawOffers extends Component {
   render() {
     const { offers, offerer, pagination, query, venue, user } = this.props
     const { lieu, search, orderBy, structure } = query.parse() || {}
-
     const { hasMore, isLoading } = this.state
 
     let createOfferTo = `/offres/nouveau`

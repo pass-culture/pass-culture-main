@@ -120,6 +120,7 @@ class RawOfferers extends Component {
     const initialValues = {
       keywords: queryParams[mapApiToBrowser.keywords],
     }
+    // a besoin de keywords
 
     return (
       <Main name="offerers">

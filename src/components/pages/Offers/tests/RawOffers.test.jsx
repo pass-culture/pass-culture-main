@@ -278,7 +278,7 @@ describe('src | components | pages | Offers | RawOffers', () => {
           // when
           wrapper.instance().onSubmit(event)
           const expected = {
-            keywords: 'AnyWord',
+            'mots-cles': 'AnyWord',
             page: null,
           }
 
@@ -305,7 +305,7 @@ describe('src | components | pages | Offers | RawOffers', () => {
           // when
           wrapper.instance().onSubmit(eventEmptyWord)
           const expected = {
-            keywords: null,
+            'mots-cles': null,
             page: null,
           }
 
