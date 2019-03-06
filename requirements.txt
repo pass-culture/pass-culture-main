@@ -38,6 +38,7 @@ PyMemoize==1.0.3
 python-keystoneclient==3.18.0
 python-swiftclient==3.6.0
 requests==2.20.1
+sqlalchemy==1.2.11
 schwifty==2018.9.1
 SQLAlchemy==1.2.11
 simplejson==3.16.0

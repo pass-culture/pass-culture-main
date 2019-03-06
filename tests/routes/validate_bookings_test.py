@@ -19,7 +19,7 @@ class Patch:
         def when_user_has_rights(self, app):
             # Given
             user = create_user()
-            admin_user = create_user(email='admin@email.fr', password='P@55w0rd')
+            admin_user = create_user(email='admin@email.fr')
             offerer = create_offerer()
             user_offerer = create_user_offerer(admin_user, offerer)
             venue = create_venue(offerer)
@@ -29,7 +29,7 @@ class Patch:
             url = API_URL + '/bookings/token/{}'.format(booking.token)
 
             # When
-            response = TestClient().with_auth('admin@email.fr', 'P@55w0rd').patch(url)
+            response = TestClient().with_auth('admin@email.fr').patch(url)
 
             # Then
             assert response.status_code == 204
@@ -40,7 +40,7 @@ class Patch:
         def when_header_is_not_standard_but_request_is_valid(self, app):
             # Given
             user = create_user()
-            admin_user = create_user(email='admin@email.fr', password='P@55w0rd')
+            admin_user = create_user(email='admin@email.fr')
             offerer = create_offerer()
             user_offerer = create_user_offerer(admin_user, offerer)
             venue = create_venue(offerer)
@@ -50,7 +50,7 @@ class Patch:
             url = API_URL + '/bookings/token/{}'.format(booking.token)
 
             # When
-            response = TestClient().with_auth('admin@email.fr', 'P@55w0rd',
+            response = TestClient().with_auth('admin@email.fr',
                                               headers={'origin': 'http://random_header.fr'}).patch(url)
 
             # Then
@@ -62,7 +62,7 @@ class Patch:
         def when_booking_user_email_has_special_character_url_encoded(self, app):
             # Given
             user = create_user(email='user+plus@email.fr')
-            user_admin = create_user(email='admin@email.fr', password='P@55w0rd')
+            user_admin = create_user(email='admin@email.fr')
             offerer = create_offerer()
             user_offerer = create_user_offerer(user_admin, offerer, is_admin=True)
             venue = create_venue(offerer)
@@ -76,7 +76,7 @@ class Patch:
             url = API_URL + '/bookings/token/{}?{}'.format(booking.token, url_email)
 
             # When
-            response = TestClient().with_auth('admin@email.fr', 'P@55w0rd').patch(url)
+            response = TestClient().with_auth('admin@email.fr').patch(url)
             # Then
             assert response.status_code == 204
 
@@ -84,7 +84,7 @@ class Patch:
         def when_user_patching_is_global_admin_is_activation_event_and_no_deposit_for_booking_user(self, app):
             # Given
             user = create_user(is_admin=False, can_book_free_offers=False)
-            pro_user = create_user(email='pro@email.fr', password='P@55w0rd', is_admin=True, can_book_free_offers=False)
+            pro_user = create_user(email='pro@email.fr', is_admin=True, can_book_free_offers=False)
             offerer = create_offerer()
             user_offerer = create_user_offerer(pro_user, offerer)
             venue = create_venue(offerer)
@@ -96,7 +96,7 @@ class Patch:
             url = API_URL + '/bookings/token/{}'.format(booking.token)
 
             # When
-            response = TestClient().with_auth('pro@email.fr', 'P@55w0rd').patch(url)
+            response = TestClient().with_auth('pro@email.fr').patch(url)
 
             # Then
             db.session.refresh(user)
@@ -111,7 +111,7 @@ class Patch:
         def when_user_patching_is_global_admin_is_activation_thing_and_no_deposit_for_booking_user(self, app):
             # Given
             user = create_user(is_admin=False, can_book_free_offers=False)
-            pro_user = create_user(email='pro@email.fr', password='P@55w0rd', is_admin=True, can_book_free_offers=False)
+            pro_user = create_user(email='pro@email.fr', is_admin=True, can_book_free_offers=False)
             offerer = create_offerer()
             user_offerer = create_user_offerer(pro_user, offerer)
             venue = create_venue(offerer)
@@ -123,7 +123,7 @@ class Patch:
             url = API_URL + '/bookings/token/{}'.format(booking.token)
 
             # When
-            response = TestClient().with_auth('pro@email.fr', 'P@55w0rd').patch(url)
+            response = TestClient().with_auth('pro@email.fr').patch(url)
 
             # Then
             db.session.refresh(user)
@@ -139,7 +139,7 @@ class Patch:
         def when_user_not_editor_and_valid_email(self, app):
             # Given
             user = create_user()
-            admin_user = create_user(email='admin@email.fr', password='P@55w0rd')
+            admin_user = create_user(email='admin@email.fr')
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue, price=0)
@@ -148,7 +148,7 @@ class Patch:
             url = API_URL + '/bookings/token/{}?email={}'.format(booking.token, user.email)
 
             # When
-            response = TestClient().with_auth('admin@email.fr', 'P@55w0rd').patch(url)
+            response = TestClient().with_auth('admin@email.fr').patch(url)
 
             # Then
             assert response.status_code == 403
@@ -160,7 +160,7 @@ class Patch:
         def when_it_is_an_offer_on_an_activation_event_and_user_patching_is_not_global_admin(self, app):
             # Given
             user = create_user()
-            pro_user = create_user(email='pro@email.fr', password='P@55w0rd', is_admin=False)
+            pro_user = create_user(email='pro@email.fr', is_admin=False)
             offerer = create_offerer()
             user_offerer = create_user_offerer(pro_user, offerer)
             venue = create_venue(offerer)
@@ -172,7 +172,7 @@ class Patch:
             url = API_URL + '/bookings/token/{}'.format(booking.token)
 
             # When
-            response = TestClient().with_auth('pro@email.fr', 'P@55w0rd').patch(url)
+            response = TestClient().with_auth('pro@email.fr').patch(url)
 
             # Then
             assert response.status_code == 403
@@ -182,7 +182,7 @@ class Patch:
         def when_user_not_editor_and_invalid_email(self, app):
             # Given
             user = create_user()
-            admin_user = create_user(email='admin@email.fr', password='P@55w0rd')
+            admin_user = create_user(email='admin@email.fr')
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue, price=0)
@@ -191,7 +191,7 @@ class Patch:
             url = API_URL + '/bookings/token/{}?email={}'.format(booking.token, 'wrong@email.fr')
 
             # When
-            response = TestClient().with_auth('admin@email.fr', 'P@55w0rd').patch(url)
+            response = TestClient().with_auth('admin@email.fr').patch(url)
 
             # Then
             assert response.status_code == 404
@@ -202,7 +202,7 @@ class Patch:
         def when_booking_user_email_with_special_character_not_url_encoded(self, app):
             # Given
             user = create_user(email='user+plus@email.fr')
-            user_admin = create_user(email='admin@email.fr', password='P@55w0rd')
+            user_admin = create_user(email='admin@email.fr')
             offerer = create_offerer()
             user_offerer = create_user_offerer(user_admin, offerer, is_admin=True)
             venue = create_venue(offerer)
@@ -215,7 +215,7 @@ class Patch:
             url = API_URL + '/bookings/token/{}?email={}'.format(booking.token, user.email)
 
             # When
-            response = TestClient().with_auth('admin@email.fr', 'P@55w0rd').patch(url)
+            response = TestClient().with_auth('admin@email.fr').patch(url)
             # Then
             assert response.status_code == 404
 
@@ -223,7 +223,7 @@ class Patch:
         def when_user_not_editor_and_valid_email_but_invalid_offer_id(self, app):
             # Given
             user = create_user()
-            admin_user = create_user(email='admin@email.fr', password='P@55w0rd')
+            admin_user = create_user(email='admin@email.fr')
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue, price=0)
@@ -232,7 +232,7 @@ class Patch:
             url = API_URL + '/bookings/token/{}?email={}&offer_id={}'.format(booking.token, user.email, humanize(123))
 
             # When
-            response = TestClient().with_auth('admin@email.fr', 'P@55w0rd').patch(url)
+            response = TestClient().with_auth('admin@email.fr').patch(url)
 
             # Then
             assert response.status_code == 404
@@ -246,7 +246,7 @@ class Patch:
                 app):
             # Given
             user = create_user(is_admin=False, can_book_free_offers=False)
-            pro_user = create_user(email='pro@email.fr', password='P@55w0rd', is_admin=True, can_book_free_offers=False)
+            pro_user = create_user(email='pro@email.fr', is_admin=True, can_book_free_offers=False)
             offerer = create_offerer()
             user_offerer = create_user_offerer(pro_user, offerer)
             venue = create_venue(offerer)
@@ -259,7 +259,7 @@ class Patch:
             url = API_URL + '/bookings/token/{}'.format(booking.token)
 
             # When
-            response = TestClient().with_auth('pro@email.fr', 'P@55w0rd').patch(url)
+            response = TestClient().with_auth('pro@email.fr').patch(url)
 
             # Then
             deposits_for_user = Deposit.query.filter_by(userId=user.id).all()
@@ -272,7 +272,7 @@ class Patch:
         def when_booking_is_cancelled(self, app):
             # Given
             user = create_user()
-            admin_user = create_user(email='admin@email.fr', password='P@55w0rd')
+            admin_user = create_user(email='admin@email.fr')
             offerer = create_offerer()
             user_offerer = create_user_offerer(admin_user, offerer)
             venue = create_venue(offerer)
@@ -283,7 +283,7 @@ class Patch:
             url = API_URL + '/bookings/token/{}'.format(booking.token)
 
             # When
-            response = TestClient().with_auth('admin@email.fr', 'P@55w0rd').patch(url)
+            response = TestClient().with_auth('admin@email.fr').patch(url)
 
             # Then
             assert response.status_code == 410
@@ -295,7 +295,7 @@ class Patch:
         def when_booking_already_validated(self, app):
             # Given
             user = create_user()
-            admin_user = create_user(email='admin@email.fr', password='P@55w0rd')
+            admin_user = create_user(email='admin@email.fr')
             offerer = create_offerer()
             user_offerer = create_user_offerer(admin_user, offerer)
             venue = create_venue(offerer)
@@ -306,7 +306,7 @@ class Patch:
             url = API_URL + '/bookings/token/{}'.format(booking.token)
 
             # When
-            response = TestClient().with_auth('admin@email.fr', 'P@55w0rd').patch(url)
+            response = TestClient().with_auth('admin@email.fr').patch(url)
 
             # Then
             assert response.status_code == 410
