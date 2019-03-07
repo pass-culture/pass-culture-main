@@ -370,7 +370,7 @@ ShallowWrapper {
         <Header
           title="Recherche"
         />,
-        undefined,
+        false,
         <button
           className="pc-text-button is-absolute fs16"
           id="search-close-button"
@@ -420,7 +420,7 @@ ShallowWrapper {
         "rendered": null,
         "type": [Function],
       },
-      undefined,
+      false,
       Object {
         "instance": null,
         "key": undefined,
@@ -517,7 +517,7 @@ ShallowWrapper {
           <Header
             title="Recherche"
           />,
-          undefined,
+          false,
           <button
             className="pc-text-button is-absolute fs16"
             id="search-close-button"
@@ -567,7 +567,7 @@ ShallowWrapper {
           "rendered": null,
           "type": [Function],
         },
-        undefined,
+        false,
         Object {
           "instance": null,
           "key": undefined,

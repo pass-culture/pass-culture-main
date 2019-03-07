@@ -147,14 +147,18 @@ ShallowWrapper {
     "key": undefined,
     "nodeType": "host",
     "props": Object {
-      "children": Array [
+      "children": <div
+        className="to-details"
+        onClick={[Function]}
+        onKeyPress={[Function]}
+        role="button"
+        tabIndex={0}
+      >
         <hr
           className="dotted-top-primary"
-        />,
-        <Link
+        />
+        <div
           className="flex-columns"
-          replace={false}
-          to="/recherche/Applaudir/item/X9"
         >
           <div
             className="image flex-0 dotted-right-primary flex-rows flex-center"
@@ -198,250 +202,12 @@ ShallowWrapper {
               title=""
             />
           </div>
-        </Link>,
-      ],
+        </div>
+      </div>,
       "className": "recommendation-list-item",
     },
     "ref": null,
-    "rendered": Array [
-      Object {
-        "instance": null,
-        "key": undefined,
-        "nodeType": "host",
-        "props": Object {
-          "className": "dotted-top-primary",
-        },
-        "ref": null,
-        "rendered": null,
-        "type": "hr",
-      },
-      Object {
-        "instance": null,
-        "key": undefined,
-        "nodeType": "class",
-        "props": Object {
-          "children": Array [
-            <div
-              className="image flex-0 dotted-right-primary flex-rows flex-center"
-            >
-              <img
-                alt=""
-                src="http://localhost/storage/thumbs/things/QE"
-              />
-            </div>,
-            <div
-              className="m18 flex-1"
-            >
-              <React.Fragment>
-                <h5
-                  className="fs18 is-bold"
-                  title="sur la route des migrants ; rencontres à Calais"
-                >
-                  <Dotdotdot
-                    clamp="2"
-                    tagName="div"
-                    truncationChar="…"
-                    useNativeClamp={true}
-                  >
-                    sur la route des migrants ; rencontres à Calais
-                  </Dotdotdot>
-                </h5>
-                <span
-                  className="fs13"
-                  id="recommendation-date"
-                >
-                  permanent
-                </span>
-              </React.Fragment>
-            </div>,
-            <div
-              className="flex-center items-center is-primary-text"
-            >
-              <span
-                aria-hidden={true}
-                className="icon-legacy-next"
-                title=""
-              />
-            </div>,
-          ],
-          "className": "flex-columns",
-          "replace": false,
-          "to": "/recherche/Applaudir/item/X9",
-        },
-        "ref": null,
-        "rendered": Array [
-          Object {
-            "instance": null,
-            "key": undefined,
-            "nodeType": "host",
-            "props": Object {
-              "children": <img
-                alt=""
-                src="http://localhost/storage/thumbs/things/QE"
-              />,
-              "className": "image flex-0 dotted-right-primary flex-rows flex-center",
-            },
-            "ref": null,
-            "rendered": Object {
-              "instance": null,
-              "key": undefined,
-              "nodeType": "host",
-              "props": Object {
-                "alt": "",
-                "src": "http://localhost/storage/thumbs/things/QE",
-              },
-              "ref": null,
-              "rendered": null,
-              "type": "img",
-            },
-            "type": "div",
-          },
-          Object {
-            "instance": null,
-            "key": undefined,
-            "nodeType": "host",
-            "props": Object {
-              "children": <React.Fragment>
-                <h5
-                  className="fs18 is-bold"
-                  title="sur la route des migrants ; rencontres à Calais"
-                >
-                  <Dotdotdot
-                    clamp="2"
-                    tagName="div"
-                    truncationChar="…"
-                    useNativeClamp={true}
-                  >
-                    sur la route des migrants ; rencontres à Calais
-                  </Dotdotdot>
-                </h5>
-                <span
-                  className="fs13"
-                  id="recommendation-date"
-                >
-                  permanent
-                </span>
-              </React.Fragment>,
-              "className": "m18 flex-1",
-            },
-            "ref": null,
-            "rendered": Object {
-              "instance": null,
-              "key": undefined,
-              "nodeType": "function",
-              "props": Object {
-                "children": Array [
-                  <h5
-                    className="fs18 is-bold"
-                    title="sur la route des migrants ; rencontres à Calais"
-                  >
-                    <Dotdotdot
-                      clamp="2"
-                      tagName="div"
-                      truncationChar="…"
-                      useNativeClamp={true}
-                    >
-                      sur la route des migrants ; rencontres à Calais
-                    </Dotdotdot>
-                  </h5>,
-                  <span
-                    className="fs13"
-                    id="recommendation-date"
-                  >
-                    permanent
-                  </span>,
-                ],
-              },
-              "ref": null,
-              "rendered": Array [
-                Object {
-                  "instance": null,
-                  "key": undefined,
-                  "nodeType": "host",
-                  "props": Object {
-                    "children": <Dotdotdot
-                      clamp="2"
-                      tagName="div"
-                      truncationChar="…"
-                      useNativeClamp={true}
-                    >
-                      sur la route des migrants ; rencontres à Calais
-                    </Dotdotdot>,
-                    "className": "fs18 is-bold",
-                    "title": "sur la route des migrants ; rencontres à Calais",
-                  },
-                  "ref": null,
-                  "rendered": Object {
-                    "instance": null,
-                    "key": undefined,
-                    "nodeType": "class",
-                    "props": Object {
-                      "children": "sur la route des migrants ; rencontres à Calais",
-                      "clamp": "2",
-                      "tagName": "div",
-                      "truncationChar": "…",
-                      "useNativeClamp": true,
-                    },
-                    "ref": null,
-                    "rendered": "sur la route des migrants ; rencontres à Calais",
-                    "type": [Function],
-                  },
-                  "type": "h5",
-                },
-                Object {
-                  "instance": null,
-                  "key": undefined,
-                  "nodeType": "host",
-                  "props": Object {
-                    "children": "permanent",
-                    "className": "fs13",
-                    "id": "recommendation-date",
-                  },
-                  "ref": null,
-                  "rendered": "permanent",
-                  "type": "span",
-                },
-              ],
-              "type": Symbol(react.fragment),
-            },
-            "type": "div",
-          },
-          Object {
-            "instance": null,
-            "key": undefined,
-            "nodeType": "host",
-            "props": Object {
-              "children": <span
-                aria-hidden={true}
-                className="icon-legacy-next"
-                title=""
-              />,
-              "className": "flex-center items-center is-primary-text",
-            },
-            "ref": null,
-            "rendered": Object {
-              "instance": null,
-              "key": undefined,
-              "nodeType": "host",
-              "props": Object {
-                "aria-hidden": true,
-                "className": "icon-legacy-next",
-                "title": "",
-              },
-              "ref": null,
-              "rendered": null,
-              "type": "span",
-            },
-            "type": "div",
-          },
-        ],
-        "type": [Function],
-      },
-    ],
-    "type": "li",
-  },
-  Symbol(enzyme.__nodes__): Array [
-    Object {
+    "rendered": Object {
       "instance": null,
       "key": undefined,
       "nodeType": "host",
@@ -450,10 +216,8 @@ ShallowWrapper {
           <hr
             className="dotted-top-primary"
           />,
-          <Link
+          <div
             className="flex-columns"
-            replace={false}
-            to="/recherche/Applaudir/item/X9"
           >
             <div
               className="image flex-0 dotted-right-primary flex-rows flex-center"
@@ -497,9 +261,13 @@ ShallowWrapper {
                 title=""
               />
             </div>
-          </Link>,
+          </div>,
         ],
-        "className": "recommendation-list-item",
+        "className": "to-details",
+        "onClick": [Function],
+        "onKeyPress": [Function],
+        "role": "button",
+        "tabIndex": 0,
       },
       "ref": null,
       "rendered": Array [
@@ -517,7 +285,7 @@ ShallowWrapper {
         Object {
           "instance": null,
           "key": undefined,
-          "nodeType": "class",
+          "nodeType": "host",
           "props": Object {
             "children": Array [
               <div
@@ -564,8 +332,6 @@ ShallowWrapper {
               </div>,
             ],
             "className": "flex-columns",
-            "replace": false,
-            "to": "/recherche/Applaudir/item/X9",
           },
           "ref": null,
           "rendered": Array [
@@ -734,9 +500,377 @@ ShallowWrapper {
               "type": "div",
             },
           ],
-          "type": [Function],
+          "type": "div",
         },
       ],
+      "type": "div",
+    },
+    "type": "li",
+  },
+  Symbol(enzyme.__nodes__): Array [
+    Object {
+      "instance": null,
+      "key": undefined,
+      "nodeType": "host",
+      "props": Object {
+        "children": <div
+          className="to-details"
+          onClick={[Function]}
+          onKeyPress={[Function]}
+          role="button"
+          tabIndex={0}
+        >
+          <hr
+            className="dotted-top-primary"
+          />
+          <div
+            className="flex-columns"
+          >
+            <div
+              className="image flex-0 dotted-right-primary flex-rows flex-center"
+            >
+              <img
+                alt=""
+                src="http://localhost/storage/thumbs/things/QE"
+              />
+            </div>
+            <div
+              className="m18 flex-1"
+            >
+              <React.Fragment>
+                <h5
+                  className="fs18 is-bold"
+                  title="sur la route des migrants ; rencontres à Calais"
+                >
+                  <Dotdotdot
+                    clamp="2"
+                    tagName="div"
+                    truncationChar="…"
+                    useNativeClamp={true}
+                  >
+                    sur la route des migrants ; rencontres à Calais
+                  </Dotdotdot>
+                </h5>
+                <span
+                  className="fs13"
+                  id="recommendation-date"
+                >
+                  permanent
+                </span>
+              </React.Fragment>
+            </div>
+            <div
+              className="flex-center items-center is-primary-text"
+            >
+              <span
+                aria-hidden={true}
+                className="icon-legacy-next"
+                title=""
+              />
+            </div>
+          </div>
+        </div>,
+        "className": "recommendation-list-item",
+      },
+      "ref": null,
+      "rendered": Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": Array [
+            <hr
+              className="dotted-top-primary"
+            />,
+            <div
+              className="flex-columns"
+            >
+              <div
+                className="image flex-0 dotted-right-primary flex-rows flex-center"
+              >
+                <img
+                  alt=""
+                  src="http://localhost/storage/thumbs/things/QE"
+                />
+              </div>
+              <div
+                className="m18 flex-1"
+              >
+                <React.Fragment>
+                  <h5
+                    className="fs18 is-bold"
+                    title="sur la route des migrants ; rencontres à Calais"
+                  >
+                    <Dotdotdot
+                      clamp="2"
+                      tagName="div"
+                      truncationChar="…"
+                      useNativeClamp={true}
+                    >
+                      sur la route des migrants ; rencontres à Calais
+                    </Dotdotdot>
+                  </h5>
+                  <span
+                    className="fs13"
+                    id="recommendation-date"
+                  >
+                    permanent
+                  </span>
+                </React.Fragment>
+              </div>
+              <div
+                className="flex-center items-center is-primary-text"
+              >
+                <span
+                  aria-hidden={true}
+                  className="icon-legacy-next"
+                  title=""
+                />
+              </div>
+            </div>,
+          ],
+          "className": "to-details",
+          "onClick": [Function],
+          "onKeyPress": [Function],
+          "role": "button",
+          "tabIndex": 0,
+        },
+        "ref": null,
+        "rendered": Array [
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "className": "dotted-top-primary",
+            },
+            "ref": null,
+            "rendered": null,
+            "type": "hr",
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": Array [
+                <div
+                  className="image flex-0 dotted-right-primary flex-rows flex-center"
+                >
+                  <img
+                    alt=""
+                    src="http://localhost/storage/thumbs/things/QE"
+                  />
+                </div>,
+                <div
+                  className="m18 flex-1"
+                >
+                  <React.Fragment>
+                    <h5
+                      className="fs18 is-bold"
+                      title="sur la route des migrants ; rencontres à Calais"
+                    >
+                      <Dotdotdot
+                        clamp="2"
+                        tagName="div"
+                        truncationChar="…"
+                        useNativeClamp={true}
+                      >
+                        sur la route des migrants ; rencontres à Calais
+                      </Dotdotdot>
+                    </h5>
+                    <span
+                      className="fs13"
+                      id="recommendation-date"
+                    >
+                      permanent
+                    </span>
+                  </React.Fragment>
+                </div>,
+                <div
+                  className="flex-center items-center is-primary-text"
+                >
+                  <span
+                    aria-hidden={true}
+                    className="icon-legacy-next"
+                    title=""
+                  />
+                </div>,
+              ],
+              "className": "flex-columns",
+            },
+            "ref": null,
+            "rendered": Array [
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": <img
+                    alt=""
+                    src="http://localhost/storage/thumbs/things/QE"
+                  />,
+                  "className": "image flex-0 dotted-right-primary flex-rows flex-center",
+                },
+                "ref": null,
+                "rendered": Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "alt": "",
+                    "src": "http://localhost/storage/thumbs/things/QE",
+                  },
+                  "ref": null,
+                  "rendered": null,
+                  "type": "img",
+                },
+                "type": "div",
+              },
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": <React.Fragment>
+                    <h5
+                      className="fs18 is-bold"
+                      title="sur la route des migrants ; rencontres à Calais"
+                    >
+                      <Dotdotdot
+                        clamp="2"
+                        tagName="div"
+                        truncationChar="…"
+                        useNativeClamp={true}
+                      >
+                        sur la route des migrants ; rencontres à Calais
+                      </Dotdotdot>
+                    </h5>
+                    <span
+                      className="fs13"
+                      id="recommendation-date"
+                    >
+                      permanent
+                    </span>
+                  </React.Fragment>,
+                  "className": "m18 flex-1",
+                },
+                "ref": null,
+                "rendered": Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "function",
+                  "props": Object {
+                    "children": Array [
+                      <h5
+                        className="fs18 is-bold"
+                        title="sur la route des migrants ; rencontres à Calais"
+                      >
+                        <Dotdotdot
+                          clamp="2"
+                          tagName="div"
+                          truncationChar="…"
+                          useNativeClamp={true}
+                        >
+                          sur la route des migrants ; rencontres à Calais
+                        </Dotdotdot>
+                      </h5>,
+                      <span
+                        className="fs13"
+                        id="recommendation-date"
+                      >
+                        permanent
+                      </span>,
+                    ],
+                  },
+                  "ref": null,
+                  "rendered": Array [
+                    Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "host",
+                      "props": Object {
+                        "children": <Dotdotdot
+                          clamp="2"
+                          tagName="div"
+                          truncationChar="…"
+                          useNativeClamp={true}
+                        >
+                          sur la route des migrants ; rencontres à Calais
+                        </Dotdotdot>,
+                        "className": "fs18 is-bold",
+                        "title": "sur la route des migrants ; rencontres à Calais",
+                      },
+                      "ref": null,
+                      "rendered": Object {
+                        "instance": null,
+                        "key": undefined,
+                        "nodeType": "class",
+                        "props": Object {
+                          "children": "sur la route des migrants ; rencontres à Calais",
+                          "clamp": "2",
+                          "tagName": "div",
+                          "truncationChar": "…",
+                          "useNativeClamp": true,
+                        },
+                        "ref": null,
+                        "rendered": "sur la route des migrants ; rencontres à Calais",
+                        "type": [Function],
+                      },
+                      "type": "h5",
+                    },
+                    Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "host",
+                      "props": Object {
+                        "children": "permanent",
+                        "className": "fs13",
+                        "id": "recommendation-date",
+                      },
+                      "ref": null,
+                      "rendered": "permanent",
+                      "type": "span",
+                    },
+                  ],
+                  "type": Symbol(react.fragment),
+                },
+                "type": "div",
+              },
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": <span
+                    aria-hidden={true}
+                    className="icon-legacy-next"
+                    title=""
+                  />,
+                  "className": "flex-center items-center is-primary-text",
+                },
+                "ref": null,
+                "rendered": Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "aria-hidden": true,
+                    "className": "icon-legacy-next",
+                    "title": "",
+                  },
+                  "ref": null,
+                  "rendered": null,
+                  "type": "span",
+                },
+                "type": "div",
+              },
+            ],
+            "type": "div",
+          },
+        ],
+        "type": "div",
+      },
       "type": "li",
     },
   ],

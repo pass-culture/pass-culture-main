@@ -1,5 +1,4 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
 import { shallow } from 'enzyme'
 import Dotdotdot from 'react-dotdotdot'
 
@@ -16,7 +15,7 @@ describe('src | components | pages | RawSearchResultItem', () => {
       const props = {
         location: {
           pathname: '/recherche/Applaudir',
-          search: ''
+          search: '',
         },
         recommendation: recommendations[0],
       }
@@ -42,18 +41,16 @@ describe('src | components | pages | RawSearchResultItem', () => {
         props = {
           location: {
             pathname: '/recherche/Applaudir',
-            search: ''
+            search: '',
           },
           recommendation: recommendations[0],
         }
         wrapper = shallow(<RawSearchResultItem {...props} />)
 
-        const linkUrl = wrapper.find(Link).props()
         const img = wrapper.find('img').props()
         const h5 = wrapper.find('h5').props()
         const dotdotdot = wrapper.find(Dotdotdot).props()
         const recommendationDate = wrapper.find('#recommendation-date').props()
-        expect(linkUrl.to).toEqual('/recherche/Applaudir/item/X9')
         expect(img.src).toEqual('http://localhost/storage/thumbs/things/QE')
         expect(dotdotdot.children).toEqual(
           'sur la route des migrants ; rencontres à Calais'
