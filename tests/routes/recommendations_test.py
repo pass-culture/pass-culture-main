@@ -210,7 +210,7 @@ class Get:
             assert response.json()['offerId'] == humanize(offer.id)
             assert response.json()['mediationId'] == humanize(mediation1.id)
 
-    class Returns401:
+    class Returns404:
         @clean_database
         def when_recommendation_is_not_found(self, app):
             # Given
