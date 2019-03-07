@@ -1,134 +1,155 @@
 import { getPrice } from '../getPrice'
 
 describe('getPrice - format a value with devise', () => {
-  it('should return empty string if undefined || null', () => {
-    // <!-- legacy
-    const expected = ''
-    let value
-    let result = getPrice(value)
-    expect(result).toEqual(expected)
-    // --> }
-    value = null
-    result = getPrice(value)
-    expect(result).toEqual(expected)
-    value = 'null'
-    result = getPrice(value)
-    expect(result).toEqual(expected)
-    value = new Error(null)
-    result = getPrice(value)
-    expect(result).toEqual(expected)
+  describe('with not valid values', () => {
+    it('should return empty string if undefined || null', () => {
+      const expected = ''
+      let value
+      let result = getPrice(value)
+      expect(result).toEqual(expected)
+      value = null
+      result = getPrice(value)
+      expect(result).toEqual(expected)
+      value = 'null'
+      result = getPrice(value)
+      expect(result).toEqual(expected)
+      value = new Error(null)
+      result = getPrice(value)
+      expect(result).toEqual(expected)
+    })
+    it('should return a empty string if not a number or array of numbers', () => {
+      const expected = ''
+      let value = false
+      let result = getPrice(value)
+      expect(result).toEqual(expected)
+      value = true
+      result = getPrice(value)
+      expect(result).toEqual(expected)
+      value = {}
+      result = getPrice(value)
+      expect(result).toEqual(expected)
+      value = []
+      result = getPrice(value)
+      expect(result).toEqual(expected)
+      value = [null, undefined]
+      result = getPrice(value)
+      expect(result).toEqual(expected)
+      value = [true, {}]
+      result = getPrice(value)
+      expect(result).toEqual(expected)
+      value = [undefined]
+      result = getPrice(value)
+      expect(result).toEqual(expected)
+    })
   })
-  it('should return a empty string if === 0 || invalid', () => {
-    const expected = ''
-    let value = false
-    let result = getPrice(value)
-    expect(result).toEqual(expected)
-    value = true
-    result = getPrice(value)
-    expect(result).toEqual(expected)
-    value = {}
-    result = getPrice(value)
-    expect(result).toEqual(expected)
-    value = []
-    result = getPrice(value)
-    expect(result).toEqual(expected)
-    value = [null, undefined]
-    result = getPrice(value)
-    expect(result).toEqual(expected)
-    value = [true, {}]
-    result = getPrice(value)
-    expect(result).toEqual(expected)
-    value = [undefined]
-    result = getPrice(value)
-    expect(result).toEqual(expected)
-  })
-  it('should return value with devise', () => {
-    // <!-- legacy
-    let value = 12
-    let expected = '12 €'
-    let result = getPrice(value)
-    expect(result).toEqual(expected)
-    value = '12'
-    expected = '12 €'
-    result = getPrice(value)
-    expect(result).toEqual(expected)
-    value = 12.42
-    expected = '12,42 €'
-    result = getPrice(value)
-    expect(result).toEqual(expected)
-    value = '12.42'
-    expected = '12,42 €'
-    result = getPrice(value)
-    expect(result).toEqual(expected)
-    // // --> }
-    value = '1222.00'
-    expected = '1222 €'
-    result = getPrice(value)
-    expect(result).toEqual(expected)
-  })
-  it('should return 0 €', () => {
-    const expected = '0 €'
-    let value = '0.00'
-    let result = getPrice(value)
-    expect(result).toEqual(expected)
-    expect(result).toEqual(expected)
-    value = 0
-    result = getPrice(value)
-    expect(result).toEqual(expected)
-    value = '0'
-    result = getPrice(value)
-    value = [0, undefined]
-    result = getPrice(value)
-    expect(result).toEqual(expected)
-    value = [0, []]
-    result = getPrice(value)
-    expect(result).toEqual(expected)
-    value = [0, {}]
-    result = getPrice(value)
-    expect(result).toEqual(expected)
-  })
-  it('should return value with devise from array', () => {
-    // <!-- legacy
-    let value = [6, 12]
-    let expected = '6 \u2192 12 €'
-    let result = getPrice(value)
-    expect(result).toEqual(expected)
-    value = ['6', '12']
-    expected = '6 \u2192 12 €'
-    result = getPrice(value)
-    expect(result).toEqual(expected)
-    value = ['6', '3', '49', '12']
-    expected = '3 \u2192 49 €'
-    result = getPrice(value)
-    expect(result).toEqual(expected)
-    value = [12, 6]
-    expected = '6 \u2192 12 €'
-    result = getPrice(value)
-    expect(result).toEqual(expected)
-    value = [12, 0]
-    expected = '0 \u2192 12 €'
-    result = getPrice(value)
-    expect(result).toEqual(expected)
-    value = [0, 12]
-    expected = '0 \u2192 12 €'
-    result = getPrice(value)
-    expect(result).toEqual(expected)
-    value = ['0', '12']
-    expected = '0 \u2192 12 €'
-    result = getPrice(value)
-    expect(result).toEqual(expected)
-    value = ['12', '0']
-    expected = '0 \u2192 12 €'
-    result = getPrice(value)
-    expect(result).toEqual(expected)
-    value = ['12', '0.00']
-    expected = '0 \u2192 12 €'
-    result = getPrice(value)
-    expect(result).toEqual(expected)
-    value = ['349', '12', '49', null, '28', '0.00', '3']
-    expected = '0 \u2192 349 €'
-    result = getPrice(value)
-    expect(result).toEqual(expected)
+  describe('with valid values', () => {
+    it('should return value with devise', () => {
+      let value = 12
+      let expected = '12 €'
+      let result = getPrice(value)
+      expect(result).toEqual(expected)
+      value = '12'
+      expected = '12 €'
+      result = getPrice(value)
+      expect(result).toEqual(expected)
+      value = 12.42
+      expected = '12,42 €'
+      result = getPrice(value)
+      expect(result).toEqual(expected)
+      value = '12.42'
+      expected = '12,42 €'
+      result = getPrice(value)
+      expect(result).toEqual(expected)
+      value = '1222.00'
+      expected = '1222 €'
+      result = getPrice(value)
+      expect(result).toEqual(expected)
+    })
+    it('should return value with custom devise', () => {
+      const value = '1222.00'
+      const expected = '1222 poires'
+      const result = getPrice(value, null, 'poires')
+      expect(result).toEqual(expected)
+    })
+    it('should return 0 €', () => {
+      const expected = '0 €'
+      let value = '0.00'
+      let result = getPrice(value)
+      expect(result).toEqual(expected)
+      expect(result).toEqual(expected)
+      value = 0
+      result = getPrice(value)
+      expect(result).toEqual(expected)
+      value = '0'
+      result = getPrice(value)
+      value = [0, undefined]
+      result = getPrice(value)
+      expect(result).toEqual(expected)
+      value = [0, []]
+      result = getPrice(value)
+      expect(result).toEqual(expected)
+      value = [0, {}]
+      result = getPrice(value)
+      expect(result).toEqual(expected)
+    })
+    it('should return free value if defined and price equal 0', () => {
+      const freeValue = 'Gratuit'
+      let value = [0]
+      let result = getPrice(value, freeValue)
+      expect(result).toEqual(freeValue)
+      value = 0
+      result = getPrice(value, freeValue)
+      expect(result).toEqual(freeValue)
+    })
+    it('should return value with devise from array', () => {
+      // <!-- legacy
+      let value = [6, 12]
+      let expected = '6 \u2192 12 €'
+      let result = getPrice(value)
+      expect(result).toEqual(expected)
+      value = ['6', '12']
+      expected = '6 \u2192 12 €'
+      result = getPrice(value)
+      expect(result).toEqual(expected)
+      value = ['6', '3', '49', '12']
+      expected = '3 \u2192 49 €'
+      result = getPrice(value)
+      expect(result).toEqual(expected)
+      value = [12, 6]
+      expected = '6 \u2192 12 €'
+      result = getPrice(value)
+      expect(result).toEqual(expected)
+      value = [12, 0]
+      expected = '0 \u2192 12 €'
+      result = getPrice(value)
+      expect(result).toEqual(expected)
+      value = [0, 12]
+      expected = '0 \u2192 12 €'
+      result = getPrice(value)
+      expect(result).toEqual(expected)
+      value = ['0', '12']
+      expected = '0 \u2192 12 €'
+      result = getPrice(value)
+      expect(result).toEqual(expected)
+      value = ['12', '0']
+      expected = '0 \u2192 12 €'
+      result = getPrice(value)
+      expect(result).toEqual(expected)
+      value = ['12', '0.00']
+      expected = '0 \u2192 12 €'
+      result = getPrice(value)
+      expect(result).toEqual(expected)
+      value = ['349', '12', '49', null, '28', '0.00', '3']
+      expected = '0 \u2192 349 €'
+      result = getPrice(value)
+      expect(result).toEqual(expected)
+    })
+    it('should return value with devise from array and not gratuit if defined', () => {
+      const value = ['349', '12', '49', null, '28', '0.00', '3']
+      const expected = '0 \u2192 349 €'
+      const result = getPrice(value, 'Gratuit')
+      expect(result).toEqual(expected)
+    })
   })
   describe('When getPrice is used in Discovery Card', () => {
     describe('when only one price that is 0', () => {
@@ -137,7 +158,7 @@ describe('getPrice - format a value with devise', () => {
         const value = [0]
 
         // when
-        const result = getPrice(value)
+        const result = getPrice(value, 'Gratuit')
 
         // then
         expect(result).toEqual('Gratuit')
@@ -173,7 +194,7 @@ describe('getPrice - format a value with devise', () => {
         const value = [12.42]
 
         // when
-        const result = getPrice(value)
+        const result = getPrice(value, 'Gratuit')
 
         // then
         expect(result).toEqual('12,42 €')
@@ -191,15 +212,25 @@ describe('getPrice - format a value with devise', () => {
         // then
         expect(result).toEqual('5 €')
       })
+      it('should return value free value', () => {
+        // given
+        const value = [0]
+
+        // when
+        const result = getPrice(value, 'Gratuit')
+
+        // then
+        expect(result).toEqual('Gratuit')
+      })
     })
 
     describe('when one price is 0 and other is decimal', () => {
-      it('it should return 0 and not gratuit', () => {
+      it('it should return 0 and not gratuit if defined', () => {
         // given
         const value = [0, 4.34, 6.78]
 
         // when
-        const result = getPrice(value)
+        const result = getPrice(value, 'Gratuit')
 
         // then
         expect(result).toEqual('0 \u2192 6,78 €')

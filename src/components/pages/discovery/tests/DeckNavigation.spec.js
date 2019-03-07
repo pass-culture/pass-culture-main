@@ -1,6 +1,6 @@
 // jest --env=jsdom ./src/components/pages/discovery/tests/DeckNavigation --watch
 import React from 'react'
-import { shallow } from 'enzyme'
+import { mount, shallow } from 'enzyme'
 
 import { RawDeckNavigation } from '../DeckNavigation'
 
@@ -37,6 +37,72 @@ describe('src | components | pages | discovery | RawDeckNavigation', () => {
     })
   })
   describe('render', () => {
+    describe(`Prix de l'offre`, () => {
+      it('should equal Gratuit when offer price is 0', () => {
+        // given
+        const props = {
+          flipHandler: jest.fn(),
+          height: 500,
+          isFinished: false,
+          recommendation: {
+            offer: {
+              stocks: [{ available: null, price: 0 }],
+            },
+          },
+        }
+        // when
+        const wrapper = mount(<RawDeckNavigation {...props} />)
+        const element = wrapper.find('span#deck-navigation-offer-price')
+        // then
+        expect(element).toBeDefined()
+        expect(element.text()).toEqual('Gratuit')
+      })
+      it(`should equal '0 -> 12 €' when offer price range is [0, 12]`, () => {
+        // given
+        const props = {
+          flipHandler: jest.fn(),
+          height: 500,
+          isFinished: false,
+          recommendation: {
+            offer: {
+              stocks: [
+                { available: null, price: 12 },
+                { available: null, price: 0 },
+              ],
+            },
+          },
+        }
+        // when
+        const wrapper = mount(<RawDeckNavigation {...props} />)
+        const element = wrapper.find('span#deck-navigation-offer-price')
+        // then
+        expect(element).toBeDefined()
+        expect(element.text()).toEqual('0 → 12 €')
+      })
+      it(`should equal '12 -> 56 €' when offer price range is [12, 56]`, () => {
+        // given
+        const props = {
+          flipHandler: jest.fn(),
+          height: 500,
+          isFinished: false,
+          recommendation: {
+            offer: {
+              stocks: [
+                { available: null, price: 42 },
+                { available: null, price: 12 },
+                { available: null, price: 56 },
+              ],
+            },
+          },
+        }
+        // when
+        const wrapper = mount(<RawDeckNavigation {...props} />)
+        const element = wrapper.find('span#deck-navigation-offer-price')
+        // then
+        expect(element).toBeDefined()
+        expect(element.text()).toEqual('12 → 56 €')
+      })
+    })
     describe('Background Color', () => {
       describe('When no color given in recommendation', () => {
         it('should render black by default', () => {

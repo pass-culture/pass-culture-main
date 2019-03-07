@@ -4,6 +4,7 @@ exports[`src | components | pages | Price snapshots should match snapshot free p
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <Price
+    free={null}
     value={0}
   />,
   Symbol(enzyme.__renderer__): Object {
@@ -71,6 +72,7 @@ exports[`src | components | pages | Price snapshots should match snapshot with a
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <Price
+    free={null}
     value={5}
   />,
   Symbol(enzyme.__renderer__): Object {
@@ -138,6 +140,7 @@ exports[`src | components | pages | Price snapshots should match snapshot with a
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <Price
+    free={null}
     value={
       Array [
         5,
@@ -210,6 +213,7 @@ exports[`src | components | pages | Price snapshots should match snapshot with d
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <Price
+    free={null}
     value={
       Array [
         5.99,
@@ -282,6 +286,7 @@ exports[`src | components | pages | Price snapshots should match snapshot withou
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <Price
+    free={null}
     value={null}
   />,
   Symbol(enzyme.__renderer__): Object {

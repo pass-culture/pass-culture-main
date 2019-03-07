@@ -30,7 +30,7 @@ ShallowWrapper {
         ],
         "results": Array [
           Object {
-            "type": "return",
+            "isThrow": false,
             "value": undefined,
           },
         ],

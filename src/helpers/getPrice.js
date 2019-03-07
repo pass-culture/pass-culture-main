@@ -1,6 +1,6 @@
+// jest --env=jsdom ./src/helpers/tests/getPrice --watch
 import isEqual from 'lodash.isequal'
 
-const devise = '€'
 const arrow = '\u2192 '
 
 const sortNumber = (a, b) => {
@@ -27,8 +27,9 @@ const valueToPrice = value => {
   return (value && `${value.toString().replace('.', ',')}`) || ''
 }
 
-const parsePriceArray = array => {
-  let result = array.filter(isValidType).map(valueToNumber)
+const parsePriceArray = value => {
+  let result = (Array.isArray(value) && value) || [value]
+  result = result.filter(isValidType).map(valueToNumber)
   result = uniqueFilter(result).sort(sortNumber)
   if (!result || !result.length) return null
   if (result.length === 1) return [result[0]]
@@ -44,17 +45,14 @@ export const priceIsDefined = value => {
   return isDefined
 }
 
-export const getPrice = value => {
+export const getPrice = (value, freeValue = null, devise = '€') => {
   const isDefined = priceIsDefined(value)
   if (!isDefined) return ''
 
-  const isFree = isEqual(value, [0])
-  if (isFree) return 'Gratuit'
+  const isFree = isEqual(value, 0) || isEqual(value, [0])
+  if (isFree && freeValue) return freeValue
 
-  let array = (Array.isArray(value) && value) || [value]
-
-  array = parsePriceArray(array)
-
+  const array = parsePriceArray(value)
   if (!array) return ''
 
   const formatedDevise = array.map(v => valueToPrice(v)).join(` ${arrow}`) || ''

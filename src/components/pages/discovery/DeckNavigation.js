@@ -125,7 +125,11 @@ export class RawDeckNavigation extends React.PureComponent {
                     style={{ transition: `opacity ${transitionTimeout}ms` }}
                   >
                     <Finishable finished={isFinished}>
-                      <Price value={priceRange} />
+                      <Price
+                        id="deck-navigation-offer-price"
+                        free="Gratuit"
+                        value={priceRange}
+                      />
                       <div className="separator">
                         {offer ? '\u00B7' : ' '}
                       </div>

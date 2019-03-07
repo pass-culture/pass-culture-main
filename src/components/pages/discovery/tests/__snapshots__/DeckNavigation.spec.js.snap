@@ -300,6 +300,8 @@ ShallowWrapper {
                   finished={null}
                 >
                   <Price
+                    free="Gratuit"
+                    id="deck-navigation-offer-price"
                     value={Array []}
                   />
                   <div
@@ -399,6 +401,8 @@ ShallowWrapper {
                     finished={null}
                   >
                     <Price
+                      free="Gratuit"
+                      id="deck-navigation-offer-price"
                       value={Array []}
                     />
                     <div
@@ -503,6 +507,8 @@ ShallowWrapper {
                     finished={null}
                   >
                     <Price
+                      free="Gratuit"
+                      id="deck-navigation-offer-price"
                       value={Array []}
                     />
                     <div
@@ -561,6 +567,8 @@ ShallowWrapper {
                     finished={null}
                   >
                     <Price
+                      free="Gratuit"
+                      id="deck-navigation-offer-price"
                       value={Array []}
                     />
                     <div
@@ -628,6 +636,8 @@ ShallowWrapper {
                       finished={null}
                     >
                       <Price
+                        free="Gratuit"
+                        id="deck-navigation-offer-price"
                         value={Array []}
                       />
                       <div
@@ -684,6 +694,8 @@ ShallowWrapper {
                       finished={null}
                     >
                       <Price
+                        free="Gratuit"
+                        id="deck-navigation-offer-price"
                         value={Array []}
                       />
                       <div
@@ -708,6 +720,8 @@ ShallowWrapper {
                     "props": Object {
                       "children": Array [
                         <Price
+                          free="Gratuit"
+                          id="deck-navigation-offer-price"
                           value={Array []}
                         />,
                         <div
@@ -728,6 +742,8 @@ ShallowWrapper {
                         "key": undefined,
                         "nodeType": "function",
                         "props": Object {
+                          "free": "Gratuit",
+                          "id": "deck-navigation-offer-price",
                           "value": Array [],
                         },
                         "ref": null,
@@ -867,6 +883,8 @@ ShallowWrapper {
                     finished={null}
                   >
                     <Price
+                      free="Gratuit"
+                      id="deck-navigation-offer-price"
                       value={Array []}
                     />
                     <div
@@ -966,6 +984,8 @@ ShallowWrapper {
                       finished={null}
                     >
                       <Price
+                        free="Gratuit"
+                        id="deck-navigation-offer-price"
                         value={Array []}
                       />
                       <div
@@ -1070,6 +1090,8 @@ ShallowWrapper {
                       finished={null}
                     >
                       <Price
+                        free="Gratuit"
+                        id="deck-navigation-offer-price"
                         value={Array []}
                       />
                       <div
@@ -1128,6 +1150,8 @@ ShallowWrapper {
                       finished={null}
                     >
                       <Price
+                        free="Gratuit"
+                        id="deck-navigation-offer-price"
                         value={Array []}
                       />
                       <div
@@ -1195,6 +1219,8 @@ ShallowWrapper {
                         finished={null}
                       >
                         <Price
+                          free="Gratuit"
+                          id="deck-navigation-offer-price"
                           value={Array []}
                         />
                         <div
@@ -1251,6 +1277,8 @@ ShallowWrapper {
                         finished={null}
                       >
                         <Price
+                          free="Gratuit"
+                          id="deck-navigation-offer-price"
                           value={Array []}
                         />
                         <div
@@ -1275,6 +1303,8 @@ ShallowWrapper {
                       "props": Object {
                         "children": Array [
                           <Price
+                            free="Gratuit"
+                            id="deck-navigation-offer-price"
                             value={Array []}
                           />,
                           <div
@@ -1295,6 +1325,8 @@ ShallowWrapper {
                           "key": undefined,
                           "nodeType": "function",
                           "props": Object {
+                            "free": "Gratuit",
+                            "id": "deck-navigation-offer-price",
                             "value": Array [],
                           },
                           "ref": null,

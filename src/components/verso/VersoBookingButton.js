@@ -56,7 +56,7 @@ class VersoBookingButton extends React.PureComponent {
         id="verso-booking-button"
         className="button is-primary is-medium"
       >
-        <Price free="——" value={priceValue} />
+        <Price free="Gratuit" value={priceValue} />
         <span>J&apos;y vais!</span>
       </Link>
     )
