@@ -1,6 +1,8 @@
 """ recommendations """
 import pytest
 
+from repository.clean_database import clean_all_database
+from tests.conftest import clean_database, TestClient
 
 from collections import Counter
 from datetime import datetime
@@ -8,7 +10,6 @@ from datetime import datetime
 from dateutil.parser import parse as parse_date
 
 from models import PcObject
-from repository.clean_database import clean_all_database, TestClient
 from sandboxes.scripts.save_sandbox import save_sandbox
 from tests.test_utils import API_URL, \
     create_event_offer, \
