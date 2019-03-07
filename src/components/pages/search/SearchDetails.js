@@ -23,7 +23,7 @@ class SearchDetails extends Component {
     if (recommendation.isClicked) {
       return
     }
-    
+
     const { dispatch } = this.props
     const options = {
       body: { isClicked: true },
@@ -33,6 +33,11 @@ class SearchDetails extends Component {
     const path = `recommendations/${recommendation.id}`
 
     dispatch(requestData('PATCH', path, options))
+  }
+
+  handleRequestSuccess = (state, action) => {
+    this.handleClickRecommendation(action.data)
+    this.setState({ isLoading: false })
   }
 
   handleRequestData = () => {
@@ -49,16 +54,11 @@ class SearchDetails extends Component {
     this.setState({ isLoading: true }, () =>
       dispatch(
         requestData('GET', path, {
-          handleSuccess: (state, action) => {
-            this.handleClickRecommendation(action.data)
-            this.setState({ isLoading: false })
-          },
+          handleSuccess: this.handleRequestSuccess,
           normalizer: recommendationNormalizer,
         })
       )
     )
-
-
   }
 
   render() {

@@ -70,11 +70,8 @@ class RawSearch extends PureComponent {
     dispatch(
       requestData('GET', path, {
         handleSuccess: (state, action) => {
-          if (action.data && action.data.length === 0) {
-            this.setState({ hasMore: false })
-          } else {
-            this.setState({ hasMore: true })
-          }
+          const hasMore = action.data && action.data.length
+          this.setState({ hasMore })
         },
       })
     )
@@ -190,8 +187,9 @@ class RawSearch extends PureComponent {
     const isOneCharInKeywords = keywordsValue && keywordsValue.length > 0
 
     // ******************** Displaying datas helpers ********************** //
-    const headerTitle =
-      match.params.view === 'resultats' ? 'Recherche : résultats' : 'Recherche'
+    let headerTitle = 'Recherche'
+    if (match.params.view === 'resultats')
+      headerTitle = `${headerTitle} : résultats`
 
     let description
     const category = decodeURIComponent(queryParams.categories)
