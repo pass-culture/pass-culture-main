@@ -68,7 +68,7 @@ const routes = [
     disabled: false,
     icon: 'search-w',
     path:
-      '/recherche/(resultats)?/:option?/:subOption?/:offerId?/:mediationId?/:view(booking|cancelled)?/:bookingId?',
+      '/recherche/(resultats)?/:option?/:subOption?/:offerId?/:mediationIdOrView?/:view(booking|cancelled)?/:bookingId?',
     title: 'Recherche',
   },
   {

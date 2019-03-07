@@ -8,6 +8,7 @@ import { compose } from 'redux'
 import Booking from '../../booking'
 import Recto from '../../Recto'
 import Verso from '../../verso'
+import currentRecommendationSelector from '../../../selectors/currentRecommendation'
 import { recommendationNormalizer } from '../../../utils/normalizers'
 
 class SearchDetails extends Component {
@@ -17,36 +18,29 @@ class SearchDetails extends Component {
   }
 
   componentDidMount() {
-    this.handleRequestData()
-    // setTimeout(this.handleForceDetailsVisible)
-  }
-
-  handleClickRecommendation = recommendation => {
-    if (recommendation.isClicked) {
+    const { currentRecommendation } = this.props
+    if (currentRecommendation) {
+      // We need to wait to go out the mount lifecycle
+      // in order to force the dom to render
+      // twice
+      setTimeout(this.handleForceDetailsVisible)
       return
     }
-
-    const { dispatch } = this.props
-    const options = {
-      body: { isClicked: true },
-      key: 'recommendations',
-    }
-
-    const path = `recommendations/${recommendation.id}`
-
-    dispatch(requestData('PATCH', path, options))
+    this.handleRequestData()
   }
 
-  handleRequestSuccess = (state, action) => {
-    this.handleClickRecommendation(action.data)
+  handleRequestSuccess = () => {
     this.handleForceDetailsVisible()
   }
 
   handleRequestData = () => {
     const { dispatch, match } = this.props
     const {
-      params: { mediationId, offerId },
+      params: { mediationIdOrView, offerId },
     } = match
+
+    const mediationId =
+      mediationIdOrView === 'booking' ? null : mediationIdOrView
 
     let path = `recommendations/offers/${offerId}`
     if (mediationId) {
@@ -96,7 +90,22 @@ SearchDetails.propTypes = {
   match: PropTypes.object.isRequired,
 }
 
+function mapStateToProps(state, ownProps) {
+  const { match } = ownProps
+  const {
+    params: { mediationId, offerId },
+  } = match
+
+  return {
+    currentRecommendation: currentRecommendationSelector(
+      state,
+      offerId,
+      mediationId
+    ),
+  }
+}
+
 export default compose(
   withRouter,
-  connect()
+  connect(mapStateToProps)
 )(SearchDetails)

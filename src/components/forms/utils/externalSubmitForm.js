@@ -4,7 +4,10 @@ export const externalSubmitForm = formid => {
   // SEE -> https://github.com/facebook/react/issues/12639
   const opts = { cancelable: true }
   const event = new Event('submit', opts)
-  document.getElementById(formid).dispatchEvent(event)
+  const formElement = document.getElementById(formid)
+  if (formElement) {
+    formElement.dispatchEvent(event)
+  }
 }
 
 export default externalSubmitForm

@@ -12,8 +12,14 @@
   }
 }
 
-#booking-card .with-header {
-  margin-top: $header-height;
+#booking-card {
+  &.with-header {
+    margin-top: $header-height;
+
+    header {
+      height: initial;
+    }
+  }
 }
 
 #booking-card .form-footer {

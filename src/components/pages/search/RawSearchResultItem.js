@@ -1,34 +1,16 @@
 /* eslint
   react/jsx-one-expression-per-line: 0 */
-// import { requestData } from 'pass-culture-shared'
+import { requestData } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import React, { Component, Fragment } from 'react'
 import Dotdotdot from 'react-dotdotdot'
 
 import { getQueryURL } from '../../../helpers'
 import { getRecommendationDateString } from './utils'
-// import { recommendationNormalizer } from '../../../utils/normalizers'
+import { recommendationNormalizer } from '../../../utils/normalizers'
 
 class RawSearchResultItem extends Component {
-  /*
-  handleClickRecommendation = recommendation => {
-    if (recommendation.isClicked) {
-      return
-    }
-
-    const { dispatch } = this.props
-    const options = {
-      body: { isClicked: true },
-      key: 'recommendations',
-    }
-
-    const path = `recommendations/${recommendation.id}`
-
-    dispatch(requestData('PATCH', path, options))
-  }
-  */
-
-  handleRedirectToItem = () => {
+  handleRequestSuccess = () => {
     const { history, location, recommendation } = this.props
     const offerId = recommendation && recommendation.offerId
     const mediationId = recommendation && recommendation.mediationId
@@ -37,30 +19,20 @@ class RawSearchResultItem extends Component {
     history.push(linkURL)
   }
 
-  /*
-  handleRequestSuccess = (state, action) => {
-    this.handleClickRecommendation(action.data)
-    this.handleRedirectToItem()
-  }
-
-  onItem = () => {
+  onClickRecommendation = () => {
     const { dispatch, recommendation } = this.props
-    const offerId = recommendation && recommendation.offerId
-    const mediationId = recommendation && recommendation.mediationId
 
-    let path = `recommendations/offers/${offerId}`
-    if (mediationId) {
-      path = `${path}?mediationId=${mediationId}`
+    const options = {
+      body: { isClicked: true },
+      handleSuccess: this.handleRequestSuccess,
+      key: 'recommendations',
+      normalizer: recommendationNormalizer,
     }
 
-    dispatch(
-      requestData('GET', path, {
-        handleSuccess: this.handleRequestSuccess,
-        normalizer: recommendationNormalizer,
-      })
-    )
+    const path = `recommendations/${recommendation.id}`
+
+    dispatch(requestData('PATCH', path, options))
   }
-  */
 
   render() {
     const { recommendation } = this.props
@@ -69,14 +41,8 @@ class RawSearchResultItem extends Component {
       <li className="recommendation-list-item">
         <div
           className="to-details"
-          onClick={
-            // this.onItem
-            this.handleRedirectToItem
-          }
-          onKeyPress={
-            // this.onItem
-            this.handleRedirectToItem
-          }
+          onClick={this.onClickRecommendation}
+          onKeyPress={this.onClickRecommendation}
           role="button"
           tabIndex={0}
         >
@@ -114,7 +80,7 @@ class RawSearchResultItem extends Component {
 }
 
 RawSearchResultItem.propTypes = {
-  // dispatch: PropTypes.func.isRequired,
+  dispatch: PropTypes.func.isRequired,
   history: PropTypes.object.isRequired,
   location: PropTypes.object.isRequired,
   recommendation: PropTypes.object.isRequired,

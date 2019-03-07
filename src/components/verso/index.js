@@ -51,21 +51,23 @@ Verso.propTypes = {
   forceDetailsVisible: PropTypes.bool,
 }
 
+function mapStateToProps(state, ownProps) {
+  const { match } = ownProps
+  const {
+    params: { mediationId, offerId },
+  } = match
+
+  return {
+    areDetailsVisible: state.card.areDetailsVisible,
+    currentRecommendation: currentRecommendationSelector(
+      state,
+      offerId,
+      mediationId
+    ),
+  }
+}
+
 export default compose(
   withRouter,
-  connect((state, ownProps) => {
-    const { match } = ownProps
-    const {
-      params: { mediationId, offerId },
-    } = match
-
-    return {
-      areDetailsVisible: state.card.areDetailsVisible,
-      currentRecommendation: currentRecommendationSelector(
-        state,
-        offerId,
-        mediationId
-      ),
-    }
-  })
+  connect(mapStateToProps)
 )(Verso)
