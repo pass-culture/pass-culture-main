@@ -1,11 +1,12 @@
 from datetime import datetime
+from typing import List
 
 from models import PcObject
 from models.email import Email
 from models.pc_object import serialize
 
 
-def save(content, status):
+def save(content: dict, status: str):
     email = Email()
     email.content = content
     email.status = status
@@ -13,5 +14,5 @@ def save(content, status):
     PcObject.check_and_save(email)
 
 
-def find_all_in_error():
+def find_all_in_error() -> List[Email]:
     return Email.query.filter_by(status='ERROR').all()

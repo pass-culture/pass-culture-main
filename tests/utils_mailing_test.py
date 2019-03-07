@@ -1384,7 +1384,6 @@ def test_save_and_send_creates_an_entry_in_email_with_status_sent_when_send_mail
     mocked_response.status_code = 200
     app.mailjet_client.send.create.return_value = mocked_response
 
-
     # when
     successfully_sent_email = save_and_send(email_content)
 
@@ -1447,7 +1446,6 @@ def test_send_content_and_update_updates_email_when_send_mail_successful(app):
     mocked_response.status_code = 200
     app.mailjet_client.send.create.return_value = mocked_response
 
-
     # when
     send_content_and_update(email)
 
@@ -1475,7 +1473,6 @@ def test_send_content_and_update_does_not_update_email_when_send_mail_unsuccessf
     mocked_response = MagicMock()
     mocked_response.status_code = 500
     app.mailjet_client.send.create.return_value = mocked_response
-
 
     # when
     send_content_and_update(email)
