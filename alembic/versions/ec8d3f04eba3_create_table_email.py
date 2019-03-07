@@ -1,4 +1,4 @@
-"""create email_failed table
+"""create email table
 
 Revision ID: ec8d3f04eba3
 Revises: fdcdc5e96f15
@@ -24,6 +24,7 @@ def upgrade():
         sa.Column('status', sa.String(12), nullable=False),
         sa.Column('datetime', sa.DateTime, nullable=True, default=datetime.utcnow),
     )
+    op.create_index(op.f('ix_status'), 'email', ['status'], unique=False)
 
 
 def downgrade():
