@@ -1,10 +1,10 @@
 import { Icon, resolveIsNew } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
+import { stringify } from 'query-string'
 import React, { Component } from 'react'
 import LoadingInfiniteScroll from 'react-loading-infinite-scroller'
 import { NavLink } from 'react-router-dom'
 import { assignData, requestData } from 'redux-saga-data'
-import { stringify } from 'query-string'
 
 import OfferItem from './OfferItem'
 import HeroSection from '../../layout/HeroSection'
@@ -127,7 +127,7 @@ class RawOffers extends Component {
     const [orderName, orderDirection] = (orderBy || '').split('+')
 
     return (
-      <Main name="offers" handleRequestData={this.handleRequestData}>
+      <Main handleRequestData={this.handleRequestData} name="offers">
         <HeroSection title="Vos offres">
           {!isAdmin && (
             <NavLink to={createOfferTo} className="cta button is-primary">
@@ -174,7 +174,10 @@ class RawOffers extends Component {
               <button
                 className="delete is-small"
                 onClick={() =>
-                  query.change({ [mapApiToBrowser.offererId]: null })
+                  query.change({
+                    [mapApiToBrowser.offererId]: null,
+                    page: null,
+                  })
                 }
               />
             </li>
@@ -186,7 +189,10 @@ class RawOffers extends Component {
                 <button
                   className="delete is-small"
                   onClick={() =>
-                    query.change({ [mapApiToBrowser.venueId]: null })
+                    query.change({
+                      [mapApiToBrowser.venueId]: null,
+                      page: null,
+                    })
                   }
                 />
               </li>

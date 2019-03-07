@@ -1,22 +1,18 @@
-import {
-  lastTrackerMoment,
-  withLogin,
-  withPagination,
-} from 'pass-culture-shared'
-
+import { lastTrackerMoment, withLogin } from 'pass-culture-shared'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
-
 import withQueryRouter from 'with-query-router'
 
 import RawOffers from './RawOffers'
 import offersSelector from '../../../selectors/offers'
 import offererSelector from '../../../selectors/offerer'
 import venueSelector from '../../../selectors/venue'
-import { mapApiToWindow, windowToApiQuery } from '../../../utils/pagination'
+import { translateBrowserUrlToApiUrl } from '../../../utils/translate'
 
-function mapStateToProps(state, ownProps) {
-  const { offererId, venueId } = ownProps.pagination.apiQuery
+export function mapStateToProps(state, ownProps) {
+  const { query } = ownProps
+  const queryParams = query.parse()
+  const { offererId, venueId } = translateBrowserUrlToApiUrl(queryParams)
   return {
     lastTrackerMoment: lastTrackerMoment(state, 'offers'),
     offers: offersSelector(state, offererId, venueId),
@@ -28,16 +24,6 @@ function mapStateToProps(state, ownProps) {
 
 export default compose(
   withLogin({ failRedirect: '/connexion' }),
-  withPagination({
-    dataKey: 'offers',
-    defaultWindowQuery: {
-      [mapApiToWindow.offererId]: null,
-      [mapApiToWindow.keywords]: null,
-      [mapApiToWindow.venueId]: null,
-      orderBy: 'offer.id+desc',
-    },
-    windowToApiQuery,
-  }),
   withQueryRouter,
   connect(mapStateToProps)
 )(RawOffers)

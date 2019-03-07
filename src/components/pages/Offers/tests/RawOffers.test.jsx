@@ -77,7 +77,7 @@ describe('src | components | pages | Offers | RawOffers', () => {
         expect(offerItem).toHaveLength(mockedOffers.length)
       })
     })
-    describe('When offers showned for an offerer or a venue', () => {
+    describe('When offers shown for an offerer or a venue', () => {
       describe('NavLink to create offer', () => {
         describe('When user isAdmin', () => {
           it('should display NavLink', () => {

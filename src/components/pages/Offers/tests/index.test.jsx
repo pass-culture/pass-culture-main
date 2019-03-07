@@ -1,0 +1,69 @@
+import { mount } from 'enzyme'
+import { createBrowserHistory } from 'history'
+import { Provider } from 'react-redux'
+import React from 'react'
+import { connect } from 'react-redux'
+import { Route, Router } from 'react-router'
+import { compose } from 'redux'
+import configureStore from 'redux-mock-store'
+import { assignData } from 'redux-saga-data'
+import withQueryRouter from 'with-query-router'
+
+import RawOffers from '../RawOffers'
+import { mapStateToProps } from '../index'
+// import { configureStore } from '../../../../utils/store'
+
+fetch.mockResponse(JSON.stringify([]), { status: 200 })
+
+const Offers = compose(
+  withQueryRouter,
+  connect(mapStateToProps)
+)(RawOffers)
+
+describe('src | components | pages | Offers', () => {
+  describe('click on ui filters', () => {
+    it('should redirect to /offres when click on venue flag', () => {
+      // given
+      const initialProps = {
+        currentUser: {},
+        dispatch: jest.fn(),
+        venue: {},
+      }
+      const store = configureStore()({
+        data: {
+          offers: [],
+          offerers: [],
+          venues: [{ id: 'AE' }],
+          types: [],
+        },
+        modal: {},
+        tracker: {},
+      })
+      const history = createBrowserHistory()
+      history.push('/offres?lieu=AE')
+      const wrapper = mount(
+        <Provider store={store}>
+          <Router history={history}>
+            <Route path="/offres">
+              <Offers {...initialProps} />
+            </Route>
+          </Router>
+        </Provider>
+      )
+
+      // when
+      wrapper
+        .find('RawOffers')
+        .find('.delete')
+        .props()
+        .onClick()
+
+      // given
+      const queryParams = wrapper
+        .find('RawOffers')
+        .props()
+        .query.parse()
+      expect(queryParams).toEqual({})
+    })
+  })
+})
