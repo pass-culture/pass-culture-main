@@ -663,9 +663,9 @@ def create_bank_information(application_id=1, bic='QSDFGH8Z555', iban='FR7630006
     return bank_information
 
 
-def create_email_failed(email, status='ERROR', time=datetime.utcnow()):
+def create_email(content, status='ERROR', time=datetime.utcnow()):
     email_failed = Email()
-    email_failed.content = email
+    email_failed.content = content
     email_failed.status = status
     email_failed.datetime = time
     return email_failed

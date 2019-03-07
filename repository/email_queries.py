@@ -2,13 +2,14 @@ from datetime import datetime
 
 from models import PcObject
 from models.email import Email
+from models.pc_object import serialize
 
 
 def save(content, status):
     email = Email()
     email.content = content
     email.status = status
-    email.datetime = datetime.utcnow()
+    email.datetime = serialize(datetime.utcnow())
     PcObject.check_and_save(email)
 
 

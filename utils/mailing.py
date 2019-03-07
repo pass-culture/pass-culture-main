@@ -8,7 +8,7 @@ from typing import Dict, List
 
 from connectors import api_entreprises
 from domain.user_activation import generate_set_password_url
-from models import Offer
+from models import Offer, Email, PcObject
 from models import RightsType, User
 from repository import email_queries
 from repository.booking_queries import find_all_ongoing_bookings_by_stock
@@ -40,6 +40,14 @@ def save_and_send(data: dict) -> bool:
     status = 'SENT' if successfully_sent_email else 'ERROR'
     email_queries.save(data, status)
     return successfully_sent_email
+
+def send_content_and_update(email: Email):
+    response = app.mailjet_client.send.create(data=email.content)
+    if response.status_code == 200:
+        email.status = 'SENT'
+        email.datetime = datetime.utcnow()
+        PcObject.check_and_save(email)
+
 
 
 def make_batch_cancellation_email(bookings, cancellation_case):

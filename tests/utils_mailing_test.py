@@ -7,13 +7,14 @@ from freezegun import freeze_time
 from unittest.mock import MagicMock, patch, Mock
 
 from models import PcObject, Offerer, ThingType, EventType
+from models.db import db
 from models.email import Email
 from tests.conftest import clean_database, mocked_mail
 from tests.files.api_entreprise import MOCKED_SIREN_ENTREPRISES_API_RETURN
 from tests.test_utils import create_stock_with_event_offer, create_stock_with_thing_offer, \
     create_user, create_booking, create_user_offerer, \
     create_offerer, create_venue, create_thing_offer, create_event_offer, create_stock_from_offer, \
-    create_stock_from_event_occurrence, create_event_occurrence, create_thing, create_mocked_bookings
+    create_stock_from_event_occurrence, create_event_occurrence, create_thing, create_mocked_bookings, create_email
 from utils.mailing import make_user_booking_recap_email, \
     make_offerer_booking_recap_email_after_user_action, make_final_recap_email_for_stock_with_event, \
     write_object_validation_email, make_offerer_driven_cancellation_email_for_user, \
@@ -24,7 +25,7 @@ from utils.mailing import make_user_booking_recap_email, \
     make_batch_cancellation_email, make_payment_transaction_email, make_user_validation_email, \
     make_payment_details_email, make_wallet_balances_email, make_payments_report_email, parse_email_addresses, \
     make_activation_notification_email, make_offer_creation_notification_email, \
-    save_and_send
+    save_and_send, send_content_and_update
 
 SUBJECT_USER_EVENT_BOOKING_CONFIRMATION_EMAIL = \
     'Confirmation de votre réservation pour Mains, sorts et papiers le 20 juillet 2019 à 14:00'
@@ -1426,6 +1427,64 @@ def test_save_and_send_creates_an_entry_in_email_with_status_error_when_send_mai
     assert email.content == email_content
     assert email.status == 'ERROR'
     assert email.datetime == datetime(2019, 1, 1, 12, 0, 0)
+
+
+@mocked_mail
+@clean_database
+@freeze_time('2019-01-01 12:00:00')
+def test_send_content_and_update_updates_email_when_send_mail_successful(app):
+    # given
+    email_content = {
+        'FromEmail': 'test@email.fr',
+        'FromName': 'Test From',
+        'Subject': 'Test subject',
+        'Text-Part': 'Hello world',
+        'Html-part': '<html><body>Hello World</body></html>'
+    }
+    email = create_email(email_content, status='ERROR', time=datetime(2018, 12, 1, 12, 0, 0))
+    PcObject.check_and_save(email)
+    mocked_response = MagicMock()
+    mocked_response.status_code = 200
+    app.mailjet_client.send.create.return_value = mocked_response
+
+
+    # when
+    send_content_and_update(email)
+
+    # then
+    db.session.refresh(email)
+    assert email.status == 'SENT'
+    assert email.datetime == datetime(2019, 1, 1, 12, 0, 0)
+    app.mailjet_client.send.create.assert_called_once_with(data=email_content)
+
+
+@mocked_mail
+@clean_database
+@freeze_time('2019-01-01 12:00:00')
+def test_send_content_and_update_does_not_update_email_when_send_mail_unsuccessful(app):
+    # given
+    email_content = {
+        'FromEmail': 'test@email.fr',
+        'FromName': 'Test From',
+        'Subject': 'Test subject',
+        'Text-Part': 'Hello world',
+        'Html-part': '<html><body>Hello World</body></html>'
+    }
+    email = create_email(email_content, status='ERROR', time=datetime(2018, 12, 1, 12, 0, 0))
+    PcObject.check_and_save(email)
+    mocked_response = MagicMock()
+    mocked_response.status_code = 500
+    app.mailjet_client.send.create.return_value = mocked_response
+
+
+    # when
+    send_content_and_update(email)
+
+    # then
+    db.session.refresh(email)
+    assert email.status == 'ERROR'
+    assert email.datetime == datetime(2018, 12, 1, 12, 0, 0)
+    app.mailjet_client.send.create.assert_called_once_with(data=email_content)
 
 
 def remove_whitespaces(text):
