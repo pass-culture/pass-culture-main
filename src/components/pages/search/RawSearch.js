@@ -47,12 +47,40 @@ class RawSearch extends PureComponent {
     } else {
       this.handleRecommendationsRequest()
     }
+
+    this.handleCategoryMissing()
   }
 
   componentDidUpdate(prevProps) {
-    const { location } = this.props
+    const { location, typeSublabelsAndDescription } = this.props
     if (location.search !== prevProps.location.search) {
       this.handleRecommendationsRequest()
+    }
+
+    if (typeSublabelsAndDescription !== prevProps.typeSublabelsAndDescription) {
+      this.handleCategoryMissing()
+    }
+  }
+
+  handleCategoryMissing = () => {
+    const { location, match, query, typeSublabelsAndDescription } = this.props
+    const {
+      params: { option },
+    } = match
+    const { categories } = query.parse()
+
+    if (categories) {
+      return
+    }
+
+    if (option && location.pathname.includes('/resultats/')) {
+      const description = getDescriptionForSublabel(
+        decodeURIComponent(option),
+        typeSublabelsAndDescription
+      )
+      if (description) {
+        query.change({ categories: option })
+      }
     }
   }
 
