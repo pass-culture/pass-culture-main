@@ -45,7 +45,9 @@ jobs: # a collection of steps
           name: Running tests
           command: |
             . venv/bin/activate
-            pytest tests
+            pytest --cov --cov-report html
+      - store_artifacts:
+          path: htmlcov
 
   check-dependencies:
     working_directory: ~/pass-culture-api-ci # directory where steps will run
