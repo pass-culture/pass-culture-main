@@ -1,3 +1,4 @@
+import classnames from 'classnames'
 import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
@@ -13,7 +14,7 @@ import { IS_DEV } from '../utils/config'
 // FIXME -> move to pass-culture-shared
 const noop = () => {}
 
-const Recto = ({ areDetailsVisible, recommendation }) => {
+const Recto = ({ areDetailsVisible, extraClassName, recommendation }) => {
   const { dateRead, mediation, id, index, isClicked, offer, thumbUrl } =
     recommendation || {}
 
@@ -23,7 +24,7 @@ const Recto = ({ areDetailsVisible, recommendation }) => {
     thumbStyle.backgroundSize = 'cover'
   }
   return (
-    <div className="recto">
+    <div className={classnames('recto', extraClassName)}>
       <Thumb
         src={thumbUrl}
         withMediation={mediation}
@@ -59,11 +60,13 @@ déjà retournée
 }
 
 Recto.defaultProps = {
+  extraClassName: null,
   recommendation: null,
 }
 
 Recto.propTypes = {
   areDetailsVisible: PropTypes.bool.isRequired,
+  extraClassName: PropTypes.string,
   recommendation: PropTypes.object,
 }
 

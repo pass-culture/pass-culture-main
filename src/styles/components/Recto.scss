@@ -3,4 +3,9 @@
   height: 84%;
   overflow: hidden;
   position: relative;
+
+  &.with-header {
+    height: 100%;
+    padding-top: $header-height;
+  }
 }

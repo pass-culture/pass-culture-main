@@ -13,9 +13,9 @@ import StaticVerso from './StaticVerso'
 
 const Verso = ({
   areDetailsVisible,
-  forceDetailsVisible,
-  className,
   currentRecommendation,
+  extraClassName,
+  forceDetailsVisible,
 }) => {
   const { mediation } = currentRecommendation || {}
   const { tutoIndex } = mediation || {}
@@ -25,7 +25,7 @@ const Verso = ({
 
   return (
     <div
-      className={classnames('verso', className, {
+      className={classnames('verso', extraClassName, {
         flipped,
       })}
     >
@@ -39,15 +39,15 @@ const Verso = ({
 }
 
 Verso.defaultProps = {
-  className: null,
   currentRecommendation: null,
+  extraClassName: null,
   forceDetailsVisible: false,
 }
 
 Verso.propTypes = {
   areDetailsVisible: PropTypes.bool.isRequired,
-  className: PropTypes.string,
   currentRecommendation: PropTypes.object,
+  extraClassName: PropTypes.string,
   forceDetailsVisible: PropTypes.bool,
 }
 
