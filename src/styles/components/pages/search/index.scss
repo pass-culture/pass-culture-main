@@ -1,29 +1,6 @@
 @import 'SearchFilter.scss';
-@import 'SearchResult.scss';
+@import 'SearchResultItem.scss';
 @import 'NavByOfferType.scss';
-
-/*
-.button.is-rounded.is-medium {
-  border-radius: $control-radius !important;
-  border-bottom-left-radius: 0 !important;
-  border-top-left-radius: 0 !important;
-  background-color: $primary;
-  color: white;
-}
-
-.button:hover,
-.button.is-hovered {
-  border-color: $primary;
-}
-
-.button.is-secondary {
-  padding-left: 0.5em;
-}
-
-.input {
-  border-color: $grey;
-}
-*/
 
 .search-picture {
   @extend .is-relative;

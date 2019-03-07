@@ -1,19 +1,16 @@
 /* eslint
   react/jsx-one-expression-per-line: 0 */
-import { requestData } from 'pass-culture-shared'
+// import { requestData } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import React, { Component, Fragment } from 'react'
 import Dotdotdot from 'react-dotdotdot'
 
 import { getQueryURL } from '../../../helpers'
 import { getRecommendationDateString } from './utils'
-import { recommendationNormalizer } from '../../../utils/normalizers'
+// import { recommendationNormalizer } from '../../../utils/normalizers'
 
 class RawSearchResultItem extends Component {
-  componentDidMount() {
-    this.onRequestItem()
-  }
-
+  /*
   handleClickRecommendation = recommendation => {
     if (recommendation.isClicked) {
       return
@@ -29,6 +26,7 @@ class RawSearchResultItem extends Component {
 
     dispatch(requestData('PATCH', path, options))
   }
+  */
 
   handleRedirectToItem = () => {
     const { history, location, recommendation } = this.props
@@ -39,16 +37,16 @@ class RawSearchResultItem extends Component {
     history.push(linkURL)
   }
 
+  /*
   handleRequestSuccess = (state, action) => {
     this.handleClickRecommendation(action.data)
     this.handleRedirectToItem()
   }
 
-  onRequestItem = () => {
-    const { dispatch, match } = this.props
-    const {
-      params: { mediationId, offerId },
-    } = match
+  onItem = () => {
+    const { dispatch, recommendation } = this.props
+    const offerId = recommendation && recommendation.offerId
+    const mediationId = recommendation && recommendation.mediationId
 
     let path = `recommendations/offers/${offerId}`
     if (mediationId) {
@@ -62,43 +60,52 @@ class RawSearchResultItem extends Component {
       })
     )
   }
+  */
 
   render() {
     const { recommendation } = this.props
 
     return (
       <li className="recommendation-list-item">
-        <hr className="dotted-top-primary" />
         <div
-          className="flex-columns"
-          onClick={this.onRequestItem}
-          onKeyPress={this.onRequestItem}
+          className="to-details"
+          onClick={
+            // this.onItem
+            this.handleRedirectToItem
+          }
+          onKeyPress={
+            // this.onItem
+            this.handleRedirectToItem
+          }
           role="button"
           tabIndex={0}
         >
-          <div className="image flex-0 dotted-right-primary flex-rows flex-center">
-            <img src={recommendation.thumbUrl} alt="" />
-          </div>
-          <div className="m18 flex-1">
-            {recommendation.offer && (
-              <Fragment>
-                <h5
-                  className="fs18 is-bold"
-                  title={recommendation.offer.eventOrThing.name}
-                >
-                  <Dotdotdot clamp="2">
-                    {recommendation.offer.eventOrThing.name}
-                  </Dotdotdot>
-                </h5>
-                <span id="recommendation-date" className="fs13">
-                  {recommendation.offer &&
-                    getRecommendationDateString(recommendation.offer)}
-                </span>
-              </Fragment>
-            )}
-          </div>
-          <div className="flex-center items-center is-primary-text">
-            <span aria-hidden className="icon-legacy-next" title="" />
+          <hr className="dotted-top-primary" />
+          <div className="flex-columns">
+            <div className="image flex-0 dotted-right-primary flex-rows flex-center">
+              <img src={recommendation.thumbUrl} alt="" />
+            </div>
+            <div className="m18 flex-1">
+              {recommendation.offer && (
+                <Fragment>
+                  <h5
+                    className="fs18 is-bold"
+                    title={recommendation.offer.eventOrThing.name}
+                  >
+                    <Dotdotdot clamp="2">
+                      {recommendation.offer.eventOrThing.name}
+                    </Dotdotdot>
+                  </h5>
+                  <span id="recommendation-date" className="fs13">
+                    {recommendation.offer &&
+                      getRecommendationDateString(recommendation.offer)}
+                  </span>
+                </Fragment>
+              )}
+            </div>
+            <div className="flex-center items-center is-primary-text">
+              <span aria-hidden className="icon-legacy-next" title="" />
+            </div>
           </div>
         </div>
       </li>
@@ -107,10 +114,9 @@ class RawSearchResultItem extends Component {
 }
 
 RawSearchResultItem.propTypes = {
-  dispatch: PropTypes.func.isRequired,
+  // dispatch: PropTypes.func.isRequired,
   history: PropTypes.object.isRequired,
   location: PropTypes.object.isRequired,
-  match: PropTypes.object.isRequired,
   recommendation: PropTypes.object.isRequired,
 }
 

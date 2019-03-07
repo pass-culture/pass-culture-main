@@ -57,9 +57,9 @@ class RawSearch extends PureComponent {
   }
 
   handleRecommendationsRequest = () => {
-    const { dispatch, match, query } = this.props
+    const { dispatch, location, query } = this.props
 
-    if (match.params.view !== 'resultats') {
+    if (!location.pathname.includes('resultats')) {
       return
     }
 
@@ -163,7 +163,6 @@ class RawSearch extends PureComponent {
     const {
       history,
       location,
-      match,
       query,
       recommendations,
       typeSublabels,
@@ -188,12 +187,12 @@ class RawSearch extends PureComponent {
 
     // ******************** Displaying datas helpers ********************** //
     let headerTitle = 'Recherche'
-    if (match.params.view === 'resultats')
+    if (location.pathname.includes('/resultats'))
       headerTitle = `${headerTitle} : résultats`
 
     let description
     const category = decodeURIComponent(queryParams.categories)
-    if (location.pathname.indexOf('/resultats/') !== -1) {
+    if (location.pathname.includes('/resultats/')) {
       description = getDescriptionForSublabel(
         category,
         typeSublabelsAndDescription
@@ -203,7 +202,9 @@ class RawSearch extends PureComponent {
     return (
       <main role="main" className="search-page page with-footer with-header">
         <Header title={headerTitle} />
-        {match.params.view && <BackButton onClick={this.onBackToSearchHome} />}
+        {location.pathname.includes('/resultats') && (
+          <BackButton onClick={this.onBackToSearchHome} />
+        )}
         <button
           type="button"
           id="search-close-button"

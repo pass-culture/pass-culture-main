@@ -8,7 +8,10 @@
 }
 
 .recommendation-list-item {
-  
+  .to-details {
+    cursor: pointer;
+    outline: none;
+  }
 }
 
 .recommendation-list-item .image {

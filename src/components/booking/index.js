@@ -1,6 +1,7 @@
 /* eslint
   react/jsx-one-expression-per-line: 0 */
-import React from 'react'
+import classnames from 'classnames'
+import React, { Fragment, PureComponent } from 'react'
 import get from 'lodash.get'
 import moment from 'moment'
 import PropTypes from 'prop-types'
@@ -36,7 +37,7 @@ const transitionStyles = {
   exited: { display: 'none', visibility: 'none' },
 }
 
-class Booking extends React.PureComponent {
+class Booking extends PureComponent {
   constructor(props) {
     super(props)
     this.formId = 'form-create-booking'
@@ -129,7 +130,7 @@ class Booking extends React.PureComponent {
     const showCancelButton = !isSubmitting && !bookedPayload && !isCancelled
     const showSubmitButton = showCancelButton && canSubmitForm
     return (
-      <React.Fragment>
+      <Fragment>
         {showCancelButton && (
           <button
             type="reset"
@@ -166,18 +167,19 @@ class Booking extends React.PureComponent {
             <b>OK</b>
           </button>
         )}
-      </React.Fragment>
+      </Fragment>
     )
   }
 
   render() {
     const userConnected = false
     const {
-      booking,
-      recommendation,
       bookables,
+      booking,
+      extraClassName,
       isCancelled,
       isEvent,
+      recommendation,
     } = this.props
     const { bookedPayload, isErrored, isSubmitting, mounted } = this.state
     const showForm =
@@ -205,7 +207,10 @@ class Booking extends React.PureComponent {
         {state => (
           <div
             id="booking-card"
-            className="is-overlay is-clipped flex-rows"
+            className={classnames(
+              'is-overlay is-clipped flex-rows',
+              extraClassName
+            )}
             style={{ ...defaultStyle, ...transitionStyles[state] }}
           >
             <div className="main flex-rows flex-1 scroll-y">
@@ -251,6 +256,7 @@ class Booking extends React.PureComponent {
 
 Booking.defaultProps = {
   bookables: null,
+  extraClassName: null,
   isEvent: false,
   recommendation: null,
 }
@@ -258,6 +264,7 @@ Booking.defaultProps = {
 Booking.propTypes = {
   bookables: PropTypes.array,
   dispatch: PropTypes.func.isRequired,
+  extraClassName: PropTypes.string,
   history: PropTypes.object.isRequired,
   isEvent: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
   match: PropTypes.object.isRequired,

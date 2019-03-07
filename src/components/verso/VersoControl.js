@@ -72,7 +72,8 @@ VersoControl.propTypes = {
   dispatch: PropTypes.func.isRequired,
   isFavorite: PropTypes.bool,
   recommendationId: PropTypes.string,
-  walletValue: PropTypes.number.isRequired,
+  walletValue: PropTypes.oneOfType([PropTypes.number, PropTypes.string])
+    .isRequired,
 }
 
 const mapStateToProps = (state, ownProps) => {

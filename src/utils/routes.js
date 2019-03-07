@@ -60,7 +60,7 @@ const routes = [
     // exemple d'URL optimale qui peut être partagée
     // par les sous composants
     path:
-      '/decouverte/:offerId?/:mediationId?/:view(booking|verso|cancelled)?/:bookingId?',
+      '/decouverte/:offerId?/:mediationId?/:view(booking|cancelled|verso)?/:bookingId?',
     title: 'Les offres',
   },
   {
@@ -68,7 +68,7 @@ const routes = [
     disabled: false,
     icon: 'search-w',
     path:
-      '/recherche/:view(resultats)?/:option?/:subOption?/:offerId?/:mediationId?',
+      '/recherche/(resultats)?/:option?/:subOption?/:offerId?/:mediationId?/:view(booking|cancelled)?/:bookingId?',
     title: 'Recherche',
   },
   {

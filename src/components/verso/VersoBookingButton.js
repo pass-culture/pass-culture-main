@@ -17,10 +17,10 @@ import currentRecommendation from '../../selectors/currentRecommendation'
 
 export const getButton = (label, onClick) => (
   <button
-    type="button"
-    key={label}
     className="no-border no-background no-outline is-block py12 is-bold fs14"
+    key={label}
     onClick={onClick}
+    type="button"
   >
     <span>{label}</span>
   </button>
