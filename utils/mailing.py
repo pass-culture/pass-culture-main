@@ -42,12 +42,14 @@ def save_and_send(data: dict) -> bool:
     return successfully_sent_email
 
 
-def send_content_and_update(email: Email):
+def send_content_and_update(email: Email) -> bool:
     response = app.mailjet_client.send.create(data=email.content)
     if response.status_code == 200:
         email.status = 'SENT'
         email.datetime = datetime.utcnow()
         PcObject.check_and_save(email)
+        return True
+    return False
 
 
 def make_batch_cancellation_email(bookings, cancellation_case):

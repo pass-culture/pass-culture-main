@@ -1447,10 +1447,11 @@ def test_send_content_and_update_updates_email_when_send_mail_successful(app):
     app.mailjet_client.send.create.return_value = mocked_response
 
     # when
-    send_content_and_update(email)
+    successfully_sent = send_content_and_update(email)
 
     # then
     db.session.refresh(email)
+    assert successfully_sent
     assert email.status == 'SENT'
     assert email.datetime == datetime(2019, 1, 1, 12, 0, 0)
     app.mailjet_client.send.create.assert_called_once_with(data=email_content)
@@ -1475,9 +1476,10 @@ def test_send_content_and_update_does_not_update_email_when_send_mail_unsuccessf
     app.mailjet_client.send.create.return_value = mocked_response
 
     # when
-    send_content_and_update(email)
+    successfully_sent = send_content_and_update(email)
 
     # then
+    assert not successfully_sent
     db.session.refresh(email)
     assert email.status == 'ERROR'
     assert email.datetime == datetime(2018, 12, 1, 12, 0, 0)

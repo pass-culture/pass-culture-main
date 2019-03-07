@@ -14,7 +14,8 @@ class Email(PcObject,
     content = Column(JSON,
                      nullable=False)
     status = Column(String(12),
-                    nullable=False)
+                    nullable=False,
+                    index=True)
 
     datetime = Column(DateTime,
                       nullable=False,

@@ -1,8 +1,7 @@
-from datetime import datetime
-
 import pytest
+from datetime import datetime
 from freezegun import freeze_time
-from unittest.mock import call, patch, MagicMock
+from unittest.mock import MagicMock
 
 from models import PcObject
 from models.db import db
@@ -15,7 +14,8 @@ from tests.test_utils import create_email
 @clean_database
 @freeze_time('2019-01-01 12:00:00')
 @mocked_mail
-def test_send_remedial_emails_sets_status_to_sent_and_datetime_to_now_only_to_emails_in_error_when_successfully_sent(app):
+def test_send_remedial_emails_sets_status_to_sent_and_datetime_to_now_only_to_emails_in_error_when_successfully_sent(
+        app):
     # given
     email_content1 = {'Html-part': '<html><body></body></html>', 'To': ['recipient@email']}
     email1 = create_email(email_content1, status='ERROR', time=datetime(2018, 12, 1, 12, 0, 0))
@@ -32,6 +32,7 @@ def test_send_remedial_emails_sets_status_to_sent_and_datetime_to_now_only_to_em
     send_remedial_emails()
 
     # then
+    assert app.mailjet_client.send.create.call_count == 2
     db.session.refresh(email1)
     db.session.refresh(email2)
     db.session.refresh(email3)
@@ -46,7 +47,7 @@ def test_send_remedial_emails_sets_status_to_sent_and_datetime_to_now_only_to_em
 @clean_database
 @freeze_time('2019-01-01 12:00:00')
 @mocked_mail
-def test_send_remedial_emails_does_not_change_email_when_unsuccessfully_sent(app):
+def test_send_remedial_emails_does_not_change_email_when_unsuccessfully_sent_and_calls_mailing_api_once(app):
     # given
     email_content1 = {'Html-part': '<html><body></body></html>', 'To': ['recipient@email']}
     email1 = create_email(email_content1, status='ERROR', time=datetime(2018, 12, 1, 12, 0, 0))
@@ -63,6 +64,7 @@ def test_send_remedial_emails_does_not_change_email_when_unsuccessfully_sent(app
     send_remedial_emails()
 
     # then
+    assert app.mailjet_client.send.create.call_count == 1
     db.session.refresh(email1)
     db.session.refresh(email2)
     db.session.refresh(email3)
