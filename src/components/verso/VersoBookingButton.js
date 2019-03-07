@@ -31,13 +31,27 @@ export const getBookingName = booking =>
 
 export const getMediationId = booking => booking.recommendation.mediationId
 export const getOfferId = booking => booking.recommendation.offerId
+export const getCancelSuccessRedirectFromBookingAndSearch = (
+  booking,
+  search
+) => {
+  const offerId = getOfferId(booking)
+  const mediationId = getMediationId(booking)
+  const url = `/decouverte/${offerId}/${mediationId}/cancelled/${
+    booking.id
+  }${search}`
+  return url
+}
 
 class VersoBookingButton extends React.PureComponent {
   renderBookingLink = () => {
-    const { offer, url } = this.props
+    const { location, offer, url } = this.props
+    const { search } = location
     const priceValue = get(offer, 'price') || get(offer, 'displayPrice')
+    const to = `${url}/booking${search}`
+
     return (
-      <Link to={`${url}/booking`} className="button is-primary is-medium">
+      <Link to={to} className="button is-primary is-medium">
         <Price free="——" value={priceValue} />
         <span>J&apos;y vais!</span>
       </Link>
@@ -45,14 +59,15 @@ class VersoBookingButton extends React.PureComponent {
   }
 
   onCancelSuccess = booking => {
-    const { dispatch, history } = this.props
+    const { dispatch, history, location } = this.props
+    const { search } = location
     dispatch(closeSharePopin())
 
-    const offerId = getOfferId(booking)
-    const mediationId = getMediationId(booking)
-    history.push(
-      `/decouverte/${offerId}/${mediationId}/cancelled/${booking.id}`
+    const redirect = getCancelSuccessRedirectFromBookingAndSearch(
+      booking,
+      search
     )
+    history.push(redirect)
   }
 
   onCancelFailure = (state, request) => {
@@ -170,6 +185,7 @@ VersoBookingButton.propTypes = {
   dispatch: PropTypes.func.isRequired,
   history: PropTypes.object.isRequired,
   isFinished: PropTypes.bool,
+  location: PropTypes.object.isRequired,
   offer: PropTypes.object,
   url: PropTypes.string.isRequired,
 }
