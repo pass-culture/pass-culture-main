@@ -18,9 +18,10 @@ import HeroSection from '../../layout/HeroSection'
 import Spinner from '../../layout/Spinner'
 import Main from '../../layout/Main'
 import { offerNormalizer } from '../../../utils/normalizers'
-import { mapApiToWindow } from '../../../utils/pagination'
-
-import { translateBrowserUrlToApiUrl } from '../../../utils/translate'
+import {
+  mapApiToBrowser,
+  translateBrowserUrlToApiUrl,
+} from '../../../utils/translate'
 
 class RawOffers extends Component {
   constructor(props) {
@@ -30,7 +31,7 @@ class RawOffers extends Component {
     const queryParams = query.parse()
     this.state = {
       hasMore: false,
-      keywordsValue: queryParams['mots-cles'],
+      keywordsValue: queryParams[mapApiToBrowser.keywords],
       isLoading: false,
     }
     props.dispatch(assignData({ offers: [] }))
@@ -92,7 +93,7 @@ class RawOffers extends Component {
     const isEmptySearch = typeof value === 'undefined' || value === ''
 
     query.change({
-      [mapApiToWindow.keywords]: value === '' ? null : value,
+      [mapApiToBrowser.keywords]: value === '' ? null : value,
       page: null,
     })
 
@@ -103,14 +104,19 @@ class RawOffers extends Component {
 
   render() {
     const { offers, offerer, pagination, query, venue, user } = this.props
-    const { lieu, search, orderBy, structure } = query.parse() || {}
+    const queryParams = query.parse()
+    const apiParams = translateBrowserUrlToApiUrl(queryParams)
+    const { keywords, venueId, offererId, orderBy } = apiParams
+    
     const { hasMore, isLoading } = this.state
 
     let createOfferTo = `/offres/nouveau`
-    if (lieu) {
-      createOfferTo = `${createOfferTo}?lieu=${lieu}`
-    } else if (structure) {
-      createOfferTo = `${createOfferTo}?structure=${structure}`
+    if (venueId) {
+      createOfferTo = `${createOfferTo}?${mapApiToBrowser.venueId}=${venueId}`
+    } else if (offererId) {
+      createOfferTo = `${createOfferTo}?${
+        mapApiToBrowser.offererId
+      }=${offererId}`
     }
 
     const [orderName, orderDirection] = (orderBy || '').split('+')
@@ -136,7 +142,7 @@ class RawOffers extends Component {
                 className="input"
                 placeholder="Saisissez un ou plusieurs mots complets"
                 type="text"
-                defaultValue={search}
+                defaultValue={keywords}
               />
             </p>
             <p className="control">
@@ -163,7 +169,7 @@ class RawOffers extends Component {
               <button
                 className="delete is-small"
                 onClick={() =>
-                  query.change({ [mapApiToWindow.offererId]: null })
+                  query.change({ [mapApiToBrowser.offererId]: null })
                 }
               />
             </li>
@@ -175,7 +181,7 @@ class RawOffers extends Component {
                 <button
                   className="delete is-small"
                   onClick={() =>
-                    query.change({ [mapApiToWindow.venueId]: null })
+                    query.change({ [mapApiToBrowser.venueId]: null })
                   }
                 />
               </li>

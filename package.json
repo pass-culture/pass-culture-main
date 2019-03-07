@@ -125,6 +125,8 @@
     "testcafe": "testcafe 'chrome:headless' testcafe",
     "precommit": "pretty-quick --staged",
     "prettier": "$(yarn bin)/prettier --write 'src/**/*.js'",
+    "test:cafe": "testcafe 'chrome:headless' testcafe",
+    "test:unit": "jest --env=jsdom",
     "symlink-shared": "if [ -d \"../shared\" ]; then cd node_modules && rm -rf pass-culture-shared && ln -sf ../../shared pass-culture-shared && cd ../../shared && yarn run compile; fi",
     "start": "node scripts/start.js"
   },
