@@ -29,7 +29,10 @@ jobs:
             cd ~/pass-culture-main/webapp
             yarn install
             yarn fontello
-            yarn test:unit
+            yarn test:unit --coverage
+            yarn coveralls
+      - store_artifacts:
+          path: coverage
       - run:
           name: Install dockerize
           command: |

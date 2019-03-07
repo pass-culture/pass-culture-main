@@ -10,6 +10,7 @@
 /testcafe/screenshots/*-actual.png
 
 # production
+/public/version.txt
 /build
 target.zip
 

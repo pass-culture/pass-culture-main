@@ -1,5 +1,7 @@
 # pass-culture-browser
 
+[![Coverage Status](https://coveralls.io/repos/github/betagouv/pass-culture-browser/badge.svg?branch=master)](https://coveralls.io/github/betagouv/pass-culture-browser?branch=master)
+
 C'est la version (browser) de l'application frontend du Pass Culture.
 
 Il faut aller voir le README dans https://github.com/betagouv/pass-culture-main
