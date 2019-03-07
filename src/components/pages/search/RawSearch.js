@@ -70,7 +70,7 @@ class RawSearch extends PureComponent {
     dispatch(
       requestData('GET', path, {
         handleSuccess: (state, action) => {
-          const hasMore = action.data && action.data.length
+          const hasMore = action.data && action.data.length > 0
           this.setState({ hasMore })
         },
       })
