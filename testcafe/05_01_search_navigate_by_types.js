@@ -157,7 +157,7 @@ test('Je vois les résultats de la page de résultats de la catégorie Lire', as
     .find('img')
   const linkResult = Selector('.search-results')
     .nth(0)
-    .find('a')
+    .find('.to-details')
 
   await t
     .expect(searchResultsTitle.innerText)
