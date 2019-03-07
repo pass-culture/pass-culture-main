@@ -4,6 +4,7 @@ babel==2.6.0
 bcrypt==3.1.4
 beautifulsoup4==4.6.3
 colorthief==0.2.1
+coveralls==1.6.0
 dateparser==0.7.0
 freezegun==0.3.11
 Flask==1.0.2
