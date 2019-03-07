@@ -25,3 +25,7 @@ def feature_cron_send_wallet_balances():
 
 def feature_cron_retrieve_offerers_bank_information():
     return os.environ.get('CRON_RETRIEVE_OFFERERS_BANK_INFORMATION', False)
+
+
+def feature_cron_send_remedial_emails():
+    return os.environ.get('CRON_SEND_REMEDIAL_EMAILS', False)

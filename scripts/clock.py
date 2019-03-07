@@ -9,7 +9,7 @@ from mailjet_rest import Client
 from models.db import db
 from models.install import install_models
 from repository.features import feature_cron_send_final_booking_recaps_enabled, feature_cron_generate_and_send_payments, \
-    feature_cron_retrieve_offerers_bank_information
+    feature_cron_retrieve_offerers_bank_information, feature_cron_send_remedial_emails
 from repository.features import feature_cron_send_wallet_balances
 from utils.config import API_ROOT_PATH
 from utils.logger import logger
@@ -69,6 +69,15 @@ def pc_retrieve_offerers_bank_information():
     logger.info("[BATCH][BANK INFORMATION] Cron retrieve_offerers_bank_information: END")
 
 
+def pc_send_remedial_emails():
+    logger.info("[BATCH][REMEDIAL EMAILS] Cron send_remedial_emails: START")
+    with app.app_context():
+        from scripts.send_remedial_emails import send_remedial_emails
+        app.mailjet_client = Client(auth=(MAILJET_API_KEY, MAILJET_API_SECRET), version='v3')
+        send_remedial_emails()
+    logger.info("[BATCH][REMEDIAL EMAILS] Cron send_remedial_emails: END")
+
+
 if __name__ == '__main__':
     scheduler = BlockingScheduler()
 
@@ -84,4 +93,7 @@ if __name__ == '__main__':
     if feature_cron_retrieve_offerers_bank_information():
         scheduler.add_job(pc_retrieve_offerers_bank_information, 'cron', id='retrieve_offerers_bank_information',
                           day='*')
+    if feature_cron_send_remedial_emails():
+        scheduler.add_job(pc_send_remedial_emails, 'cron', id='send_remedial_emails', minutes=15)
+
     scheduler.start()
