@@ -1,6 +1,6 @@
 import os
 
-from utils.config import IS_PROD
+from utils.config import IS_PROD, IS_INTEGRATION
 
 
 def feature_paid_offers_enabled():
@@ -8,7 +8,7 @@ def feature_paid_offers_enabled():
 
 
 def feature_send_mail_to_users_enabled():
-    return IS_PROD
+    return IS_PROD or IS_INTEGRATION
 
 
 def feature_cron_send_final_booking_recaps_enabled():
