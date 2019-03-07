@@ -21,6 +21,18 @@ jobs:
       - checkout:
           path: ~/pass-culture-main/pro
       - run:
+          name: Running Unit Tests
+          command: |
+            export PATH=${PATH:44}
+            export NVM_BIN=/usr/bin/nodejs
+            export PATH=$NVM_BIN:$PATH
+            cd ~/pass-culture-main/pro
+            yarn install
+            yarn testunit --coverage
+            yarn coveralls
+      - store_artifacts:
+          path: coverage
+      - run:
           name: Install dockerize
           command: |
             wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
