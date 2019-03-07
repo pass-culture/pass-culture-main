@@ -3,13 +3,15 @@ from datetime import datetime, timedelta
 import pytest
 from freezegun import freeze_time
 
-from models import Thing, PcObject, Event
+from models import Event, Offer, PcObject, Stock, Thing
 from models.offer_type import EventType, ThingType
 from repository.offer_queries import department_or_national_offers, \
     find_activation_offers, \
     find_offers_with_filter_parameters, \
     get_offers_for_recommendations_search, \
-    get_active_offers_by_type
+    get_active_offers_by_type, \
+    _has_remaining_stock_predicate
+
 from tests.conftest import clean_database
 from tests.test_utils import create_booking, \
     create_event, \
@@ -629,6 +631,116 @@ def test_get_active_offers_should_not_return_activation_thing(app):
     # Then
     assert thing_93 in offers
     assert thing_activation_93 not in offers
+
+
+@clean_database
+@pytest.mark.standalone
+def test_get_active_offers_should_return_offers_with_stock(app):
+    # Given
+    thing = create_thing(thing_name='Lire un livre', is_national=True)
+    offerer = create_offerer()
+    venue = create_venue(offerer, postal_code='34000', departement_code='34')
+    offer = create_thing_offer(venue, thing)
+    stock = create_stock_from_offer(offer, available=2)
+    booking = create_booking(create_user(), stock, venue=venue, quantity=2, is_cancelled=True)
+    PcObject.check_and_save(booking)
+
+    # When
+    offers = get_active_offers_by_type(Thing, user=create_user(email="plop@plop.com"), departement_codes=['00'], offer_id=None)
+
+    # Then
+    assert len(offers) == 1
+
+
+@clean_database
+@pytest.mark.standalone
+def test_get_active_offers_should_not_return_offers_with_no_stock(app):
+    # Given
+    thing = create_thing(thing_name='Lire un livre', is_national=True)
+    offerer = create_offerer()
+    venue = create_venue(offerer, postal_code='34000', departement_code='34')
+    offer = create_thing_offer(venue, thing)
+    stock = create_stock_from_offer(offer, available=2, price=0)
+    user = create_user()
+    booking1 = create_booking(user, stock, venue=venue, quantity=2, is_cancelled=True)
+    booking2 = create_booking(user, stock, venue=venue, quantity=2)
+    PcObject.check_and_save(booking1, booking2)
+
+    # When
+    offers = get_active_offers_by_type(Thing, user=create_user(email="plop@plop.com"), departement_codes=['00'], offer_id=None)
+
+    # Then
+    assert len(offers) == 0
+
+
+@clean_database
+@pytest.mark.standalone
+def test_offer_remaining_stock_filter_does_not_filter_offer_with_cancelled_bookings(app):
+    # Given
+    thing = create_thing(thing_name='Lire un livre', is_national=True)
+    offerer = create_offerer()
+    venue = create_venue(offerer, postal_code='34000', departement_code='34')
+    offer = create_thing_offer(venue, thing)
+    stock = create_stock_from_offer(offer, available=2)
+    booking = create_booking(create_user(), stock, venue=venue, quantity=2, is_cancelled=True)
+    PcObject.check_and_save(booking)
+
+    # When
+    nb_offers_with_remaining_stock = Offer.query \
+                                          .join(Stock) \
+                                          .filter(_has_remaining_stock_predicate()) \
+                                          .count()
+
+    # Then
+    assert nb_offers_with_remaining_stock == 1
+
+
+@clean_database
+@pytest.mark.standalone
+def test_offer_remaining_stock_filter_filters_offer_with_no_remaining_stock(app):
+    # Given
+    thing = create_thing(thing_name='Lire un livre', is_national=True)
+    offerer = create_offerer()
+    venue = create_venue(offerer, postal_code='34000', departement_code='34')
+    offer = create_thing_offer(venue, thing)
+    stock = create_stock_from_offer(offer, available=2, price=0)
+    user = create_user()
+    booking1 = create_booking(user, stock, venue=venue, quantity=2, is_cancelled=True)
+    booking2 = create_booking(user, stock, venue=venue, quantity=2)
+    PcObject.check_and_save(booking1, booking2)
+
+    # When
+    nb_offers_with_remaining_stock = Offer.query \
+                                          .join(Stock) \
+                                          .filter(_has_remaining_stock_predicate()) \
+                                          .count()
+
+    # Then
+    assert nb_offers_with_remaining_stock == 0
+
+
+@clean_database
+@pytest.mark.standalone
+def test_offer_remaining_stock_filter_filters_offer_with_one_full_stock_and_one_empty_stock(app):
+    # Given
+    thing = create_thing(thing_name='Lire un livre', is_national=True)
+    offerer = create_offerer()
+    venue = create_venue(offerer, postal_code='34000', departement_code='34')
+    offer = create_thing_offer(venue, thing)
+    stock1 = create_stock_from_offer(offer, available=2, price=0)
+    stock2 = create_stock_from_offer(offer, available=2, price=0)
+    user = create_user()
+    booking1 = create_booking(user, stock1, venue=venue, quantity=2)
+    PcObject.check_and_save(booking1, stock2)
+
+    # When
+    nb_offers_with_remaining_stock = Offer.query \
+                                          .join(Stock) \
+                                          .filter(_has_remaining_stock_predicate()) \
+                                          .count()
+
+    # Then
+    assert nb_offers_with_remaining_stock == 1
 
 
 def _create_event_stock_and_offer_for_date(venue, date):

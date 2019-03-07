@@ -230,8 +230,9 @@ def find_offers_with_filter_parameters(
     return query
 
 def _has_remaining_stock_predicate():
-    return (Stock.available == None) | (Stock.available > Booking.query.filter(Booking.stockId == Stock.id)
-        .statement.with_only_columns([func.coalesce(func.sum(Booking.quantity), 0)]))
+    return (Stock.available == None) \
+           | (Stock.available > Booking.query.filter((Booking.stockId == Stock.id) & (Booking.isCancelled == False))
+                                             .statement.with_only_columns([func.coalesce(func.sum(Booking.quantity), 0)]))
 
 def find_searchable_offer(offer_id):
     return Offer.query.filter_by(id=offer_id) \
