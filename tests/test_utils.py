@@ -377,7 +377,9 @@ def create_offerer(
         validation_token=None,
         idx=None,
         is_active=True,
-        date_created=datetime.utcnow()
+        date_created=datetime.utcnow(),
+        latitude=None,
+        longitude=None
 ):
     offerer = Offerer()
     offerer.siren = siren
@@ -389,6 +391,8 @@ def create_offerer(
     offerer.validationToken = validation_token
     offerer.id = idx
     offerer.dateCreated = date_created
+    offerer.latitude = latitude
+    offerer.longitude = longitude
     return offerer
 
 
