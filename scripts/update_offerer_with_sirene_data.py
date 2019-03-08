@@ -1,3 +1,4 @@
+from connectors import api_entreprises
 from models import PcObject
 from repository import offerer_queries
 
@@ -26,3 +27,8 @@ def update_offerer_with_sirene_data(data: dict):
     offerer.longitude = parsed_data.get('longitude') or offerer.longitude
     offerer.postalCode = parsed_data.get('postalCode') or offerer.postalCode
     PcObject.check_and_save(offerer)
+
+
+def update_offerer(siren: str):
+    api_sirene_response = api_entreprises.get_by_siren(siren)
+    update_offerer_with_sirene_data(api_sirene_response.json())

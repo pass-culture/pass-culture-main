@@ -116,7 +116,7 @@ def make_offerer_booking_recap_email_after_user_action(booking, is_cancellation=
     }
 
 
-def write_object_validation_email(offerer, user_offerer, get_by_siren=api_entreprises.get_by_siren):
+def write_object_validation_email(offerer, user_offerer, get_by_siren=api_entreprises.get_by_offerer):
     vars_obj_user = vars(user_offerer.user)
     vars_obj_user.pop('clearTextPassword', None)
     api_entreprise = get_by_siren(offerer).json()

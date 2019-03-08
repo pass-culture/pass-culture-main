@@ -3,7 +3,7 @@ from unittest.mock import patch, MagicMock
 
 import pytest
 
-from connectors.api_entreprises import ApiEntrepriseException, get_by_siren
+from connectors.api_entreprises import ApiEntrepriseException, get_by_offerer
 from tests.test_utils import create_offerer
 
 
@@ -19,7 +19,7 @@ def test_write_object_validation_email_raises_ApiEntrepriseException_when_siren_
 
     #When
     with pytest.raises(ApiEntrepriseException) as error:
-        get_by_siren(offerer)
+        get_by_offerer(offerer)
 
     #Then
     assert 'Error getting API entreprise DATA for SIREN' in str(error)

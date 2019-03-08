@@ -8,7 +8,7 @@ que retournent ces _web services_ et qu'on voudrait éventuellement transformer 
 
 Par exemple :
 ```python
-def get_by_siren(offerer: Offerer) -> dict:
+def get_by_offerer(offerer: Offerer) -> dict:
     response = requests.get("https://sirene.entreprise.api.gouv.fr/v1/siren/" + offerer.siren, verify=False)
 
     if response.status_code != 200:
@@ -40,7 +40,7 @@ def test_write_object_validation_email_raises_ApiEntrepriseException_when_siren_
 
     #When
     with pytest.raises(ApiEntrepriseException) as error:
-        get_by_siren(offerer)
+        get_by_offerer(offerer)
 
     #Then
     assert 'Error getting API entreprise DATA for SIREN' in str(error)
