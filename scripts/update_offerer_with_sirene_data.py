@@ -3,7 +3,7 @@ from models import PcObject
 from repository import offerer_queries
 
 
-def parse_sirene_data(data: dict) -> dict:
+def _parse_sirene_data(data: dict) -> dict:
     field_equivalence = {
         "siren": "siren",
         "l1_normalisee": "name",
@@ -18,7 +18,7 @@ def parse_sirene_data(data: dict) -> dict:
 
 
 def update_offerer_with_sirene_data(data: dict):
-    parsed_data = parse_sirene_data(data)
+    parsed_data = _parse_sirene_data(data)
     offerer = offerer_queries.find_by_siren(parsed_data['siren'])
     offerer.address = parsed_data.get('address') or offerer.address
     offerer.name = parsed_data.get('name') or offerer.name

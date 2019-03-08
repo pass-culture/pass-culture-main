@@ -2,67 +2,9 @@ import pytest
 
 from models import PcObject
 from models.db import db
-from scripts.update_offerer_with_sirene_data import parse_sirene_data, update_offerer_with_sirene_data
+from scripts.update_offerer_with_sirene_data import update_offerer_with_sirene_data
 from tests.conftest import clean_database
 from tests.test_utils import create_offerer
-
-
-@pytest.mark.standalone
-def test_parse_sirene_data_returns_dictionary_with_model_keys():
-    # given
-    sirene_data = {
-        "siege_social": {
-            "l1_normalisee": 'Nom',
-            "l4_normalisee": '1 rue Test',
-            "libelle_commune": 'Testville',
-            "latitude": '48.853',
-            "longitude": '2.35',
-            "code_postal": '75000',
-            "siren": '123456789'
-        }
-    }
-
-    # when
-    parsed_data = parse_sirene_data(sirene_data)
-
-    # then
-    assert parsed_data == {
-        "name": 'Nom',
-        "address": '1 rue Test',
-        "city": 'Testville',
-        "latitude": '48.853',
-        "longitude": '2.35',
-        "postalCode": '75000',
-        "siren": "123456789"
-    }
-
-
-@pytest.mark.standalone
-def test_parse_sirene_data_returns_dictionary_with_model_keys_even_with_missing_information():
-    # given
-    sirene_data = {
-        "siege_social": {
-            "l1_normalisee": 'Nom',
-            "libelle_commune": 'Testville',
-            "latitude": '48.853',
-            "longitude": '2.35',
-            "code_postal": '75000',
-            "siren": '123456789'
-        }
-    }
-
-    # when
-    parsed_data = parse_sirene_data(sirene_data)
-
-    # then
-    assert parsed_data == {
-        "name": 'Nom',
-        "city": 'Testville',
-        "latitude": '48.853',
-        "longitude": '2.35',
-        "postalCode": '75000',
-        "siren": "123456789"
-    }
 
 
 @pytest.mark.standalone
