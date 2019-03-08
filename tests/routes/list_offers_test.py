@@ -69,20 +69,20 @@ class Get:
             assert offers_1[-1]['dateCreated'] > offers_2[0]['dateCreated']
 
         @clean_database
-        def test_returns_offers_sorted_by_id_desc_with_order_by_in_params(self, app):
+        def test_results_are_sorted_by_id_desc_with_order_by_in_params(self, app):
             # given
             user = create_user(email='user@test.com')
             create_offers_for(user, 20)
             auth_request = TestClient().with_auth(email='user@test.com')
-            response_1 = auth_request.get(API_URL + '/offers?page=1')
+            first_page_response = auth_request.get(API_URL + '/offers?page=1')
 
             # when
-            response_2 = auth_request.get(API_URL + '/offers?page=2&orderBy=offer.id%20desc')
+            second_page_response = auth_request.get(API_URL + '/offers?page=2&orderBy=offer.id%20desc')
 
             # then
-            offers_1 = response_1.json()
-            offers_2 = response_2.json()
-            assert offers_1[-1]['dateCreated'] > offers_2[0]['dateCreated']
+            first_page_offers = first_page_response.json()
+            second_page_offers = second_page_response.json()
+            assert first_page_offers[-1]['dateCreated'] > second_page_offers[0]['dateCreated']
 
         @clean_database
         def test_results_are_filtered_by_given_venue_id(self, app):
