@@ -7,6 +7,14 @@
     <meta name="robots" content="noindex, nofollow">
 {% endblock %}
 
+{% block access_control %}
+    <ul class="nav navbar-nav navbar-right">
+        <li>
+            <a href="#">{{ current_user.email }}</a>
+        </li>
+    </ul>
+{% endblock %}
+
 {% block body %}
     {% if current_user.is_authenticated and current_user.isAdmin %}
         <div class="alert alert-info" role="alert">
