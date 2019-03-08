@@ -4,7 +4,7 @@ On trouvera dans le module `base_configuration` la classe `BaseAdminView` qui ce
 nos vues d'administration ainsi que le contrôle d'accès.
 
 ## Do
-Si besoin est de rajouter une nouvelle vue d'aministration, il faudra créer un nouvelle classe qui hérite de `BaseAdminView`
+Si besoin est de rajouter une nouvelle vue d'aministration, il faudra créer une nouvelle classe qui hérite de `BaseAdminView`
 et qui définit les possibilités qu'elle offre à l'utilisateur : les champs visibles, éditables, filtrables, recherchables, etc.
 Ces classes seront définies dans le module `custom_views`.
 
