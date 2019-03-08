@@ -12,12 +12,11 @@ class OffererAdminView(BaseAdminView):
 
 class UserAdminView(BaseAdminView):
     can_edit = True
-    column_list = ['id', 'email', 'firstName', 'lastName', 'publicName', 'dateOfBirth', 'postalCode']
+    column_list = ['id', 'canBookFreeOffers', 'email', 'firstName', 'lastName', 'publicName', 'dateOfBirth', 'postalCode']
     column_labels = dict(
         email='Email', firstName='Prénom', lastName='Nom', publicName="Nom d'utilsateur",
-        dateOfBirth='Date de naissance',
-        postalCode='Code postal'
+        dateOfBirth='Date de naissance', postalCode='Code postal', canBookFreeOffers='Peut réserver'
     )
     column_searchable_list = ['publicName']
-    column_filters = ['postalCode']
+    column_filters = ['postalCode', 'canBookFreeOffers']
     form_columns = ['firstName', 'lastName', 'publicName', 'dateOfBirth']
