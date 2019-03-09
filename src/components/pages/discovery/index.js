@@ -1,5 +1,4 @@
 import PropTypes from 'prop-types'
-import { withLogin } from 'pass-culture-shared'
 import React, { Fragment } from 'react'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
@@ -9,6 +8,7 @@ import { assignData, requestData } from 'redux-saga-data'
 
 import Deck from './Deck'
 import Booking from '../../booking'
+import { withRedirectToSigninWhenNotAuthenticated } from '../../hocs'
 import BackButton from '../../layout/BackButton'
 import Loader from '../../layout/Loader'
 import Footer from '../../layout/Footer'
@@ -173,7 +173,7 @@ const mapStateToProps = (state, { location }) => {
 }
 
 const DiscoveryPage = compose(
-  withLogin({ failRedirect: '/connexion' }),
+  withRedirectToSigninWhenNotAuthenticated,
   connect(mapStateToProps)
 )(RawDiscoveryPage)
 

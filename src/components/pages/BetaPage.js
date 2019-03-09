@@ -2,8 +2,7 @@
   react/jsx-one-expression-per-line: 0 */
 import React from 'react'
 import { Link } from 'react-router-dom'
-
-import { withLogin } from 'pass-culture-shared'
+import { withRedirectToDiscoveryWhenAlreadyAuthenticated } from '../hocs'
 
 export const RawBetaPage = () => (
   <div id="beta-page" className="page pc-gradient flex-rows">
@@ -39,4 +38,4 @@ export const RawBetaPage = () => (
   </div>
 )
 
-export default withLogin({ successRedirect: '/decouverte' })(RawBetaPage)
+export default withRedirectToDiscoveryWhenAlreadyAuthenticated(RawBetaPage)

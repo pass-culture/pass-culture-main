@@ -5,6 +5,7 @@ import React from 'react'
 import { Portal } from 'react-portal'
 import { NavLink } from 'react-router-dom'
 
+import { withRedirectToDiscoveryWhenAlreadyAuthenticated } from '../hocs'
 import Main from '../layout/Main'
 
 class SignupPage extends React.PureComponent {
@@ -118,4 +119,4 @@ class SignupPage extends React.PureComponent {
   }
 }
 
-export default SignupPage
+export default withRedirectToDiscoveryWhenAlreadyAuthenticated(SignupPage)

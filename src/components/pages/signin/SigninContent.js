@@ -35,12 +35,15 @@ class Signin extends React.PureComponent {
   }
 
   handleRequestSuccess = formResolver => () => {
-    const { history } = this.props
+    const { history, query } = this.props
     const nextstate = { isloading: false }
+    const queryParams = query.parse()
     this.setState(nextstate, () => {
       formResolver()
-      const nexturl = `/decouverte`
-      history.push(nexturl)
+      const nextUrl = queryParams.from
+        ? decodeURIComponent(queryParams.from)
+        : '/decouverte'
+      history.push(nextUrl)
     })
   }
 
@@ -112,6 +115,7 @@ class Signin extends React.PureComponent {
 Signin.propTypes = {
   dispatch: PropTypes.func.isRequired,
   history: PropTypes.object.isRequired,
+  query: PropTypes.object.isRequired,
 }
 
 export default Signin

@@ -1,18 +1,13 @@
-/*
- * Signin
- */
-
 import { compose } from 'redux'
 import { connect } from 'react-redux'
-import { withRouter } from 'react-router-dom'
-
-import { withLogin } from 'pass-culture-shared'
+import withQueryRouter from 'with-query-router'
 
 import SigninContent from './SigninContent'
+import { withRedirectToDiscoveryWhenAlreadyAuthenticated } from '../../hocs'
 
 export const Signin = compose(
-  withLogin({ successRedirect: '/decouverte' }),
-  withRouter,
+  withRedirectToDiscoveryWhenAlreadyAuthenticated,
+  withQueryRouter,
   connect()
 )(SigninContent)
 

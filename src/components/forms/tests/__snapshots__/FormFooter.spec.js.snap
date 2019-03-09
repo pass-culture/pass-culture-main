@@ -127,7 +127,6 @@ ShallowWrapper {
           className="flex-1 fake submit className"
           disabled={false}
           id="fake submit id"
-          replace={false}
           to="fake submit url"
         >
           <span
@@ -157,7 +156,6 @@ ShallowWrapper {
           "className": "flex-1 fake submit className",
           "disabled": false,
           "id": "fake submit id",
-          "replace": false,
           "to": "fake submit url",
         },
         "ref": null,
@@ -192,7 +190,6 @@ ShallowWrapper {
             className="flex-1 fake submit className"
             disabled={false}
             id="fake submit id"
-            replace={false}
             to="fake submit url"
           >
             <span
@@ -222,7 +219,6 @@ ShallowWrapper {
             "className": "flex-1 fake submit className",
             "disabled": false,
             "id": "fake submit id",
-            "replace": false,
             "to": "fake submit url",
           },
           "ref": null,
@@ -315,7 +311,6 @@ ShallowWrapper {
           className="flex-1 fake cancel className"
           disabled={false}
           id="fake cancel id"
-          replace={false}
           to="fake cancel url"
         >
           <span
@@ -331,7 +326,6 @@ ShallowWrapper {
           className="flex-1 fake submit className"
           disabled={false}
           id="fake submit id"
-          replace={false}
           to="fake submit url"
         >
           <span
@@ -359,7 +353,6 @@ ShallowWrapper {
           "className": "flex-1 fake cancel className",
           "disabled": false,
           "id": "fake cancel id",
-          "replace": false,
           "to": "fake cancel url",
         },
         "ref": null,
@@ -401,7 +394,6 @@ ShallowWrapper {
           "className": "flex-1 fake submit className",
           "disabled": false,
           "id": "fake submit id",
-          "replace": false,
           "to": "fake submit url",
         },
         "ref": null,
@@ -434,7 +426,6 @@ ShallowWrapper {
             className="flex-1 fake cancel className"
             disabled={false}
             id="fake cancel id"
-            replace={false}
             to="fake cancel url"
           >
             <span
@@ -450,7 +441,6 @@ ShallowWrapper {
             className="flex-1 fake submit className"
             disabled={false}
             id="fake submit id"
-            replace={false}
             to="fake submit url"
           >
             <span
@@ -478,7 +468,6 @@ ShallowWrapper {
             "className": "flex-1 fake cancel className",
             "disabled": false,
             "id": "fake cancel id",
-            "replace": false,
             "to": "fake cancel url",
           },
           "ref": null,
@@ -520,7 +509,6 @@ ShallowWrapper {
             "className": "flex-1 fake submit className",
             "disabled": false,
             "id": "fake submit id",
-            "replace": false,
             "to": "fake submit url",
           },
           "ref": null,
@@ -612,7 +600,6 @@ ShallowWrapper {
           className="flex-1 fake cancel className"
           disabled={false}
           id="fake cancel id"
-          replace={false}
           to="fake cancel url"
         >
           <span
@@ -655,7 +642,6 @@ ShallowWrapper {
           "className": "flex-1 fake cancel className",
           "disabled": false,
           "id": "fake cancel id",
-          "replace": false,
           "to": "fake cancel url",
         },
         "ref": null,
@@ -729,7 +715,6 @@ ShallowWrapper {
             className="flex-1 fake cancel className"
             disabled={false}
             id="fake cancel id"
-            replace={false}
             to="fake cancel url"
           >
             <span
@@ -772,7 +757,6 @@ ShallowWrapper {
             "className": "flex-1 fake cancel className",
             "disabled": false,
             "id": "fake cancel id",
-            "replace": false,
             "to": "fake cancel url",
           },
           "ref": null,

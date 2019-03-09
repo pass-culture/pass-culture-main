@@ -75,6 +75,7 @@
     "testcafe": "^0.20.4",
     "typeface-barlow": "^0.0.54",
     "util.promisify": "^1.0.0",
+    "with-login": "2.4.0",
     "with-query-router": "^0.1.1"
   },
   "devDependencies": {
@@ -113,6 +114,7 @@
     "image-diff": "^2.0.0",
     "indexeddbshim": "^3.6.2",
     "jest": "23.5.0",
+    "jest-fetch-mock": "^2.1.1",
     "license-reporter": "^1.2.2",
     "minimist": "^1.2.0",
     "node-env-file": "^0.1.8",

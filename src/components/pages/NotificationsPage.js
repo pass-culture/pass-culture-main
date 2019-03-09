@@ -1,12 +1,12 @@
 /* eslint
   react/jsx-one-expression-per-line: 0 */
-import { withLogin } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 
+import { withRedirectToSigninWhenNotAuthenticated } from '../hocs'
 import Loader from '../layout/Loader'
 import PageHeader from '../layout/PageHeader'
 import NavigationFooter from '../layout/NavigationFooter'
@@ -40,6 +40,6 @@ const mapStateToProps = state => {
 
 export default compose(
   withRouter,
-  withLogin({ failRedirect: '/connexion' }),
+  withRedirectToSigninWhenNotAuthenticated,
   connect(mapStateToProps)
 )(NotificationsPage)

@@ -1,21 +1,21 @@
 /* eslint
   react/jsx-one-expression-per-line: 0 */
 import PropTypes from 'prop-types'
-import { withLogin } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators, compose } from 'redux'
 import { assignData, requestData } from 'redux-saga-data'
 
-import { ROOT_PATH } from '../../../utils/config'
 import MyBookingItem from './MyBookingItem'
 import NoBookingView from './NoBookingView'
+import { mapStateToProps } from './connect'
+import { withRedirectToSigninWhenNotAuthenticated } from '../../hocs'
 import Loader from '../../layout/Loader'
 import PageHeader from '../../layout/PageHeader'
 import { toggleMainMenu } from '../../../reducers/menu'
 import NavigationFooter from '../../layout/NavigationFooter'
+import { ROOT_PATH } from '../../../utils/config'
 import { bookingNormalizer } from '../../../utils/normalizers'
-import { mapStateToProps } from './connect'
 
 const renderBookingList = items => (
   <ul className="bookings">
@@ -127,6 +127,6 @@ MyBookingsPage.propTypes = {
 }
 
 export default compose(
-  withLogin({ failRedirect: '/connexion' }),
+  withRedirectToSigninWhenNotAuthenticated,
   connect(mapStateToProps)
 )(MyBookingsPage)

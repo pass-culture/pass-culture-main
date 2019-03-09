@@ -1,12 +1,12 @@
 /* eslint
   react/jsx-one-expression-per-line: 0 */
 import React from 'react'
-import { withLogin } from 'pass-culture-shared'
 import { Scrollbars } from 'react-custom-scrollbars'
 
-import { ROOT_PATH } from '../../utils/config'
+import { withRedirectToSigninWhenNotAuthenticated } from '../hocs'
 import PageHeader from '../layout/PageHeader'
 import NavigationFooter from '../layout/NavigationFooter'
+import { ROOT_PATH } from '../../utils/config'
 
 const FavoritesPage = () => {
   const backgroundImage = `url('${ROOT_PATH}/mosaic-k.png')`
@@ -23,4 +23,4 @@ const FavoritesPage = () => {
   )
 }
 
-export default withLogin({ failRedirect: '/connexion' })(FavoritesPage)
+export default withRedirectToSigninWhenNotAuthenticated(FavoritesPage)

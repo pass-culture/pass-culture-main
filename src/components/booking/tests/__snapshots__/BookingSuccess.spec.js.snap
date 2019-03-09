@@ -76,7 +76,6 @@ ShallowWrapper {
             >
               la rubrique
               <Link
-                replace={false}
                 to="/reservations"
               >
                 <b
@@ -274,7 +273,6 @@ ShallowWrapper {
               >
                 la rubrique
                 <Link
-                  replace={false}
                   to="/reservations"
                 >
                   <b
@@ -307,7 +305,6 @@ ShallowWrapper {
                 >
                   la rubrique
                   <Link
-                    replace={false}
                     to="/reservations"
                   >
                     <b
@@ -342,7 +339,6 @@ ShallowWrapper {
                   "children": Array [
                     "la rubrique",
                     <Link
-                      replace={false}
                       to="/reservations"
                     >
                       <b
@@ -368,7 +364,6 @@ ShallowWrapper {
                       >
                          Mes Réservations 
                       </b>,
-                      "replace": false,
                       "to": "/reservations",
                     },
                     "ref": null,
@@ -461,7 +456,6 @@ ShallowWrapper {
               >
                 la rubrique
                 <Link
-                  replace={false}
                   to="/reservations"
                 >
                   <b
@@ -659,7 +653,6 @@ ShallowWrapper {
                 >
                   la rubrique
                   <Link
-                    replace={false}
                     to="/reservations"
                   >
                     <b
@@ -692,7 +685,6 @@ ShallowWrapper {
                   >
                     la rubrique
                     <Link
-                      replace={false}
                       to="/reservations"
                     >
                       <b
@@ -727,7 +719,6 @@ ShallowWrapper {
                     "children": Array [
                       "la rubrique",
                       <Link
-                        replace={false}
                         to="/reservations"
                       >
                         <b
@@ -753,7 +744,6 @@ ShallowWrapper {
                         >
                            Mes Réservations 
                         </b>,
-                        "replace": false,
                         "to": "/reservations",
                       },
                       "ref": null,
