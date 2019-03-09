@@ -13,7 +13,9 @@ ShallowWrapper {
     }
     offerers={
         Array [
-            Object {},
+            Object {
+              "id": "AE",
+            },
           ]
     }
     pagination={
@@ -98,7 +100,11 @@ ShallowWrapper {
           useWindow={true}
 >
           <Connect(OffererItem)
-                    offerer={Object {}}
+                    offerer={
+                              Object {
+                                        "id": "AE",
+                                      }
+                    }
           />
 </withRouter(_withQueryRouter)>,
       ],
@@ -233,7 +239,11 @@ ShallowWrapper {
         "props": Object {
           "children": Array [
             <Connect(OffererItem)
-              offerer={Object {}}
+              offerer={
+                            Object {
+                                          "id": "AE",
+                                        }
+              }
 />,
           ],
           "className": "main-list offerers-list",
@@ -253,10 +263,12 @@ ShallowWrapper {
         "rendered": Array [
           Object {
             "instance": null,
-            "key": undefined,
+            "key": "AE",
             "nodeType": "class",
             "props": Object {
-              "offerer": Object {},
+              "offerer": Object {
+                "id": "AE",
+              },
             },
             "ref": null,
             "rendered": null,
@@ -327,7 +339,11 @@ ShallowWrapper {
             useWindow={true}
 >
             <Connect(OffererItem)
-                        offerer={Object {}}
+                        offerer={
+                                    Object {
+                                                "id": "AE",
+                                              }
+                        }
             />
 </withRouter(_withQueryRouter)>,
         ],
@@ -462,7 +478,11 @@ ShallowWrapper {
           "props": Object {
             "children": Array [
               <Connect(OffererItem)
-                offerer={Object {}}
+                offerer={
+                                Object {
+                                                "id": "AE",
+                                              }
+                }
 />,
             ],
             "className": "main-list offerers-list",
@@ -482,10 +502,12 @@ ShallowWrapper {
           "rendered": Array [
             Object {
               "instance": null,
-              "key": undefined,
+              "key": "AE",
               "nodeType": "class",
               "props": Object {
-                "offerer": Object {},
+                "offerer": Object {
+                  "id": "AE",
+                },
               },
               "ref": null,
               "rendered": null,

@@ -4,7 +4,6 @@ import {
   InfiniteScroller,
   requestData,
   Spinner,
-  withLogin,
   withPagination,
 } from 'pass-culture-shared'
 import React, { Component } from 'react'
@@ -14,6 +13,7 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 
 import BookingItem from './BookingItem'
+import { withRedirectToSigninWhenNotAuthenticated } from '../../hocs'
 import HeroSection from '../../layout/HeroSection'
 import Main from '../../layout/Main'
 import bookingsSelector from '../../../selectors/bookings'
@@ -279,12 +279,11 @@ const mapStateToProps = (state, ownProps) => {
     bookings: bookingsSelector(state),
     offerer: offererSelector(state, offererId),
     offerers: offerersSelector(state),
-    user: state.user,
   }
 }
 
 export default compose(
-  withLogin({ failRedirect: '/connexion' }),
+  withRedirectToSigninWhenNotAuthenticated,
   withRouter,
   withPagination({
     dataKey: 'bookings',

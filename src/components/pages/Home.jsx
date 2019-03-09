@@ -1,7 +1,8 @@
-import { Icon, withLogin } from 'pass-culture-shared'
+import { Icon } from 'pass-culture-shared'
 import React from 'react'
 import { NavLink } from 'react-router-dom'
 
+import { withRedirectToSigninWhenNotAuthenticated } from '../hocs'
 import Main from '../layout/Main'
 
 const Card = ({ svg, title, text, navLink }) => {
@@ -37,4 +38,4 @@ const HomePage = ({ user }) => {
   )
 }
 
-export default withLogin({ failRedirect: '/connexion' })(HomePage)
+export default withRedirectToSigninWhenNotAuthenticated(HomePage)

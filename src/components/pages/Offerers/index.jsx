@@ -1,8 +1,8 @@
-import { withLogin } from 'pass-culture-shared'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 import withQueryRouter from 'with-query-router'
 
+import { withRedirectToSigninWhenNotAuthenticated } from '../../hocs'
 import RawOfferers from './RawOfferers'
 import offerersSelector, {
   getPendingOfferers,
@@ -16,7 +16,7 @@ function mapStateToProps(state, ownProps) {
 }
 
 export default compose(
-  withLogin({ failRedirect: '/connexion' }),
+  withRedirectToSigninWhenNotAuthenticated,
   withQueryRouter,
   connect(mapStateToProps)
 )(RawOfferers)

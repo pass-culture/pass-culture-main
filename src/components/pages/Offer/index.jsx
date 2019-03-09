@@ -10,7 +10,6 @@ import {
   pluralize,
   showModal,
   SubmitButton,
-  withLogin,
 } from 'pass-culture-shared'
 import React, { Component, Fragment } from 'react'
 import { connect } from 'react-redux'
@@ -18,6 +17,7 @@ import { NavLink, withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 import { requestData } from 'redux-saga-data'
 
+import { withRedirectToSigninWhenNotAuthenticated } from '../../hocs'
 import HeroSection from 'components/layout/HeroSection'
 import Main from 'components/layout/Main'
 import MediationsManager from './MediationsManager'
@@ -246,12 +246,12 @@ class OfferPage extends Component {
 
   setDefaultBookingEmailIfNew(prevProps) {
     if (!this.state.isNew) return
-    const { dispatch, user, venue } = this.props
+    const { currentUser, dispatch, venue } = this.props
     if (!venue) return
     if (!prevProps || !prevProps.venue || venue.id !== prevProps.venue.id) {
       dispatch(
         mergeForm('offer', {
-          bookingEmail: (venue && venue.bookingEmail) || user.email,
+          bookingEmail: (venue && venue.bookingEmail) || currentUser.email,
         })
       )
     }
@@ -343,6 +343,7 @@ class OfferPage extends Component {
 
   render() {
     const {
+      currentUser,
       event,
       eventOccurrences,
       eventOrThingPatch,
@@ -358,7 +359,6 @@ class OfferPage extends Component {
       venue,
       venues,
       url,
-      user,
       musicSubOptions,
       showSubOptions,
     } = this.props
@@ -571,7 +571,7 @@ class OfferPage extends Component {
                       type="text"
                     />
                   )}
-                  {get(user, 'isAdmin') && (
+                  {currentUser.isAdmin && (
                     <Field
                       label="Rayonnement national"
                       name="isNational"
@@ -755,8 +755,6 @@ function mapStateToProps(state, ownProps) {
   const url =
     get(state, 'form.offer.url') || get(event, 'url') || get(thing, 'url')
 
-  const user = state.user
-
   const hasEventOrThing = event || thing
 
   const eventOrThingPatch = eventOrThingPatchSelector(
@@ -796,14 +794,13 @@ function mapStateToProps(state, ownProps) {
     types,
     selectedOfferType,
     url,
-    user,
     venue,
     venues,
   }
 }
 
 export default compose(
-  withLogin({ failRedirect: '/connexion' }),
+  withRedirectToSigninWhenNotAuthenticated,
   withRouter,
   connect(mapStateToProps)
 )(OfferPage)

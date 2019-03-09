@@ -1,9 +1,8 @@
-import get from 'lodash.get'
-import { Field, Form, SubmitButton, withLogin } from 'pass-culture-shared'
+import { Field, Form, SubmitButton } from 'pass-culture-shared'
 import React from 'react'
-import { connect } from 'react-redux'
 import { compose } from 'redux'
 
+import { withRedirectToSigninWhenNotAuthenticated } from '../hocs'
 import HeroSection from '../layout/HeroSection'
 import Main from '../layout/Main'
 import UploadThumb from '../layout/UploadThumb'
@@ -11,9 +10,8 @@ import { apiUrl } from '../../utils/config'
 
 const backTo = { path: '/accueil', label: 'Accueil' }
 
-const ProfilePage = ({ user }) => {
-  const userId = get(user, 'id')
-  const thumbPath = get(user, 'thumbPath')
+const ProfilePage = ({ currentUser }) => {
+  const { thumbPath, userId } = currentUser || {}
 
   return (
     <Main name="profile" backTo={backTo}>
@@ -22,7 +20,7 @@ const ProfilePage = ({ user }) => {
         action="/users/current"
         className="section"
         name="editProfile"
-        patch={user || {}}>
+        patch={currentUser}>
         <div className="field-group">
           <Field name="publicName" label="Nom" required />
           <Field name="email" label="Email" required readOnly />
@@ -62,13 +60,4 @@ const ProfilePage = ({ user }) => {
   )
 }
 
-function mapStateToProps(state) {
-  return {
-    user: state.user,
-  }
-}
-
-export default compose(
-  withLogin({ failRedirect: '/connexion' }),
-  connect(mapStateToProps)
-)(ProfilePage)
+export default compose(withRedirectToSigninWhenNotAuthenticated)(ProfilePage)

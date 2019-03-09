@@ -7,6 +7,7 @@ import { withRouter } from 'react-router'
 import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
 import { requestData } from 'redux-saga-data'
+import { selectCurrentUser } from 'with-login'
 
 import VenueProviderItem from './VenueProviderItem'
 import providerSelector from '../../../selectors/provider'
@@ -63,11 +64,7 @@ class ProviderManager extends Component {
       match: {
         params: { venueId },
       },
-      user,
     } = this.props
-    if (!user) {
-      return
-    }
     dispatch(requestData({ apiPath: '/providers' }))
     dispatch(
       requestData({
@@ -98,9 +95,6 @@ class ProviderManager extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    if (prevProps.user !== this.props.user) {
-      this.handleDataRequest()
-    }
     if (
       prevProps.match.params.venueProviderId === 'nouveau' ||
       this.props.match.params.venueProviderId !== 'nouveau'
@@ -227,9 +221,9 @@ function mapStateToProps(state, ownProps) {
   const venueId = get(ownProps, 'venue.id')
 
   return {
+    currentUser: selectCurrentUser(state),
     provider,
     providers,
-    user: state.user,
     venueProvider: venueProviderSelector(state, venueId),
     venueProviders: venueProvidersSelector(state, venueId),
   }

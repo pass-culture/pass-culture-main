@@ -1,12 +1,13 @@
 import classnames from 'classnames'
 import get from 'lodash.get'
-import { showNotification, withLogin } from 'pass-culture-shared'
+import { showNotification } from 'pass-culture-shared'
 import React, { PureComponent, Fragment } from 'react'
 import { connect } from 'react-redux'
 import { NavLink, withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 import { requestData } from 'redux-saga-data'
 
+import { withRedirectToSigninWhenNotAuthenticated } from '../../hocs'
 import HeroSection from '../../layout/HeroSection'
 import Main from '../../layout/Main'
 import UploadThumb from '../../layout/UploadThumb'
@@ -463,7 +464,7 @@ function mapStateToProps(state, ownProps) {
 }
 
 export default compose(
-  withLogin({ failRedirect: '/connexion' }),
+  withRedirectToSigninWhenNotAuthenticated,
   withRouter,
   connect(mapStateToProps)
 )(Mediation)

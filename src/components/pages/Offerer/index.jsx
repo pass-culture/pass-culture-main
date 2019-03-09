@@ -6,7 +6,6 @@ import {
   Form,
   showNotification,
   SubmitButton,
-  withLogin,
 } from 'pass-culture-shared'
 import React, { Component, Fragment } from 'react'
 import { connect } from 'react-redux'
@@ -14,6 +13,7 @@ import { NavLink, withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 import { requestData } from 'redux-saga-data'
 
+import { withRedirectToSigninWhenNotAuthenticated } from '../../hocs'
 import HeroSection from '../../layout/HeroSection'
 import VenueItem from './VenueItem'
 import Main from '../../layout/Main'
@@ -281,6 +281,7 @@ function mapStateToProps(state, ownProps) {
     params: { offererId },
   } = match
   const { id: currentUserId } = currentUser || {}
+
   return {
     adminUserOfferer: selectUserOffererByOffererIdAndUserIdAndRightsType(
       state,
@@ -295,7 +296,7 @@ function mapStateToProps(state, ownProps) {
 }
 
 export default compose(
-  withLogin({ failRedirect: '/connexion' }),
+  withRedirectToSigninWhenNotAuthenticated,
   withRouter,
   connect(mapStateToProps)
 )(Offerer)

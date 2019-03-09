@@ -11171,6 +11171,23 @@ window-size@0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/window-size/-/window-size-0.1.0.tgz#5438cd2ea93b202efa3a19fe8887aee7c94f9c9d"
 
+with-login@2.4.0:
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/with-login/-/with-login-2.4.0.tgz#e13ea624a2caacff366e021670a95fc491cbb366"
+  dependencies:
+    classnames "2.2.5"
+    eslint "^5.8.0"
+    lodash.uniq "^4.5.0"
+    prop-types "^15.6.2"
+    react "^16.5.2"
+    react-dom "^16.5.2"
+    react-redux "^5.0.7"
+    react-router-dom "^4.3.1"
+    redux "^4.0.0"
+    redux-saga-data "^1.8.0"
+    reselect "^3.0.1"
+    uuid "^3.3.2"
+
 with-query-router@0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/with-query-router/-/with-query-router-0.1.0.tgz#328506c621fcc895774ba2dbaeffa423be874007"

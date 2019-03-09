@@ -2,6 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 
+import { withRedirectToOffersWhenAlreadyAuthenticated } from '../../hocs'
 import Logo from '../../layout/Logo'
 import Main from '../../layout/Main'
 import { Route, Switch } from 'react-router-dom/umd/react-router-dom'
@@ -33,6 +34,7 @@ const SignupPage = ({ errors, location }) => {
 }
 
 export default compose(
+  withRedirectToOffersWhenAlreadyAuthenticated,
   withRouter,
   connect()
 )(SignupPage)

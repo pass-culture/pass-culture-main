@@ -6,12 +6,10 @@ import { connect } from 'react-redux'
 import { Route, Router } from 'react-router'
 import { compose } from 'redux'
 import configureStore from 'redux-mock-store'
-import { assignData } from 'redux-saga-data'
 import withQueryRouter from 'with-query-router'
 
 import RawOffers from '../RawOffers'
 import { mapStateToProps } from '../index'
-// import { configureStore } from '../../../../utils/store'
 
 fetch.mockResponse(JSON.stringify([]), { status: 200 })
 
@@ -35,6 +33,7 @@ describe('src | components | pages | Offers', () => {
           offerers: [],
           venues: [{ id: 'AE' }],
           types: [],
+          users: [],
         },
         modal: {},
         tracker: {},

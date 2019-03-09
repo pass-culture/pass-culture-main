@@ -100,15 +100,9 @@ class RawOffers extends Component {
   }
 
   render() {
-    const {
-      currentUser,
-      offers,
-      offerer,
-      pagination,
-      query,
-      venue,
-    } = this.props
+    const { currentUser, offers, offerer, query, venue } = this.props
     const { isAdmin } = currentUser || {}
+
     const queryParams = query.parse()
     const apiParams = translateBrowserUrlToApiUrl(queryParams)
     const { keywords, venueId, offererId, orderBy } = apiParams
@@ -200,8 +194,7 @@ class RawOffers extends Component {
           )}
         </ul>
         <div className="section">
-          {// TODO pagination.orderBy & pagination.reverseOrder are broken, replace by new implementation with withQueryRouter
-          false && (
+          {false && (
             <div className="list-header">
               <div>
                 <div className="recently-added" />
@@ -211,8 +204,10 @@ class RawOffers extends Component {
                 Trier par:
                 <span className="select is-rounded is-small">
                   <select
-                    onChange={pagination.orderBy}
-                    className=""
+                    onChange={() => {
+                      // TODO pagination.orderBy
+                      // query.change({})
+                    }}
                     value={orderName}>
                     <option value="sold">Offres écoulées</option>
                     <option value="createdAt">Date de création</option>
@@ -221,7 +216,10 @@ class RawOffers extends Component {
               </div>
               <div>
                 <button
-                  onClick={pagination.reverseOrder}
+                  onClick={() => {
+                    // TODO
+                    // query.change({ })
+                  }}
                   className="button is-secondary">
                   <Icon
                     svg={

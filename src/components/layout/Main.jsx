@@ -14,11 +14,12 @@ import { withRouter } from 'react-router'
 import { NavLink } from 'react-router-dom'
 import ReactTooltip from 'react-tooltip'
 import { compose } from 'redux'
+import { selectCurrentUser } from 'with-login'
 
 import Header from './Header'
 import Notification from './Notification'
 
-class Main extends Component {
+export class RawMain extends Component {
   constructor() {
     super()
     this.state = {
@@ -60,13 +61,17 @@ class Main extends Component {
   }
 
   componentDidMount() {
-    this.props.user && this.handleDataRequest()
+    const { currentUser } = this.props
+    if (currentUser) {
+      this.handleDataRequest()
+    }
   }
 
   componentDidUpdate(prevProps) {
-    const userChanged = !prevProps.user && this.props.user // User just loaded
-    const searchChanged =
-      this.props.location.search !== prevProps.location.search
+    const { currentUser, location } = this.props
+    const { search } = location
+    const userChanged = !prevProps.currentUser && currentUser // User just loaded
+    const searchChanged = search !== prevProps.location.search
 
     if (userChanged || searchChanged) {
       this.handleDataRequest()
@@ -153,7 +158,7 @@ class Main extends Component {
 
 function mapStateToProps(state) {
   return {
-    user: state.user,
+    currentUser: selectCurrentUser(state),
   }
 }
 
@@ -161,4 +166,4 @@ export default compose(
   withRouter,
   withBlock,
   connect(mapStateToProps)
-)(Main)
+)(RawMain)

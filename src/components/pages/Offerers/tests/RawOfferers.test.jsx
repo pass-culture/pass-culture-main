@@ -14,7 +14,7 @@ describe('src | components | pages | RawOfferers', () => {
       const props = {
         currentUser: {},
         dispatch: dispatchMock,
-        offerers: [{}],
+        offerers: [{ id: 'AE' }],
         pendingOfferers: [],
         pagination: {
           apiQuery: {
@@ -46,7 +46,7 @@ describe('src | components | pages | RawOfferers', () => {
         const props = {
           currentUser: {},
           dispatch: dispatchMock,
-          offerers: [{}],
+          offerers: [{ id: 'AE' }],
           pendingOfferers: [],
           pagination: {
             apiQuery: {
@@ -75,7 +75,7 @@ describe('src | components | pages | RawOfferers', () => {
         const props = {
           currentUser: {},
           dispatch: dispatchMock,
-          offerers: [{}, {}],
+          offerers: [{ id: 'AE' }, { id: 'AF' }],
           pendingOfferers: [],
           pagination: {
             apiQuery: {

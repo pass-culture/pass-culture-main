@@ -1,9 +1,9 @@
 import get from 'lodash.get'
-import { withLogin } from 'pass-culture-shared'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 
+import { withRedirectToSigninWhenNotAuthenticated } from '../../hocs'
 import offererSelector from '../../../selectors/offerer'
 import selectUserOffererByOffererIdAndUserIdAndRightsType from '../../../selectors/selectUserOffererByOffererIdAndUserIdAndRightsType'
 import selectVenuePatchByVenueIdByOffererId from '../../../selectors/selectVenuePatchByVenueIdByOffererId'
@@ -16,6 +16,7 @@ function mapStateToProps(state, ownProps) {
     params: { offererId, venueId },
   } = match
   const { id: currentUserId } = currentUser || {}
+
   return {
     adminUserOfferer: selectUserOffererByOffererIdAndUserIdAndRightsType(
       state,
@@ -36,7 +37,7 @@ function mapStateToProps(state, ownProps) {
 }
 
 export default compose(
-  withLogin({ failRedirect: '/connexion' }),
+  withRedirectToSigninWhenNotAuthenticated,
   withRouter,
   connect(mapStateToProps)
 )(RawVenue)

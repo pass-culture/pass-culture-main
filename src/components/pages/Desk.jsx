@@ -1,8 +1,4 @@
-import {
-  getRequestErrorStringFromErrors,
-  Icon,
-  withLogin,
-} from 'pass-culture-shared'
+import { getRequestErrorStringFromErrors, Icon } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { NavLink } from 'react-router-dom'
@@ -10,6 +6,7 @@ import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { requestData } from 'redux-saga-data'
 
+import { withRedirectToSigninWhenNotAuthenticated } from '../hocs'
 import Main from '../layout/Main'
 import { formatLocalTimeDateString } from '../../utils/timezone'
 
@@ -274,6 +271,6 @@ class Desk extends Component {
 }
 
 export default compose(
-  withLogin({ failRedirect: '/connexion' }),
+  withRedirectToSigninWhenNotAuthenticated,
   connect()
 )(Desk)
