@@ -1,8 +1,9 @@
 import React, { PureComponent } from 'react'
 import { Redirect, withRouter } from 'react-router-dom'
-import { requestData, showNotification } from 'pass-culture-shared'
+import { showNotification } from 'pass-culture-shared'
 import { compose } from 'redux'
 import { connect } from 'react-redux'
+import { requestData } from 'redux-saga-data'
 
 class SignupValidation extends PureComponent {
   componentDidMount() {
@@ -14,7 +15,8 @@ class SignupValidation extends PureComponent {
     } = this.props
 
     dispatch(
-      requestData('GET', `validate/user/${token}`, {
+      requestData({
+        apiPath: `/validate/user/${token}`,
         handleSuccess: () => {
           dispatch(
             showNotification({
@@ -25,9 +27,12 @@ class SignupValidation extends PureComponent {
           )
         },
         handleFail: (state, action) => {
+          const {
+            payload: { errors },
+          } = action
           dispatch(
             showNotification({
-              text: action.errors.global,
+              text: errors.global,
               type: 'danger',
             })
           )

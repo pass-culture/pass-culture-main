@@ -12,6 +12,7 @@ describe('src | components | pages | RawOfferers', () => {
     it('should match snapshot', () => {
       // given
       const props = {
+        currentUser: {},
         dispatch: dispatchMock,
         offerers: [{}],
         pendingOfferers: [],
@@ -27,7 +28,6 @@ describe('src | components | pages | RawOfferers', () => {
         location: {
           search: '',
         },
-        user: {},
       }
 
       // when
@@ -44,6 +44,7 @@ describe('src | components | pages | RawOfferers', () => {
       it('should display Votre structure when one offerer', () => {
         // given
         const props = {
+          currentUser: {},
           dispatch: dispatchMock,
           offerers: [{}],
           pendingOfferers: [],
@@ -59,7 +60,6 @@ describe('src | components | pages | RawOfferers', () => {
           location: {
             search: '',
           },
-          user: {},
         }
 
         // when
@@ -73,6 +73,7 @@ describe('src | components | pages | RawOfferers', () => {
       it('should display Vos structures when many offerers', () => {
         // given
         const props = {
+          currentUser: {},
           dispatch: dispatchMock,
           offerers: [{}, {}],
           pendingOfferers: [],
@@ -88,7 +89,6 @@ describe('src | components | pages | RawOfferers', () => {
           location: {
             search: '',
           },
-          user: {},
         }
 
         // when

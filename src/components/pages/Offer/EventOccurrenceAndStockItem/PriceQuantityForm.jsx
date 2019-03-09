@@ -50,7 +50,7 @@ class PriceQuantityForm extends Component {
     ReactTooltip.rebuild()
   }
 
-  handleOfferSuccessData = (state, action) => {
+  handleOfferSuccessData = () => {
     const { history, offer } = this.props
     history.push(`/offres/${get(offer, 'id')}?gestion`)
   }

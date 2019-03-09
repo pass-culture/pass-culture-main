@@ -6,12 +6,12 @@ import {
   Icon,
   Field,
   Form,
-  requestData,
   showNotification,
   SubmitButton,
 } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { NavLink } from 'react-router-dom'
+import { requestData } from 'redux-saga-data'
 
 import HeroSection from '../../layout/HeroSection'
 import Main from '../../layout/Main'
@@ -24,7 +24,7 @@ import {
   VENUE_NEW_PATCH_KEYS,
 } from '../../../utils/formatPatch'
 
-class RawVenuePage extends Component {
+class RawVenue extends Component {
   constructor() {
     super()
     this.state = {
@@ -60,21 +60,24 @@ class RawVenuePage extends Component {
     } = this.props
     if (venueId !== 'nouveau') {
       dispatch(
-        requestData('GET', `offerers/${offererId}`, {
-          handleSuccess: () => {
-            requestData('GET', `venues/${venueId}`, {
-              handleSuccess,
-              handleFail,
-              key: 'venues',
-              normalizer: venueNormalizer,
-            })
-          },
+        requestData({
+          apiPath: `/offerers/${offererId}`,
           handleFail,
+          handleSuccess: () => {
+            dispatch(
+              requestData({
+                apiPath: `/venues/${venueId}`,
+                handleSuccess,
+                handleFail,
+                normalizer: venueNormalizer,
+              })
+            )
+          },
           normalizer: offererNormalizer,
         })
       )
 
-      dispatch(requestData('GET', `userOfferers/${offererId}`))
+      dispatch(requestData({ apiPath: `/userOfferers/${offererId}` }))
     } else {
       return handleSuccess()
     }
@@ -82,24 +85,29 @@ class RawVenuePage extends Component {
 
   handleSuccess = (state, action) => {
     const { dispatch, history, offerer } = this.props
-    const venueId = get(action, 'data.id')
+    const {
+      config: { method },
+      payload: { datum },
+    } = action
+    const venueId = datum.id
 
     if (!venueId) {
       console.warn('You should have a venueId here')
       return
     }
 
-    const redirectPathname =
-      get(action, 'method') === 'POST' || get(action, 'method') === 'PATCH'
-        ? `/structures/${get(offerer, 'id')}/lieux/${venueId}`
-        : `/structures/${get(offerer, 'id')}`
+    const isPatchOrPostMethod = method === 'POST' || method === 'PATCH'
+
+    const redirectPathname = isPatchOrPostMethod
+      ? `/structures/${get(offerer, 'id')}/lieux/${venueId}`
+      : `/structures/${get(offerer, 'id')}`
 
     history.push(redirectPathname)
 
     const createOfferPathname = `/offres/nouveau?lieu=${venueId}`
 
     const text =
-      get(action, 'method') === 'POST' ? (
+      method === 'POST' ? (
         <p>
           Lieu créé. Vous pouvez maintenant y{' '}
           <NavLink
@@ -443,4 +451,4 @@ class RawVenuePage extends Component {
   }
 }
 
-export default RawVenuePage
+export default RawVenue

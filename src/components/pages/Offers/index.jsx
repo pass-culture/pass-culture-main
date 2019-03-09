@@ -5,7 +5,6 @@ import {
 } from 'pass-culture-shared'
 
 import { connect } from 'react-redux'
-import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 
 import withQueryRouter from 'with-query-router'
@@ -22,7 +21,6 @@ function mapStateToProps(state, ownProps) {
     lastTrackerMoment: lastTrackerMoment(state, 'offers'),
     offers: offersSelector(state, offererId, venueId),
     offerer: offererSelector(state, offererId),
-    user: state.user,
     types: state.data.types,
     venue: venueSelector(state, venueId),
   }
@@ -30,7 +28,6 @@ function mapStateToProps(state, ownProps) {
 
 export default compose(
   withLogin({ failRedirect: '/connexion' }),
-  withRouter,
   withPagination({
     dataKey: 'offers',
     defaultWindowQuery: {

@@ -1,16 +1,9 @@
-import get from 'lodash.get'
+import { Icon, resolveIsNew } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
-
-import {
-  assignData,
-  Icon,
-  requestData,
-  resolveIsNew,
-} from 'pass-culture-shared'
-import LoadingInfiniteScroll from 'react-loading-infinite-scroller'
-
 import React, { Component } from 'react'
+import LoadingInfiniteScroll from 'react-loading-infinite-scroller'
 import { NavLink } from 'react-router-dom'
+import { assignData, requestData } from 'redux-saga-data'
 import { stringify } from 'query-string'
 
 import OfferItem from './OfferItem'
@@ -57,16 +50,17 @@ class RawOffers extends Component {
   handleRequestData = (handleSuccess = () => {}, handleFail = () => {}) => {
     const { comparedTo, dispatch, query, types } = this.props
 
-    types.length === 0 && dispatch(requestData('GET', 'types'))
+    types.length === 0 && dispatch(requestData({ apiPath: '/types' }))
 
     const queryParams = query.parse()
     const apiParams = translateBrowserUrlToApiUrl(queryParams)
     const apiParamsString = stringify(apiParams)
-    const path = `offers?${apiParamsString}`
+    const apiPath = `/offers?${apiParamsString}`
 
     this.setState({ isLoading: true }, () => {
       dispatch(
-        requestData('GET', path, {
+        requestData({
+          apiPath,
           handleFail: () => {
             this.setState({
               hasMore: false,
@@ -74,8 +68,11 @@ class RawOffers extends Component {
             })
           },
           handleSuccess: (state, action) => {
+            const {
+              payload: { data },
+            } = action
             this.setState({
-              hasMore: action.data && action.data.length > 0,
+              hasMore: data.length > 0,
               isLoading: false,
             })
           },
@@ -103,11 +100,19 @@ class RawOffers extends Component {
   }
 
   render() {
-    const { offers, offerer, pagination, query, venue, user } = this.props
+    const {
+      currentUser,
+      offers,
+      offerer,
+      pagination,
+      query,
+      venue,
+    } = this.props
+    const { isAdmin } = currentUser || {}
     const queryParams = query.parse()
     const apiParams = translateBrowserUrlToApiUrl(queryParams)
     const { keywords, venueId, offererId, orderBy } = apiParams
-    
+
     const { hasMore, isLoading } = this.state
 
     let createOfferTo = `/offres/nouveau`
@@ -124,7 +129,7 @@ class RawOffers extends Component {
     return (
       <Main name="offers" handleRequestData={this.handleRequestData}>
         <HeroSection title="Vos offres">
-          {!get(user, 'isAdmin') && (
+          {!isAdmin && (
             <NavLink to={createOfferTo} className="cta button is-primary">
               <span className="icon">
                 <Icon svg="ico-offres-w" />
@@ -241,6 +246,7 @@ class RawOffers extends Component {
 }
 
 RawOffers.propTypes = {
+  currentUser: PropTypes.object.isRequired,
   offers: PropTypes.array,
 }
 

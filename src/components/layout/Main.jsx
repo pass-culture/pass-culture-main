@@ -31,13 +31,13 @@ class Main extends Component {
   }
 
   handleDataFail = (state, action) => {
-    this.setState({
-      loading: false,
-    })
-    this.props.dispatch(
+    const { dispatch, payload } = action
+    this.setState({ loading: false })
+
+    dispatch(
       showNotification({
         type: 'danger',
-        text: get(action, 'errors.0.global') || 'Erreur de chargement',
+        text: get(payload, 'errors.0.global') || 'Erreur de chargement',
       })
     )
   }
@@ -53,7 +53,7 @@ class Main extends Component {
     }
   }
 
-  handleDataSuccess = (state, action) => {
+  handleDataSuccess = () => {
     this.setState({
       loading: false,
     })

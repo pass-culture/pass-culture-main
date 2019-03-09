@@ -78,24 +78,27 @@ class Accouting extends Component {
       return
     }
 
-    const path = `offerers/${get(offerer, 'id')}/bookings?${apiQueryString}`
+    const apiPath = `/offerers/${get(offerer, 'id')}/bookings?${apiQueryString}`
 
     dispatch(
-      requestData('GET', path, {
+      requestData({
+        apiPath,
         handleSuccess: (state, action) => {
           handleSuccess(state, action)
           goToNextPage()
         },
-        key: 'bookings',
         handleFail,
         normalizer: bookingNormalizer,
+        stateKey: 'bookings',
       })
     )
   }
 
   fetchOfferers = (handleSuccess = () => {}, handleFail = () => {}) => {
-    this.props.dispatch(
-      requestData('GET', 'offerers', {
+    const { dispatch } = this.props
+    dispatch(
+      requestData({
+        apiPath: '/offerers',
         handleSuccess: (state, action) => {
           handleSuccess(state, action)
           this.fetchBookings()

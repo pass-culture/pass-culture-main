@@ -1,4 +1,3 @@
-import get from 'lodash.get'
 import { Block, Form } from 'pass-culture-shared'
 
 import BicInput from '../components/layout/BicInput'
@@ -16,7 +15,11 @@ Object.assign(Form.inputsByType, {
 
 Object.assign(Form.defaultProps, {
   BlockComponent: Block,
-  handleFailNotification: (state, action) =>
-    get(action, 'errors.0.global') || 'Formulaire non validé',
+  handleFailNotification: (state, action) => {
+    const {
+      payload: { errors },
+    } = action
+    return (errors && errors[0] && errors[0].global) || 'Formulaire non validé'
+  },
   handleSuccessNotification: () => 'Formulaire validé',
 })

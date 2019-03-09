@@ -1,10 +1,11 @@
 import classnames from 'classnames'
 import get from 'lodash.get'
-import { requestData, showNotification, withLogin } from 'pass-culture-shared'
+import { showNotification, withLogin } from 'pass-culture-shared'
 import React, { PureComponent, Fragment } from 'react'
 import { connect } from 'react-redux'
 import { NavLink, withRouter } from 'react-router-dom'
 import { compose } from 'redux'
+import { requestData } from 'redux-saga-data'
 
 import HeroSection from '../../layout/HeroSection'
 import Main from '../../layout/Main'
@@ -57,13 +58,15 @@ class Mediation extends PureComponent {
     const { isNew } = this.state
     !offer &&
       dispatch(
-        requestData('GET', `offers/${offerId}`, {
+        requestData({
+          apiPath: `/offers/${offerId}`,
           normalizer: offerNormalizer,
         })
       )
     if (!isNew) {
       dispatch(
-        requestData('GET', `mediations/${mediationId}`, {
+        requestData({
+          apiPath: `/mediations/${mediationId}`,
           handleSuccess,
           handleFail,
           normalizer: mediationNormalizer,
@@ -76,19 +79,22 @@ class Mediation extends PureComponent {
 
   handleFailData = (state, action) => {
     const { dispatch, history, offer } = this.props
+    const {
+      payload: { errors },
+    } = action
 
     this.setState({ isLoading: false }, () => {
       history.push(`/offres/${offer.id}`)
       dispatch(
         showNotification({
-          text: get(action, 'errors.thumb[0]'),
+          text: errors.thumb[0],
           type: 'fail',
         })
       )
     })
   }
 
-  handleSuccessData = (state, action) => {
+  handleSuccessData = () => {
     const { dispatch, history, offer } = this.props
 
     this.setState({ isLoading: false }, () => {
@@ -217,17 +223,15 @@ class Mediation extends PureComponent {
     this.setState({ isLoading: true })
 
     dispatch(
-      requestData(
-        isNew ? 'POST' : 'PATCH',
-        `mediations${isNew ? '' : `/${get(mediation, 'id')}`}`,
-        {
-          body,
-          encode: 'multipart/form-data',
-          handleFail: this.handleFailData,
-          handleSuccess: this.handleSuccessData,
-          key: 'mediations',
-        }
-      )
+      requestData({
+        apiPath: `/mediations${isNew ? '' : `/${get(mediation, 'id')}`}`,
+        body,
+        encode: 'multipart/form-data',
+        handleFail: this.handleFailData,
+        handleSuccess: this.handleSuccessData,
+        method: isNew ? 'POST' : 'PATCH',
+        stateKey: 'mediations',
+      })
     )
   }
 

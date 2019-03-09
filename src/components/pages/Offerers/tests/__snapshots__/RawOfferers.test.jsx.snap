@@ -4,6 +4,7 @@ exports[`src | components | pages | RawOfferers snapshot should match snapshot 1
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <RawOfferers
+    currentUser={Object {}}
     dispatch={[Function]}
     location={
         Object {
@@ -29,7 +30,6 @@ ShallowWrapper {
             "parse": [Function],
           }
     }
-    user={Object {}}
 />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
@@ -510,7 +510,9 @@ ShallowWrapper {
           "getChildContext": Object {
             "calledByRenderer": false,
           },
-          "getDerivedStateFromProps": true,
+          "getDerivedStateFromProps": Object {
+            "hasShouldComponentUpdateBug": false,
+          },
           "getSnapshotBeforeUpdate": true,
           "setState": Object {
             "skipsComponentDidUpdateOnNullish": true,

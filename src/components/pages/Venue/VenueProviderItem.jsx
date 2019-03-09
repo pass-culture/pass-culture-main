@@ -1,26 +1,37 @@
 import classnames from 'classnames'
 import get from 'lodash.get'
-import { Icon, pluralize, requestData } from 'pass-culture-shared'
+import { Icon, pluralize } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
+import { requestData } from 'redux-saga-data'
 
 import eventsSelector from '../../../selectors/events'
 import thingsSelector from '../../../selectors/things'
 
 class VenueProviderItem extends Component {
   onDeactivateClick = () => {
-    const { isActive, requestData, venueProvider } = this.props
+    const { dispatch, isActive, venueProvider } = this.props
     const { id } = venueProvider || {}
-    requestData('PATCH', `venueProviders/${id}`, {
-      body: { isActive: !isActive },
-    })
+    dispatch(
+      requestData({
+        apiPath: `/venueProviders/${id}`,
+        body: { isActive: !isActive },
+        method: 'PATCH',
+      })
+    )
   }
 
   onDeleteClick = () => {
-    const { requestData, venueProvider } = this.props
+    const { dispatch, venueProvider } = this.props
     const { id } = venueProvider || {}
-    requestData('DELETE', `venueProviders/${id}`, { key: 'venueProviders' })
+    dispatch(
+      requestData({
+        apiPath: `/venueProviders/${id}`,
+        method: 'DELETE',
+        stateKey: 'venueProviders',
+      })
+    )
   }
 
   render() {
@@ -82,9 +93,4 @@ function mapStateToProps(state, ownProps) {
   }
 }
 
-const mapDispatchToProps = { requestData }
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(VenueProviderItem)
+export default connect(mapStateToProps)(VenueProviderItem)

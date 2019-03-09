@@ -8,16 +8,19 @@ import offererSelector from '../../../selectors/offerer'
 import selectUserOffererByOffererIdAndUserIdAndRightsType from '../../../selectors/selectUserOffererByOffererIdAndUserIdAndRightsType'
 import selectVenuePatchByVenueIdByOffererId from '../../../selectors/selectVenuePatchByVenueIdByOffererId'
 
-import RawVenuePage from './RawVenuePage'
+import RawVenue from './RawVenue'
 
 function mapStateToProps(state, ownProps) {
-  const { offererId, venueId } = ownProps.match.params
-  const { id: userId } = state.user || {}
+  const { currentUser, match } = ownProps
+  const {
+    params: { offererId, venueId },
+  } = match
+  const { id: currentUserId } = currentUser || {}
   return {
     adminUserOfferer: selectUserOffererByOffererIdAndUserIdAndRightsType(
       state,
       offererId,
-      userId,
+      currentUserId,
       'admin'
     ),
     formGeo: get(state, 'form.venue.geo'),
@@ -28,7 +31,6 @@ function mapStateToProps(state, ownProps) {
     formComment: get(state, 'form.venue.comment'),
     name: get(state, `form.venue.name`),
     offerer: offererSelector(state, offererId),
-    user: state.user,
     venuePatch: selectVenuePatchByVenueIdByOffererId(state, venueId, offererId),
   }
 }
@@ -37,4 +39,4 @@ export default compose(
   withLogin({ failRedirect: '/connexion' }),
   withRouter,
   connect(mapStateToProps)
-)(RawVenuePage)
+)(RawVenue)

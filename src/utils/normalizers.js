@@ -1,16 +1,16 @@
 export const bookingNormalizer = {
   stock: {
-    key: 'stocks',
     normalizer: {
       eventOccurrence: 'eventOccurrences',
       resolvedOffer: {
-        key: 'offers',
         normalizer: {
           event: 'events',
           thing: 'things',
         },
+        stateKey: 'offers',
       },
     },
+    stateKey: 'stocks',
   },
   user: 'users',
 }
@@ -25,64 +25,64 @@ export const thingNormalizer = {
 
 export const offerNormalizer = {
   event: {
-    key: 'events',
     normalizer: eventNormalizer,
+    stateKey: 'events',
   },
   eventOccurrences: 'eventOccurrences',
   mediations: 'mediations',
   stocks: 'stocks',
   thing: {
-    key: 'things',
     normalizer: thingNormalizer,
+    stateKey: 'things',
   },
   venue: {
-    key: 'venues',
     normalizer: {
       managingOfferer: 'offerers',
     },
+    stateKey: 'venues',
   },
 }
 
 export const mediationNormalizer = {
   event: {
-    key: 'events',
     normalizer: eventNormalizer,
+    stateKey: 'events',
   },
   thing: {
-    key: 'things',
     normalizer: thingNormalizer,
+    stateKey: 'things',
   },
 }
 
 export const offererNormalizer = {
   managedVenues: {
-    key: 'venues',
     normalizer: {
       offers: 'offers',
     },
+    stateKey: 'venues',
   },
 }
 
 export const venueNormalizer = {
   eventOccurrences: {
-    key: 'eventOccurrences',
     normalizer: {
       event: 'events',
     },
+    stateKey: 'eventOccurrences',
   },
   managingOfferer: 'offerers',
   offers: {
-    key: 'offers',
     normalizer: {
       thing: 'things',
     },
+    stateKey: 'offers',
   },
   venueProviders: 'venueProviders',
 }
 
 export const eventOccurrenceNormalizer = {
   venue: {
-    key: 'venues',
     normalizer: venueNormalizer,
+    stateKey: 'venues',
   },
 }

@@ -1,18 +1,12 @@
 import classnames from 'classnames'
 import get from 'lodash.get'
-import {
-  Field,
-  Form,
-  Icon,
-  mergeForm,
-  requestData,
-  SubmitButton,
-} from 'pass-culture-shared'
+import { Field, Form, Icon, mergeForm, SubmitButton } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 import { NavLink } from 'react-router-dom'
 import { compose } from 'redux'
+import { requestData } from 'redux-saga-data'
 
 import VenueProviderItem from './VenueProviderItem'
 import providerSelector from '../../../selectors/provider'
@@ -54,30 +48,33 @@ class ProviderManager extends Component {
 
   handleMergeForm = () => {
     const {
+      dispatch,
       match: {
         params: { venueId },
       },
-      mergeForm,
     } = this.props
     const { isNew } = this.state
-    isNew && mergeForm('venueProviders', 'nouveau', { venueId })
+    isNew && dispatch(mergeForm('venueProviders', 'nouveau', { venueId }))
   }
 
   handleDataRequest = () => {
     const {
+      dispatch,
       match: {
         params: { venueId },
       },
-      requestData,
       user,
     } = this.props
     if (!user) {
       return
     }
-    requestData('GET', 'providers')
-    requestData('GET', `venueProviders?venueId=${venueId}`, {
-      key: 'venueProviders',
-    })
+    dispatch(requestData({ apiPath: '/providers' }))
+    dispatch(
+      requestData({
+        apiPath: `/venueProviders?venueId=${venueId}`,
+        stateKey: 'venueProviders',
+      })
+    )
   }
 
   handleSuccess = () => {
@@ -172,16 +169,15 @@ class ProviderManager extends Component {
                     size="small"
                     type="select"
                   />
-                  {provider &&
-                    identifierRegexp && (
-                      <Field
-                        name="venueIdAtOfferProvider"
-                        placeholder="identifiant"
-                        required
-                        size="small"
-                        title={identifierDescription}
-                      />
-                    )}
+                  {provider && identifierRegexp && (
+                    <Field
+                      name="venueIdAtOfferProvider"
+                      placeholder="identifiant"
+                      required
+                      size="small"
+                      title={identifierDescription}
+                    />
+                  )}
                 </div>
                 <div className="field level-item level-right">
                   <NavLink
@@ -239,12 +235,7 @@ function mapStateToProps(state, ownProps) {
   }
 }
 
-const mapDispatchToProps = { mergeForm, requestData }
-
 export default compose(
   withRouter,
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )
+  connect(mapStateToProps)
 )(ProviderManager)

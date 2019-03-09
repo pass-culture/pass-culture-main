@@ -19,7 +19,7 @@ const ProfilePage = ({ user }) => {
     <Main name="profile" backTo={backTo}>
       <HeroSection title="Profil" />
       <Form
-        action="users/current"
+        action="/users/current"
         className="section"
         name="editProfile"
         patch={user || {}}>

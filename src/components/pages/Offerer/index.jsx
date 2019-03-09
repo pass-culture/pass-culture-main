@@ -4,7 +4,6 @@ import {
   CancelButton,
   Field,
   Form,
-  requestData,
   showNotification,
   SubmitButton,
   withLogin,
@@ -13,6 +12,7 @@ import React, { Component, Fragment } from 'react'
 import { connect } from 'react-redux'
 import { NavLink, withRouter } from 'react-router-dom'
 import { compose } from 'redux'
+import { requestData } from 'redux-saga-data'
 
 import HeroSection from '../../layout/HeroSection'
 import VenueItem from './VenueItem'
@@ -28,7 +28,7 @@ import {
   OFFERER_EDIT_PATCH_KEYS,
 } from '../../../utils/formatPatch'
 
-class OffererPage extends Component {
+class Offerer extends Component {
   constructor() {
     super()
     this.state = {
@@ -65,14 +65,15 @@ class OffererPage extends Component {
 
     if (offererId !== 'nouveau') {
       dispatch(
-        requestData('GET', `offerers/${offererId}`, {
+        requestData({
+          apiPath: `/offerers/${offererId}`,
           handleSuccess,
           handleFail,
           normalizer: offererNormalizer,
         })
       )
 
-      dispatch(requestData('GET', `userOfferers/${offererId}`))
+      dispatch(requestData({ apiPath: `/userOfferers/${offererId}` }))
 
       return
     }
@@ -275,18 +276,20 @@ class OffererPage extends Component {
 }
 
 function mapStateToProps(state, ownProps) {
-  const offererId = ownProps.match.params.offererId
-  const { id: userId } = state.user || {}
+  const { currentUser, match } = ownProps
+  const {
+    params: { offererId },
+  } = match
+  const { id: currentUserId } = currentUser || {}
   return {
     adminUserOfferer: selectUserOffererByOffererIdAndUserIdAndRightsType(
       state,
       offererId,
-      userId,
+      currentUserId,
       'admin'
     ),
     offerer: offererSelector(state, offererId),
     sirenName: get(state, 'form.offerer.name'),
-    user: state.user,
     venues: selectPhysicalVenuesByOffererId(state, offererId),
   }
 }
@@ -295,4 +298,4 @@ export default compose(
   withLogin({ failRedirect: '/connexion' }),
   withRouter,
   connect(mapStateToProps)
-)(OffererPage)
+)(Offerer)

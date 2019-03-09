@@ -1,17 +1,17 @@
 import {
-  requestData,
-  withLogin,
+  getRequestErrorStringFromErrors,
   Icon,
-  getRequestErrorString,
+  withLogin,
 } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { NavLink } from 'react-router-dom'
-import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
+import { compose } from 'redux'
+import { requestData } from 'redux-saga-data'
 
-import { formatLocalTimeDateString } from '../../utils/timezone'
 import Main from '../layout/Main'
+import { formatLocalTimeDateString } from '../../utils/timezone'
 
 // Configurable
 const CONFIG_CODE_LENGTH = 6
@@ -82,48 +82,61 @@ DeskState.propTypes = {
 class Desk extends Component {
   constructor(props) {
     super(props)
-
-    this.actions = bindActionCreators({ requestData }, props.dispatch)
     this.state = DEFAULT_STATE
   }
 
-  getBookingDataFor(code) {
-    this.actions.requestData('GET', `bookings/token/${code}`, {
-      key: 'deskBookings',
-      handleSuccess: (state, request) => {
-        if (request.data.isValidated === true) {
-          this.setState({ name: DESK_RECEIVE_VERIFICATION_USED })
-        } else {
-          this.setState({ name: DESK_RECEIVE_VERIFICATION_NOT_USED })
-        }
-        this.setState({ booking: request.data })
-      },
-      handleFail: (state, request) => {
-        console.log({ request })
-        this.setState({
-          name: DESK_FAIL_VERIFICATION,
-          message: getRequestErrorString(request),
-        })
-      },
-    })
+  getBookingDataFor = code => {
+    const { dispatch } = this.props
+    dispatch(
+      requestData({
+        apiPath: `/bookings/token/${code}`,
+        handleSuccess: (state, action) => {
+          const { payload } = action
+          const booking = payload.datum
+          if (booking.isValidated === true) {
+            this.setState({ name: DESK_RECEIVE_VERIFICATION_USED })
+          } else {
+            this.setState({ name: DESK_RECEIVE_VERIFICATION_NOT_USED })
+          }
+          this.setState({ booking })
+        },
+        handleFail: (state, action) => {
+          const {
+            payload: { errors },
+          } = action
+          this.setState({
+            name: DESK_FAIL_VERIFICATION,
+            message: getRequestErrorStringFromErrors(errors),
+          })
+        },
+        stateKey: 'deskBookings',
+      })
+    )
   }
 
-  postRegistrationFor(code) {
-    this.actions.requestData('PATCH', `/bookings/token/${code}`, {
-      handleSuccess: (state, request) => {
-        this.setState({ name: DESK_RECEIVE_REGISTER })
-      },
-      handleFail: (state, request) => {
-        console.log('fail', { request })
-        this.setState({
-          name: DESK_FAIL_REGISTER,
-          message: getRequestErrorString(request),
-        })
-      },
-    })
+  postRegistrationFor = code => {
+    const { dispatch } = this.props
+    dispatch(
+      requestData({
+        apiPath: `/bookings/token/${code}`,
+        handleSuccess: () => {
+          this.setState({ name: DESK_RECEIVE_REGISTER })
+        },
+        handleFail: (state, action) => {
+          const {
+            payload: { errors },
+          } = action
+          this.setState({
+            name: DESK_FAIL_REGISTER,
+            message: getRequestErrorStringFromErrors(errors),
+          })
+        },
+        method: 'PATCH',
+      })
+    )
   }
 
-  handleCodeChange(event) {
+  handleCodeChange = event => {
     const code = event.target.value.toUpperCase()
     this.setState({ code })
 
@@ -143,7 +156,7 @@ class Desk extends Component {
     return this.getBookingDataFor(code)
   }
 
-  handleCodeRegistration(code) {
+  handleCodeRegistration = code => {
     this.setState({ name: DESK_POST_REGISTER, code: '' })
     this.postRegistrationFor(code)
     this.input.focus()
@@ -260,4 +273,7 @@ class Desk extends Component {
   }
 }
 
-export default withLogin({ failRedirect: '/connexion' })(connect()(Desk))
+export default compose(
+  withLogin({ failRedirect: '/connexion' }),
+  connect()
+)(Desk)

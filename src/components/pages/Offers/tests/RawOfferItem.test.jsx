@@ -42,39 +42,39 @@ describe('src | components | pages | Offers | RawOfferItem', () => {
       wrapper.instance().onDeactivateClick()
       const expected = {
         config: {
+          apiPath: '/offers/M4',
           body: {
             isActive: false,
           },
           isMergingDatum: true,
           isMutaginArray: false,
           isMutatingDatum: true,
+          method: 'PATCH',
           normalizer: {
             event: {
-              key: 'events',
               normalizer: {
                 offers: 'offers',
               },
+              stateKey: 'events',
             },
             eventOccurrences: 'eventOccurrences',
             mediations: 'mediations',
             stocks: 'stocks',
             thing: {
-              key: 'things',
               normalizer: {
                 offers: 'offers',
               },
+              stateKey: 'things',
             },
             venue: {
-              key: 'venues',
               normalizer: {
                 managingOfferer: 'offerers',
               },
+              stateKey: 'venues',
             },
           },
         },
-        method: 'PATCH',
-        path: 'offers/M4',
-        type: 'REQUEST_DATA_PATCH_OFFERS/M4',
+        type: 'REQUEST_DATA_PATCH_/OFFERS/M4',
       }
 
       // then

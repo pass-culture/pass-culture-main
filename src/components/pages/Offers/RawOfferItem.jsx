@@ -1,10 +1,11 @@
-import { Icon, pluralize, requestData } from 'pass-culture-shared'
+import { Icon, pluralize } from 'pass-culture-shared'
 import classnames from 'classnames'
 import get from 'lodash.get'
 import moment from 'moment'
 import React, { Component } from 'react'
 import Dotdotdot from 'react-dotdotdot'
 import { NavLink } from 'react-router-dom'
+import { requestData } from 'redux-saga-data'
 
 import Price from '../../layout/Price'
 import Thumb from '../../layout/Thumb'
@@ -16,14 +17,16 @@ class RawOfferItem extends Component {
     const { dispatch, offer } = this.props
     const { id, isActive } = offer || {}
     dispatch(
-      requestData('PATCH', `offers/${id}`, {
+      requestData({
+        apiPath: `/offers/${id}`,
         body: {
           isActive: !isActive,
         },
-        normalizer: offerNormalizer,
         isMergingDatum: true,
         isMutatingDatum: true,
         isMutaginArray: false,
+        method: 'PATCH',
+        normalizer: offerNormalizer,
       })
     )
   }

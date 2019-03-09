@@ -1,4 +1,4 @@
-import { createData } from 'pass-culture-shared'
+import { createData } from 'redux-saga-data'
 
 const data = createData({
   bookings: [],

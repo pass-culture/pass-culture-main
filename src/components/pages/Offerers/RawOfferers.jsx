@@ -1,10 +1,10 @@
-import { assignData, requestData } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import { stringify } from 'query-string'
 import React, { Component, Fragment } from 'react'
 import { Form } from 'react-final-form'
 import LoadingInfiniteScroll from 'react-loading-infinite-scroller'
 import { NavLink } from 'react-router-dom'
+import { assignData, requestData } from 'redux-saga-data'
 
 import OffererItem from './OffererItem'
 import PendingOffererItem from './PendingOffererItem'
@@ -38,22 +38,25 @@ class RawOfferers extends Component {
 
   componentDidUpdate(prevProps) {
     const { location } = this.props
+
     if (location.search !== prevProps.location.search) {
       this.handleRequestData()
     }
   }
 
   handleRequestData = (handleSuccess, handleFail) => {
-    const { user, dispatch, query } = this.props
+    const { currentUser, dispatch, query } = this.props
+    const { isAdmin } = currentUser || {}
 
     const queryParams = query.parse()
     const apiParams = translateBrowserUrlToApiUrl(queryParams)
     const apiParamsString = stringify(apiParams)
-    const path = `offerers?${apiParamsString}`
+    const apiPath = `/offerers?${apiParamsString}`
 
     this.setState({ isLoading: true }, () => {
       dispatch(
-        requestData('GET', path, {
+        requestData({
+          apiPath,
           handleFail: () => {
             this.setState({
               hasMore: false,
@@ -61,8 +64,11 @@ class RawOfferers extends Component {
             })
           },
           handleSuccess: (state, action) => {
+            const {
+              payload: { data },
+            } = action
             this.setState({
-              hasMore: action.data && action.data.length > 0,
+              hasMore: data.length > 0,
               isLoading: false,
             })
           },
@@ -71,7 +77,7 @@ class RawOfferers extends Component {
       )
     })
 
-    if (!user.isAdmin) {
+    if (!isAdmin) {
       const notValidatedUserOfferersParams = Object.assign(
         {
           validated: false,
@@ -81,11 +87,12 @@ class RawOfferers extends Component {
       const notValidatedUserOfferersSearch = stringify(
         notValidatedUserOfferersParams
       )
-      const notValidatedUserOfferersPath = `offerers?${notValidatedUserOfferersSearch}`
+      const notValidatedUserOfferersPath = `/offerers?${notValidatedUserOfferersSearch}`
       dispatch(
-        requestData('GET', notValidatedUserOfferersPath, {
-          key: 'pendingOfferers',
+        requestData({
+          apiPath: notValidatedUserOfferersPath,
           normalizer: offererNormalizer,
+          stateKey: 'pendingOfferers',
         })
       )
     }
@@ -120,7 +127,6 @@ class RawOfferers extends Component {
     const initialValues = {
       keywords: queryParams[mapApiToBrowser.keywords],
     }
-    // a besoin de keywords
 
     return (
       <Main name="offerers">
@@ -194,9 +200,9 @@ class RawOfferers extends Component {
 }
 
 PropTypes.propTypes = {
+  currentUser: PropTypes.object.isRequired,
   dispatch: PropTypes.func.isRequired,
   query: PropTypes.object.isRequired,
-  user: PropTypes.object.isRequired,
 }
 
 export default RawOfferers

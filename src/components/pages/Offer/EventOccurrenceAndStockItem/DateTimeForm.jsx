@@ -6,11 +6,14 @@ import { Field, Form, SubmitButton } from 'pass-culture-shared'
 class DateTimeForm extends Component {
   handleEventOccurrenceSuccessData = (state, action) => {
     const { history, offer, stockPatch } = this.props
+    const {
+      payload: { datum },
+    } = action
+    const eventOccurrenceId = datum.id
     const stockIdOrNew = get(stockPatch, 'id', 'nouveau')
+    const offerId = get(offer, 'id')
     history.push(
-      `/offres/${get(offer, 'id')}?gestion&date=${
-        action.data.id
-      }&stock=${stockIdOrNew}`
+      `/offres/${offerId}?gestion&date=${eventOccurrenceId}&stock=${stockIdOrNew}`
     )
   }
 

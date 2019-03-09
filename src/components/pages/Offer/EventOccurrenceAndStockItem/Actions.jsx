@@ -1,9 +1,11 @@
+import { Icon } from 'pass-culture-shared'
 import React, { Component, Fragment } from 'react'
 import { NavLink } from 'react-router-dom'
 import { Portal } from 'react-portal'
 import get from 'lodash.get'
 import { connect } from 'react-redux'
-import { Icon, requestData } from 'pass-culture-shared'
+import { requestData } from 'redux-saga-data'
+
 import DeleteDialog from './DeleteDialog'
 
 class Actions extends Component {
@@ -30,12 +32,12 @@ class Actions extends Component {
       stockPatch,
     } = this.props
     dispatch(
-      requestData(
-        'DELETE',
-        isStockOnly
+      requestData({
+        apiPath: isStockOnly
           ? `stocks/${stockPatch.id}`
-          : `eventOccurrences/${eventOccurrencePatch.id}`
-      )
+          : `eventOccurrences/${eventOccurrencePatch.id}`,
+        method: 'DELETE',
+      })
     )
   }
 

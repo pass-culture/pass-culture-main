@@ -149,7 +149,7 @@ test('Une entrée avec cet identifiant existe déjà', async t => {
     // please be careful, this wait prevents is necessary
     // to pass every time, otherwise succes of this test is
     // kind of random!
-    .wait(3000)
+    .wait(10000)
 
   // then
   await t.expect(notificationError.exists).notOk()

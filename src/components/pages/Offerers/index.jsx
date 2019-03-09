@@ -12,7 +12,6 @@ function mapStateToProps(state, ownProps) {
   return {
     pendingOfferers: getPendingOfferers(state),
     offerers: offerersSelector(state),
-    user: state.user,
   }
 }
 

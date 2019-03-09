@@ -1,9 +1,9 @@
 import classnames from 'classnames'
-import { requestData } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import AvatarEditor from 'react-avatar-editor'
 import Dropzone from 'react-dropzone'
 import { connect } from 'react-redux'
+import { requestData } from 'redux-saga-data'
 
 export function computeNewZoom(current, min, max, step, factor, direction) {
   const zoom = current + step * factor * direction
@@ -80,15 +80,13 @@ class UploadThumb extends Component {
       console.warn('entityId not defined for upload')
     }
     dispatch(
-      requestData(
-        'POST',
-        `storage/thumb/${collectionName}/${entityId}/${index}`,
-        {
-          body: formData,
-          encode: 'multipart/form-data',
-          key: storeKey,
-        }
-      )
+      requestData({
+        apiPath: `/storage/thumb/${collectionName}/${entityId}/${index}`,
+        body: formData,
+        encode: 'multipart/form-data',
+        method: 'POST',
+        stateKey: storeKey,
+      })
     )
     window && window.URL.revokeObjectURL(image.preview)
   }

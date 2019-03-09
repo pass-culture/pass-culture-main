@@ -8,7 +8,6 @@ import {
   mergeErrors,
   mergeForm,
   pluralize,
-  requestData,
   showModal,
   SubmitButton,
   withLogin,
@@ -17,6 +16,7 @@ import React, { Component, Fragment } from 'react'
 import { connect } from 'react-redux'
 import { NavLink, withRouter } from 'react-router-dom'
 import { compose } from 'redux'
+import { requestData } from 'redux-saga-data'
 
 import HeroSection from 'components/layout/HeroSection'
 import Main from 'components/layout/Main'
@@ -125,27 +125,33 @@ class OfferPage extends Component {
 
     if (offerId !== 'nouveau') {
       dispatch(
-        requestData('GET', `offers/${offerId}`, {
-          key: 'offers',
+        requestData({
+          apiPath: `/offers/${offerId}`,
           normalizer: offerNormalizer,
+          stateKey: 'offers',
         })
       )
     } else if (search.venueId) {
-      requestData('GET', `venues/${search.venueId}`, {
+      requestData({
+        apiPath: `/venues/${search.venueId}`,
         normalizer: {
           managingOffererId: 'offerers',
         },
       })
     } else {
-      let offerersPath = 'offerers'
+      let offerersPath = '/offerers'
       if (search.offererId) {
         offerersPath = `${offerersPath}/${search.offererId}`
       }
 
       dispatch(
-        requestData('GET', offerersPath, {
-          handleSuccess: (state, action) => {
-            if (!get(state, 'data.venues.length')) {
+        requestData({
+          apiPath: offerersPath,
+          handleSuccess: state => {
+            const {
+              data: { venues },
+            } = state
+            if (!venues.length) {
               dispatch(
                 showModal(
                   <div>
@@ -167,26 +173,31 @@ class OfferPage extends Component {
 
     if (offerers.length === 0 || venues.length === 0) {
       dispatch(
-        requestData('GET', 'offerers', {
+        requestData({
+          apiPath: '/offerers',
           normalizer: { managedVenues: 'venues' },
         })
       )
     }
 
     if (providers.length === 0) {
-      dispatch(requestData('GET', 'providers'))
+      dispatch(requestData({ apiPath: '/providers' }))
     }
 
     if (types.length === 0) {
-      dispatch(requestData('GET', 'types'))
+      dispatch(requestData({ apiPath: '/types' }))
     }
 
     handleSuccess()
   }
 
   handleSuccess = (state, action) => {
-    const { data, method } = action
+    const {
+      config: { method },
+      payload,
+    } = action
     const { history, offer, venue } = this.props
+    const eventOrThing = payload.datum
 
     // PATCH
     if (method === 'PATCH') {
@@ -196,7 +207,7 @@ class OfferPage extends Component {
 
     // POST
     if (method === 'POST') {
-      const { offers } = data || {}
+      const { offers } = eventOrThing || {}
       const offer = offers && offers.find(o => o.venueId === get(venue, 'id'))
       if (!offer) {
         console.warn(

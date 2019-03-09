@@ -1,9 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | pages | Venue | RawVenuePage snapshot should match snapshot 1`] = `
+exports[`src | components | pages | Venue | RawVenue snapshot should match snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
-  Symbol(enzyme.__unrendered__): <RawVenuePage
+  Symbol(enzyme.__unrendered__): <RawVenue
     currentUser={Object {}}
     dispatch={[Function]}
     formComment={null}
@@ -76,17 +76,17 @@ ShallowWrapper {
           normalizer={
                     Object {
                               "eventOccurrences": Object {
-                                "key": "eventOccurrences",
                                 "normalizer": Object {
                                   "event": "events",
                                 },
+                                "stateKey": "eventOccurrences",
                               },
                               "managingOfferer": "offerers",
                               "offers": Object {
-                                "key": "offers",
                                 "normalizer": Object {
                                   "thing": "things",
                                 },
+                                "stateKey": "offers",
                               },
                               "venueProviders": "venueProviders",
                             }
@@ -112,6 +112,7 @@ ShallowWrapper {
                               <Field
                                         className=""
                                         displayValue={[Function]}
+                                        errors={null}
                                         label="SIRET (si applicable)"
                                         layout="horizontal"
                                         name="siret"
@@ -124,6 +125,7 @@ ShallowWrapper {
                               />
                               <Field
                                         displayValue={[Function]}
+                                        errors={null}
                                         isExpanded={true}
                                         label="Nom"
                                         layout="horizontal"
@@ -135,6 +137,7 @@ ShallowWrapper {
                               />
                               <Field
                                         displayValue={[Function]}
+                                        errors={null}
                                         label="E-mail"
                                         layout="horizontal"
                                         name="bookingEmail"
@@ -164,6 +167,7 @@ ShallowWrapper {
                     >
                               <Field
                                         displayValue={[Function]}
+                                        errors={null}
                                         label="BIC"
                                         layout="horizontal"
                                         name="bic"
@@ -174,6 +178,7 @@ ShallowWrapper {
                               />
                               <Field
                                         displayValue={[Function]}
+                                        errors={null}
                                         isExpanded={true}
                                         label="IBAN"
                                         layout="horizontal"
@@ -198,6 +203,7 @@ ShallowWrapper {
                     >
                               <Field
                                         displayValue={[Function]}
+                                        errors={null}
                                         isExpanded={true}
                                         label="Numéro et voie"
                                         latitude={5.15981}
@@ -214,6 +220,7 @@ ShallowWrapper {
                               <Field
                                         autocomplete="postal-code"
                                         displayValue={[Function]}
+                                        errors={null}
                                         label="Code postal"
                                         layout="horizontal"
                                         name="postalCode"
@@ -225,6 +232,7 @@ ShallowWrapper {
                               <Field
                                         autocomplete="address-level2"
                                         displayValue={[Function]}
+                                        errors={null}
                                         label="Ville"
                                         layout="horizontal"
                                         name="city"
@@ -235,6 +243,7 @@ ShallowWrapper {
                               />
                               <Field
                                         displayValue={[Function]}
+                                        errors={null}
                                         label="Latitude"
                                         layout="horizontal"
                                         name="latitude"
@@ -245,6 +254,7 @@ ShallowWrapper {
                               />
                               <Field
                                         displayValue={[Function]}
+                                        errors={null}
                                         label="Longitude"
                                         layout="horizontal"
                                         name="longitude"
@@ -363,6 +373,7 @@ ShallowWrapper {
                             <Field
                                           className=""
                                           displayValue={[Function]}
+                                          errors={null}
                                           label="SIRET (si applicable)"
                                           layout="horizontal"
                                           name="siret"
@@ -375,6 +386,7 @@ ShallowWrapper {
                             />
                             <Field
                                           displayValue={[Function]}
+                                          errors={null}
                                           isExpanded={true}
                                           label="Nom"
                                           layout="horizontal"
@@ -386,6 +398,7 @@ ShallowWrapper {
                             />
                             <Field
                                           displayValue={[Function]}
+                                          errors={null}
                                           label="E-mail"
                                           layout="horizontal"
                                           name="bookingEmail"
@@ -415,6 +428,7 @@ ShallowWrapper {
               >
                             <Field
                                           displayValue={[Function]}
+                                          errors={null}
                                           label="BIC"
                                           layout="horizontal"
                                           name="bic"
@@ -425,6 +439,7 @@ ShallowWrapper {
                             />
                             <Field
                                           displayValue={[Function]}
+                                          errors={null}
                                           isExpanded={true}
                                           label="IBAN"
                                           layout="horizontal"
@@ -449,6 +464,7 @@ ShallowWrapper {
               >
                             <Field
                                           displayValue={[Function]}
+                                          errors={null}
                                           isExpanded={true}
                                           label="Numéro et voie"
                                           latitude={5.15981}
@@ -465,6 +481,7 @@ ShallowWrapper {
                             <Field
                                           autocomplete="postal-code"
                                           displayValue={[Function]}
+                                          errors={null}
                                           label="Code postal"
                                           layout="horizontal"
                                           name="postalCode"
@@ -476,6 +493,7 @@ ShallowWrapper {
                             <Field
                                           autocomplete="address-level2"
                                           displayValue={[Function]}
+                                          errors={null}
                                           label="Ville"
                                           layout="horizontal"
                                           name="city"
@@ -486,6 +504,7 @@ ShallowWrapper {
                             />
                             <Field
                                           displayValue={[Function]}
+                                          errors={null}
                                           label="Latitude"
                                           layout="horizontal"
                                           name="latitude"
@@ -496,6 +515,7 @@ ShallowWrapper {
                             />
                             <Field
                                           displayValue={[Function]}
+                                          errors={null}
                                           label="Longitude"
                                           layout="horizontal"
                                           name="longitude"
@@ -568,17 +588,17 @@ ShallowWrapper {
           "name": "venue",
           "normalizer": Object {
             "eventOccurrences": Object {
-              "key": "eventOccurrences",
               "normalizer": Object {
                 "event": "events",
               },
+              "stateKey": "eventOccurrences",
             },
             "managingOfferer": "offerers",
             "offers": Object {
-              "key": "offers",
               "normalizer": Object {
                 "thing": "things",
               },
+              "stateKey": "offers",
             },
             "venueProviders": "venueProviders",
           },
@@ -609,6 +629,7 @@ ShallowWrapper {
                   <Field
                                     className=""
                                     displayValue={[Function]}
+                                    errors={null}
                                     label="SIRET (si applicable)"
                                     layout="horizontal"
                                     name="siret"
@@ -621,6 +642,7 @@ ShallowWrapper {
                   />
                   <Field
                                     displayValue={[Function]}
+                                    errors={null}
                                     isExpanded={true}
                                     label="Nom"
                                     layout="horizontal"
@@ -632,6 +654,7 @@ ShallowWrapper {
                   />
                   <Field
                                     displayValue={[Function]}
+                                    errors={null}
                                     label="E-mail"
                                     layout="horizontal"
                                     name="bookingEmail"
@@ -674,6 +697,7 @@ ShallowWrapper {
                     <Field
                       className=""
                       displayValue={[Function]}
+                      errors={null}
                       label="SIRET (si applicable)"
                       layout="horizontal"
                       name="siret"
@@ -686,6 +710,7 @@ ShallowWrapper {
 />,
                     <Field
                       displayValue={[Function]}
+                      errors={null}
                       isExpanded={true}
                       label="Nom"
                       layout="horizontal"
@@ -697,6 +722,7 @@ ShallowWrapper {
 />,
                     <Field
                       displayValue={[Function]}
+                      errors={null}
                       label="E-mail"
                       layout="horizontal"
                       name="bookingEmail"
@@ -719,6 +745,7 @@ ShallowWrapper {
                     "props": Object {
                       "className": "",
                       "displayValue": [Function],
+                      "errors": null,
                       "label": "SIRET (si applicable)",
                       "layout": "horizontal",
                       "name": "siret",
@@ -739,6 +766,7 @@ ShallowWrapper {
                     "nodeType": "class",
                     "props": Object {
                       "displayValue": [Function],
+                      "errors": null,
                       "isExpanded": true,
                       "label": "Nom",
                       "layout": "horizontal",
@@ -758,6 +786,7 @@ ShallowWrapper {
                     "nodeType": "class",
                     "props": Object {
                       "displayValue": [Function],
+                      "errors": null,
                       "label": "E-mail",
                       "layout": "horizontal",
                       "name": "bookingEmail",
@@ -799,6 +828,7 @@ ShallowWrapper {
 >
                   <Field
                                     displayValue={[Function]}
+                                    errors={null}
                                     label="BIC"
                                     layout="horizontal"
                                     name="bic"
@@ -809,6 +839,7 @@ ShallowWrapper {
                   />
                   <Field
                                     displayValue={[Function]}
+                                    errors={null}
                                     isExpanded={true}
                                     label="IBAN"
                                     layout="horizontal"
@@ -865,6 +896,7 @@ ShallowWrapper {
                   "children": Array [
                     <Field
                       displayValue={[Function]}
+                      errors={null}
                       label="BIC"
                       layout="horizontal"
                       name="bic"
@@ -875,6 +907,7 @@ ShallowWrapper {
 />,
                     <Field
                       displayValue={[Function]}
+                      errors={null}
                       isExpanded={true}
                       label="IBAN"
                       layout="horizontal"
@@ -896,6 +929,7 @@ ShallowWrapper {
                     "nodeType": "class",
                     "props": Object {
                       "displayValue": [Function],
+                      "errors": null,
                       "label": "BIC",
                       "layout": "horizontal",
                       "name": "bic",
@@ -914,6 +948,7 @@ ShallowWrapper {
                     "nodeType": "class",
                     "props": Object {
                       "displayValue": [Function],
+                      "errors": null,
                       "isExpanded": true,
                       "label": "IBAN",
                       "layout": "horizontal",
@@ -950,6 +985,7 @@ ShallowWrapper {
 >
                   <Field
                                     displayValue={[Function]}
+                                    errors={null}
                                     isExpanded={true}
                                     label="Numéro et voie"
                                     latitude={5.15981}
@@ -966,6 +1002,7 @@ ShallowWrapper {
                   <Field
                                     autocomplete="postal-code"
                                     displayValue={[Function]}
+                                    errors={null}
                                     label="Code postal"
                                     layout="horizontal"
                                     name="postalCode"
@@ -977,6 +1014,7 @@ ShallowWrapper {
                   <Field
                                     autocomplete="address-level2"
                                     displayValue={[Function]}
+                                    errors={null}
                                     label="Ville"
                                     layout="horizontal"
                                     name="city"
@@ -987,6 +1025,7 @@ ShallowWrapper {
                   />
                   <Field
                                     displayValue={[Function]}
+                                    errors={null}
                                     label="Latitude"
                                     layout="horizontal"
                                     name="latitude"
@@ -997,6 +1036,7 @@ ShallowWrapper {
                   />
                   <Field
                                     displayValue={[Function]}
+                                    errors={null}
                                     label="Longitude"
                                     layout="horizontal"
                                     name="longitude"
@@ -1031,6 +1071,7 @@ ShallowWrapper {
                   "children": Array [
                     <Field
                       displayValue={[Function]}
+                      errors={null}
                       isExpanded={true}
                       label="Numéro et voie"
                       latitude={5.15981}
@@ -1047,6 +1088,7 @@ ShallowWrapper {
                     <Field
                       autocomplete="postal-code"
                       displayValue={[Function]}
+                      errors={null}
                       label="Code postal"
                       layout="horizontal"
                       name="postalCode"
@@ -1058,6 +1100,7 @@ ShallowWrapper {
                     <Field
                       autocomplete="address-level2"
                       displayValue={[Function]}
+                      errors={null}
                       label="Ville"
                       layout="horizontal"
                       name="city"
@@ -1068,6 +1111,7 @@ ShallowWrapper {
 />,
                     <Field
                       displayValue={[Function]}
+                      errors={null}
                       label="Latitude"
                       layout="horizontal"
                       name="latitude"
@@ -1078,6 +1122,7 @@ ShallowWrapper {
 />,
                     <Field
                       displayValue={[Function]}
+                      errors={null}
                       label="Longitude"
                       layout="horizontal"
                       name="longitude"
@@ -1097,6 +1142,7 @@ ShallowWrapper {
                     "nodeType": "class",
                     "props": Object {
                       "displayValue": [Function],
+                      "errors": null,
                       "isExpanded": true,
                       "label": "Numéro et voie",
                       "latitude": 5.15981,
@@ -1121,6 +1167,7 @@ ShallowWrapper {
                     "props": Object {
                       "autocomplete": "postal-code",
                       "displayValue": [Function],
+                      "errors": null,
                       "label": "Code postal",
                       "layout": "horizontal",
                       "name": "postalCode",
@@ -1140,6 +1187,7 @@ ShallowWrapper {
                     "props": Object {
                       "autocomplete": "address-level2",
                       "displayValue": [Function],
+                      "errors": null,
                       "label": "Ville",
                       "layout": "horizontal",
                       "name": "city",
@@ -1158,6 +1206,7 @@ ShallowWrapper {
                     "nodeType": "class",
                     "props": Object {
                       "displayValue": [Function],
+                      "errors": null,
                       "label": "Latitude",
                       "layout": "horizontal",
                       "name": "latitude",
@@ -1176,6 +1225,7 @@ ShallowWrapper {
                     "nodeType": "class",
                     "props": Object {
                       "displayValue": [Function],
+                      "errors": null,
                       "label": "Longitude",
                       "layout": "horizontal",
                       "name": "longitude",
@@ -1426,17 +1476,17 @@ ShallowWrapper {
             normalizer={
                         Object {
                                     "eventOccurrences": Object {
-                                      "key": "eventOccurrences",
                                       "normalizer": Object {
                                         "event": "events",
                                       },
+                                      "stateKey": "eventOccurrences",
                                     },
                                     "managingOfferer": "offerers",
                                     "offers": Object {
-                                      "key": "offers",
                                       "normalizer": Object {
                                         "thing": "things",
                                       },
+                                      "stateKey": "offers",
                                     },
                                     "venueProviders": "venueProviders",
                                   }
@@ -1462,6 +1512,7 @@ ShallowWrapper {
                                     <Field
                                                 className=""
                                                 displayValue={[Function]}
+                                                errors={null}
                                                 label="SIRET (si applicable)"
                                                 layout="horizontal"
                                                 name="siret"
@@ -1474,6 +1525,7 @@ ShallowWrapper {
                                     />
                                     <Field
                                                 displayValue={[Function]}
+                                                errors={null}
                                                 isExpanded={true}
                                                 label="Nom"
                                                 layout="horizontal"
@@ -1485,6 +1537,7 @@ ShallowWrapper {
                                     />
                                     <Field
                                                 displayValue={[Function]}
+                                                errors={null}
                                                 label="E-mail"
                                                 layout="horizontal"
                                                 name="bookingEmail"
@@ -1514,6 +1567,7 @@ ShallowWrapper {
                         >
                                     <Field
                                                 displayValue={[Function]}
+                                                errors={null}
                                                 label="BIC"
                                                 layout="horizontal"
                                                 name="bic"
@@ -1524,6 +1578,7 @@ ShallowWrapper {
                                     />
                                     <Field
                                                 displayValue={[Function]}
+                                                errors={null}
                                                 isExpanded={true}
                                                 label="IBAN"
                                                 layout="horizontal"
@@ -1548,6 +1603,7 @@ ShallowWrapper {
                         >
                                     <Field
                                                 displayValue={[Function]}
+                                                errors={null}
                                                 isExpanded={true}
                                                 label="Numéro et voie"
                                                 latitude={5.15981}
@@ -1564,6 +1620,7 @@ ShallowWrapper {
                                     <Field
                                                 autocomplete="postal-code"
                                                 displayValue={[Function]}
+                                                errors={null}
                                                 label="Code postal"
                                                 layout="horizontal"
                                                 name="postalCode"
@@ -1575,6 +1632,7 @@ ShallowWrapper {
                                     <Field
                                                 autocomplete="address-level2"
                                                 displayValue={[Function]}
+                                                errors={null}
                                                 label="Ville"
                                                 layout="horizontal"
                                                 name="city"
@@ -1585,6 +1643,7 @@ ShallowWrapper {
                                     />
                                     <Field
                                                 displayValue={[Function]}
+                                                errors={null}
                                                 label="Latitude"
                                                 layout="horizontal"
                                                 name="latitude"
@@ -1595,6 +1654,7 @@ ShallowWrapper {
                                     />
                                     <Field
                                                 displayValue={[Function]}
+                                                errors={null}
                                                 label="Longitude"
                                                 layout="horizontal"
                                                 name="longitude"
@@ -1713,6 +1773,7 @@ ShallowWrapper {
                                 <Field
                                                 className=""
                                                 displayValue={[Function]}
+                                                errors={null}
                                                 label="SIRET (si applicable)"
                                                 layout="horizontal"
                                                 name="siret"
@@ -1725,6 +1786,7 @@ ShallowWrapper {
                                 />
                                 <Field
                                                 displayValue={[Function]}
+                                                errors={null}
                                                 isExpanded={true}
                                                 label="Nom"
                                                 layout="horizontal"
@@ -1736,6 +1798,7 @@ ShallowWrapper {
                                 />
                                 <Field
                                                 displayValue={[Function]}
+                                                errors={null}
                                                 label="E-mail"
                                                 layout="horizontal"
                                                 name="bookingEmail"
@@ -1765,6 +1828,7 @@ ShallowWrapper {
                 >
                                 <Field
                                                 displayValue={[Function]}
+                                                errors={null}
                                                 label="BIC"
                                                 layout="horizontal"
                                                 name="bic"
@@ -1775,6 +1839,7 @@ ShallowWrapper {
                                 />
                                 <Field
                                                 displayValue={[Function]}
+                                                errors={null}
                                                 isExpanded={true}
                                                 label="IBAN"
                                                 layout="horizontal"
@@ -1799,6 +1864,7 @@ ShallowWrapper {
                 >
                                 <Field
                                                 displayValue={[Function]}
+                                                errors={null}
                                                 isExpanded={true}
                                                 label="Numéro et voie"
                                                 latitude={5.15981}
@@ -1815,6 +1881,7 @@ ShallowWrapper {
                                 <Field
                                                 autocomplete="postal-code"
                                                 displayValue={[Function]}
+                                                errors={null}
                                                 label="Code postal"
                                                 layout="horizontal"
                                                 name="postalCode"
@@ -1826,6 +1893,7 @@ ShallowWrapper {
                                 <Field
                                                 autocomplete="address-level2"
                                                 displayValue={[Function]}
+                                                errors={null}
                                                 label="Ville"
                                                 layout="horizontal"
                                                 name="city"
@@ -1836,6 +1904,7 @@ ShallowWrapper {
                                 />
                                 <Field
                                                 displayValue={[Function]}
+                                                errors={null}
                                                 label="Latitude"
                                                 layout="horizontal"
                                                 name="latitude"
@@ -1846,6 +1915,7 @@ ShallowWrapper {
                                 />
                                 <Field
                                                 displayValue={[Function]}
+                                                errors={null}
                                                 label="Longitude"
                                                 layout="horizontal"
                                                 name="longitude"
@@ -1918,17 +1988,17 @@ ShallowWrapper {
             "name": "venue",
             "normalizer": Object {
               "eventOccurrences": Object {
-                "key": "eventOccurrences",
                 "normalizer": Object {
                   "event": "events",
                 },
+                "stateKey": "eventOccurrences",
               },
               "managingOfferer": "offerers",
               "offers": Object {
-                "key": "offers",
                 "normalizer": Object {
                   "thing": "things",
                 },
+                "stateKey": "offers",
               },
               "venueProviders": "venueProviders",
             },
@@ -1959,6 +2029,7 @@ ShallowWrapper {
                     <Field
                                         className=""
                                         displayValue={[Function]}
+                                        errors={null}
                                         label="SIRET (si applicable)"
                                         layout="horizontal"
                                         name="siret"
@@ -1971,6 +2042,7 @@ ShallowWrapper {
                     />
                     <Field
                                         displayValue={[Function]}
+                                        errors={null}
                                         isExpanded={true}
                                         label="Nom"
                                         layout="horizontal"
@@ -1982,6 +2054,7 @@ ShallowWrapper {
                     />
                     <Field
                                         displayValue={[Function]}
+                                        errors={null}
                                         label="E-mail"
                                         layout="horizontal"
                                         name="bookingEmail"
@@ -2024,6 +2097,7 @@ ShallowWrapper {
                       <Field
                         className=""
                         displayValue={[Function]}
+                        errors={null}
                         label="SIRET (si applicable)"
                         layout="horizontal"
                         name="siret"
@@ -2036,6 +2110,7 @@ ShallowWrapper {
 />,
                       <Field
                         displayValue={[Function]}
+                        errors={null}
                         isExpanded={true}
                         label="Nom"
                         layout="horizontal"
@@ -2047,6 +2122,7 @@ ShallowWrapper {
 />,
                       <Field
                         displayValue={[Function]}
+                        errors={null}
                         label="E-mail"
                         layout="horizontal"
                         name="bookingEmail"
@@ -2069,6 +2145,7 @@ ShallowWrapper {
                       "props": Object {
                         "className": "",
                         "displayValue": [Function],
+                        "errors": null,
                         "label": "SIRET (si applicable)",
                         "layout": "horizontal",
                         "name": "siret",
@@ -2089,6 +2166,7 @@ ShallowWrapper {
                       "nodeType": "class",
                       "props": Object {
                         "displayValue": [Function],
+                        "errors": null,
                         "isExpanded": true,
                         "label": "Nom",
                         "layout": "horizontal",
@@ -2108,6 +2186,7 @@ ShallowWrapper {
                       "nodeType": "class",
                       "props": Object {
                         "displayValue": [Function],
+                        "errors": null,
                         "label": "E-mail",
                         "layout": "horizontal",
                         "name": "bookingEmail",
@@ -2149,6 +2228,7 @@ ShallowWrapper {
 >
                     <Field
                                         displayValue={[Function]}
+                                        errors={null}
                                         label="BIC"
                                         layout="horizontal"
                                         name="bic"
@@ -2159,6 +2239,7 @@ ShallowWrapper {
                     />
                     <Field
                                         displayValue={[Function]}
+                                        errors={null}
                                         isExpanded={true}
                                         label="IBAN"
                                         layout="horizontal"
@@ -2215,6 +2296,7 @@ ShallowWrapper {
                     "children": Array [
                       <Field
                         displayValue={[Function]}
+                        errors={null}
                         label="BIC"
                         layout="horizontal"
                         name="bic"
@@ -2225,6 +2307,7 @@ ShallowWrapper {
 />,
                       <Field
                         displayValue={[Function]}
+                        errors={null}
                         isExpanded={true}
                         label="IBAN"
                         layout="horizontal"
@@ -2246,6 +2329,7 @@ ShallowWrapper {
                       "nodeType": "class",
                       "props": Object {
                         "displayValue": [Function],
+                        "errors": null,
                         "label": "BIC",
                         "layout": "horizontal",
                         "name": "bic",
@@ -2264,6 +2348,7 @@ ShallowWrapper {
                       "nodeType": "class",
                       "props": Object {
                         "displayValue": [Function],
+                        "errors": null,
                         "isExpanded": true,
                         "label": "IBAN",
                         "layout": "horizontal",
@@ -2300,6 +2385,7 @@ ShallowWrapper {
 >
                     <Field
                                         displayValue={[Function]}
+                                        errors={null}
                                         isExpanded={true}
                                         label="Numéro et voie"
                                         latitude={5.15981}
@@ -2316,6 +2402,7 @@ ShallowWrapper {
                     <Field
                                         autocomplete="postal-code"
                                         displayValue={[Function]}
+                                        errors={null}
                                         label="Code postal"
                                         layout="horizontal"
                                         name="postalCode"
@@ -2327,6 +2414,7 @@ ShallowWrapper {
                     <Field
                                         autocomplete="address-level2"
                                         displayValue={[Function]}
+                                        errors={null}
                                         label="Ville"
                                         layout="horizontal"
                                         name="city"
@@ -2337,6 +2425,7 @@ ShallowWrapper {
                     />
                     <Field
                                         displayValue={[Function]}
+                                        errors={null}
                                         label="Latitude"
                                         layout="horizontal"
                                         name="latitude"
@@ -2347,6 +2436,7 @@ ShallowWrapper {
                     />
                     <Field
                                         displayValue={[Function]}
+                                        errors={null}
                                         label="Longitude"
                                         layout="horizontal"
                                         name="longitude"
@@ -2381,6 +2471,7 @@ ShallowWrapper {
                     "children": Array [
                       <Field
                         displayValue={[Function]}
+                        errors={null}
                         isExpanded={true}
                         label="Numéro et voie"
                         latitude={5.15981}
@@ -2397,6 +2488,7 @@ ShallowWrapper {
                       <Field
                         autocomplete="postal-code"
                         displayValue={[Function]}
+                        errors={null}
                         label="Code postal"
                         layout="horizontal"
                         name="postalCode"
@@ -2408,6 +2500,7 @@ ShallowWrapper {
                       <Field
                         autocomplete="address-level2"
                         displayValue={[Function]}
+                        errors={null}
                         label="Ville"
                         layout="horizontal"
                         name="city"
@@ -2418,6 +2511,7 @@ ShallowWrapper {
 />,
                       <Field
                         displayValue={[Function]}
+                        errors={null}
                         label="Latitude"
                         layout="horizontal"
                         name="latitude"
@@ -2428,6 +2522,7 @@ ShallowWrapper {
 />,
                       <Field
                         displayValue={[Function]}
+                        errors={null}
                         label="Longitude"
                         layout="horizontal"
                         name="longitude"
@@ -2447,6 +2542,7 @@ ShallowWrapper {
                       "nodeType": "class",
                       "props": Object {
                         "displayValue": [Function],
+                        "errors": null,
                         "isExpanded": true,
                         "label": "Numéro et voie",
                         "latitude": 5.15981,
@@ -2471,6 +2567,7 @@ ShallowWrapper {
                       "props": Object {
                         "autocomplete": "postal-code",
                         "displayValue": [Function],
+                        "errors": null,
                         "label": "Code postal",
                         "layout": "horizontal",
                         "name": "postalCode",
@@ -2490,6 +2587,7 @@ ShallowWrapper {
                       "props": Object {
                         "autocomplete": "address-level2",
                         "displayValue": [Function],
+                        "errors": null,
                         "label": "Ville",
                         "layout": "horizontal",
                         "name": "city",
@@ -2508,6 +2606,7 @@ ShallowWrapper {
                       "nodeType": "class",
                       "props": Object {
                         "displayValue": [Function],
+                        "errors": null,
                         "label": "Latitude",
                         "layout": "horizontal",
                         "name": "latitude",
@@ -2526,6 +2625,7 @@ ShallowWrapper {
                       "nodeType": "class",
                       "props": Object {
                         "displayValue": [Function],
+                        "errors": null,
                         "label": "Longitude",
                         "layout": "horizontal",
                         "name": "longitude",
@@ -2750,7 +2850,9 @@ ShallowWrapper {
           "getChildContext": Object {
             "calledByRenderer": false,
           },
-          "getDerivedStateFromProps": true,
+          "getDerivedStateFromProps": Object {
+            "hasShouldComponentUpdateBug": false,
+          },
           "getSnapshotBeforeUpdate": true,
           "setState": Object {
             "skipsComponentDidUpdateOnNullish": true,

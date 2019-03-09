@@ -3,14 +3,14 @@ import moment from 'moment'
 import {
   closeModal,
   Icon,
-  requestData,
   showModal,
   showNotification,
-  getRequestErrorString,
+  getRequestErrorStringFromErrors,
 } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import React, { Component, Fragment } from 'react'
 import { connect } from 'react-redux'
+import { requestData } from 'redux-saga-data'
 
 import eventSelector from '../../../selectors/event'
 import thingSelector from '../../../selectors/thing'
@@ -64,13 +64,16 @@ const getBookingState = booking => {
 }
 
 class BookingItem extends Component {
-  cancelError = (state, request) => {
+  cancelError = (state, action) => {
     const { dispatch } = this.props
+    const {
+      payload: { errors },
+    } = action
 
     dispatch(
       showNotification({
         name: 'bookings',
-        text: getRequestErrorString(request),
+        text: getRequestErrorStringFromErrors(errors),
         type: 'danger',
       })
     )
@@ -89,12 +92,14 @@ class BookingItem extends Component {
               className="button is-primary level-item"
               onClick={() => {
                 dispatch(
-                  requestData('PATCH', `bookings/${id}`, {
+                  requestData({
+                    apiPath: `/bookings/${id}`,
                     body: {
                       isCancelled: true,
                     },
-                    normalizer: bookingNormalizer,
                     handleFail: this.cancelError,
+                    method: 'PATCH',
+                    normalizer: bookingNormalizer,
                   })
                 )
                 dispatch(closeModal())

@@ -108,6 +108,7 @@ ShallowWrapper {
                                                             >
                                                                       <Field
                                                                                 displayValue={[Function]}
+                                                                                errors={null}
                                                                                 label="Adresse e-mail"
                                                                                 layout="horizontal"
                                                                                 name="identifier"
@@ -120,6 +121,7 @@ ShallowWrapper {
                                                                       <Field
                                                                                 autoComplete="current-password"
                                                                                 displayValue={[Function]}
+                                                                                errors={null}
                                                                                 label="Mot de passe"
                                                                                 layout="horizontal"
                                                                                 name="password"
@@ -285,6 +287,7 @@ ShallowWrapper {
                                                             >
                                                                         <Field
                                                                                     displayValue={[Function]}
+                                                                                    errors={null}
                                                                                     label="Adresse e-mail"
                                                                                     layout="horizontal"
                                                                                     name="identifier"
@@ -297,6 +300,7 @@ ShallowWrapper {
                                                                         <Field
                                                                                     autoComplete="current-password"
                                                                                     displayValue={[Function]}
+                                                                                    errors={null}
                                                                                     label="Mot de passe"
                                                                                     layout="horizontal"
                                                                                     name="password"
@@ -429,6 +433,7 @@ ShallowWrapper {
                                                         >
                                                                       <Field
                                                                                     displayValue={[Function]}
+                                                                                    errors={null}
                                                                                     label="Adresse e-mail"
                                                                                     layout="horizontal"
                                                                                     name="identifier"
@@ -441,6 +446,7 @@ ShallowWrapper {
                                                                       <Field
                                                                                     autoComplete="current-password"
                                                                                     displayValue={[Function]}
+                                                                                    errors={null}
                                                                                     label="Mot de passe"
                                                                                     layout="horizontal"
                                                                                     name="password"
@@ -569,6 +575,7 @@ ShallowWrapper {
                                                 >
                                                                 <Field
                                                                                 displayValue={[Function]}
+                                                                                errors={null}
                                                                                 label="Adresse e-mail"
                                                                                 layout="horizontal"
                                                                                 name="identifier"
@@ -581,6 +588,7 @@ ShallowWrapper {
                                                                 <Field
                                                                                 autoComplete="current-password"
                                                                                 displayValue={[Function]}
+                                                                                errors={null}
                                                                                 label="Mot de passe"
                                                                                 layout="horizontal"
                                                                                 name="password"
@@ -705,6 +713,7 @@ ShallowWrapper {
                                     >
                                                       <Field
                                                                         displayValue={[Function]}
+                                                                        errors={null}
                                                                         label="Adresse e-mail"
                                                                         layout="horizontal"
                                                                         name="identifier"
@@ -717,6 +726,7 @@ ShallowWrapper {
                                                       <Field
                                                                         autoComplete="current-password"
                                                                         displayValue={[Function]}
+                                                                        errors={null}
                                                                         label="Mot de passe"
                                                                         layout="horizontal"
                                                                         name="password"
@@ -838,6 +848,7 @@ ShallowWrapper {
                       >
                                             <Field
                                                                   displayValue={[Function]}
+                                                                  errors={null}
                                                                   label="Adresse e-mail"
                                                                   layout="horizontal"
                                                                   name="identifier"
@@ -850,6 +861,7 @@ ShallowWrapper {
                                             <Field
                                                                   autoComplete="current-password"
                                                                   displayValue={[Function]}
+                                                                  errors={null}
                                                                   label="Mot de passe"
                                                                   layout="horizontal"
                                                                   name="password"
@@ -1030,6 +1042,7 @@ ShallowWrapper {
 >
                           <Field
                                                     displayValue={[Function]}
+                                                    errors={null}
                                                     label="Adresse e-mail"
                                                     layout="horizontal"
                                                     name="identifier"
@@ -1042,6 +1055,7 @@ ShallowWrapper {
                           <Field
                                                     autoComplete="current-password"
                                                     displayValue={[Function]}
+                                                    errors={null}
                                                     label="Mot de passe"
                                                     layout="horizontal"
                                                     name="password"
@@ -1118,6 +1132,7 @@ ShallowWrapper {
                           "children": Array [
                             <Field
                               displayValue={[Function]}
+                              errors={null}
                               label="Adresse e-mail"
                               layout="horizontal"
                               name="identifier"
@@ -1130,6 +1145,7 @@ ShallowWrapper {
                             <Field
                               autoComplete="current-password"
                               displayValue={[Function]}
+                              errors={null}
                               label="Mot de passe"
                               layout="horizontal"
                               name="password"
@@ -1159,6 +1175,7 @@ ShallowWrapper {
                             "nodeType": "class",
                             "props": Object {
                               "displayValue": [Function],
+                              "errors": null,
                               "label": "Adresse e-mail",
                               "layout": "horizontal",
                               "name": "identifier",
@@ -1179,6 +1196,7 @@ ShallowWrapper {
                             "props": Object {
                               "autoComplete": "current-password",
                               "displayValue": [Function],
+                              "errors": null,
                               "label": "Mot de passe",
                               "layout": "horizontal",
                               "name": "password",
@@ -1412,6 +1430,7 @@ ShallowWrapper {
                                                                         >
                                                                                     <Field
                                                                                                 displayValue={[Function]}
+                                                                                                errors={null}
                                                                                                 label="Adresse e-mail"
                                                                                                 layout="horizontal"
                                                                                                 name="identifier"
@@ -1424,6 +1443,7 @@ ShallowWrapper {
                                                                                     <Field
                                                                                                 autoComplete="current-password"
                                                                                                 displayValue={[Function]}
+                                                                                                errors={null}
                                                                                                 label="Mot de passe"
                                                                                                 layout="horizontal"
                                                                                                 name="password"
@@ -1589,6 +1609,7 @@ ShallowWrapper {
                                                                       >
                                                                                     <Field
                                                                                                   displayValue={[Function]}
+                                                                                                  errors={null}
                                                                                                   label="Adresse e-mail"
                                                                                                   layout="horizontal"
                                                                                                   name="identifier"
@@ -1601,6 +1622,7 @@ ShallowWrapper {
                                                                                     <Field
                                                                                                   autoComplete="current-password"
                                                                                                   displayValue={[Function]}
+                                                                                                  errors={null}
                                                                                                   label="Mot de passe"
                                                                                                   layout="horizontal"
                                                                                                   name="password"
@@ -1733,6 +1755,7 @@ ShallowWrapper {
                                                                 >
                                                                                 <Field
                                                                                                 displayValue={[Function]}
+                                                                                                errors={null}
                                                                                                 label="Adresse e-mail"
                                                                                                 layout="horizontal"
                                                                                                 name="identifier"
@@ -1745,6 +1768,7 @@ ShallowWrapper {
                                                                                 <Field
                                                                                                 autoComplete="current-password"
                                                                                                 displayValue={[Function]}
+                                                                                                errors={null}
                                                                                                 label="Mot de passe"
                                                                                                 layout="horizontal"
                                                                                                 name="password"
@@ -1873,6 +1897,7 @@ ShallowWrapper {
                                                       >
                                                                         <Field
                                                                                           displayValue={[Function]}
+                                                                                          errors={null}
                                                                                           label="Adresse e-mail"
                                                                                           layout="horizontal"
                                                                                           name="identifier"
@@ -1885,6 +1910,7 @@ ShallowWrapper {
                                                                         <Field
                                                                                           autoComplete="current-password"
                                                                                           displayValue={[Function]}
+                                                                                          errors={null}
                                                                                           label="Mot de passe"
                                                                                           layout="horizontal"
                                                                                           name="password"
@@ -2009,6 +2035,7 @@ ShallowWrapper {
                                         >
                                                             <Field
                                                                                 displayValue={[Function]}
+                                                                                errors={null}
                                                                                 label="Adresse e-mail"
                                                                                 layout="horizontal"
                                                                                 name="identifier"
@@ -2021,6 +2048,7 @@ ShallowWrapper {
                                                             <Field
                                                                                 autoComplete="current-password"
                                                                                 displayValue={[Function]}
+                                                                                errors={null}
                                                                                 label="Mot de passe"
                                                                                 layout="horizontal"
                                                                                 name="password"
@@ -2142,6 +2170,7 @@ ShallowWrapper {
                         >
                                                 <Field
                                                                         displayValue={[Function]}
+                                                                        errors={null}
                                                                         label="Adresse e-mail"
                                                                         layout="horizontal"
                                                                         name="identifier"
@@ -2154,6 +2183,7 @@ ShallowWrapper {
                                                 <Field
                                                                         autoComplete="current-password"
                                                                         displayValue={[Function]}
+                                                                        errors={null}
                                                                         label="Mot de passe"
                                                                         layout="horizontal"
                                                                         name="password"
@@ -2334,6 +2364,7 @@ ShallowWrapper {
 >
                             <Field
                                                         displayValue={[Function]}
+                                                        errors={null}
                                                         label="Adresse e-mail"
                                                         layout="horizontal"
                                                         name="identifier"
@@ -2346,6 +2377,7 @@ ShallowWrapper {
                             <Field
                                                         autoComplete="current-password"
                                                         displayValue={[Function]}
+                                                        errors={null}
                                                         label="Mot de passe"
                                                         layout="horizontal"
                                                         name="password"
@@ -2422,6 +2454,7 @@ ShallowWrapper {
                             "children": Array [
                               <Field
                                 displayValue={[Function]}
+                                errors={null}
                                 label="Adresse e-mail"
                                 layout="horizontal"
                                 name="identifier"
@@ -2434,6 +2467,7 @@ ShallowWrapper {
                               <Field
                                 autoComplete="current-password"
                                 displayValue={[Function]}
+                                errors={null}
                                 label="Mot de passe"
                                 layout="horizontal"
                                 name="password"
@@ -2463,6 +2497,7 @@ ShallowWrapper {
                               "nodeType": "class",
                               "props": Object {
                                 "displayValue": [Function],
+                                "errors": null,
                                 "label": "Adresse e-mail",
                                 "layout": "horizontal",
                                 "name": "identifier",
@@ -2483,6 +2518,7 @@ ShallowWrapper {
                               "props": Object {
                                 "autoComplete": "current-password",
                                 "displayValue": [Function],
+                                "errors": null,
                                 "label": "Mot de passe",
                                 "layout": "horizontal",
                                 "name": "password",
@@ -2635,7 +2671,9 @@ ShallowWrapper {
           "getChildContext": Object {
             "calledByRenderer": false,
           },
-          "getDerivedStateFromProps": true,
+          "getDerivedStateFromProps": Object {
+            "hasShouldComponentUpdateBug": false,
+          },
           "getSnapshotBeforeUpdate": true,
           "setState": Object {
             "skipsComponentDidUpdateOnNullish": true,

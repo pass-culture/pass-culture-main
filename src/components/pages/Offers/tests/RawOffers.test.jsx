@@ -9,6 +9,7 @@ import mockedOffers from './offersMock'
 const dispatchMock = jest.fn()
 const queryChangeMock = jest.fn()
 const initialProps = {
+  currentUser: {},
   dispatch: dispatchMock,
   offers: [],
   location: {
@@ -28,7 +29,6 @@ const initialProps = {
   },
   search: '',
   types: [],
-  user: {},
 }
 
 describe('src | components | pages | Offers | RawOffers', () => {
@@ -82,7 +82,7 @@ describe('src | components | pages | Offers | RawOffers', () => {
         describe('When user isAdmin', () => {
           it('should display NavLink', () => {
             // given
-            initialProps.user = {
+            initialProps.currentUser = {
               isAdmin: true,
             }
 
@@ -97,7 +97,7 @@ describe('src | components | pages | Offers | RawOffers', () => {
         describe('When structure (or offererId)', () => {
           it('should render link properly', () => {
             // given
-            initialProps.user = {
+            initialProps.currentUser = {
               isAdmin: false,
             }
             const parseMock = () => ({ structure: 'TEST' })
@@ -116,7 +116,7 @@ describe('src | components | pages | Offers | RawOffers', () => {
         describe('When lieu or (VenueId)', () => {
           it('should render link properly', () => {
             // given
-            initialProps.user = {
+            initialProps.currentUser = {
               isAdmin: false,
             }
             const parseMock = () => ({ lieu: 'LIEU' })
@@ -187,10 +187,11 @@ describe('src | components | pages | Offers | RawOffers', () => {
           const wrapper = shallow(<RawOffers {...initialProps} />)
           wrapper.instance().componentDidMount()
           const expected = {
-            config: {},
-            method: 'GET',
-            path: 'types',
-            type: 'REQUEST_DATA_GET_TYPES',
+            config: {
+              apiPath: '/types',
+              method: 'GET',
+            },
+            type: 'REQUEST_DATA_GET_/TYPES',
           }
 
           // then
@@ -216,10 +217,11 @@ describe('src | components | pages | Offers | RawOffers', () => {
           wrapper.instance().componentDidUpdate(prevProps)
 
           const expectedAssignData = {
-            config: {},
-            method: 'GET',
-            path: 'types',
-            type: 'REQUEST_DATA_GET_TYPES',
+            config: {
+              apiPath: '/types',
+              method: 'GET',
+            },
+            type: 'REQUEST_DATA_GET_/TYPES',
           }
 
           // the

@@ -1,9 +1,9 @@
 import React from 'react'
-import RawVenuePage from '../RawVenuePage'
+import RawVenue from '../RawVenue'
 import { shallow } from 'enzyme'
 
 const dispatchMock = jest.fn()
-describe('src | components | pages | Venue | RawVenuePage', () => {
+describe('src | components | pages | Venue | RawVenue', () => {
   describe('snapshot', () => {
     it('should match snapshot', () => {
       // given
@@ -31,7 +31,7 @@ describe('src | components | pages | Venue | RawVenuePage', () => {
       }
 
       // when
-      const wrapper = shallow(<RawVenuePage {...props} />)
+      const wrapper = shallow(<RawVenue {...props} />)
 
       // then
       expect(wrapper).toBeDefined()
@@ -66,7 +66,7 @@ describe('src | components | pages | Venue | RawVenuePage', () => {
         }
 
         // when
-        const wrapper = shallow(<RawVenuePage {...props} />)
+        const wrapper = shallow(<RawVenue {...props} />)
         const expected = {
           isEdit: true,
           isLoading: false,
@@ -114,18 +114,22 @@ describe('src | components | pages | Venue | RawVenuePage', () => {
           venuePatch: {},
         }
         const action = {
-          data: {
-            bookingEmail: 'fake@email.com',
-            id: 'CM',
+          config: {
+            apiPath: '/venues/CM',
+            method: 'PATCH',
           },
-          method: 'PATCH',
-          path: 'venues/CM',
+          payload: {
+            datum: {
+              bookingEmail: 'fake@email.com',
+              id: 'CM',
+            },
+          },
           type: 'SUCCESS_DATA_PATCH_VENUES/CM',
         }
 
         it('should change pathname', () => {
           // // When
-          const wrapper = shallow(<RawVenuePage {...props} />)
+          const wrapper = shallow(<RawVenue {...props} />)
           wrapper.instance().handleSuccess(wrapper.state(), action)
 
           // Then
@@ -134,7 +138,7 @@ describe('src | components | pages | Venue | RawVenuePage', () => {
 
         it('should dispatch a success message', () => {
           // When
-          const wrapper = shallow(<RawVenuePage {...props} />)
+          const wrapper = shallow(<RawVenue {...props} />)
           wrapper.instance().handleSuccess(wrapper.state(), action)
 
           const expected = {
