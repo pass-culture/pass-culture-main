@@ -1,7 +1,7 @@
 import classnames from 'classnames'
+import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import InfiniteScroll from 'react-infinite-scroller'
-import PropTypes from 'prop-types'
 
 import SearchResultItem from './SearchResultItem'
 import { searchResultsTitle } from './utils'

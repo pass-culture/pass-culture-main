@@ -1,7 +1,7 @@
 /* eslint
   react/jsx-one-expression-per-line: 0 */
-import React from 'react'
 import PropTypes from 'prop-types'
+import React from 'react'
 import { CopyToClipboard } from 'react-copy-to-clipboard'
 
 class CopyToClipboardButton extends React.PureComponent {

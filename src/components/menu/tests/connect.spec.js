@@ -3,9 +3,9 @@ import { createBrowserHistory } from 'history'
 import { mapDispatchToProps, mapStateToProps } from '../connect'
 import { configureStore } from '../../../utils/store'
 
-jest.mock('pass-culture-shared', () => ({
-  ...jest.requireActual('pass-culture-shared'),
-  requestData: (method, path, config) => {
+jest.mock('redux-saga-data', () => ({
+  ...jest.requireActual('redux-saga-data'),
+  requestData: config => {
     config.handleSuccess()
     return { type: 'REQUEST_DATA' }
   },

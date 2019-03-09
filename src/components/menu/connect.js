@@ -1,4 +1,4 @@
-import { requestData } from 'pass-culture-shared'
+import { requestData } from 'redux-saga-data'
 
 import { toggleMainMenu } from '../../reducers/menu'
 
@@ -14,7 +14,8 @@ export const mapDispatchToProps = dispatch => ({
         dispatch(toggleMainMenu())
       }
       dispatch(
-        requestData('GET', 'users/signout', {
+        requestData({
+          apiPath: '/users/signout',
           handleSuccess: handleSuccessAfterSignout,
         })
       )
@@ -26,10 +27,12 @@ export const mapDispatchToProps = dispatch => ({
     }
 
     dispatch(
-      requestData('PUT', 'recommendations/read', {
+      requestData({
+        apiPath: '/recommendations/read',
         body: readRecommendations,
         handleFail: handleRequestSignout,
         handleSuccess: handleRequestSignout,
+        method: 'PUT',
       })
     )
   },

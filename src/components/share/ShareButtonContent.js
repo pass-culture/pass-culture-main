@@ -1,8 +1,9 @@
-import React from 'react'
 import PropTypes from 'prop-types'
-import { openSharePopin, closeSharePopin } from '../../reducers/share'
-import MailToLink from '../layout/MailToLink'
+import React from 'react'
+
 import CopyToClipboardButton from './CopyToClipboardButton'
+import MailToLink from '../layout/MailToLink'
+import { openSharePopin, closeSharePopin } from '../../reducers/share'
 
 export const getCopyToClipboardButton = (url, onClick) => (
   <CopyToClipboardButton
@@ -19,9 +20,7 @@ export const getMailToLinkButton = (email, headers) => (
     headers={headers}
     className="no-underline is-block is-white-text py12 is-bold fs14"
   >
-    <span>
-Envoyer par e-mail
-    </span>
+    <span>Envoyer par e-mail</span>
   </MailToLink>
 )
 
@@ -32,9 +31,7 @@ export const getCloseButton = onClose => (
     className="no-border no-background no-outline is-block py12 is-bold fs14"
     onClick={() => onClose()}
   >
-    <span>
-Fermer
-    </span>
+    <span>Fermer</span>
   </button>
 )
 

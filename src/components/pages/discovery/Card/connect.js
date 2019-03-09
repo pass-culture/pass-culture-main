@@ -1,5 +1,5 @@
 import moment from 'moment'
-import { mergeData, requestData } from 'pass-culture-shared'
+import { mergeData, requestData } from 'redux-saga-data'
 
 import currentRecommendationSelector from '../../../../selectors/currentRecommendation'
 import nextRecommendationSelector from '../../../../selectors/nextRecommendation'
@@ -37,14 +37,14 @@ export const mapStateToProps = (state, ownProps) => {
 
 export const mapDispatchToProps = dispatch => ({
   handleClickRecommendation: recommendation => {
-    const options = {
+    const config = {
+      apiPath: `recommendations/${recommendation.id}`,
       body: { isClicked: true },
-      key: 'recommendations',
+      method: 'PATCH',
+      stateKey: 'recommendations',
     }
 
-    const path = `recommendations/${recommendation.id}`
-
-    dispatch(requestData('PATCH', path, options))
+    dispatch(requestData(config))
   },
 
   handleReadRecommendation: recommendation => {

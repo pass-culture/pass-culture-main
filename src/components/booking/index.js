@@ -7,8 +7,8 @@ import moment from 'moment'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import { requestData } from 'pass-culture-shared'
 import { Transition } from 'react-transition-group'
+import { requestData } from 'redux-saga-data'
 
 import { ROOT_PATH } from '../../utils/config'
 import { externalSubmitForm } from '../forms/utils'
@@ -69,7 +69,8 @@ class Booking extends PureComponent {
 
   onFormSubmit = formValues => {
     const onSubmittingStateChanged = () => {
-      this.actions.requestData('POST', 'bookings', {
+      this.actions.requestData({
+        apiPath: '/bookings',
         // NOTE -> pas de gestion de stock
         // valeur des quantites a 1 par defaut pour les besoins API
         body: { ...formValues, quantity: 1 },
@@ -78,11 +79,25 @@ class Booking extends PureComponent {
         // on cherche à recupérer la nouvelle valeur du wallet
         // il faut alors une nouvelle requête pour l'update du store redux
         handleSuccess: this.updateUserFromStore,
+        method: 'POST',
         name: 'booking',
       })
     }
     // appel au service apres le changement du state
     this.setState({ isSubmitting: true }, onSubmittingStateChanged)
+  }
+
+  updateUserFromStore = (state, action) => {
+    const { payload } = action
+    const bookedPayload = payload.datum
+    this.actions.requestData({
+      apiPath: '/users/current',
+      body: {},
+      handleFail: this.handleRequestFail,
+      handleSuccess: this.handleRequestSuccess(bookedPayload),
+      method: 'PATCH',
+      stateKey: 'user',
+    })
   }
 
   handleRequestSuccess = bookedPayload => () => {
@@ -112,16 +127,6 @@ class Booking extends PureComponent {
   getBackToBookings = () => {
     const { history } = this.props
     history.push('/reservations')
-  }
-
-  updateUserFromStore = (state, action) => {
-    const bookedPayload = action.data
-    this.actions.requestData('PATCH', 'users/current', {
-      body: {},
-      handleFail: this.handleRequestFail,
-      handleSuccess: this.handleRequestSuccess(bookedPayload),
-      key: 'user',
-    })
   }
 
   renderFormControls = () => {

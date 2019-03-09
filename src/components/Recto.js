@@ -1,6 +1,6 @@
 import classnames from 'classnames'
-import React from 'react'
 import PropTypes from 'prop-types'
+import React from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
@@ -39,20 +39,8 @@ const Recto = ({ areDetailsVisible, extraClassName, recommendation }) => {
             {' '}
             {index}
           </div>
-          {dateRead && (
-          <div>
-            {' '}
-déjà lue
-            {' '}
-          </div>
-)}
-          {isClicked && (
-          <div>
-            {' '}
-déjà retournée
-            {' '}
-          </div>
-)}
+          {dateRead && <div> déjà lue </div>}
+          {isClicked && <div> déjà retournée </div>}
         </div>
       )}
     </div>

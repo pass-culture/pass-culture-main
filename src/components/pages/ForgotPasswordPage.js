@@ -1,8 +1,8 @@
 /* eslint
   react/jsx-one-expression-per-line: 0 */
-import React from 'react'
 import PropTypes from 'prop-types'
 import queryString from 'query-string'
+import React from 'react'
 import { Switch, Route } from 'react-router-dom'
 
 import NotMatch from './NotMatch'

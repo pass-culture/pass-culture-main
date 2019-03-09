@@ -1,11 +1,11 @@
 import PropTypes from 'prop-types'
-import { assignData, requestData, withLogin } from 'pass-culture-shared'
+import { withLogin } from 'pass-culture-shared'
 import React, { Fragment } from 'react'
-import get from 'lodash.get'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { Route } from 'react-router-dom'
 import { toast } from 'react-toastify'
+import { assignData, requestData } from 'redux-saga-data'
 
 import Deck from './Deck'
 import Booking from '../../booking'
@@ -51,7 +51,10 @@ export class RawDiscoveryPage extends React.PureComponent {
   handleRequestSuccess = (state, action) => {
     const { dispatch, history, match } = this.props
     const { offerId, mediationId } = match.params
-    const len = get(action, 'data.length')
+    const {
+      payload: { data },
+    } = action
+    const len = data.length
     const isempty = !(len && len > 0)
     // loading
     this.setState({ isempty, isloading: false })
@@ -63,7 +66,7 @@ export class RawDiscoveryPage extends React.PureComponent {
     const shouldNotReloadPage = isempty || (offerId && mediationId)
 
     if (shouldNotReloadPage) return
-    const firstRecommendation = get(action, 'data[0]') || {}
+    const firstRecommendation = data[0] || {}
     // NOTE -> si la premiere carte n'a pas d'offerid
     // alors il s'agit d'une carte tuto
     const firstOfferId =
@@ -88,10 +91,11 @@ export class RawDiscoveryPage extends React.PureComponent {
     // recupere les arguments depuis l'URL
     // l'API renvoi cette première carte avant les autres recommendations
     const queryString = getQueryParams(match, readRecommendations)
-    const serviceuri = `recommendations?${queryString}`
+    const apiPath = `/recommendations?${queryString}`
 
     dispatch(
-      requestData('PUT', serviceuri, {
+      requestData({
+        apiPath,
         body: {
           readRecommendations,
           seenRecommendationIds:
@@ -99,6 +103,7 @@ export class RawDiscoveryPage extends React.PureComponent {
         },
         handleFail: this.handleRequestFail,
         handleSuccess: this.handleRequestSuccess,
+        method: 'PUT',
         normalizer: recommendationNormalizer,
       })
     )

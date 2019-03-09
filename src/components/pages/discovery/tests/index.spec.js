@@ -75,17 +75,31 @@ describe('src | components | pages | discovery | Index | DiscoveryPage', () => 
 
           // when
           shallow(<RawDiscoveryPage {...props} />)
-          const expectedRequest = {
-            config: {},
-            method: 'PUT',
-            path: 'recommendations?',
-            type: 'REQUEST_DATA_PUT_RECOMMENDATIONS?',
+          const expectedRequestDataAction = {
+            config: {
+              apiPath: '/recommendations?',
+              body: {
+                readRecommendations: null,
+                seenRecommendationIds: null,
+              },
+              method: 'PUT',
+              normalizer: {
+                bookings: 'bookings',
+              },
+            },
+            type: 'REQUEST_DATA_PUT_/RECOMMENDATIONS?',
           }
 
           // THEN
+          const receivedRequestDataAction = Object.assign(
+            {},
+            dispatchMock.mock.calls[0][0]
+          )
+          delete receivedRequestDataAction.config.handleFail
+          delete receivedRequestDataAction.config.handleSuccess
           expect(dispatchMock.mock.calls.length).toBe(1)
-          expect(dispatchMock.mock.calls[0][0].method).toEqual(
-            expectedRequest.method
+          expect(dispatchMock.mock.calls[0][0]).toEqual(
+            expectedRequestDataAction
           )
         })
       })

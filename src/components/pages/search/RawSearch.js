@@ -1,8 +1,8 @@
-import { assignData, requestData } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import { stringify } from 'query-string'
 import React, { Fragment, PureComponent } from 'react'
 import { Route, Switch } from 'react-router-dom'
+import { assignData, requestData } from 'redux-saga-data'
 
 import BackButton from '../../layout/BackButton'
 import { Icon } from '../../layout/Icon'
@@ -39,7 +39,7 @@ class RawSearch extends PureComponent {
   componentDidMount() {
     const { dispatch, query } = this.props
 
-    dispatch(requestData('GET', 'types'))
+    dispatch(requestData({ apiPath: '/types' }))
 
     const queryParams = query.parse()
     if (queryParams.page) {
@@ -94,11 +94,15 @@ class RawSearch extends PureComponent {
     const queryParams = query.parse()
     const apiParams = translateBrowserUrlToApiUrl(queryParams)
     const apiParamsString = stringify(apiParams)
-    const path = `recommendations?${apiParamsString}`
+    const apiPath = `/recommendations?${apiParamsString}`
     dispatch(
-      requestData('GET', path, {
+      requestData({
+        apiPath,
         handleSuccess: (state, action) => {
-          const hasMore = action.data && action.data.length > 0
+          const {
+            payload: { data },
+          } = action
+          const hasMore = data.length > 0
           this.setState({ hasMore })
         },
       })

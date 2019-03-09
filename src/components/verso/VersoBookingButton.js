@@ -1,12 +1,12 @@
 /* eslint
   react/jsx-one-expression-per-line: 0 */
-import React from 'react'
-import get from 'lodash.get'
-import { compose } from 'redux'
 import PropTypes from 'prop-types'
+import get from 'lodash.get'
+import React from 'react'
 import { connect } from 'react-redux'
 import { Link, withRouter } from 'react-router-dom'
-import { requestData } from 'pass-culture-shared'
+import { compose } from 'redux'
+import { requestData } from 'redux-saga-data'
 
 import Price from '../layout/Price'
 import Finishable from '../layout/Finishable'
@@ -76,10 +76,12 @@ class VersoBookingButton extends React.PureComponent {
   onCancelYes = booking => () => {
     const { dispatch } = this.props
     dispatch(
-      requestData('PATCH', `bookings/${booking.id}`, {
+      requestData({
+        apiPath: `/bookings/${booking.id}`,
         body: { isCancelled: true },
         handleFail: this.onCancelFailure,
         handleSuccess: () => this.onCancelSuccess(booking),
+        method: 'PATCH',
       })
     )
   }

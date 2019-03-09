@@ -1,7 +1,7 @@
-import { compose } from 'redux'
-import { connect } from 'react-redux'
 import get from 'lodash.get'
+import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
+import { compose } from 'redux'
 
 import currentRecommendationSelector from '../../selectors/currentRecommendation'
 import { getShareURL } from '../../helpers'

@@ -3,15 +3,13 @@ import { parseSubmitErrors } from '../parseSubmitErrors'
 describe('src | components | forms | utils | parseSubmitErrors ', () => {
   it('', () => {
     // given
-    const action = {
-      errors: {
-        identifier: ['identifiant incorrect'],
-        password: ['mot de passe incorrect'],
-      },
+    const errors = {
+      identifier: ['identifiant incorrect'],
+      password: ['mot de passe incorrect'],
     }
 
     // when
-    const result = parseSubmitErrors(action.errors)
+    const result = parseSubmitErrors(errors)
     const expected = {
       identifier: ['identifiant incorrect'],
       password: ['mot de passe incorrect'],

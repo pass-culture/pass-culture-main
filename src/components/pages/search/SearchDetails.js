@@ -1,9 +1,9 @@
-import { requestData } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import React, { Component, Fragment } from 'react'
 import { connect } from 'react-redux'
 import { Route, withRouter } from 'react-router-dom'
 import { compose } from 'redux'
+import { requestData } from 'redux-saga-data'
 
 import Booking from '../../booking'
 import Recto from '../../Recto'
@@ -42,13 +42,14 @@ class SearchDetails extends Component {
     const mediationId =
       mediationIdOrView === 'booking' ? null : mediationIdOrView
 
-    let path = `recommendations/offers/${offerId}`
+    let apiPath = `/recommendations/offers/${offerId}`
     if (mediationId) {
-      path = `${path}?mediationId=${mediationId}`
+      apiPath = `${apiPath}?mediationId=${mediationId}`
     }
 
     dispatch(
-      requestData('GET', path, {
+      requestData({
+        apiPath,
         handleSuccess: this.handleRequestSuccess,
         normalizer: recommendationNormalizer,
       })

@@ -2,10 +2,11 @@
   react/jsx-one-expression-per-line: 0 */
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Icon, requestData } from 'pass-culture-shared'
+import { Icon } from 'pass-culture-shared'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import { compose, bindActionCreators } from 'redux'
+import { requestData } from 'redux-saga-data'
 
 import { getWalletValue } from '../../utils/user'
 import { ShareButton } from '../share/ShareButton'
@@ -22,10 +23,12 @@ class VersoControl extends React.PureComponent {
 
   onClickFavorite = () => {
     const { isFavorite, recommendationId } = this.props
-    const url = `currentRecommendations/${recommendationId}`
-    this.actions.requestData('PATCH', url, {
+    const apiPath = `/currentRecommendations/${recommendationId}`
+    this.actions.requestData({
+      apiPath,
       body: { isFavorite: !isFavorite },
-      key: 'currentRecommendations',
+      method: 'PATCH',
+      stateKey: 'currentRecommendations',
     })
   }
 

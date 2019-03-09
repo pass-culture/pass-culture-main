@@ -1,12 +1,12 @@
 /* eslint
     react/jsx-one-expression-per-line: 0 */
 // import { FORM_ERROR } from 'final-form'
-import { requestData } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import React from 'react'
 import { Form as FinalForm } from 'react-final-form'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
+import { requestData } from 'redux-saga-data'
 
 const noop = () => {}
 
@@ -32,7 +32,10 @@ const withPasswordForm = (
     handleRequestFail = formResolver => (state, action) => {
       // on retourne les erreurs API au formulaire
       const nextstate = { isloading: false }
-      this.setState(nextstate, () => formResolver(action.errors))
+      const {
+        payload: { errors },
+      } = action
+      this.setState(nextstate, () => formResolver(errors))
     }
 
     handleRequestSuccess = formResolver => () => {
@@ -52,12 +55,14 @@ const withPasswordForm = (
       // pour pouvoir gérer les erreurs de l'API
       // directement dans les champs du formulaire
       const formSubmitPromise = new Promise(resolve => {
-        const options = {
+        const config = {
+          apiPath: routePath,
           body: { ...formValues },
           handleFail: this.handleRequestFail(resolve),
           handleSuccess: this.handleRequestSuccess(resolve),
+          method: routeMethod,
         }
-        this.actions.requestData(routeMethod, routePath, options)
+        this.actions.requestData(config)
       })
       return formSubmitPromise
     }

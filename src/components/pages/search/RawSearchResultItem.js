@@ -1,9 +1,9 @@
 /* eslint
   react/jsx-one-expression-per-line: 0 */
-import { requestData } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import React, { Component, Fragment } from 'react'
 import Dotdotdot from 'react-dotdotdot'
+import { requestData } from 'redux-saga-data'
 
 import { getQueryURL } from '../../../helpers'
 import { getRecommendationDateString } from './utils'
@@ -22,16 +22,16 @@ class RawSearchResultItem extends Component {
   onClickRecommendation = () => {
     const { dispatch, recommendation } = this.props
 
-    const options = {
+    const config = {
+      apiPath: `/recommendations/${recommendation.id}`,
       body: { isClicked: true },
       handleSuccess: this.handleRequestSuccess,
       key: 'recommendations',
+      method: 'PATCH',
       normalizer: recommendationNormalizer,
     }
 
-    const path = `recommendations/${recommendation.id}`
-
-    dispatch(requestData('PATCH', path, options))
+    dispatch(requestData(config))
   }
 
   render() {

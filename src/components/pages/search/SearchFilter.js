@@ -1,10 +1,10 @@
 import get from 'lodash.get'
-import { assignData } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Transition } from 'react-transition-group'
 import { compose } from 'redux'
+import { assignData } from 'redux-saga-data'
 import withQueryRouter from 'with-query-router'
 
 import FilterByDates from './FilterByDates'
@@ -193,9 +193,7 @@ class SearchFilter extends Component {
                   onClick={this.onFilterClick}
                   type="button"
                 >
-                  <span className="is-bold">
-Filtrer
-                  </span>
+                  <span className="is-bold">Filtrer</span>
                 </button>
               </div>
             </div>

@@ -24,11 +24,13 @@ class ActivationPassword extends React.PureComponent {
 
   handleActivationPasswordRequestFail = formResolver => (state, action) => {
     const nextstate = { isLoading: false }
+    const {
+      payload: { errors },
+    } = action
     // resolve form with errors
     this.setState(nextstate, () => {
-      const errors =
-        (Array.isArray(action.errors) && action.errors[0]) || action.errors
-      formResolver(errors)
+      const error = (Array.isArray(errors) && errors[0]) || errors
+      formResolver(error)
     })
   }
 

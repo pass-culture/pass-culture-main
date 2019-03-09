@@ -1,54 +1,27 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | pages | discovery | Index | DiscoveryPage snapshot should match snapshot 1`] = `
+exports[`src | components | layout | Main snapshot should match snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
-  Symbol(enzyme.__unrendered__): <RawDiscoveryPage
-    backButton={true}
-    dispatch={
-      [MockFunction] {
-        "calls": Array [
-          Array [
-            Object {
-              "config": Object {
-                "apiPath": "/recommendations?",
-                "body": Object {
-                  "readRecommendations": null,
-                  "seenRecommendationIds": null,
-                },
-                "handleFail": [Function],
-                "handleSuccess": [Function],
-                "method": "PUT",
-                "normalizer": Object {
-                  "bookings": "bookings",
-                },
-              },
-              "type": "REQUEST_DATA_PUT_/RECOMMENDATIONS?",
-            },
-          ],
-        ],
-        "results": Array [
-          Object {
-            "isThrow": false,
-            "value": undefined,
-          },
-        ],
-      }
-    }
+  Symbol(enzyme.__unrendered__): <RawMain
+    backButton={false}
+    closeSearchButton={false}
+    dispatch={[MockFunction]}
+    footer={null}
+    handleDataRequest={null}
+    header={null}
     history={Object {}}
-    location={
-      Object {
-        "search": "",
-      }
-    }
-    match={
-      Object {
-        "params": Object {},
-      }
-    }
-    readRecommendations={null}
-    seenRecommendations={null}
-  />,
+    location={Object {}}
+    name="foo"
+    noPadding={false}
+    pageTitle={null}
+    redBg={false}
+    user={null}
+  >
+    <div>
+      foo
+    </div>
+  </RawMain>,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
     "checkPropTypes": [Function],
@@ -65,19 +38,18 @@ ShallowWrapper {
     "props": Object {
       "children": Array [
         <main
-          className="discovery-page no-padding page with-footer"
+          className="foo-page page"
           role="main"
         >
-          <withRouter(Connect(Footer))
-            borderTop={true}
-            id="deck-footer"
-          />
+          <div
+            className="page-content is-relative"
+          >
+            <div>
+              foo
+            </div>
+          </div>
         </main>,
-        <Loader
-          haserror={false}
-          isempty={false}
-          isloading={true}
-        />,
+        <withRouter(Connect(Modal)) />,
       ],
     },
     "ref": null,
@@ -88,32 +60,51 @@ ShallowWrapper {
         "nodeType": "host",
         "props": Object {
           "children": Array [
+            null,
             false,
             false,
-            <withRouter(Connect(Footer))
-              borderTop={true}
-              id="deck-footer"
-            />,
+            <div
+              className="page-content is-relative"
+            >
+              <div>
+                foo
+              </div>
+            </div>,
+            null,
           ],
-          "className": "discovery-page no-padding page with-footer",
+          "className": "foo-page page",
           "role": "main",
         },
         "ref": null,
         "rendered": Array [
+          null,
           false,
           false,
           Object {
             "instance": null,
             "key": undefined,
-            "nodeType": "function",
+            "nodeType": "host",
             "props": Object {
-              "borderTop": true,
-              "id": "deck-footer",
+              "children": <div>
+                foo
+              </div>,
+              "className": "page-content is-relative",
             },
             "ref": null,
-            "rendered": null,
-            "type": [Function],
+            "rendered": Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": "foo",
+              },
+              "ref": null,
+              "rendered": "foo",
+              "type": "div",
+            },
+            "type": "div",
           },
+          null,
         ],
         "type": "main",
       },
@@ -121,11 +112,7 @@ ShallowWrapper {
         "instance": null,
         "key": undefined,
         "nodeType": "function",
-        "props": Object {
-          "haserror": false,
-          "isempty": false,
-          "isloading": true,
-        },
+        "props": Object {},
         "ref": null,
         "rendered": null,
         "type": [Function],
@@ -141,19 +128,18 @@ ShallowWrapper {
       "props": Object {
         "children": Array [
           <main
-            className="discovery-page no-padding page with-footer"
+            className="foo-page page"
             role="main"
           >
-            <withRouter(Connect(Footer))
-              borderTop={true}
-              id="deck-footer"
-            />
+            <div
+              className="page-content is-relative"
+            >
+              <div>
+                foo
+              </div>
+            </div>
           </main>,
-          <Loader
-            haserror={false}
-            isempty={false}
-            isloading={true}
-          />,
+          <withRouter(Connect(Modal)) />,
         ],
       },
       "ref": null,
@@ -164,32 +150,51 @@ ShallowWrapper {
           "nodeType": "host",
           "props": Object {
             "children": Array [
+              null,
               false,
               false,
-              <withRouter(Connect(Footer))
-                borderTop={true}
-                id="deck-footer"
-              />,
+              <div
+                className="page-content is-relative"
+              >
+                <div>
+                  foo
+                </div>
+              </div>,
+              null,
             ],
-            "className": "discovery-page no-padding page with-footer",
+            "className": "foo-page page",
             "role": "main",
           },
           "ref": null,
           "rendered": Array [
+            null,
             false,
             false,
             Object {
               "instance": null,
               "key": undefined,
-              "nodeType": "function",
+              "nodeType": "host",
               "props": Object {
-                "borderTop": true,
-                "id": "deck-footer",
+                "children": <div>
+                  foo
+                </div>,
+                "className": "page-content is-relative",
               },
               "ref": null,
-              "rendered": null,
-              "type": [Function],
+              "rendered": Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": "foo",
+                },
+                "ref": null,
+                "rendered": "foo",
+                "type": "div",
+              },
+              "type": "div",
             },
+            null,
           ],
           "type": "main",
         },
@@ -197,11 +202,7 @@ ShallowWrapper {
           "instance": null,
           "key": undefined,
           "nodeType": "function",
-          "props": Object {
-            "haserror": false,
-            "isempty": false,
-            "isloading": true,
-          },
+          "props": Object {},
           "ref": null,
           "rendered": null,
           "type": [Function],

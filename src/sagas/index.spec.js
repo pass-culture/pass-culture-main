@@ -1,12 +1,11 @@
 /* eslint-disable */
 import {
-  watchDataActions,
   watchErrorsActions,
   watchModalActions,
   watchUserActions,
 } from 'pass-culture-shared'
-
 import { all } from 'redux-saga/effects'
+import { watchDataActions } from 'redux-saga-data'
 
 import rootSaga from './index'
 import { API_URL } from '../utils/config'
@@ -21,7 +20,7 @@ describe('src | components | sagas ', () => {
       // then
       const expected = all([
         watchModalActions(),
-        watchDataActions({ url: API_URL }),
+        watchDataActions({ rootUrl: API_URL }),
         watchErrorsActions(),
         watchUserActions(),
       ])

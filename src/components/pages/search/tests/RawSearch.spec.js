@@ -256,10 +256,11 @@ describe('src | components | pages | RawSearch', () => {
           const wrapper = shallow(<RawSearch {...baseInitialProps} />)
           wrapper.instance().componentDidMount()
           const expectedRequestedGetTypes = {
-            config: {},
-            method: 'GET',
-            path: 'types',
-            type: 'REQUEST_DATA_GET_TYPES',
+            config: {
+              apiPath: '/types',
+              method: 'GET',
+            },
+            type: 'REQUEST_DATA_GET_/TYPES',
           }
 
           // THEN

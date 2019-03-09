@@ -9,7 +9,7 @@ import { compose, bindActionCreators } from 'redux'
 
 import BackButton from './BackButton'
 
-class Main extends React.PureComponent {
+export class RawMain extends React.PureComponent {
   constructor(props) {
     super(props)
     const { dispatch } = props
@@ -42,7 +42,8 @@ class Main extends React.PureComponent {
   }
 
   handleDataFail = (state, action) => {
-    const error = get(action, 'errors.global', []).join('\n')
+    const { payload } = action
+    const error = get(payload, 'errors.global', []).join('\n')
     this.actions.showNotification({
       text: error || 'Erreur de chargement',
       type: 'danger',
@@ -114,9 +115,7 @@ class Main extends React.PureComponent {
           {header && header(pageTitle)}
           {closeSearchButton && this.renderCloseButton()}
           {backButton && <BackButton {...backButton} />}
-          <div className="page-content is-relative">
-            {children}
-          </div>
+          <div className="page-content is-relative">{children}</div>
           {footer && footer()}
           {/* || (footerProps && <Footer {...footerProps} />)} */}
         </main>
@@ -126,7 +125,7 @@ class Main extends React.PureComponent {
   }
 }
 
-Main.defaultProps = {
+RawMain.defaultProps = {
   backButton: false,
   closeSearchButton: false,
   footer: null,
@@ -138,7 +137,7 @@ Main.defaultProps = {
   user: null,
 }
 
-Main.propTypes = {
+RawMain.propTypes = {
   backButton: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
   children: PropTypes.node.isRequired,
   closeSearchButton: PropTypes.bool,
@@ -163,4 +162,4 @@ const mapStateToProps = state => ({
 export default compose(
   withRouter,
   connect(mapStateToProps)
-)(Main)
+)(RawMain)

@@ -17,10 +17,11 @@ ShallowWrapper {
           ],
           Array [
             Object {
-              "config": Object {},
-              "method": "GET",
-              "path": "types",
-              "type": "REQUEST_DATA_GET_TYPES",
+              "config": Object {
+                "apiPath": "/types",
+                "method": "GET",
+              },
+              "type": "REQUEST_DATA_GET_/TYPES",
             },
           ],
           Array [
@@ -29,40 +30,42 @@ ShallowWrapper {
                 "recommendations": Array [],
               },
               "type": "ASSIGN_DATA",
-            },
-          ],
-          Array [
-            Object {
-              "config": Object {},
-              "method": "GET",
-              "path": "types",
-              "type": "REQUEST_DATA_GET_TYPES",
-            },
-          ],
-          Array [
-            Object {
-              "patch": Object {
-                "recommendations": Array [],
-              },
-              "type": "ASSIGN_DATA",
-            },
-          ],
-          Array [
-            Object {
-              "config": Object {},
-              "method": "GET",
-              "path": "types",
-              "type": "REQUEST_DATA_GET_TYPES",
             },
           ],
           Array [
             Object {
               "config": Object {
+                "apiPath": "/types",
+                "method": "GET",
+              },
+              "type": "REQUEST_DATA_GET_/TYPES",
+            },
+          ],
+          Array [
+            Object {
+              "patch": Object {
+                "recommendations": Array [],
+              },
+              "type": "ASSIGN_DATA",
+            },
+          ],
+          Array [
+            Object {
+              "config": Object {
+                "apiPath": "/types",
+                "method": "GET",
+              },
+              "type": "REQUEST_DATA_GET_/TYPES",
+            },
+          ],
+          Array [
+            Object {
+              "config": Object {
+                "apiPath": "/recommendations?categories=Jouer&keywords=Fake",
                 "handleSuccess": [Function],
+                "method": "GET",
               },
-              "method": "GET",
-              "path": "recommendations?categories=Jouer&keywords=Fake",
-              "type": "REQUEST_DATA_GET_RECOMMENDATIONS?CATEGORIES=JOUER&KEYWORDS=FAKE",
+              "type": "REQUEST_DATA_GET_/RECOMMENDATIONS?CATEGORIES=JOUER&KEYWORDS=FAKE",
             },
           ],
           Array [
@@ -75,10 +78,11 @@ ShallowWrapper {
           ],
           Array [
             Object {
-              "config": Object {},
-              "method": "GET",
-              "path": "types",
-              "type": "REQUEST_DATA_GET_TYPES",
+              "config": Object {
+                "apiPath": "/types",
+                "method": "GET",
+              },
+              "type": "REQUEST_DATA_GET_/TYPES",
             },
           ],
           Array [
@@ -91,10 +95,11 @@ ShallowWrapper {
           ],
           Array [
             Object {
-              "config": Object {},
-              "method": "GET",
-              "path": "types",
-              "type": "REQUEST_DATA_GET_TYPES",
+              "config": Object {
+                "apiPath": "/types",
+                "method": "GET",
+              },
+              "type": "REQUEST_DATA_GET_/TYPES",
             },
           ],
           Array [
@@ -107,10 +112,11 @@ ShallowWrapper {
           ],
           Array [
             Object {
-              "config": Object {},
-              "method": "GET",
-              "path": "types",
-              "type": "REQUEST_DATA_GET_TYPES",
+              "config": Object {
+                "apiPath": "/types",
+                "method": "GET",
+              },
+              "type": "REQUEST_DATA_GET_/TYPES",
             },
           ],
           Array [
@@ -123,10 +129,11 @@ ShallowWrapper {
           ],
           Array [
             Object {
-              "config": Object {},
-              "method": "GET",
-              "path": "types",
-              "type": "REQUEST_DATA_GET_TYPES",
+              "config": Object {
+                "apiPath": "/types",
+                "method": "GET",
+              },
+              "type": "REQUEST_DATA_GET_/TYPES",
             },
           ],
           Array [
@@ -139,10 +146,11 @@ ShallowWrapper {
           ],
           Array [
             Object {
-              "config": Object {},
-              "method": "GET",
-              "path": "types",
-              "type": "REQUEST_DATA_GET_TYPES",
+              "config": Object {
+                "apiPath": "/types",
+                "method": "GET",
+              },
+              "type": "REQUEST_DATA_GET_/TYPES",
             },
           ],
           Array [
@@ -155,10 +163,11 @@ ShallowWrapper {
           ],
           Array [
             Object {
-              "config": Object {},
-              "method": "GET",
-              "path": "types",
-              "type": "REQUEST_DATA_GET_TYPES",
+              "config": Object {
+                "apiPath": "/types",
+                "method": "GET",
+              },
+              "type": "REQUEST_DATA_GET_/TYPES",
             },
           ],
         ],

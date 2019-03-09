@@ -1,6 +1,6 @@
-import { createData } from 'pass-culture-shared'
 import { persistReducer } from 'redux-persist'
 import storage from 'redux-persist/lib/storage'
+import { createData } from 'redux-saga-data'
 
 const dataPersistConfig = {
   key: 'passculture-webapp-data',

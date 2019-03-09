@@ -1,7 +1,7 @@
 /* eslint
   react/jsx-one-expression-per-line: 0 */
-import PropTypes from 'prop-types'
 import get from 'lodash.get'
+import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'

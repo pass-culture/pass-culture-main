@@ -3,7 +3,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Form } from 'react-final-form'
-import { requestData } from 'pass-culture-shared'
+import { requestData } from 'redux-saga-data'
 
 import FormInputs from './FormInputs'
 import FormHeader from './FormHeader'
@@ -26,9 +26,12 @@ class Signin extends React.PureComponent {
   handleRequestFail = formResolver => (state, action) => {
     // on retourne les erreurs API au formulaire
     const nextstate = { isloading: false }
+    const {
+      payload: { errors },
+    } = action
 
-    const errors = parseSubmitErrors(action.errors)
-    this.setState(nextstate, () => formResolver(errors))
+    const errorsByKey = parseSubmitErrors(errors)
+    this.setState(nextstate, () => formResolver(errorsByKey))
   }
 
   handleRequestSuccess = formResolver => () => {
@@ -43,19 +46,21 @@ class Signin extends React.PureComponent {
 
   onFormSubmit = formValues => {
     const routeMethod = 'POST'
-    const routePath = 'users/signin'
+    const routePath = '/users/signin'
     const { dispatch } = this.props
     this.setState({ isloading: true })
     // NOTE: on retourne une promise au formulaire
     // pour pouvoir gérer les erreurs de l'API
     // directement dans les champs du formulaire
     const formSubmitPromise = new Promise(resolve => {
-      const options = {
+      const config = {
+        apiPath: routePath,
         body: { ...formValues },
         handleFail: this.handleRequestFail(resolve),
         handleSuccess: this.handleRequestSuccess(resolve),
+        method: routeMethod,
       }
-      dispatch(requestData(routeMethod, routePath, options))
+      dispatch(requestData(config))
     })
     return formSubmitPromise
   }

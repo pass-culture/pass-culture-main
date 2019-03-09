@@ -1,11 +1,11 @@
 /* eslint
   react/jsx-one-expression-per-line: 0 */
 import PropTypes from 'prop-types'
-import { assignData, requestData, withLogin } from 'pass-culture-shared'
+import { withLogin } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators, compose } from 'redux'
-import get from 'lodash.get'
+import { assignData, requestData } from 'redux-saga-data'
 
 import { ROOT_PATH } from '../../../utils/config'
 import MyBookingItem from './MyBookingItem'
@@ -36,8 +36,8 @@ class MyBookingsPage extends Component {
   }
 
   componentWillMount = () => {
-    const serviceURI = 'bookings'
-    this.actions.requestData('GET', serviceURI, {
+    this.actions.requestData({
+      apiPath: '/bookings',
       handleFail: this.handleRequestFail,
       handleSuccess: this.handleRequestSuccess,
       normalizer: bookingNormalizer,
@@ -55,7 +55,10 @@ class MyBookingsPage extends Component {
   }
 
   handleRequestSuccess = (state, action) => {
-    const len = get(action, 'data.length')
+    const {
+      payload: { data },
+    } = action
+    const len = data.length
     const isempty = !(len && len > 0)
     this.setState({ isempty, isloading: false })
   }

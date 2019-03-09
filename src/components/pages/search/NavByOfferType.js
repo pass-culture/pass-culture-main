@@ -1,17 +1,15 @@
-import { assignData } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
+import { assignData } from 'redux-saga-data'
 import withQueryRouter from 'with-query-router'
 
 import SearchPicture from './SearchPicture'
 
 const NavByOfferType = ({ dispatch, query, title, typeSublabels }) => (
   <div id="nav-by-offer-type">
-    <h2 className="is-italic fs15">
-      {title}
-    </h2>
+    <h2 className="is-italic fs15">{title}</h2>
     <div className="pc-list flex-columns wrap-2">
       {typeSublabels.map(typeSublabel => (
         <button

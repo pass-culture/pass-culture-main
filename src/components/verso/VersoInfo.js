@@ -1,12 +1,12 @@
 /* eslint
   react/jsx-one-expression-per-line: 0 */
-import React from 'react'
 import get from 'lodash.get'
-import { compose } from 'redux'
+import { Icon, Logger, capitalize } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
+import React from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
-import { Icon, Logger, capitalize } from 'pass-culture-shared'
+import { compose } from 'redux'
 
 import { navigationLink } from '../../utils/geolocation'
 import { isRecommendationFinished } from '../../helpers'

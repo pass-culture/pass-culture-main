@@ -63,13 +63,13 @@ describe('src | components | pages | signin | component', () => {
 
           const data = {
             config: {
+              apiPath: '/users/signin',
               body: formValues,
               handleFail: undefined,
               handleSuccess: undefined,
+              method: 'POST',
             },
-            method: 'POST',
-            path: 'users/signin',
-            type: 'REQUEST_DATA_POST_USERS/SIGNIN',
+            type: 'REQUEST_DATA_POST_/USERS/SIGNIN',
           }
           // then
           expect(dispatchMock).toHaveBeenCalledWith(data)

@@ -1,11 +1,9 @@
-import React from 'react'
 import PropTypes from 'prop-types'
+import React from 'react'
 import { Redirect } from 'react-router-dom'
 
 const renderRedirecting = () => (
-  <span className="is-block">
-    {'Redirecting...'}
-  </span>
+  <span className="is-block">Redirecting...</span>
 )
 
 const renderTimer = timing => (
@@ -44,9 +42,7 @@ class NoMatch extends React.PureComponent {
     if (timing < 0) return this.redirectTo()
     return (
       <div id="page-redirect">
-        <h3 className="title">
-          {`404 Not found ${location.pathname}`}
-        </h3>
+        <h3 className="title">{`404 Not found ${location.pathname}`}</h3>
         <p className="content">
           {timing > 0 && renderTimer(timing)}
           {timing === 0 && renderRedirecting()}

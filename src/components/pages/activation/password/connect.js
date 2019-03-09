@@ -1,19 +1,18 @@
-import { requestData } from 'pass-culture-shared'
+import { requestData } from 'redux-saga-data'
 
 import { getRouterQueryByKey, getRouterParamByKey } from '../../../../helpers'
 
 export const mapDispatchToProps = dispatch => ({
   loginUserAfterPasswordSaveSuccess: (values, fail, success) => {
     const { email: identifier, newPassword: password } = values
-    const options = {
-      // AzertyAzertyP1$
+    const config = {
+      apiPath: '/users/signin',
       body: { identifier, password },
       handleFail: fail,
       handleSuccess: success,
+      method: 'POST',
     }
-    const requestMethod = 'POST'
-    const requestPath = 'users/signin'
-    dispatch(requestData(requestMethod, requestPath, options))
+    dispatch(requestData(config))
   },
 
   sendActivationPasswordForm: (values, fail, success) => {
@@ -21,15 +20,15 @@ export const mapDispatchToProps = dispatch => ({
     // pour pouvoir gérer les erreurs de l'API
     // directement dans les champs du formulaire
     const formSubmitPromise = new Promise(resolve => {
-      const options = {
+      const config = {
+        apiPath: '/users/new-password',
         body: { ...values },
         handleFail: fail(resolve),
         handleSuccess: success(resolve, values),
-        key: 'activatedUserCredentials',
+        method: 'POST',
+        stateKey: 'activatedUserCredentials',
       }
-      const requestMethod = 'POST'
-      const requestPath = 'users/new-password'
-      dispatch(requestData(requestMethod, requestPath, options))
+      dispatch(requestData(config))
     })
     return formSubmitPromise
   },

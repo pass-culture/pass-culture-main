@@ -1,11 +1,11 @@
 /* eslint
     react/jsx-one-expression-per-line: 0 */
-import { requestData } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import React from 'react'
 import { Form as FinalForm } from 'react-final-form'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
+import { requestData } from 'redux-saga-data'
 
 import { ROOT_PATH } from '../../../../utils/config'
 import { parseSubmitErrors } from '../../../forms/utils'
@@ -64,8 +64,11 @@ const withProfileForm = (
     handleRequestFail = formResolver => (state, action) => {
       // on retourne les erreurs API au formulaire
       const nextstate = { isloading: false }
-      const errors = parseSubmitErrors(action.errors)
-      this.setState(nextstate, () => formResolver(errors))
+      const {
+        payload: { errors },
+      } = action
+      const errorsByKey = parseSubmitErrors(errors)
+      this.setState(nextstate, () => formResolver(errorsByKey))
     }
 
     handleRequestSuccess = formResolver => () => {
@@ -86,14 +89,16 @@ const withProfileForm = (
       // pour pouvoir gérer les erreurs de l'API
       // directement dans les champs du formulaire
       const formSubmitPromise = new Promise(resolve => {
-        const options = {
+        const config = {
+          apiPath: routePath,
           body: { ...formValues },
           handleFail: this.handleRequestFail(resolve),
           handleSuccess: this.handleRequestSuccess(resolve),
+          method: routeMethod,
         }
         // NOTE: par défaut on utilise la clé 'user'
-        if (reducerKey) options.key = reducerKey
-        this.actions.requestData(routeMethod, routePath, options)
+        if (reducerKey) config.key = reducerKey
+        this.actions.requestData(config)
       })
       return formSubmitPromise
     }

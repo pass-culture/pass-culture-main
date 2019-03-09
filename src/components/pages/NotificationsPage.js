@@ -1,11 +1,11 @@
 /* eslint
   react/jsx-one-expression-per-line: 0 */
-import React from 'react'
-import { compose } from 'redux'
+import { withLogin } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
+import React from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
-import { withLogin } from 'pass-culture-shared'
+import { compose } from 'redux'
 
 import Loader from '../layout/Loader'
 import PageHeader from '../layout/PageHeader'
