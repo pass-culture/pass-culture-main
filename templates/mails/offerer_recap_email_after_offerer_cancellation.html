@@ -4,22 +4,6 @@
         <p id="action">
             Vous venez d'annuler la réservation de {{ user_name }} ({{ user_email }})
         </p>
-        {% if not booking_is_on_event %}
-        <p id="recap">
-            pour {{ stock_name }}
-            {% if stock_date_time %}
-                <br/> le {{ stock_date_time }}
-            {% endif %},
-            <br/>
-            {% if not booking_is_on_event %}
-                {% if venue.isVirtual %}
-                    Offre numérique proposée par {{ venue.name }}
-                {% endif %}
-            {% endif %}
-            proposé par {{ venue.name }} (Adresse : {{ venue.address }}, {{ venue.postalCode }} {{ venue.city }}).
-        </p>
-        {% endif %}
-        {% if booking_is_on_event %}
             <p id="recap">
                 Voici le récapitulatif
                 {% if is_final %}
@@ -40,22 +24,27 @@
             {% if stock_bookings %}
                 <table id="recap-table">
                     <tr>
-                        <th>Nom ou pseudo</th>
+                        <th>Prénom</th>
+                        <th>Nom</th>
                         <th>Email</th>
-                        <th>Code réservation</th>
+                        {% if booking_is_on_event %}
+                            <th>Code réservation</th>
+                        {% endif %}
                     </tr>
                     {% for booking in stock_bookings %}
                         <tr>
-                            <td>{{ booking.user.publicName }}</td>
+                            <td>{{ booking.user.firstName }}</td>
+                            <td>{{ booking.user.lastName }}</td>
                             <td>{{ booking.user.email }}</td>
-                            <td>{{ booking.token }}</td>
+                            {% if booking_is_on_event %}
+                                <td>{{ booking.token }}</td>
+                            {% endif %}
                         </tr>
                     {% endfor %}
                 </table>
             {% else %}
                 <p id="no-recap">Aucune réservation</p>
             {% endif %}
-        {% endif %}
         <p id="unsubscribe-option">
             Vous recevez ce message parce que votre adresse e-mail est renseignée comme adresse de contact sur votre offre.
             <br> Si vous souhaitez modifier l’adresse de contact cliquez ici : <a id="change-email" href="mailto:support.passculture@beta.gouv.fr?subject=Changer%20l%27adresse%20e-mail%20de%20notification%20des%20r%C3%A9servations">être notifié des réservations à une autre adresse e-mail</a>.

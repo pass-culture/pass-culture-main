@@ -17,13 +17,15 @@
             {% if stock_bookings %}
                 <table id="recap-table">
                     <tr>
-                        <th>Nom ou pseudo</th>
+                        <th>Prénom</th>
+                        <th>Nom</th>
                         <th>Email</th>
                         <th>Code réservation</th>
                     </tr>
                     {% for booking in stock_bookings %}
                         <tr>
-                            <td>{{ booking.user.publicName }}</td>
+                            <td>{{ booking.user.firstName }}</td>
+                            <td>{{ booking.user.lastName }}</td>
                             <td>{{ booking.user.email }}</td>
                             <td>{{ booking.token }}</td>
                         </tr>

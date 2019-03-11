@@ -284,7 +284,7 @@ def test_offerer_recap_email_past_offer_with_booking(app):
     stock = create_stock_with_event_offer(offerer=None,
                                           venue=venue,
                                           beginning_datetime_future=False)
-    user = create_user('Test', departement_code='93', email='test@email.com', can_book_free_offers=True)
+    user = create_user('Test', first_name='Jean', last_name='Dupont', departement_code='93', email='test@email.com', can_book_free_offers=True)
     booking = create_booking(user, stock, venue, None)
     booking.token = '56789'
     stock.bookings = [booking]
@@ -302,7 +302,12 @@ def test_offerer_recap_email_past_offer_with_booking(app):
     assert 'le 20 juillet 2017 à 14:00,' in recap_html
     assert 'proposé par Test offerer (Adresse : 123 rue test, 93000 Test city).' in recap_html
     recap_table_html = recap_email_soup.find('table', {'id': 'recap-table'}).text
-    assert 'Test' in recap_table_html
+    assert 'Prénom' in recap_table_html
+    assert 'Nom' in recap_table_html
+    assert 'Email' in recap_table_html
+    assert 'Code réservation' in recap_table_html
+    assert 'Jean' in recap_table_html
+    assert 'Dupont' in recap_table_html
     assert 'test@email.com' in recap_table_html
     assert '56789' in recap_table_html
 
@@ -316,10 +321,10 @@ def test_offerer_recap_email_does_not_send_cancelled_or_used_booking(app):
     stock = create_stock_with_event_offer(offerer=Offerer(),
                                           venue=venue)
 
-    user1 = create_user('Test1', departement_code='93', email='test@email.com', can_book_free_offers=True)
+    user1 = create_user('Test1', first_name='Lucie', last_name='Dubois', departement_code='93', email='test@email.com', can_book_free_offers=True)
     booking1 = create_booking(user1, stock)
 
-    user2 = create_user('Test2', departement_code='93', email='test@email.com', can_book_free_offers=True)
+    user2 = create_user('Test2', first_name='Jean', last_name='Dupont', departement_code='93', email='test@email.com', can_book_free_offers=True)
     booking2 = create_booking(user2, stock)
 
     ongoing_bookings = [booking1, booking2]
@@ -331,8 +336,8 @@ def test_offerer_recap_email_does_not_send_cancelled_or_used_booking(app):
     # Then
     email_html = BeautifulSoup(recap_email['Html-part'], 'html.parser')
     html_recap_table = str(email_html.find("table", {"id": "recap-table"}))
-    assert '<td>Test1</td>' in html_recap_table
-    assert '<td>Test2</td>' in html_recap_table
+    assert '<td>Lucie</td>' in html_recap_table
+    assert '<td>Jean</td>' in html_recap_table
     assert '<td>Cancelled</td>' not in html_recap_table
     assert '<td>Used</td>' not in html_recap_table
 
@@ -672,7 +677,6 @@ def test_make_offerer_booking_recap_email_after_user_cancellation_should_have_un
 
 @clean_database
 @pytest.mark.standalone
-@pytest.mark.offerer_driven_cancellation
 def test_make_offerer_driven_cancellation_email_for_user_event(app):
     # Given
     user = create_user(public_name='John Doe')
@@ -702,7 +706,6 @@ def test_make_offerer_driven_cancellation_email_for_user_event(app):
 
 @clean_database
 @pytest.mark.standalone
-@pytest.mark.offerer_driven_cancellation
 def test_make_offerer_driven_cancellation_email_for_user_thing(app):
     # Given
     user = create_user(public_name='John Doe')
@@ -729,8 +732,7 @@ def test_make_offerer_driven_cancellation_email_for_user_thing(app):
 
 @clean_database
 @pytest.mark.standalone
-@pytest.mark.offerer_driven_cancellation
-def test_make_offerer_driven_cancellation_email_for_offerer_event(app):
+def test_make_offerer_driven_cancellation_email_for_offerer_event_when_no_other_booking(app):
     # Given
     user = create_user(public_name='John Doe', email='john@doe.fr')
     offerer = create_offerer(name='Test offerer')
@@ -767,20 +769,51 @@ def test_make_offerer_driven_cancellation_email_for_offerer_event(app):
 
 @clean_database
 @pytest.mark.standalone
-@pytest.mark.offerer_driven_cancellation
+def test_make_offerer_driven_cancellation_email_for_offerer_event_when_other_booking(app):
+    # Given
+    user1 = create_user(public_name='John Doe', first_name='John', last_name='Doe', email='john@doe.fr')
+    user2 = create_user(public_name='Jane S.', first_name='Jane', last_name='Smith', email='jane@smith.fr')
+    offerer = create_offerer(name='Test offerer')
+    venue = create_venue(offerer, name='Le petit théâtre', address='1 rue de la Libération', city='Montreuil',
+                         postal_code='93100')
+    offer = create_event_offer(venue, event_name='Le théâtre des ombres')
+    event_occurrence = create_event_occurrence(offer,
+                                               beginning_datetime=datetime(2019, 7, 20, 12, 0, 0, tzinfo=timezone.utc))
+    stock = create_stock_from_event_occurrence(event_occurrence, price=20, available=10)
+    booking1 = create_booking(user1, stock, token='98765')
+    booking2 = create_booking(user2, stock, token='12345')
+
+    # When
+    with patch('utils.mailing.find_all_ongoing_bookings_by_stock', return_value=[booking2]):
+        email = make_offerer_driven_cancellation_email_for_offerer(booking1)
+
+    # Then
+    email_html = BeautifulSoup(email['Html-part'], 'html.parser')
+    html_recap_table = email_html.find("table", {"id": "recap-table"}).text
+    assert 'Prénom' in html_recap_table
+    assert 'Nom' in html_recap_table
+    assert 'Email' in html_recap_table
+    assert 'Jane' in html_recap_table
+    assert 'Smith' in html_recap_table
+    assert 'jane@smith.fr' in html_recap_table
+    assert '12345' in html_recap_table
+
+
+@clean_database
+@pytest.mark.standalone
 def test_make_offerer_driven_cancellation_email_for_offerer_thing_and_already_existing_booking(app):
     # Given
-    user = create_user(public_name='John Doe', email='john@doe.fr')
+    user = create_user(public_name='John Doe', first_name='John', last_name='Doe', email='john@doe.fr')
     offerer = create_offerer(name='Test offerer')
     venue = create_venue(offerer, name='La petite librairie', address='1 rue de la Libération', city='Montreuil',
                          postal_code='93100')
     thing = create_thing(thing_name='Le récit de voyage')
     offer = create_thing_offer(venue, thing)
     stock = create_stock_from_offer(offer, price=0, available=10)
-    booking = create_booking(user, stock)
+    booking = create_booking(user, stock, token='12346')
 
-    user2 = create_user(public_name='James Bond', email='bond@james.bond.uk')
-    booking2 = create_booking(user2, stock)
+    user2 = create_user(public_name='James Bond', first_name='James', last_name='Bond', email='bond@james.bond.uk')
+    booking2 = create_booking(user2, stock, token='12345')
     ongoing_bookings = [booking2]
 
     # When
@@ -790,17 +823,20 @@ def test_make_offerer_driven_cancellation_email_for_offerer_thing_and_already_ex
     # Then
     email_html = BeautifulSoup(email['Html-part'], 'html.parser')
     html_action = str(email_html.find("p", {"id": "action"}))
-    html_recap = email_html.find("p", {"id": "recap"})
-    html_recap_table = email_html.find("table", {"id": "recap-table"})
+    html_recap = email_html.find("p", {"id": "recap"}).text
+    html_recap_table = email_html.find("table", {"id": "recap-table"}).text
     assert 'Vous venez d\'annuler' in html_action
     assert 'John Doe' in html_action
     assert 'john@doe.fr' in html_action
-    assert 'pour Le récit de voyage' in html_recap.text
-    assert 'proposé par La petite librairie' in html_recap.text
-    assert '1 rue de la Libération' in html_recap.text
-    assert 'Montreuil' in html_recap.text
-    assert '93100' in html_recap.text
-    assert html_recap_table is None
+    assert 'pour Le récit de voyage' in html_recap
+    assert 'proposé par La petite librairie' in html_recap
+    assert '1 rue de la Libération' in html_recap
+    assert 'Montreuil' in html_recap
+    assert '93100' in html_recap
+    assert 'James' in html_recap_table
+    assert 'bond@james.bond.uk' in html_recap_table
+    assert '12346' not in html_recap_table
+    assert '12345' not in html_recap_table
     assert email[
                'Subject'] == 'Confirmation de votre annulation de réservation pour Le récit de voyage, proposé par La petite librairie'
 
