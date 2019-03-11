@@ -40,6 +40,17 @@ export default function mapStateToProps(state, ownProps) {
     ? ownProps.stock
     : stockSelector(state, offerId, get(ownProps, 'eventOccurrence'))
 
+  console.log('----- stock ------- ', stock)
+  console.log('----- offerId ------- ', offerId)
+  console.log(
+    '----- eventOccurrenceId ------- ',
+    get(ownProps, 'eventOccurrence.id')
+  )
+  console.log(
+    '----- managingOffererId ------- ',
+    get(venue, 'managingOffererId')
+  )
+
   const stockPatch = stockPatchSelector(
     state,
     stock,
