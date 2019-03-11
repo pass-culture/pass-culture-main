@@ -4,55 +4,47 @@
         <p id="action">
             <strong>{{ user.firstName }} {{ user.lastName }}</strong> ({{ user.email }}) vient
             {% if is_cancellation -%}
-                d'annuler sa réservation
+                d'annuler sa réservation.
             {%- else -%}
-                de faire une nouvelle réservation
-            {%- endif -%}
-            {%- if booking_is_on_event -%}
-                .
-            {% else %}
-            <br/>pour {{ event_or_thing.name }} ({{ event_or_thing.offerType['label'] }}) {{ pro_url }}/offres/{{ human_offer_id }},
-                {% if venue.isVirtual %}
-                    <br/>offre numérique proposée par {{ venue.name }}.
-                {% else %}
-                    <br/>proposé par {{ venue.name }} (Adresse : {{ venue.address }}, {{ venue.postalCode }} {{ venue.city }}).
-                {% endif %}
+                de faire une nouvelle réservation.
             {%- endif -%}
         </p>
 
-        {% if booking_is_on_event %}
-            <p id="recap">
-                Voici le récapitulatif des réservations à ce jour :
-                <br/> (total {{ number_of_bookings }}) pour {{ event_or_thing.name }} ({{ event_or_thing.offerType['label'] }}) {{ pro_url }}/offres/{{ human_offer_id }}
-                {% if stock_date_time %}
-                    <br/> le {{ stock_date_time }},
-                {% endif %}
-                {% if venue.isVirtual %}
-                    <br/> Offre numérique proposée par {{ venue.name }}.
-                {% else %}
-                    <br/> proposé par {{ venue.name }} (Adresse : {{ venue.address }}, {{ venue.postalCode }} {{ venue.city }}).
-                {% endif %}
-            </p>
-            {% if stock_bookings %}
-                <table id="recap-table">
-                    <tr>
-                        <th>Prénom</th>
-                        <th>Nom</th>
-                        <th>Email</th>
-                        <th>Code réservation</th>
-                    </tr>
-                    {% for booking in stock_bookings %}
-                        <tr>
-                            <td>{{ booking.user.firstName }}</td>
-                            <td>{{ booking.user.lastName }}</td>
-                            <td>{{ booking.user.email }}</td>
-                            <td>{{ booking.token }}</td>
-                        </tr>
-                    {% endfor %}
-                </table>
-            {% else %}
-                <p id="no-recap">Aucune réservation</p>
+        <p id="recap">
+            Voici le récapitulatif des réservations à ce jour :
+            <br/> (total {{ number_of_bookings }}) pour {{ event_or_thing.name }} ({{ event_or_thing.offerType['label'] }}) {{ pro_url }}/offres/{{ human_offer_id }}
+            {% if stock_date_time %}
+                <br/> le {{ stock_date_time }},
             {% endif %}
+            {% if venue.isVirtual %}
+                <br/> Offre numérique proposée par {{ venue.name }}.
+            {% else %}
+                <br/> proposé par {{ venue.name }} (Adresse : {{ venue.address }}, {{ venue.postalCode }} {{ venue.city }}).
+            {% endif %}
+        </p>
+        {% if stock_bookings %}
+            <table id="recap-table">
+                <tr>
+                    <th>Prénom</th>
+                    <th>Nom</th>
+                    <th>Email</th>
+                    {% if booking_is_on_event %}
+                        <th>Code réservation</th>
+                    {% endif %}
+                </tr>
+                {% for booking in stock_bookings %}
+                    <tr>
+                        <td>{{ booking.user.firstName }}</td>
+                        <td>{{ booking.user.lastName }}</td>
+                        <td>{{ booking.user.email }}</td>
+                        {% if booking_is_on_event %}
+                            <td>{{ booking.token }}</td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+            </table>
+        {% else %}
+            <p id="no-recap">Aucune réservation</p>
         {% endif %}
         <p id="unsubscribe-option">
             Vous recevez ce message parce que votre adresse e-mail est renseignée comme adresse de contact sur votre offre.

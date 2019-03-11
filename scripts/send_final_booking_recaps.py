@@ -1,8 +1,6 @@
 import traceback
 from pprint import pprint
 
-from flask import current_app as app
-
 from domain.user_emails import send_final_booking_recap_email
 from repository.stock_queries import find_stocks_of_finished_events_when_no_recap_sent
 from utils.mailing import send_raw_email
