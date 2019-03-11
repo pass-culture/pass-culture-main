@@ -38,7 +38,7 @@ class MailServiceException(Exception):
 def send_raw_email(data: dict) -> bool:
     response = app.mailjet_client.send.create(data=data)
     successfully_sent_email = response.status_code == 200
-    status = str(EmailStatus.SENT) if successfully_sent_email else str(EmailStatus.ERROR)
+    status = EmailStatus.SENT if successfully_sent_email else EmailStatus.ERROR
     email_queries.save(data, status)
     if not successfully_sent_email:
         logger.logger.warning(
@@ -49,7 +49,7 @@ def send_raw_email(data: dict) -> bool:
 def resend_email(email: Email) -> bool:
     response = app.mailjet_client.send.create(data=email.content)
     if response.status_code == 200:
-        email.status = str(EmailStatus.SENT)
+        email.status = EmailStatus.SENT
         email.datetime = datetime.utcnow()
         PcObject.check_and_save(email)
         return True

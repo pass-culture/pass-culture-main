@@ -1394,7 +1394,7 @@ def test_save_and_send_creates_an_entry_in_email_with_status_sent_when_send_mail
     assert len(emails) == 1
     email = emails[0]
     assert email.content == email_content
-    assert email.status == str(EmailStatus.SENT)
+    assert email.status == EmailStatus.SENT
     assert email.datetime == datetime(2019, 1, 1, 12, 0, 0)
 
 
@@ -1424,7 +1424,7 @@ def test_save_and_send_creates_an_entry_in_email_with_status_error_when_send_mai
     assert len(emails) == 1
     email = emails[0]
     assert email.content == email_content
-    assert email.status == str(EmailStatus.ERROR)
+    assert email.status == EmailStatus.ERROR
     assert email.datetime == datetime(2019, 1, 1, 12, 0, 0)
 
 
@@ -1452,7 +1452,7 @@ def test_send_content_and_update_updates_email_when_send_mail_successful(app):
     # then
     db.session.refresh(email)
     assert successfully_sent
-    assert email.status == str(EmailStatus.SENT)
+    assert email.status == EmailStatus.SENT
     assert email.datetime == datetime(2019, 1, 1, 12, 0, 0)
     app.mailjet_client.send.create.assert_called_once_with(data=email_content)
 
@@ -1481,7 +1481,7 @@ def test_send_content_and_update_does_not_update_email_when_send_mail_unsuccessf
     # then
     assert not successfully_sent
     db.session.refresh(email)
-    assert email.status == str(EmailStatus.ERROR)
+    assert email.status == EmailStatus.ERROR
     assert email.datetime == datetime(2018, 12, 1, 12, 0, 0)
     app.mailjet_client.send.create.assert_called_once_with(data=email_content)
 

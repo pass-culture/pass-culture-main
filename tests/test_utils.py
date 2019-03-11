@@ -31,7 +31,7 @@ from models import Booking, \
     BankInformation, \
     Venue, PaymentTransaction, VenueProvider, Provider
 from models.db import db
-from models.email import Email
+from models.email import Email, EmailStatus
 from models.payment import PaymentDetails
 from models.payment_status import PaymentStatus, TransactionStatus
 from models.pc_object import PcObject
@@ -663,7 +663,7 @@ def create_bank_information(application_id=1, bic='QSDFGH8Z555', iban='FR7630006
     return bank_information
 
 
-def create_email(content, status='ERROR', time=datetime.utcnow()):
+def create_email(content, status=EmailStatus.ERROR, time=datetime.utcnow()):
     email_failed = Email()
     email_failed.content = content
     email_failed.status = status
