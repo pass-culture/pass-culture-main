@@ -42,7 +42,7 @@ def send_raw_email(data: dict) -> bool:
     email_queries.save(data, status)
     if not successfully_sent_email:
         logger.logger.warning(
-            f'[EMAIL] Trying to send email # {email.content} failed with status code {response.status_code}')
+            f'[EMAIL] Trying to send email # {data} failed with status code {response.status_code}')
     return successfully_sent_email
 
 

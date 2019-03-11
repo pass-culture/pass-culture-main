@@ -5,6 +5,7 @@ from unittest.mock import MagicMock
 
 from models import PcObject
 from models.db import db
+from models.email import EmailStatus
 from scripts.send_remedial_emails import send_remedial_emails
 from tests.conftest import clean_database, mocked_mail
 from tests.test_utils import create_email
@@ -36,10 +37,10 @@ def test_send_remedial_emails_sets_status_to_sent_and_datetime_to_now_only_to_em
     db.session.refresh(email1)
     db.session.refresh(email2)
     db.session.refresh(email3)
-    assert email1.status == 'SENT'
+    assert email1.status == EmailStatus.SENT
     assert email1.datetime == datetime(2019, 1, 1, 12, 0, 0)
     assert email2.datetime == datetime(2018, 12, 1, 12, 0, 0)
-    assert email3.status == 'SENT'
+    assert email3.status == EmailStatus.SENT
     assert email3.datetime == datetime(2019, 1, 1, 12, 0, 0)
 
 
@@ -68,8 +69,8 @@ def test_send_remedial_emails_does_not_change_email_when_unsuccessfully_sent_and
     db.session.refresh(email1)
     db.session.refresh(email2)
     db.session.refresh(email3)
-    assert email1.status == 'ERROR'
+    assert email1.status == EmailStatus.ERROR
     assert email1.datetime == datetime(2018, 12, 1, 12, 0, 0)
     assert email2.datetime == datetime(2018, 12, 1, 12, 0, 0)
-    assert email3.status == 'ERROR'
+    assert email3.status == EmailStatus.ERROR
     assert email3.datetime == datetime(2018, 12, 1, 12, 0, 0)
