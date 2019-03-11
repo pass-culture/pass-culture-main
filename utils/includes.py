@@ -78,12 +78,18 @@ OFFER_INCLUDES = [
         "key": "eventOccurrences",
         "sub_joins": [
             {
-                "key": "stock"
+                "key": "stock",
+                "sub_joins": [
+                'bookings'
+                ]
             }
         ]
     },
     "mediations",
-    "stocks",
+    {
+    "key": "stocks",
+    "sub_joins": ['bookings']
+    },
     {
         "key": "thing",
         "sub_joins": [
@@ -240,12 +246,12 @@ OFFERER_FOR_PENDING_VALIDATION_INCLUDES = [
                 'isAdmin': element['isAdmin'],
                 'firstName': element['firstName'],
                 'lastName': element['lastName'],
-                'postalCode': element['postalCode'], 
+                'postalCode': element['postalCode'],
                 'phoneNumber': element['phoneNumber'],
                 'validationToken': element['validationToken']
             })
         }]
-    }, 
+    },
     {
         "key": "managedVenues",
         "resolve": (lambda element, filters: {
@@ -257,8 +263,8 @@ OFFERER_FOR_PENDING_VALIDATION_INCLUDES = [
                 'address': element['address'],
                 'postalCode': element['postalCode'],
                 'city': element['city'],
-                'departementCode': element['departementCode'], 
-                'comment': element['comment'], 
+                'departementCode': element['departementCode'],
+                'comment': element['comment'],
                 'validationToken': element['validationToken']
             })
     }
