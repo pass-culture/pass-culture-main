@@ -47,8 +47,9 @@ cors = CORS(app,
 app.url_map.strict_slashes = False
 
 with app.app_context():
-    install_models()
-    install_local_providers()
+    if IS_DEV:
+        install_models()
+        install_local_providers()
     import utils.login_manager
     import routes
     install_admin_views(admin, db.session)

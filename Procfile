@@ -1,2 +1,3 @@
-web: alembic upgrade head && python app.py
+web: python app.py
+postdeploy: alembic upgrade head
 clock: python scripts/clock.py
