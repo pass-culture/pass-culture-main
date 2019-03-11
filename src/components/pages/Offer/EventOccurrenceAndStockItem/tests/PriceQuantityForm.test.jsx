@@ -1,10 +1,15 @@
+import { createBrowserHistory } from 'history'
 import React from 'react'
-import { shallow } from 'enzyme'
+import { mount, shallow } from 'enzyme'
 import configureStore from 'redux-mock-store'
 import { Provider } from 'react-redux'
+import { Route, Router } from 'react-router-dom'
+
+import { Field } from 'pass-culture-shared'
 
 import PriceQuantityForm from '../PriceQuantityForm'
 
+import mockedState from './mockedState'
 const middlewares = []
 const mockStore = configureStore(middlewares)
 
@@ -26,6 +31,64 @@ describe('src | components | pages | Offer | EventOccurrenceAndStockItem | Price
       // then
       expect(wrapper).toBeDefined()
       expect(wrapper).toMatchSnapshot()
+    })
+  })
+  describe('render', () => {
+    describe('Quantity Field', () => {
+      describe('With StockPatch', () => {
+        // security error
+        it('should update field with good params', () => {
+          // given
+          const initialState = mockedState
+          const store = mockStore(initialState)
+          const history = createBrowserHistory()
+
+          const initialProps = {
+            closeInfo: jest.fn(),
+            showInfo: jest.fn(),
+            history,
+            isStockReadOnly: false,
+            stockPatch: {
+              bookingLimitDatetime: null,
+              eventOccurrenceId: null,
+              offerId: 'UU',
+              offererId: 'BA',
+              id: 'MU',
+              available: 10,
+              bookingRecapSent: null,
+              dateModified: '2019-03-07T10:40:07.318721Z',
+              dateModifiedAtLastProvider: '2019-03-07T10:40:07.318695Z',
+              groupSize: 1,
+              idAtProviders: null,
+              isSoftDeleted: false,
+              lastProviderId: null,
+              modelName: 'Stock',
+              price: 17,
+            },
+          }
+          history.push('/offres/NE')
+
+          // when
+
+          const wrapper = mount(
+            <Provider store={store}>
+              <Router history={history}>
+                <Route path="/test">
+                  <PriceQuantityForm {...initialProps} />
+                </Route>
+              </Router>
+            </Provider>
+          )
+          history.push('/offres/NE?gestion&stock=MU')
+
+          const field = wrapper.find(Field)
+          const quantityField = field.at(4)
+          console.log('>>>>>>>', quantityField.props())
+
+          // then
+          expect(field).toHaveLength(5)
+        })
+      })
     })
   })
 })
