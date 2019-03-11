@@ -3,12 +3,12 @@ import { shallow } from 'enzyme'
 import configureStore from 'redux-mock-store'
 import { Provider } from 'react-redux'
 
-import Actions from '../Actions'
+import EditAndDeleteActions from '../EditAndDeleteActions'
 
 const middlewares = []
 const mockStore = configureStore(middlewares)
 
-describe('src | components | pages | Offer | EventOccurrenceAndStockItem | Actions', () => {
+describe('src | components | pages | Offer | EventOccurrenceAndStockItem | EditAndDeleteActions', () => {
   describe('snapshot', () => {
     it('should match snapshot', () => {
       // given
@@ -19,7 +19,7 @@ describe('src | components | pages | Offer | EventOccurrenceAndStockItem | Actio
       // when
       const wrapper = shallow(
         <Provider store={store}>
-          <Actions {...initialProps} />
+          <EditAndDeleteActions {...initialProps} />
         </Provider>
       )
 

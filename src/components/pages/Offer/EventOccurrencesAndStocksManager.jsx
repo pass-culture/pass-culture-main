@@ -17,7 +17,8 @@ function mapStateToProps(state, ownProps) {
   const search = selectApiSearch(state, ownProps.location.search)
   const { eventOccurrenceIdOrNew, stockIdOrNew } = search || {}
 
-  const isEditing = eventOccurrenceIdOrNew || stockIdOrNew
+  const editedStockId = eventOccurrenceIdOrNew || stockIdOrNew
+
   const isNew =
     eventOccurrenceIdOrNew === 'nouvelle' ||
     (!eventOccurrenceIdOrNew && stockIdOrNew === 'nouveau')
@@ -49,7 +50,7 @@ function mapStateToProps(state, ownProps) {
     event,
     eventOccurrenceIdOrNew,
     eventOccurrences,
-    isEditing,
+    editedStockId,
     isNew,
     offer,
     provider: providerSelector(state, get(event, 'lastProviderId')),
