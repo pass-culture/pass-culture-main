@@ -70,6 +70,7 @@ const ProfilePage = ({ isloaded, location, user }) => {
 ProfilePage.propTypes = {
   isloaded: PropTypes.bool.isRequired,
   location: PropTypes.object.isRequired,
+  user: PropTypes.object.isRequired,
 }
 
 const mapStateToProps = state => {

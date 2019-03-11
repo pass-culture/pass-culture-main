@@ -133,6 +133,7 @@ Main.defaultProps = {
   handleDataRequest: null,
   header: null,
   noPadding: false,
+  pageTitle: null,
   redBg: false,
   user: null,
 }
@@ -149,6 +150,7 @@ Main.propTypes = {
   location: PropTypes.object.isRequired,
   name: PropTypes.string.isRequired,
   noPadding: PropTypes.bool,
+  pageTitle: PropTypes.string,
   redBg: PropTypes.bool,
   user: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
 }

@@ -129,6 +129,7 @@ SelectBoxField.defaultProps = {
   help: null,
   id: null,
   label: null,
+  placeholder: null,
   required: false,
 }
 
@@ -139,6 +140,7 @@ SelectBoxField.propTypes = {
   id: PropTypes.string,
   label: PropTypes.string,
   name: PropTypes.string.isRequired,
+  placeholder: PropTypes.string,
   provider: PropTypes.arrayOf(SelectboxObjectType).isRequired,
   required: PropTypes.bool,
 }

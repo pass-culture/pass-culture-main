@@ -256,16 +256,20 @@ class Booking extends PureComponent {
 
 Booking.defaultProps = {
   bookables: null,
+  booking: null,
   extraClassName: null,
+  isCancelled: false,
   isEvent: false,
   recommendation: null,
 }
 
 Booking.propTypes = {
   bookables: PropTypes.array,
+  booking: PropTypes.object,
   dispatch: PropTypes.func.isRequired,
   extraClassName: PropTypes.string,
   history: PropTypes.object.isRequired,
+  isCancelled: PropTypes.bool,
   isEvent: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
   match: PropTypes.object.isRequired,
   recommendation: PropTypes.object,

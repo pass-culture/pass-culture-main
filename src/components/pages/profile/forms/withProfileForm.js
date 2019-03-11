@@ -174,12 +174,18 @@ const withProfileForm = (
     }
   }
 
+  ProfilePasswordForm.defaultProps = {
+    title: null,
+  }
+
   ProfilePasswordForm.propTypes = {
     dispatch: PropTypes.func.isRequired,
     // NOTE: history et location sont automatiquement
     // injectées par le render de la route du react-router-dom
     history: PropTypes.object.isRequired,
     location: PropTypes.object.isRequired,
+    title: PropTypes.string,
+    user: PropTypes.object.isRequired,
   }
 
   return connect()(ProfilePasswordForm)

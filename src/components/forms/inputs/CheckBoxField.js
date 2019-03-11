@@ -13,7 +13,7 @@ const validateRequiredField = value => {
   return DEFAULT_REQUIRED_ERROR
 }
 
-const CheckBoxField = ({ name, required, children, className }) => {
+const CheckBoxField = ({ children, className, name, required }) => {
   const validateFunc =
     required && typeof required === 'function'
       ? required
@@ -43,10 +43,13 @@ const CheckBoxField = ({ name, required, children, className }) => {
 }
 
 CheckBoxField.defaultProps = {
+  className: null,
   required: false,
 }
 
 CheckBoxField.propTypes = {
+  children: PropTypes.node.isRequired,
+  className: PropTypes.string,
   name: PropTypes.string.isRequired,
   required: PropTypes.oneOfType([PropTypes.bool, PropTypes.func]),
 }
