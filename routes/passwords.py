@@ -7,7 +7,7 @@ from domain.user_emails import send_reset_password_email
 from models import ApiErrors, PcObject
 from repository.user_queries import find_user_by_email, find_user_by_reset_password_token
 from utils.mailing import \
-    MailServiceException, save_and_send
+    MailServiceException, send_raw_email
 from utils.rest import expect_json_data
 
 
@@ -41,7 +41,7 @@ def post_for_password_token():
     app_origin_url = request.headers.get('origin')
 
     try:
-        send_reset_password_email(user, save_and_send, app_origin_url)
+        send_reset_password_email(user, send_raw_email, app_origin_url)
     except MailServiceException as e:
         app.logger.error('Mail service failure', e)
 

@@ -21,18 +21,18 @@ def test_maybe_send_offerer_validation_email_sends_email_to_pass_culture_when_ob
 
     user_offerer = create_user_offerer(user, offerer, validation_token=None)
 
-    mocked_send_create_email = Mock()
+    mocked_send_email = Mock()
     return_value = Mock()
     return_value.status_code = 200
-    mocked_send_create_email.return_value = return_value
+    mocked_send_email.return_value = return_value
 
     # When
     with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True):
-        maybe_send_offerer_validation_email(offerer, user_offerer, mocked_send_create_email)
+        maybe_send_offerer_validation_email(offerer, user_offerer, mocked_send_email)
 
     # Then
-    mocked_send_create_email.assert_called_once()
-    args = mocked_send_create_email.call_args
+    mocked_send_email.assert_called_once()
+    args = mocked_send_email.call_args
     email = args[1]['data']
     assert email['To'] == 'support.passculture@beta.gouv.fr'
     assert 'This is a test' not in email['Html-part']
@@ -50,18 +50,18 @@ def test_maybe_send_offerer_validation_email_sends_email_to_pass_culture_dev_whe
 
     user_offerer = create_user_offerer(user, offerer, validation_token=None)
 
-    mocked_send_create_email = Mock()
+    mocked_send_email = Mock()
     return_value = Mock()
     return_value.status_code = 200
-    mocked_send_create_email.return_value = return_value
+    mocked_send_email.return_value = return_value
 
     # When
     with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=False):
-        maybe_send_offerer_validation_email(offerer, user_offerer, mocked_send_create_email)
+        maybe_send_offerer_validation_email(offerer, user_offerer, mocked_send_email)
 
     # Then
-    mocked_send_create_email.assert_called_once()
-    args = mocked_send_create_email.call_args
+    mocked_send_email.assert_called_once()
+    args = mocked_send_email.call_args
     email = args[1]['data']
     assert email['To'] == 'passculture-dev@beta.gouv.fr'
     assert 'This is a test' in email['Html-part']
@@ -78,19 +78,19 @@ def test_maybe_send_offerer_validation_email_does_not_send_email_if_all_validate
 
     user_offerer = create_user_offerer(user, offerer, validation_token=None)
 
-    mocked_send_create_email = Mock()
+    mocked_send_email = Mock()
     return_value = Mock()
     return_value.status_code = 200
-    mocked_send_create_email.return_value = return_value
+    mocked_send_email.return_value = return_value
 
     # When
     try:
-        maybe_send_offerer_validation_email(offerer, user_offerer, mocked_send_create_email)
+        maybe_send_offerer_validation_email(offerer, user_offerer, mocked_send_email)
     except MailServiceException as e:
         app.logger.error('Mail service failure', e)
 
     # Then
-    assert not mocked_send_create_email.called
+    assert not mocked_send_email.called
 
 
 @pytest.mark.standalone
@@ -99,18 +99,18 @@ def test_send_venue_validation_email_when_mailjet_status_code_200_sends_email_to
     offerer = create_offerer()
     venue = create_venue(offerer)
 
-    mocked_send_create_email = Mock()
+    mocked_send_email = Mock()
     return_value = Mock()
     return_value.status_code = 200
-    mocked_send_create_email.return_value = return_value
+    mocked_send_email.return_value = return_value
 
     # When
     with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True):
-        send_venue_validation_email(venue, mocked_send_create_email)
+        send_venue_validation_email(venue, mocked_send_email)
 
     # Then
-    mocked_send_create_email.assert_called_once()
-    args = mocked_send_create_email.call_args
+    mocked_send_email.assert_called_once()
+    args = mocked_send_email.call_args
     email = args[1]['data']
     assert email['To'] == 'support.passculture@beta.gouv.fr'
     assert 'This is a test' not in email['Html-part']
@@ -122,18 +122,18 @@ def test_send_venue_validation_email_has_pass_culture_dev_as_recipient_when_send
     offerer = create_offerer()
     venue = create_venue(offerer)
 
-    mocked_send_create_email = Mock()
+    mocked_send_email = Mock()
     return_value = Mock()
     return_value.status_code = 200
-    mocked_send_create_email.return_value = return_value
+    mocked_send_email.return_value = return_value
 
     # When
     with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=False):
-        send_venue_validation_email(venue, mocked_send_create_email)
+        send_venue_validation_email(venue, mocked_send_email)
 
     # Then
-    mocked_send_create_email.assert_called_once()
-    args = mocked_send_create_email.call_args
+    mocked_send_email.assert_called_once()
+    args = mocked_send_email.call_args
     email = args[1]['data']
     assert email['To'] == 'passculture-dev@beta.gouv.fr'
     assert 'This is a test' in email['Html-part']
@@ -145,18 +145,18 @@ def test_send_payment_details_email_when_mailjet_status_code_200_sends_email_to_
     csv = '"header A","header B","header C","header D"\n"part A","part B","part C","part D"\n'
     recipients = ['comptable1@culture.fr', 'comptable2@culture.fr']
 
-    mocked_send_create_email = Mock()
+    mocked_send_email = Mock()
     return_value = Mock()
     return_value.status_code = 200
-    mocked_send_create_email.return_value = return_value
+    mocked_send_email.return_value = return_value
 
     # When
     with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True):
-        send_payment_details_email(csv, recipients, mocked_send_create_email)
+        send_payment_details_email(csv, recipients, mocked_send_email)
 
     # Then
-    mocked_send_create_email.assert_called_once()
-    args = mocked_send_create_email.call_args
+    mocked_send_email.assert_called_once()
+    args = mocked_send_email.call_args
     email = args[1]['data']
     assert email['To'] == 'comptable1@culture.fr, comptable2@culture.fr'
 
@@ -167,18 +167,18 @@ def test_send_payment_details_email_has_pass_culture_dev_as_recipient_when_send_
     csv = '"header A","header B","header C","header D"\n"part A","part B","part C","part D"\n'
     recipients = ['comptable1@culture.fr', 'comptable2@culture.fr']
 
-    mocked_send_create_email = Mock()
+    mocked_send_email = Mock()
     return_value = Mock()
     return_value.status_code = 200
-    mocked_send_create_email.return_value = return_value
+    mocked_send_email.return_value = return_value
 
     # When
     with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=False):
-        send_payment_details_email(csv, recipients, mocked_send_create_email)
+        send_payment_details_email(csv, recipients, mocked_send_email)
 
     # Then
-    mocked_send_create_email.assert_called_once()
-    args = mocked_send_create_email.call_args
+    mocked_send_email.assert_called_once()
+    args = mocked_send_email.call_args
     email = args[1]['data']
     assert email['To'] == 'passculture-dev@beta.gouv.fr'
 
@@ -189,18 +189,18 @@ def test_send_wallet_balances_email_when_mailjet_status_code_200_sends_email_to_
     csv = '"header A","header B","header C","header D"\n"part A","part B","part C","part D"\n'
     recipients = ['comptable1@culture.fr', 'comptable2@culture.fr']
 
-    mocked_send_create_email = Mock()
+    mocked_send_email = Mock()
     return_value = Mock()
     return_value.status_code = 200
-    mocked_send_create_email.return_value = return_value
+    mocked_send_email.return_value = return_value
 
     # When
     with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True):
-        send_wallet_balances_email(csv, recipients, mocked_send_create_email)
+        send_wallet_balances_email(csv, recipients, mocked_send_email)
 
     # Then
-    mocked_send_create_email.assert_called_once()
-    args = mocked_send_create_email.call_args
+    mocked_send_email.assert_called_once()
+    args = mocked_send_email.call_args
     email = args[1]['data']
     assert email['To'] == 'comptable1@culture.fr, comptable2@culture.fr'
 
@@ -211,18 +211,18 @@ def test_send_wallet_balances_email_has_pass_culture_dev_as_recipient_when_send_
     csv = '"header A","header B","header C","header D"\n"part A","part B","part C","part D"\n'
     recipients = ['comptable1@culture.fr', 'comptable2@culture.fr']
 
-    mocked_send_create_email = Mock()
+    mocked_send_email = Mock()
     return_value = Mock()
     return_value.status_code = 200
-    mocked_send_create_email.return_value = return_value
+    mocked_send_email.return_value = return_value
 
     # When
     with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=False):
-        send_wallet_balances_email(csv, recipients, mocked_send_create_email)
+        send_wallet_balances_email(csv, recipients, mocked_send_email)
 
     # Then
-    mocked_send_create_email.assert_called_once()
-    args = mocked_send_create_email.call_args
+    mocked_send_email.assert_called_once()
+    args = mocked_send_email.call_args
     email = args[1]['data']
     assert email['To'] == 'passculture-dev@beta.gouv.fr'
 
@@ -238,19 +238,19 @@ def test_send_payments_report_emails_when_mailjet_status_code_200_sends_email_to
         'PENDING': [Mock(), Mock(), Mock()]
     }
 
-    mocked_send_create_email = Mock()
+    mocked_send_email = Mock()
     return_value = Mock()
     return_value.status_code = 200
-    mocked_send_create_email.return_value = return_value
+    mocked_send_email.return_value = return_value
 
     # When
     with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True):
         send_payments_report_emails(not_processable_csv, error_csv, grouped_payments, ['dev.team@test.com'],
-                                    mocked_send_create_email)
+                                    mocked_send_email)
 
     # Then
-    mocked_send_create_email.assert_called_once()
-    args = mocked_send_create_email.call_args
+    mocked_send_email.assert_called_once()
+    args = mocked_send_email.call_args
     email = args[1]['data']
     assert email['To'] == 'dev.team@test.com'
 
@@ -266,19 +266,19 @@ def test_send_payments_report_emails_email_has_pass_culture_dev_as_recipient_whe
         'PENDING': [Mock(), Mock(), Mock()]
     }
 
-    mocked_send_create_email = Mock()
+    mocked_send_email = Mock()
     return_value = Mock()
     return_value.status_code = 200
-    mocked_send_create_email.return_value = return_value
+    mocked_send_email.return_value = return_value
 
     # When
     with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=False):
         send_payments_report_emails(not_processable_csv, error_csv, grouped_payments, ['dev.team@test.com'],
-                                    mocked_send_create_email)
+                                    mocked_send_email)
 
     # Then
-    mocked_send_create_email.assert_called_once()
-    args = mocked_send_create_email.call_args
+    mocked_send_email.assert_called_once()
+    args = mocked_send_email.call_args
     email = args[1]['data']
     assert email['To'] == 'passculture-dev@beta.gouv.fr'
 
@@ -286,41 +286,41 @@ def test_send_payments_report_emails_email_has_pass_culture_dev_as_recipient_whe
 @pytest.mark.standalone
 class SendOfferCreationNotificationToSupportTest:
     def test_when_mailjet_status_code_200_sends_email_to_support_email(self, app):
-        mocked_send_create_email = Mock()
+        mocked_send_email = Mock()
         return_value = Mock()
         return_value.status_code = 200
-        mocked_send_create_email.return_value = return_value
+        mocked_send_email.return_value = return_value
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_thing_offer(venue)
         author = create_user(email='author@email.com')
         # When
         with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True):
-            send_offer_creation_notification_to_support(offer, author, 'http://test.url', mocked_send_create_email)
+            send_offer_creation_notification_to_support(offer, author, 'http://test.url', mocked_send_email)
 
         # Then
-        mocked_send_create_email.assert_called_once()
-        args = mocked_send_create_email.call_args
+        mocked_send_email.assert_called_once()
+        args = mocked_send_email.call_args
         email = args[1]['data']
         assert email['To'] == 'support.passculture@beta.gouv.fr'
 
     def test_when_send_email_disabled_has_pass_culture_dev_as_recipient(self, app):
         # Given
-        mocked_send_create_email = Mock()
+        mocked_send_email = Mock()
         return_value = Mock()
         return_value.status_code = 200
-        mocked_send_create_email.return_value = return_value
+        mocked_send_email.return_value = return_value
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_thing_offer(venue)
         author = create_user(email='author@email.com')
         # When
         with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=False):
-            send_offer_creation_notification_to_support(offer, author, 'http://test.url', mocked_send_create_email)
+            send_offer_creation_notification_to_support(offer, author, 'http://test.url', mocked_send_email)
 
         # Then
-        mocked_send_create_email.assert_called_once()
-        args = mocked_send_create_email.call_args
+        mocked_send_email.assert_called_once()
+        args = mocked_send_email.call_args
         email = args[1]['data']
         assert email['To'] == 'passculture-dev@beta.gouv.fr'
 
@@ -332,10 +332,10 @@ class SendPaymentTransactionEmailTest:
         xml = '<?xml version="1.0" encoding="UTF-8"?><Document xmlns="urn:iso:std:iso:20022:tech:xsd:pain.001.001.03"></Document>'
         checksum = b'\x16\x91\x0c\x11~Hs\xc5\x1a\xa3W1\x13\xbf!jq@\xea  <h&\xef\x1f\xaf\xfc\x7fO\xc8\x82'
         recipients = ['test@email']
-        mocked_send_create_email = Mock()
-        mocked_send_create_email.return_value = True
+        mocked_send_email = Mock()
+        mocked_send_email.return_value = True
         # when
-        successfully_sent = send_payment_transaction_email(xml, checksum, recipients, mocked_send_create_email)
+        successfully_sent = send_payment_transaction_email(xml, checksum, recipients, mocked_send_email)
 
         # then
         assert successfully_sent
@@ -346,10 +346,10 @@ class SendPaymentTransactionEmailTest:
         xml = '<?xml version="1.0" encoding="UTF-8"?><Document xmlns="urn:iso:std:iso:20022:tech:xsd:pain.001.001.03"></Document>'
         checksum = b'\x16\x91\x0c\x11~Hs\xc5\x1a\xa3W1\x13\xbf!jq@\xea  <h&\xef\x1f\xaf\xfc\x7fO\xc8\x82'
         recipients = ['test@email']
-        mocked_send_create_email = Mock()
-        mocked_send_create_email.return_value = False
+        mocked_send_email = Mock()
+        mocked_send_email.return_value = False
         # when
-        successfully_sent = send_payment_transaction_email(xml, checksum, recipients, mocked_send_create_email)
+        successfully_sent = send_payment_transaction_email(xml, checksum, recipients, mocked_send_email)
 
         # then
         assert not successfully_sent

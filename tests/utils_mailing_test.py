@@ -8,7 +8,7 @@ from unittest.mock import MagicMock, patch, Mock
 
 from models import PcObject, Offerer, ThingType, EventType
 from models.db import db
-from models.email import Email
+from models.email import Email, EmailStatus
 from tests.conftest import clean_database, mocked_mail
 from tests.files.api_entreprise import MOCKED_SIREN_ENTREPRISES_API_RETURN
 from tests.test_utils import create_stock_with_event_offer, create_stock_with_thing_offer, \
@@ -25,7 +25,7 @@ from utils.mailing import make_user_booking_recap_email, \
     make_batch_cancellation_email, make_payment_transaction_email, make_user_validation_email, \
     make_payment_details_email, make_wallet_balances_email, make_payments_report_email, parse_email_addresses, \
     make_activation_notification_email, make_offer_creation_notification_email, \
-    save_and_send, send_content_and_update
+    send_raw_email, resend_email
 
 SUBJECT_USER_EVENT_BOOKING_CONFIRMATION_EMAIL = \
     'Confirmation de votre réservation pour Mains, sorts et papiers le 20 juillet 2019 à 14:00'
@@ -1385,7 +1385,7 @@ def test_save_and_send_creates_an_entry_in_email_with_status_sent_when_send_mail
     app.mailjet_client.send.create.return_value = mocked_response
 
     # when
-    successfully_sent_email = save_and_send(email_content)
+    successfully_sent_email = send_raw_email(email_content)
 
     # then
     assert successfully_sent_email
@@ -1394,7 +1394,7 @@ def test_save_and_send_creates_an_entry_in_email_with_status_sent_when_send_mail
     assert len(emails) == 1
     email = emails[0]
     assert email.content == email_content
-    assert email.status == 'SENT'
+    assert email.status == str(EmailStatus.SENT)
     assert email.datetime == datetime(2019, 1, 1, 12, 0, 0)
 
 
@@ -1415,7 +1415,7 @@ def test_save_and_send_creates_an_entry_in_email_with_status_error_when_send_mai
     app.mailjet_client.send.create.return_value = mocked_response
 
     # when
-    successfully_sent_email = save_and_send(email_content)
+    successfully_sent_email = send_raw_email(email_content)
 
     # then
     assert not successfully_sent_email
@@ -1424,7 +1424,7 @@ def test_save_and_send_creates_an_entry_in_email_with_status_error_when_send_mai
     assert len(emails) == 1
     email = emails[0]
     assert email.content == email_content
-    assert email.status == 'ERROR'
+    assert email.status == str(EmailStatus.ERROR)
     assert email.datetime == datetime(2019, 1, 1, 12, 0, 0)
 
 
@@ -1447,12 +1447,12 @@ def test_send_content_and_update_updates_email_when_send_mail_successful(app):
     app.mailjet_client.send.create.return_value = mocked_response
 
     # when
-    successfully_sent = send_content_and_update(email)
+    successfully_sent = resend_email(email)
 
     # then
     db.session.refresh(email)
     assert successfully_sent
-    assert email.status == 'SENT'
+    assert email.status == str(EmailStatus.SENT)
     assert email.datetime == datetime(2019, 1, 1, 12, 0, 0)
     app.mailjet_client.send.create.assert_called_once_with(data=email_content)
 
@@ -1476,12 +1476,12 @@ def test_send_content_and_update_does_not_update_email_when_send_mail_unsuccessf
     app.mailjet_client.send.create.return_value = mocked_response
 
     # when
-    successfully_sent = send_content_and_update(email)
+    successfully_sent = resend_email(email)
 
     # then
     assert not successfully_sent
     db.session.refresh(email)
-    assert email.status == 'ERROR'
+    assert email.status == str(EmailStatus.ERROR)
     assert email.datetime == datetime(2018, 12, 1, 12, 0, 0)
     app.mailjet_client.send.create.assert_called_once_with(data=email_content)
 

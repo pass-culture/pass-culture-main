@@ -15,7 +15,7 @@ from models.api_errors import ResourceNotFound, ForbiddenError
 from repository import user_offerer_queries, offerer_queries
 from repository.payment_queries import find_transaction_checksum
 from tests.validation_validate_test import check_validation_request, check_venue_found
-from utils.mailing import MailServiceException, save_and_send
+from utils.mailing import MailServiceException, send_raw_email
 from validation.validate import check_valid_token_for_user_validation
 
 
@@ -57,7 +57,7 @@ def validate():
     offerers = iter([obj for obj in objects_to_validate if isinstance(obj, Offerer)])
     offerer = next(offerers, None)
     try:
-        send_validation_confirmation_email(user_offerer, offerer, save_and_send)
+        send_validation_confirmation_email(user_offerer, offerer, send_raw_email)
     except MailServiceException as e:
         app.logger.error('Mail service failure', e)
     return "Validation effectuée", 202
@@ -73,7 +73,7 @@ def validate_venue():
     PcObject.check_and_save(venue)
 
     try:
-        send_venue_validation_confirmation_email(venue, save_and_send)
+        send_venue_validation_confirmation_email(venue, send_raw_email)
     except MailServiceException as e:
         app.logger.error('Mail service failure', e)
 
@@ -90,7 +90,7 @@ def validate_user(token):
     if user_offerer:
         offerer = offerer_queries.find_first_by_user_offerer_id(user_offerer.id)
         try:
-            maybe_send_offerer_validation_email(offerer, user_offerer, save_and_send)
+            maybe_send_offerer_validation_email(offerer, user_offerer, send_raw_email)
         except MailServiceException as e:
             app.logger.error('Mail service failure', e)
 

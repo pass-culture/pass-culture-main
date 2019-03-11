@@ -10,6 +10,8 @@ from alembic import op
 from datetime import datetime
 
 # revision identifiers, used by Alembic.
+from models.email import EmailStatus
+
 revision = 'ec8d3f04eba3'
 down_revision = 'fdcdc5e96f15'
 branch_labels = None
@@ -21,7 +23,7 @@ def upgrade():
         'email',
         sa.Column('id', sa.BigInteger, primary_key=True, autoincrement=True),
         sa.Column('content', sa.JSON, nullable=False),
-        sa.Column('status', sa.String(12), nullable=False),
+        sa.Column('status', sa.Enum(EmailStatus), nullable=False),
         sa.Column('datetime', sa.DateTime, nullable=True, default=datetime.utcnow),
     )
     op.create_index(op.f('ix_status'), 'email', ['status'], unique=False)

@@ -10,6 +10,7 @@ from connectors import api_entreprises
 from domain.user_activation import generate_set_password_url
 from models import Offer, Email, PcObject
 from models import RightsType, User
+from models.email import EmailStatus
 from repository import email_queries
 from repository.booking_queries import find_all_ongoing_bookings_by_stock
 from repository.features import feature_send_mail_to_users_enabled
@@ -34,21 +35,26 @@ class MailServiceException(Exception):
     pass
 
 
-def save_and_send(data: dict) -> bool:
+def send_raw_email(data: dict) -> bool:
     response = app.mailjet_client.send.create(data=data)
     successfully_sent_email = response.status_code == 200
-    status = 'SENT' if successfully_sent_email else 'ERROR'
+    status = str(EmailStatus.SENT) if successfully_sent_email else str(EmailStatus.ERROR)
     email_queries.save(data, status)
+    if not successfully_sent_email:
+        logger.logger.warning(
+            f'[EMAIL] Trying to send email # {email.content} failed with status code {response.status_code}')
     return successfully_sent_email
 
 
-def send_content_and_update(email: Email) -> bool:
+def resend_email(email: Email) -> bool:
     response = app.mailjet_client.send.create(data=email.content)
     if response.status_code == 200:
-        email.status = 'SENT'
+        email.status = str(EmailStatus.SENT)
         email.datetime = datetime.utcnow()
         PcObject.check_and_save(email)
         return True
+    logger.logger.warning(
+        f'[EMAIL] Trying to resend email # {email.id}, {email.content} failed with status code {response.status_code}')
     return False
 
 

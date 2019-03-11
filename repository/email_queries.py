@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import List
 
 from models import PcObject
-from models.email import Email
+from models.email import Email, EmailStatus
 from models.pc_object import serialize
 
 
@@ -15,4 +15,4 @@ def save(content: dict, status: str):
 
 
 def find_all_in_error() -> List[Email]:
-    return Email.query.filter_by(status='ERROR').all()
+    return Email.query.filter_by(status=str(EmailStatus.ERROR)).all()
