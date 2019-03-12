@@ -31,7 +31,7 @@ jobs:
             yarn testunit --coverage
             yarn coveralls
       - store_artifacts:
-          path: coverage
+          path: ~/pass-culture-main/pro/coverage
       - run:
           name: Install dockerize
           command: |
