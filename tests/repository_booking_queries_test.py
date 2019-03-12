@@ -1,14 +1,13 @@
 """ repository booking queries test """
+import pytest
 from datetime import datetime, timedelta
 
-import pytest
-
-from models import PcObject, ThingType
-from models.api_errors import ResourceNotFound
+from models import PcObject, ThingType, Booking
+from models.api_errors import ResourceNotFound, ApiErrors
 from repository.booking_queries import find_all_ongoing_bookings_by_stock, \
     find_offerer_bookings, find_all_bookings_for_stock, find_all_bookings_for_event_occurrence, \
     find_final_offerer_bookings, find_date_used, find_user_activation_booking, get_existing_tokens, \
-    find_active_bookings_by_user_id, find_by
+    find_active_bookings_by_user_id, find_by, save_booking
 from tests.conftest import clean_database
 from tests.test_utils import create_booking, \
     create_deposit, \
@@ -517,3 +516,46 @@ class FindByTest:
 
             # then
             assert e.value.errors['global'] == ["Cette contremarque n'a pas été trouvée"]
+
+
+@pytest.mark.standalone
+class SaveBookingTest:
+    @clean_database
+    def test_saves_booking_when_enough_stocks_after_cancellation(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_thing_offer(venue)
+        stock = create_stock_from_offer(offer, price=0, available=1)
+        user_cancelled = create_user(email='cancelled@booking.com')
+        user_booked = create_user(email='booked@email.com')
+        cancelled_booking = create_booking(user_cancelled, stock, is_cancelled=True)
+        booking = create_booking(user_booked, stock, is_cancelled=False)
+        PcObject.check_and_save(cancelled_booking)
+
+        # When
+        save_booking(booking)
+
+        # Then
+        assert Booking.query.filter_by(isCancelled=False).count() == 1
+        assert Booking.query.filter_by(isCancelled=True).count() == 1
+
+    @clean_database
+    def test_raises_too_many_bookings_error_when_not_enough_stocks(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_thing_offer(venue)
+        stock = create_stock_from_offer(offer, price=0, available=1)
+        user1 = create_user(email='cancelled@booking.com')
+        user2 = create_user(email='booked@email.com')
+        booking1 = create_booking(user1, stock, is_cancelled=False)
+        PcObject.check_and_save(booking1)
+        booking2 = create_booking(user2, stock, is_cancelled=False)
+
+        # When
+        with pytest.raises(ApiErrors) as e:
+            save_booking(booking2)
+
+        # Then
+        assert e.value.errors['global'] == ['la quantité disponible pour cette offre est atteinte']
