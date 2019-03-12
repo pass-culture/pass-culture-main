@@ -134,7 +134,7 @@ La plus conséquente est l'industrial, elle se crée via la commande:
 pc sandbox -n industrial
 ```
 
-Cette commande faite, pour avoir les crédentials des utilisateurs crées par cette sandbox, il y a deux moyens:
+Cette commande faite, il y a alors deux moyens pour avoir les email/mots de passe des utilisateurs sandbox :
 
   - on peut utiliser la commande sandbox_to_testcafe qui résume les objets utilisés de la sandbox dans les différents testcafés. Si on veut avoir tous les utilisateurs des tests pro_07_offer dans l'application pro, il faut faire:
   ```
@@ -150,7 +150,7 @@ Cette commande faite, pour avoir les crédentials des utilisateurs crées par ce
 Il est important que votre server api local tourne.
 
 Pour les développeur.ses, quand vous écrivez un testcafé,
-il faut donc la pluspart du temps écrire aussi un getter côté api dans
+il faut donc la plupart du temps écrire aussi un getter côté api dans
 sandboxes/scripts/getters/<moduleNameAvecleMêmeNomQueLeFichierTestcafe>, afin
 de récupérer les objets souhaités dans la sandbox.
 
