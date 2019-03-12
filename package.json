@@ -140,6 +140,11 @@
     "webpack-manifest-plugin": "1.3.2",
     "whatwg-fetch": "^3.0.0"
   },
+  "jest": {
+    "collectCoverageFrom": [
+      "src/**/*.{js,jsx,mjs}"
+    ]
+  },
   "scripts": {
     "analyze": "source-map-explorer build/static/js/main.*",
     "prebuild": "yarn fontello",
