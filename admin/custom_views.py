@@ -30,3 +30,9 @@ class VenueAdminView(BaseAdminView):
     column_searchable_list = ['name', 'siret', 'publicName']
     column_filters = ['postalCode', 'city', 'publicName']
     form_columns = ['name', 'siret', 'city', 'postalCode', 'address', 'publicName', 'latitude', 'longitude']
+
+class FeatureAdminView(BaseAdminView):
+    can_edit = True
+    column_list = ['name', 'description', 'isActive']
+    column_labels = dict(name='Nom', description='Description', isActive='Activé')
+    form_columns = ['isActive']
