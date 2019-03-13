@@ -32,6 +32,7 @@ ShallowWrapper {
   />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
+    "checkPropTypes": [Function],
     "getNode": [Function],
     "render": [Function],
     "simulateError": [Function],
@@ -57,6 +58,7 @@ ShallowWrapper {
           >
             <label
               className="item flex-columns items-center py5 pl7 pr22"
+              htmlFor="filter-by-dates-days-0-checkbox"
             >
               <span
                 className="flex-0 field field-checkbox"
@@ -64,6 +66,7 @@ ShallowWrapper {
                 <input
                   checked={false}
                   className="input no-background"
+                  id="filter-by-dates-days-0-checkbox"
                   onChange={[Function]}
                   type="checkbox"
                 />
@@ -81,6 +84,7 @@ ShallowWrapper {
             </label>
             <label
               className="item flex-columns items-center py5 pl7 pr22"
+              htmlFor="filter-by-dates-days-1-checkbox"
             >
               <span
                 className="flex-0 field field-checkbox"
@@ -88,6 +92,7 @@ ShallowWrapper {
                 <input
                   checked={false}
                   className="input no-background"
+                  id="filter-by-dates-days-1-checkbox"
                   onChange={[Function]}
                   type="checkbox"
                 />
@@ -105,6 +110,7 @@ ShallowWrapper {
             </label>
             <label
               className="item flex-columns items-center py5 pl7 pr22"
+              htmlFor="filter-by-dates-days-2-checkbox"
             >
               <span
                 className="flex-0 field field-checkbox"
@@ -112,6 +118,7 @@ ShallowWrapper {
                 <input
                   checked={false}
                   className="input no-background"
+                  id="filter-by-dates-days-2-checkbox"
                   onChange={[Function]}
                   type="checkbox"
                 />
@@ -175,6 +182,7 @@ ShallowWrapper {
           >
             <label
               className="item flex-columns items-center py5 pl7 pr22"
+              htmlFor="filter-by-dates-days-0-checkbox"
             >
               <span
                 className="flex-0 field field-checkbox"
@@ -182,6 +190,7 @@ ShallowWrapper {
                 <input
                   checked={false}
                   className="input no-background"
+                  id="filter-by-dates-days-0-checkbox"
                   onChange={[Function]}
                   type="checkbox"
                 />
@@ -199,6 +208,7 @@ ShallowWrapper {
             </label>
             <label
               className="item flex-columns items-center py5 pl7 pr22"
+              htmlFor="filter-by-dates-days-1-checkbox"
             >
               <span
                 className="flex-0 field field-checkbox"
@@ -206,6 +216,7 @@ ShallowWrapper {
                 <input
                   checked={false}
                   className="input no-background"
+                  id="filter-by-dates-days-1-checkbox"
                   onChange={[Function]}
                   type="checkbox"
                 />
@@ -223,6 +234,7 @@ ShallowWrapper {
             </label>
             <label
               className="item flex-columns items-center py5 pl7 pr22"
+              htmlFor="filter-by-dates-days-2-checkbox"
             >
               <span
                 className="flex-0 field field-checkbox"
@@ -230,6 +242,7 @@ ShallowWrapper {
                 <input
                   checked={false}
                   className="input no-background"
+                  id="filter-by-dates-days-2-checkbox"
                   onChange={[Function]}
                   type="checkbox"
                 />
@@ -270,6 +283,7 @@ ShallowWrapper {
               Array [
                 <label
                   className="item flex-columns items-center py5 pl7 pr22"
+                  htmlFor="filter-by-dates-days-0-checkbox"
                 >
                   <span
                     className="flex-0 field field-checkbox"
@@ -277,6 +291,7 @@ ShallowWrapper {
                     <input
                       checked={false}
                       className="input no-background"
+                      id="filter-by-dates-days-0-checkbox"
                       onChange={[Function]}
                       type="checkbox"
                     />
@@ -294,6 +309,7 @@ ShallowWrapper {
                 </label>,
                 <label
                   className="item flex-columns items-center py5 pl7 pr22"
+                  htmlFor="filter-by-dates-days-1-checkbox"
                 >
                   <span
                     className="flex-0 field field-checkbox"
@@ -301,6 +317,7 @@ ShallowWrapper {
                     <input
                       checked={false}
                       className="input no-background"
+                      id="filter-by-dates-days-1-checkbox"
                       onChange={[Function]}
                       type="checkbox"
                     />
@@ -318,6 +335,7 @@ ShallowWrapper {
                 </label>,
                 <label
                   className="item flex-columns items-center py5 pl7 pr22"
+                  htmlFor="filter-by-dates-days-2-checkbox"
                 >
                   <span
                     className="flex-0 field field-checkbox"
@@ -325,6 +343,7 @@ ShallowWrapper {
                     <input
                       checked={false}
                       className="input no-background"
+                      id="filter-by-dates-days-2-checkbox"
                       onChange={[Function]}
                       type="checkbox"
                     />
@@ -370,6 +389,7 @@ ShallowWrapper {
                     <input
                       checked={false}
                       className="input no-background"
+                      id="filter-by-dates-days-0-checkbox"
                       onChange={[Function]}
                       type="checkbox"
                     />
@@ -386,6 +406,7 @@ ShallowWrapper {
                   </span>,
                 ],
                 "className": "item flex-columns items-center py5 pl7 pr22",
+                "htmlFor": "filter-by-dates-days-0-checkbox",
               },
               "ref": null,
               "rendered": Array [
@@ -397,6 +418,7 @@ ShallowWrapper {
                     "children": <input
                       checked={false}
                       className="input no-background"
+                      id="filter-by-dates-days-0-checkbox"
                       onChange={[Function]}
                       type="checkbox"
                     />,
@@ -410,6 +432,7 @@ ShallowWrapper {
                     "props": Object {
                       "checked": false,
                       "className": "input no-background",
+                      "id": "filter-by-dates-days-0-checkbox",
                       "onChange": [Function],
                       "type": "checkbox",
                     },
@@ -449,6 +472,7 @@ ShallowWrapper {
                     <input
                       checked={false}
                       className="input no-background"
+                      id="filter-by-dates-days-1-checkbox"
                       onChange={[Function]}
                       type="checkbox"
                     />
@@ -465,6 +489,7 @@ ShallowWrapper {
                   </span>,
                 ],
                 "className": "item flex-columns items-center py5 pl7 pr22",
+                "htmlFor": "filter-by-dates-days-1-checkbox",
               },
               "ref": null,
               "rendered": Array [
@@ -476,6 +501,7 @@ ShallowWrapper {
                     "children": <input
                       checked={false}
                       className="input no-background"
+                      id="filter-by-dates-days-1-checkbox"
                       onChange={[Function]}
                       type="checkbox"
                     />,
@@ -489,6 +515,7 @@ ShallowWrapper {
                     "props": Object {
                       "checked": false,
                       "className": "input no-background",
+                      "id": "filter-by-dates-days-1-checkbox",
                       "onChange": [Function],
                       "type": "checkbox",
                     },
@@ -528,6 +555,7 @@ ShallowWrapper {
                     <input
                       checked={false}
                       className="input no-background"
+                      id="filter-by-dates-days-2-checkbox"
                       onChange={[Function]}
                       type="checkbox"
                     />
@@ -544,6 +572,7 @@ ShallowWrapper {
                   </span>,
                 ],
                 "className": "item flex-columns items-center py5 pl7 pr22",
+                "htmlFor": "filter-by-dates-days-2-checkbox",
               },
               "ref": null,
               "rendered": Array [
@@ -555,6 +584,7 @@ ShallowWrapper {
                     "children": <input
                       checked={false}
                       className="input no-background"
+                      id="filter-by-dates-days-2-checkbox"
                       onChange={[Function]}
                       type="checkbox"
                     />,
@@ -568,6 +598,7 @@ ShallowWrapper {
                     "props": Object {
                       "checked": false,
                       "className": "input no-background",
+                      "id": "filter-by-dates-days-2-checkbox",
                       "onChange": [Function],
                       "type": "checkbox",
                     },
@@ -665,6 +696,7 @@ ShallowWrapper {
             >
               <label
                 className="item flex-columns items-center py5 pl7 pr22"
+                htmlFor="filter-by-dates-days-0-checkbox"
               >
                 <span
                   className="flex-0 field field-checkbox"
@@ -672,6 +704,7 @@ ShallowWrapper {
                   <input
                     checked={false}
                     className="input no-background"
+                    id="filter-by-dates-days-0-checkbox"
                     onChange={[Function]}
                     type="checkbox"
                   />
@@ -689,6 +722,7 @@ ShallowWrapper {
               </label>
               <label
                 className="item flex-columns items-center py5 pl7 pr22"
+                htmlFor="filter-by-dates-days-1-checkbox"
               >
                 <span
                   className="flex-0 field field-checkbox"
@@ -696,6 +730,7 @@ ShallowWrapper {
                   <input
                     checked={false}
                     className="input no-background"
+                    id="filter-by-dates-days-1-checkbox"
                     onChange={[Function]}
                     type="checkbox"
                   />
@@ -713,6 +748,7 @@ ShallowWrapper {
               </label>
               <label
                 className="item flex-columns items-center py5 pl7 pr22"
+                htmlFor="filter-by-dates-days-2-checkbox"
               >
                 <span
                   className="flex-0 field field-checkbox"
@@ -720,6 +756,7 @@ ShallowWrapper {
                   <input
                     checked={false}
                     className="input no-background"
+                    id="filter-by-dates-days-2-checkbox"
                     onChange={[Function]}
                     type="checkbox"
                   />
@@ -783,6 +820,7 @@ ShallowWrapper {
             >
               <label
                 className="item flex-columns items-center py5 pl7 pr22"
+                htmlFor="filter-by-dates-days-0-checkbox"
               >
                 <span
                   className="flex-0 field field-checkbox"
@@ -790,6 +828,7 @@ ShallowWrapper {
                   <input
                     checked={false}
                     className="input no-background"
+                    id="filter-by-dates-days-0-checkbox"
                     onChange={[Function]}
                     type="checkbox"
                   />
@@ -807,6 +846,7 @@ ShallowWrapper {
               </label>
               <label
                 className="item flex-columns items-center py5 pl7 pr22"
+                htmlFor="filter-by-dates-days-1-checkbox"
               >
                 <span
                   className="flex-0 field field-checkbox"
@@ -814,6 +854,7 @@ ShallowWrapper {
                   <input
                     checked={false}
                     className="input no-background"
+                    id="filter-by-dates-days-1-checkbox"
                     onChange={[Function]}
                     type="checkbox"
                   />
@@ -831,6 +872,7 @@ ShallowWrapper {
               </label>
               <label
                 className="item flex-columns items-center py5 pl7 pr22"
+                htmlFor="filter-by-dates-days-2-checkbox"
               >
                 <span
                   className="flex-0 field field-checkbox"
@@ -838,6 +880,7 @@ ShallowWrapper {
                   <input
                     checked={false}
                     className="input no-background"
+                    id="filter-by-dates-days-2-checkbox"
                     onChange={[Function]}
                     type="checkbox"
                   />
@@ -878,6 +921,7 @@ ShallowWrapper {
                 Array [
                   <label
                     className="item flex-columns items-center py5 pl7 pr22"
+                    htmlFor="filter-by-dates-days-0-checkbox"
                   >
                     <span
                       className="flex-0 field field-checkbox"
@@ -885,6 +929,7 @@ ShallowWrapper {
                       <input
                         checked={false}
                         className="input no-background"
+                        id="filter-by-dates-days-0-checkbox"
                         onChange={[Function]}
                         type="checkbox"
                       />
@@ -902,6 +947,7 @@ ShallowWrapper {
                   </label>,
                   <label
                     className="item flex-columns items-center py5 pl7 pr22"
+                    htmlFor="filter-by-dates-days-1-checkbox"
                   >
                     <span
                       className="flex-0 field field-checkbox"
@@ -909,6 +955,7 @@ ShallowWrapper {
                       <input
                         checked={false}
                         className="input no-background"
+                        id="filter-by-dates-days-1-checkbox"
                         onChange={[Function]}
                         type="checkbox"
                       />
@@ -926,6 +973,7 @@ ShallowWrapper {
                   </label>,
                   <label
                     className="item flex-columns items-center py5 pl7 pr22"
+                    htmlFor="filter-by-dates-days-2-checkbox"
                   >
                     <span
                       className="flex-0 field field-checkbox"
@@ -933,6 +981,7 @@ ShallowWrapper {
                       <input
                         checked={false}
                         className="input no-background"
+                        id="filter-by-dates-days-2-checkbox"
                         onChange={[Function]}
                         type="checkbox"
                       />
@@ -978,6 +1027,7 @@ ShallowWrapper {
                       <input
                         checked={false}
                         className="input no-background"
+                        id="filter-by-dates-days-0-checkbox"
                         onChange={[Function]}
                         type="checkbox"
                       />
@@ -994,6 +1044,7 @@ ShallowWrapper {
                     </span>,
                   ],
                   "className": "item flex-columns items-center py5 pl7 pr22",
+                  "htmlFor": "filter-by-dates-days-0-checkbox",
                 },
                 "ref": null,
                 "rendered": Array [
@@ -1005,6 +1056,7 @@ ShallowWrapper {
                       "children": <input
                         checked={false}
                         className="input no-background"
+                        id="filter-by-dates-days-0-checkbox"
                         onChange={[Function]}
                         type="checkbox"
                       />,
@@ -1018,6 +1070,7 @@ ShallowWrapper {
                       "props": Object {
                         "checked": false,
                         "className": "input no-background",
+                        "id": "filter-by-dates-days-0-checkbox",
                         "onChange": [Function],
                         "type": "checkbox",
                       },
@@ -1057,6 +1110,7 @@ ShallowWrapper {
                       <input
                         checked={false}
                         className="input no-background"
+                        id="filter-by-dates-days-1-checkbox"
                         onChange={[Function]}
                         type="checkbox"
                       />
@@ -1073,6 +1127,7 @@ ShallowWrapper {
                     </span>,
                   ],
                   "className": "item flex-columns items-center py5 pl7 pr22",
+                  "htmlFor": "filter-by-dates-days-1-checkbox",
                 },
                 "ref": null,
                 "rendered": Array [
@@ -1084,6 +1139,7 @@ ShallowWrapper {
                       "children": <input
                         checked={false}
                         className="input no-background"
+                        id="filter-by-dates-days-1-checkbox"
                         onChange={[Function]}
                         type="checkbox"
                       />,
@@ -1097,6 +1153,7 @@ ShallowWrapper {
                       "props": Object {
                         "checked": false,
                         "className": "input no-background",
+                        "id": "filter-by-dates-days-1-checkbox",
                         "onChange": [Function],
                         "type": "checkbox",
                       },
@@ -1136,6 +1193,7 @@ ShallowWrapper {
                       <input
                         checked={false}
                         className="input no-background"
+                        id="filter-by-dates-days-2-checkbox"
                         onChange={[Function]}
                         type="checkbox"
                       />
@@ -1152,6 +1210,7 @@ ShallowWrapper {
                     </span>,
                   ],
                   "className": "item flex-columns items-center py5 pl7 pr22",
+                  "htmlFor": "filter-by-dates-days-2-checkbox",
                 },
                 "ref": null,
                 "rendered": Array [
@@ -1163,6 +1222,7 @@ ShallowWrapper {
                       "children": <input
                         checked={false}
                         className="input no-background"
+                        id="filter-by-dates-days-2-checkbox"
                         onChange={[Function]}
                         type="checkbox"
                       />,
@@ -1176,6 +1236,7 @@ ShallowWrapper {
                       "props": Object {
                         "checked": false,
                         "className": "input no-background",
+                        "id": "filter-by-dates-days-2-checkbox",
                         "onChange": [Function],
                         "type": "checkbox",
                       },
@@ -1258,11 +1319,17 @@ ShallowWrapper {
     "adapter": ReactSixteenAdapter {
       "options": Object {
         "enableComponentDidUpdateOnSetState": true,
+        "legacyContextMode": "parent",
         "lifecycles": Object {
           "componentDidUpdate": Object {
             "onSetState": true,
           },
-          "getDerivedStateFromProps": true,
+          "getChildContext": Object {
+            "calledByRenderer": false,
+          },
+          "getDerivedStateFromProps": Object {
+            "hasShouldComponentUpdateBug": false,
+          },
           "getSnapshotBeforeUpdate": true,
           "setState": Object {
             "skipsComponentDidUpdateOnNullish": true,
@@ -1271,5 +1338,6 @@ ShallowWrapper {
       },
     },
   },
+  Symbol(enzyme.__childContext__): null,
 }
 `;

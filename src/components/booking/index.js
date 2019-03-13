@@ -85,16 +85,6 @@ class Booking extends PureComponent {
     this.setState({ isSubmitting: true }, onSubmittingStateChanged)
   }
 
-  updateUserFromStore = (state, action) => {
-    const bookedPayload = action.data
-    this.actions.requestData('PATCH', 'users/current', {
-      body: {},
-      handleFail: this.handleRequestFail,
-      handleSuccess: this.handleRequestSuccess(bookedPayload),
-      key: 'user',
-    })
-  }
-
   handleRequestSuccess = bookedPayload => () => {
     const nextState = {
       bookedPayload,
@@ -122,6 +112,16 @@ class Booking extends PureComponent {
   getBackToBookings = () => {
     const { history } = this.props
     history.push('/reservations')
+  }
+
+  updateUserFromStore = (state, action) => {
+    const bookedPayload = action.data
+    this.actions.requestData('PATCH', 'users/current', {
+      body: {},
+      handleFail: this.handleRequestFail,
+      handleSuccess: this.handleRequestSuccess(bookedPayload),
+      key: 'user',
+    })
   }
 
   renderFormControls = () => {

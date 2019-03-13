@@ -22,6 +22,12 @@
       "required": { "every": [ "nesting", "id" ] },
       "allowChildren": true
     }],
+     "jsx-a11y/label-has-associated-control": [ 2, {
+       "labelComponents": ["Label"],
+       "labelAttributes": ["id"],
+       "assert": "both",
+       "depth": 3
+     }],
     "import/no-extraneous-dependencies": [2, {
       "devDependencies": true,
       "optionalDependencies": false,

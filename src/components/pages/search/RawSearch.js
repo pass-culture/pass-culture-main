@@ -387,6 +387,7 @@ class RawSearch extends PureComponent {
 
 RawSearch.propTypes = {
   dispatch: PropTypes.func.isRequired,
+  history: PropTypes.object.isRequired,
   location: PropTypes.object.isRequired,
   match: PropTypes.object.isRequired,
   query: PropTypes.object.isRequired,

@@ -86,7 +86,7 @@ class FilterByDates extends PureComponent {
           du fait que le input soit cliquable */}
         <div className="pc-scroll-horizontal is-relative pb18">
           <div className="pc-list flex-columns">
-            {DAYS_CHECKBOXES.map(({ label, value }) => {
+            {DAYS_CHECKBOXES.map(({ label, value }, index) => {
               const checked = this.isDaysChecked(
                 pickedDate,
                 pickedDaysInQuery,
@@ -94,11 +94,13 @@ class FilterByDates extends PureComponent {
               )
               return (
                 <label
+                  htmlFor={`filter-by-dates-days-${index}-checkbox`}
                   key={value}
                   className="item flex-columns items-center py5 pl7 pr22"
                 >
                   <span className="flex-0 field field-checkbox">
                     <input
+                      id={`filter-by-dates-days-${index}-checkbox`}
                       type="checkbox"
                       className="input no-background"
                       checked={checked}

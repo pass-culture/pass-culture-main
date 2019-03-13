@@ -8,13 +8,13 @@ import { withRouter } from 'react-router-dom'
 import ErrorCatcherView from './ErrorCatcherView'
 
 export class RawErrorCatcher extends React.PureComponent {
-  static getDerivedStateFromError() {
-    return { hasError: true }
-  }
-
   constructor(props) {
     super(props)
     this.state = { hasError: false }
+  }
+
+  static getDerivedStateFromError() {
+    return { hasError: true }
   }
 
   componentDidCatch(error, info) {

@@ -86,6 +86,7 @@ class SearchDetails extends Component {
 }
 
 SearchDetails.propTypes = {
+  currentRecommendation: PropTypes.object.isRequired,
   dispatch: PropTypes.func.isRequired,
   match: PropTypes.object.isRequired,
 }
