@@ -420,7 +420,7 @@ def test_offerer_recap_email_future_offer_when_new_booking_with_old_booking(app)
 @mocked_mail
 @clean_database
 @pytest.mark.standalone
-def test_offerer_booking_recap_email_thing_offer_has_recap_table_but_no_tokens(app):
+def test_offerer_booking_recap_email_thing_offer_has_action_and_recap_html(app):
     # Given
     venue = create_venue(None, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
     thing_offer = create_thing_offer(venue=None, thing_type=ThingType.AUDIOVISUEL)
@@ -449,11 +449,64 @@ def test_offerer_booking_recap_email_thing_offer_has_recap_table_but_no_tokens(a
     assert '(Audiovisuel (Films sur supports physiques et VOD))' in recap_html
     assert 'http://localhost:3001/offres/AE' in recap_html
     assert 'proposé par Test offerer (Adresse : 123 rue test, 93000 Test city).' in recap_html
+
+
+@mocked_mail
+@clean_database
+@pytest.mark.standalone
+def test_offerer_booking_recap_email_thing_offer_has_recap_table(app):
+    # Given
+    venue = create_venue(None, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
+    thing_offer = create_thing_offer(venue=None, thing_type=ThingType.AUDIOVISUEL)
+    stock = create_stock_with_thing_offer(offerer=None, venue=venue, thing_offer=thing_offer)
+    stock.offer.id = 1
+    user1 = create_user('Test', first_name='Joe', last_name='Dalton', departement_code='93', email='test1@email.com',
+                        can_book_free_offers=True)
+    user2 = create_user('Test', first_name='Averell', last_name='Dalton', departement_code='93',
+                        email='test2@email.com', can_book_free_offers=True)
+    booking1 = create_booking(user1, stock, venue, token='56789')
+    booking2 = create_booking(user2, stock, venue, token='12345')
+
+    # When
+    with patch('utils.mailing.find_all_ongoing_bookings_by_stock', return_value=[booking1, booking2]):
+        recap_email = make_offerer_booking_recap_email_after_user_action(booking1)
+
+    # Then
+
+    email_html = remove_whitespaces(recap_email['Html-part'])
+    recap_email_soup = BeautifulSoup(email_html, 'html.parser')
     recap_table_html = recap_email_soup.find("table", {"id": 'recap-table'}).text
     assert 'Joe' in recap_table_html
     assert 'Averell' in recap_table_html
     assert 'test1@email.com' in recap_table_html
     assert 'test2@email.com' in recap_table_html
+
+
+@mocked_mail
+@clean_database
+@pytest.mark.standalone
+def test_offerer_booking_recap_email_thing_offer_does_not_have_validation_tokens(app):
+    # Given
+    venue = create_venue(None, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
+    thing_offer = create_thing_offer(venue=None, thing_type=ThingType.AUDIOVISUEL)
+    stock = create_stock_with_thing_offer(offerer=None, venue=venue, thing_offer=thing_offer)
+    stock.offer.id = 1
+    user1 = create_user('Test', first_name='Joe', last_name='Dalton', departement_code='93', email='test1@email.com',
+                        can_book_free_offers=True)
+    user2 = create_user('Test', first_name='Averell', last_name='Dalton', departement_code='93',
+                        email='test2@email.com', can_book_free_offers=True)
+    booking1 = create_booking(user1, stock, venue, token='56789')
+    booking2 = create_booking(user2, stock, venue, token='12345')
+
+    # When
+    with patch('utils.mailing.find_all_ongoing_bookings_by_stock', return_value=[booking1, booking2]):
+        recap_email = make_offerer_booking_recap_email_after_user_action(booking1)
+
+    # Then
+
+    email_html = remove_whitespaces(recap_email['Html-part'])
+    recap_email_soup = BeautifulSoup(email_html, 'html.parser')
+    recap_table_html = recap_email_soup.find("table", {"id": 'recap-table'}).text
     assert '12345' not in recap_table_html
     assert '56789' not in recap_table_html
 
