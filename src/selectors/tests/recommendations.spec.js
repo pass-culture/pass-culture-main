@@ -1,4 +1,4 @@
-import selectRecommendations from '../recommendations'
+import { selectRecommendations } from '../recommendations'
 import state2 from '../../mocks/global_state_2_Testing_10_10_18'
 
 describe('selectRecommendations', () => {
@@ -14,7 +14,7 @@ describe('selectRecommendations', () => {
     })
   })
 
-  it('should return an array with just the fake end reco if there are no recommendations', () => {
+  it('should return an empty array if there are no recommendations', () => {
     // given
     const state = {
       data: {
@@ -31,8 +31,7 @@ describe('selectRecommendations', () => {
     const result = selectRecommendations(state)
 
     // then
-    expect(result.length).toEqual(1)
-    expect(result[0].uniqId).toEqual('tuto_-1')
+    expect(result).toEqual([])
   })
 
   it('should return recommendations', () => {
@@ -171,7 +170,7 @@ describe('selectRecommendations', () => {
 
     // then
     expect(result[0]).toEqual(expected)
-    expect(result.length).toEqual(47)
+    expect(result.length).toEqual(46)
   })
 
   describe('computes rounded distances', () => {
@@ -389,10 +388,11 @@ describe('selectRecommendations', () => {
           data: {
             recommendations: [
               {
-                id: 'AEWPS',
+                bookingsIds: [],
                 dateCreated: '2018-10-10T14:19:27.410551Z',
                 dateRead: null,
                 dateUpdated: '2018-10-10T14:19:27.410609Z',
+                id: 'AEWPS',
                 inviteforEventOccurrenceId: null,
                 isClicked: true,
                 isFavorite: false,
@@ -420,7 +420,6 @@ describe('selectRecommendations', () => {
                 shareMedium: null,
                 userId: 'AQBA',
                 validUntilDate: '2018-10-13T14:19:27.442986Z',
-                bookingsIds: [],
               },
             ],
           },
@@ -445,10 +444,11 @@ describe('selectRecommendations', () => {
           data: {
             recommendations: [
               {
-                id: 'AEWPS',
+                bookingsIds: [],
                 dateCreated: '2018-10-10T14:19:27.410551Z',
                 dateRead: null,
                 dateUpdated: '2018-10-10T14:19:27.410609Z',
+                id: 'AEWPS',
                 inviteforEventOccurrenceId: null,
                 isClicked: true,
                 isFavorite: false,
@@ -525,7 +525,6 @@ describe('selectRecommendations', () => {
                 shareMedium: null,
                 userId: 'AQBA',
                 validUntilDate: '2018-10-13T14:19:27.442986Z',
-                bookingsIds: [],
               },
             ],
           },

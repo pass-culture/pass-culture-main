@@ -2,30 +2,16 @@ import get from 'lodash.get'
 import uniqBy from 'lodash.uniqby'
 import { createSelector } from 'reselect'
 
-import { ROOT_PATH, THUMBS_URL } from '../utils/config'
+import { THUMBS_URL } from '../utils/config'
 import { computeDistanceInMeters, humanizeDistance } from '../utils/geolocation'
 import { getTimezone } from '../utils/timezone'
 import { setUniqIdOnRecommendation } from '../utils/recommendation'
 
-const selectRecommendations = createSelector(
+export const selectRecommendations = createSelector(
   state => state.data.recommendations,
   state => state.geolocation.latitude,
   state => state.geolocation.longitude,
   (recommendations, latitude, longitude) => {
-    const fakeLastReco = {
-      fakeLastReco: true,
-      mediation: {
-        firstThumbDominantColor: [205, 54, 70],
-        frontText:
-          'Vous avez parcouru toutes les offres. Revenez bientôt pour découvrir les nouveautés.',
-        id: 'fin',
-        thumbCount: 1,
-        thumbUrls: [`${ROOT_PATH}/splash-finReco@2x.png`],
-        tutoIndex: -1,
-      },
-      mediationId: 'fin',
-      uniqId: 'tuto_-1',
-    }
     // RECOMMENDATION MUST HAVE MEDIATION AND/OR OFFER CHILDREN
     // AND THAT IS A CRITERION TO MAKE THEM UNIQ
     let filteredRecommendations = recommendations.map(setUniqIdOnRecommendation)
@@ -36,7 +22,7 @@ const selectRecommendations = createSelector(
     filteredRecommendations = uniqBy(
       filteredRecommendations,
       recommendation => recommendation.uniqId
-    ).concat([fakeLastReco])
+    )
 
     // NOW WE CAN GIVE OTHER PROPERTIES TO THE GOOD SHAPED RECO
     filteredRecommendations = filteredRecommendations.map(

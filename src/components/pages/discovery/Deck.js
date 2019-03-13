@@ -18,7 +18,7 @@ import {
 import currentRecommendationSelector from '../../../selectors/currentRecommendation'
 import nextRecommendationSelector from '../../../selectors/nextRecommendation'
 import previousRecommendationSelector from '../../../selectors/previousRecommendation'
-import recommendationsSelector from '../../../selectors/recommendations'
+import selectRecommendationsForDiscovery from '../../../selectors/recommendations'
 import {
   NB_CARDS_REMAINING_THAT_TRIGGERS_LOAD,
   // isRecommendations,
@@ -299,7 +299,7 @@ const mapStateToProps = (state, ownProps) => {
   const { mediation } = currentRecommendation || {}
   const { thumbCount, tutoIndex } = mediation || {}
 
-  const recommendations = recommendationsSelector(state)
+  const recommendations = selectRecommendationsForDiscovery(state)
 
   const isFlipDisabled =
     !currentRecommendation || (typeof tutoIndex === 'number' && thumbCount <= 1)

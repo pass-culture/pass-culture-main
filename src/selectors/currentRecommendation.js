@@ -1,9 +1,9 @@
 import createCachedSelector from 're-reselect'
 
-import recommendationsSelector from './recommendations'
+import selectRecommendationsForDiscovery from './recommendationsForDiscovery'
 
 const selectCurrentRecommendation = createCachedSelector(
-  recommendationsSelector,
+  selectRecommendationsForDiscovery,
   (state, offerId) => offerId,
   (state, offerId, mediationId) => mediationId,
   (allRecommendations, offerId, mediationId) => {
