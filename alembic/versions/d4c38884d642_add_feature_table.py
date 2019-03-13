@@ -1,7 +1,7 @@
 """Add feature table
 
 Revision ID: d4c38884d642
-Revises: ec8d3f04eba3
+Revises: 4127e9899829
 Create Date: 2019-03-13 15:05:49.681745
 
 """
@@ -12,7 +12,7 @@ from alembic import op
 from models.feature import FeatureToggle
 
 revision = 'd4c38884d642'
-down_revision = 'ec8d3f04eba3'
+down_revision = '4127e9899829'
 branch_labels = None
 depends_on = None
 

@@ -2,7 +2,7 @@ import pytest
 
 from models import PcObject
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import API_URL, create_user, create_feature
+from tests.test_utils import API_URL, create_user
 
 
 @pytest.mark.standalone
@@ -12,21 +12,18 @@ class Get:
         def when_user_is_logged_in(self, app):
             # given
             user = create_user()
-            feature1 = create_feature(name='Feature 1', is_active=True)
-            feature2 = create_feature(name='Feature 2', is_active=False)
-            PcObject.check_and_save(user, feature1, feature2)
+            PcObject.save(user)
 
             # when
-            response = TestClient().with_auth(user.email)\
+            response = TestClient().with_auth(user.email) \
                 .get(API_URL + '/features')
 
             # then
             assert response.status_code == 200
             assert response.json() == [
-                {'modelName': 'Feature', 'name': 'Feature 1', 'isActive': True},
-                {'modelName': 'Feature', 'name': 'Feature 2', 'isActive': False}
+                {'modelName': 'Feature', 'name': 'show_bookings', 'isActive': True},
+                {'modelName': 'Feature', 'name': 'show_venues', 'isActive': True}
             ]
-
 
     class Returns401:
         @clean_database

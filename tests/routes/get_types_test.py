@@ -21,7 +21,7 @@ class Get:
         def when_feature_is_not_active(self, app):
             # given
             user = create_user(email='test@email.com')
-            PcObject.check_and_save(user)
+            PcObject.save(user)
             feature_queries.deactivate(FeatureToggle.SHOW_BOOKINGS)
 
             # when

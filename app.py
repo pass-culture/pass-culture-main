@@ -8,8 +8,8 @@ from flask_login import LoginManager
 from mailjet_rest import Client
 from werkzeug.middleware.profiler import ProfilerMiddleware
 from admin.install import install_admin_views
+from repository.feature_queries import feature_request_profiling_enabled
 from models.mediation import upsertTutoMediations
-from repository.features import feature_request_profiling_enabled
 from local_providers.install import install_local_providers
 from models.db import db
 from models.install import install_models

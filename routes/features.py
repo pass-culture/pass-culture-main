@@ -9,5 +9,5 @@ from utils.includes import FEATURE_INCLUDES
 @login_required
 def list_features():
     features = feature_queries.find_all()
-    dictified_features = [f._asdict(include=FEATURE_INCLUDES) for f in features]
-    return jsonify(dictified_features), 200
+    serialized_features = [f.as_dict(include=FEATURE_INCLUDES) for f in features]
+    return jsonify(serialized_features), 200

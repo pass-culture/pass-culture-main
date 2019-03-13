@@ -9,19 +9,16 @@ from mailjet_rest import Client
 from sqlalchemy import orm
 
 from models.db import db
-from repository.features import feature_cron_send_final_booking_recaps_enabled, feature_cron_generate_and_send_payments, \
-    feature_cron_retrieve_offerers_bank_information, feature_cron_send_remedial_emails, \
-    feature_import_beneficiaries_enabled, \
+from repository.feature_queries import feature_cron_send_final_booking_recaps_enabled, \
+    feature_cron_generate_and_send_payments, \
+    feature_cron_retrieve_offerers_bank_information, feature_cron_send_remedial_emails
+from repository.feature_queries import feature_cron_send_wallet_balances
+from repository.feature_queries import feature_import_beneficiaries_enabled, \
     feature_cron_synchronize_titelive_things, feature_cron_synchronize_titelive_descriptions, \
     feature_cron_synchronize_titelive_thumbs, \
     feature_cron_retrieve_bank_information_for_venue_without_siret
-from repository.features import feature_cron_send_wallet_balances
 from repository.user_queries import find_most_recent_beneficiary_creation_date
 from scripts.beneficiary import remote_import
-from models.install import install_models
-from repository.feature_queries import feature_cron_send_final_booking_recaps_enabled, feature_cron_generate_and_send_payments, \
-    feature_cron_retrieve_offerers_bank_information, feature_cron_send_remedial_emails
-from repository.feature_queries import feature_cron_send_wallet_balances
 from utils.config import API_ROOT_PATH
 from utils.logger import logger
 from utils.mailing import MAILJET_API_KEY, MAILJET_API_SECRET
