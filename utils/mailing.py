@@ -15,7 +15,7 @@ from models.email import EmailStatus
 from models.offer_type import ProductType
 from repository import email_queries
 from repository.booking_queries import find_all_ongoing_bookings_by_stock
-from repository.features import feature_send_mail_to_users_enabled
+from repository.feature_queries import feature_send_mail_to_users_enabled
 from repository.user_offerer_queries import find_user_offerer_email
 from utils import logger
 from utils.config import API_URL, ENV, WEBAPP_URL, PRO_URL

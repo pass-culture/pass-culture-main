@@ -14,8 +14,10 @@ from models import Booking, \
     UserOfferer, \
     UserSession, \
     Venue, \
-    VenueProvider, PaymentMessage, BankInformation, LocalProviderEvent
+    VenueProvider, PaymentMessage, BankInformation, LocalProviderEvent, Feature, PcObject
 from models.email import Email
+from models.feature import FeatureToggle
+from tests.test_utils import create_feature
 
 
 def clean_all_database(*args, **kwargs):
@@ -41,4 +43,12 @@ def clean_all_database(*args, **kwargs):
     Activity.query.delete()
     UserSession.query.delete()
     Email.query.delete()
+    LocalProviderEvent.query.delete()
+    Feature.query.delete()
     db.session.commit()
+
+    for toggle in FeatureToggle:
+        feature = create_feature(
+            name=toggle.value['name'], description=toggle.value['description'], is_active=True
+        )
+        PcObject.save(feature)

@@ -26,7 +26,7 @@ from models import Booking, \
     User, \
     UserOfferer, \
     BankInformation, \
-    Venue, PaymentMessage, VenueProvider, Provider, Product
+    Venue, PaymentMessage, VenueProvider, Provider, Product, Feature
 from models.db import db
 from models.email import Email, EmailStatus
 from models.payment import PaymentDetails
@@ -693,6 +693,14 @@ def create_email(content, status=EmailStatus.ERROR, time=datetime.utcnow()):
     email_failed.status = status
     email_failed.datetime = time
     return email_failed
+
+
+def create_feature(name='Feature A', description='This is a nice feature', is_active=True):
+    feature = Feature()
+    feature.name = name
+    feature.description = description
+    feature.isActive = is_active
+    return feature
 
 
 def saveCounts():

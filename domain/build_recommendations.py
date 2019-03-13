@@ -1,4 +1,4 @@
-from repository.features import feature_paid_offers_enabled
+from repository.feature_queries import feature_paid_offers_enabled
 from repository.recommendation_queries import find_unseen_tutorials_for_user
 from utils.config import BLOB_SIZE, BLOB_UNREAD_NUMBER
 from utils.logger import logger

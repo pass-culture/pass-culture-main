@@ -6,6 +6,7 @@ def install_routes():
     import routes.error_handlers
     import routes.events
     import routes.export
+    import routes.features
     import routes.mediations
     import routes.music_types
     import routes.offers

@@ -9,6 +9,8 @@ import sqlalchemy as sa
 from alembic import op
 
 # revision identifiers, used by Alembic.
+from models.feature import FeatureToggle
+
 revision = 'd4c38884d642'
 down_revision = 'ec8d3f04eba3'
 branch_labels = None
@@ -23,6 +25,12 @@ def upgrade():
         sa.Column('description', sa.String(300), nullable=False),
         sa.Column('isActive', sa.Boolean, nullable=False, default=False)
     )
+
+    for feature_toggle in FeatureToggle:
+        op.execute(
+            "INSERT INTO feature (name, description, \"isActive\") VALUES ('%s', '%s', false)"
+            % (feature_toggle.value['name'], feature_toggle.value['description'])
+        )
 
 
 def downgrade():
