@@ -35,3 +35,4 @@ def install_scripts():
     import scripts.testcafe
     import scripts.update_providables
     import scripts.storage
+    import scripts.init_titelive
