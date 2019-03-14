@@ -1,6 +1,5 @@
-from models import BankInformation
+from models import BankInformation, Stock
 from models.event import Event
-from models.event_occurrence import EventOccurrence
 from models.offer import Offer
 from models.offerer import Offerer
 from models.thing import Thing
@@ -19,7 +18,7 @@ def get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_u
     query = query.join(BankInformation)
     query = query.join(Venue, Venue.managingOffererId == Offerer.id).join(Offer).filter(
         (Offer.eventId != None) & \
-        (~Offer.eventOccurrences.any())
+        (~Offer.stocks.any())
     )
     user = query.first()
 
@@ -30,7 +29,7 @@ def get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_u
             for venue in uo.offerer.managedVenues:
                 for offer in venue.offers:
                     if isinstance(offer.eventOrThing, Event) \
-                            and len(offer.eventOccurrences) == 0:
+                            and len(offer.stocks) == 0:
                         return {
                             "offer": get_offer_helper(offer),
                             "offerer": get_offerer_helper(uo.offerer),
@@ -45,7 +44,7 @@ def get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_u
     query = query.join(BankInformation)
     query = query.join(Venue, Venue.managingOffererId == Offerer.id) \
         .join(Offer) \
-        .join(EventOccurrence)
+        .join(Stock)
     user = query.first()
 
     for uo in user.UserOfferers:
@@ -55,7 +54,7 @@ def get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_u
             for venue in uo.offerer.managedVenues:
                 for offer in venue.offers:
                     if isinstance(offer.eventOrThing, Event) \
-                            and offer.eventOccurrences:
+                            and offer.stocks:
                         return {
                             "offer": get_offer_helper(offer),
                             "offerer": get_offerer_helper(uo.offerer),

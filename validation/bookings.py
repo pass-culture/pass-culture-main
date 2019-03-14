@@ -135,7 +135,7 @@ def check_booking_is_usable(booking):
 def check_booking_is_cancellable(booking, is_user_cancellation):
     api_errors = ApiErrors()
     if is_user_cancellation and not booking.isUserCancellable:
-        if booking.stock.eventOccurrence:
+        if booking.stock.beginningDatetime:
             api_errors.addError('booking',
                                 "Impossible d\'annuler une réservation moins de 72h avant le début de l'évènement")
         else:

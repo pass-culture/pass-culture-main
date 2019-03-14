@@ -4,7 +4,7 @@ from unittest.mock import Mock
 import pytest
 
 from domain.expenses import SUBVENTION_PHYSICAL_THINGS, SUBVENTION_DIGITAL_THINGS
-from models import ApiErrors, Booking, Stock, EventOccurrence, Offer, Thing, ThingType
+from models import ApiErrors, Booking, Stock, Offer, Thing, ThingType
 from utils.human_ids import humanize
 from tests.test_utils import create_booking_for_thing
 from validation.bookings import check_expenses_limits, check_booking_is_cancellable
@@ -86,8 +86,7 @@ class CheckBookingIsCancellableTest:
         booking = Booking()
         booking.isUsed = False
         booking.stock = Stock()
-        booking.stock.eventOccurrence = EventOccurrence()
-        booking.stock.eventOccurrence.beginningDatetime = datetime.utcnow() + timedelta(hours=71)
+        booking.stock.beginningDatetime = datetime.utcnow() + timedelta(hours=71)
 
         # When
         with pytest.raises(ApiErrors) as e:
@@ -102,8 +101,7 @@ class CheckBookingIsCancellableTest:
         booking = Booking()
         booking.isUsed = False
         booking.stock = Stock()
-        booking.stock.eventOccurrence = EventOccurrence()
-        booking.stock.eventOccurrence.beginningDatetime = datetime.utcnow() + timedelta(hours=73)
+        booking.stock.beginningDatetime = datetime.utcnow() + timedelta(hours=73)
 
         # When
         check_output = check_booking_is_cancellable(booking, is_user_cancellation=False)
@@ -116,8 +114,7 @@ class CheckBookingIsCancellableTest:
         booking = Booking()
         booking.isUsed = False
         booking.stock = Stock()
-        booking.stock.eventOccurrence = EventOccurrence()
-        booking.stock.eventOccurrence.beginningDatetime = datetime.utcnow() + timedelta(hours=71)
+        booking.stock.beginningDatetime = datetime.utcnow() + timedelta(hours=71)
 
         # When
         check_output = check_booking_is_cancellable(booking, is_user_cancellation=False)
