@@ -1,6 +1,6 @@
 {
   "name": "pass-culture-pro",
-  "version": "21.0.0",
+  "version": "22.0.0",
   "private": true,
   "dependencies": {
     "archiver": "^2.1.1",
