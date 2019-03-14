@@ -73,17 +73,17 @@ def make_batch_cancellation_email(bookings, cancellation_case):
 
 
 def make_final_recap_email_for_stock_with_event(stock):
-    booking_is_on_event = stock.eventOccurrence is not None
+    booking_is_on_event = stock.beginningDatetime is not None
     venue = stock.resolvedOffer.venue
     date_in_tz = _get_event_datetime(stock)
     formatted_datetime = format_datetime(date_in_tz)
-    email_subject = '[Réservations] Récapitulatif pour {} le {}'.format(stock.eventOccurrence.offer.event.name,
+    email_subject = '[Réservations] Récapitulatif pour {} le {}'.format(stock.offer.event.name,
                                                                         formatted_datetime)
     stock_bookings = find_all_ongoing_bookings_by_stock(stock)
     email_html = render_template('mails/offerer_final_recap_email.html',
                                  booking_is_on_event=booking_is_on_event,
                                  number_of_bookings=len(stock_bookings),
-                                 stock_name=stock.eventOccurrence.offer.event.name,
+                                 stock_name=stock.offer.event.name,
                                  stock_date_time=formatted_datetime,
                                  venue=venue,
                                  stock_bookings=stock_bookings)
@@ -102,7 +102,7 @@ def make_offerer_booking_recap_email_after_user_action(booking, is_cancellation=
     stock_bookings = find_all_ongoing_bookings_by_stock(booking.stock)
     event_or_thing = booking.stock.resolvedOffer.eventOrThing
     human_offer_id = humanize(booking.stock.resolvedOffer.id)
-    booking_is_on_event = booking.stock.eventOccurrence is not None
+    booking_is_on_event = booking.stock.beginningDatetime is not None
 
     if is_cancellation:
         email_subject = f'[Réservations] Annulation de réservation pour {event_or_thing.name}'
@@ -162,7 +162,7 @@ def make_offerer_driven_cancellation_email_for_user(booking):
     offer_name = booking.stock.resolvedOffer.eventOrThing.name
     offerer_name = booking.stock.resolvedOffer.venue.managingOfferer.name
     booking_value = booking.amount * booking.quantity
-    booking_is_on_event = booking.stock.eventOccurrence is not None
+    booking_is_on_event = booking.stock.beginningDatetime is not None
     formatted_datetime = None
     commande_ou_reservation = 'réservation' if booking_is_on_event else 'commande'
     if booking_is_on_event:
@@ -198,7 +198,7 @@ def make_offerer_driven_cancellation_email_for_offerer(booking):
                                                                                                      venue.name)
     ongoing_stock_bookings = find_all_ongoing_bookings_by_stock(booking.stock)
     stock_date_time = None
-    booking_is_on_event = booking.stock.eventOccurrence is not None
+    booking_is_on_event = booking.stock.beginningDatetime is not None
     if booking_is_on_event:
         date_in_tz = _get_event_datetime(booking.stock)
         stock_date_time = format_datetime(date_in_tz)
@@ -574,7 +574,7 @@ def _generate_reservation_email_html_subject(booking):
     user = booking.user
     venue = stock.resolvedOffer.venue
     stock_description = _get_stock_description(stock)
-    booking_is_on_event = stock.eventOccurrence == None
+    booking_is_on_event = stock.beginningDatetime is None
 
     if booking_is_on_event:
         email_subject = 'Confirmation de votre commande pour {}'.format(stock_description)
@@ -591,7 +591,7 @@ def _generate_reservation_email_html_subject(booking):
         email_html = render_template('mails/user_confirmation_email_event.html',
                                      user=user,
                                      booking_token=booking.token,
-                                     event_occurrence_name=stock.eventOccurrence.offer.event.name,
+                                     event_occurrence_name=stock.offer.event.name,
                                      formatted_date_time=formatted_date_time,
                                      venue=venue
                                      )
@@ -601,7 +601,7 @@ def _generate_reservation_email_html_subject(booking):
 
 def _generate_user_driven_cancellation_email_for_user(user, stock):
     venue = stock.resolvedOffer.venue
-    if stock.eventOccurrence == None:
+    if stock.beginningDatetime is None:
         email_subject = 'Annulation de votre commande pour {}'.format(stock.resolvedOffer.thing.name)
         email_html = render_template('mails/user_cancellation_email_thing.html',
                                      user=user,
@@ -613,31 +613,31 @@ def _generate_user_driven_cancellation_email_for_user(user, stock):
         formatted_date_time = format_datetime(date_in_tz)
         email_html = render_template('mails/user_cancellation_email_event.html',
                                      user=user,
-                                     event_occurrence_name=stock.eventOccurrence.offer.event.name,
+                                     event_occurrence_name=stock.offer.event.name,
                                      venue=venue,
                                      formatted_date_time=formatted_date_time)
         email_subject = 'Annulation de votre réservation pour {} le {}'.format(
-            stock.eventOccurrence.offer.event.name,
+            stock.offer.event.name,
             formatted_date_time
         )
     return email_html, email_subject
 
 
 def _get_event_datetime(stock):
-    if stock.eventOccurrence.offer.venue.departementCode is not None:
-        date_in_utc = stock.eventOccurrence.beginningDatetime
+    if stock.offer.venue.departementCode is not None:
+        date_in_utc = stock.beginningDatetime
         date_in_tz = utc_datetime_to_dept_timezone(date_in_utc,
-                                                   stock.eventOccurrence.offer.venue.departementCode)
+                                                   stock.offer.venue.departementCode)
 
     else:
-        date_in_tz = stock.eventOccurrence.beginningDatetime
+        date_in_tz = stock.beginningDatetime
     return date_in_tz
 
 
 def _get_stock_description(stock):
-    if stock.eventOccurrence:
+    if stock.beginningDatetime:
         date_in_tz = _get_event_datetime(stock)
-        description = '{} le {}'.format(stock.eventOccurrence.offer.event.name,
+        description = '{} le {}'.format(stock.offer.event.name,
                                         format_datetime(date_in_tz))
     elif stock.resolvedOffer.thing:
         description = str(stock.resolvedOffer.thing.name)
