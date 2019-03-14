@@ -15,13 +15,9 @@ config = {
     'Venue_name': Venue.name
 }
 
+
 def get_keywords_analyzer(offer, keywords_string):
-    
-    print(offer.query.with_entities(*config.values()))
-
     values = offer.query.with_entities(*config.values()).first()
-
-    print(values)
 
     analyzer = {}
     for (index, (key, column)) in enumerate(config.items()):
@@ -38,6 +34,7 @@ def get_keywords_analyzer(offer, keywords_string):
             analyzer[key] = False
 
     return analyzer
+
 
 def print_keywords_analyzer(offer, keywords_string):
     keywords_analyzer = get_keywords_analyzer(offer, keywords_string)

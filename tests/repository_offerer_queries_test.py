@@ -810,7 +810,7 @@ def test_find_filtered_offerers_with_offer_status_with_VALID_param_return_filter
                                                                    booking_limit_date=datetime.utcnow() + timedelta(
                                                                        days=3))
 
-    PcObject.check_and_save(venue_without_offer, valid_event_occurrence, expired_event_occurence,
+    PcObject.check_and_save(venue_without_offer,
                             valid_stock, expired_stock, soft_deleted_thing_stock,
                             expired_booking_limit_date_event_stock,
                             valid_booking_limit_date_event_stock, soft_deleted_event_stock, not_available_event_stock)
@@ -895,7 +895,7 @@ def test_find_filtered_offerers_with_offer_status_with_EXPIRED_param_return_filt
                                                                    booking_limit_date=datetime.utcnow() + timedelta(
                                                                        days=3))
 
-    PcObject.check_and_save(venue_without_offer, valid_event_occurrence, expired_event_occurence,
+    PcObject.check_and_save(venue_without_offer,
                             valid_stock, expired_stock, soft_deleted_thing_stock,
                             expired_booking_limit_date_event_stock,
                             valid_booking_limit_date_event_stock, soft_deleted_event_stock, not_available_event_stock)
@@ -980,7 +980,7 @@ def test_find_filtered_offerers_with_offer_status_with_WITHOUT_param_return_filt
                                                                    booking_limit_date=datetime.utcnow() + timedelta(
                                                                        days=3))
 
-    PcObject.check_and_save(venue_without_offer, valid_event_occurrence, expired_event_occurence,
+    PcObject.check_and_save(venue_without_offer,
                             valid_stock, expired_stock, soft_deleted_thing_stock,
                             expired_booking_limit_date_event_stock,
                             valid_booking_limit_date_event_stock, soft_deleted_event_stock, not_available_event_stock)
@@ -1065,7 +1065,7 @@ def test_find_filtered_offerers_with_offer_status_with_ALL_param_return_filtered
                                                                    booking_limit_date=datetime.utcnow() + timedelta(
                                                                        days=3))
 
-    PcObject.check_and_save(venue_without_offer, valid_event_occurrence, expired_event_occurence,
+    PcObject.check_and_save(venue_without_offer,
                             valid_stock, expired_stock, soft_deleted_thing_stock,
                             expired_booking_limit_date_event_stock,
                             valid_booking_limit_date_event_stock, soft_deleted_event_stock, not_available_event_stock)

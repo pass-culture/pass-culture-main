@@ -331,7 +331,7 @@ class GetOffersForRecommendationsSearchTest:
                                                             end_datetime=datetime.utcnow())
         stock = create_stock_from_event_occurrence(outdated_event_occurrence, booking_limit_date=None)
 
-        PcObject.check_and_save(stock, outdated_event_occurrence)
+        PcObject.check_and_save(stock)
 
         # When
         search_result_offers = get_offers_for_recommendations_search(type_values=[
@@ -356,9 +356,10 @@ class GetOffersForRecommendationsSearchTest:
                                                             end_datetime=datetime.utcnow())
         future_event_occurrence = create_event_occurrence(offer, beginning_datetime=in_three_hours,
                                                           end_datetime=in_four_hours)
-        stock = create_stock_from_event_occurrence(future_event_occurrence, booking_limit_date=None)
+        future_stock = create_stock_from_event_occurrence(future_event_occurrence, booking_limit_date=None)
+        outdated_stock = create_stock_from_event_occurrence(outdated_event_occurrence, booking_limit_date=None)
 
-        PcObject.check_and_save(stock, future_event_occurrence, outdated_event_occurrence)
+        PcObject.check_and_save(future_stock, outdated_stock)
 
         # When
         search_result_offers = get_offers_for_recommendations_search(type_values=[
@@ -412,7 +413,7 @@ def test_get_active_event_offers_only_returns_event_offers(app):
     stock1 = create_stock_from_offer(offer1, price=0)
     stock2 = create_stock_from_event_occurrence(event_occurrence, price=0, available=10,
                                                 booking_limit_date=now + timedelta(days=2))
-    PcObject.check_and_save(user, stock1, stock2, mediation, event_occurrence)
+    PcObject.check_and_save(user, stock1, stock2, mediation)
 
     # When
     offers = get_active_offers_by_type(Event, user=user, departement_codes=['93'])

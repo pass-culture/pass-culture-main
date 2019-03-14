@@ -221,6 +221,7 @@ def create_stock_from_event_occurrence(event_occurrence, price=10, available=10,
     stock.beginningDatetime = event_occurrence['beginningDatetime']
     stock.endDatetime = event_occurrence['endDatetime']
     stock.offerId = event_occurrence['offerId']
+    stock.offer = event_occurrence['offer']
     stock.price = price
     stock.available = available
     stock.isSoftDeleted = soft_deleted
@@ -356,7 +357,7 @@ def create_thing_offer(venue, thing=None, date_created=datetime.utcnow(), bookin
     return offer
 
 
-def create_event_offer(venue, event=None, event_name='Test event', duration_minutes=60, date_created=datetime.utcnow(),
+def create_event_offer(venue=None, event=None, event_name='Test event', duration_minutes=60, date_created=datetime.utcnow(),
                        booking_email='booking.email@test.com', thumb_count=0, dominant_color=None,
                        event_type=EventType.SPECTACLE_VIVANT, is_national=False, is_active=True, idx=None):
     offer = Offer()

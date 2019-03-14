@@ -11,11 +11,10 @@ from tests.test_utils import create_venue, create_event_offer, create_venue_acti
     create_user, create_user_offerer, create_stock_from_event_occurrence, save_all_activities
 
 
-
 @pytest.mark.standalone
 @clean_database
 def test_find_filtered_venues_with_sirens_params_return_filtered_venues(app):
-    #given
+    # given
     offerer_123456789 = create_offerer(name="offerer_123456789", siren="123456789")
     offerer_123456781 = create_offerer(name="offerer_123456781", siren="123456781")
     offerer_123456782 = create_offerer(name="offerer_123456782", siren="123456782")
@@ -30,10 +29,10 @@ def test_find_filtered_venues_with_sirens_params_return_filtered_venues(app):
 
     PcObject.check_and_save(venue_123456789, venue_123456781, venue_123456782, venue_123456783, venue_123456784)
 
-    #when
+    # when
     query_with_sirens = find_filtered_venues(sirens=["123456781", "123456782", "123456783"])
 
-    #then
+    # then
     assert venue_123456789 not in query_with_sirens
     assert venue_123456781 in query_with_sirens
     assert venue_123456782 in query_with_sirens
@@ -66,14 +65,14 @@ def test_find_filtered_venues_with_dpts_param_return_filtered_venues(app):
     offerer = create_offerer()
     venue_93 = create_venue(offerer, departement_code='93', postal_code='93000')
     venue_67 = create_venue(offerer, departement_code='67', postal_code='67000',
-       siret='12345678912346')
+                            siret='12345678912346')
     venue_34 = create_venue(offerer, departement_code='34', postal_code='34000',
-       siret='12345678912347')
+                            siret='12345678912347')
     venue_virtual = create_venue(offerer, is_virtual=True, siret=None, postal_code=None)
     PcObject.check_and_save(venue_93, venue_67, venue_34, venue_virtual)
 
     # When
-    query_with_dpts = find_filtered_venues(dpts=['93','67'])
+    query_with_dpts = find_filtered_venues(dpts=['93', '67'])
 
     # Then
     assert venue_93 in query_with_dpts
@@ -114,16 +113,16 @@ def test_find_filtered_venues_with_date_params_return_filtered_venues(app):
     PcObject.check_and_save(venue_20180630, venue_20180730, venue_20180830)
 
     activity1 = create_venue_activity(venue_20180630, 'venue', 'insert', issued_at=datetime(2018,
-        6, 30))
+                                                                                            6, 30))
     activity2 = create_venue_activity(venue_20180730, 'venue', 'insert', issued_at=datetime(2018,
-        7, 30))
+                                                                                            7, 30))
     activity3 = create_venue_activity(venue_20180830, 'venue', 'insert', issued_at=datetime(2018,
-        8, 30))
+                                                                                            8, 30))
     save_all_activities(activity1, activity2, activity3)
 
     # When
     query_with_date = find_filtered_venues(from_date='2018-07-01',
-        to_date='2018-08-01')
+                                           to_date='2018-08-01')
 
     # Then
     assert venue_20180630 not in query_with_date
@@ -215,15 +214,15 @@ def test_find_filtered_venues_with_True_has_validated_user_offerer_param_return_
     validated_user_offerer = create_user_offerer(user, offerer1)
     not_validated_user_offerer = create_user_offerer(user, offerer2, validation_token="a_token")
     user_offerer_for_both1 = create_user_offerer(user, offerer3)
-    user_offerer_for_both2 =create_user_offerer(user, offerer3, validation_token="other_token")
+    user_offerer_for_both2 = create_user_offerer(user, offerer3, validation_token="other_token")
 
     venue_with_validated_user_offerer = create_venue(offerer1, siret='12345678912346')
     venue_with_not_validated_user_offerer = create_venue(offerer2, siret='12345678912347')
     venue_with_both = create_venue(offerer3)
 
     PcObject.check_and_save(validated_user_offerer, not_validated_user_offerer,
-        user_offerer_for_both1, user_offerer_for_both2, venue_with_not_validated_user_offerer,
-        venue_with_validated_user_offerer, venue_with_both)
+                            user_offerer_for_both1, user_offerer_for_both2, venue_with_not_validated_user_offerer,
+                            venue_with_validated_user_offerer, venue_with_both)
 
     # When
     query_validated = find_filtered_venues(has_validated_user_offerer=True)
@@ -246,15 +245,15 @@ def test_find_filtered_venues_with_False_has_validated_user_offerer_param_return
     validated_user_offerer = create_user_offerer(user, offerer1)
     not_validated_user_offerer = create_user_offerer(user, offerer2, validation_token="a_token")
     user_offerer_for_both1 = create_user_offerer(user, offerer3)
-    user_offerer_for_both2 =create_user_offerer(user, offerer3, validation_token="other_token")
+    user_offerer_for_both2 = create_user_offerer(user, offerer3, validation_token="other_token")
 
     venue_with_validated_user_offerer = create_venue(offerer1, siret='12345678912346')
     venue_with_not_validated_user_offerer = create_venue(offerer2, siret='12345678912347')
     venue_with_both = create_venue(offerer3)
 
     PcObject.check_and_save(validated_user_offerer, not_validated_user_offerer,
-        user_offerer_for_both1, user_offerer_for_both2, venue_with_not_validated_user_offerer,
-        venue_with_validated_user_offerer, venue_with_both)
+                            user_offerer_for_both1, user_offerer_for_both2, venue_with_not_validated_user_offerer,
+                            venue_with_validated_user_offerer, venue_with_both)
 
     # When
     query_not_validated = find_filtered_venues(has_validated_user_offerer=False)
@@ -270,7 +269,7 @@ def test_find_filtered_venues_with_False_has_validated_user_offerer_param_return
 def test_find_filtered_venues_with_True_has_validated_user_param_return_filtered_venues(app):
     # Given
     validated_user = create_user()
-    not_validated_user1= create_user(email="mail1@mail.com", validation_token="hello token")
+    not_validated_user1 = create_user(email="mail1@mail.com", validation_token="hello token")
     not_validated_user2 = create_user(email="mail2@mail.com", validation_token="other token")
     offerer1 = create_offerer()
     offerer2 = create_offerer(siren="123456781")
@@ -280,11 +279,12 @@ def test_find_filtered_venues_with_True_has_validated_user_param_return_filtered
     user_offerer3 = create_user_offerer(validated_user, offerer3)
     user_offerer4 = create_user_offerer(not_validated_user2, offerer3)
 
-    venue_with_validated_user= create_venue(offerer1)
+    venue_with_validated_user = create_venue(offerer1)
     venue_with_not_validated_user = create_venue(offerer2, siret='12345678912346')
     venue_with_both = create_venue(offerer3, siret='12345678912347')
 
-    PcObject.check_and_save( user_offerer1, user_offerer2, user_offerer3, user_offerer4, venue_with_not_validated_user, venue_with_validated_user, venue_with_both)
+    PcObject.check_and_save(user_offerer1, user_offerer2, user_offerer3, user_offerer4, venue_with_not_validated_user,
+                            venue_with_validated_user, venue_with_both)
 
     # When
     query_validated = find_filtered_venues(has_validated_user=True)
@@ -300,7 +300,7 @@ def test_find_filtered_venues_with_True_has_validated_user_param_return_filtered
 def test_find_filtered_venues_with_False_has_validated_user_param_return_filtered_venues(app):
     # Given
     validated_user = create_user()
-    not_validated_user1= create_user(email="mail1@mail.com", validation_token="hello token")
+    not_validated_user1 = create_user(email="mail1@mail.com", validation_token="hello token")
     not_validated_user2 = create_user(email="mail2@mail.com", validation_token="other token")
     offerer1 = create_offerer()
     offerer2 = create_offerer(siren="123456781")
@@ -310,11 +310,12 @@ def test_find_filtered_venues_with_False_has_validated_user_param_return_filtere
     user_offerer3 = create_user_offerer(validated_user, offerer3)
     user_offerer4 = create_user_offerer(not_validated_user2, offerer3)
 
-    venue_with_validated_user= create_venue(offerer1)
+    venue_with_validated_user = create_venue(offerer1)
     venue_with_not_validated_user = create_venue(offerer2, siret='12345678912346')
     venue_with_both = create_venue(offerer3, siret='12345678912347')
 
-    PcObject.check_and_save( user_offerer1, user_offerer2, user_offerer3, user_offerer4, venue_with_not_validated_user, venue_with_validated_user, venue_with_both)
+    PcObject.check_and_save(user_offerer1, user_offerer2, user_offerer3, user_offerer4, venue_with_not_validated_user,
+                            venue_with_validated_user, venue_with_both)
 
     # When
     query_not_validated = find_filtered_venues(has_validated_user=False)
@@ -349,35 +350,44 @@ def test_find_filtered_venues_with_offer_status_with_VALID_param_return_filtered
     not_available_event = create_event_offer(venue_with_not_available_event)
 
     valid_event_occurrence = create_event_occurrence(valid_event,
-        beginning_datetime=datetime.utcnow() + timedelta(days=4),
-        end_datetime=datetime.utcnow() + timedelta(days=5))
+                                                     beginning_datetime=datetime.utcnow() + timedelta(days=4),
+                                                     end_datetime=datetime.utcnow() + timedelta(days=5))
     valid_event_occurrence_soft_deleted = create_event_occurrence(soft_deleted_event,
-        beginning_datetime=datetime.utcnow() + timedelta(days=4),
-        end_datetime=datetime.utcnow() + timedelta(days=5))
+                                                                  beginning_datetime=datetime.utcnow() + timedelta(
+                                                                      days=4),
+                                                                  end_datetime=datetime.utcnow() + timedelta(days=5))
     valid_event_occurrence_not_available = create_event_occurrence(not_available_event,
-        beginning_datetime=datetime.utcnow() + timedelta(days=4),
-        end_datetime=datetime.utcnow() + timedelta(days=5))
+                                                                   beginning_datetime=datetime.utcnow() + timedelta(
+                                                                       days=4),
+                                                                   end_datetime=datetime.utcnow() + timedelta(days=5))
     expired_event_occurence = create_event_occurrence(expired_event,
-       beginning_datetime=datetime(2018,2,1), end_datetime=datetime(2018,3,2))
+                                                      beginning_datetime=datetime(2018, 2, 1),
+                                                      end_datetime=datetime(2018, 3, 2))
 
     valid_stock = create_stock_with_thing_offer(offerer, venue_with_valid_thing, valid_thing)
     expired_stock = create_stock_with_thing_offer(offerer, venue_with_expired_thing, expired_thing,
-       available=0)
+                                                  available=0)
     soft_deleted_thing_stock = create_stock_with_thing_offer(offerer, venue_with_soft_deleted_thing,
-       soft_deleted_thing, soft_deleted=True)
+                                                             soft_deleted_thing, soft_deleted=True)
 
     expired_booking_limit_date_event_stock = create_stock_from_event_occurrence(expired_event_occurence,
-       booking_limit_date=datetime(2018,1,1))
+                                                                                booking_limit_date=datetime(2018, 1, 1))
     valid_booking_limit_date_event_stock = create_stock_from_event_occurrence(valid_event_occurrence,
-       booking_limit_date=datetime.utcnow() + timedelta(days=3))
+                                                                              booking_limit_date=datetime.utcnow() + timedelta(
+                                                                                  days=3))
     soft_deleted_event_stock = create_stock_from_event_occurrence(valid_event_occurrence_soft_deleted,
-       soft_deleted=True, booking_limit_date=datetime.utcnow() + timedelta(days=3))
+                                                                  soft_deleted=True,
+                                                                  booking_limit_date=datetime.utcnow() + timedelta(
+                                                                      days=3))
     not_available_event_stock = create_stock_from_event_occurrence(valid_event_occurrence_not_available,
-       available=0, booking_limit_date=datetime.utcnow() + timedelta(days=3))
+                                                                   available=0,
+                                                                   booking_limit_date=datetime.utcnow() + timedelta(
+                                                                       days=3))
 
-    PcObject.check_and_save(venue_without_offer, valid_event_occurrence, expired_event_occurence,
-        valid_stock, expired_stock, soft_deleted_thing_stock, expired_booking_limit_date_event_stock,
-        valid_booking_limit_date_event_stock, soft_deleted_event_stock)
+    PcObject.check_and_save(venue_without_offer,
+                            valid_stock, expired_stock, soft_deleted_thing_stock,
+                            expired_booking_limit_date_event_stock,
+                            valid_booking_limit_date_event_stock, soft_deleted_event_stock)
 
     # When
     query_has_valid_offer = find_filtered_venues(offer_status='VALID')
@@ -386,7 +396,7 @@ def test_find_filtered_venues_with_offer_status_with_VALID_param_return_filtered
     assert venue_with_valid_event in query_has_valid_offer
     assert venue_without_offer not in query_has_valid_offer
     assert venue_with_expired_event not in query_has_valid_offer
-    assert venue_with_valid_thing  in query_has_valid_offer
+    assert venue_with_valid_thing in query_has_valid_offer
     assert venue_with_expired_thing not in query_has_valid_offer
     assert venue_with_soft_deleted_thing not in query_has_valid_offer
     assert venue_with_soft_deleted_event not in query_has_valid_offer
@@ -417,35 +427,44 @@ def test_find_filtered_venues_with_offer_status_with_EXPIRED_param_return_filter
     not_available_event = create_event_offer(venue_with_not_available_event)
 
     valid_event_occurrence = create_event_occurrence(valid_event,
-        beginning_datetime=datetime.utcnow() + timedelta(days=4),
-        end_datetime=datetime.utcnow() + timedelta(days=5))
+                                                     beginning_datetime=datetime.utcnow() + timedelta(days=4),
+                                                     end_datetime=datetime.utcnow() + timedelta(days=5))
     valid_event_occurrence_soft_deleted = create_event_occurrence(soft_deleted_event,
-        beginning_datetime=datetime.utcnow() + timedelta(days=4),
-        end_datetime=datetime.utcnow() + timedelta(days=5))
+                                                                  beginning_datetime=datetime.utcnow() + timedelta(
+                                                                      days=4),
+                                                                  end_datetime=datetime.utcnow() + timedelta(days=5))
     valid_event_occurrence_not_available = create_event_occurrence(not_available_event,
-        beginning_datetime=datetime.utcnow() + timedelta(days=4),
-        end_datetime=datetime.utcnow() + timedelta(days=5))
+                                                                   beginning_datetime=datetime.utcnow() + timedelta(
+                                                                       days=4),
+                                                                   end_datetime=datetime.utcnow() + timedelta(days=5))
     expired_event_occurence = create_event_occurrence(expired_event,
-       beginning_datetime=datetime(2018,2,1), end_datetime=datetime(2018,3,2))
+                                                      beginning_datetime=datetime(2018, 2, 1),
+                                                      end_datetime=datetime(2018, 3, 2))
 
     valid_stock = create_stock_with_thing_offer(offerer, venue_with_valid_thing, valid_thing)
     expired_stock = create_stock_with_thing_offer(offerer, venue_with_expired_thing, expired_thing,
-       available=0)
+                                                  available=0)
     soft_deleted_thing_stock = create_stock_with_thing_offer(offerer, venue_with_soft_deleted_thing,
-       soft_deleted_thing, soft_deleted=True)
+                                                             soft_deleted_thing, soft_deleted=True)
 
     expired_booking_limit_date_event_stock = create_stock_from_event_occurrence(expired_event_occurence,
-       booking_limit_date=datetime(2018,1,1))
+                                                                                booking_limit_date=datetime(2018, 1, 1))
     valid_booking_limit_date_event_stock = create_stock_from_event_occurrence(valid_event_occurrence,
-       booking_limit_date=datetime.utcnow() + timedelta(days=3))
+                                                                              booking_limit_date=datetime.utcnow() + timedelta(
+                                                                                  days=3))
     soft_deleted_event_stock = create_stock_from_event_occurrence(valid_event_occurrence_soft_deleted,
-       soft_deleted=True, booking_limit_date=datetime.utcnow() + timedelta(days=3))
+                                                                  soft_deleted=True,
+                                                                  booking_limit_date=datetime.utcnow() + timedelta(
+                                                                      days=3))
     not_available_event_stock = create_stock_from_event_occurrence(valid_event_occurrence_not_available,
-       available=0, booking_limit_date=datetime.utcnow() + timedelta(days=3))
+                                                                   available=0,
+                                                                   booking_limit_date=datetime.utcnow() + timedelta(
+                                                                       days=3))
 
-    PcObject.check_and_save(venue_without_offer, valid_event_occurrence, expired_event_occurence,
-        valid_stock, expired_stock, soft_deleted_thing_stock, expired_booking_limit_date_event_stock,
-        valid_booking_limit_date_event_stock, soft_deleted_event_stock)
+    PcObject.check_and_save(venue_without_offer,
+                            valid_stock, expired_stock, soft_deleted_thing_stock,
+                            expired_booking_limit_date_event_stock,
+                            valid_booking_limit_date_event_stock, soft_deleted_event_stock)
 
     # When
     query_has_expired_offer = find_filtered_venues(offer_status='EXPIRED')
@@ -485,35 +504,44 @@ def test_find_filtered_venues_with_offer_status_with_WITHOUT_param_return_filter
     not_available_event = create_event_offer(venue_with_not_available_event)
 
     valid_event_occurrence = create_event_occurrence(valid_event,
-        beginning_datetime=datetime.utcnow() + timedelta(days=4),
-        end_datetime=datetime.utcnow() + timedelta(days=5))
+                                                     beginning_datetime=datetime.utcnow() + timedelta(days=4),
+                                                     end_datetime=datetime.utcnow() + timedelta(days=5))
     valid_event_occurrence_soft_deleted = create_event_occurrence(soft_deleted_event,
-        beginning_datetime=datetime.utcnow() + timedelta(days=4),
-        end_datetime=datetime.utcnow() + timedelta(days=5))
+                                                                  beginning_datetime=datetime.utcnow() + timedelta(
+                                                                      days=4),
+                                                                  end_datetime=datetime.utcnow() + timedelta(days=5))
     valid_event_occurrence_not_available = create_event_occurrence(not_available_event,
-        beginning_datetime=datetime.utcnow() + timedelta(days=4),
-        end_datetime=datetime.utcnow() + timedelta(days=5))
+                                                                   beginning_datetime=datetime.utcnow() + timedelta(
+                                                                       days=4),
+                                                                   end_datetime=datetime.utcnow() + timedelta(days=5))
     expired_event_occurence = create_event_occurrence(expired_event,
-       beginning_datetime=datetime(2018,2,1), end_datetime=datetime(2018,3,2))
+                                                      beginning_datetime=datetime(2018, 2, 1),
+                                                      end_datetime=datetime(2018, 3, 2))
 
     valid_stock = create_stock_with_thing_offer(offerer, venue_with_valid_thing, valid_thing)
     expired_stock = create_stock_with_thing_offer(offerer, venue_with_expired_thing, expired_thing,
-       available=0)
+                                                  available=0)
     soft_deleted_thing_stock = create_stock_with_thing_offer(offerer, venue_with_soft_deleted_thing,
-       soft_deleted_thing, soft_deleted=True)
+                                                             soft_deleted_thing, soft_deleted=True)
 
     expired_booking_limit_date_event_stock = create_stock_from_event_occurrence(expired_event_occurence,
-       booking_limit_date=datetime(2018,1,1))
+                                                                                booking_limit_date=datetime(2018, 1, 1))
     valid_booking_limit_date_event_stock = create_stock_from_event_occurrence(valid_event_occurrence,
-       booking_limit_date=datetime.utcnow() + timedelta(days=3))
+                                                                              booking_limit_date=datetime.utcnow() + timedelta(
+                                                                                  days=3))
     soft_deleted_event_stock = create_stock_from_event_occurrence(valid_event_occurrence_soft_deleted,
-       soft_deleted=True, booking_limit_date=datetime.utcnow() + timedelta(days=3))
+                                                                  soft_deleted=True,
+                                                                  booking_limit_date=datetime.utcnow() + timedelta(
+                                                                      days=3))
     not_available_event_stock = create_stock_from_event_occurrence(valid_event_occurrence_not_available,
-       available=0, booking_limit_date=datetime.utcnow() + timedelta(days=3))
+                                                                   available=0,
+                                                                   booking_limit_date=datetime.utcnow() + timedelta(
+                                                                       days=3))
 
-    PcObject.check_and_save(venue_without_offer, valid_event_occurrence, expired_event_occurence,
-        valid_stock, expired_stock, soft_deleted_thing_stock, expired_booking_limit_date_event_stock,
-        valid_booking_limit_date_event_stock, soft_deleted_event_stock)
+    PcObject.check_and_save(venue_without_offer,
+                            valid_stock, expired_stock, soft_deleted_thing_stock,
+                            expired_booking_limit_date_event_stock,
+                            valid_booking_limit_date_event_stock, soft_deleted_event_stock)
 
     # When
     query_without_offer = find_filtered_venues(offer_status='WITHOUT')
@@ -553,35 +581,44 @@ def test_find_filtered_venues_with_offer_status_with_ALL_param_return_filtered_v
     not_available_event = create_event_offer(venue_with_not_available_event)
 
     valid_event_occurrence = create_event_occurrence(valid_event,
-        beginning_datetime=datetime.utcnow() + timedelta(days=4),
-        end_datetime=datetime.utcnow() + timedelta(days=5))
+                                                     beginning_datetime=datetime.utcnow() + timedelta(days=4),
+                                                     end_datetime=datetime.utcnow() + timedelta(days=5))
     valid_event_occurrence_soft_deleted = create_event_occurrence(soft_deleted_event,
-        beginning_datetime=datetime.utcnow() + timedelta(days=4),
-        end_datetime=datetime.utcnow() + timedelta(days=5))
+                                                                  beginning_datetime=datetime.utcnow() + timedelta(
+                                                                      days=4),
+                                                                  end_datetime=datetime.utcnow() + timedelta(days=5))
     valid_event_occurrence_not_available = create_event_occurrence(not_available_event,
-        beginning_datetime=datetime.utcnow() + timedelta(days=4),
-        end_datetime=datetime.utcnow() + timedelta(days=5))
+                                                                   beginning_datetime=datetime.utcnow() + timedelta(
+                                                                       days=4),
+                                                                   end_datetime=datetime.utcnow() + timedelta(days=5))
     expired_event_occurence = create_event_occurrence(expired_event,
-       beginning_datetime=datetime(2018,2,1), end_datetime=datetime(2018,3,2))
+                                                      beginning_datetime=datetime(2018, 2, 1),
+                                                      end_datetime=datetime(2018, 3, 2))
 
     valid_stock = create_stock_with_thing_offer(offerer, venue_with_valid_thing, valid_thing)
     expired_stock = create_stock_with_thing_offer(offerer, venue_with_expired_thing, expired_thing,
-       available=0)
+                                                  available=0)
     soft_deleted_thing_stock = create_stock_with_thing_offer(offerer, venue_with_soft_deleted_thing,
-       soft_deleted_thing, soft_deleted=True)
+                                                             soft_deleted_thing, soft_deleted=True)
 
     expired_booking_limit_date_event_stock = create_stock_from_event_occurrence(expired_event_occurence,
-       booking_limit_date=datetime(2018,1,1))
+                                                                                booking_limit_date=datetime(2018, 1, 1))
     valid_booking_limit_date_event_stock = create_stock_from_event_occurrence(valid_event_occurrence,
-       booking_limit_date=datetime.utcnow() + timedelta(days=3))
+                                                                              booking_limit_date=datetime.utcnow() + timedelta(
+                                                                                  days=3))
     soft_deleted_event_stock = create_stock_from_event_occurrence(valid_event_occurrence_soft_deleted,
-       soft_deleted=True, booking_limit_date=datetime.utcnow() + timedelta(days=3))
+                                                                  soft_deleted=True,
+                                                                  booking_limit_date=datetime.utcnow() + timedelta(
+                                                                      days=3))
     not_available_event_stock = create_stock_from_event_occurrence(valid_event_occurrence_not_available,
-       available=0, booking_limit_date=datetime.utcnow() + timedelta(days=3))
+                                                                   available=0,
+                                                                   booking_limit_date=datetime.utcnow() + timedelta(
+                                                                       days=3))
 
-    PcObject.check_and_save(venue_without_offer, valid_event_occurrence, expired_event_occurence,
-        valid_stock, expired_stock, soft_deleted_thing_stock, expired_booking_limit_date_event_stock,
-        valid_booking_limit_date_event_stock, soft_deleted_event_stock)
+    PcObject.check_and_save(venue_without_offer,
+                            valid_stock, expired_stock, soft_deleted_thing_stock,
+                            expired_booking_limit_date_event_stock,
+                            valid_booking_limit_date_event_stock, soft_deleted_event_stock)
 
     # When
     query_with_all_offer = find_filtered_venues(offer_status='ALL')
@@ -616,13 +653,10 @@ def test_find_filtered_venues_with_default_param_return_all_venues(app):
 
     valid_offer = create_event_offer(venue_with_valid_offer)
     expired_offer = create_event_offer(venue_with_expired_offer)
-    valid_event_occurrence = create_event_occurrence(valid_offer)
-    expired_event_occurence = create_event_occurrence(expired_offer,
-       beginning_datetime=datetime(2018,1,1), end_datetime=datetime(2018,2,2))
 
-    PcObject.check_and_save(venue_with_valid_offer, venue_without_offer, valid_event_occurrence,
-        expired_event_occurence, venue_virtual, venue_97000, venue_without_siret, venue_93000,
-        venue_67000, venue_34000)
+    PcObject.check_and_save(venue_with_valid_offer, venue_without_offer,
+                            venue_virtual, venue_97000, venue_without_siret, venue_93000,
+                            venue_67000, venue_34000)
 
     # When
     default_query = find_filtered_venues()
