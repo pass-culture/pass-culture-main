@@ -172,7 +172,7 @@ class InitTiteLiveThings(LocalProvider):
 
 def get_lines_from_thing_file(last_read_lines: int, thing_file: str):
     with open(thing_file, 'r', encoding='iso-8859-1') as f:
-        data_lines = islice(f.readlines(), last_read_lines, None)
+        data_lines = islice(f.readlines(1024*64), last_read_lines, None)
     return data_lines
 
 

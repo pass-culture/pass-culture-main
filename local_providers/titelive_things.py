@@ -174,7 +174,7 @@ def get_lines_from_thing_file(thing_file: str):
     file_path = 'RETR ' + THINGS_FOLDER_NAME_TITELIVE + '/' + thing_file
     get_titelive_ftp().retrbinary(file_path, data_file.write)
     data_wrapper.seek(0, 0)
-    return iter(data_wrapper.readlines())
+    return iter(data_wrapper.readlines(1024*64))
 
 
 def get_thing_type_and_extra_data_from_titelive_type(titelive_type):
