@@ -7,7 +7,7 @@ from sqlalchemy.orm import aliased
 from typing import Optional, List, Tuple
 
 from domain.departments import get_departement_codes_from_user
-from models import Event, EventOccurrence, Offer, Thing
+from models import Event, Offer, Stock, Thing
 from repository.offer_queries import get_active_offers_by_type
 from utils.logger import logger
 
@@ -71,17 +71,17 @@ def score_offer(offer: Offer) -> Optional[int]:
 def specific_score_event(event: Event) -> Optional[int]:
     score = 0
 
-    next_occurrence = EventOccurrence.query \
+    next_occurrence_stock = Stock.query \
         .join(aliased(Offer)) \
-        .filter((Offer.event == event) & (EventOccurrence.beginningDatetime > datetime.utcnow())) \
+        .filter((Offer.event == event) & (Stock.beginningDatetime > datetime.utcnow())) \
         .first()
 
-    if next_occurrence is None:
+    if next_occurrence_stock is None:
         return None
 
     # If the next occurrence of an event is less than 10 days away,
     # it gets one more point for each day closer it is to now
-    score += max(0, 10 - (next_occurrence.beginningDatetime - datetime.utcnow()).days)
+    score += max(0, 10 - (next_occurrence_stock.beginningDatetime - datetime.utcnow()).days)
 
     return score
 

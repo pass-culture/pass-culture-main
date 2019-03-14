@@ -3,7 +3,6 @@ from utils.config import IS_DEV
 import routes.bookings
 import routes.client_errors
 import routes.error_handlers
-import routes.event_occurrences
 import routes.events
 import routes.export
 import routes.mediations

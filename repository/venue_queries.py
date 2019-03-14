@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from models import PcObject, ApiErrors
-from models import Venue, Offer, EventOccurrence, Event, Thing, Stock, Offerer, UserOfferer, User
+from models import Venue, Offer, Event, Thing, Stock, Offerer, UserOfferer, User
 from models.db import db
 from models.venue import TooManyVirtualVenuesException
 from models.activity import load_activity
@@ -188,12 +188,11 @@ def _filter_by_offer_status(query, offer_status):
 
     elif offer_status == "VALID" or offer_status == "EXPIRED":
         query = query.join(Offer)
-        can_still_be_booked_event = Stock.bookingLimitDatetime >= datetime.utcnow()
         is_not_soft_deleted_thing = Stock.isSoftDeleted == False
         can_still_be_booked_thing = ((Stock.bookingLimitDatetime == None) | (Stock.bookingLimitDatetime >= datetime.utcnow()))
         is_available_thing = ((Stock.available == None) | (Stock.available > 0))
 
-        query_1 = query.join(EventOccurrence).join(Stock)
+        query_1 = query.join(Stock)
         query_2 = query.join(Stock)
 
     if offer_status == "VALID":

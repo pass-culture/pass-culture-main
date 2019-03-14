@@ -2,10 +2,10 @@ from datetime import datetime, timedelta
 
 import pytest
 
-from models import Offer, Thing, Event, PcObject, ApiErrors, EventOccurrence, ThingType
+from models import Offer, Thing, Event, PcObject, ApiErrors, ThingType
 from tests.conftest import clean_database
 from utils.date import DateTimes
-from tests.test_utils import create_event_occurrence, create_thing, create_thing_offer, create_offerer, create_venue
+from tests.test_utils import create_thing, create_thing_offer, create_offerer, create_stock, create_venue
 
 now = datetime.utcnow()
 two_days_ago = now - timedelta(days=2)
@@ -19,7 +19,7 @@ def test_date_range_is_empty_if_offer_is_on_a_thing():
     # given
     offer = Offer()
     offer.thing = Thing()
-    offer.eventOccurrences = []
+    offer.stocks = []
 
     # then
     assert offer.dateRange == DateTimes()
@@ -30,8 +30,8 @@ def test_date_range_matches_the_occurrence_if_only_one_occurrence():
     # given
     offer = Offer()
     offer.event = Event()
-    offer.eventOccurrences = [
-        create_event_occurrence(offer, beginning_datetime=two_days_ago, end_datetime=five_days_from_now)
+    offer.stocks = [
+        create_stock(offer=offer, beginning_datetime=two_days_ago, end_datetime=five_days_from_now)
     ]
 
     # then
@@ -43,11 +43,11 @@ def test_date_range_starts_at_first_beginning_date_time_and_ends_at_last_end_dat
     # given
     offer = Offer()
     offer.event = Event()
-    offer.eventOccurrences = [
-        create_event_occurrence(offer, beginning_datetime=two_days_ago, end_datetime=five_days_from_now),
-        create_event_occurrence(offer, beginning_datetime=four_days_ago, end_datetime=five_days_from_now),
-        create_event_occurrence(offer, beginning_datetime=four_days_ago, end_datetime=ten_days_from_now),
-        create_event_occurrence(offer, beginning_datetime=two_days_ago, end_datetime=ten_days_from_now)
+    offer.stocks = [
+        create_stock(offer=offer, beginning_datetime=two_days_ago, end_datetime=five_days_from_now),
+        create_stock(offer=offer, beginning_datetime=four_days_ago, end_datetime=five_days_from_now),
+        create_stock(offer=offer, beginning_datetime=four_days_ago, end_datetime=ten_days_from_now),
+        create_stock(offer=offer, beginning_datetime=two_days_ago, end_datetime=ten_days_from_now)
     ]
 
     # then
@@ -56,11 +56,11 @@ def test_date_range_starts_at_first_beginning_date_time_and_ends_at_last_end_dat
 
 
 @pytest.mark.standalone
-def test_date_range_is_empty_if_event_has_no_event_occurrences():
+def test_date_range_is_empty_if_event_has_no_stocks():
     # given
     offer = Offer()
     offer.event = Event()
-    offer.eventOccurrences = []
+    offer.stocks = []
 
     # then
     assert offer.dateRange == DateTimes()
@@ -106,11 +106,14 @@ def test_offer_error_when_thing_is_digital_but_venue_not_virtual(app):
 @pytest.mark.standalone
 def test_offer_as_dict_returns_dateRange_in_ISO_8601(app):
     # Given
-    eventOccurrence = EventOccurrence()
-    eventOccurrence.beginningDatetime = datetime(2018, 10, 22, 10, 10, 10)
-    eventOccurrence.endDatetime = datetime(2018, 10, 22, 13, 10, 10)
     offer = Offer()
-    offer.eventOccurrences = [eventOccurrence]
+    offer.stocks = [
+        create_stock(offer=offer,
+                     beginning_datetime=datetime(2018, 10, 22, 10, 10, 10),
+                     end_datetime=datetime(2018, 10, 22, 13, 10, 10))
+    ]
+
+
     # When
     offer_dict = offer._asdict(include=["dateRange"])
     # Then

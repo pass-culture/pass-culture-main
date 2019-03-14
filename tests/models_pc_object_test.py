@@ -4,11 +4,12 @@ from decimal import Decimal
 import pytest
 from sqlalchemy import Column, DateTime, Integer, Float
 
-from models import PcObject, Offer, EventOccurrence, User
+from models import PcObject, Offer, User
 from models import ThingType
 from models.api_errors import DecimalCastError, DateTimeCastError
 from models.db import Model
 from models.pc_object import serialize
+from tests.test_utils import create_stock
 
 
 class TimeInterval(PcObject, Model):
@@ -94,11 +95,13 @@ def test_populate_from_dict_raises_type_error_if_raw_date_is_invalid():
 @pytest.mark.standalone
 def test_serialize_on_datetime_list_returns_string_with_date_in_ISO_8601_list():
     # Given
-    eventOccurrence = EventOccurrence()
-    eventOccurrence.beginningDatetime = now
-    eventOccurrence.endDatetime = now + timedelta(hours=3)
     offer = Offer()
-    offer.eventOccurrences = [eventOccurrence]
+    offer.stocks = [
+        create_stock(offer=offer,
+                     beginning_datetime=now,
+                     end_datetime=now + timedelta(hours=3))
+    ]
+
     # When
     serialized_list = serialize(offer.dateRange)
     # Then

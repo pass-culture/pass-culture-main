@@ -13,7 +13,6 @@ from sqlalchemy.orm import relationship
 
 from models.versioned_mixin import VersionedMixin
 from models.db import Model
-from models.event_occurrence import EventOccurrence
 from models.pc_object import PcObject
 from models.providable_mixin import ProvidableMixin
 from models.soft_deletable_mixin import SoftDeletableMixin
@@ -25,27 +24,18 @@ class Stock(PcObject,
             SoftDeletableMixin,
             VersionedMixin):
 
-    id = Column(BigInteger,
-                primary_key=True,
-                autoincrement=True)
-
-    # an stock is either linked to a thing or to an eventOccurrence
-
     dateModified = Column(DateTime,
                           nullable=False,
                           default=datetime.utcnow)
 
-    eventOccurrenceId = Column(BigInteger,
-                               ForeignKey("event_occurrence.id"),
-                               CheckConstraint('("eventOccurrenceId" IS NOT NULL AND "offerId" IS NULL)' +
-                                              'OR ("eventOccurrenceId" IS NULL AND "offerId" IS NOT NULL)',
-                                              name='check_stock_has_event_occurrence_xor_offer'),
-                              index=True,
-                              nullable=True)
+    beginningDatetime = Column(DateTime,
+                               index=True,
+                               nullable=True)
 
-    eventOccurrence = relationship('EventOccurrence',
-                                   foreign_keys=[eventOccurrenceId],
-                                   backref='stocks')
+    endDatetime = Column(DateTime,
+                         CheckConstraint('"endDatetime" > "beginningDatetime"',
+                                         name='check_end_datetime_is_after_beginning_datetime'),
+                         nullable=True)
 
     offerId = Column(BigInteger,
                      ForeignKey('offer.id'),
@@ -54,7 +44,7 @@ class Stock(PcObject,
 
     offer = relationship('Offer',
                          foreign_keys=[offerId],
-                         backref='thingStocks')
+                         backref='stocks')
 
 
     price = Column(Numeric(10, 2),
@@ -80,6 +70,14 @@ class Stock(PcObject,
     bookingRecapSent = Column(DateTime,
                               nullable=True)
 
+    def errors(self):
+        api_errors = super(Stock, self).errors()
+        if self.endDatetime \
+           and self.beginningDatetime \
+           and self.endDatetime < self.beginningDatetime:
+            api_errors.addError('endDatetime', 'La date de fin de l\'événement doit être postérieure à la date de début')
+        return api_errors
+
     @property
     def resolvedOffer(self):
         return self.offer or self.eventOccurrence.offer
@@ -92,16 +90,10 @@ class Stock(PcObject,
 def page_defaults(mapper, configuration, target):
     # `bookingLimitDatetime` defaults to midnight before `beginningDatetime`
     # for eventOccurrences
-    if target.eventOccurrenceId and not target.bookingLimitDatetime:
-        eventOccurrence = target.eventOccurrence
-        if eventOccurrence is None:
-            eventOccurrence = EventOccurrence\
-                                      .query\
-                                      .filter_by(id=target.eventOccurrenceId)\
-                                      .first_or_404()
-        target.bookingLimitDatetime = eventOccurrence.beginningDatetime\
-                                                    .replace(hour=23)\
-                                                    .replace(minute=59) - timedelta(days=3)
+    if target.beginningDatetime and not target.bookingLimitDatetime:
+        target.bookingLimitDatetime = target.beginningDatetime\
+                                            .replace(hour=23)\
+                                            .replace(minute=59) - timedelta(days=3)
 
 
 Stock.trig_ddl = """
@@ -125,10 +117,11 @@ Stock.trig_ddl = """
       END IF;
 
       IF NOT NEW."bookingLimitDatetime" IS NULL AND
-      (NEW."bookingLimitDatetime" > (SELECT "beginningDatetime" FROM event_occurrence WHERE id=NEW."eventOccurrenceId")) THEN
+         NOT NEW."beginningDatetime" IS NULL AND
+         NEW."bookingLimitDatetime" > NEW."beginningDatetime" THEN
 
       RAISE EXCEPTION 'bookingLimitDatetime_too_late'
-      USING HINT = 'stock.bookingLimitDatetime after event_occurrence.beginningDatetime';
+      USING HINT = 'bookingLimitDatetime after beginningDatetime';
       END IF;
 
       RETURN NEW;

@@ -3,8 +3,7 @@ from datetime import datetime
 
 from sqlalchemy import func, update, or_, and_
 
-from models import EventOccurrence, \
-                   Mediation, \
+from models import Mediation, \
                    Offer, \
                    Recommendation, \
                    Stock
@@ -70,18 +69,11 @@ def find_recommendations_for_user_matching_offers_and_search(user_id=None, offer
 def keep_only_bookable_stocks():
     stock_is_still_bookable = or_(Stock.bookingLimitDatetime > datetime.utcnow(), Stock.bookingLimitDatetime == None)
     stock_is_not_soft_deleted = Stock.isSoftDeleted == False
-    join_on_stocks = Recommendation.query \
-        .join(Offer) \
-        .join(Stock) \
-        .filter(and_(stock_is_not_soft_deleted, stock_is_still_bookable))
-    join_on_event_occurrences = Recommendation.query \
-        .join(Offer) \
-        .join(EventOccurrence) \
-        .join(Stock) \
-        .filter(and_(stock_is_not_soft_deleted, stock_is_still_bookable))
-
-
-    return join_on_stocks.union_all(join_on_event_occurrences)
+    return Recommendation.query \
+                         .join(Offer) \
+                         .join(Stock) \
+                         .filter(and_(stock_is_not_soft_deleted,
+                                      stock_is_still_bookable))
 
 
 def filter_unseen_valid_recommendations_for_user(query, user, seen_recommendation_ids):

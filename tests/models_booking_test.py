@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 
 import pytest
 
-from models import Booking, Offer, Stock, Thing, User, EventOccurrence
+from models import Booking, Offer, Stock, Thing, User
 
 
 @pytest.mark.standalone
@@ -40,8 +40,7 @@ class BookingIsCancellableTest:
         # Given
         booking = Booking()
         booking.stock = Stock()
-        booking.stock.eventOccurrence = EventOccurrence()
-        booking.stock.eventOccurrence.beginningDatetime = datetime.utcnow() + timedelta(hours=73)
+        booking.stock.beginningDatetime = datetime.utcnow() + timedelta(hours=73)
 
         # When
         is_cancellable = booking.isUserCancellable
@@ -66,8 +65,7 @@ class BookingIsCancellableTest:
         # Given
         booking = Booking()
         booking.stock = Stock()
-        booking.stock.eventOccurrence = EventOccurrence()
-        booking.stock.eventOccurrence.beginningDatetime = datetime.utcnow() + timedelta(hours=71)
+        booking.stock.beginningDatetime = datetime.utcnow() + timedelta(hours=71)
 
         # When
         is_cancellable = booking.isUserCancellable

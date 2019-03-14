@@ -3,7 +3,7 @@ from sqlalchemy import or_
 
 from domain.keywords import create_filter_matching_all_keywords_in_any_model, \
     create_get_filter_matching_ts_query_in_any_model
-from models import Offerer, Venue, Offer, EventOccurrence, UserOfferer, User, Stock, Recommendation
+from models import Offerer, Venue, Offer, UserOfferer, User, Stock, Recommendation
 from models import RightsType
 from models.db import db
 
@@ -18,10 +18,6 @@ def find_by_siren(siren):
 
 def get_by_offer_id(offer_id):
     return Offerer.query.join(Venue).join(Offer).filter_by(id=offer_id).first()
-
-
-def get_by_event_occurrence_id(event_occurrence_id):
-    return Offerer.query.join(Venue).join(Offer).join(EventOccurrence).filter_by(id=event_occurrence_id).first()
 
 
 def find_all_admin_offerer_emails(offerer_id):
@@ -284,7 +280,7 @@ def _filter_by_offer_status(query, offer_status):
                                      | (Stock.bookingLimitDatetime >= datetime.utcnow()))
         is_available_thing = ((Stock.available == None) | (Stock.available > 0))
 
-        query_1 = query.join(EventOccurrence).join(Stock)
+        query_1 = query.join(Stock)
         query_2 = query.join(Stock)
 
     if offer_status == "VALID":

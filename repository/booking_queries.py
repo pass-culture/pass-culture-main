@@ -11,7 +11,6 @@ from domain.keywords import create_filter_matching_all_keywords_in_any_model, \
 from models import ApiErrors, \
     Booking, \
     Event, \
-    EventOccurrence, \
     PcObject, \
     Offer, \
     Stock, \
@@ -55,10 +54,7 @@ def filter_bookings_with_keywords_string(query, keywords_string):
 
 def find_offerer_bookings(offerer_id, search=None, order_by=None, page=1):
     query = Booking.query.join(Stock) \
-        .outerjoin(EventOccurrence) \
-        .join(Offer,
-              ((Stock.offerId == Offer.id) | \
-               (EventOccurrence.offerId == Offer.id))) \
+        .join(Offer) \
         .join(Venue) \
         .outerjoin(Thing, and_(Offer.thingId == Thing.id)) \
         .outerjoin(Event, and_(Offer.eventId == Event.id)) \
@@ -78,12 +74,11 @@ def find_offerer_bookings(offerer_id, search=None, order_by=None, page=1):
 
 
 def find_bookings_from_recommendation(reco, user):
-    booking_query = Booking.query.join(Stock)
-    if reco.offer.eventId:
-        booking_query = booking_query.join(EventOccurrence)
-    booking_query = booking_query.join(Offer) \
-        .filter(Booking.user == user) \
-        .filter(Offer.id == reco.offerId)
+    booking_query = Booking.query \
+                           .join(Stock) \
+                           .join(Offer) \
+                           .filter(Booking.user == user) \
+                           .filter(Offer.id == reco.offerId)
     return booking_query.all()
 
 
@@ -111,7 +106,6 @@ def find_by(token: str, email: str = None, offer_id: int = None) -> Booking:
             .join(Offer) \
             .filter_by(id=offer_id)
         query_offer_2 = Booking.query.join(Stock) \
-            .join(EventOccurrence) \
             .join(aliased(Offer)) \
             .filter_by(id=offer_id)
         query_offer = query_offer_1.union_all(query_offer_2)

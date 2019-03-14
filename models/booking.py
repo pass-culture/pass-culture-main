@@ -94,8 +94,8 @@ class Booking(PcObject,
 
     @property
     def isUserCancellable(self):
-        if self.stock.eventOccurrence:
-            event_starts_in_more_than_72_hours = self.stock.eventOccurrence.beginningDatetime > datetime.utcnow() + timedelta(
+        if self.stock.beginningDatetime:
+            event_starts_in_more_than_72_hours = self.stock.beginningDatetime > datetime.utcnow() + timedelta(
                 hours=72)
             return event_starts_in_more_than_72_hours
         else:

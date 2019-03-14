@@ -10,7 +10,6 @@ from domain.keywords import create_filter_matching_all_keywords_in_any_model, \
 from models import Booking, \
     Event, \
     EventType, \
-    EventOccurrence, \
     Offer, \
     Stock, \
     Offerer, \
@@ -44,7 +43,7 @@ def bookable_offers(query, offer_type):
     # remove events for which all occurrences are in the past
     # (crude filter to limit joins before the more complete one below)
     if offer_type == Event:
-        query = query.filter(Offer.eventOccurrences.any(EventOccurrence.beginningDatetime > datetime.utcnow()))
+        query = query.filter(Offer.stocks.any(Stock.beginningDatetime > datetime.utcnow()))
         logger.debug(lambda: '(reco) future events.count ' + str(query.count()))
 
     query = _filter_bookable_offers_for_discovery(query)
@@ -80,11 +79,7 @@ def not_currently_recommended_offers(query, user):
 def get_active_offers_by_type(offer_type, user=None, departement_codes=None, offer_id=None):
     query = Offer.query.filter_by(isActive=True)
     logger.debug(lambda: '(reco) {} active offers count {}'.format(offer_type.__name__, query.count()))
-    if offer_type == Event:
-        query = query.join(EventOccurrence)
-        query = query.join(Stock, and_(EventOccurrence.id == Stock.eventOccurrenceId))
-    else:
-        query = query.join(Stock, and_(Offer.id == Stock.offerId))
+    query = query.join(Stock, and_(Offer.id == Stock.offerId))
     logger.debug(lambda: '(reco) {} offers with stock count {}'.format(offer_type.__name__, query.count()))
 
     query = query.join(Venue, and_(Offer.venueId == Venue.id))
@@ -116,8 +111,8 @@ def get_active_offers_by_type(offer_type, user=None, departement_codes=None, off
 
 
 def _date_interval_to_filter(date_interval):
-    return ((EventOccurrence.beginningDatetime >= date_interval[0]) & \
-            (EventOccurrence.beginningDatetime <= date_interval[1]))
+    return ((Stock.beginningDatetime >= date_interval[0]) & \
+            (Stock.beginningDatetime <= date_interval[1]))
 
 
 def filter_offers_with_keywords_string(query, keywords_string):
@@ -241,17 +236,13 @@ def find_searchable_offer(offer_id):
         .first()
 
 def _filter_recommendable_offers_for_search(offer_query):
-    join_on_event_occurrence = Offer.id == EventOccurrence.offerId
-    join_on_stock = (Stock.offerId == Offer.id) | (Stock.eventOccurrenceId == EventOccurrence.id)
-
     stock_can_still_be_booked = (Stock.bookingLimitDatetime > datetime.utcnow()) | (Stock.bookingLimitDatetime == None)
-    event_has_not_began_yet = EventOccurrence.beginningDatetime > datetime.utcnow()
-    offer_is_on_a_thing = Stock.eventOccurrenceId == None
+    event_has_not_began_yet = Stock.beginningDatetime > datetime.utcnow()
+    offer_is_on_a_thing = Offer.eventId == None
 
     offer_query = offer_query.reset_joinpoint() \
         .filter(Offer.isActive == True) \
-        .outerjoin(EventOccurrence, join_on_event_occurrence) \
-        .join(Stock, join_on_stock) \
+        .join(Stock) \
         .filter(Stock.isSoftDeleted == False) \
         .filter(stock_can_still_be_booked) \
         .filter(event_has_not_began_yet | offer_is_on_a_thing) \
@@ -265,16 +256,14 @@ def find_activation_offers(departement_code: str) -> List[Offer]:
     departement_codes = ILE_DE_FRANCE_DEPT_CODES if departement_code == '93' else [departement_code]
     match_department_or_is_national = or_(Venue.departementCode.in_(departement_codes), Event.isNational == True,
                                           Thing.isNational == True)
-    join_on_stock = and_(or_(Offer.id == Stock.offerId, Stock.eventOccurrenceId == EventOccurrence.id))
-    join_on_event_occurrence = and_(Offer.id == EventOccurrence.offerId)
     join_on_event = and_(Event.id == Offer.eventId)
 
     query = Offer.query \
         .outerjoin(Thing) \
         .outerjoin(Event, join_on_event) \
-        .outerjoin(EventOccurrence, join_on_event_occurrence) \
         .join(Venue) \
-        .join(Stock, join_on_stock) \
+        .reset_joinpoint() \
+        .join(Stock) \
         .filter(Event.type == str(EventType.ACTIVATION)) \
         .filter(match_department_or_is_national)
 

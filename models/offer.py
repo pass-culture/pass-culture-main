@@ -5,7 +5,7 @@ from itertools import chain
 from sqlalchemy import BigInteger, CheckConstraint, Column, DateTime, desc, ForeignKey, String
 from sqlalchemy.orm import relationship
 
-from models import DeactivableMixin, EventOccurrence
+from models import DeactivableMixin
 from models.db import Model
 from models.pc_object import PcObject
 from models.providable_mixin import ProvidableMixin
@@ -73,11 +73,11 @@ class Offer(PcObject,
 
     @property
     def dateRange(self):
-        if self.thing or not self.eventOccurrences:
+        if self.thing or not self.stocks:
             return DateTimes()
 
-        start = min([occurrence.beginningDatetime for occurrence in self.eventOccurrences])
-        end = max([occurrence.endDatetime for occurrence in self.eventOccurrences])
+        start = min([stock.beginningDatetime for stock in self.stocks])
+        end = max([stock.endDatetime for stock in self.stocks])
         return DateTimes(start, end)
 
     @property
@@ -85,20 +85,8 @@ class Offer(PcObject,
         return self.event or self.thing
 
     @property
-    def stocks(self):
-        if self.thing:
-            return self.thingStocks
-        elif self.event:
-            return list(chain(*map(lambda eo: eo.stocks,
-                                   self.eventOccurrences)))
-        else:
-            return []
-
-    @property
     def lastStock(self):
         query = Stock.queryNotSoftDeleted()
-        if self.eventId:
-            query = query.join(EventOccurrence)
         return query.join(Offer) \
             .filter(Offer.id == self.id) \
             .order_by(desc(Stock.bookingLimitDatetime)) \

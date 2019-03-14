@@ -3,7 +3,6 @@ from models.db import db
 from models import Booking, \
     Deposit, \
     Event, \
-    EventOccurrence, \
     Mediation, \
     Payment, \
     PaymentStatus, \
@@ -30,7 +29,6 @@ def clean_all_database(*args, **kwargs):
     PaymentTransaction.query.delete()
     Booking.query.delete()
     Stock.query.delete()
-    EventOccurrence.query.delete()
     Recommendation.query.delete()
     Mediation.query.delete()
     Offer.query.delete()

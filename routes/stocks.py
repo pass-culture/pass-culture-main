@@ -3,17 +3,15 @@ from flask import current_app as app, jsonify, request
 from flask_login import current_user
 
 from domain.discard_pc_objects import cancel_bookings
-from domain.stocks import find_offerer_for_new_stock
 from domain.user_emails import send_batch_cancellation_emails_to_users, send_batch_cancellation_email_to_offerer
 from models.event import Event
-from models.event_occurrence import EventOccurrence
 from models.offer import Offer
 from models.pc_object import PcObject
 from models.stock import Stock
 from models.thing import Thing
 from models.user_offerer import RightsType
 from models.venue import Venue
-from repository import stock_queries, booking_queries
+from repository import booking_queries, offerer_queries, stock_queries
 from utils.human_ids import dehumanize
 from utils.mailing import MailServiceException, send_raw_email
 from utils.rest import ensure_current_user_has_rights, \
@@ -22,7 +20,6 @@ from utils.rest import ensure_current_user_has_rights, \
     load_or_404, \
     login_or_api_key_required
 from domain.keywords import LANGUAGE
-from validation.stocks import check_offer_id_xor_event_occurrence_id_in_request
 
 search_models = [
     # Order is important
@@ -30,17 +27,6 @@ search_models = [
     Venue,
     Event
 ]
-
-
-def join_stocks(query):
-    for search_model in search_models:
-        if search_model == Event:
-            query = query.outerjoin(EventOccurrence)\
-                         .join(Offer)\
-                         .outerjoin(search_model)
-        else:
-            query = query.join(Offer).outerjoin(search_model)
-    return query
 
 
 def query_stocks(ts_query):
@@ -87,14 +73,9 @@ def get_stock(stock_id, mediation_id):
 @expect_json_data
 def create_stock():
     stock_dict = request.json
-    check_offer_id_xor_event_occurrence_id_in_request(stock_dict)
     offer_id = dehumanize(stock_dict.get('offerId', None))
-    event_occurrence_id = dehumanize(stock_dict.get('eventOccurrenceId', None))
-    offerer = find_offerer_for_new_stock(offer_id, event_occurrence_id)
+    offerer = offerer_queries.get_by_offer_id(offer_id)
     ensure_current_user_has_rights(RightsType.editor, offerer.id)
-
-    if event_occurrence_id and offer_id:
-        del(stock_dict['offerId'])
 
     new_stock = Stock(from_dict=stock_dict)
     stock_queries.save_stock(new_stock)

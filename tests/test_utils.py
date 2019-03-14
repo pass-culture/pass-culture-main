@@ -15,7 +15,6 @@ import models
 from models import Booking, \
     Deposit, \
     Event, \
-    EventOccurrence, \
     EventType, \
     Mediation, \
     Offer, \
@@ -192,26 +191,25 @@ def create_stock_with_event_offer(
     stock.price = price
     stock.available = available
 
-    stock.eventOccurrence = EventOccurrence()
     if beginning_datetime_future:
-        stock.eventOccurrence.beginningDatetime = datetime(2019, 7, 20, 12, 0, 0, tzinfo=timezone.utc)
-        stock.eventOccurrence.endDatetime = datetime(2019, 7, 20, 12, 10, 0, tzinfo=timezone.utc)
+        stock.beginningDatetime = datetime(2019, 7, 20, 12, 0, 0, tzinfo=timezone.utc)
+        stock.endDatetime = datetime(2019, 7, 20, 12, 10, 0, tzinfo=timezone.utc)
         stock.bookingLimitDatetime = datetime.utcnow() + timedelta(minutes=2)
     else:
-        stock.eventOccurrence.beginningDatetime = datetime(2017, 7, 20, 12, 0, 0, tzinfo=timezone.utc)
-        stock.eventOccurrence.endDatetime = datetime(2017, 7, 20, 12, 10, 0, tzinfo=timezone.utc)
+        stock.beginningDatetime = datetime(2017, 7, 20, 12, 0, 0, tzinfo=timezone.utc)
+        stock.endDatetime = datetime(2017, 7, 20, 12, 10, 0, tzinfo=timezone.utc)
         stock.bookingLimitDatetime = datetime.utcnow() - timedelta(days=800)
-    stock.eventOccurrence.offer = Offer()
-    stock.eventOccurrence.offer.bookingEmail = booking_email
-    stock.eventOccurrence.offer.event = Event(
+    stock.offer = Offer()
+    stock.offer.bookingEmail = booking_email
+    stock.offer.event = Event(
         from_dict={
             'isNational': False,
             'durationMinutes': 10,
             'name': name,
             'type': str(event_type)}
     )
-    stock.eventOccurrence.offer.id = offer_id
-    stock.eventOccurrence.offer.venue = venue
+    stock.offer.id = offer_id
+    stock.offer.venue = venue
     stock.isSoftDeleted = is_soft_deleted
 
     return stock
@@ -220,14 +218,16 @@ def create_stock_with_event_offer(
 def create_stock_from_event_occurrence(event_occurrence, price=10, available=10, soft_deleted=False, recap_sent=False,
                                        booking_limit_date=None):
     stock = Stock()
-    stock.eventOccurrence = event_occurrence
+    stock.beginningDatetime = event_occurrence['beginningDatetime']
+    stock.endDatetime = event_occurrence['endDatetime']
+    stock.offerId = event_occurrence['offerId']
     stock.price = price
     stock.available = available
     stock.isSoftDeleted = soft_deleted
     if recap_sent:
         stock.bookingRecapSent = datetime.utcnow()
     if booking_limit_date is None:
-        stock.bookingLimitDatetime = event_occurrence.beginningDatetime
+        stock.bookingLimitDatetime = event_occurrence['beginningDatetime']
     else:
         stock.bookingLimitDatetime = booking_limit_date
     return stock
@@ -243,12 +243,14 @@ def create_stock_from_offer(offer, price=10, available=10, soft_deleted=False, b
     return stock
 
 
-def create_stock(price=10, available=10, booking_limit_datetime=None, offer=None):
+def create_stock(price=10, available=10, booking_limit_datetime=None, offer=None, beginning_datetime=None, end_datetime=None):
     stock = Stock()
     stock.price = price
     stock.available = available
     stock.bookingLimitDatetime = booking_limit_datetime
     stock.offer = offer
+    stock.beginningDatetime = beginning_datetime
+    stock.endDatetime = end_datetime
     return stock
 
 
@@ -465,15 +467,17 @@ def create_recommendation(offer=None, user=None, mediation=None, idx=None, date_
     return recommendation
 
 
+#FIXME: Remove this
 def create_event_occurrence(
         offer,
         beginning_datetime=datetime.utcnow() + timedelta(hours=2),
         end_datetime=datetime.utcnow() + timedelta(hours=5)
 ):
-    event_occurrence = EventOccurrence()
-    event_occurrence.offer = offer
-    event_occurrence.beginningDatetime = beginning_datetime
-    event_occurrence.endDatetime = end_datetime
+    event_occurrence = {}
+    event_occurrence['offer'] = offer
+    event_occurrence['offerId'] = offer.id
+    event_occurrence['beginningDatetime'] = beginning_datetime
+    event_occurrence['endDatetime'] = end_datetime
     return event_occurrence
 
 
