@@ -74,6 +74,8 @@ OFFER_INCLUDES = [
             '-type'
         ]
     },
+    'isFinished',
+    'isFullyBooked',
     "mediations",
     {
     "key": "stocks",
@@ -115,6 +117,8 @@ RECOMMENDATION_INCLUDES = [
     {
         "key": "offer",
         "sub_joins": [
+            'isFinished',
+            'isFullyBooked',
             "dateRange",
             {
                 "key": "eventOrThing",
@@ -142,7 +146,12 @@ BOOKING_INCLUDES = [
             [
                 {
                     "key": "resolvedOffer",
-                    "sub_joins": ["eventOrThing", "venue"]
+                    "sub_joins": [
+                        "eventOrThing",
+                        "venue",
+                        'isFinished',
+                        'isFullyBooked'
+                    ]
                 }
             ]
     },
@@ -157,6 +166,8 @@ PRO_BOOKING_INCLUDES = [
                 {
                     "key": "resolvedOffer",
                     "sub_joins": [
+                        'isFinished',
+                        'isFullyBooked',
                         {
                             "key": "event",
                             "sub_joins": ["offerType"]

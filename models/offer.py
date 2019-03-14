@@ -1,14 +1,12 @@
-from itertools import chain
-
 from datetime import datetime
-from sqlalchemy import BigInteger, CheckConstraint, Column, DateTime, desc, ForeignKey, String, Text, Integer, Binary, \
-    ARRAY, Boolean, false, cast, TEXT, Index
+
+from sqlalchemy import BigInteger, CheckConstraint, Column, DateTime, desc, ForeignKey, String
+from sqlalchemy import Text, Integer, ARRAY, Boolean, false, cast, TEXT, Index
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.functions import coalesce
 
 from domain.keywords import create_tsvector
 from models import ExtraDataMixin
-from models import DeactivableMixin
 from models.db import Model
 from models.deactivable_mixin import DeactivableMixin
 from models.offer_type import ThingType, EventType
@@ -148,6 +146,25 @@ class Offer(PcObject,
     @property
     def isDigital(self):
         return self.url is not None and self.url != ''
+
+    @property
+    def availableStocks(self):
+        return sum(map(lambda s: s.available if s.isBookable else 0, self.stocks))
+
+    @property
+    def isFinished(self):
+        return all(map(lambda s: not s.isBookable, self.stocks))
+
+    @property
+    def isFullyBooked(self):
+        bookable_stocks = list(filter(lambda s: s.isBookable, self.stocks))
+        total_quantity = 0
+
+        for stock in bookable_stocks:
+            bookings = filter(lambda b: not b.isCancelled, stock.bookings)
+            total_quantity += sum(map(lambda s: s.quantity, bookings))
+
+        return total_quantity >= self.availableStocks
 
     def _type_can_only_be_offline(self):
         offline_only_things = filter(lambda thing_type: thing_type.value['offlineOnly'], ThingType)
