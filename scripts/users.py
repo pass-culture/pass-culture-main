@@ -119,7 +119,8 @@ def export_created_data(bookings: List[Booking]):
     csv = generate_activation_users_csv(users)
 
     try:
-        send_users_activation_report(csv, ACTIVATION_USER_RECIPIENTS, send_raw_email)
+        with app.app_context():
+            send_users_activation_report(csv, ACTIVATION_USER_RECIPIENTS, send_raw_email)
     except MailServiceException as e:
         logger.error('Error while sending activation users report email to MailJet', e)
 
