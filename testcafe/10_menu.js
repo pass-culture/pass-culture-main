@@ -130,14 +130,8 @@ test('Menu | Liens | Mentions légales', async t => {
   await t
     .expect(menuMentionsLegales.exists)
     .ok()
-    .click(menuMentionsLegales)
-  await t
-    .expect(getPageUrl())
-    .eql(
-      'https://pass-culture.gitbook.io/documents/textes-normatifs/mentions-legales-et-conditions-generales-dutilisation-de-lapplication-pass-culture',
-      'On est redirigé vers gitbook',
-      { timeout: 10000 }
-    )
+  await t.expect(menuMentionsLegales.getAttribute('href'))
+         .eql('https://pass-culture.gitbook.io/documents/textes-normatifs/mentions-legales-et-conditions-generales-dutilisation-de-lapplication-pass-culture');
 })
 
 test('Menu | Liens | Déconnexion', async t => {
