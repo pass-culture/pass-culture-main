@@ -34,6 +34,7 @@ ShallowWrapper {
 >
           <Field
                     displayValue={[Function]}
+                    errors={null}
                     layout="horizontal"
                     name="isActive"
                     size="normal"
@@ -102,6 +103,7 @@ ShallowWrapper {
         "props": Object {
           "children": <Field
             displayValue={[Function]}
+            errors={null}
             layout="horizontal"
             name="isActive"
             size="normal"
@@ -117,6 +119,7 @@ ShallowWrapper {
           "nodeType": "class",
           "props": Object {
             "displayValue": [Function],
+            "errors": null,
             "layout": "horizontal",
             "name": "isActive",
             "size": "normal",
@@ -154,6 +157,7 @@ ShallowWrapper {
 >
             <Field
                         displayValue={[Function]}
+                        errors={null}
                         layout="horizontal"
                         name="isActive"
                         size="normal"
@@ -222,6 +226,7 @@ ShallowWrapper {
           "props": Object {
             "children": <Field
               displayValue={[Function]}
+              errors={null}
               layout="horizontal"
               name="isActive"
               size="normal"
@@ -237,6 +242,7 @@ ShallowWrapper {
             "nodeType": "class",
             "props": Object {
               "displayValue": [Function],
+              "errors": null,
               "layout": "horizontal",
               "name": "isActive",
               "size": "normal",
@@ -265,7 +271,9 @@ ShallowWrapper {
           "getChildContext": Object {
             "calledByRenderer": false,
           },
-          "getDerivedStateFromProps": true,
+          "getDerivedStateFromProps": Object {
+            "hasShouldComponentUpdateBug": false,
+          },
           "getSnapshotBeforeUpdate": true,
           "setState": Object {
             "skipsComponentDidUpdateOnNullish": true,
