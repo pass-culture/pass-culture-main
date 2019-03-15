@@ -348,6 +348,12 @@ def create_thing_offer(venue, thing=None, date_created=datetime.utcnow(), bookin
                                    author_name=author_name, url=url, thumb_count=thumb_count,
                                    dominant_color=dominant_color, is_national=is_national)
     offer.venue = venue
+    offer.name = thing_name
+    offer.type = str(thing_type)
+    offer.mediaUrls = media_urls
+    offer.extraData = {'author': author_name}
+    offer.url = url
+    offer.isNational = is_national
     offer.dateCreated = date_created
     offer.bookingEmail = booking_email
     offer.isActive = is_active
@@ -370,6 +376,9 @@ def create_event_offer(venue=None, event=None, event_name='Test event', duration
                              thumb_count=thumb_count, dominant_color=dominant_color, is_national=is_national)
     offer.event = event
     offer.venue = venue
+    offer.name = event_name
+    offer.type = str(event_type)
+    offer.isNational = is_national
     offer.dateCreated = date_created
     offer.bookingEmail = booking_email
     offer.isActive = is_active

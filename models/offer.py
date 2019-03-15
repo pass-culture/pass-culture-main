@@ -1,12 +1,17 @@
-""" offer model """
-from datetime import datetime
 from itertools import chain
 
-from sqlalchemy import BigInteger, CheckConstraint, Column, DateTime, desc, ForeignKey, String
+from datetime import datetime
+from sqlalchemy import BigInteger, CheckConstraint, Column, DateTime, desc, ForeignKey, String, Text, Integer, Binary, \
+    ARRAY, Boolean, false, cast, TEXT, Index
 from sqlalchemy.orm import relationship
+from sqlalchemy.sql.functions import coalesce
 
+from domain.keywords import create_tsvector
+from models import ExtraDataMixin
 from models import DeactivableMixin
 from models.db import Model
+from models.deactivable_mixin import DeactivableMixin
+from models.offer_type import ThingType, EventType
 from models.pc_object import PcObject
 from models.providable_mixin import ProvidableMixin
 from models.stock import Stock
@@ -16,16 +21,9 @@ from utils.date import DateTimes
 
 class Offer(PcObject,
             Model,
+            ExtraDataMixin,
             DeactivableMixin,
             ProvidableMixin):
-    id = Column(BigInteger,
-                primary_key=True,
-                autoincrement=True)
-
-    dateCreated = Column(DateTime,
-                         nullable=False,
-                         default=datetime.utcnow)
-
     thingId = Column(BigInteger,
                      ForeignKey("thing.id"),
                      index=True,
@@ -59,6 +57,48 @@ class Offer(PcObject,
 
     bookingEmail = Column(String(120), nullable=True)
 
+    type = Column(String(50),
+                  nullable=True)
+
+    name = Column(String(140), nullable=False)
+
+    description = Column(Text, nullable=True)
+
+    conditions = Column(String(120),
+                        nullable=True)
+
+    ageMin = Column(Integer,
+                    nullable=True)
+    ageMax = Column(Integer,
+                    nullable=True)
+
+    accessibility = Column(Binary(1),
+                           CheckConstraint('("eventId" IS  NULL) OR (accessibility IS NOT NULL)',
+                                           name='check_providable_with_provider_has_idatproviders'),
+                           nullable=True,
+                           default=bytes([0]),
+
+                           )
+
+    url = Column(String(255), nullable=True)
+
+    mediaUrls = Column(ARRAY(String(220)),
+                       nullable=False,
+                       default=[])
+
+    durationMinutes = Column(Integer,
+                             CheckConstraint('("eventId" IS NULL) OR ("durationMinutes" IS NOT NULL)'),
+                             nullable=True)
+
+    isNational = Column(Boolean,
+                        server_default=false(),
+                        default=False,
+                        nullable=False)
+
+    dateCreated = Column(DateTime,
+                         nullable=False,
+                         default=datetime.utcnow)
+
     def errors(self):
         api_errors = super(Offer, self).errors()
         thing = self.thing
@@ -69,6 +109,9 @@ class Offer(PcObject,
         if thing and thing.url and not venue.isVirtual:
             api_errors.addError('venue',
                                 'Une offre numérique doit obligatoirement être associée au lieu "Offre en ligne"')
+        if self.isDigital and self._type_can_only_be_offline():
+            api_errors.addError('url', 'Une offre de type {} ne peut pas être numérique'.format(
+                self._get_label_from_type_string()))
         return api_errors
 
     @property
@@ -95,3 +138,39 @@ class Offer(PcObject,
     @property
     def hasActiveMediation(self):
         return any(map(lambda m: m.isActive, self.mediations))
+
+    @property
+    def offerType(self):
+        all_types = list(ThingType) + list(EventType)
+        for possible_type in all_types:
+            if str(possible_type) == self.type:
+                return possible_type.as_dict()
+
+    @property
+    def isDigital(self):
+        return self.url is not None and self.url != ''
+
+    def _type_can_only_be_offline(self):
+        offline_only_things = filter(lambda thing_type: thing_type.value['offlineOnly'], ThingType)
+        offline_only_types_for_things = map(lambda x: x.__str__(), offline_only_things)
+        return self.type in offline_only_types_for_things
+
+    def _get_label_from_type_string(self):
+        matching_type_thing = next(filter(lambda thing_type: str(thing_type) == self.type, ThingType))
+        return matching_type_thing.value['label']
+
+
+Offer.__ts_vector__ = create_tsvector(
+    cast(coalesce(Offer.name, ''), TEXT),
+    coalesce(Offer.extraData['author'].cast(TEXT), ''),
+    coalesce(Offer.extraData['byArtist'].cast(TEXT), ''),
+    cast(coalesce(Offer.description, ''), TEXT),
+)
+
+Offer.__table_args__ = (
+    Index(
+        'idx_thing_fts',
+        Offer.__ts_vector__,
+        postgresql_using='gin'
+    ),
+)
