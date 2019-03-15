@@ -12,34 +12,7 @@ import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
 import get from 'lodash.get'
 import ReactTooltip from 'react-tooltip'
-
-const floatSep = ','
-
-function getDisplayedPrice(value, readOnly) {
-  if (value === 0) {
-    if (readOnly) {
-      return 'Gratuit'
-    }
-    return 0
-  }
-  if (readOnly) {
-    let floatValue = value
-    if (value && String(value).includes(floatSep)) {
-      floatValue = parseFloat(value.replace(/,/, '.')).toFixed(2)
-    }
-    let floatValueString = `${floatValue} €`
-    if (floatSep === ',') {
-      floatValueString = floatValueString.replace('.', ',')
-    }
-    return floatValueString
-  }
-
-  if (value === ' ') {
-    return 0
-  }
-
-  return value
-}
+import { FLOATSEP, getDisplayedPrice, getRemaingStock } from './utils'
 
 class PriceQuantityForm extends Component {
   constructor() {
@@ -53,6 +26,7 @@ class PriceQuantityForm extends Component {
 
   handleOfferSuccessData = () => {
     const { history, offer } = this.props
+
     history.push(`/offres/${get(offer, 'id')}?gestion`)
   }
 
@@ -116,6 +90,10 @@ class PriceQuantityForm extends Component {
       stockPatch,
     } = this.props
 
+    const availableStock = get(stockPatch, 'available')
+    const offerBookings = get(stockPatch, 'bookings', [])
+    const remainingStock = getRemaingStock(availableStock, offerBookings)
+
     const name = `stock${stockFormKey}`
     let action = ''
     let stockId
@@ -131,81 +109,86 @@ class PriceQuantityForm extends Component {
     }
 
     return (
-      <Form
-        action={action}
-        BlockComponent={null}
-        handleSuccess={this.handleOfferSuccessData}
-        layout="input-only"
-        name={name}
-        patch={stockPatch}
-        size="small"
-        readOnly={isStockReadOnly}
-        Tag={null}>
-        <Fragment>
-          <td title="Gratuit si vide">
-            <Field name="eventOccurrenceId" type="hidden" />
-            <Field name="offerId" type="hidden" />
-            <Field
-              className="input is-small input-number"
-              displayValue={value => getDisplayedPrice(value, isStockReadOnly)}
-              floatSep={floatSep}
-              min="0"
-              name="price"
-              onBlur={this.onPriceBlur}
-              placeholder="Gratuit"
-              step="0.01"
-              title="Prix"
-              type={isStockReadOnly ? 'text' : 'number'}
-            />
-          </td>
-          <td title="Laissez vide si pas de limite">
-            <Field
-              maxDate={isStockOnly ? undefined : beginningDatetime}
-              name="bookingLimitDatetime"
-              placeholder="Laissez vide si pas de limite"
-              type="date"
-            />
-          </td>
-          <td className="tooltiped">
-            <Field
-              className="input is-small input-number"
-              name="available"
-              placeholder="Illimité"
-              renderInfo={() => {
-                if (!isStockReadOnly) {
-                  return (
-                    <span
-                      className="button tooltip qty-info"
-                      data-place="bottom"
-                      data-tip="<p>Laissez ce champ vide pour un nombre de places illimité.</p>"
-                      data-type="info">
-                      <Icon svg="picto-info" />
-                    </span>
-                  )
+      <tbody>
+        <Form
+          action={action}
+          BlockComponent={null}
+          handleSuccess={this.handleOfferSuccessData}
+          layout="input-only"
+          name={name}
+          patch={stockPatch}
+          size="small"
+          readOnly={isStockReadOnly}
+          Tag={null}>
+          <Fragment>
+            <td title="Gratuit si vide">
+              <Field name="eventOccurrenceId" type="hidden" />
+              <Field name="offerId" type="hidden" />
+              <Field
+                className="input is-small input-number"
+                displayValue={value =>
+                  getDisplayedPrice(value, isStockReadOnly)
                 }
-              }}
-              title="Places disponibles"
-              type={isStockReadOnly ? 'text' : 'number'}
-            />
-          </td>
-          {!isStockReadOnly && (
-            <Fragment>
-              <td>
-                <SubmitButton className="button is-primary is-small submitStep">
-                  Valider
-                </SubmitButton>
-              </td>
-              <td className="is-clipped">
-                <NavLink
-                  className="button is-secondary is-small cancel-step"
-                  to={`/offres/${get(offer, 'id')}?gestion`}>
-                  Annuler
-                </NavLink>
-              </td>
-            </Fragment>
-          )}
-        </Fragment>
-      </Form>
+                floatSep={FLOATSEP}
+                min="0"
+                name="price"
+                onBlur={this.onPriceBlur}
+                placeholder="Gratuit"
+                step="0.01"
+                title="Prix"
+                type={isStockReadOnly ? 'text' : 'number'}
+              />
+            </td>
+            <td title="Laissez vide si pas de limite">
+              <Field
+                maxDate={isStockOnly ? undefined : beginningDatetime}
+                name="bookingLimitDatetime"
+                placeholder="Laissez vide si pas de limite"
+                type="date"
+              />
+            </td>
+            <td className="tooltiped">
+              <Field
+                className="input is-small input-number"
+                name="available"
+                placeholder="Illimité"
+                renderInfo={() => {
+                  if (!isStockReadOnly) {
+                    return (
+                      <span
+                        className="button tooltip qty-info"
+                        data-place="bottom"
+                        data-tip="<p>Laissez ce champ vide pour un nombre de places ou stock illimité.</p>"
+                        data-type="info">
+                        <Icon svg="picto-info" />
+                      </span>
+                    )
+                  }
+                }}
+                title="Stock[ou] Places affecté[es]"
+                type={isStockReadOnly ? 'text' : 'number'}
+              />
+            </td>
+            <td>{remainingStock}</td>
+            {!isStockReadOnly && (
+              <Fragment>
+                <td>
+                  <SubmitButton className="button is-primary is-small submitStep">
+                    Valider
+                  </SubmitButton>
+                </td>
+                <td className="is-clipped">
+                  <NavLink
+                    className="button is-secondary is-small cancel-step"
+                    to={`/offres/${get(offer, 'id')}?gestion`}>
+                    Annuler
+                  </NavLink>
+                </td>
+              </Fragment>
+            )}
+          </Fragment>
+        </Form>
+      </tbody>
     )
   }
 }

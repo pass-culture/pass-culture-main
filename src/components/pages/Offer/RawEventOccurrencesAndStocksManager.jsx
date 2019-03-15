@@ -118,6 +118,11 @@ class RawEventOccurrencesAndStocksManager extends Component {
     } = this.props
     const { info } = this.state
 
+    console.log(
+      ' ----- This.props RawEventOccurrencesAndStocksManager ----- ',
+      this.props
+    )
+
     return (
       <div
         className="event-occurrences-and-stocks-manager"
@@ -171,7 +176,8 @@ class RawEventOccurrencesAndStocksManager extends Component {
                 )}
                 <td>Prix</td>
                 <td>Date Limite de Réservation</td>
-                <td>Places disponibles</td>
+                <td>Stock[ou]Places affecté[es] </td>
+                <td>Stock restant</td>
                 <td>Modifier</td>
                 <td>Supprimer</td>
               </tr>

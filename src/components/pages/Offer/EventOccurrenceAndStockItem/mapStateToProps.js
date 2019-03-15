@@ -40,6 +40,8 @@ export default function mapStateToProps(state, ownProps) {
     ? ownProps.stock
     : stockSelector(state, offerId, get(ownProps, 'eventOccurrence'))
 
+  const eventOccurrences = eventOccurrencesSelector(state, offerId)
+
   const stockPatch = stockPatchSelector(
     state,
     stock,
@@ -73,7 +75,7 @@ export default function mapStateToProps(state, ownProps) {
     event: eventSelector(state, eventId),
     eventId,
     eventOccurrencePatch,
-    eventOccurrences: eventOccurrencesSelector(state, offerId),
+    eventOccurrences,
     eventOccurrenceIdOrNew,
     formBeginningDatetime: get(
       state,

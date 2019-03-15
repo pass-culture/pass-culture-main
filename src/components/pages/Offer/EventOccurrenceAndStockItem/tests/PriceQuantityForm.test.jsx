@@ -12,6 +12,9 @@ import PriceQuantityForm from '../PriceQuantityForm'
 import mockedState from './mockedState'
 const middlewares = []
 const mockStore = configureStore(middlewares)
+const dispatchMock = jest.fn()
+const closeInfoMock = jest.fn()
+const showInfoMock = jest.fn()
 
 describe('src | components | pages | Offer | EventOccurrenceAndStockItem | PriceQuantityForm', () => {
   describe('snapshot', () => {
@@ -33,9 +36,43 @@ describe('src | components | pages | Offer | EventOccurrenceAndStockItem | Price
       expect(wrapper).toMatchSnapshot()
     })
   })
-  describe('render', () => {
+
+  describe('functions', () => {
+    describe('handleOfferSuccessData', () => {
+      it('should push correct url to history to permit to patch form', () => {
+        // given
+        const initialState = {}
+
+        const historyMock = { push: jest.fn() }
+        const initialProps = {
+          closeInfo: closeInfoMock,
+          dispatch: dispatchMock,
+          history: historyMock,
+          offer: {
+            id: 'TY',
+          },
+          showInfo: showInfoMock,
+          stockPatch: {
+            id: 'DG',
+          },
+          store: mockStore(initialState),
+        }
+
+        // when
+        const wrapper = shallow(<PriceQuantityForm {...initialProps} />)
+        // const wrapperInstance = wrapper.instance()
+        const expected = '/offres/TY?gestion&date=K9&stock=DG'
+
+        // then
+        expect(wrapper.state()).toEqual('expected')
+        expect(historyMock.push).toHaveBeenCalledWith(expected)
+      })
+    })
+  })
+
+  describe.skip('render', () => {
     describe('Quantity Field', () => {
-      describe('With StockPatch', () => {
+      describe('With editedStockId', () => {
         // security error
         it('should update field with good params', () => {
           // given
@@ -69,7 +106,6 @@ describe('src | components | pages | Offer | EventOccurrenceAndStockItem | Price
           history.push('/offres/NE')
 
           // when
-
           const wrapper = mount(
             <Provider store={store}>
               <Router history={history}>
@@ -83,7 +119,6 @@ describe('src | components | pages | Offer | EventOccurrenceAndStockItem | Price
 
           const field = wrapper.find(Field)
           const quantityField = field.at(4)
-          console.log('>>>>>>>', quantityField.props())
 
           // then
           expect(field).toHaveLength(5)
