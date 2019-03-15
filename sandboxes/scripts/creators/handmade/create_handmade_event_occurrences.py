@@ -40,8 +40,4 @@ def create_handmade_event_occurrences(offers_by_name):
         offer=offers_by_name['Le temps des cerises en mode mixolydien / ASSOCIATION KWATA']
     )
 
-    PcObject.check_and_save(*event_occurrences_by_name.values())
-
-    logger.info('created {} event_occurrences'.format(len(event_occurrences_by_name)))
-
     return event_occurrences_by_name

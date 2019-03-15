@@ -22,7 +22,6 @@ def test_save_handmade_sandbox(app):
         Booking=2,
         Deposit=1,
         Event=4,
-        EventOccurrence=5,
         Mediation=5,
         Offer=7,
         Offerer=7,
