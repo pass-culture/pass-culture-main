@@ -8,7 +8,7 @@ from models.pc_object import PcObject, serialize
 from tests.conftest import clean_database, TestClient
 from tests.test_utils import API_URL, create_user, create_offerer, create_venue, \
     create_stock_with_event_offer, create_booking, create_event_offer, create_user_offerer, create_event_occurrence, \
-    create_recommendation, create_stock_from_event_occurrence
+    create_recommendation, create_stock_from_event_occurrence, create_thing_offer
 from utils.human_ids import dehumanize, humanize
 
 
@@ -45,14 +45,15 @@ class Post:
             offerer = create_offerer()
             user_offerer = create_user_offerer(user, offerer)
             venue = create_venue(offerer)
-            offer = create_event_offer(venue)
+            offer = create_thing_offer(venue)
             PcObject.check_and_save(user_offerer, offer)
 
             stock_data = {'price': 1222, 'offerId': humanize(offer.id)}
             PcObject.check_and_save(user)
 
             # When
-            r_create = TestClient().with_auth('test@email.fr').post(API_URL + '/stocks/', json=stock_data)
+            r_create = TestClient().with_auth('test@email.fr')\
+                .post(API_URL + '/stocks/', json=stock_data)
 
             # Then
             assert r_create.status_code == 201
@@ -68,7 +69,7 @@ class Post:
             user = create_user(email='test@email.fr', can_book_free_offers=False, is_admin=True)
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer = create_event_offer(venue)
+            offer = create_thing_offer(venue)
             PcObject.check_and_save(user, offer)
 
             # When
@@ -114,7 +115,7 @@ class Post:
             user = create_user(email='test@email.fr', can_book_free_offers=False, is_admin=True)
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer = create_event_offer(venue)
+            offer = create_thing_offer(venue)
             PcObject.check_and_save(user, offer)
 
             data = {
@@ -131,6 +132,35 @@ class Post:
             assert response.status_code == 400
             assert response.json()["bookingLimitDatetime"] == ["Format de date invalide"]
 
+        @clean_database
+        def when_setting_beginning_and_end_datetimes_on_offer_with_thing(self, app):
+            # Given
+            user = create_user(email='test@email.fr', can_book_free_offers=False, is_admin=True)
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            offer = create_thing_offer(venue)
+            PcObject.check_and_save(user, offer)
+            beginningDatetime = datetime(2019, 2, 14)
+
+            data = {
+                'price': 0,
+                'offerId': humanize(offer.id),
+                'beginningDatetime': serialize(beginningDatetime),
+                'endDatetime': serialize(beginningDatetime + timedelta(days=1)),
+                'bookingLimitDatetime': serialize(beginningDatetime - timedelta(days=2))
+            }
+
+            # When
+            response = TestClient().with_auth(user.email) \
+                .post(API_URL + '/stocks/', json=data)
+
+            # Then
+            assert response.status_code == 400
+            assert response.json()['global'] == [
+                'Impossible de mettre des dates de début et fin si l\'offre ne porte pas sur un évenement'
+            ]
+
+
     class Returns403:
         @clean_database
         def when_user_has_no_rights_and_creating_stock_from_offer_id(self, app):
@@ -138,7 +168,7 @@ class Post:
             user = create_user(email='test@email.fr')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer = create_event_offer(venue)
+            offer = create_thing_offer(venue)
             PcObject.check_and_save(user, offer)
 
             data = {'price': 1222, 'offerId': humanize(offer.id)}

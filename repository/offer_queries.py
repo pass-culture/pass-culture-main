@@ -296,9 +296,7 @@ def find_offer_for_venue_id_and_specific_thing(venue_id, thing):
 
 
 def find_offer_by_id(offer_id):
-    return Offer.query \
-        .filter(Offer.id == offer_id) \
-        .first()
+    return Offer.query.get(offer_id)
 
 
 def find_first_offer_linked_to_event(event):

@@ -12,6 +12,7 @@ from models.thing import Thing
 from models.user_offerer import RightsType
 from models.venue import Venue
 from repository import booking_queries, offerer_queries, stock_queries
+from repository.offer_queries import find_offer_by_id
 from utils.human_ids import dehumanize
 from utils.mailing import MailServiceException, send_raw_email
 from utils.rest import ensure_current_user_has_rights, \
@@ -20,7 +21,7 @@ from utils.rest import ensure_current_user_has_rights, \
     load_or_404, \
     login_or_api_key_required
 from domain.keywords import LANGUAGE
-from validation.stocks import check_request_has_offer_id
+from validation.stocks import check_request_has_offer_id, check_stock_has_dates_for_event_offer
 
 search_models = [
     # Order is important
@@ -64,6 +65,8 @@ def create_stock():
     request_data = request.json
     check_request_has_offer_id(request_data)
     offer_id = dehumanize(request_data.get('offerId', None))
+    offer = find_offer_by_id(offer_id)
+    check_stock_has_dates_for_event_offer(request_data, offer)
     offerer = offerer_queries.get_by_offer_id(offer_id)
     ensure_current_user_has_rights(RightsType.editor, offerer.id)
 
@@ -71,6 +74,24 @@ def create_stock():
     stock_queries.save_stock(new_stock)
     return jsonify(new_stock._asdict()), 201
 
+
+
+# @app.route('/eventOccurrences/<id>', methods=['PATCH'])
+# @login_or_api_key_required
+# @expect_json_data
+# def edit_event_occurrence(id):
+#     eo = load_or_404(EventOccurrence, id)
+#
+#     eo.ensure_can_be_updated()
+#
+#     ensure_current_user_has_rights(RightsType.editor,
+#                                    eo.offer.venue.managingOffererId)
+#     eo.populateFromDict(request.json)
+#     #TODO: Si changement d'horaires et qu'il y a des réservations il faut envoyer des mails !
+#     #TODO: Interdire la modification d'évenements passés
+#     PcObject.check_and_save(eo)
+#
+#     return jsonify(eo._asdict(include=EVENT_OCCURRENCE_INCLUDES)), 200
 
 @app.route('/stocks/<stock_id>', methods=['PATCH'])
 @login_or_api_key_required
