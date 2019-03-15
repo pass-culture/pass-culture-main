@@ -58,11 +58,7 @@ def create_industrial_bookings(
         if user_has_only_activation_booked and not is_activation_offer:
             continue
 
-        recommendation_stocks = [
-            stock for stock in stocks
-            if stock.offer == offer or\
-            stock.eventOccurrence in offer.eventOccurrences
-        ]
+        recommendation_stocks = [stock for stock in stocks if stock.offer == offer]
 
         for (index, stock) in enumerate(recommendation_stocks):
 

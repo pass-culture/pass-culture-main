@@ -14,7 +14,7 @@ def get_existing_pro_validated_user_with_validated_offerer_with_validated_user_o
     query = User.query.filter(User.validationToken == None)
     query = filter_users_with_at_least_one_validated_offerer_validated_user_offerer(query)
     query = query.join(Venue) \
-                 .filter(Venue.offers.any(~Offer.thingStocks.any()))
+                 .filter(Venue.offers.any(~Offer.stocks.any()))
     query = query.join(Offer) \
                  .join(Stock) \
                  .filter(Stock.bookings.any(Booking.isUsed == False))
@@ -25,8 +25,8 @@ def get_existing_pro_validated_user_with_validated_offerer_with_validated_user_o
             and uo.offerer.validationToken == None:
             for venue in uo.offerer.managedVenues:
                 for offer in venue.offers:
-                    if offer.thingStocks:
-                        for stock in offer.thingStocks:
+                    if offer.thingId:
+                        for stock in offer.stocks:
                             if stock.bookings:
                                 for booking in stock.bookings:
                                     if not booking.isUsed:

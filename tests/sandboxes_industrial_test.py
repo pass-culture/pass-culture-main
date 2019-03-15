@@ -1,10 +1,10 @@
 import pytest
 
-from sandboxes.scripts.testcafe_helpers import get_all_testcafe_helpers
 from sandboxes.scripts.save_sandbox import save_sandbox
+from sandboxes.scripts.testcafe_helpers import get_all_testcafe_helpers
 from tests.conftest import clean_database
 from tests.test_utils import assertCreatedCounts, \
-                             saveCounts
+    saveCounts
 from utils.logger import logger
 
 
@@ -24,7 +24,6 @@ def test_save_industrial_sandbox(app):
         Booking=40,
         Deposit=6,
         Event=56,
-        EventOccurrence=78,
         Mediation=55,
         Offer=105,
         Offerer=13,
@@ -38,6 +37,7 @@ def test_save_industrial_sandbox(app):
 
     # teardown
     logger.info = logger_info
+
 
 @clean_database
 @pytest.mark.standalone
