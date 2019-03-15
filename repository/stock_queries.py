@@ -5,6 +5,7 @@ from sqlalchemy.exc import InternalError
 
 from models import Stock, Offerer, User, ApiErrors, PcObject, Offer, Thing, ThingType, Venue
 from utils.human_ids import dehumanize
+from utils.logger import logger
 
 
 def find_stock_by_id(id: int) -> Stock:
@@ -41,7 +42,7 @@ def save_stock(stock):
                 api_errors.addError('bookingLimitDatetime',
                                     'La date limite de réservation pour cette offre est postérieure à la date de début de l\'évènement')
             else:
-                app.log.error("Unexpected error in patch stocks: " + pformat(ie))
+                logger.error("Unexpected error in patch stocks: " + pformat(ie))
 
             raise api_errors
         else:

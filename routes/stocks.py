@@ -20,6 +20,7 @@ from utils.rest import ensure_current_user_has_rights, \
     load_or_404, \
     login_or_api_key_required
 from domain.keywords import LANGUAGE
+from validation.stocks import check_request_has_offer_id
 
 search_models = [
     # Order is important
@@ -27,18 +28,6 @@ search_models = [
     Venue,
     Event
 ]
-
-
-def query_stocks(ts_query):
-    return or_(
-        *[
-            model.__ts_vector__.match(
-                ts_query,
-                postgresql_regconfig=LANGUAGE
-            )
-            for model in search_models
-        ]
-    )
 
 
 @app.route('/stocks', methods=['GET'])
@@ -72,12 +61,13 @@ def get_stock(stock_id, mediation_id):
 @login_or_api_key_required
 @expect_json_data
 def create_stock():
-    stock_dict = request.json
-    offer_id = dehumanize(stock_dict.get('offerId', None))
+    request_data = request.json
+    check_request_has_offer_id(request_data)
+    offer_id = dehumanize(request_data.get('offerId', None))
     offerer = offerer_queries.get_by_offer_id(offer_id)
     ensure_current_user_has_rights(RightsType.editor, offerer.id)
 
-    new_stock = Stock(from_dict=stock_dict)
+    new_stock = Stock(from_dict=request_data)
     stock_queries.save_stock(new_stock)
     return jsonify(new_stock._asdict()), 201
 
