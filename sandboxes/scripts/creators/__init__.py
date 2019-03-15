@@ -1,1 +1,1 @@
-from sandboxes.scripts.creators import handmade, industrial
+from sandboxes.scripts.creators import industrial
