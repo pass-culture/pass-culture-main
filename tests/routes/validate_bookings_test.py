@@ -71,7 +71,7 @@ class Patch:
             stock = create_stock_from_event_occurrence(event_occurrence, price=0)
             booking = create_booking(user, stock, venue=venue)
 
-            PcObject.check_and_save(user_offerer, booking, event_occurrence)
+            PcObject.check_and_save(user_offerer, booking)
             url_email = urlencode({'email': 'user+plus@email.fr'})
             url = API_URL + '/bookings/token/{}?{}'.format(booking.token, url_email)
 
@@ -211,7 +211,7 @@ class Patch:
             stock = create_stock_from_event_occurrence(event_occurrence, price=0)
             booking = create_booking(user, stock, venue=venue)
 
-            PcObject.check_and_save(user_offerer, booking, event_occurrence)
+            PcObject.check_and_save(user_offerer, booking)
             url = API_URL + '/bookings/token/{}?email={}'.format(booking.token, user.email)
 
             # When

@@ -5,7 +5,6 @@ import pytest
 from models import PcObject, \
     EventType
 from tests.conftest import clean_database, TestClient
-from utils.date import strftime
 from tests.test_utils import API_URL, \
     create_event_occurrence, \
     create_stock_from_event_occurrence, \
@@ -18,6 +17,11 @@ from tests.test_utils import API_URL, \
     create_thing_offer, \
     create_user, \
     create_venue
+from utils.date import strftime
+
+TWENTY_DAYS_FROM_NOW = datetime.utcnow() + timedelta(days=20)
+
+TEN_DAYS_FROM_NOW = datetime.utcnow() + timedelta(days=10)
 
 RECOMMENDATION_URL = API_URL + '/recommendations'
 
@@ -89,7 +93,9 @@ class Get:
             venue = create_venue(offerer)
             offer = create_event_offer(venue, event_name='Training in Modern Jazz')
             recommendation = create_recommendation(offer, user, search=search)
-            stock = create_stock_from_offer(offer)
+            stock = create_stock_from_offer(
+                offer, beginning_datetime=TEN_DAYS_FROM_NOW, end_datetime=TWENTY_DAYS_FROM_NOW
+            )
             PcObject.check_and_save(stock, recommendation)
 
             # when
@@ -170,7 +176,8 @@ class Get:
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_event_offer(venue, event_name="L'histoire sans fin")
-            stock = create_stock_from_offer(offer)
+            stock = create_stock_from_offer(offer,
+                beginning_datetime = TEN_DAYS_FROM_NOW, end_datetime = TWENTY_DAYS_FROM_NOW)
             PcObject.check_and_save(stock, user)
 
             # when
@@ -190,7 +197,8 @@ class Get:
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_event_offer(venue, event_name="Vortek's")
-            stock = create_stock_from_offer(offer)
+            stock = create_stock_from_offer(offer, beginning_datetime=TEN_DAYS_FROM_NOW,
+                                            end_datetime=TWENTY_DAYS_FROM_NOW)
             PcObject.check_and_save(stock, user)
 
             # when
@@ -214,7 +222,8 @@ class Get:
             # NOTE: we need to create event occurrence and stock because
             # GET recommendations filter offer without stock
             recommendation = create_recommendation(offer, user, search=search)
-            stock = create_stock_from_offer(offer)
+            stock = create_stock_from_offer(offer, beginning_datetime=TEN_DAYS_FROM_NOW,
+                                            end_datetime=TWENTY_DAYS_FROM_NOW)
             PcObject.check_and_save(stock, recommendation)
 
             # when
@@ -236,7 +245,8 @@ class Get:
             venue = create_venue(offerer)
             offer = create_event_offer(venue, event_name='Rencontres avec des auteurs')
             recommendation = create_recommendation(offer, user, search=search)
-            stock = create_stock_from_offer(offer)
+            stock = create_stock_from_offer(offer, beginning_datetime=TEN_DAYS_FROM_NOW,
+                                            end_datetime=TWENTY_DAYS_FROM_NOW)
             PcObject.check_and_save(stock, recommendation)
 
             # when
@@ -257,7 +267,8 @@ class Get:
             venue = create_venue(offerer)
             offer = create_event_offer(venue, event_name='Rencontres avec des auteurs')
             recommendation = create_recommendation(offer, user, search=search)
-            stock = create_stock_from_offer(offer)
+            stock = create_stock_from_offer(offer, beginning_datetime=TEN_DAYS_FROM_NOW,
+                                            end_datetime=TWENTY_DAYS_FROM_NOW)
             PcObject.check_and_save(stock, recommendation)
 
             # when
@@ -312,8 +323,10 @@ class Get:
             offer2 = create_event_offer(venue, event_name='Training in Modern Jazz', event_type=EventType.CINEMA)
             recommendation = create_recommendation(offer1, user)
             recommendation2 = create_recommendation(offer2, user)
-            stock = create_stock_from_offer(offer1)
-            stock2 = create_stock_from_offer(offer2)
+            stock = create_stock_from_offer(offer1, beginning_datetime=TEN_DAYS_FROM_NOW,
+                                            end_datetime=TWENTY_DAYS_FROM_NOW)
+            stock2 = create_stock_from_offer(offer2, beginning_datetime=TEN_DAYS_FROM_NOW,
+                                             end_datetime=TWENTY_DAYS_FROM_NOW)
             PcObject.check_and_save(stock, recommendation, stock2, recommendation2)
 
             # when
@@ -337,9 +350,12 @@ class Get:
             recommendation = create_recommendation(offer1, user)
             recommendation2 = create_recommendation(offer2, user)
             recommendation3 = create_recommendation(offer3, user)
-            stock = create_stock_from_offer(offer1)
-            stock2 = create_stock_from_offer(offer2)
-            stock3 = create_stock_from_offer(offer3)
+            stock = create_stock_from_offer(offer1,
+                                            beginning_datetime=TEN_DAYS_FROM_NOW, end_datetime=TWENTY_DAYS_FROM_NOW)
+            stock2 = create_stock_from_offer(offer2,
+                                             beginning_datetime=TEN_DAYS_FROM_NOW, end_datetime=TWENTY_DAYS_FROM_NOW)
+            stock3 = create_stock_from_offer(offer3,
+                                             beginning_datetime=TEN_DAYS_FROM_NOW, end_datetime=TWENTY_DAYS_FROM_NOW)
             PcObject.check_and_save(stock, recommendation, stock2, recommendation2, stock3, recommendation3)
 
             # when
@@ -549,7 +565,8 @@ class Get:
             recommendation = create_recommendation(offer, user)
             recommendation1 = create_recommendation(offer1, user)
             stock = create_stock_from_event_occurrence(event_occurrence)
-            stock1 = create_stock_from_offer(offer1)
+            stock1 = create_stock_from_offer(offer1, beginning_datetime=TEN_DAYS_FROM_NOW,
+                                             end_datetime=TWENTY_DAYS_FROM_NOW)
             PcObject.check_and_save(stock, stock1, recommendation, recommendation1)
 
             # When

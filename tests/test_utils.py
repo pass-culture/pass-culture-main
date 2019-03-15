@@ -94,7 +94,8 @@ def create_booking(user, stock=None, venue=None, recommendation=None, quantity=1
         booking.recommendation = create_recommendation(stock.offer, user)
     booking.isCancelled = is_cancelled
     booking.isUsed = is_used
-    booking.id = idx
+    if idx:
+        booking.id = idx
     return booking
 
 
@@ -234,13 +235,16 @@ def create_stock_from_event_occurrence(event_occurrence, price=10, available=10,
     return stock
 
 
-def create_stock_from_offer(offer, price=10, available=10, soft_deleted=False, booking_limit_datetime=None):
+def create_stock_from_offer(offer, price=10, available=10, soft_deleted=False, booking_limit_datetime=None,
+                            beginning_datetime=None, end_datetime=None):
     stock = Stock()
     stock.offer = offer
     stock.price = price
     stock.available = available
     stock.isSoftDeleted = soft_deleted
     stock.bookingLimitDatetime = booking_limit_datetime
+    stock.beginningDatetime = beginning_datetime
+    stock.endDatetime = end_datetime
     return stock
 
 

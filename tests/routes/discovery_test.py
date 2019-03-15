@@ -251,6 +251,27 @@ class Put:
             assert len(response.json()) == 0
 
         @clean_database
+        def when_user_has_one_offer_in_his_department(self, app):
+            # given
+            user = create_user(departement_code='93', can_book_free_offers=True, is_admin=False)
+            offerer = create_offerer()
+            venue93 = create_venue(offerer, siret=offerer.siren + '54321', postal_code='93000', departement_code='93')
+            venue67 = create_venue(offerer, siret=offerer.siren + '56789', postal_code='67000', departement_code='67')
+            thing_offer1 = create_thing_offer(venue93, thing_name='thing 93', url=None, is_national=False)
+            thing_offer2 = create_thing_offer(venue67, thing_name='thing 67', url=None, is_national=False)
+            stock1 = create_stock_from_offer(thing_offer1)
+            stock2 = create_stock_from_offer(thing_offer2)
+            PcObject.check_and_save(user, stock1, stock2)
+
+            # when
+            response = TestClient().with_auth(user.email) \
+                .put(RECOMMENDATION_URL, json={'readRecommendations': []})
+
+            # then
+            assert response.status_code == 200
+            assert len(response.json()) == 1
+
+        @clean_database
         def when_offers_have_soft_deleted_stocks(self, app):
             # Given
             offerer = create_offerer()
@@ -450,9 +471,9 @@ class Put:
             user = create_user(email='test@email.com')
             PcObject.check_and_save(stock_venue_not_validated, stock_venue_validated, user)
             auth_request = TestClient().with_auth(user.email)
-            data = {'seenRecommendationIds': []}
+
             # when
-            response = auth_request.put(RECOMMENDATION_URL, json=data)
+            response = auth_request.put(RECOMMENDATION_URL, json={'seenRecommendationIds': []})
 
             # Then
             assert response.status_code == 200
@@ -477,9 +498,8 @@ class Put:
             PcObject.check_and_save(user, stock1, mediation1, stock2, mediation2, mediation3)
             auth_request = TestClient().with_auth(user.email)
 
-            data = {'seenRecommendationIds': []}
             # when
-            response = auth_request.put(RECOMMENDATION_URL, json=data)
+            response = auth_request.put(RECOMMENDATION_URL, json={'seenRecommendationIds': []})
 
             # then
             assert response.status_code == 200
@@ -510,15 +530,13 @@ class Put:
             stock4 = create_stock_from_offer(offer4, price=0)
             recommendation_offer3 = create_recommendation(offer3, user)
             recommendation_offer4 = create_recommendation(offer4, user, date_read=now - timedelta(days=1))
-            PcObject.check_and_save(user, stock1, stock2, stock3, stock4, mediation, event_occurrence,
-                                    recommendation_offer3,
-                                    recommendation_offer4)
+            PcObject.check_and_save(user, stock1, stock2, stock3, stock4, mediation,
+                                    recommendation_offer3, recommendation_offer4)
             auth_request = TestClient().with_auth(user.email)
 
-            data = {'seenRecommendationIds': []}
-
             # when
-            response = auth_request.put(RECOMMENDATION_URL + '?offerId=%s' % humanize(offer1.id), json=data)
+            response = auth_request.put(RECOMMENDATION_URL + '?offerId=%s' % humanize(offer1.id),
+                                        json={'seenRecommendationIds': []})
 
             # then
             assert response.status_code == 200
@@ -558,13 +576,13 @@ class Put:
             recommendation_offer3 = create_recommendation(offer3, user, valid_until_date=fifteen_min_ago)
             recommendation_offer4 = create_recommendation(offer4, user, date_read=now - timedelta(days=1),
                                                           valid_until_date=fifteen_min_ago)
-            PcObject.check_and_save(stock1, stock2, stock3, stock4, mediation, event_occurrence, recommendation_offer3,
+            PcObject.check_and_save(stock1, stock2, stock3, stock4, mediation, recommendation_offer3,
                                     recommendation_offer4, recommendation_offer1, recommendation_offer2)
             auth_request = TestClient().with_auth(user.email)
 
-            data = {'seenRecommendationIds': []}
             # when
-            response = auth_request.put(RECOMMENDATION_URL + '?offerId=%s' % humanize(offer1.id), json=data)
+            response = auth_request.put(RECOMMENDATION_URL + '?offerId=%s' % humanize(offer1.id),
+                                        json={'seenRecommendationIds': []})
 
             # then
             assert response.status_code == 200
@@ -831,6 +849,26 @@ class Put:
             # Then
             assert recommendations.status_code == 200
             assert not recommendations.json()
+
+        @clean_database
+        def when_user_has_already_seen_recommendation(self, app):
+            # given
+            user = create_user()
+            offerer = create_offerer()
+            venue = create_venue(offerer, postal_code='29100', siret='12345678912341')
+            offer = create_thing_offer(venue)
+            mediation = create_mediation(offer, is_active=True)
+            stock = create_stock_from_offer(offer)
+            recommendation = create_recommendation(offer=offer, user=user, mediation=mediation, is_clicked=False)
+            PcObject.check_and_save(stock, recommendation)
+
+            # when
+            response = TestClient().with_auth(user.email)\
+                .put(RECOMMENDATION_URL, json={'seenRecommendationIds': [humanize(recommendation.id)]})
+
+            # then
+            assert response.status_code == 200
+            assert response.json() == []
 
         @clean_database
         def test_returns_same_quantity_of_recommendations_in_different_orders(self, app):

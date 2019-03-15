@@ -9,7 +9,7 @@ from tests.conftest import clean_database
 from tests.test_utils import API_URL, create_user, req_with_auth, create_user_offerer, \
     create_offerer, create_venue, create_event_occurrence, create_event_offer, \
     create_venue_activity, create_stock_with_thing_offer, create_stock_with_event_offer, \
-    save_all_activities, create_bank_information
+    save_all_activities, create_bank_information, create_stock_from_event_occurrence
 from utils.human_ids import humanize
 
 TOKEN = os.environ.get('EXPORT_TOKEN')
@@ -355,22 +355,21 @@ def test_get_venues_return_200_and_filtered_venues(app):
     offer8 = create_event_offer(venue_virtual_with_offer_in_date_range)
     offer9 = create_event_offer(venue_not_validated_with_offer_in_date_range)
 
-    valid_event_occurrence1 = create_event_occurrence(offer1)
-    valid_event_occurrence2 = create_event_occurrence(offer2)
-    valid_event_occurrence3 = create_event_occurrence(offer3)
-    valid_event_occurrence4 = create_event_occurrence(offer4)
-    valid_event_occurrence5 = create_event_occurrence(offer5)
-    valid_event_occurrence6 = create_event_occurrence(offer6)
-    valid_event_occurrence7 = create_event_occurrence(offer7)
-    valid_event_occurrence8 = create_event_occurrence(offer8)
-    valid_event_occurrence9 = create_event_occurrence(offer9)
-
-    PcObject.check_and_save(user, valid_event_occurrence1, valid_event_occurrence2, valid_event_occurrence3,
-                            valid_event_occurrence4, valid_event_occurrence5, valid_event_occurrence6,
-                            valid_event_occurrence7,
-                            valid_event_occurrence8, valid_event_occurrence9,
-                            venue_with_not_validated_offerer_in_date_range,
-                            venue67_without_offer_in_date_range)
+    stocks = [
+        create_stock_from_event_occurrence(create_event_occurrence(offer1)),
+        create_stock_from_event_occurrence(create_event_occurrence(offer2)),
+        create_stock_from_event_occurrence(create_event_occurrence(offer3)),
+        create_stock_from_event_occurrence(create_event_occurrence(offer4)),
+        create_stock_from_event_occurrence(create_event_occurrence(offer5)),
+        create_stock_from_event_occurrence(create_event_occurrence(offer6)),
+        create_stock_from_event_occurrence(create_event_occurrence(offer7)),
+        create_stock_from_event_occurrence(create_event_occurrence(offer8)),
+        create_stock_from_event_occurrence(create_event_occurrence(offer9))
+    ]
+    PcObject.check_and_save(
+        user,venue_with_not_validated_offerer_in_date_range,
+        venue67_without_offer_in_date_range, *stocks
+    )
 
     activity_in_date_range1 = create_venue_activity(venue93_with_offer_in_date_range, 'venue', 'insert',
                                                     issued_at=datetime(2018, 11, 30))

@@ -191,7 +191,7 @@ def _create_response_to_get_booking_by_token(booking):
     date = None
     event = booking.stock.resolvedOffer.event
     if event:
-        date = serialize(booking.stock.eventOccurrence.beginningDatetime)
+        date = serialize(booking.stock.beginningDatetime)
     venue_departement_code = booking.stock.resolvedOffer.venue.departementCode
     response = {
         'bookingId': humanize(booking.id),

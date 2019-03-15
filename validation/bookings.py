@@ -52,9 +52,8 @@ def check_offer_is_active(stock):
     soft_deleted_stock = stock.isSoftDeleted
     inactive_offerer = not stock.resolvedOffer.venue.managingOfferer.isActive
     inactive_offer = not stock.resolvedOffer.isActive
-    soft_deleted_event_occurrence = stock.eventOccurrence and stock.eventOccurrence.isSoftDeleted
 
-    if soft_deleted_stock or inactive_offerer or inactive_offer or soft_deleted_event_occurrence:
+    if soft_deleted_stock or inactive_offerer or inactive_offer:
         api_errors = ApiErrors()
         api_errors.addError('stockId', "Cette offre a été retirée. Elle n'est plus valable.")
         raise api_errors
@@ -86,8 +85,7 @@ def check_stock_booking_limit_date(stock):
 
 
 def check_offer_date(stock):
-    date = stock.eventOccurrence and stock.eventOccurrence.beginningDatetime
-    stock_has_expired = date is not None and date < datetime.utcnow()
+    stock_has_expired = stock.beginningDatetime is not None and stock.beginningDatetime < datetime.utcnow()
 
     if stock_has_expired:
         api_errors = ApiErrors()

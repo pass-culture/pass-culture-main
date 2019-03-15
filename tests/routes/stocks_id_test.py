@@ -22,7 +22,8 @@ class Get:
             humanized_stock_id = humanize(stock.id)
 
             # when
-            request = TestClient().with_auth('test@email.com').get(API_URL + '/stocks/' + humanized_stock_id)
+            request = TestClient().with_auth('test@email.com')\
+                .get(API_URL + '/stocks/' + humanized_stock_id)
             # then
             assert request.status_code == 200
             assert request.json()['available'] == 10
@@ -41,7 +42,8 @@ class Get:
             humanized_stock_id = humanize(stock.id)
 
             # when
-            request = TestClient().with_auth('test@email.com').get(API_URL + '/stocks/' + humanized_stock_id)
+            request = TestClient().with_auth('test@email.com')\
+                .get(API_URL + '/stocks/' + humanized_stock_id)
 
             # then
             assert request.status_code == 404
@@ -62,7 +64,8 @@ class Patch:
             humanized_stock_id = humanize(stock.id)
 
             # when
-            request_update = TestClient().with_auth('test@email.com').patch(API_URL + '/stocks/' + humanized_stock_id, json={'available': 5, 'price': 20})
+            request_update = TestClient().with_auth('test@email.com')\
+                .patch(API_URL + '/stocks/' + humanized_stock_id, json={'available': 5, 'price': 20})
 
             # then
             assert request_update.status_code == 200
@@ -81,7 +84,8 @@ class Patch:
             humanized_stock_id = humanize(stock.id)
 
             # when
-            request_update = TestClient().with_auth('test@email.com').patch(API_URL + '/stocks/' + humanized_stock_id, json={'available': 5, 'price': 20})
+            request_update = TestClient().with_auth('test@email.com')\
+                .patch(API_URL + '/stocks/' + humanized_stock_id, json={'available': 5, 'price': 20})
 
             # then
             assert request_update.status_code == 200
@@ -104,7 +108,8 @@ class Patch:
             PcObject.check_and_save(booking, user_admin)
 
             # when
-            response = TestClient().with_auth('email@test.com').patch(API_URL + '/stocks/' + humanize(stock.id), json={'available': ' '})
+            response = TestClient().with_auth('email@test.com')\
+                .patch(API_URL + '/stocks/' + humanize(stock.id), json={'available': ' '})
 
             # then
             assert response.status_code == 400
@@ -119,12 +124,12 @@ class Patch:
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue)
             PcObject.check_and_save(stock, user)
-
             stockId = stock.id
+            serialized_date = serialize(stock.beginningDatetime + timedelta(days=1))
 
-            serialized_date = serialize(stock.eventOccurrence.beginningDatetime + timedelta(days=1))
             # when
-            response = TestClient().with_auth('email@test.com').patch(API_URL + '/stocks/' + humanize(stockId), json={'bookingLimitDatetime': serialized_date})
+            response = TestClient().with_auth('email@test.com')\
+                .patch(API_URL + '/stocks/' + humanize(stockId), json={'bookingLimitDatetime': serialized_date})
 
             # then
             assert response.status_code == 400
@@ -145,7 +150,8 @@ class Patch:
             PcObject.check_and_save(booking, user_admin)
 
             # when
-            response = TestClient().with_auth('email@test.com').patch(API_URL + '/stocks/' + humanize(stock.id), json={'available': 0})
+            response = TestClient().with_auth('email@test.com')\
+                .patch(API_URL + '/stocks/' + humanize(stock.id), json={'available': 0})
 
             # then
             assert response.status_code == 400
@@ -163,7 +169,8 @@ class Patch:
             PcObject.check_and_save(user, stock)
 
             # when
-            response = TestClient().with_auth('test@email.com').patch(API_URL + '/stocks/' + humanize(stock.id), json={'available': 5})
+            response = TestClient().with_auth('test@email.com')\
+                .patch(API_URL + '/stocks/' + humanize(stock.id), json={'available': 5})
 
             # then
             assert response.status_code == 403
