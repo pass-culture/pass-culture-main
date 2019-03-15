@@ -20,17 +20,31 @@ def check_request_has_offer_id(request_data: dict):
         raise ApiErrors({'offerId': ['Ce paramètre est obligatoire']})
 
 
-def check_stock_has_dates_for_event_offer(request_data: dict, offer: Offer):
+def check_new_stock_has_dates(request_data: dict, offer: Offer):
     if offer.thing:
-        if 'beginningDatetime' in request_data or 'endDatetime' in request_data:
-            raise ApiErrors(
-                {'global': [
-                    'Impossible de mettre des dates de début et fin si l\'offre ne porte pas sur un évenement'
-                ]})
-
+        _forbid_dates_on_stock_for_thing_offer(request_data)
     else:
-        if 'endDatetime' not in request_data:
+        if request_data.get('endDatetime', None) is None:
             raise ApiErrors({'endDatetime': ['Ce paramètre est obligatoire']})
 
-        if 'beginningDatetime' not in request_data:
+        if request_data.get('beginningDatetime', None) is None:
             raise ApiErrors({'beginningDatetime': ['Ce paramètre est obligatoire']})
+
+
+def check_existing_stock_has_dates(request_data: dict, offer: Offer):
+    if offer.thing:
+        _forbid_dates_on_stock_for_thing_offer(request_data)
+    else:
+        if 'endDatetime' in request_data and request_data['endDatetime'] is None:
+            raise ApiErrors({'endDatetime': ['Ce paramètre est obligatoire']})
+
+        if 'beginningDatetime' in request_data and request_data['beginningDatetime'] is None:
+            raise ApiErrors({'beginningDatetime': ['Ce paramètre est obligatoire']})
+
+
+def _forbid_dates_on_stock_for_thing_offer(request_data):
+    if 'beginningDatetime' in request_data or 'endDatetime' in request_data:
+        raise ApiErrors(
+            {'global': [
+                'Impossible de mettre des dates de début et fin si l\'offre ne porte pas sur un évenement'
+            ]})
