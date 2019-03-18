@@ -19,12 +19,25 @@ export function errorKeyToFrenchKey(errorKey) {
 }
 
 export default createSelector(
-  (state, eventOccurrenceIdOrNew) =>
+  (state, eventOccurrenceIdOrNew, stockIdOrNew) =>
     get(state, `errors.eventOccurrence${eventOccurrenceIdOrNew}`),
+  // quick and dirty fix
+  // MERGE_ERRORS make "stockJ4" name with eventOccurrence id and not stock id
+  // shared/src/components/forms/Form.js
+
+  (state, eventOccurrenceIdOrNew, stockIdOrNew) =>
+    get(state, `errors.stock${eventOccurrenceIdOrNew}`),
+
   (state, eventOccurrenceIdOrNew, stockIdOrNew) =>
     get(state, `errors.stock${stockIdOrNew}`),
-  (eventOccurrenceErrors, stockErrors) => {
-    const errors = Object.assign({}, eventOccurrenceErrors, stockErrors)
+
+  (eventOccurrenceErrors, eventOccurrenceStockErrors, stockErrors) => {
+    const errors = Object.assign(
+      {},
+      eventOccurrenceErrors,
+      eventOccurrenceStockErrors,
+      stockErrors
+    )
     const e = Object.keys(errors)
       .filter(errorKeyToFrenchKey)
       .reduce(

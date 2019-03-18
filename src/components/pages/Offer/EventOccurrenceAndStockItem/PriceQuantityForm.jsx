@@ -109,86 +109,82 @@ class PriceQuantityForm extends Component {
     }
 
     return (
-      <tbody>
-        <Form
-          action={action}
-          BlockComponent={null}
-          handleSuccess={this.handleOfferSuccessData}
-          layout="input-only"
-          name={name}
-          patch={stockPatch}
-          size="small"
-          readOnly={isStockReadOnly}
-          Tag={null}>
-          <Fragment>
-            <td title="Gratuit si vide">
-              <Field name="eventOccurrenceId" type="hidden" />
-              <Field name="offerId" type="hidden" />
-              <Field
-                className="input is-small input-number"
-                displayValue={value =>
-                  getDisplayedPrice(value, isStockReadOnly)
+      <Form
+        action={action}
+        BlockComponent={null}
+        handleSuccess={this.handleOfferSuccessData}
+        layout="input-only"
+        name={name}
+        patch={stockPatch}
+        size="small"
+        readOnly={isStockReadOnly}
+        Tag={null}>
+        <Fragment>
+          <td title="Gratuit si vide">
+            <Field name="eventOccurrenceId" type="hidden" />
+            <Field name="offerId" type="hidden" />
+            <Field
+              className="input is-small input-number"
+              displayValue={value => getDisplayedPrice(value, isStockReadOnly)}
+              floatSep={FLOATSEP}
+              min="0"
+              name="price"
+              onBlur={this.onPriceBlur}
+              placeholder="Gratuit"
+              step="0.01"
+              title="Prix"
+              type={isStockReadOnly ? 'text' : 'number'}
+            />
+          </td>
+          <td title="Laissez vide si pas de limite">
+            <Field
+              maxDate={isStockOnly ? undefined : beginningDatetime}
+              name="bookingLimitDatetime"
+              placeholder="Laissez vide si pas de limite"
+              type="date"
+            />
+          </td>
+          <td className="tooltiped">
+            <Field
+              className="input is-small input-number"
+              name="available"
+              placeholder="Illimité"
+              renderInfo={() => {
+                if (!isStockReadOnly) {
+                  return (
+                    <span
+                      className="button tooltip qty-info"
+                      data-place="bottom"
+                      data-tip="<p>Laissez ce champ vide pour un nombre de places ou stock illimité.</p>"
+                      data-type="info">
+                      <Icon svg="picto-info" />
+                    </span>
+                  )
                 }
-                floatSep={FLOATSEP}
-                min="0"
-                name="price"
-                onBlur={this.onPriceBlur}
-                placeholder="Gratuit"
-                step="0.01"
-                title="Prix"
-                type={isStockReadOnly ? 'text' : 'number'}
-              />
-            </td>
-            <td title="Laissez vide si pas de limite">
-              <Field
-                maxDate={isStockOnly ? undefined : beginningDatetime}
-                name="bookingLimitDatetime"
-                placeholder="Laissez vide si pas de limite"
-                type="date"
-              />
-            </td>
-            <td className="tooltiped">
-              <Field
-                className="input is-small input-number"
-                name="available"
-                placeholder="Illimité"
-                renderInfo={() => {
-                  if (!isStockReadOnly) {
-                    return (
-                      <span
-                        className="button tooltip qty-info"
-                        data-place="bottom"
-                        data-tip="<p>Laissez ce champ vide pour un nombre de places ou stock illimité.</p>"
-                        data-type="info">
-                        <Icon svg="picto-info" />
-                      </span>
-                    )
-                  }
-                }}
-                title="Stock[ou] Places affecté[es]"
-                type={isStockReadOnly ? 'text' : 'number'}
-              />
-            </td>
-            <td>{remainingStock}</td>
-            {!isStockReadOnly && (
-              <Fragment>
-                <td>
-                  <SubmitButton className="button is-primary is-small submitStep">
-                    Valider
-                  </SubmitButton>
-                </td>
-                <td className="is-clipped">
-                  <NavLink
-                    className="button is-secondary is-small cancel-step"
-                    to={`/offres/${get(offer, 'id')}?gestion`}>
-                    Annuler
-                  </NavLink>
-                </td>
-              </Fragment>
-            )}
-          </Fragment>
-        </Form>
-      </tbody>
+              }}
+              title="Stock[ou] Places affecté[es]"
+              type={isStockReadOnly ? 'text' : 'number'}
+            />
+          </td>
+          <td>{remainingStock}</td>
+          {!isStockReadOnly && (
+            <Fragment>
+              <td>
+                <SubmitButton className="button is-primary is-small submitStep">
+                  Valider
+                </SubmitButton>
+              </td>
+              <td className="is-clipped">
+                <NavLink
+                  className="button is-secondary is-small cancel-step"
+                  to={`/offres/${get(offer, 'id')}?gestion`}>
+                  Annuler
+                </NavLink>
+              </td>
+            </Fragment>
+          )}
+        </Fragment>
+      </Form>
     )
   }
 }

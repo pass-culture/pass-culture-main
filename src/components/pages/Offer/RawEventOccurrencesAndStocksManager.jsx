@@ -118,11 +118,6 @@ class RawEventOccurrencesAndStocksManager extends Component {
     } = this.props
     const { info } = this.state
 
-    console.log(
-      ' ----- This.props RawEventOccurrencesAndStocksManager ----- ',
-      this.props
-    )
-
     return (
       <div
         className="event-occurrences-and-stocks-manager"

@@ -21,8 +21,6 @@ const mockedStock = {
   price: 17,
 }
 
-// const errors = {'Date de réservation': ["Format de date invalide"]}
-
 describe.skip('src | components | pages | Offer | RawEventOccurrencesAndStocksManager', () => {
   // need to mock .focus()
   describe('snapshot', () => {

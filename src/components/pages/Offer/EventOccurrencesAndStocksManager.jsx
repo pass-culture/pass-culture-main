@@ -43,6 +43,7 @@ function mapStateToProps(state, ownProps) {
     eventOccurrenceIdOrNew,
     stockIdOrNew
   )
+
   const isStockOnly = typeof get(thing, 'id') !== 'undefined'
 
   return {
