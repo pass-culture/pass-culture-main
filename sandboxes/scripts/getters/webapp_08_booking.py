@@ -1,6 +1,16 @@
 from models.user import User
+from datetime import datetime
+from models import Offer, EventOccurrence, Stock
 from repository.user_queries import filter_webapp_users
-from sandboxes.scripts.utils.helpers import get_user_helper
+from sandboxes.scripts.utils.helpers import get_user_helper, get_offer_helper
+
+def get_non_free_offer_with_multi_dates_not_already_booked():
+  query = Offer.query.filter(EventOccurrence.query.filter((Offer.id == EventOccurrence.offerId) & (EventOccurrence.beginningDatetime > datetime.utcnow())).count() > 1)
+  query = query.filter(Stock.price >= 0)
+  offer = query.first()
+  return {
+      "offer": get_offer_helper(offer)
+  }
 
 def get_existing_webapp_user_has_no_more_money():
   query = filter_webapp_users(User.query)
