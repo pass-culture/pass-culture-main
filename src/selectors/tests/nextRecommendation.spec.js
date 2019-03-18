@@ -108,7 +108,7 @@ describe('nextRecommendationSelector', () => {
               isSoftDeleted: false,
               lastProviderId: null,
               modelName: 'Stock',
-              offerId: null,
+              offerId: 'ASKA',
               price: 15,
             },
           ],
