@@ -62,7 +62,7 @@ class TiteLiveThings(LocalProvider):
                         + " line. Skipping line")
             return None
 
-        self.infos = self.get_infos_from_data_line(elements)
+        self.infos = get_infos_from_data_line(elements)
         self.extraData = {}
 
         self.thing_type, self.extraData['bookFormat'] = get_thing_type_and_extra_data_from_titelive_type(
@@ -83,76 +83,10 @@ class TiteLiveThings(LocalProvider):
         thing.name = trim_with_elipsis(self.infos['titre'], 140)
         thing.datePublished = read_things_date(self.infos['date_parution'])
         thing.type = self.thing_type
-        thing.extraData = self.get_extraData_from_infos()
+        thing.extraData = get_extraData_from_infos(self.extraData, self.infos)
 
         if self.infos['url_extrait_pdf'] != '':
             thing.mediaUrls.append(self.infos['url_extrait_pdf'])
-
-    def get_extraData_from_infos(self):
-        extraData = self.extraData
-        extraData['author'] = self.infos['auteurs']
-        if self.infos['indice_dewey'] != '':
-            extraData['dewey'] = self.infos['indice_dewey']
-        extraData['titelive_regroup'] = self.infos['code_regroupement']
-        extraData['prix_livre'] = self.infos['prix'].replace(',', '.')
-        extraData['rayon'] = self.infos['libelle_csr']
-        if self.infos['is_scolaire'] == '1':
-            extraData['schoolbook'] = True
-        if self.infos['classement_top'] != '':
-            extraData['top'] = self.infos['classement_top']
-        if self.infos['collection'] != '':
-            extraData['collection'] = self.infos['collection']
-        if self.infos['num_in_collection'] != '':
-            extraData['num_in_collection'] = self.infos['num_in_collection']
-        if self.infos['libelle_serie_bd'] != '':
-            extraData['comic_series'] = self.infos['libelle_serie_bd']
-        if self.infos['commentaire'] != '':
-            extraData['comment'] = trim_with_elipsis(self.infos['commentaire'], 92)
-
-        return extraData
-
-    def get_infos_from_data_line(self, elts: []):
-        infos = {}
-        infos['ean13'] = elts[0]
-        infos['isbn'] = elts[1]
-        infos['titre'] = elts[2]
-        infos['titre_court'] = elts[3]
-        infos['code_csr'] = elts[4]
-        infos['code_dispo'] = elts[5]
-        infos['collection'] = elts[6]
-        infos['num_in_collection'] = elts[7]
-        infos['prix'] = elts[9]
-        infos['editeur'] = elts[10]
-        infos['distributeur'] = elts[11]
-        infos['date_parution'] = elts[12]
-        infos['code_support'] = elts[13]
-        infos['code_tva'] = elts[14]
-        infos['n_pages'] = elts[15]
-        infos['longueur'] = elts[16]
-        infos['largeur'] = elts[17]
-        infos['epaisseur'] = elts[18]
-        infos['poids'] = elts[19]
-        infos['is_update'] = elts[21]
-        infos['auteurs'] = elts[23]
-        infos['datetime_created'] = elts[24]
-        infos['date_updated'] = elts[25]
-        infos['taux_tva'] = elts[26]
-        infos['libelle_csr'] = elts[27]
-        infos['traducteur'] = elts[28]
-        infos['langue_orig'] = elts[29]
-        infos['commentaire'] = elts[31]
-        infos['classement_top'] = elts[32]
-        infos['has_image'] = elts[33]
-        infos['code_edi_fournisseur'] = elts[34]
-        infos['libelle_serie_bd'] = elts[35]
-        infos['ref_editeur'] = elts[38]
-        infos['is_scolaire'] = elts[39]
-        infos['n_extraits_mp3'] = elts[40]
-        infos['url_extrait_pdf'] = elts[41]
-        infos['id_auteur'] = elts[42]
-        infos['indice_dewey'] = elts[43]
-        infos['code_regroupement'] = elts[44]
-        return infos
 
     def get_remaining_files_to_check(self, ordered_thing_files):
         latest_sync_part_end_event = local_provider_event_queries.find_latest_sync_part_end_event(self.dbObject)
@@ -174,7 +108,7 @@ def get_lines_from_thing_file(thing_file: str):
     file_path = 'RETR ' + THINGS_FOLDER_NAME_TITELIVE + '/' + thing_file
     get_titelive_ftp().retrbinary(file_path, data_file.write)
     data_wrapper.seek(0, 0)
-    return iter(data_wrapper.readlines(1024*64))
+    return iter(data_wrapper.readlines(1024 * 64))
 
 
 def get_thing_type_and_extra_data_from_titelive_type(titelive_type):
@@ -234,3 +168,71 @@ def get_thing_type_and_extra_data_from_titelive_type(titelive_type):
     else:
         logger.info(" WARNING: Unknown titelive_type: " + titelive_type)
         return None, None
+
+
+def get_infos_from_data_line(elts: []):
+    infos = {}
+    infos['ean13'] = elts[0]
+    infos['isbn'] = elts[1]
+    infos['titre'] = elts[2]
+    infos['titre_court'] = elts[3]
+    infos['code_csr'] = elts[4]
+    infos['code_dispo'] = elts[5]
+    infos['collection'] = elts[6]
+    infos['num_in_collection'] = elts[7]
+    infos['prix'] = elts[9]
+    infos['editeur'] = elts[10]
+    infos['distributeur'] = elts[11]
+    infos['date_parution'] = elts[12]
+    infos['code_support'] = elts[13]
+    infos['code_tva'] = elts[14]
+    infos['n_pages'] = elts[15]
+    infos['longueur'] = elts[16]
+    infos['largeur'] = elts[17]
+    infos['epaisseur'] = elts[18]
+    infos['poids'] = elts[19]
+    infos['is_update'] = elts[21]
+    infos['auteurs'] = elts[23]
+    infos['datetime_created'] = elts[24]
+    infos['date_updated'] = elts[25]
+    infos['taux_tva'] = elts[26]
+    infos['libelle_csr'] = elts[27]
+    infos['traducteur'] = elts[28]
+    infos['langue_orig'] = elts[29]
+    infos['commentaire'] = elts[31]
+    infos['classement_top'] = elts[32]
+    infos['has_image'] = elts[33]
+    infos['code_edi_fournisseur'] = elts[34]
+    infos['libelle_serie_bd'] = elts[35]
+    infos['ref_editeur'] = elts[38]
+    infos['is_scolaire'] = elts[39]
+    infos['n_extraits_mp3'] = elts[40]
+    infos['url_extrait_pdf'] = elts[41]
+    infos['id_auteur'] = elts[42]
+    infos['indice_dewey'] = elts[43]
+    infos['code_regroupement'] = elts[44]
+    return infos
+
+
+def get_extraData_from_infos(extra_data: [], infos: []) -> []:
+    extraData = extra_data
+    extraData['author'] = infos['auteurs']
+    if infos['indice_dewey'] != '':
+        extraData['dewey'] = infos['indice_dewey']
+    extraData['titelive_regroup'] = infos['code_regroupement']
+    extraData['prix_livre'] = infos['prix'].replace(',', '.')
+    extraData['rayon'] = infos['libelle_csr']
+    if infos['is_scolaire'] == '1':
+        extraData['schoolbook'] = True
+    if infos['classement_top'] != '':
+        extraData['top'] = infos['classement_top']
+    if infos['collection'] != '':
+        extraData['collection'] = infos['collection']
+    if infos['num_in_collection'] != '':
+        extraData['num_in_collection'] = infos['num_in_collection']
+    if infos['libelle_serie_bd'] != '':
+        extraData['comic_series'] = infos['libelle_serie_bd']
+    if infos['commentaire'] != '':
+        extraData['comment'] = trim_with_elipsis(infos['commentaire'], 92)
+
+    return extraData
