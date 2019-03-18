@@ -36,3 +36,4 @@ def install_scripts():
     import scripts.update_providables
     import scripts.storage
     import scripts.init_titelive
+    import scripts.install_data

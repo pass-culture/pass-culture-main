@@ -4,10 +4,10 @@ import subprocess
 from apscheduler.schedulers.blocking import BlockingScheduler
 from flask import Flask
 from io import StringIO
+from sqlalchemy import orm
 from mailjet_rest import Client
 
 from models.db import db
-from models.install import install_models
 from repository.features import feature_cron_send_final_booking_recaps_enabled, feature_cron_generate_and_send_payments, \
     feature_cron_retrieve_offerers_bank_information, feature_cron_send_remedial_emails
 from repository.features import feature_cron_send_wallet_balances
@@ -48,7 +48,6 @@ def pc_send_wallet_balances():
     logger.info("[BATCH] Cron send_wallet_balances: START")
 
     with app.app_context():
-        install_models()
         from scripts.payments import send_wallet_balances
         app.mailjet_client = Client(auth=(MAILJET_API_KEY, MAILJET_API_SECRET), version='v3')
         recipients = parse_email_addresses(os.environ.get('WALLET_BALANCES_RECIPIENTS', None))
@@ -79,6 +78,7 @@ def pc_send_remedial_emails():
 
 
 if __name__ == '__main__':
+    orm.configure_mappers()
     scheduler = BlockingScheduler()
 
     if feature_cron_send_final_booking_recaps_enabled():

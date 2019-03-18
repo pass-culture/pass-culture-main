@@ -1,8 +1,6 @@
 """ interact """
 import os
 
-from local_providers.install import install_local_providers
-from models.install import install_models
 from flask import Flask
 from mailjet_rest import Client
 
@@ -16,10 +14,6 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.mailjet_client = Client(auth=(MAILJET_API_KEY, MAILJET_API_SECRET), version='v3')
 db.init_app(app)
 db.app = app
-
-with app.app_context():
-    install_models()
-    install_local_providers()
 
 # IMPORT A LOT OF TOOLS TO MAKE THEM AVAILABLE
 # IN THE PYTHON SHELL
