@@ -1,23 +1,21 @@
-"""offers"""
-
-from datetime import datetime
 from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
 
-from domain.offers import check_digital_offer_consistency, InconsistentOffer
-from models import ApiErrors, Offer, PcObject, Recommendation, \
-    RightsType, Venue
-from models.db import db
+from domain.admin_emails import send_offer_creation_notification_to_support
+from models import Offer, PcObject, Venue, Event, Thing, RightsType
 from repository import venue_queries
 from repository.offer_queries import find_activation_offers, \
     find_offers_with_filter_parameters
+from utils.config import PRO_URL
 from utils.human_ids import dehumanize
 from utils.includes import OFFER_INCLUDES
-from utils.rest import ensure_current_user_has_rights, \
-    expect_json_data, \
+from utils.mailing import send_raw_email
+from utils.rest import expect_json_data, \
     handle_rest_get_list, \
-    load_or_404
+    load_or_404, login_or_api_key_required, load_or_raise_error, ensure_current_user_has_rights
+from validation.events import check_has_venue_id, check_user_can_create_activation_event
 from validation.offers import check_venue_exists_when_requested, check_user_has_rights_for_query
+from validation.url import is_url_safe
 
 
 @app.route('/offers', methods=['GET'])
@@ -66,42 +64,56 @@ def get_offer(id):
 
 
 @app.route('/offers', methods=['POST'])
-@login_required
+@login_or_api_key_required
 @expect_json_data
 def post_offer():
-    offer = Offer()
-    venue = load_or_404(Venue, request.json['venueId'])
+    venue_id = request.json.get('venueId')
+    check_has_venue_id(venue_id)
+    venue = load_or_raise_error(Venue, venue_id)
     ensure_current_user_has_rights(RightsType.editor, venue.managingOffererId)
-    offer.populateFromDict(request.json)
+    thing_dict = request.json.get('thing')
+    event_dict = request.json.get('event')
+    if event_dict:
+        offer = _fill_offer_with_event_data(event_dict)
 
-    if offer.thingId:
-        try:
-            check_digital_offer_consistency(offer, venue)
-        except InconsistentOffer as e:
-            errors = ApiErrors()
-            errors.addError('global', e.message)
-            raise errors
+    if thing_dict:
+        offer = _fill_offer_with_thing_data(thing_dict)
 
+    offer.venue = venue
+    offer.bookingEmail = request.json.get('bookingEmail', None)
     PcObject.check_and_save(offer)
-    return jsonify(offer._asdict(include=OFFER_INCLUDES)), 201
+    send_offer_creation_notification_to_support(offer, current_user, PRO_URL, send_raw_email)
+
+    return jsonify(
+        offer._asdict(include=OFFER_INCLUDES)
+    ), 201
 
 
-@app.route('/offers/<offer_id>', methods=['PATCH'])
-@login_required
+def _fill_offer_with_thing_data(thing_dict):
+    thing = Thing()
+    url = thing_dict.get('url')
+    if url:
+        is_url_safe(url)
+        thing_dict['isNational'] = True
+    thing.populateFromDict(thing_dict)
+    offer = Offer()
+    offer.populateFromDict(thing_dict)
+    offer.thing = thing
+    return offer
+
+
+def _fill_offer_with_event_data(event_dict):
+    event = Event()
+    event.populateFromDict(event_dict)
+    check_user_can_create_activation_event(current_user, event)
+    offer = Offer()
+    offer.populateFromDict(event_dict)
+    offer.event = event
+    return offer
+
+
+@app.route('/offer/<id>', methods=['PATCH'])
+@login_or_api_key_required
 @expect_json_data
-def update_offer(offer_id):
-    offer = load_or_404(Offer, offer_id)
-    ensure_current_user_has_rights(RightsType.editor, offer.venue.managingOffererId)
-    # ensure only some properties can be modified
-    newProps = dict()
-    if 'isActive' in request.json:
-        newProps['isActive'] = request.json['isActive']
-    offer.populateFromDict(newProps)
-    PcObject.check_and_save(offer)
-    if 'isActive' in request.json \
-            and not newProps['isActive']:
-        Recommendation.query.filter((Recommendation.offerId == offer.id)
-                                    & (Recommendation.validUntilDate > datetime.utcnow())) \
-            .update({'validUntilDate': datetime.utcnow()})
-        db.session.commit()
-    return jsonify(offer._asdict()), 200
+def patch_offer(id):
+    pass
