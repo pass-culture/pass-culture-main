@@ -382,6 +382,7 @@ def create_event_offer(venue=None, event=None, event_name='Test event', duration
     offer.dateCreated = date_created
     offer.bookingEmail = booking_email
     offer.isActive = is_active
+    offer.durationMinutes = duration_minutes
     offer.id = idx
     return offer
 

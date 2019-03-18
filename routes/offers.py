@@ -3,7 +3,7 @@ from flask_login import current_user, login_required
 
 from domain.admin_emails import send_offer_creation_notification_to_support
 from models import Offer, PcObject, Venue, Event, Thing, RightsType
-from repository import venue_queries
+from repository import venue_queries, offer_queries
 from repository.offer_queries import find_activation_offers, \
     find_offers_with_filter_parameters
 from utils.config import PRO_URL
@@ -116,4 +116,10 @@ def _fill_offer_with_event_data(event_dict):
 @login_or_api_key_required
 @expect_json_data
 def patch_offer(id):
-    pass
+    offer = offer_queries.find_offer_by_id(dehumanize(id))
+    ensure_current_user_has_rights(RightsType.editor, offer.venue.managingOffererId)
+    if 'bookingEmail' in request.json:
+        offer.bookingEmail = request.json['bookingEmail']
+    PcObject.check_and_save(offer)
+
+    return '', 200
