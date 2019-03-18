@@ -2,8 +2,8 @@
 import moment from 'moment'
 import 'moment-timezone'
 
-import { addModifierString, humanizeBeginningDate, mapStockToBookable} from '../selectBookables'
-import { stockWithoutEventOccurrence, stockWithEventOccurrence } from './data/selectBookables'
+import { addModifierString, humanizeBeginningDate, setTimezoneOnBeginningDatetime} from '../selectBookables'
+import { stockWithDates, stockWithoutDates } from './data/selectBookables'
 
 const format = 'dddd DD/MM/YYYY à HH:mm'
 
@@ -63,30 +63,30 @@ describe('src | selectors| selectBookables', () => {
       expect(result).toStrictEqual(expected)
     })
   })
-  describe('mapStockToBookable', () => {
-    it('case stock with no event occurrence', () => {
+  describe('setTimezoneOnBeginningDatetime', () => {
+    it('does nothing if stock as no beginning', () => {
       // given
       const timezone = 'Europe/Paris'
-      const items = [stockWithoutEventOccurrence]
+      const items = [stockWithoutDates]
 
       // when
-      const results = mapStockToBookable(timezone)(items)
+      const results = setTimezoneOnBeginningDatetime(timezone)(items)
 
       // then
       expect(results[0].offerId).toBe('ATRQ')
-      expect(results[0].eventOccurrence).toBeUndefined()
+      expect(results[0].beginningDatetime).toBeNull()
+      expect(results[0].endDatetime).toBeNull()
     })
-    it('case stock with event occurrence', () => {
+    it('sets timezones to beginningDatetime', () => {
       // given
       const timezone = 'Europe/Paris'
-      const items = [stockWithEventOccurrence]
+      const items = [stockWithDates]
 
       // when
-      const results = mapStockToBookable(timezone)(items)
+      const results = setTimezoneOnBeginningDatetime(timezone)(items)
 
       // then
       expect(results[0].offerId).toBe("BYAQ")
-      expect(results[0].eventOccurrence).toBeUndefined()
       expect(results[0].beginningDatetime.format()).toBe("2019-04-19T20:30:00+02:00")
       expect(results[0].endDatetime).toBe("2019-04-20T20:00:00Z")
     })

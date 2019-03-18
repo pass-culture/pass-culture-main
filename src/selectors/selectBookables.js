@@ -1,7 +1,5 @@
 import moment from 'moment'
 import get from 'lodash.get'
-import omit from 'lodash.omit'
-import pick from 'lodash.pick'
 import cloneDeep from 'lodash.clonedeep'
 import createCachedSelector from 're-reselect'
 
@@ -19,19 +17,14 @@ export const addModifierString = () => items =>
     __modifiers__: (obj.__modifiers__ || []).concat([MODIFIER_STRING_ID]),
   }))
 
-export const mapStockToBookable = timezone => stocks =>
+export const setTimezoneOnBeginningDatetime = timezone => stocks =>
   stocks.map(stock => {
-    let extend
-    if (stock.eventOccurrence) {
-      extend = pick(stock.eventOccurrence, ['endDatetime', 'offerId'])
-      extend.beginningDatetime = moment(
-        stock.eventOccurrence.beginningDatetime
-      ).tz(timezone)
-    } else {
-      extend = pick(stock, ['offerId'])
+    let extend = {}
+    if (stock.beginningDatetime) {
+      const dateWithTimezone = moment(stock.beginningDatetime).tz(timezone);
+      extend = {beginningDatetime: dateWithTimezone}
     }
-    const base = omit(stock, ['eventOccurrence'])
-    return Object.assign({}, base, extend)
+    return Object.assign({}, stock, extend)
   })
 
 export const humanizeBeginningDate = () => items => {
@@ -83,7 +76,7 @@ export const selectBookables = createCachedSelector(
     const tz = get(recommendation, 'tz')
     return pipe(
       filterAvailableStocks,
-      mapStockToBookable(tz),
+      setTimezoneOnBeginningDatetime(tz),
       humanizeBeginningDate(),
       markAsReserved(bookings),
       addModifierString(),

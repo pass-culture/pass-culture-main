@@ -28,3 +28,27 @@ export const stockWithEventOccurrence = {
   "offerId": null,
   "price": 15.00
 }
+
+export const stockWithDates = {
+  "available": 10,
+  "price": 25.00,
+  "beginningDatetime": "2019-04-19T18:30:00Z",
+  "endDatetime": "2019-04-20T20:00:00Z",
+  "bookingLimitDatetime": null,
+  "id": "C3LA",
+  "isSoftDeleted": false,
+  "modelName": "Stock",
+  "offerId": "BYAQ",
+}
+
+export const stockWithoutDates = {
+  "available": 10,
+  "price": 25.00,
+  "beginningDatetime": null,
+  "endDatetime": null,
+  "bookingLimitDatetime": null,
+  "id": "C3LA",
+  "isSoftDeleted": false,
+  "modelName": "Stock",
+  "offerId": "ATRQ",
+}
