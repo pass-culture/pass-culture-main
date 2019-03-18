@@ -221,8 +221,8 @@ class Booking extends PureComponent {
             <div className="main flex-rows flex-1 scroll-y">
               <BookingHeader recommendation={recommendation} />
               <div
-                className="flex-1 flex-center items-center"
-                style={{ backgroundImage, minHeight: '450px' }}
+                className="content flex-1 flex-center items-center"
+                style={{ backgroundImage }}
               >
                 <div className="py36 px12 flex-rows">
                   {isSubmitting && <BookingLoader />}
