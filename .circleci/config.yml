@@ -70,6 +70,12 @@ jobs: # a collection of steps
           command: |
             . venv/bin/activate
             ./scripts/check-pip-dependencies.sh
+      - run:
+          name: Notify PC Ops Bot
+          when: on_fail
+          command: |
+            export BOT_MESSAGE="Build *$CIRCLE_JOB* fail : $CIRCLE_BUILD_URL"
+            curl -d text="$BOT_MESSAGE" https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage?chat_id=$TELEGRAM_CHAT_ID&parse_mode=Markdown
 
   functional-tests-webapp:
     machine:
@@ -131,6 +137,12 @@ jobs: # a collection of steps
             export PATH=$NVM_BIN:$PATH
             cd ~/pass-culture-main/webapp
             yarn test:cafe
+      - run:
+          name: Notify PC Ops Bot
+          when: on_fail
+          command: |
+            export BOT_MESSAGE="Build *$CIRCLE_JOB* fail : $CIRCLE_BUILD_URL"
+            curl -d text="$BOT_MESSAGE" https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage?chat_id=$TELEGRAM_CHAT_ID&parse_mode=Markdown
 
   functional-tests-pro:
     machine:
@@ -192,6 +204,12 @@ jobs: # a collection of steps
             export PATH=$NVM_BIN:$PATH
             cd ~/pass-culture-main/pro
             yarn testcafe
+      - run:
+          name: Notify PC Ops Bot
+          when: on_fail
+          command: |
+            export BOT_MESSAGE="Build *$CIRCLE_JOB* fail : $CIRCLE_BUILD_URL"
+            curl -d text="$BOT_MESSAGE" https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage?chat_id=$TELEGRAM_CHAT_ID&parse_mode=Markdown
 
 workflows:
   version: 2
