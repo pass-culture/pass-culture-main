@@ -2,7 +2,7 @@
 import moment from 'moment'
 import get from 'lodash.get'
 
-import AllBookingsDataset from './data/selectBookings'
+import {allBookingsDataset, inExactTwoDays} from './data/selectBookings'
 import {
   filterValidBookings,
   filterBookingsInLessThanTwoDays,
@@ -107,8 +107,10 @@ describe('src | selectors | selectBookings', () => {
           },
         },
       }
+
       // when
       const result = filterValidBookings(booking)
+
       // then
       const expected = false
       expect(result).toStrictEqual(expected)
@@ -117,29 +119,24 @@ describe('src | selectors | selectBookings', () => {
   describe('filterBookingsInLessThanTwoDays', () => {
     it('returns an array of bookings with beginningDatetime today or in less than 2 days', () => {
       // given
-      const nowMomentMock = moment()
-      let allbookings = AllBookingsDataset(nowMomentMock)
-      allbookings = allbookings.filter(filterValidBookings)
+      const now = moment()
+      const allBookings = allBookingsDataset(now)
+
       // when
-      const result = filterBookingsInLessThanTwoDays(allbookings, nowMomentMock)
+      const results = filterBookingsInLessThanTwoDays(allBookings, now)
+
       // then
-      expect(result).toHaveLength(3)
-      const expected = allbookings.filter(o => {
-        const debugid = get(o, 'stock.debugid')
-        return (
-          debugid === 'not-activation-exact-now' ||
-          debugid === 'not-activation-tomorrow' ||
-          debugid === 'not-activation-in-exact-2-days'
-        )
-      })
-      expect(result).toStrictEqual(expected)
+      expect(results).toHaveLength(4)
+      expect(results.every(
+        (booking) => booking.stock.beginningDatetime <= inExactTwoDays(now)
+      )).toBe(true)
     })
   })
-  describe('filterBookingsInMoreThanTwoDaysOrPast', () => {
+  xdescribe('filterBookingsInMoreThanTwoDaysOrPast', () => {
     it('returns all bookings excepts >= today hh:mm:s', () => {
       // given
       const nowMomentMock = moment()
-      let allbookings = AllBookingsDataset(nowMomentMock)
+      let allbookings = allBookingsDataset(nowMomentMock)
       allbookings = allbookings.filter(filterValidBookings)
       // when
       const result = filterBookingsInMoreThanTwoDaysOrPast(

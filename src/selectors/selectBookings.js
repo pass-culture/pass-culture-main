@@ -15,18 +15,17 @@ export const filterValidBookings = bookingobj => {
 
 export const filterBookingsInLessThanTwoDays = (
   filtered,
-  momentNowMock = null
+  now = null
 ) => {
-  const nowMoment = momentNowMock || moment()
+  const nowMoment = now || moment()
   const twoDaysFromNow = nowMoment.clone().add(2, 'days')
-  const results = filtered.filter(booking => {
-    const date = get(booking, 'stock.eventOccurrence.beginningDatetime')
+  return filtered.filter(booking => {
+    const date = get(booking, 'stock.beginningDatetime')
     const hasBeginningDatetime = Boolean(date)
     const isAfterNow = moment(date).isSameOrAfter(nowMoment)
     const isBeforeTwoDays = moment(date).isSameOrBefore(twoDaysFromNow)
     return hasBeginningDatetime && isBeforeTwoDays && isAfterNow
   })
-  return results
 }
 
 export const filterBookingsInMoreThanTwoDaysOrPast = (
