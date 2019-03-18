@@ -95,6 +95,6 @@ if grep -q 'ERROR' restore_"$ENV"_error.log; then
 else
   echo "Restore success !"
   echo "Restarting backend.."
-  /usr/local/bin/scalingo -a "$APP_NAME" restart
+  /usr/local/bin/scalingo -a "$APP_NAME" run 'alembic upgrade head'
   echo "Application restarted and ready to use."
 fi
