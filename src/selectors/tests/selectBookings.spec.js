@@ -132,29 +132,27 @@ describe('src | selectors | selectBookings', () => {
       )).toBe(true)
     })
   })
-  xdescribe('filterBookingsInMoreThanTwoDaysOrPast', () => {
+  describe('filterBookingsInMoreThanTwoDaysOrPast', () => {
     it('returns all bookings excepts >= today hh:mm:s', () => {
       // given
-      const nowMomentMock = moment()
-      let allbookings = allBookingsDataset(nowMomentMock)
-      allbookings = allbookings.filter(filterValidBookings)
+      const now = moment()
+      const allBookings = allBookingsDataset(now)
+        .filter(filterValidBookings)
+
       // when
-      const result = filterBookingsInMoreThanTwoDaysOrPast(
-        allbookings,
-        nowMomentMock
+      const results = filterBookingsInMoreThanTwoDaysOrPast(
+        allBookings,
+        now
       )
+
       // then
-      expect(result).toHaveLength(4)
-      const expected = allbookings.filter(o => {
-        const debugid = get(o, 'stock.debugid')
-        return (
-          debugid === 'not-activation-yesterday' ||
-          debugid === 'not-activation-in-4-days' ||
-          debugid === 'not-activation-in-2-days-and-1-seconds' ||
-          debugid === 'not-activation-without-beginningDatetime'
-        )
-      })
-      expect(result).toStrictEqual(expected)
+      expect(results).toHaveLength(4)
+      expect(results.every(
+        (booking) => {
+          const date = booking.stock.beginningDatetime
+          return date > inExactTwoDays(now) || date < now
+        }
+      )).toBe(true)
     })
   })
 })

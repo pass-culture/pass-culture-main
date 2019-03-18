@@ -2,9 +2,9 @@ import moment from 'moment'
 import get from 'lodash.get'
 import { createSelector } from 'reselect'
 
-export const filterValidBookings = bookingobj => {
-  if (!bookingobj) return false
-  const offer = get(bookingobj, 'stock.resolvedOffer')
+export const filterValidBookings = booking => {
+  if (!booking) return false
+  const offer = get(booking, 'stock.resolvedOffer')
   if (!offer) return false
   const offerType = get(offer, 'eventOrThing.type')
   if (!offerType) return false
@@ -30,12 +30,12 @@ export const filterBookingsInLessThanTwoDays = (
 
 export const filterBookingsInMoreThanTwoDaysOrPast = (
   allBookings,
-  momentNowMock
+  now
 ) => {
-  const nowMoment = momentNowMock || moment()
+  const nowMoment = now || moment()
   const twoDaysFromNow = nowMoment.clone().add(2, 'days')
   const filtered = allBookings.filter(booking => {
-    const date = get(booking, 'stock.eventOccurrence.beginningDatetime')
+    const date = get(booking, 'stock.beginningDatetime')
     const hasBeginningDatetime = Boolean(date)
     const isBeforeNow = moment(date).isBefore(nowMoment)
     const isAfterTwoDays = moment(date).isAfter(twoDaysFromNow)
