@@ -19,18 +19,18 @@ export const addModifierString = () => items =>
     __modifiers__: (obj.__modifiers__ || []).concat([MODIFIER_STRING_ID]),
   }))
 
-export const mapStockToBookable = timezone => items =>
-  items.map(obj => {
+export const mapStockToBookable = timezone => stocks =>
+  stocks.map(stock => {
     let extend
-    if (obj.eventOccurrence) {
-      extend = pick(obj.eventOccurrence, ['endDatetime', 'offerId'])
+    if (stock.eventOccurrence) {
+      extend = pick(stock.eventOccurrence, ['endDatetime', 'offerId'])
       extend.beginningDatetime = moment(
-        obj.eventOccurrence.beginningDatetime
+        stock.eventOccurrence.beginningDatetime
       ).tz(timezone)
     } else {
-      extend = pick(obj, ['offerId'])
+      extend = pick(stock, ['offerId'])
     }
-    const base = omit(obj, ['eventOccurrence'])
+    const base = omit(stock, ['eventOccurrence'])
     return Object.assign({}, base, extend)
   })
 

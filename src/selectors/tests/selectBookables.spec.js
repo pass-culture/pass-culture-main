@@ -1,6 +1,9 @@
 // yarn test:unit ./src/selectors/tests/selectBookables.spec.js  --watch
 import moment from 'moment'
-import { addModifierString, humanizeBeginningDate } from '../selectBookables'
+import 'moment-timezone'
+
+import { addModifierString, humanizeBeginningDate, mapStockToBookable} from '../selectBookables'
+import { stockWithoutEventOccurrence, stockWithEventOccurrence } from './data/selectBookables'
 
 const format = 'dddd DD/MM/YYYY à HH:mm'
 
@@ -60,7 +63,34 @@ describe('src | selectors| selectBookables', () => {
       expect(result).toStrictEqual(expected)
     })
   })
-  xdescribe('mapStockToBookable', () => {})
+  describe('mapStockToBookable', () => {
+    it('case stock with no event occurrence', () => {
+      // given
+      const timezone = 'Europe/Paris'
+      const items = [stockWithoutEventOccurrence]
+
+      // when
+      const results = mapStockToBookable(timezone)(items)
+
+      // then
+      expect(results[0].offerId).toBe('ATRQ')
+      expect(results[0].eventOccurrence).toBeUndefined()
+    })
+    it('case stock with event occurrence', () => {
+      // given
+      const timezone = 'Europe/Paris'
+      const items = [stockWithEventOccurrence]
+
+      // when
+      const results = mapStockToBookable(timezone)(items)
+
+      // then
+      expect(results[0].offerId).toBe("BYAQ")
+      expect(results[0].eventOccurrence).toBeUndefined()
+      expect(results[0].beginningDatetime.format()).toBe("2019-04-19T20:30:00+02:00")
+      expect(results[0].endDatetime).toBe("2019-04-20T20:00:00Z")
+    })
+  })
   xdescribe('markAsReserved', () => {})
   xdescribe('sortByDate', () => {})
   xdescribe('selectBookables', () => {})
