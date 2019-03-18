@@ -75,7 +75,6 @@ describe('src | helpers | discovery', () => {
         firstThumbDominantColor: [0, 0, 0],
         id: 'AHZQ',
         index: 0,
-        inviteforEventOccurrenceId: null,
         isClicked: false,
         isFavorite: false,
         isFirst: false,

@@ -45,7 +45,6 @@ describe('selectRecommendations', () => {
       firstThumbDominantColor: [237, 235, 231],
       id: 'AEWPS',
       index: 0,
-      inviteforEventOccurrenceId: null,
       isClicked: true,
       isFavorite: false,
       isFirst: false,
@@ -99,11 +98,12 @@ describe('selectRecommendations', () => {
         stocks: [
           {
             available: 200,
+            beginningDatetime: null,
             bookingLimitDatetime: null,
             bookingRecapSent: null,
             dateModified: '2018-09-12T15:13:50.187143Z',
             dateModifiedAtLastProvider: '2018-09-12T15:13:50.187134Z',
-            eventOccurrenceId: null,
+            endDatetime: null,
             groupSize: 1,
             id: 'C8PA',
             idAtProviders: null,
@@ -503,11 +503,12 @@ describe('selectRecommendations', () => {
                   stocks: [
                     {
                       available: 200,
+                      beginningDatetime: null,
                       bookingLimitDatetime: null,
                       bookingRecapSent: null,
                       dateModified: '2018-09-12T15:13:50.187143Z',
                       dateModifiedAtLastProvider: '2018-09-12T15:13:50.187134Z',
-                      eventOccurrenceId: null,
+                      endDatetime: null,
                       groupSize: 1,
                       id: 'C8PA',
                       idAtProviders: null,

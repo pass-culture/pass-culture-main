@@ -32,7 +32,6 @@ describe('previousRecommendationSelector', () => {
         firstThumbDominantColor: [245, 243, 237],
         id: 'AFNVK',
         index: 0,
-        inviteforEventOccurrenceId: null,
         isClicked: true,
         isFavorite: false,
         isFirst: false,
@@ -86,11 +85,12 @@ describe('previousRecommendationSelector', () => {
           stocks: [
             {
               available: 5000,
+              beginningDatetime: null,
               bookingLimitDatetime: null,
               bookingRecapSent: null,
               dateModified: '2018-09-14T14:04:39.745053Z',
               dateModifiedAtLastProvider: '2018-09-14T14:04:39.745046Z',
-              eventOccurrenceId: null,
+              endDatetime: null,
               groupSize: 1,
               id: 'CPGQ',
               idAtProviders: null,

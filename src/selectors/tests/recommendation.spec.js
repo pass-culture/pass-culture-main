@@ -12,7 +12,6 @@ describe('selectRecommendation', () => {
         dateRead: null,
         dateUpdated: '2018-10-25T19:48:46.812742Z',
         id: 'AFNVK',
-        inviteforEventOccurrenceId: null,
         isClicked: true,
         isFavorite: false,
         isFirst: false,
@@ -66,11 +65,12 @@ describe('selectRecommendation', () => {
           stocks: [
             {
               available: 5000,
+              beginningDatetime: null,
               bookingLimitDatetime: null,
               bookingRecapSent: null,
               dateModified: '2018-09-14T14:04:39.745053Z',
               dateModifiedAtLastProvider: '2018-09-14T14:04:39.745046Z',
-              eventOccurrenceId: null,
+              endDatetime: null,
               groupSize: 1,
               id: 'CPGQ',
               idAtProviders: null,

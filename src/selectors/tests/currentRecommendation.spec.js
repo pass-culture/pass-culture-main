@@ -19,7 +19,6 @@ describe('currentRecommendationSelector', () => {
         firstThumbDominantColor: [36, 36, 35],
         id: 'AFNYA',
         index: 52,
-        inviteforEventOccurrenceId: null,
         isClicked: false,
         isFavorite: false,
         isFirst: false,
@@ -73,11 +72,12 @@ describe('currentRecommendationSelector', () => {
           stocks: [
             {
               available: 10000,
+              beginningDatetime: null,
               bookingLimitDatetime: null,
               bookingRecapSent: null,
               dateModified: '2018-10-05T13:12:33.318021Z',
               dateModifiedAtLastProvider: '2018-10-05T13:12:33.318016Z',
-              eventOccurrenceId: null,
+              endDatetime: null,
               groupSize: 1,
               id: 'CYKA',
               idAtProviders: null,
