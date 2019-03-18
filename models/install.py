@@ -41,4 +41,4 @@ def install_models():
 
     db.session.commit()
 
-    # upsertTutoMediations()
+    upsertTutoMediations()
