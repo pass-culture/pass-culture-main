@@ -200,17 +200,8 @@ def create_stock_with_event_offer(
         stock.beginningDatetime = datetime(2017, 7, 20, 12, 0, 0, tzinfo=timezone.utc)
         stock.endDatetime = datetime(2017, 7, 20, 12, 10, 0, tzinfo=timezone.utc)
         stock.bookingLimitDatetime = datetime.utcnow() - timedelta(days=800)
-    stock.offer = Offer()
-    stock.offer.bookingEmail = booking_email
-    stock.offer.event = Event(
-        from_dict={
-            'isNational': False,
-            'durationMinutes': 10,
-            'name': name,
-            'type': str(event_type)}
-    )
+    stock.offer = create_event_offer(venue, event_name=name, event_type=event_type, booking_email=booking_email, is_national=False)
     stock.offer.id = offer_id
-    stock.offer.venue = venue
     stock.isSoftDeleted = is_soft_deleted
 
     return stock
@@ -339,9 +330,8 @@ def create_event(
 
 def create_thing_offer(venue, thing=None, date_created=datetime.utcnow(), booking_email='booking.email@test.com',
                        thing_type=ThingType.AUDIOVISUEL, thing_name='Test Book', media_urls=['test/urls'],
-                       author_name='Test Author',
-                       thumb_count=1, dominant_color=None, url=None, is_national=False, is_active=True,
-                       id_at_providers=None, idx=None):
+                       author_name='Test Author', description=None, thumb_count=1, dominant_color=None, url=None,
+                       is_national=False, is_active=True, id_at_providers=None, idx=None):
     offer = Offer()
     if thing:
         offer.thing = thing
@@ -351,16 +341,18 @@ def create_thing_offer(venue, thing=None, date_created=datetime.utcnow(), bookin
         offer.extraData = thing.extraData
         offer.url = thing.url
         offer.isNational = thing.isNational
+        offer.description = thing.description
     else:
         offer.thing = create_thing(thing_name=thing_name, thing_type=thing_type, media_urls=media_urls,
                                    author_name=author_name, url=url, thumb_count=thumb_count,
-                                   dominant_color=dominant_color, is_national=is_national)
+                                   dominant_color=dominant_color, is_national=is_national, description=description)
         offer.name = thing_name
         offer.type = str(thing_type)
         offer.mediaUrls = media_urls
         offer.extraData = {'author': author_name}
         offer.url = url
         offer.isNational = is_national
+        offer.description = description
     offer.venue = venue
     offer.dateCreated = date_created
     offer.bookingEmail = booking_email
@@ -490,7 +482,6 @@ def create_recommendation(offer=None, user=None, mediation=None, idx=None, date_
     return recommendation
 
 
-#FIXME: Remove this
 def create_event_occurrence(
         offer,
         beginning_datetime=datetime.utcnow() + timedelta(hours=2),

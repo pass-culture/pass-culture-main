@@ -1433,8 +1433,8 @@ class MakeOfferCreationNotificationEmailTest:
 
         self.physical_offer93 = create_thing_offer(self.venue93, thing_type=ThingType.AUDIOVISUEL,
                                                    thing_name='Le vent se lève', idx=1)
-        self.virtual_offer = create_thing_offer(self.virtual_venue, thing_type=ThingType.JEUX_VIDEO, idx=2,
-                                                thing_name='Les lapins crétins')
+        self.virtual_offer = create_thing_offer(self.virtual_venue, thing_type=ThingType.JEUX_VIDEO,
+                                                thing_name='Les lapins crétins', idx=2)
 
     def test_when_physical_offer_returns_subject_with_departement_information_and_dictionary_with_given_content(self,
                                                                                                                 app):
