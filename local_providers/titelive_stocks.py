@@ -16,7 +16,7 @@ NB_DATA_LIMIT_PER_REQUEST = 5000
 def make_url(last_seen_isbn, last_date_checked, venue_siret):
     if last_seen_isbn:
         return 'https://stock.epagine.fr/stocks/%s?after=%s&modifiedSince=%s' \
-           % (venue_siret, last_seen_isbn, last_date_checked)
+               % (venue_siret, last_seen_isbn, last_date_checked)
     else:
         return 'https://stock.epagine.fr/stocks/%s?modifiedSince=%s' \
                % (venue_siret, last_date_checked)
@@ -29,7 +29,6 @@ def get_data(last_seen_isbn, last_date_checked, venue_siret):
 
 
 class TiteLiveStocks(LocalProvider):
-
     help = ""
     identifierDescription = "Code Titelive de la librairie"
     identifierRegexp = "^\d+$"
@@ -110,7 +109,12 @@ class TiteLiveStocks(LocalProvider):
         elif isinstance(obj, Offer):
             obj.venue = self.venue
             obj.thing = self.thing
-
+            obj.type = self.thing.type
+            obj.name = self.thing.name
+            obj.description = self.thing.description
+            obj.url = self.thing.url
+            obj.mediaUrls = self.thing.mediaUrls
+            obj.isNational = self.thing.isNational
 
     def updateObjects(self, limit=None):
         super().updateObjects(limit)
