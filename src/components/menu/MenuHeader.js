@@ -1,13 +1,15 @@
 /* eslint
   react/jsx-one-expression-per-line: 0 */
-import React from 'react'
 import PropTypes from 'prop-types'
+import React from 'react'
+import { connect } from 'react-redux'
+import { selectCurrentUser } from 'with-login'
 
 import { ROOT_PATH } from '../../utils/config'
 import { getWalletValue } from '../../utils/user'
 
-const MenuHeader = ({ user }) => {
-  const walletValue = getWalletValue(user)
+export const RawMenuHeader = ({ currentUser }) => {
+  const walletValue = getWalletValue(currentUser)
   const avatar = `${ROOT_PATH}/icons/avatar-default-w-XL.svg`
   return (
     <div id="main-menu-header" className="flex-columns is-relative py16 fs18">
@@ -19,7 +21,7 @@ const MenuHeader = ({ user }) => {
           id="main-menu-header-username"
           className="is-clipped text-ellipsis px5"
         >
-          <span>{user && user.publicName}</span>
+          <span>{currentUser && currentUser.publicName}</span>
         </p>
       </div>
       <div className="column-account flex-1 flex-rows flex-center px12">
@@ -36,12 +38,18 @@ const MenuHeader = ({ user }) => {
   )
 }
 
-MenuHeader.defaultProps = {
-  user: null,
+RawMenuHeader.defaultProps = {
+  currentUser: null,
 }
 
-MenuHeader.propTypes = {
-  user: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
+RawMenuHeader.propTypes = {
+  currentUser: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
 }
 
-export default MenuHeader
+function mapStateToProps(state) {
+  return {
+    currentUser: selectCurrentUser(state),
+  }
+}
+
+export default connect(mapStateToProps)(RawMenuHeader)

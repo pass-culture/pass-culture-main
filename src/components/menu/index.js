@@ -6,6 +6,7 @@ import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { Transition } from 'react-transition-group'
 import { withRouter } from 'react-router-dom'
+import { selectCurrentUser } from 'with-login'
 
 import routes from '../../utils/routes'
 import MenuItem from './MenuItem'
@@ -83,7 +84,7 @@ class MainMenu extends React.PureComponent {
   )
 
   render() {
-    const { user } = this.props
+    const { currentUser } = this.props
     const { isVisible } = this.state
     return (
       <Transition in={isVisible} timeout={transitionDelay}>
@@ -100,7 +101,7 @@ class MainMenu extends React.PureComponent {
                   className="pc-theme-red is-relative"
                 >
                   {this.renderCloseButton()}
-                  <MenuHeader user={user} />
+                  <MenuHeader currentUser={currentUser} />
                   <nav id="main-menu-navigation" className="flex-rows mt16 pb0">
                     {this.renderNavigationLinks()}
                   </nav>
@@ -115,17 +116,17 @@ class MainMenu extends React.PureComponent {
 }
 
 MainMenu.defaultProps = {
-  user: null,
+  currentUser: null,
 }
 
 MainMenu.propTypes = {
+  currentUser: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
   dispatch: PropTypes.func.isRequired,
   history: PropTypes.object.isRequired,
-  user: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
 }
 
 const mapStateToProps = state => ({
-  user: state.user,
+  currentUser: selectCurrentUser(state),
 })
 
 export default compose(

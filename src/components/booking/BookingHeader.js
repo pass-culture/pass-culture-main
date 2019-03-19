@@ -5,8 +5,9 @@ import get from 'lodash.get'
 import PropTypes from 'prop-types'
 
 const BookingHeader = ({ recommendation }) => {
-  const title = get(recommendation, 'offer.eventOrThing.name')
-  const subtitle = get(recommendation, 'offer.venue.name')
+  const { offer } = recommendation || {}
+  const title = get(offer, 'eventOrThing.name')
+  const subtitle = get(offer, 'venue.name')
   return (
     <header className="flex-0">
       <h1 className="title">
@@ -19,8 +20,12 @@ const BookingHeader = ({ recommendation }) => {
   )
 }
 
+BookingHeader.defaultProps = {
+  recommendation: null,
+}
+
 BookingHeader.propTypes = {
-  recommendation: PropTypes.object.isRequired,
+  recommendation: PropTypes.object,
 }
 
 export default BookingHeader

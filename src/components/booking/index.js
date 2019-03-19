@@ -1,16 +1,16 @@
 /* eslint
   react/jsx-one-expression-per-line: 0 */
 import classnames from 'classnames'
-import React, { Fragment, PureComponent } from 'react'
 import get from 'lodash.get'
 import moment from 'moment'
 import PropTypes from 'prop-types'
+import React, { Fragment, PureComponent } from 'react'
 import { connect } from 'react-redux'
-import { bindActionCreators } from 'redux'
 import { Transition } from 'react-transition-group'
+import { bindActionCreators } from 'redux'
 import { requestData } from 'redux-saga-data'
+import { resolveCurrentUser } from 'with-login'
 
-import { ROOT_PATH } from '../../utils/config'
 import { externalSubmitForm } from '../forms/utils'
 import BookingCancel from './BookingCancel'
 import BookingForm from './BookingForm'
@@ -22,6 +22,7 @@ import { priceIsDefined } from '../../helpers/getPrice'
 import { selectBookables } from '../../selectors/selectBookables'
 import { selectBookingById } from '../../selectors/selectBookings'
 import currentRecommendationSelector from '../../selectors/currentRecommendation'
+import { ROOT_PATH } from '../../utils/config'
 
 const duration = 250
 const backgroundImage = `url('${ROOT_PATH}/mosaic-k.png')`
@@ -46,6 +47,7 @@ class Booking extends PureComponent {
     this.state = {
       bookedPayload: false,
       canSubmitForm: false,
+      errors: null,
       isErrored: false,
       isSubmitting: false,
       mounted: false,
@@ -96,7 +98,10 @@ class Booking extends PureComponent {
       handleFail: this.handleRequestFail,
       handleSuccess: this.handleRequestSuccess(bookedPayload),
       method: 'PATCH',
-      stateKey: 'user',
+      // IMPORTANT: this resolve is important to keep
+      // track the currentUser with the
+      // selectCurrentUser selector
+      resolve: resolveCurrentUser,
     })
   }
 
@@ -110,9 +115,14 @@ class Booking extends PureComponent {
   }
 
   handleRequestFail = (state, action) => {
+    const {
+      payload: { errors },
+    } = action
+    const isErrored = errors && Object.keys(errors).length > 0
     const nextState = {
       bookedPayload: false,
-      isErrored: action,
+      errors,
+      isErrored,
       isSubmitting: false,
     }
     this.setState(nextState)
@@ -186,7 +196,14 @@ class Booking extends PureComponent {
       isEvent,
       recommendation,
     } = this.props
-    const { bookedPayload, isErrored, isSubmitting, mounted } = this.state
+
+    const {
+      bookedPayload,
+      errors,
+      isErrored,
+      isSubmitting,
+      mounted,
+    } = this.state
     const showForm =
       !isSubmitting && !bookedPayload && !isErrored && !isCancelled
     const defaultBookable = !isEvent && get(bookables, '[0]')
@@ -197,6 +214,7 @@ class Booking extends PureComponent {
       initialDate = get(bookables, '0.beginningDatetime')
       initialDate = moment(initialDate)
     }
+
     const formInitialValues = {
       bookables,
       date: (initialDate && { date: initialDate }) || null,
@@ -204,7 +222,7 @@ class Booking extends PureComponent {
         defaultBookable && priceIsDefined(defaultBookable.price)
           ? defaultBookable.price
           : null,
-      recommendationId: recommendation.id,
+      recommendationId: recommendation && recommendation.id,
       stockId: (defaultBookable && defaultBookable.id) || null,
     }
     return (
@@ -232,17 +250,17 @@ class Booking extends PureComponent {
                   {isCancelled && (
                     <BookingCancel isEvent={isEvent} data={booking} />
                   )}
-                  {isErrored && <BookingError {...isErrored} />}
+                  {isErrored && <BookingError errors={errors} />}
                   {showForm && (
                     <BookingForm
                       className="flex-1 flex-rows flex-center items-center"
-                      isEvent={isEvent}
                       formId={this.formId}
+                      initialValues={formInitialValues}
+                      isEvent={isEvent}
                       isReadOnly={isReadOnly}
                       disabled={userConnected}
                       onSubmit={this.onFormSubmit}
                       onMutation={this.onFormMutation}
-                      initialValues={formInitialValues}
                       onValidation={this.onFormValidation}
                     />
                   )}

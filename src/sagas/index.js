@@ -1,8 +1,4 @@
-import {
-  watchErrorsActions,
-  watchModalActions,
-  watchUserActions,
-} from 'pass-culture-shared'
+import { watchErrorsActions, watchModalActions } from 'pass-culture-shared'
 import { all } from 'redux-saga/effects'
 import { watchDataActions } from 'redux-saga-data'
 
@@ -13,7 +9,6 @@ function* rootSaga() {
     watchModalActions(),
     watchDataActions({ rootUrl: API_URL }),
     watchErrorsActions(),
-    watchUserActions(),
   ])
 }
 

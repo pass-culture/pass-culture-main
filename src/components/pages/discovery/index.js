@@ -51,8 +51,7 @@ export class RawDiscoveryPage extends React.PureComponent {
   }
 
   handleRequestSuccess = (state, action) => {
-    const { dispatch, history, match, recommendations } = this.props
-    const { offerId, mediationId } = match.params
+    const { dispatch, history, recommendations } = this.props
     const {
       payload: { data },
     } = action
@@ -94,13 +93,7 @@ export class RawDiscoveryPage extends React.PureComponent {
   }
 
   handleDataRequest = () => {
-    const {
-      currentRecommendation,
-      dispatch,
-      match,
-      recommendations,
-      readRecommendations,
-    } = this.props
+    const { dispatch, match, recommendations, readRecommendations } = this.props
 
     const { atWorldsEnd, isLoading } = this.state
 

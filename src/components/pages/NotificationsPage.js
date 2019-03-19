@@ -5,17 +5,18 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
+import { selectCurrentUser } from 'with-login'
 
 import { withRedirectToSigninWhenNotAuthenticated } from '../hocs'
 import Loader from '../layout/Loader'
 import PageHeader from '../layout/PageHeader'
 import NavigationFooter from '../layout/NavigationFooter'
 
-const NotificationsPage = ({ user }) => {
-  const isloaded = user || typeof user === 'object'
+const NotificationsPage = ({ currentUser }) => {
+  const isCurrentUserLoaded = currentUser || typeof currentUser === 'object'
   return (
     <div id="notifications-page" className="page is-relative flex-rows">
-      {isloaded && (
+      {isCurrentUserLoaded && (
         <React.Fragment>
           <PageHeader theme="red" title="Mes notifications" />
           <main role="main" className="pc-main is-clipped is-relative">
@@ -24,19 +25,19 @@ const NotificationsPage = ({ user }) => {
           <NavigationFooter theme="white" className="dotted-top-primary" />
         </React.Fragment>
       )}
-      <Loader isloading={!isloaded} />
+      <Loader isloading={!isCurrentUserLoaded} />
     </div>
   )
 }
 
 NotificationsPage.propTypes = {
-  user: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]).isRequired,
+  currentUser: PropTypes.oneOfType([PropTypes.bool, PropTypes.object])
+    .isRequired,
 }
 
-const mapStateToProps = state => {
-  const user = state.user || false
-  return { user }
-}
+const mapStateToProps = state => ({
+  currentUser: selectCurrentUser(state) || false,
+})
 
 export default compose(
   withRouter,

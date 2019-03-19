@@ -1,10 +1,10 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | MonPassCulture snapshot should match snapshot with required props 1`] = `
+exports[`src | components | RawMonPassCulture snapshot should match snapshot with required props 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
-  Symbol(enzyme.__unrendered__): <MonPassCulture
-    user={
+  Symbol(enzyme.__unrendered__): <RawMonPassCulture
+    currentUser={
       Object {
         "expenses": Object {
           "digital": Object {

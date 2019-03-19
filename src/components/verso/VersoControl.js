@@ -7,6 +7,7 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import { compose, bindActionCreators } from 'redux'
 import { requestData } from 'redux-saga-data'
+import { selectCurrentUser } from 'with-login'
 
 import { getWalletValue } from '../../utils/user'
 import { ShareButton } from '../share/ShareButton'
@@ -80,14 +81,14 @@ VersoControl.propTypes = {
 }
 
 const mapStateToProps = (state, ownProps) => {
-  const { user } = state
   const { mediationId, offerId } = ownProps.match.params
   const recommendation = currentRecommendationSelector(
     state,
     offerId,
     mediationId
   )
-  const walletValue = getWalletValue(user)
+  const currentUser = selectCurrentUser(state)
+  const walletValue = getWalletValue(currentUser)
   return {
     isFavorite: recommendation && recommendation.isFavorite,
     recommendationId: recommendation && recommendation.id,

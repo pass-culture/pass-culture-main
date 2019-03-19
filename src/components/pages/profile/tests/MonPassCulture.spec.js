@@ -1,19 +1,19 @@
-// jest --env=jsdom ./src/components/pages/profile/tests/MonPassCulture --watch
+// jest --env=jsdom ./src/components/pages/profile/tests/RawMonPassCulture --watch
 import React from 'react'
 import { shallow } from 'enzyme'
 
-import MonPassCulture from '../MonPassCulture'
+import { RawMonPassCulture } from '../MonPassCulture'
 
 const walletId = '#profile-wallet-balance-value'
 const digitalId = '#profile-digital-wallet-value'
 const physicalId = '#profile-physical-wallet-value'
 
-describe('src | components | MonPassCulture', () => {
+describe('src | components | RawMonPassCulture', () => {
   describe('snapshot', () => {
     it('should match snapshot with required props', () => {
       // given
       const props = {
-        user: {
+        currentUser: {
           expenses: {
             digital: { actual: 0, max: 200 },
             physical: { actual: 0, max: 200 },
@@ -23,7 +23,7 @@ describe('src | components | MonPassCulture', () => {
       }
 
       // when
-      const wrapper = shallow(<MonPassCulture {...props} />)
+      const wrapper = shallow(<RawMonPassCulture {...props} />)
 
       // then
       expect(wrapper).toBeDefined()
@@ -34,7 +34,7 @@ describe('src | components | MonPassCulture', () => {
     it('with wallet value set to 0', () => {
       // given
       const props = {
-        user: {
+        currentUser: {
           expenses: {
             digital: { actual: 100, max: 200 },
             physical: { actual: 100, max: 200 },
@@ -44,7 +44,7 @@ describe('src | components | MonPassCulture', () => {
       }
 
       // when
-      const wrapper = shallow(<MonPassCulture {...props} />)
+      const wrapper = shallow(<RawMonPassCulture {...props} />)
       const walletElement = wrapper.find(walletId)
       const digitalElement = wrapper.find(digitalId)
       const physicalElement = wrapper.find(physicalId)
@@ -65,7 +65,7 @@ describe('src | components | MonPassCulture', () => {
     it('with wallet value set to 90', () => {
       // given
       const props = {
-        user: {
+        currentUser: {
           expenses: {
             digital: { actual: 20, max: 200 },
             physical: { actual: 80, max: 200 },
@@ -75,7 +75,7 @@ describe('src | components | MonPassCulture', () => {
       }
 
       // when
-      const wrapper = shallow(<MonPassCulture {...props} />)
+      const wrapper = shallow(<RawMonPassCulture {...props} />)
       const walletElement = wrapper.find(walletId)
       const digitalElement = wrapper.find(digitalId)
       const physicalElement = wrapper.find(physicalId)
@@ -96,7 +96,7 @@ describe('src | components | MonPassCulture', () => {
     it('render with wallet value set to 200', () => {
       // given
       const props = {
-        user: {
+        currentUser: {
           expenses: {
             digital: { actual: 120, max: 200 },
             physical: { actual: 140, max: 200 },
@@ -106,7 +106,7 @@ describe('src | components | MonPassCulture', () => {
       }
 
       // when
-      const wrapper = shallow(<MonPassCulture {...props} />)
+      const wrapper = shallow(<RawMonPassCulture {...props} />)
       const walletElement = wrapper.find(walletId)
       const digitalElement = wrapper.find(digitalId)
       const physicalElement = wrapper.find(physicalId)
@@ -127,7 +127,7 @@ describe('src | components | MonPassCulture', () => {
     it('render with invalid wallet balance', () => {
       // given
       const props = {
-        user: {
+        currentUser: {
           expenses: {
             digital: { actual: 120, max: 200 },
             physical: { actual: 140, max: 200 },
@@ -137,7 +137,7 @@ describe('src | components | MonPassCulture', () => {
       }
 
       // when
-      const wrapper = shallow(<MonPassCulture {...props} />)
+      const wrapper = shallow(<RawMonPassCulture {...props} />)
       const walletElement = wrapper.find(walletId)
       const digitalElement = wrapper.find(digitalId)
       const physicalElement = wrapper.find(physicalId)

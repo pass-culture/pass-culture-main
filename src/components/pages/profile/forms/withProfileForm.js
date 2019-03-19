@@ -6,6 +6,7 @@ import { Form as FinalForm } from 'react-final-form'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { requestData } from 'redux-saga-data'
+import { selectCurrentUser } from 'with-login'
 
 import { ROOT_PATH } from '../../../../utils/config'
 import { parseSubmitErrors } from '../../../forms/utils'
@@ -28,7 +29,7 @@ const getInitialValuesFromUser = (obj, user) =>
  *                                               par défaut ne valide pas
  * @param  {String}  [routePath='users/current'] Route de l'API pour l'update
  * @param  {String}  [routeMethod='PATCH']       Methode de la route API
- * @param  {String}  [reducerKey='user']         Si au resultat de l'appel API
+ * @param  {String}  [stateKey='users']         Si au resultat de l'appel API
  *                                               Le store redux doit être update
  *                                               La valeur `false` désactive
  *                                               l'update du store/reducer
@@ -43,7 +44,7 @@ const withProfileForm = (
   // en tant que props du composant, comme pour la propriete `title` du header
   routePath = 'users/current',
   routeMethod = 'PATCH',
-  reducerKey = 'user',
+  stateKey = 'users',
   initialValues = false
 ) => {
   const name = WrappedComponent.displayName || 'Component'
@@ -53,11 +54,11 @@ const withProfileForm = (
   class ProfilePasswordForm extends React.PureComponent {
     constructor(props) {
       super(props)
-      const { dispatch, user } = this.props
+      const { currentUser, dispatch } = this.props
       this.state = { isloading: false }
       // NOTE: initialValues sont detruites a chaque mount/unmount
       // mais la reference ne change pas au changement du state
-      this.initialValues = getInitialValuesFromUser(initialValues, user)
+      this.initialValues = getInitialValuesFromUser(initialValues, currentUser)
       this.actions = bindActionCreators({ requestData }, dispatch)
     }
 
@@ -96,8 +97,8 @@ const withProfileForm = (
           handleSuccess: this.handleRequestSuccess(resolve),
           method: routeMethod,
         }
-        // NOTE: par défaut on utilise la clé 'user'
-        if (reducerKey) config.key = reducerKey
+        // NOTE: par défaut on utilise la clé 'users'
+        if (stateKey) config.key = stateKey
         this.actions.requestData(config)
       })
       return formSubmitPromise
@@ -184,16 +185,22 @@ const withProfileForm = (
   }
 
   ProfilePasswordForm.propTypes = {
+    currentUser: PropTypes.object.isRequired,
     dispatch: PropTypes.func.isRequired,
     // NOTE: history et location sont automatiquement
     // injectées par le render de la route du react-router-dom
     history: PropTypes.object.isRequired,
     location: PropTypes.object.isRequired,
     title: PropTypes.string,
-    user: PropTypes.object.isRequired,
   }
 
-  return connect()(ProfilePasswordForm)
+  function mapStateToProps(state) {
+    return {
+      currentUser: selectCurrentUser(state),
+    }
+  }
+
+  return connect(mapStateToProps)(ProfilePasswordForm)
 }
 
 export default withProfileForm

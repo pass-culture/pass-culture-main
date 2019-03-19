@@ -6,6 +6,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import { compose, bindActionCreators } from 'redux'
+import { selectCurrentUser } from 'with-login'
 
 import BackButton from './BackButton'
 
@@ -18,21 +19,21 @@ export class RawMain extends React.PureComponent {
   }
 
   componentDidMount() {
-    const { user } = this.props
+    const { currentUser } = this.props
     // si un utilisateur est connecte ?
     // FIXME -> cela doit etre gere par un composant private
     // heritage de ReactRouter
     // NOTE -> https://reacttraining.com/react-router/web/example/auth-workflow
-    if (!user) return
+    if (!currentUser) return
     this.dataRequestHandler()
   }
 
   componentDidUpdate(prevProps) {
-    const { user, location } = this.props
-    const userChanged = !prevProps.user && user // User just loaded
+    const { currentUser, location } = this.props
+    const currentUserChanged = !prevProps.currentUser && currentUser // User just loaded
     const searchChanged = location.search !== prevProps.location.search
 
-    if (userChanged || searchChanged) {
+    if (currentUserChanged || searchChanged) {
       this.dataRequestHandler()
     }
   }
@@ -128,19 +129,20 @@ export class RawMain extends React.PureComponent {
 RawMain.defaultProps = {
   backButton: false,
   closeSearchButton: false,
+  currentUser: null,
   footer: null,
   handleDataRequest: null,
   header: null,
   noPadding: false,
   pageTitle: null,
   redBg: false,
-  user: null,
 }
 
 RawMain.propTypes = {
   backButton: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
   children: PropTypes.node.isRequired,
   closeSearchButton: PropTypes.bool,
+  currentUser: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
   dispatch: PropTypes.func.isRequired,
   footer: PropTypes.func,
   handleDataRequest: PropTypes.func,
@@ -151,12 +153,11 @@ RawMain.propTypes = {
   noPadding: PropTypes.bool,
   pageTitle: PropTypes.string,
   redBg: PropTypes.bool,
-  user: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
 }
 
 const mapStateToProps = state => ({
+  currentUser: selectCurrentUser(state),
   notification: state.notification,
-  user: state.user,
 })
 
 export default compose(

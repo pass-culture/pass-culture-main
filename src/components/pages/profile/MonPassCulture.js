@@ -1,14 +1,16 @@
 /* eslint
   react/jsx-one-expression-per-line: 0 */
-import React from 'react'
 import PropTypes from 'prop-types'
+import React from 'react'
+import { connect } from 'react-redux'
+import { selectCurrentUser } from 'with-login'
 
 import { getAvailableBalanceByType } from './utils'
 import { getWalletValue } from '../../../utils/user'
 
-const MonPassCulture = ({ user }) => {
-  const { expenses } = user
-  const allWallet = getWalletValue(user)
+export const RawMonPassCulture = ({ currentUser }) => {
+  const { expenses } = currentUser
+  const allWallet = getWalletValue(currentUser)
   const { digital, physical } = expenses
   const [digitalAvailable, physicalAvailable] = [digital, physical].map(
     getAvailableBalanceByType(allWallet)
@@ -37,8 +39,14 @@ const MonPassCulture = ({ user }) => {
   )
 }
 
-MonPassCulture.propTypes = {
-  user: PropTypes.object.isRequired,
+RawMonPassCulture.propTypes = {
+  currentUser: PropTypes.object.isRequired,
 }
 
-export default MonPassCulture
+function mapStateToProps(state) {
+  return {
+    currentUser: selectCurrentUser(state),
+  }
+}
+
+export default connect(mapStateToProps)(RawMonPassCulture)

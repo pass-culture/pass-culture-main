@@ -22,18 +22,20 @@ const parseRoutesWithComponent = () => {
   return routes
 }
 
-const ProfilePage = ({ isloaded, location, user }) => {
+const ProfilePage = ({ currentUser, isCurrentUserLoaded, location }) => {
   const routes = parseRoutesWithComponent()
   const possibleRoutes = Object.keys(routes).join('|')
   return (
     <div id="profile-page" className="page is-relative">
-      {isloaded && (
+      {isCurrentUserLoaded && (
         <Switch location={location}>
           <Route
             exact
             path="/profil/:menu(menu)?"
             key="route-profile-main-view"
-            render={() => <ProfileMainView user={user} config={config} />}
+            render={() => (
+              <ProfileMainView currentUser={currentUser} config={config} />
+            )}
           />
           <Route
             exact
@@ -52,7 +54,7 @@ const ProfilePage = ({ isloaded, location, user }) => {
               const Component = routes[view].component
               if (!Component) return null
               const { title } = routes[view]
-              return <Component {...routeProps} title={title} user={user} />
+              return <Component {...routeProps} title={title} />
             }}
           />
           <Route
@@ -62,21 +64,24 @@ const ProfilePage = ({ isloaded, location, user }) => {
           />
         </Switch>
       )}
-      {!isloaded && <Loader isloading />}
+      {!isCurrentUserLoaded && <Loader isloading />}
     </div>
   )
 }
 
 ProfilePage.propTypes = {
-  isloaded: PropTypes.bool.isRequired,
+  currentUser: PropTypes.object.isRequired,
+  isCurrentUserLoaded: PropTypes.bool.isRequired,
   location: PropTypes.object.isRequired,
-  user: PropTypes.object.isRequired,
 }
 
-const mapStateToProps = state => {
-  const user = state.user || false
-  const isloaded = (user && user !== null) || typeof user === 'object'
-  return { isloaded, user }
+const mapStateToProps = (state, ownProps) => {
+  const currentUser = ownProps.currentUser || false
+  const isCurrentUserLoaded =
+    (currentUser && currentUser !== null) || typeof currentUser === 'object'
+  return {
+    isCurrentUserLoaded,
+  }
 }
 
 export default compose(

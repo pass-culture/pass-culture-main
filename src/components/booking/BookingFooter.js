@@ -1,6 +1,6 @@
 /* eslint
   react/jsx-one-expression-per-line: 0 */
-import React from 'react'
+import React, { Fragment } from 'react'
 import PropTypes from 'prop-types'
 
 const BookingFooter = ({
@@ -14,7 +14,7 @@ const BookingFooter = ({
   const showCancelButton = !isSubmitting && !isBooked
   const showSubmitButton = showCancelButton && canSubmitForm
   return (
-    <React.Fragment>
+    <Fragment>
       {showCancelButton && (
         <button type="reset" onClick={onCancel} className="text-center my5">
           <span>Annuler</span>
@@ -30,7 +30,7 @@ const BookingFooter = ({
           <b>OK</b>
         </button>
       )}
-    </React.Fragment>
+    </Fragment>
   )
 }
 

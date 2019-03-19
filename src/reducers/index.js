@@ -1,4 +1,4 @@
-import { errors, form, loading, modal, user } from 'pass-culture-shared'
+import { errors, form, loading, modal } from 'pass-culture-shared'
 import { combineReducers } from 'redux'
 
 import data from './data'
@@ -21,7 +21,6 @@ const rootReducer = combineReducers({
   overlay,
   share,
   splash,
-  user,
 })
 
 export default rootReducer

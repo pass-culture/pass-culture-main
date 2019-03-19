@@ -1,15 +1,16 @@
 import get from 'lodash.get'
 import { Logger, Icon } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
-import Draggable from 'react-draggable'
 import React, { Component } from 'react'
-import { withRouter } from 'react-router-dom'
+import Draggable from 'react-draggable'
 import { connect } from 'react-redux'
-import { compose } from 'redux'
+import { withRouter } from 'react-router-dom'
 import withSizes from 'react-sizes'
+import { compose } from 'redux'
 
 import Card from './Card'
 import DeckNavigation from './DeckNavigation'
+import { NB_CARDS_REMAINING_THAT_TRIGGERS_LOAD } from '../../../helpers/discovery'
 import {
   closeCardDetails,
   showCardDetails,
@@ -19,13 +20,6 @@ import currentRecommendationSelector from '../../../selectors/currentRecommendat
 import nextRecommendationSelector from '../../../selectors/nextRecommendation'
 import previousRecommendationSelector from '../../../selectors/previousRecommendation'
 import selectRecommendationsForDiscovery from '../../../selectors/recommendations'
-import {
-  NB_CARDS_REMAINING_THAT_TRIGGERS_LOAD,
-  // isRecommendations,
-  // isCurrentRecommendation,
-  // isNewRecommendations,
-  // isNewCurrentRecommendation,
-} from '../../../helpers/discovery'
 
 export class RawDeck extends Component {
   constructor(props) {
@@ -277,7 +271,7 @@ RawDeck.propTypes = {
   horizontalSlideRatio: PropTypes.number,
   isFlipDisabled: PropTypes.bool.isRequired,
   match: PropTypes.object.isRequired,
-  nextLimit: PropTypes.number.isRequired,
+  nextLimit: PropTypes.oneOfType([PropTypes.bool, PropTypes.number]).isRequired,
   nextRecommendation: PropTypes.object,
   noDataTimeout: PropTypes.number,
   previousRecommendation: PropTypes.object,
@@ -304,7 +298,6 @@ const mapStateToProps = (state, ownProps) => {
   const isFlipDisabled =
     !currentRecommendation || (typeof tutoIndex === 'number' && thumbCount <= 1)
 
-    
   const nextLimit =
     nbRecos > 0 &&
     (NB_CARDS_REMAINING_THAT_TRIGGERS_LOAD >= nbRecos - 1

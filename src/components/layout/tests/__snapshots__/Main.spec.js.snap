@@ -6,6 +6,7 @@ ShallowWrapper {
   Symbol(enzyme.__unrendered__): <RawMain
     backButton={false}
     closeSearchButton={false}
+    currentUser={null}
     dispatch={[MockFunction]}
     footer={null}
     handleDataRequest={null}
@@ -16,7 +17,6 @@ ShallowWrapper {
     noPadding={false}
     pageTitle={null}
     redBg={false}
-    user={null}
   >
     <div>
       foo

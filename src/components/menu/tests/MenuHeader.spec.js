@@ -2,7 +2,7 @@
 import React from 'react'
 import { shallow } from 'enzyme'
 
-import MenuHeader from '../MenuHeader'
+import { RawMenuHeader } from '../MenuHeader'
 
 const walletValueId = '#main-menu-header-wallet-value'
 
@@ -11,14 +11,14 @@ describe('src | components | menu | MenuHeader', () => {
     it('should match snapshot', () => {
       // given
       const props = {
-        user: {
+        currentUser: {
           publicName: 'username',
           wallet_balance: 500,
         },
       }
 
       // when
-      const wrapper = shallow(<MenuHeader {...props} />)
+      const wrapper = shallow(<RawMenuHeader {...props} />)
 
       // then
       expect(wrapper).toBeDefined()
@@ -30,7 +30,7 @@ describe('src | components | menu | MenuHeader', () => {
       // given
       const props = {}
       // when
-      const wrapper = shallow(<MenuHeader {...props} />)
+      const wrapper = shallow(<RawMenuHeader {...props} />)
       const walletElement = wrapper.find(walletValueId).first()
       // then
       const expected = '--\u00A0€'
@@ -39,9 +39,9 @@ describe('src | components | menu | MenuHeader', () => {
     })
     it('with user but no wallet_balance', () => {
       // given
-      const props = { user: {} }
+      const props = { currentUser: {} }
       // when
-      const wrapper = shallow(<MenuHeader {...props} />)
+      const wrapper = shallow(<RawMenuHeader {...props} />)
       const walletElement = wrapper.find(walletValueId).first()
       // then
       const expected = '--\u00A0€'
@@ -50,9 +50,9 @@ describe('src | components | menu | MenuHeader', () => {
     })
     it('with user and wallet_balance', () => {
       // given
-      const props = { user: { wallet_balance: 500 } }
+      const props = { currentUser: { wallet_balance: 500 } }
       // when
-      const wrapper = shallow(<MenuHeader {...props} />)
+      const wrapper = shallow(<RawMenuHeader {...props} />)
       const walletElement = wrapper.find(walletValueId).first()
       // then
       const expected = '500\u00A0€'
