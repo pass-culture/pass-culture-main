@@ -1,5 +1,12 @@
 .event-occurrences-and-stocks-manager {
 
+  td.remaining-stock {
+    color: #757575;
+    font-size: 0.75rem;
+    font-weight: 500;
+    min-width: 75px;
+  }
+
   .info {
     @extend .is-absolute;
     @extend .level;
