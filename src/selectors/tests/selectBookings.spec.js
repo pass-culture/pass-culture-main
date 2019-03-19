@@ -1,6 +1,5 @@
 // jest --env=jsdom ./src/selectors/tests/selectBookings --watch
 import moment from 'moment'
-import get from 'lodash.get'
 
 import {allBookingsDataset, inExactTwoDays} from './data/selectBookings'
 import {
