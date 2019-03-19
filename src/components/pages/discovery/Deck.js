@@ -131,10 +131,9 @@ export class RawDeck extends Component {
 
   handleRefreshNext = () => {
     const { currentRecommendation, handleDataRequest, nextLimit } = this.props
-
-    if (nextLimit && currentRecommendation.index === nextLimit) {
-      handleDataRequest()
-    }
+    const shouldRequest = nextLimit && currentRecommendation.index === nextLimit
+    if (!shouldRequest) return
+    handleDataRequest()
   }
 
   handleRefreshedDraggableKey = () => {
@@ -300,21 +299,21 @@ const mapStateToProps = (state, ownProps) => {
   const { thumbCount, tutoIndex } = mediation || {}
 
   const recommendations = selectRecommendationsForDiscovery(state)
+  const nbRecos = recommendations ? recommendations.length : 0
 
   const isFlipDisabled =
     !currentRecommendation || (typeof tutoIndex === 'number' && thumbCount <= 1)
 
+    
   const nextLimit =
-    recommendations &&
-    recommendations.length > 0 &&
-    (NB_CARDS_REMAINING_THAT_TRIGGERS_LOAD >= recommendations.length - 1
-      ? recommendations.length - 1
-      : recommendations.length - 1 - NB_CARDS_REMAINING_THAT_TRIGGERS_LOAD)
+    nbRecos > 0 &&
+    (NB_CARDS_REMAINING_THAT_TRIGGERS_LOAD >= nbRecos - 1
+      ? nbRecos - 1
+      : nbRecos - 1 - NB_CARDS_REMAINING_THAT_TRIGGERS_LOAD)
 
   const previousLimit =
-    recommendations &&
-    recommendations.length > 0 &&
-    (NB_CARDS_REMAINING_THAT_TRIGGERS_LOAD < recommendations.length - 1
+    nbRecos > 0 &&
+    (NB_CARDS_REMAINING_THAT_TRIGGERS_LOAD < nbRecos - 1
       ? NB_CARDS_REMAINING_THAT_TRIGGERS_LOAD + 1
       : 0)
 

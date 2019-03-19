@@ -67,10 +67,11 @@ export class RawDiscoveryPage extends React.PureComponent {
       pathnameWithoutTrailingSlash === '/decouverte/tuto/fin'
     const shouldReloadPage = newRecosNb > 0 && weAreNotViewingACard
 
+    const atWorldsEnd = newRecosNb === 0
+    const isEmpty = (!recommendations || !recommendations.length) && atWorldsEnd
     this.setState({
-      atWorldsEnd: newRecosNb === 0,
-      isEmpty:
-        (!recommendations || recommendations.length === 0) && newRecosNb === 0,
+      atWorldsEnd,
+      isEmpty,
       isLoading: false,
     })
 
@@ -94,9 +95,9 @@ export class RawDiscoveryPage extends React.PureComponent {
 
   handleDataRequest = () => {
     const {
+      currentRecommendation,
       dispatch,
       match,
-      currentRecommendation,
       recommendations,
       readRecommendations,
     } = this.props

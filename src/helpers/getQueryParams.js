@@ -23,12 +23,10 @@ export const getQueryParams = (match, currentRecommendation) => {
     !DEFAULT_VIEW_IDENTIFIERS.includes(pMediationId) &&
     pMediationId
 
-  if (
-    currentRecommendation &&
-    currentRecommendation.mediationId === mediationId &&
-    currentRecommendation.offerId === offerId
-  )
-    return ''
+  const isSameRecoAsMatchParams = currentRecommendation &&
+  currentRecommendation.mediationId === mediationId &&
+  currentRecommendation.offerId === offerId
+  if (isSameRecoAsMatchParams) return ''
 
   const params = [
     // si il ne s'agit pas d'un tuto alors is s'agit d'une offre

@@ -18,7 +18,6 @@ export const selectRecommendations = createSelector(
     filteredRecommendations = filteredRecommendations.filter(
       recommendation => recommendation.uniqId
     )
-    // filteredRecommendations.length = Math.min(filteredRecommendations.length,7)
     filteredRecommendations = uniqBy(
       filteredRecommendations,
       recommendation => recommendation.uniqId
