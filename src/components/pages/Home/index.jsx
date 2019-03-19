@@ -1,9 +1,9 @@
-import { Icon } from 'pass-culture-shared'
 import React from 'react'
 import { NavLink } from 'react-router-dom'
 
-import { withRedirectToSigninWhenNotAuthenticated } from '../hocs'
-import Main from '../layout/Main'
+import { withRedirectToSigninWhenNotAuthenticated } from 'components/hocs'
+import Icon from 'components/layout/Icon'
+import Main from 'components/layout/Main'
 
 const Card = ({ svg, title, text, navLink }) => {
   return (
@@ -17,7 +17,7 @@ const Card = ({ svg, title, text, navLink }) => {
   )
 }
 
-const HomePage = ({ user }) => {
+const Home = ({ currentUser }) => {
   return (
     <Main name="home" whiteHeader>
       <div className="home-cards columns">
@@ -38,4 +38,4 @@ const HomePage = ({ user }) => {
   )
 }
 
-export default withRedirectToSigninWhenNotAuthenticated(HomePage)
+export default withRedirectToSigninWhenNotAuthenticated(Home)

@@ -23,7 +23,7 @@ describe('src | components | pages | Offers', () => {
     it('should redirect to /offres when click on venue flag', () => {
       // given
       const initialProps = {
-        currentUser: {},
+        currentUser: { id: 'AE', currentUserUUID: 'baba' },
         dispatch: jest.fn(),
         venue: {},
       }
@@ -33,7 +33,7 @@ describe('src | components | pages | Offers', () => {
           offerers: [],
           venues: [{ id: 'AE' }],
           types: [],
-          users: [],
+          users: [{ id: 'AE', currentUserUUID: 'baba' }],
         },
         modal: {},
         tracker: {},
