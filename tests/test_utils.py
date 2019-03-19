@@ -288,7 +288,8 @@ def create_thing(
         description=None,
         dominant_color=None,
         thumb_count=1,
-        url=None
+        url=None,
+        owning_offerer=None
 ):
     thing = Thing()
     thing.type = str(thing_type)
@@ -302,6 +303,7 @@ def create_thing(
     thing.mediaUrls = media_urls
     thing.thumbCount = thumb_count
     thing.url = url
+    thing.owningOfferer = owning_offerer
 
     if thumb_count > 0:
         if dominant_color is None:
@@ -343,17 +345,23 @@ def create_thing_offer(venue, thing=None, date_created=datetime.utcnow(), bookin
     offer = Offer()
     if thing:
         offer.thing = thing
+        offer.name = thing.name
+        offer.type = thing.type
+        offer.mediaUrls = thing.mediaUrls
+        offer.extraData = thing.extraData
+        offer.url = thing.url
+        offer.isNational = thing.isNational
     else:
         offer.thing = create_thing(thing_name=thing_name, thing_type=thing_type, media_urls=media_urls,
                                    author_name=author_name, url=url, thumb_count=thumb_count,
                                    dominant_color=dominant_color, is_national=is_national)
+        offer.name = thing_name
+        offer.type = str(thing_type)
+        offer.mediaUrls = media_urls
+        offer.extraData = {'author': author_name}
+        offer.url = url
+        offer.isNational = is_national
     offer.venue = venue
-    offer.name = thing_name
-    offer.type = str(thing_type)
-    offer.mediaUrls = media_urls
-    offer.extraData = {'author': author_name}
-    offer.url = url
-    offer.isNational = is_national
     offer.dateCreated = date_created
     offer.bookingEmail = booking_email
     offer.isActive = is_active
@@ -376,13 +384,13 @@ def create_event_offer(venue=None, event=None, event_name='Test event', duration
                              thumb_count=thumb_count, dominant_color=dominant_color, is_national=is_national)
     offer.event = event
     offer.venue = venue
-    offer.name = event_name
-    offer.type = str(event_type)
-    offer.isNational = is_national
+    offer.name = event.name
+    offer.type = event.type
+    offer.isNational = event.isNational
+    offer.durationMinutes = event.durationMinutes
     offer.dateCreated = date_created
     offer.bookingEmail = booking_email
     offer.isActive = is_active
-    offer.durationMinutes = duration_minutes
     offer.id = idx
     return offer
 

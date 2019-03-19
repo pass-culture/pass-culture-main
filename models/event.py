@@ -9,8 +9,9 @@ from sqlalchemy import Binary, \
     Integer, \
     String, \
     Text, \
-    TEXT
+    TEXT, ForeignKey
 from sqlalchemy.dialects.postgresql import ARRAY
+from sqlalchemy.orm import relationship
 from sqlalchemy.sql.expression import cast, false
 from sqlalchemy.sql.functions import coalesce
 
@@ -75,6 +76,14 @@ class Event(PcObject,
                         server_default=false(),
                         default=False,
                         nullable=False)
+
+    owningOffererId = Column(BigInteger,
+                      ForeignKey("offerer.id"),
+                      nullable=True)
+
+    owningOfferer = relationship('Offerer',
+                          foreign_keys=[owningOffererId],
+                          backref='events')
 
     @property
     def offerType(self):

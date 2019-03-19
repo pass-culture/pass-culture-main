@@ -1,5 +1,5 @@
 from models import RightsType
-from models.api_errors import ResourceNotFound
+from models.api_errors import ResourceNotFound, ApiErrors
 from utils.rest import ensure_current_user_has_rights
 
 
@@ -19,4 +19,18 @@ def check_venue_exists_when_requested(venue, venue_id):
             'global',
             "Ce lieu n'a pas été trouvé"
         )
+        raise errors
+
+
+def check_valid_edition(response, thing_or_event_dict):
+    forbidden_keys = {'idAtProviders', 'dateModifiedAtLastProvider', 'thumbCount', 'firstThumbDominantColor',
+                      'owningOffererId', 'id', 'lastProviderId', 'isNational', 'dateCreated'}
+    all_keys = response.keys()
+    if thing_or_event_dict:
+        all_keys = set(all_keys).union(set(thing_or_event_dict.keys()))
+    keys_in_error = forbidden_keys.intersection(all_keys)
+    if thing_or_event_dict and keys_in_error:
+        errors = ApiErrors()
+        for key in keys_in_error:
+            errors.addError(key, 'Vous ne pouvez pas modifier cette information')
         raise errors

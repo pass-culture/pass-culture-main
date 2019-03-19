@@ -6,8 +6,9 @@ from sqlalchemy import BigInteger, \
     Column, \
     Index, \
     String, \
-    Text, Boolean
+    Text, Boolean, ForeignKey
 from sqlalchemy.dialects.postgresql import ARRAY, TEXT
+from sqlalchemy.orm import relationship
 from sqlalchemy.sql.expression import cast
 from sqlalchemy.sql.functions import coalesce
 
@@ -58,6 +59,14 @@ class Thing(PcObject,
     isNational = Column(Boolean,
                         default=False,
                         nullable=False)
+
+    owningOffererId = Column(BigInteger,
+                      ForeignKey("offerer.id"),
+                      nullable=True)
+
+    owningOfferer = relationship('Offerer',
+                          foreign_keys=[owningOffererId],
+                          backref='things')
 
     @property
     def offerType(self):

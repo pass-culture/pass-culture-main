@@ -14,7 +14,7 @@ from utils.rest import expect_json_data, \
     handle_rest_get_list, \
     load_or_404, login_or_api_key_required, load_or_raise_error, ensure_current_user_has_rights
 from validation.events import check_has_venue_id, check_user_can_create_activation_event
-from validation.offers import check_venue_exists_when_requested, check_user_has_rights_for_query
+from validation.offers import check_venue_exists_when_requested, check_user_has_rights_for_query, check_valid_edition
 from validation.url import is_url_safe
 
 
@@ -116,10 +116,22 @@ def _fill_offer_with_event_data(event_dict):
 @login_or_api_key_required
 @expect_json_data
 def patch_offer(id):
+    thing_or_event_dict = request.json.get('thing') or request.json.get('event')
+    check_valid_edition(request.json, thing_or_event_dict)
     offer = offer_queries.find_offer_by_id(dehumanize(id))
     ensure_current_user_has_rights(RightsType.editor, offer.venue.managingOffererId)
-    if 'bookingEmail' in request.json:
-        offer.bookingEmail = request.json['bookingEmail']
+    offer.populateFromDict(request.json)
+    if thing_or_event_dict:
+        _update_offer_with_thing_or_event_data(offer, thing_or_event_dict)
     PcObject.check_and_save(offer)
 
-    return '', 200
+    return jsonify(
+        offer._asdict(include=OFFER_INCLUDES)
+    ), 200
+
+
+def _update_offer_with_thing_or_event_data(offer, thing_or_event_dict):
+    offer.populateFromDict(thing_or_event_dict)
+    owning_offerer = offer.eventOrThing.owningOfferer
+    if owning_offerer and owning_offerer == offer.venue.managingOfferer:
+        offer.eventOrThing.populateFromDict(thing_or_event_dict)
