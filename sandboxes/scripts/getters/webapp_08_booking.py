@@ -1,12 +1,27 @@
-from models.user import User
 from datetime import datetime
-from models import Offer, EventOccurrence, Stock
+from models.user import User
+from sqlalchemy import func, and_, or_
+from models import Event, EventOccurrence, EventType, Offer, Stock, Thing, Venue
 from repository.user_queries import filter_webapp_users
+from repository.offer_queries import _filter_bookable_offers_for_discovery
 from sandboxes.scripts.utils.helpers import get_user_helper, get_offer_helper
 
+
 def get_non_free_offer_with_multi_dates_not_already_booked():
-  query = Offer.query.filter(EventOccurrence.query.filter((Offer.id == EventOccurrence.offerId) & (EventOccurrence.beginningDatetime > datetime.utcnow())).count() > 1)
-  query = query.filter(Stock.price >= 0)
+
+  join_on_stock = and_(or_(Offer.id == Stock.offerId, Stock.eventOccurrenceId == EventOccurrence.id))
+  join_on_event_occurrence = and_(Offer.id == EventOccurrence.offerId)
+  join_on_event = and_(Event.id == Offer.eventId)
+
+  query = Offer.query \
+      .outerjoin(Thing) \
+      .outerjoin(Event, join_on_event) \
+      .outerjoin(EventOccurrence, join_on_event_occurrence) \
+      .join(Venue) \
+      .join(Stock, join_on_stock) \
+      .filter(Event.type != str(EventType.ACTIVATION))
+  query = _filter_bookable_offers_for_discovery(query)
+  query = query.filter(Stock.price > 0)
   offer = query.first()
   return {
       "offer": get_offer_helper(offer)
