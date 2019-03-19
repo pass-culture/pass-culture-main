@@ -166,7 +166,11 @@ class PriceQuantityForm extends Component {
               type={isStockReadOnly ? 'text' : 'number'}
             />
           </td>
-          <td>{remainingStock}</td>
+
+          <td className="is-small remaining-stock" id="remaining-stock">
+            {remainingStock}
+          </td>
+
           {!isStockReadOnly && (
             <Fragment>
               <td>

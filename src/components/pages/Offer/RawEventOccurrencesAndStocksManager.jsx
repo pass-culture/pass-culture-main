@@ -171,7 +171,7 @@ class RawEventOccurrencesAndStocksManager extends Component {
                 )}
                 <td>Prix</td>
                 <td>Date Limite de Réservation</td>
-                <td>Stock[ou]Places affecté[es] </td>
+                <td>{isStockOnly ? 'Stock' : 'Places affectées'}</td>
                 <td>Stock restant</td>
                 <td>Modifier</td>
                 <td>Supprimer</td>
