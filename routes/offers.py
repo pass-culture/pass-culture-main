@@ -3,9 +3,11 @@ from flask_login import current_user, login_required
 
 from domain.admin_emails import send_offer_creation_notification_to_support
 from models import Offer, PcObject, Venue, Event, Thing, RightsType
+from models.api_errors import ResourceNotFound
 from repository import venue_queries, offer_queries
 from repository.offer_queries import find_activation_offers, \
     find_offers_with_filter_parameters
+from repository.recommendation_queries import invalidate_recommendations
 from utils.config import PRO_URL
 from utils.human_ids import dehumanize
 from utils.includes import OFFER_INCLUDES
@@ -89,6 +91,35 @@ def post_offer():
     ), 201
 
 
+@app.route('/offer/<id>', methods=['PATCH'])
+@login_or_api_key_required
+@expect_json_data
+def patch_offer(id):
+    thing_or_event_dict = request.json.get('thing') or request.json.get('event')
+    check_valid_edition(request.json, thing_or_event_dict)
+    offer = offer_queries.find_offer_by_id(dehumanize(id))
+    if not offer:
+        raise ResourceNotFound
+    ensure_current_user_has_rights(RightsType.editor, offer.venue.managingOffererId)
+    offer.populateFromDict(request.json)
+    if thing_or_event_dict:
+        _update_offer_with_thing_or_event_data(offer, thing_or_event_dict)
+    PcObject.check_and_save(offer)
+    if 'isActive' in request.json and not request.json['isActive']:
+        invalidate_recommendations(offer)
+
+    return jsonify(
+        offer._asdict(include=OFFER_INCLUDES)
+    ), 200
+
+
+def _update_offer_with_thing_or_event_data(offer, thing_or_event_dict):
+    offer.populateFromDict(thing_or_event_dict)
+    owning_offerer = offer.eventOrThing.owningOfferer
+    if owning_offerer and owning_offerer == offer.venue.managingOfferer:
+        offer.eventOrThing.populateFromDict(thing_or_event_dict)
+
+
 def _fill_offer_with_thing_data(thing_dict):
     thing = Thing()
     url = thing_dict.get('url')
@@ -110,28 +141,3 @@ def _fill_offer_with_event_data(event_dict):
     offer.populateFromDict(event_dict)
     offer.event = event
     return offer
-
-
-@app.route('/offer/<id>', methods=['PATCH'])
-@login_or_api_key_required
-@expect_json_data
-def patch_offer(id):
-    thing_or_event_dict = request.json.get('thing') or request.json.get('event')
-    check_valid_edition(request.json, thing_or_event_dict)
-    offer = offer_queries.find_offer_by_id(dehumanize(id))
-    ensure_current_user_has_rights(RightsType.editor, offer.venue.managingOffererId)
-    offer.populateFromDict(request.json)
-    if thing_or_event_dict:
-        _update_offer_with_thing_or_event_data(offer, thing_or_event_dict)
-    PcObject.check_and_save(offer)
-
-    return jsonify(
-        offer._asdict(include=OFFER_INCLUDES)
-    ), 200
-
-
-def _update_offer_with_thing_or_event_data(offer, thing_or_event_dict):
-    offer.populateFromDict(thing_or_event_dict)
-    owning_offerer = offer.eventOrThing.owningOfferer
-    if owning_offerer and owning_offerer == offer.venue.managingOfferer:
-        offer.eventOrThing.populateFromDict(thing_or_event_dict)

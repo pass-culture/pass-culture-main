@@ -1,13 +1,12 @@
-from datetime import datetime
-
 import pytest
+from datetime import datetime, timedelta
 
 from models import PcObject
 from models.db import db
 from models.pc_object import serialize
 from tests.conftest import clean_database, TestClient
 from tests.test_utils import create_user, create_offerer, create_user_offerer, create_venue, \
-    create_thing_offer, API_URL, create_event, create_event_offer, create_thing
+    create_thing_offer, API_URL, create_event, create_event_offer, create_thing, create_recommendation
 from utils.human_ids import humanize
 
 
@@ -38,6 +37,33 @@ class Patch:
             assert response.status_code == 200
             db.session.refresh(offer)
             assert offer.bookingEmail == 'offer@email.com'
+
+        @clean_database
+        def when_deactivating_offer_and_makes_recommendations_outdated(self, app):
+            # Given
+            seven_days_from_now = datetime.utcnow() + timedelta(days=7)
+            user = create_user()
+            offerer = create_offerer()
+            user_offerer = create_user_offerer(user, offerer)
+            venue = create_venue(offerer)
+            offer = create_thing_offer(venue, booking_email='old@email.com')
+            recommendation = create_recommendation(offer, user, valid_until_date=seven_days_from_now)
+
+            PcObject.check_and_save(offer, user, user_offerer, recommendation)
+
+            json = {
+                'isActive': False,
+            }
+
+            # When
+            response = TestClient().with_auth(user.email).patch(
+                f'{API_URL}/offer/{humanize(offer.id)}',
+                json=json)
+
+            # Then
+            assert response.status_code == 200
+            db.session.refresh(recommendation)
+            assert recommendation.validUntilDate < datetime.utcnow()
 
         @clean_database
         def when_user_updating_thing_offer_is_linked_to_same_owning_offerer(self, app):
@@ -201,71 +227,16 @@ class Patch:
             assert response.status_code == 403
             assert response.json()['global'] == ["Cette structure n'est pas enregistrée chez cet utilisateur."]
 
+        class Returns404:
+            @clean_database
+            def test_returns_404_if_offer_does_not_exist(self, app):
+                # given
+                user = create_user()
+                PcObject.check_and_save(user)
+                auth_request = TestClient().with_auth(email=user.email)
 
-@pytest.mark.standalone
-class Patch:
-    class Returns200:
-        @clean_database
-        def test_returns_200_and_expires_recos(self, app):
-            # given
-            user = create_user()
-            offerer = create_offerer()
-            venue = create_venue(offerer)
-            offer = create_event_offer(venue)
-            user_offerer = create_user_offerer(user, offerer)
-            recommendation = create_recommendation(offer, user, valid_until_date=datetime.utcnow() + timedelta(days=7))
-            PcObject.check_and_save(offer, user, venue, offerer, recommendation, user_offerer)
+                # when
+                response = auth_request.patch(API_URL + '/offer/ADFGA', json={})
 
-            auth_request = TestClient().with_auth(email=user.email)
-            data = {'eventId': 'AE', 'isActive': False}
-
-            # when
-            response = auth_request.patch(API_URL + '/offers/%s' % humanize(offer.id), json=data)
-
-            # then
-            db.session.refresh(offer)
-            assert response.status_code == 200
-            assert response.json()['id'] == humanize(offer.id)
-            assert response.json()['isActive'] == offer.isActive
-            assert offer.isActive == data['isActive']
-            # only isActive can be modified
-            assert offer.eventId != data['eventId']
-            assert response.json()['eventId'] != offer.eventId
-            db.session.refresh(recommendation)
-            assert recommendation.validUntilDate < datetime.utcnow()
-
-    class Returns403:
-        @clean_database
-        def test_returns_403_if_user_is_not_attached_to_offerer_of_offer(self, app):
-            # given
-            current_user = create_user(email='bobby@test.com')
-            other_user = create_user(email='jimmy@test.com')
-            offerer = create_offerer()
-            venue = create_venue(offerer)
-            offer = create_event_offer(venue)
-            user_offerer = create_user_offerer(other_user, offerer)
-            PcObject.check_and_save(offer, other_user, current_user, venue, offerer, user_offerer)
-
-            auth_request = TestClient().with_auth(email=current_user.email)
-
-            # when
-            response = auth_request.patch(API_URL + '/offers/%s' % humanize(offer.id), json={})
-
-            # then
-            error_message = response.json()
-            assert response.status_code == 403
-            assert error_message['global'] == ['Cette structure n\'est pas enregistrée chez cet utilisateur.']
-
-    class Returns404:
-        @clean_database
-        def test_returns_404_if_offer_does_not_exist(self, app):
-            # given
-            user = create_user()
-            PcObject.check_and_save(user)
-            auth_request = TestClient().with_auth(email=user.email)
-
-            # when
-            response = auth_request.patch(API_URL + '/offers/ADFGA', json={})
-
-            # then
-            assert response.status_code == 404
+                # then
+                assert response.status_code == 404
