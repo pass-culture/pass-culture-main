@@ -117,8 +117,7 @@ def _date_interval_to_filter(date_interval):
 
 def filter_offers_with_keywords_string(query, keywords_string):
     get_filter_matching_ts_query_for_offer = create_get_filter_matching_ts_query_in_any_model(
-        Event,
-        Thing,
+        Offer,
         Venue,
         Offerer
     )

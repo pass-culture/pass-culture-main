@@ -169,7 +169,7 @@ Offer.__ts_vector__ = create_tsvector(
 
 Offer.__table_args__ = (
     Index(
-        'idx_thing_fts',
+        'idx_offer_fts',
         Offer.__ts_vector__,
         postgresql_using='gin'
     ),
