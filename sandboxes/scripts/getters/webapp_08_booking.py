@@ -1,15 +1,13 @@
+from models import Offer, Stock, Thing, Event, EventType, ThingType
 from models.user import User
-from models import Event, EventType, EventOccurrence, Offer, Stock, Thing, ThingType
-from repository.user_queries import filter_webapp_users
 from repository.offer_queries import _filter_bookable_offers_for_discovery
-from sandboxes.scripts.utils.helpers import get_user_helper,  get_offer_helper
+from repository.user_queries import filter_webapp_users
+from sandboxes.scripts.utils.helpers import get_user_helper, get_offer_helper
+
 
 def get_query_join_on_event(query):
-  join_on_event = (Stock.eventOccurrenceId == EventOccurrence.id)
-  join_on_event_occurrence = (Offer.id == EventOccurrence.offerId)
-  query = query \
-    .outerjoin(EventOccurrence, join_on_event_occurrence) \
-    .join(Stock, join_on_event)
+  join_on_event = (Offer.id == Stock.offerId)
+  query = query.join(Stock, join_on_event)
   return query
 
 def get_query_join_on_thing(query):
