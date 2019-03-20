@@ -35,7 +35,7 @@ def upgrade():
     )
 
     op.create_check_constraint(
-        constraint_name='check_durationMinutes_not_null_for_event',
+        constraint_name='check_duration_minutes_not_null_for_event',
         table_name='offer',
         condition="""("eventId" IS NULL) OR ("durationMinutes" IS NOT NULL)"""
     )

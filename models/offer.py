@@ -74,7 +74,7 @@ class Offer(PcObject,
 
     accessibility = Column(Binary(1),
                            CheckConstraint('("eventId" IS  NULL) OR (accessibility IS NOT NULL)',
-                                           name='check_providable_with_provider_has_idatproviders'),
+                                           name='check_accessibility_not_null_for_event'),
                            nullable=True,
                            default=bytes([0]),
 
@@ -87,7 +87,8 @@ class Offer(PcObject,
                        default=[])
 
     durationMinutes = Column(Integer,
-                             CheckConstraint('("eventId" IS NULL) OR ("durationMinutes" IS NOT NULL)'),
+                             CheckConstraint('("eventId" IS NULL) OR ("durationMinutes" IS NOT NULL)',
+                                             name='check_duration_minutes_not_null_for_event'),
                              nullable=True)
 
     isNational = Column(Boolean,
