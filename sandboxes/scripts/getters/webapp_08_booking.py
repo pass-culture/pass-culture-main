@@ -1,27 +1,59 @@
-from datetime import datetime
 from models.user import User
-from sqlalchemy import func, and_, or_
-from models import Event, EventOccurrence, EventType, Offer, Stock, Thing, Venue
+from models import Event, EventType, EventOccurrence, Offer, Stock, Thing, ThingType
 from repository.user_queries import filter_webapp_users
 from repository.offer_queries import _filter_bookable_offers_for_discovery
-from sandboxes.scripts.utils.helpers import get_user_helper, get_offer_helper
+from sandboxes.scripts.utils.helpers import get_user_helper,  get_offer_helper
 
+def get_query_join_on_event(query):
+  join_on_event = (Stock.eventOccurrenceId == EventOccurrence.id)
+  join_on_event_occurrence = (Offer.id == EventOccurrence.offerId)
+  query = query \
+    .outerjoin(EventOccurrence, join_on_event_occurrence) \
+    .join(Stock, join_on_event)
+  return query
 
-def get_non_free_offer_with_multi_dates_not_already_booked():
+def get_query_join_on_thing(query):
+  join_on_thing = (Offer.id == Stock.offerId)
+  query = query.join(Stock, join_on_thing)
+  return query
 
-  join_on_stock = and_(or_(Offer.id == Stock.offerId, Stock.eventOccurrenceId == EventOccurrence.id))
-  join_on_event_occurrence = and_(Offer.id == EventOccurrence.offerId)
-  join_on_event = and_(Event.id == Offer.eventId)
+def get_non_free_offers_query_by_type(type):
+  filter_not_free_price = (Stock.price > 0)
+  filter_not_an_activation_offer = \
+      (Event.type != str(EventType.ACTIVATION)) \
+      | (Thing.type != str(ThingType.ACTIVATION))
 
-  query = Offer.query \
-      .outerjoin(Thing) \
-      .outerjoin(Event, join_on_event) \
-      .outerjoin(EventOccurrence, join_on_event_occurrence) \
-      .join(Venue) \
-      .join(Stock, join_on_stock) \
-      .filter(Event.type != str(EventType.ACTIVATION))
+  query = Offer.query.outerjoin(type)
+  if type == Thing:
+      query = get_query_join_on_thing(query)
+  else:
+      query = get_query_join_on_event(query)
   query = _filter_bookable_offers_for_discovery(query)
-  query = query.filter(Stock.price > 0)
+  query = query \
+      .filter(filter_not_an_activation_offer) \
+      .filter(filter_not_free_price)
+  return query
+
+def get_non_free_digital_offer():
+  query = get_non_free_offers_query_by_type(Thing)
+  offer = query \
+      .filter(Thing.url != None) \
+      .first()
+  return {
+      "offer": get_offer_helper(offer)
+  }
+
+def get_non_free_thing_offer():
+  query = get_non_free_offers_query_by_type(Thing)
+  offer = query \
+      .filter(Thing.url == None) \
+      .first()
+  return {
+      "offer": get_offer_helper(offer)
+  }
+
+def get_non_free_event_offer():
+  query = get_non_free_offers_query_by_type(Event)
   offer = query.first()
   return {
       "offer": get_offer_helper(offer)
