@@ -2,7 +2,7 @@
 
 Première étape, installer la cli scalingo :
 
-curl -O https://cli-dl.scalingo.io/install && bash install
+`curl -O https://cli-dl.scalingo.io/install && bash install`
 
 
 Ajouter votre clé ssh pour effectuer les opérations sur scalingo depuis votre terminal :

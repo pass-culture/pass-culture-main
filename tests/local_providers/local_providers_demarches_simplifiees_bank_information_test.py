@@ -128,7 +128,9 @@ class BankInformationProviderProviderTest:
         assert bank_information.offererId == offerer_id
         assert bank_information.venueId == None
         assert bank_information.idAtProviders == '793875030'
-        local_provider_events = LocalProviderEvent.query.all()
+        local_provider_events = LocalProviderEvent.query\
+            .order_by(LocalProviderEvent.id)\
+            .all()
         assert len(local_provider_events) == 2
         assert local_provider_events[0].type == LocalProviderEventType.SyncStart
         assert local_provider_events[1].type == LocalProviderEventType.SyncEnd
@@ -358,7 +360,9 @@ class BankInformationProviderProviderTest:
         bank_information = BankInformation.query.all()
         assert len(bank_information)
         assert bank_information[0].idAtProviders == '79387503000016'
-        sync_error = LocalProviderEvent.query.filter_by(type=LocalProviderEventType.SyncError).first()
+        sync_error = LocalProviderEvent.query\
+            .filter_by(type=LocalProviderEventType.SyncError)\
+            .first()
         assert sync_error.payload == 'unknown RIB affiliation for application id 1'
 
     @patch(

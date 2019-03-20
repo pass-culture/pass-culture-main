@@ -80,7 +80,7 @@ def test_titelive_stock_provider_create_1_stock_and_1_offer(get_data, app):
 @clean_database
 @pytest.mark.skipif(check_titelive_epagine_is_down(), reason="Titelive Epagine API is down")
 @patch('local_providers.titelive_stocks.get_data')
-def test_titelive_stock_provider_create_1_stock_and_udpate_1_offer(get_data, app):
+def test_titelive_stock_provider_create_1_stock_and_do_not_create_existing_offer(get_data, app):
     # mock
     get_data.return_value = {
         'total': 'null',
@@ -111,7 +111,7 @@ def test_titelive_stock_provider_create_1_stock_and_udpate_1_offer(get_data, app
         .one_or_none()
 
     thing = create_thing(id_at_providers='0002730757438')
-    offer = create_thing_offer(venue, thing=thing)
+    offer = create_thing_offer(venue, thing=thing, id_at_providers='0002730757438@77567146400110')
 
     PcObject.check_and_save(thing, offer)
 
@@ -120,7 +120,7 @@ def test_titelive_stock_provider_create_1_stock_and_udpate_1_offer(get_data, app
                   venueProvider,
                   checkedObjects=2,
                   createdObjects=1,
-                  updatedObjects=1,
+                  updatedObjects=0,
                   erroredObjects=0,
                   checkedThumbs=0,
                   createdThumbs=0,
@@ -134,7 +134,7 @@ def test_titelive_stock_provider_create_1_stock_and_udpate_1_offer(get_data, app
 @clean_database
 @pytest.mark.skipif(check_titelive_epagine_is_down(), reason="Titelive Epagine API is down")
 @patch('local_providers.titelive_stocks.get_data')
-def test_titelive_stock_provider_create_2_stock_and_1_offer_and_udpate_1_offer(get_data, app):
+def test_titelive_stock_provider_create_2_stock_and_1_offer(get_data, app):
     # mock
     get_data.return_value = {
         'total': 'null',
@@ -181,7 +181,7 @@ def test_titelive_stock_provider_create_2_stock_and_1_offer_and_udpate_1_offer(g
                   venueProvider,
                   checkedObjects=4,
                   createdObjects=3,
-                  updatedObjects=1,
+                  updatedObjects=0,
                   erroredObjects=0,
                   checkedThumbs=0,
                   createdThumbs=0,

@@ -2,7 +2,7 @@ import requests
 from datetime import datetime
 
 from domain.titelive import read_stock_datetime
-from models import Offer, VenueProvider
+from models import Offer, VenueProvider, PcObject
 from models.db import db
 from models.local_provider import LocalProvider, ProvidableInfo
 from models.stock import Stock
@@ -52,6 +52,7 @@ class TiteLiveStocks(LocalProvider):
         self.more_pages = True
         self.data = None
         self.thing = None
+        self.existing_offer = None
 
     def __next__(self):
         self.index = self.index + 1
@@ -91,10 +92,16 @@ class TiteLiveStocks(LocalProvider):
         p_info_stock.idAtProviders = "%s@%s" % (self.titelive_stock['ref'], self.venue.siret)
         p_info_stock.dateModifiedAtProvider = datetime.utcnow()
 
-        p_info_offer = ProvidableInfo()
-        p_info_offer.type = Offer
-        p_info_offer.idAtProviders = "%s@%s" % (self.titelive_stock['ref'], self.venue.siret)
-        p_info_offer.dateModifiedAtProvider = datetime.utcnow()
+        self.existing_offer = Offer.query \
+            .filter_by(idAtProviders="%s@%s" % (self.titelive_stock['ref'], self.venue.siret)) \
+            .one_or_none()
+        if self.existing_offer is None:
+            p_info_offer = ProvidableInfo()
+            p_info_offer.type = Offer
+            p_info_offer.idAtProviders = "%s@%s" % (self.titelive_stock['ref'], self.venue.siret)
+            p_info_offer.dateModifiedAtProvider = datetime.utcnow()
+        else:
+            p_info_offer = None
 
         return p_info_offer, p_info_stock
 
@@ -105,16 +112,21 @@ class TiteLiveStocks(LocalProvider):
             obj.price = int(self.titelive_stock['price'])
             obj.available = int(self.titelive_stock['available'])
             obj.bookingLimitDatetime = read_stock_datetime(self.titelive_stock['validUntil'])
-            obj.offer = self.providables[0]
-        elif isinstance(obj, Offer):
-            obj.venue = self.venue
-            obj.thing = self.thing
+            if self.existing_offer:
+                obj.offerId = self.existing_offer.id
+            else:
+                obj.offerId = self.providables[0].id
+        elif isinstance(obj, Offer) \
+                and self.existing_offer is None:
+            obj.venueId = self.venue.id
+            obj.thingId = self.thing.id
             obj.type = self.thing.type
             obj.name = self.thing.name
             obj.description = self.thing.description
             obj.url = self.thing.url
             obj.mediaUrls = self.thing.mediaUrls
             obj.isNational = self.thing.isNational
+            PcObject.check_and_save(obj)
 
     def updateObjects(self, limit=None):
         super().updateObjects(limit)

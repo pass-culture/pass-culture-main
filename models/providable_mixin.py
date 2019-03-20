@@ -1,11 +1,11 @@
 """ providable mixin """
 from datetime import datetime
-from sqlalchemy import BigInteger,\
-                       CheckConstraint,\
-                       Column,\
-                       DateTime,\
-                       ForeignKey,\
-                       String
+from sqlalchemy import BigInteger, \
+    CheckConstraint, \
+    Column, \
+    DateTime, \
+    ForeignKey, \
+    String
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declared_attr
 
@@ -28,9 +28,10 @@ class ProvidableMixin(VersionedMixin):
 
     idAtProviders = Column(String(70),
                            CheckConstraint('"lastProviderId" IS NULL OR "idAtProviders" IS NOT NULL',
-                                                 name='check_providable_with_provider_has_idatproviders'),
+                                           name='check_providable_with_provider_has_idatproviders'),
                            nullable=True,
-                           unique=True)
+                           unique=True,
+                           index=True)
 
     dateModifiedAtLastProvider = Column(DateTime,
                                         nullable=True,

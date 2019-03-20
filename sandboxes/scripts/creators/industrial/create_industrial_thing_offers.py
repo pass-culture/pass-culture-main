@@ -51,8 +51,13 @@ def create_industrial_thing_offers(
                 is_active = False
             else:
                 is_active = True
-            thing_offers_by_name[name] = create_thing_offer(thing_venue, thing=thing, thing_type=thing.type,
-                                                            is_active=is_active, id_at_providers=id_at_providers)
+            thing_offers_by_name[name] = create_thing_offer(
+                thing_venue,
+                thing=thing,
+                thing_type=thing.type,
+                is_active=is_active,
+                id_at_providers=str(id_at_providers)
+            )
             offer_index += 1
             id_at_providers += 1
 

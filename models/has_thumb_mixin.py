@@ -7,6 +7,7 @@ from domain.mediations import DO_NOT_CROP, standardize_image, compute_dominant_c
 from models.pc_object import PcObject
 from utils.human_ids import humanize
 from utils.inflect_engine import inflect_engine
+from utils.logger import logger
 from utils.object_storage import delete_public_object, \
     get_public_object_date, \
     store_public_object
@@ -43,7 +44,8 @@ class HasThumbMixin(object):
             dominant_color=None,
             convert=True,
             crop=None,
-            symlink_path=None
+            symlink_path=None,
+            need_save=True
     ):
         new_thumb = thumb
 
@@ -70,4 +72,5 @@ class HasThumbMixin(object):
 
         self.thumbCount = max(image_index + 1, self.thumbCount or 0)
 
-        PcObject.check_and_save(self)
+        if need_save:
+            PcObject.check_and_save(self)

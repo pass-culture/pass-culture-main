@@ -275,6 +275,8 @@ def create_thing(
         author_name='Test Author',
         is_national=False,
         id_at_providers=None,
+        date_modified_at_last_provider=None,
+        last_provider_id=None,
         media_urls=['test/urls'],
         description=None,
         dominant_color=None,
@@ -290,6 +292,8 @@ def create_thing(
     thing.isNational = is_national
     if id_at_providers is None:
         id_at_providers = ''.join(random.choices(string.digits, k=13))
+    thing.dateModifiedAtLastProvider = date_modified_at_last_provider
+    thing.lastProviderId = last_provider_id
     thing.idAtProviders = id_at_providers
     thing.mediaUrls = media_urls
     thing.thumbCount = thumb_count
@@ -359,7 +363,7 @@ def create_thing_offer(venue, thing=None, date_created=datetime.utcnow(), bookin
     offer.isActive = is_active
 
     if id_at_providers:
-        offer.id_at_providers = id_at_providers
+        offer.idAtProviders = id_at_providers
     elif venue is not None:
         offer.idAtProviders = "%s@%s" % (offer.thing.idAtProviders, venue.siret or venue.id)
     offer.id = idx
@@ -669,7 +673,7 @@ def create_payment_details(
 
 def create_bank_information(application_id=1, bic='QSDFGH8Z555', iban='FR7630006000011234567890189',
                             id_at_providers='234567891', date_modified_at_last_provider=datetime(2019, 1, 1),
-                            offerer=None, venue=None):
+                            offerer=None, venue=None, last_provider_id=None):
     bank_information = BankInformation()
     bank_information.offerer = offerer
     bank_information.venue = venue
@@ -678,6 +682,7 @@ def create_bank_information(application_id=1, bic='QSDFGH8Z555', iban='FR7630006
     bank_information.iban = iban
     bank_information.idAtProviders = id_at_providers
     bank_information.dateModifiedAtLastProvider = date_modified_at_last_provider
+    bank_information.lastProviderId = Provider.getByClassName('BankInformationProvider').id
     return bank_information
 
 
