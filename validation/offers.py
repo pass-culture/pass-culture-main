@@ -1,3 +1,5 @@
+from flask import Request
+
 from models import RightsType
 from models.api_errors import ResourceNotFound, ApiErrors
 from utils.rest import ensure_current_user_has_rights
@@ -22,7 +24,7 @@ def check_venue_exists_when_requested(venue, venue_id):
         raise errors
 
 
-def check_valid_edition(response, thing_or_event_dict):
+def check_valid_edition(response: Request, thing_or_event_dict: dict):
     forbidden_keys = {'idAtProviders', 'dateModifiedAtLastProvider', 'thumbCount', 'firstThumbDominantColor',
                       'owningOffererId', 'id', 'lastProviderId', 'isNational', 'dateCreated'}
     all_keys = response.keys()
