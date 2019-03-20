@@ -1109,11 +1109,11 @@ def test_find_filtered_offerers_with_offer_status_with_ALL_param_and_False_has_n
                                                  siret=None)
     venue_with_offer_5 = create_venue(offerer_with_both_venues_offer_on_not_virtual, siret="12345678412345")
 
-    offer_1 = create_event_offer(virtual_venue_with_offer_1)
-    offer_2 = create_event_offer(virtual_venue_with_offer_3)
-    offer_3 = create_event_offer(venue_with_offer_3)
-    offer_4 = create_event_offer(virtual_venue_with_offer_4)
-    offer_5 = create_event_offer(venue_with_offer_5)
+    offer_1 = create_thing_offer(virtual_venue_with_offer_1, url='http://url.com')
+    offer_2 = create_thing_offer(virtual_venue_with_offer_3, url='http://url.com')
+    offer_3 = create_thing_offer(venue_with_offer_3, url=None)
+    offer_4 = create_thing_offer(virtual_venue_with_offer_4, url='http://url.com')
+    offer_5 = create_thing_offer(venue_with_offer_5, url=None)
 
     PcObject.check_and_save(offer_1, offer_2, offer_3, offer_4, offer_5, virtual_venue_without_offer_1,
                             virtual_venue_without_offer_2,
@@ -1156,10 +1156,10 @@ def test_find_filtered_offerers_with_offer_status_with_ALL_param_and_True_has_no
                                                  siret=None)
     venue_with_offer_5 = create_venue(offerer_with_both_venues_offer_on_not_virtual, siret="12345678412345")
 
-    offer_1 = create_event_offer(virtual_venue_with_offer_1)
-    offer_2 = create_event_offer(virtual_venue_with_offer_3)
+    offer_1 = create_thing_offer(virtual_venue_with_offer_1, url='http://url.com')
+    offer_2 = create_thing_offer(virtual_venue_with_offer_3, url='http://url.com')
     offer_3 = create_event_offer(venue_with_offer_3)
-    offer_4 = create_event_offer(virtual_venue_with_offer_4)
+    offer_4 = create_thing_offer(virtual_venue_with_offer_4, url='http://url.com')
     offer_5 = create_event_offer(venue_with_offer_5)
 
     PcObject.check_and_save(offer_1, offer_2, offer_3, offer_4, offer_5, virtual_venue_without_offer_1,
