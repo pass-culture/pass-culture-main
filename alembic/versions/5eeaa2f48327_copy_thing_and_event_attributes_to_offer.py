@@ -28,6 +28,10 @@ def upgrade():
     op.add_column('offer', sa.Column('durationMinutes', sa.Integer, nullable=True))
     op.add_column('offer', sa.Column('isNational', sa.Boolean, nullable=True))
     op.add_column('offer', sa.Column('extraData', sa.JSON, nullable=True))
+    op.execute('''
+    UPDATE offer 
+    SET accessibility = ''\x00'' 
+    WHERE offer."eventId" IS NOT NULL''')
     op.create_check_constraint(
         constraint_name='check_accessibility_not_null_for_event',
         table_name='offer',
