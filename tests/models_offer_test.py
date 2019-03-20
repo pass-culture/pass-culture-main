@@ -69,7 +69,7 @@ def test_date_range_is_empty_if_event_has_no_stocks():
 
 @clean_database
 @pytest.mark.standalone
-def test_create_digital_offer_success(app):
+def test_create_digital_offer_success_when_digital_thing_and_virtual_venue(app):
     # Given
     url = 'http://mygame.fr/offre'
     digital_thing = create_thing(thing_type=ThingType.JEUX_VIDEO, url=url, is_national=True)
@@ -83,7 +83,25 @@ def test_create_digital_offer_success(app):
     PcObject.check_and_save(digital_thing, offer)
 
     # Then
-    assert offer.thing.url == url
+    assert offer.url == url
+
+
+@clean_database
+@pytest.mark.standalone
+def test_create_physical_offer_success_when_physical_thing_and_physical_venue(app):
+    # Given
+    physical_thing = create_thing(thing_type=ThingType.LIVRE_EDITION, url=None)
+    offerer = create_offerer()
+    physical_venue = create_venue(offerer, is_virtual=False, siret=offerer.siren + '12345')
+    PcObject.check_and_save(physical_venue)
+
+    offer = create_thing_offer(physical_venue, physical_thing)
+
+    # When
+    PcObject.check_and_save(physical_thing, offer)
+
+    # Then
+    assert offer.url is None
 
 
 @clean_database
@@ -103,6 +121,25 @@ def test_offer_error_when_thing_is_digital_but_venue_not_virtual(app):
     # Then
     assert errors.value.errors['venue'] == [
         'Une offre numérique doit obligatoirement être associée au lieu "Offre en ligne"']
+
+
+@clean_database
+@pytest.mark.standalone
+def test_offer_error_when_thing_is_physical_but_venue_is_virtual(app):
+    # Given
+    physical_thing = create_thing(thing_type=ThingType.JEUX_VIDEO, url=None)
+    offerer = create_offerer()
+    digital_venue = create_venue(offerer, is_virtual=True, siret=None)
+    PcObject.check_and_save(digital_venue)
+    offer = create_thing_offer(digital_venue, physical_thing)
+
+    # When
+    with pytest.raises(ApiErrors) as errors:
+        PcObject.check_and_save(offer)
+
+    # Then
+    assert errors.value.errors['venue'] == [
+        'Une offre physique ne peut être associée au lieu "Offre en ligne"']
 
 
 @pytest.mark.standalone
