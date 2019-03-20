@@ -2,7 +2,8 @@ import pytest
 
 from models import PcObject, EventType, Offer, Thing, Event, ThingType
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import create_user, API_URL, create_offerer, create_venue, create_user_offerer, create_thing
+from tests.test_utils import create_user, API_URL, create_offerer, create_venue, create_user_offerer, create_thing, \
+    create_event
 from utils.human_ids import humanize, dehumanize
 
 
@@ -55,7 +56,8 @@ class Post:
 
             # Then
             assert request.status_code == 400
-            assert request.json()['global'] == ['Aucun objet ne correspond à cet identifiant dans notre base de données']
+            assert request.json()['global'] == [
+                'Aucun objet ne correspond à cet identifiant dans notre base de données']
 
         @clean_database
         def when_offer_with_urls_and_type_offline_only(self, app):
@@ -138,6 +140,29 @@ class Post:
             assert response.json()['venue'] == [
                 'Une offre numérique doit obligatoirement être associée au lieu "Offre en ligne"']
 
+        @clean_database
+        def when_existing_thing_is_physical_and_venue_is_virtual(self, app):
+            # given
+            user = create_user(email='user@test.com')
+            offerer = create_offerer()
+            user_offerer = create_user_offerer(user, offerer)
+            venue = create_venue(offerer, is_virtual=True, siret=None)
+            thing = create_thing(url=None)
+            PcObject.check_and_save(user_offerer, venue, thing)
+
+            data = {
+                'venueId': humanize(venue.id),
+                'thingId': humanize(thing.id)
+            }
+            auth_request = TestClient().with_auth(email='user@test.com')
+
+            # when
+            response = auth_request.post(API_URL + '/offers', json=data)
+
+            # then
+            assert response.status_code == 400
+            assert response.json()['venue'] == ['Une offre physique ne peut être associée au lieu "Offre en ligne"']
+
     class Returns201:
         @clean_database
         def when_creating_a_new_event_offer(self, app):
@@ -191,7 +216,7 @@ class Post:
             assert offer.type == str(EventType.SPECTACLE_VIVANT)
 
         @clean_database
-        def when_creating_a_new_offer_without_booking_email(self, app):
+        def when_creating_a_new_event_offer_without_booking_email(self, app):
             # Given
             user = create_user(email='test@email.com')
             offerer = create_offerer()
@@ -239,7 +264,7 @@ class Post:
                     },
                 'venueId': humanize(venue.id),
                 'bookingEmail': 'offer@email.com'
-                    }
+            }
 
             # When
             response = TestClient().with_auth(user.email).post(
@@ -275,6 +300,50 @@ class Post:
             assert offer.isDigital
             assert offer.isNational
             assert thing.isNational
+
+        @clean_database
+        def when_creating_a_new_offer_from_an_existing_thing(self, app):
+            # given
+            user = create_user(email='user@test.com')
+            offerer = create_offerer()
+            user_offerer = create_user_offerer(user, offerer)
+            venue = create_venue(offerer)
+            thing = create_thing()
+            PcObject.check_and_save(user_offerer, venue, thing)
+
+            data = {
+                'venueId': humanize(venue.id),
+                'thingId': humanize(thing.id)
+            }
+            auth_request = TestClient().with_auth(email='user@test.com')
+
+            # when
+            response = auth_request.post(API_URL + '/offers', json=data)
+
+            # then
+            assert response.status_code == 201
+
+        @clean_database
+        def when_creating_a_new_offer_from_an_existing_event(self, app):
+            # given
+            user = create_user(email='user@test.com')
+            offerer = create_offerer()
+            user_offerer = create_user_offerer(user, offerer)
+            venue = create_venue(offerer)
+            event = create_event()
+            PcObject.check_and_save(user_offerer, venue, event)
+
+            data = {
+                'venueId': humanize(venue.id),
+                'eventId': humanize(event.id)
+            }
+            auth_request = TestClient().with_auth(email='user@test.com')
+
+            # when
+            response = auth_request.post(API_URL + '/offers', json=data)
+
+            # then
+            assert response.status_code == 201
 
         @clean_database
         def when_creating_a_new_activation_event_offer_as_a_global_admin(self, app):
@@ -364,27 +433,27 @@ class Post:
 
         @clean_database
         def when_user_is_not_attached_to_offerer(self, app):
-                # Given
-                user = create_user(email='test@email.com')
-                offerer = create_offerer()
-                venue = create_venue(offerer)
-                PcObject.check_and_save(user, venue)
+            # Given
+            user = create_user(email='test@email.com')
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            PcObject.check_and_save(user, venue)
 
-                json = {
-                    'event': {
-                        'name': 'La pièce de théâtre',
-                        'durationMinutes': 60,
-                        'type': str(EventType.SPECTACLE_VIVANT)
-                    },
-                    'venueId': humanize(venue.id),
-                    'bookingEmail': 'offer@email.com'
-                }
+            json = {
+                'event': {
+                    'name': 'La pièce de théâtre',
+                    'durationMinutes': 60,
+                    'type': str(EventType.SPECTACLE_VIVANT)
+                },
+                'venueId': humanize(venue.id),
+                'bookingEmail': 'offer@email.com'
+            }
 
-                # When
-                request = TestClient().with_auth(user.email).post(
-                    f'{API_URL}/offers/',
-                    json=json)
+            # When
+            request = TestClient().with_auth(user.email).post(
+                f'{API_URL}/offers/',
+                json=json)
 
-                # Then
-                assert request.status_code == 403
-                assert request.json()['global'] == ["Cette structure n'est pas enregistrée chez cet utilisateur."]
+            # Then
+            assert request.status_code == 403
+            assert request.json()['global'] == ["Cette structure n'est pas enregistrée chez cet utilisateur."]

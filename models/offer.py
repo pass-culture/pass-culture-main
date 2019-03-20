@@ -101,14 +101,15 @@ class Offer(PcObject,
 
     def errors(self):
         api_errors = super(Offer, self).errors()
-        thing = self.thing
         if self.venue:
             venue = self.venue
         else:
             venue = Venue.query.get(self.venueId)
-        if thing and thing.url and not venue.isVirtual:
+        if self.isDigital and not venue.isVirtual:
             api_errors.addError('venue',
                                 'Une offre numérique doit obligatoirement être associée au lieu "Offre en ligne"')
+        elif not self.isDigital and venue.isVirtual:
+            api_errors.addError('venue', 'Une offre physique ne peut être associée au lieu "Offre en ligne"')
         if self.isDigital and self._type_can_only_be_offline():
             api_errors.addError('url', 'Une offre de type {} ne peut pas être numérique'.format(
                 self._get_label_from_type_string()))

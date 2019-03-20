@@ -6,10 +6,8 @@ from datetime import datetime, timedelta
 from models import PcObject, Venue, EventType, ThingType
 from tests.conftest import clean_database, TestClient
 from tests.test_utils import API_URL, \
-    create_event, \
     create_event_offer, \
     create_offerer, \
-    create_thing, \
     create_thing_offer, \
     create_user, \
     create_user_offerer, \
@@ -250,109 +248,6 @@ class Get:
             # Then
             assert response.status_code == 200
             assert response.json() == []
-
-
-@pytest.mark.standalone
-class Post:
-    class Returns201:
-        @clean_database
-        def test_create_thing_offer(self, app):
-            # given
-            user = create_user(email='user@test.com')
-            offerer = create_offerer()
-            user_offerer = create_user_offerer(user, offerer)
-            venue = create_venue(offerer)
-            thing = create_thing()
-            PcObject.check_and_save(user_offerer, venue, thing)
-
-            data = {
-                'venueId': humanize(venue.id),
-                'thingId': humanize(thing.id)
-            }
-            auth_request = TestClient().with_auth(email='user@test.com')
-
-            # when
-            response = auth_request.post(API_URL + '/offers', json=data)
-
-            # then
-            assert response.status_code == 201
-
-        @clean_database
-        def test_create_event_offer(self, app):
-            # given
-            user = create_user(email='user@test.com')
-            offerer = create_offerer()
-            user_offerer = create_user_offerer(user, offerer)
-            venue = create_venue(offerer)
-            event = create_event()
-            PcObject.check_and_save(user_offerer, venue, event)
-
-            data = {
-                'venueId': humanize(venue.id),
-                'eventId': humanize(event.id)
-            }
-            auth_request = TestClient().with_auth(email='user@test.com')
-
-            # when
-            response = auth_request.post(API_URL + '/offers', json=data)
-
-            # then
-            assert response.status_code == 201
-
-    class Returns400:
-        @clean_database
-        def test_create_thing_offer_returns_bad_request_if_thing_is_physical_and_venue_is_virtual(self, app):
-            # given
-            user = create_user(email='user@test.com')
-            offerer = create_offerer()
-            user_offerer = create_user_offerer(user, offerer)
-            venue = create_venue(offerer, is_virtual=True, siret=None)
-            thing = create_thing(url=None)
-            PcObject.check_and_save(user_offerer, venue, thing)
-
-            data = {
-                'venueId': humanize(venue.id),
-                'thingId': humanize(thing.id)
-            }
-            auth_request = TestClient().with_auth(email='user@test.com')
-
-            # when
-            response = auth_request.post(API_URL + '/offers', json=data)
-
-            # then
-            assert response.status_code == 400
-            assert response.json() == {
-                'global':
-                    ['Offer.venue is virtual but Offer.thing does not have an URL']
-            }
-
-    class Returns403:
-        @clean_database
-        def when_user_is_not_attached_to_offerer(self, app):
-            # given
-            current_user = create_user(email='user@test.com')
-            other_user = create_user(email='jimmy@test.com')
-            offerer = create_offerer()
-
-            other_user_offerer = create_user_offerer(other_user, offerer)
-
-            venue = create_venue(offerer)
-            event = create_event()
-            PcObject.check_and_save(other_user, venue, event, current_user, other_user_offerer)
-
-            data = {
-                'venueId': humanize(venue.id),
-                'eventId': humanize(event.id)
-            }
-            auth_request = TestClient().with_auth(email=current_user.email)
-
-            # when
-            response = auth_request.post(API_URL + '/offers', json=data)
-
-            # then
-            error_message = response.json()
-            assert response.status_code == 403
-            assert error_message['global'] == ['Cette structure n\'est pas enregistrée chez cet utilisateur.']
 
 
 def create_offers_for(user, n, siren='123456789'):
