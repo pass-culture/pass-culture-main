@@ -29,16 +29,14 @@ const submitButton = Selector('button.button.is-primary') //créer un lieu
 const updateAnchor = Selector('a.button.is-secondary') //modifier un lieu
 const venueMarker = Selector('img.leaflet-marker-icon')
 
-fixture('VenuePage A | Créer un nouveau lieu avec succès').beforeEach(
-  async t => {
-    t.ctx.sandbox = await fetchSandbox(
-      'pro_05_venue',
-      'get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_no_physical_venue'
-    )
-    const { offerer, user } = t.ctx.sandbox
-    return navigateToNewVenueAs(user, offerer)(t)
-  }
-)
+fixture('Venue A | Créer un nouveau lieu avec succès').beforeEach(async t => {
+  t.ctx.sandbox = await fetchSandbox(
+    'pro_05_venue',
+    'get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_no_physical_venue'
+  )
+  const { offerer, user } = t.ctx.sandbox
+  return navigateToNewVenueAs(user, offerer)(t)
+})
 
 test('Je rentre une nouveau lieu via son siret avec succès', async t => {
   // given
@@ -115,16 +113,16 @@ test('Je rentre un nouveau lieu sans siret avec succès', async t => {
   await navigateAfterSubmit(t)
 })
 
-fixture(
-  "VenuePage B | Je ne peux pas créer de lieu, j'ai des erreurs"
-).beforeEach(async t => {
-  t.ctx.sandbox = await fetchSandbox(
-    'pro_05_venue',
-    'get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_with_at_least_one_physical_venue'
-  )
-  const { offerer, user } = t.ctx.sandbox
-  return navigateToNewVenueAs(user, offerer)(t)
-})
+fixture("Venue B | Je ne peux pas créer de lieu, j'ai des erreurs").beforeEach(
+  async t => {
+    t.ctx.sandbox = await fetchSandbox(
+      'pro_05_venue',
+      'get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_with_at_least_one_physical_venue'
+    )
+    const { offerer, user } = t.ctx.sandbox
+    return navigateToNewVenueAs(user, offerer)(t)
+  }
+)
 
 test('Une entrée avec cet identifiant existe déjà', async t => {
   // when
@@ -264,7 +262,7 @@ test('La saisie de bonnes coordonées géographiques ajoute un marker', async t 
     .ok()
 })
 
-fixture('VenuePage C | Je suis sur la page de détail du lieu').beforeEach(
+fixture('Venue C | Je suis sur la page de détail du lieu').beforeEach(
   async t => {
     t.ctx.sandbox = await fetchSandbox(
       'pro_05_venue',

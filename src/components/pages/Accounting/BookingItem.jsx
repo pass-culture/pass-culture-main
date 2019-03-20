@@ -12,16 +12,15 @@ import React, { Component, Fragment } from 'react'
 import { connect } from 'react-redux'
 import { requestData } from 'redux-saga-data'
 
-import eventSelector from '../../../selectors/event'
-import thingSelector from '../../../selectors/thing'
-import offerSelector from '../../../selectors/offer'
-import offererSelector from '../../../selectors/offerer'
-import selectEventOccurrenceById from '../../../selectors/selectEventOccurenceById'
-import selectStockById from '../../../selectors/selectStockById'
-import selectUserById from '../../../selectors/selectUserById'
-import venueSelector from '../../../selectors/venue'
-import { bookingNormalizer } from '../../../utils/normalizers'
-import { getOfferTypeLabel } from '../../../utils/offerItem'
+import selectEventById from 'selectors/selectEventById'
+import selectThingById from 'selectors/selectThingById'
+import selectOfferById from 'selectors/selectOfferById'
+import selectOffererById from 'selectors/selectOffererById'
+import selectStockById from 'selectors/selectStockById'
+import selectUserById from 'selectors/selectUserById'
+import selectVenueById from 'selectors/selectVenueById'
+import { bookingNormalizer } from 'utils/normalizers'
+import { getOfferTypeLabel } from 'utils/offerItem'
 
 const getBookingState = booking => {
   const { isCancelled, isUsed } = booking
@@ -157,18 +156,19 @@ class BookingItem extends Component {
             {token}: {userIdentifier}
           </td>
           <td rowSpan="2">
-            {!isCancelled && !isUsed && (
-              <div className="navbar-item has-dropdown is-hoverable AccountingPage-actions">
-                <div className="actionButton" />
-                <div className="navbar-dropdown is-right">
-                  <a
-                    className="navbar-item cancel"
-                    onClick={this.onCancelClick}>
-                    <Icon svg="ico-close-r" /> Annuler la réservation
-                  </a>
+            {!isCancelled &&
+              !isUsed && (
+                <div className="navbar-item has-dropdown is-hoverable AccountingPage-actions">
+                  <div className="actionButton" />
+                  <div className="navbar-dropdown is-right">
+                    <a
+                      className="navbar-item cancel"
+                      onClick={this.onCancelClick}>
+                      <Icon svg="ico-close-r" /> Annuler la réservation
+                    </a>
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
           </td>
         </tr>
         <tr className="offer-item first-col">
@@ -202,25 +202,20 @@ BookingItem.propTypes = {
 }
 
 function mapStateToProps(state, ownProps) {
-  const stock = selectStockById(state, ownProps.booking.stockId)
-  const eventOccurrence = selectEventOccurrenceById(
-    state,
-    get(stock, 'eventOccurrenceId')
-  )
-  const offer = offerSelector(
-    state,
-    get(stock, 'offerId') || get(eventOccurrence, 'offerId')
-  )
-  const event = eventSelector(state, get(offer, 'eventId'))
-  const thing = thingSelector(state, get(offer, 'thingId'))
-  const venue = venueSelector(state, get(offer, 'venueId'))
-  const offerer = offererSelector(state, get(venue, 'managingOffererId'))
+  const { booking } = ownProps
+  const { stockId } = booking
+  const stock = selectStockById(state, stockId)
+  const offerId = get(stock, 'offerId')
+  const offer = selectOfferById(state, offerId)
+  const event = selectEventById(state, get(offer, 'eventId'))
+  const thing = selectThingById(state, get(offer, 'thingId'))
+  const venue = selectVenueById(state, get(offer, 'venueId'))
+  const offerer = selectOffererById(state, get(venue, 'managingOffererId'))
   const user = selectUserById(state, ownProps.booking.userId)
   const offerTypeLabel = getOfferTypeLabel(event, thing)
 
   return {
     event,
-    eventOccurrence,
     offer,
     offerTypeLabel,
     offerer,

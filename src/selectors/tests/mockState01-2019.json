@@ -2,7 +2,6 @@
   "data": {
     "bookings": [],
     "events": [],
-    "eventOccurrences": [],
     "mediations": [],
     "offers": [],
     "offerers": [

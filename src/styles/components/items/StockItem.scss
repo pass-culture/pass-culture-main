@@ -1,0 +1,35 @@
+.stock-item {
+  display: table-row;
+  td {
+    vertical-align: middle;
+
+    .input {
+      min-width: 75px;
+
+      &.input-number {
+        width: 77px;
+      }
+
+      &.date-picker {
+        min-width: 100px;
+      }
+
+      &[readonly] {
+        text-align: center;
+      }
+
+      &[type='time'] {
+        margin-left: 0.75rem;
+      }
+    }
+
+
+    .qty-info {
+      margin-left: 6px!important;
+    }
+  }
+
+  &.with-confirm {
+    background-image: none;
+  }
+}

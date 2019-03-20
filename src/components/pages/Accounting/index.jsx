@@ -13,17 +13,14 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 
 import BookingItem from './BookingItem'
-import { withRedirectToSigninWhenNotAuthenticated } from '../../hocs'
-import HeroSection from '../../layout/HeroSection'
-import Main from '../../layout/Main'
-import bookingsSelector from '../../../selectors/bookings'
-import offererSelector from '../../../selectors/offerer'
-import offerersSelector from '../../../selectors/offerers'
-import {
-  bookingNormalizer,
-  offererNormalizer,
-} from '../../../utils/normalizers'
-import { mapApiToWindow, windowToApiQuery } from '../../../utils/pagination'
+import { withRedirectToSigninWhenNotAuthenticated } from 'components/hocs'
+import HeroSection from 'components/layout/HeroSection'
+import Main from 'components/layout/Main'
+import bookingsSelector from 'selectors/bookings'
+import selectOffererById from 'selectors/selectOffererById'
+import offerersSelector from 'selectors/offerers'
+import { bookingNormalizer, offererNormalizer } from 'utils/normalizers'
+import { mapApiToWindow, windowToApiQuery } from 'utils/pagination'
 
 const TableSortableTh = ({ field, label, sort, action, style }) => (
   <th style={style}>
@@ -277,7 +274,7 @@ const mapStateToProps = (state, ownProps) => {
 
   return {
     bookings: bookingsSelector(state),
-    offerer: offererSelector(state, offererId),
+    offerer: selectOffererById(state, offererId),
     offerers: offerersSelector(state),
   }
 }

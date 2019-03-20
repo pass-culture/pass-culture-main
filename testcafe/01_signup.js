@@ -18,7 +18,7 @@ const signInButton = Selector('.is-secondary').withText("J'ai déjà un compte")
 const signUpButton = Selector('button.button.is-primary')
 const sirenInput = Selector('#user-siren')
 
-fixture('SignupPage A | Je crée un compte utilisateur·ice').page(
+fixture('Signup A | Je crée un compte utilisateur·ice').page(
   `${ROOT_PATH + 'inscription'}`
 )
 
@@ -75,7 +75,7 @@ test('Je créé un compte avec un nouveau siren, je suis redirigé·e vers la pa
 })
 
 fixture(
-  "SignupPage B | Création d'un compte utilisateur et messages d'erreur lorsque les champs ne sont pas correctement remplis"
+  "Signup B | Création d'un compte utilisateur et messages d'erreur lorsque les champs ne sont pas correctement remplis"
 )
   .page(`${ROOT_PATH + 'inscription'}`)
   .beforeEach(async t => {
@@ -129,7 +129,7 @@ test('Mot de passe invalide', async t => {
 })
 
 fixture(
-  "SignupPage C | Création d'un compte pour rattachement à une structure existante"
+  "Signup C | Création d'un compte pour rattachement à une structure existante"
 )
   .page(`${ROOT_PATH + 'inscription'}`)
   .beforeEach(async t => {
@@ -167,7 +167,7 @@ test('Je créé un compte avec un siren déjà dans la base, je suis redirigé·
 })
 
 fixture(
-  'SignupPage D | Clique sur le lien de validation de compte reçu par email'
+  'Signup D | Clique sur le lien de validation de compte reçu par email'
 ).page(`${ROOT_PATH + 'inscription'}`)
 
 test('Je suis redirigé·e vers la page de connexion avec un message de confirmation', async t => {

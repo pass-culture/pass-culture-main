@@ -4,23 +4,23 @@ import { compose } from 'redux'
 import withQueryRouter from 'with-query-router'
 
 import RawOffers from './RawOffers'
-import { withRedirectToSigninWhenNotAuthenticated } from '../../hocs'
-import offersSelector from '../../../selectors/offers'
-import offererSelector from '../../../selectors/offerer'
-import venueSelector from '../../../selectors/venue'
-import { translateBrowserUrlToApiUrl } from '../../../utils/translate'
+import { withRedirectToSigninWhenNotAuthenticated } from 'components/hocs'
+import selectOffererById from 'selectors/selectOffererById'
+import selectOffersByOffererIdAndVenueId from 'selectors/selectOffersByOffererIdAndVenueId'
+import selectVenueById from 'selectors/selectVenueById'
+import { translateQueryParamsToApiParams } from 'utils/translate'
 
 export function mapStateToProps(state, ownProps) {
   const { query } = ownProps
   const queryParams = query.parse()
-  const apiQueryParams = translateBrowserUrlToApiUrl(queryParams)
+  const apiQueryParams = translateQueryParamsToApiParams(queryParams)
   const { offererId, venueId } = apiQueryParams
   return {
     lastTrackerMoment: lastTrackerMoment(state, 'offers'),
-    offers: offersSelector(state, offererId, venueId),
-    offerer: offererSelector(state, offererId),
+    offers: selectOffersByOffererIdAndVenueId(state, offererId, venueId),
+    offerer: selectOffererById(state, offererId),
     types: state.data.types,
-    venue: venueSelector(state, venueId),
+    venue: selectVenueById(state, venueId),
   }
 }
 

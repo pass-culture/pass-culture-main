@@ -1,0 +1,13 @@
+import createCachedSelector from 're-reselect'
+
+function mapArgToKey(state, mediationId) {
+  return mediationId || ''
+}
+
+export const selectMediationById = createCachedSelector(
+  state => state.data.mediations,
+  (state, mediationId) => mediationId,
+  (mediations, mediationId) => mediations.find(m => m.id === mediationId)
+)(mapArgToKey)
+
+export default selectMediationById

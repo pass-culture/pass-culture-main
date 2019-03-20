@@ -13,16 +13,15 @@ import React, { Component } from 'react'
 import { NavLink } from 'react-router-dom'
 import { requestData } from 'redux-saga-data'
 
-import HeroSection from '../../layout/HeroSection'
-import Main from '../../layout/Main'
 import VenueProvidersManager from './VenueProvidersManager'
-import { offererNormalizer, venueNormalizer } from '../../../utils/normalizers'
-
+import HeroSection from 'components/layout/HeroSection'
+import Main from 'components/layout/Main'
+import { offererNormalizer, venueNormalizer } from 'utils/normalizers'
 import {
   formatPatch,
   VENUE_EDIT_PATCH_KEYS,
   VENUE_NEW_PATCH_KEYS,
-} from '../../../utils/formatPatch'
+} from 'utils/formatPatch'
 
 class RawVenue extends Component {
   constructor() {
@@ -189,16 +188,17 @@ class RawVenue extends Component {
             <p className="subtitle">Ajoutez un lieu où accéder à vos offres.</p>
           )}
 
-          {get(offerer, 'id') && savedVenueId && (
-            <NavLink
-              to={`/offres/nouveau?lieu=${venuePatch.id}`}
-              className="cta button is-primary">
-              <span className="icon">
-                <Icon svg="ico-offres-w" />
-              </span>
-              <span>Créer une offre</span>
-            </NavLink>
-          )}
+          {get(offerer, 'id') &&
+            savedVenueId && (
+              <NavLink
+                to={`/offres/nouveau?lieu=${venuePatch.id}`}
+                className="cta button is-primary">
+                <span className="icon">
+                  <Icon svg="ico-offres-w" />
+                </span>
+                <span>Créer une offre</span>
+              </NavLink>
+            )}
         </HeroSection>
 
         {!isNew && <VenueProvidersManager venue={venuePatch} />}

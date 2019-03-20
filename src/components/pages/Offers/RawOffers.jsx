@@ -7,14 +7,14 @@ import { NavLink } from 'react-router-dom'
 import { assignData, requestData } from 'redux-saga-data'
 
 import OfferItem from './OfferItem'
-import HeroSection from '../../layout/HeroSection'
-import Spinner from '../../layout/Spinner'
-import Main from '../../layout/Main'
-import { offerNormalizer } from '../../../utils/normalizers'
+import HeroSection from 'components/layout/HeroSection'
+import Spinner from 'components/layout/Spinner'
+import Main from 'components/layout/Main'
+import { offerNormalizer } from 'utils/normalizers'
 import {
   mapApiToBrowser,
-  translateBrowserUrlToApiUrl,
-} from '../../../utils/translate'
+  translateQueryParamsToApiParams,
+} from 'utils/translate'
 
 class RawOffers extends Component {
   constructor(props) {
@@ -53,7 +53,7 @@ class RawOffers extends Component {
     types.length === 0 && dispatch(requestData({ apiPath: '/types' }))
 
     const queryParams = query.parse()
-    const apiParams = translateBrowserUrlToApiUrl(queryParams)
+    const apiParams = translateQueryParamsToApiParams(queryParams)
     const apiParamsString = stringify(apiParams)
     const apiPath = `/offers?${apiParamsString}`
 
@@ -104,7 +104,7 @@ class RawOffers extends Component {
     const { isAdmin } = currentUser || {}
 
     const queryParams = query.parse()
-    const apiParams = translateBrowserUrlToApiUrl(queryParams)
+    const apiParams = translateQueryParamsToApiParams(queryParams)
     const { keywords, venueId, offererId, orderBy } = apiParams
 
     const { hasMore, isLoading } = this.state

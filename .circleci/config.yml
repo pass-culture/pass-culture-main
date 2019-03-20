@@ -43,8 +43,9 @@ jobs:
       - run:
           name: Run API server
           command: |
-            cd ~/pass-culture-main
-            docker-compose up
+            cd ~/pass-culture-main  
+            cd api && git checkout PC-1647-merge-event-occurrence-into-stock
+            cd ../ && docker-compose up
           background: true
       - run:
           name: Run Frontend

@@ -15,7 +15,7 @@ const stateText = Selector('.form .state span')
 const exitlink = Selector('#exitlink')
 const registerButton = Selector('.form button[type="submit"]')
 
-fixture('DeskPage A | Saisir un code').page(`${ROOT_PATH}guichet`)
+fixture('Desk A | Saisir un code').page(`${ROOT_PATH}guichet`)
 
 test("L'état de départ de la page /guichet est conforme", async t => {
   const { booking, user } = await fetchSandbox(

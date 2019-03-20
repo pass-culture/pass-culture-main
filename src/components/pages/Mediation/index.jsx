@@ -7,19 +7,16 @@ import { NavLink, withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 import { requestData } from 'redux-saga-data'
 
-import { withRedirectToSigninWhenNotAuthenticated } from '../../hocs'
-import HeroSection from '../../layout/HeroSection'
-import Main from '../../layout/Main'
-import UploadThumb from '../../layout/UploadThumb'
-import mediationSelector from '../../../selectors/mediation'
-import offerSelector from '../../../selectors/offer'
-import offererSelector from '../../../selectors/offerer'
-import venueSelector from '../../../selectors/venue'
-import {
-  mediationNormalizer,
-  offerNormalizer,
-} from '../../../utils/normalizers'
-import CanvasTools from '../../../utils/canvas'
+import { withRedirectToSigninWhenNotAuthenticated } from 'components/hocs'
+import HeroSection from 'components/layout/HeroSection'
+import Main from 'components/layout/Main'
+import UploadThumb from 'components/layout/UploadThumb'
+import selectMediationById from 'selectors/selectMediationById'
+import selectOfferById from 'selectors/selectOfferById'
+import selectOffererById from 'selectors/selectOffererById'
+import selectVenueById from 'selectors/selectVenueById'
+import { mediationNormalizer, offerNormalizer } from 'utils/normalizers'
+import CanvasTools from 'utils/canvas'
 
 const IMAGE_UPLOAD_SIZE = 400
 const IMAGE_UPLOAD_BORDER = 25
@@ -454,12 +451,17 @@ class Mediation extends PureComponent {
 }
 
 function mapStateToProps(state, ownProps) {
-  const offer = offerSelector(state, ownProps.match.params.offerId)
-  const venue = venueSelector(state, get(offer, 'venueId'))
+  const {
+    match: {
+      params: { mediationId, offerId },
+    },
+  } = ownProps
+  const offer = selectOfferById(state, offerId)
+  const venue = selectVenueById(state, get(offer, 'venueId'))
   return {
     offer,
-    offerer: offererSelector(state, get(venue, 'managingOffererId')),
-    mediation: mediationSelector(state, ownProps.match.params.mediationId),
+    offerer: selectOffererById(state, get(venue, 'managingOffererId')),
+    mediation: selectMediationById(state, mediationId),
   }
 }
 

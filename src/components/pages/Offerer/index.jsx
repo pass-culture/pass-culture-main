@@ -17,7 +17,7 @@ import { withRedirectToSigninWhenNotAuthenticated } from '../../hocs'
 import HeroSection from '../../layout/HeroSection'
 import VenueItem from './VenueItem'
 import Main from '../../layout/Main'
-import offererSelector from '../../../selectors/offerer'
+import selectOffererById from '../../../selectors/selectOffererById'
 import selectUserOffererByOffererIdAndUserIdAndRightsType from '../../../selectors/selectUserOffererByOffererIdAndUserIdAndRightsType'
 import selectPhysicalVenuesByOffererId from '../../../selectors/selectPhysicalVenuesByOffererId'
 import { offererNormalizer } from '../../../utils/normalizers'
@@ -289,7 +289,7 @@ function mapStateToProps(state, ownProps) {
       currentUserId,
       'admin'
     ),
-    offerer: offererSelector(state, offererId),
+    offerer: selectOffererById(state, offererId),
     sirenName: get(state, 'form.offerer.name'),
     venues: selectPhysicalVenuesByOffererId(state, offererId),
   }

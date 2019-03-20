@@ -12,7 +12,7 @@ const pageH1 = Selector('h1')
 const errorsDiv = Selector('.errors')
 
 fixture(
-  'LostPasswordPage A | La page de connexion propose un lien pour changer de mot de passe'
+  'LostPassword A | La page de connexion propose un lien pour changer de mot de passe'
 ).page(`${ROOT_PATH + 'connexion'}`)
 
 test('Je peux cliquer sur le lien mot de passe oublié', async t => {
@@ -55,7 +55,7 @@ test('Je peux cliquer sur le lien mot de passe oublié', async t => {
 })
 
 fixture(
-  'LostPasswordPage B | La page de changement de mot de passe vérifie le token'
+  'LostPassword B | La page de changement de mot de passe vérifie le token'
 ).page(`${ROOT_PATH + 'mot-de-passe-perdu?token=ABCD'}`)
 
 test('Je ne peux pas changer mon mot de passe de sans token valide', async t => {

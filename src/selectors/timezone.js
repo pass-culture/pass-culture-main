@@ -1,9 +1,9 @@
 import createCachedSelector from 're-reselect'
 
-import venueSelector from './venue'
+import selectVenueById from './selectVenueById'
 
 export default createCachedSelector(
-  (state, venueId) => venueSelector(state, venueId),
+  (state, venueId) => selectVenueById(state, venueId),
   venue => {
     if (!venue) return
     switch (venue.departementCode) {

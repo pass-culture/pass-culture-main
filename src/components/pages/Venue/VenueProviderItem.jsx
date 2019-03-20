@@ -6,8 +6,8 @@ import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
 import { requestData } from 'redux-saga-data'
 
-import eventsSelector from '../../../selectors/events'
-import thingsSelector from '../../../selectors/things'
+import selectEventsByProviderId from 'selectors/selectEventsByProviderId'
+import selectThingsByProviderId from 'selectors/selectThingsByProviderId'
 
 class VenueProviderItem extends Component {
   onDeactivateClick = () => {
@@ -87,9 +87,12 @@ class VenueProviderItem extends Component {
 }
 
 function mapStateToProps(state, ownProps) {
+  const {
+    venueProvider: { providerId },
+  } = ownProps
   return {
-    events: eventsSelector(state, ownProps.venueProvider.providerId),
-    things: thingsSelector(state, ownProps.venueProvider.providerId),
+    events: selectEventsByProviderId(state, providerId),
+    things: selectThingsByProviderId(state, providerId),
   }
 }
 

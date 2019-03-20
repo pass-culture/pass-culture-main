@@ -7,7 +7,7 @@ import {
   navigateToVenueAs,
 } from './helpers/navigations'
 
-fixture('OfferPage A | Naviguer vers creer une offre et revenir au précédent')
+fixture('Offer A | Naviguer vers creer une offre et revenir au précédent')
 
 test("Lorsque je clique sur le bouton créer une offre sur la page des offres, j'accède au formulaire de création d'offre", async t => {
   // given
@@ -96,7 +96,7 @@ const descriptionInput = Selector('#offer-description')
 const submitButton = Selector('button.button.is-primary').withText(
   'Enregistrer'
 )
-fixture('OfferPage B | Créer une nouvelle offre')
+fixture('Offer B | Créer une nouvelle offre')
 
 test('Je peux créer une offre événement', async t => {
   // given
@@ -223,7 +223,7 @@ test('Créer des offres avec des sous-types', async t => {
     .ok()
 })
 
-fixture.skip('*TODO* OfferPage B | Modifier nouvelle offre')
+fixture.skip('*TODO* Offer B | Modifier nouvelle offre')
 
 test('Je peux modifier un objet', async t => {
   // given

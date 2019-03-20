@@ -13,7 +13,7 @@ const sirenInput = Selector('#offerer-siren')
 const sirenErrorInput = Selector('#offerer-siren-error')
 const submitButton = Selector('button.button.is-primary')
 
-fixture('OffererPage A | Créer une nouvelle structure').beforeEach(async t => {
+fixture('Offerer A | Créer une nouvelle structure').beforeEach(async t => {
   t.ctx.sandbox = await fetchSandbox(
     'pro_04_offerer',
     'get_existing_pro_validated_user_with_first_offerer'
@@ -123,7 +123,7 @@ test("Je rentre une structure dont l'adresse n'est pas renvoyée par l'api siren
   await t.expect(location.pathname).eql('/structures')
 })
 
-fixture('OffererPage B | Modifier une structure')
+fixture('Offerer B | Modifier une structure')
 
 test.skip('Je modifie une structure pour lui ajouter ses coordonnées bancaires car je suis admin', async t => {
   // given

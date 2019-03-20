@@ -3,7 +3,6 @@ import { createData } from 'redux-saga-data'
 const data = createData({
   bookings: [],
   events: [],
-  eventOccurrences: [],
   mediations: [],
   offers: [],
   offerers: [],

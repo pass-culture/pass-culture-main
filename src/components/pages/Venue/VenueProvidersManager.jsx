@@ -10,10 +10,10 @@ import { requestData } from 'redux-saga-data'
 import { selectCurrentUser } from 'with-login'
 
 import VenueProviderItem from './VenueProviderItem'
-import providerSelector from '../../../selectors/provider'
-import providersSelector from '../../../selectors/providers'
-import venueProviderSelector from '../../../selectors/venueProvider'
-import venueProvidersSelector from '../../../selectors/venueProviders'
+import selectProviderById from 'selectors/selectProviderById'
+import selectProviders from 'selectors/selectProviders'
+import venueProviderSelector from 'selectors/venueProvider'
+import venueProvidersSelector from 'selectors/venueProviders'
 
 class ProviderManager extends Component {
   constructor() {
@@ -206,7 +206,7 @@ class ProviderManager extends Component {
 }
 
 function mapStateToProps(state, ownProps) {
-  const providers = providersSelector(state)
+  const providers = selectProviders(state)
 
   const formPatch = get(state, 'form.venueProvider')
 
@@ -215,7 +215,7 @@ function mapStateToProps(state, ownProps) {
     provider = providers[0]
   } else {
     const providerId = get(formPatch, 'providerId')
-    provider = providerSelector(state, providerId)
+    provider = selectProviderById(state, providerId)
   }
 
   const venueId = get(ownProps, 'venue.id')

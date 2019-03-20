@@ -4,7 +4,7 @@ import { fetchSandbox } from './helpers/sandboxes'
 import { navigateToOfferAs } from './helpers/navigations'
 import { createUserRole } from './helpers/roles'
 
-fixture('OffersList A | Lister les offres').beforeEach(async t => {
+fixture('Offers A | Lister les offres').beforeEach(async t => {
   t.ctx.sandbox = await fetchSandbox(
     'pro_06_offers',
     'get_existing_pro_validated_user_with_at_least_one_visible_activated_offer'

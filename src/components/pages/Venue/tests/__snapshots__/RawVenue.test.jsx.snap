@@ -75,12 +75,6 @@ ShallowWrapper {
           name="venue"
           normalizer={
                     Object {
-                              "eventOccurrences": Object {
-                                "normalizer": Object {
-                                  "event": "events",
-                                },
-                                "stateKey": "eventOccurrences",
-                              },
                               "managingOfferer": "offerers",
                               "offers": Object {
                                 "normalizer": Object {
@@ -587,12 +581,6 @@ ShallowWrapper {
           "handleSuccessRedirect": null,
           "name": "venue",
           "normalizer": Object {
-            "eventOccurrences": Object {
-              "normalizer": Object {
-                "event": "events",
-              },
-              "stateKey": "eventOccurrences",
-            },
             "managingOfferer": "offerers",
             "offers": Object {
               "normalizer": Object {
@@ -1475,12 +1463,6 @@ ShallowWrapper {
             name="venue"
             normalizer={
                         Object {
-                                    "eventOccurrences": Object {
-                                      "normalizer": Object {
-                                        "event": "events",
-                                      },
-                                      "stateKey": "eventOccurrences",
-                                    },
                                     "managingOfferer": "offerers",
                                     "offers": Object {
                                       "normalizer": Object {
@@ -1987,12 +1969,6 @@ ShallowWrapper {
             "handleSuccessRedirect": null,
             "name": "venue",
             "normalizer": Object {
-              "eventOccurrences": Object {
-                "normalizer": Object {
-                  "event": "events",
-                },
-                "stateKey": "eventOccurrences",
-              },
               "managingOfferer": "offerers",
               "offers": Object {
                 "normalizer": Object {

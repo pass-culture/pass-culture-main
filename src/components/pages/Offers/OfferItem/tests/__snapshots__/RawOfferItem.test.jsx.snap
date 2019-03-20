@@ -1,0 +1,1732 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`src | components | pages | Offers | RawOfferItem snapshot should match snapshot 1`] = `
+ShallowWrapper {
+  Symbol(enzyme.__root__): [Circular],
+  Symbol(enzyme.__unrendered__): <RawOfferItem
+    dispatch={[Function]}
+    location={
+        Object {
+            "search": "?orderBy=offer.id+desc",
+          }
+    }
+    maxDescriptionLength={300}
+    offer={
+        Object {
+            "bookingEmail": "booking.email@test.com",
+            "dateCreated": "2019-02-25T09:50:10.735519Z",
+            "dateModifiedAtLastProvider": "2019-02-25T09:50:31.881297Z",
+            "eventId": null,
+            "id": "M4",
+            "idAtProviders": null,
+            "isActive": true,
+            "lastProviderId": null,
+            "mediationsIds": Array [
+              "HA",
+            ],
+            "modelName": "Offer",
+            "stocksIds": Array [
+              "MQ",
+            ],
+            "thingId": "EY",
+            "venueId": "CU",
+          }
+    }
+/>,
+  Symbol(enzyme.__renderer__): Object {
+    "batchedUpdates": [Function],
+    "checkPropTypes": [Function],
+    "getNode": [Function],
+    "render": [Function],
+    "simulateError": [Function],
+    "simulateEvent": [Function],
+    "unmount": [Function],
+  },
+  Symbol(enzyme.__node__): Object {
+    "instance": null,
+    "key": undefined,
+    "nodeType": "host",
+    "props": Object {
+      "children": Array [
+        <Thumb
+          alt="offre"
+          src={undefined}
+/>,
+        <div
+          className="list-content"
+>
+          <NavLink
+                    activeClassName="active"
+                    aria-current="page"
+                    className="name"
+                    title={undefined}
+                    to="/offres/M4?orderBy=offer.id+desc"
+          >
+                    <Dotdotdot
+                              clamp={1}
+                              tagName="div"
+                              truncationChar="…"
+                              useNativeClamp={true}
+                    />
+          </NavLink>
+          <ul
+                    className="infos"
+          >
+                    <li
+                              className="is-uppercase"
+                    />
+                    <li>
+                              <span
+                                        className="label"
+                              >
+                                        Structure :
+                              </span>
+                    </li>
+                    <li>
+                              <span
+                                        className="label"
+                              >
+                                        Lieu :
+                              </span>
+                               
+                    </li>
+          </ul>
+          <ul
+                    className="infos"
+          >
+                    <li
+                              title={undefined}
+                    >
+                              
+                    </li>
+                    <li>
+                              <NavLink
+                                        activeClassName="active"
+                                        aria-current="page"
+                                        className="has-text-primary"
+                                        to="/offres/M4?gestion"
+                              >
+                                        undefined prix
+                              </NavLink>
+                    </li>
+                    <li />
+                    <li>
+                              0 place
+                               
+                    </li>
+                    <li>
+                              <Price
+                                        Tag="span"
+                                        free="Gratuit"
+                                        value={0}
+                              />
+                    </li>
+          </ul>
+          <ul
+                    className="actions"
+          >
+                    <li>
+                              <NavLink
+                                        activeClassName="active"
+                                        aria-current="page"
+                                        className="button addMediations is-small is-primary is-outlined"
+                                        to="/offres/M4/accroches/nouveau?orderBy=offer.id+desc"
+                              >
+                                        <span
+                                                  className="icon"
+                                        >
+                                                  <Icon
+                                                            svg="ico-stars"
+                                                  />
+                                        </span>
+                                        <span>
+                                                  Ajouter une Accroche
+                                        </span>
+                              </NavLink>
+                    </li>
+                    <li>
+                              <NavLink
+                                        activeClassName="active"
+                                        aria-current="page"
+                                        className="button is-secondary is-small edit-link"
+                                        to="/offres/M4"
+                              >
+                                        <Icon
+                                                  svg="ico-pen-r"
+                                        />
+                                        Modifier
+                              </NavLink>
+                              <button
+                                        className="button is-secondary is-small activ-switch"
+                                        onClick={[Function]}
+                              >
+                                        <span>
+                                                  <Icon
+                                                            svg="ico-close-r"
+                                                  />
+                                                  Désactiver
+                                        </span>
+                              </button>
+                    </li>
+          </ul>
+</div>,
+      ],
+      "className": "offer-item active",
+    },
+    "ref": null,
+    "rendered": Array [
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "function",
+        "props": Object {
+          "alt": "offre",
+          "src": undefined,
+        },
+        "ref": null,
+        "rendered": null,
+        "type": [Function],
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": Array [
+            <NavLink
+              activeClassName="active"
+              aria-current="page"
+              className="name"
+              title={undefined}
+              to="/offres/M4?orderBy=offer.id+desc"
+>
+              <Dotdotdot
+                            clamp={1}
+                            tagName="div"
+                            truncationChar="…"
+                            useNativeClamp={true}
+              />
+</NavLink>,
+            <ul
+              className="infos"
+>
+              <li
+                            className="is-uppercase"
+              />
+              <li>
+                            <span
+                                          className="label"
+                            >
+                                          Structure :
+                            </span>
+              </li>
+              <li>
+                            <span
+                                          className="label"
+                            >
+                                          Lieu :
+                            </span>
+                             
+              </li>
+</ul>,
+            <ul
+              className="infos"
+>
+              <li
+                            title={undefined}
+              >
+                            
+              </li>
+              <li>
+                            <NavLink
+                                          activeClassName="active"
+                                          aria-current="page"
+                                          className="has-text-primary"
+                                          to="/offres/M4?gestion"
+                            >
+                                          undefined prix
+                            </NavLink>
+              </li>
+              <li />
+              <li>
+                            0 place
+                             
+              </li>
+              <li>
+                            <Price
+                                          Tag="span"
+                                          free="Gratuit"
+                                          value={0}
+                            />
+              </li>
+</ul>,
+            <ul
+              className="actions"
+>
+              <li>
+                            <NavLink
+                                          activeClassName="active"
+                                          aria-current="page"
+                                          className="button addMediations is-small is-primary is-outlined"
+                                          to="/offres/M4/accroches/nouveau?orderBy=offer.id+desc"
+                            >
+                                          <span
+                                                        className="icon"
+                                          >
+                                                        <Icon
+                                                                      svg="ico-stars"
+                                                        />
+                                          </span>
+                                          <span>
+                                                        Ajouter une Accroche
+                                          </span>
+                            </NavLink>
+              </li>
+              <li>
+                            <NavLink
+                                          activeClassName="active"
+                                          aria-current="page"
+                                          className="button is-secondary is-small edit-link"
+                                          to="/offres/M4"
+                            >
+                                          <Icon
+                                                        svg="ico-pen-r"
+                                          />
+                                          Modifier
+                            </NavLink>
+                            <button
+                                          className="button is-secondary is-small activ-switch"
+                                          onClick={[Function]}
+                            >
+                                          <span>
+                                                        <Icon
+                                                                      svg="ico-close-r"
+                                                        />
+                                                        Désactiver
+                                          </span>
+                            </button>
+              </li>
+</ul>,
+          ],
+          "className": "list-content",
+        },
+        "ref": null,
+        "rendered": Array [
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "function",
+            "props": Object {
+              "activeClassName": "active",
+              "aria-current": "page",
+              "children": <Dotdotdot
+                clamp={1}
+                tagName="div"
+                truncationChar="…"
+                useNativeClamp={true}
+/>,
+              "className": "name",
+              "title": undefined,
+              "to": "/offres/M4?orderBy=offer.id+desc",
+            },
+            "ref": null,
+            "rendered": Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "class",
+              "props": Object {
+                "children": undefined,
+                "clamp": 1,
+                "tagName": "div",
+                "truncationChar": "…",
+                "useNativeClamp": true,
+              },
+              "ref": null,
+              "rendered": null,
+              "type": [Function],
+            },
+            "type": [Function],
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": Array [
+                <li
+                  className="is-uppercase"
+/>,
+                <li>
+                  <span
+                                    className="label"
+                  >
+                                    Structure :
+                  </span>
+</li>,
+                <li>
+                  <span
+                                    className="label"
+                  >
+                                    Lieu :
+                  </span>
+                   
+</li>,
+              ],
+              "className": "infos",
+            },
+            "ref": null,
+            "rendered": Array [
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": undefined,
+                  "className": "is-uppercase",
+                },
+                "ref": null,
+                "rendered": null,
+                "type": "li",
+              },
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": Array [
+                    <span
+                      className="label"
+>
+                      Structure :
+</span>,
+                    undefined,
+                  ],
+                },
+                "ref": null,
+                "rendered": Array [
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "host",
+                    "props": Object {
+                      "children": "Structure :",
+                      "className": "label",
+                    },
+                    "ref": null,
+                    "rendered": "Structure :",
+                    "type": "span",
+                  },
+                  undefined,
+                ],
+                "type": "li",
+              },
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": Array [
+                    <span
+                      className="label"
+>
+                      Lieu :
+</span>,
+                    " ",
+                    undefined,
+                  ],
+                },
+                "ref": null,
+                "rendered": Array [
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "host",
+                    "props": Object {
+                      "children": "Lieu :",
+                      "className": "label",
+                    },
+                    "ref": null,
+                    "rendered": "Lieu :",
+                    "type": "span",
+                  },
+                  " ",
+                  undefined,
+                ],
+                "type": "li",
+              },
+            ],
+            "type": "ul",
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": Array [
+                undefined,
+                false,
+                <li
+                  title={undefined}
+>
+                  
+</li>,
+                <li>
+                  <NavLink
+                                    activeClassName="active"
+                                    aria-current="page"
+                                    className="has-text-primary"
+                                    to="/offres/M4?gestion"
+                  >
+                                    undefined prix
+                  </NavLink>
+</li>,
+                <li />,
+                <li>
+                  0 place
+                   
+</li>,
+                <li>
+                  <Price
+                                    Tag="span"
+                                    free="Gratuit"
+                                    value={0}
+                  />
+</li>,
+              ],
+              "className": "infos",
+            },
+            "ref": null,
+            "rendered": Array [
+              undefined,
+              false,
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": Array [
+                    false,
+                    false,
+                  ],
+                  "title": undefined,
+                },
+                "ref": null,
+                "rendered": Array [
+                  false,
+                  false,
+                ],
+                "type": "li",
+              },
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": <NavLink
+                    activeClassName="active"
+                    aria-current="page"
+                    className="has-text-primary"
+                    to="/offres/M4?gestion"
+>
+                    undefined prix
+</NavLink>,
+                },
+                "ref": null,
+                "rendered": Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "function",
+                  "props": Object {
+                    "activeClassName": "active",
+                    "aria-current": "page",
+                    "children": "undefined prix",
+                    "className": "has-text-primary",
+                    "to": "/offres/M4?gestion",
+                  },
+                  "ref": null,
+                  "rendered": "undefined prix",
+                  "type": [Function],
+                },
+                "type": "li",
+              },
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": undefined,
+                },
+                "ref": null,
+                "rendered": null,
+                "type": "li",
+              },
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": Array [
+                    "0 place",
+                    " ",
+                  ],
+                },
+                "ref": null,
+                "rendered": Array [
+                  "0 place",
+                  " ",
+                ],
+                "type": "li",
+              },
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": <Price
+                    Tag="span"
+                    free="Gratuit"
+                    value={0}
+/>,
+                },
+                "ref": null,
+                "rendered": Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "function",
+                  "props": Object {
+                    "Tag": "span",
+                    "free": "Gratuit",
+                    "value": 0,
+                  },
+                  "ref": null,
+                  "rendered": null,
+                  "type": [Function],
+                },
+                "type": "li",
+              },
+            ],
+            "type": "ul",
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": Array [
+                <li>
+                  <NavLink
+                                    activeClassName="active"
+                                    aria-current="page"
+                                    className="button addMediations is-small is-primary is-outlined"
+                                    to="/offres/M4/accroches/nouveau?orderBy=offer.id+desc"
+                  >
+                                    <span
+                                                      className="icon"
+                                    >
+                                                      <Icon
+                                                                        svg="ico-stars"
+                                                      />
+                                    </span>
+                                    <span>
+                                                      Ajouter une Accroche
+                                    </span>
+                  </NavLink>
+</li>,
+                <li>
+                  <NavLink
+                                    activeClassName="active"
+                                    aria-current="page"
+                                    className="button is-secondary is-small edit-link"
+                                    to="/offres/M4"
+                  >
+                                    <Icon
+                                                      svg="ico-pen-r"
+                                    />
+                                    Modifier
+                  </NavLink>
+                  <button
+                                    className="button is-secondary is-small activ-switch"
+                                    onClick={[Function]}
+                  >
+                                    <span>
+                                                      <Icon
+                                                                        svg="ico-close-r"
+                                                      />
+                                                      Désactiver
+                                    </span>
+                  </button>
+</li>,
+              ],
+              "className": "actions",
+            },
+            "ref": null,
+            "rendered": Array [
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": <NavLink
+                    activeClassName="active"
+                    aria-current="page"
+                    className="button addMediations is-small is-primary is-outlined"
+                    to="/offres/M4/accroches/nouveau?orderBy=offer.id+desc"
+>
+                    <span
+                                        className="icon"
+                    >
+                                        <Icon
+                                                            svg="ico-stars"
+                                        />
+                    </span>
+                    <span>
+                                        Ajouter une Accroche
+                    </span>
+</NavLink>,
+                },
+                "ref": null,
+                "rendered": Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "function",
+                  "props": Object {
+                    "activeClassName": "active",
+                    "aria-current": "page",
+                    "children": Array [
+                      <span
+                        className="icon"
+>
+                        <Icon
+                                                svg="ico-stars"
+                        />
+</span>,
+                      <span>
+                        Ajouter une Accroche
+</span>,
+                    ],
+                    "className": "button addMediations is-small is-primary is-outlined",
+                    "to": "/offres/M4/accroches/nouveau?orderBy=offer.id+desc",
+                  },
+                  "ref": null,
+                  "rendered": Array [
+                    Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "host",
+                      "props": Object {
+                        "children": <Icon
+                          svg="ico-stars"
+/>,
+                        "className": "icon",
+                      },
+                      "ref": null,
+                      "rendered": Object {
+                        "instance": null,
+                        "key": undefined,
+                        "nodeType": "function",
+                        "props": Object {
+                          "svg": "ico-stars",
+                        },
+                        "ref": null,
+                        "rendered": null,
+                        "type": [Function],
+                      },
+                      "type": "span",
+                    },
+                    Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "host",
+                      "props": Object {
+                        "children": "Ajouter une Accroche",
+                      },
+                      "ref": null,
+                      "rendered": "Ajouter une Accroche",
+                      "type": "span",
+                    },
+                  ],
+                  "type": [Function],
+                },
+                "type": "li",
+              },
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": Array [
+                    <NavLink
+                      activeClassName="active"
+                      aria-current="page"
+                      className="button is-secondary is-small edit-link"
+                      to="/offres/M4"
+>
+                      <Icon
+                                            svg="ico-pen-r"
+                      />
+                      Modifier
+</NavLink>,
+                    <button
+                      className="button is-secondary is-small activ-switch"
+                      onClick={[Function]}
+>
+                      <span>
+                                            <Icon
+                                                                  svg="ico-close-r"
+                                            />
+                                            Désactiver
+                      </span>
+</button>,
+                  ],
+                },
+                "ref": null,
+                "rendered": Array [
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "function",
+                    "props": Object {
+                      "activeClassName": "active",
+                      "aria-current": "page",
+                      "children": Array [
+                        <Icon
+                          svg="ico-pen-r"
+/>,
+                        "Modifier",
+                      ],
+                      "className": "button is-secondary is-small edit-link",
+                      "to": "/offres/M4",
+                    },
+                    "ref": null,
+                    "rendered": Array [
+                      Object {
+                        "instance": null,
+                        "key": undefined,
+                        "nodeType": "function",
+                        "props": Object {
+                          "svg": "ico-pen-r",
+                        },
+                        "ref": null,
+                        "rendered": null,
+                        "type": [Function],
+                      },
+                      "Modifier",
+                    ],
+                    "type": [Function],
+                  },
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "host",
+                    "props": Object {
+                      "children": <span>
+                        <Icon
+                                                svg="ico-close-r"
+                        />
+                        Désactiver
+</span>,
+                      "className": "button is-secondary is-small activ-switch",
+                      "onClick": [Function],
+                    },
+                    "ref": null,
+                    "rendered": Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "host",
+                      "props": Object {
+                        "children": Array [
+                          <Icon
+                            svg="ico-close-r"
+/>,
+                          "Désactiver",
+                        ],
+                      },
+                      "ref": null,
+                      "rendered": Array [
+                        Object {
+                          "instance": null,
+                          "key": undefined,
+                          "nodeType": "function",
+                          "props": Object {
+                            "svg": "ico-close-r",
+                          },
+                          "ref": null,
+                          "rendered": null,
+                          "type": [Function],
+                        },
+                        "Désactiver",
+                      ],
+                      "type": "span",
+                    },
+                    "type": "button",
+                  },
+                ],
+                "type": "li",
+              },
+            ],
+            "type": "ul",
+          },
+        ],
+        "type": "div",
+      },
+    ],
+    "type": "li",
+  },
+  Symbol(enzyme.__nodes__): Array [
+    Object {
+      "instance": null,
+      "key": undefined,
+      "nodeType": "host",
+      "props": Object {
+        "children": Array [
+          <Thumb
+            alt="offre"
+            src={undefined}
+/>,
+          <div
+            className="list-content"
+>
+            <NavLink
+                        activeClassName="active"
+                        aria-current="page"
+                        className="name"
+                        title={undefined}
+                        to="/offres/M4?orderBy=offer.id+desc"
+            >
+                        <Dotdotdot
+                                    clamp={1}
+                                    tagName="div"
+                                    truncationChar="…"
+                                    useNativeClamp={true}
+                        />
+            </NavLink>
+            <ul
+                        className="infos"
+            >
+                        <li
+                                    className="is-uppercase"
+                        />
+                        <li>
+                                    <span
+                                                className="label"
+                                    >
+                                                Structure :
+                                    </span>
+                        </li>
+                        <li>
+                                    <span
+                                                className="label"
+                                    >
+                                                Lieu :
+                                    </span>
+                                     
+                        </li>
+            </ul>
+            <ul
+                        className="infos"
+            >
+                        <li
+                                    title={undefined}
+                        >
+                                    
+                        </li>
+                        <li>
+                                    <NavLink
+                                                activeClassName="active"
+                                                aria-current="page"
+                                                className="has-text-primary"
+                                                to="/offres/M4?gestion"
+                                    >
+                                                undefined prix
+                                    </NavLink>
+                        </li>
+                        <li />
+                        <li>
+                                    0 place
+                                     
+                        </li>
+                        <li>
+                                    <Price
+                                                Tag="span"
+                                                free="Gratuit"
+                                                value={0}
+                                    />
+                        </li>
+            </ul>
+            <ul
+                        className="actions"
+            >
+                        <li>
+                                    <NavLink
+                                                activeClassName="active"
+                                                aria-current="page"
+                                                className="button addMediations is-small is-primary is-outlined"
+                                                to="/offres/M4/accroches/nouveau?orderBy=offer.id+desc"
+                                    >
+                                                <span
+                                                            className="icon"
+                                                >
+                                                            <Icon
+                                                                        svg="ico-stars"
+                                                            />
+                                                </span>
+                                                <span>
+                                                            Ajouter une Accroche
+                                                </span>
+                                    </NavLink>
+                        </li>
+                        <li>
+                                    <NavLink
+                                                activeClassName="active"
+                                                aria-current="page"
+                                                className="button is-secondary is-small edit-link"
+                                                to="/offres/M4"
+                                    >
+                                                <Icon
+                                                            svg="ico-pen-r"
+                                                />
+                                                Modifier
+                                    </NavLink>
+                                    <button
+                                                className="button is-secondary is-small activ-switch"
+                                                onClick={[Function]}
+                                    >
+                                                <span>
+                                                            <Icon
+                                                                        svg="ico-close-r"
+                                                            />
+                                                            Désactiver
+                                                </span>
+                                    </button>
+                        </li>
+            </ul>
+</div>,
+        ],
+        "className": "offer-item active",
+      },
+      "ref": null,
+      "rendered": Array [
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "function",
+          "props": Object {
+            "alt": "offre",
+            "src": undefined,
+          },
+          "ref": null,
+          "rendered": null,
+          "type": [Function],
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": Array [
+              <NavLink
+                activeClassName="active"
+                aria-current="page"
+                className="name"
+                title={undefined}
+                to="/offres/M4?orderBy=offer.id+desc"
+>
+                <Dotdotdot
+                                clamp={1}
+                                tagName="div"
+                                truncationChar="…"
+                                useNativeClamp={true}
+                />
+</NavLink>,
+              <ul
+                className="infos"
+>
+                <li
+                                className="is-uppercase"
+                />
+                <li>
+                                <span
+                                                className="label"
+                                >
+                                                Structure :
+                                </span>
+                </li>
+                <li>
+                                <span
+                                                className="label"
+                                >
+                                                Lieu :
+                                </span>
+                                 
+                </li>
+</ul>,
+              <ul
+                className="infos"
+>
+                <li
+                                title={undefined}
+                >
+                                
+                </li>
+                <li>
+                                <NavLink
+                                                activeClassName="active"
+                                                aria-current="page"
+                                                className="has-text-primary"
+                                                to="/offres/M4?gestion"
+                                >
+                                                undefined prix
+                                </NavLink>
+                </li>
+                <li />
+                <li>
+                                0 place
+                                 
+                </li>
+                <li>
+                                <Price
+                                                Tag="span"
+                                                free="Gratuit"
+                                                value={0}
+                                />
+                </li>
+</ul>,
+              <ul
+                className="actions"
+>
+                <li>
+                                <NavLink
+                                                activeClassName="active"
+                                                aria-current="page"
+                                                className="button addMediations is-small is-primary is-outlined"
+                                                to="/offres/M4/accroches/nouveau?orderBy=offer.id+desc"
+                                >
+                                                <span
+                                                                className="icon"
+                                                >
+                                                                <Icon
+                                                                                svg="ico-stars"
+                                                                />
+                                                </span>
+                                                <span>
+                                                                Ajouter une Accroche
+                                                </span>
+                                </NavLink>
+                </li>
+                <li>
+                                <NavLink
+                                                activeClassName="active"
+                                                aria-current="page"
+                                                className="button is-secondary is-small edit-link"
+                                                to="/offres/M4"
+                                >
+                                                <Icon
+                                                                svg="ico-pen-r"
+                                                />
+                                                Modifier
+                                </NavLink>
+                                <button
+                                                className="button is-secondary is-small activ-switch"
+                                                onClick={[Function]}
+                                >
+                                                <span>
+                                                                <Icon
+                                                                                svg="ico-close-r"
+                                                                />
+                                                                Désactiver
+                                                </span>
+                                </button>
+                </li>
+</ul>,
+            ],
+            "className": "list-content",
+          },
+          "ref": null,
+          "rendered": Array [
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "function",
+              "props": Object {
+                "activeClassName": "active",
+                "aria-current": "page",
+                "children": <Dotdotdot
+                  clamp={1}
+                  tagName="div"
+                  truncationChar="…"
+                  useNativeClamp={true}
+/>,
+                "className": "name",
+                "title": undefined,
+                "to": "/offres/M4?orderBy=offer.id+desc",
+              },
+              "ref": null,
+              "rendered": Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "class",
+                "props": Object {
+                  "children": undefined,
+                  "clamp": 1,
+                  "tagName": "div",
+                  "truncationChar": "…",
+                  "useNativeClamp": true,
+                },
+                "ref": null,
+                "rendered": null,
+                "type": [Function],
+              },
+              "type": [Function],
+            },
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": Array [
+                  <li
+                    className="is-uppercase"
+/>,
+                  <li>
+                    <span
+                                        className="label"
+                    >
+                                        Structure :
+                    </span>
+</li>,
+                  <li>
+                    <span
+                                        className="label"
+                    >
+                                        Lieu :
+                    </span>
+                     
+</li>,
+                ],
+                "className": "infos",
+              },
+              "ref": null,
+              "rendered": Array [
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": undefined,
+                    "className": "is-uppercase",
+                  },
+                  "ref": null,
+                  "rendered": null,
+                  "type": "li",
+                },
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": Array [
+                      <span
+                        className="label"
+>
+                        Structure :
+</span>,
+                      undefined,
+                    ],
+                  },
+                  "ref": null,
+                  "rendered": Array [
+                    Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "host",
+                      "props": Object {
+                        "children": "Structure :",
+                        "className": "label",
+                      },
+                      "ref": null,
+                      "rendered": "Structure :",
+                      "type": "span",
+                    },
+                    undefined,
+                  ],
+                  "type": "li",
+                },
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": Array [
+                      <span
+                        className="label"
+>
+                        Lieu :
+</span>,
+                      " ",
+                      undefined,
+                    ],
+                  },
+                  "ref": null,
+                  "rendered": Array [
+                    Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "host",
+                      "props": Object {
+                        "children": "Lieu :",
+                        "className": "label",
+                      },
+                      "ref": null,
+                      "rendered": "Lieu :",
+                      "type": "span",
+                    },
+                    " ",
+                    undefined,
+                  ],
+                  "type": "li",
+                },
+              ],
+              "type": "ul",
+            },
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": Array [
+                  undefined,
+                  false,
+                  <li
+                    title={undefined}
+>
+                    
+</li>,
+                  <li>
+                    <NavLink
+                                        activeClassName="active"
+                                        aria-current="page"
+                                        className="has-text-primary"
+                                        to="/offres/M4?gestion"
+                    >
+                                        undefined prix
+                    </NavLink>
+</li>,
+                  <li />,
+                  <li>
+                    0 place
+                     
+</li>,
+                  <li>
+                    <Price
+                                        Tag="span"
+                                        free="Gratuit"
+                                        value={0}
+                    />
+</li>,
+                ],
+                "className": "infos",
+              },
+              "ref": null,
+              "rendered": Array [
+                undefined,
+                false,
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": Array [
+                      false,
+                      false,
+                    ],
+                    "title": undefined,
+                  },
+                  "ref": null,
+                  "rendered": Array [
+                    false,
+                    false,
+                  ],
+                  "type": "li",
+                },
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": <NavLink
+                      activeClassName="active"
+                      aria-current="page"
+                      className="has-text-primary"
+                      to="/offres/M4?gestion"
+>
+                      undefined prix
+</NavLink>,
+                  },
+                  "ref": null,
+                  "rendered": Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "function",
+                    "props": Object {
+                      "activeClassName": "active",
+                      "aria-current": "page",
+                      "children": "undefined prix",
+                      "className": "has-text-primary",
+                      "to": "/offres/M4?gestion",
+                    },
+                    "ref": null,
+                    "rendered": "undefined prix",
+                    "type": [Function],
+                  },
+                  "type": "li",
+                },
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": undefined,
+                  },
+                  "ref": null,
+                  "rendered": null,
+                  "type": "li",
+                },
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": Array [
+                      "0 place",
+                      " ",
+                    ],
+                  },
+                  "ref": null,
+                  "rendered": Array [
+                    "0 place",
+                    " ",
+                  ],
+                  "type": "li",
+                },
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": <Price
+                      Tag="span"
+                      free="Gratuit"
+                      value={0}
+/>,
+                  },
+                  "ref": null,
+                  "rendered": Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "function",
+                    "props": Object {
+                      "Tag": "span",
+                      "free": "Gratuit",
+                      "value": 0,
+                    },
+                    "ref": null,
+                    "rendered": null,
+                    "type": [Function],
+                  },
+                  "type": "li",
+                },
+              ],
+              "type": "ul",
+            },
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": Array [
+                  <li>
+                    <NavLink
+                                        activeClassName="active"
+                                        aria-current="page"
+                                        className="button addMediations is-small is-primary is-outlined"
+                                        to="/offres/M4/accroches/nouveau?orderBy=offer.id+desc"
+                    >
+                                        <span
+                                                            className="icon"
+                                        >
+                                                            <Icon
+                                                                                svg="ico-stars"
+                                                            />
+                                        </span>
+                                        <span>
+                                                            Ajouter une Accroche
+                                        </span>
+                    </NavLink>
+</li>,
+                  <li>
+                    <NavLink
+                                        activeClassName="active"
+                                        aria-current="page"
+                                        className="button is-secondary is-small edit-link"
+                                        to="/offres/M4"
+                    >
+                                        <Icon
+                                                            svg="ico-pen-r"
+                                        />
+                                        Modifier
+                    </NavLink>
+                    <button
+                                        className="button is-secondary is-small activ-switch"
+                                        onClick={[Function]}
+                    >
+                                        <span>
+                                                            <Icon
+                                                                                svg="ico-close-r"
+                                                            />
+                                                            Désactiver
+                                        </span>
+                    </button>
+</li>,
+                ],
+                "className": "actions",
+              },
+              "ref": null,
+              "rendered": Array [
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": <NavLink
+                      activeClassName="active"
+                      aria-current="page"
+                      className="button addMediations is-small is-primary is-outlined"
+                      to="/offres/M4/accroches/nouveau?orderBy=offer.id+desc"
+>
+                      <span
+                                            className="icon"
+                      >
+                                            <Icon
+                                                                  svg="ico-stars"
+                                            />
+                      </span>
+                      <span>
+                                            Ajouter une Accroche
+                      </span>
+</NavLink>,
+                  },
+                  "ref": null,
+                  "rendered": Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "function",
+                    "props": Object {
+                      "activeClassName": "active",
+                      "aria-current": "page",
+                      "children": Array [
+                        <span
+                          className="icon"
+>
+                          <Icon
+                                                    svg="ico-stars"
+                          />
+</span>,
+                        <span>
+                          Ajouter une Accroche
+</span>,
+                      ],
+                      "className": "button addMediations is-small is-primary is-outlined",
+                      "to": "/offres/M4/accroches/nouveau?orderBy=offer.id+desc",
+                    },
+                    "ref": null,
+                    "rendered": Array [
+                      Object {
+                        "instance": null,
+                        "key": undefined,
+                        "nodeType": "host",
+                        "props": Object {
+                          "children": <Icon
+                            svg="ico-stars"
+/>,
+                          "className": "icon",
+                        },
+                        "ref": null,
+                        "rendered": Object {
+                          "instance": null,
+                          "key": undefined,
+                          "nodeType": "function",
+                          "props": Object {
+                            "svg": "ico-stars",
+                          },
+                          "ref": null,
+                          "rendered": null,
+                          "type": [Function],
+                        },
+                        "type": "span",
+                      },
+                      Object {
+                        "instance": null,
+                        "key": undefined,
+                        "nodeType": "host",
+                        "props": Object {
+                          "children": "Ajouter une Accroche",
+                        },
+                        "ref": null,
+                        "rendered": "Ajouter une Accroche",
+                        "type": "span",
+                      },
+                    ],
+                    "type": [Function],
+                  },
+                  "type": "li",
+                },
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": Array [
+                      <NavLink
+                        activeClassName="active"
+                        aria-current="page"
+                        className="button is-secondary is-small edit-link"
+                        to="/offres/M4"
+>
+                        <Icon
+                                                svg="ico-pen-r"
+                        />
+                        Modifier
+</NavLink>,
+                      <button
+                        className="button is-secondary is-small activ-switch"
+                        onClick={[Function]}
+>
+                        <span>
+                                                <Icon
+                                                                        svg="ico-close-r"
+                                                />
+                                                Désactiver
+                        </span>
+</button>,
+                    ],
+                  },
+                  "ref": null,
+                  "rendered": Array [
+                    Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "function",
+                      "props": Object {
+                        "activeClassName": "active",
+                        "aria-current": "page",
+                        "children": Array [
+                          <Icon
+                            svg="ico-pen-r"
+/>,
+                          "Modifier",
+                        ],
+                        "className": "button is-secondary is-small edit-link",
+                        "to": "/offres/M4",
+                      },
+                      "ref": null,
+                      "rendered": Array [
+                        Object {
+                          "instance": null,
+                          "key": undefined,
+                          "nodeType": "function",
+                          "props": Object {
+                            "svg": "ico-pen-r",
+                          },
+                          "ref": null,
+                          "rendered": null,
+                          "type": [Function],
+                        },
+                        "Modifier",
+                      ],
+                      "type": [Function],
+                    },
+                    Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "host",
+                      "props": Object {
+                        "children": <span>
+                          <Icon
+                                                    svg="ico-close-r"
+                          />
+                          Désactiver
+</span>,
+                        "className": "button is-secondary is-small activ-switch",
+                        "onClick": [Function],
+                      },
+                      "ref": null,
+                      "rendered": Object {
+                        "instance": null,
+                        "key": undefined,
+                        "nodeType": "host",
+                        "props": Object {
+                          "children": Array [
+                            <Icon
+                              svg="ico-close-r"
+/>,
+                            "Désactiver",
+                          ],
+                        },
+                        "ref": null,
+                        "rendered": Array [
+                          Object {
+                            "instance": null,
+                            "key": undefined,
+                            "nodeType": "function",
+                            "props": Object {
+                              "svg": "ico-close-r",
+                            },
+                            "ref": null,
+                            "rendered": null,
+                            "type": [Function],
+                          },
+                          "Désactiver",
+                        ],
+                        "type": "span",
+                      },
+                      "type": "button",
+                    },
+                  ],
+                  "type": "li",
+                },
+              ],
+              "type": "ul",
+            },
+          ],
+          "type": "div",
+        },
+      ],
+      "type": "li",
+    },
+  ],
+  Symbol(enzyme.__options__): Object {
+    "adapter": ReactSixteenAdapter {
+      "options": Object {
+        "enableComponentDidUpdateOnSetState": true,
+        "legacyContextMode": "parent",
+        "lifecycles": Object {
+          "componentDidUpdate": Object {
+            "onSetState": true,
+          },
+          "getChildContext": Object {
+            "calledByRenderer": false,
+          },
+          "getDerivedStateFromProps": Object {
+            "hasShouldComponentUpdateBug": false,
+          },
+          "getSnapshotBeforeUpdate": true,
+          "setState": Object {
+            "skipsComponentDidUpdateOnNullish": true,
+          },
+        },
+      },
+    },
+  },
+  Symbol(enzyme.__childContext__): null,
+}
+`;

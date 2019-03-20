@@ -11,7 +11,7 @@ const pageTitle = Selector('h1')
 const signInButton = Selector('button.button.is-primary')
 const signUpButton = Selector('.is-secondary')
 
-fixture('SignInPage A | Je me connecte avec un compte validé')
+fixture('Signin A | Je me connecte avec un compte validé')
   .page(`${ROOT_PATH + 'connexion'}`)
   .beforeEach(async t => {
     t.ctx.sandbox = await fetchSandbox(
@@ -109,7 +109,7 @@ test("J'ai un mot de passe incorrect, je vois un messages d'erreur et je reste s
   await t.expect(location.pathname).eql('/connexion')
 })
 
-fixture('SignInPage B | Je me connecte avec un compte pas encore validé')
+fixture('Signin B | Je me connecte avec un compte pas encore validé')
   .page(`${ROOT_PATH + 'connexion'}`)
   .beforeEach(async t => {
     t.ctx.sandbox = await fetchSandbox(
@@ -137,7 +137,7 @@ test("Je vois un messages d'erreur et je reste sur la page /connection", async t
   await t.expect(location.pathname).eql('/connexion')
 })
 
-fixture("SignInPage C | J'accède à une page sans être connecté·e").page(
+fixture("Signin C | J'accède à une page sans être connecté·e").page(
   `${ROOT_PATH + 'offres'}`
 )
 

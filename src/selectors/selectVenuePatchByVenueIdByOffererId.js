@@ -1,14 +1,14 @@
 import get from 'lodash.get'
 import createCachedSelector from 're-reselect'
 
-import venueSelector from './venue'
+import selectVenueById from './selectVenueById'
 
 function mapArgsToKey(state, venueId, offererId, bookingEmail) {
   return `${venueId || ''}/${offererId || ''}/${bookingEmail || ''}`
 }
 
 export default createCachedSelector(
-  venueSelector,
+  selectVenueById,
   (state, venueId, offererId) => offererId,
   state => get(state, 'form.venue.sire'),
   state => get(state, 'form.venue.name'),

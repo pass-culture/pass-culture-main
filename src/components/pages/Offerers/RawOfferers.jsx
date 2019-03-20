@@ -16,7 +16,7 @@ import { TextField } from '../../layout/form'
 import { offererNormalizer } from '../../../utils/normalizers'
 import {
   mapApiToBrowser,
-  translateBrowserUrlToApiUrl,
+  translateQueryParamsToApiParams,
 } from '../../../utils/translate'
 
 class RawOfferers extends Component {
@@ -49,7 +49,7 @@ class RawOfferers extends Component {
     const { isAdmin } = currentUser || {}
 
     const queryParams = query.parse()
-    const apiParams = translateBrowserUrlToApiUrl(queryParams)
+    const apiParams = translateQueryParamsToApiParams(queryParams)
     const apiParamsString = stringify(apiParams)
     const apiPath = `/offerers?${apiParamsString}`
 

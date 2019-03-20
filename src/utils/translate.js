@@ -90,7 +90,6 @@ export function getObjectWithMappedKeys(obj, keysMap) {
 }
 
 export const mapBrowserToApi = {
-  date: 'eventOccurrenceIdOrNew',
   de: 'from',
   lieu: 'venueId',
   [`mots-cles`]: 'keywords',
@@ -100,6 +99,6 @@ export const mapBrowserToApi = {
 
 export const mapApiToBrowser = invert(mapBrowserToApi)
 
-export function translateBrowserUrlToApiUrl(query) {
-  return getObjectWithMappedKeys(query, mapBrowserToApi)
+export function translateQueryParamsToApiParams(queryParams) {
+  return getObjectWithMappedKeys(queryParams, mapBrowserToApi)
 }

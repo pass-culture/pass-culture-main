@@ -8,7 +8,7 @@ import {
 
 const subTitleHeader = Selector('h2')
 
-fixture(`OfferersPage A | Voir la liste de mes structures`)
+fixture(`Offerers A | Voir la liste de mes structures`)
 
 test("L'utilisateur a au moins une structure validé, on peut aller dessus", async t => {
   // given
@@ -137,7 +137,7 @@ test("L'utilisateur a au moins un rattachement à une structure en cours de vali
   await t.expect(Selector('.offerer-item').count).eql(offerersCount)
 })
 
-fixture('OfferersPage B | Recherche')
+fixture('Offerers B | Recherche')
 
 test('Je peux chercher une structure avec des mots-clés et naviguer sur sa page', async t => {
   // given

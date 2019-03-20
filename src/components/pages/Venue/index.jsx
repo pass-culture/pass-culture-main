@@ -3,12 +3,11 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 
-import { withRedirectToSigninWhenNotAuthenticated } from '../../hocs'
-import offererSelector from '../../../selectors/offerer'
-import selectUserOffererByOffererIdAndUserIdAndRightsType from '../../../selectors/selectUserOffererByOffererIdAndUserIdAndRightsType'
-import selectVenuePatchByVenueIdByOffererId from '../../../selectors/selectVenuePatchByVenueIdByOffererId'
-
 import RawVenue from './RawVenue'
+import { withRedirectToSigninWhenNotAuthenticated } from 'components/hocs'
+import selectOffererById from 'selectors/selectOffererById'
+import selectUserOffererByOffererIdAndUserIdAndRightsType from 'selectors/selectUserOffererByOffererIdAndUserIdAndRightsType'
+import selectVenuePatchByVenueIdByOffererId from 'selectors/selectVenuePatchByVenueIdByOffererId'
 
 function mapStateToProps(state, ownProps) {
   const { currentUser, match } = ownProps
@@ -31,7 +30,7 @@ function mapStateToProps(state, ownProps) {
     formSiret: get(state, 'form.venue.siret'),
     formComment: get(state, 'form.venue.comment'),
     name: get(state, `form.venue.name`),
-    offerer: offererSelector(state, offererId),
+    offerer: selectOffererById(state, offererId),
     venuePatch: selectVenuePatchByVenueIdByOffererId(state, venueId, offererId),
   }
 }
