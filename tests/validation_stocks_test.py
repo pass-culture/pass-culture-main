@@ -6,11 +6,11 @@ from models import ApiErrors, Venue
 from models.pc_object import serialize
 from tests.test_utils import create_thing_offer, create_event_offer
 from utils.human_ids import humanize
-from validation.stocks import check_new_stock_has_dates, check_existing_stock_has_dates
+from validation.stocks import check_dates_are_allowed_on_new_stock, check_dates_are_allowed_on_existing_stock
 
 
 @pytest.mark.standalone
-class CheckNewStockHasDatesTest:
+class CheckDatesAreAllowedOnNewStockTest:
     class OfferIsOnThingTest:
         def test_raises_error_with_beginning_and_end_datetimes(self):
             # Given
@@ -26,7 +26,7 @@ class CheckNewStockHasDatesTest:
 
             # When
             with pytest.raises(ApiErrors) as e:
-                check_new_stock_has_dates(data, offer)
+                check_dates_are_allowed_on_new_stock(data, offer)
 
             # Then
             assert e.value.errors['global'] == [
@@ -46,7 +46,7 @@ class CheckNewStockHasDatesTest:
 
             # When
             with pytest.raises(ApiErrors) as e:
-                check_new_stock_has_dates(data, offer)
+                check_dates_are_allowed_on_new_stock(data, offer)
 
             # Then
             assert e.value.errors['global'] == [
@@ -66,7 +66,7 @@ class CheckNewStockHasDatesTest:
 
             # When
             with pytest.raises(ApiErrors) as e:
-                check_new_stock_has_dates(data, offer)
+                check_dates_are_allowed_on_new_stock(data, offer)
 
             # Then
             assert e.value.errors['global'] == [
@@ -87,7 +87,7 @@ class CheckNewStockHasDatesTest:
 
             # When
             with pytest.raises(ApiErrors) as e:
-                check_new_stock_has_dates(data, offer)
+                check_dates_are_allowed_on_new_stock(data, offer)
 
             # Then
             assert e.value.errors['endDatetime'] == [
@@ -108,7 +108,7 @@ class CheckNewStockHasDatesTest:
 
             # When
             with pytest.raises(ApiErrors) as e:
-                check_new_stock_has_dates(data, offer)
+                check_dates_are_allowed_on_new_stock(data, offer)
 
             # Then
             assert e.value.errors['endDatetime'] == [
@@ -128,7 +128,7 @@ class CheckNewStockHasDatesTest:
 
             # When
             with pytest.raises(ApiErrors) as e:
-                check_new_stock_has_dates(data, offer)
+                check_dates_are_allowed_on_new_stock(data, offer)
 
             # Then
             assert e.value.errors['beginningDatetime'] == [
@@ -147,7 +147,7 @@ class CheckNewStockHasDatesTest:
 
             # When
             with pytest.raises(ApiErrors) as e:
-                check_new_stock_has_dates(data, offer)
+                check_dates_are_allowed_on_new_stock(data, offer)
 
             # Then
             assert e.value.errors['beginningDatetime'] == [
@@ -155,7 +155,7 @@ class CheckNewStockHasDatesTest:
             ]
 
 
-class CheckExistingStockHasDatesTest:
+class CheckDatesAreAllowedOnExistingStockTest:
     class OfferIsOnThingTest:
         def test_raises_error_with_beginning_datetime_only(self):
             # Given
@@ -164,7 +164,7 @@ class CheckExistingStockHasDatesTest:
 
             # When
             with pytest.raises(ApiErrors) as e:
-                check_existing_stock_has_dates(data, offer)
+                check_dates_are_allowed_on_existing_stock(data, offer)
 
             # Then
             assert e.value.errors['global'] == [
@@ -178,7 +178,7 @@ class CheckExistingStockHasDatesTest:
 
             # When
             with pytest.raises(ApiErrors) as e:
-                check_existing_stock_has_dates(data, offer)
+                check_dates_are_allowed_on_existing_stock(data, offer)
 
             # Then
             assert e.value.errors['global'] == [
@@ -193,7 +193,7 @@ class CheckExistingStockHasDatesTest:
 
             # When
             with pytest.raises(ApiErrors) as e:
-                check_existing_stock_has_dates(data, offer)
+                check_dates_are_allowed_on_existing_stock(data, offer)
 
             # Then
             assert e.value.errors['beginningDatetime'] == [
@@ -207,7 +207,7 @@ class CheckExistingStockHasDatesTest:
 
             # When
             with pytest.raises(ApiErrors) as e:
-                check_existing_stock_has_dates(data, offer)
+                check_dates_are_allowed_on_existing_stock(data, offer)
 
             # Then
             assert e.value.errors['endDatetime'] == [

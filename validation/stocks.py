@@ -20,7 +20,7 @@ def check_request_has_offer_id(request_data: dict):
         raise ApiErrors({'offerId': ['Ce paramètre est obligatoire']})
 
 
-def check_new_stock_has_dates(request_data: dict, offer: Offer):
+def check_dates_are_allowed_on_new_stock(request_data: dict, offer: Offer):
     if offer.thing:
         _forbid_dates_on_stock_for_thing_offer(request_data)
     else:
@@ -31,7 +31,7 @@ def check_new_stock_has_dates(request_data: dict, offer: Offer):
             raise ApiErrors({'beginningDatetime': ['Ce paramètre est obligatoire']})
 
 
-def check_existing_stock_has_dates(request_data: dict, offer: Offer):
+def check_dates_are_allowed_on_existing_stock(request_data: dict, offer: Offer):
     if offer.thing:
         _forbid_dates_on_stock_for_thing_offer(request_data)
     else:
