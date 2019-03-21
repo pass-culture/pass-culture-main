@@ -74,17 +74,6 @@ OFFER_INCLUDES = [
             '-type'
         ]
     },
-    {
-        "key": "eventOccurrences",
-        "sub_joins": [
-            {
-                "key": "stock",
-                "sub_joins": [
-                'bookings'
-                ]
-            }
-        ]
-    },
     "mediations",
     {
     "key": "stocks",
@@ -129,10 +118,7 @@ RECOMMENDATION_INCLUDES = [
             "dateRange",
             "eventOrThing",
             "mediation",
-            {
-                "key": "stocks",
-                "sub_joins": ["eventOccurrence"]
-            },
+            "stocks",
             {
                 "key": "venue",
                 "sub_joins": ["managingOfferer"]
@@ -152,8 +138,7 @@ BOOKING_INCLUDES = [
                 {
                     "key": "resolvedOffer",
                     "sub_joins": ["eventOrThing", "venue"]
-                },
-                "eventOccurrence"
+                }
             ]
     },
     "recommendation"
@@ -176,8 +161,7 @@ PRO_BOOKING_INCLUDES = [
                             "sub_joins": ["offerType"]
                         }
                     ]
-                },
-                "eventOccurrence"
+                }
             ]
     },
     {
@@ -204,10 +188,6 @@ VENUE_INCLUDES = [
     'bic',
     'iban',
     "-validationToken",
-    {
-        "key": "eventOccurrences",
-        "sub_joins": ["event"]
-    },
     {
         "key": "managingOfferer"
     },
