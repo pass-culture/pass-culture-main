@@ -25,7 +25,7 @@ export const config = [
     key: ['firstName', 'lastName'],
     // Utilise pour afficher au dessus d'un field dans la vue main
     label: 'Nom et prénom',
-    // ce champs est utile lorqu'on veut mettre un mainPlaceholder
+    // ce champ est utile lorqu'on veut mettre un mainPlaceholder
     // dans la partie mes identifiants et qu'il n'y a pas de valeur par défaut
     mainPlaceholder: 'Renseigner mon nom et prénom',
     resolver: (user, [firstnameKey, lastnameKey]) =>

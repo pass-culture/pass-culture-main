@@ -8,7 +8,7 @@ import FormError from '../FormError'
 import InputLabel from '../InputLabel'
 import { isEmpty } from '../../../utils/strings'
 
-const DEFAULT_REQUIRED_ERROR = 'Ce champs est requis'
+const DEFAULT_REQUIRED_ERROR = 'Ce champ est requis'
 
 const validateRequiredField = value => {
   if (value && !isEmpty(value)) return undefined

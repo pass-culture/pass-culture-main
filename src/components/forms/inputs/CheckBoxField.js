@@ -7,7 +7,7 @@ import { Field } from 'react-final-form'
 import FormError from '../FormError'
 import { isEmpty } from '../../../utils/strings'
 
-const DEFAULT_REQUIRED_ERROR = 'Ce champs est requis'
+const DEFAULT_REQUIRED_ERROR = 'Ce champ est requis'
 const validateRequiredField = value => {
   if (value && !isEmpty(value)) return undefined
   return DEFAULT_REQUIRED_ERROR

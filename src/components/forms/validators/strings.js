@@ -1,5 +1,5 @@
 export const strings = {
-  DEFAULT_REQUIRED_ERROR: 'Ce champs est requis.',
+  DEFAULT_REQUIRED_ERROR: 'Ce champ est requis.',
   IS_NOT_MATCHING_CONFIRM: 'Les valeurs ne sont pas identiques.',
   PASSORD_ERROR_IS_EQUAL_ORIGINAL:
     'Votre nouveau mot de passe doit être différent de votre ancien mot de passe.',
