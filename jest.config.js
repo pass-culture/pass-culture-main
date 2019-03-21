@@ -11,7 +11,7 @@ module.exports = {
     '^react-native$': 'react-native-web',
   },
   setupFiles: ['<rootDir>/jest-polyfill.js', '<rootDir>/jest.setup.js'],
-  testEnvironment: 'node',
+  testEnvironment: 'jest-environment-jsdom-global',
   testMatch: [
     '<rootDir>/src/**/__tests__/**/*.{js,jsx}',
     '<rootDir>/src/**/?(*.)(spec|test).{js,jsx}',
