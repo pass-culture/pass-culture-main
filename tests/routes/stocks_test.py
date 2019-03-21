@@ -52,12 +52,12 @@ class Post:
             PcObject.check_and_save(user)
 
             # When
-            r_create = TestClient().with_auth('test@email.fr')\
+            response = TestClient().with_auth('test@email.fr')\
                 .post(API_URL + '/stocks/', json=stock_data)
 
             # Then
-            assert r_create.status_code == 201
-            id = r_create.json()['id']
+            assert response.status_code == 201
+            id = response.json()['id']
 
             stock = Stock.query.filter_by(id=dehumanize(id)).first()
             assert stock.price == 1222
@@ -195,11 +195,11 @@ class Delete:
             PcObject.check_and_save(user, stock)
 
             # When
-            r_delete = TestClient().with_auth('email@test.fr').delete(API_URL + '/stocks/' + humanize(stock.id))
+            response = TestClient().with_auth('email@test.fr').delete(API_URL + '/stocks/' + humanize(stock.id))
 
             # Then
-            assert r_delete.status_code == 200
-            assert r_delete.json()['isSoftDeleted'] is True
+            assert response.status_code == 200
+            assert response.json()['isSoftDeleted'] is True
 
             db.session.refresh(stock)
             assert stock

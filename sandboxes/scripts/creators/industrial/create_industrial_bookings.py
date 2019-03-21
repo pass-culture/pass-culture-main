@@ -58,9 +58,7 @@ def create_industrial_bookings(
         if user_has_only_activation_booked and not is_activation_offer:
             continue
 
-        recommendation_stocks = [stock for stock in stocks if stock.offer == offer]
-
-        for (index, stock) in enumerate(recommendation_stocks):
+        for (index, stock) in enumerate(offer.stocks):
 
             # every STOCK_MODULO RECO will have several stocks
             if index > 0 and recommendation_index%(RECOMMENDATIONS_WITH_SEVERAL_STOCKS_REMOVE_MODULO + index):

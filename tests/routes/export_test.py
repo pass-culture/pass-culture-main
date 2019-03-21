@@ -367,7 +367,7 @@ def test_get_venues_return_200_and_filtered_venues(app):
         create_stock_from_event_occurrence(create_event_occurrence(offer9))
     ]
     PcObject.check_and_save(
-        user,venue_with_not_validated_offerer_in_date_range,
+        user, venue_with_not_validated_offerer_in_date_range,
         venue67_without_offer_in_date_range, *stocks
     )
 

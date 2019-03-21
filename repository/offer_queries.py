@@ -236,8 +236,9 @@ def find_searchable_offer(offer_id):
         .first()
 
 def _filter_recommendable_offers_for_search(offer_query):
-    stock_can_still_be_booked = (Stock.bookingLimitDatetime > datetime.utcnow()) | (Stock.bookingLimitDatetime == None)
-    event_has_not_began_yet = (Stock.beginningDatetime != None) & (Stock.beginningDatetime > datetime.utcnow())
+    now = datetime.utcnow()
+    stock_can_still_be_booked = (Stock.bookingLimitDatetime > now) | (Stock.bookingLimitDatetime == None)
+    event_has_not_began_yet = (Stock.beginningDatetime != None) & (Stock.beginningDatetime > now)
     offer_is_on_a_thing = Offer.eventId == None
 
     offer_query = offer_query.reset_joinpoint() \
