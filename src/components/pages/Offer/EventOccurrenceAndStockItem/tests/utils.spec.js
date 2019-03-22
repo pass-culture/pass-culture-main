@@ -133,17 +133,6 @@ describe('src | components | pages | Offer | EventOccurrenceAndStockItem | utils
       expect(result).toEqual(54)
     })
   })
-  describe('When there is no more available stock', () => {
-    it('should compute remaining stock', () => {
-      // given
-      const availableStock = 0
-      // when
-      const result = getRemainingStock(availableStock, bookings)
-
-      // then
-      expect(result).toEqual(-2)
-    })
-  })
   describe('When stock is illimited', () => {
     it('should compute remaining illimited stock', () => {
       // given

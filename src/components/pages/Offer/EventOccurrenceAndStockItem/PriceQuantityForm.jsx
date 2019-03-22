@@ -94,8 +94,6 @@ class PriceQuantityForm extends Component {
     const offerBookings = get(stockPatch, 'bookings', [])
     const remainingStock = getRemainingStock(availableStock, offerBookings)
 
-    console.log('getRemainingStock', getRemainingStock)
-
     const name = `stock${stockFormKey}`
     let action = ''
     let stockId
