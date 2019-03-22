@@ -1,4 +1,4 @@
-import { getRemaingStock } from '../utils'
+import { getRemainingStock } from '../utils'
 
 describe('src | components | pages | Offer | EventOccurrenceAndStockItem | utils', () => {
   const bookings = [
@@ -127,10 +127,10 @@ describe('src | components | pages | Offer | EventOccurrenceAndStockItem | utils
       const availableStock = 56
 
       // when
-      const result = getRemaingStock(availableStock, bookings)
+      const result = getRemainingStock(availableStock, bookings)
 
       // then
-      expect(result).toEqual(49)
+      expect(result).toEqual(54)
     })
   })
   describe('When there is no more available stock', () => {
@@ -138,10 +138,10 @@ describe('src | components | pages | Offer | EventOccurrenceAndStockItem | utils
       // given
       const availableStock = 0
       // when
-      const result = getRemaingStock(availableStock, bookings)
+      const result = getRemainingStock(availableStock, bookings)
 
       // then
-      expect(result).toEqual(-7)
+      expect(result).toEqual(-2)
     })
   })
   describe('When stock is illimited', () => {
@@ -151,7 +151,7 @@ describe('src | components | pages | Offer | EventOccurrenceAndStockItem | utils
       const bookings = 12
 
       // when
-      const result = getRemaingStock(availableStock, bookings)
+      const result = getRemainingStock(availableStock, bookings)
 
       // then
       expect(result).toEqual('Illimité')

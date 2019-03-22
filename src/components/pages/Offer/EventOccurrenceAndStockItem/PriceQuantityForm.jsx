@@ -12,7 +12,7 @@ import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
 import get from 'lodash.get'
 import ReactTooltip from 'react-tooltip'
-import { FLOATSEP, getDisplayedPrice, getRemaingStock } from './utils'
+import { FLOATSEP, getDisplayedPrice, getRemainingStock } from './utils'
 
 class PriceQuantityForm extends Component {
   constructor() {
@@ -92,7 +92,9 @@ class PriceQuantityForm extends Component {
 
     const availableStock = get(stockPatch, 'available')
     const offerBookings = get(stockPatch, 'bookings', [])
-    const remainingStock = getRemaingStock(availableStock, offerBookings)
+    const remainingStock = getRemainingStock(availableStock, offerBookings)
+
+    console.log('getRemainingStock', getRemainingStock)
 
     const name = `stock${stockFormKey}`
     let action = ''

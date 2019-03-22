@@ -1,9 +1,11 @@
-export const getRemaingStock = (availableStock, bookings) => {
+export const getRemainingStock = (availableStock, bookings) => {
   if (!availableStock && availableStock !== 0) {
     return 'Illimité'
   }
 
-  const validBookings = bookings.filter(booking => booking.isCancelled === true)
+  const validBookings = bookings.filter(
+    booking => booking.isCancelled === false
+  )
 
   return availableStock - validBookings.length
 }
