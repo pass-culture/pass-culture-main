@@ -12,7 +12,7 @@ from sandboxes.scripts.utils.helpers import get_offer_helper, \
     get_venue_helper
 
 
-def get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_user_offerer_with_event_offer_no_occurrence():
+def get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_user_offerer_with_event_offer_no_stock():
     query = User.query.filter(User.validationToken == None)
     query = filter_users_with_at_least_one_validated_offerer_validated_user_offerer(query)
     query = query.join(BankInformation)
@@ -38,7 +38,7 @@ def get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_u
                         }
 
 
-def get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_user_offerer_with_event_offer_with_occurrence():
+def get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_user_offerer_with_event_offer_with_stock():
     query = User.query.filter(User.validationToken == None)
     query = filter_users_with_at_least_one_validated_offerer_validated_user_offerer(query)
     query = query.join(BankInformation)
