@@ -6,7 +6,7 @@ from models.email import Email, EmailStatus
 from models.pc_object import serialize
 
 
-def save(content: dict, status: str):
+def save(content: dict, status: EmailStatus):
     email = Email()
     email.content = content
     email.status = status
