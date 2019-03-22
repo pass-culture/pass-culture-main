@@ -22,21 +22,11 @@ def upgrade():
     op.add_column('offer', sa.Column('conditions', sa.String(120), nullable=True))
     op.add_column('offer', sa.Column('ageMin', sa.Integer, nullable=True))
     op.add_column('offer', sa.Column('ageMax', sa.Integer, nullable=True))
-    op.add_column('offer', sa.Column('accessibility', sa.Binary, nullable=True))
     op.add_column('offer', sa.Column('url', sa.String(255), nullable=True))
     op.add_column('offer', sa.Column('mediaUrls', sa.ARRAY(sa.String(120)), nullable=True))
     op.add_column('offer', sa.Column('durationMinutes', sa.Integer, nullable=True))
     op.add_column('offer', sa.Column('isNational', sa.Boolean, nullable=True))
     op.add_column('offer', sa.Column('extraData', sa.JSON, nullable=True))
-    op.execute('''
-    UPDATE offer 
-    SET accessibility = ''\x00'' 
-    WHERE offer."eventId" IS NOT NULL''')
-    op.create_check_constraint(
-        constraint_name='check_accessibility_not_null_for_event',
-        table_name='offer',
-        condition="""("eventId" IS  NULL) OR (accessibility IS NOT NULL)"""
-    )
 
     op.create_check_constraint(
         constraint_name='check_duration_minutes_not_null_for_event',
@@ -64,7 +54,6 @@ def upgrade():
      conditions = event.conditions,
      "ageMin" = event."ageMin",
      "ageMax" = event."ageMax",
-     accessibility = event.accessibility,
      "mediaUrls" = event."mediaUrls",
      "durationMinutes" = event."durationMinutes",
      "isNational" = event."isNational"
@@ -85,7 +74,6 @@ def downgrade():
     op.drop_column('offer', 'conditions')
     op.drop_column('offer', 'ageMin')
     op.drop_column('offer', 'ageMax')
-    op.drop_column('offer', 'accessibility')
     op.drop_column('offer', 'url')
     op.drop_column('offer', 'mediaUrls')
     op.drop_column('offer', 'durationMinutes')

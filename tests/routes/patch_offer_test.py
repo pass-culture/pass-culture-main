@@ -97,7 +97,7 @@ class Patch:
             assert thing.name == 'New Name'
 
         @clean_database
-        def when_user_updating_thing_offer_is_not_linked_to_owningOfferers_offerers(self, app):
+        def when_user_updating_thing_offer_is_not_linked_to_owning_offerer(self, app):
             # Given
             user = create_user(email='editor@email.com')
             owning_offerer = create_offerer(siren='123456789')
@@ -161,7 +161,7 @@ class Patch:
 
     class Returns400:
         @clean_database
-        def when_trying_to_patch_forbidden_keys(self, app):
+        def when_trying_to_patch_forbidden_attributes(self, app):
             # Given
             user = create_user()
             offerer = create_offerer()

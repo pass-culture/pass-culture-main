@@ -67,79 +67,74 @@ def test_date_range_is_empty_if_event_has_no_stocks():
     assert offer.dateRange == DateTimes()
 
 
-@clean_database
 @pytest.mark.standalone
-def test_create_digital_offer_success_when_digital_thing_and_virtual_venue(app):
-    # Given
-    url = 'http://mygame.fr/offre'
-    digital_thing = create_thing(thing_type=ThingType.JEUX_VIDEO, url=url, is_national=True)
-    offerer = create_offerer()
-    virtual_venue = create_venue(offerer, is_virtual=True, siret=None)
-    PcObject.check_and_save(virtual_venue)
+class CreateOfferTest:
+    @clean_database
+    def test_success_when_is_digital_and_virtual_venue(self, app):
+        # Given
+        url = 'http://mygame.fr/offre'
+        digital_thing = create_thing(thing_type=ThingType.JEUX_VIDEO, url=url, is_national=True)
+        offerer = create_offerer()
+        virtual_venue = create_venue(offerer, is_virtual=True, siret=None)
+        PcObject.check_and_save(virtual_venue)
 
-    offer = create_thing_offer(virtual_venue, digital_thing)
+        offer = create_thing_offer(virtual_venue, digital_thing)
 
-    # When
-    PcObject.check_and_save(digital_thing, offer)
+        # When
+        PcObject.check_and_save(digital_thing, offer)
 
-    # Then
-    assert offer.url == url
+        # Then
+        assert offer.url == url
 
+    @clean_database
+    def test_success_when_is_physical_and_physical_venue(self, app):
+        # Given
+        physical_thing = create_thing(thing_type=ThingType.LIVRE_EDITION, url=None)
+        offerer = create_offerer()
+        physical_venue = create_venue(offerer, is_virtual=False, siret=offerer.siren + '12345')
+        PcObject.check_and_save(physical_venue)
 
-@clean_database
-@pytest.mark.standalone
-def test_create_physical_offer_success_when_physical_thing_and_physical_venue(app):
-    # Given
-    physical_thing = create_thing(thing_type=ThingType.LIVRE_EDITION, url=None)
-    offerer = create_offerer()
-    physical_venue = create_venue(offerer, is_virtual=False, siret=offerer.siren + '12345')
-    PcObject.check_and_save(physical_venue)
+        offer = create_thing_offer(physical_venue, physical_thing)
 
-    offer = create_thing_offer(physical_venue, physical_thing)
+        # When
+        PcObject.check_and_save(physical_thing, offer)
 
-    # When
-    PcObject.check_and_save(physical_thing, offer)
+        # Then
+        assert offer.url is None
 
-    # Then
-    assert offer.url is None
+    @clean_database
+    def test_fails_when_is_digital_but_physical_venue(self, app):
+        # Given
+        digital_thing = create_thing(thing_type=ThingType.JEUX_VIDEO, url='http://mygame.fr/offre')
+        offerer = create_offerer()
+        physical_venue = create_venue(offerer)
+        PcObject.check_and_save(physical_venue)
+        offer = create_thing_offer(physical_venue, digital_thing)
 
+        # When
+        with pytest.raises(ApiErrors) as errors:
+            PcObject.check_and_save(offer)
 
-@clean_database
-@pytest.mark.standalone
-def test_offer_error_when_thing_is_digital_but_venue_not_virtual(app):
-    # Given
-    digital_thing = create_thing(thing_type=ThingType.JEUX_VIDEO, url='http://mygame.fr/offre')
-    offerer = create_offerer()
-    physical_venue = create_venue(offerer)
-    PcObject.check_and_save(physical_venue)
-    offer = create_thing_offer(physical_venue, digital_thing)
+        # Then
+        assert errors.value.errors['venue'] == [
+            'Une offre numérique doit obligatoirement être associée au lieu "Offre en ligne"']
 
-    # When
-    with pytest.raises(ApiErrors) as errors:
-        PcObject.check_and_save(offer)
+    @clean_database
+    def test_fails_when_is_physical_but_venue_is_virtual(self, app):
+        # Given
+        physical_thing = create_thing(thing_type=ThingType.JEUX_VIDEO, url=None)
+        offerer = create_offerer()
+        digital_venue = create_venue(offerer, is_virtual=True, siret=None)
+        PcObject.check_and_save(digital_venue)
+        offer = create_thing_offer(digital_venue, physical_thing)
 
-    # Then
-    assert errors.value.errors['venue'] == [
-        'Une offre numérique doit obligatoirement être associée au lieu "Offre en ligne"']
+        # When
+        with pytest.raises(ApiErrors) as errors:
+            PcObject.check_and_save(offer)
 
-
-@clean_database
-@pytest.mark.standalone
-def test_offer_error_when_thing_is_physical_but_venue_is_virtual(app):
-    # Given
-    physical_thing = create_thing(thing_type=ThingType.JEUX_VIDEO, url=None)
-    offerer = create_offerer()
-    digital_venue = create_venue(offerer, is_virtual=True, siret=None)
-    PcObject.check_and_save(digital_venue)
-    offer = create_thing_offer(digital_venue, physical_thing)
-
-    # When
-    with pytest.raises(ApiErrors) as errors:
-        PcObject.check_and_save(offer)
-
-    # Then
-    assert errors.value.errors['venue'] == [
-        'Une offre physique ne peut être associée au lieu "Offre en ligne"']
+        # Then
+        assert errors.value.errors['venue'] == [
+            'Une offre physique ne peut être associée au lieu "Offre en ligne"']
 
 
 @pytest.mark.standalone
@@ -164,11 +159,8 @@ def test_offer_is_digital_if_it_has_an_url():
     offer = Offer()
     offer.url = 'http://url.com'
 
-    # when
-    is_digital = offer.isDigital
-
-    # then
-    assert is_digital
+    # when / then
+    assert offer.isDigital
 
 
 def test_thing_offer_offerType_returns_dict_matching_ThingType_enum():

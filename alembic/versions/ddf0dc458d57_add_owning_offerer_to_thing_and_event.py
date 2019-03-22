@@ -1,4 +1,4 @@
-"""add authorId to event and thing
+"""add owning_offerer_id to event and thing
 
 Revision ID: ddf0dc458d57
 Revises: 5eeaa2f48327

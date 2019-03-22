@@ -13,6 +13,11 @@ def check_user_has_rights_for_query(offerer_id, venue, venue_id):
         ensure_current_user_has_rights(RightsType.editor,
                                        offerer_id)
 
+def check_has_venue_id(venue_id):
+    if venue_id is None:
+        api_errors = ApiErrors()
+        api_errors.addError('venueId', 'Vous devez préciser un identifiant de lieu')
+        raise api_errors
 
 def check_venue_exists_when_requested(venue, venue_id):
     if venue_id and venue is None:
@@ -24,10 +29,10 @@ def check_venue_exists_when_requested(venue, venue_id):
         raise errors
 
 
-def check_valid_edition(response: Request, thing_or_event_dict: dict):
+def check_valid_edition(request: Request, thing_or_event_dict: dict):
     forbidden_keys = {'idAtProviders', 'dateModifiedAtLastProvider', 'thumbCount', 'firstThumbDominantColor',
                       'owningOffererId', 'id', 'lastProviderId', 'isNational', 'dateCreated'}
-    all_keys = response.keys()
+    all_keys = request.keys()
     if thing_or_event_dict:
         all_keys = set(all_keys).union(set(thing_or_event_dict.keys()))
     keys_in_error = forbidden_keys.intersection(all_keys)

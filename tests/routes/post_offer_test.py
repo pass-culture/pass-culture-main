@@ -11,7 +11,7 @@ from utils.human_ids import humanize, dehumanize
 class Post:
     class Returns400:
         @clean_database
-        def when_no_venue_id(self, app):
+        def when_venue_id_is_not_received(self, app):
             # Given
             user = create_user(email='test@email.com')
             json = {
@@ -36,7 +36,7 @@ class Post:
             assert request.json()['venueId'] == ['Vous devez préciser un identifiant de lieu']
 
         @clean_database
-        def when_no_venue_with_that_id(self, app):
+        def when_venue_is_not_found(self, app):
             # Given
             user = create_user(email='test@email.com')
             json = {
@@ -60,7 +60,7 @@ class Post:
                 'Aucun objet ne correspond à cet identifiant dans notre base de données']
 
         @clean_database
-        def when_offer_with_urls_and_type_offline_only(self, app):
+        def when_new_offer_has_errors(self, app):
             # Given
             user = create_user(email='test@email.com')
             offerer = create_offerer()
@@ -87,81 +87,6 @@ class Post:
             assert response.status_code == 400
             assert response.json()['url'] == ['Une offre de type Jeux (Abonnements) ne peut pas être numérique']
 
-        @clean_database
-        def when_offer_thing_with_invalid_url(self, app):
-            # Given
-            user = create_user(email='test@email.com')
-            offerer = create_offerer()
-            user_offerer = create_user_offerer(user, offerer)
-            venue = create_venue(offerer, is_virtual=True, siret=None)
-            PcObject.check_and_save(user, venue, user_offerer)
-            json = {
-                'thing': {
-                    'type': 'ThingType.JEUX_VIDEO',
-                    'name': 'Les Lapins Crétins',
-                    'mediaUrls': ['http://media.url'],
-                    'url': 'ftp://invalid.url'
-                },
-                'venueId': humanize(venue.id)}
-
-            # When
-            response = TestClient().with_auth(user.email).post(
-                f'{API_URL}/offers/',
-                json=json)
-
-            # Then
-            assert response.status_code == 400
-            assert response.json()['url'] == ["L'URL doit commencer par \"http://\" ou \"https://\""]
-
-        @clean_database
-        def when_thing_offer_with_url_and_physical_venue(self, app):
-            # Given
-            user = create_user(email='test@email.com')
-            offerer = create_offerer()
-            user_offerer = create_user_offerer(user, offerer)
-            venue = create_venue(offerer, is_virtual=False)
-            PcObject.check_and_save(user, venue, user_offerer)
-            json = {
-                'thing': {
-                    'type': 'ThingType.JEUX_VIDEO',
-                    'name': 'Les Lapins Crétins',
-                    'mediaUrls': ['http://media.url'],
-                    'url': 'http://lapins-cretins.fr'
-                },
-                'venueId': humanize(venue.id)}
-
-            # When
-            response = TestClient().with_auth(user.email).post(
-                f'{API_URL}/offers/',
-                json=json)
-
-            # Then
-            assert response.status_code == 400
-            assert response.json()['venue'] == [
-                'Une offre numérique doit obligatoirement être associée au lieu "Offre en ligne"']
-
-        @clean_database
-        def when_existing_thing_is_physical_and_venue_is_virtual(self, app):
-            # given
-            user = create_user(email='user@test.com')
-            offerer = create_offerer()
-            user_offerer = create_user_offerer(user, offerer)
-            venue = create_venue(offerer, is_virtual=True, siret=None)
-            thing = create_thing(url=None)
-            PcObject.check_and_save(user_offerer, venue, thing)
-
-            data = {
-                'venueId': humanize(venue.id),
-                'thingId': humanize(thing.id)
-            }
-            auth_request = TestClient().with_auth(email='user@test.com')
-
-            # when
-            response = auth_request.post(API_URL + '/offers', json=data)
-
-            # then
-            assert response.status_code == 400
-            assert response.json()['venue'] == ['Une offre physique ne peut être associée au lieu "Offre en ligne"']
 
     class Returns201:
         @clean_database
