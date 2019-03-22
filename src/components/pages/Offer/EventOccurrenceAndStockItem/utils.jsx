@@ -2,8 +2,10 @@ export const getRemaingStock = (availableStock, bookings) => {
   if (!availableStock && availableStock !== 0) {
     return 'Illimité'
   }
-  const numbersbookings = bookings.length
-  return availableStock - numbersbookings
+
+  const validBookings = bookings.filter(booking => booking.isCancelled === true)
+
+  return availableStock - validBookings.length
 }
 
 export const FLOATSEP = ','
