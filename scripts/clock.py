@@ -94,6 +94,6 @@ if __name__ == '__main__':
         scheduler.add_job(pc_retrieve_offerers_bank_information, 'cron', id='retrieve_offerers_bank_information',
                           day='*')
     if feature_cron_send_remedial_emails():
-        scheduler.add_job(pc_send_remedial_emails, 'cron', id='send_remedial_emails', minute=15)
+        scheduler.add_job(pc_send_remedial_emails, 'cron', id='send_remedial_emails', minute='*/15')
 
     scheduler.start()
