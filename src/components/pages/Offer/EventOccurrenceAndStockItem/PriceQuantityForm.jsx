@@ -162,11 +162,10 @@ class PriceQuantityForm extends Component {
                   )
                 }
               }}
-              title="Stock[ou] Places affecté[es]"
+              title="Stock ou places affect·é·es"
               type={isStockReadOnly ? 'text' : 'number'}
             />
           </td>
-
           <td className="is-small remaining-stock" id="remaining-stock">
             {remainingStock}
           </td>
