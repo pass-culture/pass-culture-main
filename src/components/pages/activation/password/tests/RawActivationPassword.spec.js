@@ -1,8 +1,8 @@
 import React from 'react'
-import { mount, shallow } from 'enzyme'
+import { shallow } from 'enzyme'
 import { Form } from 'react-final-form'
+import { Redirect } from 'react-router'
 import { FormFooter } from '../../../../forms/FormFooter'
-import FormInputs from '../inputs'
 
 import RawActivationPassword from '../RawActivationPassword'
 
@@ -17,6 +17,7 @@ describe('src | components | pages | activation | password | RawActivationPasswo
         replace: jest.fn(),
       },
       initialValues: {},
+      isValidUrl: true,
       loginUserAfterPasswordSaveSuccess: jest.fn(),
       sendActivationPasswordForm: jest.fn(),
     }
@@ -37,6 +38,20 @@ describe('src | components | pages | activation | password | RawActivationPasswo
     // then
     expect(wrapper).toBeDefined()
     expect(wrapper).toMatchSnapshot()
+  })
+
+  describe('when the isValidUrl is false', () => {
+    it('should redirect to activation error page', () => {
+      // when
+      const wrapper = shallow(
+        <RawActivationPassword {...props} isValidUrl={false} />
+      )
+
+      // then
+      const redirectComponent = wrapper.find(Redirect)
+      expect(redirectComponent).toHaveLength(1)
+      expect(redirectComponent.prop('to')).toBe('/activation/error')
+    })
   })
 
   it('should mount component with isLoading as false', () => {
@@ -65,35 +80,6 @@ describe('src | components | pages | activation | password | RawActivationPasswo
       expect(formFooter.find('button[type="submit"]').prop('disabled')).toBe(
         true
       )
-    })
-
-    it.skip('should authorize submit when information are valid', () => {
-      // given
-      const wrapper = mount(<RawActivationPassword {...props} />)
-      const form = wrapper.find(Form)
-      const formInputs = form.find(FormInputs)
-
-      // when
-      const passwordFields = formInputs.find('PasswordField')
-      passwordFields
-        .at(0)
-        .find('input[name="newPassword"]')
-        .simulate('change', { target: { value: 'Azerty123456789#' } })
-      passwordFields
-        .at(1)
-        .find('input[name="newPasswordConfirm"]')
-        .simulate('change', { target: { value: 'Azerty123456789#' } })
-      const checkboxField = formInputs.find('CheckBoxField')
-      checkboxField
-        .find('input[type="checkbox"]')
-        .simulate('change', { target: { value: true } })
-
-      const formFooter = wrapper.find(Form).find(FormFooter)
-      const submitButton = formFooter.find('button[type="submit"]')
-      submitButton.html().click()
-
-      // then
-      expect(props.sendActivationPasswordForm).toHaveBeenCalled()
     })
 
     it('should send password details to api', () => {

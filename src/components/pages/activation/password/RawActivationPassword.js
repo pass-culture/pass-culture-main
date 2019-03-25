@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { Redirect } from 'react-router'
 import { Form } from 'react-final-form'
 import canSubmitForm from './canSubmitForm'
-import FormInputs from './inputs'
+import FormInputs from './FormInputs'
 import { FormFooter } from '../../../forms'
 
 class RawActivationPassword extends React.PureComponent {
@@ -56,10 +56,9 @@ class RawActivationPassword extends React.PureComponent {
 
   render() {
     const { isLoading } = this.state
-    const { initialValues } = this.props
-    const isValidURL =
-      initialValues && initialValues.email && initialValues.token
-    if (!isValidURL) {
+    const { initialValues, isValidUrl } = this.props
+
+    if (!isValidUrl) {
       return <Redirect to="/activation/error" />
     }
     return (
@@ -108,6 +107,7 @@ class RawActivationPassword extends React.PureComponent {
 RawActivationPassword.propTypes = {
   history: PropTypes.object.isRequired,
   initialValues: PropTypes.object.isRequired,
+  isValidUrl: PropTypes.bool.isRequired,
   loginUserAfterPasswordSaveSuccess: PropTypes.func.isRequired,
   sendActivationPasswordForm: PropTypes.func.isRequired,
 }

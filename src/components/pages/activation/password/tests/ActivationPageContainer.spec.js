@@ -1,11 +1,11 @@
 import { requestData } from 'redux-saga-data'
-import { mapDispatchToProps } from '../ActivationPageContainer'
+import { mapDispatchToProps, mapStateToProps } from '../ActivationPageContainer'
 
 jest.mock('redux-saga-data', () => ({
   requestData: jest.fn(),
 }))
 describe('src | components | pages | activation | password | ActivationPageContainer', () => {
-  describe('mapStateToProps', () => {
+  describe('mapDispatchToProps', () => {
     let dispatch
 
     beforeEach(() => {
@@ -96,6 +96,111 @@ describe('src | components | pages | activation | password | ActivationPageConta
         // then
         expect(requestData).toHaveBeenCalledWith(config)
         expect(dispatch).toHaveBeenCalledWith(expectedAction)
+      })
+    })
+  })
+
+  describe('mapStateToProps', () => {
+    describe('isValidUrl', () => {
+      it('should return false when no email is given', () => {
+        // given
+        const location = {}
+        const match = {
+          params: {
+            token: 'fake token',
+          },
+        }
+        const params = {
+          location,
+          match,
+        }
+
+        // when
+        const result = mapStateToProps({}, params)
+
+        // then
+        expect(result).toHaveProperty('isValidUrl', false)
+      })
+
+      it('should return false when no token is given', () => {
+        // given
+        const location = {
+          search: '?email=fake@example.net',
+        }
+        const match = {}
+        const params = {
+          location,
+          match,
+        }
+
+        // when
+        const result = mapStateToProps({}, params)
+
+        // then
+        expect(result).toHaveProperty('isValidUrl', false)
+      })
+
+      it('should return false when neither token nor email are given', () => {
+        // given
+        const location = {}
+        const match = {}
+        const params = {
+          location,
+          match,
+        }
+
+        // when
+        const result = mapStateToProps({}, params)
+
+        // then
+        expect(result).toHaveProperty('isValidUrl', false)
+      })
+
+      it('should return true when token and email are given', () => {
+        // given
+        const location = {
+          search: '?email=fake@example.net',
+        }
+        const match = {
+          params: {
+            token: 'fake token',
+          },
+        }
+        const params = {
+          location,
+          match,
+        }
+
+        // when
+        const result = mapStateToProps({}, params)
+
+        // then
+        expect(result).toHaveProperty('isValidUrl', true)
+      })
+    })
+
+    describe('initialValues', () => {
+      it('should map email from query params', () => {
+        // given
+        const location = { search: '?email=prenom@example.net' }
+
+        // when
+        const { initialValues } = mapStateToProps({}, { location, match: {} })
+
+        // then
+        expect(initialValues).toHaveProperty('email', 'prenom@example.net')
+      })
+
+      it('should map token from router params', () => {
+        // given
+        const location = { search: '?email=prenom@example.net' }
+        const match = { params: { token: 'my-precious-token' } }
+
+        // when
+        const { initialValues } = mapStateToProps({}, { location, match })
+
+        // then
+        expect(initialValues).toHaveProperty('token', 'my-precious-token')
       })
     })
   })
