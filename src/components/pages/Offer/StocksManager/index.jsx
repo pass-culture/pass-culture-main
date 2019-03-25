@@ -3,12 +3,12 @@ import { compose } from 'redux'
 import withQueryRouter from 'with-query-router'
 
 import RawStocksManager from './RawStocksManager'
+import selectStockErrorsByStockId from './selectStockErrorsByStockId'
 import selectEventById from 'selectors/selectEventById'
 import selectOfferById from 'selectors/selectOfferById'
 import selectProviderById from 'selectors/selectProviderById'
 import selectThingById from 'selectors/selectThingById'
 import selectStocksByOfferId from 'selectors/selectStocksByOfferId'
-import selectStockErrorsByStockId from 'selectors/selectStockErrorsByStockId'
 import { translateQueryParamsToApiParams } from 'utils/translate'
 
 function mapStateToProps(state, ownProps) {

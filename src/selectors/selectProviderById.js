@@ -2,7 +2,7 @@ import createCachedSelector from 're-reselect'
 
 import selectProviders from './selectProviders'
 
-function mapArgsToKey(state, providerId) {
+function mapArgsToCacheKey(state, providerId) {
   return providerId || ''
 }
 
@@ -10,6 +10,6 @@ export const selectProviderById = createCachedSelector(
   state => selectProviders(state),
   (state, providerId) => providerId,
   (providers, providerId) => providers.find(p => p.id === providerId)
-)(mapArgsToKey)
+)(mapArgsToCacheKey)
 
 export default selectProviderById

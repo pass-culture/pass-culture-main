@@ -1,6 +1,10 @@
 import createCachedSelector from 're-reselect'
 
-export default createCachedSelector(
+function mapArgsToCacheKey(state, optionalVenueId) {
+  return optionalVenueId || ''
+}
+
+export const selectVenueProvidersByVenueId = createCachedSelector(
   state => state.data.venueProviders,
   (state, optionalVenueId) => optionalVenueId,
   (venueProviders, optionalVenueId) => {
@@ -10,4 +14,6 @@ export default createCachedSelector(
       )
     return venueProviders
   }
-)((state, optionalVenueId) => optionalVenueId || '')
+)(mapArgsToCacheKey)
+
+export default selectVenueProvidersByVenueId

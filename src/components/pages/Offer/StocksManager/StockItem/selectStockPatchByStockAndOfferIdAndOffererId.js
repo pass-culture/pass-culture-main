@@ -5,7 +5,7 @@ import selectOfferById from 'selectors/selectOfferById'
 import selectStocksByOfferId from 'selectors/selectStocksByOfferId'
 import { getDatetimeOneDayAfter, getDatetimeTwoDaysBefore } from './utils'
 
-function mapArgsToKey(state, stock, offerId, offererId) {
+function mapArgsToCacheKey(state, stock, offerId, offererId) {
   return `${offerId || ''}/${offererId || ''}`
 }
 
@@ -64,6 +64,6 @@ export const selectStockPatchByStockAndOfferIdAndOffererId = createCachedSelecto
       stock
     )
   }
-)(mapArgsToKey)
+)(mapArgsToCacheKey)
 
 export default selectStockPatchByStockAndOfferIdAndOffererId

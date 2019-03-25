@@ -5,6 +5,8 @@ import React, { Component, Fragment } from 'react'
 import { getDatetimeOneDayAfter } from './utils'
 
 export class EventFields extends Component {
+  static isParsedByForm = true
+
   componentDidUpdate(prevProps) {
     this.handleCrossingEndDatetime()
   }
@@ -101,4 +103,3 @@ EventFields.propTypes = {
 }
 
 export default EventFields
-EventFields.isParsedByForm = true

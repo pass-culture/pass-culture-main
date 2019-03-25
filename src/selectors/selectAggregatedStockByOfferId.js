@@ -2,7 +2,7 @@ import createCachedSelector from 're-reselect'
 
 import selectStocksByOfferId from './selectStocksByOfferId'
 
-function mapArgsToKey(state, offerId) {
+function mapArgsToCacheKey(state, offerId) {
   return offerId || ''
 }
 
@@ -10,19 +10,19 @@ export const selectAggregatedStockByOfferId = createCachedSelector(
   selectStocksByOfferId,
   stocks =>
     stocks.reduce(
-      (aggreged, stock) => ({
-        available: aggreged.available + stock.available,
-        groupSizeMin: aggreged.groupSizeMin
-          ? Math.min(aggreged.groupSizeMin, stock.groupSize)
+      (aggregatedStock, stock) => ({
+        available: aggregatedStock.available + stock.available,
+        groupSizeMin: aggregatedStock.groupSizeMin
+          ? Math.min(aggregatedStock.groupSizeMin, stock.groupSize)
           : stock.groupSize,
-        groupSizeMax: aggreged.groupSizeMax
-          ? Math.max(aggreged.groupSizeMax, stock.groupSize)
+        groupSizeMax: aggregatedStock.groupSizeMax
+          ? Math.max(aggregatedStock.groupSizeMax, stock.groupSize)
           : stock.groupSize,
-        priceMin: aggreged.priceMin
-          ? Math.min(aggreged.priceMin, stock.price)
+        priceMin: aggregatedStock.priceMin
+          ? Math.min(aggregatedStock.priceMin, stock.price)
           : stock.price,
-        priceMax: aggreged.priceMax
-          ? Math.max(aggreged.priceMax, stock.price)
+        priceMax: aggregatedStock.priceMax
+          ? Math.max(aggregatedStock.priceMax, stock.price)
           : stock.price,
       }),
       {
@@ -33,6 +33,6 @@ export const selectAggregatedStockByOfferId = createCachedSelector(
         priceMax: 0,
       }
     )
-)(mapArgsToKey)
+)(mapArgsToCacheKey)
 
 export default selectAggregatedStockByOfferId

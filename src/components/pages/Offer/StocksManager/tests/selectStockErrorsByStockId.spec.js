@@ -14,16 +14,15 @@ describe('selectStockErrorsByStockId', () => {
         },
       }
       const stockIdOrNew = 'NA'
-
-      // When'
+      // When
       const result = selectStockErrorsByStockId(state, stockIdOrNew)
+
+      // Then
       const expected = {
         Places: [
           'la quantité pour cette offre ne peut pas être inférieure au nombre de réservations existantes.',
         ],
       }
-
-      // Then
       expect(result).toEqual(expected)
     })
   })

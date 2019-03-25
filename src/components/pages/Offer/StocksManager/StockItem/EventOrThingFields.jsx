@@ -11,6 +11,8 @@ import ReactTooltip from 'react-tooltip'
 import { FLOATSEP, getDisplayedPrice, getRemainingStock } from './utils'
 
 export class EventOrThingFields extends Component {
+  static isParsedByForm = true
+
   constructor() {
     super()
     this.isPriceInputDeactivate = false
@@ -161,4 +163,3 @@ EventOrThingFields.propTypes = {
 }
 
 export default EventOrThingFields
-EventOrThingFields.isParsedByForm = true

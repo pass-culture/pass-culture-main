@@ -1,11 +1,11 @@
 import get from 'lodash.get'
 import createCachedSelector from 're-reselect'
 
-const mapArgsToKey = (state, event, thing, offerer, venue) =>
+const mapArgsToCacheKey = (state, event, thing, offerer, venue) =>
   `${get(event, 'id', ' ')}/${get(thing, 'id', ' ')}/
    ${get(offerer, 'id', ' ')}/${get(venue, 'id', ' ')}`
 
-export default createCachedSelector(
+export const selectEventOrThingPatchByEventAndThingAndOfferAndOffererAndVenue = createCachedSelector(
   (state, event) => event,
   (state, event, thing) => thing,
   (state, event, thing, offer) => offer,
@@ -23,4 +23,6 @@ export default createCachedSelector(
       },
       event || thing
     )
-)(mapArgsToKey)
+)(mapArgsToCacheKey)
+
+export default selectEventOrThingPatchByEventAndThingAndOfferAndOffererAndVenue

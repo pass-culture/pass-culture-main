@@ -1,6 +1,6 @@
 import createCachedSelector from 're-reselect'
 
-function mapArgToKey(state, optionalProviderId) {
+function mapArgsToCacheKey(state, optionalProviderId) {
   return optionalProviderId
 }
 
@@ -13,6 +13,6 @@ export const selectThingsByProviderId = createCachedSelector(
     }
     return things
   }
-)(mapArgToKey)
+)(mapArgsToCacheKey)
 
 export default selectThingsByProviderId

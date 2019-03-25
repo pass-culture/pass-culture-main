@@ -3,7 +3,7 @@ import createCachedSelector from 're-reselect'
 
 import selectOfferById from './selectOfferById'
 
-function mapArgsToKey(state, offerId) {
+function mapArgsToCacheKey(state, offerId) {
   return offerId || ''
 }
 
@@ -24,6 +24,6 @@ export const selectStocksByOfferId = createCachedSelector(
 
     return filteredStocks
   }
-)(mapArgsToKey)
+)(mapArgsToCacheKey)
 
 export default selectStocksByOfferId

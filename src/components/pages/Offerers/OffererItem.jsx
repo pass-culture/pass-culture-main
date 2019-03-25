@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
 
 import selectPhysicalVenuesByOffererId from '../../../selectors/selectPhysicalVenuesByOffererId'
-import venuesSelector from '../../../selectors/venues'
+import selectVenuesByOffererIdAndOfferType from '../../../selectors/selectVenuesByOffererIdAndOfferType'
 
 const OffererItem = ({ offerer, physicalVenues, venues }) => {
   const { id, name, nOffers, isValidated } = offerer || {}
@@ -90,7 +90,7 @@ function mapStateToProps(state, ownProps) {
   const offererId = ownProps.offerer.id
   return {
     physicalVenues: selectPhysicalVenuesByOffererId(state, offererId),
-    venues: venuesSelector(state, offererId),
+    venues: selectVenuesByOffererIdAndOfferType(state, offererId),
   }
 }
 

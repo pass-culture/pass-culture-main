@@ -6,11 +6,11 @@ import selectEventById from './selectEventById'
 import selectThingById from './selectThingById'
 import { THUMBS_URL } from '../utils/config'
 
-function mapArgsToKey(state, offerId, eventId, thingId) {
+function mapArgsToCacheKey(state, offerId, eventId, thingId) {
   return `${offerId || ''}/${eventId || ''}/${thingId || ''}`
 }
 
-export default createCachedSelector(
+export const selectThumbUrlByOfferIdAndEventIdAndThingId = createCachedSelector(
   (state, offerId, eventId, thingId) =>
     selectActiveMediationsByOfferId(state, offerId),
   (state, offerId, eventId, thingId) => selectEventById(state, eventId),
@@ -28,4 +28,6 @@ export default createCachedSelector(
       get(thing, 'thumbCount') && `${THUMBS_URL}/things/${get(thing, 'id')}`
     )
   }
-)(mapArgsToKey)
+)(mapArgsToCacheKey)
+
+export default selectThumbUrlByOfferIdAndEventIdAndThingId

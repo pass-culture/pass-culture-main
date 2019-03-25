@@ -2,13 +2,13 @@ import createCachedSelector from 're-reselect'
 
 import selectMediationsByOfferId from './selectMediationsByOfferId'
 
-function mapArgsToKey(state, offerId) {
+function mapArgsToCacheKey(state, offerId) {
   return offerId || ''
 }
 
 const selectActiveMediationsByOfferId = createCachedSelector(
   selectMediationsByOfferId,
   mediations => mediations.filter(mediation => mediation.isActive)
-)(mapArgsToKey)
+)(mapArgsToCacheKey)
 
 export default selectActiveMediationsByOfferId

@@ -3,7 +3,7 @@ import selectEventById from 'selectors/selectEventById'
 import selectOfferById from 'selectors/selectOfferById'
 import selectOffererById from 'selectors/selectOffererById'
 import selectVenueById from 'selectors/selectVenueById'
-import timezoneSelector from 'selectors/timezone'
+import selectTimezoneByVenueId from 'selectors/selectTimezoneByVenueId'
 import { translateQueryParamsToApiParams } from 'utils/translate'
 
 export default function mapStateToProps(state, ownProps) {
@@ -19,6 +19,8 @@ export default function mapStateToProps(state, ownProps) {
   const offerId = params.offerId
   const offer = selectOfferById(state, offerId)
   const { eventId, venueId } = offer || {}
+
+  const event = selectEventById(state, eventId)
 
   const venue = selectVenueById(state, venueId)
   const managingOffererId = venue && venue.managingOffererId
@@ -47,11 +49,12 @@ export default function mapStateToProps(state, ownProps) {
     bookingLimitDatetime: formBookingLimitDatetime,
     endDatetime: formEndDatetime,
     price: formPrice,
-  } =
-    stockForm || {}
+  } = stockForm || {}
+
+  const tz = selectTimezoneByVenueId(state, venueId)
 
   return {
-    event: selectEventById(state, eventId),
+    event,
     eventId,
     formBeginningDatetime,
     formBookingLimitDatetime,
@@ -63,7 +66,7 @@ export default function mapStateToProps(state, ownProps) {
     stockFormKey,
     stockPatch,
     stockIdOrNew,
-    tz: timezoneSelector(state, venueId),
+    tz,
     venue,
     venueId,
   }

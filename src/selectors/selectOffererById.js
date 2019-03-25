@@ -1,11 +1,13 @@
 import createCachedSelector from 're-reselect'
 
-import offerersSelector from './offerers'
+function mapArgsToCacheKey(state, offererId) {
+  return offererId || ''
+}
 
 export const selectOffererById = createCachedSelector(
-  state => offerersSelector(state),
+  state => state.data.offerers,
   (state, offererId) => offererId,
   (offerers, offererId) => offerers.find(offerer => offerer.id === offererId)
-)((state, offererId) => offererId || '')
+)(mapArgsToCacheKey)
 
 export default selectOffererById

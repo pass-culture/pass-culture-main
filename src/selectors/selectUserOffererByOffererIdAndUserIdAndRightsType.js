@@ -1,6 +1,6 @@
 import createCachedSelector from 're-reselect'
 
-function mapArgsToKey(state, offererId, userId, right) {
+function mapArgsToCacheKey(state, offererId, userId, right) {
   return `${offererId || ''}/${userId || ''}/${right || ''}`
 }
 
@@ -17,6 +17,6 @@ export const selectUserOffererByOffererIdAndUserIdAndRightsType = createCachedSe
         userOfferer.rights === `RightsType.${rightsType}`
     )
   }
-)(mapArgsToKey)
+)(mapArgsToCacheKey)
 
 export default selectUserOffererByOffererIdAndUserIdAndRightsType

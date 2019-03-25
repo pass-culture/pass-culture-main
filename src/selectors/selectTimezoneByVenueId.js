@@ -2,7 +2,11 @@ import createCachedSelector from 're-reselect'
 
 import selectVenueById from './selectVenueById'
 
-export default createCachedSelector(
+function mapArgsToCacheKey(state, venueId) {
+  return venueId || ''
+}
+
+export const selectTimezoneByVenueId = createCachedSelector(
   (state, venueId) => selectVenueById(state, venueId),
   venue => {
     if (!venue) return
@@ -14,4 +18,6 @@ export default createCachedSelector(
         return 'Europe/Paris'
     }
   }
-)((state, venueId) => venueId || '')
+)(mapArgsToCacheKey)
+
+export default selectTimezoneByVenueId

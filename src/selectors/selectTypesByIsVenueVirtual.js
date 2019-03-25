@@ -1,6 +1,6 @@
 import { createSelector } from 'reselect'
 
-export default createSelector(
+export const selectTypesByIsVenueVirtual = createSelector(
   state => state.data.types,
   (state, isVenueVirtual) => isVenueVirtual,
   (types, isVenueVirtual) => {
@@ -16,3 +16,5 @@ export default createSelector(
     return filteredTypes
   }
 )
+
+export default selectTypesByIsVenueVirtual

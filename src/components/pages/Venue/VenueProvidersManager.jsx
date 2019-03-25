@@ -12,8 +12,8 @@ import { selectCurrentUser } from 'with-login'
 import VenueProviderItem from './VenueProviderItem'
 import selectProviderById from 'selectors/selectProviderById'
 import selectProviders from 'selectors/selectProviders'
-import venueProviderSelector from 'selectors/venueProvider'
-import venueProvidersSelector from 'selectors/venueProviders'
+import selectVenueProviderByVenueIdAndVenueProviderId from 'selectors/selectVenueProviderByVenueIdAndVenueProviderId'
+import selectVenueProvidersByVenueId from 'selectors/selectVenueProvidersByVenueId'
 
 class ProviderManager extends Component {
   constructor() {
@@ -206,6 +206,8 @@ class ProviderManager extends Component {
 }
 
 function mapStateToProps(state, ownProps) {
+  const { venue } = ownProps
+  const { id: venueId } = venue || {}
   const providers = selectProviders(state)
 
   const formPatch = get(state, 'form.venueProvider')
@@ -218,14 +220,15 @@ function mapStateToProps(state, ownProps) {
     provider = selectProviderById(state, providerId)
   }
 
-  const venueId = get(ownProps, 'venue.id')
-
   return {
     currentUser: selectCurrentUser(state),
     provider,
     providers,
-    venueProvider: venueProviderSelector(state, venueId),
-    venueProviders: venueProvidersSelector(state, venueId),
+    venueProvider: selectVenueProviderByVenueIdAndVenueProviderId(
+      state,
+      venueId
+    ),
+    venueProviders: selectVenueProvidersByVenueId(state, venueId),
   }
 }
 

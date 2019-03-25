@@ -4,14 +4,11 @@ import withQueryRouter from 'with-query-router'
 
 import { withRedirectToSigninWhenNotAuthenticated } from '../../hocs'
 import RawOfferers from './RawOfferers'
-import offerersSelector, {
-  getPendingOfferers,
-} from '../../../selectors/offerers'
 
 function mapStateToProps(state, ownProps) {
   return {
-    pendingOfferers: getPendingOfferers(state),
-    offerers: offerersSelector(state),
+    pendingOfferers: state.data.pendingOfferers,
+    offerers: state.data.offerers,
   }
 }
 

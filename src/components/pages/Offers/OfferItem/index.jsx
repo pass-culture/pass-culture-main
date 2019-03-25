@@ -9,7 +9,7 @@ import selectMaxDateByOfferId from 'selectors/selectMaxDateByOfferId'
 import selectMediationsByOfferId from 'selectors/selectMediationsByOfferId'
 import selectStocksByOfferId from 'selectors/selectStocksByOfferId'
 import selectThingById from 'selectors/selectThingById'
-import thumbUrlSelector from 'selectors/thumbUrl'
+import selectThumbUrlByOfferIdAndEventIdAndThingId from 'selectors/selectThumbUrlByOfferIdAndEventIdAndThingId'
 import selectVenueById from 'selectors/selectVenueById'
 import offerrerSelector from 'selectors/selectOffererById'
 import { getOfferTypeLabel } from 'utils/offerItem'
@@ -28,11 +28,19 @@ function mapStateToProps(state, ownProps) {
     mediations: selectMediationsByOfferId(state, offerId),
     stocks: selectStocksByOfferId(state, offerId),
     thing,
-    thumbUrl: thumbUrlSelector(state, offerId, eventId, thingId),
+    thumbUrl: selectThumbUrlByOfferIdAndEventIdAndThingId(
+      state,
+      offerId,
+      eventId,
+      thingId
+    ),
     offerTypeLabel: getOfferTypeLabel(event, thing),
     venue,
     offerrer,
   }
 }
 
-export default compose(withRouter, connect(mapStateToProps))(RawOfferItem)
+export default compose(
+  withRouter,
+  connect(mapStateToProps)
+)(RawOfferItem)

@@ -1,7 +1,7 @@
-import { typeSelector } from '../type'
+import { selectTypeByIsVenueVirtualAndOfferTypeValue } from '../selectTypeByIsVenueVirtualAndOfferTypeValue'
 import state from './mockState'
 
-describe('typeSelector', () => {
+describe('selectTypeByIsVenueVirtualAndOfferTypeValue', () => {
   describe('when offer type is consistent with isVirtual', () => {
     it('returns an offer type given its value', () => {
       // given
@@ -9,7 +9,11 @@ describe('typeSelector', () => {
       const offerTypeValue = 'ThingType.MUSIQUE'
 
       // when
-      const result = typeSelector(state, isVirtual, offerTypeValue)
+      const result = selectTypeByIsVenueVirtualAndOfferTypeValue(
+        state,
+        isVirtual,
+        offerTypeValue
+      )
 
       // then
       expect(result).toEqual({
@@ -33,7 +37,11 @@ describe('typeSelector', () => {
       const offerTypeValue = 'ThingType.TRUC'
 
       // when
-      const result = typeSelector(state, isVirtual, offerTypeValue)
+      const result = selectTypeByIsVenueVirtualAndOfferTypeValue(
+        state,
+        isVirtual,
+        offerTypeValue
+      )
 
       // then
       expect(result).not.toBeDefined()
@@ -47,7 +55,11 @@ describe('typeSelector', () => {
       const offerTypeValue = 'ThingType.PRATIQUE_ARTISTIQUE_ABO'
 
       // when
-      const result = typeSelector(state, isVirtual, offerTypeValue)
+      const result = selectTypeByIsVenueVirtualAndOfferTypeValue(
+        state,
+        isVirtual,
+        offerTypeValue
+      )
 
       // then
       expect(result).not.toBeDefined()
@@ -61,7 +73,11 @@ describe('typeSelector', () => {
       const offerTypeValue = 'ThingType.PRESSE_ABO'
 
       // when
-      const result = typeSelector(state, isVirtual, offerTypeValue)
+      const result = selectTypeByIsVenueVirtualAndOfferTypeValue(
+        state,
+        isVirtual,
+        offerTypeValue
+      )
 
       // then
       expect(result).not.toBeDefined()

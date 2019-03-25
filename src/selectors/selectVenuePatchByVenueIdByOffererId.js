@@ -3,7 +3,7 @@ import createCachedSelector from 're-reselect'
 
 import selectVenueById from './selectVenueById'
 
-function mapArgsToKey(state, venueId, offererId, bookingEmail) {
+function mapArgsToCacheKey(state, venueId, offererId, bookingEmail) {
   return `${venueId || ''}/${offererId || ''}/${bookingEmail || ''}`
 }
 
@@ -21,4 +21,4 @@ export default createCachedSelector(
 
     return Object.assign(defaultData, venue)
   }
-)(mapArgsToKey)
+)(mapArgsToCacheKey)

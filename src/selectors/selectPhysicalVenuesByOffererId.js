@@ -1,14 +1,14 @@
 import createCachedSelector from 're-reselect'
 
-import venuesSelector from './venues'
+import selectVenuesByOffererIdAndOfferType from './selectVenuesByOffererIdAndOfferType'
 
-function mapArgsToKey(state, offererId) {
+function mapArgsToCacheKey(state, offererId) {
   return `${offererId || ''}`
 }
 
 const selectPhysicalVenuesByOffererId = createCachedSelector(
-  venuesSelector,
+  selectVenuesByOffererIdAndOfferType,
   venues => venues.filter(venue => !venue.isVirtual)
-)(mapArgsToKey)
+)(mapArgsToCacheKey)
 
 export default selectPhysicalVenuesByOffererId

@@ -4,21 +4,20 @@ import { compose } from 'redux'
 import withQueryRouter from 'with-query-router'
 
 import RawOffer from './RawOffer'
+import selectEventOrThingPatchByEventAndThingAndOfferAndOffererAndVenue from './selectEventOrThingPatchByEventAndThingAndOfferAndOffererAndVenue'
 import { withRedirectToSigninWhenNotAuthenticated } from 'components/hocs'
 import selectEventById from 'selectors/selectEventById'
-import eventOrThingPatchSelector from 'selectors/eventOrThingPatch'
 import selectOfferById from 'selectors/selectOfferById'
 import selectOffererById from 'selectors/selectOffererById'
-import offerersSelector from 'selectors/offerers'
 import selectProviders from 'selectors/selectProviders'
 import selectMusicSubOptionsByMusicType from 'selectors/selectMusicSubOptionsByMusicType'
 import selectShowSubOptionsByShowType from 'selectors/selectShowSubOptionsByShowType'
 import selectStocksByOfferId from 'selectors/selectStocksByOfferId'
 import selectThingById from 'selectors/selectThingById'
-import typesSelector from 'selectors/types'
-import { typeSelector } from 'selectors/type'
+import selectTypesByIsVenueVirtual from 'selectors/selectTypesByIsVenueVirtual'
+import selectTypeByIsVenueVirtualAndOfferTypeValue from 'selectors/selectTypeByIsVenueVirtualAndOfferTypeValue'
 import selectVenueById from 'selectors/selectVenueById'
-import venuesSelector from 'selectors/venues'
+import selectVenuesByOffererIdAndOfferType from 'selectors/selectVenuesByOffererIdAndOfferType'
 
 function mapStateToProps(state, ownProps) {
   const {
@@ -44,24 +43,32 @@ function mapStateToProps(state, ownProps) {
 
   const venue = selectVenueById(state, venueId)
 
-  const isVirtual = get(venue, 'isVirtual')
-  const types = typesSelector(state, isVirtual)
+  const isVenueVirtual = get(venue, 'isVirtual')
+  const types = selectTypesByIsVenueVirtual(state, isVenueVirtual)
 
   const offerTypeValue =
     get(state, 'form.offer.type') ||
     get(event, 'offerType.value') ||
     get(thing, 'offerType.value')
 
-  const selectedOfferType = typeSelector(state, isVirtual, offerTypeValue)
+  const selectedOfferType = selectTypeByIsVenueVirtualAndOfferTypeValue(
+    state,
+    isVenueVirtual,
+    offerTypeValue
+  )
 
   const formOffererId = get(state, 'form.offer.offererId')
   let offererId = formOffererId || queryParams.offererId
 
-  const venues = venuesSelector(state, offererId, selectedOfferType)
+  const venues = selectVenuesByOffererIdAndOfferType(
+    state,
+    offererId,
+    selectedOfferType
+  )
 
   offererId = offererId || get(venue, 'managingOffererId')
 
-  const offerers = offerersSelector(state)
+  const offerers = state.data.offerers
   const offerer = selectOffererById(state, offererId)
 
   const stocks = selectStocksByOfferId(state, offerId)
@@ -71,7 +78,7 @@ function mapStateToProps(state, ownProps) {
 
   const hasEventOrThing = event || thing
 
-  const eventOrThingPatch = eventOrThingPatchSelector(
+  const eventOrThingPatch = selectEventOrThingPatchByEventAndThingAndOfferAndOffererAndVenue(
     state,
     event,
     thing,

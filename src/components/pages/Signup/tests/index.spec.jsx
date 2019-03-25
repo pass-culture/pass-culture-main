@@ -1,5 +1,5 @@
 import React from 'react'
-import SignupPage from '../SignupPage'
+import SignupPage from '../index'
 import { shallow } from 'enzyme'
 
 describe('src | components | pages | Signup', () => {

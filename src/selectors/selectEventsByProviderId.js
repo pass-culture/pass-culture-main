@@ -1,6 +1,6 @@
 import createCachedSelector from 're-reselect'
 
-function mapArgToKey(state, providerId) {
+function mapArgsToCacheKey(state, providerId) {
   return providerId || ''
 }
 
@@ -9,6 +9,6 @@ export const selectEventsByProviderId = createCachedSelector(
   (state, providerId) => providerId,
   (events, providerId) =>
     events.filter(event => event.lastProviderId === providerId)
-)(mapArgToKey)
+)(mapArgsToCacheKey)
 
 export default selectEventsByProviderId

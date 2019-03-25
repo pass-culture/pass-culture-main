@@ -1,9 +1,13 @@
 import createCachedSelector from 're-reselect'
 
-import venueProvidersSelector from './venueProviders'
+import selectVenueProvidersByVenueId from './selectVenueProvidersByVenueId'
 
-export default createCachedSelector(
-  venueProvidersSelector,
+function mapArgsToCacheKey(state, venueId, venueProviderId) {
+  return venueProviderId || ''
+}
+
+export const selectVenueProviderByVenueIdAndVenueProviderId = createCachedSelector(
+  selectVenueProvidersByVenueId,
   (state, venueId) => venueId,
   (state, venueId, venueProviderId) => venueProviderId,
   (venueProviders, venueId, venueProviderId) => {
@@ -13,4 +17,6 @@ export default createCachedSelector(
       venueProviders.find(vp => vp.id === venueProviderId)
     return Object.assign({ venueId }, venueProvider)
   }
-)((state, venueId, venueProviderId) => venueProviderId || '')
+)(mapArgsToCacheKey)
+
+export default selectVenueProviderByVenueIdAndVenueProviderId

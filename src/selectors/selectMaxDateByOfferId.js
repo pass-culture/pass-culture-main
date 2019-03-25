@@ -2,7 +2,7 @@ import createCachedSelector from 're-reselect'
 
 import selectStocksByOfferId from './selectStocksByOfferId'
 
-function mapArgToKey(state, offerId) {
+function mapArgsToCacheKey(state, offerId) {
   return offerId || ''
 }
 
@@ -17,6 +17,6 @@ export const selectMaxDateByOfferId = createCachedSelector(
       null
     )
   }
-)(mapArgToKey)
+)(mapArgsToCacheKey)
 
 export default selectMaxDateByOfferId
