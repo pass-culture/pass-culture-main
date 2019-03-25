@@ -1,14 +1,14 @@
-// jest --env=jsdom ./src/components/pages/activation/tests/utils --watch
-import { canSubmitForm } from '../utils'
+import canSubmitForm from '../canSubmitForm'
 
-describe('src | components | pages | activation | tests | utils', () => {
-  describe('canSubmitForm', () => {
+// FIXME: add missing tests
+describe('src | components | pages | activation | tests | canSubmitForm', () => {
     it('it throw cause missing arguments', () => {
       expect(() => {
         // when
         canSubmitForm()
       }).toThrow()
     })
+
     it('should return true', () => {
       // given
       const value = {
@@ -18,10 +18,12 @@ describe('src | components | pages | activation | tests | utils', () => {
       }
       // when
       const result = canSubmitForm(value)
+
       // then
       const expected = true
       expect(result).toStrictEqual(expected)
     })
+
     it('should return true', () => {
       // given
       const value = {
@@ -29,11 +31,12 @@ describe('src | components | pages | activation | tests | utils', () => {
         hasSubmitErrors: true,
         hasValidationErrors: false,
       }
+
       // when
       const result = canSubmitForm(value)
+
       // then
       const expected = true
       expect(result).toStrictEqual(expected)
     })
-  })
 })

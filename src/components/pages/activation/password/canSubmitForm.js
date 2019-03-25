@@ -1,4 +1,4 @@
-export const canSubmitForm = formProps => {
+const canSubmitForm = (formProps) => {
   if (!formProps) {
     throw new Error('canSubmitForm: Missing arguments')
   }
@@ -9,9 +9,11 @@ export const canSubmitForm = formProps => {
     hasValidationErrors,
     pristine,
   } = formProps
+
   const canSubmit =
     (!pristine && !hasSubmitErrors && !hasValidationErrors) ||
     (!hasValidationErrors && hasSubmitErrors && dirtySinceLastSubmit)
+
   return canSubmit
 }
 

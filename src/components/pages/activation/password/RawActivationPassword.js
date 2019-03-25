@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Redirect } from 'react-router'
 import { Form } from 'react-final-form'
-import { canSubmitForm } from '../utils'
+import canSubmitForm from './canSubmitForm'
 import FormInputs from './inputs'
 import { FormFooter } from '../../../forms'
 
