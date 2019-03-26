@@ -1,8 +1,6 @@
 """ local provider """
-from sqlalchemy.sql import select
-from sqlalchemy.orm.state import InstanceState
-from sqlalchemy import inspect
 import time
+from sqlalchemy.sql import select
 import traceback
 from abc import abstractmethod
 from collections import Iterator
@@ -11,7 +9,6 @@ from pprint import pprint
 from sqlalchemy import text
 from postgresql_audit.flask import versioning_manager
 
-from domain.mediations import compute_dominant_color
 from models import HasThumbMixin
 from models.db import db
 from models.event import Event
@@ -20,9 +17,11 @@ from models.pc_object import PcObject
 from models.provider import Provider
 from models.thing import Thing
 from utils.date import read_json_date
-from utils.human_ids import humanize, dehumanize
+from utils.human_ids import humanize
 from utils.inflect_engine import inflect_engine
 from utils.logger import logger
+
+CHUNK_MAX_SIZE = 1000
 
 
 class ProvidableInfo(object):
@@ -174,10 +173,6 @@ class LocalProvider(Iterator):
     def dateModifiedAtProvider(self, obj):
         if obj.lastProviderId == self.dbObject.id:
             return obj.dateModifiedAtLastProvider
-        if not obj.lastProviderId:
-            return datetime.utcnow()
-        if obj.id is None:
-            return obj.dateModifiedAtLastProvider or datetime.utcnow()
         for change in obj.activity():
             if change.changed_data['lastProviderId'] == self.dbObject.id:
                 return read_json_date(change.changed_data['dateModifiedAtLastProvider'])
@@ -256,95 +251,70 @@ class LocalProvider(Iterator):
                     providable_infos = [providable_infos]
 
                 for providable_info in providable_infos:
+
                     if providable_info is not None:
+                        pc_obj = self.get_existing_pc_obj(providable_info, chunk_to_insert, chunk_to_update)
+
+                        date_modified_at_provider = None
                         is_new_obj = False
-                        object_in_current_chunk = self.get_object_from_current_chunk(providable_info, chunk_to_insert,
-                                                                                     chunk_to_update)
-                        if object_in_current_chunk is None:
-                            pc_obj = self.existingObjectOrNone(providable_info)
-                        else:
-                            pc_obj = object_in_current_chunk
 
                         if pc_obj is None:
                             is_new_obj = True
                             if providable_info.dateModifiedAtProvider is None \
                                     or not self.canCreate:
-                                print('  Not creating or updating '
-                                      + providable_info.type.__name__
-                                      + '# ' + providable_info.idAtProviders)
+                                print('  Not creating or updating ' + providable_info.type.__name__ +
+                                      '# ' + providable_info.idAtProviders)
                                 continue
                             pc_obj = self.createObject(providable_info)
-                            dateModifiedAtProvider = None
-
                         else:
-                            if object_in_current_chunk is not None:
-                                dateModifiedAtProvider = datetime.utcnow()
-                            else:
-                                dateModifiedAtProvider = self.dateModifiedAtProvider(pc_obj)
+                            date_modified_at_provider = self.dateModifiedAtProvider(pc_obj)
 
                         self.providables.append(pc_obj)
 
+                        object_need_update = date_modified_at_provider is None \
+                                             or date_modified_at_provider < providable_info.dateModifiedAtProvider
+
                         if providable_info.dateModifiedAtProvider is not None \
-                                and (dateModifiedAtProvider is None
-                                     or dateModifiedAtProvider < providable_info.dateModifiedAtProvider):
+                                and object_need_update:
                             self.handleUpdate(pc_obj, providable_info, is_new_obj)
 
-                            # Test errors
                             errors = pc_obj.errors()
                             if errors and len(errors.errors) > 0:
-                                print('  Error for providable '
-                                      + providable_info.type.__name__
-                                      + '# ' + providable_info.idAtProviders)
                                 self.logEvent(LocalProviderEventType.SyncError, 'ApiErrors')
                                 continue
 
                             if is_new_obj:
                                 chunk_to_insert[providable_info.idAtProviders] = pc_obj
                             else:
-                                chunk_to_update[providable_info.idAtProviders] = pc_obj
+                                if providable_info.idAtProviders in chunk_to_insert:
+                                    chunk_to_insert[providable_info.idAtProviders] = pc_obj
+                                else:
+                                    chunk_to_update[providable_info.idAtProviders] = pc_obj
 
                         else:
                             print('  Not creating or updating '
                                   + providable_info.type.__name__
                                   + '# ' + providable_info.idAtProviders)
+
                         if pc_obj is not None:
                             if isinstance(pc_obj, HasThumbMixin):
                                 initial_thumb_count = pc_obj.thumbCount
                                 self.handleThumb(pc_obj)
+
                                 if pc_obj.thumbCount != initial_thumb_count:
-                                    # Test errors
                                     errors = pc_obj.errors()
                                     if errors and len(errors.errors) > 0:
-                                        print('  Error during creating '
-                                              + providable_info.type.__name__
-                                              + '# ' + providable_info.idAtProviders)
                                         self.logEvent(LocalProviderEventType.SyncError, 'ApiErrors')
                                         continue
+
                                     chunk_to_update[providable_info.idAtProviders] = pc_obj
 
-                        if len(chunk_to_insert) + len(chunk_to_update) >= 10:
-                            # time1 = time.time()
-                            if len(chunk_to_insert) > 0:
-                                db.session.bulk_save_objects(chunk_to_insert.values())
-                                db.session.commit()
+                        if len(chunk_to_insert) + len(chunk_to_update) >= CHUNK_MAX_SIZE:
+                            time1 = time.time()
+                            self.save_chunks(chunk_to_insert, chunk_to_update, providable_info)
+                            time2 = time.time()
+                            logger.info("Time save %s" % str(time2 - time1))
 
-                            if len(chunk_to_update) > 0:
-                                conn = db.engine.connect()
-                                for value in chunk_to_update.values():
-                                    tmp_dict = value.__dict__
-                                    if '_sa_instance_state' in tmp_dict:
-                                        del tmp_dict['_sa_instance_state']
-                                    if 'datePublished' in tmp_dict:
-                                        del tmp_dict['datePublished']
-                                    if 'venue' in tmp_dict:
-                                        del tmp_dict['venue']
-                                    statement = providable_info.type.__table__.update(). \
-                                        where(providable_info.type.id == tmp_dict['id']). \
-                                        values(tmp_dict)
-                                    conn.execute(statement)
-
-                                    # time2 = time.time()
-                                    # logger.info('time for saving 1000 records: %s' % str(time2 - time1))
                             chunk_to_insert = {}
                             chunk_to_update = {}
 
@@ -355,53 +325,11 @@ class LocalProvider(Iterator):
                     break
         except Exception as e:
             if len(chunk_to_insert) + len(chunk_to_update) > 0:
-                if len(chunk_to_insert) > 0:
-                    db.session.bulk_save_objects(chunk_to_insert.values())
-                    db.session.commit()
-
-                if len(chunk_to_update) > 0:
-                    conn = db.engine.connect()
-                    for value in chunk_to_update.values():
-                        tmp_dict = value.__dict__
-                        if '_sa_instance_state' in tmp_dict:
-                            del tmp_dict['_sa_instance_state']
-                        if 'datePublished' in tmp_dict:
-                            del tmp_dict['datePublished']
-                        if 'venue' in tmp_dict:
-                            del tmp_dict['venue']
-                        statement = providable_info.type.__table__.update(). \
-                            where(providable_info.type.id == tmp_dict['id']). \
-                            values(tmp_dict)
-                        conn.execute(statement)
+                self.save_chunks(chunk_to_insert, chunk_to_update, providable_info)
             raise e
 
         if len(chunk_to_insert) + len(chunk_to_update) > 0:
-            if len(chunk_to_insert) > 0:
-                db.session.bulk_save_objects(chunk_to_insert.values())
-                db.session.commit()
-
-            if len(chunk_to_update) > 0:
-                conn = db.engine.connect()
-                for value in chunk_to_update.values():
-                    tmp_dict = value.__dict__
-                    if '_sa_instance_state' in tmp_dict:
-                        del tmp_dict['_sa_instance_state']
-                    if 'datePublished' in tmp_dict:
-                        del tmp_dict['datePublished']
-                    if 'venue' in tmp_dict:
-                        del tmp_dict['venue']
-                    statement = providable_info.type.__table__.update(). \
-                        where(providable_info.type.id == tmp_dict['id']). \
-                        values(tmp_dict)
-                    conn.execute(statement)
-
-        # with db.session.no_autoflush:
-        #    update = sa.update(self.objectType)\
-        #               .where((self.objectType.provider == self.offerer.provider) &\
-        #                      ~self.objectType.idAtProviders.in_(self.getDeactivatedObjectIds()))\
-        #               .values({'deactivated': True})
-        #    db.session.execute(update)
-        # db.session.commit()
+            self.save_chunks(chunk_to_insert, chunk_to_update, providable_info)
 
         print("  Checked " + str(self.checkedObjects) + " objects")
         print("  Created " + str(self.createdObjects) + " objects")
@@ -412,12 +340,44 @@ class LocalProvider(Iterator):
         print("  Created " + str(self.createdThumbs) + " thumbs")
         print("  Updated " + str(self.updatedThumbs) + " thumbs")
         print("  " + str(self.erroredThumbs) + " errors in thumb creations/updates")
+
         self.logEvent(LocalProviderEventType.SyncEnd)
         if self.venueProvider is not None:
             self.venueProvider.lastSyncDate = datetime.utcnow()
             PcObject.check_and_save(self.venueProvider)
 
-    def get_object_from_current_chunk(self, providable_info, chunk_to_insert, chunk_to_update):
+    def get_existing_pc_obj(self, providable_info, chunk_to_insert, chunk_to_update):
+        object_in_current_chunk = self.get_object_from_current_chunks(providable_info,
+                                                                      chunk_to_insert,
+                                                                      chunk_to_update)
+        if object_in_current_chunk is None:
+            return self.existingObjectOrNone(providable_info)
+        else:
+            return object_in_current_chunk
+
+    def save_chunks(self, chunk_to_insert, chunk_to_update, providable_info):
+        if len(chunk_to_insert) > 0:
+            db.session.bulk_save_objects(chunk_to_insert.values())
+            db.session.commit()
+        if len(chunk_to_update) > 0:
+            self.save_chunk_to_update(chunk_to_update, providable_info)
+
+    def save_chunk_to_update(self, chunk_to_update, providable_info):
+        conn = db.engine.connect()
+        for value in chunk_to_update.values():
+            tmp_dict = value.__dict__
+            if '_sa_instance_state' in tmp_dict:
+                del tmp_dict['_sa_instance_state']
+            if 'datePublished' in tmp_dict:
+                del tmp_dict['datePublished']
+            if 'venue' in tmp_dict:
+                del tmp_dict['venue']
+            statement = providable_info.type.__table__.update(). \
+                where(providable_info.type.id == tmp_dict['id']). \
+                values(tmp_dict)
+            conn.execute(statement)
+
+    def get_object_from_current_chunks(self, providable_info, chunk_to_insert, chunk_to_update):
         if providable_info.idAtProviders in chunk_to_insert:
             pc_object = chunk_to_insert[providable_info.idAtProviders]
             if type(pc_object) == providable_info.type:

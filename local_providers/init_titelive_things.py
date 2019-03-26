@@ -62,7 +62,7 @@ class InitTiteLiveThings(LocalProvider):
                         + " line. Skipping line")
             return None
 
-        if (self.lines_checked % 500) == 0:
+        if (self.lines_checked % 1000) == 0:
             self.logEvent(LocalProviderEventType.SyncPartEnd,
                           self.lines_checked)
 
