@@ -108,10 +108,20 @@ Stock.trig_ddl = """
     CREATE OR REPLACE FUNCTION check_stock()
     RETURNS TRIGGER AS $$
     BEGIN
-      IF NOT NEW.available IS NULL AND
-      ((SELECT COUNT(*) FROM booking WHERE "stockId"=NEW.id) > NEW.available) THEN
-        RAISE EXCEPTION 'available_too_low'
-              USING HINT = 'stock.available cannot be lower than number of bookings';
+      IF 
+       NOT NEW.available IS NULL 
+       AND
+        (
+         (
+          SELECT SUM(booking.quantity) 
+          FROM booking 
+          WHERE "stockId"=NEW.id
+          AND NOT booking."isCancelled"
+         ) > NEW.available
+        ) 
+      THEN
+       RAISE EXCEPTION 'available_too_low'
+       USING HINT = 'stock.available cannot be lower than number of bookings';
       END IF;
 
       IF NOT NEW."bookingLimitDatetime" IS NULL AND
