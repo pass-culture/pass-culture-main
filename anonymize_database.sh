@@ -20,7 +20,22 @@ else
   exit 1
 fi
 
-cat anonymize.sql | sed -e "s/##PASSWORD##/$password/" > /tmp/anonymize_tmp.sql
+PRG="$BASH_SOURCE"
+
+while [ -h "$PRG" ] ; do
+	ls=$(ls -ld "$PRG")
+	link=$(expr "$ls" : '.*-> \(.*\)$')
+	if expr "$link" : '/.*' > /dev/null; then
+		PRG="$link"
+	else
+		PRG=$(dirname "$PRG")"/$link"
+	fi
+done
+
+ROOT_PATH=$(realpath "$(dirname "$PRG")")
+echo "$ROOT_PATH"
+
+cat "$ROOT_PATH"/anonymize.sql | sed -e "s/##PASSWORD##/$password/" > /tmp/anonymize_tmp.sql
 
 if [[ -z "$APP_NAME" ]]; then
   echo "Connect to local database"
