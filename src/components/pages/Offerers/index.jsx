@@ -1,8 +1,10 @@
 import { connect } from 'react-redux'
 import { compose } from 'redux'
-import withQueryRouter from 'with-query-router'
 
-import { withRedirectToSigninWhenNotAuthenticated } from '../../hocs'
+import {
+  withFrenchQueryRouter,
+  withRedirectToSigninWhenNotAuthenticated,
+} from 'components/hocs'
 import RawOfferers from './RawOfferers'
 
 function mapStateToProps(state, ownProps) {
@@ -14,6 +16,6 @@ function mapStateToProps(state, ownProps) {
 
 export default compose(
   withRedirectToSigninWhenNotAuthenticated,
-  withQueryRouter,
+  withFrenchQueryRouter,
   connect(mapStateToProps)
 )(RawOfferers)

@@ -112,7 +112,7 @@
   background-repeat: no-repeat;
   background-position: 97.5% 50%;
   background-image: url('/icons/dropdown-disclosure-down.svg');
-  border-radius: rem(16px);
+  border-radius: 16px;
   border: none;
   font-weight: 500;
   height: 36px;
@@ -128,16 +128,13 @@
   width: 100%;
 }
 
-.field-input {
-  height: 36px;
-}
 
 .field-input,
 .field-textarea,
 .field-texteditor {
   @extend .py6;
   @extend .px18;
-  @extend .fs16;
+  @extend .fs12;
   @extend .flex-1;
   @extend .is-medium;
   @extend .no-outline;
@@ -171,6 +168,31 @@
 .field-texteditor,
 .field-select {
   color: $text;
+}
+
+.field-date {
+  padding-left: 6px;
+
+  input.date {
+    @extend .fs12;
+    border: 0;
+    cursor: pointer;
+    font-weight: 500;
+    width: 60px;
+    &:focus {
+      outline: none;
+    }
+  }
+
+  img {
+    height: 15px;
+    width: 15px;
+  }
+}
+
+.field-time,
+.field-number {
+  text-align: center;
 }
 
 .textarea-field,
@@ -245,8 +267,14 @@
       .field-textarea,
       .field-texteditor,
       .field-select {
-        color: $blue-light;
+        background-color: transparent;
+        border: 0;
+        font-weight: 500;
         opacity: 1;
+
+        &:focus {
+          outline: none;
+        }
       }
 
       .field-checkbox,

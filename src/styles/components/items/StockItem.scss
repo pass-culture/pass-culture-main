@@ -3,15 +3,11 @@
   td {
     vertical-align: middle;
 
-    .input {
+    .field-input {
       min-width: 75px;
 
       &.input-number {
         width: 77px;
-      }
-
-      &.date-picker {
-        min-width: 100px;
       }
 
       &[readonly] {

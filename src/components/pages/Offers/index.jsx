@@ -1,10 +1,12 @@
 import { lastTrackerMoment } from 'pass-culture-shared'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
-import withQueryRouter from 'with-query-router'
 
 import RawOffers from './RawOffers'
-import { withRedirectToSigninWhenNotAuthenticated } from 'components/hocs'
+import {
+  withFrenchQueryRouter,
+  withRedirectToSigninWhenNotAuthenticated,
+} from 'components/hocs'
 import selectOffererById from 'selectors/selectOffererById'
 import selectOffersByOffererIdAndVenueId from 'selectors/selectOffersByOffererIdAndVenueId'
 import selectVenueById from 'selectors/selectVenueById'
@@ -26,6 +28,6 @@ export function mapStateToProps(state, ownProps) {
 
 export default compose(
   withRedirectToSigninWhenNotAuthenticated,
-  withQueryRouter,
+  withFrenchQueryRouter,
   connect(mapStateToProps)
 )(RawOffers)

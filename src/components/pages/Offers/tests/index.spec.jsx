@@ -6,15 +6,15 @@ import { connect } from 'react-redux'
 import { Route, Router } from 'react-router'
 import { compose } from 'redux'
 import configureStore from 'redux-mock-store'
-import withQueryRouter from 'with-query-router'
 
+import { withFrenchQueryRouter } from 'components/hocs'
 import RawOffers from '../RawOffers'
 import { mapStateToProps } from '../index'
 
 fetch.mockResponse(JSON.stringify([]), { status: 200 })
 
 const Offers = compose(
-  withQueryRouter,
+  withFrenchQueryRouter,
   connect(mapStateToProps)
 )(RawOffers)
 

@@ -6,7 +6,7 @@ import selectStocksByOfferId from 'selectors/selectStocksByOfferId'
 import { getDatetimeOneDayAfter, getDatetimeTwoDaysBefore } from './utils'
 
 function mapArgsToCacheKey(state, stock, offerId, offererId) {
-  return `${offerId || ''}/${offererId || ''}`
+  return `${(stock && stock.id) || ''}${offerId || ''}/${offererId || ''}`
 }
 
 export const selectStockPatchByStockAndOfferIdAndOffererId = createCachedSelector(
@@ -16,8 +16,14 @@ export const selectStockPatchByStockAndOfferIdAndOffererId = createCachedSelecto
   (state, stock, offerId) => offerId,
   (state, stock, offerId, offererId) => offererId,
   (stock, offer, stocks, offerId, offererId) => {
-    let { beginningDatetime, bookingLimitDatetime, endDatetime, price } =
-      stock || {}
+    let {
+      available,
+      beginningDatetime,
+      bookingLimitDatetime,
+      endDatetime,
+      id,
+      price,
+    } = stock || {}
 
     if (offer.eventId) {
       let lastStock
@@ -52,17 +58,16 @@ export const selectStockPatchByStockAndOfferIdAndOffererId = createCachedSelecto
       price = 0
     }
 
-    return Object.assign(
-      {
-        beginningDatetime,
-        bookingLimitDatetime,
-        endDatetime,
-        offerId,
-        offererId,
-        price,
-      },
-      stock
-    )
+    return {
+      available,
+      beginningDatetime,
+      bookingLimitDatetime,
+      endDatetime,
+      id,
+      offerId,
+      offererId,
+      price,
+    }
   }
 )(mapArgsToCacheKey)
 

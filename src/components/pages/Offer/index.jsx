@@ -1,11 +1,13 @@
 import get from 'lodash.get'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
-import withQueryRouter from 'with-query-router'
 
 import RawOffer from './RawOffer'
 import selectEventOrThingPatchByEventAndThingAndOfferAndOffererAndVenue from './selectEventOrThingPatchByEventAndThingAndOfferAndOffererAndVenue'
-import { withRedirectToSigninWhenNotAuthenticated } from 'components/hocs'
+import {
+  withFrenchQueryRouter,
+  withRedirectToSigninWhenNotAuthenticated,
+} from 'components/hocs'
 import selectEventById from 'selectors/selectEventById'
 import selectOfferById from 'selectors/selectOfferById'
 import selectOffererById from 'selectors/selectOffererById'
@@ -121,6 +123,6 @@ function mapStateToProps(state, ownProps) {
 
 export default compose(
   withRedirectToSigninWhenNotAuthenticated,
-  withQueryRouter,
+  withFrenchQueryRouter,
   connect(mapStateToProps)
 )(RawOffer)

@@ -69,14 +69,8 @@
           td {
             text-align: center;
             border: none;
+            max-width: 120px;
 
-            &:first-child {
-              width: 20%;
-            }
-
-            input.date {
-              width: 100px;
-            }
             input[type='time'] {
               padding-left: 1rem;
             }

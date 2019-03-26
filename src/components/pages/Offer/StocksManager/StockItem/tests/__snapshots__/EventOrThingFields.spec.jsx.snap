@@ -20,9 +20,9 @@ ShallowWrapper {
         closeInfo={[Function]}
         dispatch={[Function]}
         isEventStock={true}
-        isReadOnly={true}
         offer={null}
         parseFormChild={[Function]}
+        readOnly={true}
         showInfo={[Function]}
         stockPatch={null}
     />
@@ -45,9 +45,9 @@ ShallowWrapper {
       "closeInfo": [Function],
       "dispatch": [Function],
       "isEventStock": true,
-      "isReadOnly": true,
       "offer": null,
       "parseFormChild": [Function],
+      "readOnly": true,
       "showInfo": [Function],
       "stockPatch": null,
     },
@@ -65,9 +65,9 @@ ShallowWrapper {
         "closeInfo": [Function],
         "dispatch": [Function],
         "isEventStock": true,
-        "isReadOnly": true,
         "offer": null,
         "parseFormChild": [Function],
+        "readOnly": true,
         "showInfo": [Function],
         "stockPatch": null,
       },

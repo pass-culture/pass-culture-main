@@ -1,12 +1,11 @@
-import { Field, mergeForm, recursiveMap } from 'pass-culture-shared'
+import moment from 'moment'
 import PropTypes from 'prop-types'
 import React, { Component, Fragment } from 'react'
 
-import { getDatetimeOneDayAfter } from './utils'
+import { DateField, HiddenField, TimeField } from 'components/layout/form'
 
 export class EventFields extends Component {
-  static isParsedByForm = true
-
+  /*
   componentDidUpdate(prevProps) {
     this.handleCrossingEndDatetime()
   }
@@ -27,78 +26,58 @@ export class EventFields extends Component {
 
     dispatch(mergeForm(`stock${stockFormKey}`, { endDatetime }))
   }
+  */
 
   render() {
-    const {
-      beginningDatetime,
-      isReadOnly,
-      parseFormChild,
-      stocks,
-      tz,
-    } = this.props
-    const highlightedDates = (stocks || []).map(
-      stock => stock.beginningDatetime
-    )
+    const { beginningMinDate, readOnly, stocks, tz } = this.props
+    const highlightDates = (stocks || []).map(stock => stock.beginningDatetime)
 
-    const children = (
+    return (
       <Fragment>
         <td>
-          <Field
-            debug
-            highlightedDates={highlightedDates}
-            minDate="today"
-            name="beginningDate"
-            patchKey="beginningDatetime"
-            readOnly={isReadOnly}
+          <DateField
+            highlightDates={highlightDates}
+            minDate={beginningMinDate || moment()}
+            name="beginningDatetime"
+            readOnly={readOnly}
             required
             title="Date"
-            type="date"
-            tz={tz}
           />
         </td>
         <td>
-          <Field
+          <TimeField
             name="beginningTime"
             patchKey="beginningDatetime"
-            readOnly={isReadOnly}
+            readOnly={readOnly}
             required
             title="Heure"
-            type="time"
             tz={tz}
           />
         </td>
         <td>
-          <Field minDate={beginningDatetime} name="endDatetime" type="hidden" />
-          <Field
+          <HiddenField name="endDatetime" />
+          <TimeField
             name="endTime"
             patchKey="endDatetime"
-            readOnly={isReadOnly}
+            readOnly={readOnly}
             required
             title="Heure de fin"
-            type="time"
             tz={tz}
           />
         </td>
       </Fragment>
     )
-    return recursiveMap(children, parseFormChild)
   }
 }
 
 EventFields.defaultProps = {
-  formBeginningDatetime: null,
-  formBookingLimitDatetime: null,
-  formEndDatetime: null,
-  parseFormChild: c => c,
+  beginningMinDate: null,
   stocks: null,
 }
 
 EventFields.propTypes = {
+  beginningMinDate: PropTypes.string,
   dispatch: PropTypes.func.isRequired,
-  formBeginningDatetime: PropTypes.string,
-  formBookingLimitDatetime: PropTypes.string,
-  formEndDatetime: PropTypes.string,
-  parseFormChild: PropTypes.func,
   stocks: PropTypes.array,
 }
 

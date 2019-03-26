@@ -1,14 +1,12 @@
-import {
-  assignModalConfig,
-  Field,
-  Icon,
-  recursiveMap,
-} from 'pass-culture-shared'
+import moment from 'moment'
+import { assignModalConfig } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import React, { Component, Fragment } from 'react'
 import ReactTooltip from 'react-tooltip'
 
-import { FLOATSEP, getDisplayedPrice, getRemainingStock } from './utils'
+import { getRemainingStock } from './utils'
+import { DateField, HiddenField, NumberField } from 'components/layout/form'
+import Icon from 'components/layout/Icon'
 
 export class EventOrThingFields extends Component {
   static isParsedByForm = true
@@ -36,10 +34,10 @@ export class EventOrThingFields extends Component {
       dispatch,
       formPrice,
       hasIban,
-      isReadOnly,
+      readOnly,
       showInfo,
     } = this.props
-    if (isReadOnly || hasIban || !formPrice) {
+    if (readOnly || hasIban || !formPrice) {
       return
     }
 
@@ -73,49 +71,40 @@ export class EventOrThingFields extends Component {
   }
 
   render() {
-    const {
-      beginningDatetime,
-      isReadOnly,
-      isEventStock,
-      parseFormChild,
-      stockPatch,
-    } = this.props
+    const { beginningDatetime, isEventStock, readOnly, stockPatch } = this.props
     const { available, bookings } = stockPatch || {}
     const remainingStock = getRemainingStock(available, bookings || [])
 
-    const children = (
+    return (
       <Fragment>
         <td title="Gratuit si vide">
-          <Field name="offerId" type="hidden" />
-          <Field name="venueId" type="hidden" />
-          <Field
-            className="input is-small input-number"
-            displayValue={value => getDisplayedPrice(value, isReadOnly)}
-            floatSep={FLOATSEP}
+          <HiddenField name="offerId" type="hidden" />
+          <HiddenField name="venueId" type="hidden" />
+          <NumberField
             min="0"
             name="price"
             onBlur={this.onPriceBlur}
             placeholder="Gratuit"
+            readOnly={readOnly}
             step="0.01"
             title="Prix"
-            type={isReadOnly ? 'text' : 'number'}
           />
         </td>
         <td title="Laissez vide si pas de limite">
-          <Field
-            maxDate={isEventStock ? beginningDatetime : undefined}
+          <DateField
+            maxDate={isEventStock ? moment(beginningDatetime) : undefined}
             name="bookingLimitDatetime"
             placeholder="Laissez vide si pas de limite"
-            type="date"
+            readOnly={readOnly}
           />
         </td>
         <td className="tooltiped">
-          <Field
-            className="input is-small input-number"
+          <NumberField
             name="available"
             placeholder="Illimité"
+            readOnly={readOnly}
             renderInfo={() => {
-              if (!isReadOnly) {
+              if (!readOnly) {
                 return (
                   <span
                     className="button tooltip qty-info"
@@ -128,7 +117,6 @@ export class EventOrThingFields extends Component {
               }
             }}
             title="Stock[ou] Places affecté[es]"
-            type={isReadOnly ? 'text' : 'number'}
           />
         </td>
 
@@ -137,16 +125,14 @@ export class EventOrThingFields extends Component {
         </td>
       </Fragment>
     )
-    return recursiveMap(children, parseFormChild)
   }
 }
 
 EventOrThingFields.defaultProps = {
   beginningDatetime: null,
-  isReadOnly: true,
+  readOnly: true,
   isEventStock: true,
   offer: null,
-  parseFormChild: c => c,
   stockPatch: null,
 }
 
@@ -154,10 +140,10 @@ EventOrThingFields.propTypes = {
   beginningDatetime: PropTypes.string,
   closeInfo: PropTypes.func.isRequired,
   dispatch: PropTypes.func.isRequired,
-  isReadOnly: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
   isEventStock: PropTypes.bool,
   offer: PropTypes.object,
   parseFormChild: PropTypes.func,
+  readOnly: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
   showInfo: PropTypes.func.isRequired,
   stockPatch: PropTypes.object,
 }

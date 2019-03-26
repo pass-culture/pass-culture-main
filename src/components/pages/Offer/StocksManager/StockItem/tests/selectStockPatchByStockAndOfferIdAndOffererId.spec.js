@@ -34,16 +34,10 @@ describe('createOfferersSelector', () => {
     )
     const expected = {
       available: 22,
+      beginningDatetime: undefined,
       bookingLimitDatetime: '2019-03-13T23:00:00Z',
-      bookingRecapSent: null,
-      dateModified: '2019-03-07T10:40:07.318721Z',
-      dateModifiedAtLastProvider: '2019-03-07T10:40:07.318695Z',
-      groupSize: 1,
+      endDatetime: undefined,
       id: 'MU',
-      idAtProviders: null,
-      isSoftDeleted: false,
-      lastProviderId: null,
-      modelName: 'Stock',
       offerId: 'UU',
       offererId: 'BA',
       price: 17,

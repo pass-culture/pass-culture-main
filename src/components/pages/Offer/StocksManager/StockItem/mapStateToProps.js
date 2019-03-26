@@ -7,13 +7,11 @@ import selectTimezoneByVenueId from 'selectors/selectTimezoneByVenueId'
 import { translateQueryParamsToApiParams } from 'utils/translate'
 
 export default function mapStateToProps(state, ownProps) {
-  const { form } = state
   const {
     match: { params },
     query,
     stock,
   } = ownProps
-  const { id: stockId } = stock || {}
   const { stockIdOrNew } = translateQueryParamsToApiParams(query.parse())
 
   const offerId = params.offerId
@@ -32,38 +30,18 @@ export default function mapStateToProps(state, ownProps) {
     managingOffererId
   )
 
-  const isReadOnly =
-    !stockIdOrNew ||
-    (stockIdOrNew === 'nouveau' && typeof stockId !== 'undefined') ||
-    (stockIdOrNew !== 'nouveau' && stockId !== stockIdOrNew)
-
   const offerer = selectOffererById(state, managingOffererId)
   const hasIban =
     (venue && typeof venue.iban !== 'undefined') ||
     (offerer && typeof offerer.iban !== 'undefined')
-
-  const stockFormKey = (stockPatch && stockPatch.id) || ''
-  const stockForm = form && form[`stock${stockFormKey}`]
-  const {
-    beginningDatetime: formBeginningDatetime,
-    bookingLimitDatetime: formBookingLimitDatetime,
-    endDatetime: formEndDatetime,
-    price: formPrice,
-  } = stockForm || {}
 
   const tz = selectTimezoneByVenueId(state, venueId)
 
   return {
     event,
     eventId,
-    formBeginningDatetime,
-    formBookingLimitDatetime,
-    formEndDatetime,
-    formPrice,
     hasIban,
-    isReadOnly,
     offer,
-    stockFormKey,
     stockPatch,
     stockIdOrNew,
     tz,

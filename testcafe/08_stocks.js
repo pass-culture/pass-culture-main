@@ -29,7 +29,7 @@ test("Je peux créer un stock d'événement d'une offre vide sans remplir de cha
   let location = await t.eval(() => window.location)
   let queryParams = parse(location.search)
   await t.expect(queryParams.gestion).eql(null)
-  await t.expect(queryParams.stock).eql('nouveau')
+  await t.expect(queryParams.stock).eql('creation')
 
   // when
   await t.click(submitButton)
@@ -56,7 +56,7 @@ test('Je peux créer un autre stock et remplir des champs', async t => {
   let location = await t.eval(() => window.location)
   let queryParams = parse(location.search)
   await t.expect(queryParams.gestion).eql(null)
-  await t.expect(queryParams.stock).eql('nouveau')
+  await t.expect(queryParams.stock).eql('creation')
 
   // when
   await t.typeText(priceInput, '10').typeText(availableInput, '50')
@@ -84,7 +84,7 @@ test('Je peux créer un stock en utilisant la touche Entrée', async t => {
   let location = await t.eval(() => window.location)
   let queryParams = parse(location.search)
   await t.expect(queryParams.gestion).eql(null)
-  await t.expect(queryParams.stock).eql('nouveau')
+  await t.expect(queryParams.stock).eql('creation')
 
   // when
   await t.pressKey('Enter')
@@ -152,7 +152,7 @@ test('Je peux interrompre la saisie en utilisant la touche Escape', async t => {
   let location = await t.eval(() => window.location)
   let queryParams = parse(location.search)
   await t.expect(queryParams.gestion).eql(null)
-  await t.expect(queryParams.stock).eql('nouveau')
+  await t.expect(queryParams.stock).eql('creation')
 
   // when
   await t.pressKey('esc')
@@ -239,16 +239,16 @@ fixture('Offer Gestion C | Modifier des stocks')
 
 test('Je peux modifier un stock', async t => {
   // given
-  const editAnchor = Selector('a.edit-stock:first-child')
   const beginInput = Selector('input.date')
   const datePicker = Selector('.react-datepicker')
   const datePickerLastDay = Selector(
     '.react-datepicker__week:last-child .react-datepicker__day:last-child'
   )
-  const { offer, user } = await fetchSandbox(
+  const { offer, stock, user } = await fetchSandbox(
     'pro_08_stocks',
     'get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_user_offerer_with_event_offer_with_stock'
   )
+  const editAnchor = Selector(`#edit-stock-${stock.id}-button`)
   await navigateToOfferAs(user, offer)(t)
   await t.click(manageStockAnchor)
 
@@ -259,7 +259,7 @@ test('Je peux modifier un stock', async t => {
   let location = await t.eval(() => window.location)
   let queryParams = parse(location.search)
   await t.expect(queryParams.gestion).eql(null)
-  await t.expect(queryParams.stock).match(/[A-Z0-9]*/)
+  await t.expect(queryParams[`stock${stock.id}`]).eql('modification')
   await t
     .expect(beginInput.exists)
     .ok()

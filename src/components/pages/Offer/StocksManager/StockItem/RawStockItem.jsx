@@ -1,126 +1,154 @@
-import { Form, resetForm } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
+import { Form } from 'react-final-form'
+import { requestData } from 'redux-saga-data'
 
 import EditAndDeleteControl from './EditAndDeleteControl'
 import EventFields from './EventFields'
 import EventOrThingFields from './EventOrThingFields'
 import SubmitAndCancelControl from './SubmitAndCancelControl'
+import { errorKeyToFrenchKey } from './utils'
+import { selectTimeDecoratorFromTimeNameAndDateNameAndTz } from 'components/layout/form'
 
 export class RawStockItem extends Component {
-  componentDidUpdate(prevProps, prevState) {
-    const { isReadOnly } = this.props
-    if (!prevProps.isReadOnly && isReadOnly) {
-      this.handleResetForm()
+  constructor() {
+    super()
+    this.state = {
+      isRequestPending: false,
     }
   }
 
-  componentWillMount() {
-    this.handleResetForm()
+  handleRequestFail = formResolver => (state, action) => {
+    const { handleSetErrors } = this.props
+    const {
+      payload: { errors },
+    } = action
+    const nextState = { isRequestPending: false }
+    const frenchErrors = Object.keys(errors)
+      .filter(errorKeyToFrenchKey)
+      .reduce(
+        (result, errorKey) =>
+          Object.assign(
+            { [errorKeyToFrenchKey(errorKey)]: errors[errorKey] },
+            result
+          ),
+        null
+      )
+    this.setState(nextState, () => handleSetErrors(frenchErrors))
   }
 
-  handleResetForm = () => {
-    const { dispatch, isReadOnly } = this.props
-    if (isReadOnly) {
-      dispatch(resetForm())
-    }
+  handleRequestSuccess = formResolver => () => {
+    const { query, stockPatch } = this.props
+    const { id: stockId } = stockPatch
+    const nextState = { isRequestPending: false }
+    this.setState(nextState, () => {
+      query.changeToReadOnlyUrl('stock', stockId)
+      formResolver()
+    })
   }
 
-  handleSuccess = (state, action) => {
-    const { history, offer } = this.props
-    const { id: offerId } = offer
-    history.push(`/offres/${offerId}?gestion`)
+  onFormSubmit = formValues => {
+    const { dispatch, query, stockPatch } = this.props
+    const { id: stockId } = stockPatch
+    const context = query.context('stock', stockId)
+    const { method } = context
+    const apiPath = `/stocks/${stockId || ''}`
+    this.setState({ isRequestPending: true })
+
+    const formSubmitPromise = new Promise(resolve => {
+      dispatch(
+        requestData({
+          apiPath,
+          body: { ...formValues },
+          handleFail: this.handleRequestFail(resolve),
+          handleSuccess: this.handleRequestSuccess(resolve),
+          method,
+        })
+      )
+    })
+    return formSubmitPromise
   }
 
   render() {
     const {
       closeInfo,
       dispatch,
-      formBeginningDatetime,
-      formBookingLimitDatetime,
-      formEndDatetime,
-      formPrice,
       hasIban,
       history,
       isEventStock,
-      isReadOnly,
       offer,
+      query,
       showInfo,
-      stockFormKey,
       stockPatch,
       stocks,
       tz,
     } = this.props
-    let { beginningDatetime } = stockPatch || {}
-    beginningDatetime = formBeginningDatetime || beginningDatetime
-
-    const name = `stock${stockFormKey}`
-    let action = ''
-    let stockId
-    if (stockPatch && stockPatch.id) {
-      stockId = stockPatch.id
-      action = `/stocks/${stockId}`
-    } else if (stockPatch && stockPatch.id) {
-      stockId = stockPatch.id
-      action = `/stocks/${stockId}`
-    } else if (!isReadOnly) {
-      action = '/stocks'
-      stockId = null
-    }
+    const { isRequestPending } = this.state
+    const { id: stockId } = stockPatch
+    const { readOnly } = query.context('stock', stockId)
 
     return (
       <tbody ref={DOMNode => (this.tbody = DOMNode)}>
         <Form
-          action={action}
-          BlockComponent={null}
-          className="stock-item"
-          handleSuccess={this.handleSuccess}
-          layout="input-only"
-          name={name}
-          patch={stockPatch}
-          size="small"
-          readOnly={isReadOnly}
-          Tag="tr">
-          {isEventStock && (
-            <EventFields
-              beginningDatetime={beginningDatetime}
-              dispatch={dispatch}
-              formBeginningDatetime={formBeginningDatetime}
-              formBookingLimitDatetime={formBookingLimitDatetime}
-              formEndDatetime={formEndDatetime}
-              isReadOnly={isReadOnly}
-              stockFormKey={stockFormKey}
-              stockPatch={stockPatch}
-              stocks={stocks}
-              tz={tz}
-            />
-          )}
-          <EventOrThingFields
-            beginningDatetime={beginningDatetime}
-            closeInfo={closeInfo}
-            dispatch={dispatch}
-            formPrice={formPrice}
-            hasIban={hasIban}
-            isEventStock={isEventStock}
-            isReadOnly={isReadOnly}
-            offer={offer}
-            showInfo={showInfo}
-            stockFormKey={stockFormKey}
-            stockPatch={stockPatch}
-          />
-          {isReadOnly ? (
-            <EditAndDeleteControl
-              dispatch={dispatch}
-              history={history}
-              isEventStock={isEventStock}
-              offer={offer}
-              stockPatch={stockPatch}
-              tbody={this.tbody}
-            />
-          ) : (
-            <SubmitAndCancelControl offer={offer} />
-          )}
-        </Form>
+          decorators={[
+            selectTimeDecoratorFromTimeNameAndDateNameAndTz(
+              'beginningTime',
+              'beginningDatetime',
+              tz
+            ),
+            selectTimeDecoratorFromTimeNameAndDateNameAndTz(
+              'endTime',
+              'endDatetime',
+              tz
+            ),
+          ]}
+          initialValues={stockPatch}
+          onSubmit={this.onFormSubmit}
+          render={({ form, values, handleSubmit }) => {
+            const { beginningDatetime } = values
+            return (
+              <tr className="stock-item">
+                {isEventStock && (
+                  <EventFields
+                    dispatch={dispatch}
+                    readOnly={readOnly}
+                    stockPatch={stockPatch}
+                    stocks={stocks}
+                    tz={tz}
+                    values={values}
+                  />
+                )}
+                <EventOrThingFields
+                  beginningDatetime={beginningDatetime}
+                  closeInfo={closeInfo}
+                  dispatch={dispatch}
+                  hasIban={hasIban}
+                  isEventStock={isEventStock}
+                  readOnly={readOnly}
+                  offer={offer}
+                  showInfo={showInfo}
+                  stockPatch={stockPatch}
+                />
+                {readOnly ? (
+                  <EditAndDeleteControl
+                    dispatch={dispatch}
+                    history={history}
+                    isEventStock={isEventStock}
+                    offer={offer}
+                    stockPatch={stockPatch}
+                    tbody={this.tbody}
+                  />
+                ) : (
+                  <SubmitAndCancelControl
+                    handleSubmit={handleSubmit}
+                    isRequestPending={isRequestPending}
+                    stockId={stockId}
+                  />
+                )}
+              </tr>
+            )
+          }}
+        />
       </tbody>
     )
   }
@@ -131,7 +159,6 @@ RawStockItem.defaultProps = {
   formBeginningDatetime: null,
   formBookingLimitDatetime: null,
   formEndDatetime: null,
-  isReadOnly: null,
   offer: null,
   showInfo: PropTypes.func.isRequired,
   stocks: null,
@@ -139,14 +166,13 @@ RawStockItem.defaultProps = {
 
 RawStockItem.propTypes = {
   closeInfo: PropTypes.func.isRequired,
-  formBeginningDatetime: PropTypes.string,
-  formBookingLimitDatetime: PropTypes.string,
-  formEndDatetime: PropTypes.string,
+  dispatch: PropTypes.func.isRequired,
   hasIban: PropTypes.bool.isRequired,
   history: PropTypes.object.isRequired,
   isEventStock: PropTypes.bool.isRequired,
-  isReadOnly: PropTypes.bool,
   offer: PropTypes.object,
+  query: PropTypes.object.isRequired,
+  stockPatch: PropTypes.object.isRequired,
   stocks: PropTypes.arrayOf(PropTypes.object),
   showInfo: PropTypes.func.isRequired,
 }

@@ -1,27 +1,45 @@
-import { recursiveMap, SubmitButton } from 'pass-culture-shared'
+import classnames from 'classnames'
+import PropTypes from 'prop-types'
 import React, { Fragment } from 'react'
-import { NavLink } from 'react-router-dom'
 
-const SubmitAndCancelControl = ({ offer, parseFormChild }) => {
-  const { id: offerId } = offer
-  const children = (
-    <Fragment>
-      <td>
-        <SubmitButton className="button is-primary is-small submitStep">
-          Valider
-        </SubmitButton>
-      </td>
-      <td className="is-clipped">
-        <NavLink
-          className="button is-secondary is-small cancel-step"
-          to={`/offres/${offerId}?gestion`}>
-          Annuler
-        </NavLink>
-      </td>
-    </Fragment>
-  )
-  return recursiveMap(children, parseFormChild)
+import { withFrenchQueryRouter } from 'components/hocs'
+
+const SubmitAndCancelControl = ({
+  handleSubmit,
+  isRequestPending,
+  query,
+  stockId,
+}) => (
+  <Fragment>
+    <td>
+      <button
+        className={classnames('button is-primary is-small submitStep', {
+          'is-loading': isRequestPending,
+        })}
+        onClick={handleSubmit}
+        type="submit">
+        Valider
+      </button>
+    </td>
+    <td className="is-clipped">
+      <button
+        className="button is-secondary is-small cancel-step"
+        onClick={() => query.changeToReadOnlyUrl('stock', stockId)}>
+        Annuler
+      </button>
+    </td>
+  </Fragment>
+)
+
+SubmitAndCancelControl.defaultProps = {
+  stockId: null,
 }
 
-export default SubmitAndCancelControl
-SubmitAndCancelControl.isParsedByForm = true
+SubmitAndCancelControl.propTypes = {
+  handleSubmit: PropTypes.func.isRequired,
+  isRequestPending: PropTypes.bool.isRequired,
+  query: PropTypes.object.isRequired,
+  stockId: PropTypes.string,
+}
+
+export default withFrenchQueryRouter(SubmitAndCancelControl)

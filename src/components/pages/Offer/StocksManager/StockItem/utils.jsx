@@ -51,3 +51,20 @@ export function getDatetimeTwoDaysBefore(datetime) {
     .subtract(2, 'day')
     .toISOString()
 }
+
+export function errorKeyToFrenchKey(errorKey) {
+  switch (errorKey) {
+    case 'available':
+      return 'Places'
+    case 'beginningDatetime':
+      return 'Date de début'
+    case 'bookingLimitDatetime':
+      return 'Date de réservation'
+    case 'endDatetime':
+      return 'Date de fin'
+    case 'price':
+      return 'Prix'
+    default:
+      return errorKey
+  }
+}

@@ -15,6 +15,8 @@ describe('src | components | pages | Offer | StockItem | RawStockItem ', () => {
         hasIban: false,
         history: { push: jest.fn() },
         isEventStock: false,
+        query: { context: () => ({}) },
+        stockPatch: {},
         stocks: [],
       }
 
@@ -27,8 +29,8 @@ describe('src | components | pages | Offer | StockItem | RawStockItem ', () => {
     })
   })
   describe('functions', () => {
-    describe('handleSuccess', () => {
-      it('redirect to gestion at patch success', () => {
+    describe('handleRequestSuccess', () => {
+      it.only('redirect to gestion at patch success', done => {
         // given
         const state = {}
         const action = {
@@ -40,30 +42,34 @@ describe('src | components | pages | Offer | StockItem | RawStockItem ', () => {
           },
           type: 'SUCCESS_DATA_PATCH_STOCKS/K9',
         }
-        const historyMock = { push: jest.fn() }
         const initialProps = {
           closeInfo: jest.fn(),
           dispatch: jest.fn(),
           hasIban: false,
-          history: historyMock,
           isEditing: false,
           isEventStock: false,
           offer: {
             id: 'TY',
           },
+          query: { changeToReadOnlyUrl: jest.fn(), context: () => ({}) },
           stockPatch: {
             id: 'DG',
           },
           stocks: [],
         }
-
-        // when
         const wrapper = shallow(<RawStockItem {...initialProps} />)
-        wrapper.instance().handleSuccess(state, action)
-        const expected = '/offres/TY?gestion'
 
-        // then
-        expect(historyMock.push).toHaveBeenCalledWith(expected)
+        new Promise((resolve, reject) => {
+          // when
+          wrapper.instance().handleRequestSuccess(resolve)()
+        }).then(() => {
+          // then
+          expect(initialProps.query.changeToReadOnlyUrl).toHaveBeenCalledWith(
+            'stock',
+            'DG'
+          )
+          done()
+        })
       })
     })
   })

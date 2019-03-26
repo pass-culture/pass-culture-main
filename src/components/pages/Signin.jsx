@@ -3,9 +3,11 @@ import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import { NavLink, Link } from 'react-router-dom'
 import { compose } from 'redux'
-import withQueryRouter from 'with-query-router'
 
-import { withRedirectToOffersWhenAlreadyAuthenticated } from '../hocs'
+import {
+  withFrenchQueryRouter,
+  withRedirectToOffersWhenAlreadyAuthenticated,
+} from '../hocs'
 import Logo from '../layout/Logo'
 import Main from '../layout/Main'
 import { mapApiToBrowser } from '../../utils/translate'
@@ -110,5 +112,5 @@ Signin.propTypes = {
 
 export default compose(
   withRedirectToOffersWhenAlreadyAuthenticated,
-  withQueryRouter
+  withFrenchQueryRouter
 )(Signin)

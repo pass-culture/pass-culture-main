@@ -11209,9 +11209,9 @@ with-login@2.4.0:
     reselect "^3.0.1"
     uuid "^3.3.2"
 
-with-query-router@0.1.0:
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/with-query-router/-/with-query-router-0.1.0.tgz#328506c621fcc895774ba2dbaeffa423be874007"
+with-query-router@0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/with-query-router/-/with-query-router-0.1.1.tgz#3e8292f19728b37307f9cdb77437d7060e6736fb"
   dependencies:
     classnames "2.2.5"
     eslint "^5.8.0"
@@ -11225,12 +11225,13 @@ with-query-router@0.1.0:
     redux "^4.0.0"
     reselect "^3.0.1"
 
-with-query-router@0.1.1:
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/with-query-router/-/with-query-router-0.1.1.tgz#3e8292f19728b37307f9cdb77437d7060e6736fb"
+with-query-router@2.7.0:
+  version "2.7.0"
+  resolved "https://registry.yarnpkg.com/with-query-router/-/with-query-router-2.7.0.tgz#6228b5cd15052fa221470fe4adad291a365787ab"
   dependencies:
     classnames "2.2.5"
     eslint "^5.8.0"
+    lodash.invert "^4.3.0"
     lodash.uniq "^4.5.0"
     prop-types "^15.6.2"
     query-string "^5.1.1"

@@ -1,12 +1,11 @@
-import get from 'lodash.get'
 import PropTypes from 'prop-types'
-import { Icon } from 'pass-culture-shared'
 import React, { Component, Fragment } from 'react'
 import { Portal } from 'react-portal'
-import { NavLink } from 'react-router-dom'
 import { requestData } from 'redux-saga-data'
 
 import DeleteDialog from './DeleteDialog'
+import { withFrenchQueryRouter } from 'components/hocs'
+import Icon from 'components/layout/Icon'
 
 class EditAndDeleteControl extends Component {
   constructor(props) {
@@ -35,14 +34,13 @@ class EditAndDeleteControl extends Component {
   }
 
   render() {
-    const { offer, isEventStock, stockPatch } = this.props
-    const { id: offerId } = offer || {}
+    const { isEventStock, query, stockPatch } = this.props
+    const { id: stockId } = stockPatch
     const { isDeleting } = this.state
 
-    const editAndDeleteNavUrl = `/offres/${offerId}?gestion&stock=${get(
-      stockPatch,
-      'id'
-    )}`
+    if (!stockId) {
+      return null
+    }
 
     // Delete dialog
     if (isDeleting) {
@@ -62,13 +60,14 @@ class EditAndDeleteControl extends Component {
     return (
       <Fragment>
         <td>
-          <NavLink
-            to={editAndDeleteNavUrl}
-            className="button is-small is-secondary edit-stock">
+          <button
+            className="button is-small is-secondary edit-stock"
+            id={`edit-stock-${stockId}-button`}
+            onClick={() => query.changeToModificationUrl('stock', stockId)}>
             <span className="icon">
               <Icon svg="ico-pen-r" />
             </span>
-          </NavLink>
+          </button>
         </td>
         <td className="is-clipped">
           {!isDeleting && (
@@ -89,6 +88,8 @@ class EditAndDeleteControl extends Component {
 
 EditAndDeleteControl.propTypes = {
   dispatch: PropTypes.func.isRequired,
+  isEventStock: PropTypes.bool.isRequired,
+  query: PropTypes.object.isRequired,
 }
 
-export default EditAndDeleteControl
+export default withFrenchQueryRouter(EditAndDeleteControl)
