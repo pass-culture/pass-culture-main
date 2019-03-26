@@ -33,6 +33,14 @@ jobs: # a collection of steps
           paths:
             - "venv"
       - run:
+          name: Install dockerize
+          command: |
+            wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
+            sudo tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
+            rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
+          environment:
+            DOCKERIZE_VERSION: v0.6.1
+      - run:
           name: Running API
           command: |
             gpg --passphrase $PASS_PRIVATE --batch --output private.tar.gz -d private.tar.gz.gpg
@@ -44,6 +52,7 @@ jobs: # a collection of steps
       - run: # run tests
           name: Running tests
           command: |
+            dockerize -wait http://localhost:5000/health -timeout 1m -wait-retry-interval 1s
             . venv/bin/activate
             pytest tests --cov --cov-report html
             coveralls
@@ -64,7 +73,6 @@ jobs: # a collection of steps
             python3 -m venv venv
             . venv/bin/activate
             pip install -r requirements.txt
-
       - run:
           name: Check outdated dependencies
           command: |
@@ -75,7 +83,7 @@ jobs: # a collection of steps
           when: on_fail
           command: |
             export BOT_MESSAGE="Build *$CIRCLE_JOB* fail : $CIRCLE_BUILD_URL"
-            curl -d text="$BOT_MESSAGE" https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage?chat_id=$TELEGRAM_CHAT_ID&parse_mode=Markdown
+            curl -d text="$BOT_MESSAGE" "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage?chat_id=$TELEGRAM_CHAT_ID&parse_mode=Markdown"
 
   functional-tests-webapp:
     machine:
@@ -142,7 +150,7 @@ jobs: # a collection of steps
           when: on_fail
           command: |
             export BOT_MESSAGE="Build *$CIRCLE_JOB* fail : $CIRCLE_BUILD_URL"
-            curl -d text="$BOT_MESSAGE" https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage?chat_id=$TELEGRAM_CHAT_ID&parse_mode=Markdown
+            curl -d text="$BOT_MESSAGE" "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage?chat_id=$TELEGRAM_CHAT_ID&parse_mode=Markdown"
 
   functional-tests-pro:
     machine:
@@ -209,7 +217,7 @@ jobs: # a collection of steps
           when: on_fail
           command: |
             export BOT_MESSAGE="Build *$CIRCLE_JOB* fail : $CIRCLE_BUILD_URL"
-            curl -d text="$BOT_MESSAGE" https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage?chat_id=$TELEGRAM_CHAT_ID&parse_mode=Markdown
+            curl -d text="$BOT_MESSAGE" "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage?chat_id=$TELEGRAM_CHAT_ID&parse_mode=Markdown"
 
 workflows:
   version: 2
