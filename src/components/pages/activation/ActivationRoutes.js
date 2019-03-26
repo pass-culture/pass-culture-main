@@ -1,7 +1,7 @@
 import React from 'react'
-import { Redirect, Route } from 'react-router-dom'
+import { Redirect, Route, Switch } from 'react-router-dom'
 
-import ActivationError from './error'
+import ActivationError from './error/ActivationError'
 import ActivationPageContainer from './password/ActivationPageContainer'
 
 const ActivationRoutes = () => (
@@ -9,9 +9,11 @@ const ActivationRoutes = () => (
     id="activation-page"
     className="is-full-layout is-relative pc-gradient is-white-text flex-rows"
   >
-    <Route path="/activation/error" component={ActivationError} exact />
-    <Route path="/activation/:token" component={ActivationPageContainer} />
-    <Redirect to="/activation/error" />
+    <Switch>
+      <Route path="/activation/error" component={ActivationError} exact />
+      <Route path="/activation/:token" component={ActivationPageContainer} />
+      <Redirect to="/activation/error" />
+    </Switch>
   </div>
 )
 

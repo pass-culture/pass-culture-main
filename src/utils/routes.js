@@ -1,7 +1,7 @@
 import React from 'react'
 import { Redirect } from 'react-router-dom'
 
-import ActivationRoutes from '../components/pages/activation/ActivationRoutes'
+import ActivationRoutesContainer from '../components/pages/activation/ActivationRoutesContainer'
 import BetaPage from '../components/pages/BetaPage'
 import MyBookingsPage from '../components/pages/my-bookings'
 import DiscoveryPage from '../components/pages/discovery'
@@ -27,7 +27,7 @@ const routes = [
     title: "Bienvenue dans l'avant-première du Pass Culture",
   },
   {
-    component: ActivationRoutes,
+    component: ActivationRoutesContainer,
     path: '/activation/:token?',
     title: 'Activation',
   },

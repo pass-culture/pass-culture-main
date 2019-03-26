@@ -4,5 +4,3 @@ export const withRedirectToDiscoveryWhenAlreadyAuthenticated = withLogin({
   isRequired: false,
   successRedirect: () => '/decouverte',
 })
-
-export default withRedirectToDiscoveryWhenAlreadyAuthenticated
