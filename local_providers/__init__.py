@@ -6,6 +6,7 @@ from local_providers.titelive_thing_descriptions import TiteLiveThingDescription
 from local_providers.titelive_thing_thumbs import TiteLiveThingThumbs
 from local_providers.demarches_simplifiees_bank_information import BankInformationProvider
 from local_providers.init_titelive_things import InitTiteLiveThings
+from local_providers.init_titelive_thing_descriptions import InitTiteLiveThingDescriptions
 
 __all__ = (
     'OpenAgendaEvents',
@@ -14,5 +15,6 @@ __all__ = (
     'TiteLiveThingDescriptions',
     'TiteLiveThingThumbs',
     'BankInformationProvider',
-    'InitTiteLiveThings'
+    'InitTiteLiveThings',
+    'InitTiteLiveThingDescriptions'
 )

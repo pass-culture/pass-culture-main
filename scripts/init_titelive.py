@@ -4,6 +4,7 @@ from pprint import pprint
 
 from flask import current_app as app
 
+from local_providers.init_titelive_thing_descriptions import InitTiteLiveThingDescriptions
 from local_providers.init_titelive_things import InitTiteLiveThings
 from scripts.init_titelive.clean_images_in_object_storage import clean_remaining_titelive_images_in_object_storage
 from scripts.init_titelive.import_thumbs import import_init_titelive_thumbs
@@ -50,3 +51,15 @@ def clean_titelive_remaining_images(container, pattern):
         print('ERROR: ' + str(e))
         traceback.print_tb(e.__traceback__)
         pprint(vars(e))
+
+
+@app.manager.option('-l',
+                    '--limit',
+                    help='Limit update to n items per providerName/venueId'
+                         + ' (for test purposes)', type=int)
+@app.manager.option('-f',
+                    '--file',
+                    help='File containing Titelive Description Things data')
+def import_titelive_full_descriptions(limit: int, file: str):
+    provider = InitTiteLiveThingDescriptions(file)
+    return do_update(provider, limit)
