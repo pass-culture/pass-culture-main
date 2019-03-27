@@ -223,7 +223,7 @@ class Get:
         @clean_database
         def when_activation_token_does_not_exist(self, app):
             # when
-            request = TestClient().get(API_URL + '/users/token/None')
+            request = TestClient().get(API_URL + '/users/token/3YU26FS')
 
             # then
             assert request.status_code == 404

@@ -22,14 +22,14 @@ def get_profile():
     return jsonify(user)
 
 
-@app.route("/users/token/<token_id>", methods=["GET"])
-def check_activation_token_exists(token_id):
-    token = find_user_by_reset_password_token(token_id)
+@app.route("/users/token/<token>", methods=["GET"])
+def check_activation_token_exists(token):
+    user = find_user_by_reset_password_token(token)
 
-    if token is None:
+    if user is None:
         return jsonify(), 404
-    else:
-        return jsonify(), 200
+
+    return jsonify(), 200
 
 
 @app.route('/users/current', methods=['PATCH'])
