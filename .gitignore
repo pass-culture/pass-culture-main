@@ -51,6 +51,7 @@ public/static/fontello/.fontello.session
 
 # IDEA
 .idea/
+webapp.iml
 
 # licenses
 licenses
