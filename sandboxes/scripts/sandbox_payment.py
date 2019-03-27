@@ -90,6 +90,15 @@ def save_reimbursable_thing_offer(venue: Venue):
     return reimbursable_stock
 
 
+def save_online_book(venue: Venue):
+    paid_reimbursable_offer = create_thing_offer(venue, thing_name='Roman cool',
+                                                 thing_type=ThingType.LIVRE_EDITION, url='https://mycoolbook.fr')
+    reimbursable_stock = create_stock(price=20, offer=paid_reimbursable_offer)
+    PcObject.check_and_save(reimbursable_stock)
+    logger.info('created 1 online book offer with 1 paid stock of 20 €')
+    return reimbursable_stock
+
+
 def save_paid_reimbursable_event_offer(venue: Venue):
     paid_reimbursable_event_offer = create_event_offer(venue, event_name='Paid event',
                                                        event_type=EventType.SPECTACLE_VIVANT)
@@ -121,6 +130,7 @@ def save_sandbox():
         = save_paid_reimbursable_event_offer(venue_with_siret_without_iban)
 
     reimbursable_stock_of_offerer_without_iban = save_reimbursable_thing_offer(venue_with_siret_with_iban)
+    online_book_stock_of_offerer_without_iban = save_online_book(venue_with_siret_with_iban)
 
     bookings = [
         create_booking(
@@ -379,6 +389,51 @@ def save_sandbox():
             stock=reimbursable_stock_of_offerer_without_iban,
             venue=venue_with_siret_with_iban,
             token='TOKE30',
+            is_used=True
+        ),
+        create_booking(
+            user1,
+            recommendation=create_recommendation(offer=online_book_stock_of_offerer_without_iban.resolvedOffer,
+                                                 user=user1),
+            stock=online_book_stock_of_offerer_without_iban,
+            venue=venue_with_siret_with_iban,
+            token='TOKE31',
+            is_used=False
+        ),
+        create_booking(
+            user2,
+            recommendation=create_recommendation(offer=online_book_stock_of_offerer_without_iban.resolvedOffer,
+                                                 user=user2),
+            stock=online_book_stock_of_offerer_without_iban,
+            venue=venue_with_siret_with_iban,
+            token='TOKE32',
+            is_used=False
+        ),
+        create_booking(
+            user3,
+            recommendation=create_recommendation(offer=online_book_stock_of_offerer_without_iban.resolvedOffer,
+                                                 user=user3),
+            stock=online_book_stock_of_offerer_without_iban,
+            venue=venue_with_siret_with_iban,
+            token='TOKE33',
+            is_used=False
+        ),
+        create_booking(
+            user4,
+            recommendation=create_recommendation(offer=online_book_stock_of_offerer_without_iban.resolvedOffer,
+                                                 user=user4),
+            stock=online_book_stock_of_offerer_without_iban,
+            venue=venue_with_siret_with_iban,
+            token='TOKE34',
+            is_used=True
+        ),
+        create_booking(
+            user5,
+            recommendation=create_recommendation(offer=online_book_stock_of_offerer_without_iban.resolvedOffer,
+                                                 user=user5),
+            stock=online_book_stock_of_offerer_without_iban,
+            venue=venue_with_siret_with_iban,
+            token='TOKE35',
             is_used=True
         )
     ]
