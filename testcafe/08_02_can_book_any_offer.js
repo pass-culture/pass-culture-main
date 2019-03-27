@@ -11,10 +11,12 @@ let offerBookingPage = null
 let previousWalletValue = null
 const discoverURL = `${ROOT_PATH}decouverte`
 
-const bookOfferButton = Selector('#verso-booking-button')
 const alreadyBookedOfferButton = Selector('#verso-already-booked-button')
+const bookOfferButton = Selector('#verso-booking-button')
+const bookingItem = Selector('.booking-item')
 const closeMenu = Selector('#main-menu-close-button')
 const closeBookingButton = Selector('#booking-close-button')
+const menuReservations = Selector('.navlink').withText('Mes Réservations')
 const openMenu = Selector('#deck-footer .profile-button')
 const openVerso = Selector('#deck-open-verso-button')
 const sendBookingButton = Selector('#booking-validation-button')
@@ -55,6 +57,19 @@ test(`Je peux réserver l'offre`, async t => {
     .click(bookOfferButton)
     .expect(getPageUrl())
     .eql(offerBookingPage)
+    .expect(sendBookingButton.exists)
+    .ok()
+})
+
+test(`Je vois l'offre dans "mes réservations" et je peux cliquer dessus pour revenir à la page booking`, async t => {
+  await t
+    .click(openMenu)
+    .click(menuReservations)
+    .expect(getPageUrl())
+    .eql(`${ROOT_PATH}reservations`)
+    .click(bookingItem)
+    .expect(getPageUrl())
+    .match(/\/decouverte\/.*\/verso$/)
     .expect(sendBookingButton.exists)
     .ok()
 })
