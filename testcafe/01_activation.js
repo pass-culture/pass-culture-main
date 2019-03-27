@@ -6,9 +6,6 @@ import { ROOT_PATH } from '../src/utils/config'
 
 const activationEmailSpan = Selector('#activation-email')
 const cguInput = Selector("input[name='cguCheckBox']")
-const errorSpan = Selector('span.pc-error-message').withText(
-  'Votre lien de changement de mot de passe est invalide.'
-)
 const newPasswordInput = Selector('#activation-newPassword')
 const newPasswordConfirm = Selector('#activation-newPasswordConfirm')
 const submitButton = Selector("button[type='submit']")
@@ -59,29 +56,18 @@ test('Sans email en query, je suis redirigé·e vers /activation/error', async t
     .eql(`${baseURL}/error`)
 })
 
-test("Avec un email déjà activé, j'ai un message d'erreur", async t => {
+test('Avec un email déjà activé, je suis redirigé vers la page lien invalide', async t => {
   // given
   const { user } = await fetchSandbox(
     'webapp_01_activation',
     'get_existing_webapp_validated_user'
   )
-  const { email, password } = user
+  const { email } = user
+  const tokenAlreadyUsed = 'BFYU73UV'
 
   // when
-  await t.navigateTo(`${baseURL}/is_activated?email=${email}`)
-
-  // when
-  await t
-    .typeText(newPasswordInput, password)
-    .typeText(newPasswordConfirm, password)
-    .click(cguInput)
-    .click(submitButton)
-    .wait(1000)
+  await t.navigateTo(`${baseURL}/${tokenAlreadyUsed}?email=${email}`)
 
   // then
-  await t
-    .expect(errorSpan.visible)
-    .ok()
-    .expect(submitButton.hasAttribute('disabled'))
-    .ok()
+  await t.expect(getPageUrl()).eql(`${baseURL}/lien-invalide`)
 })
