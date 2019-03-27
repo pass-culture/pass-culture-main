@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from decimal import Decimal
 from enum import Enum
 
-from models import Booking
+from models import Booking, ThingType
 
 MIN_DATETIME = datetime.datetime(datetime.MINYEAR, 1, 1)
 MAX_DATETIME = datetime.datetime(datetime.MAXYEAR, 1, 1)
@@ -60,12 +60,14 @@ class PhysicalOffersReimbursement(ReimbursementRule):
     valid_until = None
 
     def is_relevant(self, booking, **kwargs):
-        return not booking.stock.resolvedOffer.eventOrThing.isDigital
+        eventOrThing = booking.stock.resolvedOffer.eventOrThing
+        book_offer = eventOrThing.type == str(ThingType.LIVRE_EDITION)
+        return book_offer or not eventOrThing.isDigital
 
 
 class MaxReimbursementByOfferer(ReimbursementRule):
     rate = Decimal(0)
-    description = 'Pas de remboursement au dessus du plafond de 23 000 € par offreur'
+    description = 'Pas de remboursement au dessus du plafond de 20 000 € par offreur'
     valid_from = None
     valid_until = None
 
@@ -73,7 +75,7 @@ class MaxReimbursementByOfferer(ReimbursementRule):
         if booking.stock.resolvedOffer.eventOrThing.isDigital:
             return False
         else:
-            return kwargs['cumulative_value'] > 23000
+            return kwargs['cumulative_value'] > 20000
 
 
 class ReimbursementRules(Enum):
