@@ -70,8 +70,6 @@ test(`Je vois l'offre dans "mes réservations" et je peux cliquer dessus pour re
     .click(bookingItem)
     .expect(getPageUrl())
     .match(/\/decouverte\/.*\/verso$/)
-    .expect(sendBookingButton.exists)
-    .ok()
 })
 
 test(`Je peux cliquer sur annuler pour fermer le formulaire de réservation`, async t => {
