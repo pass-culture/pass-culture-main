@@ -42,6 +42,7 @@ export const mapStateToProps = (state, { location, match }) => {
 
   return {
     initialValues,
+    isValidToken: true,
     isValidUrl,
   }
 }

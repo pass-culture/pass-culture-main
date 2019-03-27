@@ -1,8 +1,12 @@
 import { requestData } from 'redux-saga-data'
 import { mapDispatchToProps, mapStateToProps } from '../ActivationPageContainer'
+import { isValidToken } from '../../../../../utils/http/client'
 
 jest.mock('redux-saga-data', () => ({
   requestData: jest.fn(),
+}))
+jest.mock('../../../../../utils/http/client', () => ({
+  isValidToken: jest.fn(),
 }))
 describe('src | components | pages | activation | password | ActivationPageContainer', () => {
   describe('mapDispatchToProps', () => {
@@ -54,6 +58,43 @@ describe('src | components | pages | activation | password | ActivationPageConta
           values,
           failFunction,
           successFunction
+        )
+
+        // then
+        expect(requestData).toHaveBeenCalledWith(config)
+        expect(dispatch).toHaveBeenCalledWith(expectedAction)
+      })
+    })
+
+    describe('sendActivationPasswordForm', () => {
+      it('should dispatch a requestData action', () => {
+        // given
+        const actions = mapDispatchToProps(dispatch)
+        const values = {
+          email: 'fake email',
+          newPassword: 'fake password',
+        }
+        const failFunction = jest.fn(() => {})
+        const successFunction = jest.fn(() => {})
+        const config = {
+          apiPath: '/users/new-password',
+          body: { email: values.email, newPassword: values.newPassword },
+          handleFail: failFunction,
+          handleSuccess: successFunction,
+          method: 'POST',
+          stateKey: 'activatedUserCredentials',
+        }
+        const expectedAction = {
+          config,
+          type: 'REQUEST_DATA_POST_ACTIVATEDUSERCREDENTIALS',
+        }
+        requestData.mockReturnValue(expectedAction)
+
+        // when
+        actions.sendActivationPasswordForm(
+          values,
+          () => failFunction,
+          () => successFunction
         )
 
         // then
@@ -201,6 +242,34 @@ describe('src | components | pages | activation | password | ActivationPageConta
 
         // then
         expect(initialValues).toHaveProperty('token', 'my-precious-token')
+      })
+    })
+
+    describe('isTokenValid', () => {
+      it('should map isTokenValid as true', () => {
+        // given
+        const match = { params: { token: 'my-precious-token' } }
+        const tokenStatusResolvedFromAPI = true
+        isValidToken.mockReturnValue(
+          Promise.resolve(tokenStatusResolvedFromAPI)
+        )
+
+        // when
+        const props = mapStateToProps({}, { location: {}, match })
+
+        // then
+        expect(props).toHaveProperty('isValidToken', tokenStatusResolvedFromAPI)
+      })
+
+      it('should evaluate token validity from URL', () => {
+        // given
+        const match = { params: { token: 'my-precious-token' } }
+
+        // when
+        mapStateToProps({}, { location: {}, match })
+
+        // then
+        expect(isValidToken).toHaveBeenCalledWith('my-precious-token')
       })
     })
   })
