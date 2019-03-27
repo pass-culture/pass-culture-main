@@ -1,5 +1,4 @@
 """ local provider """
-import time
 from sqlalchemy.sql import select
 import traceback
 from abc import abstractmethod
@@ -19,7 +18,6 @@ from models.thing import Thing
 from utils.date import read_json_date
 from utils.human_ids import humanize
 from utils.inflect_engine import inflect_engine
-from utils.logger import logger
 
 CHUNK_MAX_SIZE = 1000
 
@@ -113,7 +111,6 @@ class LocalProvider(Iterator):
             return
         try:
             thumb_dates = self.getObjectThumbDates(obj)
-            need_save = False
             for index, thumb_date in enumerate(thumb_dates):
                 self.checkedThumbs += 1
                 if thumb_date is None:
@@ -124,7 +121,6 @@ class LocalProvider(Iterator):
                     thumb = self.getObjectThumb(obj, index)
                     if thumb is None:
                         continue
-                    need_save = True
                     if existing_date is not None:
                         obj.delete_thumb(index)
                         print("    Updating thumb #" + str(index) + " for " + str(obj))
@@ -135,8 +131,6 @@ class LocalProvider(Iterator):
                         self.updatedThumbs += 1
                     else:
                         self.createdThumbs += 1
-            # if need_save:
-            #     PcObject.check_and_save(obj)
         except Exception as e:
             self.logEvent(LocalProviderEventType.SyncError, e.__class__.__name__)
             self.erroredThumbs += 1
@@ -147,19 +141,13 @@ class LocalProvider(Iterator):
 
     def existingObjectOrNone(self, providable_info):
         conn = db.engine.connect()
-        query = select([providable_info.type]). \
-            where(providable_info.type.idAtProviders == providable_info.idAtProviders)
-        result = conn.execute(query).fetchone()
-        if result is not None:
-            pc_object = {}
-            for x, y in result.items():
-                if x.endswith('Id'):
-                    pc_object[x] = humanize(y)
-                else:
-                    pc_object[x] = y
-            pc_obj = providable_info.type(from_dict=pc_object)
-            pc_obj.id = pc_object['id']
-            return pc_obj
+        model_to_query = providable_info.type
+        query = select([model_to_query]). \
+            where(model_to_query.idAtProviders == providable_info.idAtProviders)
+        db_object_dict = conn.execute(query).fetchone()
+
+        if db_object_dict is not None:
+            return dict_to_object(db_object_dict, model_to_query)
         return None
 
     def createObject(self, providable_info):
@@ -310,10 +298,7 @@ class LocalProvider(Iterator):
                                     chunk_to_update[providable_info.idAtProviders] = pc_obj
 
                         if len(chunk_to_insert) + len(chunk_to_update) >= CHUNK_MAX_SIZE:
-                            time1 = time.time()
                             self.save_chunks(chunk_to_insert, chunk_to_update, providable_info)
-                            time2 = time.time()
-                            logger.info("Time save %s" % str(time2 - time1))
 
                             chunk_to_insert = {}
                             chunk_to_update = {}
@@ -387,3 +372,15 @@ class LocalProvider(Iterator):
             if type(pc_object) == providable_info.type:
                 return pc_object
         return None
+
+
+def dict_to_object(object_dict, model):
+    pc_object = {}
+    for key, value in object_dict.items():
+        if key.endswith('Id'):
+            pc_object[key] = humanize(value)
+        else:
+            pc_object[key] = value
+    pc_obj = model(from_dict=pc_object)
+    pc_obj.id = pc_object['id']
+    return pc_obj

@@ -98,7 +98,7 @@ def get_active_offers_by_type(offer_type, user=None, departement_codes=None, off
     query = department_or_national_offers(query, offer_type, departement_codes)
     logger.debug(lambda:
                  '(reco) department or national {} {} in {}'.format(offer_type.__name__, str(departement_codes),
-                                                                     query.count()))
+                                                                    query.count()))
     query = bookable_offers(query, offer_type)
     logger.debug(lambda: '(reco) bookable_offers {} {}'.format(offer_type.__name__, query.count()))
     query = with_active_and_validated_offerer(query)
@@ -223,16 +223,19 @@ def find_offers_with_filter_parameters(
 
     return query
 
+
 def _has_remaining_stock_predicate():
     return (Stock.available == None) \
            | (Stock.available > Booking.query.filter((Booking.stockId == Stock.id) & (Booking.isCancelled == False))
-                                             .statement.with_only_columns([func.coalesce(func.sum(Booking.quantity), 0)]))
+              .statement.with_only_columns([func.coalesce(func.sum(Booking.quantity), 0)]))
+
 
 def find_searchable_offer(offer_id):
     return Offer.query.filter_by(id=offer_id) \
         .join(Venue) \
         .filter(Venue.validationToken == None) \
         .first()
+
 
 def _filter_recommendable_offers_for_search(offer_query):
     now = datetime.utcnow()
@@ -297,6 +300,12 @@ def find_offer_for_venue_id_and_specific_thing(venue_id, thing):
 
 def find_offer_by_id(offer_id):
     return Offer.query.get(offer_id)
+
+
+def find_offer_by_id_at_providers(id_at_providers):
+    return Offer.query \
+        .filter(Offer.idAtProviders == id_at_providers) \
+        .first()
 
 
 def find_first_offer_linked_to_event(event):

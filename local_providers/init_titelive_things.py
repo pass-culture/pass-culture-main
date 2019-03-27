@@ -15,7 +15,7 @@ from utils.string_processing import trim_with_elipsis
 
 DATE_REGEXP = re.compile('([a-zA-Z]+)(\d+).tit')
 NUMBER_OF_ELEMENTS_PER_LINE = 46  # (45 elements from line + \n)
-
+SYNC_PART_SIZE = 1000
 
 class InitTiteLiveThings(LocalProvider):
     help = ""
@@ -62,7 +62,7 @@ class InitTiteLiveThings(LocalProvider):
                         + " line. Skipping line")
             return None
 
-        if (self.lines_checked % 1000) == 0:
+        if (self.lines_checked % SYNC_PART_SIZE) == 0:
             self.logEvent(LocalProviderEventType.SyncPartEnd,
                           self.lines_checked)
 

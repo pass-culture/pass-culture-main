@@ -200,7 +200,7 @@ class TiteliveThingsTest:
                       erroredThumbs=0,
                       )
         updated_thing = Thing.query.first()
-        assert updated_thing.name != 'Toto à la playa'
+        assert updated_thing.name == 'nouvelles du Chili'
 
     @clean_database
     @patch('local_providers.titelive_things.get_files_to_process_from_titelive_ftp')

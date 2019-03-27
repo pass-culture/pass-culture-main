@@ -7,7 +7,7 @@ from models.db import db
 from models.local_provider import LocalProvider, ProvidableInfo
 from models.stock import Stock
 from repository import thing_queries, local_provider_event_queries, venue_queries
-from utils.logger import logger
+from repository.offer_queries import find_offer_by_id_at_providers
 
 URL_TITELIVE_WEBSERVICE_STOCKS = "https://stock.epagine.fr/stocks/"
 NB_DATA_LIMIT_PER_REQUEST = 5000
@@ -87,46 +87,49 @@ class TiteLiveStocks(LocalProvider):
         # Refresh data before using it
         db.session.add(self.venue)
 
-        p_info_stock = ProvidableInfo()
-        p_info_stock.type = Stock
-        p_info_stock.idAtProviders = "%s@%s" % (self.titelive_stock['ref'], self.venue.siret)
-        p_info_stock.dateModifiedAtProvider = datetime.utcnow()
+        providable_info_stock = ProvidableInfo()
+        providable_info_stock.type = Stock
+        providable_info_stock.idAtProviders = "%s@%s" % (self.titelive_stock['ref'], self.venue.siret)
+        providable_info_stock.dateModifiedAtProvider = datetime.utcnow()
+
+        self.existing_offer = find_offer_by_id_at_providers("%s@%s" % (self.titelive_stock['ref'], self.venue.siret))
 
         self.existing_offer = Offer.query \
             .filter_by(idAtProviders="%s@%s" % (self.titelive_stock['ref'], self.venue.siret)) \
             .one_or_none()
-        if self.existing_offer is None:
-            p_info_offer = ProvidableInfo()
-            p_info_offer.type = Offer
-            p_info_offer.idAtProviders = "%s@%s" % (self.titelive_stock['ref'], self.venue.siret)
-            p_info_offer.dateModifiedAtProvider = datetime.utcnow()
-        else:
-            p_info_offer = None
 
-        return p_info_offer, p_info_stock
+        if self.existing_offer is None:
+            providable_info_offer = ProvidableInfo()
+            providable_info_offer.type = Offer
+            providable_info_offer.idAtProviders = "%s@%s" % (self.titelive_stock['ref'], self.venue.siret)
+            providable_info_offer.dateModifiedAtProvider = datetime.utcnow()
+        else:
+            providable_info_offer = None
+
+        return providable_info_offer, providable_info_stock
 
     def updateObject(self, obj):
         assert obj.idAtProviders == "%s@%s" % (self.titelive_stock['ref'], self.venue.siret)
         if isinstance(obj, Stock):
-            logger.info("Create stock for thing: %s" % self.titelive_stock['ref'])
-            obj.price = int(self.titelive_stock['price'])
-            obj.available = int(self.titelive_stock['available'])
-            obj.bookingLimitDatetime = read_stock_datetime(self.titelive_stock['validUntil'])
-            if self.existing_offer:
-                obj.offerId = self.existing_offer.id
-            else:
-                obj.offerId = self.providables[0].id
+            self.update_stock_object(obj, self.titelive_stock, self.existing_offer)
         elif isinstance(obj, Offer) \
                 and self.existing_offer is None:
-            obj.venueId = self.venue.id
-            obj.thingId = self.thing.id
-            obj.type = self.thing.type
-            obj.name = self.thing.name
-            obj.description = self.thing.description
-            obj.url = self.thing.url
-            obj.mediaUrls = self.thing.mediaUrls
-            obj.isNational = self.thing.isNational
-            PcObject.check_and_save(obj)
+            self.update_offer_object(obj)
 
     def updateObjects(self, limit=None):
         super().updateObjects(limit)
+
+    def update_stock_object(self, obj, stock_information, offer):
+        obj.price = int(stock_information['price'])
+        obj.available = int(stock_information['available'])
+        obj.bookingLimitDatetime = read_stock_datetime(stock_information['validUntil'])
+        if offer:
+            obj.offerId = offer.id
+        else:
+            providable_offer = self.providables[0]
+            obj.offerId = providable_offer.id
+
+    def update_offer_object(self, obj):
+        obj.mediaUrls = self.thing.mediaUrls
+        obj.isNational = self.thing.isNational
+        PcObject.check_and_save(obj)
