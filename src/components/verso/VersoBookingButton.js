@@ -125,6 +125,7 @@ class VersoBookingButton extends React.PureComponent {
 
   renderOfflineCancelableButton = booking => (
     <button
+      id="verso-cancel-booking-button"
       type="button"
       className="cancel-button"
       onClick={() => this.openCancelPopin(booking)}
