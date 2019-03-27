@@ -74,7 +74,7 @@ def save_free_event_offer_with_stocks(venue: Venue):
 
 def save_non_reimbursable_thing_offer(venue: Venue):
     paid_non_reimbursable_offer = create_thing_offer(venue, thing_name='Concert en ligne',
-                                                     thing_type=ThingType.JEUX_VIDEO)
+                                                     thing_type=ThingType.JEUX_VIDEO, url='http://my.game.fr')
     non_reimbursable_stock = create_stock(price=30, offer=paid_non_reimbursable_offer)
     PcObject.check_and_save(non_reimbursable_stock)
     logger.info('created 1 non reimbursable thing offer with 1 paid stock of 30 €')
