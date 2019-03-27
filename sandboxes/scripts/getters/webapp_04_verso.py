@@ -1,8 +1,7 @@
-from models import Booking, Event, EventOccurrence, Offer, Stock, Thing, User
+from models import Booking, Event, Offer, Stock, Thing, User
 from repository.user_queries import filter_webapp_users
 from sandboxes.scripts.utils.helpers import get_user_helper, get_offer_helper
 
-from pprint import pprint
 
 def get_existing_webapp_hnmm_user(return_as_dict=False):
     query = filter_webapp_users(User.query)
