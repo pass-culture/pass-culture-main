@@ -30,18 +30,32 @@ describe('src | reducers | token  ', () => {
     })
 
     describe('when a SET_TOKEN_STATUS event is received', () => {
-      // given
+      it('should change mark token as checked and as valid', () => {
+        // when
+        const nextState = tokenReducer(
+          {},
+          { payload: true, type: 'SET_TOKEN_STATUS' }
+        )
 
-      // when
-      const nextState = tokenReducer(
-        {},
-        { payload: true, type: 'SET_TOKEN_STATUS' }
-      )
+        // then
+        expect(nextState).toEqual({
+          hasBeenChecked: true,
+          isValid: true,
+        })
+      })
 
-      // then
-      expect(nextState).toEqual({
-        hasBeenChecked: true,
-        isValid: true,
+      it('should change mark token as checked and invalid', () => {
+        // when
+        const nextState = tokenReducer(
+          {},
+          { payload: false, type: 'SET_TOKEN_STATUS' }
+        )
+
+        // then
+        expect(nextState).toEqual({
+          hasBeenChecked: true,
+          isValid: false,
+        })
       })
     })
   })

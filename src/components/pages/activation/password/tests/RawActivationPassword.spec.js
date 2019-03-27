@@ -12,11 +12,14 @@ describe('src | components | pages | activation | password | RawActivationPasswo
 
   beforeEach(() => {
     props = {
+      checkTokenIsValid: jest.fn(),
+      hasTokenBeenChecked: false,
       history: {
         push: jest.fn(),
         replace: jest.fn(),
       },
       initialValues: {},
+      isValidToken: true,
       isValidUrl: true,
       loginUserAfterPasswordSaveSuccess: jest.fn(),
       sendActivationPasswordForm: jest.fn(),
@@ -40,6 +43,71 @@ describe('src | components | pages | activation | password | RawActivationPasswo
     expect(wrapper).toMatchSnapshot()
   })
 
+  it('should mount component with isLoading as false', () => {
+    // when
+    const wrapper = shallow(<RawActivationPassword {...props} />)
+
+    // then
+    expect(wrapper.state().isLoading).toBe(false)
+  })
+
+  describe('when token validity has not been checked', () => {
+    it('should check token validity', () => {
+      // Given
+      props.hasTokenBeenChecked = false
+      props.initialValues.token = 'my-token-to-check'
+
+      // When
+      shallow(<RawActivationPassword {...props} />)
+
+      // then
+      expect(props.checkTokenIsValid).toHaveBeenCalledWith('my-token-to-check')
+    })
+
+    it('should not redirect to invalid link page when token is marked as invalid', () => {
+      // Given
+      props.hasTokenBeenChecked = false
+      props.isValidToken = false
+
+      // When
+      const wrapper = shallow(<RawActivationPassword {...props} />)
+
+      // then
+      const redirectComponent = wrapper.find(Redirect)
+      expect(redirectComponent).toHaveLength(0)
+    })
+  })
+
+  describe('when token validity has been checked', () => {
+    it('should not check validity', () => {
+      // Given
+      props.hasTokenBeenChecked = true
+      props.initialValues.token = 'my-token-to-check'
+
+      // When
+      shallow(<RawActivationPassword {...props} />)
+
+      // then
+      expect(props.checkTokenIsValid).not.toHaveBeenCalled()
+    })
+
+    describe('when the token is not valid', () => {
+      it('should redirect to activation error page', () => {
+        // given
+        props.hasTokenBeenChecked = true
+        props.isValidToken = false
+
+        // when
+        const wrapper = shallow(<RawActivationPassword {...props} />)
+
+        // then
+        const redirectComponent = wrapper.find(Redirect)
+        expect(redirectComponent).toHaveLength(1)
+        expect(redirectComponent.prop('to')).toBe('/activation/lien-invalide')
+      })
+    })
+  })
+
   describe('when the isValidUrl is false', () => {
     it('should redirect to activation error page', () => {
       // when
@@ -52,14 +120,6 @@ describe('src | components | pages | activation | password | RawActivationPasswo
       expect(redirectComponent).toHaveLength(1)
       expect(redirectComponent.prop('to')).toBe('/activation/error')
     })
-  })
-
-  it('should mount component with isLoading as false', () => {
-    // when
-    const wrapper = shallow(<RawActivationPassword {...props} />)
-
-    // then
-    expect(wrapper.state().isLoading).toBe(false)
   })
 
   describe('when submit activation password form', () => {

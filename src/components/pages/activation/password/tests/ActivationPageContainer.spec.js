@@ -1,13 +1,16 @@
 import { requestData } from 'redux-saga-data'
 import { mapDispatchToProps, mapStateToProps } from '../ActivationPageContainer'
-import { isValidToken } from '../../../../../utils/http/client'
+import { validateToken, setTokenStatus } from '../../../../../reducers/token'
 
 jest.mock('redux-saga-data', () => ({
   requestData: jest.fn(),
 }))
-jest.mock('../../../../../utils/http/client', () => ({
-  isValidToken: jest.fn(),
+
+jest.mock('../../../../../reducers/token', () => ({
+  setTokenStatus: jest.fn(param => ({ payload: param, type: 'ACTION' })),
+  validateToken: jest.fn(),
 }))
+
 describe('src | components | pages | activation | password | ActivationPageContainer', () => {
   describe('mapDispatchToProps', () => {
     let dispatch
@@ -16,9 +19,10 @@ describe('src | components | pages | activation | password | ActivationPageConta
       dispatch = jest.fn()
     })
 
-    it('should return two functions', () => {
+    it('should return three functions', () => {
       // given
       const expectedResult = {
+        checkTokenIsValid: expect.anything(),
         loginUserAfterPasswordSaveSuccess: expect.anything(),
         sendActivationPasswordForm: expect.anything(),
       }
@@ -28,6 +32,47 @@ describe('src | components | pages | activation | password | ActivationPageConta
 
       // then
       expect(result).toEqual(expectedResult)
+    })
+
+    describe('checkTokenIsValid', () => {
+      it('should verify token validity', async () => {
+        // given
+        const tokenStatus = true
+        const token = 'HDUIV21I'
+        validateToken.mockResolvedValue(tokenStatus)
+
+        // when
+        await mapDispatchToProps(dispatch).checkTokenIsValid(token)
+
+        // then
+        expect(validateToken).toHaveBeenCalledWith(token, dispatch)
+      })
+
+      it('should update token status when it is valid', async () => {
+        // given
+        const tokenStatus = true
+        const token = 'HDUIV21I'
+        validateToken.mockResolvedValue(tokenStatus)
+
+        // when
+        await mapDispatchToProps(dispatch).checkTokenIsValid(token)
+
+        // then
+        expect(dispatch).toHaveBeenCalledWith(setTokenStatus(tokenStatus))
+      })
+
+      it('should update token status when it is invalid', async () => {
+        // given
+        const tokenStatus = false
+        const token = 'HDUIV21I'
+        validateToken.mockResolvedValue(tokenStatus)
+
+        // when
+        await mapDispatchToProps(dispatch).checkTokenIsValid(token)
+
+        // then
+        expect(dispatch).toHaveBeenCalledWith(setTokenStatus(tokenStatus))
+      })
     })
 
     describe('loginUserAfterPasswordSaveSuccess', () => {
@@ -102,46 +147,16 @@ describe('src | components | pages | activation | password | ActivationPageConta
         expect(dispatch).toHaveBeenCalledWith(expectedAction)
       })
     })
-
-    describe('sendActivationPasswordForm', () => {
-      it('should dispatch a requestData action', () => {
-        // given
-        const actions = mapDispatchToProps(dispatch)
-        const values = {
-          email: 'fake email',
-          newPassword: 'fake password',
-        }
-        const failFunction = jest.fn(() => {})
-        const successFunction = jest.fn(() => {})
-        const config = {
-          apiPath: '/users/new-password',
-          body: { email: values.email, newPassword: values.newPassword },
-          handleFail: failFunction,
-          handleSuccess: successFunction,
-          method: 'POST',
-          stateKey: 'activatedUserCredentials',
-        }
-        const expectedAction = {
-          config,
-          type: 'REQUEST_DATA_POST_ACTIVATEDUSERCREDENTIALS',
-        }
-        requestData.mockReturnValue(expectedAction)
-
-        // when
-        actions.sendActivationPasswordForm(
-          values,
-          () => failFunction,
-          () => successFunction
-        )
-
-        // then
-        expect(requestData).toHaveBeenCalledWith(config)
-        expect(dispatch).toHaveBeenCalledWith(expectedAction)
-      })
-    })
   })
 
   describe('mapStateToProps', () => {
+    let state
+    beforeEach(() => {
+      state = {
+        token: {},
+      }
+    })
+
     describe('isValidUrl', () => {
       it('should return false when no email is given', () => {
         // given
@@ -157,7 +172,7 @@ describe('src | components | pages | activation | password | ActivationPageConta
         }
 
         // when
-        const result = mapStateToProps({}, params)
+        const result = mapStateToProps(state, params)
 
         // then
         expect(result).toHaveProperty('isValidUrl', false)
@@ -175,7 +190,7 @@ describe('src | components | pages | activation | password | ActivationPageConta
         }
 
         // when
-        const result = mapStateToProps({}, params)
+        const result = mapStateToProps(state, params)
 
         // then
         expect(result).toHaveProperty('isValidUrl', false)
@@ -191,7 +206,7 @@ describe('src | components | pages | activation | password | ActivationPageConta
         }
 
         // when
-        const result = mapStateToProps({}, params)
+        const result = mapStateToProps(state, params)
 
         // then
         expect(result).toHaveProperty('isValidUrl', false)
@@ -213,7 +228,7 @@ describe('src | components | pages | activation | password | ActivationPageConta
         }
 
         // when
-        const result = mapStateToProps({}, params)
+        const result = mapStateToProps(state, params)
 
         // then
         expect(result).toHaveProperty('isValidUrl', true)
@@ -226,7 +241,10 @@ describe('src | components | pages | activation | password | ActivationPageConta
         const location = { search: '?email=prenom@example.net' }
 
         // when
-        const { initialValues } = mapStateToProps({}, { location, match: {} })
+        const { initialValues } = mapStateToProps(state, {
+          location,
+          match: {},
+        })
 
         // then
         expect(initialValues).toHaveProperty('email', 'prenom@example.net')
@@ -238,38 +256,36 @@ describe('src | components | pages | activation | password | ActivationPageConta
         const match = { params: { token: 'my-precious-token' } }
 
         // when
-        const { initialValues } = mapStateToProps({}, { location, match })
+        const { initialValues } = mapStateToProps(state, { location, match })
 
         // then
         expect(initialValues).toHaveProperty('token', 'my-precious-token')
       })
     })
 
-    describe('isTokenValid', () => {
-      it('should map isTokenValid as true', () => {
+    describe('hasTokenBeenChecked', () => {
+      it('should mark if token has been checked', () => {
         // given
-        const match = { params: { token: 'my-precious-token' } }
-        const tokenStatusResolvedFromAPI = true
-        isValidToken.mockReturnValue(
-          Promise.resolve(tokenStatusResolvedFromAPI)
-        )
+        state = { token: { hasBeenChecked: false } }
 
         // when
-        const props = mapStateToProps({}, { location: {}, match })
+        const props = mapStateToProps(state, { location: {}, match: {} })
 
         // then
-        expect(props).toHaveProperty('isValidToken', tokenStatusResolvedFromAPI)
+        expect(props).toHaveProperty('hasTokenBeenChecked', false)
       })
+    })
 
-      it('should evaluate token validity from URL', () => {
+    describe('isValidToken', () => {
+      it('should mark the token status', () => {
         // given
-        const match = { params: { token: 'my-precious-token' } }
+        state = { token: { isValid: true } }
 
         // when
-        mapStateToProps({}, { location: {}, match })
+        const props = mapStateToProps(state, { location: {}, match: {} })
 
         // then
-        expect(isValidToken).toHaveBeenCalledWith('my-precious-token')
+        expect(props).toHaveProperty('isValidToken', true)
       })
     })
   })

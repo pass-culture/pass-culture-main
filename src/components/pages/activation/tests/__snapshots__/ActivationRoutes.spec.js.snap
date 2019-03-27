@@ -26,6 +26,11 @@ ShallowWrapper {
         />
         <Route
           component={[Function]}
+          exact={true}
+          path="/activation/lien-invalide"
+        />
+        <Route
+          component={[Function]}
           path="/activation/:token"
         />
         <Redirect
@@ -49,6 +54,11 @@ ShallowWrapper {
           />,
           <Route
             component={[Function]}
+            exact={true}
+            path="/activation/lien-invalide"
+          />,
+          <Route
+            component={[Function]}
             path="/activation/:token"
           />,
           <Redirect
@@ -66,6 +76,19 @@ ShallowWrapper {
             "component": [Function],
             "exact": true,
             "path": "/activation/error",
+          },
+          "ref": null,
+          "rendered": null,
+          "type": [Function],
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "class",
+          "props": Object {
+            "component": [Function],
+            "exact": true,
+            "path": "/activation/lien-invalide",
           },
           "ref": null,
           "rendered": null,
@@ -113,6 +136,11 @@ ShallowWrapper {
           />
           <Route
             component={[Function]}
+            exact={true}
+            path="/activation/lien-invalide"
+          />
+          <Route
+            component={[Function]}
             path="/activation/:token"
           />
           <Redirect
@@ -136,6 +164,11 @@ ShallowWrapper {
             />,
             <Route
               component={[Function]}
+              exact={true}
+              path="/activation/lien-invalide"
+            />,
+            <Route
+              component={[Function]}
               path="/activation/:token"
             />,
             <Redirect
@@ -153,6 +186,19 @@ ShallowWrapper {
               "component": [Function],
               "exact": true,
               "path": "/activation/error",
+            },
+            "ref": null,
+            "rendered": null,
+            "type": [Function],
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "class",
+            "props": Object {
+              "component": [Function],
+              "exact": true,
+              "path": "/activation/lien-invalide",
             },
             "ref": null,
             "rendered": null,

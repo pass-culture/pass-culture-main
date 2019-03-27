@@ -12,6 +12,14 @@ class RawActivationPassword extends React.PureComponent {
     this.state = { isLoading: false }
   }
 
+  componentWillMount() {
+    const { checkTokenIsValid, initialValues, hasTokenBeenChecked } = this.props
+
+    if (!hasTokenBeenChecked) {
+      checkTokenIsValid(initialValues.token)
+    }
+  }
+
   handleActivationLoginRequestFail = () => {
     const { history } = this.props
     history.push('/activation/error')
@@ -56,11 +64,21 @@ class RawActivationPassword extends React.PureComponent {
 
   render() {
     const { isLoading } = this.state
-    const { initialValues, isValidUrl } = this.props
+    const {
+      initialValues,
+      isValidUrl,
+      isValidToken,
+      hasTokenBeenChecked,
+    } = this.props
 
     if (!isValidUrl) {
       return <Redirect to="/activation/error" />
     }
+
+    if (hasTokenBeenChecked && !isValidToken) {
+      return <Redirect to="/activation/lien-invalide" />
+    }
+
     return (
       <div
         id="activation-password-page"
@@ -105,8 +123,11 @@ class RawActivationPassword extends React.PureComponent {
 }
 
 RawActivationPassword.propTypes = {
+  checkTokenIsValid: PropTypes.func.isRequired,
+  hasTokenBeenChecked: PropTypes.bool.isRequired,
   history: PropTypes.object.isRequired,
   initialValues: PropTypes.object.isRequired,
+  isValidToken: PropTypes.bool.isRequired,
   isValidUrl: PropTypes.bool.isRequired,
   loginUserAfterPasswordSaveSuccess: PropTypes.func.isRequired,
   sendActivationPasswordForm: PropTypes.func.isRequired,

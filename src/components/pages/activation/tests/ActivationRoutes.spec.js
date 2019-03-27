@@ -3,6 +3,7 @@ import { shallow } from 'enzyme'
 import { Redirect, Route } from 'react-router'
 import ActivationPageContainer from '../password/ActivationPageContainer'
 import ActivationError from '../error/ActivationError'
+import InvalidLink from '../invalid-link/InvalidLink'
 
 import ActivationRoutes from '../ActivationRoutes'
 
@@ -22,8 +23,8 @@ describe('src | components | pages | activation | tests | index', () => {
 
     // then
     const routes = wrapper.find(Route)
-    expect(routes.at(1).prop('path')).toBe('/activation/:token')
-    expect(routes.at(1).prop('component')).toEqual(ActivationPageContainer)
+    expect(routes.at(2).prop('path')).toBe('/activation/:token')
+    expect(routes.at(2).prop('component')).toEqual(ActivationPageContainer)
   })
 
   it('should render error component when route is exactly /activation/error', () => {
@@ -44,5 +45,16 @@ describe('src | components | pages | activation | tests | index', () => {
     // then
     const redirect = wrapper.find(Redirect)
     expect(redirect.prop('to')).toBe('/activation/error')
+  })
+
+  it('should render invalid-link component when route is exactly /activation/lien-invalide', () => {
+    // given
+    const wrapper = shallow(<ActivationRoutes />)
+
+    // then
+    const routes = wrapper.find(Route)
+    expect(routes.at(1).prop('path')).toBe('/activation/lien-invalide')
+    expect(routes.at(1).prop('component')).toEqual(InvalidLink)
+    expect(routes.at(1).prop('exact')).toBeDefined()
   })
 })

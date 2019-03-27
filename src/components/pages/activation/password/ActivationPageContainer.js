@@ -3,8 +3,17 @@ import { requestData } from 'redux-saga-data'
 import { getRouterParamByKey, getRouterQueryByKey } from '../../../../helpers'
 
 import RawActivationPassword from './RawActivationPassword'
+import { setTokenStatus, validateToken } from '../../../../reducers/token'
+
+import doesTokenHaveBeenChecked from '../../../../selectors/token/doesTokenHaveBeenChecked'
+import isValidToken from '../../../../selectors/token/isValidToken'
 
 export const mapDispatchToProps = dispatch => ({
+  checkTokenIsValid: token =>
+    validateToken(token, dispatch).then(tokenStatus => {
+      dispatch(setTokenStatus(tokenStatus))
+    }),
+
   loginUserAfterPasswordSaveSuccess: (values, fail, success) => {
     const { email: identifier, newPassword: password } = values
     const config = {
@@ -41,8 +50,9 @@ export const mapStateToProps = (state, { location, match }) => {
   const isValidUrl = !!(token && email)
 
   return {
+    hasTokenBeenChecked: doesTokenHaveBeenChecked(state),
     initialValues,
-    isValidToken: true,
+    isValidToken: isValidToken(state),
     isValidUrl,
   }
 }
