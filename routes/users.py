@@ -5,6 +5,7 @@ from flask_login import current_user, login_required, logout_user, login_user
 
 from domain.expenses import get_expenses
 from models import PcObject
+from repository.user_queries import find_user_by_reset_password_token
 from utils.credentials import get_user_with_credentials
 from utils.includes import USER_INCLUDES
 from utils.login_manager import stamp_session, discard_session
@@ -19,6 +20,16 @@ def get_profile():
     user = current_user._asdict(include=USER_INCLUDES)
     user['expenses'] = get_expenses(current_user.userBookings)
     return jsonify(user)
+
+
+@app.route("/users/token/<token_id>", methods=["GET"])
+def check_activation_token_exists(token_id):
+    token = find_user_by_reset_password_token(token_id)
+
+    if token is None:
+        return jsonify(), 404
+    else:
+        return jsonify(), 200
 
 
 @app.route('/users/current', methods=['PATCH'])

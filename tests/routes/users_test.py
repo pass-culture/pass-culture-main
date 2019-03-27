@@ -5,7 +5,7 @@ import requests
 
 from models import PcObject
 from models.db import db
-from tests.conftest import clean_database
+from tests.conftest import clean_database, TestClient
 from utils.human_ids import humanize
 from tests.test_utils import API_URL, req, req_with_auth, create_thing_offer, create_user, create_offerer, create_venue, \
     create_stock_with_thing_offer, create_recommendation, create_deposit, create_booking
@@ -201,3 +201,29 @@ def test_get_current_user_returns_400_when_header_not_in_whitelist(app):
     # then
     assert response.status_code == 400
     assert response.json()['global'] == ['Header non autorisé']
+
+
+@pytest.mark.standalone
+class Get:
+    class Returns200:
+        @clean_database
+        def when_activation_token_exists(self, app):
+            # given
+            token = 'U2NCXTNB2'
+            user = create_user(reset_password_token=token)
+            PcObject.check_and_save(user)
+
+            # when
+            request = TestClient().get(API_URL + '/users/token/' + token)
+
+            # then
+            assert request.status_code == 200
+
+    class Returns404:
+        @clean_database
+        def when_activation_token_does_not_exist(self, app):
+            # when
+            request = TestClient().get(API_URL + '/users/token/None')
+
+            # then
+            assert request.status_code == 404
