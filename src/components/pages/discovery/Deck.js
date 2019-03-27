@@ -1,5 +1,5 @@
 import get from 'lodash.get'
-import { Logger, Icon } from 'pass-culture-shared'
+import { Icon } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import Draggable from 'react-draggable'
@@ -29,24 +29,17 @@ export class RawDeck extends Component {
   }
 
   componentDidMount() {
-    Logger.log('DECK ---> componentDidMount')
     const { currentRecommendation, recommendations } = this.props
-
     this.handleUrlFlip()
 
     const isStateWithoutRecommendationsOrCurrentRecommendation =
       !recommendations || recommendations.length === 0 || !currentRecommendation
 
-    if (isStateWithoutRecommendationsOrCurrentRecommendation) {
-      this.handleRefreshedDraggableKey()
-    }
+    if (!isStateWithoutRecommendationsOrCurrentRecommendation) return
+    this.handleRefreshedDraggableKey()
   }
 
-  componentDidUpdate(previousProps) {
-    Logger.log(
-      'DECK ---> componentDidUpdate',
-      previousProps.recommendations.length
-    )
+  componentDidUpdate() {
     // const withRecommendationsAvailable = isRecommendations(
     //   recommendations,
     //   previousProps
@@ -64,6 +57,10 @@ export class RawDeck extends Component {
     //   previousProps
     // )
 
+    const { match } = this.props
+    const { view } = match.params
+    const isVersoView = view === 'verso'
+    if (isVersoView) return
     this.handleUrlFlip()
 
     // if (
@@ -77,7 +74,6 @@ export class RawDeck extends Component {
   }
 
   componentWillUnmount() {
-    Logger.log('DECK ---> componentWillUnmount')
     const { dispatch, readTimeout, noDataTimeout } = this.props
     dispatch(closeCardDetails())
 
@@ -151,9 +147,10 @@ export class RawDeck extends Component {
   handleUrlFlip = () => {
     // Quand on arrive depuis un booking vers une offre, le details doit être affiché
     const { dispatch, match } = this.props
-    if (match.params.view === 'verso') {
-      dispatch(flipUnflippable())
-    }
+    const { view } = match.params
+    const isVersoView = view === 'verso'
+    if (!isVersoView) return
+    dispatch(flipUnflippable())
   }
 
   renderDraggableCards() {
