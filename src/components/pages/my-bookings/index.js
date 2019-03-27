@@ -32,7 +32,7 @@ class MyBookingsPage extends Component {
     const { dispatch } = props
     const actions = { requestData, toggleMainMenu }
     this.actions = bindActionCreators(actions, dispatch)
-    this.state = { haserror: false, isempty: false, isloading: true }
+    this.state = { hasError: false, isEmpty: false, isLoading: true }
   }
 
   componentWillMount = () => {
@@ -51,7 +51,7 @@ class MyBookingsPage extends Component {
 
   handleRequestFail = () => {
     // ERREUR DE CHARGEMENT
-    this.setState({ haserror: true, isloading: true })
+    this.setState({ hasError: true, isLoading: true })
   }
 
   handleRequestSuccess = (state, action) => {
@@ -59,13 +59,13 @@ class MyBookingsPage extends Component {
       payload: { data },
     } = action
     const len = data.length
-    const isempty = !(len && len > 0)
-    this.setState({ isempty, isloading: false })
+    const isEmpty = !(len && len > 0)
+    this.setState({ isEmpty, isLoading: false })
   }
 
   render() {
     const { soonBookings, otherBookings } = this.props
-    const { isempty, isloading, haserror } = this.state
+    const { isEmpty, isLoading, hasError } = this.state
     // NOTE -> perfs: calculate length once
     const soonBookingsLength = soonBookings.length
     const otherBookingsLength = otherBookings.length
@@ -73,7 +73,7 @@ class MyBookingsPage extends Component {
     const backgroundImage = `url('${ROOT_PATH}/mosaic-k.png')`
     return (
       <div id="bookings-page" className="page is-relative flex-rows">
-        {!isloading && (
+        {!isLoading && (
           <React.Fragment>
             <PageHeader
               useClose
@@ -106,14 +106,14 @@ class MyBookingsPage extends Component {
                 - si aucune reservations API
                 - si aucune reservations dans les deja charges
               */}
-                {(isempty || hasNoBooking) && <NoBookingView />}
+                {(isEmpty || hasNoBooking) && <NoBookingView />}
               </div>
             </main>
             <NavigationFooter theme="purple" className="dotted-top-white" />
           </React.Fragment>
         )}
-        {!isempty && (
-          <Loader isempty={isempty} haserror={haserror} isloading={isloading} />
+        {!isEmpty && (
+          <Loader isEmpty={isEmpty} hasError={hasError} isLoading={isLoading} />
         )}
       </div>
     )

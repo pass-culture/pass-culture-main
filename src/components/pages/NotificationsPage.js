@@ -25,7 +25,7 @@ const NotificationsPage = ({ currentUser }) => {
           <NavigationFooter theme="white" className="dotted-top-primary" />
         </React.Fragment>
       )}
-      <Loader isloading={!isCurrentUserLoaded} />
+      <Loader isLoading={!isCurrentUserLoaded} />
     </div>
   )
 }

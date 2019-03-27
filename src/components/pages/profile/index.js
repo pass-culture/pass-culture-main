@@ -64,7 +64,7 @@ const ProfilePage = ({ currentUser, isCurrentUserLoaded, location }) => {
           />
         </Switch>
       )}
-      {!isCurrentUserLoaded && <Loader isloading />}
+      {!isCurrentUserLoaded && <Loader isLoading />}
     </div>
   )
 }
