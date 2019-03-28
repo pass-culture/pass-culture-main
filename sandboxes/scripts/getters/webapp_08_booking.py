@@ -1,8 +1,9 @@
-from models import Offer, Stock, Thing, Event, EventType, ThingType
+from models import Offer, Stock, Thing, Event, EventType, ThingType, Mediation
 from models.user import User
 from repository.offer_queries import _filter_bookable_offers_for_discovery
 from repository.user_queries import filter_webapp_users
 from sandboxes.scripts.utils.helpers import get_user_helper, get_offer_helper
+from utils.human_ids import humanize
 
 
 def get_query_join_on_event(query):
@@ -41,12 +42,15 @@ def get_non_free_digital_offer():
       "offer": get_offer_helper(offer)
   }
 
-def get_non_free_thing_offer():
+def get_non_free_thing_offer_with_active_mediation():
   query = get_non_free_offers_query_by_type(Thing)
   offer = query \
       .filter(Thing.url == None) \
+      .filter(Stock.beginningDatetime == None) \
+      .filter(Offer.mediations.any(Mediation.isActive == True)) \
       .first()
   return {
+      "mediationId": [humanize(m.id) for m in offer.mediations if m.isActive][0],
       "offer": get_offer_helper(offer)
   }
 
