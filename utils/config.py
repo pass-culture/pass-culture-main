@@ -26,6 +26,6 @@ else:
     WEBAPP_URL = 'https://app.passculture-%s.beta.gouv.fr' % ENV
     PRO_URL = 'https://pro.passculture-%s.beta.gouv.fr' % ENV
 
-BLOB_SIZE = 80
+BLOB_SIZE = 30
 BLOB_UNREAD_NUMBER = int(BLOB_SIZE / 5)
 BLOB_READ_NUMBER = int(BLOB_SIZE / 5)
