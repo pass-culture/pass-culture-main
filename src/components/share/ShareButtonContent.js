@@ -88,10 +88,11 @@ class ShareButtonContent extends React.PureComponent {
   }
 
   render() {
-    const { offerName, url } = this.props
+    const { id, offerName, url } = this.props
     const isDisabled = !offerName || !url
     return (
       <button
+        id={id}
         type="button"
         disabled={isDisabled}
         className="button is-secondary fs32"
@@ -109,6 +110,7 @@ class ShareButtonContent extends React.PureComponent {
 
 ShareButtonContent.defaultProps = {
   email: null,
+  id: 'verso-share-button',
   offerName: null,
   text: null,
   url: null,
@@ -117,6 +119,7 @@ ShareButtonContent.defaultProps = {
 ShareButtonContent.propTypes = {
   dispatch: PropTypes.func.isRequired,
   email: PropTypes.string,
+  id: PropTypes.string,
   offerName: PropTypes.string,
   text: PropTypes.string,
   url: PropTypes.string,

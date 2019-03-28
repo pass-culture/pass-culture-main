@@ -2,13 +2,13 @@ import get from 'lodash.get'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
+import { selectCurrentUser } from 'with-login'
 
 import currentRecommendationSelector from '../../selectors/currentRecommendation'
 import { getShareURL } from '../../helpers'
 import ShareButtonContent from './ShareButtonContent'
 
 const mapStateToProps = (state, ownProps) => {
-  const { user } = state
   const { location } = ownProps
   const { mediationId, offerId } = ownProps.match.params
   const recommendation = currentRecommendationSelector(
@@ -16,6 +16,7 @@ const mapStateToProps = (state, ownProps) => {
     offerId,
     mediationId
   )
+  const user = selectCurrentUser(state)
   const url = (user && getShareURL(location, user)) || null
   const offerName = get(recommendation, 'offer.eventOrThing.name')
   const text = offerName && `Retrouvez ${offerName} sur le pass Culture`
