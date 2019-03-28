@@ -16,9 +16,9 @@ class UserAdminView(BaseAdminView):
     column_labels = dict(
         email='Email', canBookFreeOffers='Peut réserver', firstName='Prénom', lastName='Nom', publicName="Nom d'utilisateur",
         dateOfBirth='Date de naissance', departementCode='Département', postalCode='Code postal',
-        resetPasswordToken='Jeton d\'activation et réinitialisation de mot de passe', validationToken='Jeton d\'activation de compte pro'
+        resetPasswordToken='Jeton d\'activation et réinitialisation de mot de passe', validationToken='Jeton de validation d\'adresse email'
     )
-    column_searchable_list = ['publicName', 'email']
+    column_searchable_list = ['publicName', 'email', 'firstName', 'lastName']
     column_filters = ['postalCode', 'canBookFreeOffers']
     form_columns = ['firstName', 'lastName', 'publicName', 'dateOfBirth', 'departementCode', 'postalCode']
 
