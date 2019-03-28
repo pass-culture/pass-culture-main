@@ -91,6 +91,7 @@ def signup_webapp():
         new_user.departementCode = departement_code
 
     new_user.generate_validation_token()
+    new_user.canBookFreeOffers = False
     objects_to_save.append(new_user)
 
     PcObject.check_and_save(*objects_to_save)

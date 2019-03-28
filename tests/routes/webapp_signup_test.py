@@ -27,10 +27,10 @@ class Post:
         @clean_database
         @freeze_time('2019-01-01 01:00:00')
         @clean_database
-        def test_signup_successful_returns_status_code_201_and_does_not_log_user_in(self, app):
+        def when_data_is_accurate(self, app):
             # Given
             data = BASE_DATA.copy()
-            expected_response_json = {'canBookFreeOffers': True,
+            expected_response_json = {'canBookFreeOffers': False,
                                       'departementCode': '93',
                                       'email': 'toto@btmx.fr',
                                       'firstName': 'Toto',
@@ -60,9 +60,23 @@ class Post:
                     assert json[key] == value
             for key in other_expected_keys:
                 assert key in json
+
+        @clean_database
+        def test_created_user_has_validation_token_and_cannot_book_free_offers(self, app):
+            data = BASE_DATA.copy()
+
+            # When
+            response = TestClient() \
+                .post(API_URL + '/users/signup/webapp',
+                      json=data, headers={'origin': 'http://localhost:3000'})
+
+            # Then
+            assert response.status_code == 201
             assert 'validationToken' not in response.json()
             created_user = User.query.filter_by(email='toto@btmx.fr').first()
             assert created_user.validationToken is not None
+            assert not created_user.canBookFreeOffers
+
 
     class Returns400:
         @clean_database
