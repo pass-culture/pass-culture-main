@@ -42,7 +42,7 @@ def get_booking_for_user(user):
 def get_event_already_booked_and_user_hnmm_93():
     offers = Offer.query \
         .join(Stock) \
-        .filter_by(Stock.beginningDatetime != None) \
+        .filter(Stock.beginningDatetime != None) \
         .add_columns(Stock.id) \
         .all()
     user = get_existing_webapp_hnmm_user()
