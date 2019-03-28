@@ -3,7 +3,7 @@ import React from 'react'
 import { render } from 'enzyme'
 import ActivationError from '../ActivationError'
 
-describe('src | components | pages | activation | InvalidLink', () => {
+describe('src | components | pages | activation | ActivationError', () => {
   it('should match snapshot', () => {
     // when
     const wrapper = render(<ActivationError />)

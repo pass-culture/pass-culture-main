@@ -12,7 +12,7 @@ class RawActivationPassword extends React.PureComponent {
     this.state = { isLoading: false }
   }
 
-  componentWillMount() {
+  componentDidMount() {
     const { checkTokenIsValid, initialValues, hasTokenBeenChecked } = this.props
 
     if (!hasTokenBeenChecked) {

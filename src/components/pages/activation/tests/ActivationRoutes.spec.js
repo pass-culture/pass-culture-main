@@ -7,7 +7,7 @@ import InvalidLink from '../invalid-link/InvalidLink'
 
 import ActivationRoutes from '../ActivationRoutes'
 
-describe('src | components | pages | activation | tests | index', () => {
+describe('src | components | pages | activation | tests | ActivationRoutes', () => {
   it('should match snapshot', () => {
     // when
     const wrapper = shallow(<ActivationRoutes />)
@@ -38,7 +38,7 @@ describe('src | components | pages | activation | tests | index', () => {
     expect(routes.at(0).prop('exact')).toBeDefined()
   })
 
-  it('should redirect to error page when does not match any known URLs', () => {
+  it('should redirect to error page when current URLs does not match any mapped URLs', () => {
     // given
     const wrapper = shallow(<ActivationRoutes />)
 
@@ -47,7 +47,7 @@ describe('src | components | pages | activation | tests | index', () => {
     expect(redirect.prop('to')).toBe('/activation/error')
   })
 
-  it('should render invalid-link component when route is exactly /activation/lien-invalide', () => {
+  it('should render InvalidLink component when route is exactly /activation/lien-invalide', () => {
     // given
     const wrapper = shallow(<ActivationRoutes />)
 
