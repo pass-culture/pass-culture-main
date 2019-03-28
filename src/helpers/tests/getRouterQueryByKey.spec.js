@@ -1,7 +1,7 @@
 // jest --env=jsdom ./src/helpers/tests/getRouterQueryByKey --watch
 import getRouterQueryByKey from '../getRouterQueryByKey'
 
-describe('src | helpers | tests | getRouterQueryByKey', () => {
+describe('src | helpers | getRouterQueryByKey', () => {
   it('should thrown if missing location param', () => {
     expect(() => {
       // when

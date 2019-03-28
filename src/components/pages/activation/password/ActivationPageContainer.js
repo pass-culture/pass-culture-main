@@ -47,7 +47,7 @@ export const mapStateToProps = (state, { location, match }) => {
   const token = getRouterParamByKey(match, 'token')
   const email = getRouterQueryByKey(location, 'email')
   const initialValues = { email, token }
-  const isValidUrl = !!(token && email)
+  const isValidUrl = Boolean(token && email)
 
   return {
     hasTokenBeenChecked: doesTokenHaveBeenChecked(state),

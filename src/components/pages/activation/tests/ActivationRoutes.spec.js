@@ -7,7 +7,7 @@ import InvalidLink from '../invalid-link/InvalidLink'
 
 import ActivationRoutes from '../ActivationRoutes'
 
-describe('src | components | pages | activation | tests | ActivationRoutes', () => {
+describe('src | components | pages | activation | ActivationRoutes', () => {
   it('should match snapshot', () => {
     // when
     const wrapper = shallow(<ActivationRoutes />)

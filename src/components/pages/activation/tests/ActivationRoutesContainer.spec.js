@@ -8,7 +8,7 @@ import { withRedirectToDiscoveryWhenAlreadyAuthenticated } from '../../../hocs/w
 jest.mock('../../../hocs/with-login', () => ({
   withRedirectToDiscoveryWhenAlreadyAuthenticated: jest.fn(() => ''),
 }))
-describe('src | components | pages | activation | tests | ActivationRoutesContainer', () => {
+describe('src | components | pages | activation | ActivationRoutesContainer', () => {
   it('should redirect to discovery page when user is already logged in', () => {
     // given
     const middlewares = []

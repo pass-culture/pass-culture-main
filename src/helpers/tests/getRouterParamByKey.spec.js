@@ -1,7 +1,7 @@
 // jest --env=jsdom ./src/helpers/tests/getRouterParamByKey --watch
 import getRouterParamByKey from '../getRouterParamByKey'
 
-describe('src | helpers | tests | getRouterParamByKey', () => {
+describe('src | helpers | getRouterParamByKey', () => {
   it('returns token if exists', () => {
     // given
     const token = 'AAAA'

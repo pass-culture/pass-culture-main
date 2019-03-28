@@ -55,11 +55,12 @@ class RawActivationPassword extends React.PureComponent {
   onFormSubmit = formValues => {
     this.setState({ isLoading: true })
     const { sendActivationPasswordForm } = this.props
-    return sendActivationPasswordForm(
+    const promise = sendActivationPasswordForm(
       { ...formValues },
       this.handleActivationPasswordRequestFail,
       this.savePasswordRequestSuccess
     )
+    return promise
   }
 
   render() {

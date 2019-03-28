@@ -56,7 +56,7 @@ test('Sans email en query, je suis redirigé·e vers /activation/error', async t
     .eql(`${baseURL}/error`)
 })
 
-test('Avec un email déjà activé, je suis redirigé vers la page lien invalide', async t => {
+test('Avec un email déjà activé, je suis redirigé·e vers la page lien invalide', async t => {
   // given
   const { user } = await fetchSandbox(
     'webapp_01_activation',
