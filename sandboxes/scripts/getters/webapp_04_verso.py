@@ -1,6 +1,6 @@
-from models import Booking, Event, Offer, Stock, Thing, User
+from models import Booking, Event, Mediation, Offer, Stock, Thing, User
 from repository.user_queries import filter_webapp_users
-from sandboxes.scripts.utils.helpers import get_user_helper, get_offer_helper
+from sandboxes.scripts.utils.helpers import get_mediation_helper, get_offer_helper, get_user_helper
 
 
 def get_existing_webapp_hnmm_user(return_as_dict=False):
@@ -32,38 +32,56 @@ def filter_booking_by_offer_id(bookings, offers):
                 break
     return selected
 
+def get_cancellable_bookings_for_user(user):
+    query = Booking.query.filter_by(
+        userId=user.id
+    )
+    bookings = [b for b in query.all() if b.isUserCancellable]
+    return bookings
 
-def get_booking_for_user(user):
-    query = Booking.query.filter_by(userId=user.id)
-    bookings = query.all()
+def get_not_cancellable_bookings_for_user(user):
+    query = Booking.query.filter_by(
+        userId=user.id
+    )
+    bookings = [b for b in query.all() if not b.isUserCancellable]
     return bookings
 
 
-def get_event_already_booked_and_user_hnmm_93():
+def get_event_offer_with_active_mediation_already_booked_but_cancellable_and_user_hnmm_93():
     offers = Offer.query \
+        .filter(Offer.mediations.any(Mediation.isActive == True)) \
         .join(Stock) \
         .filter(Stock.beginningDatetime != None) \
         .add_columns(Stock.id) \
         .all()
     user = get_existing_webapp_hnmm_user()
-    bookings = get_booking_for_user(user)
+    bookings = get_cancellable_bookings_for_user(user)
     offer = filter_booking_by_offer_id(bookings, offers)
-    return {
-        "offer": get_offer_helper(offer),
-        "user": get_user_helper(user)
-    }
+
+    for mediation in offer.mediations:
+        if mediation.isActive:
+            return {
+                "mediation": get_mediation_helper(mediation),
+                "offer": get_offer_helper(offer),
+                "user": get_user_helper(user)
+            }
 
 
-def get_digital_offer_already_booked_and_user_hnmm_93():
+def get_digital_offer_with_active_mediation_already_booked_and_user_hnmm_93():
     offers = Offer.query.outerjoin(Thing) \
+        .filter(Offer.mediations.any(Mediation.isActive == True)) \
         .filter(Thing.url != None) \
         .join(Stock, (Offer.id == Stock.offerId)) \
         .add_columns(Stock.id) \
         .all()
     user = get_existing_webapp_hnmm_user()
-    bookings = get_booking_for_user(user)
+    bookings = get_not_cancellable_bookings_for_user(user)
     offer = filter_booking_by_offer_id(bookings, offers)
-    return {
-        "offer": get_offer_helper(offer),
-        "user": get_user_helper(user)
-    }
+
+    for mediation in offer.mediations:
+        if mediation.isActive:
+            return {
+                "mediation": get_mediation_helper(mediation),
+                "offer": get_offer_helper(offer),
+                "user": get_user_helper(user)
+            }

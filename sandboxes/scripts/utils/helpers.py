@@ -4,6 +4,9 @@ def get_booking_helper(booking):
         "venueName": booking.recommendation.offer.venue.name
     })
 
+def get_mediation_helper(mediation):
+    return mediation._asdict()
+
 def get_offer_helper(offer):
     return dict(offer._asdict(), **{
         "keywordsString": '{} {}'.format(
