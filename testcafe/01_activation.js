@@ -27,7 +27,7 @@ test('Je suis redirigé·e vers découverte', async t => {
   await t.navigateTo(url)
 
   // then
-  await t.expect(activationEmailSpan.innerText).eql(email)
+  await t.expect(activationEmailSpan.innerText).eql(email, { timeout: 2000 })
 
   // when
   await t
