@@ -1,7 +1,7 @@
 """ Remove table event occurrence
 
 Revision ID: 989e483edf93
-Revises: ec8d3f04eba3
+Revises: 802c89135fd7
 Create Date: 2019-03-14 13:23:34.641583
 
 """
@@ -11,7 +11,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision = '989e483edf93'
-down_revision = 'ec8d3f04eba3'
+down_revision = '802c89135fd7'
 branch_labels = None
 depends_on = None
 
@@ -32,7 +32,6 @@ def upgrade():
     op.drop_column('recommendation', 'inviteforEventOccurrenceId')
     op.alter_column('stock', 'offerId', existing_type=sa.BigInteger, nullable=False)
     op.drop_table('event_occurrence')
-    op.execute('DROP SEQUENCE event_occurrence_id_seq;')
 
     op.execute("""
        CREATE OR REPLACE FUNCTION check_stock()
