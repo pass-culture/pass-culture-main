@@ -77,6 +77,32 @@ class Post:
             assert created_user.validationToken is not None
             assert not created_user.canBookFreeOffers
 
+        @clean_database
+        def when_setting_is_admin_true_and_can_book_free_offers_true_creates_account_with_can_book_free_offers_false(self, app):
+            # Given
+            user_json = {
+                'email': 'pctest.isAdmin.canBook@btmx.fr',
+                'publicName': 'IsAdmin CanBook',
+                'firstName': 'IsAdmin',
+                'lastName': 'CanBook',
+                'postalCode': '93100',
+                'password': '__v4l1d_P455sw0rd__',
+                'contact_ok': 'true',
+                'isAdmin': True,
+                'canBookFreeOffers': True
+            }
+
+            # When
+            r_signup = TestClient() \
+                .post(API_URL + '/users/signup/webapp',
+                                json=user_json, headers={'origin': 'http://localhost:3000'})
+
+            # Then
+            assert r_signup.status_code == 201
+            created_user = User.query.filter_by(email='pctest.isAdmin.canBook@btmx.fr').one()
+            assert created_user.isAdmin
+            assert not created_user.canBookFreeOffers
+
 
     class Returns400:
         @clean_database

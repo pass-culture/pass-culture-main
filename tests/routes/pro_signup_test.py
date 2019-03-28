@@ -390,28 +390,3 @@ class Post:
             assert r_signup.status_code == 400
             error = r_signup.json()
             assert 'postalCode' in error
-
-        @clean_database
-        def when_setting_isAdmin_true_and_canBookFreeOffers_true(self, app):
-            # Given
-            user_json = {
-                'email': 'pctest.isAdmin.canBook@btmx.fr',
-                'publicName': 'IsAdmin CanBook',
-                'firstName': 'IsAdmin',
-                'lastName': 'CanBook',
-                'postalCode': '93100',
-                'password': '__v4l1d_P455sw0rd__',
-                'contact_ok': 'true',
-                'isAdmin': True,
-                'canBookFreeOffers': True
-            }
-
-            # When
-            r_signup = TestClient() \
-                .post(API_URL + '/users/signup/webapp',
-                                json=user_json, headers={'origin': 'http://localhost:3000'})
-
-            # Then
-            assert r_signup.status_code == 400
-            error = r_signup.json()
-            assert error == {'canBookFreeOffers': ['Admin ne peut pas booker']}
