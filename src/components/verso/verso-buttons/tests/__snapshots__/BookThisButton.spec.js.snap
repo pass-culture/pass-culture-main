@@ -1,0 +1,191 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`src | components | verso | verso-buttons | BookThisButton should match snapshot with required props 1`] = `
+ShallowWrapper {
+  Symbol(enzyme.__root__): [Circular],
+  Symbol(enzyme.__unrendered__): <BookThisButton
+    linkDestination="/path/to/page/"
+    priceValue={
+      Array [
+        0,
+      ]
+    }
+  />,
+  Symbol(enzyme.__renderer__): Object {
+    "batchedUpdates": [Function],
+    "checkPropTypes": [Function],
+    "getNode": [Function],
+    "render": [Function],
+    "simulateError": [Function],
+    "simulateEvent": [Function],
+    "unmount": [Function],
+  },
+  Symbol(enzyme.__node__): Object {
+    "instance": null,
+    "key": undefined,
+    "nodeType": "class",
+    "props": Object {
+      "children": Array [
+        <Price
+          className="px12 py8"
+          free="Gratuit"
+          value={
+            Array [
+              0,
+            ]
+          }
+        />,
+        <hr
+          className="dotted-left-2x-white no-margin"
+        />,
+        <span
+          className="button-label px12 py8"
+        >
+          J'y vais!
+        </span>,
+      ],
+      "className": "button-with-price flex-columns is-bold is-white-text fs18",
+      "id": "verso-booking-button",
+      "to": "/path/to/page/",
+    },
+    "ref": null,
+    "rendered": Array [
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "function",
+        "props": Object {
+          "className": "px12 py8",
+          "free": "Gratuit",
+          "value": Array [
+            0,
+          ],
+        },
+        "ref": null,
+        "rendered": null,
+        "type": [Function],
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "className": "dotted-left-2x-white no-margin",
+        },
+        "ref": null,
+        "rendered": null,
+        "type": "hr",
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": "J'y vais!",
+          "className": "button-label px12 py8",
+        },
+        "ref": null,
+        "rendered": "J'y vais!",
+        "type": "span",
+      },
+    ],
+    "type": [Function],
+  },
+  Symbol(enzyme.__nodes__): Array [
+    Object {
+      "instance": null,
+      "key": undefined,
+      "nodeType": "class",
+      "props": Object {
+        "children": Array [
+          <Price
+            className="px12 py8"
+            free="Gratuit"
+            value={
+              Array [
+                0,
+              ]
+            }
+          />,
+          <hr
+            className="dotted-left-2x-white no-margin"
+          />,
+          <span
+            className="button-label px12 py8"
+          >
+            J'y vais!
+          </span>,
+        ],
+        "className": "button-with-price flex-columns is-bold is-white-text fs18",
+        "id": "verso-booking-button",
+        "to": "/path/to/page/",
+      },
+      "ref": null,
+      "rendered": Array [
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "function",
+          "props": Object {
+            "className": "px12 py8",
+            "free": "Gratuit",
+            "value": Array [
+              0,
+            ],
+          },
+          "ref": null,
+          "rendered": null,
+          "type": [Function],
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "className": "dotted-left-2x-white no-margin",
+          },
+          "ref": null,
+          "rendered": null,
+          "type": "hr",
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": "J'y vais!",
+            "className": "button-label px12 py8",
+          },
+          "ref": null,
+          "rendered": "J'y vais!",
+          "type": "span",
+        },
+      ],
+      "type": [Function],
+    },
+  ],
+  Symbol(enzyme.__options__): Object {
+    "adapter": ReactSixteenAdapter {
+      "options": Object {
+        "enableComponentDidUpdateOnSetState": true,
+        "legacyContextMode": "parent",
+        "lifecycles": Object {
+          "componentDidUpdate": Object {
+            "onSetState": true,
+          },
+          "getChildContext": Object {
+            "calledByRenderer": false,
+          },
+          "getDerivedStateFromProps": Object {
+            "hasShouldComponentUpdateBug": false,
+          },
+          "getSnapshotBeforeUpdate": true,
+          "setState": Object {
+            "skipsComponentDidUpdateOnNullish": true,
+          },
+        },
+      },
+    },
+  },
+}
+`;

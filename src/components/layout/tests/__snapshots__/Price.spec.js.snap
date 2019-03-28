@@ -4,6 +4,7 @@ exports[`src | components | pages | Price snapshots should match snapshot free p
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <Price
+    className=""
     free={null}
     value={0}
   />,
@@ -22,7 +23,7 @@ ShallowWrapper {
     "nodeType": "host",
     "props": Object {
       "children": "0 €",
-      "className": "price",
+      "className": "price ",
     },
     "ref": null,
     "rendered": "0 €",
@@ -35,7 +36,7 @@ ShallowWrapper {
       "nodeType": "host",
       "props": Object {
         "children": "0 €",
-        "className": "price",
+        "className": "price ",
       },
       "ref": null,
       "rendered": "0 €",
@@ -72,6 +73,7 @@ exports[`src | components | pages | Price snapshots should match snapshot with a
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <Price
+    className=""
     free={null}
     value={5}
   />,
@@ -90,7 +92,7 @@ ShallowWrapper {
     "nodeType": "host",
     "props": Object {
       "children": "5 €",
-      "className": "price",
+      "className": "price ",
     },
     "ref": null,
     "rendered": "5 €",
@@ -103,7 +105,7 @@ ShallowWrapper {
       "nodeType": "host",
       "props": Object {
         "children": "5 €",
-        "className": "price",
+        "className": "price ",
       },
       "ref": null,
       "rendered": "5 €",
@@ -140,6 +142,7 @@ exports[`src | components | pages | Price snapshots should match snapshot with a
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <Price
+    className=""
     free={null}
     value={
       Array [
@@ -163,7 +166,7 @@ ShallowWrapper {
     "nodeType": "host",
     "props": Object {
       "children": "5 → 10 €",
-      "className": "price",
+      "className": "price ",
     },
     "ref": null,
     "rendered": "5 → 10 €",
@@ -176,7 +179,7 @@ ShallowWrapper {
       "nodeType": "host",
       "props": Object {
         "children": "5 → 10 €",
-        "className": "price",
+        "className": "price ",
       },
       "ref": null,
       "rendered": "5 → 10 €",
@@ -213,6 +216,7 @@ exports[`src | components | pages | Price snapshots should match snapshot with d
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <Price
+    className=""
     free={null}
     value={
       Array [
@@ -236,7 +240,7 @@ ShallowWrapper {
     "nodeType": "host",
     "props": Object {
       "children": "5,99 → 10 €",
-      "className": "price",
+      "className": "price ",
     },
     "ref": null,
     "rendered": "5,99 → 10 €",
@@ -249,7 +253,7 @@ ShallowWrapper {
       "nodeType": "host",
       "props": Object {
         "children": "5,99 → 10 €",
-        "className": "price",
+        "className": "price ",
       },
       "ref": null,
       "rendered": "5,99 → 10 €",
@@ -286,6 +290,7 @@ exports[`src | components | pages | Price snapshots should match snapshot withou
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <Price
+    className=""
     free={null}
     value={null}
   />,
@@ -304,7 +309,7 @@ ShallowWrapper {
     "nodeType": "host",
     "props": Object {
       "children": "",
-      "className": "price",
+      "className": "price ",
     },
     "ref": null,
     "rendered": "",
@@ -317,7 +322,7 @@ ShallowWrapper {
       "nodeType": "host",
       "props": Object {
         "children": "",
-        "className": "price",
+        "className": "price ",
       },
       "ref": null,
       "rendered": "",

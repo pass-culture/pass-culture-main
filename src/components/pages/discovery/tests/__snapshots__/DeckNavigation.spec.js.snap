@@ -296,10 +296,11 @@ ShallowWrapper {
                   }
                 }
               >
-                <Unknown
+                <Finishable
                   finished={null}
                 >
                   <Price
+                    className=""
                     free="Gratuit"
                     id="deck-navigation-offer-price"
                     value={Array []}
@@ -312,7 +313,7 @@ ShallowWrapper {
                   <div>
                      
                   </div>
-                </Unknown>
+                </Finishable>
               </div>
             </div>
           </Draggable>
@@ -397,10 +398,11 @@ ShallowWrapper {
                     }
                   }
                 >
-                  <Unknown
+                  <Finishable
                     finished={null}
                   >
                     <Price
+                      className=""
                       free="Gratuit"
                       id="deck-navigation-offer-price"
                       value={Array []}
@@ -413,7 +415,7 @@ ShallowWrapper {
                     <div>
                        
                     </div>
-                  </Unknown>
+                  </Finishable>
                 </div>
               </div>
             </Draggable>
@@ -503,10 +505,11 @@ ShallowWrapper {
                     }
                   }
                 >
-                  <Unknown
+                  <Finishable
                     finished={null}
                   >
                     <Price
+                      className=""
                       free="Gratuit"
                       id="deck-navigation-offer-price"
                       value={Array []}
@@ -519,7 +522,7 @@ ShallowWrapper {
                     <div>
                        
                     </div>
-                  </Unknown>
+                  </Finishable>
                 </div>
               </div>
             </Draggable>,
@@ -563,10 +566,11 @@ ShallowWrapper {
                     }
                   }
                 >
-                  <Unknown
+                  <Finishable
                     finished={null}
                   >
                     <Price
+                      className=""
                       free="Gratuit"
                       id="deck-navigation-offer-price"
                       value={Array []}
@@ -579,7 +583,7 @@ ShallowWrapper {
                     <div>
                        
                     </div>
-                  </Unknown>
+                  </Finishable>
                 </div>
               </div>,
               "defaultClassName": "react-draggable",
@@ -632,10 +636,11 @@ ShallowWrapper {
                       }
                     }
                   >
-                    <Unknown
+                    <Finishable
                       finished={null}
                     >
                       <Price
+                        className=""
                         free="Gratuit"
                         id="deck-navigation-offer-price"
                         value={Array []}
@@ -648,7 +653,7 @@ ShallowWrapper {
                       <div>
                          
                       </div>
-                    </Unknown>
+                    </Finishable>
                   </div>,
                 ],
                 "id": "dragButton",
@@ -690,10 +695,11 @@ ShallowWrapper {
                   "key": undefined,
                   "nodeType": "host",
                   "props": Object {
-                    "children": <Unknown
+                    "children": <Finishable
                       finished={null}
                     >
                       <Price
+                        className=""
                         free="Gratuit"
                         id="deck-navigation-offer-price"
                         value={Array []}
@@ -706,7 +712,7 @@ ShallowWrapper {
                       <div>
                          
                       </div>
-                    </Unknown>,
+                    </Finishable>,
                     "className": "clue",
                     "style": Object {
                       "transition": "opacity 250ms",
@@ -720,6 +726,7 @@ ShallowWrapper {
                     "props": Object {
                       "children": Array [
                         <Price
+                          className=""
                           free="Gratuit"
                           id="deck-navigation-offer-price"
                           value={Array []}
@@ -742,6 +749,7 @@ ShallowWrapper {
                         "key": undefined,
                         "nodeType": "function",
                         "props": Object {
+                          "className": "",
                           "free": "Gratuit",
                           "id": "deck-navigation-offer-price",
                           "value": Array [],
@@ -879,10 +887,11 @@ ShallowWrapper {
                     }
                   }
                 >
-                  <Unknown
+                  <Finishable
                     finished={null}
                   >
                     <Price
+                      className=""
                       free="Gratuit"
                       id="deck-navigation-offer-price"
                       value={Array []}
@@ -895,7 +904,7 @@ ShallowWrapper {
                     <div>
                        
                     </div>
-                  </Unknown>
+                  </Finishable>
                 </div>
               </div>
             </Draggable>
@@ -980,10 +989,11 @@ ShallowWrapper {
                       }
                     }
                   >
-                    <Unknown
+                    <Finishable
                       finished={null}
                     >
                       <Price
+                        className=""
                         free="Gratuit"
                         id="deck-navigation-offer-price"
                         value={Array []}
@@ -996,7 +1006,7 @@ ShallowWrapper {
                       <div>
                          
                       </div>
-                    </Unknown>
+                    </Finishable>
                   </div>
                 </div>
               </Draggable>
@@ -1086,10 +1096,11 @@ ShallowWrapper {
                       }
                     }
                   >
-                    <Unknown
+                    <Finishable
                       finished={null}
                     >
                       <Price
+                        className=""
                         free="Gratuit"
                         id="deck-navigation-offer-price"
                         value={Array []}
@@ -1102,7 +1113,7 @@ ShallowWrapper {
                       <div>
                          
                       </div>
-                    </Unknown>
+                    </Finishable>
                   </div>
                 </div>
               </Draggable>,
@@ -1146,10 +1157,11 @@ ShallowWrapper {
                       }
                     }
                   >
-                    <Unknown
+                    <Finishable
                       finished={null}
                     >
                       <Price
+                        className=""
                         free="Gratuit"
                         id="deck-navigation-offer-price"
                         value={Array []}
@@ -1162,7 +1174,7 @@ ShallowWrapper {
                       <div>
                          
                       </div>
-                    </Unknown>
+                    </Finishable>
                   </div>
                 </div>,
                 "defaultClassName": "react-draggable",
@@ -1215,10 +1227,11 @@ ShallowWrapper {
                         }
                       }
                     >
-                      <Unknown
+                      <Finishable
                         finished={null}
                       >
                         <Price
+                          className=""
                           free="Gratuit"
                           id="deck-navigation-offer-price"
                           value={Array []}
@@ -1231,7 +1244,7 @@ ShallowWrapper {
                         <div>
                            
                         </div>
-                      </Unknown>
+                      </Finishable>
                     </div>,
                   ],
                   "id": "dragButton",
@@ -1273,10 +1286,11 @@ ShallowWrapper {
                     "key": undefined,
                     "nodeType": "host",
                     "props": Object {
-                      "children": <Unknown
+                      "children": <Finishable
                         finished={null}
                       >
                         <Price
+                          className=""
                           free="Gratuit"
                           id="deck-navigation-offer-price"
                           value={Array []}
@@ -1289,7 +1303,7 @@ ShallowWrapper {
                         <div>
                            
                         </div>
-                      </Unknown>,
+                      </Finishable>,
                       "className": "clue",
                       "style": Object {
                         "transition": "opacity 250ms",
@@ -1303,6 +1317,7 @@ ShallowWrapper {
                       "props": Object {
                         "children": Array [
                           <Price
+                            className=""
                             free="Gratuit"
                             id="deck-navigation-offer-price"
                             value={Array []}
@@ -1325,6 +1340,7 @@ ShallowWrapper {
                           "key": undefined,
                           "nodeType": "function",
                           "props": Object {
+                            "className": "",
                             "free": "Gratuit",
                             "id": "deck-navigation-offer-price",
                             "value": Array [],

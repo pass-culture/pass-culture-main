@@ -1,49 +1,33 @@
 ul.verso-control {
   list-style: none;
-  background-color: $primary;
-  height: $footer-height;
-  padding-left: $page-padding;
-  padding-right: $page-padding;
-  color: $white;
-  font-weight: 500;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-shrink: 0;
+  // height: $footer-height;
+
   li {
-    display: inline-block;
-    text-align: center;
-    .pass-label {
-      display: block;
-      margin-bottom: -3px;
-    }
-    .pass-value {
-      display: block;
-      font-size: 1.5em;
-    }
-    .button.is-go {
-      .price {
-        font-weight: normal;
-        border-right: thin solid;
-        margin-right: 10px;
-        padding-right: 10px;
-        padding-top: 0.5em;
-        padding-bottom: 0.5em;
-        margin-top: -0.5em;
-        margin-bottom: -0.5em;
-      }
-      svg {
-        margin-right: 5px;
-      }
-    }
+    @extend .text-center;
+    @extend .is-inline-block;
+
+    // .button.is-go {
+    //   .price {
+    //     font-weight: normal;
+    //     border-right: thin solid;
+    //     margin-right: 10px;
+    //     padding-right: 10px;
+    //     padding-top: 0.5em;
+    //     padding-bottom: 0.5em;
+    //     margin-top: -0.5em;
+    //     margin-bottom: -0.5em;
+    //   }
+    //
+    //   svg {
+    //     margin-right: 5px;
+    //   }
+    // }
+
     .cancel-button {
       background: transparent;
       color: white;
-      font-weight: bold;
-      font-size: 18px;
       border: 2px solid white;
       border-left-style: dotted;
-      padding: 5px 10px;
     }
   }
 }

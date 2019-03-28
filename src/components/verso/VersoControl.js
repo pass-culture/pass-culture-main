@@ -36,10 +36,10 @@ class VersoControl extends React.PureComponent {
   render() {
     const { isFavorite, walletValue } = this.props
     return (
-      <ul className="verso-control">
+      <ul className="verso-control py8 px12 is-medium is-flex flex-0 flex-between items-center pc-theme-red">
         <li>
-          <small className="pass-label">Mon Pass</small>
-          <span id="verso-wallet-value" className="pass-value">
+          <small className="is-block">Mon Pass</small>
+          <span id="verso-wallet-value" className="fs24 is-block">
             {walletValue}&nbsp;€
           </span>
         </li>
@@ -47,7 +47,7 @@ class VersoControl extends React.PureComponent {
           <button
             disabled
             type="button"
-            className="button is-secondary"
+            className="no-border no-background"
             onClick={this.onClickFavorite}
           >
             <Icon

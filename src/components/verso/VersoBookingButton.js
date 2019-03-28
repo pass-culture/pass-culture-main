@@ -8,12 +8,12 @@ import { Link, withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 import { requestData } from 'redux-saga-data'
 
-import Price from '../layout/Price'
 import Finishable from '../layout/Finishable'
 import { isRecommendationFinished } from '../../helpers'
 import { openSharePopin, closeSharePopin } from '../../reducers/share'
 import { selectBookings } from '../../selectors/selectBookings'
 import currentRecommendation from '../../selectors/currentRecommendation'
+import BookThisButtonContainer from './verso-buttons/BookThisButtonContainer'
 
 export const getButton = (label, onClick) => (
   <button
@@ -44,32 +44,22 @@ export const getCancelSuccessRedirectFromBookingAndSearch = (
 }
 
 class VersoBookingButton extends React.PureComponent {
-  renderBookingLink = () => {
-    const { location, offer, url } = this.props
-    const { search } = location
-    const priceValue = get(offer, 'price') || get(offer, 'displayPrice')
-    const to = `${url}/booking${search}`
-
+  renderBookingThisButton = () => {
+    const { isFinished } = this.props
     return (
-      <Link
-        to={to}
-        id="verso-booking-button"
-        className="button is-primary is-medium"
-      >
-        <Price free="Gratuit" value={priceValue} />
-        <span>J&apos;y vais!</span>
-      </Link>
+      <Finishable finished={isFinished}>
+        <BookThisButtonContainer />
+      </Finishable>
     )
   }
 
   onCancelSuccess = booking => {
-    const { dispatch, history, location } = this.props
-    const { search } = location
+    const { dispatch, history, locationSearch } = this.props
     dispatch(closeSharePopin())
 
     const redirect = getCancelSuccessRedirectFromBookingAndSearch(
       booking,
-      search
+      locationSearch
     )
     history.push(redirect)
   }
@@ -127,7 +117,7 @@ class VersoBookingButton extends React.PureComponent {
     <button
       id="verso-cancel-booking-button"
       type="button"
-      className="cancel-button"
+      className="cancel-button is-bold fs18 px10 py5"
       onClick={() => this.openCancelPopin(booking)}
     >
       Annuler
@@ -153,8 +143,7 @@ class VersoBookingButton extends React.PureComponent {
   }
 
   renderOnlineButton = () => {
-    const { booking } = this.props
-    const onlineOfferUrl = get(booking, 'completedUrl')
+    const { onlineOfferUrl } = this.props
     return (
       <a
         id="verso-online-booked-button"
@@ -169,16 +158,12 @@ class VersoBookingButton extends React.PureComponent {
   }
 
   render() {
-    const { booking, isFinished } = this.props
-    const onlineOfferUrl = get(booking, 'completedUrl')
+    const { booking, onlineOfferUrl } = this.props
     return (
       <React.Fragment>
         {booking && onlineOfferUrl && this.renderOnlineButton()}
         {booking && !onlineOfferUrl && this.renderOfflineButton(booking)}
-        {!booking && !isFinished && this.renderBookingLink()}
-        {!booking && isFinished && (
-          <Finishable finished>{this.renderBookingLink()}</Finishable>
-        )}
+        {!booking && this.renderBookingThisButton()}
       </React.Fragment>
     )
   }
@@ -187,7 +172,7 @@ class VersoBookingButton extends React.PureComponent {
 VersoBookingButton.defaultProps = {
   booking: null,
   isFinished: false,
-  offer: null,
+  onlineOfferUrl: null,
 }
 
 VersoBookingButton.propTypes = {
@@ -195,14 +180,13 @@ VersoBookingButton.propTypes = {
   dispatch: PropTypes.func.isRequired,
   history: PropTypes.object.isRequired,
   isFinished: PropTypes.bool,
-  location: PropTypes.object.isRequired,
-  offer: PropTypes.object,
-  url: PropTypes.string.isRequired,
+  locationSearch: PropTypes.string.isRequired,
+  onlineOfferUrl: PropTypes.string,
 }
 
-const mapStateToProps = (state, { match }) => {
-  const { params, url } = match
-  const { mediationId, offerId } = params
+const mapStateToProps = (state, { match, location }) => {
+  const { mediationId, offerId } = match.params
+  const { search: locationSearch } = location
   const recommendation = currentRecommendation(state, offerId, mediationId)
   const isFinished = isRecommendationFinished(recommendation, offerId)
   // NOTE -> on ne peut pas faire confiance a bookingsIds
@@ -211,11 +195,12 @@ const mapStateToProps = (state, { match }) => {
   const stockIds = (stocks || []).map(o => o.id)
   const bookings = selectBookings(state)
   const booking = bookings.find(b => stockIds.includes(b.stockId))
+  const onlineOfferUrl = get(booking, 'completedUrl')
   return {
     booking,
     isFinished,
-    offer: recommendation && recommendation.offer,
-    url: url.replace(/\/$/, ''),
+    locationSearch,
+    onlineOfferUrl,
   }
 }
 

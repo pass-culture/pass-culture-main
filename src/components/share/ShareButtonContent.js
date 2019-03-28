@@ -95,7 +95,7 @@ class ShareButtonContent extends React.PureComponent {
         id={id}
         type="button"
         disabled={isDisabled}
-        className="button is-secondary fs32"
+        className="no-border no-background fs32"
         onClick={this.onClickShare}
       >
         <span
