@@ -27,11 +27,11 @@ fixture(`08_02 L'user peut reserver n'importe quelle offre`).beforeEach(
       'webapp_08_booking',
       'get_existing_webapp_user_can_book_digital_offer'
     )
-    const { offer } = await fetchSandbox(
+    const { mediationId, offer } = await fetchSandbox(
       'webapp_08_booking',
-      'get_non_free_thing_offer'
+      'get_non_free_thing_offer_with_active_mediation'
     )
-    offerPage = `${discoverURL}/${offer.id}`
+    offerPage = `${discoverURL}/${offer.id}/${mediationId}`
     offerBookingPage = `${offerPage}/booking`
     await t.useRole(createUserRole(user)).navigateTo(offerPage)
   }

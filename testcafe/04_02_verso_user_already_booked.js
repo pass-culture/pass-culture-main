@@ -40,7 +40,7 @@ test(`L'user ne peut plus réserver un event déjà réservé`, async t => {
     .expect(bookOfferButton.exists)
     .notOk()
     .expect(eventAlreadyBookedButton.exists)
-    .ok()
+    .ok({'timeout': 10000})
     .expect(eventAlreadyBookedButton.textContent)
     .eql(`Réservé`)
 }).before(async t => {

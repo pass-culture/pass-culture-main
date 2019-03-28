@@ -36,11 +36,11 @@ fixture(`08_03 Réservation d'une offre type thing`).beforeEach(async t => {
     'webapp_08_booking',
     'get_existing_webapp_user_can_book_thing_offer'
   )
-  const { offer } = await fetchSandbox(
+  const { mediationId, offer } = await fetchSandbox(
     'webapp_08_booking',
-    'get_non_free_thing_offer'
+    'get_non_free_thing_offer_with_active_mediation'
   )
-  offerPage = `${discoverURL}/${offer.id}`
+  offerPage = `${discoverURL}/${offer.id}/${mediationId}`
   offerPageVerso = `${offerPage}/verso`
   offerBookingPage = `${offerPage}/booking`
   await t.useRole(createUserRole(user)).navigateTo(offerPage)
@@ -122,8 +122,7 @@ test(`Je vérifie mes réservations après reconnexion`, async t => {
     .expect(bookedOffer.exists)
     .ok()
     .click(bookedOffer)
-    .click(openVerso)
-    .wait(500)
+    .wait(1000)
     .expect(alreadyBookedOfferButton.textContent)
     .eql(`Réservé`)
     .click(alreadyBookedOfferButton)

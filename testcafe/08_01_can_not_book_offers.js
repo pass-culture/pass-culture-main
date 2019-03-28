@@ -20,11 +20,11 @@ test(`Je n'ai plus d'argent`, async t => {
     'webapp_08_booking',
     'get_existing_webapp_user_has_no_more_money'
   )
-  const { offer } = await fetchSandbox(
+  const { mediationId, offer } = await fetchSandbox(
     'webapp_08_booking',
-    'get_non_free_thing_offer'
+    'get_non_free_thing_offer_with_active_mediation'
   )
-  const offerPage = `${discoverURL}/${offer.id}`
+  const offerPage = `${discoverURL}/${offer.id}/${mediationId}`
   await t
     .useRole(createUserRole(user))
     .navigateTo(offerPage)

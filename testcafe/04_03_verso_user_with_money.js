@@ -9,7 +9,6 @@ import { ROOT_PATH } from '../src/utils/config'
 let offerTitle = null
 let offerSubTitle = null
 const discoverURL = `${ROOT_PATH}decouverte`
-
 const dragButton = Selector('#dragButton')
 const versoOfferName = Selector('#verso-offer-name')
 const versoOfferVenue = Selector('#verso-offer-venue')
@@ -24,13 +23,13 @@ fixture(`04 Verso`).beforeEach(async t => {
     'webapp_04_verso',
     'get_existing_webapp_hbs_user'
   )
-  const { offer } = await fetchSandbox(
+  const { mediationId, offer } = await fetchSandbox(
     'webapp_08_booking',
-    'get_non_free_thing_offer'
+    'get_non_free_thing_offer_with_active_mediation'
   )
   offerTitle = offer.thingName
   offerSubTitle = offer.venueName
-  const offerURL = `${discoverURL}/${offer.id}`
+  const offerURL = `${discoverURL}/${offer.id}/${mediationId}`
   await t.useRole(createUserRole(user)).navigateTo(offerURL)
   await dragButton.with({ visibilityCheck: true })()
 })
