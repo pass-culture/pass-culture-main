@@ -7,11 +7,11 @@ import { getVersoWallet, getVersoWalletValue } from './helpers/getVersoWallet'
 
 const openVersoButton = Selector('#deck-open-verso-button')
 
-fixture(`04 Verso`).beforeEach(async t => {
+fixture(`04_01 Verso`).beforeEach(async t => {
   // given
   const { user } = await fetchSandbox(
     'webapp_04_verso',
-    'get_digital_offer_already_booked_and_user_hnmm_93'
+    'get_digital_offer_with_active_mediation_already_booked_and_user_hnmm_93'
   )
   await t.useRole(createUserRole(user))
 })
