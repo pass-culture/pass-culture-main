@@ -90,7 +90,7 @@ def save_reimbursable_thing_offer(venue: Venue):
     return reimbursable_stock
 
 
-def save_online_book(venue: Venue):
+def save_paid_online_book_offer(venue: Venue):
     paid_reimbursable_offer = create_thing_offer(venue, thing_name='Roman cool',
                                                  thing_type=ThingType.LIVRE_EDITION, url='https://mycoolbook.fr')
     reimbursable_stock = create_stock(price=20, offer=paid_reimbursable_offer)
@@ -117,20 +117,20 @@ def save_sandbox():
     user1, user2, user3, user4, user5 = save_users_with_deposits()
     venue_online_of_offerer_with_iban, venue_with_siret_of_offerer_with_iban, venue_without_siret_of_offerer_with_iban \
         = save_offerer_with_iban()
-    venue_online_of_offerer_without_iban, venue_with_siret_with_iban, venue_with_siret_without_iban \
-        = save_offerer_without_iban()
+    venue_online_of_offerer_without_iban, venue_of_offerer_without_iban_with_siret_with_iban,\
+    venue_of_offerer_without_iban_with_siret_without_iban = save_offerer_without_iban()
     past_free_event_stock, future_free_event_stock = save_free_event_offer_with_stocks(
         venue_with_siret_of_offerer_with_iban)
-    non_reimbursable_stock = save_non_reimbursable_thing_offer(venue_online_of_offerer_with_iban)
+    non_reimbursable_stock_of_offerer_with_iban = save_non_reimbursable_thing_offer(venue_online_of_offerer_with_iban)
     reimbursable_stock_of_offerer_with_iban = save_reimbursable_thing_offer(venue_with_siret_of_offerer_with_iban)
     past_event_stock_of_offerer_with_iban, future_event_stock_of_offerer_with_iban \
         = save_paid_reimbursable_event_offer(venue_without_siret_of_offerer_with_iban)
 
     past_event_stock_of_offerer_without_iban, future_event_stock_of_offerer_without_iban \
-        = save_paid_reimbursable_event_offer(venue_with_siret_without_iban)
+        = save_paid_reimbursable_event_offer(venue_of_offerer_without_iban_with_siret_without_iban)
 
-    reimbursable_stock_of_offerer_without_iban = save_reimbursable_thing_offer(venue_with_siret_with_iban)
-    online_book_stock_of_offerer_without_iban = save_online_book(venue_online_of_offerer_with_iban)
+    reimbursable_stock_of_offerer_without_iban = save_reimbursable_thing_offer(venue_of_offerer_without_iban_with_siret_with_iban)
+    online_book_stock_of_offerer_without_iban = save_paid_online_book_offer(venue_online_of_offerer_with_iban)
 
     bookings = [
         create_booking(
@@ -175,40 +175,40 @@ def save_sandbox():
         ),
         create_booking(
             user1,
-            recommendation=create_recommendation(offer=non_reimbursable_stock.resolvedOffer, user=user1),
-            stock=non_reimbursable_stock,
+            recommendation=create_recommendation(offer=non_reimbursable_stock_of_offerer_with_iban.resolvedOffer, user=user1),
+            stock=non_reimbursable_stock_of_offerer_with_iban,
             venue=venue_online_of_offerer_with_iban,
             token='TOKEN6',
             is_used=True
         ),
         create_booking(
             user2,
-            recommendation=create_recommendation(offer=non_reimbursable_stock.resolvedOffer, user=user2),
-            stock=non_reimbursable_stock,
+            recommendation=create_recommendation(offer=non_reimbursable_stock_of_offerer_with_iban.resolvedOffer, user=user2),
+            stock=non_reimbursable_stock_of_offerer_with_iban,
             venue=venue_online_of_offerer_with_iban,
             token='TOKEN7',
             is_used=True
         ),
         create_booking(
             user3,
-            recommendation=create_recommendation(offer=non_reimbursable_stock.resolvedOffer, user=user3),
-            stock=non_reimbursable_stock,
+            recommendation=create_recommendation(offer=non_reimbursable_stock_of_offerer_with_iban.resolvedOffer, user=user3),
+            stock=non_reimbursable_stock_of_offerer_with_iban,
             venue=venue_online_of_offerer_with_iban,
             token='TOKEN8',
             is_used=True
         ),
         create_booking(
             user4,
-            recommendation=create_recommendation(offer=non_reimbursable_stock.resolvedOffer, user=user4),
-            stock=non_reimbursable_stock,
+            recommendation=create_recommendation(offer=non_reimbursable_stock_of_offerer_with_iban.resolvedOffer, user=user4),
+            stock=non_reimbursable_stock_of_offerer_with_iban,
             venue=venue_online_of_offerer_with_iban,
             token='TOKEN9',
             is_used=False
         ),
         create_booking(
             user5,
-            recommendation=create_recommendation(offer=non_reimbursable_stock.resolvedOffer, user=user5),
-            stock=non_reimbursable_stock,
+            recommendation=create_recommendation(offer=non_reimbursable_stock_of_offerer_with_iban.resolvedOffer, user=user5),
+            stock=non_reimbursable_stock_of_offerer_with_iban,
             venue=venue_online_of_offerer_with_iban,
             token='TOKE10',
             is_used=False
@@ -306,7 +306,7 @@ def save_sandbox():
             recommendation=create_recommendation(offer=past_event_stock_of_offerer_without_iban.resolvedOffer,
                                                  user=user1),
             stock=past_event_stock_of_offerer_without_iban,
-            venue=venue_with_siret_without_iban,
+            venue=venue_of_offerer_without_iban_with_siret_without_iban,
             token='TOKE21',
             is_used=True
         ),
@@ -315,7 +315,7 @@ def save_sandbox():
             recommendation=create_recommendation(offer=past_event_stock_of_offerer_without_iban.resolvedOffer,
                                                  user=user2),
             stock=past_event_stock_of_offerer_without_iban,
-            venue=venue_with_siret_without_iban,
+            venue=venue_of_offerer_without_iban_with_siret_without_iban,
             token='TOKE22',
             is_used=True
         ),
@@ -324,7 +324,7 @@ def save_sandbox():
             recommendation=create_recommendation(offer=past_event_stock_of_offerer_without_iban.resolvedOffer,
                                                  user=user3),
             stock=past_event_stock_of_offerer_without_iban,
-            venue=venue_with_siret_without_iban,
+            venue=venue_of_offerer_without_iban_with_siret_without_iban,
             token='TOKE23',
             is_used=False
         ),
@@ -333,7 +333,7 @@ def save_sandbox():
             recommendation=create_recommendation(offer=future_event_stock_of_offerer_without_iban.resolvedOffer,
                                                  user=user4),
             stock=future_event_stock_of_offerer_without_iban,
-            venue=venue_with_siret_without_iban,
+            venue=venue_of_offerer_without_iban_with_siret_without_iban,
             token='TOKE24',
             is_used=True
         ),
@@ -342,7 +342,7 @@ def save_sandbox():
             recommendation=create_recommendation(offer=future_event_stock_of_offerer_without_iban.resolvedOffer,
                                                  user=user5),
             stock=future_event_stock_of_offerer_without_iban,
-            venue=venue_with_siret_without_iban,
+            venue=venue_of_offerer_without_iban_with_siret_without_iban,
             token='TOKE25',
             is_used=False
         ),
@@ -351,7 +351,7 @@ def save_sandbox():
             recommendation=create_recommendation(offer=reimbursable_stock_of_offerer_without_iban.resolvedOffer,
                                                  user=user1),
             stock=reimbursable_stock_of_offerer_without_iban,
-            venue=venue_with_siret_with_iban,
+            venue=venue_of_offerer_without_iban_with_siret_with_iban,
             token='TOKE26',
             is_used=False
         ),
@@ -360,7 +360,7 @@ def save_sandbox():
             recommendation=create_recommendation(offer=reimbursable_stock_of_offerer_without_iban.resolvedOffer,
                                                  user=user2),
             stock=reimbursable_stock_of_offerer_without_iban,
-            venue=venue_with_siret_with_iban,
+            venue=venue_of_offerer_without_iban_with_siret_with_iban,
             token='TOKE27',
             is_used=False
         ),
@@ -369,7 +369,7 @@ def save_sandbox():
             recommendation=create_recommendation(offer=reimbursable_stock_of_offerer_without_iban.resolvedOffer,
                                                  user=user3),
             stock=reimbursable_stock_of_offerer_without_iban,
-            venue=venue_with_siret_with_iban,
+            venue=venue_of_offerer_without_iban_with_siret_with_iban,
             token='TOKE28',
             is_used=False
         ),
@@ -378,7 +378,7 @@ def save_sandbox():
             recommendation=create_recommendation(offer=reimbursable_stock_of_offerer_without_iban.resolvedOffer,
                                                  user=user4),
             stock=reimbursable_stock_of_offerer_without_iban,
-            venue=venue_with_siret_with_iban,
+            venue=venue_of_offerer_without_iban_with_siret_with_iban,
             token='TOKE29',
             is_used=True
         ),
@@ -387,7 +387,7 @@ def save_sandbox():
             recommendation=create_recommendation(offer=reimbursable_stock_of_offerer_without_iban.resolvedOffer,
                                                  user=user5),
             stock=reimbursable_stock_of_offerer_without_iban,
-            venue=venue_with_siret_with_iban,
+            venue=venue_of_offerer_without_iban_with_siret_with_iban,
             token='TOKE30',
             is_used=True
         ),
