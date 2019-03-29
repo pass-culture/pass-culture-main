@@ -8,6 +8,7 @@ from models.venue import Venue
 from repository.user_queries import filter_users_with_at_least_one_validated_offerer_validated_user_offerer
 from sandboxes.scripts.utils.helpers import get_offer_helper, \
     get_offerer_helper, \
+    get_stock_helper, \
     get_user_helper, \
     get_venue_helper
 
@@ -56,12 +57,15 @@ def get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_u
                 for offer in venue.offers:
                     if isinstance(offer.eventOrThing, Event) \
                             and offer.stocks:
-                        return {
-                            "offer": get_offer_helper(offer),
-                            "offerer": get_offerer_helper(uo.offerer),
-                            "user": get_user_helper(user),
-                            "venue": get_venue_helper(venue)
-                        }
+                        for stock in offer.stocks:
+                            if stock.beginningDatetime and stock.endDatetime:
+                                return {
+                                    "offer": get_offer_helper(offer),
+                                    "offerer": get_offerer_helper(uo.offerer),
+                                    "stock": get_stock_helper(stock),
+                                    "user": get_user_helper(user),
+                                    "venue": get_venue_helper(venue)
+                                }
 
 
 def get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_user_offerer_with_thing_offer_with_stock():
@@ -84,6 +88,7 @@ def get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_u
                         return {
                             "offer": get_offer_helper(offer),
                             "offerer": get_offerer_helper(uo.offerer),
+                            "stock": get_stock_helper(offer.stocks[0]),
                             "user": get_user_helper(user),
                             "venue": get_venue_helper(venue)
                         }

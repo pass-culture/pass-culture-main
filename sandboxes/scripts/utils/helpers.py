@@ -29,6 +29,9 @@ def get_offerer_helper(offerer):
         "longitude": '2.4579903',
     })
 
+def get_stock_helper(stock):
+    return stock._asdict()
+
 def get_email(first_name, last_name, domain):
     return "{}.{}@{}".format(
         first_name.replace(' ', '').strip().lower(),
