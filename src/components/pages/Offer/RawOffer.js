@@ -1,4 +1,5 @@
 import get from 'lodash.get'
+import PropTypes from 'prop-types'
 import {
   CancelButton,
   closeModal,
@@ -346,6 +347,7 @@ class RawOffer extends Component {
       musicSubOptions,
       showSubOptions,
     } = this.props
+
     const { apiPath, isNew, isReadOnly, isEventType } = this.state
     const eventOrThingName = get(event, 'name') || get(thing, 'name')
     const offerId = get(offer, 'id')
@@ -502,7 +504,7 @@ class RawOffer extends Component {
                 </div>
               )}
             </div>
-            {!isNew && <MediationsManager />}
+            {!isNew && offer && <MediationsManager />}
             {showAllForm && (
               <div>
                 <h2 className="main-list-title">Infos pratiques</h2>
@@ -688,6 +690,17 @@ class RawOffer extends Component {
       </Main>
     )
   }
+}
+
+RawOffer.defaultProps = {}
+
+RawOffer.propTypes = {
+  location: PropTypes.object.isRequired,
+  match: PropTypes.object.isRequired,
+  currentUser: PropTypes.object.isRequired,
+  query: PropTypes.object.isRequired,
+  dispatch: PropTypes.func.isRequired,
+  //not required
 }
 
 export default RawOffer

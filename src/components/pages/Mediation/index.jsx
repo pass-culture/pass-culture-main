@@ -99,6 +99,7 @@ class Mediation extends PureComponent {
       history.push(`/offres/${offer.id}`)
       dispatch(
         showNotification({
+          tag: 'mediations-manager',
           text: 'Votre accroche a bien été enregistrée',
           type: 'success',
         })
