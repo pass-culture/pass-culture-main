@@ -15,9 +15,11 @@ from models.local_provider_event import LocalProviderEvent, LocalProviderEventTy
 from models.pc_object import PcObject
 from models.provider import Provider
 from models.thing import Thing
+from models.stock import Stock
 from utils.date import read_json_date
 from utils.human_ids import humanize
 from utils.inflect_engine import inflect_engine
+from utils.logger import logger
 
 CHUNK_MAX_SIZE = 1000
 
@@ -241,6 +243,8 @@ class LocalProvider(Iterator):
                 for providable_info in providable_infos:
 
                     if providable_info is not None:
+                        chunk_key = providable_info.idAtProviders + '|' + str(providable_info.type.__name__)
+
                         pc_obj = self.get_existing_pc_obj(providable_info, chunk_to_insert, chunk_to_update)
 
                         date_modified_at_provider = None
@@ -272,12 +276,12 @@ class LocalProvider(Iterator):
                                 continue
 
                             if is_new_obj:
-                                chunk_to_insert[providable_info.idAtProviders] = pc_obj
+                                chunk_to_insert[chunk_key] = pc_obj
                             else:
-                                if providable_info.idAtProviders in chunk_to_insert:
-                                    chunk_to_insert[providable_info.idAtProviders] = pc_obj
+                                if chunk_key in chunk_to_insert:
+                                    chunk_to_insert[chunk_key] = pc_obj
                                 else:
-                                    chunk_to_update[providable_info.idAtProviders] = pc_obj
+                                    chunk_to_update[chunk_key] = pc_obj
 
                         else:
                             print('  Not creating or updating '
@@ -295,7 +299,7 @@ class LocalProvider(Iterator):
                                         self.logEvent(LocalProviderEventType.SyncError, 'ApiErrors')
                                         continue
 
-                                    chunk_to_update[providable_info.idAtProviders] = pc_obj
+                                    chunk_to_update[chunk_key] = pc_obj
 
                         if len(chunk_to_insert) + len(chunk_to_update) >= CHUNK_MAX_SIZE:
                             self.save_chunks(chunk_to_insert, chunk_to_update, providable_info)
@@ -363,12 +367,13 @@ class LocalProvider(Iterator):
             conn.execute(statement)
 
     def get_object_from_current_chunks(self, providable_info, chunk_to_insert, chunk_to_update):
-        if providable_info.idAtProviders in chunk_to_insert:
-            pc_object = chunk_to_insert[providable_info.idAtProviders]
+        chunk_key = providable_info.idAtProviders + '|' + str(providable_info.type.__name__)
+        if chunk_key in chunk_to_insert:
+            pc_object = chunk_to_insert[chunk_key]
             if type(pc_object) == providable_info.type:
                 return pc_object
-        if providable_info.idAtProviders in chunk_to_update:
-            pc_object = chunk_to_update[providable_info.idAtProviders]
+        if chunk_key in chunk_to_update:
+            pc_object = chunk_to_update[chunk_key]
             if type(pc_object) == providable_info.type:
                 return pc_object
         return None

@@ -130,6 +130,7 @@ class TiteLiveStocks(LocalProvider):
             obj.offerId = providable_offer.id
 
     def update_offer_object(self, obj):
-        obj.mediaUrls = self.thing.mediaUrls
-        obj.isNational = self.thing.isNational
+        obj.name = self.thing.name
+        obj.venueId = self.venueId
+        obj.thingId = self.thing.id
         PcObject.check_and_save(obj)
