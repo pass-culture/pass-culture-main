@@ -74,6 +74,21 @@ const mockedOffers = [
     mediationsIds: ['EY'],
     stocksIds: ['JQ'],
   },
+  {
+    id: '1M',
+    bookingEmail: 'booking.email@test.com',
+    dateCreated: '2019-02-25T09:50:10.735519Z',
+    dateModifiedAtLastProvider: '2019-02-25T09:50:31.598542Z',
+    eventId: 42,
+    idAtProviders: null,
+    isActive: true,
+    lastProviderId: null,
+    modelName: 'Offer',
+    thingId: null,
+    venueId: 'BE',
+    mediationsIds: ['EY'],
+    stocksIds: ['JQ'],
+  },
 ]
 
 export default mockedOffers

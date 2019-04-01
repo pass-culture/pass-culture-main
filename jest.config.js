@@ -13,7 +13,6 @@ module.exports = {
   },
   modulePaths: ['node_modules', 'src'],
   setupFiles: ['<rootDir>/.jest-polyfill.js', '<rootDir>/jest.setup.js'],
-  testEnvironment: 'node',
   testMatch: [
     '<rootDir>/src/**/__tests__/**/*.{js,jsx}',
     '<rootDir>/src/**/?(*.)(spec|test).{js,jsx}',

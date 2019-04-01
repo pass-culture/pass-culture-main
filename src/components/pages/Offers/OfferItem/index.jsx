@@ -11,7 +11,7 @@ import selectStocksByOfferId from 'selectors/selectStocksByOfferId'
 import selectThingById from 'selectors/selectThingById'
 import selectThumbUrlByOfferIdAndEventIdAndThingId from 'selectors/selectThumbUrlByOfferIdAndEventIdAndThingId'
 import selectVenueById from 'selectors/selectVenueById'
-import offerrerSelector from 'selectors/selectOffererById'
+import offererSelector from 'selectors/selectOffererById'
 import { getOfferTypeLabel } from 'utils/offerItem'
 
 function mapStateToProps(state, ownProps) {
@@ -20,7 +20,8 @@ function mapStateToProps(state, ownProps) {
   const event = selectEventById(state, eventId)
   const thing = selectThingById(state, thingId)
   const venue = selectVenueById(state, venueId)
-  const offerrer = offerrerSelector(state, venue.managingOffererId)
+  const offerer = offererSelector(state, venue.managingOffererId)
+
   return {
     aggregatedStock: selectAggregatedStockByOfferId(state, offerId),
     event,
@@ -36,7 +37,7 @@ function mapStateToProps(state, ownProps) {
     ),
     offerTypeLabel: getOfferTypeLabel(event, thing),
     venue,
-    offerrer,
+    offerrer: offerer,
   }
 }
 

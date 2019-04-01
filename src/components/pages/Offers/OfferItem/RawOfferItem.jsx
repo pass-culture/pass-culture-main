@@ -12,9 +12,10 @@ import Thumb from 'components/layout/Thumb'
 import { offerNormalizer } from 'utils/normalizers'
 
 class RawOfferItem extends Component {
-  onDeactivateClick = event => {
+  onDeactivateClick = () => {
     const { dispatch, offer } = this.props
     const { id, isActive } = offer || {}
+
     dispatch(
       requestData({
         apiPath: `/offers/${id}`,
@@ -28,6 +29,42 @@ class RawOfferItem extends Component {
         normalizer: offerNormalizer,
       })
     )
+  }
+
+  buildEventLabel = remainingStock => {
+    if (remainingStock === 0) {
+      return '0 places'
+    }
+
+    const label = 'encore ' + remainingStock
+    return remainingStock > 1 ? label + ' places' : label + ' place'
+  }
+
+  buildThingLabel = remainingStock => {
+    return remainingStock + ' en stock'
+  }
+
+  buildNumberOfParticipantsLabel = (groupSizeMin, groupSizeMax) => {
+    return groupSizeMin === groupSizeMax
+      ? groupSizeMin
+      : groupSizeMin - groupSizeMax
+  }
+
+  buildNumberOfParticipantsTitle = (groupSizeMin, groupSizeMax) => {
+    const groupLabel =
+      groupSizeMin === groupSizeMax
+        ? 'minimum ' + pluralize(groupSizeMin, 'personnes')
+        : 'entre ' + groupSizeMin + ' et ' + groupSizeMax + ' personnes'
+
+    return groupSizeMin > 0 ? groupLabel : undefined
+  }
+
+  buildEventNavLinkLabel = stockSize => {
+    return pluralize(stockSize, 'dates')
+  }
+
+  buildThingNavLinkLabel = stockSize => {
+    return stockSize + ' prix'
   }
 
   render() {
@@ -47,11 +84,12 @@ class RawOfferItem extends Component {
     } = this.props
 
     const { isNew } = offer || {}
-    const { available, groupSizeMin, groupSizeMax, priceMin, priceMax } =
+    const { groupSizeMin, groupSizeMax, priceMin, priceMax } =
       aggregatedStock || {}
     const { name, createdAt } = event || thing || {}
 
-    const mediationsLength = get(mediations, 'length')
+    const numberOfMediations = get(mediations, 'length')
+    const remainingStockQuantity = get(stocks, 'length')
 
     return (
       <li
@@ -71,7 +109,7 @@ class RawOfferItem extends Component {
           <ul className="infos">
             <li className="is-uppercase">{offerTypeLabel}</li>
             <li>
-              <span className="label">Structure :</span>
+              <span className="label">Structure : </span>
               {offerrer && offerrer.name}
             </li>
             <li>
@@ -84,20 +122,16 @@ class RawOfferItem extends Component {
                 <div className="recently-added" />
               </li>
             )}
-            {false &&
-              moment(createdAt).isAfter(moment().add(-1, 'days')) && (
-                <li>
-                  <div className="recently-added" />
-                </li>
-              )}
+            {false && moment(createdAt).isAfter(moment().add(-1, 'days')) && (
+              <li>
+                <div className="recently-added" />
+              </li>
+            )}
             <li
-              title={
-                groupSizeMin > 0
-                  ? groupSizeMin === groupSizeMax
-                    ? `minimum ${pluralize(groupSizeMin, 'personnes')}`
-                    : `entre ${groupSizeMin} et ${groupSizeMax} personnes`
-                  : undefined
-              }>
+              title={this.buildNumberOfParticipantsTitle(
+                groupSizeMin,
+                groupSizeMax
+              )}>
               {
                 // DISABLE GROUP SIZE AMBIGUITY FOR THE MOMENT
                 /*groupSizeMin === 0 && (
@@ -111,9 +145,10 @@ class RawOfferItem extends Component {
                 <div>
                   <Icon svg="picto-group" />,{' '}
                   <p>
-                    {groupSizeMin === groupSizeMax
-                      ? groupSizeMin
-                      : `${groupSizeMin} - ${groupSizeMax}`}
+                    {this.buildNumberOfParticipantsLabel(
+                      groupSizeMin,
+                      groupSizeMax
+                    )}
                   </p>
                 </div>
               )}
@@ -122,13 +157,13 @@ class RawOfferItem extends Component {
               <NavLink
                 className="has-text-primary"
                 to={`/offres/${offer.id}?gestion`}>
-                {event
-                  ? pluralize(get(stocks, 'length'), 'dates')
-                  : get(stocks, 'length') + ' prix'}
+                {event && this.buildEventNavLinkLabel(remainingStockQuantity)}
+                {thing && this.buildThingNavLinkLabel(remainingStockQuantity)}
               </NavLink>
             </li>
             <li>{maxDate && `jusqu'au ${maxDate.format('DD/MM/YYYY')}`}</li>
-            <li>{available ? `encore ${available} places` : '0 place'} </li>
+            {event && <li>{this.buildEventLabel(remainingStockQuantity)}</li>}
+            {thing && <li>{this.buildThingLabel(remainingStockQuantity)}</li>}
             <li>
               {priceMin === priceMax ? (
                 <Price value={priceMin || 0} />
@@ -143,10 +178,10 @@ class RawOfferItem extends Component {
             <li>
               <NavLink
                 to={`/offres/${offer.id}${
-                  mediationsLength ? '' : `/accroches/nouveau${search}`
+                  numberOfMediations ? '' : `/accroches/nouveau${search}`
                 }`}
                 className={`button addMediations is-small ${
-                  mediationsLength ? 'is-secondary' : 'is-primary is-outlined'
+                  numberOfMediations ? 'is-secondary' : 'is-primary is-outlined'
                 }`}>
                 <span className="icon">
                   <Icon svg="ico-stars" />

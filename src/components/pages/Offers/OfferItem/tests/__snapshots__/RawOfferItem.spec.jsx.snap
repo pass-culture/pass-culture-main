@@ -79,7 +79,7 @@ ShallowWrapper {
                               <span
                                         className="label"
                               >
-                                        Structure :
+                                        Structure : 
                               </span>
                     </li>
                     <li>
@@ -106,14 +106,10 @@ ShallowWrapper {
                                         className="has-text-primary"
                                         to="/offres/M4?gestion"
                               >
-                                        undefined prix
+                                        
                               </NavLink>
                     </li>
                     <li />
-                    <li>
-                              0 place
-                               
-                    </li>
                     <li>
                               <Price
                                         Tag="span"
@@ -217,7 +213,7 @@ ShallowWrapper {
                             <span
                                           className="label"
                             >
-                                          Structure :
+                                          Structure : 
                             </span>
               </li>
               <li>
@@ -244,14 +240,10 @@ ShallowWrapper {
                                           className="has-text-primary"
                                           to="/offres/M4?gestion"
                             >
-                                          undefined prix
+                                          
                             </NavLink>
               </li>
               <li />
-              <li>
-                            0 place
-                             
-              </li>
               <li>
                             <Price
                                           Tag="span"
@@ -360,7 +352,7 @@ ShallowWrapper {
                   <span
                                     className="label"
                   >
-                                    Structure :
+                                    Structure : 
                   </span>
 </li>,
                 <li>
@@ -397,7 +389,7 @@ ShallowWrapper {
                     <span
                       className="label"
 >
-                      Structure :
+                      Structure : 
 </span>,
                     undefined,
                   ],
@@ -409,11 +401,11 @@ ShallowWrapper {
                     "key": undefined,
                     "nodeType": "host",
                     "props": Object {
-                      "children": "Structure :",
+                      "children": "Structure : ",
                       "className": "label",
                     },
                     "ref": null,
-                    "rendered": "Structure :",
+                    "rendered": "Structure : ",
                     "type": "span",
                   },
                   undefined,
@@ -477,14 +469,12 @@ ShallowWrapper {
                                     className="has-text-primary"
                                     to="/offres/M4?gestion"
                   >
-                                    undefined prix
+                                    
                   </NavLink>
 </li>,
                 <li />,
-                <li>
-                  0 place
-                   
-</li>,
+                undefined,
+                undefined,
                 <li>
                   <Price
                                     Tag="span"
@@ -528,7 +518,7 @@ ShallowWrapper {
                     className="has-text-primary"
                     to="/offres/M4?gestion"
 >
-                    undefined prix
+                    
 </NavLink>,
                 },
                 "ref": null,
@@ -539,12 +529,18 @@ ShallowWrapper {
                   "props": Object {
                     "activeClassName": "active",
                     "aria-current": "page",
-                    "children": "undefined prix",
+                    "children": Array [
+                      undefined,
+                      undefined,
+                    ],
                     "className": "has-text-primary",
                     "to": "/offres/M4?gestion",
                   },
                   "ref": null,
-                  "rendered": "undefined prix",
+                  "rendered": Array [
+                    undefined,
+                    undefined,
+                  ],
                   "type": [Function],
                 },
                 "type": "li",
@@ -560,23 +556,8 @@ ShallowWrapper {
                 "rendered": null,
                 "type": "li",
               },
-              Object {
-                "instance": null,
-                "key": undefined,
-                "nodeType": "host",
-                "props": Object {
-                  "children": Array [
-                    "0 place",
-                    " ",
-                  ],
-                },
-                "ref": null,
-                "rendered": Array [
-                  "0 place",
-                  " ",
-                ],
-                "type": "li",
-              },
+              undefined,
+              undefined,
               Object {
                 "instance": null,
                 "key": undefined,
@@ -910,7 +891,7 @@ ShallowWrapper {
                                     <span
                                                 className="label"
                                     >
-                                                Structure :
+                                                Structure : 
                                     </span>
                         </li>
                         <li>
@@ -937,14 +918,10 @@ ShallowWrapper {
                                                 className="has-text-primary"
                                                 to="/offres/M4?gestion"
                                     >
-                                                undefined prix
+                                                
                                     </NavLink>
                         </li>
                         <li />
-                        <li>
-                                    0 place
-                                     
-                        </li>
                         <li>
                                     <Price
                                                 Tag="span"
@@ -1048,7 +1025,7 @@ ShallowWrapper {
                                 <span
                                                 className="label"
                                 >
-                                                Structure :
+                                                Structure : 
                                 </span>
                 </li>
                 <li>
@@ -1075,14 +1052,10 @@ ShallowWrapper {
                                                 className="has-text-primary"
                                                 to="/offres/M4?gestion"
                                 >
-                                                undefined prix
+                                                
                                 </NavLink>
                 </li>
                 <li />
-                <li>
-                                0 place
-                                 
-                </li>
                 <li>
                                 <Price
                                                 Tag="span"
@@ -1191,7 +1164,7 @@ ShallowWrapper {
                     <span
                                         className="label"
                     >
-                                        Structure :
+                                        Structure : 
                     </span>
 </li>,
                   <li>
@@ -1228,7 +1201,7 @@ ShallowWrapper {
                       <span
                         className="label"
 >
-                        Structure :
+                        Structure : 
 </span>,
                       undefined,
                     ],
@@ -1240,11 +1213,11 @@ ShallowWrapper {
                       "key": undefined,
                       "nodeType": "host",
                       "props": Object {
-                        "children": "Structure :",
+                        "children": "Structure : ",
                         "className": "label",
                       },
                       "ref": null,
-                      "rendered": "Structure :",
+                      "rendered": "Structure : ",
                       "type": "span",
                     },
                     undefined,
@@ -1308,14 +1281,12 @@ ShallowWrapper {
                                         className="has-text-primary"
                                         to="/offres/M4?gestion"
                     >
-                                        undefined prix
+                                        
                     </NavLink>
 </li>,
                   <li />,
-                  <li>
-                    0 place
-                     
-</li>,
+                  undefined,
+                  undefined,
                   <li>
                     <Price
                                         Tag="span"
@@ -1359,7 +1330,7 @@ ShallowWrapper {
                       className="has-text-primary"
                       to="/offres/M4?gestion"
 >
-                      undefined prix
+                      
 </NavLink>,
                   },
                   "ref": null,
@@ -1370,12 +1341,18 @@ ShallowWrapper {
                     "props": Object {
                       "activeClassName": "active",
                       "aria-current": "page",
-                      "children": "undefined prix",
+                      "children": Array [
+                        undefined,
+                        undefined,
+                      ],
                       "className": "has-text-primary",
                       "to": "/offres/M4?gestion",
                     },
                     "ref": null,
-                    "rendered": "undefined prix",
+                    "rendered": Array [
+                      undefined,
+                      undefined,
+                    ],
                     "type": [Function],
                   },
                   "type": "li",
@@ -1391,23 +1368,8 @@ ShallowWrapper {
                   "rendered": null,
                   "type": "li",
                 },
-                Object {
-                  "instance": null,
-                  "key": undefined,
-                  "nodeType": "host",
-                  "props": Object {
-                    "children": Array [
-                      "0 place",
-                      " ",
-                    ],
-                  },
-                  "ref": null,
-                  "rendered": Array [
-                    "0 place",
-                    " ",
-                  ],
-                  "type": "li",
-                },
+                undefined,
+                undefined,
                 Object {
                   "instance": null,
                   "key": undefined,
