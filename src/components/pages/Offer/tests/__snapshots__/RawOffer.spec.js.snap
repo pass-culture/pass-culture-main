@@ -27,6 +27,7 @@ ShallowWrapper {
             "parse": [Function],
           }
     }
+    venues={Array []}
 />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
@@ -146,7 +147,7 @@ ShallowWrapper {
                                         label="Lieu"
                                         layout="horizontal"
                                         name="venueId"
-                                        options={undefined}
+                                        options={Array []}
                                         placeholder="Sélectionnez un lieu"
                                         readOnly={false}
                                         required={true}
@@ -332,7 +333,7 @@ ShallowWrapper {
                                                 label="Lieu"
                                                 layout="horizontal"
                                                 name="venueId"
-                                                options={undefined}
+                                                options={Array []}
                                                 placeholder="Sélectionnez un lieu"
                                                 readOnly={false}
                                                 required={true}
@@ -513,7 +514,7 @@ ShallowWrapper {
                                                 label="Lieu"
                                                 layout="horizontal"
                                                 name="venueId"
-                                                options={undefined}
+                                                options={Array []}
                                                 placeholder="Sélectionnez un lieu"
                                                 readOnly={false}
                                                 required={true}
@@ -742,7 +743,7 @@ ShallowWrapper {
                                         label="Lieu"
                                         layout="horizontal"
                                         name="venueId"
-                                        options={undefined}
+                                        options={Array []}
                                         placeholder="Sélectionnez un lieu"
                                         readOnly={false}
                                         required={true}
@@ -829,7 +830,7 @@ ShallowWrapper {
                         label="Lieu"
                         layout="horizontal"
                         name="venueId"
-                        options={undefined}
+                        options={Array []}
                         placeholder="Sélectionnez un lieu"
                         readOnly={false}
                         required={true}
@@ -890,7 +891,7 @@ ShallowWrapper {
                         "label": "Lieu",
                         "layout": "horizontal",
                         "name": "venueId",
-                        "options": undefined,
+                        "options": Array [],
                         "placeholder": "Sélectionnez un lieu",
                         "readOnly": false,
                         "required": true,
@@ -1244,7 +1245,7 @@ ShallowWrapper {
                                                   label="Lieu"
                                                   layout="horizontal"
                                                   name="venueId"
-                                                  options={undefined}
+                                                  options={Array []}
                                                   placeholder="Sélectionnez un lieu"
                                                   readOnly={false}
                                                   required={true}
@@ -1430,7 +1431,7 @@ ShallowWrapper {
                                                         label="Lieu"
                                                         layout="horizontal"
                                                         name="venueId"
-                                                        options={undefined}
+                                                        options={Array []}
                                                         placeholder="Sélectionnez un lieu"
                                                         readOnly={false}
                                                         required={true}
@@ -1611,7 +1612,7 @@ ShallowWrapper {
                                                       label="Lieu"
                                                       layout="horizontal"
                                                       name="venueId"
-                                                      options={undefined}
+                                                      options={Array []}
                                                       placeholder="Sélectionnez un lieu"
                                                       readOnly={false}
                                                       required={true}
@@ -1840,7 +1841,7 @@ ShallowWrapper {
                                             label="Lieu"
                                             layout="horizontal"
                                             name="venueId"
-                                            options={undefined}
+                                            options={Array []}
                                             placeholder="Sélectionnez un lieu"
                                             readOnly={false}
                                             required={true}
@@ -1927,7 +1928,7 @@ ShallowWrapper {
                           label="Lieu"
                           layout="horizontal"
                           name="venueId"
-                          options={undefined}
+                          options={Array []}
                           placeholder="Sélectionnez un lieu"
                           readOnly={false}
                           required={true}
@@ -1988,7 +1989,7 @@ ShallowWrapper {
                           "label": "Lieu",
                           "layout": "horizontal",
                           "name": "venueId",
-                          "options": undefined,
+                          "options": Array [],
                           "placeholder": "Sélectionnez un lieu",
                           "readOnly": false,
                           "required": true,

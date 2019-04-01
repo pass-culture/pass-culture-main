@@ -106,6 +106,7 @@ class RawOffer extends Component {
       query,
       types,
     } = this.props
+
     const { offererId, venueId } = translateQueryParamsToApiParams(
       query.parse()
     )
@@ -130,7 +131,6 @@ class RawOffer extends Component {
       if (offererId) {
         offerersPath = `${offerersPath}/${offererId}`
       }
-
       dispatch(
         requestData({
           apiPath: offerersPath,
@@ -692,15 +692,17 @@ class RawOffer extends Component {
   }
 }
 
-RawOffer.defaultProps = {}
+RawOffer.defaultProps = {
+  venues: [],
+}
 
 RawOffer.propTypes = {
+  currentUser: PropTypes.object.isRequired,
+  dispatch: PropTypes.func.isRequired,
   location: PropTypes.object.isRequired,
   match: PropTypes.object.isRequired,
-  currentUser: PropTypes.object.isRequired,
   query: PropTypes.object.isRequired,
-  dispatch: PropTypes.func.isRequired,
-  //not required
+  venues: PropTypes.array,
 }
 
 export default RawOffer

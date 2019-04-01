@@ -34,12 +34,4 @@ describe('src | components | pages | Offer | MediationsManager | RawMediationsMa
       expect(wrapper).toMatchSnapshot()
     })
   })
-  describe('render', () => {
-    describe('MediationItem', () => {})
-    describe('NavLink', () => {})
-  })
-  describe('functions', () => {
-    describe('componentDidMount', () => {})
-    describe('componentWillUnmount', () => {})
-  })
 })
