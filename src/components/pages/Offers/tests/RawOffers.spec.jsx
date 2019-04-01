@@ -110,7 +110,9 @@ describe('src | components | pages | Offers | RawOffers', () => {
 
             // then
             expect(navLink).toHaveLength(1)
-            expect(navLink.props().to).toEqual('/offres/nouveau?structure=TEST')
+            expect(navLink.props().to).toEqual(
+              '/offres/creation?structure=TEST'
+            )
           })
         })
         describe('When lieu or (VenueId)', () => {
@@ -129,7 +131,7 @@ describe('src | components | pages | Offers | RawOffers', () => {
 
             // then
             expect(navLink).toHaveLength(1)
-            expect(navLink.props().to).toEqual('/offres/nouveau?lieu=LIEU')
+            expect(navLink.props().to).toEqual('/offres/creation?lieu=LIEU')
           })
         })
       })

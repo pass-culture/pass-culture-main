@@ -18,6 +18,10 @@ function mapStateToProps(state, ownProps) {
 
   const offer = selectOfferById(state, offerId)
 
+  if (!offer) {
+    return {}
+  }
+
   const { eventId, thingId } = offer
   const event = selectEventById(state, eventId)
   const thing = selectThingById(state, thingId)
@@ -26,6 +30,8 @@ function mapStateToProps(state, ownProps) {
 
   const isEventStock = typeof event !== 'undefined'
 
+  const shouldPreventCreationOfSecondStock = !isEventStock && stocks.length > 0
+
   const provider = selectProviderById(state, event && event.lastProviderId)
 
   return {
@@ -33,6 +39,7 @@ function mapStateToProps(state, ownProps) {
     isEventStock,
     offer,
     provider,
+    shouldPreventCreationOfSecondStock,
     stocks,
     thing,
   }

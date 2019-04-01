@@ -19,7 +19,7 @@ test("Lorsque je clique sur le bouton créer une offre sur la page des offres, j
 
   // then
   const location = await t.eval(() => window.location)
-  await t.expect(location.pathname).eql('/offres/nouveau')
+  await t.expect(location.pathname).eql('/offres/creation')
 })
 
 test("Lorsque je clique sur le bouton créer une offre d'un item structure dans la page structures, j'accède au formulaire de création d'offre", async t => {
@@ -32,7 +32,7 @@ test("Lorsque je clique sur le bouton créer une offre d'un item structure dans 
 
   // then
   const location = await t.eval(() => window.location)
-  await t.expect(location.pathname).eql('/offres/nouveau')
+  await t.expect(location.pathname).eql('/offres/creation')
 })
 
 test("Lorsque je clique sur le bouton créer une offre d'un item lieu dans la page d'une structure, j'accède au formulaire de création d'offre", async t => {
@@ -45,7 +45,7 @@ test("Lorsque je clique sur le bouton créer une offre d'un item lieu dans la pa
 
   // then
   const location = await t.eval(() => window.location)
-  await t.expect(location.pathname).eql('/offres/nouveau')
+  await t.expect(location.pathname).eql('/offres/creation')
 })
 
 test("Lorsque je clique sur le bouton créer une offre sur la page d'un lieu, j'accède au formulaire de création d'offre", async t => {
@@ -54,7 +54,7 @@ test("Lorsque je clique sur le bouton créer une offre sur la page d'un lieu, j'
     'pro_07_offer',
     'get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_with_physical_venue'
   )
-  const newOfferAnchor = Selector("a[href^='/offres/nouveau?lieu=']")
+  const newOfferAnchor = Selector("a[href^='/offres/creation?lieu=']")
   await navigateToVenueAs(user, offerer, venue)(t)
 
   // when
@@ -62,7 +62,7 @@ test("Lorsque je clique sur le bouton créer une offre sur la page d'un lieu, j'
 
   // then
   const location = await t.eval(() => window.location)
-  await t.expect(location.pathname).eql('/offres/nouveau')
+  await t.expect(location.pathname).eql('/offres/creation')
 })
 
 test('Lorsque je clique sur le bouton annuler une offre sur la page des offres, je reviens aux offres', async t => {

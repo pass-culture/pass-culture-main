@@ -1,4 +1,4 @@
-import selectStockPatchByStockAndOfferIdAndOffererId from '../selectStockPatchByStockAndOfferIdAndOffererId'
+import selectFormInitialValuesByStockAndOfferIdAndOffererId from '../selectFormInitialValuesByStockAndOfferIdAndOffererId'
 
 import mockStateForStockPatchTest from './mockStateForStockPatchTest'
 
@@ -26,7 +26,7 @@ describe('createOfferersSelector', () => {
     const managingOffererId = 'BA'
 
     // when
-    const result = selectStockPatchByStockAndOfferIdAndOffererId(
+    const result = selectFormInitialValuesByStockAndOfferIdAndOffererId(
       state,
       stock,
       offerId,

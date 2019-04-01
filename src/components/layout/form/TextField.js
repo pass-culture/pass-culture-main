@@ -29,8 +29,10 @@ export const TextField = ({
   renderInner,
   renderValue,
   required,
+  title,
   type,
   validate,
+  ...inputProps
 }) => {
   const requiredValidate =
     required && typeof required === 'function'
@@ -65,12 +67,14 @@ export const TextField = ({
               <div className="field-inner flex-columns items-center">
                 <input
                   {...input}
+                  {...inputProps}
                   autoComplete={autoComplete ? 'on' : 'off'}
                   className={`field-input field-${type}`}
                   disabled={disabled || readOnly}
                   placeholder={readOnly ? '' : placeholder}
                   readOnly={readOnly}
                   required={!!required} // cast to boolean
+                  title={title}
                   type={type}
                 />
                 {renderInner()}
@@ -96,6 +100,7 @@ TextField.defaultProps = {
   renderInner: () => null,
   renderValue: () => null,
   required: false,
+  title: null,
   type: 'text',
   validate: null,
 }
@@ -112,6 +117,7 @@ TextField.propTypes = {
   renderInner: PropTypes.func,
   renderValue: PropTypes.func,
   required: PropTypes.oneOfType([PropTypes.bool, PropTypes.func]),
+  title: PropTypes.string,
   type: PropTypes.string,
   validate: PropTypes.func,
 }

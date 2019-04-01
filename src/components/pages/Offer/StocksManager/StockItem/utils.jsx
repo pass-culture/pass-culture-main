@@ -1,7 +1,7 @@
 import moment from 'moment'
 
-export const getRemainingStock = (availableStock, bookings) => {
-  if (!availableStock && availableStock !== 0) {
+export const getRemainingStocksCount = (available, bookings) => {
+  if (!available && available !== 0) {
     return 'Illimité'
   }
 
@@ -9,7 +9,7 @@ export const getRemainingStock = (availableStock, bookings) => {
     booking => booking.isCancelled === false
   )
 
-  return availableStock - validBookings.length
+  return available - validBookings.length
 }
 
 export const FLOATSEP = ','
@@ -43,6 +43,12 @@ export function getDisplayedPrice(value, readOnly) {
 export function getDatetimeOneDayAfter(datetime) {
   return moment(datetime)
     .add(1, 'day')
+    .toISOString()
+}
+
+export function getDatetimeOneHourAfter(datetime) {
+  return moment(datetime)
+    .add(1, 'hour')
     .toISOString()
 }
 

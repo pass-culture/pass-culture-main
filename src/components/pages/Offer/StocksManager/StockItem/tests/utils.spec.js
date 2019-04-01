@@ -1,4 +1,9 @@
-import { getRemainingStock } from '../utils'
+import {
+  getDatetimeOneDayAfter,
+  getDatetimeOneHourAfter,
+  getDatetimeTwoDaysBefore,
+  getRemainingStocksCount,
+} from '../utils'
 
 describe('src | components | pages | Offer | StockItem | utils', () => {
   const bookings = [
@@ -123,10 +128,10 @@ describe('src | components | pages | Offer | StockItem | utils', () => {
   describe('When there is available stock', () => {
     it('should compute remaining stock', () => {
       // given
-      const availableStock = 56
+      const available = 56
 
       // when
-      const result = getRemainingStock(availableStock, bookings)
+      const result = getRemainingStocksCount(available, bookings)
 
       // then
       expect(result).toEqual(54)
@@ -135,14 +140,46 @@ describe('src | components | pages | Offer | StockItem | utils', () => {
   describe('When stock is illimited', () => {
     it('should compute remaining illimited stock', () => {
       // given
-      const availableStock = null
+      const available = null
       const bookings = 12
 
       // when
-      const result = getRemainingStock(availableStock, bookings)
+      const result = getRemainingStocksCount(available, bookings)
 
       // then
       expect(result).toEqual('Illimité')
+    })
+  })
+  describe('getDatetimeOneDayAfter', () => {
+    it('should getDatetimeOneDayAfter', () => {
+      // given
+      const datetime = '2019-04-27T19:00:00Z'
+
+      // when
+      const nextDatetime = getDatetimeOneDayAfter(datetime)
+
+      // then
+      expect(nextDatetime).toEqual('2019-04-28T19:00:00.000Z')
+    })
+    it('should getDatetimeOneHourAfter', () => {
+      // given
+      const datetime = '2019-04-27T19:00:00Z'
+
+      // when
+      const nextDatetime = getDatetimeOneHourAfter(datetime)
+
+      // then
+      expect(nextDatetime).toEqual('2019-04-27T20:00:00.000Z')
+    })
+    it('should getDatetimeTwoDaysBefore', () => {
+      // given
+      const datetime = '2019-04-27T19:00:00Z'
+
+      // when
+      const nextDatetime = getDatetimeTwoDaysBefore(datetime)
+
+      // then
+      expect(nextDatetime).toEqual('2019-04-25T19:00:00.000Z')
     })
   })
 })

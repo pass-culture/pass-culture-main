@@ -8,7 +8,7 @@ const addAnchor = Selector('#add-stock')
 const backButton = Selector('a.back-button')
 const availableInput = Selector('input[name="available"]')
 const closeManagerButton = Selector('#close-manager')
-const manageStockAnchor = Selector('a.manage-stock')
+const manageStockAnchor = Selector('.manage-stock')
 const submitButton = Selector('button.button.submitStep')
 const priceInput = Selector('input[name="price"]')
 
@@ -96,7 +96,7 @@ test('Je peux créer un stock en utilisant la touche Entrée', async t => {
   await t.expect(queryParams.stock).eql(undefined)
 })
 
-test('Je peux femer la fenêtre en utilisant la touche Escape', async t => {
+test('Je peux fermer la fenêtre en utilisant la touche Escape', async t => {
   // given
   const { offer, user } = await fetchSandbox(
     'pro_08_stocks',
@@ -109,14 +109,12 @@ test('Je peux femer la fenêtre en utilisant la touche Escape', async t => {
 
   // then
   let location = await t.eval(() => window.location)
-  await t
-    .expect(location.search)
-    .eql('')
-    .expect(location.href)
-    .match(/offres\/[A-Z0-9]+/i)
+  const queryParams = parse(location.search)
+  await t.expect(queryParams.gestion).eql(undefined)
+  await t.expect(queryParams.stock).eql(undefined)
 })
 
-test('Je peux femer la fenêtre en cliquant sur le bouton', async t => {
+test('Je peux fermer la fenêtre en cliquant sur le bouton', async t => {
   // given
   const scheduleCloseButton = Selector('button.button').withText('Fermer')
   const { offer, user } = await fetchSandbox(
@@ -130,11 +128,8 @@ test('Je peux femer la fenêtre en cliquant sur le bouton', async t => {
 
   // then
   let location = await t.eval(() => window.location)
-  await t
-    .expect(location.search)
-    .eql('')
-    .expect(location.href)
-    .match(/offres\/[A-Z0-9]+/i)
+  const queryParams = parse(location.search)
+  await t.expect(queryParams.gestion).eql(undefined)
 })
 
 test('Je peux interrompre la saisie en utilisant la touche Escape', async t => {
@@ -161,7 +156,7 @@ test('Je peux interrompre la saisie en utilisant la touche Escape', async t => {
   location = await t.eval(() => window.location)
   queryParams = parse(location.search)
   await t.expect(queryParams.gestion).eql(null)
-  await t.expect(location.href).match(/offres\/[A-Z0-9]+/i)
+  await t.expect(queryParams.stock).eql(undefined)
 })
 
 test('Je ne peux pas rentrer un nouveau stock pour un objet avec déjà un stock', async t => {

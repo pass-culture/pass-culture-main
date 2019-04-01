@@ -23,7 +23,7 @@ const VenueItem = ({ venue }) => {
         <ul className="actions">
           <li>
             <NavLink
-              to={`/offres/nouveau?lieu=${id}`}
+              to={`/offres/creation?lieu=${id}`}
               className="has-text-primary">
               <Icon svg="ico-offres-r" /> Créer une offre
             </NavLink>

@@ -5,6 +5,7 @@ import React, { Fragment } from 'react'
 import { withFrenchQueryRouter } from 'components/hocs'
 
 const SubmitAndCancelControl = ({
+  canSubmit,
   handleSubmit,
   isRequestPending,
   query,
@@ -16,6 +17,7 @@ const SubmitAndCancelControl = ({
         className={classnames('button is-primary is-small submitStep', {
           'is-loading': isRequestPending,
         })}
+        disabled={!canSubmit}
         onClick={handleSubmit}
         type="submit">
         Valider
@@ -24,7 +26,9 @@ const SubmitAndCancelControl = ({
     <td className="is-clipped">
       <button
         className="button is-secondary is-small cancel-step"
-        onClick={() => query.changeToReadOnlyUrl('stock', stockId)}>
+        onClick={() =>
+          query.changeToReadOnly(null, { id: stockId, key: 'stock' })
+        }>
         Annuler
       </button>
     </td>
@@ -32,10 +36,12 @@ const SubmitAndCancelControl = ({
 )
 
 SubmitAndCancelControl.defaultProps = {
+  canSubmit: false,
   stockId: null,
 }
 
 SubmitAndCancelControl.propTypes = {
+  canSubmit: PropTypes.bool,
   handleSubmit: PropTypes.func.isRequired,
   isRequestPending: PropTypes.bool.isRequired,
   query: PropTypes.object.isRequired,

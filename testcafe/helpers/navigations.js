@@ -89,7 +89,7 @@ export const navigateToNewOfferAs = (user, offerer, venue) => async t => {
     const newOfferAnchor = Selector("a[href^='/structures/']")
       .withText(venue.name)
       .parent('div.list-content')
-      .find("a[href^='/offres/nouveau?lieu=']")
+      .find("a[href^='/offres/creation?lieu=']")
 
     await navigateToOffererAs(user, offerer)(t)
 
@@ -100,14 +100,14 @@ export const navigateToNewOfferAs = (user, offerer, venue) => async t => {
     const newOfferAnchor = Selector("a[href^='/structures/']")
       .withText(offerer.name)
       .parent('div.list-content')
-      .find("a[href^='/offres/nouveau?structure=']")
+      .find("a[href^='/offres/creation?structure=']")
 
     await navigateToOfferersAs(user)(t)
 
     await t.click(newOfferAnchor)
     return
   }
-  const newOfferAnchor = Selector("a[href^='/offres/nouveau']")
+  const newOfferAnchor = Selector("a[href^='/offres/creation']")
   await t.useRole(createUserRole(user)).click(newOfferAnchor)
 }
 

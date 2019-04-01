@@ -20,7 +20,6 @@ import selectTypesByIsVenueVirtual from 'selectors/selectTypesByIsVenueVirtual'
 import selectTypeByIsVenueVirtualAndOfferTypeValue from 'selectors/selectTypeByIsVenueVirtualAndOfferTypeValue'
 import selectVenueById from 'selectors/selectVenueById'
 import selectVenuesByOffererIdAndOfferType from 'selectors/selectVenuesByOffererIdAndOfferType'
-import { translateQueryParamsToApiParams } from '../../../utils/translate'
 
 function mapStateToProps(state, ownProps) {
   const {
@@ -29,7 +28,7 @@ function mapStateToProps(state, ownProps) {
     },
     query,
   } = ownProps
-  const queryParams = translateQueryParamsToApiParams(query.parse())
+  const translatedQueryParams = query.translate()
 
   const providers = selectProviders(state)
 
@@ -42,7 +41,7 @@ function mapStateToProps(state, ownProps) {
   const thing = selectThingById(state, thingId)
 
   const formVenueId = get(state, 'form.offer.venueId')
-  const venueId = formVenueId || queryParams.venueId
+  const venueId = formVenueId || translatedQueryParams.venueId
 
   const venue = selectVenueById(state, venueId)
 
@@ -61,7 +60,7 @@ function mapStateToProps(state, ownProps) {
   )
 
   const formOffererId = get(state, 'form.offer.offererId')
-  let offererId = formOffererId || queryParams.offererId
+  let offererId = formOffererId || translatedQueryParams.offererId
 
   const venues = selectVenuesByOffererIdAndOfferType(
     state,

@@ -103,7 +103,7 @@ class RawVenue extends Component {
 
     history.push(redirectPathname)
 
-    const createOfferPathname = `/offres/nouveau?lieu=${venueId}`
+    const createOfferPathname = `/offres/creation?lieu=${venueId}`
 
     const text =
       method === 'POST' ? (
@@ -188,17 +188,16 @@ class RawVenue extends Component {
             <p className="subtitle">Ajoutez un lieu où accéder à vos offres.</p>
           )}
 
-          {get(offerer, 'id') &&
-            savedVenueId && (
-              <NavLink
-                to={`/offres/nouveau?lieu=${venuePatch.id}`}
-                className="cta button is-primary">
-                <span className="icon">
-                  <Icon svg="ico-offres-w" />
-                </span>
-                <span>Créer une offre</span>
-              </NavLink>
-            )}
+          {get(offerer, 'id') && savedVenueId && (
+            <NavLink
+              to={`/offres/creation?lieu=${venuePatch.id}`}
+              className="cta button is-primary">
+              <span className="icon">
+                <Icon svg="ico-offres-w" />
+              </span>
+              <span>Créer une offre</span>
+            </NavLink>
+          )}
         </HeroSection>
 
         {!isNew && <VenueProvidersManager venue={venuePatch} />}
@@ -417,7 +416,7 @@ class RawVenue extends Component {
                     <div className="control">
                       <NavLink
                         className="button is-secondary is-medium"
-                        to={`/offres/nouveau?lieu=${venueId}`}>
+                        to={`/offres/creation?lieu=${venueId}`}>
                         Créer une offre dans ce lieu
                       </NavLink>
                     </div>

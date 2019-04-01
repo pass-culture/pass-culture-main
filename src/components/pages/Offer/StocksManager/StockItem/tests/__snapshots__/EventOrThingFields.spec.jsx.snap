@@ -24,7 +24,6 @@ ShallowWrapper {
         parseFormChild={[Function]}
         readOnly={true}
         showInfo={[Function]}
-        stockPatch={null}
     />
 </Provider>,
   Symbol(enzyme.__renderer__): Object {
@@ -49,7 +48,6 @@ ShallowWrapper {
       "parseFormChild": [Function],
       "readOnly": true,
       "showInfo": [Function],
-      "stockPatch": null,
     },
     "ref": null,
     "rendered": null,
@@ -69,7 +67,6 @@ ShallowWrapper {
         "parseFormChild": [Function],
         "readOnly": true,
         "showInfo": [Function],
-        "stockPatch": null,
       },
       "ref": null,
       "rendered": null,

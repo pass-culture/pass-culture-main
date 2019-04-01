@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 import React, { Component, Fragment } from 'react'
 import ReactTooltip from 'react-tooltip'
 
-import { getRemainingStock } from './utils'
+import { getRemainingStocksCount } from './utils'
 import { DateField, HiddenField, NumberField } from 'components/layout/form'
 import Icon from 'components/layout/Icon'
 
@@ -29,14 +29,8 @@ export class EventOrThingFields extends Component {
       return
     }
 
-    const {
-      closeInfo,
-      dispatch,
-      formPrice,
-      hasIban,
-      readOnly,
-      showInfo,
-    } = this.props
+    const { closeInfo, dispatch, hasIban, readOnly, showInfo } = this.props
+    const formPrice = event.target.value
     if (readOnly || hasIban || !formPrice) {
       return
     }
@@ -71,9 +65,12 @@ export class EventOrThingFields extends Component {
   }
 
   render() {
-    const { beginningDatetime, isEventStock, readOnly, stockPatch } = this.props
-    const { available, bookings } = stockPatch || {}
-    const remainingStock = getRemainingStock(available, bookings || [])
+    const { beginningDatetime, isEventStock, readOnly, stock } = this.props
+    const { available, bookings } = stock || {}
+    const remainingStocksCount = getRemainingStocksCount(
+      available,
+      bookings || []
+    )
 
     return (
       <Fragment>
@@ -81,12 +78,10 @@ export class EventOrThingFields extends Component {
           <HiddenField name="offerId" type="hidden" />
           <HiddenField name="venueId" type="hidden" />
           <NumberField
-            min="0"
             name="price"
             onBlur={this.onPriceBlur}
             placeholder="Gratuit"
             readOnly={readOnly}
-            step="0.01"
             title="Prix"
           />
         </td>
@@ -103,7 +98,7 @@ export class EventOrThingFields extends Component {
             name="available"
             placeholder="Illimité"
             readOnly={readOnly}
-            renderInfo={() => {
+            renderValue={() => {
               if (!readOnly) {
                 return (
                   <span
@@ -121,7 +116,7 @@ export class EventOrThingFields extends Component {
         </td>
 
         <td className="is-small remaining-stock" id="remaining-stock">
-          {remainingStock}
+          {remainingStocksCount}
         </td>
       </Fragment>
     )
@@ -133,7 +128,6 @@ EventOrThingFields.defaultProps = {
   readOnly: true,
   isEventStock: true,
   offer: null,
-  stockPatch: null,
 }
 
 EventOrThingFields.propTypes = {
@@ -145,7 +139,7 @@ EventOrThingFields.propTypes = {
   parseFormChild: PropTypes.func,
   readOnly: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
   showInfo: PropTypes.func.isRequired,
-  stockPatch: PropTypes.object,
+  stock: PropTypes.object.isRequired,
 }
 
 export default EventOrThingFields

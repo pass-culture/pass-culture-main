@@ -8418,16 +8418,22 @@ react-error-overlay@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/react-error-overlay/-/react-error-overlay-3.0.0.tgz#c2bc8f4d91f1375b3dad6d75265d51cd5eeaf655"
 
-react-final-form-utils@0.0.2:
-  version "0.0.2"
-  resolved "https://registry.yarnpkg.com/react-final-form-utils/-/react-final-form-utils-0.0.2.tgz#02ce660843e836518d78fb775c82eb391c823019"
+react-final-form-utils@1.1.3:
+  version "1.1.3"
+  resolved "https://registry.yarnpkg.com/react-final-form-utils/-/react-final-form-utils-1.1.3.tgz#b6a8d513988bb65566ff1cd91ff93676b61d7153"
   dependencies:
     classnames "2.2.5"
     eslint "^5.8.0"
+    final-form-calculate "^1.2.1"
+    moment "^2.18.1"
+    moment-locale-fr "^1.0.0"
+    moment-timezone "^0.5.21"
     prop-types "^15.6.2"
+    re-reselect "^2.1.0"
     react "^16.5.2"
     react-dom "^16.5.2"
     react-router-dom "^4.3.1"
+    reselect "^3.0.1"
 
 react-final-form@^4.1.0:
   version "4.1.0"
@@ -11225,9 +11231,9 @@ with-query-router@0.1.1:
     redux "^4.0.0"
     reselect "^3.0.1"
 
-with-query-router@2.7.0:
-  version "2.7.0"
-  resolved "https://registry.yarnpkg.com/with-query-router/-/with-query-router-2.7.0.tgz#6228b5cd15052fa221470fe4adad291a365787ab"
+with-query-router@2.9.1:
+  version "2.9.1"
+  resolved "https://registry.yarnpkg.com/with-query-router/-/with-query-router-2.9.1.tgz#701467912245497f095945aad1031370617430b9"
   dependencies:
     classnames "2.2.5"
     eslint "^5.8.0"

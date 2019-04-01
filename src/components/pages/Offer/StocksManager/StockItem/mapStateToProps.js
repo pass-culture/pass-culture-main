@@ -1,4 +1,4 @@
-import selectStockPatchByStockAndOfferIdAndOffererId from './selectStockPatchByStockAndOfferIdAndOffererId'
+import selectFormInitialValuesByStockAndOfferIdAndOffererId from './selectFormInitialValuesByStockAndOfferIdAndOffererId'
 import selectEventById from 'selectors/selectEventById'
 import selectOfferById from 'selectors/selectOfferById'
 import selectOffererById from 'selectors/selectOffererById'
@@ -23,7 +23,7 @@ export default function mapStateToProps(state, ownProps) {
   const venue = selectVenueById(state, venueId)
   const managingOffererId = venue && venue.managingOffererId
 
-  const stockPatch = selectStockPatchByStockAndOfferIdAndOffererId(
+  const stockPatch = selectFormInitialValuesByStockAndOfferIdAndOffererId(
     state,
     stock,
     offerId,

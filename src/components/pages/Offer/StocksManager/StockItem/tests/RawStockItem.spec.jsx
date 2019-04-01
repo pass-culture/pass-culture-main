@@ -30,28 +30,17 @@ describe('src | components | pages | Offer | StockItem | RawStockItem ', () => {
   })
   describe('functions', () => {
     describe('handleRequestSuccess', () => {
-      it.only('redirect to gestion at patch success', done => {
+      it('redirect to gestion at patch success', done => {
         // given
-        const state = {}
-        const action = {
-          config: {},
-          payload: {
-            datum: {
-              id: 'K9',
-            },
-          },
-          type: 'SUCCESS_DATA_PATCH_STOCKS/K9',
-        }
         const initialProps = {
           closeInfo: jest.fn(),
           dispatch: jest.fn(),
           hasIban: false,
-          isEditing: false,
           isEventStock: false,
           offer: {
             id: 'TY',
           },
-          query: { changeToReadOnlyUrl: jest.fn(), context: () => ({}) },
+          query: { changeToReadOnly: jest.fn(), context: () => ({}) },
           stockPatch: {
             id: 'DG',
           },
@@ -64,9 +53,12 @@ describe('src | components | pages | Offer | StockItem | RawStockItem ', () => {
           wrapper.instance().handleRequestSuccess(resolve)()
         }).then(() => {
           // then
-          expect(initialProps.query.changeToReadOnlyUrl).toHaveBeenCalledWith(
-            'stock',
-            'DG'
+          expect(initialProps.query.changeToReadOnly).toHaveBeenCalledWith(
+            null,
+            {
+              id: 'DG',
+              key: 'stock',
+            }
           )
           done()
         })

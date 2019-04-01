@@ -53,7 +53,7 @@ ShallowWrapper {
                     activeClassName="active"
                     aria-current="page"
                     className="cta button is-primary"
-                    to="/offres/nouveau"
+                    to="/offres/creation"
           >
                     <span
                               className="icon"
@@ -154,7 +154,7 @@ ShallowWrapper {
             activeClassName="active"
             aria-current="page"
             className="cta button is-primary"
-            to="/offres/nouveau"
+            to="/offres/creation"
 >
             <span
                         className="icon"
@@ -190,7 +190,7 @@ ShallowWrapper {
 </span>,
             ],
             "className": "cta button is-primary",
-            "to": "/offres/nouveau",
+            "to": "/offres/creation",
           },
           "ref": null,
           "rendered": Array [
@@ -548,7 +548,7 @@ ShallowWrapper {
                         activeClassName="active"
                         aria-current="page"
                         className="cta button is-primary"
-                        to="/offres/nouveau"
+                        to="/offres/creation"
             >
                         <span
                                     className="icon"
@@ -649,7 +649,7 @@ ShallowWrapper {
               activeClassName="active"
               aria-current="page"
               className="cta button is-primary"
-              to="/offres/nouveau"
+              to="/offres/creation"
 >
               <span
                             className="icon"
@@ -685,7 +685,7 @@ ShallowWrapper {
 </span>,
               ],
               "className": "cta button is-primary",
-              "to": "/offres/nouveau",
+              "to": "/offres/creation",
             },
             "ref": null,
             "rendered": Array [

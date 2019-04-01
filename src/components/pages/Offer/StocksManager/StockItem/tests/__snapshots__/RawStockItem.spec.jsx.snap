@@ -41,12 +41,7 @@ ShallowWrapper {
     "nodeType": "host",
     "props": Object {
       "children": <ReactFinalForm
-        decorators={
-                Array [
-                        [Function],
-                        [Function],
-                      ]
-        }
+        decorators={false}
         initialValues={Object {}}
         onSubmit={[Function]}
         render={[Function]}
@@ -58,10 +53,7 @@ ShallowWrapper {
       "key": undefined,
       "nodeType": "class",
       "props": Object {
-        "decorators": Array [
-          [Function],
-          [Function],
-        ],
+        "decorators": false,
         "initialValues": Object {},
         "onSubmit": [Function],
         "render": [Function],
@@ -79,12 +71,7 @@ ShallowWrapper {
       "nodeType": "host",
       "props": Object {
         "children": <ReactFinalForm
-          decorators={
-                    Array [
-                              [Function],
-                              [Function],
-                            ]
-          }
+          decorators={false}
           initialValues={Object {}}
           onSubmit={[Function]}
           render={[Function]}
@@ -96,10 +83,7 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "class",
         "props": Object {
-          "decorators": Array [
-            [Function],
-            [Function],
-          ],
+          "decorators": false,
           "initialValues": Object {},
           "onSubmit": [Function],
           "render": [Function],

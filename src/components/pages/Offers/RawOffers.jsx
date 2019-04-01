@@ -109,7 +109,7 @@ class RawOffers extends Component {
 
     const { hasMore, isLoading } = this.state
 
-    let createOfferTo = `/offres/nouveau`
+    let createOfferTo = `/offres/creation`
     if (venueId) {
       createOfferTo = `${createOfferTo}?${mapApiToBrowser.venueId}=${venueId}`
     } else if (offererId) {

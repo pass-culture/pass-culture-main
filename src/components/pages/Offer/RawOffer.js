@@ -2,7 +2,6 @@ import get from 'lodash.get'
 import PropTypes from 'prop-types'
 import {
   CancelButton,
-  closeModal,
   Field,
   Form,
   Icon,
@@ -23,7 +22,6 @@ import HeroSection from 'components/layout/HeroSection'
 import Main from 'components/layout/Main'
 import { musicOptions, showOptions } from 'utils/edd'
 import { offerNormalizer } from 'utils/normalizers'
-import { translateQueryParamsToApiParams } from 'utils/translate'
 
 const CONDITIONAL_FIELDS = {
   speaker: [
@@ -78,7 +76,7 @@ class RawOffer extends Component {
     const { eventId } = offer || {}
 
     const isEdit = search.indexOf('modifie') > -1
-    const isNew = offerId === 'nouveau'
+    const isNew = offerId === 'creation'
     const isEventType = get(selectedOfferType, 'type') === 'Event' || eventId
     const isReadOnly = !isNew && !isEdit
 
@@ -105,12 +103,9 @@ class RawOffer extends Component {
       query,
       types,
     } = this.props
+    const { offererId, venueId } = query.translate()
 
-    const { offererId, venueId } = translateQueryParamsToApiParams(
-      query.parse()
-    )
-
-    if (offerId !== 'nouveau') {
+    if (offerId !== 'creation') {
       dispatch(
         requestData({
           apiPath: `/offers/${offerId}`,
@@ -177,55 +172,36 @@ class RawOffer extends Component {
     handleSuccess()
   }
 
-  handleSuccess = (state, action) => {
+  handleFormSuccess = (state, action) => {
+    const { query } = this.props
     const {
-      config: { method },
-      payload,
+      payload: { datum },
     } = action
-
-    const { history } = this.props
-    const offer = payload.datum
-
-    if (method === 'PATCH') {
-      history.push(`/offres/${offer.id}`)
-      return
-    }
-
-    if (method === 'POST') {
-      if (!offer) {
-        console.warn(
-          'Something wrong with returned data, we should retrieve the created offer here'
-        )
-        return
-      }
-      history.push(`/offres/${offer.id}?gestion`)
-    }
+    const offerId = datum.id
+    query.changeToReadOnly({ gestion: '' }, { id: offerId })
   }
 
-  handleOffererRedirect = () => {
-    const { history, offer, query } = this.props
-    const apiParams = translateQueryParamsToApiParams(query.parse())
+  handleVenueRedirect = () => {
+    const { offer, query } = this.props
+    const translatedQueryParams = query.translate()
     const venueId = get(offer, 'venueId')
-    if (venueId && !apiParams.venueId) {
-      history.push(`/offres/${offer.id}?lieu=${venueId}`)
+    if (venueId && !translatedQueryParams.venueId) {
+      query.change({ venueId })
       return
     }
   }
 
-  handleShowManagerModal = () => {
-    const {
-      hasEventOrThing,
-      dispatch,
-      location: { search },
-    } = this.props
-    search.indexOf('gestion') > -1
-      ? hasEventOrThing &&
-        dispatch(
-          showModal(<StocksManager />, {
-            isUnclosable: true,
-          })
-        )
-      : dispatch(closeModal())
+  handleShowStocksManager = () => {
+    const { dispatch, query } = this.props
+    const { gestion } = query.parse()
+    if (typeof gestion === 'undefined') {
+      return
+    }
+    dispatch(
+      showModal(<StocksManager />, {
+        isUnclosable: true,
+      })
+    )
   }
 
   setDefaultBookingEmailIfNew(prevProps) {
@@ -242,8 +218,8 @@ class RawOffer extends Component {
   }
 
   componentDidMount() {
-    this.handleOffererRedirect()
-    this.handleShowManagerModal()
+    this.handleVenueRedirect()
+    this.handleShowStocksManager()
     this.setDefaultBookingEmailIfNew()
   }
 
@@ -253,26 +229,17 @@ class RawOffer extends Component {
       eventOrThingPatch,
       formOffererId,
       formVenueId,
-      hasEventOrThing,
-      location: { pathname, search },
-      offer,
+      location,
       offerer,
       offerTypeError,
       selectedOfferType,
-      stocks,
       venue,
     } = this.props
+    const { search } = location
 
-    if (search.indexOf('gestion') > -1) {
-      if (
-        prevProps.offer !== offer ||
-        prevProps.stocks !== stocks ||
-        prevProps.location.pathname !== pathname ||
-        prevProps.location.search !== search ||
-        (hasEventOrThing && !prevProps.hasEventOrThing)
-      ) {
-        this.handleShowManagerModal()
-      }
+    if (prevProps.location.search !== search) {
+      this.handleShowStocksManager()
+      return
     }
 
     if (
@@ -332,18 +299,19 @@ class RawOffer extends Component {
       eventOrThingPatch,
       hasEventOrThing,
       location: { search },
+      musicSubOptions,
       offer,
       offerer,
       offerers,
+      query,
       stocks,
       thing,
       selectedOfferType,
+      showSubOptions,
       types,
+      url,
       venue,
       venues,
-      url,
-      musicSubOptions,
-      showSubOptions,
     } = this.props
 
     const { apiPath, isNew, isReadOnly, isEventType } = this.state
@@ -394,7 +362,7 @@ class RawOffer extends Component {
           <Form
             action={apiPath}
             name="offer"
-            handleSuccess={this.handleSuccess}
+            handleSuccess={this.handleFormSuccess}
             patch={eventOrThingPatch}
             readOnly={isReadOnly}>
             <div className="field-group">
@@ -485,9 +453,12 @@ class RawOffer extends Component {
                           isEventType ? 'date' : 'stock'
                         )}
                       </span>
-                      <NavLink
+                      <button
                         className="button is-primary is-outlined is-small manage-stock"
-                        to={`/offres/${offerId}?gestion`}>
+                        onClick={event => {
+                          event.preventDefault()
+                          query.change({ gestion: '' })
+                        }}>
                         <span className="icon">
                           <Icon svg="ico-calendar" />
                         </span>
@@ -496,7 +467,7 @@ class RawOffer extends Component {
                             ? 'Gérer les dates et les stocks'
                             : 'Gérer les stocks'}
                         </span>
-                      </NavLink>
+                      </button>
                     </div>
                   </div>
                 </div>

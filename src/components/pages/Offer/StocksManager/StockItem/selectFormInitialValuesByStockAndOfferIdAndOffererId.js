@@ -3,13 +3,17 @@ import createCachedSelector from 're-reselect'
 
 import selectOfferById from 'selectors/selectOfferById'
 import selectStocksByOfferId from 'selectors/selectStocksByOfferId'
-import { getDatetimeOneDayAfter, getDatetimeTwoDaysBefore } from './utils'
+import {
+  getDatetimeOneDayAfter,
+  getDatetimeOneHourAfter,
+  getDatetimeTwoDaysBefore,
+} from './utils'
 
 function mapArgsToCacheKey(state, stock, offerId, offererId) {
   return `${(stock && stock.id) || ''}${offerId || ''}/${offererId || ''}`
 }
 
-export const selectStockPatchByStockAndOfferIdAndOffererId = createCachedSelector(
+export const selectFormInitialValuesByStockAndOfferIdAndOffererId = createCachedSelector(
   (state, stock) => stock,
   (state, stock, offerId) => selectOfferById(state, offerId),
   (state, stock, offerId) => selectStocksByOfferId(state, offerId),
@@ -25,12 +29,16 @@ export const selectStockPatchByStockAndOfferIdAndOffererId = createCachedSelecto
       price,
     } = stock || {}
 
-    if (offer.eventId) {
-      let lastStock
-      if (stocks && stocks.length) {
-        lastStock = stocks[0]
-      }
+    if (!offer) {
+      return {}
+    }
 
+    let lastStock
+    if (stocks && stocks.length) {
+      lastStock = stocks[0]
+    }
+
+    if (offer.eventId) {
       if (!beginningDatetime) {
         if (lastStock) {
           beginningDatetime = getDatetimeOneDayAfter(
@@ -45,7 +53,7 @@ export const selectStockPatchByStockAndOfferIdAndOffererId = createCachedSelecto
         if (lastStock) {
           endDatetime = getDatetimeOneDayAfter(lastStock.endDatetime)
         } else if (beginningDatetime) {
-          endDatetime = getDatetimeOneDayAfter()
+          endDatetime = getDatetimeOneHourAfter(beginningDatetime)
         }
       }
     }
@@ -55,7 +63,17 @@ export const selectStockPatchByStockAndOfferIdAndOffererId = createCachedSelecto
     }
 
     if (typeof price === 'undefined') {
-      price = 0
+      if (lastStock) {
+        price = lastStock.price
+      } else {
+        price = 0
+      }
+    }
+
+    if (typeof available === 'undefined') {
+      if (lastStock) {
+        available = lastStock.available
+      }
     }
 
     return {
@@ -71,4 +89,4 @@ export const selectStockPatchByStockAndOfferIdAndOffererId = createCachedSelecto
   }
 )(mapArgsToCacheKey)
 
-export default selectStockPatchByStockAndOfferIdAndOffererId
+export default selectFormInitialValuesByStockAndOfferIdAndOffererId

@@ -1,15 +1,16 @@
 import React from 'react'
 import { shallow } from 'enzyme'
-import Offer from '../index'
 
-describe('src | components | pages | Offer | Offer ', () => {
+import SubmitAndCancelControl from '../index'
+
+describe('src | components | pages | Offer | StocksManager | StockItem | SubmitAndCancelControl ', () => {
   describe('snapshot', () => {
     it('should match snapshot', () => {
       // given
       const initialProps = {}
 
       // when
-      const wrapper = shallow(<Offer {...initialProps} />)
+      const wrapper = shallow(<SubmitAndCancelControl {...initialProps} />)
 
       // then
       expect(wrapper).toBeDefined()

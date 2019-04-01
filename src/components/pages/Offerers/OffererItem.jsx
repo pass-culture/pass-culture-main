@@ -30,7 +30,7 @@ const OffererItem = ({ offerer, physicalVenues, venues }) => {
     <Fragment>
       <li>
         <NavLink
-          to={`/offres/nouveau?structure=${id}`}
+          to={`/offres/creation?structure=${id}`}
           className="has-text-primary">
           <Icon svg="ico-offres-r" />
           Nouvelle offre {canCreateOnlyVirtualOffer && 'numérique'}
