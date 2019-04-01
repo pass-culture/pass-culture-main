@@ -6,6 +6,7 @@ ShallowWrapper {
   Symbol(enzyme.__unrendered__): <ShareButtonContent
     dispatch={[MockFunction]}
     email={null}
+    id="verso-share-button"
     offerName="Fake offer name"
     text="Fake text"
     url="http://www.fake-url.com"
@@ -31,6 +32,7 @@ ShallowWrapper {
       />,
       "className": "button is-secondary fs32",
       "disabled": false,
+      "id": "verso-share-button",
       "onClick": [Function],
       "type": "button",
     },
@@ -63,6 +65,7 @@ ShallowWrapper {
         />,
         "className": "button is-secondary fs32",
         "disabled": false,
+        "id": "verso-share-button",
         "onClick": [Function],
         "type": "button",
       },
