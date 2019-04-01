@@ -14,7 +14,7 @@ from utils.logger import logger
 
 DATE_REGEXP = re.compile('Resume-full_(\d{8}).zip')
 INIT_TITELIVE_DESCRIPTION_DATE_FORMAT = "%d%m%Y"
-END_FILE_IDENTIFIER = '_p.txt'
+END_FILE_NAME_IDENTIFIER = '_p.txt'
 
 
 class InitTiteLiveThingDescriptions(LocalProvider):
@@ -32,7 +32,7 @@ class InitTiteLiveThingDescriptions(LocalProvider):
         file_path = Path(os.path.dirname(os.path.realpath(__file__))) \
                     / '..' / titelive_file
         self.zip = ZipFile(file_path)
-        self.desc_zipinfos = None
+        self.description_zip_infos = None
         self.date_modified = None
 
     def open_next_file(self):
@@ -40,24 +40,23 @@ class InitTiteLiveThingDescriptions(LocalProvider):
             self.logEvent(LocalProviderEventType.SyncPartEnd,
                           get_date_from_filename(self.zip, DATE_REGEXP))
 
-        logger.info("  Importing descriptions from file " + str(self.zip))
+        logger.info("Importing descriptions from file " + str(self.zip))
         self.logEvent(LocalProviderEventType.SyncPartStart,
                       get_date_from_filename(self.zip, DATE_REGEXP))
 
-        self.desc_zipinfos = self.get_description_files_from_zip_info()
-        tmp_date = str(get_date_from_filename(self.zip, DATE_REGEXP))
-        logger.info(tmp_date)
-        self.date_modified = self.read_description_date(tmp_date)
+        self.description_zip_infos = self.get_description_files_from_zip_info()
+        file_date = str(get_date_from_filename(self.zip, DATE_REGEXP))
+        self.date_modified = self.read_description_date(file_date)
 
     def __next__(self):
-        if self.desc_zipinfos is None:
+        if self.description_zip_infos is None:
             self.open_next_file()
 
         try:
-            self.desc_zipinfo = next(self.desc_zipinfos)
+            self.desc_zipinfo = next(self.description_zip_infos)
         except StopIteration:
             self.open_next_file()
-            self.desc_zipinfo = next(self.desc_zipinfos)
+            self.desc_zipinfo = next(self.description_zip_infos)
 
         providable_info = ProvidableInfo()
         providable_info.type = Thing
@@ -74,7 +73,7 @@ class InitTiteLiveThingDescriptions(LocalProvider):
 
     def get_description_files_from_zip_info(self):
         sorted_files = sorted(self.zip.infolist(), key=lambda f: f.filename)
-        filtered_files = filter(lambda f: f.filename.lower().endswith(END_FILE_IDENTIFIER), sorted_files)
+        filtered_files = filter(lambda f: f.filename.lower().endswith(END_FILE_NAME_IDENTIFIER), sorted_files)
         return iter(filtered_files)
 
     def read_description_date(self, date):
