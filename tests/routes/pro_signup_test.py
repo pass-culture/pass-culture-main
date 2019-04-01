@@ -19,7 +19,6 @@ BASE_DATA_PRO = {
     'postalCode': '92000',
     'city': 'Nanterre',
     'name': 'Crédit Coopératif',
-
 }
 
 
@@ -49,15 +48,15 @@ class Post:
             other_expected_keys = {'id', 'dateCreated'}
 
             # When
-            r_signup = TestClient() \
+            response = TestClient() \
                 .post(API_URL + '/users/signup/pro',
                                 json=data, headers={'origin': 'http://localhost:3000'})
 
             # Then
-            assert r_signup.status_code == 201
-            assert 'Set-Cookie' not in r_signup.headers
+            assert response.status_code == 201
+            assert 'Set-Cookie' not in response.headers
 
-            json = r_signup.json()
+            json = response.json()
             assert 'dateCreated' in json
             for key, value in expected_response_json.items():
                 if key != 'dateCreated':
@@ -66,14 +65,47 @@ class Post:
                 assert key in json
 
         @clean_database
-        def when_successful_creates_user_offerer_digital_venue_and_userOfferer_and_not_log_user_in(
+        def test_does_not_allow_the_creation_of_admins(self, app):
+            # Given
+            user_json = {
+                'email': 'toto_pro@btmx.fr',
+                'publicName': 'Toto Pro',
+                'firstName': 'Toto',
+                'lastName': 'Pro',
+                'password': '__v4l1d_P455sw0rd__',
+                'contact_ok': 'true',
+                'siren': '349974931',
+                'address': '12 boulevard de Pesaro',
+                'postalCode': '92000',
+                'city': 'Nanterre',
+                'name': 'Crédit Coopératif',
+                'isAdmin': True
+            }
+
+            # When
+            response = TestClient() \
+                .post(API_URL + '/users/signup/pro',
+                                json=user_json, headers={'origin': 'http://localhost:3000'})
+
+            # Then
+            assert response.status_code == 201
+            created_user = User.query.filter_by(email='toto_pro@btmx.fr').one()
+            assert not created_user.isAdmin
+
+        @clean_database
+        def test_creates_user_offerer_digital_venue_and_userOfferer_and_does_not_log_user_in(
                 self, app):
+            # Given
             data_pro = BASE_DATA_PRO.copy()
-            r_signup = TestClient() \
+
+            # When
+            response = TestClient() \
                 .post(API_URL + '/users/signup/pro',
                                 json=data_pro, headers={'origin': 'http://localhost:3000'})
-            assert r_signup.status_code == 201
-            assert 'Set-Cookie' not in r_signup.headers
+
+            # Then
+            assert response.status_code == 201
+            assert 'Set-Cookie' not in response.headers
             user = User.query \
                 .filter_by(email='toto_pro@btmx.fr') \
                 .first()
@@ -96,6 +128,7 @@ class Post:
         @clean_database
         def when_successful_and_existing_offerer_creates_editor_user_offerer_and_does_not_log_in(
                 self, app):
+            # Given
             json_offerer = {
                 "name": "Test Offerer",
                 "siren": "349974931",
@@ -110,11 +143,15 @@ class Post:
             PcObject.check_and_save(offerer, user_offerer)
 
             data = BASE_DATA_PRO.copy()
-            r_signup = TestClient() \
+
+            # When
+            response = TestClient() \
                 .post(API_URL + '/users/signup/pro',
                                 json=data, headers={'origin': 'http://localhost:3000'})
-            assert r_signup.status_code == 201
-            assert 'Set-Cookie' not in r_signup.headers
+
+            # Then
+            assert response.status_code == 201
+            assert 'Set-Cookie' not in response.headers
             user = User.query \
                 .filter_by(email='toto_pro@btmx.fr') \
                 .first()
@@ -133,7 +170,7 @@ class Post:
         @clean_database
         def when_successful_and_existing_offerer_but_no_user_offerer_does_not_signin(self,
                                                                                      app):
-            "should create user and userOfferer"
+            # Given
             json_offerer = {
                 "name": "Test Offerer",
                 "siren": "349974931",
@@ -145,11 +182,15 @@ class Post:
             PcObject.check_and_save(offerer)
 
             data = BASE_DATA_PRO.copy()
-            r_signup = TestClient() \
+
+            # When
+            response = TestClient() \
                 .post(API_URL + '/users/signup/pro',
                                 json=data, headers={'origin': 'http://localhost:3000'})
-            assert r_signup.status_code == 201
-            assert 'Set-Cookie' not in r_signup.headers
+
+            # Then
+            assert response.status_code == 201
+            assert 'Set-Cookie' not in response.headers
             user = User.query \
                 .filter_by(email='toto_pro@btmx.fr') \
                 .first()
@@ -174,13 +215,13 @@ class Post:
             del (data['email'])
 
             # When
-            r_signup = TestClient() \
+            response = TestClient() \
                 .post(API_URL + '/users/signup/pro',
                                 json=data, headers={'origin': 'http://localhost:3000'})
 
             # Then
-            assert r_signup.status_code == 400
-            error = r_signup.json()
+            assert response.status_code == 400
+            error = response.json()
             assert 'email' in error
 
         @clean_database
@@ -190,95 +231,95 @@ class Post:
             data['email'] = 'toto'
 
             # When
-            r_signup = TestClient() \
+            response = TestClient() \
                 .post(API_URL + '/users/signup/pro',
                                 json=data, headers={'origin': 'http://localhost:3000'})
 
             # Then
-            assert r_signup.status_code == 400
-            error = r_signup.json()
+            assert response.status_code == 400
+            error = response.json()
             assert 'email' in error
 
         @clean_database
-        def when_email_already_used(self, app):
+        def when_email_is_already_used(self, app):
+            # Given
             data = BASE_DATA_PRO.copy()
             TestClient() \
                 .post(API_URL + '/users/signup/pro',
                      json=data, headers={'origin': 'http://localhost:3000'})
 
             # When
-            data['siren'] = '123456789'
-            r_signup = TestClient() \
+            response = TestClient() \
                 .post(API_URL + '/users/signup/pro',
                                 json=data, headers={'origin': 'http://localhost:3000'})
 
             # Then
-            assert r_signup.status_code == 400
-            error = r_signup.json()
+            assert response.status_code == 400
+            error = response.json()
             assert 'email' in error
 
         @clean_database
-        def when_missing_public_name(self, app):
+        def when_public_name_is_missing(self, app):
             # Given
             data = BASE_DATA_PRO.copy()
             del (data['publicName'])
 
             # When
-            r_signup = TestClient() \
+            response = TestClient() \
                 .post(API_URL + '/users/signup/pro',
                                 json=data, headers={'origin': 'http://localhost:3000'})
 
             # Then
-            assert r_signup.status_code == 400
-            error = r_signup.json()
+            assert response.status_code == 400
+            error = response.json()
             assert 'publicName' in error
 
         @clean_database
-        def when_public_name_too_short(self, app):
+        def when_public_name_is_too_short(self, app):
             # Given
             data = BASE_DATA_PRO.copy()
             data['publicName'] = 't'
 
             # When
-            r_signup = TestClient() \
+            response = TestClient() \
                 .post(API_URL + '/users/signup/pro',
                                 json=data, headers={'origin': 'http://localhost:3000'})
 
             # Then
-            assert r_signup.status_code == 400
-            error = r_signup.json()
+            assert response.status_code == 400
+            error = response.json()
             assert 'publicName' in error
 
         @clean_database
-        def when_public_name_too_long(self, app):
+        def when_public_name_is_too_long(self, app):
             # Given
             data = BASE_DATA_PRO.copy()
             data['publicName'] = 'x' * 32
 
             # When
-            r_signup = TestClient() \
+            response = TestClient() \
                 .post(API_URL + '/users/signup/pro',
                                 json=data, headers={'origin': 'http://localhost:3000'})
 
             # Then
-            assert r_signup.status_code == 400
-            error = r_signup.json()
+            assert response.status_code == 400
+            error = response.json()
             assert 'publicName' in error
 
         @clean_database
-        def when_password_missing(self, app):
+        def when_password_is_missing(self, app):
             # Given
             data = BASE_DATA_PRO.copy()
             del (data['password'])
 
             # When
-            r_signup = TestClient() \
+            response = TestClient() \
                 .post(API_URL + '/users/signup/pro',
                                 json=data, headers={'origin': 'http://localhost:3000'})
 
             # Then
-            assert r_signup.status_code == 400
-            error = r_signup.json()
+            assert response.status_code == 400
+            error = response.json()
             assert 'password' in error
 
         @clean_database
@@ -288,13 +329,13 @@ class Post:
             data['password'] = 'weakpassword'
 
             # When
-            r_signup = TestClient() \
+            response = TestClient() \
                 .post(API_URL + '/users/signup/pro',
                                 json=data, headers={'origin': 'http://localhost:3000'})
 
             # Then
-            assert r_signup.status_code == 400
-            response = r_signup.json()
+            assert response.status_code == 400
+            response = response.json()
             assert response['password'] == [
                 'Le mot de passe doit faire au moins 12 caractères et contenir à minima '
                 '1 majuscule, 1 minuscule, 1 chiffre et 1 caractère spécial parmi _-&?~#|^@=+.$,<>%*!:;'
@@ -302,32 +343,34 @@ class Post:
 
         @clean_database
         def when_contact_ok_is_missing(self, app):
+            # Given
             data = BASE_DATA_PRO.copy()
             del (data['contact_ok'])
 
             # When
-            r_signup = TestClient() \
+            response = TestClient() \
                 .post(API_URL + '/users/signup/pro',
                                 json=data, headers={'origin': 'http://localhost:3000'})
 
             # Then
-            assert r_signup.status_code == 400
-            error = r_signup.json()
+            assert response.status_code == 400
+            error = response.json()
             assert 'contact_ok' in error
 
         @clean_database
         def when_contact_ok_format_is_invalid(self, app):
+            # Given
             data = BASE_DATA_PRO.copy()
             data['contact_ok'] = 't'
 
             # When
-            r_signup = TestClient() \
+            response = TestClient() \
                 .post(API_URL + '/users/signup/pro',
                                 json=data, headers={'origin': 'http://localhost:3000'})
 
             # Then
-            assert r_signup.status_code == 400
-            error = r_signup.json()
+            assert response.status_code == 400
+            error = response.json()
             assert 'contact_ok' in error
 
         @clean_database
@@ -337,56 +380,59 @@ class Post:
             del (data['name'])
 
             # When
-            r_signup = TestClient() \
+            response = TestClient() \
                 .post(API_URL + '/users/signup/pro',
                                 json=data, headers={'origin': 'http://localhost:3000'})
 
             # Then
-            assert r_signup.status_code == 400
-            error = r_signup.json()
+            assert response.status_code == 400
+            error = response.json()
             assert 'name' in error
 
         @clean_database
         def when_offerer_city_is_missing(self, app):
+            # Given
             data = BASE_DATA_PRO.copy()
             del (data['city'])
 
             # When
-            r_signup = TestClient() \
+            response = TestClient() \
                 .post(API_URL + '/users/signup/pro',
                                 json=data, headers={'origin': 'http://localhost:3000'})
 
             # Then
-            assert r_signup.status_code == 400
-            error = r_signup.json()
+            assert response.status_code == 400
+            error = response.json()
             assert 'city' in error
 
         @clean_database
         def when_postal_code_is_missing(self, app):
+            # Given
             data = BASE_DATA_PRO.copy()
             del (data['postalCode'])
 
             # When
-            r_signup = TestClient() \
+            response = TestClient() \
                 .post(API_URL + '/users/signup/pro',
                                 json=data, headers={'origin': 'http://localhost:3000'})
 
             # Then
-            assert r_signup.status_code == 400
-            error = r_signup.json()
+            assert response.status_code == 400
+            error = response.json()
             assert 'postalCode' in error
 
         @clean_database
         def when_invalid_postal_code(self, app):
+            # Given
             data = BASE_DATA_PRO.copy()
             data['postalCode'] = '111'
 
             # When
-            r_signup = TestClient() \
+            response = TestClient() \
                 .post(API_URL + '/users/signup/pro',
                                 json=data, headers={'origin': 'http://localhost:3000'})
 
             # Then
-            assert r_signup.status_code == 400
-            error = r_signup.json()
+            assert response.status_code == 400
+            error = response.json()
             assert 'postalCode' in error

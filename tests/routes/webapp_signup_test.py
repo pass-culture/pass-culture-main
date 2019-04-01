@@ -78,7 +78,7 @@ class Post:
             assert not created_user.canBookFreeOffers
 
         @clean_database
-        def when_setting_is_admin_true_and_can_book_free_offers_true_creates_account_with_can_book_free_offers_false(self, app):
+        def test_does_not_allow_the_creation_of_admins(self, app):
             # Given
             user_json = {
                 'email': 'pctest.isAdmin.canBook@btmx.fr',
@@ -93,15 +93,14 @@ class Post:
             }
 
             # When
-            r_signup = TestClient() \
+            response = TestClient() \
                 .post(API_URL + '/users/signup/webapp',
                                 json=user_json, headers={'origin': 'http://localhost:3000'})
 
             # Then
-            assert r_signup.status_code == 201
+            assert response.status_code == 201
             created_user = User.query.filter_by(email='pctest.isAdmin.canBook@btmx.fr').one()
-            assert created_user.isAdmin
-            assert not created_user.canBookFreeOffers
+            assert not created_user.isAdmin
 
 
     class Returns400:
@@ -112,13 +111,13 @@ class Post:
             del (data['email'])
 
             # When
-            r_signup = TestClient() \
+            response = TestClient() \
                 .post(API_URL + '/users/signup/webapp',
                                 json=data, headers={'origin': 'http://localhost:3000'})
 
             # Then
-            assert r_signup.status_code == 400
-            error = r_signup.json()
+            assert response.status_code == 400
+            error = response.json()
             assert 'email' in error
 
         @clean_database
@@ -128,13 +127,13 @@ class Post:
             data['email'] = 'toto'
 
             # When
-            r_signup = TestClient() \
+            response = TestClient() \
                 .post(API_URL + '/users/signup/webapp',
                                 json=data, headers={'origin': 'http://localhost:3000'})
 
             # Then
-            assert r_signup.status_code == 400
-            error = r_signup.json()
+            assert response.status_code == 400
+            error = response.json()
             assert 'email' in error
 
         @clean_database
@@ -144,13 +143,13 @@ class Post:
                      json=BASE_DATA, headers={'origin': 'http://localhost:3000'})
 
             # When
-            r_signup = TestClient() \
+            response = TestClient() \
                 .post(API_URL + '/users/signup/webapp',
                                 json=BASE_DATA, headers={'origin': 'http://localhost:3000'})
 
             # Then
-            assert r_signup.status_code == 400
-            error = r_signup.json()
+            assert response.status_code == 400
+            error = response.json()
             assert 'email' in error
 
         @clean_database
@@ -160,13 +159,13 @@ class Post:
             del (data['publicName'])
 
             # When
-            r_signup = TestClient() \
+            response = TestClient() \
                 .post(API_URL + '/users/signup/webapp',
                                 json=data, headers={'origin': 'http://localhost:3000'})
 
             # Then
-            assert r_signup.status_code == 400
-            error = r_signup.json()
+            assert response.status_code == 400
+            error = response.json()
             assert 'publicName' in error
 
         @clean_database
@@ -176,13 +175,13 @@ class Post:
             data['publicName'] = 't'
 
             # When
-            r_signup = TestClient() \
+            response = TestClient() \
                 .post(API_URL + '/users/signup/webapp',
                                 json=data, headers={'origin': 'http://localhost:3000'})
 
             # Then
-            assert r_signup.status_code == 400
-            error = r_signup.json()
+            assert response.status_code == 400
+            error = response.json()
             assert 'publicName' in error
 
         @clean_database
@@ -192,13 +191,13 @@ class Post:
             data['publicName'] = 'x' * 32
 
             # When
-            r_signup = TestClient() \
+            response = TestClient() \
                 .post(API_URL + '/users/signup/webapp',
                                 json=data, headers={'origin': 'http://localhost:3000'})
 
             # Then
-            assert r_signup.status_code == 400
-            error = r_signup.json()
+            assert response.status_code == 400
+            error = response.json()
             assert 'publicName' in error
 
         @clean_database
@@ -208,13 +207,13 @@ class Post:
             del (data['password'])
 
             # When
-            r_signup = TestClient() \
+            response = TestClient() \
                 .post(API_URL + '/users/signup/webapp',
                                 json=data, headers={'origin': 'http://localhost:3000'})
 
             # Then
-            assert r_signup.status_code == 400
-            error = r_signup.json()
+            assert response.status_code == 400
+            error = response.json()
             assert 'password' in error
 
         @clean_database
@@ -224,17 +223,14 @@ class Post:
             data['password'] = 'weakpassword'
 
             # When
-            r_signup = TestClient() \
+            response = TestClient() \
                 .post(API_URL + '/users/signup/webapp',
                                 json=data, headers={'origin': 'http://localhost:3000'})
 
             # Then
-            assert r_signup.status_code == 400
-            response = r_signup.json()
-            assert response['password'] == [
-                'Le mot de passe doit faire au moins 12 caractères et contenir à minima '
-                '1 majuscule, 1 minuscule, 1 chiffre et 1 caractère spécial parmi _-&?~#|^@=+.$,<>%*!:;'
-            ]
+            assert response.status_code == 400
+            response = response.json()
+            assert 'password' in response
 
         @clean_database
         def when_missing_contact_ok(self, app):
@@ -242,13 +238,13 @@ class Post:
             del (data['contact_ok'])
 
             # When
-            r_signup = TestClient() \
+            response = TestClient() \
                 .post(API_URL + '/users/signup/webapp',
                                 json=data, headers={'origin': 'http://localhost:3000'})
 
             # Then
-            assert r_signup.status_code == 400
-            error = r_signup.json()
+            assert response.status_code == 400
+            error = response.json()
             assert 'contact_ok' in error
 
         @clean_database
@@ -257,13 +253,13 @@ class Post:
             data['contact_ok'] = 't'
 
             # When
-            r_signup = TestClient() \
+            response = TestClient() \
                 .post(API_URL + '/users/signup/webapp',
                                 json=data, headers={'origin': 'http://localhost:3000'})
 
             # Then
-            assert r_signup.status_code == 400
-            error = r_signup.json()
+            assert response.status_code == 400
+            error = response.json()
             assert 'contact_ok' in error
 
         @clean_database
@@ -275,11 +271,11 @@ class Post:
             data['email'] = 'unknown@unknown.com'
 
             # When
-            r_signup = TestClient() \
+            response = TestClient() \
                 .post(API_URL + '/users/signup/webapp',
                                 json=data, headers={'origin': 'http://localhost:3000'})
 
             # Then
-            assert r_signup.status_code == 400
-            error = r_signup.json()
+            assert response.status_code == 400
+            error = response.json()
             assert 'email' in error

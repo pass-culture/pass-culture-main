@@ -92,6 +92,7 @@ def signup_webapp():
 
     new_user.generate_validation_token()
     new_user.canBookFreeOffers = False
+    new_user.isAdmin = False
     objects_to_save.append(new_user)
 
     PcObject.check_and_save(*objects_to_save)
@@ -127,6 +128,7 @@ def signup_pro():
         objects_to_save.extend([digital_venue, offerer])
     objects_to_save.append(user_offerer)
     new_user.canBookFreeOffers = False
+    new_user.isAdmin = False
     new_user = _set_offerer_departement_code(new_user, offerer)
 
     new_user.generate_validation_token()
