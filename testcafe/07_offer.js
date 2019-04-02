@@ -96,6 +96,7 @@ const descriptionInput = Selector('#offer-description')
 const submitButton = Selector('button.button.is-primary').withText(
   'Enregistrer'
 )
+
 fixture('Offer B | Créer une nouvelle offre')
 
 test('Je peux créer une offre événement', async t => {
