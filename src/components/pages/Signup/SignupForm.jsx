@@ -16,10 +16,9 @@ class SignupForm extends PureComponent {
             Nous vous invitons à prendre connaissance des{' '}
             <a
               className="is-secondary"
-              href="https://pass.culture.fr/assets/docs/Pas_a_pas_pass_Culture.pdf"
+              href="https://pass.culture.fr/ressources"
               rel="noopener noreferrer"
-              target="_blank"
-            >
+              target="_blank">
               modalités de fonctionnement en cliquant ici
             </a>{' '}
             avant de renseigner les champs suivants.
