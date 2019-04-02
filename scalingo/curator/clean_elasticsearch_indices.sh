@@ -12,7 +12,6 @@ fi
 
 old_scalingo_process_pid=$(pgrep -x "scalingo")
 if [ "$old_scalingo_process_pid" > 1 ]; then
-then
     echo "A Scalingo tunnel was left opened, we are killing the old process ($old_scalingo_process_pid) before starting."
     echo "Safety first !"
     sudo kill -9 "$old_scalingo_process_pid"
