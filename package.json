@@ -127,10 +127,9 @@
     "coveralls": "cat ./coverage/lcov.info | node node_modules/.bin/coveralls",
     "licenses": "node_modules/.bin/license-reporter save --json licenses.json",
     "testunit": "jest --env=jsdom",
-    "testcafe": "testcafe 'chrome:headless' testcafe",
     "precommit": "pretty-quick --staged",
     "prettier": "$(yarn bin)/prettier --write 'src/**/*.js'",
-    "test:cafe": "testcafe 'chrome:headless' testcafe",
+    "test:cafe": "testcafe --assertion-timeout 5000 --selector-timeout 15000 'chrome:headless' testcafe",
     "test:unit": "jest --env=jsdom",
     "symlink-shared": "if [ -d \"../shared\" ]; then cd node_modules && rm -rf pass-culture-shared && ln -sf ../../shared pass-culture-shared && cd ../../shared && yarn run compile; fi",
     "start": "node scripts/start.js"
