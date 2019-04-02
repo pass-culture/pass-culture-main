@@ -16,7 +16,7 @@ jobs:
             sudo lsof /var/lib/apt/lists/lock
             while pgrep apt-get >/dev/null 2>&1 ; do
             echo "Waiting for apt ..."
-            sleep 1
+            sleep 2
             done
             curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
             curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
