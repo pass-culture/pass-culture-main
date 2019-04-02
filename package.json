@@ -155,7 +155,7 @@
     "pgbuild-prod": "yarn build && PG_ENV=production node scripts/pgbuild.js",
     "prettier": "$(yarn bin)/prettier --write 'src/**/*.js'",
     "start": "node scripts/start.js",
-    "test:cafe": "testcafe 'chrome:headless' testcafe",
+    "test:cafe": "testcafe --assertion-timeout 5000 --selector-timeout 15000 'chrome:headless' testcafe",
     "test:unit": "jest --env=jsdom",
     "coveralls": "cat ./coverage/lcov.info | node node_modules/.bin/coveralls",
     "test:visual": "./scripts/tests/visual.sh",
