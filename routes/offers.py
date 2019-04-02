@@ -4,8 +4,8 @@ from flask_login import current_user, login_required
 from domain.admin_emails import send_offer_creation_notification_to_support
 from domain.create_offer import fill_offer_with_new_event_data, \
     fill_offer_with_new_thing_data, fill_offer_with_existing_thing_data, fill_offer_with_existing_event_data
-from models import Offer, PcObject, Venue, RightsType, Thing, Event
-from models.api_errors import ResourceNotFound, ApiErrors
+from models import Offer, PcObject, Venue, RightsType
+from models.api_errors import ResourceNotFound
 from models.offer_type import ProductType
 from repository import venue_queries, offer_queries
 from repository.offer_queries import find_activation_offers, \
@@ -93,6 +93,8 @@ def post_offer():
 
         elif ProductType.is_event(offer_type_name):
             offer = fill_offer_with_new_event_data(request.json, current_user)
+
+        offer.eventOrThing.owningOfferer = venue.managingOfferer
 
     offer.venue = venue
     offer.bookingEmail = request.json.get('bookingEmail', None)
