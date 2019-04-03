@@ -16,13 +16,9 @@ class Post:
             user = create_user(email='test@email.com')
             json = {
                 'bookingEmail': 'offer@email.com',
-                'thing':
-                    {
-                        'name': 'La pièce de théâtre',
-                        'durationMinutes': 60,
-                        'type': str(EventType.SPECTACLE_VIVANT),
-                    }
-
+                'name': 'La pièce de théâtre',
+                'durationMinutes': 60,
+                'type': str(ThingType.AUDIOVISUEL)
             }
             PcObject.check_and_save(user)
 
@@ -41,11 +37,8 @@ class Post:
             user = create_user(email='test@email.com')
             json = {
                 'venueId': humanize(123),
-                'thing':
-                    {
-                        'name': 'La pièce de théâtre',
-                        'durationMinutes': 60
-                    }
+                'name': 'La pièce de théâtre',
+                'durationMinutes': 60
             }
             PcObject.check_and_save(user)
 
@@ -68,13 +61,10 @@ class Post:
             venue = create_venue(offerer, is_virtual=True, siret=None)
             PcObject.check_and_save(user, venue, user_offerer)
             json = {
-                'thing':
-                    {
-                        'type': 'ThingType.JEUX_ABO',
-                        'name': 'Le grand jeu',
-                        "url": 'http://legrandj.eu',
-                        'mediaUrls': ['http://media.url']
-                    },
+                'type': 'ThingType.JEUX_ABO',
+                'name': 'Le grand jeu',
+                "url": 'http://legrandj.eu',
+                'mediaUrls': ['http://media.url'],
                 'venueId': humanize(venue.id)
             }
 
@@ -86,7 +76,6 @@ class Post:
             # Then
             assert response.status_code == 400
             assert response.json()['url'] == ['Une offre de type Jeux (Abonnements) ne peut pas être numérique']
-
 
     class Returns201:
         @clean_database
@@ -101,12 +90,9 @@ class Post:
             json = {
                 'venueId': humanize(venue.id),
                 'bookingEmail': 'offer@email.com',
-                'event':
-                    {
-                        'name': 'La pièce de théâtre',
-                        'durationMinutes': 60,
-                        'type': str(EventType.SPECTACLE_VIVANT)
-                    }
+                'name': 'La pièce de théâtre',
+                'durationMinutes': 60,
+                'type': str(EventType.SPECTACLE_VIVANT)
             }
 
             # When
@@ -151,12 +137,9 @@ class Post:
 
             json = {
                 'venueId': humanize(venue.id),
-                'event':
-                    {
-                        'name': 'La pièce de théâtre',
-                        'durationMinutes': 60,
-                        'type': str(EventType.SPECTACLE_VIVANT)
-                    }
+                'name': 'La pièce de théâtre',
+                'durationMinutes': 60,
+                'type': str(EventType.SPECTACLE_VIVANT)
             }
 
             # When
@@ -180,13 +163,10 @@ class Post:
             thing = create_thing()
             PcObject.check_and_save(user, venue, thing, user_offerer)
             json = {
-                'thing':
-                    {
-                        'type': 'ThingType.JEUX_VIDEO',
-                        'name': 'Les lapins crétins',
-                        'mediaUrls': ['http://media.url'],
-                        'url': 'http://jeux.fr/offre',
-                    },
+                'type': 'ThingType.JEUX_VIDEO',
+                'name': 'Les lapins crétins',
+                'mediaUrls': ['http://media.url'],
+                'url': 'http://jeux.fr/offre',
                 'venueId': humanize(venue.id),
                 'bookingEmail': 'offer@email.com'
             }
@@ -279,12 +259,9 @@ class Post:
             PcObject.check_and_save(user, venue)
 
             json = {
-                'event':
-                    {
-                        'name': "Offre d'activation",
-                        'durationMinutes': 60,
-                        'type': str(EventType.ACTIVATION)
-                    },
+                'name': "Offre d'activation",
+                'durationMinutes': 60,
+                'type': str(EventType.ACTIVATION),
                 'venueId': humanize(venue.id),
             }
 
@@ -307,12 +284,9 @@ class Post:
             PcObject.check_and_save(user_offerer, venue)
 
             json = {
-                'event':
-                    {
-                        'name': "Offre d'activation",
-                        'durationMinutes': 60,
-                        'type': str(EventType.ACTIVATION)
-                    },
+                'name': "Offre d'activation",
+                'durationMinutes': 60,
+                'type': str(EventType.ACTIVATION),
                 'venueId': humanize(venue.id),
             }
 
@@ -337,12 +311,9 @@ class Post:
             PcObject.check_and_save(user_offerer, venue)
 
             json = {
-                'event':
-                    {
-                        'name': "Offre d'activation",
-                        'durationMinutes': 60,
-                        'type': str(EventType.ACTIVATION)
-                    },
+                'name': "Offre d'activation",
+                'durationMinutes': 60,
+                'type': str(EventType.ACTIVATION),
                 'venueId': humanize(venue.id),
             }
 
@@ -365,11 +336,9 @@ class Post:
             PcObject.check_and_save(user, venue)
 
             json = {
-                'event': {
-                    'name': 'La pièce de théâtre',
-                    'durationMinutes': 60,
-                    'type': str(EventType.SPECTACLE_VIVANT)
-                },
+                'name': 'La pièce de théâtre',
+                'durationMinutes': 60,
+                'type': str(EventType.SPECTACLE_VIVANT),
                 'venueId': humanize(venue.id),
                 'bookingEmail': 'offer@email.com'
             }

@@ -4,7 +4,7 @@ from flask_login import current_user, login_required
 from domain.admin_emails import send_offer_creation_notification_to_support
 from domain.create_offer import fill_offer_with_new_event_data, \
     fill_offer_with_new_thing_data, fill_offer_with_existing_thing_data, fill_offer_with_existing_event_data
-from models import Offer, PcObject, Venue, RightsType
+from models import Offer, PcObject, Venue, RightsType, Thing
 from models.api_errors import ResourceNotFound
 from repository import venue_queries, offer_queries
 from repository.offer_queries import find_activation_offers, \
@@ -74,7 +74,7 @@ def post_offer():
     check_has_venue_id(venue_id)
     venue = load_or_raise_error(Venue, venue_id)
     ensure_current_user_has_rights(RightsType.editor, venue.managingOffererId)
-    thing_dict = request.json.get('thing')
+    thing_dict = Thing(from_dict=request.json)
     event_dict = request.json.get('event')
     event_id = dehumanize(request.json.get('eventId'))
     thing_id = dehumanize(request.json.get('thingId'))
