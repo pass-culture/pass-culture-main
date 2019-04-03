@@ -1,12 +1,11 @@
 from datetime import datetime
 
 from models import PcObject, ApiErrors
-from models import Venue, Offer, Event, Thing, Stock, Offerer, UserOfferer, User
+from models import Venue, Offer, Stock, Offerer, UserOfferer, User
 from models.db import db
 from models.venue import TooManyVirtualVenuesException
 from models.activity import load_activity
 from sqlalchemy import and_
-from repository.offer_queries import with_active_and_validated_offerer
 from repository.offerer_queries import _filter_by_sirens
 
 
@@ -34,35 +33,35 @@ def find_filtered_venues(sirens=None,
                          to_date=None,
                          has_siret=None,
                          is_virtual=None,
-                         offer_status=None, 
+                         offer_status=None,
                          is_validated=None,
                          has_validated_offerer=None,
                          has_offerer_with_siren=None,
                          has_validated_user_offerer=None,
                          has_validated_user=None):
 
-    query = db.session.query(Venue) 
+    query = db.session.query(Venue)
     if dpts:
         query = _filter_by_dpts(query, dpts)
-    
-    if zip_codes: 
+
+    if zip_codes:
         query = _filter_by_zipcodes(query, zip_codes)
-    
+
     if from_date or to_date:
         query = _filter_by_date(query, from_date, to_date)
-    
+
     if has_siret is not None:
         query = _filter_by_has_siret(query, has_siret)
-    
+
     if is_virtual is not None:
         query = _filter_by_is_virtual(query, is_virtual)
-    
+
     if offer_status:
         query = _filter_by_offer_status(query, offer_status)
-    
+
     if is_validated is not None:
         query = _filter_by_is_validated(query, is_validated)
-    
+
     if has_validated_offerer is not None or has_offerer_with_siren is not None \
      or has_validated_user_offerer is not None or has_validated_user is not None \
      or sirens is not None:
@@ -70,19 +69,19 @@ def find_filtered_venues(sirens=None,
 
     if sirens is not None:
         query = _filter_by_sirens(query, sirens)
-    
+
     if has_validated_offerer is not None:
         query = _filter_by_has_validated_offerer(query, has_validated_offerer)
-    
+
     if has_offerer_with_siren is not None:
         query = _filter_by_has_offerer_with_siren(query, has_offerer_with_siren)
-    
+
     if has_validated_user_offerer is not None or has_validated_user is not None:
         query = query.join(UserOfferer)
-    
+
     if has_validated_user_offerer is not None:
         query = _filter_by_has_validated_user_offerer(query, has_validated_user_offerer)
-    
+
     if has_validated_user is not None:
         query = _filter_by_has_validated_user(query, has_validated_user)
 
@@ -95,7 +94,7 @@ def _filter_by_is_virtual(query, is_virtual):
         query = query.filter(Venue.isVirtual == True)
     else:
         query = query.filter(Venue.isVirtual == False)
-    
+
     return query
 
 
@@ -116,7 +115,7 @@ def _filter_by_has_offerer_with_siren(query, has_offerer_with_siren):
     else:
         query = query.filter(~has_siren)
 
-    return query 
+    return query
 
 
 def _filter_by_has_validated_user_offerer(query, has_validated_user_offerer):
@@ -125,8 +124,8 @@ def _filter_by_has_validated_user_offerer(query, has_validated_user_offerer):
         query = query.filter(Offerer.users.any(is_valid))
     else:
         query = query.filter(~Offerer.users.any(is_valid))
-    
-    return query 
+
+    return query
 
 
 def _filter_by_has_validated_user(query, has_validated_user):
@@ -137,7 +136,7 @@ def _filter_by_has_validated_user(query, has_validated_user):
     else:
         query = query.filter(~Offerer.users.any(is_valid))
 
-    return query 
+    return query
 
 
 def _filter_by_dpts(query, dpts):
@@ -161,7 +160,7 @@ def _filter_by_date(query, from_date=None, to_date=None):
         query = query.filter(Activity.issued_at >= from_date)
     if to_date:
         query = query.filter(Activity.issued_at <= to_date)
-    return query    
+    return query
 
 
 def _filter_by_has_siret(query, has_siret):
@@ -169,7 +168,7 @@ def _filter_by_has_siret(query, has_siret):
         query = query.filter(Venue.siret != None)
     else:
         query = query.filter(Venue.siret == None)
-    return query 
+    return query
 
 
 def _filter_by_is_validated(query, is_validated):
@@ -177,7 +176,7 @@ def _filter_by_is_validated(query, is_validated):
         query = query.filter(Venue.validationToken == None)
     else:
         query = query.filter(Venue.validationToken != None)
-    return query 
+    return query
 
 
 def _filter_by_offer_status(query, offer_status):

@@ -22,25 +22,16 @@ class Offer(PcObject,
             DeactivableMixin,
             ProvidableMixin):
     thingId = Column(BigInteger,
-                     ForeignKey("thing.id"),
                      index=True,
                      nullable=True)
 
-    thing = relationship('Thing',
-                         foreign_keys=[thingId],
-                         backref='offers')
-
-    eventId = Column(BigInteger,
-                     ForeignKey("event.id"),
-                     CheckConstraint(
-                         '("eventId" IS NOT NULL AND "thingId" IS NULL)' + \
-                         'OR ("eventId" IS NULL AND "thingId" IS NOT NULL)',
-                         name='check_offer_has_thing_xor_event'),
+    productId = Column(BigInteger,
+                     ForeignKey("product.id"),
                      index=True,
-                     nullable=True)
+                     nullable=False)
 
-    event = relationship('Event',
-                         foreign_keys=[eventId],
+    product = relationship('Product',
+                         foreign_keys=[productId],
                          backref='offers')
 
     venueId = Column(BigInteger,

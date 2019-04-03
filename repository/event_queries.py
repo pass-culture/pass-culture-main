@@ -1,5 +1,5 @@
-from models import Event
+from models import Product
 
 
-def find_by_id(event_id: str) -> Event:
-    return Event.query.filter_by(id=event_id).one()
+def find_by_id(product_id: str) -> Product:
+    return Product.query.filter_by(id=product_id).one()

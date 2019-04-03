@@ -6,6 +6,7 @@ from connectors.ftp_titelive import get_files_to_process_from_titelive_ftp, get_
 from domain.titelive import get_date_from_filename
 from models.local_provider import LocalProvider, ProvidableInfo
 from models.local_provider_event import LocalProviderEventType
+from models import Product
 
 from repository import local_provider_event_queries
 from utils.logger import logger
@@ -20,7 +21,7 @@ class TiteLiveThingThumbs(LocalProvider):
                             + "(on synchronise tout)"
     identifierRegexp = None
     name = "TiteLive (Epagine / Place des libraires.com) Thumbs"
-    objectType = Thing
+    objectType = Product
     canCreate = False
 
     def __init__(self):
@@ -58,7 +59,7 @@ class TiteLiveThingThumbs(LocalProvider):
             self.thumb_zipinfo = next(self.thumb_zipinfos)
 
         providable_info = ProvidableInfo()
-        providable_info.type = Thing
+        providable_info.type = Product
         providable_info.dateModifiedAtProvider = None
         path = PurePath(self.thumb_zipinfo.filename)
         providable_info.idAtProviders = path.name.split('_', 1)[0]

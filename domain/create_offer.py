@@ -1,24 +1,24 @@
-from models import Offer, Thing, Event
+from models import Offer, Product
 from repository import thing_queries, event_queries
 from validation.events import check_user_can_create_activation_event
 from validation.url import is_url_safe
 
 
 def fill_offer_with_new_thing_data(payload: dict) -> Offer:
-    thing = Thing(from_dict=payload)
-    url = thing.url
+    product = Product(from_dict=payload)
+    url = product.url
     if url:
         is_url_safe(url)
-        thing.isNational = True
+        product.isNational = True
 
-    offer = _initialize_offer_from_thing(thing)
+    offer = _initialize_offer_from_thing(product)
     return offer
 
 
 def fill_offer_with_new_event_data(payload: dict, user) -> Offer:
-    event = Event(from_dict=payload)
-    check_user_can_create_activation_event(user, event)
-    offer = _initiaize_offer_from_event(event)
+    product = Product(from_dict=payload)
+    check_user_can_create_activation_event(user, product)
+    offer = _initiaize_offer_from_event(product)
     return offer
 
 
@@ -44,20 +44,58 @@ def _initialize_offer_from_thing(thing):
     offer.mediaUrls = thing.mediaUrls
     offer.isNational = thing.isNational
     offer.extraData = thing.extraData
+
+def fill_offer_with_new_thing_data(thing_dict: str) -> Offer:
+    product = Product()
+    url = thing_dict.get('url')
+    if url:
+        is_url_safe(url)
+        thing_dict['isNational'] = True
+    product.populateFromDict(thing_dict)
+    offer = Offer()
+    offer.populateFromDict(thing_dict)
+    offer.product = product
+    return offer
+
+
+def fill_offer_with_new_event_data(event_dict: dict, user) -> Offer:
+    product = Product()
+    product.populateFromDict(event_dict)
+    check_user_can_create_activation_event(user, product)
+    offer = Offer()
+    offer.populateFromDict(event_dict)
+    offer.product = product
+    return offer
+
+
+def fill_offer_with_existing_thing_data(thing_id: str, offer_data) -> Offer:
+    product = thing_queries.find_by_id(thing_id)
+    offer = Offer()
+    offer.populateFromDict(offer_data)
+    offer.product = product
+    offer.type = product.type
+    offer.name = product.name
+    offer.description = product.description
+    offer.url = product.url
+    offer.mediaUrls = product.mediaUrls
+    offer.isNational = product.isNational
+    offer.extraData = product.extraData
     return offer
 
 
 def _initiaize_offer_from_event(event: Event) -> Offer:
     offer = Offer()
-    offer.event = event
-    offer.type = event.type
-    offer.name = event.name
-    offer.description = event.description
-    offer.mediaUrls = event.mediaUrls
-    offer.conditions = event.conditions
-    offer.ageMin = event.ageMin
-    offer.ageMax = event.ageMax
-    offer.durationMinutes = event.durationMinutes
-    offer.isNational = event.isNational
-    offer.extraData = event.extraData
+    product = event_queries.find_by_id(event_id)
+    offer.product = product
+    offer.type = product.type
+    offer.name = product.name
+    offer.description = product.description
+    offer.mediaUrls = product.mediaUrls
+    offer.conditions = product.conditions
+    offer.ageMin = product.ageMin
+    offer.ageMax = product.ageMax
+    offer.accessibility = product.accessibility
+    offer.durationMinutes = product.durationMinutes
+    offer.isNational = product.isNational
+    offer.extraData = product.extraData
     return offer

@@ -1,5 +1,13 @@
 from datetime import datetime
+<<<<<<< HEAD
 from models import Stock, Offerer, User, ApiErrors, PcObject, Offer, Thing, ThingType, Venue
+=======
+from pprint import pformat
+
+from sqlalchemy.exc import InternalError
+
+from models import Stock, Offerer, User, ApiErrors, PcObject, Offer, ThingType, Venue, Product
+>>>>>>> (PC-1723) Fix imports
 from utils.human_ids import dehumanize
 from utils.logger import logger
 
@@ -35,7 +43,7 @@ def find_online_activation_stock():
         .join(Offer) \
         .join(Venue) \
         .filter_by(isVirtual=True) \
-        .join(Thing, Offer.thingId == Thing.id) \
+        .join(Product, Offer.productId == Product.id) \
         .filter_by(type=str(ThingType.ACTIVATION)) \
         .first()
 

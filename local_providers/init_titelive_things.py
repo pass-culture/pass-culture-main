@@ -8,6 +8,7 @@ from domain.titelive import read_things_date
 from local_providers.titelive_things import get_thing_type_and_extra_data_from_titelive_type, get_infos_from_data_line, \
     get_extraData_from_infos
 from models.local_provider import LocalProvider, ProvidableInfo
+from models import Product
 from models.local_provider_event import LocalProviderEventType, LocalProviderEvent
 
 from utils.logger import logger
@@ -23,7 +24,7 @@ class InitTiteLiveThings(LocalProvider):
                             + "(on synchronise tout)"
     identifierRegexp = None
     name = "Init TiteLive (Epagine / Place des libraires.com)"
-    objectType = Thing
+    objectType = Product
     canCreate = True
 
     def __init__(self, titelive_file: str, **options):
@@ -78,7 +79,7 @@ class InitTiteLiveThings(LocalProvider):
 
         self.lines_checked += 1
         providable_info = ProvidableInfo()
-        providable_info.type = Thing
+        providable_info.type = Product
         providable_info.idAtProviders = self.infos['ean13']
         providable_info.dateModifiedAtProvider = read_things_date(self.infos['date_updated'])
         return providable_info

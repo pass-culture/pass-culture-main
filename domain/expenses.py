@@ -1,7 +1,7 @@
 from decimal import Decimal
 from typing import List, Union
 
-from models import ThingType, Booking, Event, Thing
+from models import ThingType, Booking, Product
 
 PHYSICAL_EXPENSES_CAPPED_TYPES = [ThingType.LIVRE_EDITION, ThingType.AUDIOVISUEL, ThingType.MUSIQUE, ThingType.JEUX]
 DIGITAL_EXPENSES_CAPPED_TYPES = [ThingType.AUDIOVISUEL, ThingType.JEUX_VIDEO, ThingType.MUSIQUE, ThingType.PRESSE_ABO]
@@ -49,24 +49,18 @@ def _get_bookings_of_physical_things(bookings: List[Booking]) -> List[Booking]:
     return match
 
 
-def is_eligible_to_digital_things_capping(thing_or_event: Union[Thing, Event]) -> bool:
-    if type(thing_or_event) == Event:
-        return False
-
-    if thing_or_event.isDigital and thing_or_event.type in map(str, DIGITAL_EXPENSES_CAPPED_TYPES):
+def is_eligible_to_digital_things_capping(product: Product) -> bool:
+    if product.isDigital and product.type in map(str, DIGITAL_EXPENSES_CAPPED_TYPES):
         return True
 
     return False
 
 
-def is_eligible_to_physical_things_capping(thing_or_event: Union[Thing, Event]) -> bool:
-    if type(thing_or_event) == Event:
-        return False
-
-    if thing_or_event.isDigital and thing_or_event.type == str(ThingType.LIVRE_EDITION):
+def is_eligible_to_physical_things_capping(product: Product) -> bool:
+    if product.isDigital and product.type == str(ThingType.LIVRE_EDITION):
         return True
 
-    if not thing_or_event.isDigital and thing_or_event.type in map(str, PHYSICAL_EXPENSES_CAPPED_TYPES):
+    if not product.isDigital and product.type in map(str, PHYSICAL_EXPENSES_CAPPED_TYPES):
         return True
 
     return False

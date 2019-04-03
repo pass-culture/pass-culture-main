@@ -4,6 +4,7 @@ from pathlib import PurePath
 from connectors.ftp_titelive import get_files_to_process_from_titelive_ftp, get_zip_file_from_ftp
 from domain.titelive import get_date_from_filename, read_description_date
 from models.local_provider import LocalProvider, ProvidableInfo
+from models import Product
 from models.local_provider_event import LocalProviderEventType
 
 from repository import local_provider_event_queries
@@ -20,7 +21,7 @@ class TiteLiveThingDescriptions(LocalProvider):
                             + "(on synchronise tout)"
     identifierRegexp = None
     name = "TiteLive (Epagine / Place des libraires.com) Descriptions"
-    objectType = Thing
+    objectType = Product
     canCreate = False
 
     def __init__(self):
@@ -59,7 +60,7 @@ class TiteLiveThingDescriptions(LocalProvider):
             self.desc_zipinfo = next(self.desc_zipinfos)
 
         providable_info = ProvidableInfo()
-        providable_info.type = Thing
+        providable_info.type = Product
         providable_info.dateModifiedAtProvider = self.date_modified
         path = PurePath(self.desc_zipinfo.filename)
         providable_info.idAtProviders = path.name.split('_', 1)[0]

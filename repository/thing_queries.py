@@ -1,12 +1,12 @@
-from models import Thing, ThingType
+from models import ThingType, Product
 
 
 def find_by_id(id):
-    return Thing.query.get(id)
+    return Product.query.get(id)
 
 
 def find_thing_by_isbn_only_for_type_book(isbn):
-    thing = Thing.query.filter((Thing.type == str(ThingType.LIVRE_EDITION)) &
-                               (Thing.idAtProviders == isbn)) \
+    thing = Product.query.filter((Product.type == str(ThingType.LIVRE_EDITION)) &
+                               (Product.idAtProviders == isbn)) \
                                .one_or_none()
     return thing

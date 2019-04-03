@@ -9,21 +9,18 @@ from domain.keywords import create_filter_matching_all_keywords_in_any_model, \
     create_get_filter_matching_ts_query_in_any_model
 from models import ApiErrors, \
     Booking, \
-    Event, \
     PcObject, \
     Offer, \
     Stock, \
-    Thing, \
     User, \
+    Product, \
     Venue, Offerer, ThingType
 from models.api_errors import ResourceNotFound
 from models.db import db
 from utils.rest import query_with_order_by, check_order_by
 
 get_filter_matching_ts_query_for_booking = create_get_filter_matching_ts_query_in_any_model(
-    Event,
-    Thing,
-    Venue,
+    Product,Venue
 )
 
 
@@ -43,8 +40,8 @@ def filter_bookings_with_keywords_string(query, keywords_string):
         get_filter_matching_ts_query_for_booking,
         keywords_string
     )
-    query = query.outerjoin(Event) \
-        .outerjoin(Thing) \
+    query = query \
+        .outerjoin(Product) \
         .outerjoin(Venue) \
         .filter(keywords_filter) \
         .reset_joinpoint()
@@ -55,8 +52,7 @@ def find_offerer_bookings(offerer_id, search=None, order_by=None, page=1):
     query = Booking.query.join(Stock) \
         .join(Offer) \
         .join(Venue) \
-        .outerjoin(Thing, and_(Offer.thingId == Thing.id)) \
-        .outerjoin(Event, and_(Offer.eventId == Event.id)) \
+        .outerjoin(Product, and_(Offer.productId == Product.id)) \
         .filter(Venue.managingOffererId == offerer_id) \
         .reset_joinpoint()
 
@@ -162,8 +158,8 @@ def find_user_activation_booking(user: User) -> User:
         .join(User) \
         .join(Stock, Booking.stockId == Stock.id) \
         .join(Offer) \
-        .join(Thing) \
-        .filter(Thing.type == str(ThingType.ACTIVATION)) \
+        .join(Product) \
+        .filter(Product.type == str(ThingType.ACTIVATION)) \
         .filter(User.id == user.id) \
         .first()
 

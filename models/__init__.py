@@ -20,6 +20,7 @@ from models.payment_status import PaymentStatus
 from models.payment_transaction import PaymentTransaction
 from models.pc_object import PcObject
 from models.product import Product
+from models.thing import BookFormat
 from models.providable_mixin import ProvidableMixin
 from models.provider import Provider
 from models.recommendation import Recommendation
@@ -45,6 +46,7 @@ __all__ = (
     'ExtraDataMixin',
     'HasAddressMixin',
     'HasThumbMixin',
+    'BookFormat',
     'NeedsValidationMixin',
     'ProvidableMixin',
     'Booking',

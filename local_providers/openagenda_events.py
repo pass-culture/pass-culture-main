@@ -7,7 +7,7 @@ from datetime import datetime
 from pathlib import Path
 import requests
 
-from models import VenueProvider
+from models import VenueProvider, Product, Stock
 from models.db import db
 
 from models.local_provider import LocalProvider, ProvidableInfo
@@ -44,7 +44,7 @@ class OpenAgendaEvents(LocalProvider):
     identifierDescription = "Identifiant de l'agenda (ex: 80942872). Il se trouve à la fin de l'adresse web de votre agenda."
     identifierRegexp = "^\d+$"
     name = "Open Agenda"
-    objectType = Event
+    objectType = Product
     canCreate = True
 
     def __init__(self, venueProvider: VenueProvider, **options):
@@ -91,7 +91,7 @@ class OpenAgendaEvents(LocalProvider):
             return next(self)
 
         p_info_event = ProvidableInfo()
-        p_info_event.type = Event
+        p_info_event.type = Product
         p_info_event.idAtProviders = str(self.oa_event['uid'])
         p_info_event.dateModifiedAtProvider = read_date(self.oa_event['updatedAt'])
 
@@ -104,7 +104,7 @@ class OpenAgendaEvents(LocalProvider):
         durations_sum = 0
         for oa_timing in self.oa_event['timings']:
             p_info_eo = ProvidableInfo()
-            p_info_eo.type = EventOccurrence
+            p_info_eo.type = Stock
             p_info_eo.idAtProviders = str(self.oa_event['uid'])+'_'+str(read_date(oa_timing['start']))
             p_info_eo.dateModifiedAtProvider = read_date(self.oa_event['updatedAt'])
             p_info_eos.append(p_info_eo)
@@ -117,13 +117,13 @@ class OpenAgendaEvents(LocalProvider):
         return [p_info_event, p_info_offer] + p_info_eos
 
     def getDeactivatedObjectIds(self):
-        return db.session.query(Event.idAtProviders)\
-                             .filter(Event.provider == 'OpenAgenda',
-                                     Event.venue == self.venue,
-                                     ~Event.idAtProviders.in_(self.seen_uids))
+        return db.session.query(Product.idAtProviders)\
+                             .filter(Product.provider == 'OpenAgenda',
+                                     Product.venue == self.venue,
+                                     ~Product.idAtProviders.in_(self.seen_uids))
 
     def updateObject(self, obj):
-        if isinstance(obj, Event):
+        if isinstance(obj, Product):
             assert obj.idAtProviders == str(self.oa_event['uid'])
             obj.name = self.oa_event['title']['fr']\
                          if 'fr' in self.oa_event['title']\
@@ -132,7 +132,7 @@ class OpenAgendaEvents(LocalProvider):
                                 if 'fr' in self.oa_event['description']\
                                 else self.oa_event['description']['en']
             obj.durationMinutes = self.duration
-        elif isinstance(obj, EventOccurrence):
+        elif isinstance(obj, Stock):
             index = len(self.providables)-3
             oa_timing = self.oa_event['timings'][index]
             obj.beginningDatetime = read_date(oa_timing['start'])
@@ -146,7 +146,7 @@ class OpenAgendaEvents(LocalProvider):
                              + obj.__class__.__name__)
 
     def getObjectThumbDates(self, obj):
-        if not isinstance(obj, Event):
+        if not isinstance(obj, Product):
             return []
         assert obj.idAtProviders == str(self.oa_event['uid'])
         if 'thumbnail' in self.oa_event and self.oa_event['thumbnail']:
