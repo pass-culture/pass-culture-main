@@ -4,7 +4,6 @@ from models.booking import Booking
 from models.deactivable_mixin import DeactivableMixin
 from models.deposit import Deposit
 from models.email import Email
-from models.event import Event
 from models.extra_data_mixin import ExtraDataMixin
 from models.has_address_mixin import HasAddressMixin
 from models.has_thumb_mixin import HasThumbMixin
@@ -20,10 +19,10 @@ from models.payment import Payment
 from models.payment_status import PaymentStatus
 from models.payment_transaction import PaymentTransaction
 from models.pc_object import PcObject
+from models.product import Product
 from models.providable_mixin import ProvidableMixin
 from models.provider import Provider
 from models.recommendation import Recommendation
-from models.thing import Thing
 from models.user import User
 from models.user_offerer import RightsType
 from models.user_offerer import UserOfferer
@@ -49,7 +48,6 @@ __all__ = (
     'NeedsValidationMixin',
     'ProvidableMixin',
     'Booking',
-    'Event',
     'Mediation',
     'Stock',
     'Offerer',
@@ -61,9 +59,9 @@ __all__ = (
     'PaymentStatus',
     'PaymentTransaction',
     'Provider',
+    'Product',
     'Recommendation',
     'RightsType',
-    'Thing',
     'ThingType',
     'UserOfferer',
     'User',

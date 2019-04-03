@@ -9,7 +9,7 @@ import requests
 
 from models import VenueProvider
 from models.db import db
-from models.event import Event
+
 from models.local_provider import LocalProvider, ProvidableInfo
 from models.offer import Offer
 from models.venue import Venue

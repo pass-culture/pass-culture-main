@@ -1,6 +1,6 @@
-from models.event import Event
+
 from models.mediation import Mediation
-from models.thing import Thing
+
 from models.offer_type import EventType
 from models.pc_object import PcObject
 from recommendations_engine.offers import get_departement_codes_from_user

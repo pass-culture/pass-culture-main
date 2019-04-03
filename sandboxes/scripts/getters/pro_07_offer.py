@@ -1,8 +1,8 @@
 from models import Offerer
 from models import Offerer
-from models.event import Event
+
 from models.offer import Offer
-from models.thing import Thing
+
 from models.user import User
 from models.venue import Venue
 from repository.offerer_queries import keep_offerers_with_at_least_one_physical_venue

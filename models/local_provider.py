@@ -8,18 +8,15 @@ from pprint import pprint
 from sqlalchemy import text
 from postgresql_audit.flask import versioning_manager
 
-from models import HasThumbMixin
+from models import HasThumbMixin, Product
 from models.db import db
-from models.event import Event
+
 from models.local_provider_event import LocalProviderEvent, LocalProviderEventType
 from models.pc_object import PcObject
 from models.provider import Provider
-from models.thing import Thing
-from models.stock import Stock
 from utils.date import read_json_date
 from utils.human_ids import humanize
 from utils.inflect_engine import inflect_engine
-from utils.logger import logger
 
 CHUNK_MAX_SIZE = 1000
 
@@ -175,8 +172,7 @@ class LocalProvider(Iterator):
         try:
             self.updateObject(obj)
             # FIXME: keep this until we make type an ENUM again
-            if isinstance(obj, Thing) \
-                    or isinstance(obj, Event):
+            if isinstance(obj, Product):
                 type_elems = str(obj.type).split('.')
                 if len(type_elems) == 2:
                     obj.type = type_elems[1]

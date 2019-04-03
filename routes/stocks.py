@@ -3,13 +3,11 @@ from flask import current_app as app, jsonify, request
 from flask_login import current_user
 
 from domain.discard_pc_objects import cancel_bookings
-from domain.keywords import LANGUAGE
 from domain.user_emails import send_batch_cancellation_emails_to_users, send_batch_cancellation_email_to_offerer
-from models.event import Event
 from models.mediation import Mediation
 from models.pc_object import PcObject
 from models.stock import Stock
-from models.thing import Thing
+
 from models.user_offerer import RightsType
 from models.venue import Venue
 from repository import booking_queries, offerer_queries

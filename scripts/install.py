@@ -12,7 +12,7 @@ def install_scripts():
     from models.needs_validation_mixin import NeedsValidationMixin
     from models.providable_mixin import ProvidableMixin
     from models.booking import Booking
-    from models.event import Event
+
     from models.mediation import Mediation
     from models.stock import Stock
     from models.offerer import Offerer
@@ -22,7 +22,7 @@ def install_scripts():
     from models.offer import Offer
     from models.provider import Provider
     from models.recommendation import Recommendation
-    from models.thing import Thing
+
     from models.user_offerer import UserOfferer
     from models.user import User
     from models.venue import Venue

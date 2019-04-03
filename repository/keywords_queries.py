@@ -1,8 +1,8 @@
 import json
 
-from models.event import Event
+
 from models.offerer import Offerer
-from models.thing import Thing
+
 from models.venue import Venue
 from repository.offer_queries import get_is_offer_selected_by_keywords_string_at_column
 

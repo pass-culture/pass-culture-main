@@ -1,8 +1,8 @@
 from models import BankInformation, Stock
-from models.event import Event
+
 from models.offer import Offer
 from models.offerer import Offerer
-from models.thing import Thing
+
 from models.user import User
 from models.venue import Venue
 from repository.user_queries import filter_users_with_at_least_one_validated_offerer_validated_user_offerer

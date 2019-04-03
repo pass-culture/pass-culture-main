@@ -4,8 +4,7 @@ from connectors.ftp_titelive import get_files_to_process_from_titelive_ftp, get_
 from domain.titelive import get_date_from_filename, read_things_date
 from models.local_provider import LocalProvider, ProvidableInfo
 from models.local_provider_event import LocalProviderEventType
-from models.thing import Thing, BookFormat
-from models import ThingType, VenueProvider
+from models import ThingType, VenueProvider, BookFormat
 from repository import local_provider_event_queries
 from utils.logger import logger
 from utils.string_processing import trim_with_elipsis

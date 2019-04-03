@@ -9,7 +9,7 @@ from local_providers.titelive_things import get_thing_type_and_extra_data_from_t
     get_extraData_from_infos
 from models.local_provider import LocalProvider, ProvidableInfo
 from models.local_provider_event import LocalProviderEventType, LocalProviderEvent
-from models.thing import Thing
+
 from utils.logger import logger
 from utils.string_processing import trim_with_elipsis
 

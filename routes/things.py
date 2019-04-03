@@ -2,7 +2,7 @@
 import simplejson as json
 from flask import current_app as app
 
-from models.thing import Thing
+
 from utils.rest import login_or_api_key_required, \
     handle_rest_get_list
 
