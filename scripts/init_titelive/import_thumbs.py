@@ -3,26 +3,25 @@ from models import Thing, PcObject
 
 
 def import_init_titelive_thumbs(connexion, container_name, titelive_thumb_identifier):
-    images_in_object_storage = get_titelive_thumb_names_group_by_id_at_providers(connexion,
-                                                                                 container_name,
-                                                                                 titelive_thumb_identifier)
+    image_names_in_object_storage = get_titelive_thumb_names_group_by_id_at_providers(connexion,
+                                                                                      container_name,
+                                                                                      titelive_thumb_identifier)
 
     existing_things_from_providers = Thing.query \
         .filter(Thing.idAtProviders != None) \
         .all()
 
     for thing in existing_things_from_providers:
-        if thing.idAtProviders in images_in_object_storage:
-            for existing_image_name in images_in_object_storage[thing.idAtProviders]:
-                image = connexion.get_object(container_name,
-                                             existing_image_name)
-                new_image_name = thing.thumb_storage_id(thing.thumbCount)
+        if thing.idAtProviders in image_names_in_object_storage:
+            for existing_image_name in image_names_in_object_storage[thing.idAtProviders]:
+                image = connexion.get_object(container_name, existing_image_name)[1]
+                new_image_name = thing.get_thumb_storage_id(thing.thumbCount)
                 thing.thumbCount += 1
                 if thing.thumbCount == 1:
-                    thing.firstThumbDominantColor = compute_dominant_color(image[1])
+                    thing.firstThumbDominantColor = compute_dominant_color(image)
                 connexion.put_object(container_name,
                                      'thumbs/' + new_image_name,
-                                     contents=image[1],
+                                     contents=image,
                                      content_type='image/jpeg')
                 connexion.delete_object(container_name,
                                         existing_image_name)
@@ -32,11 +31,12 @@ def import_init_titelive_thumbs(connexion, container_name, titelive_thumb_identi
 
 def get_titelive_thumb_names_group_by_id_at_providers(connexion, container_name, titelive_thumb_identifier):
     images_in_object_storage = {}
-    for data in connexion.get_container(container_name)[1]:
-        if titelive_thumb_identifier in data['name']:
-            id_at_providers = data['name'].split('_')[0].split('/')[-1]
+    files_info_in_container = connexion.get_container(container_name)[1]
+    for file_data in files_info_in_container:
+        if titelive_thumb_identifier in file_data['name']:
+            id_at_providers = file_data['name'].split('_')[0].split('/')[-1]
             if id_at_providers in images_in_object_storage:
-                images_in_object_storage[id_at_providers].append(data['name'])
+                images_in_object_storage[id_at_providers].append(file_data['name'])
             else:
-                images_in_object_storage[id_at_providers] = [data['name']]
+                images_in_object_storage[id_at_providers] = [file_data['name']]
     return images_in_object_storage

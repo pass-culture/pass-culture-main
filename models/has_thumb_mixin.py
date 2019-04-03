@@ -22,15 +22,16 @@ class HasThumbMixin(object):
                                      nullable=True)
 
     def delete_thumb(self, index):
-        delete_public_object("thumbs", self.thumb_storage_id(index))
+        delete_public_object("thumbs", self.get_thumb_storage_id(index))
 
     def thumb_date(self, index):
-        return get_public_object_date("thumbs", self.thumb_storage_id(index))
+        return get_public_object_date("thumbs", self.get_thumb_storage_id(index))
 
-    def thumb_storage_id(self, index):
+    def get_thumb_storage_id(self, index):
         if self.id is None:
             raise ValueError("Trying to get thumb_storage_id for an unsaved object")
-        return inflect_engine.plural(self.__class__.__name__.lower()) + "/" \
+        return inflect_engine.plural(self.__class__.__name__.lower())\
+               + "/" \
                + humanize(self.id) \
                + (('_' + str(index)) if index > 0 else '')
 
@@ -61,7 +62,7 @@ class HasThumbMixin(object):
 
         store_public_object(
             'thumbs',
-            self.thumb_storage_id(image_index),
+            self.get_thumb_storage_id(image_index),
             new_thumb,
             'image/' + (image_type or 'jpeg'),
             symlink_path=symlink_path
