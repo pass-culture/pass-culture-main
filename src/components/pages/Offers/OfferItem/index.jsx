@@ -35,9 +35,9 @@ function mapStateToProps(state, ownProps) {
       eventId,
       thingId
     ),
+    offerer,
     offerTypeLabel: getOfferTypeLabel(event, thing),
     venue,
-    offerrer: offerer,
   }
 }
 

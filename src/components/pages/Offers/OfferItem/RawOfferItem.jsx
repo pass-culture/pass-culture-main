@@ -35,36 +35,34 @@ class RawOfferItem extends Component {
     if (remainingStock === 0) {
       return '0 places'
     }
-
-    const label = 'encore ' + remainingStock
-    return remainingStock > 1 ? label + ' places' : label + ' place'
+    return `encore ${pluralize(remainingStock, 'place')}`
   }
 
   buildThingLabel = remainingStock => {
-    return remainingStock + ' en stock'
+    return `${remainingStock} en stock`
   }
 
   buildNumberOfParticipantsLabel = (groupSizeMin, groupSizeMax) => {
     return groupSizeMin === groupSizeMax
-      ? groupSizeMin
-      : groupSizeMin - groupSizeMax
+      ? `${groupSizeMin}`
+      : `${groupSizeMin} - ${groupSizeMax}`
   }
 
   buildNumberOfParticipantsTitle = (groupSizeMin, groupSizeMax) => {
     const groupLabel =
       groupSizeMin === groupSizeMax
-        ? 'minimum ' + pluralize(groupSizeMin, 'personnes')
-        : 'entre ' + groupSizeMin + ' et ' + groupSizeMax + ' personnes'
+        ? `minimum ${pluralize(groupSizeMin, 'personnes')}`
+        : `entre ${groupSizeMin} et ${groupSizeMax} personnes`
 
-    return groupSizeMin > 0 ? groupLabel : undefined
+    return groupSizeMin > 0 ? groupLabel : null
   }
 
   buildEventNavLinkLabel = stockSize => {
-    return pluralize(stockSize, 'dates')
+    return pluralize(stockSize, 'date')
   }
 
   buildThingNavLinkLabel = stockSize => {
-    return stockSize + ' prix'
+    return `${stockSize} prix`
   }
 
   render() {
@@ -79,7 +77,7 @@ class RawOfferItem extends Component {
       thing,
       thumbUrl,
       offerTypeLabel,
-      offerrer,
+      offerer,
       venue,
     } = this.props
 
@@ -110,19 +108,15 @@ class RawOfferItem extends Component {
             <li className="is-uppercase">{offerTypeLabel}</li>
             <li>
               <span className="label">Structure : </span>
-              {offerrer && offerrer.name}
+              {offerer && offerer.name}
             </li>
             <li>
-              <span className="label">Lieu :</span> {venue && venue.name}
+              <span className="label">Lieu : </span>
+              {venue && venue.name}
             </li>
           </ul>
           <ul className="infos">
             {isNew && (
-              <li>
-                <div className="recently-added" />
-              </li>
-            )}
-            {false && moment(createdAt).isAfter(moment().add(-1, 'days')) && (
               <li>
                 <div className="recently-added" />
               </li>
@@ -132,14 +126,6 @@ class RawOfferItem extends Component {
                 groupSizeMin,
                 groupSizeMax
               )}>
-              {
-                // DISABLE GROUP SIZE AMBIGUITY FOR THE MOMENT
-                /*groupSizeMin === 0 && (
-                <div>
-                  <Icon svg="picto-user" /> {'ou '} <Icon svg="picto-group" />
-                </div>
-                )*/
-              }
               {groupSizeMin === 1 && <Icon svg="picto-user" />}
               {groupSizeMin > 1 && (
                 <div>

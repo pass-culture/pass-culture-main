@@ -86,16 +86,15 @@ ShallowWrapper {
                               <span
                                         className="label"
                               >
-                                        Lieu :
+                                        Lieu : 
                               </span>
-                               
                     </li>
           </ul>
           <ul
                     className="infos"
           >
                     <li
-                              title={undefined}
+                              title={null}
                     >
                               
                     </li>
@@ -220,16 +219,15 @@ ShallowWrapper {
                             <span
                                           className="label"
                             >
-                                          Lieu :
+                                          Lieu : 
                             </span>
-                             
               </li>
 </ul>,
             <ul
               className="infos"
 >
               <li
-                            title={undefined}
+                            title={null}
               >
                             
               </li>
@@ -359,9 +357,8 @@ ShallowWrapper {
                   <span
                                     className="label"
                   >
-                                    Lieu :
+                                    Lieu : 
                   </span>
-                   
 </li>,
               ],
               "className": "infos",
@@ -421,9 +418,8 @@ ShallowWrapper {
                     <span
                       className="label"
 >
-                      Lieu :
+                      Lieu : 
 </span>,
-                    " ",
                     undefined,
                   ],
                 },
@@ -434,14 +430,13 @@ ShallowWrapper {
                     "key": undefined,
                     "nodeType": "host",
                     "props": Object {
-                      "children": "Lieu :",
+                      "children": "Lieu : ",
                       "className": "label",
                     },
                     "ref": null,
-                    "rendered": "Lieu :",
+                    "rendered": "Lieu : ",
                     "type": "span",
                   },
-                  " ",
                   undefined,
                 ],
                 "type": "li",
@@ -456,9 +451,8 @@ ShallowWrapper {
             "props": Object {
               "children": Array [
                 undefined,
-                false,
                 <li
-                  title={undefined}
+                  title={null}
 >
                   
 </li>,
@@ -488,7 +482,6 @@ ShallowWrapper {
             "ref": null,
             "rendered": Array [
               undefined,
-              false,
               Object {
                 "instance": null,
                 "key": undefined,
@@ -498,7 +491,7 @@ ShallowWrapper {
                     false,
                     false,
                   ],
-                  "title": undefined,
+                  "title": null,
                 },
                 "ref": null,
                 "rendered": Array [
@@ -898,16 +891,15 @@ ShallowWrapper {
                                     <span
                                                 className="label"
                                     >
-                                                Lieu :
+                                                Lieu : 
                                     </span>
-                                     
                         </li>
             </ul>
             <ul
                         className="infos"
             >
                         <li
-                                    title={undefined}
+                                    title={null}
                         >
                                     
                         </li>
@@ -1032,16 +1024,15 @@ ShallowWrapper {
                                 <span
                                                 className="label"
                                 >
-                                                Lieu :
+                                                Lieu : 
                                 </span>
-                                 
                 </li>
 </ul>,
               <ul
                 className="infos"
 >
                 <li
-                                title={undefined}
+                                title={null}
                 >
                                 
                 </li>
@@ -1171,9 +1162,8 @@ ShallowWrapper {
                     <span
                                         className="label"
                     >
-                                        Lieu :
+                                        Lieu : 
                     </span>
-                     
 </li>,
                 ],
                 "className": "infos",
@@ -1233,9 +1223,8 @@ ShallowWrapper {
                       <span
                         className="label"
 >
-                        Lieu :
+                        Lieu : 
 </span>,
-                      " ",
                       undefined,
                     ],
                   },
@@ -1246,14 +1235,13 @@ ShallowWrapper {
                       "key": undefined,
                       "nodeType": "host",
                       "props": Object {
-                        "children": "Lieu :",
+                        "children": "Lieu : ",
                         "className": "label",
                       },
                       "ref": null,
-                      "rendered": "Lieu :",
+                      "rendered": "Lieu : ",
                       "type": "span",
                     },
-                    " ",
                     undefined,
                   ],
                   "type": "li",
@@ -1268,9 +1256,8 @@ ShallowWrapper {
               "props": Object {
                 "children": Array [
                   undefined,
-                  false,
                   <li
-                    title={undefined}
+                    title={null}
 >
                     
 </li>,
@@ -1300,7 +1287,6 @@ ShallowWrapper {
               "ref": null,
               "rendered": Array [
                 undefined,
-                false,
                 Object {
                   "instance": null,
                   "key": undefined,
@@ -1310,7 +1296,7 @@ ShallowWrapper {
                       false,
                       false,
                     ],
-                    "title": undefined,
+                    "title": null,
                   },
                   "ref": null,
                   "rendered": Array [

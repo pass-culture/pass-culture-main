@@ -111,7 +111,7 @@ describe('src | components | pages | Offers | RawOfferItem', () => {
     it('should display informations of the type of offer, the offerer and the venue', () => {
       // given
       props.offerTypeLabel = 'a thing'
-      props.offerrer = {
+      props.offerer = {
         name: 'UGC',
       }
       props.venue = {
@@ -128,14 +128,14 @@ describe('src | components | pages | Offers | RawOfferItem', () => {
 
       expect(infosSubItems.at(0).prop('className')).toBe('is-uppercase')
       expect(infosSubItems.at(0).text()).toBe('a thing')
-      expect(infosSubItems.at(1).text()).toBe('Structure : UGC')
-      expect(infosSubItems.at(2).text()).toBe('Lieu : Paris')
+      expect(infosSubItems.at(1).text()).toEqual('Structure : UGC')
+      expect(infosSubItems.at(2).text()).toEqual('Lieu : Paris')
     })
 
     it('should display informations of the type of offer, the offerer and the venue', () => {
       // given
       props.offerTypeLabel = 'a thing'
-      props.offerrer = {
+      props.offerer = {
         name: 'UGC',
       }
       props.venue = {
@@ -204,6 +204,9 @@ describe('src | components | pages | Offers | RawOfferItem', () => {
       const userPictoComponent = offerInfosSubElements.at(0).find(Icon)
       expect(userPictoComponent).toBeDefined()
       expect(userPictoComponent.prop('svg')).toBe('picto-group')
+
+      const numberOfParticipantsLabel = offerInfosSubElements.at(0).find('p')
+      expect(numberOfParticipantsLabel.text()).toBe('2 - 5')
     })
 
     describe('when offer is an event', () => {
