@@ -1,7 +1,7 @@
 """add thing and event information into offer table plus copy information
 
 Revision ID: 5eeaa2f48327
-Revises: ec8d3f04eba3
+Revises: 989e483edf93
 Create Date: 2019-03-15 10:41:55.958475
 
 """
@@ -10,7 +10,7 @@ from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = '5eeaa2f48327'
-down_revision = 'ec8d3f04eba3'
+down_revision = '989e483edf93'
 branch_labels = None
 depends_on = None
 
