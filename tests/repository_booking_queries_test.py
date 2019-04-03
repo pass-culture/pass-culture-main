@@ -7,7 +7,7 @@ from models.api_errors import ResourceNotFound, ApiErrors
 from repository.booking_queries import find_all_ongoing_bookings_by_stock, \
     find_offerer_bookings, find_all_bookings_for_stock, \
     find_final_offerer_bookings, find_date_used, find_user_activation_booking, get_existing_tokens, \
-    find_active_bookings_by_user_id, find_by, save_booking
+    find_active_bookings_by_user_id, find_by
 from tests.conftest import clean_database
 from tests.test_utils import create_booking, \
     create_deposit, \
@@ -504,7 +504,7 @@ class SaveBookingTest:
         PcObject.check_and_save(cancelled_booking)
 
         # When
-        save_booking(booking)
+        PcObject.check_and_save(booking)
 
         # Then
         assert Booking.query.filter_by(isCancelled=False).count() == 1
@@ -525,7 +525,7 @@ class SaveBookingTest:
 
         # When
         with pytest.raises(ApiErrors) as e:
-            save_booking(booking2)
+            PcObject.check_and_save(booking2)
 
         # Then
         assert e.value.errors['global'] == ['la quantité disponible pour cette offre est atteinte']

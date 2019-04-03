@@ -3,7 +3,6 @@ from typing import Set
 
 from postgresql_audit.flask import versioning_manager
 from sqlalchemy import and_, text, func
-from sqlalchemy.exc import InternalError
 from sqlalchemy.orm import aliased
 
 from domain.keywords import create_filter_matching_all_keywords_in_any_model, \
@@ -122,20 +121,6 @@ def find_by(token: str, email: str = None, offer_id: int = None) -> Booking:
         raise errors
 
     return booking
-
-
-def save_booking(booking):
-    try:
-        PcObject.check_and_save(booking)
-    except InternalError as internal_error:
-        api_errors = ApiErrors()
-
-        if 'tooManyBookings' in str(internal_error.orig):
-            api_errors.addError('global', 'la quantité disponible pour cette offre est atteinte')
-        elif 'insufficientFunds' in str(internal_error.orig):
-            api_errors.addError('insufficientFunds',
-                                "Le solde de votre pass n'est pas suffisant pour effectuer cette réservation.")
-        raise api_errors
 
 
 def find_by_id(booking_id):

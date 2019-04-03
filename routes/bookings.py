@@ -88,7 +88,7 @@ def create_booking():
 
     expenses = get_expenses(bookings)
     check_expenses_limits(expenses, new_booking)
-    booking_queries.save_booking(new_booking)
+    PcObject.check_and_save(new_booking)
 
     try:
         send_booking_recap_emails(new_booking, send_raw_email)

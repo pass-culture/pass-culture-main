@@ -3,16 +3,18 @@ from flask import current_app as app, jsonify, request
 from flask_login import current_user
 
 from domain.discard_pc_objects import cancel_bookings
+from domain.keywords import LANGUAGE
 from domain.user_emails import send_batch_cancellation_emails_to_users, send_batch_cancellation_email_to_offerer
 from models.event import Event
-from models.offer import Offer
+from models.mediation import Mediation
 from models.pc_object import PcObject
 from models.stock import Stock
 from models.thing import Thing
 from models.user_offerer import RightsType
 from models.venue import Venue
-from repository import booking_queries, offerer_queries, stock_queries
+from repository import booking_queries, offerer_queries
 from repository.offer_queries import find_offer_by_id
+from repository.stock_queries import find_stocks_with_possible_filters
 from utils.human_ids import dehumanize
 from utils.mailing import MailServiceException, send_raw_email
 from utils.rest import ensure_current_user_has_rights, \
@@ -20,7 +22,6 @@ from utils.rest import ensure_current_user_has_rights, \
     handle_rest_get_list, \
     load_or_404, \
     login_or_api_key_required
-from domain.keywords import LANGUAGE
 from validation.stocks import check_request_has_offer_id, check_dates_are_allowed_on_new_stock, check_dates_are_allowed_on_existing_stock
 
 search_models = [
@@ -36,7 +37,7 @@ search_models = [
 def list_stocks():
     filters = request.args.copy()
     return handle_rest_get_list(Stock,
-                                query=stock_queries.find_stocks_with_possible_filters(filters, current_user),
+                                query=find_stocks_with_possible_filters(filters, current_user),
                                 paginate=50)
 
 
@@ -47,7 +48,11 @@ def list_stocks():
 @login_or_api_key_required
 def get_stock(stock_id, mediation_id):
     filters = request.args.copy()
-    query = stock_queries.find_stocks_with_possible_filters(filters, current_user).filter_by(id=dehumanize(stock_id))
+    query = find_stocks_with_possible_filters(filters, current_user).filter_by(id=dehumanize(stock_id))
+
+    if mediation_id is not None:
+        mediation = load_or_404(Mediation, mediation_id)
+
     if stock_id == '0':
         stock = {'id': '0',
                  'thing': {'id': '0',
@@ -71,7 +76,7 @@ def create_stock():
     ensure_current_user_has_rights(RightsType.editor, offerer.id)
 
     new_stock = Stock(from_dict=request_data)
-    stock_queries.save_stock(new_stock)
+    PcObject.check_and_save(new_stock)
     return jsonify(new_stock._asdict()), 201
 
 
@@ -88,7 +93,7 @@ def edit_stock(stock_id):
     offerer_id = stock.resolvedOffer.venue.managingOffererId
     ensure_current_user_has_rights(RightsType.editor, offerer_id)
     stock.populateFromDict(request_data)
-    stock_queries.save_stock(stock)
+    PcObject.check_and_save(stock)
     return jsonify(stock._asdict()), 200
 
 

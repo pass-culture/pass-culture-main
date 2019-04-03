@@ -16,7 +16,7 @@ from sqlalchemy import CHAR, \
     Integer, \
     Numeric, \
     String, DateTime
-from sqlalchemy.exc import DataError, IntegrityError
+from sqlalchemy.exc import DataError, IntegrityError, InternalError
 from sqlalchemy.orm.collections import InstrumentedList
 
 from models.api_errors import ApiErrors, DecimalCastError, DateTimeCastError
@@ -236,6 +236,10 @@ class PcObject():
             return PcObject.restize_global_error(e)
 
     @staticmethod
+    def restize_internal_error(e):
+        return PcObject.restize_global_error(e)
+
+    @staticmethod
     def restize_type_error(e):
         if e.args and len(e.args) > 1 and e.args[1] == 'geography':
             return [e.args[2], 'doit etre une liste de nombre décimaux comme par exemple : [2.22, 3.22]']
@@ -328,6 +332,10 @@ class PcObject():
             raise api_errors
         except IntegrityError as ie:
             api_errors.addError(*PcObject.restize_integrity_error(ie))
+            raise api_errors
+        except InternalError as ie:
+            for obj in objects:
+                api_errors.addError(*obj.restize_internal_error(ie))
             raise api_errors
         except TypeError as te:
             api_errors.addError(*PcObject.restize_type_error(te))

@@ -1,5 +1,6 @@
 """ stock """
 from datetime import datetime, timedelta
+from pprint import pformat
 from sqlalchemy import BigInteger, \
                        CheckConstraint, \
                        Column, \
@@ -16,6 +17,7 @@ from models.db import Model
 from models.pc_object import PcObject
 from models.providable_mixin import ProvidableMixin
 from models.soft_deletable_mixin import SoftDeletableMixin
+from utils.logger import logger
 
 
 class Stock(PcObject,
@@ -74,7 +76,7 @@ class Stock(PcObject,
         api_errors = super(Stock, self).errors()
         if self.endDatetime \
            and self.beginningDatetime \
-           and self.endDatetime < self.beginningDatetime:
+           and self.endDatetime <= self.beginningDatetime:
             api_errors.addError('endDatetime', 'La date de fin de l\'événement doit être postérieure à la date de début')
         return api_errors
 
@@ -84,6 +86,20 @@ class Stock(PcObject,
 
     def queryNotSoftDeleted():
         return Stock.query.filter_by(isSoftDeleted=False)
+
+    @staticmethod
+    def restize_internal_error(ie):
+        if 'check_stock' in str(ie.orig):
+            if 'available_too_low' in str(ie.orig):
+                return ['available', 'la quantité pour cette offre'
+                                    + ' ne peut pas être inférieure'
+                                    + ' au nombre de réservations existantes.']
+            elif 'bookingLimitDatetime_too_late' in str(ie.orig):
+                return ['bookingLimitDatetime',
+                                    'La date limite de réservation pour cette offre est postérieure à la date de début de l\'évènement']
+            else:
+                logger.error("Unexpected error in patch stocks: " + pformat(ie))
+        return PcObject.restize_internal_error(ie)
 
 
 @event.listens_for(Stock, 'before_insert')
@@ -100,17 +116,17 @@ Stock.trig_ddl = """
     CREATE OR REPLACE FUNCTION check_stock()
     RETURNS TRIGGER AS $$
     BEGIN
-      IF 
-       NOT NEW.available IS NULL 
+      IF
+       NOT NEW.available IS NULL
        AND
         (
          (
-          SELECT SUM(booking.quantity) 
-          FROM booking 
+          SELECT SUM(booking.quantity)
+          FROM booking
           WHERE "stockId"=NEW.id
           AND NOT booking."isCancelled"
          ) > NEW.available
-        ) 
+        )
       THEN
        RAISE EXCEPTION 'available_too_low'
        USING HINT = 'stock.available cannot be lower than number of bookings';

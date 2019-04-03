@@ -117,5 +117,5 @@ def test_available_stocks_cannot_be_changed_when_exceeding_bookings_quantity_2(a
     stock.available = 1
 
     # When
-    with pytest.raises(InternalError):
+    with pytest.raises(ApiErrors):
         PcObject.check_and_save(stock)

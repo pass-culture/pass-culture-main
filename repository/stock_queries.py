@@ -1,8 +1,4 @@
 from datetime import datetime
-from pprint import pformat
-
-from sqlalchemy.exc import InternalError
-
 from models import Stock, Offerer, User, ApiErrors, PcObject, Offer, Thing, ThingType, Venue
 from utils.human_ids import dehumanize
 from utils.logger import logger
@@ -25,28 +21,6 @@ def find_stocks_with_possible_filters(filters, user):
 def set_booking_recap_sent_and_save(stock):
     stock.bookingRecapSent = datetime.utcnow()
     PcObject.check_and_save(stock)
-
-
-def save_stock(stock):
-    try:
-        PcObject.check_and_save(stock)
-    except InternalError as ie:
-        if 'check_stock' in str(ie.orig):
-            api_errors = ApiErrors()
-
-            if 'available_too_low' in str(ie.orig):
-                api_errors.addError('available', 'la quantité pour cette offre'
-                                    + ' ne peut pas être inférieure'
-                                    + ' au nombre de réservations existantes.')
-            elif 'bookingLimitDatetime_too_late' in str(ie.orig):
-                api_errors.addError('bookingLimitDatetime',
-                                    'La date limite de réservation pour cette offre est postérieure à la date de début de l\'évènement')
-            else:
-                logger.error("Unexpected error in patch stocks: " + pformat(ie))
-
-            raise api_errors
-        else:
-            raise ie
 
 
 def find_stocks_of_finished_events_when_no_recap_sent():

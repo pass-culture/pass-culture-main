@@ -101,6 +101,15 @@ class Booking(PcObject,
         else:
             return False
 
+    @staticmethod
+    def restize_internal_error(ie):
+        if 'tooManyBookings' in str(ie.orig):
+            return ['global', 'la quantité disponible pour cette offre est atteinte']
+        elif 'insufficientFunds' in str(ie.orig):
+            return ['insufficientFunds',
+                                "Le solde de votre pass n'est pas suffisant pour effectuer cette réservation."]
+        return PcObject.restize_integrity_error(ie)
+
 
 class ActivationUser:
     CSV_HEADER = [
