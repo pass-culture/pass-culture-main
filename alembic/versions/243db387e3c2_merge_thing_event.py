@@ -21,6 +21,7 @@ def upgrade():
     op.alter_column('event', 'durationMinutes', existing_type=sa.Integer, nullable=True)
     op.drop_column('event', 'accessibility')
     op.add_column('event', sa.Column('thingId', sa.BigInteger, nullable=True))
+    op.drop_constraint('check_duration_minutes_not_null_for_event', 'offer')
     op.drop_constraint('check_offer_has_thing_xor_event', 'offer')
 
     op.execute("""
@@ -47,9 +48,9 @@ def upgrade():
     op.drop_table('thing')
 
     op.execute("""
+    ALTER TABLE "event" RENAME CONSTRAINT "event_pkey" TO "product_pkey";
     ALTER TABLE "event" RENAME TO "product";
     ALTER SEQUENCE "event_id_seq" RENAME TO "product_id_seq";
-    ALTER TABLE "event" RENAME CONSTRAINT "event_pkey" TO "product_pkey";
     ALTER TABLE "offer" RENAME CONSTRAINT "offer_eventId_fkey" TO "offer_productId_fkey";
     ALTER INDEX "ix_offer_eventId" RENAME TO "ix_offer_productId";
     """)
