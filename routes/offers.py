@@ -100,7 +100,7 @@ def post_offer():
     ), 201
 
 
-@app.route('/offer/<id>', methods=['PATCH'])
+@app.route('/offers/<id>', methods=['PATCH'])
 @login_or_api_key_required
 @expect_json_data
 def patch_offer(id):

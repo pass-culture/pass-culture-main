@@ -30,7 +30,7 @@ class Patch:
 
             # When
             response = TestClient().with_auth(user.email).patch(
-                f'{API_URL}/offer/{humanize(offer.id)}',
+                f'{API_URL}/offers/{humanize(offer.id)}',
                 json=json)
 
             # Then
@@ -57,7 +57,7 @@ class Patch:
 
             # When
             response = TestClient().with_auth(user.email).patch(
-                f'{API_URL}/offer/{humanize(offer.id)}',
+                f'{API_URL}/offers/{humanize(offer.id)}',
                 json=json)
 
             # Then
@@ -86,7 +86,7 @@ class Patch:
 
             # When
             response = TestClient().with_auth(user.email).patch(
-                f'{API_URL}/offer/{humanize(offer.id)}',
+                f'{API_URL}/offers/{humanize(offer.id)}',
                 json=json)
 
             # Then
@@ -118,7 +118,7 @@ class Patch:
 
             # When
             response = TestClient().with_auth(user.email).patch(
-                f'{API_URL}/offer/{humanize(offer.id)}',
+                f'{API_URL}/offers/{humanize(offer.id)}',
                 json=json)
 
             # Then
@@ -149,7 +149,7 @@ class Patch:
 
             # When
             response = TestClient().with_auth(user.email).patch(
-                f'{API_URL}/offer/{humanize(offer.id)}',
+                f'{API_URL}/offers/{humanize(offer.id)}',
                 json=json)
 
             # Then
@@ -192,7 +192,7 @@ class Patch:
 
             # When
             response = TestClient().with_auth(user.email).patch(
-                f'{API_URL}/offer/{humanize(offer.id)}',
+                f'{API_URL}/offers/{humanize(offer.id)}',
                 json=json)
 
             # Then
@@ -220,7 +220,7 @@ class Patch:
 
             # When
             response = TestClient().with_auth(user.email).patch(
-                f'{API_URL}/offer/{humanize(offer.id)}',
+                f'{API_URL}/offers/{humanize(offer.id)}',
                 json=json)
 
             # Then
@@ -236,7 +236,7 @@ class Patch:
                 auth_request = TestClient().with_auth(email=user.email)
 
                 # when
-                response = auth_request.patch(API_URL + '/offer/ADFGA', json={})
+                response = auth_request.patch(API_URL + '/offers/ADFGA', json={})
 
                 # then
                 assert response.status_code == 404
