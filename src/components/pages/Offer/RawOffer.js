@@ -74,16 +74,15 @@ class RawOffer extends Component {
       offer,
       selectedOfferType,
     } = nextProps
-    const { eventId, thingId } = offer || {}
+
+    const { eventId } = offer || {}
 
     const isEdit = search.indexOf('modifie') > -1
     const isNew = offerId === 'nouveau'
     const isEventType = get(selectedOfferType, 'type') === 'Event' || eventId
     const isReadOnly = !isNew && !isEdit
 
-    const apiPath = isEventType
-      ? `events/${eventId || ''}`
-      : `things/${thingId || ''}`
+    const apiPath = isNew ? 'offers/' : `offers/${offerId}`
 
     return {
       apiPath,

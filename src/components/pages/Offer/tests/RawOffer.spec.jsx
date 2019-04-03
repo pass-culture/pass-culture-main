@@ -1,12 +1,9 @@
 import React from 'react'
 import { shallow } from 'enzyme'
-import configureStore from 'redux-mock-store'
 
 import RawOffer from '../RawOffer'
 import MediationsManager from '../MediationsManager/index'
-import { requestData } from 'redux-saga-data'
-
-import { offerNormalizer } from 'utils/normalizers'
+import { Form } from 'pass-culture-shared'
 
 const dispatchMock = jest.fn()
 
@@ -41,6 +38,7 @@ describe('src | components | pages | Offer | RawOffer ', () => {
       expect(wrapper).toMatchSnapshot()
     })
   })
+
   describe('render', () => {
     describe('MediationsManager', () => {
       it("should be displayed when it's not a new offer", () => {
@@ -84,170 +82,133 @@ describe('src | components | pages | Offer | RawOffer ', () => {
         expect(mediationsManagerComponent).toHaveLength(1)
       })
     })
-  })
 
-  describe('functions', () => {
-    describe('handleDataRequest', () => {
-      describe('When OfferId is not nouveau and venue is given', () => {
-        it('should first dispatch requestData when Main component is rendered', () => {
-          // given
-          const initialProps = {
-            location: {
-              search: '?lieu=AQ',
+    describe('when creating a new offer', () => {
+      it('should create a new Thing when no offer type', () => {
+        // given
+        const initialProps = {
+          location: {
+            search: '?lieu=AQ',
+          },
+          match: {
+            params: {
+              offerId: 'nouveau',
             },
-            match: {
-              params: {
-                offerId: 'N9',
-              },
-            },
-            currentUser: {
-              isAdmin: false,
-            },
-            history: {
-              action: 'POP',
-              location: {
-                pathname: '/offres/N9',
-                search: '?lieu=AQ',
-                hash: '',
-                state: undefined,
-                key: 'c5cg3o',
-              },
-            },
-            query: {
-              parse: () => ({ lieu: 'AQ' }),
-            },
-            dispatch: dispatchMock,
-            offerers: [],
-            venues: [],
-            providers: [],
-            types: [],
-          }
+          },
+          currentUser: {
+            isAdmin: false,
+          },
+          query: {
+            parse: () => ({ lieu: 'AQ' }),
+          },
+          dispatch: dispatchMock,
+          venues: [],
+        }
 
-          // when
-          const wrapper = shallow(<RawOffer {...initialProps} />)
+        // when
+        const wrapper = shallow(<RawOffer {...initialProps} />)
 
-          const handleSuccess = jest.fn(() => {})
-
-          console.log('GET STATE in test', wrapper.state())
-          console.log('props in test', wrapper.props())
-
-          wrapper.props().handleDataRequest(handleSuccess)
-          const expectedRequestedGetTypes = {
-            keepComponentMounted: undefined,
-            type: 'CLOSE_MODAL',
-          }
-
-          const toto3 = {
-            config: {
-              apiPath: '/offers/N9',
-              method: 'GET',
-              normalizer: offerNormalizer,
-              stateKey: 'offers',
-            },
-            type: 'REQUEST_DATA_GET_OFFERS',
-          }
-
-          const toto4 = {
-            config: {
-              apiPath: '/offerers',
-              method: 'GET',
-              normalizer: {
-                managedVenues: 'venues',
-              },
-            },
-            type: 'REQUEST_DATA_GET_/OFFERERS',
-          }
-
-          const toto5 = {
-            config: {
-              apiPath: '/providers',
-              method: 'GET',
-            },
-            type: 'REQUEST_DATA_GET_/PROVIDERS',
-          }
-
-          const toto6 = {
-            config: {
-              apiPath: '/types',
-              method: 'GET',
-            },
-            type: 'REQUEST_DATA_GET_/TYPES',
-          }
-
-          // then
-          expect(dispatchMock).toHaveBeenCalled()
-          expect(dispatchMock.mock.calls.length).toEqual(7)
-          expect(dispatchMock.mock.calls[0][0]).toEqual(
-            expectedRequestedGetTypes
-          )
-          expect(dispatchMock.mock.calls[1][0]).toEqual(
-            expectedRequestedGetTypes
-          )
-          expect(dispatchMock.mock.calls[2][0]).toEqual(
-            expectedRequestedGetTypes
-          )
-          expect(dispatchMock.mock.calls[3][0]).toEqual(toto3)
-          expect(dispatchMock.mock.calls[4][0]).toEqual(toto4)
-          expect(dispatchMock.mock.calls[5][0]).toEqual(toto5)
-          expect(dispatchMock.mock.calls[6][0]).toEqual(toto6)
-        })
+        // then
+        expect(wrapper.find(Form).prop('action')).toEqual('offers/')
       })
-      describe.skip('When venueId', () => {
-        it('????', () => {
-          // query parse {lieu: "DY"}
-          // RawOffer.js:118  QQQQQQQQQQQ       Venue Id  DY
-          // RawOffer.js:119  QQQQQQQQQQQ       OffererID undefined
-          // je créé un lieu et je peux ajouter une offre http://localhost:3001/offres/nouveau?lieu=DY
-        })
-      })
-      describe.skip('When OfferId is nouveau', () => {
-        // /offres/nouveau?structure=BU
 
-        // venueId est undefined  // offererId = BU
-
-        it('should  ', () => {
-          // given
-          const initialProps = {
-            location: {
-              search: '?structure=BU',
+      it('should create a new Event when event type given', () => {
+        // given
+        const initialProps = {
+          location: {
+            search: '?lieu=AQ',
+          },
+          match: {
+            params: {
+              offerId: 'nouveau',
             },
-          }
+          },
+          currentUser: {
+            isAdmin: false,
+          },
+          query: {
+            parse: () => ({ lieu: 'AQ' }),
+          },
+          dispatch: dispatchMock,
+          venues: [],
 
-          // when
+          selectedOfferType: {
+            type: 'Event',
+          },
+        }
 
-          // then
-        })
+        // when
+        const wrapper = shallow(<RawOffer {...initialProps} />)
+
+        // then
+        expect(wrapper.find(Form).prop('action')).toEqual('offers/')
       })
-      describe('When no venue at all and new offer', () => {
-        it('should display modal', () => {
-          // query parse {}
-          // RawOffer.js:118  QQQQQQQQQQQ       Venue Id  undefined
-          // RawOffer.js:119  QQQQQQQQQQQ       OffererID undefined
-        })
+    })
+
+    describe('when updating the offer', () => {
+      it('should update a thing when no offer type', () => {
+        // given
+        const initialProps = {
+          location: {
+            search: '?lieu=AQ',
+          },
+          match: {
+            params: {
+              offerId: 'VAG',
+            },
+          },
+          currentUser: {
+            isAdmin: false,
+          },
+          query: {
+            parse: () => ({ lieu: 'AQ' }),
+          },
+          dispatch: dispatchMock,
+          venues: [],
+          offer: {
+            thingId: 'V24',
+          },
+        }
+
+        // when
+        const wrapper = shallow(<RawOffer {...initialProps} />)
+
+        // then
+        expect(wrapper.find(Form).prop('action')).toEqual('offers/VAG')
       })
-      describe('When one venue and new offer', () => {
-        it('???', () => {
-          // url : http://localhost:3001/offres/nouveau
-          // Venue Id  undefined
-          // OffererID undefined
 
-          // given
+      it('should create a new Event when event type given', () => {
+        // given
+        const initialProps = {
+          location: {
+            search: '?lieu=AQ',
+          },
+          match: {
+            params: {
+              offerId: 'VAG',
+            },
+          },
+          currentUser: {
+            isAdmin: false,
+          },
+          query: {
+            parse: () => ({ lieu: 'AQ' }),
+          },
+          dispatch: dispatchMock,
+          venues: [],
+          selectedOfferType: {
+            type: 'Event',
+          },
+          offer: {
+            eventId: '6GD',
+          },
+        }
 
-          const initialProps = {
-            history: {},
-            dispatch: dispatchMock,
-            match: {
-              params: { offerId: 'nouveau' },
-            },
-            offerers: [],
-            venues: [],
-            providers: [],
-            query: {
-              parse: () => ({}),
-            },
-            types: [],
-          }
-        })
+        // when
+        const wrapper = shallow(<RawOffer {...initialProps} />)
+
+        // then
+        expect(wrapper.find(Form).prop('action')).toEqual('offers/VAG')
       })
     })
   })
