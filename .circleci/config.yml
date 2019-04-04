@@ -211,7 +211,7 @@ jobs: # a collection of steps
             export NVM_BIN=/usr/bin/nodejs
             export PATH=$NVM_BIN:$PATH
             cd ~/pass-culture-main/pro
-            yarn testcafe
+            yarn test:cafe
       - run:
           name: Notify PC Ops Bot
           when: on_fail
