@@ -17,22 +17,24 @@ const closeVersoButton = Selector('#deck-close-verso-button')
 const openVersoButton = Selector('#deck-open-verso-button')
 const alreadyBookedOfferButton = Selector('#verso-already-booked-button')
 
-fixture(`04 Verso`).beforeEach(async t => {
-  // given
-  const { user } = await fetchSandbox(
-    'webapp_04_verso',
-    'get_existing_webapp_hbs_user'
-  )
-  const { mediationId, offer } = await fetchSandbox(
-    'webapp_08_booking',
-    'get_non_free_thing_offer_with_active_mediation'
-  )
-  offerTitle = offer.thingName
-  offerSubTitle = offer.venueName
-  const offerURL = `${discoverURL}/${offer.id}/${mediationId}`
-  await t.useRole(createUserRole(user)).navigateTo(offerURL)
-  await dragButton.with({ visibilityCheck: true })()
-})
+fixture(`04_03 Verso l'user peut réserver l'offre payante`).beforeEach(
+  async t => {
+    // given
+    const { user } = await fetchSandbox(
+      'webapp_04_verso',
+      'get_existing_webapp_hbs_user'
+    )
+    const { mediationId, offer } = await fetchSandbox(
+      'webapp_08_booking',
+      'get_non_free_thing_offer_with_active_mediation'
+    )
+    offerTitle = offer.thingName
+    offerSubTitle = offer.venueName
+    const offerURL = `${discoverURL}/${offer.id}/${mediationId}`
+    await t.useRole(createUserRole(user)).navigateTo(offerURL)
+    await dragButton.with({ visibilityCheck: true })()
+  }
+)
 
 test(`L'user doit pouvoir cliquer sur les chevrons pour ouvrir le verso`, async t => {
   await t
@@ -63,7 +65,7 @@ test(`L'user peut réserver l'Offre`, async t => {
     .expect(bookOfferButton.exists)
     .ok()
     .expect(bookOfferButton.textContent)
-    .eql(`J'y vais!`)
+    .match(/([0-9]*\s€J'y vais!)/g)
 })
 
 test('Le titre et le nom du lieu sont affichés', async t => {
