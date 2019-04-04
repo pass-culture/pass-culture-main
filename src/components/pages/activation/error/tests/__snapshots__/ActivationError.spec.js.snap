@@ -11,27 +11,46 @@ initialize {
     "children": Array [
       Object {
         "attribs": Object {
-          "class": "fs20",
+          "class": "flex-center flex-row",
         },
         "children": Array [
           Object {
-            "data": "Il semblerait que le lien cliqué soit incorrect.",
+            "attribs": Object {
+              "class": "fs20",
+            },
+            "children": Array [
+              Object {
+                "data": "Il semblerait que le lien cliqué soit incorrect.",
+                "next": null,
+                "parent": [Circular],
+                "prev": null,
+                "type": "text",
+              },
+            ],
+            "name": "p",
+            "namespace": "http://www.w3.org/1999/xhtml",
             "next": null,
             "parent": [Circular],
             "prev": null,
-            "type": "text",
+            "type": "tag",
+            "x-attribsNamespace": Object {
+              "class": undefined,
+            },
+            "x-attribsPrefix": Object {
+              "class": undefined,
+            },
           },
         ],
-        "name": "h2",
+        "name": "div",
         "namespace": "http://www.w3.org/1999/xhtml",
         "next": Object {
           "attribs": Object {
-            "class": "fs20",
+            "class": "flex-center flex-row padded",
           },
           "children": Array [
             Object {
               "attribs": Object {
-                "class": "is-underline is-block is-white-text py12",
+                "class": "no-background border-all rd4 py12 px18 is-inline-block is-white-text text-center fs16",
                 "href": "mailto:obfuscated",
                 "id": "activation-error-contact-us",
               },
@@ -75,7 +94,7 @@ initialize {
               },
             },
           ],
-          "name": "p",
+          "name": "div",
           "namespace": "http://www.w3.org/1999/xhtml",
           "next": null,
           "parent": [Circular],
@@ -100,12 +119,12 @@ initialize {
       },
       Object {
         "attribs": Object {
-          "class": "fs20",
+          "class": "flex-center flex-row padded",
         },
         "children": Array [
           Object {
             "attribs": Object {
-              "class": "is-underline is-block is-white-text py12",
+              "class": "no-background border-all rd4 py12 px18 is-inline-block is-white-text text-center fs16",
               "href": "mailto:obfuscated",
               "id": "activation-error-contact-us",
             },
@@ -149,24 +168,43 @@ initialize {
             },
           },
         ],
-        "name": "p",
+        "name": "div",
         "namespace": "http://www.w3.org/1999/xhtml",
         "next": null,
         "parent": [Circular],
         "prev": Object {
           "attribs": Object {
-            "class": "fs20",
+            "class": "flex-center flex-row",
           },
           "children": Array [
             Object {
-              "data": "Il semblerait que le lien cliqué soit incorrect.",
+              "attribs": Object {
+                "class": "fs20",
+              },
+              "children": Array [
+                Object {
+                  "data": "Il semblerait que le lien cliqué soit incorrect.",
+                  "next": null,
+                  "parent": [Circular],
+                  "prev": null,
+                  "type": "text",
+                },
+              ],
+              "name": "p",
+              "namespace": "http://www.w3.org/1999/xhtml",
               "next": null,
               "parent": [Circular],
               "prev": null,
-              "type": "text",
+              "type": "tag",
+              "x-attribsNamespace": Object {
+                "class": undefined,
+              },
+              "x-attribsPrefix": Object {
+                "class": undefined,
+              },
             },
           ],
-          "name": "h2",
+          "name": "div",
           "namespace": "http://www.w3.org/1999/xhtml",
           "next": [Circular],
           "parent": [Circular],
