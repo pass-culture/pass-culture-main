@@ -1,86 +1,84 @@
 // jest --env=jsdom ./src/components/pages/tests/SignupPage --watch
-/* eslint-disable */
 import { mount } from 'enzyme'
 import { createBrowserHistory } from 'history'
-import React, { Component } from 'react'
-import { connect, Provider } from 'react-redux'
+import React from 'react'
+import { Provider } from 'react-redux'
 import { Route, Router } from 'react-router-dom'
-import configureStore from 'redux-mock-store'
 
 import { RawSignupPage } from '../SignupPage'
+import { configureStore } from '../../../utils/store'
 
-const mockStore = configureStore([])
-class RawFormCallback extends Component {
-  componentDidUpdate() {
-    const { onFormUpdate } = this.props
-    onFormUpdate()
+const mockRequestDataCatch = jest.fn()
+jest.mock('redux-saga-data', () => {
+  const actualModule = jest.requireActual('redux-saga-data')
+  return {
+    ...actualModule,
+    requestData: config => {
+      mockRequestDataCatch(config)
+      return actualModule.requestData(config)
+    },
   }
-
-  render() {
-    return null
-  }
-}
-function mapStateToProps(state) {
-  return { form: state.form.user }
-}
-const FormCallback = connect(mapStateToProps)(RawFormCallback)
+})
 
 describe('src | components | pages | SignupPage', () => {
   it('should call users/signup/webapp', done => {
     // given
-    function setInput(wrapper, key, value) {
-      wrapper
-        .find(`input[name='${key}']`)
-        .simulate('change', { target: { value } })
-    }
-    const mockDispatch = jest.fn()
-    const failFunction = jest.fn()
-    const initialState = { data: { users: [] }, form: { user: {} }, modal: {} }
-    const store = mockStore(initialState)
-    const successFunction = jest.fn()
+    fetch.mockResponse(JSON.stringify({}), { status: 200 })
+    const { store } = configureStore()
+    const history = createBrowserHistory()
     const values = {
       contact_ok: true,
       email: 'fake@email.fr',
       password: 'fake.P@ssw0rd',
       publicName: 'fakePublic',
     }
-    const props = { dispatch: mockDispatch }
-    const history = createBrowserHistory()
-    history.push('/test')
     const wrapper = mount(
       <Provider store={store}>
         <Router history={history}>
           <Route path="/test">
-            <RawSignupPage {...props} />
-            <FormCallback onFormUpdate={onFormUpdate} />
+            <RawSignupPage />
           </Route>
         </Router>
       </Provider>
     )
-    Object.keys(values).forEach(key => setInput(wrapper, key, values[key]))
-    /* eslint-disable no-use-before-define */
-    function onFormUpdate() {
-      const config = {
-        apiPath: '/users/signup/webapp',
-        body: values,
-        handleFail: failFunction,
-        handleSuccess: successFunction,
-        method: 'POST',
-      }
-      const expectedAction = {
-        config,
-        type: 'REQUEST_DATA_POST_/USERS/SIGNUP/WEBAPP',
-      }
+    wrapper
+      .find("input[name='email']")
+      .simulate('change', { target: { value: values.email } })
+    wrapper
+      .find("input[name='password']")
+      .simulate('change', { target: { value: values.password } })
+    wrapper
+      .find("input[name='publicName']")
+      .simulate('change', { target: { value: values.publicName } })
+    wrapper
+      .find("input[name='contact_ok']")
+      .simulate('change', { target: { checked: true } })
 
+    setTimeout(() => {
+      const expectedSubConfig = {
+        apiPath: 'users/signup/webapp',
+        body: values,
+        method: 'POST',
+        name: 'user',
+        normalizer: null,
+      }
       // when
       const submitButton = wrapper.find('button[name="user"]')
 
       // then
-      console.log(submitButton.props())
       expect(submitButton.props().disabled).toEqual(false)
+
+      // when
       submitButton.simulate('click')
-      expect(mockDispatch).toHaveBeenCalledWith(expectedAction)
+
+      // then
+      const receivedConfig = mockRequestDataCatch.mock.calls[0][0]
+      Object.keys(expectedSubConfig).forEach(key =>
+        expect(receivedConfig[key]).toEqual(expectedSubConfig[key])
+      )
+
+      // done
       done()
-    }
+    })
   })
 })
