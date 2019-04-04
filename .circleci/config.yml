@@ -13,7 +13,6 @@ jobs:
             cd pass-culture-main
             rm -rf shared
             git clone https://github.com/betagouv/pass-culture-api.git api
-            sudo lsof /var/lib/apt/lists/lock
             while pgrep apt-get >/dev/null 2>&1 ; do
             echo "Waiting for apt ..."
             sleep 2
