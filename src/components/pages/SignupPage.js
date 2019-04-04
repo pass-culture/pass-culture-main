@@ -8,7 +8,7 @@ import { NavLink } from 'react-router-dom'
 import { withRedirectToDiscoveryWhenAlreadyAuthenticated } from '../hocs'
 import Main from '../layout/Main'
 
-class SignupPage extends React.PureComponent {
+export class RawSignupPage extends React.PureComponent {
   constructor() {
     super()
     this.state = { $footer: null }
@@ -43,7 +43,7 @@ class SignupPage extends React.PureComponent {
           </h2>
           <Form
             name="user"
-            action="/users/signup"
+            action="/users/signup/webapp"
             layout="vertical"
             handleSuccessNotification={null}
             handleSuccessRedirect={() => '/decouverte'}
@@ -119,4 +119,4 @@ class SignupPage extends React.PureComponent {
   }
 }
 
-export default withRedirectToDiscoveryWhenAlreadyAuthenticated(SignupPage)
+export default withRedirectToDiscoveryWhenAlreadyAuthenticated(RawSignupPage)
