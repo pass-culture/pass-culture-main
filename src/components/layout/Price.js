@@ -1,10 +1,10 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-import { getPrice } from '../../helpers'
+import { getDisplayPrice } from '../../helpers'
 
 const Price = ({ free, value, ...rest }) => {
-  const price = getPrice(value, free)
+  const price = getDisplayPrice(value, free)
   return (
     <span {...rest} className="price">
       {price}

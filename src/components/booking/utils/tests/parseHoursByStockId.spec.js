@@ -1,6 +1,6 @@
 // jest ./src/components/booking/utils/tests/parseHoursByStockId --watch
 import moment from 'moment-timezone'
-import { getPrice } from '../../../../helpers/getPrice'
+import { getDisplayPrice } from '../../../../helpers/getDisplayPrice'
 import parseHoursByStockId from '../parseHoursByStockId'
 
 describe('src | components | booking | utils | parseHoursByStockId', () => {
@@ -61,7 +61,7 @@ describe('src | components | booking | utils | parseHoursByStockId', () => {
     const now = moment()
     const price = 1
     const time = moment().format(format)
-    const devisedPrice = getPrice(price)
+    const devisedPrice = getDisplayPrice(price)
     const expected = [{ id: 'AAAAA', label: `${time} - ${devisedPrice}` }]
     const value = {
       bookables: [
@@ -79,7 +79,7 @@ describe('src | components | booking | utils | parseHoursByStockId', () => {
     const nowtz = moment().tz('America/Los_Angeles')
     const price = 1
     const time = moment().format(format)
-    const devisedPrice = getPrice(price)
+    const devisedPrice = getDisplayPrice(price)
     const expected = [{ id: 'AAAAA', label: `${time} - ${devisedPrice}` }]
     const value = {
       bookables: [

@@ -1,4 +1,4 @@
-// jest --env=jsdom ./src/helpers/tests/getPrice --watch
+// jest --env=jsdom ./src/helpers/tests/getDisplayPrice --watch
 import isEqual from 'lodash.isequal'
 
 const arrow = '\u2192 '
@@ -45,7 +45,7 @@ export const priceIsDefined = value => {
   return isDefined
 }
 
-export const getPrice = (value, freeValue = null, devise = '€') => {
+export const getDisplayPrice = (value, freeValue = null, devise = '€') => {
   const isDefined = priceIsDefined(value)
   if (!isDefined) return ''
 
@@ -59,4 +59,4 @@ export const getPrice = (value, freeValue = null, devise = '€') => {
   return `${formatedDevise} ${devise}`
 }
 
-export default getPrice
+export default getDisplayPrice

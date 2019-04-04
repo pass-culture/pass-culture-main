@@ -5,11 +5,11 @@ import { Icon } from 'antd'
 import get from 'lodash.get'
 import PropTypes from 'prop-types'
 
-import { getPrice } from '../../helpers'
+import { getDisplayPrice } from '../../helpers'
 
 const BookingCancel = ({ isEvent, data }) => {
   let price = get(data, 'stock.price')
-  price = getPrice(price)
+  price = getDisplayPrice(price)
   const cssclass = (isEvent && 'event') || 'thing'
   return (
     <div className={`booked text-center ${cssclass}`}>

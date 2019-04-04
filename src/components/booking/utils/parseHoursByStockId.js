@@ -1,5 +1,5 @@
 import moment from 'moment'
-import { isSameDayInEachTimezone, getPrice } from '../../../helpers'
+import { isSameDayInEachTimezone, getDisplayPrice } from '../../../helpers'
 
 const parseHoursByStockId = (allFormValues, format = 'HH:mm') => {
   const isvalid =
@@ -20,7 +20,7 @@ const parseHoursByStockId = (allFormValues, format = 'HH:mm') => {
       // parse les infos d'une offre
       // pour être affichée dans la selectbox
       const time = obj.beginningDatetime.format(format)
-      const devised = getPrice(obj.price)
+      const devised = getDisplayPrice(obj.price)
       const label = `${time} - ${devised}`
       return { id: obj.id, label }
     })
