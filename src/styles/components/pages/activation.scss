@@ -75,3 +75,29 @@
   color: $white;
   background-color: transparent;
 }
+
+#activation-error-page, #activation-link-error-page {
+  p {
+    font-weight: 500;
+    font-style: italic;
+  }
+
+  > div {
+    margin-top: 16px;
+  }
+
+  a {
+    border-radius: 1px;
+    font-size: 18px;
+    font-weight: 700;
+    padding-top: 5px;
+    padding-bottom: 5px; 
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+}
+
+
+/*height: 36px; */
+

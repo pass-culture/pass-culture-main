@@ -14,7 +14,7 @@ const InvalidLink = () => (
         className="no-background border-all rd4 py12 px18 is-inline-block is-white-text text-center fs16"
         href="/connexion"
       >
-        <span>Me connecter</span>
+        <span>S’identifier</span>
       </a>
     </div>
   </main>
