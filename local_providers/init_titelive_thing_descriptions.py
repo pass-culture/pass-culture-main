@@ -6,9 +6,8 @@ from zipfile import ZipFile
 
 from datetime import datetime
 
-from domain.titelive import get_date_from_filename, read_description_date
+from domain.titelive import get_date_from_filename
 from models.local_provider import LocalProvider, ProvidableInfo
-from models.local_provider_event import LocalProviderEventType
 from models.thing import Thing
 from utils.logger import logger
 
@@ -36,14 +35,7 @@ class InitTiteLiveThingDescriptions(LocalProvider):
         self.date_modified = None
 
     def open_next_file(self):
-        if self.zip:
-            self.logEvent(LocalProviderEventType.SyncPartEnd,
-                          get_date_from_filename(self.zip, DATE_REGEXP))
-
         logger.info("Importing descriptions from file " + str(self.zip))
-        self.logEvent(LocalProviderEventType.SyncPartStart,
-                      get_date_from_filename(self.zip, DATE_REGEXP))
-
         self.description_zip_infos = self.get_description_files_from_zip_info()
         file_date = str(get_date_from_filename(self.zip, DATE_REGEXP))
         self.date_modified = self.read_description_date(file_date)
@@ -52,23 +44,19 @@ class InitTiteLiveThingDescriptions(LocalProvider):
         if self.description_zip_infos is None:
             self.open_next_file()
 
-        try:
-            self.desc_zipinfo = next(self.description_zip_infos)
-        except StopIteration:
-            self.open_next_file()
-            self.desc_zipinfo = next(self.description_zip_infos)
+        self.description_zipinfo = next(self.description_zip_infos)
 
         providable_info = ProvidableInfo()
         providable_info.type = Thing
         providable_info.dateModifiedAtProvider = self.date_modified
-        path = PurePath(self.desc_zipinfo.filename)
+        path = PurePath(self.description_zipinfo.filename)
         providable_info.idAtProviders = path.name.split('_', 1)[0]
         self.thingId = providable_info.idAtProviders
 
         return providable_info
 
     def updateObject(self, thing):
-        with self.zip.open(self.desc_zipinfo) as f:
+        with self.zip.open(self.description_zipinfo) as f:
             thing.description = f.read().decode('iso-8859-1')
 
     def get_description_files_from_zip_info(self):

@@ -19,5 +19,5 @@ else
 fi
 
 scalingo -a "$APP_NAME" run -d --size 2XL "wget -O TiteliveDescriptions.zip $FILE_LINK
-&& python scripts/pc.py import_titelive_full_table -f TiteliveDescriptions.zip"
+&& python scripts/pc.py import_titelive_full_descriptions -f TiteliveDescriptions.zip"
 
