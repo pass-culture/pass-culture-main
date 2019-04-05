@@ -10,7 +10,7 @@ import Footer from '../layout/Footer';
 import VersoInfo from './VersoInfo';
 import VersoWrapper from './VersoWrapper';
 import VersoControl from './VersoControl';
-import StaticVerso from './StaticVerso';
+import VersoInfoTuto from './VersoInfoTuto';
 import { getHeaderColor } from '../../utils/colors';
 import { ROOT_PATH } from '../../utils/config';
 
@@ -61,7 +61,7 @@ class Verso extends React.PureComponent {
           {!isTuto && <VersoControl />}
           <div className="verso-content" style={{ ...contentStyle }}>
             {!isTuto && <VersoInfo />}
-            {isTuto && <StaticVerso mediationId={mediation.id} />}
+            {isTuto && <VersoInfoTuto mediationId={mediation.id} />}
           </div>
         </VersoWrapper>
         <Footer id="verso-footer" borderTop colored={!isTuto} />
