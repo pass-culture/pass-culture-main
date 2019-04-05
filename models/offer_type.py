@@ -175,3 +175,21 @@ class ThingType(SearchableType):
         'sublabel': "Lire",
         'description': "S’abonner à un quotidien d’actualité ? À un hebdomadaire humoristique ? À un mensuel dédié à la nature ? Acheter une BD ou un manga ? Ou tout simplement ce livre dont tout le monde parle ?"
     }
+
+
+class ProductType:
+    @classmethod
+    def is_thing(cls, name: str) -> object:
+        for possible_type in list(ThingType):
+            if str(possible_type) == name:
+                return True
+
+        return False
+
+    @classmethod
+    def is_event(cls, name: str) -> object:
+        for possible_type in list(EventType):
+            if str(possible_type) == name:
+                return True
+
+        return False

@@ -4,8 +4,9 @@ from flask_login import current_user, login_required
 from domain.admin_emails import send_offer_creation_notification_to_support
 from domain.create_offer import fill_offer_with_new_event_data, \
     fill_offer_with_new_thing_data, fill_offer_with_existing_thing_data, fill_offer_with_existing_event_data
-from models import Offer, PcObject, Venue, RightsType, Thing
-from models.api_errors import ResourceNotFound
+from models import Offer, PcObject, Venue, RightsType, Thing, Event
+from models.api_errors import ResourceNotFound, ApiErrors
+from models.offer_type import ProductType
 from repository import venue_queries, offer_queries
 from repository.offer_queries import find_activation_offers, \
     find_offers_with_filter_parameters
@@ -18,7 +19,7 @@ from utils.rest import expect_json_data, \
     handle_rest_get_list, \
     load_or_404, login_or_api_key_required, load_or_raise_error, ensure_current_user_has_rights
 from validation.offers import check_venue_exists_when_requested, check_user_has_rights_for_query, check_valid_edition, \
-    check_has_venue_id
+    check_has_venue_id, check_offer_type_is_valid
 
 
 @app.route('/offers', methods=['GET'])
@@ -74,21 +75,24 @@ def post_offer():
     check_has_venue_id(venue_id)
     venue = load_or_raise_error(Venue, venue_id)
     ensure_current_user_has_rights(RightsType.editor, venue.managingOffererId)
-    thing_dict = Thing(from_dict=request.json)
-    event_dict = request.json.get('event')
     event_id = dehumanize(request.json.get('eventId'))
     thing_id = dehumanize(request.json.get('thingId'))
-    if event_dict:
-        offer = fill_offer_with_new_event_data(event_dict, current_user)
-
-    elif thing_dict:
-        offer = fill_offer_with_new_thing_data(thing_dict)
-
-    elif thing_id:
-        offer = fill_offer_with_existing_thing_data(thing_id, request.json)
+    if thing_id:
+        offer = fill_offer_with_existing_thing_data(thing_id)
 
     elif event_id:
         offer = fill_offer_with_existing_event_data(event_id)
+
+    else:
+        offer_type_name = request.json.get('type')
+
+        check_offer_type_is_valid(offer_type_name)
+
+        if ProductType.is_thing(offer_type_name):
+            offer = fill_offer_with_new_thing_data(request.json)
+
+        elif ProductType.is_event(offer_type_name):
+            offer = fill_offer_with_new_event_data(request.json, current_user)
 
     offer.venue = venue
     offer.bookingEmail = request.json.get('bookingEmail', None)

@@ -77,6 +77,33 @@ class Post:
             assert response.status_code == 400
             assert response.json()['url'] == ['Une offre de type Jeux (Abonnements) ne peut pas être numérique']
 
+        @clean_database
+        def when_offer_type_is_unknown(self, app):
+            # Given
+            user = create_user(email='test@email.com')
+            offerer = create_offerer()
+            user_offerer = create_user_offerer(user, offerer)
+            venue = create_venue(offerer, is_virtual=False)
+            event = create_event()
+            PcObject.check_and_save(user, venue, event, user_offerer)
+            json = {
+                'type': '',
+                'name': 'Les lapins crétins',
+                'mediaUrls': ['http://media.url'],
+                'durationMinutes': 200,
+                'venueId': humanize(venue.id),
+                'bookingEmail': 'offer@email.com'
+            }
+
+            # When
+            response = TestClient().with_auth(user.email).post(
+                f'{API_URL}/offers/',
+                json=json)
+
+            # Then
+            assert response.status_code == 400
+            assert response.json()['type'] == ['Le type de cette offre est inconnu']
+
     class Returns201:
         @clean_database
         def when_creating_a_new_event_offer(self, app):

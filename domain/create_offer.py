@@ -4,33 +4,38 @@ from validation.events import check_user_can_create_activation_event
 from validation.url import is_url_safe
 
 
-def fill_offer_with_new_thing_data(thing_dict: str) -> Offer:
-    thing = Thing()
-    url = thing_dict.get('url')
+def fill_offer_with_new_thing_data(payload: dict) -> Offer:
+    thing = Thing(from_dict=payload)
+    url = thing.url
     if url:
         is_url_safe(url)
-        thing_dict['isNational'] = True
-    thing.populateFromDict(thing_dict)
-    offer = Offer()
-    offer.populateFromDict(thing_dict)
-    offer.thing = thing
+        thing.isNational = True
+
+    offer = _initialize_offer_from_thing(thing)
     return offer
 
 
-def fill_offer_with_new_event_data(event_dict: dict, user) -> Offer:
-    event = Event()
-    event.populateFromDict(event_dict)
+def fill_offer_with_new_event_data(payload: dict, user) -> Offer:
+    event = Event(from_dict=payload)
     check_user_can_create_activation_event(user, event)
-    offer = Offer()
-    offer.populateFromDict(event_dict)
-    offer.event = event
+    offer = _initiaize_offer_from_event(event)
     return offer
 
 
-def fill_offer_with_existing_thing_data(thing_id: str, offer_data) -> Offer:
+def fill_offer_with_existing_thing_data(thing_id: str) -> Offer:
     thing = thing_queries.find_by_id(thing_id)
+    offer = _initialize_offer_from_thing(thing)
+    return offer
+
+
+def fill_offer_with_existing_event_data(event_id: str) -> Offer:
+    event = event_queries.find_by_id(event_id)
+    offer = _initiaize_offer_from_event(event)
+    return offer
+
+
+def _initialize_offer_from_thing(thing):
     offer = Offer()
-    offer.populateFromDict(offer_data)
     offer.thing = thing
     offer.type = thing.type
     offer.name = thing.name
@@ -42,9 +47,8 @@ def fill_offer_with_existing_thing_data(thing_id: str, offer_data) -> Offer:
     return offer
 
 
-def fill_offer_with_existing_event_data(event_id: str) -> Offer:
+def _initiaize_offer_from_event(event: Event) -> Offer:
     offer = Offer()
-    event = event_queries.find_by_id(event_id)
     offer.event = event
     offer.type = event.type
     offer.name = event.name
