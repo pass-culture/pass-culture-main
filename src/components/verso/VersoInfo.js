@@ -8,10 +8,13 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 
+import { ROOT_PATH } from '../../utils/config'
 import { navigationLink } from '../../utils/geolocation'
 import { isRecommendationFinished } from '../../helpers'
 import { selectBookables } from '../../selectors/selectBookables'
 import currentRecommendationSelector from '../../selectors/currentRecommendation'
+
+const backgroundImage = `url('${ROOT_PATH}/mosaic-k.png')`
 
 class VersoInfo extends React.PureComponent {
   componentWillMount() {
@@ -128,10 +131,12 @@ class VersoInfo extends React.PureComponent {
 
   render() {
     return (
-      <div className="verso-info">
-        {this.renderOfferWhat()}
-        {this.renderOfferWhen()}
-        {this.renderOfferWhere()}
+      <div className="verso-content" style={{ backgroundImage }}>
+        <div className="verso-info">
+          {this.renderOfferWhat()}
+          {this.renderOfferWhen()}
+          {this.renderOfferWhere()}
+        </div>
       </div>
     )
   }
