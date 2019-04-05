@@ -7,7 +7,7 @@ import React from 'react';
 
 import Footer from '../layout/Footer';
 import VersoInfo from './VersoInfo';
-import VersoWrapper from './VersoWrapperContainer';
+import VersoWrapper from './VersoWrapper';
 
 import StaticVerso from './StaticVerso';
 
@@ -16,6 +16,9 @@ class Verso extends React.PureComponent {
     const {
       areDetailsVisible,
       currentRecommendation,
+      dispatchMakeDraggable,
+      dispatchMakeUndraggable,
+      draggable,
       extraClassName,
       forceDetailsVisible,
     } = this.props;
@@ -30,7 +33,14 @@ class Verso extends React.PureComponent {
           flipped,
         })}
       >
-        <VersoWrapper className="with-padding-top">
+        <VersoWrapper
+          className="with-padding-top"
+          areDetailsVisible={areDetailsVisible}
+          currentRecommendation={currentRecommendation}
+          dispatchMakeDraggable={dispatchMakeDraggable}
+          dispatchMakeUndraggable={dispatchMakeUndraggable}
+          draggable={draggable}
+        >
           {!isTuto && <VersoInfo />}
           {isTuto && <StaticVerso mediationId={mediation.id} />}
         </VersoWrapper>
@@ -53,6 +63,9 @@ Verso.defaultProps = {
 Verso.propTypes = {
   areDetailsVisible: PropTypes.bool.isRequired,
   currentRecommendation: PropTypes.object,
+  dispatchMakeDraggable: PropTypes.func.isRequired,
+  dispatchMakeUndraggable: PropTypes.func.isRequired,
+  draggable: PropTypes.bool.isRequired,
   extraClassName: PropTypes.string,
   forceDetailsVisible: PropTypes.bool,
 };
