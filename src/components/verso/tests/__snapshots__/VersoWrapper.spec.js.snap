@@ -1,9 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | verso | RawVersoWrapper snapshot should match snapshot 1`] = `
+exports[`src | components | verso | VersoWrapper snapshot should match snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
-  Symbol(enzyme.__unrendered__): <RawVersoWrapper
+  Symbol(enzyme.__unrendered__): <VersoWrapper
     areDetailsVisible={true}
     className="className"
     currentRecommendation={null}
@@ -14,7 +14,7 @@ ShallowWrapper {
     <div
       id="fake-required-child-element"
     />
-  </RawVersoWrapper>,
+  </VersoWrapper>,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
     "checkPropTypes": [Function],

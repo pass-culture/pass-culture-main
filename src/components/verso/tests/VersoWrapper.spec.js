@@ -1,12 +1,13 @@
+/* jest --env=jsdom ./src/components/verso/tests/VersoWrapper.spec.js --watch */
 import React from 'react'
 import { shallow } from 'enzyme'
 
-import { RawVersoWrapper } from '../VersoWrapper'
+import VersoWrapper from '../VersoWrapper'
 
 const dispatchMakeDraggableMock = jest.fn()
 const dispatchMakeUndraggableMock = jest.fn()
 
-describe('src | components | verso | RawVersoWrapper', () => {
+describe('src | components | verso | VersoWrapper', () => {
   describe('snapshot', () => {
     it('should match snapshot', () => {
       // given
@@ -21,9 +22,9 @@ describe('src | components | verso | RawVersoWrapper', () => {
 
       // when
       const wrapper = shallow(
-        <RawVersoWrapper {...props}>
+        <VersoWrapper {...props}>
           <div id="fake-required-child-element" />
-        </RawVersoWrapper>
+        </VersoWrapper>
       )
 
       // then
@@ -47,9 +48,9 @@ describe('src | components | verso | RawVersoWrapper', () => {
 
           // when
           const wrapper = shallow(
-            <RawVersoWrapper {...props}>
+            <VersoWrapper {...props}>
               <div id="fake-required-child-element" />
-            </RawVersoWrapper>
+            </VersoWrapper>
           )
           const header = wrapper.find('.verso-header')
 
@@ -74,9 +75,9 @@ describe('src | components | verso | RawVersoWrapper', () => {
 
           // when
           const wrapper = shallow(
-            <RawVersoWrapper {...props}>
+            <VersoWrapper {...props}>
               <div id="fake-required-child-element" />
-            </RawVersoWrapper>
+            </VersoWrapper>
           )
           const header = wrapper.find('.verso-header')
 
