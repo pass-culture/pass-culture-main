@@ -1,4 +1,4 @@
-/* jest --env=jsdom ./src/components/verso/tests/VersoWrapper.spec.js --watch */
+/* $(yarn bin)/jest --env=jsdom ./src/components/verso/tests/VersoWrapper.spec.js --watch */
 import React from 'react'
 import { shallow } from 'enzyme'
 

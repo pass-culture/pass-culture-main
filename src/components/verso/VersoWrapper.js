@@ -5,7 +5,6 @@ import get from 'lodash.get';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
-import VersoControl from './VersoControl';
 import { getHeaderColor } from '../../utils/colors';
 import { ROOT_PATH } from '../../utils/config';
 
@@ -97,10 +96,7 @@ class VersoWrapper extends Component {
             {offerVenue}
           </h2>
         </div>
-        {!isTutoView && <VersoControl />}
-        <div className="verso-content" style={{ ...contentStyle }}>
-          {children}
-        </div>
+        {children}
       </div>
     );
   }
