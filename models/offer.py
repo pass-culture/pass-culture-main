@@ -117,7 +117,6 @@ class Offer(PcObject,
         return api_errors
 
     def updatewith_thing_or_event_data(self, thing_or_event_dict: dict):
-        self.populateFromDict(thing_or_event_dict)
         owning_offerer = self.eventOrThing.owningOfferer
         if owning_offerer and owning_offerer == self.venue.managingOfferer:
             self.eventOrThing.populateFromDict(thing_or_event_dict)

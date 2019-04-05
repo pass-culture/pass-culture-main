@@ -110,15 +110,14 @@ def post_offer():
 @login_or_api_key_required
 @expect_json_data
 def patch_offer(id):
-    thing_or_event_dict = request.json.get('thing') or request.json.get('event')
-    check_valid_edition(request.json, thing_or_event_dict)
+    thing_or_event_dict = request.json
+    check_valid_edition(request.json)
     offer = offer_queries.find_offer_by_id(dehumanize(id))
     if not offer:
         raise ResourceNotFound
     ensure_current_user_has_rights(RightsType.editor, offer.venue.managingOffererId)
     offer.populateFromDict(request.json)
-    if thing_or_event_dict:
-        offer.updatewith_thing_or_event_data(thing_or_event_dict)
+    offer.updatewith_thing_or_event_data(thing_or_event_dict)
     PcObject.check_and_save(offer)
     if 'isActive' in request.json and not request.json['isActive']:
         invalidate_recommendations(offer)

@@ -78,10 +78,7 @@ class Patch:
             PcObject.check_and_save(offer, user_offerer)
 
             json = {
-                'thing':
-                    {
-                        'name': 'New Name'
-                    }
+                'name': 'New Name'
             }
 
             # When
@@ -110,10 +107,7 @@ class Patch:
             PcObject.check_and_save(offer, editor_user_offerer, owning_offerer)
 
             json = {
-                'thing':
-                    {
-                        'name': 'New Name'
-                    }
+                'name': 'New Name'
             }
 
             # When
@@ -141,10 +135,7 @@ class Patch:
             PcObject.check_and_save(offer, user_offerer)
 
             json = {
-                'thing':
-                    {
-                        'name': 'New Name'
-                    }
+                'name': 'New Name'
             }
 
             # When
@@ -173,21 +164,17 @@ class Patch:
             PcObject.check_and_save(offer, user, user_offerer)
 
             forbidden_keys = ['idAtProviders', 'dateModifiedAtLastProvider', 'thumbCount', 'firstThumbDominantColor',
-                              'owningOffererId', 'id', 'lastProviderId', 'isNational', 'dateCreated']
+                              'owningOffererId', 'id', 'lastProviderId', 'dateCreated']
 
             json = {
                 'id': 1,
                 'dateCreated': serialize(datetime(2019, 1, 1)),
-                'isNational': True,
                 'lastProviderId': 1,
-                'thing':
-                    {
-                        'owningOffererId': 'AA',
-                        'idAtProviders': 1,
-                        'dateModifiedAtLastProvider': serialize(datetime(2019, 1, 1)),
-                        'thumbCount': 2,
-                        'firstThumbDominantColor': ''
-                    }
+                'owningOffererId': 'AA',
+                'idAtProviders': 1,
+                'dateModifiedAtLastProvider': serialize(datetime(2019, 1, 1)),
+                'thumbCount': 2,
+                'firstThumbDominantColor': ''
             }
 
             # When

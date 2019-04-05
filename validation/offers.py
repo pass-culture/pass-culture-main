@@ -32,14 +32,12 @@ def check_venue_exists_when_requested(venue, venue_id):
         raise errors
 
 
-def check_valid_edition(request: Request, thing_or_event_dict: dict):
+def check_valid_edition(payload: dict):
     forbidden_keys = {'idAtProviders', 'dateModifiedAtLastProvider', 'thumbCount', 'firstThumbDominantColor',
-                      'owningOffererId', 'id', 'lastProviderId', 'isNational', 'dateCreated'}
-    all_keys = request.keys()
-    if thing_or_event_dict:
-        all_keys = set(all_keys).union(set(thing_or_event_dict.keys()))
+                      'owningOffererId', 'id', 'lastProviderId', 'dateCreated'}
+    all_keys = payload.keys()
     keys_in_error = forbidden_keys.intersection(all_keys)
-    if thing_or_event_dict and keys_in_error:
+    if keys_in_error:
         errors = ApiErrors()
         for key in keys_in_error:
             errors.addError(key, 'Vous ne pouvez pas modifier cette information')
