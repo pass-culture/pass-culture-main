@@ -9,12 +9,9 @@ import VersoControl from './VersoControl';
 import { getHeaderColor } from '../../utils/colors';
 import { ROOT_PATH } from '../../utils/config';
 
-class VersoWrapper extends Component {
-  constructor(props) {
-    super(props);
-    this.toucheMoveHandler = this.toucheMoveHandler.bind(this);
-  }
+const backgroundImage = `url('${ROOT_PATH}/mosaic-k.png')`;
 
+class VersoWrapper extends Component {
   componentDidMount() {
     if (!this.$el) return;
     const opts = { passive: true };
@@ -34,7 +31,15 @@ class VersoWrapper extends Component {
     this.$el.removeEventListener('touchmove', this.toucheMoveHandler);
   }
 
-  toucheMoveHandler() {
+  forwarContainerRefElement = element => {
+    this.$el = element;
+  }
+
+  forwarHeaderRefElement = element => {
+    this.$header = element;
+  }
+
+  toucheMoveHandler = () => {
     const {
       draggable,
       dispatchMakeUndraggable,
@@ -54,17 +59,17 @@ class VersoWrapper extends Component {
       currentRecommendation,
       'firstThumbDominantColor'
     );
-    const headerColor = getHeaderColor(firstThumbDominantColor);
+    const backgroundColor = getHeaderColor(firstThumbDominantColor);
 
     const { mediation, offer } = currentRecommendation || {};
     const { eventOrThing, venue } = offer || {};
 
     const { tutoIndex } = mediation || {};
+    const isTutoView = typeof tutoIndex === 'number';
 
-    const contentStyle = {};
-    contentStyle.backgroundImage = `url('${ROOT_PATH}/mosaic-k.png')`;
-    if (typeof tutoIndex === 'number') {
-      contentStyle.backgroundColor = headerColor;
+    const contentStyle = { backgroundImage };
+    if (isTutoView) {
+      contentStyle.backgroundColor = backgroundColor;
     }
 
     const offerVenue = get(venue, 'name');
@@ -73,17 +78,13 @@ class VersoWrapper extends Component {
     if (author) offerName = `${offerName}, de ${author}`;
     return (
       <div
-        ref={$el => {
-          this.$el = $el;
-        }}
+        ref={this.forwarContainerRefElement}
         className={`verso-wrapper ${className || ''}`}
       >
         <div
           className="verso-header"
-          style={{ backgroundColor: headerColor }}
-          ref={$el => {
-            this.$header = $el;
-          }}
+          style={{ backgroundColor }}
+          ref={this.forwarHeaderRefElement}
         >
           <h1
             id="verso-offer-name"
@@ -96,7 +97,7 @@ class VersoWrapper extends Component {
             {offerVenue}
           </h2>
         </div>
-        {typeof tutoIndex !== 'number' && <VersoControl />}
+        {!isTutoView && <VersoControl />}
         <div className="verso-content" style={{ ...contentStyle }}>
           {children}
         </div>

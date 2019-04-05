@@ -1,6 +1,7 @@
 /* eslint
   semi: [2, "always"]
   react/jsx-one-expression-per-line: 0 */
+import get from 'lodash.get';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
@@ -16,10 +17,12 @@ export const mapStateToProps = (state, ownProps) => {
     offerId,
     mediationId
   );
+  const draggable = get(state, 'card.draggable');
+  const areDetailsVisible = get(state, 'card.areDetailsVisible');
   return {
-    areDetailsVisible: state.card.areDetailsVisible,
+    areDetailsVisible,
     currentRecommendation,
-    draggable: state.card.draggable,
+    draggable,
   };
 };
 
