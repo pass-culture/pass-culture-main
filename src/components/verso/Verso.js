@@ -7,6 +7,7 @@ import React from 'react';
 
 import Footer from '../layout/Footer';
 import VersoInfo from './VersoInfo';
+import VersoHeader from './VersoHeader';
 import VersoControl from './VersoControl';
 import VersoInfoTuto from './VersoInfoTuto';
 
@@ -24,7 +25,7 @@ class Verso extends React.PureComponent {
     } = this.props;
 
     const flipped = forceDetailsVisible || areDetailsVisible;
-
+    const showHeader = offerName && offerVenue;
     return (
       <div
         className={classnames('verso', extraClassName, {
@@ -32,22 +33,13 @@ class Verso extends React.PureComponent {
         })}
       >
         <div className="verso-wrapper with-padding-top">
-          <div className="verso-header" style={{ backgroundColor }}>
-            {offerName && (
-              <h1
-                id="verso-offer-name"
-                style={{ lineHeight: '2.7rem' }}
-                className="fs40 is-medium is-hyphens"
-              >
-                {offerName}
-              </h1>
-            )}
-            {offerVenue && (
-              <h2 id="verso-offer-venue" className="fs22 is-normal is-hyphens">
-                {offerVenue}
-              </h2>
-            )}
-          </div>
+          {showHeader && (
+            <VersoHeader
+              title={offerName}
+              subtitle={offerVenue}
+              backgroundColor={backgroundColor}
+            />
+          )}
           {!isTuto && <VersoControl />}
           {!isTuto && <VersoInfo />}
           {isTuto && <VersoInfoTuto mediationId={mediationId} />}

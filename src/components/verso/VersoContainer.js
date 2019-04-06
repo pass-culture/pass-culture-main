@@ -66,4 +66,6 @@ export const mapStateToProps = (state, { match }) => {
 export default compose(
   withRouter,
   connect(mapStateToProps)
+  // NOTE a tester d'utiliser React.memo ici
+  // en tant que HOC en plus de redux
 )(Verso);
