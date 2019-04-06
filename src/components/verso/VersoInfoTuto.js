@@ -6,9 +6,10 @@ import React from 'react';
 
 import { THUMBS_URL, ROOT_PATH } from '../../utils/config';
 
+const imageSrcBase = `${THUMBS_URL}/mediations`;
 const backgroundImage = `url('${ROOT_PATH}/mosaic-k.png')`;
 
-const VersoInfoTuto = ({ backgroundColor, mediationId }) => (
+const VersoInfoTuto = React.memo(({ backgroundColor, mediationId }) => (
   <div
     className="verso-content"
     style={{
@@ -19,10 +20,10 @@ const VersoInfoTuto = ({ backgroundColor, mediationId }) => (
     <img
       alt="verso"
       className="verso-tuto-mediation"
-      src={`${THUMBS_URL}/mediations/${mediationId}_1`}
+      src={`${imageSrcBase}/${mediationId}_1`}
     />
   </div>
-);
+));
 
 VersoInfoTuto.propTypes = {
   backgroundColor: PropTypes.string.isRequired,

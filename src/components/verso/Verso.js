@@ -1,7 +1,6 @@
 /* eslint
   semi: [2, "always"]
   react/jsx-one-expression-per-line: 0 */
-import get from 'lodash.get';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -10,7 +9,6 @@ import Footer from '../layout/Footer';
 import VersoInfo from './VersoInfo';
 import VersoControl from './VersoControl';
 import VersoInfoTuto from './VersoInfoTuto';
-import { getHeaderColor } from '../../utils/colors';
 
 class Verso extends React.PureComponent {
   componentDidMount() {
@@ -56,30 +54,16 @@ class Verso extends React.PureComponent {
   render() {
     const {
       areDetailsVisible,
-      currentRecommendation,
+      backgroundColor,
       extraClassName,
       forceDetailsVisible,
+      isTuto,
+      mediationId,
+      offerName,
+      offerVenue,
     } = this.props;
 
-    const mediation = get(currentRecommendation, 'mediation');
-    const tutoIndex = get(currentRecommendation, 'mediation.tutoIndex');
-    const offerVenue = get(currentRecommendation, 'offer.venue.name');
-    const author = get(
-      currentRecommendation,
-      'offer.eventOrThing.extraData.author'
-    );
-    let offerName = get(currentRecommendation, 'offer.eventOrThing.name');
-    if (author) offerName = `${offerName}, de ${author}`;
-
-    const isTuto = Boolean(typeof tutoIndex === 'number');
-
     const flipped = forceDetailsVisible || areDetailsVisible;
-
-    const firstThumbDominantColor = get(
-      currentRecommendation,
-      'firstThumbDominantColor'
-    );
-    const backgroundColor = getHeaderColor(firstThumbDominantColor);
 
     return (
       <div
@@ -109,7 +93,7 @@ class Verso extends React.PureComponent {
           </div>
           {!isTuto && <VersoControl />}
           {!isTuto && <VersoInfo />}
-          {isTuto && <VersoInfoTuto mediationId={mediation.id} />}
+          {isTuto && <VersoInfoTuto mediationId={mediationId} />}
         </div>
         <Footer id="verso-footer" borderTop colored={!isTuto} />
       </div>
@@ -118,19 +102,24 @@ class Verso extends React.PureComponent {
 }
 
 Verso.defaultProps = {
-  currentRecommendation: null,
+  backgroundColor: null,
   extraClassName: null,
   forceDetailsVisible: false,
+  mediationId: null,
 };
 
 Verso.propTypes = {
   areDetailsVisible: PropTypes.bool.isRequired,
-  currentRecommendation: PropTypes.object,
+  backgroundColor: PropTypes.string,
   dispatchMakeDraggable: PropTypes.func.isRequired,
   dispatchMakeUndraggable: PropTypes.func.isRequired,
   draggable: PropTypes.bool.isRequired,
   extraClassName: PropTypes.string,
   forceDetailsVisible: PropTypes.bool,
+  isTuto: PropTypes.bool.isRequired,
+  mediationId: PropTypes.string,
+  offerName: PropTypes.string.isRequired,
+  offerVenue: PropTypes.string.isRequired,
 };
 
 export default Verso;
