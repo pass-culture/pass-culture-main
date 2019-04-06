@@ -11,46 +11,6 @@ import VersoControl from './VersoControl';
 import VersoInfoTuto from './VersoInfoTuto';
 
 class Verso extends React.PureComponent {
-  componentDidMount() {
-    if (!this.$el) return;
-    const opts = { passive: true };
-    this.$el.addEventListener('touchmove', this.toucheMoveHandler, opts);
-  }
-
-  componentDidUpdate(prevProps) {
-    const { areDetailsVisible } = this.props;
-    const shouldScroll =
-      !areDetailsVisible && prevProps.areDetailsVisible && this.$header.scrollTo;
-    if (!shouldScroll) return;
-    this.$header.scrollTo(0, 0);
-  }
-
-  componentWillUnmount() {
-    if (!this.$el) return;
-    this.$el.removeEventListener('touchmove', this.toucheMoveHandler);
-  }
-
-  forwarContainerRefElement = element => {
-    this.$el = element;
-  }
-
-  forwarHeaderRefElement = element => {
-    this.$header = element;
-  }
-
-  toucheMoveHandler = () => {
-    const {
-      draggable,
-      dispatchMakeUndraggable,
-      dispatchMakeDraggable,
-    } = this.props;
-    if (draggable && this.$el.scrollTop > 0) {
-      dispatchMakeUndraggable();
-    } else if (!draggable && this.$el.scrollTop <= 0) {
-      dispatchMakeDraggable();
-    }
-  }
-
   render() {
     const {
       areDetailsVisible,
@@ -71,15 +31,8 @@ class Verso extends React.PureComponent {
           flipped,
         })}
       >
-        <div
-          ref={this.forwarContainerRefElement}
-          className="verso-wrapper with-padding-top"
-        >
-          <div
-            className="verso-header"
-            style={{ backgroundColor }}
-            ref={this.forwarHeaderRefElement}
-          >
+        <div className="verso-wrapper with-padding-top">
+          <div className="verso-header" style={{ backgroundColor }}>
             {offerName && (
               <h1
                 id="verso-offer-name"
@@ -117,9 +70,6 @@ Verso.defaultProps = {
 Verso.propTypes = {
   areDetailsVisible: PropTypes.bool.isRequired,
   backgroundColor: PropTypes.string,
-  dispatchMakeDraggable: PropTypes.func.isRequired,
-  dispatchMakeUndraggable: PropTypes.func.isRequired,
-  draggable: PropTypes.bool.isRequired,
   extraClassName: PropTypes.string,
   forceDetailsVisible: PropTypes.bool,
   isTuto: PropTypes.bool.isRequired,

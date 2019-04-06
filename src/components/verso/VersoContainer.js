@@ -9,7 +9,6 @@ import { withRouter } from 'react-router-dom';
 import Verso from './Verso';
 import { getHeaderColor } from '../../utils/colors';
 import currentRecommendationSelector from '../../selectors/currentRecommendation';
-import { makeDraggable, makeUndraggable } from '../../reducers/card';
 
 export const checkIsTuto = recommendation => {
   const tutoIndex = get(recommendation, 'mediation.tutoIndex');
@@ -64,15 +63,7 @@ export const mapStateToProps = (state, { match }) => {
   };
 };
 
-export const mapDispatchToProps = {
-  dispatchMakeDraggable: makeDraggable,
-  dispatchMakeUndraggable: makeUndraggable,
-};
-
 export default compose(
   withRouter,
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )
+  connect(mapStateToProps)
 )(Verso);
