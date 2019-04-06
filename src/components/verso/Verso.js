@@ -80,16 +80,20 @@ class Verso extends React.PureComponent {
             style={{ backgroundColor }}
             ref={this.forwarHeaderRefElement}
           >
-            <h1
-              id="verso-offer-name"
-              style={{ lineHeight: '2.7rem' }}
-              className="fs40 is-medium is-hyphens"
-            >
-              {offerName}
-            </h1>
-            <h2 id="verso-offer-venue" className="fs22 is-normal is-hyphens">
-              {offerVenue}
-            </h2>
+            {offerName && (
+              <h1
+                id="verso-offer-name"
+                style={{ lineHeight: '2.7rem' }}
+                className="fs40 is-medium is-hyphens"
+              >
+                {offerName}
+              </h1>
+            )}
+            {offerVenue && (
+              <h2 id="verso-offer-venue" className="fs22 is-normal is-hyphens">
+                {offerVenue}
+              </h2>
+            )}
           </div>
           {!isTuto && <VersoControl />}
           {!isTuto && <VersoInfo />}
@@ -106,6 +110,8 @@ Verso.defaultProps = {
   extraClassName: null,
   forceDetailsVisible: false,
   mediationId: null,
+  offerName: null,
+  offerVenue: null,
 };
 
 Verso.propTypes = {
@@ -118,8 +124,8 @@ Verso.propTypes = {
   forceDetailsVisible: PropTypes.bool,
   isTuto: PropTypes.bool.isRequired,
   mediationId: PropTypes.string,
-  offerName: PropTypes.string.isRequired,
-  offerVenue: PropTypes.string.isRequired,
+  offerName: PropTypes.string,
+  offerVenue: PropTypes.string,
 };
 
 export default Verso;

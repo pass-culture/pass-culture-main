@@ -27,7 +27,7 @@ export const getPriceValue = (state, params) => {
   }
   const { mediationId, offerId } = params
   const recommendation = currentRecommendation(state, offerId, mediationId)
-  if (!recommendation) return state
+  if (!recommendation) return []
   const stocks = get(recommendation, 'offer.stocks')
   return getPriceRangeFromStocks(stocks)
 }
