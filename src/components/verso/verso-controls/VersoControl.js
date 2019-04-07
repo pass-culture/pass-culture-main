@@ -9,10 +9,10 @@ import { compose, bindActionCreators } from 'redux'
 import { requestData } from 'redux-saga-data'
 import { selectCurrentUser } from 'with-login'
 
-import { getWalletValue } from '../../utils/user'
-import { ShareButton } from '../share/ShareButton'
-import VersoBookingButton from './VersoBookingButton'
-import currentRecommendationSelector from '../../selectors/currentRecommendation'
+import { getWalletValue } from '../../../utils/user'
+import { ShareButton } from '../../share/ShareButton'
+import VersoBookingButton from '../VersoBookingButton'
+import currentRecommendationSelector from '../../../selectors/currentRecommendation'
 
 class VersoControl extends React.PureComponent {
   constructor(props) {

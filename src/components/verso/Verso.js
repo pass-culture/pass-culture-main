@@ -7,7 +7,7 @@ import React from 'react';
 
 import Footer from '../layout/Footer';
 import VersoHeader from './VersoHeader';
-import VersoControl from './VersoControl';
+import VersoControl from './verso-controls/VersoControl';
 import VersoInfoOffer from './verso-content/VersoInfo';
 import VersoTutoContent from './verso-content/VersoTutoContent';
 
