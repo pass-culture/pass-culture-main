@@ -16,6 +16,7 @@ class Verso extends React.PureComponent {
     const {
       areDetailsVisible,
       backgroundColor,
+      contentInlineStyle,
       extraClassName,
       forceDetailsVisible,
       isTuto,
@@ -24,7 +25,7 @@ class Verso extends React.PureComponent {
       offerVenue,
     } = this.props;
 
-    // css anination
+    // css animation
     const flipped = forceDetailsVisible || areDetailsVisible;
     return (
       <div
@@ -39,13 +40,10 @@ class Verso extends React.PureComponent {
             backgroundColor={backgroundColor}
           />
           {!isTuto && <VersoControl />}
-          {!isTuto && <VersoInfoOffer />}
-          {isTuto && (
-            <VersoInfoTuto
-              backgroundColor={backgroundColor}
-              mediationId={mediationId}
-            />
-          )}
+          <div className="verso-content" style={contentInlineStyle}>
+            {!isTuto && <VersoInfoOffer />}
+            {isTuto && <VersoInfoTuto mediationId={mediationId} />}
+          </div>
         </div>
         <Footer id="verso-footer" borderTop colored={!isTuto} />
       </div>
@@ -65,6 +63,7 @@ Verso.defaultProps = {
 Verso.propTypes = {
   areDetailsVisible: PropTypes.bool.isRequired,
   backgroundColor: PropTypes.string,
+  contentInlineStyle: PropTypes.object.isRequired,
   extraClassName: PropTypes.string,
   forceDetailsVisible: PropTypes.bool,
   isTuto: PropTypes.bool.isRequired,

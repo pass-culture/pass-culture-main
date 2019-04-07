@@ -6,9 +6,17 @@ import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 
+import { ROOT_PATH } from '../../utils/config';
 import Verso from './Verso';
 import { getHeaderColor } from '../../utils/colors';
 import currentRecommendationSelector from '../../selectors/currentRecommendation';
+
+const backgroundImage = `url('${ROOT_PATH}/mosaic-k.png')`;
+export const getContentInlineStyle = (isTuto, backgroundColor) => {
+  let result = { backgroundImage };
+  if (isTuto && backgroundColor) result = { ...result, backgroundColor };
+  return result;
+};
 
 export const checkIsTuto = recommendation => {
   const tutoIndex = get(recommendation, 'mediation.tutoIndex');
@@ -49,12 +57,15 @@ export const mapStateToProps = (state, { match }) => {
   const offerVenue = getOfferVenue(recommendation);
   const offerName = getOfferName(recommendation);
 
+  const contentInlineStyle = getContentInlineStyle(isTuto, backgroundColor);
+
   const draggable = get(state, 'card.draggable');
   const areDetailsVisible = get(state, 'card.areDetailsVisible');
 
   return {
     areDetailsVisible,
     backgroundColor,
+    contentInlineStyle,
     draggable,
     isTuto,
     mediationId,
