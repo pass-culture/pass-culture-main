@@ -25,24 +25,26 @@ class Verso extends React.PureComponent {
     } = this.props;
 
     const flipped = forceDetailsVisible || areDetailsVisible;
-    const showHeader = offerName && offerVenue;
     return (
       <div
         className={classnames('verso', extraClassName, {
           flipped,
         })}
       >
-        <div className="verso-wrapper with-padding-top">
-          {showHeader && (
-            <VersoHeader
-              title={offerName}
-              subtitle={offerVenue}
-              backgroundColor={backgroundColor}
-            />
-          )}
+        <div className="verso-wrapper is-black-text scroll-y flex-rows is-relative text-left">
+          <VersoHeader
+            title={offerName}
+            subtitle={offerVenue}
+            backgroundColor={backgroundColor}
+          />
           {!isTuto && <VersoControl />}
           {!isTuto && <VersoInfo />}
-          {isTuto && <VersoInfoTuto mediationId={mediationId} />}
+          {isTuto && (
+            <VersoInfoTuto
+              backgroundColor={backgroundColor}
+              mediationId={mediationId}
+            />
+          )}
         </div>
         <Footer id="verso-footer" borderTop colored={!isTuto} />
       </div>

@@ -53,6 +53,15 @@
   }
 }
 
+.pc-theme-black {
+  color: $white;
+  background-color: $black;
+
+  [class*='border-'] {
+    border-color: $white;
+  }
+}
+
 .pc-theme-white {
   color: $primary;
   background-color: $white;

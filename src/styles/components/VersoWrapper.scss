@@ -1,44 +1,28 @@
 .verso-wrapper {
-  color: $text;
-  text-align: left;
-  min-height: 100%;
-  position: relative;
-  overflow-y: scroll;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  -webkit-overflow-scrolling: touch;
   cursor: initial;
-
-  &.with-padding-top {
-    padding-top: 56.25%;
-  }
+  height: 100%;
+  min-height: 100%;
+  padding-top: 56.25%;
+  -webkit-overflow-scrolling: touch;
 
   .verso-header {
-    background-color: $black;
-    padding-top: rem(33px);
-    padding-bottom: rem(33px);
-    padding-left: $page-padding;
-    padding-right: $page-padding;
-    color: $white;
-    position: relative;
     flex-shrink: 0;
+  }
 
+  .with-triangle::before {
     $triangle-diag: 50px;
 
-    &::before {
-      content: '';
-      background-color: inherit;
-      width: $triangle-diag;
-      height: $triangle-diag;
-      transform: rotate(45deg);
-      top: -$triangle-diag/2;
-      margin: auto;
-      left: 0;
-      right: 0;
-      position: absolute;
-      z-index: -1;
-    }
+    content: '';
+    background-color: inherit;
+    width: $triangle-diag;
+    height: $triangle-diag;
+    transform: rotate(45deg);
+    top: -$triangle-diag/2;
+    margin: auto;
+    left: 0;
+    right: 0;
+    position: absolute;
+    z-index: -1;
   }
 
   .verso-content {
@@ -58,14 +42,8 @@
       font-size: 1.5rem;
     }
 
-    img.verso-tuto-mediation {
-      width: 100%;
-    }
-
     p {
       padding-bottom: 1rem;
-      // line-height: 1.125rem;
-      // font-size: 0.94rem;
     }
 
     ul.address-info {
