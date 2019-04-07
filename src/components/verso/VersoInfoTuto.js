@@ -9,7 +9,7 @@ import { THUMBS_URL, ROOT_PATH } from '../../utils/config';
 const imageSrcBase = `${THUMBS_URL}/mediations`;
 const backgroundImage = `url('${ROOT_PATH}/mosaic-k.png')`;
 
-const VersoInfoTuto = React.memo(({ backgroundColor, mediationId }) => {
+const VersoInfoTuto = ({ backgroundColor, mediationId }) => {
   let style = { backgroundImage };
   if (backgroundColor) style = { ...style, backgroundColor };
   return (
@@ -21,7 +21,7 @@ const VersoInfoTuto = React.memo(({ backgroundColor, mediationId }) => {
       />
     </div>
   );
-});
+};
 
 VersoInfoTuto.defaultProps = {
   backgroundColor: null,

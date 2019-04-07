@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import Footer from '../layout/Footer';
-import VersoInfo from './VersoInfo';
+import VersoInfoOffer from './VersoInfo';
 import VersoHeader from './VersoHeader';
 import VersoControl from './VersoControl';
 import VersoInfoTuto from './VersoInfoTuto';
@@ -38,7 +38,7 @@ class Verso extends React.PureComponent {
             backgroundColor={backgroundColor}
           />
           {!isTuto && <VersoControl />}
-          {!isTuto && <VersoInfo />}
+          {!isTuto && <VersoInfoOffer />}
           {isTuto && (
             <VersoInfoTuto
               backgroundColor={backgroundColor}

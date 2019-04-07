@@ -1,7 +1,10 @@
-import React from 'react'
-import PropTypes from 'prop-types'
+/* eslint
+  semi: [2, "always"]
+  react/jsx-one-expression-per-line: 0 */
+import React from 'react';
+import PropTypes from 'prop-types';
 
-const VersoHeader = React.memo(({ backgroundColor, subtitle, title }) => (
+const VersoHeader = ({ backgroundColor, subtitle, title }) => (
   <div
     className="verso-header with-triangle is-relative pc-theme-black py32 px12"
     style={{ backgroundColor }}
@@ -21,17 +24,17 @@ const VersoHeader = React.memo(({ backgroundColor, subtitle, title }) => (
       </h2>
     )}
   </div>
-))
+);
 
 VersoHeader.defaultProps = {
   subtitle: null,
   title: null,
-}
+};
 
 VersoHeader.propTypes = {
   backgroundColor: PropTypes.string.isRequired,
-  subtitle: PropTypes.string.isRequired,
-  title: PropTypes.string.isRequired,
-}
+  subtitle: PropTypes.string,
+  title: PropTypes.string,
+};
 
-export default VersoHeader
+export default VersoHeader;

@@ -2,6 +2,10 @@
   background-color: $white;
 }
 
+.pc-background-black {
+  background-color: $black;
+}
+
 .pc-background-red,
 .pc-background-primary {
   background-color: $primary;
@@ -45,8 +49,8 @@
 }
 
 .pc-theme-default {
-  color: $black;
-  background-color: $white;
+  @extend .is-black-text;
+  @extend .pc-background-white;
 
   [class*='border-'] {
     border-color: $black;
@@ -54,8 +58,8 @@
 }
 
 .pc-theme-black {
-  color: $white;
-  background-color: $black;
+  @extend .is-white-text;
+  @extend .pc-background-black;
 
   [class*='border-'] {
     border-color: $white;

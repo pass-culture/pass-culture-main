@@ -14,14 +14,14 @@
 
     content: '';
     background-color: inherit;
-    width: $triangle-diag;
     height: $triangle-diag;
-    transform: rotate(45deg);
-    top: -$triangle-diag/2;
-    margin: auto;
     left: 0;
-    right: 0;
+    margin: auto;
     position: absolute;
+    right: 0;
+    top: -$triangle-diag/2;
+    transform: rotate(45deg);
+    width: $triangle-diag;
     z-index: -1;
   }
 
