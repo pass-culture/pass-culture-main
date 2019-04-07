@@ -1,24 +1,19 @@
 .verso {
-  position: absolute;
-  left: 0;
-  right: 0;
   transition: transform 250ms;
-  top: 0;
-  bottom: 0;
-  z-index: 500;
+  z-index: $zindex-verso-view;
   transform: translate(0, 100%);
   will-change: transform;
   height: 100%;
 
   &.flipped {
+    // A remplacer par react-transition-group
+    // pour gérer les transitions dans le composant
     transform: translate(0, 0);
   }
 
   &.with-header {
+    // NOTE: permet de passer le verso au dessus du header
+    // - dans la recherche
     margin-top: $header-height;
-  }
-
-  .over-wrapper {
-    margin-top: 50%;
   }
 }

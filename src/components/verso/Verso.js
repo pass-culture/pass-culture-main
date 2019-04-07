@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import VersoHeader from './VersoHeader';
-import VersoControl from './verso-controls/VersoControl';
+import VersoControl from './verso-controls/VersoControlContainer';
 import VersoContentOfferContainer from './verso-content/verso-content-offer/VersoContentOfferContainer';
 import VersoContentTuto from './verso-content/VersoContentTuto';
 import Footer from '../layout/Footer';
@@ -29,7 +29,7 @@ class Verso extends React.PureComponent {
     const flipped = forceDetailsVisible || areDetailsVisible;
     return (
       <div
-        className={classnames('verso', extraClassName, {
+        className={classnames('verso is-overlay', extraClassName, {
           flipped,
         })}
       >

@@ -4,3 +4,6 @@ export { default as selectRecommendations } from './recommendations'
 export {
   default as selectRecommendationsForDiscovery,
 } from './recommendationsForDiscovery'
+export {
+  default as currentRecommendationSelector,
+} from './currentRecommendation'

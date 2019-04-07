@@ -1,105 +1,51 @@
 /* eslint
+  semi: [2, "always"]
   react/jsx-one-expression-per-line: 0 */
-import React from 'react'
-import PropTypes from 'prop-types'
-import { connect } from 'react-redux'
-import { withRouter } from 'react-router-dom'
-import { compose, bindActionCreators } from 'redux'
-import { requestData } from 'redux-saga-data'
-import { selectCurrentUser } from 'with-login'
+import React from 'react';
+import PropTypes from 'prop-types';
 
-import { getWalletValue } from '../../../utils/user'
-import { ShareButton } from '../../share/ShareButton'
-import VersoBookingButtonContainer from '../verso-buttons/verso-booking-button/VersoBookingButtonContainer'
-import currentRecommendationSelector from '../../../selectors/currentRecommendation'
+import Finishable from '../../layout/Finishable';
+import { ShareButton } from '../../share/ShareButton';
+import VersoWallet from './wallet/VersoWalletContainer';
+import VersoButtonFavorite from './favorite/VersoButtonFavoriteContainer';
+import VersoBooking from './booking/VersoBooking';
+// import VersoBookingButtonContainer from '../verso-buttons/verso-booking-button/VersoBookingButtonContainer';
 
-class VersoControl extends React.PureComponent {
-  constructor(props) {
-    super(props)
-    const { dispatch } = this.props
-    const actions = { requestData }
-    this.actions = bindActionCreators(actions, dispatch)
-  }
+const renderClickBlockerIfFinished = () => (
+  <button
+    type="button"
+    onClick={() => {}}
+    className="finishable-click-blocker"
+  />
+);
 
-  onClickFavorite = () => {
-    const { isFavorite, recommendationId } = this.props
-    const apiPath = `/currentRecommendations/${recommendationId}`
-    this.actions.requestData({
-      apiPath,
-      body: { isFavorite: !isFavorite },
-      method: 'PATCH',
-      stateKey: 'currentRecommendations',
-    })
-  }
-
-  render() {
-    const { isFavorite, walletValue } = this.props
-    return (
-      <ul className="verso-control py8 px12 is-medium is-flex flex-0 flex-between items-center pc-theme-red">
-        <li>
-          <small className="is-block">Mon Pass</small>
-          <span id="verso-wallet-value" className="fs24 is-block">
-            {walletValue}&nbsp;€
-          </span>
-        </li>
-        <li>
-          <button
-            disabled
-            type="button"
-            className="no-border no-background"
-            onClick={this.onClickFavorite}
-          >
-            <span
-              aria-hidden
-              className={`icon-ico-like${isFavorite ? '-on' : ''}`}
-              title={isFavorite ? 'Retirer des favoris' : 'Ajouter aux favoris'}
-            />
-          </button>
-        </li>
-        <li>
-          <ShareButton />
-        </li>
-        <li>
-          <VersoBookingButtonContainer />
-        </li>
-      </ul>
-    )
-  }
-}
+const VersoControl = ({ isFinished }) => (
+  <div className="verso-control is-relative">
+    <ul className="py8 px12 is-medium is-flex flex-0 flex-between items-center pc-theme-red">
+      <li>
+        <VersoWallet />
+      </li>
+      <li>
+        <VersoButtonFavorite />
+      </li>
+      <li>
+        <ShareButton />
+      </li>
+      <li className="is-relative">
+        {isFinished && renderClickBlockerIfFinished()}
+        <VersoBooking />
+      </li>
+    </ul>
+    <Finishable finished={isFinished} />
+  </div>
+);
 
 VersoControl.defaultProps = {
-  isFavorite: false,
-  recommendationId: null,
-}
+  isFinished: false,
+};
 
 VersoControl.propTypes = {
-  dispatch: PropTypes.func.isRequired,
-  isFavorite: PropTypes.bool,
-  recommendationId: PropTypes.string,
-  walletValue: PropTypes.oneOfType([PropTypes.number, PropTypes.string])
-    .isRequired,
-}
+  isFinished: PropTypes.bool,
+};
 
-const mapStateToProps = (state, ownProps) => {
-  const { match, width } = ownProps
-  const { mediationId, offerId } = match.params
-  const recommendation = currentRecommendationSelector(
-    state,
-    offerId,
-    mediationId
-  )
-  const isMobile = width <= 670
-  const currentUser = selectCurrentUser(state)
-  const walletValue = getWalletValue(currentUser)
-  return {
-    isFavorite: recommendation && recommendation.isFavorite,
-    isMobile,
-    recommendationId: recommendation && recommendation.id,
-    walletValue,
-  }
-}
-
-export default compose(
-  withRouter,
-  connect(mapStateToProps)
-)(VersoControl)
+export default VersoControl;

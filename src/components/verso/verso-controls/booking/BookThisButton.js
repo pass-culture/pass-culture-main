@@ -25,16 +25,15 @@ class BookThisButton extends React.PureComponent {
       <Link
         to={linkDestination}
         id="verso-booking-button"
-        className="button-with-price flex-columns is-bold is-white-text fs18"
+        className="flex-columns is-bold is-white-text fs18"
       >
         <Price
           free="Gratuit"
-          className="px6 py8 flex-columns items-center"
+          className="pc-ticket-button-price px6 py8 flex-columns items-center"
           value={priceValue}
           format={formatOutputPrice}
         />
-        <hr className="dotted-left-2x-white no-margin" />
-        <span className="button-label px6 py8">J&apos;y vais!</span>
+        <span className="pc-ticket-button-label px6 py8">J&apos;y vais!</span>
       </Link>
     )
   }

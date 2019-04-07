@@ -1,23 +1,31 @@
-ul.verso-control {
-  @extend .no-list-style;
+.verso {
+  .verso-control {
+    @extend .is-clipped;
+    @extend .no-list-style;
 
-  height: 62px;
-  min-height: 62px;
+    height: 62px;
+    min-height: 62px;
+    list-style: none;
+  }
 
-  span[class^='icon-']::before {
+  .verso-control span[class^='icon-']::before {
     margin: 0;
   }
 
-  li {
+  .verso-control li {
     @extend .text-center;
     @extend .is-inline-block;
+  }
 
-    .cancel-button {
-      background: transparent;
-      color: white;
-      border: 2px solid white;
-      border-left-style: dotted;
-    }
+  .verso-control .finishable {
+    // -> voir fichier finishable.scss
+  }
+
+  .verso-control .cancel-button {
+    background: transparent;
+    color: white;
+    border: 2px solid white;
+    border-left-style: dotted;
   }
 }
 

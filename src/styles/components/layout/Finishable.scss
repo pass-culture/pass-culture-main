@@ -1,15 +1,70 @@
 .finishable {
-  position: relative;
+  @extend .is-relative;
 
   // TODO: change with rotated horizontal icon for better control
 
   .finish-icon {
-    position: absolute;
-    width: 110%;
+    @extend .is-absolute;
+
     top: 0;
     bottom: 0;
+    width: 110%;
     margin: auto;
     left: -1rem;
     right: -1rem;
+  }
+}
+
+.verso-control {
+  .finishable-click-blocker {
+    @extend .no-border;
+    @extend .no-pointer;
+    @extend .is-absolute;
+    @extend .no-background;
+
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .finishable {
+    @extend .is-absolute;
+    @extend .is-full-height;
+
+    top: 0;
+    right: 0;
+    width: 120px;
+
+    .finish-ribon {
+      @extend .is-block;
+      @extend .is-full-width;
+      @extend .is-full-height;
+
+      transform: rotate(-8deg);
+    }
+
+    .finish-ribon-img {
+      @extend .is-absolute;
+
+      top: 50%;
+      left: 55%;
+      margin-top: -23px;
+      margin-left: -40px;
+    }
+
+    .finish-ribon-background {
+      @extend .is-absolute;
+
+      top: 50%;
+      left: 55%;
+      width: 300%;
+      height: 20px;
+      margin-top: -10px;
+      margin-left: -150%;
+      transform: rotate(-17deg);
+      background-color: $white;
+      background-size: 20px 10px;
+    }
   }
 }

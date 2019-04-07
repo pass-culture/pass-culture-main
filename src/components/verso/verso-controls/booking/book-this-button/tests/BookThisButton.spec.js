@@ -1,8 +1,8 @@
 import React from 'react'
 import { shallow } from 'enzyme'
 
-import Price from '../../../../layout/Price'
-import BookThisButton, { formatOutputPrice } from '../BookThisButton'
+import Price from '../../../../../layout/Price'
+import BookThisButton, { formatOutputPrice } from '../../BookThisButton'
 
 describe('src | components | verso | verso-buttons | BookThisButton', () => {
   describe('BookThisButton component', () => {

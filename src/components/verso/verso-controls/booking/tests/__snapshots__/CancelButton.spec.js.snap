@@ -1,0 +1,234 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`src | components | verso | verso-controls | booking | RawCancelButton snapshot with required props should match snapshot 1`] = `
+ShallowWrapper {
+  Symbol(enzyme.__root__): [Circular],
+  Symbol(enzyme.__unrendered__): <RawCancelButton
+    booking={Object {}}
+    dispatch={[MockFunction]}
+    history={Object {}}
+    isCancelled={false}
+    locationSearch="?astring"
+    priceValue={42}
+  />,
+  Symbol(enzyme.__renderer__): Object {
+    "batchedUpdates": [Function],
+    "checkPropTypes": [Function],
+    "getNode": [Function],
+    "render": [Function],
+    "simulateError": [Function],
+    "simulateEvent": [Function],
+    "unmount": [Function],
+  },
+  Symbol(enzyme.__node__): Object {
+    "instance": null,
+    "key": undefined,
+    "nodeType": "host",
+    "props": Object {
+      "children": Array [
+        <span
+          className="pc-ticket-button-price reserved"
+        >
+          <Price
+            className=""
+            free="Gratuit"
+            value={42}
+          />
+          <i
+            className="icon-ico-check fs24"
+          />
+        </span>,
+        <span
+          className="pc-ticket-button-label"
+        >
+          Annuler
+        </span>,
+      ],
+      "className": "flex-columns no-border no-background",
+      "id": "verso-cancel-booking-button",
+      "onClick": [Function],
+      "type": "button",
+    },
+    "ref": null,
+    "rendered": Array [
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": Array [
+            <Price
+              className=""
+              free="Gratuit"
+              value={42}
+            />,
+            <i
+              className="icon-ico-check fs24"
+            />,
+          ],
+          "className": "pc-ticket-button-price reserved",
+        },
+        "ref": null,
+        "rendered": Array [
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "function",
+            "props": Object {
+              "className": "",
+              "free": "Gratuit",
+              "value": 42,
+            },
+            "ref": null,
+            "rendered": null,
+            "type": [Function],
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "className": "icon-ico-check fs24",
+            },
+            "ref": null,
+            "rendered": null,
+            "type": "i",
+          },
+        ],
+        "type": "span",
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": "Annuler",
+          "className": "pc-ticket-button-label",
+        },
+        "ref": null,
+        "rendered": "Annuler",
+        "type": "span",
+      },
+    ],
+    "type": "button",
+  },
+  Symbol(enzyme.__nodes__): Array [
+    Object {
+      "instance": null,
+      "key": undefined,
+      "nodeType": "host",
+      "props": Object {
+        "children": Array [
+          <span
+            className="pc-ticket-button-price reserved"
+          >
+            <Price
+              className=""
+              free="Gratuit"
+              value={42}
+            />
+            <i
+              className="icon-ico-check fs24"
+            />
+          </span>,
+          <span
+            className="pc-ticket-button-label"
+          >
+            Annuler
+          </span>,
+        ],
+        "className": "flex-columns no-border no-background",
+        "id": "verso-cancel-booking-button",
+        "onClick": [Function],
+        "type": "button",
+      },
+      "ref": null,
+      "rendered": Array [
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": Array [
+              <Price
+                className=""
+                free="Gratuit"
+                value={42}
+              />,
+              <i
+                className="icon-ico-check fs24"
+              />,
+            ],
+            "className": "pc-ticket-button-price reserved",
+          },
+          "ref": null,
+          "rendered": Array [
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "function",
+              "props": Object {
+                "className": "",
+                "free": "Gratuit",
+                "value": 42,
+              },
+              "ref": null,
+              "rendered": null,
+              "type": [Function],
+            },
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "className": "icon-ico-check fs24",
+              },
+              "ref": null,
+              "rendered": null,
+              "type": "i",
+            },
+          ],
+          "type": "span",
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": "Annuler",
+            "className": "pc-ticket-button-label",
+          },
+          "ref": null,
+          "rendered": "Annuler",
+          "type": "span",
+        },
+      ],
+      "type": "button",
+    },
+  ],
+  Symbol(enzyme.__options__): Object {
+    "adapter": ReactSixteenAdapter {
+      "options": Object {
+        "enableComponentDidUpdateOnSetState": true,
+        "legacyContextMode": "parent",
+        "lifecycles": Object {
+          "componentDidUpdate": Object {
+            "onSetState": true,
+          },
+          "getChildContext": Object {
+            "calledByRenderer": false,
+          },
+          "getDerivedStateFromProps": Object {
+            "hasShouldComponentUpdateBug": false,
+          },
+          "getSnapshotBeforeUpdate": true,
+          "setState": Object {
+            "skipsComponentDidUpdateOnNullish": true,
+          },
+        },
+      },
+    },
+  },
+  Symbol(enzyme.__childContext__): null,
+}
+`;

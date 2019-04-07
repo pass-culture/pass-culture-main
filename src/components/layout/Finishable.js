@@ -8,18 +8,21 @@ const Finishable = ({ finished, children }) => {
   return (
     <div className="finishable">
       {children}
-      <Icon svg="badge-termine" className="finish-icon" alt="Terminé" />
+      <span className="finish-ribon">
+        <span className="finish-ribon-background" />
+        <Icon className="finish-ribon-img" svg="badge-termine" alt="Terminé" />
+      </span>
     </div>
   )
 }
 
 Finishable.defaultProps = {
-  finished: false,
+  children: null,
 }
 
 Finishable.propTypes = {
-  children: PropTypes.node.isRequired,
-  finished: PropTypes.bool,
+  children: PropTypes.node,
+  finished: PropTypes.bool.isRequired,
 }
 
 export default Finishable

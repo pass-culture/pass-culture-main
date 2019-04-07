@@ -42,7 +42,7 @@ ShallowWrapper {
             subtitle="Offer subtitle"
             title="Offer title"
           />
-          <withRouter(Connect(VersoControl)) />
+          <VersoControl />
           <div
             className="verso-content"
             style={
@@ -61,7 +61,7 @@ ShallowWrapper {
           id="verso-footer"
         />,
       ],
-      "className": "verso extra-classname flipped",
+      "className": "verso is-overlay extra-classname flipped",
     },
     "ref": null,
     "rendered": Array [
@@ -76,7 +76,7 @@ ShallowWrapper {
               subtitle="Offer subtitle"
               title="Offer title"
             />,
-            <withRouter(Connect(VersoControl)) />,
+            <VersoControl />,
             <div
               className="verso-content"
               style={
@@ -179,7 +179,7 @@ ShallowWrapper {
               subtitle="Offer subtitle"
               title="Offer title"
             />
-            <withRouter(Connect(VersoControl)) />
+            <VersoControl />
             <div
               className="verso-content"
               style={
@@ -198,7 +198,7 @@ ShallowWrapper {
             id="verso-footer"
           />,
         ],
-        "className": "verso extra-classname flipped",
+        "className": "verso is-overlay extra-classname flipped",
       },
       "ref": null,
       "rendered": Array [
@@ -213,7 +213,7 @@ ShallowWrapper {
                 subtitle="Offer subtitle"
                 title="Offer title"
               />,
-              <withRouter(Connect(VersoControl)) />,
+              <VersoControl />,
               <div
                 className="verso-content"
                 style={

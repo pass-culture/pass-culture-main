@@ -1,0 +1,23 @@
+.pc-ticket-button-price,
+.pc-ticket-button-label {
+  @extend .py8;
+  @extend .fs18;
+  @extend .px6;
+  @extend .is-bold;
+  @extend .is-white-text;
+  @extend .no-background;
+
+  border: 2px solid white;
+}
+
+.pc-ticket-button-price {
+  border-right: 0;
+
+  &.reserved {
+    border: 0;
+  }
+}
+
+.pc-ticket-button-label {
+  border-left-style: dotted;
+}

@@ -11,6 +11,7 @@ import {
 } from './utils'
 import { Icon } from '../../../layout/Icon'
 import { navigationLink } from '../../../../utils/geolocation'
+import VersoActionsBar from '../VersoActionsBar'
 
 class VersoContentOffer extends React.PureComponent {
   componentDidMount() {
@@ -167,8 +168,10 @@ class VersoContentOffer extends React.PureComponent {
   }
 
   render() {
+    const { onlineOfferUrl } = this.props
     return (
       <div className="verso-info">
+        {onlineOfferUrl && <VersoActionsBar url={onlineOfferUrl} />}
         {this.renderOfferWhat()}
         {this.renderOfferDetails()}
         {this.renderOfferWhen()}
@@ -183,6 +186,7 @@ VersoContentOffer.defaultProps = {
   maxShownDates: 7,
   musicSubType: null,
   musicType: null,
+  onlineOfferUrl: null,
   recommendation: null,
   showSubType: null,
   showType: null,
@@ -195,6 +199,7 @@ VersoContentOffer.propTypes = {
   maxShownDates: PropTypes.number,
   musicSubType: PropTypes.object,
   musicType: PropTypes.object,
+  onlineOfferUrl: PropTypes.string,
   recommendation: PropTypes.object,
   showSubType: PropTypes.object,
   showType: PropTypes.object,
