@@ -8,11 +8,11 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 
-import { ROOT_PATH } from '../../utils/config'
-import { navigationLink } from '../../utils/geolocation'
-import { isRecommendationFinished } from '../../helpers'
-import { selectBookables } from '../../selectors/selectBookables'
-import currentRecommendationSelector from '../../selectors/currentRecommendation'
+import { ROOT_PATH } from '../../../utils/config'
+import { navigationLink } from '../../../utils/geolocation'
+import { isRecommendationFinished } from '../../../helpers'
+import { selectBookables } from '../../../selectors/selectBookables'
+import currentRecommendationSelector from '../../../selectors/currentRecommendation'
 
 const backgroundImage = `url('${ROOT_PATH}/mosaic-k.png')`
 

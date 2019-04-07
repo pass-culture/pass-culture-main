@@ -6,10 +6,10 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import Footer from '../layout/Footer';
-import VersoInfoOffer from './VersoInfo';
 import VersoHeader from './VersoHeader';
 import VersoControl from './VersoControl';
-import VersoInfoTuto from './VersoInfoTuto';
+import VersoInfoOffer from './verso-content/VersoInfo';
+import VersoInfoTuto from './verso-content/VersoInfoTuto';
 
 class Verso extends React.PureComponent {
   render() {
@@ -24,6 +24,7 @@ class Verso extends React.PureComponent {
       offerVenue,
     } = this.props;
 
+    // css anination
     const flipped = forceDetailsVisible || areDetailsVisible;
     return (
       <div

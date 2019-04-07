@@ -6,7 +6,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 
 import VersoInfoTuto from '../VersoInfoTuto';
-import { THUMBS_URL } from '../../../utils/config';
+import { THUMBS_URL } from '../../../../utils/config';
 
 describe('src | components | verso | VersoInfoTuto', () => {
   it('should match snapshot', () => {
