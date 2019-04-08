@@ -1,4 +1,4 @@
-from flask import current_app as app, jsonify, request
+from flask import current_app as app, jsonify, request, redirect
 
 from connectors.google_spreadsheet import get_authorized_emails_and_dept_codes
 from domain.departments import ILE_DE_FRANCE_DEPT_CODES
@@ -16,6 +16,10 @@ from validation.users import check_valid_signup
 
 
 @app.route("/users/signup", methods=["POST"])
+def signup_old():
+    return redirect("/users/signup/webapp", code=307)
+
+
 @app.route("/users/signup/webapp", methods=["POST"])
 def signup_webapp():
     objects_to_save = []

@@ -1,12 +1,13 @@
-import pytest
 from datetime import datetime
-from freezegun import freeze_time
 from unittest.mock import patch
+
+import pytest
+from freezegun import freeze_time
 
 from models.pc_object import serialize
 from models.user import User
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import API_URL, req
+from tests.test_utils import API_URL
 
 BASE_DATA = {
     'email': 'toto@btmx.fr',
@@ -49,7 +50,7 @@ class Post:
             # When
             response = TestClient() \
                 .post(API_URL + '/users/signup/webapp',
-                                json=data, headers={'origin': 'http://localhost:3000'})
+                      json=data, headers={'origin': 'http://localhost:3000'})
 
             # Then
             assert response.status_code == 201
@@ -95,13 +96,27 @@ class Post:
             # When
             response = TestClient() \
                 .post(API_URL + '/users/signup/webapp',
-                                json=user_json, headers={'origin': 'http://localhost:3000'})
+                      json=user_json, headers={'origin': 'http://localhost:3000'})
 
             # Then
             assert response.status_code == 201
             created_user = User.query.filter_by(email='pctest.isAdmin.canBook@btmx.fr').one()
             assert not created_user.isAdmin
 
+        @clean_database
+        def when_calling_old_route(self, app):
+            # Given
+            data = BASE_DATA.copy()
+
+            # When
+            response = TestClient() \
+                .post(API_URL + '/users/signup',
+                      json=data, headers={'origin': 'http://localhost:3000'})
+
+            # Then
+            assert response.status_code == 201
+            assert response.history[0].status_code == 307
+            assert response.url == 'http://localhost:5000/users/signup/webapp'
 
     class Returns400:
         @clean_database
@@ -113,7 +128,7 @@ class Post:
             # When
             response = TestClient() \
                 .post(API_URL + '/users/signup/webapp',
-                                json=data, headers={'origin': 'http://localhost:3000'})
+                      json=data, headers={'origin': 'http://localhost:3000'})
 
             # Then
             assert response.status_code == 400
@@ -129,7 +144,7 @@ class Post:
             # When
             response = TestClient() \
                 .post(API_URL + '/users/signup/webapp',
-                                json=data, headers={'origin': 'http://localhost:3000'})
+                      json=data, headers={'origin': 'http://localhost:3000'})
 
             # Then
             assert response.status_code == 400
@@ -140,12 +155,12 @@ class Post:
         def when_email_is_already_used(self, app):
             TestClient() \
                 .post(API_URL + '/users/signup/webapp',
-                     json=BASE_DATA, headers={'origin': 'http://localhost:3000'})
+                      json=BASE_DATA, headers={'origin': 'http://localhost:3000'})
 
             # When
             response = TestClient() \
                 .post(API_URL + '/users/signup/webapp',
-                                json=BASE_DATA, headers={'origin': 'http://localhost:3000'})
+                      json=BASE_DATA, headers={'origin': 'http://localhost:3000'})
 
             # Then
             assert response.status_code == 400
@@ -161,7 +176,7 @@ class Post:
             # When
             response = TestClient() \
                 .post(API_URL + '/users/signup/webapp',
-                                json=data, headers={'origin': 'http://localhost:3000'})
+                      json=data, headers={'origin': 'http://localhost:3000'})
 
             # Then
             assert response.status_code == 400
@@ -177,7 +192,7 @@ class Post:
             # When
             response = TestClient() \
                 .post(API_URL + '/users/signup/webapp',
-                                json=data, headers={'origin': 'http://localhost:3000'})
+                      json=data, headers={'origin': 'http://localhost:3000'})
 
             # Then
             assert response.status_code == 400
@@ -193,7 +208,7 @@ class Post:
             # When
             response = TestClient() \
                 .post(API_URL + '/users/signup/webapp',
-                                json=data, headers={'origin': 'http://localhost:3000'})
+                      json=data, headers={'origin': 'http://localhost:3000'})
 
             # Then
             assert response.status_code == 400
@@ -209,7 +224,7 @@ class Post:
             # When
             response = TestClient() \
                 .post(API_URL + '/users/signup/webapp',
-                                json=data, headers={'origin': 'http://localhost:3000'})
+                      json=data, headers={'origin': 'http://localhost:3000'})
 
             # Then
             assert response.status_code == 400
@@ -225,7 +240,7 @@ class Post:
             # When
             response = TestClient() \
                 .post(API_URL + '/users/signup/webapp',
-                                json=data, headers={'origin': 'http://localhost:3000'})
+                      json=data, headers={'origin': 'http://localhost:3000'})
 
             # Then
             assert response.status_code == 400
@@ -240,7 +255,7 @@ class Post:
             # When
             response = TestClient() \
                 .post(API_URL + '/users/signup/webapp',
-                                json=data, headers={'origin': 'http://localhost:3000'})
+                      json=data, headers={'origin': 'http://localhost:3000'})
 
             # Then
             assert response.status_code == 400
@@ -255,7 +270,7 @@ class Post:
             # When
             response = TestClient() \
                 .post(API_URL + '/users/signup/webapp',
-                                json=data, headers={'origin': 'http://localhost:3000'})
+                      json=data, headers={'origin': 'http://localhost:3000'})
 
             # Then
             assert response.status_code == 400
@@ -273,7 +288,7 @@ class Post:
             # When
             response = TestClient() \
                 .post(API_URL + '/users/signup/webapp',
-                                json=data, headers={'origin': 'http://localhost:3000'})
+                      json=data, headers={'origin': 'http://localhost:3000'})
 
             # Then
             assert response.status_code == 400
