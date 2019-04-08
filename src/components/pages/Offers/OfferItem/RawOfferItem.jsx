@@ -1,6 +1,5 @@
 import classnames from 'classnames'
 import get from 'lodash.get'
-import moment from 'moment'
 import { Icon, pluralize } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import Dotdotdot from 'react-dotdotdot'
@@ -84,7 +83,7 @@ class RawOfferItem extends Component {
     const { isNew } = offer || {}
     const { groupSizeMin, groupSizeMax, priceMin, priceMax } =
       aggregatedStock || {}
-    const { name, createdAt } = event || thing || {}
+    const { name } = event || thing || {}
 
     const numberOfMediations = get(mediations, 'length')
     const remainingStockQuantity = get(stocks, 'length')
