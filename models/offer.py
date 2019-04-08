@@ -72,14 +72,6 @@ class Offer(PcObject,
     ageMax = Column(Integer,
                     nullable=True)
 
-    accessibility = Column(Binary(1),
-                           CheckConstraint('("eventId" IS  NULL) OR (accessibility IS NOT NULL)',
-                                           name='check_accessibility_not_null_for_event'),
-                           nullable=True,
-                           default=bytes([0]),
-
-                           )
-
     url = Column(String(255), nullable=True)
 
     mediaUrls = Column(ARRAY(String(220)),

@@ -57,7 +57,6 @@ def _initiaize_offer_from_event(event: Event) -> Offer:
     offer.conditions = event.conditions
     offer.ageMin = event.ageMin
     offer.ageMax = event.ageMax
-    offer.accessibility = event.accessibility
     offer.durationMinutes = event.durationMinutes
     offer.isNational = event.isNational
     offer.extraData = event.extraData
