@@ -1,6 +1,7 @@
-import { Block, Form } from 'pass-culture-shared'
+import { Form } from 'pass-culture-shared'
 
 import BicInput from '../components/layout/BicInput'
+import Block from '../components/layout/Block'
 import GeoInput from '../components/layout/GeoInput'
 import IbanInput from '../components/layout/IbanInput'
 import SirenInput from '../components/layout/SirenInput'
