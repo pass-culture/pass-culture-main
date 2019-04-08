@@ -112,6 +112,22 @@ class Offer(PcObject,
             self.eventOrThing.populateFromDict(thing_or_event_dict)
 
     @property
+    def stockAlertMessage(self):
+        print('self.stocks', self.stocks)
+        if self.thing and len(self.stocks) == 0:
+            return 'Pas encore de stock'
+        if self.event and len(self.stocks) == 0:
+            return 'Pas encore de places'
+
+
+# plusieurs dates n'ont pas de places
+# une date n'a pas plus de places
+# STOCK / PLACES illimité si available = null and no aucun places = 0
+# Il n'y a plus de places (tout est à 0)
+# encore 44 places
+# plus de places pour x dates
+
+    @property
     def dateRange(self):
         if self.thing or not self.stocks:
             return DateTimes()

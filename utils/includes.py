@@ -33,9 +33,9 @@ NOT_VALIDATED_OFFERER_INCLUDES = [
     "-validationToken"
 ]
 
-EVENT_OCCURRENCE_INCLUDES = [
-    'stocks'
-]
+# EVENT_OCCURRENCE_INCLUDES = [
+#     'stocks'
+# ]
 
 EVENT_INCLUDES = [
     {
@@ -77,6 +77,7 @@ OFFER_INCLUDES = [
     'isFinished',
     'isFullyBooked',
     "mediations",
+    "stockAlertMessage",
     {
     "key": "stocks",
     "sub_joins": ['bookings']
@@ -111,7 +112,6 @@ OFFER_INCLUDES = [
     }
 ]
 
-
 RECOMMENDATION_INCLUDES = [
     "mediation",
     {
@@ -135,7 +135,6 @@ RECOMMENDATION_INCLUDES = [
         ]
     },
 ]
-
 
 BOOKING_INCLUDES = [
     "completedUrl",
@@ -221,8 +220,6 @@ VENUE_INCLUDES = [
 VENUE_PROVIDER_INCLUDES = [
     "provider"
 ]
-
-
 
 OFFERER_FOR_PENDING_VALIDATION_INCLUDES = [
     "validationToken",
