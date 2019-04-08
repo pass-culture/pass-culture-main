@@ -16,7 +16,6 @@ from models.stock import Stock
 from models.venue import Venue
 from utils.date import DateTimes
 
-
 class Offer(PcObject,
             Model,
             ExtraDataMixin,
@@ -113,19 +112,28 @@ class Offer(PcObject,
 
     @property
     def stockAlertMessage(self):
-        print('self.stocks', self.stocks)
-        if self.thing and len(self.stocks) == 0:
-            return 'Pas encore de stock'
-        if self.event and len(self.stocks) == 0:
-            return 'Pas encore de places'
+        message = ""
+        if len(self.stocks) == 0:
+            if self.thing:
+                message = 'Pas encore de stock'
+            else:
+                message = 'Pas encore de places'
 
+        if len(self.stocks) > 0:
+            available_places_or_stock = 0
+            initial_places_or_stock = 0
+            for stock in self.stocks:
+                total_bookings = 0
+                valid_bookings = [book for book in stock.bookings if not book.isCancelled]
+                for valid_booking in valid_bookings:
+                    total_bookings += valid_booking.quantity
+                initial_places_or_stock += stock.available
+                available_places_or_stock = initial_places_or_stock - total_bookings
 
-# plusieurs dates n'ont pas de places
-# une date n'a pas plus de places
-# STOCK / PLACES illimité si available = null and no aucun places = 0
-# Il n'y a plus de places (tout est à 0)
-# encore 44 places
-# plus de places pour x dates
+                if available_places_or_stock > 0:
+                    message = f'Encore {available_places_or_stock} places'
+
+        return message
 
     @property
     def dateRange(self):

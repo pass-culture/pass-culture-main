@@ -6,11 +6,14 @@ from models import PcObject
 from models.db import db
 from tests.conftest import clean_database, TestClient
 from tests.test_utils import API_URL, \
+    create_booking, \
+    create_deposit, \
     create_event_offer, \
     create_offerer, \
     create_recommendation, \
     create_user, \
     create_user_offerer, \
+    create_stock_from_offer, \
     create_venue, create_thing_offer, create_bank_information
 from utils.human_ids import humanize
 
@@ -150,3 +153,29 @@ class Get:
                 assert response.status_code == 200
                 assert 'stockAlertMessage' in response_json
                 assert response_json['stockAlertMessage'] == "Pas encore de places"
+
+        @clean_database
+        def when_an_event_offer_is_created_wit_stock_and_there_is_remaining_stock(self, app):
+            # given
+                user = create_user(email='user@test.com')
+                user2 = create_user(email='user2@test.com')
+                offerer = create_offerer()
+                venue = create_venue(offerer)
+                offer = create_thing_offer(venue)
+                stock = create_stock_from_offer(offer, available=15)
+                recommendation = create_recommendation(offer, user)
+
+                deposit = create_deposit(user2, datetime.utcnow(), amount=500)
+                booking = create_booking(user2, stock, venue, recommendation, quantity=3)
+
+                PcObject.check_and_save(booking, deposit, user, offer, stock, user2)
+
+            # when
+                response = TestClient().with_auth(email='user@test.com').get(API_URL + f'/offers/{humanize(offer.id)}')
+
+            # then
+                response_json = response.json()
+                pprint(response_json)
+                assert response.status_code == 200
+                assert 'stockAlertMessage' in response_json
+                assert response_json['stockAlertMessage'] == "Encore 12 places"
