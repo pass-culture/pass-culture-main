@@ -1,34 +1,21 @@
 /* eslint
   react/jsx-one-expression-per-line: 0 */
 import get from 'lodash.get'
-import { Icon, Logger, capitalize } from 'pass-culture-shared'
+import { capitalize } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
-import React from 'react'
-import { connect } from 'react-redux'
-import { withRouter } from 'react-router-dom'
-import { compose } from 'redux'
+import React, { Fragment } from 'react'
 
+import { Icon } from '../../layout/Icon'
 import { navigationLink } from '../../../utils/geolocation'
-import { isRecommendationFinished } from '../../../helpers'
-import { selectBookables } from '../../../selectors/selectBookables'
-import currentRecommendationSelector from '../../../selectors/currentRecommendation'
 
-class VersoInfo extends React.PureComponent {
-  componentWillMount() {
-    Logger.fixme('VersoInfo ---> componentWillMount')
-  }
-
-  componentWillUnmount() {
-    Logger.fixme('VersoInfo ---> componentWillUnmount')
-  }
-
-  renderOfferWhat() {
+class VersoContentOffer extends React.PureComponent {
+  renderOfferDetails() {
     const { recommendation } = this.props
     const description = get(recommendation, 'offer.eventOrThing.description')
     if (!description) return null
     return (
       <div>
-        <h3>Quoi ?</h3>
+        <h3>Et en détails ?</h3>
         <pre className="is-raw-description">{description}</pre>
       </div>
     )
@@ -50,7 +37,7 @@ class VersoInfo extends React.PureComponent {
     const sliced = bookables.slice(0, maxDatesShowned)
     const hasMoreBookables = bookables.length > maxDatesShowned
     return (
-      <React.Fragment>
+      <Fragment>
         {sliced.map(obj => (
           <li key={obj.id}>
             {capitalize(obj.humanBeginningDate)}
@@ -60,7 +47,7 @@ class VersoInfo extends React.PureComponent {
         {hasMoreBookables && (
           <li>{'Cliquez sur "j\'y vais" pour voir plus de dates.'}</li>
         )}
-      </React.Fragment>
+      </Fragment>
     )
   }
 
@@ -68,11 +55,33 @@ class VersoInfo extends React.PureComponent {
     const { bookables } = this.props
     const limitDatetime = get(bookables, '[0].bookinglimitDatetime')
     return (
-      <React.Fragment>
+      <Fragment>
         <li>
           Dès maintenant {limitDatetime && `et jusqu&apos;au ${limitDatetime}`}{' '}
         </li>
-      </React.Fragment>
+      </Fragment>
+    )
+  }
+
+  renderOfferWhat() {
+    const { recommendation } = this.props
+    const eventOrThing = get(recommendation, 'offer.eventOrThing')
+    const author = get(eventOrThing, 'author')
+    const durationMinutes = get(eventOrThing, 'durationMinutes')
+    const type = get(eventOrThing, 'extraData.musicType')
+    const label = get(eventOrThing, 'offerType.label')
+    const performer = get(eventOrThing, 'performer')
+    const speaker = get(eventOrThing, 'speaker')
+    return (
+      <div>
+        <h3>Quoi ?</h3>
+        <span className="is-bold">{label}</span>
+        {durationMinutes && <span>- Durée {durationMinutes}</span>}
+        {type && <span>Genre {type}</span>}
+        {author && <span>Auteur {author}</span>}
+        {performer && <span>Interprête {performer}</span>}
+        {speaker && <span>Intervenant {speaker}</span>}
+      </div>
     )
   }
 
@@ -130,6 +139,7 @@ class VersoInfo extends React.PureComponent {
     return (
       <div className="verso-info">
         {this.renderOfferWhat()}
+        {this.renderOfferDetails()}
         {this.renderOfferWhen()}
         {this.renderOfferWhere()}
       </div>
@@ -137,39 +147,17 @@ class VersoInfo extends React.PureComponent {
   }
 }
 
-VersoInfo.defaultProps = {
+VersoContentOffer.defaultProps = {
   bookables: null,
   maxDatesShowned: 7,
   recommendation: null,
 }
 
-VersoInfo.propTypes = {
+VersoContentOffer.propTypes = {
   bookables: PropTypes.array,
   isFinished: PropTypes.bool.isRequired,
   maxDatesShowned: PropTypes.number,
   recommendation: PropTypes.object,
 }
 
-const mapStateToProps = (state, ownProps) => {
-  const { match } = ownProps
-  const { mediationId, offerId } = match.params
-  // recuperation de la recommandation
-  const recommendation = currentRecommendationSelector(
-    state,
-    offerId,
-    mediationId
-  )
-
-  const bookables = selectBookables(state, recommendation, match)
-  const isFinished = isRecommendationFinished(recommendation, offerId)
-  return {
-    bookables,
-    isFinished,
-    recommendation,
-  }
-}
-
-export default compose(
-  withRouter,
-  connect(mapStateToProps)
-)(VersoInfo)
+export default VersoContentOffer

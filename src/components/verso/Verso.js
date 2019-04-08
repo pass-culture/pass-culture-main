@@ -8,8 +8,8 @@ import React from 'react';
 import Footer from '../layout/Footer';
 import VersoHeader from './VersoHeader';
 import VersoControl from './verso-controls/VersoControl';
-import VersoInfoOffer from './verso-content/VersoInfo';
-import VersoTutoContent from './verso-content/VersoTutoContent';
+import VersoContentOfferContainer from './verso-content/VersoContentOfferContainer';
+import VersoContentTuto from './verso-content/VersoContentTuto';
 
 class Verso extends React.PureComponent {
   render() {
@@ -41,8 +41,8 @@ class Verso extends React.PureComponent {
           />
           {!isTuto && <VersoControl />}
           <div className="verso-content" style={contentInlineStyle}>
-            {!isTuto && <VersoInfoOffer />}
-            {isTuto && <VersoTutoContent mediationId={mediationId} />}
+            {!isTuto && <VersoContentOfferContainer />}
+            {isTuto && <VersoContentTuto mediationId={mediationId} />}
           </div>
         </div>
         <Footer id="verso-footer" borderTop colored={!isTuto} />
