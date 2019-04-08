@@ -85,7 +85,7 @@ class BookingItem extends Component {
     dispatch(
       showModal(
         <div>
-          Êtes-vous surs de vouloir annuler cette réservation ?
+          Souhaitez-vous réellement annuler cette réservation ?
           <div className="level">
             <button
               className="button is-primary level-item"
@@ -156,19 +156,18 @@ class BookingItem extends Component {
             {token}: {userIdentifier}
           </td>
           <td rowSpan="2">
-            {!isCancelled &&
-              !isUsed && (
-                <div className="navbar-item has-dropdown is-hoverable AccountingPage-actions">
-                  <div className="actionButton" />
-                  <div className="navbar-dropdown is-right">
-                    <a
-                      className="navbar-item cancel"
-                      onClick={this.onCancelClick}>
-                      <Icon svg="ico-close-r" /> Annuler la réservation
-                    </a>
-                  </div>
+            {!isCancelled && !isUsed && (
+              <div className="navbar-item has-dropdown is-hoverable AccountingPage-actions">
+                <div className="actionButton" />
+                <div className="navbar-dropdown is-right">
+                  <a
+                    className="navbar-item cancel"
+                    onClick={this.onCancelClick}>
+                    <Icon svg="ico-close-r" /> Annuler la réservation
+                  </a>
                 </div>
-              )}
+              </div>
+            )}
           </td>
         </tr>
         <tr className="offer-item first-col">
