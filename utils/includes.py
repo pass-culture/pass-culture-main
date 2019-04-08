@@ -116,7 +116,12 @@ RECOMMENDATION_INCLUDES = [
         "key": "offer",
         "sub_joins": [
             "dateRange",
-            "eventOrThing",
+            {
+                "key": "eventOrThing",
+                "sub_joins": [
+                    "offerType"
+                ]
+            },
             "mediation",
             "stocks",
             {
