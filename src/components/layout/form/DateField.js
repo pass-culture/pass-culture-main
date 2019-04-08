@@ -18,6 +18,18 @@ const validateRequiredField = createValidateRequiredField(
   config.DEFAULT_REQUIRED_ERROR
 )
 
+const renderReadOnlyInput = readOnlyValue => (
+  <input className="field-input field-date" readOnly value={readOnlyValue} />
+)
+
+const renderDateInput = DatePickerProps => (
+  <div className="flex-columns items-center field-input field-date">
+    <DatePicker {...DatePickerProps} />
+    <div className="flex-auto" />
+    <Icon alt="Horaires" svg="ico-calendar" />
+  </div>
+)
+
 export const DateField = ({
   autoComplete,
   className,
@@ -79,35 +91,25 @@ export const DateField = ({
             <div className="field-control">
               <div className="field-value flex-columns items-center">
                 <div className="field-inner flex-columns items-center">
-                  {readOnly ? (
-                    <input
-                      className="field-input field-date"
-                      readOnly
-                      value={readOnlyValue}
-                    />
-                  ) : (
-                    <div className="flex-columns items-center field-input field-date">
-                      <DatePicker
-                        className="date"
-                        dateFormat={dateFormat}
-                        id={inputName}
-                        isClearable={isClearable}
-                        locale={locale}
-                        placeholderText={placeholder}
-                        shouldCloseOnSelect
-                        selected={selected}
-                        {...DatePickerProps}
-                        {...input}
-                        onChange={date => {
-                          const changedValue = date.toISOString()
-                          input.onChange(changedValue)
-                        }}
-                        value={readOnlyValue}
-                      />
-                      <div className="flex-auto" />
-                      <Icon alt="Horaires" svg="ico-calendar" />
-                    </div>
-                  )}
+                  {readOnly && renderReadOnlyInput(readOnlyValue)}
+                  {!readOnly &&
+                    renderDateInput({
+                      className: 'date',
+                      dateFormat,
+                      id: inputName,
+                      isClearable,
+                      locale,
+                      placeholderText: placeholder,
+                      shouldCloseOnSelect: true,
+                      selected,
+                      ...DatePickerProps,
+                      ...input,
+                      onChange: date => {
+                        const changedValue = date.toISOString()
+                        input.onChange(changedValue)
+                      },
+                      value: readOnlyValue,
+                    })}
                 </div>
                 {renderValue()}
               </div>

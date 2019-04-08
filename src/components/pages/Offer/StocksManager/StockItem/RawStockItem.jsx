@@ -57,8 +57,6 @@ export class RawStockItem extends Component {
   }
 
   onFormSubmit = formValues => {
-    console.log('formValues', formValues)
-
     const { dispatch, handleSetErrors, query, stockPatch } = this.props
     const { id: stockId } = stockPatch
     const context = query.context({ id: stockId, key: 'stock' })

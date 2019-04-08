@@ -99,17 +99,18 @@ export class EventOrThingFields extends Component {
             placeholder="Illimité"
             readOnly={readOnly}
             renderValue={() => {
-              if (!readOnly) {
-                return (
-                  <span
-                    className="button tooltip qty-info"
-                    data-place="bottom"
-                    data-tip="<p>Laissez ce champ vide pour un nombre de places ou stock illimité.</p>"
-                    data-type="info">
-                    <Icon svg="picto-info" />
-                  </span>
-                )
+              if (readOnly) {
+                return null
               }
+              return (
+                <span
+                  className="button tooltip qty-info"
+                  data-place="bottom"
+                  data-tip="<p>Laissez ce champ vide pour un nombre de places ou stock illimité.</p>"
+                  data-type="info">
+                  <Icon svg="picto-info" />
+                </span>
+              )
             }}
             title="Stock[ou] Places affecté[es]"
           />

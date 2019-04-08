@@ -18,6 +18,7 @@ import { requestData } from 'redux-saga-data'
 
 import MediationsManager from './MediationsManager'
 import StocksManager from './StocksManager'
+import { CREATION } from 'components/hocs/withFrenchQueryRouter'
 import HeroSection from 'components/layout/HeroSection'
 import Main from 'components/layout/Main'
 import { musicOptions, showOptions } from 'utils/edd'
@@ -76,7 +77,7 @@ class RawOffer extends Component {
     const { eventId } = offer || {}
 
     const isEdit = search.indexOf('modifie') > -1
-    const isNew = offerId === 'creation'
+    const isNew = offerId === CREATION
     const isEventType = get(selectedOfferType, 'type') === 'Event' || eventId
     const isReadOnly = !isNew && !isEdit
 

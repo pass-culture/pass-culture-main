@@ -38,24 +38,16 @@ export const selectFormInitialValuesByStockAndOfferIdAndOffererId = createCached
       lastStock = stocks[0]
     }
 
-    if (offer.eventId) {
-      if (!beginningDatetime) {
-        if (lastStock) {
-          beginningDatetime = getDatetimeOneDayAfter(
-            lastStock.beginningDatetime
-          )
-        } else {
-          beginningDatetime = getDatetimeOneDayAfter(moment())
-        }
-      }
+    if (offer.eventId && !beginningDatetime) {
+      beginningDatetime = lastStock
+        ? getDatetimeOneDayAfter(lastStock.beginningDatetime)
+        : getDatetimeOneDayAfter(moment())
+    }
 
-      if (!endDatetime) {
-        if (lastStock) {
-          endDatetime = getDatetimeOneDayAfter(lastStock.endDatetime)
-        } else if (beginningDatetime) {
-          endDatetime = getDatetimeOneHourAfter(beginningDatetime)
-        }
-      }
+    if (offer.eventId && !endDatetime) {
+      endDatetime = lastStock
+        ? getDatetimeOneDayAfter(lastStock.endDatetime)
+        : getDatetimeOneHourAfter(beginningDatetime)
     }
 
     if (!bookingLimitDatetime) {
@@ -63,17 +55,11 @@ export const selectFormInitialValuesByStockAndOfferIdAndOffererId = createCached
     }
 
     if (typeof price === 'undefined') {
-      if (lastStock) {
-        price = lastStock.price
-      } else {
-        price = 0
-      }
+      price = lastStock ? lastStock.price : 0
     }
 
-    if (typeof available === 'undefined') {
-      if (lastStock) {
-        available = lastStock.available
-      }
+    if (typeof available === 'undefined' && lastStock) {
+      available = lastStock.available
     }
 
     return {
