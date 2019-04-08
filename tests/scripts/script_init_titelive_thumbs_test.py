@@ -1,5 +1,7 @@
-from unittest.mock import patch, MagicMock, call
+from pathlib import Path
+from unittest.mock import patch, MagicMock, call, ANY
 
+import os
 import pytest
 
 from models import PcObject
@@ -45,9 +47,13 @@ class InitTiteliveThumbsTest:
             ]
         ]
 
+        test_jpeg_image_path = Path(os.path.dirname(os.path.realpath(__file__))) \
+                               / 'script_init_titelive_thumbs_test_image.jpg'
+        test_jpeg_image = open(test_jpeg_image_path, "rb").read()
+        image_content = test_jpeg_image
+
         connexion.get_object = MagicMock()
-        connexion.get_object.side_effect = [filename_to_save_1,
-                                            filename_to_save_2]
+        connexion.get_object.return_value = ['init_thumbs_test_image.jpg', image_content]
 
         connexion.put_object = MagicMock()
         connexion.delete_object = MagicMock()
@@ -70,10 +76,10 @@ class InitTiteliveThumbsTest:
 
         assert connexion.put_object.call_args_list[0] == call(container_name,
                                                               'thumbs/things/' + humanize(thing_1.id),
-                                                              content_type='image/jpeg', contents='h')
+                                                              content_type='image/jpeg', contents=ANY)
         assert connexion.put_object.call_args_list[1] == call(container_name,
                                                               'thumbs/things/' + humanize(thing_1.id) + '_1',
-                                                              content_type='image/jpeg', contents='h')
+                                                              content_type='image/jpeg', contents=ANY)
 
         assert connexion.delete_object.call_args_list[0] == call(container_name, filename_to_save_1)
         assert connexion.delete_object.call_args_list[1] == call(container_name, filename_to_save_2)

@@ -1,4 +1,4 @@
-from domain.mediations import compute_dominant_color
+from domain.mediations import compute_dominant_color, DO_NOT_CROP, standardize_image
 from models import Thing, PcObject
 
 
@@ -6,10 +6,9 @@ def import_init_titelive_thumbs(connexion, container_name, titelive_thumb_identi
     image_names_in_object_storage = get_titelive_thumb_names_group_by_id_at_providers(connexion,
                                                                                       container_name,
                                                                                       titelive_thumb_identifier)
-
+    new_image_name = None
     existing_things_from_providers = Thing.query \
-        .filter(Thing.idAtProviders != None) \
-        .all()
+        .filter(Thing.idAtProviders != None)
 
     for thing in existing_things_from_providers:
         if thing.idAtProviders in image_names_in_object_storage:
@@ -19,9 +18,10 @@ def import_init_titelive_thumbs(connexion, container_name, titelive_thumb_identi
                 thing.thumbCount += 1
                 if thing.thumbCount == 1:
                     thing.firstThumbDominantColor = compute_dominant_color(image)
+                new_thumb = standardize_image(image, DO_NOT_CROP)
                 connexion.put_object(container_name,
                                      'thumbs/' + new_image_name,
-                                     contents=image,
+                                     contents=new_thumb,
                                      content_type='image/jpeg')
                 connexion.delete_object(container_name,
                                         existing_image_name)
