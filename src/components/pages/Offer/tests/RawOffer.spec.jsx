@@ -39,6 +39,80 @@ describe('src | components | pages | Offer | RawOffer ', () => {
     })
   })
 
+  describe('handleSuccess', () => {
+    describe('when the offer is successfully modified', () => {
+      it('should redirect to offer page', () => {
+        // given
+        const historyPush = jest.fn()
+        const initialProps = {
+          location: {
+            search: '?lieu=AQ',
+          },
+          match: {
+            params: {},
+          },
+          currentUser: {
+            isAdmin: false,
+          },
+          query: {
+            parse: () => ({ lieu: 'AQ' }),
+          },
+          dispatch: dispatchMock,
+          history: {
+            push: historyPush,
+          },
+        }
+
+        const wrapper = shallow(<RawOffer {...initialProps} />)
+
+        // when
+        let offre = { id: 'SN' }
+        let action = { config: { method: 'PATCH' }, payload: { datum: offre } }
+        wrapper.instance().handleSuccess({}, action)
+
+        // then
+        expect(historyPush).toHaveBeenCalledWith('/offres/SN')
+      })
+    })
+
+    describe('when the offer is successfully modified', () => {
+      it('should redirect to gestion page', () => {
+        // given
+        const historyPush = jest.fn()
+        const initialProps = {
+          location: {
+            search: '?lieu=AQ',
+          },
+          match: {
+            params: {
+              offerId: 'nouveau',
+            },
+          },
+          currentUser: {
+            isAdmin: false,
+          },
+          query: {
+            parse: () => ({ lieu: 'AQ' }),
+          },
+          dispatch: dispatchMock,
+          history: {
+            push: historyPush,
+          },
+        }
+
+        const wrapper = shallow(<RawOffer {...initialProps} />)
+
+        // when
+        let offre = { id: 'SN' }
+        let action = { config: { method: 'POST' }, payload: { datum: offre } }
+        wrapper.instance().handleSuccess({}, action)
+
+        // then
+        expect(historyPush).toHaveBeenCalledWith('/offres/SN?gestion')
+      })
+    })
+  })
+
   describe('render', () => {
     describe('MediationsManager', () => {
       it("should be displayed when it's not a new offer", () => {

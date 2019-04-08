@@ -182,8 +182,9 @@ class RawOffer extends Component {
       config: { method },
       payload,
     } = action
-    const { history, offer, venue } = this.props
-    const eventOrThing = payload.datum
+
+    const { history } = this.props
+    const offer = payload.datum
 
     if (method === 'PATCH') {
       history.push(`/offres/${offer.id}`)
@@ -191,8 +192,6 @@ class RawOffer extends Component {
     }
 
     if (method === 'POST') {
-      const { offers } = eventOrThing || {}
-      const offer = offers && offers.find(o => o.venueId === get(venue, 'id'))
       if (!offer) {
         console.warn(
           'Something wrong with returned data, we should retrieve the created offer here'
