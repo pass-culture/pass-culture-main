@@ -122,13 +122,42 @@ class Offer(PcObject,
         if len(self.stocks) > 0:
             available_places_or_stock = 0
             initial_places_or_stock = 0
+
+            with_illimited_places_or_stock = 0
+            with_no_more_places_or_stock = 0
+
             for stock in self.stocks:
                 total_bookings = 0
                 valid_bookings = [book for book in stock.bookings if not book.isCancelled]
+
+
                 for valid_booking in valid_bookings:
                     total_bookings += valid_booking.quantity
-                initial_places_or_stock += stock.available
-                available_places_or_stock = initial_places_or_stock - total_bookings
+
+                print('----- stock.available ------- ')
+                print('----- stock.available ------- ', stock.available)
+                print('----- stock.available ------- ')
+
+                # nombre d'offres du stock avec stock ou places illimité
+                if not stock.available:
+                    with_illimited_places_or_stock += 1
+                    print('with_illimited_places_or_stock', with_illimited_places_or_stock)
+
+                # nombre d'offres du stock avec un stock de places à 0
+                if stock.available and stock.available == 0:
+                    with_no_more_places_or_stock += 1
+                    print('with_no_more_places_or_stock', with_no_more_places_or_stock)
+
+                # on n'additionne que si stock est un chiffre (illimité c'est quand available == null)
+                if stock.available:
+                    initial_places_or_stock += stock.available
+                    available_places_or_stock = initial_places_or_stock - total_bookings
+
+                if with_no_more_places_or_stock >= with_illimited_places_or_stock:
+                    message = f'Plus de places pour  {with_no_more_places_or_stock} offre(s)'
+
+                if with_illimited_places_or_stock >= available_places_or_stock:
+                    message = "Illimité"
 
                 if available_places_or_stock > 0:
                     message = f'Encore {available_places_or_stock} places'
