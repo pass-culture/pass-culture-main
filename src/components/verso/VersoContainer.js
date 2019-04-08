@@ -25,15 +25,20 @@ export const checkIsTuto = recommendation => {
 };
 
 export const getOfferVenue = recommendation => {
-  const result = get(recommendation, 'offer.venue.name');
+  const result = get(recommendation, 'offer.venue.name', null);
   return result;
 };
 
 export const getOfferName = recommendation => {
-  const author = get(recommendation, 'offer.eventOrThing.extraData.author');
-  let result = get(recommendation, 'offer.eventOrThing.name');
-  if (author) result = `${result}, de ${author}`;
-  return result;
+  let path = 'offer.eventOrThing.name';
+  const name = get(recommendation, path, null);
+  if (!name) return null;
+
+  path = 'offer.eventOrThing.extraData.author';
+  const author = get(recommendation, path, null);
+
+  if (!author) return name;
+  return `${name}, de ${author}`;
 };
 
 export const getBackgroundColor = recommendation => {
