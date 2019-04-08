@@ -1,4 +1,3 @@
-// jest --env=jsdom ./src/components/pages/tests/SignupPage --watch
 import { mount } from 'enzyme'
 import { createBrowserHistory } from 'history'
 import React from 'react'
@@ -21,7 +20,7 @@ jest.mock('redux-saga-data', () => {
 })
 
 describe('src | components | pages | SignupPage', () => {
-  it('should call users/signup/webapp', done => {
+  it('should call users/signup/webapp', () => {
     // given
     fetch.mockResponse(JSON.stringify({}), { status: 200 })
     const { store } = configureStore()
@@ -54,31 +53,26 @@ describe('src | components | pages | SignupPage', () => {
       .find("input[name='contact_ok']")
       .simulate('change', { target: { checked: true } })
 
-    setTimeout(() => {
-      const expectedSubConfig = {
-        apiPath: 'users/signup/webapp',
-        body: values,
-        method: 'POST',
-        name: 'user',
-        normalizer: null,
-      }
-      // when
-      const submitButton = wrapper.find('button[name="user"]')
+    const expectedSubConfig = {
+      apiPath: 'users/signup/webapp',
+      body: values,
+      method: 'POST',
+      name: 'user',
+      normalizer: null,
+    }
+    // when
+    const submitButton = wrapper.find('button[name="user"]')
 
-      // then
-      expect(submitButton.props().disabled).toEqual(false)
+    // then
+    expect(submitButton.props().disabled).toEqual(false)
 
-      // when
-      submitButton.simulate('click')
+    // when
+    submitButton.simulate('click')
 
-      // then
-      const receivedConfig = mockRequestDataCatch.mock.calls[0][0]
-      Object.keys(expectedSubConfig).forEach(key =>
-        expect(receivedConfig[key]).toEqual(expectedSubConfig[key])
-      )
-
-      // done
-      done()
-    })
+    // then
+    const receivedConfig = mockRequestDataCatch.mock.calls[0][0]
+    Object.keys(expectedSubConfig).forEach(key =>
+      expect(receivedConfig[key]).toEqual(expectedSubConfig[key])
+    )
   })
 })
