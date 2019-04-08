@@ -61,7 +61,7 @@ export const DateField = ({
         return (
           <div
             className={classnames('field date-field', className, {
-              readonly: readOnly,
+              'is-read-only': readOnly,
             })}
             id={id}>
             <label

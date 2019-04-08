@@ -47,7 +47,7 @@ export const TimeField = ({
         return (
           <div
             className={classnames('field time-field', className, {
-              readonly: readOnly,
+              'is-read-only': readOnly,
             })}
             id={id}>
             <label

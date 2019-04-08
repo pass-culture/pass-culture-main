@@ -47,7 +47,7 @@ export const TextField = ({
       render={({ input, meta }) => (
         <div
           className={classnames('field text-field', className, {
-            readonly: readOnly,
+            'is-read-only': readOnly,
           })}
           id={id}>
           <label

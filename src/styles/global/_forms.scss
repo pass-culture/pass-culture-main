@@ -242,7 +242,7 @@
     }
   }
 
-  &.readonly {
+  &.is-read-only {
     .field-texteditor {
       .texteditor {
         img[class*='draftJsEmojiPlugin__image'] {
@@ -255,7 +255,7 @@
 }
 
 .field {
-  &.readonly {
+  &.is-read-only {
     .field-inner {
       border: none;
       background-color: transparent;
