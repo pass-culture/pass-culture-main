@@ -1,0 +1,172 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`src | components | verso | VersoHeader should match snapshot with all props 1`] = `
+ShallowWrapper {
+  Symbol(enzyme.__root__): [Circular],
+  Symbol(enzyme.__unrendered__): <VersoHeader
+    backgroundColor="#ACE539"
+    subtitle="Offer subtitle"
+    title="Offer title"
+  />,
+  Symbol(enzyme.__renderer__): Object {
+    "batchedUpdates": [Function],
+    "checkPropTypes": [Function],
+    "getNode": [Function],
+    "render": [Function],
+    "simulateError": [Function],
+    "simulateEvent": [Function],
+    "unmount": [Function],
+  },
+  Symbol(enzyme.__node__): Object {
+    "instance": null,
+    "key": undefined,
+    "nodeType": "host",
+    "props": Object {
+      "children": Array [
+        <h1
+          className="fs40 is-medium is-hyphens"
+          id="verso-offer-name"
+          style={
+            Object {
+              "lineHeight": "2.7rem",
+            }
+          }
+        >
+          Offer title
+        </h1>,
+        <h2
+          className="fs22 is-normal is-hyphens"
+          id="verso-offer-venue"
+        >
+          Offer subtitle
+        </h2>,
+      ],
+      "className": "verso-header with-triangle is-relative pc-theme-black py32 px12",
+      "style": Object {
+        "backgroundColor": "#ACE539",
+      },
+    },
+    "ref": null,
+    "rendered": Array [
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": "Offer title",
+          "className": "fs40 is-medium is-hyphens",
+          "id": "verso-offer-name",
+          "style": Object {
+            "lineHeight": "2.7rem",
+          },
+        },
+        "ref": null,
+        "rendered": "Offer title",
+        "type": "h1",
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": "Offer subtitle",
+          "className": "fs22 is-normal is-hyphens",
+          "id": "verso-offer-venue",
+        },
+        "ref": null,
+        "rendered": "Offer subtitle",
+        "type": "h2",
+      },
+    ],
+    "type": "div",
+  },
+  Symbol(enzyme.__nodes__): Array [
+    Object {
+      "instance": null,
+      "key": undefined,
+      "nodeType": "host",
+      "props": Object {
+        "children": Array [
+          <h1
+            className="fs40 is-medium is-hyphens"
+            id="verso-offer-name"
+            style={
+              Object {
+                "lineHeight": "2.7rem",
+              }
+            }
+          >
+            Offer title
+          </h1>,
+          <h2
+            className="fs22 is-normal is-hyphens"
+            id="verso-offer-venue"
+          >
+            Offer subtitle
+          </h2>,
+        ],
+        "className": "verso-header with-triangle is-relative pc-theme-black py32 px12",
+        "style": Object {
+          "backgroundColor": "#ACE539",
+        },
+      },
+      "ref": null,
+      "rendered": Array [
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": "Offer title",
+            "className": "fs40 is-medium is-hyphens",
+            "id": "verso-offer-name",
+            "style": Object {
+              "lineHeight": "2.7rem",
+            },
+          },
+          "ref": null,
+          "rendered": "Offer title",
+          "type": "h1",
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": "Offer subtitle",
+            "className": "fs22 is-normal is-hyphens",
+            "id": "verso-offer-venue",
+          },
+          "ref": null,
+          "rendered": "Offer subtitle",
+          "type": "h2",
+        },
+      ],
+      "type": "div",
+    },
+  ],
+  Symbol(enzyme.__options__): Object {
+    "adapter": ReactSixteenAdapter {
+      "options": Object {
+        "enableComponentDidUpdateOnSetState": true,
+        "legacyContextMode": "parent",
+        "lifecycles": Object {
+          "componentDidUpdate": Object {
+            "onSetState": true,
+          },
+          "getChildContext": Object {
+            "calledByRenderer": false,
+          },
+          "getDerivedStateFromProps": Object {
+            "hasShouldComponentUpdateBug": false,
+          },
+          "getSnapshotBeforeUpdate": true,
+          "setState": Object {
+            "skipsComponentDidUpdateOnNullish": true,
+          },
+        },
+      },
+    },
+  },
+}
+`;
