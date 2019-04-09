@@ -54,7 +54,7 @@
     "node-fetch": "^2.3.0",
     "node-sass": "^4.9.0",
     "object-assign": "4.1.1",
-    "pass-culture-shared": "0.1.0-alpha16",
+    "pass-culture-shared": "0.1.0-alpha17",
     "postcss-flexbugs-fixes": "3.2.0",
     "postcss-loader": "2.0.8",
     "promise": "8.0.1",
