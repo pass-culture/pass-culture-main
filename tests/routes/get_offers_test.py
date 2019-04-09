@@ -132,30 +132,10 @@ class Get:
                 pprint(response_json)
                 assert response.status_code == 200
                 assert 'stockAlertMessage' in response_json
-                assert response_json['stockAlertMessage'] == "Pas encore de stock"
+                assert response_json['stockAlertMessage'] == "pas encore de stock"
 
         @clean_database
-        def when_an_event_offer_is_created_but_there_is_no_stock_yet(self, app):
-            # given
-                user = create_user(email='user@test.com')
-                offerer = create_offerer()
-                venue = create_venue(offerer)
-                offer = create_event_offer(venue)
-
-                PcObject.check_and_save(user, offer)
-
-            # when
-                response = TestClient().with_auth(email='user@test.com').get(API_URL + f'/offers/{humanize(offer.id)}')
-
-            # then
-                response_json = response.json()
-                pprint(response_json)
-                assert response.status_code == 200
-                assert 'stockAlertMessage' in response_json
-                assert response_json['stockAlertMessage'] == "Pas encore de places"
-
-        @clean_database
-        def when_an_event_offer_is_created_with_stock_and_remaining_stock(self, app):
+        def when_a_thing_offer_is_created_with_remaining_stock(self, app):
             # given
                 user = create_user(email='user@test.com')
                 user2 = create_user(email='user2@test.com')
@@ -178,10 +158,10 @@ class Get:
                 pprint(response_json)
                 assert response.status_code == 200
                 assert 'stockAlertMessage' in response_json
-                assert response_json['stockAlertMessage'] == "Encore 12 places"
+                assert response_json['stockAlertMessage'] == "encore 12 en stock"
 
         @clean_database
-        def when_an_event_offer_is_created_with_stock_and_remaining_stocks_wich_one_is_illimited(self, app):
+        def when_a_thing_offer_with_unlimited_and_remaing_stock(self, app):
             # given
                 user = create_user(email='user@test.com')
                 user2 = create_user(email='user2@test.com')
@@ -205,10 +185,11 @@ class Get:
                 pprint(response_json)
                 assert response.status_code == 200
                 assert 'stockAlertMessage' in response_json
-                assert response_json['stockAlertMessage'] == 'Illimité'
+
+                assert response_json['stockAlertMessage'] == 'encore 12 en stock'
 
         @clean_database
-        def when_an_event_offer_is_created_with_stock_and_remaining_stocks_wich_one_is_illimited_but_one_is_with_no_more_stock(self, app):
+        def when_a_thing_offer_with_no_more_remaining_stock(self, app):
             # given
                 user = create_user(email='user@test.com')
                 user2 = create_user(email='user2@test.com')
@@ -232,4 +213,51 @@ class Get:
                 pprint(response_json)
                 assert response.status_code == 200
                 assert 'stockAlertMessage' in response_json
-                assert response_json['stockAlertMessage'] == 'Plus de places pour 1 offre(s)'
+                assert response_json['stockAlertMessage'] == 'plus de stock pour 1 offre(s)'
+
+        @clean_database
+        def when_a_thing_offer_with_only_unlimited_stocks(self, app):
+            # given
+                user = create_user(email='user@test.com')
+                user2 = create_user(email='user2@test.com')
+                offerer = create_offerer()
+                venue = create_venue(offerer)
+                offer = create_thing_offer(venue)
+                stock = create_stock_from_offer(offer, available=None)
+                stock2 = create_stock_from_offer(offer, available=None)
+                recommendation = create_recommendation(offer, user)
+
+                deposit = create_deposit(user2, datetime.utcnow(), amount=500)
+                booking = create_booking(user2, stock, venue, recommendation, quantity=15)
+
+                PcObject.check_and_save(booking, deposit, user, offer, stock, stock2, user2)
+
+            # when
+                response = TestClient().with_auth(email='user@test.com').get(API_URL + f'/offers/{humanize(offer.id)}')
+
+            # then
+                response_json = response.json()
+                pprint(response_json)
+                assert response.status_code == 200
+                assert 'stockAlertMessage' in response_json
+                assert response_json['stockAlertMessage'] == 'illimité'
+
+        @clean_database
+        def when_an_event_offer_is_created_but_there_is_no_stock_yet(self, app):
+            # given
+                user = create_user(email='user@test.com')
+                offerer = create_offerer()
+                venue = create_venue(offerer)
+                offer = create_event_offer(venue)
+
+                PcObject.check_and_save(user, offer)
+
+            # when
+                response = TestClient().with_auth(email='user@test.com').get(API_URL + f'/offers/{humanize(offer.id)}')
+
+            # then
+                response_json = response.json()
+                pprint(response_json)
+                assert response.status_code == 200
+                assert 'stockAlertMessage' in response_json
+                assert response_json['stockAlertMessage'] == "pas encore de places"

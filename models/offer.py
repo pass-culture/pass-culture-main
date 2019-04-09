@@ -112,12 +112,26 @@ class Offer(PcObject,
 
     @property
     def stockAlertMessage(self):
+
         message = ""
+
+        if self.thing:
+            thing_type = True
+            stock_word = "stock"
+            remaining_stock_word = "en stock"
+            all_places_word = ''
+        else:
+            thing_type = False
+            stock_word = "place(s)"
+            all_places_word = 'toutes les dates'
+            remaining_stock_word= ''
+
+
         if len(self.stocks) == 0:
-            if self.thing:
-                message = 'Pas encore de stock'
+            if thing_type:
+                message = 'pas encore de stock'
             else:
-                message = 'Pas encore de places'
+                message = 'pas encore de places'
 
         if len(self.stocks) > 0:
             available_places_or_stock = 0
@@ -127,40 +141,42 @@ class Offer(PcObject,
             with_no_more_places_or_stock = 0
 
             for stock in self.stocks:
+
+                total_stocks = len(self.stocks)
                 total_bookings = 0
                 valid_bookings = [book for book in stock.bookings if not book.isCancelled]
-
 
                 for valid_booking in valid_bookings:
                     total_bookings += valid_booking.quantity
 
-                print('----- stock.available ------- ')
-                print('----- stock.available ------- ', stock.available)
-                print('----- stock.available ------- ')
-
-                # nombre d'offres du stock avec stock ou places illimité
-                if not stock.available:
-                    with_illimited_places_or_stock += 1
-                    print('with_illimited_places_or_stock', with_illimited_places_or_stock)
-
-                # nombre d'offres du stock avec un stock de places à 0
-                if stock.available and stock.available == 0:
-                    with_no_more_places_or_stock += 1
-                    print('with_no_more_places_or_stock', with_no_more_places_or_stock)
+                # stock.available > condition pour éviter les null du iillimité
 
                 # on n'additionne que si stock est un chiffre (illimité c'est quand available == null)
                 if stock.available:
                     initial_places_or_stock += stock.available
                     available_places_or_stock = initial_places_or_stock - total_bookings
 
-                if with_no_more_places_or_stock >= with_illimited_places_or_stock:
-                    message = f'Plus de places pour  {with_no_more_places_or_stock} offre(s)'
+                # nombre d'offres du stock avec stock ou places illimité
+                if not stock.available:
+                    with_illimited_places_or_stock += 1
 
-                if with_illimited_places_or_stock >= available_places_or_stock:
-                    message = "Illimité"
+                # nombre d'offres du stock avec un stock de places à 0
+                if stock.available and available_places_or_stock == 0:
+                    with_no_more_places_or_stock += 1
+
+                # affichage du stock sans places
+                if with_no_more_places_or_stock >= with_illimited_places_or_stock:
+                    message = f'plus de {stock_word} pour {with_no_more_places_or_stock} offre(s)'
+
+                if with_no_more_places_or_stock == total_stocks:
+                    message = f'plus de {stock_word} pour {all_places_word}'
+
+                # illimité si tous les stocks sont illimtés
+                if with_illimited_places_or_stock == total_stocks:
+                    message = "illimité"
 
                 if available_places_or_stock > 0:
-                    message = f'Encore {available_places_or_stock} places'
+                    message = f'encore {available_places_or_stock} {remaining_stock_word}'
 
         return message
 
