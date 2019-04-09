@@ -1,7 +1,6 @@
 import get from 'lodash.get'
 import PropTypes from 'prop-types'
 import {
-  CancelButton,
   Field,
   Form,
   Icon,
@@ -597,11 +596,11 @@ class RawOffer extends Component {
                     Modifier l'offre
                   </button>
                 ) : (
-                  <CancelButton
+                  <button
                     className="button is-secondary is-medium"
                     onClick={() => query.changeToReadOnly()}>
                     Annuler
-                  </CancelButton>
+                  </button>
                 )}
               </div>
               <div className="control">
