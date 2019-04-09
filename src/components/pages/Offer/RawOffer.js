@@ -18,7 +18,6 @@ import { requestData } from 'redux-saga-data'
 
 import MediationsManager from './MediationsManager'
 import StocksManager from './StocksManager'
-import { CREATION } from 'components/hocs/withFrenchQueryRouter'
 import HeroSection from 'components/layout/HeroSection'
 import Main from 'components/layout/Main'
 import { musicOptions, showOptions } from 'utils/edd'
@@ -54,43 +53,6 @@ const CONDITIONAL_FIELDS = {
 }
 
 class RawOffer extends Component {
-  constructor() {
-    super()
-    this.state = {
-      isNew: false,
-      isEventType: false,
-      isOffererAndVenueSelectsReadOnly: true,
-      isReadOnly: true,
-    }
-  }
-
-  static getDerivedStateFromProps(nextProps) {
-    const {
-      location: { search },
-      match: {
-        params: { offerId },
-      },
-      offer,
-      selectedOfferType,
-    } = nextProps
-
-    const { eventId } = offer || {}
-
-    const isEdit = search.indexOf('modifie') > -1
-    const isNew = offerId === CREATION
-    const isEventType = get(selectedOfferType, 'type') === 'Event' || eventId
-    const isReadOnly = !isNew && !isEdit
-
-    const apiPath = isNew ? 'offers/' : `offers/${offerId}`
-
-    return {
-      apiPath,
-      isEventType,
-      isNew,
-      isReadOnly,
-    }
-  }
-
   handleDataRequest = (handleSuccess, handleFail) => {
     const {
       history,
@@ -206,8 +168,11 @@ class RawOffer extends Component {
   }
 
   setDefaultBookingEmailIfNew(prevProps) {
-    if (!this.state.isNew) return
-    const { currentUser, dispatch, venue } = this.props
+    const { currentUser, dispatch, query, venue } = this.props
+    const { isCreatedEntity } = query.context()
+    if (!isCreatedEntity) {
+      return
+    }
     if (!venue) return
     if (!prevProps || !prevProps.venue || venue.id !== prevProps.venue.id) {
       dispatch(
@@ -299,7 +264,6 @@ class RawOffer extends Component {
       event,
       eventOrThingPatch,
       hasEventOrThing,
-      location: { search },
       musicSubOptions,
       offer,
       offerer,
@@ -314,12 +278,14 @@ class RawOffer extends Component {
       venue,
       venues,
     } = this.props
+    const { eventId } = offer || {}
+    const { isCreatedEntity, isModifiedEntity, readOnly } = query.context()
 
-    const { apiPath, isNew, isReadOnly, isEventType } = this.state
+    const isEventType = get(selectedOfferType, 'type') === 'Event' || eventId
     const eventOrThingName = get(event, 'name') || get(thing, 'name')
     const offerId = get(offer, 'id')
     const offererId = get(offerer, 'id')
-    const showAllForm = selectedOfferType || !isNew
+    const showAllForm = selectedOfferType || !isCreatedEntity
     const venueId = get(venue, 'id')
     const isOfferActive = get(offer, 'isActive')
     const isOffererSelectReadOnly = typeof offererId !== 'undefined'
@@ -327,7 +293,7 @@ class RawOffer extends Component {
     const isVenueVirtual = get(venue, 'isVirtual')
 
     let title
-    if (isNew) {
+    if (isCreatedEntity) {
       title = 'Ajouter une offre'
       if (venueId) {
         if (isVenueVirtual) {
@@ -361,11 +327,11 @@ class RawOffer extends Component {
           </p>
 
           <Form
-            action={apiPath}
+            action={isCreatedEntity ? 'offers/' : `offers/${offerId}`}
             name="offer"
             handleSuccess={this.handleFormSuccess}
             patch={eventOrThingPatch}
-            readOnly={isReadOnly}>
+            readOnly={readOnly}>
             <div className="field-group">
               <Field isExpanded label="Titre de l'offre" name="name" required />
               <Field
@@ -435,7 +401,7 @@ class RawOffer extends Component {
                   )}
                 </Fragment>
               )}
-              {!isNew && hasEventOrThing && (
+              {!isCreatedEntity && hasEventOrThing && (
                 <div className="field is-horizontal field-text">
                   <div className="field-label">
                     <label className="label" htmlFor="input_offers_name">
@@ -474,7 +440,7 @@ class RawOffer extends Component {
                 </div>
               )}
             </div>
-            {!isNew && offer && <MediationsManager />}
+            {!isCreatedEntity && offer && <MediationsManager />}
             {showAllForm && (
               <div>
                 <h2 className="main-list-title">Infos pratiques</h2>
@@ -518,7 +484,7 @@ class RawOffer extends Component {
                       name="url"
                       required
                       sublabel={
-                        !isReadOnly &&
+                        !readOnly &&
                         "Vous pouvez inclure {token} {email} et {offerId} dans l'URL, qui seront remplacés respectivement par le code de la contremarque, l'email de la personne ayant reservé et l'identifiant de l'offre"
                       }
                       type="text"
@@ -554,7 +520,7 @@ class RawOffer extends Component {
                     label="Description"
                     maxLength={1000}
                     name="description"
-                    rows={isReadOnly ? 1 : 5}
+                    rows={readOnly ? 1 : 5}
                     type="textarea"
                   />
 
@@ -624,30 +590,31 @@ class RawOffer extends Component {
               className="field is-grouped is-grouped-centered"
               style={{ justifyContent: 'space-between' }}>
               <div className="control">
-                {isReadOnly ? (
-                  <NavLink
+                {readOnly ? (
+                  <button
                     className="button is-secondary is-medium"
-                    to={`/offres/${offerId}?modifie`}>
+                    onClick={() => query.changeToModification()}>
                     Modifier l'offre
-                  </NavLink>
+                  </button>
                 ) : (
                   <CancelButton
                     className="button is-secondary is-medium"
-                    to={isNew ? '/offres' : `/offres/${offerId}`}>
+                    onClick={() => query.changeToReadOnly()}>
                     Annuler
                   </CancelButton>
                 )}
               </div>
               <div className="control">
-                {isReadOnly ? (
+                {readOnly ? (
                   <NavLink to="/offres" className="button is-primary is-medium">
-                    Terminer {search.modifie && !isOfferActive && 'et activer'}
+                    Terminer{' '}
+                    {isModifiedEntity && !isOfferActive && 'et activer'}
                   </NavLink>
                 ) : (
                   showAllForm && (
                     <SubmitButton className="button is-primary is-medium">
                       Enregistrer{' '}
-                      {isNew &&
+                      {isCreatedEntity &&
                         'et passer ' +
                           (isEventType ? 'aux dates' : 'aux stocks')}
                     </SubmitButton>
