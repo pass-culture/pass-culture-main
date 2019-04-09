@@ -68,7 +68,7 @@ jobs:
             ./pc sandbox --name=industrial
 
       - run:
-          name: Run Functional Tests
+          name: Run End To End Tests
           command: |
             export PATH=${PATH:44}
             export NVM_BIN=/usr/bin/nodejs
