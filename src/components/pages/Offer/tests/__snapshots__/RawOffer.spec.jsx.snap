@@ -205,12 +205,12 @@ ShallowWrapper {
                         <div
                                 className="control"
                         >
-                                <CancelButton
+                                <button
                                         className="button is-secondary is-medium"
                                         onClick={[Function]}
                                 >
                                         Annuler
-                                </CancelButton>
+                                </button>
                         </div>
                         <div
                                 className="control"
@@ -391,12 +391,12 @@ ShallowWrapper {
                         <div
                                     className="control"
                         >
-                                    <CancelButton
+                                    <button
                                                 className="button is-secondary is-medium"
                                                 onClick={[Function]}
                                     >
                                                 Annuler
-                                    </CancelButton>
+                                    </button>
                         </div>
                         <div
                                     className="control"
@@ -572,12 +572,12 @@ ShallowWrapper {
                 <div
                                 className="control"
                 >
-                                <CancelButton
+                                <button
                                                 className="button is-secondary is-medium"
                                                 onClick={[Function]}
                                 >
                                                 Annuler
-                                </CancelButton>
+                                </button>
                 </div>
                 <div
                                 className="control"
@@ -1025,12 +1025,12 @@ ShallowWrapper {
                   <div
                     className="control"
 >
-                    <CancelButton
+                    <button
                                         className="button is-secondary is-medium"
                                         onClick={[Function]}
                     >
                                         Annuler
-                    </CancelButton>
+                    </button>
 </div>,
                   <div
                     className="control"
@@ -1059,19 +1059,19 @@ ShallowWrapper {
                   "key": undefined,
                   "nodeType": "host",
                   "props": Object {
-                    "children": <CancelButton
+                    "children": <button
                       className="button is-secondary is-medium"
                       onClick={[Function]}
 >
                       Annuler
-</CancelButton>,
+</button>,
                     "className": "control",
                   },
                   "ref": null,
                   "rendered": Object {
                     "instance": null,
                     "key": undefined,
-                    "nodeType": "function",
+                    "nodeType": "host",
                     "props": Object {
                       "children": "Annuler",
                       "className": "button is-secondary is-medium",
@@ -1079,7 +1079,7 @@ ShallowWrapper {
                     },
                     "ref": null,
                     "rendered": "Annuler",
-                    "type": [Function],
+                    "type": "button",
                   },
                   "type": "div",
                 },
@@ -1304,12 +1304,12 @@ ShallowWrapper {
                               <div
                                         className="control"
                               >
-                                        <CancelButton
+                                        <button
                                                   className="button is-secondary is-medium"
                                                   onClick={[Function]}
                                         >
                                                   Annuler
-                                        </CancelButton>
+                                        </button>
                               </div>
                               <div
                                         className="control"
@@ -1490,12 +1490,12 @@ ShallowWrapper {
                             <div
                                           className="control"
                             >
-                                          <CancelButton
+                                          <button
                                                         className="button is-secondary is-medium"
                                                         onClick={[Function]}
                                           >
                                                         Annuler
-                                          </CancelButton>
+                                          </button>
                             </div>
                             <div
                                           className="control"
@@ -1671,12 +1671,12 @@ ShallowWrapper {
                   <div
                                     className="control"
                   >
-                                    <CancelButton
+                                    <button
                                                       className="button is-secondary is-medium"
                                                       onClick={[Function]}
                                     >
                                                       Annuler
-                                    </CancelButton>
+                                    </button>
                   </div>
                   <div
                                     className="control"
@@ -2124,12 +2124,12 @@ ShallowWrapper {
                     <div
                       className="control"
 >
-                      <CancelButton
+                      <button
                                             className="button is-secondary is-medium"
                                             onClick={[Function]}
                       >
                                             Annuler
-                      </CancelButton>
+                      </button>
 </div>,
                     <div
                       className="control"
@@ -2158,19 +2158,19 @@ ShallowWrapper {
                     "key": undefined,
                     "nodeType": "host",
                     "props": Object {
-                      "children": <CancelButton
+                      "children": <button
                         className="button is-secondary is-medium"
                         onClick={[Function]}
 >
                         Annuler
-</CancelButton>,
+</button>,
                       "className": "control",
                     },
                     "ref": null,
                     "rendered": Object {
                       "instance": null,
                       "key": undefined,
-                      "nodeType": "function",
+                      "nodeType": "host",
                       "props": Object {
                         "children": "Annuler",
                         "className": "button is-secondary is-medium",
@@ -2178,7 +2178,7 @@ ShallowWrapper {
                       },
                       "ref": null,
                       "rendered": "Annuler",
-                      "type": [Function],
+                      "type": "button",
                     },
                     "type": "div",
                   },
