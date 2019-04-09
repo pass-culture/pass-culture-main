@@ -65,7 +65,7 @@ test("Lorsque je clique sur le bouton créer une offre sur la page d'un lieu, j'
   await t.expect(location.pathname).eql('/offres/creation')
 })
 
-test('Lorsque je clique sur le bouton annuler une offre sur la page des offres, je reviens aux offres', async t => {
+test("Lorsque je clique sur le bouton annuler d'une page offre sur la page des offres, je reviens au mode read only de l'offre", async t => {
   // given
   const { user } = await fetchSandbox(
     'pro_07_offer',
