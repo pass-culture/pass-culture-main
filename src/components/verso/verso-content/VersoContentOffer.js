@@ -5,6 +5,10 @@ import { capitalize } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import React, { Fragment } from 'react'
 
+import {
+  getDurationFromMinutes,
+  getWhatTitleFromLabelAndIsVirtualVenue,
+} from './utils'
 import { Icon } from '../../layout/Icon'
 import { navigationLink } from '../../../utils/geolocation'
 
@@ -68,15 +72,20 @@ class VersoContentOffer extends React.PureComponent {
     const eventOrThing = get(recommendation, 'offer.eventOrThing')
     const author = get(eventOrThing, 'author')
     const durationMinutes = get(eventOrThing, 'durationMinutes')
-    const type = get(eventOrThing, 'extraData.musicType')
+    const isVirtualVenue = get(recommendation, 'offer.venue.isVirtual')
     const label = get(eventOrThing, 'offerType.label')
     const performer = get(eventOrThing, 'performer')
     const speaker = get(eventOrThing, 'speaker')
+    const type = get(eventOrThing, 'extraData.musicType')
+
+    const duration = getDurationFromMinutes(durationMinutes)
+    const title = getWhatTitleFromLabelAndIsVirtualVenue(label, isVirtualVenue)
+
     return (
       <div>
         <h3>Quoi ?</h3>
-        <span className="is-bold">{label}</span>
-        {durationMinutes && <span>- Durée {durationMinutes}</span>}
+        <span className="is-bold">{title}</span>
+        {durationMinutes && <span> - Durée {duration}</span>}
         {type && <span>Genre {type}</span>}
         {author && <span>Auteur {author}</span>}
         {performer && <span>Interprête {performer}</span>}

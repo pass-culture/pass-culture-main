@@ -1,5 +1,6 @@
 import moment from 'moment'
 import 'moment/locale/fr'
+import 'moment-duration-format'
 import 'moment-timezone'
 
 import { version } from '../../package.json'
