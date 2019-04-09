@@ -52,7 +52,7 @@ ShallowWrapper {
               }
             }
           >
-            <withRouter(Connect(VersoInfo)) />
+            <withRouter(Connect(VersoContentOffer)) />
           </div>
         </div>,
         <withRouter(Connect(Footer))
@@ -86,7 +86,7 @@ ShallowWrapper {
                 }
               }
             >
-              <withRouter(Connect(VersoInfo)) />
+              <withRouter(Connect(VersoContentOffer)) />
             </div>,
           ],
           "className": "verso-wrapper is-black-text scroll-y flex-rows is-relative text-left",
@@ -121,7 +121,7 @@ ShallowWrapper {
             "nodeType": "host",
             "props": Object {
               "children": Array [
-                <withRouter(Connect(VersoInfo)) />,
+                <withRouter(Connect(VersoContentOffer)) />,
                 false,
               ],
               "className": "verso-content",
@@ -189,7 +189,7 @@ ShallowWrapper {
                 }
               }
             >
-              <withRouter(Connect(VersoInfo)) />
+              <withRouter(Connect(VersoContentOffer)) />
             </div>
           </div>,
           <withRouter(Connect(Footer))
@@ -223,7 +223,7 @@ ShallowWrapper {
                   }
                 }
               >
-                <withRouter(Connect(VersoInfo)) />
+                <withRouter(Connect(VersoContentOffer)) />
               </div>,
             ],
             "className": "verso-wrapper is-black-text scroll-y flex-rows is-relative text-left",
@@ -258,7 +258,7 @@ ShallowWrapper {
               "nodeType": "host",
               "props": Object {
                 "children": Array [
-                  <withRouter(Connect(VersoInfo)) />,
+                  <withRouter(Connect(VersoContentOffer)) />,
                   false,
                 ],
                 "className": "verso-content",

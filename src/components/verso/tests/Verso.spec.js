@@ -4,8 +4,8 @@ import { shallow } from 'enzyme'
 
 import Verso from '../Verso'
 import VersoControl from '../verso-controls/VersoControl'
-import VersoInfoOffer from '../verso-content/VersoInfo'
-import VersoTutoContent from '../verso-content/VersoTutoContent'
+import VersoContentOfferContainer from '../verso-content/VersoContentOfferContainer'
+import VersoContentTuto from '../verso-content/VersoContentTuto'
 
 const backgroundColor = '#ACE539'
 const props = {
@@ -34,8 +34,8 @@ describe('src | components | verso | Verso', () => {
     const cprops = { ...props, isTuto: false }
     // when
     const wrapper = shallow(<Verso {...cprops} />)
-    const infos = wrapper.find(VersoInfoOffer)
-    const tuto = wrapper.find(VersoTutoContent)
+    const infos = wrapper.find(VersoContentOfferContainer)
+    const tuto = wrapper.find(VersoContentTuto)
     const controls = wrapper.find(VersoControl)
     // then
     expect(tuto).toHaveLength(0)
@@ -47,8 +47,8 @@ describe('src | components | verso | Verso', () => {
     const cprops = { ...props, isTuto: true }
     // when
     const wrapper = shallow(<Verso {...cprops} />)
-    const infos = wrapper.find(VersoInfoOffer)
-    const tuto = wrapper.find(VersoTutoContent)
+    const infos = wrapper.find(VersoContentOfferContainer)
+    const tuto = wrapper.find(VersoContentTuto)
     const controls = wrapper.find(VersoControl)
     // then
     expect(tuto).toHaveLength(1)

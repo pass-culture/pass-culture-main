@@ -69,27 +69,36 @@ class VersoContentOffer extends React.PureComponent {
 
   renderOfferWhat() {
     const { recommendation } = this.props
-    const eventOrThing = get(recommendation, 'offer.eventOrThing')
-    const author = get(eventOrThing, 'author')
-    const durationMinutes = get(eventOrThing, 'durationMinutes')
-    const isVirtualVenue = get(recommendation, 'offer.venue.isVirtual')
-    const label = get(eventOrThing, 'offerType.label')
-    const performer = get(eventOrThing, 'performer')
-    const speaker = get(eventOrThing, 'speaker')
-    const type = get(eventOrThing, 'extraData.musicType')
+    const offer = get(recommendation, 'offer')
 
+    const venue = get(offer, 'venue')
+    const isVirtualVenue = get(venue, 'isVirtual')
+
+    const eventOrThing = get(offer, 'eventOrThing')
+    const durationMinutes = get(eventOrThing, 'durationMinutes')
     const duration = getDurationFromMinutes(durationMinutes)
+
+    const extraData = get(eventOrThing, 'extraData')
+    const label = get(eventOrThing, 'offerType.label')
     const title = getWhatTitleFromLabelAndIsVirtualVenue(label, isVirtualVenue)
 
+    const author = get(extraData, 'author')
+    const performer = get(extraData, 'performer')
+    const speaker = get(extraData, 'speaker')
+    const stageDirector = get(extraData, 'stageDirector')
+    const type = get(extraData, 'musicType') || get(extraData, 'showType')
     return (
       <div>
         <h3>Quoi ?</h3>
-        <span className="is-bold">{title}</span>
-        {durationMinutes && <span> - Durée {duration}</span>}
-        {type && <span>Genre {type}</span>}
-        {author && <span>Auteur {author}</span>}
-        {performer && <span>Interprête {performer}</span>}
-        {speaker && <span>Intervenant {speaker}</span>}
+        <div>
+          <span className="is-bold">{title}</span>
+          {durationMinutes && <span> - Durée {duration}</span>}
+        </div>
+        {type && <div>Genre : {type}</div>}
+        {author && <div>Auteur : {author}</div>}
+        {performer && <div>Interprête : {performer}</div>}
+        {speaker && <div>Intervenant : {speaker}</div>}
+        {stageDirector && <div>Metteur en scène : {stageDirector}</div>}
       </div>
     )
   }
