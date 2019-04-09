@@ -23,10 +23,12 @@ def upgrade():
     op.add_column('offer', sa.Column('ageMin', sa.Integer, nullable=True))
     op.add_column('offer', sa.Column('ageMax', sa.Integer, nullable=True))
     op.add_column('offer', sa.Column('url', sa.String(255), nullable=True))
-    op.add_column('offer', sa.Column('mediaUrls', sa.ARRAY(sa.String(120)), nullable=True))
+    op.add_column('offer', sa.Column('mediaUrls', sa.ARRAY(sa.String(220)), nullable=True))
     op.add_column('offer', sa.Column('durationMinutes', sa.Integer, nullable=True))
     op.add_column('offer', sa.Column('isNational', sa.Boolean, nullable=True))
     op.add_column('offer', sa.Column('extraData', sa.JSON, nullable=True))
+
+    op.alter_column('thing', 'mediaUrls', sa.ARRAY(sa.String(220)))
 
     op.execute("""
     UPDATE offer

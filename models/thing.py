@@ -50,7 +50,7 @@ class Thing(PcObject,
 
     description = Column(Text, nullable=True)
 
-    mediaUrls = Column(ARRAY(String(120)),
+    mediaUrls = Column(ARRAY(String(220)),
                        nullable=False,
                        default=[])
 
