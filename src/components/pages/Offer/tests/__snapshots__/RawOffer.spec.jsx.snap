@@ -25,6 +25,7 @@ ShallowWrapper {
     query={
         Object {
             "parse": [Function],
+            "translate": [Function],
           }
     }
     venues={Array []}

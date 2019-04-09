@@ -25,6 +25,7 @@ describe('src | components | pages | Offer | RawOffer ', () => {
         },
         query: {
           parse: () => ({ lieu: 'AQ' }),
+          translate: () => ({ venue: 'AQ ' }),
         },
         dispatch: dispatchMock,
         venues: [],
@@ -43,7 +44,7 @@ describe('src | components | pages | Offer | RawOffer ', () => {
     describe('when the offer is successfully modified', () => {
       it('should redirect to offer page', () => {
         // given
-        const historyPush = jest.fn()
+        const queryChangeToReadOnly = jest.fn()
         const initialProps = {
           location: {
             search: '?lieu=AQ',
@@ -55,60 +56,65 @@ describe('src | components | pages | Offer | RawOffer ', () => {
             isAdmin: false,
           },
           query: {
+            changeToReadOnly: queryChangeToReadOnly,
             parse: () => ({ lieu: 'AQ' }),
+            translate: () => ({ venue: 'AQ ' }),
           },
           dispatch: dispatchMock,
-          history: {
-            push: historyPush,
-          },
+          history: {},
         }
 
         const wrapper = shallow(<RawOffer {...initialProps} />)
 
         // when
-        let offre = { id: 'SN' }
-        let action = { config: { method: 'PATCH' }, payload: { datum: offre } }
-        wrapper.instance().handleSuccess({}, action)
+        const queryParams = { gestion: '' }
+        const offer = { id: 'SN' }
+        const action = {
+          config: { method: 'PATCH' },
+          payload: { datum: offer },
+        }
+        wrapper.instance().handleFormSuccess({}, action)
 
         // then
-        expect(historyPush).toHaveBeenCalledWith('/offres/SN')
+        expect(queryChangeToReadOnly).toHaveBeenCalledWith(queryParams, offer)
       })
     })
 
     describe('when the offer is successfully modified', () => {
       it('should redirect to gestion page', () => {
         // given
-        const historyPush = jest.fn()
+        const queryChangeToReadOnly = jest.fn()
         const initialProps = {
           location: {
             search: '?lieu=AQ',
           },
           match: {
             params: {
-              offerId: 'nouveau',
+              offerId: 'creation',
             },
           },
           currentUser: {
             isAdmin: false,
           },
           query: {
+            changeToReadOnly: queryChangeToReadOnly,
             parse: () => ({ lieu: 'AQ' }),
+            translate: () => ({ venue: 'AQ ' }),
           },
           dispatch: dispatchMock,
-          history: {
-            push: historyPush,
-          },
+          history: {},
         }
 
         const wrapper = shallow(<RawOffer {...initialProps} />)
 
         // when
-        let offre = { id: 'SN' }
-        let action = { config: { method: 'POST' }, payload: { datum: offre } }
-        wrapper.instance().handleSuccess({}, action)
+        const queryParams = { gestion: '' }
+        const offer = { id: 'SN' }
+        const action = { config: { method: 'POST' }, payload: { datum: offer } }
+        wrapper.instance().handleFormSuccess({}, action)
 
         // then
-        expect(historyPush).toHaveBeenCalledWith('/offres/SN?gestion')
+        expect(queryChangeToReadOnly).toHaveBeenCalledWith(queryParams, offer)
       })
     })
   })
@@ -130,7 +136,9 @@ describe('src | components | pages | Offer | RawOffer ', () => {
             isAdmin: false,
           },
           query: {
+            change: () => {},
             parse: () => ({ lieu: 'AQ' }),
+            translate: () => ({ venue: 'AQ' }),
           },
           dispatch: dispatchMock,
           offer: {
@@ -166,14 +174,16 @@ describe('src | components | pages | Offer | RawOffer ', () => {
           },
           match: {
             params: {
-              offerId: 'nouveau',
+              offerId: 'creation',
             },
           },
           currentUser: {
             isAdmin: false,
           },
           query: {
+            change: () => {},
             parse: () => ({ lieu: 'AQ' }),
+            translate: () => ({ venue: 'AQ' }),
           },
           dispatch: dispatchMock,
           venues: [],
@@ -194,7 +204,7 @@ describe('src | components | pages | Offer | RawOffer ', () => {
           },
           match: {
             params: {
-              offerId: 'nouveau',
+              offerId: 'creation',
             },
           },
           currentUser: {
@@ -202,6 +212,7 @@ describe('src | components | pages | Offer | RawOffer ', () => {
           },
           query: {
             parse: () => ({ lieu: 'AQ' }),
+            translate: () => ({ venue: 'AQ' }),
           },
           dispatch: dispatchMock,
           venues: [],
@@ -236,6 +247,7 @@ describe('src | components | pages | Offer | RawOffer ', () => {
           },
           query: {
             parse: () => ({ lieu: 'AQ' }),
+            translate: () => ({ venue: 'AQ' }),
           },
           dispatch: dispatchMock,
           venues: [],
@@ -267,6 +279,7 @@ describe('src | components | pages | Offer | RawOffer ', () => {
           },
           query: {
             parse: () => ({ lieu: 'AQ' }),
+            translate: () => ({ venue: 'AQ' }),
           },
           dispatch: dispatchMock,
           venues: [],
