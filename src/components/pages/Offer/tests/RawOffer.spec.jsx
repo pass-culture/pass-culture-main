@@ -24,6 +24,7 @@ describe('src | components | pages | Offer | RawOffer ', () => {
           isAdmin: false,
         },
         query: {
+          context: () => ({}),
           parse: () => ({ lieu: 'AQ' }),
           translate: () => ({ venue: 'AQ ' }),
         },
@@ -57,6 +58,7 @@ describe('src | components | pages | Offer | RawOffer ', () => {
           },
           query: {
             changeToReadOnly: queryChangeToReadOnly,
+            context: () => ({}),
             parse: () => ({ lieu: 'AQ' }),
             translate: () => ({ venue: 'AQ ' }),
           },
@@ -98,6 +100,7 @@ describe('src | components | pages | Offer | RawOffer ', () => {
           },
           query: {
             changeToReadOnly: queryChangeToReadOnly,
+            context: () => ({}),
             parse: () => ({ lieu: 'AQ' }),
             translate: () => ({ venue: 'AQ ' }),
           },
@@ -137,6 +140,7 @@ describe('src | components | pages | Offer | RawOffer ', () => {
           },
           query: {
             change: () => {},
+            context: () => ({}),
             parse: () => ({ lieu: 'AQ' }),
             translate: () => ({ venue: 'AQ' }),
           },
@@ -182,6 +186,11 @@ describe('src | components | pages | Offer | RawOffer ', () => {
           },
           query: {
             change: () => {},
+            context: () => ({
+              isCreatedEntity: true,
+              isModifiedEntity: false,
+              readOnly: false,
+            }),
             parse: () => ({ lieu: 'AQ' }),
             translate: () => ({ venue: 'AQ' }),
           },
@@ -193,7 +202,7 @@ describe('src | components | pages | Offer | RawOffer ', () => {
         const wrapper = shallow(<RawOffer {...initialProps} />)
 
         // then
-        expect(wrapper.find(Form).prop('action')).toEqual('offers/')
+        expect(wrapper.find(Form).prop('action')).toEqual('/offers')
       })
 
       it('should create a new Event when event type given', () => {
@@ -211,6 +220,11 @@ describe('src | components | pages | Offer | RawOffer ', () => {
             isAdmin: false,
           },
           query: {
+            context: () => ({
+              isCreatedEntity: true,
+              isModifiedEntity: false,
+              readOnly: false,
+            }),
             parse: () => ({ lieu: 'AQ' }),
             translate: () => ({ venue: 'AQ' }),
           },
@@ -226,7 +240,7 @@ describe('src | components | pages | Offer | RawOffer ', () => {
         const wrapper = shallow(<RawOffer {...initialProps} />)
 
         // then
-        expect(wrapper.find(Form).prop('action')).toEqual('offers/')
+        expect(wrapper.find(Form).prop('action')).toEqual('/offers')
       })
     })
 
@@ -246,12 +260,18 @@ describe('src | components | pages | Offer | RawOffer ', () => {
             isAdmin: false,
           },
           query: {
+            context: () => ({
+              isCreatedEntity: false,
+              isModifiedEntity: false,
+              readOnly: true,
+            }),
             parse: () => ({ lieu: 'AQ' }),
             translate: () => ({ venue: 'AQ' }),
           },
           dispatch: dispatchMock,
           venues: [],
           offer: {
+            id: 'VAG',
             thingId: 'V24',
           },
         }
@@ -260,7 +280,7 @@ describe('src | components | pages | Offer | RawOffer ', () => {
         const wrapper = shallow(<RawOffer {...initialProps} />)
 
         // then
-        expect(wrapper.find(Form).prop('action')).toEqual('offers/VAG')
+        expect(wrapper.find(Form).prop('action')).toEqual('/offers/VAG')
       })
 
       it('should create a new Event when event type given', () => {
@@ -278,6 +298,11 @@ describe('src | components | pages | Offer | RawOffer ', () => {
             isAdmin: false,
           },
           query: {
+            context: () => ({
+              isCreatedEntity: false,
+              isModifiedEntity: false,
+              readOnly: true,
+            }),
             parse: () => ({ lieu: 'AQ' }),
             translate: () => ({ venue: 'AQ' }),
           },
@@ -287,6 +312,7 @@ describe('src | components | pages | Offer | RawOffer ', () => {
             type: 'Event',
           },
           offer: {
+            id: 'VAG',
             eventId: '6GD',
           },
         }
@@ -295,7 +321,7 @@ describe('src | components | pages | Offer | RawOffer ', () => {
         const wrapper = shallow(<RawOffer {...initialProps} />)
 
         // then
-        expect(wrapper.find(Form).prop('action')).toEqual('offers/VAG')
+        expect(wrapper.find(Form).prop('action')).toEqual('/offers/VAG')
       })
     })
   })

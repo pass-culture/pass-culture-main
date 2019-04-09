@@ -327,7 +327,7 @@ class RawOffer extends Component {
           </p>
 
           <Form
-            action={isCreatedEntity ? 'offers/' : `offers/${offerId}`}
+            action={isCreatedEntity ? '/offers' : `/offers/${offerId}`}
             name="offer"
             handleSuccess={this.handleFormSuccess}
             patch={eventOrThingPatch}

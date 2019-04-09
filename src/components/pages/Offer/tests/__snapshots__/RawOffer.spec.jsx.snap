@@ -24,6 +24,7 @@ ShallowWrapper {
     }
     query={
         Object {
+            "context": [Function],
             "parse": [Function],
             "translate": [Function],
           }
@@ -65,7 +66,7 @@ ShallowWrapper {
         <withRouter(Connect(_Form))
                 BlockComponent={null}
                 Tag="form"
-                action="offers/N9"
+                action="/offers/undefined"
                 className={null}
                 errorsPatch={Object {}}
                 failNotification="Formulaire non validé"
@@ -83,7 +84,7 @@ ShallowWrapper {
                 onEscapeKey={null}
                 onSubmit={null}
                 patch={undefined}
-                readOnly={true}
+                readOnly={undefined}
                 successNotification="Formulaire non validé"
         >
                 <div
@@ -185,7 +186,7 @@ ShallowWrapper {
                                         layout="horizontal"
                                         maxLength={1000}
                                         name="description"
-                                        rows={1}
+                                        rows={5}
                                         size="normal"
                                         storeValue={[Function]}
                                         type="textarea"
@@ -204,26 +205,26 @@ ShallowWrapper {
                         <div
                                 className="control"
                         >
-                                <NavLink
-                                        activeClassName="active"
-                                        aria-current="page"
+                                <CancelButton
                                         className="button is-secondary is-medium"
-                                        to="/offres/undefined?modifie"
+                                        onClick={[Function]}
                                 >
-                                        Modifier l'offre
-                                </NavLink>
+                                        Annuler
+                                </CancelButton>
                         </div>
                         <div
                                 className="control"
                         >
-                                <NavLink
-                                        activeClassName="active"
-                                        aria-current="page"
+                                <SubmitButton
                                         className="button is-primary is-medium"
-                                        to="/offres"
+                                        getDisabled={[Function]}
+                                        getTitle={[Function]}
+                                        requiredFields={Array []}
+                                        type="submit"
                                 >
-                                        Terminer 
-                                </NavLink>
+                                        Enregistrer
+                                         
+                                </SubmitButton>
                         </div>
                 </div>
         </withRouter(Connect(_Form))>
@@ -251,7 +252,7 @@ ShallowWrapper {
           <withRouter(Connect(_Form))
             BlockComponent={null}
             Tag="form"
-            action="offers/N9"
+            action="/offers/undefined"
             className={null}
             errorsPatch={Object {}}
             failNotification="Formulaire non validé"
@@ -269,7 +270,7 @@ ShallowWrapper {
             onEscapeKey={null}
             onSubmit={null}
             patch={undefined}
-            readOnly={true}
+            readOnly={undefined}
             successNotification="Formulaire non validé"
 >
             <div
@@ -371,7 +372,7 @@ ShallowWrapper {
                                                 layout="horizontal"
                                                 maxLength={1000}
                                                 name="description"
-                                                rows={1}
+                                                rows={5}
                                                 size="normal"
                                                 storeValue={[Function]}
                                                 type="textarea"
@@ -390,26 +391,26 @@ ShallowWrapper {
                         <div
                                     className="control"
                         >
-                                    <NavLink
-                                                activeClassName="active"
-                                                aria-current="page"
+                                    <CancelButton
                                                 className="button is-secondary is-medium"
-                                                to="/offres/undefined?modifie"
+                                                onClick={[Function]}
                                     >
-                                                Modifier l'offre
-                                    </NavLink>
+                                                Annuler
+                                    </CancelButton>
                         </div>
                         <div
                                     className="control"
                         >
-                                    <NavLink
-                                                activeClassName="active"
-                                                aria-current="page"
+                                    <SubmitButton
                                                 className="button is-primary is-medium"
-                                                to="/offres"
+                                                getDisabled={[Function]}
+                                                getTitle={[Function]}
+                                                requiredFields={Array []}
+                                                type="submit"
                                     >
-                                                Terminer 
-                                    </NavLink>
+                                                Enregistrer
+                                                 
+                                    </SubmitButton>
                         </div>
             </div>
 </withRouter(Connect(_Form))>,
@@ -450,7 +451,7 @@ ShallowWrapper {
           "props": Object {
             "BlockComponent": null,
             "Tag": "form",
-            "action": "offers/N9",
+            "action": "/offers/undefined",
             "children": Array [
               <div
                 className="field-group"
@@ -552,7 +553,7 @@ ShallowWrapper {
                                                 layout="horizontal"
                                                 maxLength={1000}
                                                 name="description"
-                                                rows={1}
+                                                rows={5}
                                                 size="normal"
                                                 storeValue={[Function]}
                                                 type="textarea"
@@ -571,26 +572,26 @@ ShallowWrapper {
                 <div
                                 className="control"
                 >
-                                <NavLink
-                                                activeClassName="active"
-                                                aria-current="page"
+                                <CancelButton
                                                 className="button is-secondary is-medium"
-                                                to="/offres/undefined?modifie"
+                                                onClick={[Function]}
                                 >
-                                                Modifier l'offre
-                                </NavLink>
+                                                Annuler
+                                </CancelButton>
                 </div>
                 <div
                                 className="control"
                 >
-                                <NavLink
-                                                activeClassName="active"
-                                                aria-current="page"
+                                <SubmitButton
                                                 className="button is-primary is-medium"
-                                                to="/offres"
+                                                getDisabled={[Function]}
+                                                getTitle={[Function]}
+                                                requiredFields={Array []}
+                                                type="submit"
                                 >
-                                                Terminer 
-                                </NavLink>
+                                                Enregistrer
+                                                 
+                                </SubmitButton>
                 </div>
 </div>,
             ],
@@ -611,7 +612,7 @@ ShallowWrapper {
             "onEscapeKey": null,
             "onSubmit": null,
             "patch": undefined,
-            "readOnly": true,
+            "readOnly": undefined,
             "successNotification": "Formulaire non validé",
           },
           "ref": null,
@@ -781,7 +782,7 @@ ShallowWrapper {
                                         layout="horizontal"
                                         maxLength={1000}
                                         name="description"
-                                        rows={1}
+                                        rows={5}
                                         size="normal"
                                         storeValue={[Function]}
                                         type="textarea"
@@ -956,7 +957,7 @@ ShallowWrapper {
                         layout="horizontal"
                         maxLength={1000}
                         name="description"
-                        rows={1}
+                        rows={5}
                         size="normal"
                         storeValue={[Function]}
                         type="textarea"
@@ -985,7 +986,7 @@ ShallowWrapper {
                         "layout": "horizontal",
                         "maxLength": 1000,
                         "name": "description",
-                        "rows": 1,
+                        "rows": 5,
                         "size": "normal",
                         "storeValue": [Function],
                         "type": "textarea",
@@ -1024,26 +1025,26 @@ ShallowWrapper {
                   <div
                     className="control"
 >
-                    <NavLink
-                                        activeClassName="active"
-                                        aria-current="page"
+                    <CancelButton
                                         className="button is-secondary is-medium"
-                                        to="/offres/undefined?modifie"
+                                        onClick={[Function]}
                     >
-                                        Modifier l'offre
-                    </NavLink>
+                                        Annuler
+                    </CancelButton>
 </div>,
                   <div
                     className="control"
 >
-                    <NavLink
-                                        activeClassName="active"
-                                        aria-current="page"
+                    <SubmitButton
                                         className="button is-primary is-medium"
-                                        to="/offres"
+                                        getDisabled={[Function]}
+                                        getTitle={[Function]}
+                                        requiredFields={Array []}
+                                        type="submit"
                     >
-                                        Terminer 
-                    </NavLink>
+                                        Enregistrer
+                                         
+                    </SubmitButton>
 </div>,
                 ],
                 "className": "field is-grouped is-grouped-centered",
@@ -1058,14 +1059,12 @@ ShallowWrapper {
                   "key": undefined,
                   "nodeType": "host",
                   "props": Object {
-                    "children": <NavLink
-                      activeClassName="active"
-                      aria-current="page"
+                    "children": <CancelButton
                       className="button is-secondary is-medium"
-                      to="/offres/undefined?modifie"
+                      onClick={[Function]}
 >
-                      Modifier l'offre
-</NavLink>,
+                      Annuler
+</CancelButton>,
                     "className": "control",
                   },
                   "ref": null,
@@ -1074,14 +1073,12 @@ ShallowWrapper {
                     "key": undefined,
                     "nodeType": "function",
                     "props": Object {
-                      "activeClassName": "active",
-                      "aria-current": "page",
-                      "children": "Modifier l'offre",
+                      "children": "Annuler",
                       "className": "button is-secondary is-medium",
-                      "to": "/offres/undefined?modifie",
+                      "onClick": [Function],
                     },
                     "ref": null,
-                    "rendered": "Modifier l'offre",
+                    "rendered": "Annuler",
                     "type": [Function],
                   },
                   "type": "div",
@@ -1091,14 +1088,16 @@ ShallowWrapper {
                   "key": undefined,
                   "nodeType": "host",
                   "props": Object {
-                    "children": <NavLink
-                      activeClassName="active"
-                      aria-current="page"
+                    "children": <SubmitButton
                       className="button is-primary is-medium"
-                      to="/offres"
+                      getDisabled={[Function]}
+                      getTitle={[Function]}
+                      requiredFields={Array []}
+                      type="submit"
 >
-                      Terminer 
-</NavLink>,
+                      Enregistrer
+                       
+</SubmitButton>,
                     "className": "control",
                   },
                   "ref": null,
@@ -1107,18 +1106,21 @@ ShallowWrapper {
                     "key": undefined,
                     "nodeType": "function",
                     "props": Object {
-                      "activeClassName": "active",
-                      "aria-current": "page",
                       "children": Array [
-                        "Terminer ",
+                        "Enregistrer",
+                        " ",
                         undefined,
                       ],
                       "className": "button is-primary is-medium",
-                      "to": "/offres",
+                      "getDisabled": [Function],
+                      "getTitle": [Function],
+                      "requiredFields": Array [],
+                      "type": "submit",
                     },
                     "ref": null,
                     "rendered": Array [
-                      "Terminer ",
+                      "Enregistrer",
+                      " ",
                       undefined,
                     ],
                     "type": [Function],
@@ -1163,7 +1165,7 @@ ShallowWrapper {
           <withRouter(Connect(_Form))
                     BlockComponent={null}
                     Tag="form"
-                    action="offers/N9"
+                    action="/offers/undefined"
                     className={null}
                     errorsPatch={Object {}}
                     failNotification="Formulaire non validé"
@@ -1181,7 +1183,7 @@ ShallowWrapper {
                     onEscapeKey={null}
                     onSubmit={null}
                     patch={undefined}
-                    readOnly={true}
+                    readOnly={undefined}
                     successNotification="Formulaire non validé"
           >
                     <div
@@ -1283,7 +1285,7 @@ ShallowWrapper {
                                                   layout="horizontal"
                                                   maxLength={1000}
                                                   name="description"
-                                                  rows={1}
+                                                  rows={5}
                                                   size="normal"
                                                   storeValue={[Function]}
                                                   type="textarea"
@@ -1302,26 +1304,26 @@ ShallowWrapper {
                               <div
                                         className="control"
                               >
-                                        <NavLink
-                                                  activeClassName="active"
-                                                  aria-current="page"
+                                        <CancelButton
                                                   className="button is-secondary is-medium"
-                                                  to="/offres/undefined?modifie"
+                                                  onClick={[Function]}
                                         >
-                                                  Modifier l'offre
-                                        </NavLink>
+                                                  Annuler
+                                        </CancelButton>
                               </div>
                               <div
                                         className="control"
                               >
-                                        <NavLink
-                                                  activeClassName="active"
-                                                  aria-current="page"
+                                        <SubmitButton
                                                   className="button is-primary is-medium"
-                                                  to="/offres"
+                                                  getDisabled={[Function]}
+                                                  getTitle={[Function]}
+                                                  requiredFields={Array []}
+                                                  type="submit"
                                         >
-                                                  Terminer 
-                                        </NavLink>
+                                                  Enregistrer
+                                                   
+                                        </SubmitButton>
                               </div>
                     </div>
           </withRouter(Connect(_Form))>
@@ -1349,7 +1351,7 @@ ShallowWrapper {
             <withRouter(Connect(_Form))
               BlockComponent={null}
               Tag="form"
-              action="offers/N9"
+              action="/offers/undefined"
               className={null}
               errorsPatch={Object {}}
               failNotification="Formulaire non validé"
@@ -1367,7 +1369,7 @@ ShallowWrapper {
               onEscapeKey={null}
               onSubmit={null}
               patch={undefined}
-              readOnly={true}
+              readOnly={undefined}
               successNotification="Formulaire non validé"
 >
               <div
@@ -1469,7 +1471,7 @@ ShallowWrapper {
                                                         layout="horizontal"
                                                         maxLength={1000}
                                                         name="description"
-                                                        rows={1}
+                                                        rows={5}
                                                         size="normal"
                                                         storeValue={[Function]}
                                                         type="textarea"
@@ -1488,26 +1490,26 @@ ShallowWrapper {
                             <div
                                           className="control"
                             >
-                                          <NavLink
-                                                        activeClassName="active"
-                                                        aria-current="page"
+                                          <CancelButton
                                                         className="button is-secondary is-medium"
-                                                        to="/offres/undefined?modifie"
+                                                        onClick={[Function]}
                                           >
-                                                        Modifier l'offre
-                                          </NavLink>
+                                                        Annuler
+                                          </CancelButton>
                             </div>
                             <div
                                           className="control"
                             >
-                                          <NavLink
-                                                        activeClassName="active"
-                                                        aria-current="page"
+                                          <SubmitButton
                                                         className="button is-primary is-medium"
-                                                        to="/offres"
+                                                        getDisabled={[Function]}
+                                                        getTitle={[Function]}
+                                                        requiredFields={Array []}
+                                                        type="submit"
                                           >
-                                                        Terminer 
-                                          </NavLink>
+                                                        Enregistrer
+                                                         
+                                          </SubmitButton>
                             </div>
               </div>
 </withRouter(Connect(_Form))>,
@@ -1548,7 +1550,7 @@ ShallowWrapper {
             "props": Object {
               "BlockComponent": null,
               "Tag": "form",
-              "action": "offers/N9",
+              "action": "/offers/undefined",
               "children": Array [
                 <div
                   className="field-group"
@@ -1650,7 +1652,7 @@ ShallowWrapper {
                                                       layout="horizontal"
                                                       maxLength={1000}
                                                       name="description"
-                                                      rows={1}
+                                                      rows={5}
                                                       size="normal"
                                                       storeValue={[Function]}
                                                       type="textarea"
@@ -1669,26 +1671,26 @@ ShallowWrapper {
                   <div
                                     className="control"
                   >
-                                    <NavLink
-                                                      activeClassName="active"
-                                                      aria-current="page"
+                                    <CancelButton
                                                       className="button is-secondary is-medium"
-                                                      to="/offres/undefined?modifie"
+                                                      onClick={[Function]}
                                     >
-                                                      Modifier l'offre
-                                    </NavLink>
+                                                      Annuler
+                                    </CancelButton>
                   </div>
                   <div
                                     className="control"
                   >
-                                    <NavLink
-                                                      activeClassName="active"
-                                                      aria-current="page"
+                                    <SubmitButton
                                                       className="button is-primary is-medium"
-                                                      to="/offres"
+                                                      getDisabled={[Function]}
+                                                      getTitle={[Function]}
+                                                      requiredFields={Array []}
+                                                      type="submit"
                                     >
-                                                      Terminer 
-                                    </NavLink>
+                                                      Enregistrer
+                                                       
+                                    </SubmitButton>
                   </div>
 </div>,
               ],
@@ -1709,7 +1711,7 @@ ShallowWrapper {
               "onEscapeKey": null,
               "onSubmit": null,
               "patch": undefined,
-              "readOnly": true,
+              "readOnly": undefined,
               "successNotification": "Formulaire non validé",
             },
             "ref": null,
@@ -1879,7 +1881,7 @@ ShallowWrapper {
                                             layout="horizontal"
                                             maxLength={1000}
                                             name="description"
-                                            rows={1}
+                                            rows={5}
                                             size="normal"
                                             storeValue={[Function]}
                                             type="textarea"
@@ -2054,7 +2056,7 @@ ShallowWrapper {
                           layout="horizontal"
                           maxLength={1000}
                           name="description"
-                          rows={1}
+                          rows={5}
                           size="normal"
                           storeValue={[Function]}
                           type="textarea"
@@ -2083,7 +2085,7 @@ ShallowWrapper {
                           "layout": "horizontal",
                           "maxLength": 1000,
                           "name": "description",
-                          "rows": 1,
+                          "rows": 5,
                           "size": "normal",
                           "storeValue": [Function],
                           "type": "textarea",
@@ -2122,26 +2124,26 @@ ShallowWrapper {
                     <div
                       className="control"
 >
-                      <NavLink
-                                            activeClassName="active"
-                                            aria-current="page"
+                      <CancelButton
                                             className="button is-secondary is-medium"
-                                            to="/offres/undefined?modifie"
+                                            onClick={[Function]}
                       >
-                                            Modifier l'offre
-                      </NavLink>
+                                            Annuler
+                      </CancelButton>
 </div>,
                     <div
                       className="control"
 >
-                      <NavLink
-                                            activeClassName="active"
-                                            aria-current="page"
+                      <SubmitButton
                                             className="button is-primary is-medium"
-                                            to="/offres"
+                                            getDisabled={[Function]}
+                                            getTitle={[Function]}
+                                            requiredFields={Array []}
+                                            type="submit"
                       >
-                                            Terminer 
-                      </NavLink>
+                                            Enregistrer
+                                             
+                      </SubmitButton>
 </div>,
                   ],
                   "className": "field is-grouped is-grouped-centered",
@@ -2156,14 +2158,12 @@ ShallowWrapper {
                     "key": undefined,
                     "nodeType": "host",
                     "props": Object {
-                      "children": <NavLink
-                        activeClassName="active"
-                        aria-current="page"
+                      "children": <CancelButton
                         className="button is-secondary is-medium"
-                        to="/offres/undefined?modifie"
+                        onClick={[Function]}
 >
-                        Modifier l'offre
-</NavLink>,
+                        Annuler
+</CancelButton>,
                       "className": "control",
                     },
                     "ref": null,
@@ -2172,14 +2172,12 @@ ShallowWrapper {
                       "key": undefined,
                       "nodeType": "function",
                       "props": Object {
-                        "activeClassName": "active",
-                        "aria-current": "page",
-                        "children": "Modifier l'offre",
+                        "children": "Annuler",
                         "className": "button is-secondary is-medium",
-                        "to": "/offres/undefined?modifie",
+                        "onClick": [Function],
                       },
                       "ref": null,
-                      "rendered": "Modifier l'offre",
+                      "rendered": "Annuler",
                       "type": [Function],
                     },
                     "type": "div",
@@ -2189,14 +2187,16 @@ ShallowWrapper {
                     "key": undefined,
                     "nodeType": "host",
                     "props": Object {
-                      "children": <NavLink
-                        activeClassName="active"
-                        aria-current="page"
+                      "children": <SubmitButton
                         className="button is-primary is-medium"
-                        to="/offres"
+                        getDisabled={[Function]}
+                        getTitle={[Function]}
+                        requiredFields={Array []}
+                        type="submit"
 >
-                        Terminer 
-</NavLink>,
+                        Enregistrer
+                         
+</SubmitButton>,
                       "className": "control",
                     },
                     "ref": null,
@@ -2205,18 +2205,21 @@ ShallowWrapper {
                       "key": undefined,
                       "nodeType": "function",
                       "props": Object {
-                        "activeClassName": "active",
-                        "aria-current": "page",
                         "children": Array [
-                          "Terminer ",
+                          "Enregistrer",
+                          " ",
                           undefined,
                         ],
                         "className": "button is-primary is-medium",
-                        "to": "/offres",
+                        "getDisabled": [Function],
+                        "getTitle": [Function],
+                        "requiredFields": Array [],
+                        "type": "submit",
                       },
                       "ref": null,
                       "rendered": Array [
-                        "Terminer ",
+                        "Enregistrer",
+                        " ",
                         undefined,
                       ],
                       "type": [Function],
