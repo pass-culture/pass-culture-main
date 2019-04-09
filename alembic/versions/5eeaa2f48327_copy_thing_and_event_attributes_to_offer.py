@@ -28,12 +28,6 @@ def upgrade():
     op.add_column('offer', sa.Column('isNational', sa.Boolean, nullable=True))
     op.add_column('offer', sa.Column('extraData', sa.JSON, nullable=True))
 
-    op.create_check_constraint(
-        constraint_name='check_duration_minutes_not_null_for_event',
-        table_name='offer',
-        condition="""("eventId" IS NULL) OR ("durationMinutes" IS NOT NULL)"""
-    )
-
     op.execute("""
     UPDATE offer
     SET type = thing.type,
@@ -62,6 +56,13 @@ def upgrade():
     WHERE
      event.id = offer."eventId";
     """)
+
+    op.create_check_constraint(
+        constraint_name='check_duration_minutes_not_null_for_event',
+        table_name='offer',
+        condition="""("eventId" IS NULL) OR ("durationMinutes" IS NOT NULL)"""
+    )
+
     op.alter_column('offer', 'name', nullable=False)
     op.alter_column('offer', 'mediaUrls', nullable=False)
     op.alter_column('offer', 'isNational', nullable=False)
