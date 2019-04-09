@@ -64,7 +64,7 @@ ShallowWrapper {
         <withRouter(Connect(_Form))
                 BlockComponent={null}
                 Tag="form"
-                action="things/"
+                action="offers/N9"
                 className={null}
                 errorsPatch={Object {}}
                 failNotification="Formulaire non validé"
@@ -250,7 +250,7 @@ ShallowWrapper {
           <withRouter(Connect(_Form))
             BlockComponent={null}
             Tag="form"
-            action="things/"
+            action="offers/N9"
             className={null}
             errorsPatch={Object {}}
             failNotification="Formulaire non validé"
@@ -449,7 +449,7 @@ ShallowWrapper {
           "props": Object {
             "BlockComponent": null,
             "Tag": "form",
-            "action": "things/",
+            "action": "offers/N9",
             "children": Array [
               <div
                 className="field-group"
@@ -1162,7 +1162,7 @@ ShallowWrapper {
           <withRouter(Connect(_Form))
                     BlockComponent={null}
                     Tag="form"
-                    action="things/"
+                    action="offers/N9"
                     className={null}
                     errorsPatch={Object {}}
                     failNotification="Formulaire non validé"
@@ -1348,7 +1348,7 @@ ShallowWrapper {
             <withRouter(Connect(_Form))
               BlockComponent={null}
               Tag="form"
-              action="things/"
+              action="offers/N9"
               className={null}
               errorsPatch={Object {}}
               failNotification="Formulaire non validé"
@@ -1547,7 +1547,7 @@ ShallowWrapper {
             "props": Object {
               "BlockComponent": null,
               "Tag": "form",
-              "action": "things/",
+              "action": "offers/N9",
               "children": Array [
                 <div
                   className="field-group"
