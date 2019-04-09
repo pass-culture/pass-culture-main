@@ -3,6 +3,8 @@ from models.pc_object import PcObject
 from sandboxes.scripts.mocks.thing_mocks import MOCK_AUTHOR_NAMES, \
                                                 MOCK_DESCRIPTIONS, \
                                                 MOCK_NAMES
+from sandboxes.scripts.mocks.user_mocks import MOCK_FIRST_NAMES, \
+                                               MOCK_LAST_NAMES
 from utils.logger import logger
 from tests.test_utils import create_thing
 
@@ -29,7 +31,7 @@ def create_industrial_things():
             name = "{} / {}".format(thing_type_dict['value'], MOCK_NAMES[mock_index])
             is_national = True if thing_type_dict['onlineOnly'] else False
             url = 'https://ilestencoretemps.fr/' if thing_type_dict['onlineOnly'] else None
-            things_by_name[name] = create_thing(
+            thing = create_thing(
                 author_name=MOCK_AUTHOR_NAMES[mock_index],
                 description=MOCK_DESCRIPTIONS[mock_index],
                 id_at_providers=str(id_at_providers),
@@ -38,6 +40,21 @@ def create_industrial_things():
                 thing_type=thing_type_dict['value'],
                 url=url
             )
+
+            extraData = {}
+            extra_data_index = 0
+            for conditionalField in thing.offerType['conditionalFields']:
+                if conditionalField in ['author', 'performer', 'speaker', 'stageDirector']:
+                    mock_first_name_index = (type_index + thing_type_dict_index + extra_data_index) % len(MOCK_FIRST_NAMES)
+                    mock_first_name = MOCK_FIRST_NAMES[mock_first_name_index]
+                    mock_last_name_index = (type_index + thing_type_dict_index + extra_data_index) % len(MOCK_LAST_NAMES)
+                    mock_last_name = MOCK_LAST_NAMES[mock_last_name_index]
+                    mock_name = '{} {}'.format(mock_first_name, mock_last_name)
+                    extraData[conditionalField] = mock_name
+                extra_data_index += 1
+            thing.extraData = extraData
+
+            things_by_name[name] = thing
 
             id_at_providers += 1
 

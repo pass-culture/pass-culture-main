@@ -5,6 +5,8 @@ from sandboxes.scripts.mocks.event_mocks import MOCK_ACTIVATION_DESCRIPTION, \
                                                 MOCK_ACTIVATION_NAME, \
                                                 MOCK_DESCRIPTIONS, \
                                                 MOCK_NAMES
+from sandboxes.scripts.mocks.user_mocks import MOCK_FIRST_NAMES, \
+                                               MOCK_LAST_NAMES
 from utils.logger import logger
 from tests.test_utils import create_event
 
@@ -34,13 +36,30 @@ def create_industrial_events():
                 event_name = MOCK_NAMES[mock_index]
                 description = MOCK_DESCRIPTIONS[mock_index]
 
+            event_type = event_type_dict['value']
+
             name = "{} / {}".format(event_type_dict['value'], MOCK_NAMES[mock_index])
-            events_by_name[name] = create_event(
+            event = create_event(
                 description=description,
                 event_name=event_name,
-                event_type=event_type_dict['value'],
+                event_type=event_type,
                 duration_minutes=60
             )
+
+            extraData = {}
+            extra_data_index = 0
+            for conditionalField in event.offerType['conditionalFields']:
+                if conditionalField in ['author', 'performer', 'speaker', 'stageDirector']:
+                    mock_first_name_index = (type_index + event_type_dict_index + extra_data_index) % len(MOCK_FIRST_NAMES)
+                    mock_first_name = MOCK_FIRST_NAMES[mock_first_name_index]
+                    mock_last_name_index = (type_index + event_type_dict_index + extra_data_index) % len(MOCK_LAST_NAMES)
+                    mock_last_name = MOCK_LAST_NAMES[mock_last_name_index]
+                    mock_name = '{} {}'.format(mock_first_name, mock_last_name)
+                    extraData[conditionalField] = mock_name
+                extra_data_index += 1
+            event.extraData = extraData
+
+            events_by_name[name] = event
 
         type_index += len(event_type_dicts)
 
