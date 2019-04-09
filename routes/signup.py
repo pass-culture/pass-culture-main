@@ -17,7 +17,7 @@ from validation.users import check_valid_signup
 
 @app.route("/users/signup", methods=["POST"])
 def signup_old():
-    return redirect("/users/signup/webapp", code=307)
+    return redirect("/users/signup/webapp", code=308)
 
 
 @app.route("/users/signup/webapp", methods=["POST"])

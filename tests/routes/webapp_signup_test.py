@@ -115,7 +115,7 @@ class Post:
 
             # Then
             assert response.status_code == 201
-            assert response.history[0].status_code == 307
+            assert response.history[0].status_code == 308
             assert response.url == 'http://localhost:5000/users/signup/webapp'
 
     class Returns400:
