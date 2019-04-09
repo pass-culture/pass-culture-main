@@ -114,17 +114,20 @@ class Offer(PcObject,
     def stockAlertMessage(self):
 
         message = ""
+        # offer_name = "offre"
+        # pluralized_offer_name = "offres"
 
-        if self.thing:
+        if self.thingId:
             thing_type = True
             stock_word = "stock"
             remaining_stock_word = "en stock"
             all_places_word = ''
         else:
             thing_type = False
-            stock_word = "place(s)"
+            stock_word = "places"
             all_places_word = 'toutes les dates'
-            remaining_stock_word= ''
+            remaining_stock_word = "place"
+            pluralized_remaining_stock_word = "places"
 
 
         if len(self.stocks) == 0:
@@ -165,9 +168,11 @@ class Offer(PcObject,
                     with_no_more_places_or_stock += 1
 
                 # affichage du stock sans places
-                if with_no_more_places_or_stock >= with_illimited_places_or_stock:
-                    message = f'plus de {stock_word} pour {with_no_more_places_or_stock} offre(s)'
 
+                if with_no_more_places_or_stock >= with_illimited_places_or_stock:
+                    message = f'plus de {stock_word} pour {with_no_more_places_or_stock} offre'
+
+                # plus aucune places du tout
                 if with_no_more_places_or_stock == total_stocks:
                     message = f'plus de {stock_word} pour {all_places_word}'
 
@@ -176,6 +181,9 @@ class Offer(PcObject,
                     message = "illimité"
 
                 if available_places_or_stock > 0:
+                    print("thing_type", thing_type)
+                    if available_places_or_stock > 1 and not thing_type:
+                        remaining_stock_word = pluralized_remaining_stock_word
                     message = f'encore {available_places_or_stock} {remaining_stock_word}'
 
         return message
