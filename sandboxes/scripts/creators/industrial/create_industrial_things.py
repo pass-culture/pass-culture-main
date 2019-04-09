@@ -1,3 +1,4 @@
+from domain.music_types import music_types
 from domain.types import get_formatted_event_or_thing_types
 from models.pc_object import PcObject
 from sandboxes.scripts.mocks.thing_mocks import MOCK_AUTHOR_NAMES, \
@@ -5,8 +6,10 @@ from sandboxes.scripts.mocks.thing_mocks import MOCK_AUTHOR_NAMES, \
                                                 MOCK_NAMES
 from sandboxes.scripts.mocks.user_mocks import MOCK_FIRST_NAMES, \
                                                MOCK_LAST_NAMES
-from utils.logger import logger
 from tests.test_utils import create_thing
+from utils.logger import logger
+from utils.token import random_token
+
 
 THINGS_PER_TYPE = 7
 
@@ -44,6 +47,7 @@ def create_industrial_things():
             extraData = {}
             extra_data_index = 0
             for conditionalField in thing.offerType['conditionalFields']:
+                conditional_index = type_index + thing_type_dict_index + extra_data_index
                 if conditionalField in ['author', 'performer', 'speaker', 'stageDirector']:
                     mock_first_name_index = (type_index + thing_type_dict_index + extra_data_index) % len(MOCK_FIRST_NAMES)
                     mock_first_name = MOCK_FIRST_NAMES[mock_first_name_index]
@@ -51,6 +55,12 @@ def create_industrial_things():
                     mock_last_name = MOCK_LAST_NAMES[mock_last_name_index]
                     mock_name = '{} {}'.format(mock_first_name, mock_last_name)
                     extraData[conditionalField] = mock_name
+                elif conditionalField == "musicType":
+                    music_type_index = conditional_index % len(music_types)
+                    music_type = music_types[music_type_index]
+                    extraData[conditionalField] = music_type['label']
+                elif conditionalField == "isbn":
+                    extraData[conditionalField] = random_token(13)
                 extra_data_index += 1
             thing.extraData = extraData
 

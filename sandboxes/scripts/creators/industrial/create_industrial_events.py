@@ -1,3 +1,5 @@
+from domain.music_types import music_types
+from domain.show_types import show_types
 from domain.types import get_formatted_event_or_thing_types
 from models.offer_type import EventType
 from models.pc_object import PcObject
@@ -49,13 +51,24 @@ def create_industrial_events():
             extraData = {}
             extra_data_index = 0
             for conditionalField in event.offerType['conditionalFields']:
+                conditional_index = type_index + event_type_dict_index + extra_data_index
                 if conditionalField in ['author', 'performer', 'speaker', 'stageDirector']:
-                    mock_first_name_index = (type_index + event_type_dict_index + extra_data_index) % len(MOCK_FIRST_NAMES)
+                    mock_first_name_index = conditional_index % len(MOCK_FIRST_NAMES)
                     mock_first_name = MOCK_FIRST_NAMES[mock_first_name_index]
-                    mock_last_name_index = (type_index + event_type_dict_index + extra_data_index) % len(MOCK_LAST_NAMES)
+                    mock_last_name_index = conditional_index % len(MOCK_LAST_NAMES)
                     mock_last_name = MOCK_LAST_NAMES[mock_last_name_index]
                     mock_name = '{} {}'.format(mock_first_name, mock_last_name)
                     extraData[conditionalField] = mock_name
+                elif conditionalField == "musicType":
+                    music_type_index = conditional_index % len(music_types)
+                    music_type = music_types[music_type_index]
+                    extraData[conditionalField] = music_type['label']
+                elif conditionalField == "showType":
+                    show_type_index = conditional_index % len(show_types)
+                    show_type = show_types[show_type_index]
+                    extraData[conditionalField] = show_type['label']
+                elif conditionalField == "visa":
+                    pass
                 extra_data_index += 1
             event.extraData = extraData
 
