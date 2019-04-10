@@ -19,5 +19,5 @@ export function getDurationFromMinutes(minutes) {
         .format('H:mm')
         .replace(':', 'h')
         .replace('00', '')
-    : minutes
+    : `${minutes}m`
 }
