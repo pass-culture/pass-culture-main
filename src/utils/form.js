@@ -1,7 +1,7 @@
 import { Form } from 'pass-culture-shared'
 
 import BicInput from '../components/layout/BicInput'
-import Block from '../components/layout/Block'
+import BlockContainer from '../components/layout/BlockContainer'
 import GeoInput from '../components/layout/GeoInput'
 import IbanInput from '../components/layout/IbanInput'
 import SirenInput from '../components/layout/SirenInput'
@@ -15,7 +15,7 @@ Object.assign(Form.inputsByType, {
 })
 
 Object.assign(Form.defaultProps, {
-  BlockComponent: Block,
+  BlockComponent: BlockContainer,
   handleFailNotification: (state, action) => {
     const {
       payload: { errors },

@@ -1,40 +1,26 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import { connect } from 'react-redux'
-import { withRouter } from 'react-router-dom'
-import { compose } from 'redux'
-
-import { closeModal } from 'pass-culture-shared'
 
 export const Block = ({
   cancelText,
   confirmText,
-  dispatch,
-  history,
-  nextLocation,
   text,
-  unblock,
+  onConfirmation,
+  onCancel,
 }) => {
-  const { pathname, search } = nextLocation
   return (
     <div>
       <div className="subtitle">{text}</div>
       <div className="level">
         <button
           className="button is-primary level-item"
-          onClick={() => {
-            dispatch(closeModal())
-            unblock()
-            history.push(`${pathname}${search}`)
-          }}
+          onClick={onConfirmation}
           type="button">
           {confirmText}
         </button>
         <button
           className="button is-secondary level-item"
-          onClick={() => {
-            dispatch(closeModal())
-          }}
+          onClick={onCancel}
           type="button">
           {cancelText}
         </button>
@@ -53,14 +39,9 @@ Block.defaultProps = {
 Block.propTypes = {
   cancelText: PropTypes.string,
   confirmText: PropTypes.string,
-  dispatch: PropTypes.func.isRequired,
-  history: PropTypes.object.isRequired,
-  nextLocation: PropTypes.object.isRequired,
   text: PropTypes.string,
-  unblock: PropTypes.func.isRequired,
+  onConfirmation: PropTypes.func.isRequired,
+  onCancel: PropTypes.func.isRequired,
 }
 
-export default compose(
-  withRouter,
-  connect()
-)(Block)
+export default Block
