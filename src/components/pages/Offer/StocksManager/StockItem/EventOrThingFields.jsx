@@ -4,7 +4,11 @@ import PropTypes from 'prop-types'
 import React, { Component, Fragment } from 'react'
 import ReactTooltip from 'react-tooltip'
 
-import { createFormatPrice, getRemainingStocksCount } from './utils'
+import {
+  createFormatAvailable,
+  createFormatPrice,
+  getRemainingStocksCount,
+} from './utils'
 import { DateField, HiddenField, NumberField } from 'components/layout/form'
 import Icon from 'components/layout/Icon'
 
@@ -96,6 +100,7 @@ export class EventOrThingFields extends Component {
         </td>
         <td className="tooltiped">
           <NumberField
+            format={createFormatAvailable(readOnly)}
             name="available"
             placeholder="Illimité"
             readOnly={readOnly}

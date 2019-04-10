@@ -75,6 +75,13 @@ export function errorKeyToFrenchKey(errorKey) {
   }
 }
 
+export const createFormatAvailable = readOnly => value => {
+  if (value === null) {
+    return 'Illimité'
+  }
+  return value
+}
+
 export const createFormatPrice = readOnly => value => {
   if (value === '' || (readOnly && value === 0)) {
     return 'Gratuit'

@@ -70,6 +70,9 @@ export class RawStockItem extends Component {
     if (body.price === '') {
       body.price = 0
     }
+    if (body.available === '') {
+      body.available = null
+    }
 
     const formSubmitPromise = new Promise(resolve => {
       dispatch(
