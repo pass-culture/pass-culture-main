@@ -78,6 +78,7 @@ ShallowWrapper {
                 handleSuccess={[Function]}
                 handleSuccessNotification={null}
                 handleSuccessRedirect={null}
+                method={undefined}
                 name="offer"
                 normalizer={null}
                 onEnterKey={null}
@@ -265,6 +266,7 @@ ShallowWrapper {
             handleSuccess={[Function]}
             handleSuccessNotification={null}
             handleSuccessRedirect={null}
+            method={undefined}
             name="offer"
             normalizer={null}
             onEnterKey={null}
@@ -609,6 +611,7 @@ ShallowWrapper {
             "handleSuccess": [Function],
             "handleSuccessNotification": null,
             "handleSuccessRedirect": null,
+            "method": undefined,
             "name": "offer",
             "normalizer": null,
             "onEnterKey": null,
@@ -1183,6 +1186,7 @@ ShallowWrapper {
                     handleSuccess={[Function]}
                     handleSuccessNotification={null}
                     handleSuccessRedirect={null}
+                    method={undefined}
                     name="offer"
                     normalizer={null}
                     onEnterKey={null}
@@ -1370,6 +1374,7 @@ ShallowWrapper {
               handleSuccess={[Function]}
               handleSuccessNotification={null}
               handleSuccessRedirect={null}
+              method={undefined}
               name="offer"
               normalizer={null}
               onEnterKey={null}
@@ -1714,6 +1719,7 @@ ShallowWrapper {
               "handleSuccess": [Function],
               "handleSuccessNotification": null,
               "handleSuccessRedirect": null,
+              "method": undefined,
               "name": "offer",
               "normalizer": null,
               "onEnterKey": null,
