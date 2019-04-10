@@ -65,7 +65,7 @@ ShallowWrapper {
         </p>
         <withRouter(Connect(_Form))
                 BlockComponent={null}
-                Tag="form"
+                Tag={null}
                 action="/offers/undefined"
                 className={null}
                 errorsPatch={Object {}}
@@ -207,6 +207,7 @@ ShallowWrapper {
                         >
                                 <button
                                         className="button is-secondary is-medium"
+                                        id="cancel-button"
                                         onClick={[Function]}
                                 >
                                         Annuler
@@ -251,7 +252,7 @@ ShallowWrapper {
 </p>,
           <withRouter(Connect(_Form))
             BlockComponent={null}
-            Tag="form"
+            Tag={null}
             action="/offers/undefined"
             className={null}
             errorsPatch={Object {}}
@@ -393,6 +394,7 @@ ShallowWrapper {
                         >
                                     <button
                                                 className="button is-secondary is-medium"
+                                                id="cancel-button"
                                                 onClick={[Function]}
                                     >
                                                 Annuler
@@ -450,7 +452,7 @@ ShallowWrapper {
           "nodeType": "function",
           "props": Object {
             "BlockComponent": null,
-            "Tag": "form",
+            "Tag": null,
             "action": "/offers/undefined",
             "children": Array [
               <div
@@ -574,6 +576,7 @@ ShallowWrapper {
                 >
                                 <button
                                                 className="button is-secondary is-medium"
+                                                id="cancel-button"
                                                 onClick={[Function]}
                                 >
                                                 Annuler
@@ -1027,6 +1030,7 @@ ShallowWrapper {
 >
                     <button
                                         className="button is-secondary is-medium"
+                                        id="cancel-button"
                                         onClick={[Function]}
                     >
                                         Annuler
@@ -1061,6 +1065,7 @@ ShallowWrapper {
                   "props": Object {
                     "children": <button
                       className="button is-secondary is-medium"
+                      id="cancel-button"
                       onClick={[Function]}
 >
                       Annuler
@@ -1075,6 +1080,7 @@ ShallowWrapper {
                     "props": Object {
                       "children": "Annuler",
                       "className": "button is-secondary is-medium",
+                      "id": "cancel-button",
                       "onClick": [Function],
                     },
                     "ref": null,
@@ -1164,7 +1170,7 @@ ShallowWrapper {
           </p>
           <withRouter(Connect(_Form))
                     BlockComponent={null}
-                    Tag="form"
+                    Tag={null}
                     action="/offers/undefined"
                     className={null}
                     errorsPatch={Object {}}
@@ -1306,6 +1312,7 @@ ShallowWrapper {
                               >
                                         <button
                                                   className="button is-secondary is-medium"
+                                                  id="cancel-button"
                                                   onClick={[Function]}
                                         >
                                                   Annuler
@@ -1350,7 +1357,7 @@ ShallowWrapper {
 </p>,
             <withRouter(Connect(_Form))
               BlockComponent={null}
-              Tag="form"
+              Tag={null}
               action="/offers/undefined"
               className={null}
               errorsPatch={Object {}}
@@ -1492,6 +1499,7 @@ ShallowWrapper {
                             >
                                           <button
                                                         className="button is-secondary is-medium"
+                                                        id="cancel-button"
                                                         onClick={[Function]}
                                           >
                                                         Annuler
@@ -1549,7 +1557,7 @@ ShallowWrapper {
             "nodeType": "function",
             "props": Object {
               "BlockComponent": null,
-              "Tag": "form",
+              "Tag": null,
               "action": "/offers/undefined",
               "children": Array [
                 <div
@@ -1673,6 +1681,7 @@ ShallowWrapper {
                   >
                                     <button
                                                       className="button is-secondary is-medium"
+                                                      id="cancel-button"
                                                       onClick={[Function]}
                                     >
                                                       Annuler
@@ -2126,6 +2135,7 @@ ShallowWrapper {
 >
                       <button
                                             className="button is-secondary is-medium"
+                                            id="cancel-button"
                                             onClick={[Function]}
                       >
                                             Annuler
@@ -2160,6 +2170,7 @@ ShallowWrapper {
                     "props": Object {
                       "children": <button
                         className="button is-secondary is-medium"
+                        id="cancel-button"
                         onClick={[Function]}
 >
                         Annuler
@@ -2174,6 +2185,7 @@ ShallowWrapper {
                       "props": Object {
                         "children": "Annuler",
                         "className": "button is-secondary is-medium",
+                        "id": "cancel-button",
                         "onClick": [Function],
                       },
                       "ref": null,
