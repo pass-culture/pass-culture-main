@@ -1,7 +1,6 @@
 /* eslint
   semi: [2, "always"]
   react/jsx-one-expression-per-line: 0 */
-// $(yarn bin)/jest --env=jsdom ./src/components/verso/verso-content/tests/VersoContentTuto.spec.js --watch
 import React from 'react';
 import { shallow } from 'enzyme';
 
