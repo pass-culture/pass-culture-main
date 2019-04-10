@@ -34,5 +34,7 @@ def install_scripts():
     import scripts.testcafe
     import scripts.update_providables
     import scripts.storage
-    import scripts.init_titelive
+    import scripts.init_titelive.clean_images_in_object_storage
+    import scripts.init_titelive.import_thumbs
+    import scripts.init_titelive.init_titelive
     import scripts.install_data
