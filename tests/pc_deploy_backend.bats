@@ -135,12 +135,10 @@ teardown(){
     mock_set_output "${mock}" "checkout production" 12
     # git pull origin production || exit_restoring_branch
     mock_set_output "${mock}" "pull production" 13
-    # git tag -l --points-at "$commit_to_deploy" | wc -l
-    mock_set_output "${mock}" "tagged_commit" 14
     # git ls-remote --tags origin refs/tags/v"$TAG_NAME"
-    mock_set_output "${mock}" "" 15
+    mock_set_output "${mock}" "" 14
     # exit_restoring_branch
-    mock_set_output "${mock}" "checkout origin branch" 16
+    mock_set_output "${mock}" "checkout origin branch" 15
 
     # Test mock is set up properly
     [[ "$(readlink -e $(which git))" == "$(readlink -e ${mock})" ]]
@@ -149,8 +147,8 @@ teardown(){
     run pc -e production -t 0.0.0 deploy-backend
 
     # Then
-    echo "$(mock_get_call_num ${mock})"
-    [[ "$(mock_get_call_num ${mock})" -eq 16 ]]
+    echo "Number of calls: $(mock_get_call_num ${mock})"
+    [[ "$(mock_get_call_num ${mock})" -eq 15 ]]
 
     # Allow to follow last steps
     for index in ${!lines[@]}; do
@@ -193,16 +191,14 @@ teardown(){
     mock_set_output "${mock}" "checkout production" 12
     # git pull origin production || exit_restoring_branch
     mock_set_output "${mock}" "pull production" 13
-    # git tag -l --points-at "$commit_to_deploy" | wc -l
-    mock_set_output "${mock}" "tagged_commit" 14
     # git ls-remote --tags origin refs/tags/v"$TAG_NAME"
-    mock_set_output "${mock}" "v0.0.0" 15
+    mock_set_output "${mock}" "v0.0.0" 14
     # git checkout "v$TAG_NAME"
-    mock_set_output "${mock}" "ok" 16
+    mock_set_output "${mock}" "ok" 15
     # git log -n 1 --pretty=format:%H staging
-    mock_set_output "${mock}" "commit_hash_not_in_staging" 17
+    mock_set_output "${mock}" "commit_hash_not_in_staging" 16
     # exit_restoring_branch
-    mock_set_output "${mock}" "checkout origin branch" 18
+    mock_set_output "${mock}" "checkout origin branch" 17
 
     # Test mock is set up properly
     [[ "$(readlink -e $(which git))" == "$(readlink -e ${mock})" ]]
@@ -211,8 +207,8 @@ teardown(){
     run pc -e production -t 0.0.0 deploy-backend
 
     # Then
-    echo "$(mock_get_call_num ${mock})"
-    [[ "$(mock_get_call_num ${mock})" -eq 18 ]]
+    echo "Number of calls: $(mock_get_call_num ${mock})"
+    [[ "$(mock_get_call_num ${mock})" -eq 17 ]]
 
     echo "Status: ""$status"
     [ "$status" -eq 1 ]
@@ -259,15 +255,15 @@ teardown(){
     mock_set_output "${mock}" "checkout production" 12
     # git pull origin production || exit_restoring_branch
     mock_set_output "${mock}" "pull production" 13
-    # git tag -l --points-at "$commit_to_deploy" | wc -l
-    mock_set_output "${mock}" "tagged_commit" 14
     # git ls-remote --tags origin refs/tags/v"$TAG_NAME"
-    mock_set_output "${mock}" "v0.0.0" 15
+    mock_set_output "${mock}" "v0.0.0" 14
     # git checkout "v$TAG_NAME"
-    mock_set_output "${mock}" "ok" 16
+    mock_set_output "${mock}" "ok" 15
     # git log -n 1 --pretty=format:%H staging
-    mock_set_output "${mock}" "commit_hash" 17
+    mock_set_output "${mock}" "commit_hash" 16
     # git push -f origin HEAD:"$ENV"
+    mock_set_output "${mock}" "psuh force origin HEAD:ENV" 17
+    # git checkout bats-tests
     mock_set_output "${mock}" "Exit success !" 18
 
     # Test mock is set up properly
@@ -277,8 +273,8 @@ teardown(){
     run pc -e production -t 0.0.0 deploy-backend
 
     # Then
-    echo "$(mock_get_call_num ${mock})"
-    [[ "$(mock_get_call_num ${mock})" -eq 19 ]]
+    echo "Number of calls: $(mock_get_call_num ${mock})"
+    [[ "$(mock_get_call_num ${mock})" -eq 18 ]]
 
     for index in ${!lines[@]};
     do
@@ -288,7 +284,7 @@ teardown(){
     echo "Status: ""$status"
     [ "$status" -eq 0 ]
 
-    index=$((index))
+    index=$((index-1))
     echo "Expected: ""$expected_output"
     echo "Output: ${lines[index]}"
     [[ "${lines[index]}" =~ .*$expected_output.* ]]

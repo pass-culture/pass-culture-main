@@ -352,6 +352,87 @@ elif [[ "$CMD" == "tag-version-backend" ]] \
     exit_success_restoring_branch
   fi
 
+# TODO: tag with main
+elif [[ "$CMD" == "tag" ]]; then
+
+  if [[ "$TAG_NAME" ]]; then
+    TAG_VERSION="v$TAG_NAME"
+
+    # TAG API
+    cd "$ROOT_PATH"/api
+    git tag "$TAG_VERSION"
+    git push origin "$TAG_VERSION"
+
+    # TAG WEBAPP
+    cd "$ROOT_PATH"/webapp
+    yarn version --new-version "$TAG_NAME"
+    git push origin "$current_branch"
+    git push origin "$TAG_VERSION"
+
+    # TAG PRO
+    cd "$ROOT_PATH"/pro
+    yarn version --new-version "$TAG_NAME"
+    git push origin "$current_branch"
+    git push origin "$TAG_VERSION"
+
+    # TAG MAIN
+    cd "$ROOT_PATH"
+    git tag "$TAG_VERSION"
+    git push origin "$TAG_VERSION"
+
+    echo "New version tagged : $TAG_NAME"
+
+    exit_success_restoring_branch
+  fi
+
+# TODO: Deploy with main
+elif [[ "$CMD" == "deploy" ]]; then
+   ensure_remote "Deploy backend cannot be run on the local environment. Use (for example) \"pc -e staging -t X.Y.Z "$CMD"\"."
+
+  if [[ ! "$ENV" == 'production' ]] \
+        && [[ ! "$ENV" == 'staging' ]] \
+        && [[ ! "$ENV" == 'demo' ]] \
+        && [[ ! "$ENV" == 'integration' ]]; then
+     echo_error "Can only deploy-backend in staging, demo, integration and production"
+     exit 1
+  fi
+
+  if [[ "$TAG_NAME" == 'not-set' ]]; then
+    echo_error "ERROR: You need to specify an existing tag to deploy"
+    exit_error_restoring_branch
+  fi
+
+  cd "$APP_PATH"
+  echo "$TAG_NAME will be deployed to $ENV"
+  commit_to_deploy=$(git log -n 1 --pretty=format:%H)
+
+  update_deploy_branches
+
+  if [[ ! -z $(git ls-remote --tags origin refs/tags/v"$TAG_NAME") ]]; then
+    git checkout "v$TAG_NAME"
+    git submodule update
+  else
+    echo_error "ERROR: You need to specify an existing remote tag to deploy"
+    exit_error_restoring_branch
+  fi
+
+  if [[ "$ENV" == "production" ]]; then
+    staging_commit=$(git log -n 1 --pretty=format:%H staging)
+    echo "$staging_commit"
+    if [[ "$staging_commit" != "$commit_to_deploy" ]]; then
+      echo_error "ERROR: Can only deploy in production commits that are also deployed in staging"
+      exit_error_restoring_branch
+    fi
+  fi
+
+  git push -f origin HEAD:"$ENV"
+
+  if [[ "$ENV" == 'production' ]]; then
+     echo -e "$ABELS_COLOR""/!\\ You just deployed to production. Was the version also delivered to integration and demo ?""${NO_COLOR}"
+  fi
+
+  exit_success_restoring_branch
+
 # Deploy current version of API/Webapp/Pro to specified environment
 elif [[ "$CMD" == "deploy-backend" ]] \
      || [[ "$CMD" == "deploy-frontend-webapp" ]] \
