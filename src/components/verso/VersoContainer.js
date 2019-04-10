@@ -30,15 +30,10 @@ export const getOfferVenue = recommendation => {
 };
 
 export const getOfferName = recommendation => {
-  let path = 'offer.eventOrThing.name';
+  const path = 'offer.eventOrThing.name';
   const name = get(recommendation, path, null);
   if (!name) return null;
-
-  path = 'offer.eventOrThing.extraData.author';
-  const author = get(recommendation, path, null);
-
-  if (!author) return name;
-  return `${name}, de ${author}`;
+  return name;
 };
 
 export const getBackgroundColor = recommendation => {
