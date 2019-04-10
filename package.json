@@ -100,7 +100,7 @@
     "webpack-manifest-plugin": "1.3.2",
     "whatwg-fetch": "2.0.3",
     "with-login": "2.4.0",
-    "with-query-router": "2.9.1"
+    "with-query-router": "3.0.0"
   },
   "devDependencies": {
     "coveralls": "^3.0.0",

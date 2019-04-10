@@ -65,17 +65,17 @@ test("Lorsque je clique sur le bouton créer une offre sur la page d'un lieu, j'
   await t.expect(location.pathname).eql('/offres/creation')
 })
 
-test("Lorsque je clique sur le bouton annuler d'une page offre sur la page des offres, je reviens au mode read only de l'offre", async t => {
+test("Lorsque je clique sur le bouton annuler de la page créer une offre sur la page des offres, je reviens au mode read only de l'offre", async t => {
   // given
   const { user } = await fetchSandbox(
     'pro_07_offer',
     'get_existing_pro_validated_user_with_at_least_one_visible_offer'
   )
-  const cancelAnchor = Selector('button.button').withText('Annuler')
+  const cancelButton = Selector('#cancel-button').withText('Annuler')
   await navigateToNewOfferAs(user)(t)
 
   // when
-  await t.click(cancelAnchor)
+  await t.click(cancelButton)
 
   // then
   const location = await t.eval(() => window.location)

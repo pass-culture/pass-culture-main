@@ -7,6 +7,7 @@ import {
   mergeErrors,
   mergeForm,
   pluralize,
+  resetForm,
   showModal,
   SubmitButton,
 } from 'pass-culture-shared'
@@ -135,12 +136,15 @@ class RawOffer extends Component {
   }
 
   handleFormSuccess = (state, action) => {
-    const { query } = this.props
+    const { offer, query } = this.props
+    const previousOfferId = offer && offer.id
     const {
       payload: { datum },
     } = action
     const offerId = datum.id
-    query.changeToReadOnly({ gestion: '' }, { id: offerId })
+
+    const queryParams = previousOfferId ? {} : { gestion: '' }
+    query.changeToReadOnly(queryParams, { id: offerId })
   }
 
   handleVenueRedirect = () => {
@@ -245,6 +249,10 @@ class RawOffer extends Component {
     }
   }
 
+  componentWillMount() {
+    this.props.dispatch(resetForm())
+  }
+
   hasConditionalField(fieldName) {
     if (!this.props.selectedOfferType) {
       return false
@@ -291,6 +299,8 @@ class RawOffer extends Component {
     const isVenueSelectReadOnly = typeof venueId !== 'undefined'
     const isVenueVirtual = get(venue, 'isVirtual')
 
+    const formApiPath = isCreatedEntity ? '/offers' : `/offers/${offerId}`
+
     let title
     if (isCreatedEntity) {
       title = 'Ajouter une offre'
@@ -326,11 +336,12 @@ class RawOffer extends Component {
           </p>
 
           <Form
-            action={isCreatedEntity ? '/offers' : `/offers/${offerId}`}
+            action={formApiPath}
             name="offer"
             handleSuccess={this.handleFormSuccess}
             patch={eventOrThingPatch}
-            readOnly={readOnly}>
+            readOnly={readOnly}
+            Tag={null}>
             <div className="field-group">
               <Field isExpanded label="Titre de l'offre" name="name" required />
               <Field
@@ -598,7 +609,8 @@ class RawOffer extends Component {
                 ) : (
                   <button
                     className="button is-secondary is-medium"
-                    onClick={() => query.changeToReadOnly()}>
+                    id="cancel-button"
+                    onClick={() => query.changeToReadOnly({}, { id: offerId })}>
                     Annuler
                   </button>
                 )}

@@ -5478,7 +5478,6 @@ jest-docblock@^21.0.0:
 jest-environment-jsdom-global@^1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/jest-environment-jsdom-global/-/jest-environment-jsdom-global-1.2.0.tgz#dd5b16fe0a0566ee40010d8632be5adf5a5ccb65"
-  integrity sha512-41cDl0OxzmFY/cnW0COUN+lnt2N2ks1r3V4fAKOnlZ9xIrGy0PNPan+Bz8HP+uQy/8bGV6T7J4Oi7X+h43It6g==
 
 jest-environment-jsdom@^20.0.3:
   version "20.0.3"
@@ -11232,9 +11231,9 @@ with-query-router@0.1.1:
     redux "^4.0.0"
     reselect "^3.0.1"
 
-with-query-router@2.9.1:
-  version "2.9.1"
-  resolved "https://registry.yarnpkg.com/with-query-router/-/with-query-router-2.9.1.tgz#701467912245497f095945aad1031370617430b9"
+with-query-router@3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/with-query-router/-/with-query-router-3.0.0.tgz#57f98fb04036c7727f3e05cb90a398478fb50272"
   dependencies:
     classnames "2.2.5"
     eslint "^5.8.0"
