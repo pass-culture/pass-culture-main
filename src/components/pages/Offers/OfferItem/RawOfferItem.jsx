@@ -30,17 +30,6 @@ class RawOfferItem extends Component {
     )
   }
 
-  buildEventLabel = remainingStock => {
-    if (remainingStock === 0) {
-      return '0 places'
-    }
-    return `encore ${pluralize(remainingStock, 'place')}`
-  }
-
-  buildThingLabel = remainingStock => {
-    return `${remainingStock} en stock`
-  }
-
   buildNumberOfParticipantsLabel = (groupSizeMin, groupSizeMax) => {
     return groupSizeMin === groupSizeMax
       ? `${groupSizeMin}`
@@ -77,6 +66,7 @@ class RawOfferItem extends Component {
       thumbUrl,
       offerTypeLabel,
       offerer,
+      stockAlertMessage,
       venue,
     } = this.props
 
@@ -147,8 +137,7 @@ class RawOfferItem extends Component {
               </NavLink>
             </li>
             <li>{maxDate && `jusqu'au ${maxDate.format('DD/MM/YYYY')}`}</li>
-            {event && <li>{this.buildEventLabel(remainingStockQuantity)}</li>}
-            {thing && <li>{this.buildThingLabel(remainingStockQuantity)}</li>}
+            <li>{stockAlertMessage}</li>
             <li>
               {priceMin === priceMax ? (
                 <Price value={priceMin || 0} />

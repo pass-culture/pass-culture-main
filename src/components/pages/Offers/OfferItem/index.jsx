@@ -21,6 +21,7 @@ function mapStateToProps(state, ownProps) {
   const thing = selectThingById(state, thingId)
   const venue = selectVenueById(state, venueId)
   const offerer = offererSelector(state, venue.managingOffererId)
+  const stockAlertMessage = offer.stockAlertMessage
 
   return {
     aggregatedStock: selectAggregatedStockByOfferId(state, offerId),
@@ -37,6 +38,7 @@ function mapStateToProps(state, ownProps) {
     ),
     offerer,
     offerTypeLabel: getOfferTypeLabel(event, thing),
+    stockAlertMessage,
     venue,
   }
 }

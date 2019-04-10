@@ -109,6 +109,7 @@ ShallowWrapper {
                               </NavLink>
                     </li>
                     <li />
+                    <li />
                     <li>
                               <Price
                                         Tag="span"
@@ -241,6 +242,7 @@ ShallowWrapper {
                                           
                             </NavLink>
               </li>
+              <li />
               <li />
               <li>
                             <Price
@@ -467,8 +469,7 @@ ShallowWrapper {
                   </NavLink>
 </li>,
                 <li />,
-                undefined,
-                undefined,
+                <li />,
                 <li>
                   <Price
                                     Tag="span"
@@ -549,8 +550,17 @@ ShallowWrapper {
                 "rendered": null,
                 "type": "li",
               },
-              undefined,
-              undefined,
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": undefined,
+                },
+                "ref": null,
+                "rendered": null,
+                "type": "li",
+              },
               Object {
                 "instance": null,
                 "key": undefined,
@@ -914,6 +924,7 @@ ShallowWrapper {
                                     </NavLink>
                         </li>
                         <li />
+                        <li />
                         <li>
                                     <Price
                                                 Tag="span"
@@ -1046,6 +1057,7 @@ ShallowWrapper {
                                                 
                                 </NavLink>
                 </li>
+                <li />
                 <li />
                 <li>
                                 <Price
@@ -1272,8 +1284,7 @@ ShallowWrapper {
                     </NavLink>
 </li>,
                   <li />,
-                  undefined,
-                  undefined,
+                  <li />,
                   <li>
                     <Price
                                         Tag="span"
@@ -1354,8 +1365,17 @@ ShallowWrapper {
                   "rendered": null,
                   "type": "li",
                 },
-                undefined,
-                undefined,
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": undefined,
+                  },
+                  "ref": null,
+                  "rendered": null,
+                  "type": "li",
+                },
                 Object {
                   "instance": null,
                   "key": undefined,

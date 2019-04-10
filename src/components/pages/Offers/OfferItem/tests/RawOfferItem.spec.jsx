@@ -1,7 +1,7 @@
 import React from 'react'
 import { mount, shallow } from 'enzyme'
 import offersMock from '../../tests/offersMock'
-import { Icon, pluralize } from 'pass-culture-shared'
+import { Icon } from 'pass-culture-shared'
 
 import { NavLink } from 'react-router-dom'
 import Dotdotdot from 'react-dotdotdot'
@@ -216,6 +216,7 @@ describe('src | components | pages | Offers | RawOfferItem', () => {
           offerType: { label: 'Conférence — Débat — Dédicace' },
         }
         props.stocks = []
+        props.stockAlertMessage = 'plus de places'
         props.offer = {
           id: '1M',
           bookingEmail: 'booking.email@test.com',
@@ -241,7 +242,7 @@ describe('src | components | pages | Offers | RawOfferItem', () => {
           .at(1)
           .find('li')
           .at(3)
-        expect(stockAvailabilityElement.text()).toBe('0 places')
+        expect(stockAvailabilityElement.text()).toBe('plus de places')
       })
 
       it('should display the correct text when 1 ticket is available', () => {
@@ -250,6 +251,7 @@ describe('src | components | pages | Offers | RawOfferItem', () => {
           offerType: { label: 'Conférence — Débat — Dédicace' },
         }
         props.stocks = [{}]
+        props.stockAlertMessage = 'encore 1 place'
         props.offer = {
           id: '1M',
           bookingEmail: 'booking.email@test.com',
@@ -284,6 +286,7 @@ describe('src | components | pages | Offers | RawOfferItem', () => {
           offerType: { label: 'Conférence — Débat — Dédicace' },
         }
         props.stocks = [{}, {}]
+        props.stockAlertMessage = 'encore 2 places'
         props.offer = {
           id: '1M',
           bookingEmail: 'booking.email@test.com',
@@ -375,6 +378,7 @@ describe('src | components | pages | Offers | RawOfferItem', () => {
           offerType: { label: 'Une place de cinéma' },
         }
         props.stocks = []
+        props.stockAlertMessage = 'plus de stock'
         props.offer = {
           id: '1M',
           bookingEmail: 'booking.email@test.com',
@@ -400,7 +404,7 @@ describe('src | components | pages | Offers | RawOfferItem', () => {
           .at(1)
           .find('li')
           .at(3)
-        expect(stockAvailabilityElement.text()).toBe('0 en stock')
+        expect(stockAvailabilityElement.text()).toBe('plus de stock')
       })
 
       it('should display the correct text "1 prix" on the link redirecting to the offer management', () => {
