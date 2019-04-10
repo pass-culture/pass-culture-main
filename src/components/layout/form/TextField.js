@@ -17,6 +17,13 @@ const validateRequiredField = createValidateRequiredField(
   config.DEFAULT_REQUIRED_ERROR
 )
 
+function getInputValue(inputType, value) {
+  if (inputType === 'number' && typeof value === 'string') {
+    return ''
+  }
+  return value
+}
+
 export const TextField = ({
   autoComplete,
   className,
@@ -48,10 +55,8 @@ export const TextField = ({
       validate={composeValidators(validate, requiredValidate)}
       parse={parse || createParseNumberValue(type)}
       render={({ input, meta }) => {
-        let value = input.value
-        if (!readOnly && typeof value === 'string') {
-          value = ''
-        }
+        const inputType = readOnly ? 'text' : type
+        const inputValue = getInputValue(inputType, input.value)
         return (
           <div
             className={classnames('field text-field', className, {
@@ -83,8 +88,8 @@ export const TextField = ({
                     readOnly={readOnly}
                     required={!!required} // cast to boolean
                     title={title}
-                    type={readOnly ? 'text' : type}
-                    value={value}
+                    type={inputType}
+                    value={inputValue}
                   />
                   {renderInner()}
                 </div>

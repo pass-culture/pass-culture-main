@@ -64,7 +64,7 @@ export const selectFormInitialValuesByStockAndOfferIdAndOffererId = createCached
       available = lastStock.available
     }
 
-    const stockPatch = {
+    const formInitialValues = {
       available,
       bookingLimitDatetime,
       id,
@@ -73,10 +73,10 @@ export const selectFormInitialValuesByStockAndOfferIdAndOffererId = createCached
       price,
     }
     if (offer.eventId) {
-      Object.assign(stockPatch, { beginningDatetime, endDatetime })
+      Object.assign(formInitialValues, { beginningDatetime, endDatetime })
     }
 
-    return stockPatch
+    return formInitialValues
   }
 )(mapArgsToCacheKey)
 
