@@ -63,6 +63,7 @@ def test_thing_offerType_returns_dict_matching_ThingType_enum():
     # given
     thing = create_thing(thing_type=ThingType.LIVRE_EDITION)
     expected_value = {
+        'conditionalFields': ["author", "isbn"],
         'label': 'Livre — Édition',
         'offlineOnly': False,
         'onlineOnly': False,

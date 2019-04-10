@@ -169,6 +169,7 @@ def test_thing_offer_offerType_returns_dict_matching_ThingType_enum():
     venue = create_venue(offerer)
     offer = create_thing_offer(venue, thing_type=ThingType.LIVRE_EDITION)
     expected_value = {
+        'conditionalFields': ["author", "isbn"],
         'label': 'Livre — Édition',
         'offlineOnly': False,
         'onlineOnly': False,
@@ -195,6 +196,7 @@ def test_event_offer_offerType_returns_dict_matching_EventType_enum():
     venue = create_venue(offerer)
     offer = create_event_offer(venue, event_type=EventType.SPECTACLE_VIVANT)
     expected_value = {
+        'conditionalFields': ["author", "showType", "stageDirector", "performer"],
         'label': "Spectacle vivant",
         'offlineOnly': True,
         'onlineOnly': False,

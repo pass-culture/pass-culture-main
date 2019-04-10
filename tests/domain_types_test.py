@@ -11,6 +11,7 @@ class GetFormattedEventOrThingTypesTest:
 
         # then
         assert types[0] == {
+            'conditionalFields': ["author", "visa", "stageDirector"],
             'offlineOnly': True,
             'onlineOnly': False,
             'sublabel': 'Regarder',
@@ -27,6 +28,7 @@ class GetFormattedEventOrThingTypesTest:
     def test_returns_all_types_including_activations_if_user_is_admin(self):
         # given
         activation_event = {
+            'conditionalFields': [],
             'offlineOnly': True,
             'onlineOnly': False,
             'sublabel': 'Activation',
@@ -37,6 +39,7 @@ class GetFormattedEventOrThingTypesTest:
         }
 
         activation_thing = {
+            'conditionalFields': [],
             'type': 'Thing',
             'value': 'ThingType.ACTIVATION',
             'label': 'Pass Culture : activation en ligne',
@@ -58,6 +61,7 @@ class GetFormattedEventOrThingTypesTest:
     def test_does_not_return_thing_type_jeux(self):
         # given
         jeux = {
+            'conditionalFields': [],
             'type': 'Thing',
             'value': 'ThingType.JEUX',
             'label': "Jeux (Biens physiques)",

@@ -118,13 +118,16 @@ def test_serialize_enum_returns_dict_with_enum_value():
     serialized_enum = serialize(enum)
 
     # Then
-    assert serialized_enum == {'label': 'Jeux (Biens physiques)',
-                               'offlineOnly': True,
-                               'onlineOnly': False,
-                               'sublabel': 'Jouer',
-                               'description': 'Résoudre l’énigme d’un jeu de piste dans votre ville ? '
-                                              'Jouer en ligne entre amis ? '
-                                              'Découvrir cet univers étrange avec une manette ?'}
+    assert serialized_enum == {
+        'conditionalFields': [],
+        'label': 'Jeux (Biens physiques)',
+        'offlineOnly': True,
+        'onlineOnly': False,
+        'sublabel': 'Jouer',
+        'description': 'Résoudre l’énigme d’un jeu de piste dans votre ville ? '
+                      'Jouer en ligne entre amis ? '
+                      'Découvrir cet univers étrange avec une manette ?'
+    }
 
 
 @pytest.mark.standalone

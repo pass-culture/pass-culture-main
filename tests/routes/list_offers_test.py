@@ -200,6 +200,7 @@ class Get:
             PcObject.check_and_save(user, stock_event, stock_thing)
 
             expected_thing_type = {
+                'conditionalFields': ["author", "isbn"],
                 'label': "Livre — Édition",
                 'offlineOnly': False,
                 'onlineOnly': False,
@@ -209,6 +210,7 @@ class Get:
                 'value': 'ThingType.LIVRE_EDITION'
             }
             expected_event_type = {
+                'conditionalFields': ["author", "showType", "stageDirector", "performer"],
                 'label': "Spectacle vivant",
                 'offlineOnly': True,
                 'onlineOnly': False,

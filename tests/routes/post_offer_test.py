@@ -130,6 +130,7 @@ class Post:
             # Then
             assert response.status_code == 201
             assert response.json()['event']['offerType'] == {
+                'conditionalFields': ["author", "showType", "stageDirector", "performer"],
                 'description': 'Suivre un géant de 12 mètres dans la ville ? '
                                'Rire aux éclats devant un stand up ? '
                                'Rêver le temps d’un opéra ou d’un spectacle de danse ? '
@@ -210,6 +211,7 @@ class Post:
             offer = Offer.query.filter_by(id=offer_id).first()
             assert offer.bookingEmail == 'offer@email.com'
             assert response.json()['thing']['offerType'] == {
+                'conditionalFields': [],
                 'description': 'Résoudre l’énigme d’un jeu de piste dans votre ville ? '
                                'Jouer en ligne entre amis ? '
                                'Découvrir cet univers étrange avec une manette ?',

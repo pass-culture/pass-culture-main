@@ -46,6 +46,7 @@ def test_event_offerType_returns_dict_matching_EventType_enum():
     # given
     event = create_event(event_type=EventType.SPECTACLE_VIVANT)
     expected_value = {
+        'conditionalFields': ["author", "showType", "stageDirector", "performer"],
         'label': "Spectacle vivant",
         'offlineOnly': True,
         'onlineOnly': False,

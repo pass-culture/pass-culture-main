@@ -172,6 +172,7 @@ class Get:
             PcObject.check_and_save(booking_thing, booking_event, user_offerer)
 
             expected_audiovisuel_offer_type = {
+                'conditionalFields': [],
                 'description': 'Action, science-fiction, documentaire ou comédie sentimentale ? ' \
                                'En salle, en plein air ou bien au chaud chez soi ? ' \
                                'Et si c’était plutôt cette exposition qui allait faire son cinéma ?',
@@ -184,6 +185,7 @@ class Get:
             }
 
             expected_musees_patrimoine_offer_type = {
+                'conditionalFields': [],
                 'description': 'Action, science-fiction, documentaire ou comédie sentimentale ? '
                                'En salle, en plein air ou bien au chaud chez soi ? '
                                'Et si c’était plutôt cette exposition qui allait faire son cinéma ?',
