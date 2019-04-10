@@ -1,3 +1,4 @@
+// $(yarn bin)/jest --env=jsdom ./src/helpers/tests/getPriceRangeFromStocks --watch
 import getPriceRangeFromStocks from '../getPriceRangeFromStocks'
 
 describe('src | helpers | getPriceRangeFromStocks', () => {
@@ -27,7 +28,7 @@ describe('src | helpers | getPriceRangeFromStocks', () => {
       expect(result).toStrictEqual(expected)
     })
     describe('when stocks exists', () => {
-      it('returns an array of prices', () => {
+      it('returns an array of prices with uniques values', () => {
         const stocks = [
           {},
           { available: 1, price: 0 },
@@ -35,6 +36,7 @@ describe('src | helpers | getPriceRangeFromStocks', () => {
           { available: 10, price: 100 },
           { available: 0, price: 22.5 },
           { available: 0, price: 0 },
+          { available: 10, price: 0 },
           { available: null, price: 56 },
         ]
         const expected = [0, 15.99, 100, 56]
