@@ -2,6 +2,7 @@ import moment from 'moment'
 import { assignModalConfig } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import React, { Component, Fragment } from 'react'
+import { createParseNumberValue } from 'react-final-form-utils'
 import ReactTooltip from 'react-tooltip'
 
 import {
@@ -34,7 +35,8 @@ export class EventOrThingFields extends Component {
     }
 
     const { closeInfo, dispatch, hasIban, readOnly, showInfo } = this.props
-    const formPrice = event.target.value
+    const formPrice = createParseNumberValue('number')(event.target.value)
+
     if (readOnly || hasIban || !formPrice) {
       return
     }
