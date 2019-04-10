@@ -21,9 +21,11 @@ export const TextField = ({
   autoComplete,
   className,
   disabled,
+  format,
   id,
   label,
   name,
+  parse,
   placeholder,
   readOnly,
   renderInner,
@@ -41,50 +43,58 @@ export const TextField = ({
 
   return (
     <Field
+      format={format}
       name={name}
       validate={composeValidators(validate, requiredValidate)}
-      parse={createParseNumberValue(type)}
-      render={({ input, meta }) => (
-        <div
-          className={classnames('field text-field', className, {
-            'is-read-only': readOnly,
-          })}
-          id={id}>
-          <label
-            htmlFor={name}
-            className={classnames('field-label', { empty: !label })}>
-            {label && (
-              <span>
-                <span>{label}</span>
-                {required && !readOnly && (
-                  <span className="field-asterisk">*</span>
-                )}
-              </span>
-            )}
-          </label>
-          <div className="field-control">
-            <div className="field-value flex-columns items-center">
-              <div className="field-inner flex-columns items-center">
-                <input
-                  {...input}
-                  {...inputProps}
-                  autoComplete={autoComplete ? 'on' : 'off'}
-                  className={`field-input field-${type}`}
-                  disabled={disabled || readOnly}
-                  placeholder={readOnly ? '' : placeholder}
-                  readOnly={readOnly}
-                  required={!!required} // cast to boolean
-                  title={title}
-                  type={type}
-                />
-                {renderInner()}
+      parse={parse || createParseNumberValue(type)}
+      render={({ input, meta }) => {
+        let value = input.value
+        if (!readOnly && typeof value === 'string') {
+          value = ''
+        }
+        return (
+          <div
+            className={classnames('field text-field', className, {
+              'is-read-only': readOnly,
+            })}
+            id={id}>
+            <label
+              htmlFor={name}
+              className={classnames('field-label', { empty: !label })}>
+              {label && (
+                <span>
+                  <span>{label}</span>
+                  {required && !readOnly && (
+                    <span className="field-asterisk">*</span>
+                  )}
+                </span>
+              )}
+            </label>
+            <div className="field-control">
+              <div className="field-value flex-columns items-center">
+                <div className="field-inner flex-columns items-center">
+                  <input
+                    {...input}
+                    {...inputProps}
+                    autoComplete={autoComplete ? 'on' : 'off'}
+                    className={`field-input field-${type}`}
+                    disabled={disabled || readOnly}
+                    placeholder={readOnly ? '' : placeholder}
+                    readOnly={readOnly}
+                    required={!!required} // cast to boolean
+                    title={title}
+                    type={readOnly ? 'text' : type}
+                    value={value}
+                  />
+                  {renderInner()}
+                </div>
+                {renderValue()}
               </div>
-              {renderValue()}
+              <FieldError meta={meta} />
             </div>
-            <FieldError meta={meta} />
           </div>
-        </div>
-      )}
+        )
+      }}
     />
   )
 }
@@ -93,8 +103,10 @@ TextField.defaultProps = {
   autoComplete: false,
   className: '',
   disabled: false,
+  format: null,
   id: null,
   label: '',
+  parse: null,
   placeholder: 'Please enter a value',
   readOnly: false,
   renderInner: () => null,
@@ -109,9 +121,11 @@ TextField.propTypes = {
   autoComplete: PropTypes.bool,
   className: PropTypes.string,
   disabled: PropTypes.bool,
+  format: PropTypes.func,
   id: PropTypes.string,
   label: PropTypes.string,
   name: PropTypes.string.isRequired,
+  parse: PropTypes.func,
   placeholder: PropTypes.string,
   readOnly: PropTypes.bool,
   renderInner: PropTypes.func,

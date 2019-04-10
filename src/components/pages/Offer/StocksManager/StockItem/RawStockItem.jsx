@@ -66,11 +66,16 @@ export class RawStockItem extends Component {
 
     handleSetErrors()
 
+    const body = Object.assign({}, formValues)
+    if (body.price === '') {
+      body.price = 0
+    }
+
     const formSubmitPromise = new Promise(resolve => {
       dispatch(
         requestData({
           apiPath,
-          body: { ...formValues },
+          body,
           handleFail: this.handleRequestFail(resolve),
           handleSuccess: this.handleRequestSuccess(resolve),
           method,

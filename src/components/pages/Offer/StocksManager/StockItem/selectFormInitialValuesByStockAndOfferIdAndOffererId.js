@@ -56,6 +56,8 @@ export const selectFormInitialValuesByStockAndOfferIdAndOffererId = createCached
 
     if (typeof price === 'undefined') {
       price = lastStock ? lastStock.price : 0
+    } else if (price === 0) {
+      price = ''
     }
 
     if (typeof available === 'undefined' && lastStock) {

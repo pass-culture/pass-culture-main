@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 import React, { Component, Fragment } from 'react'
 import ReactTooltip from 'react-tooltip'
 
-import { getRemainingStocksCount } from './utils'
+import { createFormatPrice, getRemainingStocksCount } from './utils'
 import { DateField, HiddenField, NumberField } from 'components/layout/form'
 import Icon from 'components/layout/Icon'
 
@@ -80,6 +80,7 @@ export class EventOrThingFields extends Component {
           <NumberField
             name="price"
             onBlur={this.onPriceBlur}
+            format={createFormatPrice(readOnly)}
             placeholder="Gratuit"
             readOnly={readOnly}
             title="Prix"
@@ -129,6 +130,7 @@ EventOrThingFields.defaultProps = {
   readOnly: true,
   isEventStock: true,
   offer: null,
+  stock: null,
 }
 
 EventOrThingFields.propTypes = {
@@ -140,7 +142,7 @@ EventOrThingFields.propTypes = {
   parseFormChild: PropTypes.func,
   readOnly: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
   showInfo: PropTypes.func.isRequired,
-  stock: PropTypes.object.isRequired,
+  stock: PropTypes.object,
 }
 
 export default EventOrThingFields
