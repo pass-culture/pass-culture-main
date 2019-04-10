@@ -17,129 +17,37 @@ from tests.test_utils import API_URL, \
     create_venue, create_thing_offer, create_bank_information
 from utils.human_ids import humanize
 
-
-@pytest.mark.standalone
-class Patch:
-    class Returns200:
-        @clean_database
-        def test_returns_200_and_expires_recos(self, app):
-            # given
-            user = create_user()
-            offerer = create_offerer()
-            venue = create_venue(offerer)
-            offer = create_event_offer(venue)
-            user_offerer = create_user_offerer(user, offerer)
-            recommendation = create_recommendation(offer, user, valid_until_date=datetime.utcnow() + timedelta(days=7))
-            PcObject.check_and_save(offer, user, venue, offerer, recommendation, user_offerer)
-
-            auth_request = TestClient().with_auth(email=user.email)
-            data = {'eventId': 'AE', 'isActive': False}
-
-            # when
-            response = auth_request.patch(API_URL + '/offers/%s' % humanize(offer.id), json=data)
-
-            # then
-            db.session.refresh(offer)
-            assert response.status_code == 200
-            assert response.json()['id'] == humanize(offer.id)
-            assert response.json()['isActive'] == offer.isActive
-            assert offer.isActive == data['isActive']
-            # only isActive can be modified
-            assert offer.eventId != data['eventId']
-            assert response.json()['eventId'] != offer.eventId
-            db.session.refresh(recommendation)
-            assert recommendation.validUntilDate < datetime.utcnow()
-
-    class Returns403:
-        @clean_database
-        def test_returns_403_if_user_is_not_attached_to_offerer_of_offer(self, app):
-            # given
-            current_user = create_user(email='bobby@test.com')
-            other_user = create_user(email='jimmy@test.com')
-            offerer = create_offerer()
-            venue = create_venue(offerer)
-            offer = create_event_offer(venue)
-            user_offerer = create_user_offerer(other_user, offerer)
-            PcObject.check_and_save(offer, other_user, current_user, venue, offerer, user_offerer)
-
-            auth_request = TestClient().with_auth(email=current_user.email)
-
-            # when
-            response = auth_request.patch(API_URL + '/offers/%s' % humanize(offer.id), json={})
-
-            # then
-            error_message = response.json()
-            assert response.status_code == 403
-            assert error_message['global'] == ['Cette structure n\'est pas enregistrée chez cet utilisateur.']
-
-    class Returns404:
-        @clean_database
-        def test_returns_404_if_offer_does_not_exist(self, app):
-            # given
-            user = create_user()
-            PcObject.check_and_save(user)
-            auth_request = TestClient().with_auth(email=user.email)
-
-            # when
-            response = auth_request.patch(API_URL + '/offers/ADFGA', json={})
-
-            # then
-            assert response.status_code == 404
-
-
 @pytest.mark.standalone
 class Get:
     class Returns200:
         @clean_database
-        def when_user_has_rights_on_managing_offerer(self, app):
-            # Given
-            user = create_user(email='user@test.com')
-            offerer = create_offerer()
-            venue = create_venue(offerer)
-            offer = create_thing_offer(venue)
-            venue_bank_information = create_bank_information(venue=venue, id_at_providers=venue.siret)
-            offerer_bank_information = create_bank_information(offerer=offerer, id_at_providers=offerer.siren)
-
-            PcObject.check_and_save(user, offer)
-
-            # when
-            response = TestClient().with_auth(email='user@test.com').get(API_URL + f'/offers/{humanize(offer.id)}')
-
-            # then
-            response_json = response.json()
-            pprint(response_json)
-            assert response.status_code == 200
-            assert 'iban' in response_json['venue']
-            assert 'bic' in response_json['venue']
-            assert 'iban' in response_json['venue']['managingOfferer']
-            assert 'bic' in response_json['venue']['managingOfferer']
-
-        @clean_database
-        def when_a_thing_offer_is_created_but_there_is_no_stock_yet(self, app):
+        def when_a_thing_offer_but_there_is_no_stock_yet(self, app):
             # given
                 user = create_user(email='user@test.com')
                 offerer = create_offerer()
+                user_offerer = create_user_offerer(user, offerer)
                 venue = create_venue(offerer)
                 offer = create_thing_offer(venue)
 
-                PcObject.check_and_save(user, offer)
+                PcObject.check_and_save(user, user_offerer, offer)
 
             # when
-                response = TestClient().with_auth(email='user@test.com').get(API_URL + f'/offers/{humanize(offer.id)}')
+                response = TestClient().with_auth(email='user@test.com').get(API_URL + '/offers')
 
             # then
                 response_json = response.json()
                 pprint(response_json)
                 assert response.status_code == 200
-                assert 'stockAlertMessage' in response_json
-                assert response_json['stockAlertMessage'] == "pas encore de stock"
+                assert 'stockAlertMessage' in response_json[0]
+                assert response_json[0]['stockAlertMessage'] == "pas encore de stock"
 
         @clean_database
-        def when_a_thing_offer_is_created_but_there_is_only_one_place_left(self, app):
+        def when_a_thing_offer_but_there_is_only_one_place_left(self, app):
             # given
                 user = create_user(email='user@test.com')
                 user2 = create_user(email='user2@test.com')
                 offerer = create_offerer()
+                user_offerer = create_user_offerer(user, offerer)
                 venue = create_venue(offerer)
                 offer = create_thing_offer(venue)
 
@@ -149,25 +57,25 @@ class Get:
                 deposit = create_deposit(user2, datetime.utcnow(), amount=500)
                 booking = create_booking(user2, stock, venue, recommendation, quantity=9)
 
-                PcObject.check_and_save(booking, deposit, offer, recommendation, stock, user2)
+                PcObject.check_and_save(booking, deposit, offer, recommendation, stock, user2, user_offerer)
 
             # when
-                response = TestClient().with_auth(email='user@test.com').get(API_URL + f'/offers/{humanize(offer.id)}')
+                response = TestClient().with_auth(email='user@test.com').get(API_URL + f'/offers?')
 
             # then
                 response_json = response.json()
                 pprint(response_json)
                 assert response.status_code == 200
-                assert 'stockAlertMessage' in response_json
-                assert response_json['stockAlertMessage'] == "encore 1 en stock"
-
+                assert 'stockAlertMessage' in response_json[0]
+                assert response_json[0]['stockAlertMessage'] == "encore 1 en stock"
 
         @clean_database
-        def when_a_thing_offer_is_created_with_remaining_stock(self, app):
+        def when_a_thing_offer_with_remaining_stock(self, app):
             # given
                 user = create_user(email='user@test.com')
                 user2 = create_user(email='user2@test.com')
                 offerer = create_offerer()
+                user_offerer = create_user_offerer(user, offerer)
                 venue = create_venue(offerer)
                 offer = create_thing_offer(venue)
                 stock = create_stock_from_offer(offer, available=15)
@@ -176,17 +84,17 @@ class Get:
                 deposit = create_deposit(user2, datetime.utcnow(), amount=500)
                 booking = create_booking(user2, stock, venue, recommendation, quantity=3)
 
-                PcObject.check_and_save(booking, deposit, user, offer, stock, user2)
+                PcObject.check_and_save(booking, deposit, user, offer, stock, user2, user_offerer)
 
             # when
-                response = TestClient().with_auth(email='user@test.com').get(API_URL + f'/offers/{humanize(offer.id)}')
+                response = TestClient().with_auth(email='user@test.com').get(API_URL + f'/offers?')
 
             # then
                 response_json = response.json()
                 pprint(response_json)
                 assert response.status_code == 200
-                assert 'stockAlertMessage' in response_json
-                assert response_json['stockAlertMessage'] == "encore 12 en stock"
+                assert 'stockAlertMessage' in response_json[0]
+                assert response_json[0]['stockAlertMessage'] == "encore 12 en stock"
 
         @clean_database
         def when_a_thing_offer_with_unlimited_and_remaining_stock(self, app):
@@ -194,6 +102,7 @@ class Get:
                 user = create_user(email='user@test.com')
                 user2 = create_user(email='user2@test.com')
                 offerer = create_offerer()
+                user_offerer = create_user_offerer(user, offerer)
                 venue = create_venue(offerer)
                 offer = create_thing_offer(venue)
                 stock = create_stock_from_offer(offer, available=15)
@@ -203,18 +112,18 @@ class Get:
                 deposit = create_deposit(user2, datetime.utcnow(), amount=500)
                 booking = create_booking(user2, stock, venue, recommendation, quantity=3)
 
-                PcObject.check_and_save(booking, deposit, user, offer, stock, stock2, user2)
+                PcObject.check_and_save(booking, deposit, user, offer, stock, stock2, user2, user_offerer)
 
             # when
-                response = TestClient().with_auth(email='user@test.com').get(API_URL + f'/offers/{humanize(offer.id)}')
+                response = TestClient().with_auth(email='user@test.com').get(API_URL + f'/offers?')
 
             # then
                 response_json = response.json()
                 pprint(response_json)
                 assert response.status_code == 200
-                assert 'stockAlertMessage' in response_json
+                assert 'stockAlertMessage' in response_json[0]
 
-                assert response_json['stockAlertMessage'] == 'encore 12 en stock'
+                assert response_json[0]['stockAlertMessage'] == 'encore 12 en stock'
 
         @clean_database
         def when_a_thing_offer_with_no_more_remaining_stock(self, app):
@@ -222,6 +131,7 @@ class Get:
                 user = create_user(email='user@test.com')
                 user2 = create_user(email='user2@test.com')
                 offerer = create_offerer()
+                user_offerer = create_user_offerer(user, offerer)
                 venue = create_venue(offerer)
                 offer = create_thing_offer(venue)
                 stock = create_stock_from_offer(offer, available=15)
@@ -231,17 +141,17 @@ class Get:
                 deposit = create_deposit(user2, datetime.utcnow(), amount=500)
                 booking = create_booking(user2, stock, venue, recommendation, quantity=15)
 
-                PcObject.check_and_save(booking, deposit, user, offer, stock, stock2, user2)
+                PcObject.check_and_save(booking, deposit, user, offer, stock, stock2, user2, user_offerer)
 
             # when
-                response = TestClient().with_auth(email='user@test.com').get(API_URL + f'/offers/{humanize(offer.id)}')
+                response = TestClient().with_auth(email='user@test.com').get(API_URL + f'/offers?')
 
             # then
                 response_json = response.json()
                 pprint(response_json)
                 assert response.status_code == 200
-                assert 'stockAlertMessage' in response_json
-                assert response_json['stockAlertMessage'] == 'plus de stock pour 1 offre'
+                assert 'stockAlertMessage' in response_json[0]
+                assert response_json[0]['stockAlertMessage'] == 'plus de stock pour 1 offre'
 
         @clean_database
         def when_a_thing_offer_with_only_unlimited_stocks(self, app):
@@ -249,6 +159,7 @@ class Get:
                 user = create_user(email='user@test.com')
                 user2 = create_user(email='user2@test.com')
                 offerer = create_offerer()
+                user_offerer = create_user_offerer(user, offerer)
                 venue = create_venue(offerer)
                 offer = create_thing_offer(venue)
                 stock = create_stock_from_offer(offer, available=None)
@@ -258,44 +169,46 @@ class Get:
                 deposit = create_deposit(user2, datetime.utcnow(), amount=500)
                 booking = create_booking(user2, stock, venue, recommendation, quantity=15)
 
-                PcObject.check_and_save(booking, deposit, user, offer, stock, stock2, user2)
+                PcObject.check_and_save(booking, deposit, user, offer, stock, stock2, user2, user_offerer)
 
             # when
-                response = TestClient().with_auth(email='user@test.com').get(API_URL + f'/offers/{humanize(offer.id)}')
+                response = TestClient().with_auth(email='user@test.com').get(API_URL + f'/offers?')
 
             # then
                 response_json = response.json()
                 pprint(response_json)
                 assert response.status_code == 200
-                assert 'stockAlertMessage' in response_json
-                assert response_json['stockAlertMessage'] == 'illimité'
+                assert 'stockAlertMessage' in response_json[0]
+                assert response_json[0]['stockAlertMessage'] == 'illimité'
 
         @clean_database
-        def when_an_event_offer_is_created_but_there_is_no_stock_yet(self, app):
+        def when_an_event_offer_but_there_is_no_stock_yet(self, app):
             # given
                 user = create_user(email='user@test.com')
                 offerer = create_offerer()
+                user_offerer = create_user_offerer(user, offerer)
                 venue = create_venue(offerer)
                 offer = create_event_offer(venue)
 
-                PcObject.check_and_save(user, offer)
+                PcObject.check_and_save(offer, user, user_offerer)
 
             # when
-                response = TestClient().with_auth(email='user@test.com').get(API_URL + f'/offers/{humanize(offer.id)}')
+                response = TestClient().with_auth(email='user@test.com').get(API_URL + f'/offers?')
 
             # then
                 response_json = response.json()
                 pprint(response_json)
                 assert response.status_code == 200
-                assert 'stockAlertMessage' in response_json
-                assert response_json['stockAlertMessage'] == "pas encore de places"
+                assert 'stockAlertMessage' in response_json[0]
+                assert response_json[0]['stockAlertMessage'] == "pas encore de places"
 
         @clean_database
-        def when_an_event_offer_is_created_but_there_is_only_one_place_left(self, app):
+        def when_an_event_offer_but_there_is_only_one_place_left(self, app):
             # given
                 user = create_user(email='user@test.com')
                 user2 = create_user(email='user2@test.com')
                 offerer = create_offerer()
+                user_offerer = create_user_offerer(user, offerer)
                 venue = create_venue(offerer)
                 offer = create_event_offer(venue)
 
@@ -305,24 +218,25 @@ class Get:
                 deposit = create_deposit(user2, datetime.utcnow(), amount=500)
                 booking = create_booking(user2, stock, venue, recommendation, quantity=9)
 
-                PcObject.check_and_save(booking, deposit, offer, recommendation, stock, user2)
+                PcObject.check_and_save(booking, deposit, offer, recommendation, stock, user2, user_offerer)
 
             # when
-                response = TestClient().with_auth(email='user@test.com').get(API_URL + f'/offers/{humanize(offer.id)}')
+                response = TestClient().with_auth(email='user@test.com').get(API_URL + f'/offers?')
 
             # then
                 response_json = response.json()
                 pprint(response_json)
                 assert response.status_code == 200
-                assert 'stockAlertMessage' in response_json
-                assert response_json['stockAlertMessage'] == "encore 1 place"
+                assert 'stockAlertMessage' in response_json[0]
+                assert response_json[0]['stockAlertMessage'] == "encore 1 place"
 
         @clean_database
-        def when_an_event_offer_is_created_with_remaining_stock(self, app):
+        def when_an_event_offer_with_remaining_stock(self, app):
             # given
                 user = create_user(email='user@test.com')
                 user2 = create_user(email='user2@test.com')
                 offerer = create_offerer()
+                user_offerer = create_user_offerer(user, offerer)
                 venue = create_venue(offerer)
                 offer = create_event_offer(venue)
                 stock = create_stock_from_offer(offer, available=15)
@@ -331,24 +245,25 @@ class Get:
                 deposit = create_deposit(user2, datetime.utcnow(), amount=500)
                 booking = create_booking(user2, stock, venue, recommendation, quantity=3)
 
-                PcObject.check_and_save(booking, deposit, user, offer, stock, user2)
+                PcObject.check_and_save(booking, deposit, user, offer, stock, user2, user_offerer)
 
             # when
-                response = TestClient().with_auth(email='user@test.com').get(API_URL + f'/offers/{humanize(offer.id)}')
+                response = TestClient().with_auth(email='user@test.com').get(API_URL + f'/offers?')
 
             # then
                 response_json = response.json()
                 pprint(response_json)
                 assert response.status_code == 200
-                assert 'stockAlertMessage' in response_json
-                assert response_json['stockAlertMessage'] == "encore 12 places"
+                assert 'stockAlertMessage' in response_json[0]
+                assert response_json[0]['stockAlertMessage'] == "encore 12 places"
 
         @clean_database
-        def when_an_event_offer_is_created_with_unlimited_and_remaining_stock(self, app):
+        def when_an_event_offer_with_unlimited_and_remaining_stock(self, app):
             # given
                 user = create_user(email='user@test.com')
                 user2 = create_user(email='user2@test.com')
                 offerer = create_offerer()
+                user_offerer = create_user_offerer(user, offerer)
                 venue = create_venue(offerer)
                 offer = create_event_offer(venue)
                 stock = create_stock_from_offer(offer, available=15)
@@ -357,24 +272,25 @@ class Get:
                 deposit = create_deposit(user2, datetime.utcnow(), amount=500)
                 booking = create_booking(user2, stock, venue, recommendation, quantity=3)
 
-                PcObject.check_and_save(booking, deposit, user, offer, stock, user2)
+                PcObject.check_and_save(booking, deposit, user, offer, stock, user2, user_offerer)
 
             # when
-                response = TestClient().with_auth(email='user@test.com').get(API_URL + f'/offers/{humanize(offer.id)}')
+                response = TestClient().with_auth(email='user@test.com').get(API_URL + f'/offers?')
 
             # then
                 response_json = response.json()
                 pprint(response_json)
                 assert response.status_code == 200
-                assert 'stockAlertMessage' in response_json
-                assert response_json['stockAlertMessage'] == "encore 12 places"
+                assert 'stockAlertMessage' in response_json[0]
+                assert response_json[0]['stockAlertMessage'] == "encore 12 places"
 
         @clean_database
-        def when_an_event_offer_is_created_with_no_more_remaining_stock(self, app):
+        def when_an_event_offer_with_no_more_remaining_stock(self, app):
             # given
                 user = create_user(email='user@test.com')
                 user2 = create_user(email='user2@test.com')
                 offerer = create_offerer()
+                user_offerer = create_user_offerer(user, offerer)
                 venue = create_venue(offerer)
                 offer = create_event_offer(venue)
                 stock = create_stock_from_offer(offer, available=15)
@@ -384,24 +300,25 @@ class Get:
                 deposit = create_deposit(user2, datetime.utcnow(), amount=500)
                 booking = create_booking(user2, stock, venue, recommendation, quantity=15)
 
-                PcObject.check_and_save(booking, deposit, user, offer, stock, stock2, user2)
+                PcObject.check_and_save(booking, deposit, user, offer, stock, stock2, user2, user_offerer)
 
             # when
-                response = TestClient().with_auth(email='user@test.com').get(API_URL + f'/offers/{humanize(offer.id)}')
+                response = TestClient().with_auth(email='user@test.com').get(API_URL + f'/offers?')
 
             # then
                 response_json = response.json()
                 pprint(response_json)
                 assert response.status_code == 200
-                assert 'stockAlertMessage' in response_json
-                assert response_json['stockAlertMessage'] == "plus de places pour 1 offre"
+                assert 'stockAlertMessage' in response_json[0]
+                assert response_json[0]['stockAlertMessage'] == "plus de places pour 1 offre"
 
         @clean_database
-        def when_an_event_offer_is_created_with_only_unlimited_stocks(self, app):
+        def when_an_event_offer_with_only_unlimited_stocks(self, app):
             # given
                 user = create_user(email='user@test.com')
                 user2 = create_user(email='user2@test.com')
                 offerer = create_offerer()
+                user_offerer = create_user_offerer(user, offerer)
                 venue = create_venue(offerer)
                 offer = create_event_offer(venue)
                 stock = create_stock_from_offer(offer, available=None)
@@ -411,14 +328,14 @@ class Get:
                 deposit = create_deposit(user2, datetime.utcnow(), amount=500)
                 booking = create_booking(user2, stock, venue, recommendation, quantity=3)
 
-                PcObject.check_and_save(booking, deposit, user, offer, stock, stock2, user2)
+                PcObject.check_and_save(booking, deposit, user, offer, stock, stock2, user2, user_offerer)
 
             # when
-                response = TestClient().with_auth(email='user@test.com').get(API_URL + f'/offers/{humanize(offer.id)}')
+                response = TestClient().with_auth(email='user@test.com').get(API_URL + f'/offers?')
 
             # then
                 response_json = response.json()
                 pprint(response_json)
                 assert response.status_code == 200
-                assert 'stockAlertMessage' in response_json
-                assert response_json['stockAlertMessage'] == "illimité"
+                assert 'stockAlertMessage' in response_json[0]
+                assert response_json[0]['stockAlertMessage'] == "illimité"

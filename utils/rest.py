@@ -117,28 +117,37 @@ def check_order_by(order_by):
 def handle_rest_get_list(modelClass, query=None,
                          refine=None, order_by=None, flask_request=None,
                          include=None, resolve=None, print_elements=None,
-                         paginate=None, page=None):
+                         paginate=None, page=None, populate=None):
+
     if flask_request is None:
         flask_request = request
+
     if query is None:
         query = modelClass.query
+
     # DELETED
     if issubclass(modelClass, SoftDeletableMixin):
         query = query.filter_by(isSoftDeleted=False)
+
     # REFINE
     if refine:
         query = refine(query)
+
     # ORDER BY
     if order_by:
         check_order_by(order_by)
         query = query_with_order_by(query, order_by)
-
     # PAGINATE
     if paginate:
         if page is not None:
             page = int(page)
         query = query.paginate(page, per_page=paginate, error_out=False)\
                      .items
+
+    objects = [o for o in query]
+    if populate:
+        objects = list(map(populate, objects))
+
     # DICTIFY
     elements = [
         o._asdict(
@@ -146,6 +155,7 @@ def handle_rest_get_list(modelClass, query=None,
             resolve=resolve,
         ) for o in query
     ]
+
     # PRINT
     if print_elements:
         print(elements)

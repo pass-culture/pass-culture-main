@@ -4,6 +4,7 @@ from flask_login import current_user, login_required
 from domain.admin_emails import send_offer_creation_notification_to_support
 from domain.create_offer import fill_offer_with_new_event_data, \
     fill_offer_with_new_thing_data, fill_offer_with_existing_thing_data, fill_offer_with_existing_event_data
+from domain.offers import addStockAlertMessageToOffer
 from models import Offer, PcObject, Venue, RightsType
 from models.api_errors import ResourceNotFound
 from models.offer_type import ProductType
@@ -20,7 +21,6 @@ from utils.rest import expect_json_data, \
     load_or_404, login_or_api_key_required, load_or_raise_error, ensure_current_user_has_rights
 from validation.offers import check_venue_exists_when_requested, check_user_has_rights_for_query, check_valid_edition, \
     check_has_venue_id, check_offer_type_is_valid
-
 
 @app.route('/offers', methods=['GET'])
 @login_required
@@ -41,10 +41,19 @@ def list_offers():
 
     return handle_rest_get_list(Offer,
                                 include=OFFER_INCLUDES,
+                                populate=addStockAlertMessageToOffer,
                                 page=request.args.get('page'),
                                 paginate=10,
                                 order_by='offer.id desc',
-                                query=query)
+                                query=query
+                                )
+
+
+@app.route('/offers/<id>', methods=['GET'])
+@login_required
+def get_offer(id):
+    offer = load_or_404(Offer, id)
+    return jsonify(offer._asdict(include=OFFER_INCLUDES))
 
 
 @app.route('/offers/activation', methods=['GET'])
@@ -58,13 +67,6 @@ def list_activation_offers():
         include=OFFER_INCLUDES,
         query=query
     )
-
-
-@app.route('/offers/<id>', methods=['GET'])
-@login_required
-def get_offer(id):
-    offer = load_or_404(Offer, id)
-    return jsonify(offer._asdict(include=OFFER_INCLUDES))
 
 
 @app.route('/offers', methods=['POST'])
