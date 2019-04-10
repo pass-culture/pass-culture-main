@@ -21,8 +21,7 @@ let result;
 let isTuto;
 let expected;
 let recommendation = {};
-let name = 'Offer title';
-let author = 'Offerrer name';
+const name = 'Offer title';
 
 describe('src | components | verso | VersoContainer', () => {
   describe('getContentInlineStyle', () => {
@@ -104,38 +103,21 @@ describe('src | components | verso | VersoContainer', () => {
   });
 
   describe('getOfferName', () => {
-    it('returns a string value, name concat to author', () => {
+    it('returns a string value', () => {
       // given
       recommendation = {};
       set(recommendation, 'offer.eventOrThing.name', name);
-      set(recommendation, 'offer.eventOrThing.extraData.author', author);
       // when
       result = getOfferName(recommendation);
       // then
-      expected = `${name}, de ${author}`;
-      expect(result).toEqual(expected);
-    });
-
-    it('returns only name', () => {
-      // given
-      author = null;
-      recommendation = {};
-      set(recommendation, 'offer.eventOrThing.name', name);
-      set(recommendation, 'offer.eventOrThing.extraData.author', author);
-      // when
-      result = getOfferName(recommendation);
-      // then
-      expected = `${name}`;
+      expected = name;
       expect(result).toEqual(expected);
     });
 
     it('returns null', () => {
       // given
-      name = null;
-      author = 'Offerrer name';
       recommendation = {};
-      set(recommendation, 'offer.eventOrThing.name', name);
-      set(recommendation, 'offer.eventOrThing.extraData.author', author);
+      set(recommendation, 'offer.eventOrThing.name', null);
       // when
       result = getOfferName(recommendation);
       // then
