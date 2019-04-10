@@ -195,7 +195,7 @@ class RawOffer extends Component {
   componentDidUpdate(prevProps) {
     const {
       dispatch,
-      eventOrThingPatch,
+      formInitialValues,
       formOffererId,
       formVenueId,
       location,
@@ -235,7 +235,7 @@ class RawOffer extends Component {
     this.setDefaultBookingEmailIfNew(prevProps)
 
     if (
-      get(eventOrThingPatch, 'type') &&
+      get(formInitialValues, 'type') &&
       !selectedOfferType &&
       !offerTypeError
     ) {
@@ -269,7 +269,7 @@ class RawOffer extends Component {
     const {
       currentUser,
       event,
-      eventOrThingPatch,
+      formInitialValues,
       hasEventOrThing,
       musicSubOptions,
       offer,
@@ -286,7 +286,12 @@ class RawOffer extends Component {
       venues,
     } = this.props
     const { eventId } = offer || {}
-    const { isCreatedEntity, isModifiedEntity, readOnly } = query.context()
+    const {
+      isCreatedEntity,
+      isModifiedEntity,
+      method,
+      readOnly,
+    } = query.context()
 
     const isEventType = get(selectedOfferType, 'type') === 'Event' || eventId
     const eventOrThingName = get(event, 'name') || get(thing, 'name')
@@ -337,9 +342,10 @@ class RawOffer extends Component {
 
           <Form
             action={formApiPath}
+            method={method}
             name="offer"
             handleSuccess={this.handleFormSuccess}
-            patch={eventOrThingPatch}
+            patch={formInitialValues}
             readOnly={readOnly}
             Tag={null}>
             <div className="field-group">
@@ -351,8 +357,8 @@ class RawOffer extends Component {
                 optionValue="value"
                 options={types}
                 placeholder={
-                  get(eventOrThingPatch, 'type') && !selectedOfferType
-                    ? get(eventOrThingPatch, 'offerTypeValue')
+                  get(formInitialValues, 'type') && !selectedOfferType
+                    ? get(formInitialValues, 'offerTypeValue')
                     : "Sélectionnez un type d'offre"
                 }
                 readOnly={offerId && selectedOfferType}

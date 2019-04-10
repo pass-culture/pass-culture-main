@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import { compose } from 'redux'
 
 import RawOffer from './RawOffer'
-import selectEventOrThingPatchByEventAndThingAndOfferAndOffererAndVenue from './selectEventOrThingPatchByEventAndThingAndOfferAndOffererAndVenue'
+import selectFormInitialValuesByEventAndThingAndOfferAndOffererAndVenue from './selectFormInitialValuesByEventAndThingAndOfferAndOffererAndVenue'
 import {
   withFrenchQueryRouter,
   withRedirectToSigninWhenNotAuthenticated,
@@ -80,7 +80,7 @@ function mapStateToProps(state, ownProps) {
 
   const hasEventOrThing = event || thing
 
-  const eventOrThingPatch = selectEventOrThingPatchByEventAndThingAndOfferAndOffererAndVenue(
+  const formInitialValues = selectFormInitialValuesByEventAndThingAndOfferAndOffererAndVenue(
     state,
     event,
     thing,
@@ -99,7 +99,7 @@ function mapStateToProps(state, ownProps) {
 
   return {
     event,
-    eventOrThingPatch,
+    formInitialValues,
     formOffererId,
     formVenueId,
     hasEventOrThing,
