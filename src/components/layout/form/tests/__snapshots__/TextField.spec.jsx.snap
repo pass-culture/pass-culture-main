@@ -32,9 +32,11 @@ ShallowWrapper {
                 autoComplete={false}
                 className=""
                 disabled={false}
+                format={null}
                 id={null}
                 label=""
                 name="title"
+                parse={null}
                 placeholder="Please enter a value"
                 readOnly={false}
                 renderInner={[Function]}
@@ -48,9 +50,11 @@ ShallowWrapper {
                 autoComplete={false}
                 className=""
                 disabled={false}
+                format={null}
                 id={null}
                 label=""
                 name="text"
+                parse={null}
                 placeholder="Please enter a value"
                 readOnly={false}
                 renderInner={[Function]}
@@ -98,9 +102,11 @@ ShallowWrapper {
             autoComplete={false}
             className=""
             disabled={false}
+            format={null}
             id={null}
             label=""
             name="title"
+            parse={null}
             placeholder="Please enter a value"
             readOnly={false}
             renderInner={[Function]}
@@ -114,9 +120,11 @@ ShallowWrapper {
             autoComplete={false}
             className=""
             disabled={false}
+            format={null}
             id={null}
             label=""
             name="text"
+            parse={null}
             placeholder="Please enter a value"
             readOnly={false}
             renderInner={[Function]}
@@ -144,9 +152,11 @@ ShallowWrapper {
             "autoComplete": false,
             "className": "",
             "disabled": false,
+            "format": null,
             "id": null,
             "label": "",
             "name": "title",
+            "parse": null,
             "placeholder": "Please enter a value",
             "readOnly": false,
             "renderInner": [Function],
@@ -168,9 +178,11 @@ ShallowWrapper {
             "autoComplete": false,
             "className": "",
             "disabled": false,
+            "format": null,
             "id": null,
             "label": "",
             "name": "text",
+            "parse": null,
             "placeholder": "Please enter a value",
             "readOnly": false,
             "renderInner": [Function],
@@ -230,9 +242,11 @@ ShallowWrapper {
                     autoComplete={false}
                     className=""
                     disabled={false}
+                    format={null}
                     id={null}
                     label=""
                     name="title"
+                    parse={null}
                     placeholder="Please enter a value"
                     readOnly={false}
                     renderInner={[Function]}
@@ -246,9 +260,11 @@ ShallowWrapper {
                     autoComplete={false}
                     className=""
                     disabled={false}
+                    format={null}
                     id={null}
                     label=""
                     name="text"
+                    parse={null}
                     placeholder="Please enter a value"
                     readOnly={false}
                     renderInner={[Function]}
@@ -296,9 +312,11 @@ ShallowWrapper {
               autoComplete={false}
               className=""
               disabled={false}
+              format={null}
               id={null}
               label=""
               name="title"
+              parse={null}
               placeholder="Please enter a value"
               readOnly={false}
               renderInner={[Function]}
@@ -312,9 +330,11 @@ ShallowWrapper {
               autoComplete={false}
               className=""
               disabled={false}
+              format={null}
               id={null}
               label=""
               name="text"
+              parse={null}
               placeholder="Please enter a value"
               readOnly={false}
               renderInner={[Function]}
@@ -342,9 +362,11 @@ ShallowWrapper {
               "autoComplete": false,
               "className": "",
               "disabled": false,
+              "format": null,
               "id": null,
               "label": "",
               "name": "title",
+              "parse": null,
               "placeholder": "Please enter a value",
               "readOnly": false,
               "renderInner": [Function],
@@ -366,9 +388,11 @@ ShallowWrapper {
               "autoComplete": false,
               "className": "",
               "disabled": false,
+              "format": null,
               "id": null,
               "label": "",
               "name": "text",
+              "parse": null,
               "placeholder": "Please enter a value",
               "readOnly": false,
               "renderInner": [Function],
