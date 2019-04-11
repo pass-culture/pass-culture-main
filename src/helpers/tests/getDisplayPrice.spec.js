@@ -1,6 +1,30 @@
-import { getDisplayPrice } from '../getDisplayPrice'
+// $(yarn bin)/jest --env=jsdom ./src/helpers/tests/getDisplayPrice.spec.js --watch
+import {
+  getDisplayPrice,
+  defaultOutputPriceFormatter,
+} from '../getDisplayPrice'
 
-describe('getDisplayPrice - format a value with devise', () => {
+describe('defaultOutputPriceFormatter', () => {
+  it('returns a string with not valid values', () => {
+    const value = null
+    const result = defaultOutputPriceFormatter(value, '€')
+    const expected = '--'
+    expect(result).toEqual(expected)
+  })
+  it('returns a string with valid values', () => {
+    let value = [12, 22]
+    let result = defaultOutputPriceFormatter(value, '€')
+    let expected = '12 \u2192 22 €'
+    expect(result).toEqual(expected)
+
+    value = [12]
+    result = defaultOutputPriceFormatter(value, '€')
+    expected = '12 €'
+    expect(result).toEqual(expected)
+  })
+})
+
+describe('getDisplayPrice', () => {
   describe('with not valid values', () => {
     it('should return empty string if undefined || null', () => {
       const expected = ''
@@ -85,7 +109,7 @@ describe('getDisplayPrice - format a value with devise', () => {
     it('should return value with custom devise', () => {
       const value = '1222.00'
       const expected = '1222 poires'
-      const result = getDisplayPrice(value, null, 'poires')
+      const result = getDisplayPrice(value, null, null, 'poires')
       expect(result).toEqual(expected)
     })
 
@@ -270,6 +294,21 @@ describe('getDisplayPrice - format a value with devise', () => {
 
         // then
         expect(result).toEqual('0 \u2192 6,78 €')
+      })
+    })
+
+    describe('with a specific formatter', () => {
+      it('returns a formatted string', () => {
+        const value = [12, 22]
+        const euros = 'poires'
+        const splitter = '\u0020this_is_the_splitter\u0020'
+        const formatter = (prices, devise) => {
+          const res = prices.join(splitter)
+          return `${res}\u0020${devise}`
+        }
+        const expected = `12${splitter}22\u0020${euros}`
+        const result = getDisplayPrice(value, null, formatter, euros)
+        expect(result).toEqual(expected)
       })
     })
   })
