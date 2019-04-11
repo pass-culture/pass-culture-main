@@ -75,11 +75,7 @@ OFFER_INCLUDES = [
     "mediations",
     "stockAlertMessage",
     {
-    "key": "stocks",
-    "sub_joins": ['bookings']
-    },
-    {
-        "key": "thing",
+        "key": "product",
         "sub_joins": [
             'mediations',
             'offerType',
@@ -88,6 +84,10 @@ OFFER_INCLUDES = [
             },
             '-type'
         ]
+    },
+    {
+        "key": "stocks",
+        "sub_joins": ['bookings']
     },
     {
         "key": "venue",

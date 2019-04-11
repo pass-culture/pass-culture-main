@@ -4,6 +4,7 @@ import secrets
 from datetime import datetime, timedelta
 
 from models import PcObject, Venue, EventType, ThingType
+from models.offer_type import ProductType
 from tests.conftest import clean_database, TestClient
 from tests.test_utils import API_URL, \
     create_event_offer, \
@@ -135,6 +136,7 @@ class Get:
             for offer in offers:
                 assert offer['venueId'] == humanize(venue_id)
                 assert 'event' in offer['name'].lower()
+                assert 'event' in offer['product']['name'].lower()
 
         @clean_database
         def test_can_be_searched_using_multiple_search_terms(self, app):
@@ -152,8 +154,8 @@ class Get:
             offers = response.json()
             assert response.status_code == 200
             assert len(offers) == 10
-            assert len([o for o in offers if 'event' in o]) > 0
-            assert len([o for o in offers if 'thing' in o]) > 0
+            assert len([o for o in offers if ProductType.is_event(o['type'])]) > 0
+            assert len([o for o in offers if ProductType.is_thing(o['type'])]) > 0
 
         @clean_database
         def test_list_activation_offers_returns_offers_of_event_type(self, app):
@@ -181,11 +183,11 @@ class Get:
 
             # then
             json = response.json()
-            event_ids = list(map(lambda x: x['eventId'], json))
+            event_ids = [info['productId'] for info in json if ProductType.is_event(info['type'])]
             assert len(json) == 2
             assert response.status_code == 200
-            assert humanize(offer2.eventId) in event_ids
-            assert humanize(offer3.eventId) in event_ids
+            assert humanize(offer2.productId) in event_ids
+            assert humanize(offer3.productId) in event_ids
 
         @clean_database
         def test_returns_list_of_offers_with_thing_or_event_with_type_details(self, app):
@@ -227,8 +229,8 @@ class Get:
 
             # then
             json = response.json()
-            types = list(map(lambda x: x['thing']['offerType'] if 'thing' in x else x['event']['offerType'], json))
-            thing_or_event_keys = list(map(lambda x: x['thing'].keys() if 'thing' in x else x['event'].keys(), json))
+            types = list(map(lambda x: x['product']['offerType'], json))
+            thing_or_event_keys = list(map(lambda x: x['product'].keys(), json))
             assert response.status_code == 200
             assert expected_thing_type in types
             assert expected_event_type in types

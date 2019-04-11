@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 
 import pytest
 
-from models import Offer, Thing, Event, PcObject, ApiErrors, ThingType, EventType
+from models import Offer, PcObject, ApiErrors, ThingType, EventType
 from tests.conftest import clean_database
 from tests.test_utils import create_event_offer
 from tests.test_utils import create_thing, create_thing_offer, create_offerer, create_venue, \
