@@ -1,7 +1,7 @@
 import { selectFormInitialValuesByEventAndThingAndOfferAndOffererAndVenue } from '../selectFormInitialValuesByEventAndThingAndOfferAndOffererAndVenue'
 
 describe('src | components | pages | Offer | utils | selectFormInitialValuesByEventAndThingAndOfferAndOffererAndVenue', () => {
-  it('should take info from event or thing when offer has no idea, ie isCreatedEntity', () => {
+  it('should build an object using initial values from offer or product (given POST or PATCH context), venue and offerer', () => {
     // given
     const state = {}
     const event = {
@@ -57,7 +57,7 @@ describe('src | components | pages | Offer | utils | selectFormInitialValuesByEv
     expect(value).toEqual(expectedValue)
   })
 
-  it('should take info from event or thing when offer has no idea, ie isCreatedEntity', () => {
+  it('should build an object taking info from product when creating new offer', () => {
     // given
     const state = {}
     const event = {
@@ -82,7 +82,7 @@ describe('src | components | pages | Offer | utils | selectFormInitialValuesByEv
     expect(value.description).toEqual(event.description)
   })
 
-  it('should take info from offer when offer.id, ie isModifiedEntity', () => {
+  it('should build an offer taking info from offer when updating offer', () => {
     // given
     const state = {}
     const event = {
