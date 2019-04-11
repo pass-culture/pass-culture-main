@@ -1,9 +1,9 @@
 import React from 'react'
 import { shallow } from 'enzyme'
+import { Form } from 'pass-culture-shared'
 
 import RawOffer from '../RawOffer'
 import MediationsManager from '../MediationsManager/index'
-import { Form } from 'pass-culture-shared'
 
 const dispatchMock = jest.fn()
 

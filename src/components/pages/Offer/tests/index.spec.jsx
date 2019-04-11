@@ -1,5 +1,6 @@
 import React from 'react'
 import { shallow } from 'enzyme'
+
 import Offer from '../index'
 
 describe('src | components | pages | Offer | Offer ', () => {

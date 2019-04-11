@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import { compose } from 'redux'
 
 import RawOffer from './RawOffer'
-import selectFormInitialValuesByEventAndThingAndOfferAndOffererAndVenue from './selectFormInitialValuesByEventAndThingAndOfferAndOffererAndVenue'
+import selectFormInitialValuesByEventAndThingAndOfferAndOffererAndVenue from './utils/selectFormInitialValuesByEventAndThingAndOfferAndOffererAndVenue'
 import {
   withFrenchQueryRouter,
   withRedirectToSigninWhenNotAuthenticated,

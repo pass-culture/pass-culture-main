@@ -1,25 +1,11 @@
 import get from 'lodash.get'
 import createCachedSelector from 're-reselect'
 
+import { getValueFromOfferOrProduct } from './getValueFromOfferOrProduct'
+
 const mapArgsToCacheKey = (state, event, thing, offerer, venue) =>
   `${get(event, 'id', ' ')}/${get(thing, 'id', ' ')}/
    ${get(offerer, 'id', ' ')}/${get(venue, 'id', ' ')}`
-
-export const getValueFromOfferOrProduct = (key, offer, product) => {
-  if (!offer) {
-    return
-  }
-
-  const isCreatedEntity = !offer.id
-  if (isCreatedEntity) {
-    if (key === 'type') {
-      return get(product, 'offerType.value', '')
-    }
-    return product[key]
-  }
-
-  return offer[key]
-}
 
 const productKeys = [
   'ageMax',
