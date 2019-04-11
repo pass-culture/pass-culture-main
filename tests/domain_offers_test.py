@@ -4,7 +4,7 @@ import pytest
 
 from models import PcObject
 from domain.offers import add_stock_alert_message_to_offer, check_digital_offer_consistency, InconsistentOffer
-from models import Offer, Venue, Thing
+from models import Offer, Venue, Product
 from datetime import datetime
 from tests.test_utils import create_booking, \
     create_deposit, \
@@ -28,7 +28,7 @@ class CheckDigitalOfferConsistencyTest:
     def test_raises_an_error_for_physical_venue_and_digital_thing(self):
         # given
         venue = Venue(from_dict={'isVirtual': False})
-        find_thing.return_value = Thing(from_dict={'url': 'https://zerlngzergner.fr'})
+        find_thing.return_value = Product(from_dict={'url': 'https://zerlngzergner.fr'})
 
         # when
         with pytest.raises(InconsistentOffer) as e:
@@ -40,7 +40,7 @@ class CheckDigitalOfferConsistencyTest:
     def test_does_not_raise_an_error_for_virtual_venue_and_digital_thing(self):
         # given
         venue = Venue(from_dict={'isVirtual': True})
-        find_thing.return_value = Thing(from_dict={'url': 'https://zerlngzergner.fr'})
+        find_thing.return_value = Product(from_dict={'url': 'https://zerlngzergner.fr'})
 
         # when
         result = check_digital_offer_consistency(offer, venue, find_thing=find_thing)
@@ -51,7 +51,7 @@ class CheckDigitalOfferConsistencyTest:
     def test_raises_an_error_for_virtual_venue_and_physical_thing(self):
         # given
         venue = Venue(from_dict={'isVirtual': True})
-        find_thing.return_value = Thing(from_dict={'url': None})
+        find_thing.return_value = Product(from_dict={'url': None})
 
         # when
         with pytest.raises(InconsistentOffer) as e:
@@ -63,7 +63,7 @@ class CheckDigitalOfferConsistencyTest:
     def test_does_not_raise_an_error_for_physical_venue_and_physical_thing(self):
         # given
         venue = Venue(from_dict={'isVirtual': False})
-        find_thing.return_value = Thing(from_dict={'url': None})
+        find_thing.return_value = Product(from_dict={'url': None})
 
         # when
         result = check_digital_offer_consistency(offer, venue, find_thing=find_thing)

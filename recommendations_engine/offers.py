@@ -7,7 +7,8 @@ from sqlalchemy.orm import aliased
 from typing import Optional, List, Tuple
 
 from domain.departments import get_departement_codes_from_user
-from models import Event, Offer, Stock, Thing
+from models import Offer, Stock, Product
+from models.offer_type import ProductType
 from repository.offer_queries import get_active_offers_by_type
 from utils.logger import logger
 
@@ -57,7 +58,7 @@ def score_offer(offer: Offer) -> Optional[int]:
     # a bit of randomness so we don't always return the same offers
     common_score += randint(0, 10)
 
-    if isinstance(offer.eventOrThing, Event):
+    if ProductType.is_event(offer.eventOrThing.type):
         specific_score = specific_score_event(offer.eventOrThing)
     else:
         specific_score = specific_score_thing(offer.eventOrThing)
@@ -68,7 +69,7 @@ def score_offer(offer: Offer) -> Optional[int]:
     return common_score + specific_score
 
 
-def specific_score_event(event: Event) -> Optional[int]:
+def specific_score_event(event: Product) -> Optional[int]:
     score = 0
 
     next_occurrence_stock = Stock.query \
@@ -86,7 +87,7 @@ def specific_score_event(event: Event) -> Optional[int]:
     return score
 
 
-def specific_score_thing(thing: Thing) -> Optional[int]:
+def specific_score_thing(thing: Product) -> Optional[int]:
     score = 0
     return score
 

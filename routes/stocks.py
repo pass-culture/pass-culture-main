@@ -4,6 +4,7 @@ from flask_login import current_user
 
 from domain.discard_pc_objects import cancel_bookings
 from domain.user_emails import send_batch_cancellation_emails_to_users, send_batch_cancellation_email_to_offerer
+from models import Product
 from models.mediation import Mediation
 from models.pc_object import PcObject
 from models.stock import Stock
@@ -24,9 +25,8 @@ from validation.stocks import check_request_has_offer_id, check_dates_are_allowe
 
 search_models = [
     # Order is important
-    Thing,
+    Product,
     Venue,
-    Event
 ]
 
 

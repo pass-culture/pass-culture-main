@@ -67,8 +67,9 @@ class Offer(PcObject,
                        default=[])
 
     durationMinutes = Column(Integer,
-                             CheckConstraint('("eventId" IS NULL) OR ("durationMinutes" IS NOT NULL)',
-                                             name='check_duration_minutes_not_null_for_event'),
+                             # TODO Reporter cette contrainte
+                             # CheckConstraint('("eventId" IS NULL) OR ("durationMinutes" IS NOT NULL)',
+                             #                name='check_duration_minutes_not_null_for_event'),
                              nullable=True)
 
     isNational = Column(Boolean,
@@ -111,7 +112,7 @@ class Offer(PcObject,
 
     @property
     def eventOrThing(self):
-        return self.event or self.thing
+        return self.product
 
     @property
     def lastStock(self):

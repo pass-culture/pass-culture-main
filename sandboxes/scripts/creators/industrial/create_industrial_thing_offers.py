@@ -53,7 +53,7 @@ def create_industrial_thing_offers(
                 is_active = True
             thing_offers_by_name[name] = create_thing_offer(
                 thing_venue,
-                thing=thing,
+                product=thing,
                 thing_type=thing.type,
                 is_active=is_active,
                 id_at_providers=str(id_at_providers)

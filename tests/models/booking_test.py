@@ -2,19 +2,19 @@ from datetime import datetime, timedelta
 
 import pytest
 
-from models import Booking, Offer, Stock, Thing, User
+from models import Booking, Offer, Stock, User, Product
 
 
 @pytest.mark.standalone
 def test_booking_completed_url_gets_normalized():
     # Given
 
-    thing = Thing()
-    thing.url = 'javascript:alert("plop")'
+    product = Product()
+    product.url = 'javascript:alert("plop")'
 
     offer = Offer()
     offer.id = 1
-    offer.thing = thing
+    offer.product = product
 
     stock = Stock()
 
@@ -53,7 +53,7 @@ class BookingIsCancellableTest:
         booking = Booking()
         booking.stock = Stock()
         booking.stock.offer = Offer()
-        booking.stock.offer.thing = Thing()
+        booking.stock.offer.thing = Product()
 
         # When
         is_cancellable = booking.isUserCancellable

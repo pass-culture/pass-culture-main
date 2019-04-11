@@ -5,7 +5,7 @@ import pytest
 from datetime import datetime
 
 from local_providers import TiteLiveThings
-from models import Thing
+from models import Product
 from models.pc_object import PcObject
 from models.provider import Provider
 from models.venue_provider import VenueProvider
@@ -199,7 +199,7 @@ class TiteliveThingsTest:
                       updatedThumbs=0,
                       erroredThumbs=0,
                       )
-        updated_thing = Thing.query.first()
+        updated_thing = Product.query.first()
         assert updated_thing.name == 'nouvelles du Chili'
 
     @clean_database

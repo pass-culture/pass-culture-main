@@ -11,6 +11,7 @@ from domain.user_activation import generate_set_password_url
 from models import Offer, Email, PcObject
 from models import RightsType, User
 from models.email import EmailStatus
+from models.offer_type import ProductType
 from repository import email_queries
 from repository.booking_queries import find_all_ongoing_bookings_by_stock
 from repository.features import feature_send_mail_to_users_enabled
@@ -77,13 +78,13 @@ def make_final_recap_email_for_stock_with_event(stock):
     venue = stock.resolvedOffer.venue
     date_in_tz = _get_event_datetime(stock)
     formatted_datetime = format_datetime(date_in_tz)
-    email_subject = '[Réservations] Récapitulatif pour {} le {}'.format(stock.offer.event.name,
+    email_subject = '[Réservations] Récapitulatif pour {} le {}'.format(stock.offer.product.name,
                                                                         formatted_datetime)
     stock_bookings = find_all_ongoing_bookings_by_stock(stock)
     email_html = render_template('mails/offerer_final_recap_email.html',
                                  booking_is_on_event=booking_is_on_event,
                                  number_of_bookings=len(stock_bookings),
-                                 stock_name=stock.offer.event.name,
+                                 stock_name=stock.offer.product.name,
                                  stock_date_time=formatted_datetime,
                                  venue=venue,
                                  stock_bookings=stock_bookings)
@@ -581,8 +582,8 @@ def _generate_reservation_email_html_subject(booking):
         email_html = render_template('mails/user_confirmation_email_thing.html',
                                      user=user,
                                      booking_token=booking.token,
-                                     thing_name=stock.resolvedOffer.thing.name,
-                                     thing_reference=stock.resolvedOffer.thing.idAtProviders,
+                                     thing_name=stock.resolvedOffer.product.name,
+                                     thing_reference=stock.resolvedOffer.product.idAtProviders,
                                      venue=venue)
     else:
         date_in_tz = _get_event_datetime(stock)
@@ -591,7 +592,7 @@ def _generate_reservation_email_html_subject(booking):
         email_html = render_template('mails/user_confirmation_email_event.html',
                                      user=user,
                                      booking_token=booking.token,
-                                     event_occurrence_name=stock.offer.event.name,
+                                     event_occurrence_name=stock.offer.product.name,
                                      formatted_date_time=formatted_date_time,
                                      venue=venue
                                      )
@@ -602,22 +603,22 @@ def _generate_reservation_email_html_subject(booking):
 def _generate_user_driven_cancellation_email_for_user(user, stock):
     venue = stock.resolvedOffer.venue
     if stock.beginningDatetime is None:
-        email_subject = 'Annulation de votre commande pour {}'.format(stock.resolvedOffer.thing.name)
+        email_subject = 'Annulation de votre commande pour {}'.format(stock.resolvedOffer.product.name)
         email_html = render_template('mails/user_cancellation_email_thing.html',
                                      user=user,
-                                     thing_name=stock.resolvedOffer.thing.name,
-                                     thing_reference=stock.resolvedOffer.thing.idAtProviders,
+                                     thing_name=stock.resolvedOffer.product.name,
+                                     thing_reference=stock.resolvedOffer.product.idAtProviders,
                                      venue=venue)
     else:
         date_in_tz = _get_event_datetime(stock)
         formatted_date_time = format_datetime(date_in_tz)
         email_html = render_template('mails/user_cancellation_email_event.html',
                                      user=user,
-                                     event_occurrence_name=stock.offer.event.name,
+                                     event_occurrence_name=stock.offer.product.name,
                                      venue=venue,
                                      formatted_date_time=formatted_date_time)
         email_subject = 'Annulation de votre réservation pour {} le {}'.format(
-            stock.offer.event.name,
+            stock.offer.product.name,
             formatted_date_time
         )
     return email_html, email_subject
@@ -637,9 +638,9 @@ def _get_event_datetime(stock):
 def _get_stock_description(stock):
     if stock.beginningDatetime:
         date_in_tz = _get_event_datetime(stock)
-        description = '{} le {}'.format(stock.offer.event.name,
+        description = '{} le {}'.format(stock.offer.product.name,
                                         format_datetime(date_in_tz))
-    elif stock.resolvedOffer.thing:
-        description = str(stock.resolvedOffer.thing.name)
+    elif ProductType.is_thing(stock.resolvedOffer.type):
+        description = str(stock.resolvedOffer.product.name)
 
     return description

@@ -8,23 +8,21 @@ from domain.keywords import create_filter_matching_all_keywords_in_any_model, \
     create_get_filter_matching_ts_query_in_any_model, \
     get_first_matching_keywords_string_at_column
 from models import Booking, \
-    Event, \
     EventType, \
     Offer, \
     Stock, \
     Offerer, \
     Recommendation, \
-    Thing, \
     ThingType, \
-    Venue
+    Venue,\
+    Product
 from repository.user_offerer_queries import filter_query_where_user_is_user_offerer_and_is_validated
 from utils.distance import get_sql_geo_distance_in_kilometers
 from utils.logger import logger
 
 
 def build_offer_search_base_query():
-    return Offer.query.outerjoin(Event) \
-        .outerjoin(Thing) \
+    return Offer.query.outerjoin(Product) \
         .join(Venue) \
         .join(Offerer)
 
@@ -39,12 +37,11 @@ def department_or_national_offers(query, offer_type, departement_codes):
     return query
 
 
-def bookable_offers(query, offer_type):
-    # remove events for which all occurrences are in the past
-    # (crude filter to limit joins before the more complete one below)
-    if offer_type == Event:
-        query = query.filter(Offer.stocks.any(Stock.beginningDatetime > datetime.utcnow()))
-        logger.debug(lambda: '(reco) future events.count ' + str(query.count()))
+def bookable_offers(query):
+    beginning_date_is_in_the_future = (Stock.beginningDatetime > datetime.utcnow())
+    no_beginning_date = Stock.beginningDatetime == None
+    query = query.filter(beginning_date_is_in_the_future | no_beginning_date)
+    logger.debug(lambda: '(reco) future events.count ' + str(query.count()))
 
     query = _filter_bookable_offers_for_discovery(query)
     logger.debug(lambda: '(reco) bookable .count ' + str(query.count()))
@@ -58,11 +55,9 @@ def with_active_and_validated_offerer(query):
     return query
 
 
-def not_activation_offers(query, offer_type):
-    if offer_type == Event:
-        return query.filter(Event.type != str(EventType.ACTIVATION))
-    else:
-        return query.filter(Thing.type != str(ThingType.ACTIVATION))
+def not_activation_offers(query):
+    query = query.filter(Offer.type != str(EventType.ACTIVATION))
+    return query.filter(Offer.type != str(ThingType.ACTIVATION))
 
 
 def not_currently_recommended_offers(query, user):
@@ -78,35 +73,32 @@ def not_currently_recommended_offers(query, user):
 
 def get_active_offers_by_type(offer_type, user=None, departement_codes=None, offer_id=None):
     query = Offer.query.filter_by(isActive=True)
-    logger.debug(lambda: '(reco) {} active offers count {}'.format(offer_type.__name__, query.count()))
+    logger.debug(lambda: '(reco) active offers count {}'.format(query.count()))
     query = query.join(Stock, and_(Offer.id == Stock.offerId))
-    logger.debug(lambda: '(reco) {} offers with stock count {}'.format(offer_type.__name__, query.count()))
+    logger.debug(lambda: '(reco) offers with stock count {}'.format(query.count()))
 
     query = query.join(Venue, and_(Offer.venueId == Venue.id))
     query = query.filter(Venue.validationToken == None)
     query = query.join(Offerer)
-    if offer_type == Event:
-        query = query.join(Event, and_(Offer.eventId == Event.id))
-    else:
-        query = query.join(Thing, and_(Offer.thingId == Thing.id))
-    logger.debug(lambda: '(reco) {} offers with venue offerer {}'.format(offer_type.__name__, query.count()))
+    query = query.join(Product, and_(Offer.productId == Product.id))
+    logger.debug(lambda: '(reco) offers with venue offerer {}'.format(query.count()))
 
     if offer_id is not None:
         query = query.filter(Offer.id == offer_id)
-    logger.debug(lambda: '(reco) all ' + str(offer_type) + '.count ' + str(query.count()))
+    logger.debug(lambda: '(reco) all {} count '.format(query.count()))
 
     query = department_or_national_offers(query, offer_type, departement_codes)
     logger.debug(lambda:
-                 '(reco) department or national {} {} in {}'.format(offer_type.__name__, str(departement_codes),
+                 '(reco) department or national {} in {}'.format(str(departement_codes),
                                                                     query.count()))
-    query = bookable_offers(query, offer_type)
-    logger.debug(lambda: '(reco) bookable_offers {} {}'.format(offer_type.__name__, query.count()))
+    query = bookable_offers(query)
+    logger.debug(lambda: '(reco) bookable_offers {}'.format(query.count()))
     query = with_active_and_validated_offerer(query)
-    logger.debug(lambda: '(reco) active and validated {} {}'.format(offer_type.__name__, query.count()))
+    logger.debug(lambda: '(reco) active and validated {}'.format(query.count()))
     query = not_currently_recommended_offers(query, user)
-    query = not_activation_offers(query, offer_type)
+    query = not_activation_offers(query)
     query = query.distinct(offer_type.id)
-    logger.debug(lambda: '(reco) distinct {} {}'.format(offer_type.__name__, query.count()))
+    logger.debug(lambda: '(reco) distinct {}'.format(query.count()))
     return query.all()
 
 
@@ -172,20 +164,17 @@ def get_offers_for_recommendations_search(
     if days_intervals is not None:
         event_beginningdate_in_interval_filter = or_(*map(
             _date_interval_to_filter, days_intervals))
+        stock_has_no_beginning_date_time = Stock.beginningDatetime == None
         query = query.filter(
             event_beginningdate_in_interval_filter | \
-            (Offer.thing != None)) \
+            stock_has_no_beginning_date_time) \
             .reset_joinpoint()
 
     if keywords_string is not None:
         query = filter_offers_with_keywords_string(query, keywords_string)
 
     if type_values is not None:
-        event_query = query.filter(Event.type.in_(type_values))
-
-        thing_query = query.filter(Thing.type.in_(type_values))
-
-        query = event_query.union_all(thing_query)
+        query = query.filter(Offer.type.in_(type_values))
 
     if page is not None:
         query = query \
@@ -241,7 +230,7 @@ def _filter_recommendable_offers_for_search(offer_query):
     now = datetime.utcnow()
     stock_can_still_be_booked = (Stock.bookingLimitDatetime > now) | (Stock.bookingLimitDatetime == None)
     event_has_not_began_yet = (Stock.beginningDatetime != None) & (Stock.beginningDatetime > now)
-    offer_is_on_a_thing = Offer.eventId == None
+    offer_is_on_a_thing = Stock.beginningDatetime == None
 
     offer_query = offer_query.reset_joinpoint() \
         .filter(Offer.isActive == True) \
@@ -257,17 +246,14 @@ def _filter_recommendable_offers_for_search(offer_query):
 
 def find_activation_offers(departement_code: str) -> List[Offer]:
     departement_codes = ILE_DE_FRANCE_DEPT_CODES if departement_code == '93' else [departement_code]
-    match_department_or_is_national = or_(Venue.departementCode.in_(departement_codes), Event.isNational == True,
-                                          Thing.isNational == True)
-    join_on_event = and_(Event.id == Offer.eventId)
+    match_department_or_is_national = or_(Venue.departementCode.in_(departement_codes), Offer.isNational == True)
 
     query = Offer.query \
-        .outerjoin(Thing) \
-        .outerjoin(Event, join_on_event) \
+        .join(Product) \
         .join(Venue) \
         .reset_joinpoint() \
         .join(Stock) \
-        .filter(Event.type == str(EventType.ACTIVATION)) \
+        .filter(Offer.type == str(EventType.ACTIVATION)) \
         .filter(match_department_or_is_national)
 
     query = _filter_bookable_offers_for_discovery(query)

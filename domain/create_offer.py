@@ -83,7 +83,7 @@ def fill_offer_with_existing_thing_data(thing_id: str, offer_data) -> Offer:
     return offer
 
 
-def _initiaize_offer_from_event(event: Event) -> Offer:
+def _initiaize_offer_from_event(event_id) -> Offer:
     offer = Offer()
     product = event_queries.find_by_id(event_id)
     offer.product = product

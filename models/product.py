@@ -1,4 +1,4 @@
-""" model event """
+""" model product """
 from enum import Enum
 
 from sqlalchemy import Binary, \

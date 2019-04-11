@@ -42,8 +42,8 @@ def _get_bookings_of_digital_things(bookings: List[Booking]) -> List[Booking]:
 def _get_bookings_of_physical_things(bookings: List[Booking]) -> List[Booking]:
     match = []
     for booking in bookings:
-        thing_or_event = booking.stock.resolvedOffer.eventOrThing
-        if is_eligible_to_physical_things_capping(thing_or_event):
+        product = booking.stock.resolvedOffer.eventOrThing
+        if is_eligible_to_physical_things_capping(product):
             match.append(booking)
 
     return match

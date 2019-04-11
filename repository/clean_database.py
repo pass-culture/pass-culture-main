@@ -2,15 +2,14 @@ from models.activity import load_activity
 from models.db import db
 from models import Booking, \
     Deposit, \
-    Event, \
     Mediation, \
     Payment, \
     PaymentStatus, \
+    Product, \
     Offer, \
     Offerer, \
     Recommendation, \
     Stock, \
-    Thing, \
     User, \
     UserOfferer, \
     UserSession, \
@@ -32,8 +31,9 @@ def clean_all_database(*args, **kwargs):
     Recommendation.query.delete()
     Mediation.query.delete()
     Offer.query.delete()
-    Thing.query.delete()
-    Event.query.delete()
+    # Thing.query.delete()
+    # Event.query.delete()
+    Product.query.delete()
     BankInformation.query.delete()
     Venue.query.delete()
     UserOfferer.query.delete()

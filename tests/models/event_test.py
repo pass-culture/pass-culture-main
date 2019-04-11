@@ -1,9 +1,9 @@
-from models import Event, EventType
+from models import EventType, Product
 from tests.test_utils import create_event
 
 
 def test_an_event_is_always_physical_and_cannot_be_digital():
-    assert Event().isDigital is False
+    assert Product().isDigital is False
 
 
 def test_event_type_find_from_sub_labels_returns_nothing_if_no_sub_labels():

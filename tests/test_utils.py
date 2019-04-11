@@ -14,7 +14,6 @@ from unittest.mock import Mock
 import models
 from models import Booking, \
     Deposit, \
-    Event, \
     EventType, \
     Mediation, \
     Offer, \
@@ -23,12 +22,11 @@ from models import Booking, \
     Recommendation, \
     RightsType, \
     Stock, \
-    Thing, \
     ThingType, \
     User, \
     UserOfferer, \
     BankInformation, \
-    Venue, PaymentTransaction, VenueProvider, Provider
+    Venue, PaymentTransaction, VenueProvider, Provider, Product
 from models.db import db
 from models.email import Email, EmailStatus
 from models.payment import PaymentDetails
@@ -69,8 +67,8 @@ def create_booking(user, stock=None, venue=None, recommendation=None, quantity=1
         venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city',
                              '93')
     if stock is None:
-        thing_offer = create_thing_offer(venue)
-        stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=10)
+        product_with_thing_type = create_thing_offer(venue)
+        stock = create_stock_with_thing_offer(offerer, venue, product_with_thing_type, price=10)
     booking.stock = stock
     booking.user = user
     if token is None:
@@ -108,11 +106,11 @@ def create_booking_for_thing(
         type=ThingType.JEUX,
         date_created=datetime.utcnow()
 ):
-    thing = Thing(from_dict={'url': url, 'type': str(type)})
+    product = Product(from_dict={'url': url, 'type': str(type)})
     offer = Offer()
     stock = Stock()
     booking = Booking(from_dict={'amount': amount})
-    offer.thing = thing
+    offer.product = product
     stock.offer = offer
     booking.stock = stock
     booking.quantity = quantity
@@ -130,11 +128,11 @@ def create_booking_for_event(
         type=EventType.CINEMA,
         date_created=datetime.utcnow()
 ):
-    event = Event(from_dict={'type': str(type)})
+    product = Product(from_dict={'type': str(type)})
     offer = Offer()
     stock = Stock()
     booking = Booking(from_dict={'amount': amount})
-    offer.event = event
+    offer.product = product
     stock.offer = offer
     booking.stock = stock
     booking.quantity = quantity
@@ -240,14 +238,14 @@ def create_stock(price=10, available=10, booking_limit_datetime=None, offer=None
     return stock
 
 
-def create_stock_with_thing_offer(offerer, venue, thing_offer=None, price=10, available=50,
+def create_stock_with_thing_offer(offerer, venue, product=None, price=10, available=50,
                                   booking_email='offer.booking.email@test.com', soft_deleted=False,
                                   booking_limit_datetime=None):
     stock = Stock()
     stock.offerer = offerer
     stock.price = price
-    if thing_offer:
-        stock.offer = thing_offer
+    if product:
+        stock.offer = product
     else:
         stock.offer = create_thing_offer(venue)
     stock.offer.bookingEmail = booking_email
@@ -259,6 +257,7 @@ def create_stock_with_thing_offer(offerer, venue, thing_offer=None, price=10, av
     return stock
 
 
+# TODO Remplacer cette fonction par un create_product ou create_product_with_Thing_type
 def create_thing(
         thing_name='Test Book',
         thing_type=ThingType.LIVRE_EDITION,
@@ -274,29 +273,29 @@ def create_thing(
         url=None,
         owning_offerer=None
 ):
-    thing = Thing()
-    thing.type = str(thing_type)
-    thing.name = thing_name
-    thing.description = description
-    thing.extraData = {'author': author_name}
-    thing.isNational = is_national
+    product = Product()
+    product.type = str(thing_type)
+    product.name = thing_name
+    product.description = description
+    product.extraData = {'author': author_name}
+    product.isNational = is_national
     if id_at_providers is None:
         id_at_providers = ''.join(random.choices(string.digits, k=13))
-    thing.dateModifiedAtLastProvider = date_modified_at_last_provider
-    thing.lastProviderId = last_provider_id
-    thing.idAtProviders = id_at_providers
-    thing.mediaUrls = media_urls
-    thing.thumbCount = thumb_count
-    thing.url = url
-    thing.owningOfferer = owning_offerer
+    product.dateModifiedAtLastProvider = date_modified_at_last_provider
+    product.lastProviderId = last_provider_id
+    product.idAtProviders = id_at_providers
+    product.mediaUrls = media_urls
+    product.thumbCount = thumb_count
+    product.url = url
+    product.owningOfferer = owning_offerer
 
     if thumb_count > 0:
         if dominant_color is None:
-            thing.firstThumbDominantColor = b'\x00\x00\x00'
+            product.firstThumbDominantColor = b'\x00\x00\x00'
         else:
-            thing.firstThumbDominantColor = dominant_color
-    thing.description = description
-    return thing
+            product.firstThumbDominantColor = dominant_color
+    product.description = description
+    return product
 
 
 def create_event(
@@ -308,7 +307,7 @@ def create_event(
         is_national=False,
         thumb_count=0,
 ):
-    event = Event()
+    event = Product()
     event.name = event_name
     event.description = description
     event.durationMinutes = duration_minutes
@@ -322,22 +321,22 @@ def create_event(
     return event
 
 
-def create_thing_offer(venue, thing=None, date_created=datetime.utcnow(), booking_email='booking.email@test.com',
+def create_thing_offer(venue, product=None, date_created=datetime.utcnow(), booking_email='booking.email@test.com',
                        thing_type=ThingType.AUDIOVISUEL, thing_name='Test Book', media_urls=['test/urls'],
                        author_name='Test Author', description=None, thumb_count=1, dominant_color=None, url=None,
                        is_national=False, is_active=True, id_at_providers=None, idx=None):
     offer = Offer()
-    if thing:
-        offer.thing = thing
-        offer.name = thing.name
-        offer.type = thing.type
-        offer.mediaUrls = thing.mediaUrls
-        offer.extraData = thing.extraData
-        offer.url = thing.url
-        offer.isNational = thing.isNational
-        offer.description = thing.description
+    if product:
+        offer.product = product
+        offer.name = product.name
+        offer.type = product.type
+        offer.mediaUrls = product.mediaUrls
+        offer.extraData = product.extraData
+        offer.url = product.url
+        offer.isNational = product.isNational
+        offer.description = product.description
     else:
-        offer.thing = create_thing(thing_name=thing_name, thing_type=thing_type, media_urls=media_urls,
+        offer.product = create_thing(thing_name=thing_name, thing_type=thing_type, media_urls=media_urls,
                                    author_name=author_name, url=url, thumb_count=thumb_count,
                                    dominant_color=dominant_color, is_national=is_national, description=description)
         offer.name = thing_name
@@ -355,25 +354,25 @@ def create_thing_offer(venue, thing=None, date_created=datetime.utcnow(), bookin
     if id_at_providers:
         offer.idAtProviders = id_at_providers
     elif venue is not None:
-        offer.idAtProviders = "%s@%s" % (offer.thing.idAtProviders, venue.siret or venue.id)
+        offer.idAtProviders = "%s@%s" % (offer.product.idAtProviders, venue.siret or venue.id)
     offer.id = idx
 
     return offer
 
 
-def create_event_offer(venue=None, event=None, event_name='Test event', duration_minutes=60, date_created=datetime.utcnow(),
+def create_event_offer(venue=None, product=None, event_name='Test event', duration_minutes=60, date_created=datetime.utcnow(),
                        booking_email='booking.email@test.com', thumb_count=0, dominant_color=None,
                        event_type=EventType.SPECTACLE_VIVANT, is_national=False, is_active=True, idx=None):
     offer = Offer()
-    if event is None:
-        event = create_event(event_name=event_name, event_type=event_type, duration_minutes=duration_minutes,
-                             thumb_count=thumb_count, dominant_color=dominant_color, is_national=is_national)
-    offer.event = event
+    if product is None:
+        product = create_event(event_name=event_name, event_type=event_type, duration_minutes=duration_minutes,
+                               thumb_count=thumb_count, dominant_color=dominant_color, is_national=is_national)
+    offer.product = product
     offer.venue = venue
-    offer.name = event.name
-    offer.type = event.type
-    offer.isNational = event.isNational
-    offer.durationMinutes = event.durationMinutes
+    offer.name = product.name
+    offer.type = product.type
+    offer.isNational = product.isNational
+    offer.durationMinutes = product.durationMinutes
     offer.dateCreated = date_created
     offer.bookingEmail = booking_email
     offer.isActive = is_active

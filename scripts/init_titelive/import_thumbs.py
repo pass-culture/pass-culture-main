@@ -1,5 +1,5 @@
 from domain.mediations import compute_dominant_color, DO_NOT_CROP, standardize_image
-from models import Thing, PcObject
+from models import Product, PcObject
 
 
 def import_init_titelive_thumbs(connexion, container_name, titelive_thumb_identifier):
@@ -7,8 +7,8 @@ def import_init_titelive_thumbs(connexion, container_name, titelive_thumb_identi
                                                                                       container_name,
                                                                                       titelive_thumb_identifier)
     new_image_name = None
-    existing_things_from_providers = Thing.query \
-        .filter(Thing.idAtProviders != None)
+    existing_things_from_providers = Product.query \
+        .filter(Product.idAtProviders != None)
 
     for thing in existing_things_from_providers:
         if thing.idAtProviders in image_names_in_object_storage:

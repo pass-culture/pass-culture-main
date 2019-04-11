@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 import pytest
 from freezegun import freeze_time
 
-from models import Event, Offer, PcObject, Stock, Thing
+from models import Offer, PcObject, Stock, Product
 from models.offer_type import EventType, ThingType
 from repository.offer_queries import department_or_national_offers, \
     find_activation_offers, \
@@ -41,10 +41,10 @@ class DepartmentOrNationalOffersTest:
         venue = create_venue(offerer, postal_code='34000', departement_code='34')
         offer = create_thing_offer(venue, thing)
         PcObject.check_and_save(offer)
-        query = Thing.query.filter_by(name='Lire un livre')
+        query = Product.query.filter_by(name='Lire un livre')
 
         # when
-        query = department_or_national_offers(query, Thing, ['93'])
+        query = department_or_national_offers(query, Product, ['93'])
 
         # then
         assert thing in query.all()
@@ -57,10 +57,10 @@ class DepartmentOrNationalOffersTest:
         venue = create_venue(offerer, is_virtual=False, postal_code='29000', departement_code='29')
         offer = create_event_offer(venue, event)
         PcObject.check_and_save(offer)
-        query = Event.query.filter_by(name='Voir une pièce')
+        query = Product.query.filter_by(name='Voir une pièce')
 
         # when
-        query = department_or_national_offers(query, Event, ['93'])
+        query = department_or_national_offers(query, Product, ['93'])
 
         # then
         assert event in query.all()
@@ -73,10 +73,10 @@ class DepartmentOrNationalOffersTest:
         venue = create_venue(offerer, is_virtual=False, postal_code='29000', departement_code='29')
         offer = create_event_offer(venue, event)
         PcObject.check_and_save(offer)
-        query = Event.query.filter_by(name='Voir une pièce')
+        query = Product.query.filter_by(name='Voir une pièce')
 
         # when
-        query = department_or_national_offers(query, Event, ['34'])
+        query = department_or_national_offers(query, Product, ['34'])
 
         # then
         assert query.count() == 0
@@ -89,10 +89,10 @@ class DepartmentOrNationalOffersTest:
         venue = create_venue(offerer, is_virtual=False, postal_code='29000', departement_code='29')
         offer = create_event_offer(venue, event)
         PcObject.check_and_save(offer)
-        query = Event.query.filter_by(name='Voir une pièce')
+        query = Product.query.filter_by(name='Voir une pièce')
 
         # when
-        query = department_or_national_offers(query, Event, ['00'])
+        query = department_or_national_offers(query, Product, ['00'])
 
         # then
         assert query.count() == 1
@@ -105,10 +105,10 @@ class DepartmentOrNationalOffersTest:
         venue = create_venue(offerer, is_virtual=False, postal_code='29000', departement_code='29')
         offer = create_event_offer(venue, event)
         PcObject.check_and_save(offer)
-        query = Event.query.filter_by(name='Voir une pièce')
+        query = Product.query.filter_by(name='Voir une pièce')
 
         # when
-        query = department_or_national_offers(query, Event, ['29'])
+        query = department_or_national_offers(query, Product, ['29'])
 
         # then
         assert query.count() == 1
@@ -389,9 +389,10 @@ def test_get_active_offers_by_type_when_departement_code_00(app):
     PcObject.check_and_save(user, stock_34, stock_93, stock_75)
 
     # When
-    offers = get_active_offers_by_type(Thing, user=user, departement_codes=['00'], offer_id=None)
+    offers = get_active_offers_by_type(Product, user=user, departement_codes=['00'], offer_id=None)
 
     # Then
+    print(offers)
     assert offer_34 in offers
     assert offer_93 in offers
     assert offer_75 in offers
@@ -399,7 +400,7 @@ def test_get_active_offers_by_type_when_departement_code_00(app):
 
 @clean_database
 @pytest.mark.standalone
-def test_get_active_event_offers_only_returns_event_offers(app):
+def test_get_active_offers_only_returns_both_EventType_and_ThingType(app):
     # Given
     user = create_user(departement_code='93')
     offerer = create_offerer()
@@ -416,10 +417,9 @@ def test_get_active_event_offers_only_returns_event_offers(app):
     PcObject.check_and_save(user, stock1, stock2, mediation)
 
     # When
-    offers = get_active_offers_by_type(Event, user=user, departement_codes=['93'])
+    offers = get_active_offers_by_type(Product, user=user, departement_codes=['93'])
     # Then
-    assert len(offers) == 1
-    assert offers[0].id == offer2.id
+    assert len(offers) == 2
 
 
 @clean_database
@@ -605,7 +605,7 @@ def test_get_active_offers_should_not_return_activation_event(app):
     PcObject.check_and_save(user, stock_93, stock_activation_93)
 
     # When
-    offers = get_active_offers_by_type(Event, user=user, departement_codes=['00'], offer_id=None)
+    offers = get_active_offers_by_type(Product, user=user, departement_codes=['00'], offer_id=None)
 
     # Then
     assert offer_93 in offers
@@ -627,7 +627,7 @@ def test_get_active_offers_should_not_return_activation_thing(app):
     PcObject.check_and_save(user, stock_93, stock_activation_93)
 
     # When
-    offers = get_active_offers_by_type(Thing, user=user, departement_codes=['00'], offer_id=None)
+    offers = get_active_offers_by_type(Product, user=user, departement_codes=['00'], offer_id=None)
 
     # Then
     assert thing_93 in offers
@@ -647,7 +647,7 @@ def test_get_active_offers_should_return_offers_with_stock(app):
     PcObject.check_and_save(booking)
 
     # When
-    offers = get_active_offers_by_type(Thing, user=create_user(email="plop@plop.com"), departement_codes=['00'], offer_id=None)
+    offers = get_active_offers_by_type(Product, user=create_user(email="plop@plop.com"), departement_codes=['00'], offer_id=None)
 
     # Then
     assert len(offers) == 1
@@ -668,7 +668,7 @@ def test_get_active_offers_should_not_return_offers_with_no_stock(app):
     PcObject.check_and_save(booking1, booking2)
 
     # When
-    offers = get_active_offers_by_type(Thing, user=create_user(email="plop@plop.com"), departement_codes=['00'], offer_id=None)
+    offers = get_active_offers_by_type(Product, user=create_user(email="plop@plop.com"), departement_codes=['00'], offer_id=None)
 
     # Then
     assert len(offers) == 0

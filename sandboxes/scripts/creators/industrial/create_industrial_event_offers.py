@@ -43,7 +43,7 @@ def create_industrial_event_offers(
                 is_active = True
             event_offers_by_name[name] = create_event_offer(
                 event_venue,
-                event=event,
+                product=event,
                 event_type=event.type,
                 is_active=is_active
             )

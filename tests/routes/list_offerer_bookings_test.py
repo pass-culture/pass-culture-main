@@ -39,8 +39,8 @@ class Get:
 
             venue = create_venue(offerer)
             stock1 = create_stock_with_event_offer(offerer, venue, price=20)
-            stock2 = create_stock_with_thing_offer(offerer, venue, thing_offer=None, price=40)
-            stock3 = create_stock_with_thing_offer(offerer, venue, thing_offer=None, price=22950)
+            stock2 = create_stock_with_thing_offer(offerer, venue, product=None, price=40)
+            stock3 = create_stock_with_thing_offer(offerer, venue, product=None, price=22950)
             booking1 = create_booking(user, stock1, venue, recommendation=None, quantity=2)
             booking2 = create_booking(user, stock2, venue, recommendation=None, quantity=2)
             booking3 = create_booking(user, stock3, venue, recommendation=None, quantity=1)
@@ -502,8 +502,8 @@ class Get:
 
             venue = create_venue(offerer)
             stock1 = create_stock_with_event_offer(offerer, venue, price=20)
-            stock2 = create_stock_with_thing_offer(offerer, venue, thing_offer=None, price=30)
-            stock3 = create_stock_with_thing_offer(offerer, venue, thing_offer=None, price=40)
+            stock2 = create_stock_with_thing_offer(offerer, venue, product=None, price=30)
+            stock3 = create_stock_with_thing_offer(offerer, venue, product=None, price=40)
             booking1 = create_booking(user, stock1, venue, recommendation=None, quantity=2)
             booking2 = create_booking(user, stock2, venue, recommendation=None, quantity=1)
             booking3 = create_booking(user, stock3, venue, recommendation=None, quantity=2)

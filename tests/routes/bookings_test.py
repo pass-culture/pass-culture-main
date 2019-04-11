@@ -54,7 +54,7 @@ class Post:
 
             thing_offer = create_thing_offer(venue)
 
-            expired_stock = create_stock_with_thing_offer(offerer=offerer, venue=venue, thing_offer=thing_offer,
+            expired_stock = create_stock_with_thing_offer(offerer=offerer, venue=venue, product=thing_offer,
                                                           price=0)
             expired_stock.bookingLimitDatetime = datetime.utcnow() - timedelta(seconds=1)
             PcObject.check_and_save(expired_stock)
@@ -86,7 +86,7 @@ class Post:
             offerer = create_offerer('987654321', 'Test address', 'Test city', '93000', 'Test name')
             venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city',
                                  '93')
-            too_many_bookings_stock = create_stock_with_thing_offer(offerer=Offerer(), venue=venue, thing_offer=None,
+            too_many_bookings_stock = create_stock_with_thing_offer(offerer=Offerer(), venue=venue, product=None,
                                                                     available=2)
 
             user = create_user(email='test@email.com')
@@ -1056,7 +1056,7 @@ class GetBookingByTokenTest:
         admin_user = create_user(email='admin@email.fr')
         offerer = create_offerer()
         venue = create_venue(offerer)
-        stock = create_stock_with_thing_offer(offerer, venue, thing_offer=None, price=0)
+        stock = create_stock_with_thing_offer(offerer, venue, product=None, price=0)
         booking = create_booking(user, stock, venue=venue)
 
         PcObject.check_and_save(admin_user, booking)
@@ -1109,7 +1109,7 @@ class GetBookingByTokenTest:
         admin_user = create_user(email='admin@email.fr')
         offerer = create_offerer()
         venue = create_venue(offerer)
-        stock = create_stock_with_thing_offer(offerer, venue, thing_offer=None, price=0)
+        stock = create_stock_with_thing_offer(offerer, venue, product=None, price=0)
         booking = create_booking(user, stock, venue=venue)
 
         PcObject.check_and_save(admin_user, booking)
@@ -1174,7 +1174,7 @@ class GetBookingByTokenTest:
         admin_user = create_user(email='admin@email.fr')
         offerer = create_offerer()
         venue = create_venue(offerer)
-        stock = create_stock_with_thing_offer(offerer, venue, thing_offer=None, price=0)
+        stock = create_stock_with_thing_offer(offerer, venue, product=None, price=0)
         booking = create_booking(user, stock, venue=venue, is_used=True)
 
         PcObject.check_and_save(admin_user, booking)
@@ -1195,7 +1195,7 @@ class GetBookingByTokenTest:
         admin_user = create_user(email='admin@email.fr')
         offerer = create_offerer()
         venue = create_venue(offerer)
-        stock = create_stock_with_thing_offer(offerer, venue, thing_offer=None, price=0)
+        stock = create_stock_with_thing_offer(offerer, venue, product=None, price=0)
         booking = create_booking(user, stock, venue=venue, is_cancelled=True)
 
         PcObject.check_and_save(admin_user, booking)
@@ -1513,7 +1513,7 @@ class GetBookingTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_thing_offer(venue, url='https://host/path/{token}?offerId={offerId}&email={email}')
-        stock = create_stock_with_thing_offer(offerer=offerer, venue=venue, thing_offer=offer, price=0)
+        stock = create_stock_with_thing_offer(offerer=offerer, venue=venue, product=offer, price=0)
         booking = create_booking(user, stock, venue=venue, token='ABCDEF')
 
         PcObject.check_and_save(booking)

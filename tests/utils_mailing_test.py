@@ -117,8 +117,8 @@ def test_maker_user_booking_thing_recap_email_should_have_standard_body_and_subj
     # Given
     venue = create_venue(None, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
     thing_offer = create_thing_offer(venue=None)
-    stock = create_stock_with_thing_offer(offerer=None, venue=venue, thing_offer=thing_offer)
-    stock.offer.thing.idAtProviders = '12345'
+    stock = create_stock_with_thing_offer(offerer=None, venue=venue, product=thing_offer)
+    stock.offer.product.idAtProviders = '12345'
     user = create_user('Test', departement_code='93', email='test@email.com', can_book_free_offers=True)
     booking = create_booking(user, stock, venue, None)
     booking.token = '56789'
@@ -142,8 +142,8 @@ def test_make_user_booking_thing_recap_email_should_have_standard_cancellation_b
     # Given
     venue = create_venue(None, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
     thing_offer = create_thing_offer(venue=None)
-    stock = create_stock_with_thing_offer(offerer=None, venue=venue, thing_offer=thing_offer)
-    stock.offer.thing.idAtProviders = '12345'
+    stock = create_stock_with_thing_offer(offerer=None, venue=venue, product=thing_offer)
+    stock.offer.product.idAtProviders = '12345'
     user = create_user('Test', departement_code='93', email='test@email.com', can_book_free_offers=True)
     booking = create_booking(user, stock, venue, None)
 
@@ -443,7 +443,7 @@ def test_offerer_booking_recap_email_thing_offer_has_action_and_recap_html(app):
     # Given
     venue = create_venue(None, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
     thing_offer = create_thing_offer(venue=None, thing_type=ThingType.AUDIOVISUEL)
-    stock = create_stock_with_thing_offer(offerer=None, venue=venue, thing_offer=thing_offer)
+    stock = create_stock_with_thing_offer(offerer=None, venue=venue, product=thing_offer)
     stock.offer.id = 1
     user1 = create_user('Test', first_name='Joe', last_name='Dalton', departement_code='93', email='test1@email.com',
                         can_book_free_offers=True)
@@ -477,7 +477,7 @@ def test_offerer_booking_recap_email_thing_offer_has_recap_table(app):
     # Given
     venue = create_venue(None, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
     thing_offer = create_thing_offer(venue=None, thing_type=ThingType.AUDIOVISUEL)
-    stock = create_stock_with_thing_offer(offerer=None, venue=venue, thing_offer=thing_offer)
+    stock = create_stock_with_thing_offer(offerer=None, venue=venue, product=thing_offer)
     stock.offer.id = 1
     user1 = create_user('Test', first_name='Joe', last_name='Dalton', departement_code='93', email='test1@email.com',
                         can_book_free_offers=True)
@@ -508,7 +508,7 @@ def test_offerer_booking_recap_email_thing_offer_does_not_have_validation_tokens
     # Given
     venue = create_venue(None, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
     thing_offer = create_thing_offer(venue=None, thing_type=ThingType.AUDIOVISUEL)
-    stock = create_stock_with_thing_offer(offerer=None, venue=venue, thing_offer=thing_offer)
+    stock = create_stock_with_thing_offer(offerer=None, venue=venue, product=thing_offer)
     stock.offer.id = 1
     user1 = create_user('Test', first_name='Joe', last_name='Dalton', departement_code='93', email='test1@email.com',
                         can_book_free_offers=True)

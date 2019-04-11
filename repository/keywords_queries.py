@@ -1,16 +1,14 @@
 import json
 
-
+from models import Product
 from models.offerer import Offerer
 
 from models.venue import Venue
 from repository.offer_queries import get_is_offer_selected_by_keywords_string_at_column
 
 config = {
-    'Event_description': Event.description,
-    'Event_name': Event.name,
-    'Thing_name': Thing.name,
-    'Thing_description': Thing.description,
+    'Product_description': Product.description,
+    'Product_name': Product.name,
     'Offerer_name': Offerer.name,
     'Venue_name': Venue.name
 }

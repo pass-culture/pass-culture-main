@@ -1,4 +1,4 @@
-from models import Offer, Stock, Thing, Event, EventType, ThingType, Mediation
+from models import Offer, Stock, EventType, ThingType, Mediation, Product
 from models.user import User
 from repository.offer_queries import _filter_bookable_offers_for_discovery
 from repository.user_queries import filter_webapp_users
@@ -19,14 +19,11 @@ def get_query_join_on_thing(query):
 def get_non_free_offers_query_by_type(type):
   filter_not_free_price = (Stock.price > 0)
   filter_not_an_activation_offer = \
-      (Event.type != str(EventType.ACTIVATION)) \
-      | (Thing.type != str(ThingType.ACTIVATION))
+      (Product.type != str(EventType.ACTIVATION)) \
+      | (Product.type != str(ThingType.ACTIVATION))
 
   query = Offer.query.outerjoin(type)
-  if type == Thing:
-      query = get_query_join_on_thing(query)
-  else:
-      query = get_query_join_on_event(query)
+  query = get_query_join_on_thing(query)
   query = _filter_bookable_offers_for_discovery(query)
   query = query \
       .filter(filter_not_an_activation_offer) \
@@ -34,18 +31,18 @@ def get_non_free_offers_query_by_type(type):
   return query
 
 def get_non_free_digital_offer():
-  query = get_non_free_offers_query_by_type(Thing)
+  query = get_non_free_offers_query_by_type(Product)
   offer = query \
-      .filter(Thing.url != None) \
+      .filter(Product.url != None) \
       .first()
   return {
       "offer": get_offer_helper(offer)
   }
 
 def get_non_free_thing_offer_with_active_mediation():
-  query = get_non_free_offers_query_by_type(Thing)
+  query = get_non_free_offers_query_by_type(Product)
   offer = query \
-      .filter(Thing.url == None) \
+      .filter(Product.url == None) \
       .filter(Stock.beginningDatetime == None) \
       .filter(Offer.mediations.any(Mediation.isActive == True)) \
       .first()
@@ -55,7 +52,7 @@ def get_non_free_thing_offer_with_active_mediation():
   }
 
 def get_non_free_event_offer():
-  query = get_non_free_offers_query_by_type(Event)
+  query = get_non_free_offers_query_by_type(Product)
   offer = query.first()
   return {
       "offer": get_offer_helper(offer)

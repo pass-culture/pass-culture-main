@@ -1,4 +1,4 @@
-from models import Booking, Event, Mediation, Offer, Stock, Thing, User
+from models import Booking, Mediation, Offer, Stock, User, Product
 from repository.user_queries import filter_webapp_users
 from sandboxes.scripts.utils.helpers import get_mediation_helper, get_offer_helper, get_user_helper
 
@@ -68,9 +68,9 @@ def get_event_offer_with_active_mediation_already_booked_but_cancellable_and_use
 
 
 def get_digital_offer_with_active_mediation_already_booked_and_user_hnmm_93():
-    offers = Offer.query.outerjoin(Thing) \
+    offers = Offer.query.outerjoin(Product) \
         .filter(Offer.mediations.any(Mediation.isActive == True)) \
-        .filter(Thing.url != None) \
+        .filter(Product.url != None) \
         .join(Stock, (Offer.id == Stock.offerId)) \
         .add_columns(Stock.id) \
         .all()

@@ -11,7 +11,7 @@ from local_providers import TiteLiveThings, TiteLiveThingThumbs, TiteLiveThingDe
 from local_providers.titelive_thing_descriptions import DESCRIPTION_FOLDER_NAME_TITELIVE
 from local_providers.titelive_thing_thumbs import THUMB_FOLDER_NAME_TITELIVE
 from local_providers.titelive_things import THINGS_FOLDER_NAME_TITELIVE
-from models import Thing
+from models import Product
 from models.db import db
 from sqlalchemy import func
 from models.pc_object import PcObject
@@ -105,7 +105,7 @@ class TiteliveTest:
                       Thing=0
                       )
 
-        assert db.session.query(func.sum(Thing.thumbCount)).scalar() == 92
+        assert db.session.query(func.sum(Product.thumbCount)).scalar() == 92
 
         # mock TiteliveThingDescription
         files = get_ordered_zip_description_files_from_sandbox_files()

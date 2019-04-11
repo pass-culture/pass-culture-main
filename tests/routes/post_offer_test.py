@@ -1,6 +1,6 @@
 import pytest
 
-from models import PcObject, EventType, Offer, Thing, Event, ThingType
+from models import PcObject, EventType, Offer, ThingType, Product
 from tests.conftest import clean_database, TestClient
 from tests.test_utils import create_user, API_URL, create_offerer, create_venue, create_user_offerer, create_thing, \
     create_event
@@ -149,7 +149,7 @@ class Post:
             assert offer.bookingEmail == 'offer@email.com'
             assert offer.venueId == venue.id
             event_id = dehumanize(response.json()['event']['id'])
-            event = Event.query.filter_by(id=event_id).first()
+            event = Product.query.filter_by(id=event_id).first()
             assert event.durationMinutes == 60
             assert event.name == 'La pièce de théâtre'
             assert offer.type == str(EventType.SPECTACLE_VIVANT)
@@ -227,7 +227,7 @@ class Post:
             assert offer.bookingEmail == 'offer@email.com'
             assert offer.venueId == venue.id
             thing_id = dehumanize(response.json()['thing']['id'])
-            thing = Thing.query.filter_by(id=thing_id).first()
+            thing = Product.query.filter_by(id=thing_id).first()
             assert thing.name == 'Les lapins crétins'
             assert offer.type == str(ThingType.JEUX_VIDEO)
             assert thing.url == 'http://jeux.fr/offre'

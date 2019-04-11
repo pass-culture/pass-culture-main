@@ -8,7 +8,8 @@ from pprint import pprint
 from sqlalchemy import text
 from postgresql_audit.flask import versioning_manager
 
-from models import HasThumbMixin, Product
+from models import HasThumbMixin
+from models.product import Product
 from models.db import db
 
 from models.local_provider_event import LocalProviderEvent, LocalProviderEventType
