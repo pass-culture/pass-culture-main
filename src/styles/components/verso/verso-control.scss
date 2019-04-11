@@ -3,6 +3,23 @@ ul.verso-control {
   min-height: 62px;
   list-style: none;
 
+  .icon-ico-like,
+  .icon-ico-like-on {
+    @extend .fs44;
+
+    &::before {
+      margin: 0;
+    }
+  }
+
+  #verso-share-button {
+    @extend .fs32;
+
+    .icon-legacy-share::before {
+      margin: 0;
+    }
+  }
+
   li {
     @extend .text-center;
     @extend .is-inline-block;

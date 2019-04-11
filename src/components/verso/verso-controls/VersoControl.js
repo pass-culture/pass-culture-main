@@ -2,7 +2,6 @@
   react/jsx-one-expression-per-line: 0 */
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Icon } from 'pass-culture-shared'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import { compose, bindActionCreators } from 'redux'
@@ -50,9 +49,10 @@ class VersoControl extends React.PureComponent {
             className="no-border no-background"
             onClick={this.onClickFavorite}
           >
-            <Icon
-              alt={isFavorite ? 'Retirer des favoris' : 'Ajouter aux favoris'}
-              svg={isFavorite ? 'ico-like-w-on' : 'ico-like-w'}
+            <span
+              aria-hidden
+              className={`icon-ico-like${isFavorite ? '-on' : ''}`}
+              title={isFavorite ? 'Retirer des favoris' : 'Ajouter aux favoris'}
             />
           </button>
         </li>
