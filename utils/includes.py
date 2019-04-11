@@ -164,13 +164,9 @@ PRO_BOOKING_INCLUDES = [
                         'isFinished',
                         'isFullyBooked',
                         {
-                            "key": "event",
+                            "key": "product",
                             "sub_joins": ["offerType"]
                         },
-                        {
-                            "key": "thing",
-                            "sub_joins": ["offerType"]
-                        }
                     ]
                 }
             ]

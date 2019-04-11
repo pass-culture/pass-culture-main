@@ -381,9 +381,9 @@ class Get:
             # then
             assert response.status_code == 200
             elements = response.json()
-            assert elements[0]['stock']['resolvedOffer']['event']['type'] == 'EventType.SPECTACLE_VIVANT'
-            assert elements[1]['stock']['resolvedOffer']['event']['type'] == 'EventType.SPECTACLE_VIVANT'
-            assert elements[2]['stock']['resolvedOffer']['thing']['type'] == 'ThingType.LIVRE_EDITION'
+            assert elements[0]['stock']['resolvedOffer']['product']['type'] == 'EventType.SPECTACLE_VIVANT'
+            assert elements[1]['stock']['resolvedOffer']['product']['type'] == 'EventType.SPECTACLE_VIVANT'
+            assert elements[2]['stock']['resolvedOffer']['product']['type'] == 'ThingType.LIVRE_EDITION'
 
         @clean_database
         def when_ordered_by_category_desc(self, app):
@@ -416,9 +416,9 @@ class Get:
             # then
             assert response.status_code == 200
             elements = response.json()
-            assert elements[0]['stock']['resolvedOffer']['thing']['type'] == 'ThingType.LIVRE_EDITION'
-            assert elements[1]['stock']['resolvedOffer']['event']['type'] == 'EventType.SPECTACLE_VIVANT'
-            assert elements[2]['stock']['resolvedOffer']['event']['type'] == 'EventType.SPECTACLE_VIVANT'
+            assert elements[0]['stock']['resolvedOffer']['product']['type'] == 'ThingType.LIVRE_EDITION'
+            assert elements[1]['stock']['resolvedOffer']['product']['type'] == 'EventType.SPECTACLE_VIVANT'
+            assert elements[2]['stock']['resolvedOffer']['product']['type'] == 'EventType.SPECTACLE_VIVANT'
 
         @clean_database
         def when_ordered_by_amount_desc(self, app):
@@ -532,7 +532,5 @@ class Get:
 
 
 def _get_offer_type(response_json):
-    try:
-        return response_json['stock']['resolvedOffer']['thing']['offerType']
-    except KeyError:
-        return response_json['stock']['resolvedOffer']['event']['offerType']
+        print(response_json)
+        return response_json['stock']['resolvedOffer']['product']['offerType']

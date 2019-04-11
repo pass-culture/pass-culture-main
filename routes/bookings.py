@@ -11,7 +11,8 @@ from domain.user_activation import create_initial_deposit, check_is_activation_b
 from domain.user_emails import send_booking_recap_emails, \
     send_booking_confirmation_email_to_user, send_cancellation_emails_to_user_and_offerer, \
     send_activation_notification_email
-from models import ApiErrors, Booking, Offerer, PcObject, Stock, RightsType, EventType
+from models import ApiErrors, Booking, PcObject, Stock, RightsType, EventType, Offerer
+from models.offer_type import ProductType
 from models.pc_object import serialize
 from repository import booking_queries
 from repository.booking_queries import find_active_bookings_by_user_id, \
@@ -211,8 +212,9 @@ def activate_user(user_to_activate):
 def _create_response_to_get_booking_by_token(booking):
     offer_name = booking.stock.resolvedOffer.eventOrThing.name
     date = None
-    event = booking.stock.resolvedOffer.event
-    if event:
+    product = booking.stock.resolvedOffer.product
+    is_event = ProductType.is_event(product.type)
+    if is_event:
         date = serialize(booking.stock.beginningDatetime)
     venue_departement_code = booking.stock.resolvedOffer.venue.departementCode
     response = {
@@ -224,7 +226,7 @@ def _create_response_to_get_booking_by_token(booking):
         'userName': booking.user.publicName,
         'venueDepartementCode': venue_departement_code,
     }
-    if event and event.type == str(EventType.ACTIVATION):
+    if product.type == str(EventType.ACTIVATION):
         response.update({'phoneNumber': booking.user.phoneNumber,
                          'dateOfBirth': serialize(booking.user.dateOfBirth)})
 
