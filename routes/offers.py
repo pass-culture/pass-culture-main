@@ -2,12 +2,10 @@ from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
 
 from domain.admin_emails import send_offer_creation_notification_to_support
-from domain.create_offer import fill_offer_with_new_event_data, \
-    fill_offer_with_new_thing_data, fill_offer_with_existing_thing_data, fill_offer_with_existing_event_data
 from domain.offers import add_stock_alert_message_to_offer
+from domain.create_offer import fill_offer_with_new_data, fill_offer_with_existing_data
 from models import Offer, PcObject, Venue, RightsType
 from models.api_errors import ResourceNotFound
-from models.offer_type import ProductType
 from repository import venue_queries, offer_queries
 from repository.offer_queries import find_activation_offers, \
     find_offers_with_filter_parameters
@@ -77,25 +75,14 @@ def post_offer():
     check_has_venue_id(venue_id)
     venue = load_or_raise_error(Venue, venue_id)
     ensure_current_user_has_rights(RightsType.editor, venue.managingOffererId)
-    event_id = dehumanize(request.json.get('eventId'))
-    thing_id = dehumanize(request.json.get('thingId'))
-    if thing_id:
-        offer = fill_offer_with_existing_thing_data(thing_id)
-
-    elif event_id:
-        offer = fill_offer_with_existing_event_data(event_id)
+    product_id = dehumanize(request.json.get('productId'))
+    if product_id:
+        offer = fill_offer_with_existing_data(product_id)
 
     else:
         offer_type_name = request.json.get('type')
-
         check_offer_type_is_valid(offer_type_name)
-
-        if ProductType.is_thing(offer_type_name):
-            offer = fill_offer_with_new_thing_data(request.json)
-
-        elif ProductType.is_event(offer_type_name):
-            offer = fill_offer_with_new_event_data(request.json, current_user)
-
+        offer = fill_offer_with_new_data(request.json, current_user)
         offer.eventOrThing.owningOfferer = venue.managingOfferer
 
     offer.venue = venue

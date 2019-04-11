@@ -129,7 +129,7 @@ class Post:
 
             # Then
             assert response.status_code == 201
-            assert response.json()['event']['offerType'] == {
+            assert response.json()['product']['offerType'] == {
                 'conditionalFields': ["author", "showType", "stageDirector", "performer"],
                 'description': 'Suivre un géant de 12 mètres dans la ville ? '
                                'Rire aux éclats devant un stand up ? '
@@ -148,7 +148,7 @@ class Post:
             offer = Offer.query.filter_by(id=offer_id).first()
             assert offer.bookingEmail == 'offer@email.com'
             assert offer.venueId == venue.id
-            event_id = dehumanize(response.json()['event']['id'])
+            event_id = dehumanize(response.json()['product']['id'])
             event = Product.query.filter_by(id=event_id).first()
             assert event.durationMinutes == 60
             assert event.name == 'La pièce de théâtre'
@@ -210,7 +210,7 @@ class Post:
             offer_id = dehumanize(response.json()['id'])
             offer = Offer.query.filter_by(id=offer_id).first()
             assert offer.bookingEmail == 'offer@email.com'
-            assert response.json()['thing']['offerType'] == {
+            assert response.json()['product']['offerType'] == {
                 'conditionalFields': [],
                 'description': 'Résoudre l’énigme d’un jeu de piste dans votre ville ? '
                                'Jouer en ligne entre amis ? '
@@ -226,7 +226,7 @@ class Post:
             offer = Offer.query.filter_by(id=offer_id).first()
             assert offer.bookingEmail == 'offer@email.com'
             assert offer.venueId == venue.id
-            thing_id = dehumanize(response.json()['thing']['id'])
+            thing_id = dehumanize(response.json()['product']['id'])
             thing = Product.query.filter_by(id=thing_id).first()
             assert thing.name == 'Les lapins crétins'
             assert offer.type == str(ThingType.JEUX_VIDEO)
@@ -249,7 +249,7 @@ class Post:
 
             data = {
                 'venueId': humanize(venue.id),
-                'thingId': humanize(thing.id)
+                'productId': humanize(thing.id)
             }
             auth_request = TestClient().with_auth(email='user@test.com')
 
@@ -271,7 +271,7 @@ class Post:
 
             data = {
                 'venueId': humanize(venue.id),
-                'eventId': humanize(event.id)
+                'productId': humanize(event.id)
             }
             auth_request = TestClient().with_auth(email='user@test.com')
 
