@@ -27,11 +27,11 @@ def build_offer_search_base_query():
         .join(Offerer)
 
 
-def department_or_national_offers(query, offer_type, departement_codes):
+def department_or_national_offers(query, departement_codes):
     if '00' in departement_codes:
         return query
     query = query.filter(
-        Venue.departementCode.in_(departement_codes) | (offer_type.isNational == True)
+        Venue.departementCode.in_(departement_codes) | (Offer.isNational == True)
     )
     logger.debug(lambda: '(reco) departement .count ' + str(query.count()))
     return query
@@ -71,7 +71,7 @@ def not_currently_recommended_offers(query, user):
     return query
 
 
-def get_active_offers_by_type(offer_type, user=None, departement_codes=None, offer_id=None):
+def get_active_offers_by_type(user=None, departement_codes=None, offer_id=None):
     query = Offer.query.filter_by(isActive=True)
     logger.debug(lambda: '(reco) active offers count {}'.format(query.count()))
     query = query.join(Stock, and_(Offer.id == Stock.offerId))
@@ -87,7 +87,7 @@ def get_active_offers_by_type(offer_type, user=None, departement_codes=None, off
         query = query.filter(Offer.id == offer_id)
     logger.debug(lambda: '(reco) all {} count '.format(query.count()))
 
-    query = department_or_national_offers(query, offer_type, departement_codes)
+    query = department_or_national_offers(query, departement_codes)
     logger.debug(lambda:
                  '(reco) department or national {} in {}'.format(str(departement_codes),
                                                                     query.count()))
@@ -97,7 +97,7 @@ def get_active_offers_by_type(offer_type, user=None, departement_codes=None, off
     logger.debug(lambda: '(reco) active and validated {}'.format(query.count()))
     query = not_currently_recommended_offers(query, user)
     query = not_activation_offers(query)
-    query = query.distinct(offer_type.id)
+    query = query.distinct(Product.id)
     logger.debug(lambda: '(reco) distinct {}'.format(query.count()))
     return query.all()
 

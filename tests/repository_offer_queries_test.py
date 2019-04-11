@@ -44,7 +44,7 @@ class DepartmentOrNationalOffersTest:
         query = Product.query.filter_by(name='Lire un livre')
 
         # when
-        query = department_or_national_offers(query, Product, ['93'])
+        query = department_or_national_offers(query, ['93'])
 
         # then
         assert thing in query.all()
@@ -60,7 +60,7 @@ class DepartmentOrNationalOffersTest:
         query = Product.query.filter_by(name='Voir une pièce')
 
         # when
-        query = department_or_national_offers(query, Product, ['93'])
+        query = department_or_national_offers(query, ['93'])
 
         # then
         assert event in query.all()
@@ -76,7 +76,7 @@ class DepartmentOrNationalOffersTest:
         query = Product.query.filter_by(name='Voir une pièce')
 
         # when
-        query = department_or_national_offers(query, Product, ['34'])
+        query = department_or_national_offers(query, ['34'])
 
         # then
         assert query.count() == 0
@@ -92,7 +92,7 @@ class DepartmentOrNationalOffersTest:
         query = Product.query.filter_by(name='Voir une pièce')
 
         # when
-        query = department_or_national_offers(query, Product, ['00'])
+        query = department_or_national_offers(query, ['00'])
 
         # then
         assert query.count() == 1
@@ -108,7 +108,7 @@ class DepartmentOrNationalOffersTest:
         query = Product.query.filter_by(name='Voir une pièce')
 
         # when
-        query = department_or_national_offers(query, Product, ['29'])
+        query = department_or_national_offers(query, ['29'])
 
         # then
         assert query.count() == 1
@@ -389,7 +389,7 @@ def test_get_active_offers_by_type_when_departement_code_00(app):
     PcObject.check_and_save(user, stock_34, stock_93, stock_75)
 
     # When
-    offers = get_active_offers_by_type(Product, user=user, departement_codes=['00'], offer_id=None)
+    offers = get_active_offers_by_type(user=user, departement_codes=['00'], offer_id=None)
 
     # Then
     print(offers)
@@ -417,7 +417,7 @@ def test_get_active_offers_only_returns_both_EventType_and_ThingType(app):
     PcObject.check_and_save(user, stock1, stock2, mediation)
 
     # When
-    offers = get_active_offers_by_type(Product, user=user, departement_codes=['93'])
+    offers = get_active_offers_by_type(user=user, departement_codes=['93'])
     # Then
     assert len(offers) == 2
 
@@ -605,7 +605,7 @@ def test_get_active_offers_should_not_return_activation_event(app):
     PcObject.check_and_save(user, stock_93, stock_activation_93)
 
     # When
-    offers = get_active_offers_by_type(Product, user=user, departement_codes=['00'], offer_id=None)
+    offers = get_active_offers_by_type(user=user, departement_codes=['00'], offer_id=None)
 
     # Then
     assert offer_93 in offers
@@ -627,7 +627,7 @@ def test_get_active_offers_should_not_return_activation_thing(app):
     PcObject.check_and_save(user, stock_93, stock_activation_93)
 
     # When
-    offers = get_active_offers_by_type(Product, user=user, departement_codes=['00'], offer_id=None)
+    offers = get_active_offers_by_type(user=user, departement_codes=['00'], offer_id=None)
 
     # Then
     assert thing_93 in offers
@@ -647,7 +647,7 @@ def test_get_active_offers_should_return_offers_with_stock(app):
     PcObject.check_and_save(booking)
 
     # When
-    offers = get_active_offers_by_type(Product, user=create_user(email="plop@plop.com"), departement_codes=['00'], offer_id=None)
+    offers = get_active_offers_by_type(user=create_user(email="plop@plop.com"), departement_codes=['00'], offer_id=None)
 
     # Then
     assert len(offers) == 1
@@ -668,7 +668,7 @@ def test_get_active_offers_should_not_return_offers_with_no_stock(app):
     PcObject.check_and_save(booking1, booking2)
 
     # When
-    offers = get_active_offers_by_type(Product, user=create_user(email="plop@plop.com"), departement_codes=['00'], offer_id=None)
+    offers = get_active_offers_by_type(user=create_user(email="plop@plop.com"), departement_codes=['00'], offer_id=None)
 
     # Then
     assert len(offers) == 0

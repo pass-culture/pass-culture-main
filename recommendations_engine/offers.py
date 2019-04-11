@@ -13,8 +13,8 @@ from repository.offer_queries import get_active_offers_by_type
 from utils.logger import logger
 
 roundrobin_predicates = [
-    lambda offer: offer.thingId,
-    lambda offer: offer.eventId
+    lambda offer: ProductType.is_thing(offer.type),
+    lambda offer: ProductType.is_event(offer.type)
 ]
 
 
@@ -69,12 +69,12 @@ def score_offer(offer: Offer) -> Optional[int]:
     return common_score + specific_score
 
 
-def specific_score_event(event: Product) -> Optional[int]:
+def specific_score_event(product: Product) -> Optional[int]:
     score = 0
 
     next_occurrence_stock = Stock.query \
         .join(aliased(Offer)) \
-        .filter((Offer.event == event) & (Stock.beginningDatetime > datetime.utcnow())) \
+        .filter((Offer.product == product) & (Stock.beginningDatetime > datetime.utcnow())) \
         .first()
 
     if next_occurrence_stock is None:
@@ -93,15 +93,11 @@ def specific_score_thing(thing: Product) -> Optional[int]:
 
 
 def remove_duplicate_things_or_events(offers: List[Offer]) -> List[Offer]:
-    seen_thing_ids = {}
-    seen_event_ids = {}
+    seen_product_ids = {}
     result = []
     for offer in offers:
-        if offer.thingId not in seen_thing_ids and offer.eventId not in seen_event_ids:
-            if offer.thingId:
-                seen_thing_ids[offer.thingId] = True
-            else:
-                seen_event_ids[offer.eventId] = True
+        if offer.productId not in seen_product_ids:
+            seen_product_ids[offer.productId] = True
             result.append(offer)
     return result
 
@@ -112,10 +108,10 @@ def get_offers_for_recommendations_discovery(limit=3, user=None, coords=None) ->
 
     departement_codes = get_departement_codes_from_user(user)
 
-    event_offers = get_active_offers_by_type(Event, user=user, departement_codes=departement_codes)
+    event_offers = get_active_offers_by_type(user=user, departement_codes=departement_codes)
     logger.debug(lambda: '(reco) event_offers count (%i)', len(event_offers))
 
-    thing_offers = get_active_offers_by_type(Thing, user=user, departement_codes=departement_codes)
+    thing_offers = get_active_offers_by_type(user=user, departement_codes=departement_codes)
     logger.debug(lambda: '(reco) thing_offers count (%i)', len(thing_offers))
 
     offers = sort_by_score(event_offers + thing_offers)

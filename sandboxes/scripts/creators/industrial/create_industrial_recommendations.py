@@ -77,18 +77,10 @@ def create_industrial_recommendations(mediations_by_name, offers_by_name, users_
         departement_codes = get_departement_codes_from_user(user)
 
         active_event_offer_ids = [
-            o.id for o in get_active_offers_by_type(
-                Event,
-                departement_codes=departement_codes,
-                user=user
-            )
+            o.id for o in get_active_offers_by_type(user=user, departement_codes=departement_codes)
         ]
         active_thing_offer_ids = [
-            o.id for o in get_active_offers_by_type(
-                Thing,
-                departement_codes=departement_codes,
-                user=user
-            )
+            o.id for o in get_active_offers_by_type(user=user, departement_codes=departement_codes)
         ]
 
         # every (OFFER_WITH_RECOMMENDATION_PER_USER_MODULO_RATIO - 1)/OFFER_WITH_RECOMMENDATION_PER_USER_MODULO_RATIO
