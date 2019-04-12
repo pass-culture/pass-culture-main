@@ -9,7 +9,7 @@ from domain.keywords import create_tsvector
 from models import ExtraDataMixin
 from models.db import Model
 from models.deactivable_mixin import DeactivableMixin
-from models.offer_type import ThingType, EventType
+from models.offer_type import ThingType, EventType, ProductType
 from models.pc_object import PcObject
 from models.providable_mixin import ProvidableMixin
 from models.stock import Stock
@@ -103,7 +103,7 @@ class Offer(PcObject,
             self.eventOrThing.populateFromDict(thing_or_event_dict)
     @property
     def dateRange(self):
-        if self.thing or not self.stocks:
+        if ProductType.is_thing(self.type) or not self.stocks:
             return DateTimes()
 
         start = min([stock.beginningDatetime for stock in self.stocks])

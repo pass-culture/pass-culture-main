@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from pprint import pprint
 
 import pytest
 
@@ -390,6 +391,7 @@ class Get:
             # Then
             recommendations = response.json()
             assert response.status_code == 200
+            pprint(recommendations[0]['offer'])
             assert recommendations[0]['offer']['dateRange'] == [
                 strftime(self.three_days_from_now), strftime(self.three_days_and_one_hour_from_now)
             ]
