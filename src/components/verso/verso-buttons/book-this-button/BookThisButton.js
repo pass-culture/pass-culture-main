@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom'
 
 import Price from '../../../layout/Price'
 
-const formatOutputPrice = (prices, devise) => {
+export const formatOutputPrice = (prices, devise) => {
   const arrow = '\u27A4'
   const hasMoreThanOnePrice = prices.length && prices.length > 1
   const [startingPrice, endingPrice] = prices
@@ -15,7 +15,7 @@ const formatOutputPrice = (prices, devise) => {
       <span>{startingPrice}</span>
       {hasMoreThanOnePrice && (
         <React.Fragment>
-          <span className="fs12 px3">{arrow}</span>
+          <span className="fs12">&nbsp;{arrow}&nbsp;</span>
           <span>{endingPrice}</span>
         </React.Fragment>
       )}

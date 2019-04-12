@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | verso | verso-buttons | BookThisButton should match snapshot with required props 1`] = `
+exports[`src | components | verso | verso-buttons | BookThisButton BookThisButton component should match snapshot with required props 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <BookThisButton
@@ -27,7 +27,8 @@ ShallowWrapper {
     "props": Object {
       "children": Array [
         <Price
-          className="px12 py8"
+          className="px6 py8"
+          format={[Function]}
           free="Gratuit"
           value={
             Array [
@@ -39,7 +40,7 @@ ShallowWrapper {
           className="dotted-left-2x-white no-margin"
         />,
         <span
-          className="button-label px12 py8"
+          className="button-label px6 py8"
         >
           J'y vais!
         </span>,
@@ -55,7 +56,8 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "function",
         "props": Object {
-          "className": "px12 py8",
+          "className": "px6 py8",
+          "format": [Function],
           "free": "Gratuit",
           "value": Array [
             0,
@@ -82,7 +84,7 @@ ShallowWrapper {
         "nodeType": "host",
         "props": Object {
           "children": "J'y vais!",
-          "className": "button-label px12 py8",
+          "className": "button-label px6 py8",
         },
         "ref": null,
         "rendered": "J'y vais!",
@@ -99,7 +101,8 @@ ShallowWrapper {
       "props": Object {
         "children": Array [
           <Price
-            className="px12 py8"
+            className="px6 py8"
+            format={[Function]}
             free="Gratuit"
             value={
               Array [
@@ -111,7 +114,7 @@ ShallowWrapper {
             className="dotted-left-2x-white no-margin"
           />,
           <span
-            className="button-label px12 py8"
+            className="button-label px6 py8"
           >
             J'y vais!
           </span>,
@@ -127,7 +130,8 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "function",
           "props": Object {
-            "className": "px12 py8",
+            "className": "px6 py8",
+            "format": [Function],
             "free": "Gratuit",
             "value": Array [
               0,
@@ -154,7 +158,7 @@ ShallowWrapper {
           "nodeType": "host",
           "props": Object {
             "children": "J'y vais!",
-            "className": "button-label px12 py8",
+            "className": "button-label px6 py8",
           },
           "ref": null,
           "rendered": "J'y vais!",
