@@ -8,14 +8,18 @@ import Price from '../../../layout/Price'
 
 const formatOutputPrice = (prices, devise) => {
   const arrow = '\u27A4'
+  const hasMoreThanOnePrice = prices.length && prices.length > 1
   const [startingPrice, endingPrice] = prices
   return (
     <React.Fragment>
       <span>{startingPrice}</span>
-      <span className="fs12 px3">{arrow}</span>
-      <span>
-        {endingPrice}&nbsp;{devise}
-      </span>
+      {hasMoreThanOnePrice && (
+        <React.Fragment>
+          <span className="fs12 px3">{arrow}</span>
+          <span>{endingPrice}</span>
+        </React.Fragment>
+      )}
+      <span>&nbsp;{devise}</span>
     </React.Fragment>
   )
 }

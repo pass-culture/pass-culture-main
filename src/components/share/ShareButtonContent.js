@@ -95,12 +95,12 @@ class ShareButtonContent extends React.PureComponent {
         id={id}
         type="button"
         disabled={isDisabled}
-        className="no-border no-background fs32"
+        className="no-border no-background"
         onClick={this.onClickShare}
       >
         <span
           aria-hidden
-          className="icon-legacy-share"
+          className="icon-ico-share"
           title="Partager cette offre"
         />
       </button>

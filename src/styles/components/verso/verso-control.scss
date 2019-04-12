@@ -1,24 +1,21 @@
 ul.verso-control {
+  @extend .no-list-style;
+
   height: 62px;
   min-height: 62px;
-  list-style: none;
 
-  .icon-ico-like,
-  .icon-ico-like-on {
-    @extend .fs44;
-
-    &::before {
-      margin: 0;
-    }
+  span[class^='icon-']::before {
+    margin: 0;
   }
 
-  #verso-share-button {
-    @extend .fs32;
-
-    .icon-legacy-share::before {
-      margin: 0;
-    }
-  }
+  // .icon-ico-like,
+  // .icon-ico-like-on {
+  //   @extend .fs44;
+  // }
+  //
+  // #verso-share-button {
+  //   @extend .fs32;
+  // }
 
   li {
     @extend .text-center;
@@ -47,5 +44,17 @@ ul.verso-control {
       border: 2px solid white;
       border-left-style: dotted;
     }
+  }
+}
+
+@media screen and (max-width: 370px) {
+  .verso-control span[class^='icon-'] {
+    font-size: 28px;
+  }
+}
+
+@media screen and (min-width: 371px) {
+  .verso-control span[class^='icon-'] {
+    font-size: 44px;
   }
 }

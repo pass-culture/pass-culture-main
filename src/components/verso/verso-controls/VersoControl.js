@@ -3,6 +3,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
+// import { withSizes } from 'react-sizes'
 import { withRouter } from 'react-router-dom'
 import { compose, bindActionCreators } from 'redux'
 import { requestData } from 'redux-saga-data'
@@ -81,16 +82,19 @@ VersoControl.propTypes = {
 }
 
 const mapStateToProps = (state, ownProps) => {
-  const { mediationId, offerId } = ownProps.match.params
+  const { match, width } = ownProps
+  const { mediationId, offerId } = match.params
   const recommendation = currentRecommendationSelector(
     state,
     offerId,
     mediationId
   )
+  const isMobile = width <= 670
   const currentUser = selectCurrentUser(state)
   const walletValue = getWalletValue(currentUser)
   return {
     isFavorite: recommendation && recommendation.isFavorite,
+    isMobile,
     recommendationId: recommendation && recommendation.id,
     walletValue,
   }
