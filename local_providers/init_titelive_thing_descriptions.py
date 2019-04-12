@@ -8,7 +8,7 @@ from datetime import datetime
 
 from domain.titelive import get_date_from_filename
 from models.local_provider import LocalProvider, ProvidableInfo
-from models.thing import Thing
+from models.product import Product
 from utils.logger import logger
 
 DATE_REGEXP = re.compile('Resume-full_(\d{8}).zip')
@@ -22,7 +22,7 @@ class InitTiteLiveThingDescriptions(LocalProvider):
                             + "(on synchronise tout)"
     identifierRegexp = None
     name = "Init TiteLive Descriptions"
-    objectType = Thing
+    objectType = Product
     canCreate = False
 
     def __init__(self, titelive_file: str, **options):
@@ -47,17 +47,17 @@ class InitTiteLiveThingDescriptions(LocalProvider):
         self.description_zipinfo = next(self.description_zip_infos)
 
         providable_info = ProvidableInfo()
-        providable_info.type = Thing
+        providable_info.type = Product
         providable_info.dateModifiedAtProvider = self.date_modified
         path = PurePath(self.description_zipinfo.filename)
         providable_info.idAtProviders = path.name.split('_', 1)[0]
-        self.thingId = providable_info.idAtProviders
+        self.productId = providable_info.idAtProviders
 
         return providable_info
 
-    def updateObject(self, thing):
+    def updateObject(self, product):
         with self.zip.open(self.description_zipinfo) as f:
-            thing.description = f.read().decode('iso-8859-1')
+            product.description = f.read().decode('iso-8859-1')
 
     def get_description_files_from_zip_info(self):
         sorted_files = sorted(self.zip.infolist(), key=lambda f: f.filename)
