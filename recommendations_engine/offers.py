@@ -58,9 +58,10 @@ def score_offer(offer: Offer) -> Optional[int]:
     # a bit of randomness so we don't always return the same offers
     common_score += randint(0, 10)
 
-    if ProductType.is_event(offer.eventOrThing.type):
+    specific_score = None
+    if ProductType.is_event(offer.type):
         specific_score = specific_score_event(offer.eventOrThing)
-    else:
+    elif ProductType.is_thing(offer.type):
         specific_score = specific_score_thing(offer.eventOrThing)
 
     if specific_score is None:
@@ -71,7 +72,6 @@ def score_offer(offer: Offer) -> Optional[int]:
 
 def specific_score_event(product: Product) -> Optional[int]:
     score = 0
-
     next_occurrence_stock = Stock.query \
         .join(aliased(Offer)) \
         .filter((Offer.product == product) & (Stock.beginningDatetime > datetime.utcnow())) \
