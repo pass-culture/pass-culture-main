@@ -25,6 +25,7 @@ class EditAndDeleteControl extends Component {
 
   onConfirmDeleteClick = () => {
     const { dispatch, stockPatch } = this.props
+
     dispatch(
       requestData({
         apiPath: `stocks/${stockPatch.id}`,
@@ -93,6 +94,7 @@ EditAndDeleteControl.propTypes = {
   isEventStock: PropTypes.bool.isRequired,
   query: PropTypes.object.isRequired,
   stock: PropTypes.object.isRequired,
+  stockPatch: PropTypes.object.isRequired,
 }
 
 export default withFrenchQueryRouter(EditAndDeleteControl)
