@@ -51,7 +51,7 @@ class TiteLiveStocks(LocalProvider):
         self.index = -1
         self.more_pages = True
         self.data = None
-        self.thing = None
+        self.product = None
         self.existing_offer = None
 
     def __next__(self):
@@ -79,9 +79,9 @@ class TiteLiveStocks(LocalProvider):
         self.titelive_stock = self.data['stocks'][self.index]
         self.last_seen_isbn = str(self.titelive_stock['ref'])
 
-        self.thing = thing_queries.find_thing_by_isbn_only_for_type_book(self.titelive_stock['ref'])
+        self.product = thing_queries.find_thing_by_isbn_only_for_type_book(self.titelive_stock['ref'])
 
-        if self.thing is None:
+        if self.product is None:
             return next(self)
 
         # Refresh data before using it

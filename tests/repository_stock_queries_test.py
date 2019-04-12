@@ -56,7 +56,7 @@ def test_create_stock_triggers_insert_activities(app):
     # Then
     activities = load_activity().query.all()
     assert len(activities) == 5
-    assert {"thing", "offerer", "venue", "thing", "offer", "stock"} == set(
+    assert {"product", "offerer", "venue", "offer", "stock"} == set(
         [a.table_name for a in activities]
     )
     assert {"insert"} == set([a.verb for a in activities])
@@ -83,6 +83,6 @@ def test_find_online_activation_stock(app):
 
     # then
     assert stock.offer.venue.isVirtual == True
-    assert stock.offer.thing.type == 'ThingType.ACTIVATION'
+    assert stock.offer.product.type == 'ThingType.ACTIVATION'
     assert stock.available == 200
     assert stock.price == 0

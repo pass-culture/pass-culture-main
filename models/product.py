@@ -77,6 +77,22 @@ class Product(PcObject,
     def isDigital(self):
         return self.url is not None and self.url != ''
 
+    def _type_can_only_be_offline(self):
+        offline_only_products = filter(lambda product_type: product_type.value['offlineOnly'], ThingType)
+        offline_only_types_for_products = map(lambda x: x.__str__(), offline_only_products)
+        return self.type in offline_only_types_for_products
+
+    def _get_label_from_type_string(self):
+        matching_type_product = next(filter(lambda product_type: product_type.__str__() == self.type, ThingType))
+        return matching_type_product.value['label']
+
+
+    def errors(self):
+        api_errors = super(Product, self).errors()
+        if self.isDigital and self._type_can_only_be_offline():
+            api_errors.addError('url', 'Une offre de type {} ne peut pas être numérique'.format(
+                self._get_label_from_type_string()))
+        return api_errors
 
 Product.__ts_vector__ = create_tsvector(
     cast(coalesce(Product.name, ''), TEXT),

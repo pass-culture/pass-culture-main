@@ -25,9 +25,7 @@ def test_get_keywords_analyzer(app):
     keywords_analyzer = get_keywords_analyzer(offer, 'nua')
 
     # then
-    assert keywords_analyzer['Event_name'] is False
-    assert keywords_analyzer['Event_description'] is False
-    assert keywords_analyzer['Thing_name'] is False
-    assert keywords_analyzer['Thing_description'] is False
+    assert keywords_analyzer['Product_description'] is False
+    assert keywords_analyzer['Product_name'] is False
     assert keywords_analyzer['Offerer_name'] is False
     assert keywords_analyzer['Venue_name'] is False
