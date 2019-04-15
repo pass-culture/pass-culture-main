@@ -5,6 +5,7 @@ ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <Price
     className=""
+    format={null}
     free={null}
     value={0}
   />,
@@ -74,6 +75,7 @@ ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <Price
     className=""
+    format={null}
     free={null}
     value={5}
   />,
@@ -143,6 +145,7 @@ ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <Price
     className=""
+    format={null}
     free={null}
     value={
       Array [
@@ -217,6 +220,7 @@ ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <Price
     className=""
+    format={null}
     free={null}
     value={
       Array [
@@ -291,6 +295,7 @@ ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <Price
     className=""
+    format={null}
     free={null}
     value={null}
   />,
