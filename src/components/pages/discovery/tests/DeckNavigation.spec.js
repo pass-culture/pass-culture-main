@@ -1,4 +1,3 @@
-// jest --env=jsdom ./src/components/pages/discovery/tests/DeckNavigation --watch
 import React from 'react'
 import { mount, shallow } from 'enzyme'
 
@@ -20,6 +19,7 @@ describe('src | components | pages | discovery | RawDeckNavigation', () => {
       expect(wrapper).toBeDefined()
       expect(wrapper).toMatchSnapshot()
     })
+
     it('should match snapshot with flipHandler', () => {
       // given
       const props = {
@@ -36,6 +36,7 @@ describe('src | components | pages | discovery | RawDeckNavigation', () => {
       expect(wrapper).toMatchSnapshot()
     })
   })
+
   describe('render', () => {
     describe(`Prix de l'offre`, () => {
       it('should equal Gratuit when offer price is 0', () => {
@@ -103,6 +104,7 @@ describe('src | components | pages | discovery | RawDeckNavigation', () => {
         expect(element.text()).toEqual('12 → 56 €')
       })
     })
+
     describe('Background Color', () => {
       describe('When no color given in recommendation', () => {
         it('should render black by default', () => {

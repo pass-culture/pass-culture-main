@@ -18,6 +18,7 @@ describe('src | components | verso | VersoBookingButton', () => {
       expect(wrapper).toMatchSnapshot()
     })
   })
+
   describe('getBookingName', () => {
     it('should return booking name', () => {
       // given

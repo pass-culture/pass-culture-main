@@ -2,14 +2,14 @@
   semi: [2, "always"]
   react/jsx-one-expression-per-line: 0 */
 import classnames from 'classnames';
-import PropTypes from 'prop-types';
 import React from 'react';
-
-import Footer from '../layout/Footer';
-import VersoHeader from './VersoHeader';
+import PropTypes from 'prop-types';
 import VersoControl from './verso-controls/VersoControl';
+
 import VersoContentOfferContainer from './verso-content/VersoContentOfferContainer';
 import VersoContentTuto from './verso-content/VersoContentTuto';
+import VersoHeader from "./VersoHeader";
+import Footer from "../layout/Footer";
 
 class Verso extends React.PureComponent {
   render() {

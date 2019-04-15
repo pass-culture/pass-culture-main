@@ -5,11 +5,11 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 
-import Thumb from './layout/Thumb'
-import currentRecommendationSelector from '../selectors/currentRecommendation'
-import nextRecommendationSelector from '../selectors/nextRecommendation'
-import previousRecommendationSelector from '../selectors/previousRecommendation'
-import { IS_DEV } from '../utils/config'
+import Thumb from '../layout/Thumb'
+import currentRecommendationSelector from '../../selectors/currentRecommendation'
+import nextRecommendationSelector from '../../selectors/nextRecommendation'
+import previousRecommendationSelector from '../../selectors/previousRecommendation'
+import { IS_DEV } from '../../utils/config'
 
 // FIXME -> move to pass-culture-shared
 const noop = () => {}

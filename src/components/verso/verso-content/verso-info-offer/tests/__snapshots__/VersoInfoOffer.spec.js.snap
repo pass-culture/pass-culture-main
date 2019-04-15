@@ -1,0 +1,999 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`src | components | verso | verso-content | verso-info-offer | VersoInfoOffer should match snapshot 1`] = `
+ShallowWrapper {
+  Symbol(enzyme.__root__): [Circular],
+  Symbol(enzyme.__unrendered__): <VersoInfoOffer
+    bookables={Array []}
+    isFinished={false}
+    maxShownDates={7}
+    recommendation={
+      Object {
+        "distance": 1,
+        "id": "AEAQ",
+        "offer": Object {
+          "eventId": null,
+          "eventOrThing": Object {
+            "description": "fake description",
+          },
+          "id": "X9",
+          "thingId": "QE",
+          "venue": Object {
+            "address": "72 rue Carnot",
+            "city": "ROMAINVILLE",
+            "id": "A9",
+            "latitude": 2.44072,
+            "longitude": 48.88381,
+            "name": "fake name",
+            "postalCode": "93230",
+          },
+        },
+        "offerId": "X9",
+      }
+    }
+  />,
+  Symbol(enzyme.__renderer__): Object {
+    "batchedUpdates": [Function],
+    "checkPropTypes": [Function],
+    "getNode": [Function],
+    "render": [Function],
+    "simulateError": [Function],
+    "simulateEvent": [Function],
+    "unmount": [Function],
+  },
+  Symbol(enzyme.__node__): Object {
+    "instance": null,
+    "key": undefined,
+    "nodeType": "host",
+    "props": Object {
+      "children": Array [
+        <div>
+          <h3>
+            Quoi ?
+          </h3>
+          <pre
+            className="is-raw-description"
+          >
+            fake description
+          </pre>
+        </div>,
+        <div>
+          <h3>
+            Quand ?
+          </h3>
+          <ul
+            className="dates-info"
+          >
+            <React.Fragment>
+              <li>
+                Dès maintenant
+                 
+              </li>
+            </React.Fragment>
+          </ul>
+        </div>,
+        <div>
+          <h3>
+            Où ?
+          </h3>
+          <div
+            className="flex-columns flex-between"
+          >
+            <p
+              className="address-info"
+            >
+              <span
+                className="is-block"
+              >
+                fake name
+              </span>
+              <span
+                className="is-block"
+              >
+                72 rue Carnot
+              </span>
+              <span
+                className="is-block"
+              >
+                93230
+              </span>
+              <span
+                className="is-block"
+              >
+                ROMAINVILLE
+              </span>
+            </p>
+            <a
+              className="distance"
+            >
+              <span>
+                1
+                
+              </span>
+              <Icon
+                alt="Géolocalisation dans Open Street Map"
+                svg="ico-geoloc-solid2"
+              />
+            </a>
+          </div>
+        </div>,
+      ],
+      "className": "verso-info",
+    },
+    "ref": null,
+    "rendered": Array [
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": Array [
+            <h3>
+              Quoi ?
+            </h3>,
+            <pre
+              className="is-raw-description"
+            >
+              fake description
+            </pre>,
+          ],
+        },
+        "ref": null,
+        "rendered": Array [
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": "Quoi ?",
+            },
+            "ref": null,
+            "rendered": "Quoi ?",
+            "type": "h3",
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": "fake description",
+              "className": "is-raw-description",
+            },
+            "ref": null,
+            "rendered": "fake description",
+            "type": "pre",
+          },
+        ],
+        "type": "div",
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": Array [
+            <h3>
+              Quand ?
+            </h3>,
+            <ul
+              className="dates-info"
+            >
+              <React.Fragment>
+                <li>
+                  Dès maintenant
+                   
+                </li>
+              </React.Fragment>
+            </ul>,
+          ],
+        },
+        "ref": null,
+        "rendered": Array [
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": "Quand ?",
+            },
+            "ref": null,
+            "rendered": "Quand ?",
+            "type": "h3",
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": <React.Fragment>
+                <li>
+                  Dès maintenant
+                   
+                </li>
+              </React.Fragment>,
+              "className": "dates-info",
+            },
+            "ref": null,
+            "rendered": Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "function",
+              "props": Object {
+                "children": <li>
+                  Dès maintenant
+                   
+                </li>,
+              },
+              "ref": null,
+              "rendered": Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": Array [
+                    "Dès maintenant",
+                    undefined,
+                    " ",
+                  ],
+                },
+                "ref": null,
+                "rendered": Array [
+                  "Dès maintenant",
+                  undefined,
+                  " ",
+                ],
+                "type": "li",
+              },
+              "type": Symbol(react.fragment),
+            },
+            "type": "ul",
+          },
+        ],
+        "type": "div",
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": Array [
+            <h3>
+              Où ?
+            </h3>,
+            <div
+              className="flex-columns flex-between"
+            >
+              <p
+                className="address-info"
+              >
+                <span
+                  className="is-block"
+                >
+                  fake name
+                </span>
+                <span
+                  className="is-block"
+                >
+                  72 rue Carnot
+                </span>
+                <span
+                  className="is-block"
+                >
+                  93230
+                </span>
+                <span
+                  className="is-block"
+                >
+                  ROMAINVILLE
+                </span>
+              </p>
+              <a
+                className="distance"
+              >
+                <span>
+                  1
+                  
+                </span>
+                <Icon
+                  alt="Géolocalisation dans Open Street Map"
+                  svg="ico-geoloc-solid2"
+                />
+              </a>
+            </div>,
+          ],
+        },
+        "ref": null,
+        "rendered": Array [
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": "Où ?",
+            },
+            "ref": null,
+            "rendered": "Où ?",
+            "type": "h3",
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": Array [
+                <p
+                  className="address-info"
+                >
+                  <span
+                    className="is-block"
+                  >
+                    fake name
+                  </span>
+                  <span
+                    className="is-block"
+                  >
+                    72 rue Carnot
+                  </span>
+                  <span
+                    className="is-block"
+                  >
+                    93230
+                  </span>
+                  <span
+                    className="is-block"
+                  >
+                    ROMAINVILLE
+                  </span>
+                </p>,
+                <a
+                  className="distance"
+                >
+                  <span>
+                    1
+                    
+                  </span>
+                  <Icon
+                    alt="Géolocalisation dans Open Street Map"
+                    svg="ico-geoloc-solid2"
+                  />
+                </a>,
+              ],
+              "className": "flex-columns flex-between",
+            },
+            "ref": null,
+            "rendered": Array [
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": Array [
+                    <span
+                      className="is-block"
+                    >
+                      fake name
+                    </span>,
+                    <span
+                      className="is-block"
+                    >
+                      72 rue Carnot
+                    </span>,
+                    <span
+                      className="is-block"
+                    >
+                      93230
+                    </span>,
+                    <span
+                      className="is-block"
+                    >
+                      ROMAINVILLE
+                    </span>,
+                  ],
+                  "className": "address-info",
+                },
+                "ref": null,
+                "rendered": Array [
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "host",
+                    "props": Object {
+                      "children": "fake name",
+                      "className": "is-block",
+                    },
+                    "ref": null,
+                    "rendered": "fake name",
+                    "type": "span",
+                  },
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "host",
+                    "props": Object {
+                      "children": "72 rue Carnot",
+                      "className": "is-block",
+                    },
+                    "ref": null,
+                    "rendered": "72 rue Carnot",
+                    "type": "span",
+                  },
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "host",
+                    "props": Object {
+                      "children": "93230",
+                      "className": "is-block",
+                    },
+                    "ref": null,
+                    "rendered": "93230",
+                    "type": "span",
+                  },
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "host",
+                    "props": Object {
+                      "children": "ROMAINVILLE",
+                      "className": "is-block",
+                    },
+                    "ref": null,
+                    "rendered": "ROMAINVILLE",
+                    "type": "span",
+                  },
+                ],
+                "type": "p",
+              },
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": Array [
+                    <span>
+                      1
+                      
+                    </span>,
+                    <Icon
+                      alt="Géolocalisation dans Open Street Map"
+                      svg="ico-geoloc-solid2"
+                    />,
+                  ],
+                  "className": "distance",
+                  "href": undefined,
+                },
+                "ref": null,
+                "rendered": Array [
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "host",
+                    "props": Object {
+                      "children": Array [
+                        1,
+                        "",
+                      ],
+                    },
+                    "ref": null,
+                    "rendered": Array [
+                      1,
+                      "",
+                    ],
+                    "type": "span",
+                  },
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "function",
+                    "props": Object {
+                      "alt": "Géolocalisation dans Open Street Map",
+                      "svg": "ico-geoloc-solid2",
+                    },
+                    "ref": null,
+                    "rendered": null,
+                    "type": [Function],
+                  },
+                ],
+                "type": "a",
+              },
+            ],
+            "type": "div",
+          },
+        ],
+        "type": "div",
+      },
+    ],
+    "type": "div",
+  },
+  Symbol(enzyme.__nodes__): Array [
+    Object {
+      "instance": null,
+      "key": undefined,
+      "nodeType": "host",
+      "props": Object {
+        "children": Array [
+          <div>
+            <h3>
+              Quoi ?
+            </h3>
+            <pre
+              className="is-raw-description"
+            >
+              fake description
+            </pre>
+          </div>,
+          <div>
+            <h3>
+              Quand ?
+            </h3>
+            <ul
+              className="dates-info"
+            >
+              <React.Fragment>
+                <li>
+                  Dès maintenant
+                   
+                </li>
+              </React.Fragment>
+            </ul>
+          </div>,
+          <div>
+            <h3>
+              Où ?
+            </h3>
+            <div
+              className="flex-columns flex-between"
+            >
+              <p
+                className="address-info"
+              >
+                <span
+                  className="is-block"
+                >
+                  fake name
+                </span>
+                <span
+                  className="is-block"
+                >
+                  72 rue Carnot
+                </span>
+                <span
+                  className="is-block"
+                >
+                  93230
+                </span>
+                <span
+                  className="is-block"
+                >
+                  ROMAINVILLE
+                </span>
+              </p>
+              <a
+                className="distance"
+              >
+                <span>
+                  1
+                  
+                </span>
+                <Icon
+                  alt="Géolocalisation dans Open Street Map"
+                  svg="ico-geoloc-solid2"
+                />
+              </a>
+            </div>
+          </div>,
+        ],
+        "className": "verso-info",
+      },
+      "ref": null,
+      "rendered": Array [
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": Array [
+              <h3>
+                Quoi ?
+              </h3>,
+              <pre
+                className="is-raw-description"
+              >
+                fake description
+              </pre>,
+            ],
+          },
+          "ref": null,
+          "rendered": Array [
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": "Quoi ?",
+              },
+              "ref": null,
+              "rendered": "Quoi ?",
+              "type": "h3",
+            },
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": "fake description",
+                "className": "is-raw-description",
+              },
+              "ref": null,
+              "rendered": "fake description",
+              "type": "pre",
+            },
+          ],
+          "type": "div",
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": Array [
+              <h3>
+                Quand ?
+              </h3>,
+              <ul
+                className="dates-info"
+              >
+                <React.Fragment>
+                  <li>
+                    Dès maintenant
+                     
+                  </li>
+                </React.Fragment>
+              </ul>,
+            ],
+          },
+          "ref": null,
+          "rendered": Array [
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": "Quand ?",
+              },
+              "ref": null,
+              "rendered": "Quand ?",
+              "type": "h3",
+            },
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": <React.Fragment>
+                  <li>
+                    Dès maintenant
+                     
+                  </li>
+                </React.Fragment>,
+                "className": "dates-info",
+              },
+              "ref": null,
+              "rendered": Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "function",
+                "props": Object {
+                  "children": <li>
+                    Dès maintenant
+                     
+                  </li>,
+                },
+                "ref": null,
+                "rendered": Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": Array [
+                      "Dès maintenant",
+                      undefined,
+                      " ",
+                    ],
+                  },
+                  "ref": null,
+                  "rendered": Array [
+                    "Dès maintenant",
+                    undefined,
+                    " ",
+                  ],
+                  "type": "li",
+                },
+                "type": Symbol(react.fragment),
+              },
+              "type": "ul",
+            },
+          ],
+          "type": "div",
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": Array [
+              <h3>
+                Où ?
+              </h3>,
+              <div
+                className="flex-columns flex-between"
+              >
+                <p
+                  className="address-info"
+                >
+                  <span
+                    className="is-block"
+                  >
+                    fake name
+                  </span>
+                  <span
+                    className="is-block"
+                  >
+                    72 rue Carnot
+                  </span>
+                  <span
+                    className="is-block"
+                  >
+                    93230
+                  </span>
+                  <span
+                    className="is-block"
+                  >
+                    ROMAINVILLE
+                  </span>
+                </p>
+                <a
+                  className="distance"
+                >
+                  <span>
+                    1
+                    
+                  </span>
+                  <Icon
+                    alt="Géolocalisation dans Open Street Map"
+                    svg="ico-geoloc-solid2"
+                  />
+                </a>
+              </div>,
+            ],
+          },
+          "ref": null,
+          "rendered": Array [
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": "Où ?",
+              },
+              "ref": null,
+              "rendered": "Où ?",
+              "type": "h3",
+            },
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": Array [
+                  <p
+                    className="address-info"
+                  >
+                    <span
+                      className="is-block"
+                    >
+                      fake name
+                    </span>
+                    <span
+                      className="is-block"
+                    >
+                      72 rue Carnot
+                    </span>
+                    <span
+                      className="is-block"
+                    >
+                      93230
+                    </span>
+                    <span
+                      className="is-block"
+                    >
+                      ROMAINVILLE
+                    </span>
+                  </p>,
+                  <a
+                    className="distance"
+                  >
+                    <span>
+                      1
+                      
+                    </span>
+                    <Icon
+                      alt="Géolocalisation dans Open Street Map"
+                      svg="ico-geoloc-solid2"
+                    />
+                  </a>,
+                ],
+                "className": "flex-columns flex-between",
+              },
+              "ref": null,
+              "rendered": Array [
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": Array [
+                      <span
+                        className="is-block"
+                      >
+                        fake name
+                      </span>,
+                      <span
+                        className="is-block"
+                      >
+                        72 rue Carnot
+                      </span>,
+                      <span
+                        className="is-block"
+                      >
+                        93230
+                      </span>,
+                      <span
+                        className="is-block"
+                      >
+                        ROMAINVILLE
+                      </span>,
+                    ],
+                    "className": "address-info",
+                  },
+                  "ref": null,
+                  "rendered": Array [
+                    Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "host",
+                      "props": Object {
+                        "children": "fake name",
+                        "className": "is-block",
+                      },
+                      "ref": null,
+                      "rendered": "fake name",
+                      "type": "span",
+                    },
+                    Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "host",
+                      "props": Object {
+                        "children": "72 rue Carnot",
+                        "className": "is-block",
+                      },
+                      "ref": null,
+                      "rendered": "72 rue Carnot",
+                      "type": "span",
+                    },
+                    Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "host",
+                      "props": Object {
+                        "children": "93230",
+                        "className": "is-block",
+                      },
+                      "ref": null,
+                      "rendered": "93230",
+                      "type": "span",
+                    },
+                    Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "host",
+                      "props": Object {
+                        "children": "ROMAINVILLE",
+                        "className": "is-block",
+                      },
+                      "ref": null,
+                      "rendered": "ROMAINVILLE",
+                      "type": "span",
+                    },
+                  ],
+                  "type": "p",
+                },
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": Array [
+                      <span>
+                        1
+                        
+                      </span>,
+                      <Icon
+                        alt="Géolocalisation dans Open Street Map"
+                        svg="ico-geoloc-solid2"
+                      />,
+                    ],
+                    "className": "distance",
+                    "href": undefined,
+                  },
+                  "ref": null,
+                  "rendered": Array [
+                    Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "host",
+                      "props": Object {
+                        "children": Array [
+                          1,
+                          "",
+                        ],
+                      },
+                      "ref": null,
+                      "rendered": Array [
+                        1,
+                        "",
+                      ],
+                      "type": "span",
+                    },
+                    Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "function",
+                      "props": Object {
+                        "alt": "Géolocalisation dans Open Street Map",
+                        "svg": "ico-geoloc-solid2",
+                      },
+                      "ref": null,
+                      "rendered": null,
+                      "type": [Function],
+                    },
+                  ],
+                  "type": "a",
+                },
+              ],
+              "type": "div",
+            },
+          ],
+          "type": "div",
+        },
+      ],
+      "type": "div",
+    },
+  ],
+  Symbol(enzyme.__options__): Object {
+    "adapter": ReactSixteenAdapter {
+      "options": Object {
+        "enableComponentDidUpdateOnSetState": true,
+        "legacyContextMode": "parent",
+        "lifecycles": Object {
+          "componentDidUpdate": Object {
+            "onSetState": true,
+          },
+          "getChildContext": Object {
+            "calledByRenderer": false,
+          },
+          "getDerivedStateFromProps": Object {
+            "hasShouldComponentUpdateBug": false,
+          },
+          "getSnapshotBeforeUpdate": true,
+          "setState": Object {
+            "skipsComponentDidUpdateOnNullish": true,
+          },
+        },
+      },
+    },
+  },
+  Symbol(enzyme.__childContext__): null,
+}
+`;

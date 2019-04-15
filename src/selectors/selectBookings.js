@@ -13,10 +13,7 @@ export const filterValidBookings = booking => {
   return !isActivationType
 }
 
-export const filterBookingsInLessThanTwoDays = (
-  filtered,
-  now = null
-) => {
+export const filterBookingsInLessThanTwoDays = (filtered, now = null) => {
   const nowMoment = now || moment()
   const twoDaysFromNow = nowMoment.clone().add(2, 'days')
   return filtered.filter(booking => {
@@ -28,10 +25,7 @@ export const filterBookingsInLessThanTwoDays = (
   })
 }
 
-export const filterBookingsInMoreThanTwoDaysOrPast = (
-  allBookings,
-  now
-) => {
+export const filterBookingsInMoreThanTwoDaysOrPast = (allBookings, now) => {
   const nowMoment = now || moment()
   const twoDaysFromNow = nowMoment.clone().add(2, 'days')
   const filtered = allBookings.filter(booking => {
@@ -70,5 +64,3 @@ export const selectBookingById = createSelector(
   (state, bookingId) => bookingId,
   (bookings, bookingId) => bookings.find(o => o.id === bookingId)
 )
-
-export default selectBookings

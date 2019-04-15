@@ -10,7 +10,7 @@ import { compose } from 'redux'
 
 import Card from './Card'
 import DeckNavigation from './DeckNavigation'
-import { NB_CARDS_REMAINING_THAT_TRIGGERS_LOAD } from '../../../helpers/discovery'
+import { NB_CARDS_REMAINING_THAT_TRIGGERS_LOAD } from '../../../helpers/isRecommendationOfferFinished'
 import {
   closeCardDetails,
   showCardDetails,
@@ -40,37 +40,11 @@ export class RawDeck extends Component {
   }
 
   componentDidUpdate() {
-    // const withRecommendationsAvailable = isRecommendations(
-    //   recommendations,
-    //   previousProps
-    // )
-    // const withCurrentRecommandationAvailable = isCurrentRecommendation(
-    //   currentRecommendation,
-    //   previousProps
-    // )
-    // const withNewRecommendationsAvailable = isNewRecommendations(
-    //   recommendations,
-    //   previousProps
-    // )
-    // const withNewCurrentRecommandationAvailable = isNewCurrentRecommendation(
-    //   currentRecommendation,
-    //   previousProps
-    // )
-
     const { match } = this.props
     const { view } = match.params
     const isVersoView = view === 'verso'
     if (isVersoView) return
     this.handleUrlFlip()
-
-    // if (
-    //   !withRecommendationsAvailable ||
-    //   !withCurrentRecommandationAvailable ||
-    //   !withNewRecommendationsAvailable ||
-    //   !withNewCurrentRecommandationAvailable
-    // ) {
-    //   this.handleRefreshedDraggableKey()
-    // }
   }
 
   componentWillUnmount() {

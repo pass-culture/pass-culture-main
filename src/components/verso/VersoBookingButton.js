@@ -9,7 +9,7 @@ import { compose } from 'redux'
 import { requestData } from 'redux-saga-data'
 
 import Finishable from '../layout/Finishable'
-import { isRecommendationFinished } from '../../helpers'
+import { isRecommendationOfferFinished } from '../../helpers/isRecommendationOfferFinished'
 import { openSharePopin, closeSharePopin } from '../../reducers/share'
 import { selectBookings } from '../../selectors/selectBookings'
 import currentRecommendation from '../../selectors/currentRecommendation'
@@ -67,7 +67,7 @@ class VersoBookingButton extends React.PureComponent {
   onCancelFailure = (state, request) => {
     const { dispatch } = this.props
     const message = get(request, 'errors.booking') || [
-      'Une erreur inconnue sest produite',
+      "Une erreur inconnue s'est produite",
     ]
 
     const options = {
@@ -188,7 +188,7 @@ const mapStateToProps = (state, { match, location }) => {
   const { mediationId, offerId } = match.params
   const { search: locationSearch } = location
   const recommendation = currentRecommendation(state, offerId, mediationId)
-  const isFinished = isRecommendationFinished(recommendation, offerId)
+  const isFinished = isRecommendationOfferFinished(recommendation, offerId)
   // NOTE -> on ne peut pas faire confiance a bookingsIds
   // bookingsIds n'est pas mis à jour avec le state
   const stocks = get(recommendation, 'offer.stocks')

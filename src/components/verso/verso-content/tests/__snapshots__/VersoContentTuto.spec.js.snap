@@ -3,7 +3,7 @@
 exports[`src | components | verso | verso-content | VersoContentTuto should match snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
-  Symbol(enzyme.__unrendered__): <VersoContentTuto
+  Symbol(enzyme.__unrendered__): <VersoTutoContent
     mediationId="1234"
   />,
   Symbol(enzyme.__renderer__): Object {

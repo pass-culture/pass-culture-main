@@ -4,8 +4,13 @@ import { shallow } from 'enzyme'
 
 import Verso from '../Verso'
 import VersoControl from '../verso-controls/VersoControl'
+<<<<<<< HEAD
 import VersoContentOfferContainer from '../verso-content/VersoContentOfferContainer'
 import VersoContentTuto from '../verso-content/VersoContentTuto'
+=======
+import VersoInfoOffer from '../verso-content/verso-info-offer/VersoInfoOfferContainer'
+import VersoTutoContent from '../verso-content/VersoTutoContent'
+>>>>>>> (PC-1546): updated logic when checking if offer is finished, updated tests to simplify reading, added missing tests
 
 const backgroundColor = '#ACE539'
 const props = {

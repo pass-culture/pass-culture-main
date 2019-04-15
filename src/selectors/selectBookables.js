@@ -21,8 +21,8 @@ export const setTimezoneOnBeginningDatetime = timezone => stocks =>
   stocks.map(stock => {
     let extend = {}
     if (stock.beginningDatetime) {
-      const dateWithTimezone = moment(stock.beginningDatetime).tz(timezone);
-      extend = {beginningDatetime: dateWithTimezone}
+      const dateWithTimezone = moment(stock.beginningDatetime).tz(timezone)
+      extend = { beginningDatetime: dateWithTimezone }
     }
     return Object.assign({}, stock, extend)
   })
@@ -69,7 +69,7 @@ export const selectBookables = createCachedSelector(
   (state, recommendation) => recommendation,
   (bookings, recommendation) => {
     let stocks = get(recommendation, 'offer.stocks')
-    // stocks = [stocks[0]]
+    // stocks =u [stocks[0]]
     // NOTE -> prevents state to be mutated
     stocks = (stocks && cloneDeep(stocks)) || null
     if (!stocks || !stocks.length) return []
@@ -84,5 +84,3 @@ export const selectBookables = createCachedSelector(
     )(stocks)
   }
 )((state, recommendation, match) => match.url)
-
-export default selectBookables

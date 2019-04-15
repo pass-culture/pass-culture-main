@@ -6,7 +6,7 @@ import { compose } from 'redux'
 import { requestData } from 'redux-saga-data'
 
 import Booking from '../../booking'
-import Recto from '../../Recto'
+import Recto from '../../recto/Recto'
 import Verso from '../../verso/VersoContainer'
 import currentRecommendationSelector from '../../../selectors/currentRecommendation'
 import { recommendationNormalizer } from '../../../utils/normalizers'

@@ -10,9 +10,9 @@ import { getDisplayPrice } from '../../helpers'
 const BookingCancel = ({ isEvent, data }) => {
   let price = get(data, 'stock.price')
   price = getDisplayPrice(price)
-  const cssclass = (isEvent && 'event') || 'thing'
+  const cssClass = (isEvent && 'event') || 'thing'
   return (
-    <div className={`booked text-center ${cssclass}`}>
+    <div className={`booked text-center ${cssClass}`}>
       <h3 className="fs22">
         {/* <!-- ICON --> */}
         <span

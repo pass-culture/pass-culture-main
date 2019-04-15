@@ -5,11 +5,6 @@ import { Switch } from 'react-router-dom'
 import BackButton from '../../../layout/BackButton'
 import RawSearch from '../RawSearch'
 
-// const getDetailsRoute = wrapper =>
-//  wrapper.find({ path: "/recherche/resultats/:option?/item/:offerId([A-Z0-9]+)/:mediationId([A-Z0-9]+)?" })
-//         .props()
-//         .render()
-
 const getPageContentRoute = wrapper =>
   wrapper
     .find({ path: '/recherche/(resultats)?/:option?/:subOption(menu)?' })

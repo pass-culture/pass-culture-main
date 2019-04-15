@@ -6,7 +6,7 @@ import withSizes from 'react-sizes'
 import { compose } from 'redux'
 
 import { mapDispatchToProps, mapStateToProps } from './connect'
-import Recto from '../../../Recto'
+import Recto from '../../../recto/Recto'
 import Verso from '../../../verso/VersoContainer'
 import { getHeaderColor } from '../../../../utils/colors'
 

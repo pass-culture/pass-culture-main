@@ -11,7 +11,7 @@ import Price from '../../layout/Price'
 import Finishable from '../../layout/Finishable'
 import { getHeaderColor } from '../../../utils/colors'
 import { getPriceRangeFromStocks } from '../../../helpers'
-import { isRecommendationFinished } from '../../../helpers/discovery'
+import { isRecommendationOfferFinished } from '../../../helpers/isRecommendationOfferFinished'
 import { ROOT_PATH } from '../../../utils/config'
 
 const toRectoDraggableBounds = {
@@ -130,12 +130,8 @@ export class RawDeckNavigation extends React.PureComponent {
                         free="Gratuit"
                         value={priceRange}
                       />
-                      <div className="separator">
-                        {offer ? '\u00B7' : ' '}
-                      </div>
-                      <div>
-                        {distanceClue}
-                      </div>
+                      <div className="separator">{offer ? '\u00B7' : ' '}</div>
+                      <div>{distanceClue}</div>
                     </Finishable>
                   </div>
                 </div>
@@ -176,7 +172,7 @@ const DeckNavigation = compose(
   connect((state, ownProps) => {
     const { recommendation } = ownProps
     const { offerId } = recommendation
-    const isFinished = isRecommendationFinished(recommendation, offerId)
+    const isFinished = isRecommendationOfferFinished(recommendation, offerId)
     return {
       isFinished,
     }

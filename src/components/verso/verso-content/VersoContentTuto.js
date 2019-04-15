@@ -8,7 +8,7 @@ import { THUMBS_URL } from '../../../utils/config';
 
 const imageSrcBase = `${THUMBS_URL}/mediations`;
 
-const VersoContentTuto = ({ mediationId }) => (
+const VersoTutoContent = ({ mediationId }) => (
   <img
     alt="verso"
     className="verso-tuto-mediation is-full-width"
@@ -16,8 +16,8 @@ const VersoContentTuto = ({ mediationId }) => (
   />
 );
 
-VersoContentTuto.propTypes = {
+VersoTutoContent.propTypes = {
   mediationId: PropTypes.string.isRequired,
 };
 
-export default VersoContentTuto;
+export default VersoTutoContent;
