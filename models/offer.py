@@ -110,6 +110,7 @@ class Offer(PcObject,
         end = max([stock.endDatetime for stock in self.stocks])
         return DateTimes(start, end)
 
+    # FIXME Useless property
     @property
     def eventOrThing(self):
         return self.product

@@ -1,7 +1,7 @@
 
 from models.mediation import Mediation
 
-from models.offer_type import EventType
+from models.offer_type import EventType, ProductType
 from models.pc_object import PcObject
 from recommendations_engine.offers import get_departement_codes_from_user
 from repository.offer_queries import get_active_offers_by_type
@@ -96,10 +96,10 @@ def create_industrial_recommendations(mediations_by_name, offers_by_name, users_
 
         for (offer_name, offer) in list(offers_by_name.items()):
 
-            if isinstance(offer.eventOrThing, Event) \
+            if ProductType.is_event(offer.product.type) \
                 and offer.id not in already_recommended_event_offer_ids:
                 continue
-            elif isinstance(offer.eventOrThing, Thing) \
+            elif ProductType.is_thing(offer.product.type) \
                 and offer.id not in already_recommended_thing_offer_ids:
                 continue
 

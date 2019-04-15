@@ -1,5 +1,6 @@
 from models.booking import Booking
 from models.offer import Offer
+from models.offer_type import ProductType
 from models.stock import Stock
 from models.user import User
 from models.venue import Venue
@@ -25,7 +26,7 @@ def get_existing_pro_validated_user_with_validated_offerer_with_validated_user_o
             and uo.offerer.validationToken == None:
             for venue in uo.offerer.managedVenues:
                 for offer in venue.offers:
-                    if offer.thingId:
+                    if ProductType.is_thing(offer.type):
                         for stock in offer.stocks:
                             if stock.bookings:
                                 for booking in stock.bookings:

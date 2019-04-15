@@ -21,18 +21,17 @@ def test_save_industrial_sandbox(app):
 
     # then
     assertCreatedCounts(
-        Booking=40,
-        Deposit=6,
-        Event=56,
-        Mediation=55,
-        Offer=105,
         Offerer=13,
-        Recommendation=102,
+        Venue=21,
+        Product=126,
+        Offer=105,
         Stock=101,
-        Thing=70,
+        Mediation=55,
         User=49,
+        Deposit=6,
         UserOfferer=125,
-        Venue=21
+        Recommendation=102,
+        Booking=40,
     )
 
     # teardown
