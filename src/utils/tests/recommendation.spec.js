@@ -1,38 +1,20 @@
 import { setUniqIdOnRecommendation } from '../recommendation'
 
 describe('utils recommendation', () => {
-  describe('when recommendation is an event', () => {
-    it('should return an object having an `uniqId` property begining with `event_`', () => {
-      // Given
-      const recommendation = {
-        offer: {
-          eventId: 42,
-        },
-      }
+  it('should return an object having an `uniqId` property begining with `event_`', () => {
+    // Given
+    const recommendation = {
+      offer: {
+        eventId: 267,
+        productId: 42,
+      },
+    }
 
-      // When
-      const result = setUniqIdOnRecommendation(recommendation)
+    // When
+    const result = setUniqIdOnRecommendation(recommendation)
 
-      // Then
-      expect(result.uniqId).toEqual('event_42')
-    })
-  })
-
-  describe('when recommendation is a thing', () => {
-    it('should return an object having an `uniqId` property begining with `thing_`', () => {
-      // Given
-      const recommendation = {
-        offer: {
-          thingId: 1337,
-        },
-      }
-
-      // When
-      const result = setUniqIdOnRecommendation(recommendation)
-
-      // Then
-      expect(result.uniqId).toEqual('thing_1337')
-    })
+    // Then
+    expect(result.uniqId).toEqual('product_42')
   })
 
   describe('when recommendation is a tuto', () => {
@@ -40,6 +22,7 @@ describe('utils recommendation', () => {
       // Given
       const recommendation = {
         mediation: {
+          productId: 42,
           tutoIndex: 'test',
         },
       }

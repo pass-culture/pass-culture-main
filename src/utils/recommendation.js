@@ -1,12 +1,10 @@
 export function setUniqIdOnRecommendation(recommendation) {
   const { mediation, offer } = recommendation
-  const { eventId, thingId } = offer || {}
+  const { productId } = offer || {}
   const { tutoIndex } = mediation || {}
   let uniqId
-  if (eventId) {
-    uniqId = `event_${eventId}`
-  } else if (thingId) {
-    uniqId = `thing_${thingId}`
+  if (productId) {
+    uniqId = `product_${productId}`
   } else if (typeof tutoIndex !== 'undefined') {
     uniqId = `tuto_${tutoIndex}`
   }
