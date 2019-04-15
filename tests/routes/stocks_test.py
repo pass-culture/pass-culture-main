@@ -133,6 +133,29 @@ class Post:
             assert response.json()["bookingLimitDatetime"] == ["Format de date invalide"]
 
         @clean_database
+        def when_negative_for_available(self, app):
+            # Given
+            user = create_user(email='test@email.fr', can_book_free_offers=False, is_admin=True)
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            offer = create_thing_offer(venue)
+            PcObject.check_and_save(user, offer)
+
+            data = {
+                'price': 0,
+                'available': -5,
+                'offerId': humanize(offer.id),
+            }
+
+            # When
+            response = TestClient().with_auth(user.email) \
+                .post(API_URL + '/stocks/', json=data)
+
+            # Then
+            assert response.status_code == 400
+            assert response.json()["available"] == ["Le stock ne peut pas être égal ou inférieur à zéro"]
+
+        @clean_database
         def when_setting_beginning_and_end_datetimes_on_offer_with_thing(self, app):
             # Given
             user = create_user(email='test@email.fr', can_book_free_offers=False, is_admin=True)
