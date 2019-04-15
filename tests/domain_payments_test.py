@@ -19,7 +19,7 @@ from tests.test_utils import create_booking, create_stock, create_user, create_o
 
 @pytest.mark.standalone
 @freeze_time('2018-10-15 09:21:34')
-def test_create_payment_for_booking_with_common_information():
+def test_create_payment_for_booking_with_common_information(app):
     # given
     user = create_user()
     stock = create_stock(price=10, available=5)
@@ -45,7 +45,7 @@ def test_create_payment_for_booking_with_common_information():
 
 
 @pytest.mark.standalone
-def test_create_payment_for_booking_when_iban_is_on_venue_should_take_payment_info_from_venue():
+def test_create_payment_for_booking_when_iban_is_on_venue_should_take_payment_info_from_venue(app):
     # given
     user = create_user()
     stock = create_stock(price=10, available=5)
@@ -70,7 +70,7 @@ def test_create_payment_for_booking_when_iban_is_on_venue_should_take_payment_in
 
 
 @pytest.mark.standalone
-def test_create_payment_for_booking_when_no_iban_on_venue_should_take_payment_info_from_offerer():
+def test_create_payment_for_booking_when_no_iban_on_venue_should_take_payment_info_from_offerer(app):
     # given
     user = create_user()
     stock = create_stock(price=10, available=5)
@@ -95,7 +95,7 @@ def test_create_payment_for_booking_when_no_iban_on_venue_should_take_payment_in
 
 
 @pytest.mark.standalone
-def test_create_payment_for_booking_takes_recipient_name_and_siren_from_offerer():
+def test_create_payment_for_booking_takes_recipient_name_and_siren_from_offerer(app):
     # given
     user = create_user()
     stock = create_stock(price=10, available=5)
@@ -141,7 +141,7 @@ def test_create_payment_for_booking_with_not_processable_status_when_no_bank_inf
 
 @pytest.mark.standalone
 @freeze_time('2018-10-15 09:21:34')
-def test_create_payment_for_booking_with_pending_status():
+def test_create_payment_for_booking_with_pending_status(app):
     # given
     user = create_user()
     stock = create_stock(price=10, available=5)
