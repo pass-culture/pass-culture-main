@@ -112,7 +112,6 @@ ShallowWrapper {
                                         name="siret"
                                         readOnly={undefined}
                                         renderInfo={[Function]}
-                                        required={true}
                                         size="normal"
                                         storeValue={[Function]}
                                         type="siret"
@@ -373,7 +372,6 @@ ShallowWrapper {
                                           name="siret"
                                           readOnly={undefined}
                                           renderInfo={[Function]}
-                                          required={true}
                                           size="normal"
                                           storeValue={[Function]}
                                           type="siret"
@@ -623,7 +621,6 @@ ShallowWrapper {
                                     name="siret"
                                     readOnly={undefined}
                                     renderInfo={[Function]}
-                                    required={true}
                                     size="normal"
                                     storeValue={[Function]}
                                     type="siret"
@@ -691,7 +688,6 @@ ShallowWrapper {
                       name="siret"
                       readOnly={undefined}
                       renderInfo={[Function]}
-                      required={true}
                       size="normal"
                       storeValue={[Function]}
                       type="siret"
@@ -739,7 +735,6 @@ ShallowWrapper {
                       "name": "siret",
                       "readOnly": undefined,
                       "renderInfo": [Function],
-                      "required": true,
                       "size": "normal",
                       "storeValue": [Function],
                       "type": "siret",
@@ -1500,7 +1495,6 @@ ShallowWrapper {
                                                 name="siret"
                                                 readOnly={undefined}
                                                 renderInfo={[Function]}
-                                                required={true}
                                                 size="normal"
                                                 storeValue={[Function]}
                                                 type="siret"
@@ -1761,7 +1755,6 @@ ShallowWrapper {
                                                 name="siret"
                                                 readOnly={undefined}
                                                 renderInfo={[Function]}
-                                                required={true}
                                                 size="normal"
                                                 storeValue={[Function]}
                                                 type="siret"
@@ -2011,7 +2004,6 @@ ShallowWrapper {
                                         name="siret"
                                         readOnly={undefined}
                                         renderInfo={[Function]}
-                                        required={true}
                                         size="normal"
                                         storeValue={[Function]}
                                         type="siret"
@@ -2079,7 +2071,6 @@ ShallowWrapper {
                         name="siret"
                         readOnly={undefined}
                         renderInfo={[Function]}
-                        required={true}
                         size="normal"
                         storeValue={[Function]}
                         type="siret"
@@ -2127,7 +2118,6 @@ ShallowWrapper {
                         "name": "siret",
                         "readOnly": undefined,
                         "renderInfo": [Function],
-                        "required": true,
                         "size": "normal",
                         "storeValue": [Function],
                         "type": "siret",

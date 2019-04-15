@@ -153,11 +153,9 @@ test('Une entrée avec cet identifiant existe déjà', async t => {
   await t.expect(notificationError.exists).notOk()
 })
 
-test('Il est obligatoire de saisir Le code SIRET OU le commentaire', async t => {
+test('Il est obligatoire de saisir le commentaire', async t => {
   // then
   await t
-    .expect(siretInput.hasAttribute('required'))
-    .ok('SIRET doit être requis par défaut')
     .expect(commentInput.hasAttribute('required'))
     .ok('Comment doit être requis par défaut')
 
@@ -165,17 +163,13 @@ test('Il est obligatoire de saisir Le code SIRET OU le commentaire', async t => 
   await t.typeText(siretInput, '123')
   // then
   await t
-    .expect(siretInput.hasAttribute('required'))
-    .ok('SIRET doit rester requis même saisi')
     .expect(commentInput.hasAttribute('required'))
-    .notOk('Comment ne devrait plus être requis quand SIRET est saisie')
+    .notOk("Comment n'est pas requis si le SIRET est saisi")
 
   // when
   await t.selectText(siretInput).pressKey('delete')
   // then
   await t
-    .expect(siretInput.hasAttribute('required'))
-    .ok('SIRET doit être requis par défaut')
     .expect(commentInput.hasAttribute('required'))
     .ok('Comment doit être requis à nouveau si SIRET est effacé')
 
@@ -186,7 +180,7 @@ test('Il est obligatoire de saisir Le code SIRET OU le commentaire', async t => 
     .expect(commentInput.hasAttribute('required'))
     .ok('Comment doit rester requis même saisi')
     .expect(siretInput.hasAttribute('required'))
-    .notOk('SIRET ne devrait plus être requis quand Comment est saisie')
+    .notOk("SIRET n'est pas requis")
 })
 
 test('Le code SIRET doit correspondre à un établissement de votre structure', async t => {

@@ -236,7 +236,6 @@ class RawVenue extends Component {
                   label="SIRET (si applicable)"
                   name="siret"
                   readOnly={siretVenue}
-                  required={!this.props.formComment}
                   renderInfo={() => {
                     if (isReadOnly) {
                       return
