@@ -1,6 +1,7 @@
 ul.verso-control {
+  height: 62px;
+  min-height: 62px;
   list-style: none;
-  // height: $footer-height;
 
   li {
     @extend .text-center;
