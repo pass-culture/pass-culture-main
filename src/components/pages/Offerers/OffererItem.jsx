@@ -53,7 +53,7 @@ const OffererItem = ({ offerer, physicalVenues, venues }) => {
       </li>
       <li>
         <NavLink
-          to={`/structures/${id}/lieux/nouveau`}
+          to={`/structures/${id}/lieux/creation`}
           className="has-text-primary">
           <Icon svg="ico-venue-r" /> Nouveau lieu
         </NavLink>

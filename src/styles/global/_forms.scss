@@ -70,12 +70,16 @@
   @extend .mb12;
   @extend .pb6;
   @extend .pr12;
-  @extend .fs16;
+  @extend .fs18;
+
+  color: $grey-darker;
+  font-weight: 400;
+  white-space: nowrap;
 
   .field-asterisk {
     @extend .ml2;
 
-    color: $primary;
+    color: $violet-dark;
   }
 
   &.empty {
@@ -123,9 +127,14 @@
 
 .field-textarea,
 .field-texteditor {
-  min-height: 100px;
   resize: none;
   width: 100%;
+
+  textarea {
+    overflow: hidden;
+    overflow-wrap: break-word;
+    resize: none;
+  }
 }
 
 
@@ -134,7 +143,7 @@
 .field-texteditor {
   @extend .py6;
   @extend .px18;
-  @extend .fs12;
+  @extend .fs16;
   @extend .flex-1;
   @extend .is-medium;
   @extend .no-outline;
@@ -198,6 +207,10 @@
 
 .textarea-field,
 .texteditor-field {
+  .field-label {
+    padding-top: 8px;
+    vertical-align: middle;
+  }
   .field-inner {
     width: 100%;
   }
@@ -255,6 +268,40 @@
 }
 
 .field {
+
+  &.is-label-aligned {
+    display: table-row;
+
+    .field-label, .control {
+      display: table-cell;
+    }
+
+    .field-label {
+      @extend .pb32;
+    }
+
+    .field-control {
+      display: table-cell;
+      padding-bottom: 0;
+      padding-top: 0;
+      width: 100%;
+
+      .field-value {
+
+        .field-inner {
+
+          .field-input {
+            border-radius: 20px;
+            height: 36px;
+            width: inherit;
+          }
+        }
+      }
+    }
+
+
+  }
+
   &.is-read-only {
     .field-inner {
       border: none;

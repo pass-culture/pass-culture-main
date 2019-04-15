@@ -1,0 +1,133 @@
+import PropTypes from 'prop-types'
+import React from 'react'
+
+import validateSiret from './validateSiret'
+import { Icon } from 'components/layout/Icon'
+import {
+  HiddenField,
+  TextareaField,
+  TextField,
+} from 'components/layout/form/fields'
+import { formatSire } from 'utils/sire'
+
+const IdentifierFields = ({
+  fieldReadOnlyBecauseFrozenFormSiret,
+  formSiret,
+  initialSiret,
+  isCreatedEntity,
+  isModifiedEntity,
+  withComment,
+  withSiret,
+  readOnly,
+}) => (
+  <div className="section">
+    <h2 className="main-list-title is-relative">
+      IDENTIFIANTS
+      {!readOnly && (
+        <span className="is-pulled-right is-size-7 has-text-grey">
+          Les champs marqués d'un <span className="required-legend"> * </span>{' '}
+          sont obligatoires
+        </span>
+      )}
+    </h2>
+    <div className="field-group">
+      {isCreatedEntity && <HiddenField name="managingOffererId" />}
+      {withSiret && (
+        <TextField
+          format={formatSire}
+          innerClassName="col-50"
+          label={`SIRET${isCreatedEntity ? ' (si applicable)' : ''} : `}
+          name="siret"
+          readOnly={readOnly || initialSiret}
+          renderValue={() => {
+            if (readOnly || !initialSiret) {
+              return null
+            }
+            if (fieldReadOnlyBecauseFrozenFormSiret) {
+              return (
+                <span
+                  className="button"
+                  data-place="bottom"
+                  data-tip="<p>Il n'est pas possible de modifier le nom, l'addresse et la géolocalisation du lieu quand un siret est rentré.</p>"
+                  data-type="info">
+                  <Icon svg="picto-info" />
+                </span>
+              )
+            }
+            return (
+              <span
+                className="button"
+                data-place="bottom"
+                data-tip="<div><p>Saisissez ici le SIRET du lieu lié à votre structure pour retrouver ses informations automatiquement.</p>
+  <p>Si les informations ne correspondent pas au SIRET saisi, <a href='mailto:pass@culture.gouv.fr?subject=Question%20SIRET'> contactez notre équipe</a>.</p></div>"
+                data-type="info">
+                <Icon svg="picto-info" />
+              </span>
+            )
+          }}
+          type="siret"
+          validate={validateSiret}
+        />
+      )}
+      <TextField
+        label="Nom : "
+        name="name"
+        readOnly={readOnly || fieldReadOnlyBecauseFrozenFormSiret}
+        required
+      />
+      <TextField
+        innerClassName="col-75"
+        label="E-mail : "
+        name="bookingEmail"
+        readOnly={readOnly}
+        required
+        renderValue={() => {
+          if (readOnly || !initialSiret) {
+            return null
+          }
+          return (
+            <span
+              className="button"
+              data-tip="<p>Cette adresse recevra les e-mails de notification de réservation (sauf si une autre adresse différente est saisie lors de la création d'une offre)</p>"
+              data-place="bottom"
+              data-type="info">
+              <Icon svg="picto-info" />
+            </span>
+          )
+        }}
+        type="email"
+      />
+      {withComment && (
+        <TextareaField
+          label="Commentaire (si pas de SIRET) : "
+          name="comment"
+          readOnly={readOnly || isModifiedEntity}
+          required={!formSiret}
+          rows={1}
+        />
+      )}
+    </div>
+  </div>
+)
+
+IdentifierFields.defaultProps = {
+  fieldReadOnlyBecauseFrozenFormSiret: false,
+  formSiret: null,
+  initialSiret: null,
+  readOnly: true,
+  withComment: true,
+  withSiret: true,
+}
+
+IdentifierFields.propTypes = {
+  fieldReadOnlyBecauseFrozenFormSiret: PropTypes.bool,
+  formSiret: PropTypes.string,
+  initialSiret: PropTypes.string,
+  isCreatedEntity: PropTypes.bool.isRequired,
+  isModifiedEntity: PropTypes.bool.isRequired,
+  readOnly: PropTypes.bool,
+  withComment: PropTypes.bool,
+  withSiret: PropTypes.bool,
+}
+
+export default IdentifierFields

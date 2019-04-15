@@ -1,352 +1,126 @@
+import { mount } from 'enzyme'
+import { createBrowserHistory } from 'history'
 import React from 'react'
+import { Provider, connect } from 'react-redux'
+import { Route, Router, Switch } from 'react-router-dom'
+import { compose } from 'redux'
+
 import Venue from '../Venue'
-import { shallow } from 'enzyme'
-import HeroSection from 'components/layout/HeroSection'
-import { CancelButton, Field, Form, SubmitButton } from 'pass-culture-shared'
-import { NavLink } from 'react-router-dom'
-import VenueProvidersManager from '../VenueProvidersManager'
+import mapDispatchToProps from '../mapDispatchToProps'
+import mapStateToProps from '../mapStateToProps'
+import { withFrenchQueryRouter } from '../../../../components/hocs'
+import { venueNormalizer } from '../../../../utils/normalizers'
+import { configureStore } from '../../../../utils/store'
 
-describe('src | components | pages | Venue | Venue', () => {
-  let dispatch
-  let push
-  let props
+const mockRequestDataCatch = jest.fn()
+jest.mock('redux-saga-data', () => {
+  const actualModule = jest.requireActual('redux-saga-data')
+  return {
+    ...actualModule,
+    requestData: config => {
+      mockRequestDataCatch(config)
+      return actualModule.requestData(config)
+    },
+  }
+})
 
-  beforeEach(() => {
-    dispatch = jest.fn()
-    push = jest.fn()
-    props = {
-      currentUser: {},
-      dispatch: dispatch,
-      formComment: null,
-      formLatitude: 5.15981,
-      formLongitude: -52.63452,
-      formSiret: '22222222411111',
-      history: {
-        location: {
-          pathname: '/fake',
-        },
-        push: push,
-      },
-      location: {
-        search: '',
-      },
-      match: {
-        params: {
-          offererId: 'APEQ',
-          venueId: 'AQYQ',
-        },
-      },
-      name: 'Maison de la Brique',
-      offerer: {
-        id: 'BQ',
-        name: 'Maison du chocolat',
-      },
-      user: {},
-      venuePatch: {
-        id: null,
-      },
+window.scroll = () => {}
+
+const ADDRESS = "5 cité de l'enfer"
+const CITY = 'Paboude'
+const LATITUDE = 48.3
+const LONGITUDE = 1.2
+const MANAGING_OFFERER_ID = 'AE'
+const NAME = 'foo'
+const POSTAL_CODE = '75010'
+const SIRET = '12345678912345'
+const mockSuccessSiretInfo = {
+  etablissement: {
+    code_postal: POSTAL_CODE,
+    l1_normalisee: NAME,
+    l4_normalisee: ADDRESS,
+    libelle_commune: CITY,
+    latitude: LATITUDE,
+    longitude: LONGITUDE,
+    siret: SIRET,
+  },
+}
+
+global.fetch = url => {
+  if (url.includes(SIRET)) {
+    const response = new Response(JSON.stringify(mockSuccessSiretInfo))
+    return response
+  }
+  return new Response(JSON.stringify({}))
+}
+
+const VenueContainer = compose(
+  withFrenchQueryRouter,
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )
+)(Venue)
+
+describe('src | components | pages | Venue', () => {
+  it('fill the form with a valid siret', done => {
+    // given
+    const { store } = configureStore()
+    const history = createBrowserHistory()
+    history.push(`/structures/${MANAGING_OFFERER_ID}/lieux/creation`)
+    const values = {
+      address: ADDRESS,
+      bookingEmail: 'fifi@moc.com',
+      city: CITY,
+      latitude: LATITUDE,
+      longitude: LONGITUDE,
+      managingOffererId: MANAGING_OFFERER_ID,
+      name: NAME,
+      postalCode: POSTAL_CODE,
+      siret: SIRET,
     }
-  })
+    const wrapper = mount(
+      <Provider store={store}>
+        <Router history={history}>
+          <Switch>
+            <Route path="/structures/:offererId/lieux/:venueId">
+              <VenueContainer />
+            </Route>
+          </Switch>
+        </Router>
+      </Provider>
+    )
+    wrapper
+      .find("input[name='bookingEmail']")
+      .simulate('change', { target: { value: values.bookingEmail } })
+    wrapper
+      .find("input[name='siret']")
+      .simulate('change', { target: { value: values.siret } })
 
-  describe('snapshot', () => {
-    it('should match snapshot', () => {
+    // then
+    setTimeout(() => {
       // when
-      const wrapper = shallow(<Venue {...props} />)
+      wrapper.update()
+      const submitButton = wrapper.find('button[type="submit"]')
+      expect(submitButton.props().disabled).toEqual(false)
+
+      // when
+      submitButton.simulate('submit')
 
       // then
-      expect(wrapper).toBeDefined()
-      expect(wrapper).toMatchSnapshot()
-    })
-  })
-
-  describe('render', () => {
-    it('should render component with default state', () => {
-      // when
-      const wrapper = shallow(<Venue {...props} />)
-
-      // then
-      expect(wrapper.state('isLoading')).toBe(false)
-      expect(wrapper.state('isNew')).toBe(false)
-      expect(wrapper.state('isRead')).toBe(true)
-    })
-
-    it('should not render a Form when venue is virtual', () => {
-      // given
-      props.venuePatch = {
-        isVirtual: true,
+      const expectedSubConfig = {
+        apiPath: '/venues/',
+        body: values,
+        method: 'POST',
+        normalizer: venueNormalizer,
       }
+      const receivedConfig = mockRequestDataCatch.mock.calls.slice(-1)[0][0]
+      Object.keys(expectedSubConfig).forEach(key =>
+        expect(receivedConfig[key]).toEqual(expectedSubConfig[key])
+      )
 
-      // when
-      const wrapper = shallow(<Venue {...props} />)
-
-      // then
-      const form = wrapper.find(Form)
-      expect(form).toHaveLength(0)
-    })
-
-    describe('when creating', () => {
-      beforeEach(() => {
-        props.match = {
-          params: {
-            offererId: 'APEQ',
-            venueId: 'nouveau',
-          },
-        }
-      })
-
-      it('should render component with correct state values', () => {
-        // when
-        const wrapper = shallow(<Venue {...props} />)
-
-        // then
-        expect(wrapper.state('isEdit')).toBe(false)
-        expect(wrapper.state('isLoading')).toBe(false)
-        expect(wrapper.state('isNew')).toBe(true)
-        expect(wrapper.state('isRead')).toBe(false)
-      })
-
-      it('should display a paragraph with proper title', () => {
-        // when
-        const wrapper = shallow(<Venue {...props} />)
-
-        // then
-        const heroSection = wrapper.find(HeroSection)
-        expect(heroSection.find('p')).toBeDefined()
-        expect(heroSection.find('p').prop('className')).toBe('subtitle')
-        expect(heroSection.find('p').text()).toBe(
-          'Ajoutez un lieu où accéder à vos offres.'
-        )
-      })
-
-      it('should build the proper backTo link', () => {
-        // when
-        const wrapper = shallow(<Venue {...props} />)
-
-        // then
-        expect(wrapper.prop('backTo')).toEqual({
-          label: 'Maison du chocolat',
-          path: '/structures/APEQ',
-        })
-      })
-
-      it('should display a hidden Field component', () => {
-        // when
-        const wrapper = shallow(<Venue {...props} />)
-
-        // then
-        const field = wrapper
-          .find(Form)
-          .find(Field)
-          .first()
-        expect(field).toBeDefined()
-        expect(field.prop('type')).toBe('hidden')
-        expect(field.prop('name')).toBe('managingOffererId')
-      })
-
-      it('should display a CancelButton component', () => {
-        // when
-        const wrapper = shallow(<Venue {...props} />)
-
-        // then
-        const cancelButton = wrapper.find(CancelButton)
-        expect(cancelButton).toBeDefined()
-        expect(cancelButton.prop('to')).toBe('/structures/APEQ')
-      })
-
-      it('should display a SubmitButton component', () => {
-        // when
-        const wrapper = shallow(<Venue {...props} />)
-
-        // then
-        const submitButton = wrapper.find(SubmitButton)
-        expect(submitButton.dive().text()).toBe('Créer')
-      })
-
-      it('should display a comment Field component', () => {
-        // when
-        const wrapper = shallow(<Venue {...props} />)
-
-        // then
-        const firstFieldGroup = wrapper.find('.field-group').first()
-        const lastField = firstFieldGroup.find(Field).last()
-        expect(lastField).toBeDefined()
-        expect(lastField.prop('label')).toBe('Commentaire (si pas de SIRET)')
-        expect(lastField.prop('name')).toBe('comment')
-        expect(lastField.prop('type')).toBe('textarea')
-        expect(lastField.prop('required')).toBe(false)
-      })
-
-      it('should not display a NavLink component', () => {
-        // when
-        const wrapper = shallow(<Venue {...props} />)
-
-        // then
-        const heroSection = wrapper.find(HeroSection)
-        expect(heroSection.find(NavLink)).toHaveLength(0)
-      })
-
-      it('should not display a VenueProvidersManager component', () => {
-        // when
-        const wrapper = shallow(<Venue {...props} />)
-
-        // then
-        expect(wrapper.find(VenueProvidersManager)).toHaveLength(0)
-      })
-    })
-
-    describe('when editing', () => {
-      beforeEach(() => {
-        props.location = {
-          search: '?modifie',
-        }
-        props.match = {
-          params: {
-            offererId: 'APEQ',
-            venueId: 'AQYQ',
-          },
-        }
-      })
-
-      it('should render component with correct state values', () => {
-        // when
-        const wrapper = shallow(<Venue {...props} />)
-
-        // then
-        expect(wrapper.state('isEdit')).toBe(true)
-        expect(wrapper.state('isLoading')).toBe(false)
-        expect(wrapper.state('isNew')).toBe(false)
-        expect(wrapper.state('isRead')).toBe(false)
-      })
-    })
-
-    describe('when reading', () => {
-      it('should render component with correct state values', () => {
-        // when
-        const wrapper = shallow(<Venue {...props} />)
-
-        // then
-        expect(wrapper.state('isEdit')).toBe(false)
-        expect(wrapper.state('isLoading')).toBe(false)
-        expect(wrapper.state('isNew')).toBe(false)
-        expect(wrapper.state('isRead')).toBe(true)
-      })
-    })
-  })
-
-  describe('when requesting API', () => {
-    describe('handleSuccess', () => {
-      describe('when creating a venue', () => {
-        const action = {
-          config: {
-            apiPath: '/venues/CM',
-            method: 'POST',
-          },
-          payload: {
-            datum: {
-              id: 'CM',
-            },
-          },
-        }
-
-        it('should redirect to venue details', () => {
-          // given
-          const wrapper = shallow(<Venue {...props} />)
-          const state = wrapper.state()
-
-          // when
-          wrapper.instance().handleSuccess(state, action)
-
-          // then
-          expect(push).toHaveBeenCalledWith('/structures/BQ/lieux/CM')
-        })
-
-        it('should dispatch a success message with valid message when venue is created', () => {
-          // given
-          const wrapper = shallow(<Venue {...props} />)
-          const state = wrapper.state()
-
-          // when
-          wrapper.instance().handleSuccess(state, action)
-
-          // then
-          expect(dispatch).toHaveBeenCalled()
-        })
-      })
-
-      describe('when editing a venue', () => {
-        const action = {
-          config: {
-            apiPath: '/venues/CM',
-            method: 'PATCH',
-          },
-          payload: {
-            datum: {
-              id: 'CM',
-            },
-          },
-        }
-
-        it('should redirect to venue details', () => {
-          // given
-          const wrapper = shallow(<Venue {...props} />)
-          const state = wrapper.state()
-
-          // when
-          wrapper.instance().handleSuccess(state, action)
-
-          // then
-          expect(push).toHaveBeenCalledWith('/structures/BQ/lieux/CM')
-        })
-
-        it('should dispatch a success message with valid message when venue is modified', () => {
-          // given
-          const wrapper = shallow(<Venue {...props} />)
-          const state = wrapper.state()
-
-          // when
-          wrapper.instance().handleSuccess(state, action)
-
-          // then
-          expect(dispatch).toHaveBeenCalledWith({
-            patch: {
-              text: 'Lieu modifié avec succès !',
-              type: 'success',
-            },
-            type: 'SHOW_NOTIFICATION',
-          })
-        })
-      })
-    })
-
-    describe('handleDataRequest', () => {
-      it('should dispatch actions to update existing venue', () => {
-        // given
-        const wrapper = shallow(<Venue {...props} />)
-
-        // when
-        wrapper.instance().handleDataRequest(jest.fn(), jest.fn())
-
-        // then
-        expect(dispatch.mock.calls[0][0]).toEqual({
-          config: {
-            apiPath: '/offerers/APEQ',
-            handleFail: expect.any(Function),
-            handleSuccess: expect.any(Function),
-            method: 'GET',
-            normalizer: {
-              managedVenues: {
-                normalizer: { offers: 'offers' },
-                stateKey: 'venues',
-              },
-            },
-          },
-          type: 'REQUEST_DATA_GET_/OFFERERS/APEQ',
-        })
-        expect(dispatch.mock.calls[1][0]).toEqual({
-          config: { apiPath: '/userOfferers/APEQ', method: 'GET' },
-          type: 'REQUEST_DATA_GET_/USEROFFERERS/APEQ',
-        })
-      })
+      // done
+      done()
     })
   })
 })

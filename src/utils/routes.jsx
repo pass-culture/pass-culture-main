@@ -7,13 +7,13 @@ import Home from '../components/pages/Home'
 import Mediation from '../components/pages/Mediation'
 import Offers from '../components/pages/Offers'
 import Offer from '../components/pages/Offer'
-import Offerer from '../components/pages/Offerer'
+import OffererContainer from '../components/pages/Offerer/OffererContainer'
 import Offerers from '../components/pages/Offerers'
 import Profile from '../components/pages/Profile'
 import Signin from '../components/pages/Signin'
 import Signup from '../components/pages/Signup'
 import Terms from '../components/pages/Terms'
-import Venue from '../components/pages/Venue/VenueContainer'
+import VenueContainer from '../components/pages/Venue/VenueContainer'
 import LostPassword from '../components/pages/LostPassword'
 import SignupValidationContainer from '../components/pages/Signup/validation/SignupValidationContainer'
 
@@ -69,17 +69,17 @@ const routes = [
     title: 'Structures',
   },
   {
-    component: Offerer,
+    component: OffererContainer,
     path: '/structures/:offererId',
     title: 'Structure',
   },
   {
-    component: Venue,
+    component: VenueContainer,
     path: '/structures/:offererId/lieux/:venueId',
     title: 'Lieu',
   },
   {
-    component: Venue,
+    component: VenueContainer,
     path: '/structures/:offererId/lieux/:venueId/fournisseurs/:venueProviderId',
     title: 'Lieu',
   },

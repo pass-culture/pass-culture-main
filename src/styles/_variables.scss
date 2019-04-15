@@ -26,6 +26,7 @@ $purple:       hsl(271, 100%, 71%) !default;
 $red: #EB0055;
 $turquoise:    hsl(171, 100%, 41%) !default;
 $violet: #bd10e0;
+$violet-dark: rgb(189, 16, 224);
 $white-ter:    hsl(0, 0%, 96%) !default;
 $white-bis:    hsl(0, 0%, 98%) !default;
 $white:        hsl(0, 0%, 100%) !default;
@@ -143,6 +144,7 @@ $marginPaddingIntSizes: (
   6,
   7,
   8,
+  10,
   12,
   16,
   18,

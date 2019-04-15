@@ -1,43 +1,15 @@
-export const VENUE_EDIT_PATCH_KEYS = ['bookingEmail', 'name', 'publicName']
-
-export const VENUE_NEW_PATCH_KEYS = [
-  'address',
-  'bic',
-  'bookingEmail',
-  'city',
-  'comment',
-  'iban',
-  'latitude',
-  'longitude',
-  'managingOffererId',
-  'name',
-  'publicName',
-  'postalCode',
-  'siret',
-]
-
-export const OFFERER_NEW_PATCH_KEYS = [
-  'address',
-  'city',
-  'name',
-  'siren',
-  'postalCode',
-]
-
-export const OFFERER_EDIT_PATCH_KEYS = ['bic', 'iban', 'rib']
-
 export const formatPatch = (
   patch,
   config,
-  newFormKeys,
-  editFormPermittedKeys
+  creationFormKeys,
+  modificationFormPermittedKeys
 ) => {
-  const { isNew } = config || {}
+  const { isCreatedEntity } = config || {}
   const formPatch = {}
 
-  let patchKeys = editFormPermittedKeys
-  if (isNew) {
-    patchKeys = newFormKeys
+  let patchKeys = modificationFormPermittedKeys
+  if (isCreatedEntity) {
+    patchKeys = creationFormKeys
   }
 
   patchKeys.forEach(key => {

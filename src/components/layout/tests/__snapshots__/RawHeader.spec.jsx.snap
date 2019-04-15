@@ -6,11 +6,11 @@ ShallowWrapper {
   Symbol(enzyme.__unrendered__): <RawHeader
     name="Fake Name"
     offerers={
-        Array [
-            Object {},
-          ]
+      Array [
+        Object {},
+      ]
     }
-/>,
+  />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
     "checkPropTypes": [Function],
@@ -27,141 +27,140 @@ ShallowWrapper {
     "props": Object {
       "children": <div
         className="container"
->
+      >
         <div
-                className="navbar-brand"
+          className="navbar-brand"
         >
-                <Logo
-                        className="navbar-item"
-                        whiteHeader={undefined}
+          <Logo
+            className="navbar-item"
+          />
+          <span
+            className="navbar-burger"
+            onClick={[Function]}
+          >
+            <span />
+            <span />
+            <span />
+          </span>
+        </div>
+        <div
+          className="navbar-menu"
+        >
+          <div
+            className="navbar-end"
+          >
+            <NavLink
+              activeClassName="active"
+              aria-current="page"
+              className="navbar-item"
+              to="/guichet"
+            >
+              <span
+                className="icon"
+              >
+                <Icon
+                  svg="ico-guichet-w"
                 />
+              </span>
+              <span>
+                Guichet
+              </span>
+            </NavLink>
+            <NavLink
+              activeClassName="active"
+              aria-current="page"
+              className="navbar-item"
+              to="/offres"
+            >
+              <span
+                className="icon"
+              >
+                <Icon
+                  svg="ico-offres-w"
+                />
+              </span>
+              <span>
+                Vos offres
+              </span>
+            </NavLink>
+            <div
+              className="navbar-item has-dropdown is-hoverable"
+            >
+              <NavLink
+                activeClassName="active"
+                aria-current="page"
+                className="navbar-link"
+                to="#"
+              >
                 <span
-                        className="navbar-burger"
-                        onClick={[Function]}
+                  className="icon"
                 >
-                        <span />
-                        <span />
-                        <span />
+                  <Icon
+                    svg="ico-user-circled-w"
+                  />
                 </span>
-        </div>
-        <div
-                className="navbar-menu"
-        >
-                <div
-                        className="navbar-end"
+                <span>
+                  Fake Name
+                </span>
+              </NavLink>
+              <div
+                className="navbar-dropdown is-right"
+              >
+                <NavLink
+                  activeClassName="active"
+                  aria-current="page"
+                  className="navbar-item"
+                  to="/profil"
                 >
-                        <NavLink
-                                activeClassName="active"
-                                aria-current="page"
-                                className="navbar-item"
-                                to="/guichet"
-                        >
-                                <span
-                                        className="icon"
-                                >
-                                        <Icon
-                                                svg="ico-guichet-w"
-                                        />
-                                </span>
-                                <span>
-                                        Guichet
-                                </span>
-                        </NavLink>
-                        <NavLink
-                                activeClassName="active"
-                                aria-current="page"
-                                className="navbar-item"
-                                to="/offres"
-                        >
-                                <span
-                                        className="icon"
-                                >
-                                        <Icon
-                                                svg="ico-offres-w"
-                                        />
-                                </span>
-                                <span>
-                                        Vos offres
-                                </span>
-                        </NavLink>
-                        <div
-                                className="navbar-item has-dropdown is-hoverable"
-                        >
-                                <NavLink
-                                        activeClassName="active"
-                                        aria-current="page"
-                                        className="navbar-link"
-                                        to="#"
-                                >
-                                        <span
-                                                className="icon"
-                                        >
-                                                <Icon
-                                                        svg="ico-user-circled-w"
-                                                />
-                                        </span>
-                                        <span>
-                                                Fake Name
-                                        </span>
-                                </NavLink>
-                                <div
-                                        className="navbar-dropdown is-right"
-                                >
-                                        <NavLink
-                                                activeClassName="active"
-                                                aria-current="page"
-                                                className="navbar-item"
-                                                to="/profil"
-                                        >
-                                                <span
-                                                        className="icon"
-                                                >
-                                                        <Icon
-                                                                svg="ico-user"
-                                                        />
-                                                </span>
-                                                <span>
-                                                        Profil
-                                                </span>
-                                        </NavLink>
-                                        <NavLink
-                                                activeClassName="active"
-                                                aria-current="page"
-                                                className="navbar-item"
-                                                to="/structures"
-                                        >
-                                                <span
-                                                        className="icon"
-                                                >
-                                                        <Icon
-                                                                svg="ico-structure-r"
-                                                        />
-                                                </span>
-                                                <span>
-                                                        Votre structure juridique
-                                                </span>
-                                        </NavLink>
-                                        <withRouter(Connect(SignoutButton))
-                                                Tag="a"
-                                                className="navbar-item"
-                                                handleSuccessRedirect={[Function]}
-                                        >
-                                                <span
-                                                        className="icon"
-                                                >
-                                                        <Icon
-                                                                svg="ico-deconnect"
-                                                        />
-                                                </span>
-                                                <span>
-                                                        Déconnexion
-                                                </span>
-                                        </withRouter(Connect(SignoutButton))>
-                                </div>
-                        </div>
-                </div>
+                  <span
+                    className="icon"
+                  >
+                    <Icon
+                      svg="ico-user"
+                    />
+                  </span>
+                  <span>
+                    Profil
+                  </span>
+                </NavLink>
+                <NavLink
+                  activeClassName="active"
+                  aria-current="page"
+                  className="navbar-item"
+                  to="/structures"
+                >
+                  <span
+                    className="icon"
+                  >
+                    <Icon
+                      svg="ico-structure-r"
+                    />
+                  </span>
+                  <span>
+                    Votre structure juridique
+                  </span>
+                </NavLink>
+                <withRouter(Connect(SignoutButton))
+                  Tag="a"
+                  className="navbar-item"
+                  handleSuccessRedirect={[Function]}
+                >
+                  <span
+                    className="icon"
+                  >
+                    <Icon
+                      svg="ico-deconnect"
+                    />
+                  </span>
+                  <span>
+                    Déconnexion
+                  </span>
+                </withRouter(Connect(SignoutButton))>
+              </div>
+            </div>
+          </div>
         </div>
-</div>,
+      </div>,
       "className": "navbar is-primary",
     },
     "ref": null,
@@ -173,137 +172,136 @@ ShallowWrapper {
         "children": Array [
           <div
             className="navbar-brand"
->
+          >
             <Logo
-                        className="navbar-item"
-                        whiteHeader={undefined}
+              className="navbar-item"
             />
             <span
-                        className="navbar-burger"
-                        onClick={[Function]}
+              className="navbar-burger"
+              onClick={[Function]}
             >
-                        <span />
-                        <span />
-                        <span />
+              <span />
+              <span />
+              <span />
             </span>
-</div>,
+          </div>,
           <div
             className="navbar-menu"
->
+          >
             <div
-                        className="navbar-end"
+              className="navbar-end"
             >
-                        <NavLink
-                                    activeClassName="active"
-                                    aria-current="page"
-                                    className="navbar-item"
-                                    to="/guichet"
-                        >
-                                    <span
-                                                className="icon"
-                                    >
-                                                <Icon
-                                                            svg="ico-guichet-w"
-                                                />
-                                    </span>
-                                    <span>
-                                                Guichet
-                                    </span>
-                        </NavLink>
-                        <NavLink
-                                    activeClassName="active"
-                                    aria-current="page"
-                                    className="navbar-item"
-                                    to="/offres"
-                        >
-                                    <span
-                                                className="icon"
-                                    >
-                                                <Icon
-                                                            svg="ico-offres-w"
-                                                />
-                                    </span>
-                                    <span>
-                                                Vos offres
-                                    </span>
-                        </NavLink>
-                        <div
-                                    className="navbar-item has-dropdown is-hoverable"
-                        >
-                                    <NavLink
-                                                activeClassName="active"
-                                                aria-current="page"
-                                                className="navbar-link"
-                                                to="#"
-                                    >
-                                                <span
-                                                            className="icon"
-                                                >
-                                                            <Icon
-                                                                        svg="ico-user-circled-w"
-                                                            />
-                                                </span>
-                                                <span>
-                                                            Fake Name
-                                                </span>
-                                    </NavLink>
-                                    <div
-                                                className="navbar-dropdown is-right"
-                                    >
-                                                <NavLink
-                                                            activeClassName="active"
-                                                            aria-current="page"
-                                                            className="navbar-item"
-                                                            to="/profil"
-                                                >
-                                                            <span
-                                                                        className="icon"
-                                                            >
-                                                                        <Icon
-                                                                                    svg="ico-user"
-                                                                        />
-                                                            </span>
-                                                            <span>
-                                                                        Profil
-                                                            </span>
-                                                </NavLink>
-                                                <NavLink
-                                                            activeClassName="active"
-                                                            aria-current="page"
-                                                            className="navbar-item"
-                                                            to="/structures"
-                                                >
-                                                            <span
-                                                                        className="icon"
-                                                            >
-                                                                        <Icon
-                                                                                    svg="ico-structure-r"
-                                                                        />
-                                                            </span>
-                                                            <span>
-                                                                        Votre structure juridique
-                                                            </span>
-                                                </NavLink>
-                                                <withRouter(Connect(SignoutButton))
-                                                            Tag="a"
-                                                            className="navbar-item"
-                                                            handleSuccessRedirect={[Function]}
-                                                >
-                                                            <span
-                                                                        className="icon"
-                                                            >
-                                                                        <Icon
-                                                                                    svg="ico-deconnect"
-                                                                        />
-                                                            </span>
-                                                            <span>
-                                                                        Déconnexion
-                                                            </span>
-                                                </withRouter(Connect(SignoutButton))>
-                                    </div>
-                        </div>
+              <NavLink
+                activeClassName="active"
+                aria-current="page"
+                className="navbar-item"
+                to="/guichet"
+              >
+                <span
+                  className="icon"
+                >
+                  <Icon
+                    svg="ico-guichet-w"
+                  />
+                </span>
+                <span>
+                  Guichet
+                </span>
+              </NavLink>
+              <NavLink
+                activeClassName="active"
+                aria-current="page"
+                className="navbar-item"
+                to="/offres"
+              >
+                <span
+                  className="icon"
+                >
+                  <Icon
+                    svg="ico-offres-w"
+                  />
+                </span>
+                <span>
+                  Vos offres
+                </span>
+              </NavLink>
+              <div
+                className="navbar-item has-dropdown is-hoverable"
+              >
+                <NavLink
+                  activeClassName="active"
+                  aria-current="page"
+                  className="navbar-link"
+                  to="#"
+                >
+                  <span
+                    className="icon"
+                  >
+                    <Icon
+                      svg="ico-user-circled-w"
+                    />
+                  </span>
+                  <span>
+                    Fake Name
+                  </span>
+                </NavLink>
+                <div
+                  className="navbar-dropdown is-right"
+                >
+                  <NavLink
+                    activeClassName="active"
+                    aria-current="page"
+                    className="navbar-item"
+                    to="/profil"
+                  >
+                    <span
+                      className="icon"
+                    >
+                      <Icon
+                        svg="ico-user"
+                      />
+                    </span>
+                    <span>
+                      Profil
+                    </span>
+                  </NavLink>
+                  <NavLink
+                    activeClassName="active"
+                    aria-current="page"
+                    className="navbar-item"
+                    to="/structures"
+                  >
+                    <span
+                      className="icon"
+                    >
+                      <Icon
+                        svg="ico-structure-r"
+                      />
+                    </span>
+                    <span>
+                      Votre structure juridique
+                    </span>
+                  </NavLink>
+                  <withRouter(Connect(SignoutButton))
+                    Tag="a"
+                    className="navbar-item"
+                    handleSuccessRedirect={[Function]}
+                  >
+                    <span
+                      className="icon"
+                    >
+                      <Icon
+                        svg="ico-deconnect"
+                      />
+                    </span>
+                    <span>
+                      Déconnexion
+                    </span>
+                  </withRouter(Connect(SignoutButton))>
+                </div>
+              </div>
             </div>
-</div>,
+          </div>,
         ],
         "className": "container",
       },
@@ -317,16 +315,15 @@ ShallowWrapper {
             "children": Array [
               <Logo
                 className="navbar-item"
-                whiteHeader={undefined}
-/>,
+              />,
               <span
                 className="navbar-burger"
                 onClick={[Function]}
->
+              >
                 <span />
                 <span />
                 <span />
-</span>,
+              </span>,
             ],
             "className": "navbar-brand",
           },
@@ -399,117 +396,117 @@ ShallowWrapper {
           "props": Object {
             "children": <div
               className="navbar-end"
->
+            >
               <NavLink
-                            activeClassName="active"
-                            aria-current="page"
-                            className="navbar-item"
-                            to="/guichet"
+                activeClassName="active"
+                aria-current="page"
+                className="navbar-item"
+                to="/guichet"
               >
-                            <span
-                                          className="icon"
-                            >
-                                          <Icon
-                                                        svg="ico-guichet-w"
-                                          />
-                            </span>
-                            <span>
-                                          Guichet
-                            </span>
+                <span
+                  className="icon"
+                >
+                  <Icon
+                    svg="ico-guichet-w"
+                  />
+                </span>
+                <span>
+                  Guichet
+                </span>
               </NavLink>
               <NavLink
-                            activeClassName="active"
-                            aria-current="page"
-                            className="navbar-item"
-                            to="/offres"
+                activeClassName="active"
+                aria-current="page"
+                className="navbar-item"
+                to="/offres"
               >
-                            <span
-                                          className="icon"
-                            >
-                                          <Icon
-                                                        svg="ico-offres-w"
-                                          />
-                            </span>
-                            <span>
-                                          Vos offres
-                            </span>
+                <span
+                  className="icon"
+                >
+                  <Icon
+                    svg="ico-offres-w"
+                  />
+                </span>
+                <span>
+                  Vos offres
+                </span>
               </NavLink>
               <div
-                            className="navbar-item has-dropdown is-hoverable"
+                className="navbar-item has-dropdown is-hoverable"
               >
-                            <NavLink
-                                          activeClassName="active"
-                                          aria-current="page"
-                                          className="navbar-link"
-                                          to="#"
-                            >
-                                          <span
-                                                        className="icon"
-                                          >
-                                                        <Icon
-                                                                      svg="ico-user-circled-w"
-                                                        />
-                                          </span>
-                                          <span>
-                                                        Fake Name
-                                          </span>
-                            </NavLink>
-                            <div
-                                          className="navbar-dropdown is-right"
-                            >
-                                          <NavLink
-                                                        activeClassName="active"
-                                                        aria-current="page"
-                                                        className="navbar-item"
-                                                        to="/profil"
-                                          >
-                                                        <span
-                                                                      className="icon"
-                                                        >
-                                                                      <Icon
-                                                                                    svg="ico-user"
-                                                                      />
-                                                        </span>
-                                                        <span>
-                                                                      Profil
-                                                        </span>
-                                          </NavLink>
-                                          <NavLink
-                                                        activeClassName="active"
-                                                        aria-current="page"
-                                                        className="navbar-item"
-                                                        to="/structures"
-                                          >
-                                                        <span
-                                                                      className="icon"
-                                                        >
-                                                                      <Icon
-                                                                                    svg="ico-structure-r"
-                                                                      />
-                                                        </span>
-                                                        <span>
-                                                                      Votre structure juridique
-                                                        </span>
-                                          </NavLink>
-                                          <withRouter(Connect(SignoutButton))
-                                                        Tag="a"
-                                                        className="navbar-item"
-                                                        handleSuccessRedirect={[Function]}
-                                          >
-                                                        <span
-                                                                      className="icon"
-                                                        >
-                                                                      <Icon
-                                                                                    svg="ico-deconnect"
-                                                                      />
-                                                        </span>
-                                                        <span>
-                                                                      Déconnexion
-                                                        </span>
-                                          </withRouter(Connect(SignoutButton))>
-                            </div>
+                <NavLink
+                  activeClassName="active"
+                  aria-current="page"
+                  className="navbar-link"
+                  to="#"
+                >
+                  <span
+                    className="icon"
+                  >
+                    <Icon
+                      svg="ico-user-circled-w"
+                    />
+                  </span>
+                  <span>
+                    Fake Name
+                  </span>
+                </NavLink>
+                <div
+                  className="navbar-dropdown is-right"
+                >
+                  <NavLink
+                    activeClassName="active"
+                    aria-current="page"
+                    className="navbar-item"
+                    to="/profil"
+                  >
+                    <span
+                      className="icon"
+                    >
+                      <Icon
+                        svg="ico-user"
+                      />
+                    </span>
+                    <span>
+                      Profil
+                    </span>
+                  </NavLink>
+                  <NavLink
+                    activeClassName="active"
+                    aria-current="page"
+                    className="navbar-item"
+                    to="/structures"
+                  >
+                    <span
+                      className="icon"
+                    >
+                      <Icon
+                        svg="ico-structure-r"
+                      />
+                    </span>
+                    <span>
+                      Votre structure juridique
+                    </span>
+                  </NavLink>
+                  <withRouter(Connect(SignoutButton))
+                    Tag="a"
+                    className="navbar-item"
+                    handleSuccessRedirect={[Function]}
+                  >
+                    <span
+                      className="icon"
+                    >
+                      <Icon
+                        svg="ico-deconnect"
+                      />
+                    </span>
+                    <span>
+                      Déconnexion
+                    </span>
+                  </withRouter(Connect(SignoutButton))>
+                </div>
               </div>
-</div>,
+            </div>,
             "className": "navbar-menu",
           },
           "ref": null,
@@ -524,110 +521,110 @@ ShallowWrapper {
                   aria-current="page"
                   className="navbar-item"
                   to="/guichet"
->
+                >
                   <span
-                                    className="icon"
+                    className="icon"
                   >
-                                    <Icon
-                                                      svg="ico-guichet-w"
-                                    />
+                    <Icon
+                      svg="ico-guichet-w"
+                    />
                   </span>
                   <span>
-                                    Guichet
+                    Guichet
                   </span>
-</NavLink>,
+                </NavLink>,
                 <NavLink
                   activeClassName="active"
                   aria-current="page"
                   className="navbar-item"
                   to="/offres"
->
+                >
                   <span
-                                    className="icon"
+                    className="icon"
                   >
-                                    <Icon
-                                                      svg="ico-offres-w"
-                                    />
+                    <Icon
+                      svg="ico-offres-w"
+                    />
                   </span>
                   <span>
-                                    Vos offres
+                    Vos offres
                   </span>
-</NavLink>,
+                </NavLink>,
                 <div
                   className="navbar-item has-dropdown is-hoverable"
->
+                >
                   <NavLink
-                                    activeClassName="active"
-                                    aria-current="page"
-                                    className="navbar-link"
-                                    to="#"
+                    activeClassName="active"
+                    aria-current="page"
+                    className="navbar-link"
+                    to="#"
                   >
-                                    <span
-                                                      className="icon"
-                                    >
-                                                      <Icon
-                                                                        svg="ico-user-circled-w"
-                                                      />
-                                    </span>
-                                    <span>
-                                                      Fake Name
-                                    </span>
+                    <span
+                      className="icon"
+                    >
+                      <Icon
+                        svg="ico-user-circled-w"
+                      />
+                    </span>
+                    <span>
+                      Fake Name
+                    </span>
                   </NavLink>
                   <div
-                                    className="navbar-dropdown is-right"
+                    className="navbar-dropdown is-right"
                   >
-                                    <NavLink
-                                                      activeClassName="active"
-                                                      aria-current="page"
-                                                      className="navbar-item"
-                                                      to="/profil"
-                                    >
-                                                      <span
-                                                                        className="icon"
-                                                      >
-                                                                        <Icon
-                                                                                          svg="ico-user"
-                                                                        />
-                                                      </span>
-                                                      <span>
-                                                                        Profil
-                                                      </span>
-                                    </NavLink>
-                                    <NavLink
-                                                      activeClassName="active"
-                                                      aria-current="page"
-                                                      className="navbar-item"
-                                                      to="/structures"
-                                    >
-                                                      <span
-                                                                        className="icon"
-                                                      >
-                                                                        <Icon
-                                                                                          svg="ico-structure-r"
-                                                                        />
-                                                      </span>
-                                                      <span>
-                                                                        Votre structure juridique
-                                                      </span>
-                                    </NavLink>
-                                    <withRouter(Connect(SignoutButton))
-                                                      Tag="a"
-                                                      className="navbar-item"
-                                                      handleSuccessRedirect={[Function]}
-                                    >
-                                                      <span
-                                                                        className="icon"
-                                                      >
-                                                                        <Icon
-                                                                                          svg="ico-deconnect"
-                                                                        />
-                                                      </span>
-                                                      <span>
-                                                                        Déconnexion
-                                                      </span>
-                                    </withRouter(Connect(SignoutButton))>
+                    <NavLink
+                      activeClassName="active"
+                      aria-current="page"
+                      className="navbar-item"
+                      to="/profil"
+                    >
+                      <span
+                        className="icon"
+                      >
+                        <Icon
+                          svg="ico-user"
+                        />
+                      </span>
+                      <span>
+                        Profil
+                      </span>
+                    </NavLink>
+                    <NavLink
+                      activeClassName="active"
+                      aria-current="page"
+                      className="navbar-item"
+                      to="/structures"
+                    >
+                      <span
+                        className="icon"
+                      >
+                        <Icon
+                          svg="ico-structure-r"
+                        />
+                      </span>
+                      <span>
+                        Votre structure juridique
+                      </span>
+                    </NavLink>
+                    <withRouter(Connect(SignoutButton))
+                      Tag="a"
+                      className="navbar-item"
+                      handleSuccessRedirect={[Function]}
+                    >
+                      <span
+                        className="icon"
+                      >
+                        <Icon
+                          svg="ico-deconnect"
+                        />
+                      </span>
+                      <span>
+                        Déconnexion
+                      </span>
+                    </withRouter(Connect(SignoutButton))>
                   </div>
-</div>,
+                </div>,
               ],
               "className": "navbar-end",
             },
@@ -643,14 +640,14 @@ ShallowWrapper {
                   "children": Array [
                     <span
                       className="icon"
->
+                    >
                       <Icon
-                                            svg="ico-guichet-w"
+                        svg="ico-guichet-w"
                       />
-</span>,
+                    </span>,
                     <span>
                       Guichet
-</span>,
+                    </span>,
                   ],
                   "className": "navbar-item",
                   "to": "/guichet",
@@ -664,7 +661,7 @@ ShallowWrapper {
                     "props": Object {
                       "children": <Icon
                         svg="ico-guichet-w"
-/>,
+                      />,
                       "className": "icon",
                     },
                     "ref": null,
@@ -705,14 +702,14 @@ ShallowWrapper {
                   "children": Array [
                     <span
                       className="icon"
->
+                    >
                       <Icon
-                                            svg="ico-offres-w"
+                        svg="ico-offres-w"
                       />
-</span>,
+                    </span>,
                     <span>
                       Vos offres
-</span>,
+                    </span>,
                   ],
                   "className": "navbar-item",
                   "to": "/offres",
@@ -726,7 +723,7 @@ ShallowWrapper {
                     "props": Object {
                       "children": <Icon
                         svg="ico-offres-w"
-/>,
+                      />,
                       "className": "icon",
                     },
                     "ref": null,
@@ -768,72 +765,72 @@ ShallowWrapper {
                       aria-current="page"
                       className="navbar-link"
                       to="#"
->
+                    >
                       <span
-                                            className="icon"
+                        className="icon"
                       >
-                                            <Icon
-                                                                  svg="ico-user-circled-w"
-                                            />
+                        <Icon
+                          svg="ico-user-circled-w"
+                        />
                       </span>
                       <span>
-                                            Fake Name
+                        Fake Name
                       </span>
-</NavLink>,
+                    </NavLink>,
                     <div
                       className="navbar-dropdown is-right"
->
+                    >
                       <NavLink
-                                            activeClassName="active"
-                                            aria-current="page"
-                                            className="navbar-item"
-                                            to="/profil"
+                        activeClassName="active"
+                        aria-current="page"
+                        className="navbar-item"
+                        to="/profil"
                       >
-                                            <span
-                                                                  className="icon"
-                                            >
-                                                                  <Icon
-                                                                                        svg="ico-user"
-                                                                  />
-                                            </span>
-                                            <span>
-                                                                  Profil
-                                            </span>
+                        <span
+                          className="icon"
+                        >
+                          <Icon
+                            svg="ico-user"
+                          />
+                        </span>
+                        <span>
+                          Profil
+                        </span>
                       </NavLink>
                       <NavLink
-                                            activeClassName="active"
-                                            aria-current="page"
-                                            className="navbar-item"
-                                            to="/structures"
+                        activeClassName="active"
+                        aria-current="page"
+                        className="navbar-item"
+                        to="/structures"
                       >
-                                            <span
-                                                                  className="icon"
-                                            >
-                                                                  <Icon
-                                                                                        svg="ico-structure-r"
-                                                                  />
-                                            </span>
-                                            <span>
-                                                                  Votre structure juridique
-                                            </span>
+                        <span
+                          className="icon"
+                        >
+                          <Icon
+                            svg="ico-structure-r"
+                          />
+                        </span>
+                        <span>
+                          Votre structure juridique
+                        </span>
                       </NavLink>
                       <withRouter(Connect(SignoutButton))
-                                            Tag="a"
-                                            className="navbar-item"
-                                            handleSuccessRedirect={[Function]}
+                        Tag="a"
+                        className="navbar-item"
+                        handleSuccessRedirect={[Function]}
                       >
-                                            <span
-                                                                  className="icon"
-                                            >
-                                                                  <Icon
-                                                                                        svg="ico-deconnect"
-                                                                  />
-                                            </span>
-                                            <span>
-                                                                  Déconnexion
-                                            </span>
+                        <span
+                          className="icon"
+                        >
+                          <Icon
+                            svg="ico-deconnect"
+                          />
+                        </span>
+                        <span>
+                          Déconnexion
+                        </span>
                       </withRouter(Connect(SignoutButton))>
-</div>,
+                    </div>,
                   ],
                   "className": "navbar-item has-dropdown is-hoverable",
                 },
@@ -849,14 +846,14 @@ ShallowWrapper {
                       "children": Array [
                         <span
                           className="icon"
->
+                        >
                           <Icon
-                                                    svg="ico-user-circled-w"
+                            svg="ico-user-circled-w"
                           />
-</span>,
+                        </span>,
                         <span>
                           Fake Name
-</span>,
+                        </span>,
                       ],
                       "className": "navbar-link",
                       "to": "#",
@@ -870,7 +867,7 @@ ShallowWrapper {
                         "props": Object {
                           "children": <Icon
                             svg="ico-user-circled-w"
-/>,
+                          />,
                           "className": "icon",
                         },
                         "ref": null,
@@ -912,53 +909,53 @@ ShallowWrapper {
                           aria-current="page"
                           className="navbar-item"
                           to="/profil"
->
+                        >
                           <span
-                                                    className="icon"
+                            className="icon"
                           >
-                                                    <Icon
-                                                                              svg="ico-user"
-                                                    />
+                            <Icon
+                              svg="ico-user"
+                            />
                           </span>
                           <span>
-                                                    Profil
+                            Profil
                           </span>
-</NavLink>,
+                        </NavLink>,
                         <NavLink
                           activeClassName="active"
                           aria-current="page"
                           className="navbar-item"
                           to="/structures"
->
+                        >
                           <span
-                                                    className="icon"
+                            className="icon"
                           >
-                                                    <Icon
-                                                                              svg="ico-structure-r"
-                                                    />
+                            <Icon
+                              svg="ico-structure-r"
+                            />
                           </span>
                           <span>
-                                                    Votre structure juridique
+                            Votre structure juridique
                           </span>
-</NavLink>,
+                        </NavLink>,
                         false,
                         false,
                         <withRouter(Connect(SignoutButton))
                           Tag="a"
                           className="navbar-item"
                           handleSuccessRedirect={[Function]}
->
+                        >
                           <span
-                                                    className="icon"
+                            className="icon"
                           >
-                                                    <Icon
-                                                                              svg="ico-deconnect"
-                                                    />
+                            <Icon
+                              svg="ico-deconnect"
+                            />
                           </span>
                           <span>
-                                                    Déconnexion
+                            Déconnexion
                           </span>
-</withRouter(Connect(SignoutButton))>,
+                        </withRouter(Connect(SignoutButton))>,
                       ],
                       "className": "navbar-dropdown is-right",
                     },
@@ -974,14 +971,14 @@ ShallowWrapper {
                           "children": Array [
                             <span
                               className="icon"
->
+                            >
                               <Icon
-                                                            svg="ico-user"
+                                svg="ico-user"
                               />
-</span>,
+                            </span>,
                             <span>
                               Profil
-</span>,
+                            </span>,
                           ],
                           "className": "navbar-item",
                           "to": "/profil",
@@ -995,7 +992,7 @@ ShallowWrapper {
                             "props": Object {
                               "children": <Icon
                                 svg="ico-user"
-/>,
+                              />,
                               "className": "icon",
                             },
                             "ref": null,
@@ -1036,14 +1033,14 @@ ShallowWrapper {
                           "children": Array [
                             <span
                               className="icon"
->
+                            >
                               <Icon
-                                                            svg="ico-structure-r"
+                                svg="ico-structure-r"
                               />
-</span>,
+                            </span>,
                             <span>
                               Votre structure juridique
-</span>,
+                            </span>,
                           ],
                           "className": "navbar-item",
                           "to": "/structures",
@@ -1057,7 +1054,7 @@ ShallowWrapper {
                             "props": Object {
                               "children": <Icon
                                 svg="ico-structure-r"
-/>,
+                              />,
                               "className": "icon",
                             },
                             "ref": null,
@@ -1099,14 +1096,14 @@ ShallowWrapper {
                           "children": Array [
                             <span
                               className="icon"
->
+                            >
                               <Icon
-                                                            svg="ico-deconnect"
+                                svg="ico-deconnect"
                               />
-</span>,
+                            </span>,
                             <span>
                               Déconnexion
-</span>,
+                            </span>,
                           ],
                           "className": "navbar-item",
                           "handleSuccessRedirect": [Function],
@@ -1120,7 +1117,7 @@ ShallowWrapper {
                             "props": Object {
                               "children": <Icon
                                 svg="ico-deconnect"
-/>,
+                              />,
                               "className": "icon",
                             },
                             "ref": null,
@@ -1175,141 +1172,140 @@ ShallowWrapper {
       "props": Object {
         "children": <div
           className="container"
->
+        >
           <div
-                    className="navbar-brand"
+            className="navbar-brand"
           >
-                    <Logo
-                              className="navbar-item"
-                              whiteHeader={undefined}
+            <Logo
+              className="navbar-item"
+            />
+            <span
+              className="navbar-burger"
+              onClick={[Function]}
+            >
+              <span />
+              <span />
+              <span />
+            </span>
+          </div>
+          <div
+            className="navbar-menu"
+          >
+            <div
+              className="navbar-end"
+            >
+              <NavLink
+                activeClassName="active"
+                aria-current="page"
+                className="navbar-item"
+                to="/guichet"
+              >
+                <span
+                  className="icon"
+                >
+                  <Icon
+                    svg="ico-guichet-w"
+                  />
+                </span>
+                <span>
+                  Guichet
+                </span>
+              </NavLink>
+              <NavLink
+                activeClassName="active"
+                aria-current="page"
+                className="navbar-item"
+                to="/offres"
+              >
+                <span
+                  className="icon"
+                >
+                  <Icon
+                    svg="ico-offres-w"
+                  />
+                </span>
+                <span>
+                  Vos offres
+                </span>
+              </NavLink>
+              <div
+                className="navbar-item has-dropdown is-hoverable"
+              >
+                <NavLink
+                  activeClassName="active"
+                  aria-current="page"
+                  className="navbar-link"
+                  to="#"
+                >
+                  <span
+                    className="icon"
+                  >
+                    <Icon
+                      svg="ico-user-circled-w"
                     />
+                  </span>
+                  <span>
+                    Fake Name
+                  </span>
+                </NavLink>
+                <div
+                  className="navbar-dropdown is-right"
+                >
+                  <NavLink
+                    activeClassName="active"
+                    aria-current="page"
+                    className="navbar-item"
+                    to="/profil"
+                  >
                     <span
-                              className="navbar-burger"
-                              onClick={[Function]}
+                      className="icon"
                     >
-                              <span />
-                              <span />
-                              <span />
+                      <Icon
+                        svg="ico-user"
+                      />
                     </span>
-          </div>
-          <div
-                    className="navbar-menu"
-          >
-                    <div
-                              className="navbar-end"
+                    <span>
+                      Profil
+                    </span>
+                  </NavLink>
+                  <NavLink
+                    activeClassName="active"
+                    aria-current="page"
+                    className="navbar-item"
+                    to="/structures"
+                  >
+                    <span
+                      className="icon"
                     >
-                              <NavLink
-                                        activeClassName="active"
-                                        aria-current="page"
-                                        className="navbar-item"
-                                        to="/guichet"
-                              >
-                                        <span
-                                                  className="icon"
-                                        >
-                                                  <Icon
-                                                            svg="ico-guichet-w"
-                                                  />
-                                        </span>
-                                        <span>
-                                                  Guichet
-                                        </span>
-                              </NavLink>
-                              <NavLink
-                                        activeClassName="active"
-                                        aria-current="page"
-                                        className="navbar-item"
-                                        to="/offres"
-                              >
-                                        <span
-                                                  className="icon"
-                                        >
-                                                  <Icon
-                                                            svg="ico-offres-w"
-                                                  />
-                                        </span>
-                                        <span>
-                                                  Vos offres
-                                        </span>
-                              </NavLink>
-                              <div
-                                        className="navbar-item has-dropdown is-hoverable"
-                              >
-                                        <NavLink
-                                                  activeClassName="active"
-                                                  aria-current="page"
-                                                  className="navbar-link"
-                                                  to="#"
-                                        >
-                                                  <span
-                                                            className="icon"
-                                                  >
-                                                            <Icon
-                                                                      svg="ico-user-circled-w"
-                                                            />
-                                                  </span>
-                                                  <span>
-                                                            Fake Name
-                                                  </span>
-                                        </NavLink>
-                                        <div
-                                                  className="navbar-dropdown is-right"
-                                        >
-                                                  <NavLink
-                                                            activeClassName="active"
-                                                            aria-current="page"
-                                                            className="navbar-item"
-                                                            to="/profil"
-                                                  >
-                                                            <span
-                                                                      className="icon"
-                                                            >
-                                                                      <Icon
-                                                                                svg="ico-user"
-                                                                      />
-                                                            </span>
-                                                            <span>
-                                                                      Profil
-                                                            </span>
-                                                  </NavLink>
-                                                  <NavLink
-                                                            activeClassName="active"
-                                                            aria-current="page"
-                                                            className="navbar-item"
-                                                            to="/structures"
-                                                  >
-                                                            <span
-                                                                      className="icon"
-                                                            >
-                                                                      <Icon
-                                                                                svg="ico-structure-r"
-                                                                      />
-                                                            </span>
-                                                            <span>
-                                                                      Votre structure juridique
-                                                            </span>
-                                                  </NavLink>
-                                                  <withRouter(Connect(SignoutButton))
-                                                            Tag="a"
-                                                            className="navbar-item"
-                                                            handleSuccessRedirect={[Function]}
-                                                  >
-                                                            <span
-                                                                      className="icon"
-                                                            >
-                                                                      <Icon
-                                                                                svg="ico-deconnect"
-                                                                      />
-                                                            </span>
-                                                            <span>
-                                                                      Déconnexion
-                                                            </span>
-                                                  </withRouter(Connect(SignoutButton))>
-                                        </div>
-                              </div>
-                    </div>
+                      <Icon
+                        svg="ico-structure-r"
+                      />
+                    </span>
+                    <span>
+                      Votre structure juridique
+                    </span>
+                  </NavLink>
+                  <withRouter(Connect(SignoutButton))
+                    Tag="a"
+                    className="navbar-item"
+                    handleSuccessRedirect={[Function]}
+                  >
+                    <span
+                      className="icon"
+                    >
+                      <Icon
+                        svg="ico-deconnect"
+                      />
+                    </span>
+                    <span>
+                      Déconnexion
+                    </span>
+                  </withRouter(Connect(SignoutButton))>
+                </div>
+              </div>
+            </div>
           </div>
-</div>,
+        </div>,
         "className": "navbar is-primary",
       },
       "ref": null,
@@ -1321,137 +1317,136 @@ ShallowWrapper {
           "children": Array [
             <div
               className="navbar-brand"
->
+            >
               <Logo
-                            className="navbar-item"
-                            whiteHeader={undefined}
+                className="navbar-item"
               />
               <span
-                            className="navbar-burger"
-                            onClick={[Function]}
+                className="navbar-burger"
+                onClick={[Function]}
               >
-                            <span />
-                            <span />
-                            <span />
+                <span />
+                <span />
+                <span />
               </span>
-</div>,
+            </div>,
             <div
               className="navbar-menu"
->
+            >
               <div
-                            className="navbar-end"
+                className="navbar-end"
               >
-                            <NavLink
-                                          activeClassName="active"
-                                          aria-current="page"
-                                          className="navbar-item"
-                                          to="/guichet"
-                            >
-                                          <span
-                                                        className="icon"
-                                          >
-                                                        <Icon
-                                                                      svg="ico-guichet-w"
-                                                        />
-                                          </span>
-                                          <span>
-                                                        Guichet
-                                          </span>
-                            </NavLink>
-                            <NavLink
-                                          activeClassName="active"
-                                          aria-current="page"
-                                          className="navbar-item"
-                                          to="/offres"
-                            >
-                                          <span
-                                                        className="icon"
-                                          >
-                                                        <Icon
-                                                                      svg="ico-offres-w"
-                                                        />
-                                          </span>
-                                          <span>
-                                                        Vos offres
-                                          </span>
-                            </NavLink>
-                            <div
-                                          className="navbar-item has-dropdown is-hoverable"
-                            >
-                                          <NavLink
-                                                        activeClassName="active"
-                                                        aria-current="page"
-                                                        className="navbar-link"
-                                                        to="#"
-                                          >
-                                                        <span
-                                                                      className="icon"
-                                                        >
-                                                                      <Icon
-                                                                                    svg="ico-user-circled-w"
-                                                                      />
-                                                        </span>
-                                                        <span>
-                                                                      Fake Name
-                                                        </span>
-                                          </NavLink>
-                                          <div
-                                                        className="navbar-dropdown is-right"
-                                          >
-                                                        <NavLink
-                                                                      activeClassName="active"
-                                                                      aria-current="page"
-                                                                      className="navbar-item"
-                                                                      to="/profil"
-                                                        >
-                                                                      <span
-                                                                                    className="icon"
-                                                                      >
-                                                                                    <Icon
-                                                                                                  svg="ico-user"
-                                                                                    />
-                                                                      </span>
-                                                                      <span>
-                                                                                    Profil
-                                                                      </span>
-                                                        </NavLink>
-                                                        <NavLink
-                                                                      activeClassName="active"
-                                                                      aria-current="page"
-                                                                      className="navbar-item"
-                                                                      to="/structures"
-                                                        >
-                                                                      <span
-                                                                                    className="icon"
-                                                                      >
-                                                                                    <Icon
-                                                                                                  svg="ico-structure-r"
-                                                                                    />
-                                                                      </span>
-                                                                      <span>
-                                                                                    Votre structure juridique
-                                                                      </span>
-                                                        </NavLink>
-                                                        <withRouter(Connect(SignoutButton))
-                                                                      Tag="a"
-                                                                      className="navbar-item"
-                                                                      handleSuccessRedirect={[Function]}
-                                                        >
-                                                                      <span
-                                                                                    className="icon"
-                                                                      >
-                                                                                    <Icon
-                                                                                                  svg="ico-deconnect"
-                                                                                    />
-                                                                      </span>
-                                                                      <span>
-                                                                                    Déconnexion
-                                                                      </span>
-                                                        </withRouter(Connect(SignoutButton))>
-                                          </div>
-                            </div>
+                <NavLink
+                  activeClassName="active"
+                  aria-current="page"
+                  className="navbar-item"
+                  to="/guichet"
+                >
+                  <span
+                    className="icon"
+                  >
+                    <Icon
+                      svg="ico-guichet-w"
+                    />
+                  </span>
+                  <span>
+                    Guichet
+                  </span>
+                </NavLink>
+                <NavLink
+                  activeClassName="active"
+                  aria-current="page"
+                  className="navbar-item"
+                  to="/offres"
+                >
+                  <span
+                    className="icon"
+                  >
+                    <Icon
+                      svg="ico-offres-w"
+                    />
+                  </span>
+                  <span>
+                    Vos offres
+                  </span>
+                </NavLink>
+                <div
+                  className="navbar-item has-dropdown is-hoverable"
+                >
+                  <NavLink
+                    activeClassName="active"
+                    aria-current="page"
+                    className="navbar-link"
+                    to="#"
+                  >
+                    <span
+                      className="icon"
+                    >
+                      <Icon
+                        svg="ico-user-circled-w"
+                      />
+                    </span>
+                    <span>
+                      Fake Name
+                    </span>
+                  </NavLink>
+                  <div
+                    className="navbar-dropdown is-right"
+                  >
+                    <NavLink
+                      activeClassName="active"
+                      aria-current="page"
+                      className="navbar-item"
+                      to="/profil"
+                    >
+                      <span
+                        className="icon"
+                      >
+                        <Icon
+                          svg="ico-user"
+                        />
+                      </span>
+                      <span>
+                        Profil
+                      </span>
+                    </NavLink>
+                    <NavLink
+                      activeClassName="active"
+                      aria-current="page"
+                      className="navbar-item"
+                      to="/structures"
+                    >
+                      <span
+                        className="icon"
+                      >
+                        <Icon
+                          svg="ico-structure-r"
+                        />
+                      </span>
+                      <span>
+                        Votre structure juridique
+                      </span>
+                    </NavLink>
+                    <withRouter(Connect(SignoutButton))
+                      Tag="a"
+                      className="navbar-item"
+                      handleSuccessRedirect={[Function]}
+                    >
+                      <span
+                        className="icon"
+                      >
+                        <Icon
+                          svg="ico-deconnect"
+                        />
+                      </span>
+                      <span>
+                        Déconnexion
+                      </span>
+                    </withRouter(Connect(SignoutButton))>
+                  </div>
+                </div>
               </div>
-</div>,
+            </div>,
           ],
           "className": "container",
         },
@@ -1465,16 +1460,15 @@ ShallowWrapper {
               "children": Array [
                 <Logo
                   className="navbar-item"
-                  whiteHeader={undefined}
-/>,
+                />,
                 <span
                   className="navbar-burger"
                   onClick={[Function]}
->
+                >
                   <span />
                   <span />
                   <span />
-</span>,
+                </span>,
               ],
               "className": "navbar-brand",
             },
@@ -1547,117 +1541,117 @@ ShallowWrapper {
             "props": Object {
               "children": <div
                 className="navbar-end"
->
+              >
                 <NavLink
-                                activeClassName="active"
-                                aria-current="page"
-                                className="navbar-item"
-                                to="/guichet"
+                  activeClassName="active"
+                  aria-current="page"
+                  className="navbar-item"
+                  to="/guichet"
                 >
-                                <span
-                                                className="icon"
-                                >
-                                                <Icon
-                                                                svg="ico-guichet-w"
-                                                />
-                                </span>
-                                <span>
-                                                Guichet
-                                </span>
+                  <span
+                    className="icon"
+                  >
+                    <Icon
+                      svg="ico-guichet-w"
+                    />
+                  </span>
+                  <span>
+                    Guichet
+                  </span>
                 </NavLink>
                 <NavLink
-                                activeClassName="active"
-                                aria-current="page"
-                                className="navbar-item"
-                                to="/offres"
+                  activeClassName="active"
+                  aria-current="page"
+                  className="navbar-item"
+                  to="/offres"
                 >
-                                <span
-                                                className="icon"
-                                >
-                                                <Icon
-                                                                svg="ico-offres-w"
-                                                />
-                                </span>
-                                <span>
-                                                Vos offres
-                                </span>
+                  <span
+                    className="icon"
+                  >
+                    <Icon
+                      svg="ico-offres-w"
+                    />
+                  </span>
+                  <span>
+                    Vos offres
+                  </span>
                 </NavLink>
                 <div
-                                className="navbar-item has-dropdown is-hoverable"
+                  className="navbar-item has-dropdown is-hoverable"
                 >
-                                <NavLink
-                                                activeClassName="active"
-                                                aria-current="page"
-                                                className="navbar-link"
-                                                to="#"
-                                >
-                                                <span
-                                                                className="icon"
-                                                >
-                                                                <Icon
-                                                                                svg="ico-user-circled-w"
-                                                                />
-                                                </span>
-                                                <span>
-                                                                Fake Name
-                                                </span>
-                                </NavLink>
-                                <div
-                                                className="navbar-dropdown is-right"
-                                >
-                                                <NavLink
-                                                                activeClassName="active"
-                                                                aria-current="page"
-                                                                className="navbar-item"
-                                                                to="/profil"
-                                                >
-                                                                <span
-                                                                                className="icon"
-                                                                >
-                                                                                <Icon
-                                                                                                svg="ico-user"
-                                                                                />
-                                                                </span>
-                                                                <span>
-                                                                                Profil
-                                                                </span>
-                                                </NavLink>
-                                                <NavLink
-                                                                activeClassName="active"
-                                                                aria-current="page"
-                                                                className="navbar-item"
-                                                                to="/structures"
-                                                >
-                                                                <span
-                                                                                className="icon"
-                                                                >
-                                                                                <Icon
-                                                                                                svg="ico-structure-r"
-                                                                                />
-                                                                </span>
-                                                                <span>
-                                                                                Votre structure juridique
-                                                                </span>
-                                                </NavLink>
-                                                <withRouter(Connect(SignoutButton))
-                                                                Tag="a"
-                                                                className="navbar-item"
-                                                                handleSuccessRedirect={[Function]}
-                                                >
-                                                                <span
-                                                                                className="icon"
-                                                                >
-                                                                                <Icon
-                                                                                                svg="ico-deconnect"
-                                                                                />
-                                                                </span>
-                                                                <span>
-                                                                                Déconnexion
-                                                                </span>
-                                                </withRouter(Connect(SignoutButton))>
-                                </div>
+                  <NavLink
+                    activeClassName="active"
+                    aria-current="page"
+                    className="navbar-link"
+                    to="#"
+                  >
+                    <span
+                      className="icon"
+                    >
+                      <Icon
+                        svg="ico-user-circled-w"
+                      />
+                    </span>
+                    <span>
+                      Fake Name
+                    </span>
+                  </NavLink>
+                  <div
+                    className="navbar-dropdown is-right"
+                  >
+                    <NavLink
+                      activeClassName="active"
+                      aria-current="page"
+                      className="navbar-item"
+                      to="/profil"
+                    >
+                      <span
+                        className="icon"
+                      >
+                        <Icon
+                          svg="ico-user"
+                        />
+                      </span>
+                      <span>
+                        Profil
+                      </span>
+                    </NavLink>
+                    <NavLink
+                      activeClassName="active"
+                      aria-current="page"
+                      className="navbar-item"
+                      to="/structures"
+                    >
+                      <span
+                        className="icon"
+                      >
+                        <Icon
+                          svg="ico-structure-r"
+                        />
+                      </span>
+                      <span>
+                        Votre structure juridique
+                      </span>
+                    </NavLink>
+                    <withRouter(Connect(SignoutButton))
+                      Tag="a"
+                      className="navbar-item"
+                      handleSuccessRedirect={[Function]}
+                    >
+                      <span
+                        className="icon"
+                      >
+                        <Icon
+                          svg="ico-deconnect"
+                        />
+                      </span>
+                      <span>
+                        Déconnexion
+                      </span>
+                    </withRouter(Connect(SignoutButton))>
+                  </div>
                 </div>
-</div>,
+              </div>,
               "className": "navbar-menu",
             },
             "ref": null,
@@ -1672,110 +1666,110 @@ ShallowWrapper {
                     aria-current="page"
                     className="navbar-item"
                     to="/guichet"
->
+                  >
                     <span
-                                        className="icon"
+                      className="icon"
                     >
-                                        <Icon
-                                                            svg="ico-guichet-w"
-                                        />
+                      <Icon
+                        svg="ico-guichet-w"
+                      />
                     </span>
                     <span>
-                                        Guichet
+                      Guichet
                     </span>
-</NavLink>,
+                  </NavLink>,
                   <NavLink
                     activeClassName="active"
                     aria-current="page"
                     className="navbar-item"
                     to="/offres"
->
+                  >
                     <span
-                                        className="icon"
+                      className="icon"
                     >
-                                        <Icon
-                                                            svg="ico-offres-w"
-                                        />
+                      <Icon
+                        svg="ico-offres-w"
+                      />
                     </span>
                     <span>
-                                        Vos offres
+                      Vos offres
                     </span>
-</NavLink>,
+                  </NavLink>,
                   <div
                     className="navbar-item has-dropdown is-hoverable"
->
+                  >
                     <NavLink
-                                        activeClassName="active"
-                                        aria-current="page"
-                                        className="navbar-link"
-                                        to="#"
+                      activeClassName="active"
+                      aria-current="page"
+                      className="navbar-link"
+                      to="#"
                     >
-                                        <span
-                                                            className="icon"
-                                        >
-                                                            <Icon
-                                                                                svg="ico-user-circled-w"
-                                                            />
-                                        </span>
-                                        <span>
-                                                            Fake Name
-                                        </span>
+                      <span
+                        className="icon"
+                      >
+                        <Icon
+                          svg="ico-user-circled-w"
+                        />
+                      </span>
+                      <span>
+                        Fake Name
+                      </span>
                     </NavLink>
                     <div
-                                        className="navbar-dropdown is-right"
+                      className="navbar-dropdown is-right"
                     >
-                                        <NavLink
-                                                            activeClassName="active"
-                                                            aria-current="page"
-                                                            className="navbar-item"
-                                                            to="/profil"
-                                        >
-                                                            <span
-                                                                                className="icon"
-                                                            >
-                                                                                <Icon
-                                                                                                    svg="ico-user"
-                                                                                />
-                                                            </span>
-                                                            <span>
-                                                                                Profil
-                                                            </span>
-                                        </NavLink>
-                                        <NavLink
-                                                            activeClassName="active"
-                                                            aria-current="page"
-                                                            className="navbar-item"
-                                                            to="/structures"
-                                        >
-                                                            <span
-                                                                                className="icon"
-                                                            >
-                                                                                <Icon
-                                                                                                    svg="ico-structure-r"
-                                                                                />
-                                                            </span>
-                                                            <span>
-                                                                                Votre structure juridique
-                                                            </span>
-                                        </NavLink>
-                                        <withRouter(Connect(SignoutButton))
-                                                            Tag="a"
-                                                            className="navbar-item"
-                                                            handleSuccessRedirect={[Function]}
-                                        >
-                                                            <span
-                                                                                className="icon"
-                                                            >
-                                                                                <Icon
-                                                                                                    svg="ico-deconnect"
-                                                                                />
-                                                            </span>
-                                                            <span>
-                                                                                Déconnexion
-                                                            </span>
-                                        </withRouter(Connect(SignoutButton))>
+                      <NavLink
+                        activeClassName="active"
+                        aria-current="page"
+                        className="navbar-item"
+                        to="/profil"
+                      >
+                        <span
+                          className="icon"
+                        >
+                          <Icon
+                            svg="ico-user"
+                          />
+                        </span>
+                        <span>
+                          Profil
+                        </span>
+                      </NavLink>
+                      <NavLink
+                        activeClassName="active"
+                        aria-current="page"
+                        className="navbar-item"
+                        to="/structures"
+                      >
+                        <span
+                          className="icon"
+                        >
+                          <Icon
+                            svg="ico-structure-r"
+                          />
+                        </span>
+                        <span>
+                          Votre structure juridique
+                        </span>
+                      </NavLink>
+                      <withRouter(Connect(SignoutButton))
+                        Tag="a"
+                        className="navbar-item"
+                        handleSuccessRedirect={[Function]}
+                      >
+                        <span
+                          className="icon"
+                        >
+                          <Icon
+                            svg="ico-deconnect"
+                          />
+                        </span>
+                        <span>
+                          Déconnexion
+                        </span>
+                      </withRouter(Connect(SignoutButton))>
                     </div>
-</div>,
+                  </div>,
                 ],
                 "className": "navbar-end",
               },
@@ -1791,14 +1785,14 @@ ShallowWrapper {
                     "children": Array [
                       <span
                         className="icon"
->
+                      >
                         <Icon
-                                                svg="ico-guichet-w"
+                          svg="ico-guichet-w"
                         />
-</span>,
+                      </span>,
                       <span>
                         Guichet
-</span>,
+                      </span>,
                     ],
                     "className": "navbar-item",
                     "to": "/guichet",
@@ -1812,7 +1806,7 @@ ShallowWrapper {
                       "props": Object {
                         "children": <Icon
                           svg="ico-guichet-w"
-/>,
+                        />,
                         "className": "icon",
                       },
                       "ref": null,
@@ -1853,14 +1847,14 @@ ShallowWrapper {
                     "children": Array [
                       <span
                         className="icon"
->
+                      >
                         <Icon
-                                                svg="ico-offres-w"
+                          svg="ico-offres-w"
                         />
-</span>,
+                      </span>,
                       <span>
                         Vos offres
-</span>,
+                      </span>,
                     ],
                     "className": "navbar-item",
                     "to": "/offres",
@@ -1874,7 +1868,7 @@ ShallowWrapper {
                       "props": Object {
                         "children": <Icon
                           svg="ico-offres-w"
-/>,
+                        />,
                         "className": "icon",
                       },
                       "ref": null,
@@ -1916,72 +1910,72 @@ ShallowWrapper {
                         aria-current="page"
                         className="navbar-link"
                         to="#"
->
+                      >
                         <span
-                                                className="icon"
+                          className="icon"
                         >
-                                                <Icon
-                                                                        svg="ico-user-circled-w"
-                                                />
+                          <Icon
+                            svg="ico-user-circled-w"
+                          />
                         </span>
                         <span>
-                                                Fake Name
+                          Fake Name
                         </span>
-</NavLink>,
+                      </NavLink>,
                       <div
                         className="navbar-dropdown is-right"
->
+                      >
                         <NavLink
-                                                activeClassName="active"
-                                                aria-current="page"
-                                                className="navbar-item"
-                                                to="/profil"
+                          activeClassName="active"
+                          aria-current="page"
+                          className="navbar-item"
+                          to="/profil"
                         >
-                                                <span
-                                                                        className="icon"
-                                                >
-                                                                        <Icon
-                                                                                                svg="ico-user"
-                                                                        />
-                                                </span>
-                                                <span>
-                                                                        Profil
-                                                </span>
+                          <span
+                            className="icon"
+                          >
+                            <Icon
+                              svg="ico-user"
+                            />
+                          </span>
+                          <span>
+                            Profil
+                          </span>
                         </NavLink>
                         <NavLink
-                                                activeClassName="active"
-                                                aria-current="page"
-                                                className="navbar-item"
-                                                to="/structures"
+                          activeClassName="active"
+                          aria-current="page"
+                          className="navbar-item"
+                          to="/structures"
                         >
-                                                <span
-                                                                        className="icon"
-                                                >
-                                                                        <Icon
-                                                                                                svg="ico-structure-r"
-                                                                        />
-                                                </span>
-                                                <span>
-                                                                        Votre structure juridique
-                                                </span>
+                          <span
+                            className="icon"
+                          >
+                            <Icon
+                              svg="ico-structure-r"
+                            />
+                          </span>
+                          <span>
+                            Votre structure juridique
+                          </span>
                         </NavLink>
                         <withRouter(Connect(SignoutButton))
-                                                Tag="a"
-                                                className="navbar-item"
-                                                handleSuccessRedirect={[Function]}
+                          Tag="a"
+                          className="navbar-item"
+                          handleSuccessRedirect={[Function]}
                         >
-                                                <span
-                                                                        className="icon"
-                                                >
-                                                                        <Icon
-                                                                                                svg="ico-deconnect"
-                                                                        />
-                                                </span>
-                                                <span>
-                                                                        Déconnexion
-                                                </span>
+                          <span
+                            className="icon"
+                          >
+                            <Icon
+                              svg="ico-deconnect"
+                            />
+                          </span>
+                          <span>
+                            Déconnexion
+                          </span>
                         </withRouter(Connect(SignoutButton))>
-</div>,
+                      </div>,
                     ],
                     "className": "navbar-item has-dropdown is-hoverable",
                   },
@@ -1997,14 +1991,14 @@ ShallowWrapper {
                         "children": Array [
                           <span
                             className="icon"
->
+                          >
                             <Icon
-                                                        svg="ico-user-circled-w"
+                              svg="ico-user-circled-w"
                             />
-</span>,
+                          </span>,
                           <span>
                             Fake Name
-</span>,
+                          </span>,
                         ],
                         "className": "navbar-link",
                         "to": "#",
@@ -2018,7 +2012,7 @@ ShallowWrapper {
                           "props": Object {
                             "children": <Icon
                               svg="ico-user-circled-w"
-/>,
+                            />,
                             "className": "icon",
                           },
                           "ref": null,
@@ -2060,53 +2054,53 @@ ShallowWrapper {
                             aria-current="page"
                             className="navbar-item"
                             to="/profil"
->
+                          >
                             <span
-                                                        className="icon"
+                              className="icon"
                             >
-                                                        <Icon
-                                                                                    svg="ico-user"
-                                                        />
+                              <Icon
+                                svg="ico-user"
+                              />
                             </span>
                             <span>
-                                                        Profil
+                              Profil
                             </span>
-</NavLink>,
+                          </NavLink>,
                           <NavLink
                             activeClassName="active"
                             aria-current="page"
                             className="navbar-item"
                             to="/structures"
->
+                          >
                             <span
-                                                        className="icon"
+                              className="icon"
                             >
-                                                        <Icon
-                                                                                    svg="ico-structure-r"
-                                                        />
+                              <Icon
+                                svg="ico-structure-r"
+                              />
                             </span>
                             <span>
-                                                        Votre structure juridique
+                              Votre structure juridique
                             </span>
-</NavLink>,
+                          </NavLink>,
                           false,
                           false,
                           <withRouter(Connect(SignoutButton))
                             Tag="a"
                             className="navbar-item"
                             handleSuccessRedirect={[Function]}
->
+                          >
                             <span
-                                                        className="icon"
+                              className="icon"
                             >
-                                                        <Icon
-                                                                                    svg="ico-deconnect"
-                                                        />
+                              <Icon
+                                svg="ico-deconnect"
+                              />
                             </span>
                             <span>
-                                                        Déconnexion
+                              Déconnexion
                             </span>
-</withRouter(Connect(SignoutButton))>,
+                          </withRouter(Connect(SignoutButton))>,
                         ],
                         "className": "navbar-dropdown is-right",
                       },
@@ -2122,14 +2116,14 @@ ShallowWrapper {
                             "children": Array [
                               <span
                                 className="icon"
->
+                              >
                                 <Icon
-                                                                svg="ico-user"
+                                  svg="ico-user"
                                 />
-</span>,
+                              </span>,
                               <span>
                                 Profil
-</span>,
+                              </span>,
                             ],
                             "className": "navbar-item",
                             "to": "/profil",
@@ -2143,7 +2137,7 @@ ShallowWrapper {
                               "props": Object {
                                 "children": <Icon
                                   svg="ico-user"
-/>,
+                                />,
                                 "className": "icon",
                               },
                               "ref": null,
@@ -2184,14 +2178,14 @@ ShallowWrapper {
                             "children": Array [
                               <span
                                 className="icon"
->
+                              >
                                 <Icon
-                                                                svg="ico-structure-r"
+                                  svg="ico-structure-r"
                                 />
-</span>,
+                              </span>,
                               <span>
                                 Votre structure juridique
-</span>,
+                              </span>,
                             ],
                             "className": "navbar-item",
                             "to": "/structures",
@@ -2205,7 +2199,7 @@ ShallowWrapper {
                               "props": Object {
                                 "children": <Icon
                                   svg="ico-structure-r"
-/>,
+                                />,
                                 "className": "icon",
                               },
                               "ref": null,
@@ -2247,14 +2241,14 @@ ShallowWrapper {
                             "children": Array [
                               <span
                                 className="icon"
->
+                              >
                                 <Icon
-                                                                svg="ico-deconnect"
+                                  svg="ico-deconnect"
                                 />
-</span>,
+                              </span>,
                               <span>
                                 Déconnexion
-</span>,
+                              </span>,
                             ],
                             "className": "navbar-item",
                             "handleSuccessRedirect": [Function],
@@ -2268,7 +2262,7 @@ ShallowWrapper {
                               "props": Object {
                                 "children": <Icon
                                   svg="ico-deconnect"
-/>,
+                                />,
                                 "className": "icon",
                               },
                               "ref": null,
@@ -2328,6 +2322,7 @@ ShallowWrapper {
           "getChildContext": Object {
             "calledByRenderer": false,
           },
+          "getDerivedStateFromError": true,
           "getDerivedStateFromProps": Object {
             "hasShouldComponentUpdateBug": false,
           },

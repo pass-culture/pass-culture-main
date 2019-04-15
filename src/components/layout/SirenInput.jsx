@@ -3,7 +3,7 @@ import { BasicInput, removeWhitespaces } from 'pass-culture-shared'
 import React, { Component, Fragment } from 'react'
 import { connect } from 'react-redux'
 
-import { formatSiren } from '../../utils/input'
+import { formatSire } from 'utils/sire'
 
 class SirenInput extends Component {
   onChange = event => {
@@ -33,7 +33,7 @@ class SirenInput extends Component {
         {...this.props}
         onChange={this.onChange}
         type="text"
-        value={formatSiren(value)}
+        value={formatSire(value)}
       />
     )
 

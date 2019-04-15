@@ -10,7 +10,11 @@ import {
   createFormatPrice,
   getRemainingStocksCount,
 } from './utils'
-import { DateField, HiddenField, NumberField } from 'components/layout/form'
+import {
+  DateField,
+  HiddenField,
+  NumberField,
+} from 'components/layout/form/fields'
 import Icon from 'components/layout/Icon'
 
 export class ProductFields extends Component {

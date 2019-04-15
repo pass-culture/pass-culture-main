@@ -1,0 +1,50 @@
+.address {
+  margin-bottom: 1.125rem;
+  width: 100%;
+
+  .input-wrapper {
+    width: 90%;
+    position: relative;
+    .menu {
+      // margin-top: 0.5rem;
+      // margin: 0 $control-radius;
+      position: absolute;
+      z-index: 2000;
+      background: $white;
+      // padding: 1rem;
+      left: $control-radius;
+      right: $control-radius;
+      // box-shadow: 0 5px 10px rgba($black, 0.5);
+      border-bottom-left-radius: $control-radius;
+      border-bottom-right-radius: $control-radius;
+      border: 2px solid $grey-light;
+      border-top: none;
+      overflow: hidden;
+
+      &.empty {
+        display: none;
+      }
+
+      .item {
+        padding: 0.5rem 1rem;
+        &:not(.placeholder) {
+          cursor: pointer;
+          &.highlighted {
+            font-weight: $weight-bold;
+          }
+          &:hover {
+            background-color: $grey-lighter;
+          }
+        }
+      }
+
+    }
+  }
+
+  .map {
+    width: 100%;
+    height: 20rem;
+    overflow: hidden;
+    margin-top: 1rem;
+  }
+}

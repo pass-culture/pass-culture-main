@@ -5,34 +5,99 @@ ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <RawOfferers
     currentUser={Object {}}
-    dispatch={[Function]}
+    dispatch={
+      [MockFunction] {
+        "calls": Array [
+          Array [
+            Object {
+              "patch": Object {
+                "offerers": Array [],
+                "pendingOfferers": Array [],
+              },
+              "type": "ASSIGN_DATA",
+            },
+          ],
+          Array [
+            Object {
+              "config": Object {
+                "apiPath": "/offerers?keywords",
+                "handleFail": [Function],
+                "handleSuccess": [Function],
+                "method": "GET",
+                "normalizer": Object {
+                  "managedVenues": Object {
+                    "normalizer": Object {
+                      "offers": "offers",
+                    },
+                    "stateKey": "venues",
+                  },
+                },
+              },
+              "type": "REQUEST_DATA_GET_/OFFERERS?KEYWORDS",
+            },
+          ],
+          Array [
+            Object {
+              "config": Object {
+                "apiPath": "/offerers?keywords&validated=false",
+                "method": "GET",
+                "normalizer": Object {
+                  "managedVenues": Object {
+                    "normalizer": Object {
+                      "offers": "offers",
+                    },
+                    "stateKey": "venues",
+                  },
+                },
+                "stateKey": "pendingOfferers",
+              },
+              "type": "REQUEST_DATA_GET_PENDINGOFFERERS",
+            },
+          ],
+        ],
+        "results": Array [
+          Object {
+            "type": "return",
+            "value": undefined,
+          },
+          Object {
+            "type": "return",
+            "value": undefined,
+          },
+          Object {
+            "type": "return",
+            "value": undefined,
+          },
+        ],
+      }
+    }
     location={
-        Object {
-            "search": "",
-          }
+      Object {
+        "search": "",
+      }
     }
     offerers={
-        Array [
-            Object {
-              "id": "AE",
-            },
-          ]
+      Array [
+        Object {
+          "id": "AE",
+        },
+      ]
     }
     pagination={
-        Object {
-            "apiQuery": Object {
-              "keywords": null,
-            },
-          }
+      Object {
+        "apiQuery": Object {
+          "keywords": null,
+        },
+      }
     }
     pendingOfferers={Array []}
     query={
-        Object {
-            "change": [Function],
-            "parse": [Function],
-          }
+      Object {
+        "change": [MockFunction],
+        "parse": [Function],
+      }
     }
-/>,
+  />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
     "checkPropTypes": [Function],
@@ -50,37 +115,37 @@ ShallowWrapper {
       "children": Array [
         <HeroSection
           title="Votre structure juridique"
->
+        >
           <p
-                    className="subtitle"
+            className="subtitle"
           >
-                    Pour présenter vos offres, vous devez d'abord créer un
-                     
-                    <b>
-                               nouveau lieu 
-                    </b>
-                     lié à une structure.
-                    <br />
-                    Sans lieu, vous ne pouvez ajouter que des offres numériques.
+            Pour présenter vos offres, vous devez d'abord créer un
+             
+            <b>
+               nouveau lieu 
+            </b>
+             lié à une structure.
+            <br />
+            Sans lieu, vous ne pouvez ajouter que des offres numériques.
           </p>
           <NavLink
-                    activeClassName="active"
-                    aria-current="page"
-                    className="cta button is-primary is-outlined"
-                    to="/structures/nouveau"
+            activeClassName="active"
+            aria-current="page"
+            className="cta button is-primary is-outlined"
+            to="/structures/nouveau"
           >
-                    + Rattacher une structure supplémentaire
+            + Rattacher une structure supplémentaire
           </NavLink>
-</HeroSection>,
+        </HeroSection>,
         <ReactFinalForm
           initialValues={
-                    Object {
-                              "keywords": null,
-                            }
+            Object {
+              "keywords": null,
+            }
           }
           onSubmit={[Function]}
           render={[Function]}
-/>,
+        />,
         <br />,
         false,
         <withRouter(_withQueryRouter)
@@ -89,24 +154,24 @@ ShallowWrapper {
           hasMore={false}
           isLoading={true}
           loader={
-                    <Spinner
-                              Tag="div"
-                              className={null}
-                              dotFrequency={500}
-                              label="Chargement"
-                              style={null}
-                    />
+            <Spinner
+              Tag="div"
+              className={null}
+              dotFrequency={500}
+              label="Chargement"
+              style={null}
+            />
           }
           useWindow={true}
->
+        >
           <Connect(OffererItem)
-                    offerer={
-                              Object {
-                                        "id": "AE",
-                                      }
-                    }
+            offerer={
+              Object {
+                "id": "AE",
+              }
+            }
           />
-</withRouter(_withQueryRouter)>,
+        </withRouter(_withQueryRouter)>,
       ],
       "name": "offerers",
     },
@@ -120,24 +185,24 @@ ShallowWrapper {
           "children": Array [
             <p
               className="subtitle"
->
+            >
               Pour présenter vos offres, vous devez d'abord créer un
                
               <b>
-                             nouveau lieu 
+                 nouveau lieu 
               </b>
                lié à une structure.
               <br />
               Sans lieu, vous ne pouvez ajouter que des offres numériques.
-</p>,
+            </p>,
             <NavLink
               activeClassName="active"
               aria-current="page"
               className="cta button is-primary is-outlined"
               to="/structures/nouveau"
->
+            >
               + Rattacher une structure supplémentaire
-</NavLink>,
+            </NavLink>,
           ],
           "title": "Votre structure juridique",
         },
@@ -153,7 +218,7 @@ ShallowWrapper {
                 " ",
                 <b>
                    nouveau lieu 
-</b>,
+                </b>,
                 " lié à une structure.",
                 <br />,
                 "Sans lieu, vous ne pouvez ajouter que des offres numériques.",
@@ -240,11 +305,11 @@ ShallowWrapper {
           "children": Array [
             <Connect(OffererItem)
               offerer={
-                            Object {
-                                          "id": "AE",
-                                        }
+                Object {
+                  "id": "AE",
+                }
               }
-/>,
+            />,
           ],
           "className": "main-list offerers-list",
           "element": "ul",
@@ -256,7 +321,7 @@ ShallowWrapper {
             dotFrequency={500}
             label="Chargement"
             style={null}
-/>,
+          />,
           "useWindow": true,
         },
         "ref": null,
@@ -289,37 +354,37 @@ ShallowWrapper {
         "children": Array [
           <HeroSection
             title="Votre structure juridique"
->
+          >
             <p
-                        className="subtitle"
+              className="subtitle"
             >
-                        Pour présenter vos offres, vous devez d'abord créer un
-                         
-                        <b>
-                                     nouveau lieu 
-                        </b>
-                         lié à une structure.
-                        <br />
-                        Sans lieu, vous ne pouvez ajouter que des offres numériques.
+              Pour présenter vos offres, vous devez d'abord créer un
+               
+              <b>
+                 nouveau lieu 
+              </b>
+               lié à une structure.
+              <br />
+              Sans lieu, vous ne pouvez ajouter que des offres numériques.
             </p>
             <NavLink
-                        activeClassName="active"
-                        aria-current="page"
-                        className="cta button is-primary is-outlined"
-                        to="/structures/nouveau"
+              activeClassName="active"
+              aria-current="page"
+              className="cta button is-primary is-outlined"
+              to="/structures/nouveau"
             >
-                        + Rattacher une structure supplémentaire
+              + Rattacher une structure supplémentaire
             </NavLink>
-</HeroSection>,
+          </HeroSection>,
           <ReactFinalForm
             initialValues={
-                        Object {
-                                    "keywords": null,
-                                  }
+              Object {
+                "keywords": null,
+              }
             }
             onSubmit={[Function]}
             render={[Function]}
-/>,
+          />,
           <br />,
           false,
           <withRouter(_withQueryRouter)
@@ -328,24 +393,24 @@ ShallowWrapper {
             hasMore={false}
             isLoading={true}
             loader={
-                        <Spinner
-                                    Tag="div"
-                                    className={null}
-                                    dotFrequency={500}
-                                    label="Chargement"
-                                    style={null}
-                        />
+              <Spinner
+                Tag="div"
+                className={null}
+                dotFrequency={500}
+                label="Chargement"
+                style={null}
+              />
             }
             useWindow={true}
->
+          >
             <Connect(OffererItem)
-                        offerer={
-                                    Object {
-                                                "id": "AE",
-                                              }
-                        }
+              offerer={
+                Object {
+                  "id": "AE",
+                }
+              }
             />
-</withRouter(_withQueryRouter)>,
+          </withRouter(_withQueryRouter)>,
         ],
         "name": "offerers",
       },
@@ -359,24 +424,24 @@ ShallowWrapper {
             "children": Array [
               <p
                 className="subtitle"
->
+              >
                 Pour présenter vos offres, vous devez d'abord créer un
                  
                 <b>
-                                 nouveau lieu 
+                   nouveau lieu 
                 </b>
                  lié à une structure.
                 <br />
                 Sans lieu, vous ne pouvez ajouter que des offres numériques.
-</p>,
+              </p>,
               <NavLink
                 activeClassName="active"
                 aria-current="page"
                 className="cta button is-primary is-outlined"
                 to="/structures/nouveau"
->
+              >
                 + Rattacher une structure supplémentaire
-</NavLink>,
+              </NavLink>,
             ],
             "title": "Votre structure juridique",
           },
@@ -392,7 +457,7 @@ ShallowWrapper {
                   " ",
                   <b>
                      nouveau lieu 
-</b>,
+                  </b>,
                   " lié à une structure.",
                   <br />,
                   "Sans lieu, vous ne pouvez ajouter que des offres numériques.",
@@ -479,11 +544,11 @@ ShallowWrapper {
             "children": Array [
               <Connect(OffererItem)
                 offerer={
-                                Object {
-                                                "id": "AE",
-                                              }
+                  Object {
+                    "id": "AE",
+                  }
                 }
-/>,
+              />,
             ],
             "className": "main-list offerers-list",
             "element": "ul",
@@ -495,7 +560,7 @@ ShallowWrapper {
               dotFrequency={500}
               label="Chargement"
               style={null}
-/>,
+            />,
             "useWindow": true,
           },
           "ref": null,
@@ -532,6 +597,7 @@ ShallowWrapper {
           "getChildContext": Object {
             "calledByRenderer": false,
           },
+          "getDerivedStateFromError": true,
           "getDerivedStateFromProps": Object {
             "hasShouldComponentUpdateBug": false,
           },

@@ -2,14 +2,12 @@ import { Form } from 'pass-culture-shared'
 
 import BicInput from '../components/layout/BicInput'
 import BlockContainer from '../components/layout/BlockContainer'
-import GeoInput from '../components/layout/GeoInput'
 import IbanInput from '../components/layout/IbanInput'
 import SirenInput from '../components/layout/SirenInput'
 
 Object.assign(Form.inputsByType, {
   bic: BicInput,
   iban: IbanInput,
-  geo: GeoInput,
   siren: SirenInput,
   siret: SirenInput,
 })

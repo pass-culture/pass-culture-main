@@ -1,8 +1,9 @@
+import { formatPatch } from '../formatPatch'
+
 import {
-  formatPatch,
-  VENUE_EDIT_PATCH_KEYS,
-  VENUE_NEW_PATCH_KEYS,
-} from '../formatPatch'
+  VENUE_MODIFICATION_PATCH_KEYS,
+  VENUE_CREATION_PATCH_KEYS,
+} from '../../components/pages/Venue/utils'
 
 describe('formatPatch', () => {
   describe('when creating new form', () => {
@@ -34,14 +35,14 @@ describe('formatPatch', () => {
         thumbCount: 0,
         venueProvidersIds: [],
       }
-      const config = { isNew: true, isEdit: false }
+      const config = { isCreatedEntity: true, isModifiedEntity: false }
 
       // when
       const result = formatPatch(
         patch,
         config,
-        VENUE_NEW_PATCH_KEYS,
-        VENUE_EDIT_PATCH_KEYS
+        VENUE_CREATION_PATCH_KEYS,
+        VENUE_MODIFICATION_PATCH_KEYS
       )
       const expected = {
         address: 'RUE DIDEROT',
@@ -91,14 +92,14 @@ describe('formatPatch', () => {
         thumbCount: 0,
         venueProvidersIds: [],
       }
-      const config = { isEdit: true }
+      const config = { isModifiedEntity: true }
 
       // when
       const result = formatPatch(
         patch,
         config,
-        VENUE_NEW_PATCH_KEYS,
-        VENUE_EDIT_PATCH_KEYS
+        VENUE_CREATION_PATCH_KEYS,
+        VENUE_MODIFICATION_PATCH_KEYS
       )
 
       // then

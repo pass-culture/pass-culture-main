@@ -5,32 +5,48 @@ ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <RawOffer
     currentUser={
-        Object {
-            "isAdmin": false,
-          }
+      Object {
+        "isAdmin": false,
+      }
     }
-    dispatch={[Function]}
+    dispatch={
+      [MockFunction] {
+        "calls": Array [
+          Array [
+            Object {
+              "type": "RESET_FORM",
+            },
+          ],
+        ],
+        "results": Array [
+          Object {
+            "type": "return",
+            "value": undefined,
+          },
+        ],
+      }
+    }
     location={
-        Object {
-            "search": "?lieu=AQ",
-          }
+      Object {
+        "search": "?lieu=AQ",
+      }
     }
     match={
-        Object {
-            "params": Object {
-              "offerId": "N9",
-            },
-          }
+      Object {
+        "params": Object {
+          "offerId": "N9",
+        },
+      }
     }
     query={
-        Object {
-            "context": [Function],
-            "parse": [Function],
-            "translate": [Function],
-          }
+      Object {
+        "context": [Function],
+        "parse": [Function],
+        "translate": [Function],
+      }
     }
     venues={Array []}
-/>,
+  />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
     "checkPropTypes": [Function],
@@ -50,187 +66,180 @@ ShallowWrapper {
         "path": "/offres",
       },
       "children": <HeroSection
-        subtitle={undefined}
         title="Détails de l'offre"
->
+      >
         <p
-                className="subtitle"
+          className="subtitle"
         >
-                Renseignez les détails de cette offre, puis mettez-la en avant en ajoutant une ou plusieurs accroches.
+          Renseignez les détails de cette offre, puis mettez-la en avant en ajoutant une ou plusieurs accroches.
         </p>
         <p
-                className="fs13 pb30"
+          className="fs13 pb30"
         >
-                Les offres payantes seront visibles dans l’application, toutefois les utilisateurs ne pourront les réserver que s’ils ont activé leur portefeuille numérique de 500 € sur Internet ou lors d’un des événements d’activation.
+          Les offres payantes seront visibles dans l’application, toutefois les utilisateurs ne pourront les réserver que s’ils ont activé leur portefeuille numérique de 500 € sur Internet ou lors d’un des événements d’activation.
         </p>
         <withRouter(Connect(_Form))
-                BlockComponent={null}
-                Tag={null}
-                action="/offers/undefined"
-                className={null}
-                errorsPatch={Object {}}
-                failNotification="Formulaire non validé"
-                formPatch={Object {}}
-                formatPatch={[Function]}
-                handleFail={null}
-                handleFailNotification={null}
-                handleFailRedirect={null}
-                handleSuccess={[Function]}
-                handleSuccessNotification={null}
-                handleSuccessRedirect={null}
-                method={undefined}
-                name="offer"
-                normalizer={null}
-                onEnterKey={null}
-                onEscapeKey={null}
-                onSubmit={null}
-                patch={undefined}
-                readOnly={undefined}
-                successNotification="Formulaire non validé"
+          BlockComponent={null}
+          Tag={null}
+          action="/offers/undefined"
+          className={null}
+          errorsPatch={Object {}}
+          failNotification="Formulaire non validé"
+          formPatch={Object {}}
+          formatPatch={[Function]}
+          handleFail={null}
+          handleFailNotification={null}
+          handleFailRedirect={null}
+          handleSuccess={[Function]}
+          handleSuccessNotification={null}
+          handleSuccessRedirect={null}
+          name="offer"
+          normalizer={null}
+          onEnterKey={null}
+          onEscapeKey={null}
+          onSubmit={null}
+          successNotification="Formulaire non validé"
         >
-                <div
-                        className="field-group"
-                >
-                        <Field
-                                displayValue={[Function]}
-                                errors={null}
-                                isExpanded={true}
-                                label="Titre de l'offre"
-                                layout="horizontal"
-                                name="name"
-                                required={true}
-                                size="normal"
-                                storeValue={[Function]}
-                        />
-                        <Field
-                                displayValue={[Function]}
-                                errors={null}
-                                label="Type"
-                                layout="horizontal"
-                                name="type"
-                                optionLabel="proLabel"
-                                optionValue="value"
-                                options={undefined}
-                                placeholder="Sélectionnez un type d'offre"
-                                readOnly={undefined}
-                                required={true}
-                                size="normal"
-                                storeValue={[Function]}
-                                sublabel="Le type d'offre ne peut pas être modifié une fois l'offre enregistrée."
-                                type="select"
-                        />
-                </div>
-                <div>
-                        <h2
-                                className="main-list-title"
-                        >
-                                Infos pratiques
-                        </h2>
-                        <div
-                                className="field-group"
-                        >
-                                <Field
-                                        debug={true}
-                                        displayValue={[Function]}
-                                        errors={null}
-                                        label="Structure"
-                                        layout="horizontal"
-                                        name="offererId"
-                                        options={undefined}
-                                        placeholder="Sélectionnez une structure"
-                                        readOnly={false}
-                                        required={true}
-                                        size="normal"
-                                        storeValue={[Function]}
-                                        type="select"
-                                />
-                                <Field
-                                        displayValue={[Function]}
-                                        errors={null}
-                                        label="Lieu"
-                                        layout="horizontal"
-                                        name="venueId"
-                                        options={Array []}
-                                        placeholder="Sélectionnez un lieu"
-                                        readOnly={false}
-                                        required={true}
-                                        size="normal"
-                                        storeValue={[Function]}
-                                        type="select"
-                                />
-                                <Field
-                                        displayValue={[Function]}
-                                        errors={null}
-                                        label="Email auquel envoyer les réservations"
-                                        layout="horizontal"
-                                        name="bookingEmail"
-                                        size="normal"
-                                        storeValue={[Function]}
-                                        sublabel="Merci de laisser ce champ vide si vous ne souhaitez pas recevoir d'email lors des réservations"
-                                        type="email"
-                                />
-                        </div>
-                        <h2
-                                className="main-list-title"
-                        >
-                                Infos artistiques
-                        </h2>
-                        <div
-                                className="field-group"
-                        >
-                                <Field
-                                        displayMaxLength={true}
-                                        displayValue={[Function]}
-                                        errors={null}
-                                        isExpanded={true}
-                                        label="Description"
-                                        layout="horizontal"
-                                        maxLength={1000}
-                                        name="description"
-                                        rows={5}
-                                        size="normal"
-                                        storeValue={[Function]}
-                                        type="textarea"
-                                />
-                        </div>
-                </div>
-                <hr />
-                <div
-                        className="field is-grouped is-grouped-centered"
-                        style={
-                                Object {
-                                        "justifyContent": "space-between",
-                                      }
-                        }
-                >
-                        <div
-                                className="control"
-                        >
-                                <button
-                                        className="button is-secondary is-medium"
-                                        id="cancel-button"
-                                        onClick={[Function]}
-                                >
-                                        Annuler
-                                </button>
-                        </div>
-                        <div
-                                className="control"
-                        >
-                                <SubmitButton
-                                        className="button is-primary is-medium"
-                                        getDisabled={[Function]}
-                                        getTitle={[Function]}
-                                        requiredFields={Array []}
-                                        type="submit"
-                                >
-                                        Enregistrer
-                                         
-                                </SubmitButton>
-                        </div>
-                </div>
+          <div
+            className="field-group"
+          >
+            <Field
+              displayValue={[Function]}
+              errors={null}
+              isExpanded={true}
+              label="Titre de l'offre"
+              layout="horizontal"
+              name="name"
+              required={true}
+              size="normal"
+              storeValue={[Function]}
+            />
+            <Field
+              displayValue={[Function]}
+              errors={null}
+              label="Type"
+              layout="horizontal"
+              name="type"
+              optionLabel="proLabel"
+              optionValue="value"
+              placeholder="Sélectionnez un type d'offre"
+              required={true}
+              size="normal"
+              storeValue={[Function]}
+              sublabel="Le type d'offre ne peut pas être modifié une fois l'offre enregistrée."
+              type="select"
+            />
+          </div>
+          <div>
+            <h2
+              className="main-list-title"
+            >
+              Infos pratiques
+            </h2>
+            <div
+              className="field-group"
+            >
+              <Field
+                debug={true}
+                displayValue={[Function]}
+                errors={null}
+                label="Structure"
+                layout="horizontal"
+                name="offererId"
+                placeholder="Sélectionnez une structure"
+                readOnly={false}
+                required={true}
+                size="normal"
+                storeValue={[Function]}
+                type="select"
+              />
+              <Field
+                displayValue={[Function]}
+                errors={null}
+                label="Lieu"
+                layout="horizontal"
+                name="venueId"
+                options={Array []}
+                placeholder="Sélectionnez un lieu"
+                readOnly={false}
+                required={true}
+                size="normal"
+                storeValue={[Function]}
+                type="select"
+              />
+              <Field
+                displayValue={[Function]}
+                errors={null}
+                label="Email auquel envoyer les réservations"
+                layout="horizontal"
+                name="bookingEmail"
+                size="normal"
+                storeValue={[Function]}
+                sublabel="Merci de laisser ce champ vide si vous ne souhaitez pas recevoir d'email lors des réservations"
+                type="email"
+              />
+            </div>
+            <h2
+              className="main-list-title"
+            >
+              Infos artistiques
+            </h2>
+            <div
+              className="field-group"
+            >
+              <Field
+                displayMaxLength={true}
+                displayValue={[Function]}
+                errors={null}
+                isExpanded={true}
+                label="Description"
+                layout="horizontal"
+                maxLength={1000}
+                name="description"
+                rows={5}
+                size="normal"
+                storeValue={[Function]}
+                type="textarea"
+              />
+            </div>
+          </div>
+          <hr />
+          <div
+            className="field is-grouped is-grouped-centered"
+            style={
+              Object {
+                "justifyContent": "space-between",
+              }
+            }
+          >
+            <div
+              className="control"
+            >
+              <button
+                className="button is-secondary is-medium"
+                id="cancel-button"
+                onClick={[Function]}
+              >
+                Annuler
+              </button>
+            </div>
+            <div
+              className="control"
+            >
+              <SubmitButton
+                className="button is-primary is-medium"
+                getDisabled={[Function]}
+                getTitle={[Function]}
+                requiredFields={Array []}
+                type="submit"
+              >
+                Enregistrer
+                 
+              </SubmitButton>
+            </div>
+          </div>
         </withRouter(Connect(_Form))>
-</HeroSection>,
+      </HeroSection>,
       "handleDataRequest": [Function],
       "name": "offer",
     },
@@ -243,14 +252,14 @@ ShallowWrapper {
         "children": Array [
           <p
             className="subtitle"
->
+          >
             Renseignez les détails de cette offre, puis mettez-la en avant en ajoutant une ou plusieurs accroches.
-</p>,
+          </p>,
           <p
             className="fs13 pb30"
->
+          >
             Les offres payantes seront visibles dans l’application, toutefois les utilisateurs ne pourront les réserver que s’ils ont activé leur portefeuille numérique de 500 € sur Internet ou lors d’un des événements d’activation.
-</p>,
+          </p>,
           <withRouter(Connect(_Form))
             BlockComponent={null}
             Tag={null}
@@ -266,158 +275,152 @@ ShallowWrapper {
             handleSuccess={[Function]}
             handleSuccessNotification={null}
             handleSuccessRedirect={null}
-            method={undefined}
             name="offer"
             normalizer={null}
             onEnterKey={null}
             onEscapeKey={null}
             onSubmit={null}
-            patch={undefined}
-            readOnly={undefined}
             successNotification="Formulaire non validé"
->
+          >
             <div
-                        className="field-group"
+              className="field-group"
             >
-                        <Field
-                                    displayValue={[Function]}
-                                    errors={null}
-                                    isExpanded={true}
-                                    label="Titre de l'offre"
-                                    layout="horizontal"
-                                    name="name"
-                                    required={true}
-                                    size="normal"
-                                    storeValue={[Function]}
-                        />
-                        <Field
-                                    displayValue={[Function]}
-                                    errors={null}
-                                    label="Type"
-                                    layout="horizontal"
-                                    name="type"
-                                    optionLabel="proLabel"
-                                    optionValue="value"
-                                    options={undefined}
-                                    placeholder="Sélectionnez un type d'offre"
-                                    readOnly={undefined}
-                                    required={true}
-                                    size="normal"
-                                    storeValue={[Function]}
-                                    sublabel="Le type d'offre ne peut pas être modifié une fois l'offre enregistrée."
-                                    type="select"
-                        />
+              <Field
+                displayValue={[Function]}
+                errors={null}
+                isExpanded={true}
+                label="Titre de l'offre"
+                layout="horizontal"
+                name="name"
+                required={true}
+                size="normal"
+                storeValue={[Function]}
+              />
+              <Field
+                displayValue={[Function]}
+                errors={null}
+                label="Type"
+                layout="horizontal"
+                name="type"
+                optionLabel="proLabel"
+                optionValue="value"
+                placeholder="Sélectionnez un type d'offre"
+                required={true}
+                size="normal"
+                storeValue={[Function]}
+                sublabel="Le type d'offre ne peut pas être modifié une fois l'offre enregistrée."
+                type="select"
+              />
             </div>
             <div>
-                        <h2
-                                    className="main-list-title"
-                        >
-                                    Infos pratiques
-                        </h2>
-                        <div
-                                    className="field-group"
-                        >
-                                    <Field
-                                                debug={true}
-                                                displayValue={[Function]}
-                                                errors={null}
-                                                label="Structure"
-                                                layout="horizontal"
-                                                name="offererId"
-                                                options={undefined}
-                                                placeholder="Sélectionnez une structure"
-                                                readOnly={false}
-                                                required={true}
-                                                size="normal"
-                                                storeValue={[Function]}
-                                                type="select"
-                                    />
-                                    <Field
-                                                displayValue={[Function]}
-                                                errors={null}
-                                                label="Lieu"
-                                                layout="horizontal"
-                                                name="venueId"
-                                                options={Array []}
-                                                placeholder="Sélectionnez un lieu"
-                                                readOnly={false}
-                                                required={true}
-                                                size="normal"
-                                                storeValue={[Function]}
-                                                type="select"
-                                    />
-                                    <Field
-                                                displayValue={[Function]}
-                                                errors={null}
-                                                label="Email auquel envoyer les réservations"
-                                                layout="horizontal"
-                                                name="bookingEmail"
-                                                size="normal"
-                                                storeValue={[Function]}
-                                                sublabel="Merci de laisser ce champ vide si vous ne souhaitez pas recevoir d'email lors des réservations"
-                                                type="email"
-                                    />
-                        </div>
-                        <h2
-                                    className="main-list-title"
-                        >
-                                    Infos artistiques
-                        </h2>
-                        <div
-                                    className="field-group"
-                        >
-                                    <Field
-                                                displayMaxLength={true}
-                                                displayValue={[Function]}
-                                                errors={null}
-                                                isExpanded={true}
-                                                label="Description"
-                                                layout="horizontal"
-                                                maxLength={1000}
-                                                name="description"
-                                                rows={5}
-                                                size="normal"
-                                                storeValue={[Function]}
-                                                type="textarea"
-                                    />
-                        </div>
+              <h2
+                className="main-list-title"
+              >
+                Infos pratiques
+              </h2>
+              <div
+                className="field-group"
+              >
+                <Field
+                  debug={true}
+                  displayValue={[Function]}
+                  errors={null}
+                  label="Structure"
+                  layout="horizontal"
+                  name="offererId"
+                  placeholder="Sélectionnez une structure"
+                  readOnly={false}
+                  required={true}
+                  size="normal"
+                  storeValue={[Function]}
+                  type="select"
+                />
+                <Field
+                  displayValue={[Function]}
+                  errors={null}
+                  label="Lieu"
+                  layout="horizontal"
+                  name="venueId"
+                  options={Array []}
+                  placeholder="Sélectionnez un lieu"
+                  readOnly={false}
+                  required={true}
+                  size="normal"
+                  storeValue={[Function]}
+                  type="select"
+                />
+                <Field
+                  displayValue={[Function]}
+                  errors={null}
+                  label="Email auquel envoyer les réservations"
+                  layout="horizontal"
+                  name="bookingEmail"
+                  size="normal"
+                  storeValue={[Function]}
+                  sublabel="Merci de laisser ce champ vide si vous ne souhaitez pas recevoir d'email lors des réservations"
+                  type="email"
+                />
+              </div>
+              <h2
+                className="main-list-title"
+              >
+                Infos artistiques
+              </h2>
+              <div
+                className="field-group"
+              >
+                <Field
+                  displayMaxLength={true}
+                  displayValue={[Function]}
+                  errors={null}
+                  isExpanded={true}
+                  label="Description"
+                  layout="horizontal"
+                  maxLength={1000}
+                  name="description"
+                  rows={5}
+                  size="normal"
+                  storeValue={[Function]}
+                  type="textarea"
+                />
+              </div>
             </div>
             <hr />
             <div
-                        className="field is-grouped is-grouped-centered"
-                        style={
-                                    Object {
-                                                "justifyContent": "space-between",
-                                              }
-                        }
+              className="field is-grouped is-grouped-centered"
+              style={
+                Object {
+                  "justifyContent": "space-between",
+                }
+              }
             >
-                        <div
-                                    className="control"
-                        >
-                                    <button
-                                                className="button is-secondary is-medium"
-                                                id="cancel-button"
-                                                onClick={[Function]}
-                                    >
-                                                Annuler
-                                    </button>
-                        </div>
-                        <div
-                                    className="control"
-                        >
-                                    <SubmitButton
-                                                className="button is-primary is-medium"
-                                                getDisabled={[Function]}
-                                                getTitle={[Function]}
-                                                requiredFields={Array []}
-                                                type="submit"
-                                    >
-                                                Enregistrer
-                                                 
-                                    </SubmitButton>
-                        </div>
+              <div
+                className="control"
+              >
+                <button
+                  className="button is-secondary is-medium"
+                  id="cancel-button"
+                  onClick={[Function]}
+                >
+                  Annuler
+                </button>
+              </div>
+              <div
+                className="control"
+              >
+                <SubmitButton
+                  className="button is-primary is-medium"
+                  getDisabled={[Function]}
+                  getTitle={[Function]}
+                  requiredFields={Array []}
+                  type="submit"
+                >
+                  Enregistrer
+                   
+                </SubmitButton>
+              </div>
             </div>
-</withRouter(Connect(_Form))>,
+          </withRouter(Connect(_Form))>,
         ],
         "subtitle": undefined,
         "title": "Détails de l'offre",
@@ -459,146 +462,143 @@ ShallowWrapper {
             "children": Array [
               <div
                 className="field-group"
->
+              >
                 <Field
-                                displayValue={[Function]}
-                                errors={null}
-                                isExpanded={true}
-                                label="Titre de l'offre"
-                                layout="horizontal"
-                                name="name"
-                                required={true}
-                                size="normal"
-                                storeValue={[Function]}
+                  displayValue={[Function]}
+                  errors={null}
+                  isExpanded={true}
+                  label="Titre de l'offre"
+                  layout="horizontal"
+                  name="name"
+                  required={true}
+                  size="normal"
+                  storeValue={[Function]}
                 />
                 <Field
-                                displayValue={[Function]}
-                                errors={null}
-                                label="Type"
-                                layout="horizontal"
-                                name="type"
-                                optionLabel="proLabel"
-                                optionValue="value"
-                                options={undefined}
-                                placeholder="Sélectionnez un type d'offre"
-                                readOnly={undefined}
-                                required={true}
-                                size="normal"
-                                storeValue={[Function]}
-                                sublabel="Le type d'offre ne peut pas être modifié une fois l'offre enregistrée."
-                                type="select"
+                  displayValue={[Function]}
+                  errors={null}
+                  label="Type"
+                  layout="horizontal"
+                  name="type"
+                  optionLabel="proLabel"
+                  optionValue="value"
+                  placeholder="Sélectionnez un type d'offre"
+                  required={true}
+                  size="normal"
+                  storeValue={[Function]}
+                  sublabel="Le type d'offre ne peut pas être modifié une fois l'offre enregistrée."
+                  type="select"
                 />
-</div>,
+              </div>,
               undefined,
               <div>
                 <h2
-                                className="main-list-title"
+                  className="main-list-title"
                 >
-                                Infos pratiques
+                  Infos pratiques
                 </h2>
                 <div
-                                className="field-group"
+                  className="field-group"
                 >
-                                <Field
-                                                debug={true}
-                                                displayValue={[Function]}
-                                                errors={null}
-                                                label="Structure"
-                                                layout="horizontal"
-                                                name="offererId"
-                                                options={undefined}
-                                                placeholder="Sélectionnez une structure"
-                                                readOnly={false}
-                                                required={true}
-                                                size="normal"
-                                                storeValue={[Function]}
-                                                type="select"
-                                />
-                                <Field
-                                                displayValue={[Function]}
-                                                errors={null}
-                                                label="Lieu"
-                                                layout="horizontal"
-                                                name="venueId"
-                                                options={Array []}
-                                                placeholder="Sélectionnez un lieu"
-                                                readOnly={false}
-                                                required={true}
-                                                size="normal"
-                                                storeValue={[Function]}
-                                                type="select"
-                                />
-                                <Field
-                                                displayValue={[Function]}
-                                                errors={null}
-                                                label="Email auquel envoyer les réservations"
-                                                layout="horizontal"
-                                                name="bookingEmail"
-                                                size="normal"
-                                                storeValue={[Function]}
-                                                sublabel="Merci de laisser ce champ vide si vous ne souhaitez pas recevoir d'email lors des réservations"
-                                                type="email"
-                                />
+                  <Field
+                    debug={true}
+                    displayValue={[Function]}
+                    errors={null}
+                    label="Structure"
+                    layout="horizontal"
+                    name="offererId"
+                    placeholder="Sélectionnez une structure"
+                    readOnly={false}
+                    required={true}
+                    size="normal"
+                    storeValue={[Function]}
+                    type="select"
+                  />
+                  <Field
+                    displayValue={[Function]}
+                    errors={null}
+                    label="Lieu"
+                    layout="horizontal"
+                    name="venueId"
+                    options={Array []}
+                    placeholder="Sélectionnez un lieu"
+                    readOnly={false}
+                    required={true}
+                    size="normal"
+                    storeValue={[Function]}
+                    type="select"
+                  />
+                  <Field
+                    displayValue={[Function]}
+                    errors={null}
+                    label="Email auquel envoyer les réservations"
+                    layout="horizontal"
+                    name="bookingEmail"
+                    size="normal"
+                    storeValue={[Function]}
+                    sublabel="Merci de laisser ce champ vide si vous ne souhaitez pas recevoir d'email lors des réservations"
+                    type="email"
+                  />
                 </div>
                 <h2
-                                className="main-list-title"
+                  className="main-list-title"
                 >
-                                Infos artistiques
+                  Infos artistiques
                 </h2>
                 <div
-                                className="field-group"
+                  className="field-group"
                 >
-                                <Field
-                                                displayMaxLength={true}
-                                                displayValue={[Function]}
-                                                errors={null}
-                                                isExpanded={true}
-                                                label="Description"
-                                                layout="horizontal"
-                                                maxLength={1000}
-                                                name="description"
-                                                rows={5}
-                                                size="normal"
-                                                storeValue={[Function]}
-                                                type="textarea"
-                                />
+                  <Field
+                    displayMaxLength={true}
+                    displayValue={[Function]}
+                    errors={null}
+                    isExpanded={true}
+                    label="Description"
+                    layout="horizontal"
+                    maxLength={1000}
+                    name="description"
+                    rows={5}
+                    size="normal"
+                    storeValue={[Function]}
+                    type="textarea"
+                  />
                 </div>
-</div>,
+              </div>,
               <hr />,
               <div
                 className="field is-grouped is-grouped-centered"
                 style={
-                                Object {
-                                                "justifyContent": "space-between",
-                                              }
+                  Object {
+                    "justifyContent": "space-between",
+                  }
                 }
->
+              >
                 <div
-                                className="control"
+                  className="control"
                 >
-                                <button
-                                                className="button is-secondary is-medium"
-                                                id="cancel-button"
-                                                onClick={[Function]}
-                                >
-                                                Annuler
-                                </button>
+                  <button
+                    className="button is-secondary is-medium"
+                    id="cancel-button"
+                    onClick={[Function]}
+                  >
+                    Annuler
+                  </button>
                 </div>
                 <div
-                                className="control"
+                  className="control"
                 >
-                                <SubmitButton
-                                                className="button is-primary is-medium"
-                                                getDisabled={[Function]}
-                                                getTitle={[Function]}
-                                                requiredFields={Array []}
-                                                type="submit"
-                                >
-                                                Enregistrer
-                                                 
-                                </SubmitButton>
+                  <SubmitButton
+                    className="button is-primary is-medium"
+                    getDisabled={[Function]}
+                    getTitle={[Function]}
+                    requiredFields={Array []}
+                    type="submit"
+                  >
+                    Enregistrer
+                     
+                  </SubmitButton>
                 </div>
-</div>,
+              </div>,
             ],
             "className": null,
             "errorsPatch": Object {},
@@ -639,7 +639,7 @@ ShallowWrapper {
                     required={true}
                     size="normal"
                     storeValue={[Function]}
-/>,
+                  />,
                   <Field
                     displayValue={[Function]}
                     errors={null}
@@ -648,15 +648,13 @@ ShallowWrapper {
                     name="type"
                     optionLabel="proLabel"
                     optionValue="value"
-                    options={undefined}
                     placeholder="Sélectionnez un type d'offre"
-                    readOnly={undefined}
                     required={true}
                     size="normal"
                     storeValue={[Function]}
                     sublabel="Le type d'offre ne peut pas être modifié une fois l'offre enregistrée."
                     type="select"
-/>,
+                  />,
                   false,
                   false,
                   undefined,
@@ -724,76 +722,75 @@ ShallowWrapper {
                 "children": Array [
                   <h2
                     className="main-list-title"
->
+                  >
                     Infos pratiques
-</h2>,
+                  </h2>,
                   <div
                     className="field-group"
->
+                  >
                     <Field
-                                        debug={true}
-                                        displayValue={[Function]}
-                                        errors={null}
-                                        label="Structure"
-                                        layout="horizontal"
-                                        name="offererId"
-                                        options={undefined}
-                                        placeholder="Sélectionnez une structure"
-                                        readOnly={false}
-                                        required={true}
-                                        size="normal"
-                                        storeValue={[Function]}
-                                        type="select"
+                      debug={true}
+                      displayValue={[Function]}
+                      errors={null}
+                      label="Structure"
+                      layout="horizontal"
+                      name="offererId"
+                      placeholder="Sélectionnez une structure"
+                      readOnly={false}
+                      required={true}
+                      size="normal"
+                      storeValue={[Function]}
+                      type="select"
                     />
                     <Field
-                                        displayValue={[Function]}
-                                        errors={null}
-                                        label="Lieu"
-                                        layout="horizontal"
-                                        name="venueId"
-                                        options={Array []}
-                                        placeholder="Sélectionnez un lieu"
-                                        readOnly={false}
-                                        required={true}
-                                        size="normal"
-                                        storeValue={[Function]}
-                                        type="select"
+                      displayValue={[Function]}
+                      errors={null}
+                      label="Lieu"
+                      layout="horizontal"
+                      name="venueId"
+                      options={Array []}
+                      placeholder="Sélectionnez un lieu"
+                      readOnly={false}
+                      required={true}
+                      size="normal"
+                      storeValue={[Function]}
+                      type="select"
                     />
                     <Field
-                                        displayValue={[Function]}
-                                        errors={null}
-                                        label="Email auquel envoyer les réservations"
-                                        layout="horizontal"
-                                        name="bookingEmail"
-                                        size="normal"
-                                        storeValue={[Function]}
-                                        sublabel="Merci de laisser ce champ vide si vous ne souhaitez pas recevoir d'email lors des réservations"
-                                        type="email"
+                      displayValue={[Function]}
+                      errors={null}
+                      label="Email auquel envoyer les réservations"
+                      layout="horizontal"
+                      name="bookingEmail"
+                      size="normal"
+                      storeValue={[Function]}
+                      sublabel="Merci de laisser ce champ vide si vous ne souhaitez pas recevoir d'email lors des réservations"
+                      type="email"
                     />
-</div>,
+                  </div>,
                   <h2
                     className="main-list-title"
->
+                  >
                     Infos artistiques
-</h2>,
+                  </h2>,
                   <div
                     className="field-group"
->
+                  >
                     <Field
-                                        displayMaxLength={true}
-                                        displayValue={[Function]}
-                                        errors={null}
-                                        isExpanded={true}
-                                        label="Description"
-                                        layout="horizontal"
-                                        maxLength={1000}
-                                        name="description"
-                                        rows={5}
-                                        size="normal"
-                                        storeValue={[Function]}
-                                        type="textarea"
+                      displayMaxLength={true}
+                      displayValue={[Function]}
+                      errors={null}
+                      isExpanded={true}
+                      label="Description"
+                      layout="horizontal"
+                      maxLength={1000}
+                      name="description"
+                      rows={5}
+                      size="normal"
+                      storeValue={[Function]}
+                      type="textarea"
                     />
-</div>,
+                  </div>,
                 ],
               },
               "ref": null,
@@ -823,14 +820,13 @@ ShallowWrapper {
                         label="Structure"
                         layout="horizontal"
                         name="offererId"
-                        options={undefined}
                         placeholder="Sélectionnez une structure"
                         readOnly={false}
                         required={true}
                         size="normal"
                         storeValue={[Function]}
                         type="select"
-/>,
+                      />,
                       undefined,
                       <Field
                         displayValue={[Function]}
@@ -845,7 +841,7 @@ ShallowWrapper {
                         size="normal"
                         storeValue={[Function]}
                         type="select"
-/>,
+                      />,
                       undefined,
                       false,
                       undefined,
@@ -859,7 +855,7 @@ ShallowWrapper {
                         storeValue={[Function]}
                         sublabel="Merci de laisser ce champ vide si vous ne souhaitez pas recevoir d'email lors des réservations"
                         type="email"
-/>,
+                      />,
                     ],
                     "className": "field-group",
                   },
@@ -967,7 +963,7 @@ ShallowWrapper {
                         size="normal"
                         storeValue={[Function]}
                         type="textarea"
-/>,
+                      />,
                       false,
                       false,
                       false,
@@ -1030,29 +1026,29 @@ ShallowWrapper {
                 "children": Array [
                   <div
                     className="control"
->
+                  >
                     <button
-                                        className="button is-secondary is-medium"
-                                        id="cancel-button"
-                                        onClick={[Function]}
+                      className="button is-secondary is-medium"
+                      id="cancel-button"
+                      onClick={[Function]}
                     >
-                                        Annuler
+                      Annuler
                     </button>
-</div>,
+                  </div>,
                   <div
                     className="control"
->
+                  >
                     <SubmitButton
-                                        className="button is-primary is-medium"
-                                        getDisabled={[Function]}
-                                        getTitle={[Function]}
-                                        requiredFields={Array []}
-                                        type="submit"
+                      className="button is-primary is-medium"
+                      getDisabled={[Function]}
+                      getTitle={[Function]}
+                      requiredFields={Array []}
+                      type="submit"
                     >
-                                        Enregistrer
-                                         
+                      Enregistrer
+                       
                     </SubmitButton>
-</div>,
+                  </div>,
                 ],
                 "className": "field is-grouped is-grouped-centered",
                 "style": Object {
@@ -1070,9 +1066,9 @@ ShallowWrapper {
                       className="button is-secondary is-medium"
                       id="cancel-button"
                       onClick={[Function]}
->
+                    >
                       Annuler
-</button>,
+                    </button>,
                     "className": "control",
                   },
                   "ref": null,
@@ -1103,10 +1099,10 @@ ShallowWrapper {
                       getTitle={[Function]}
                       requiredFields={Array []}
                       type="submit"
->
+                    >
                       Enregistrer
                        
-</SubmitButton>,
+                    </SubmitButton>,
                     "className": "control",
                   },
                   "ref": null,
@@ -1158,187 +1154,180 @@ ShallowWrapper {
           "path": "/offres",
         },
         "children": <HeroSection
-          subtitle={undefined}
           title="Détails de l'offre"
->
+        >
           <p
-                    className="subtitle"
+            className="subtitle"
           >
-                    Renseignez les détails de cette offre, puis mettez-la en avant en ajoutant une ou plusieurs accroches.
+            Renseignez les détails de cette offre, puis mettez-la en avant en ajoutant une ou plusieurs accroches.
           </p>
           <p
-                    className="fs13 pb30"
+            className="fs13 pb30"
           >
-                    Les offres payantes seront visibles dans l’application, toutefois les utilisateurs ne pourront les réserver que s’ils ont activé leur portefeuille numérique de 500 € sur Internet ou lors d’un des événements d’activation.
+            Les offres payantes seront visibles dans l’application, toutefois les utilisateurs ne pourront les réserver que s’ils ont activé leur portefeuille numérique de 500 € sur Internet ou lors d’un des événements d’activation.
           </p>
           <withRouter(Connect(_Form))
-                    BlockComponent={null}
-                    Tag={null}
-                    action="/offers/undefined"
-                    className={null}
-                    errorsPatch={Object {}}
-                    failNotification="Formulaire non validé"
-                    formPatch={Object {}}
-                    formatPatch={[Function]}
-                    handleFail={null}
-                    handleFailNotification={null}
-                    handleFailRedirect={null}
-                    handleSuccess={[Function]}
-                    handleSuccessNotification={null}
-                    handleSuccessRedirect={null}
-                    method={undefined}
-                    name="offer"
-                    normalizer={null}
-                    onEnterKey={null}
-                    onEscapeKey={null}
-                    onSubmit={null}
-                    patch={undefined}
-                    readOnly={undefined}
-                    successNotification="Formulaire non validé"
+            BlockComponent={null}
+            Tag={null}
+            action="/offers/undefined"
+            className={null}
+            errorsPatch={Object {}}
+            failNotification="Formulaire non validé"
+            formPatch={Object {}}
+            formatPatch={[Function]}
+            handleFail={null}
+            handleFailNotification={null}
+            handleFailRedirect={null}
+            handleSuccess={[Function]}
+            handleSuccessNotification={null}
+            handleSuccessRedirect={null}
+            name="offer"
+            normalizer={null}
+            onEnterKey={null}
+            onEscapeKey={null}
+            onSubmit={null}
+            successNotification="Formulaire non validé"
           >
-                    <div
-                              className="field-group"
-                    >
-                              <Field
-                                        displayValue={[Function]}
-                                        errors={null}
-                                        isExpanded={true}
-                                        label="Titre de l'offre"
-                                        layout="horizontal"
-                                        name="name"
-                                        required={true}
-                                        size="normal"
-                                        storeValue={[Function]}
-                              />
-                              <Field
-                                        displayValue={[Function]}
-                                        errors={null}
-                                        label="Type"
-                                        layout="horizontal"
-                                        name="type"
-                                        optionLabel="proLabel"
-                                        optionValue="value"
-                                        options={undefined}
-                                        placeholder="Sélectionnez un type d'offre"
-                                        readOnly={undefined}
-                                        required={true}
-                                        size="normal"
-                                        storeValue={[Function]}
-                                        sublabel="Le type d'offre ne peut pas être modifié une fois l'offre enregistrée."
-                                        type="select"
-                              />
-                    </div>
-                    <div>
-                              <h2
-                                        className="main-list-title"
-                              >
-                                        Infos pratiques
-                              </h2>
-                              <div
-                                        className="field-group"
-                              >
-                                        <Field
-                                                  debug={true}
-                                                  displayValue={[Function]}
-                                                  errors={null}
-                                                  label="Structure"
-                                                  layout="horizontal"
-                                                  name="offererId"
-                                                  options={undefined}
-                                                  placeholder="Sélectionnez une structure"
-                                                  readOnly={false}
-                                                  required={true}
-                                                  size="normal"
-                                                  storeValue={[Function]}
-                                                  type="select"
-                                        />
-                                        <Field
-                                                  displayValue={[Function]}
-                                                  errors={null}
-                                                  label="Lieu"
-                                                  layout="horizontal"
-                                                  name="venueId"
-                                                  options={Array []}
-                                                  placeholder="Sélectionnez un lieu"
-                                                  readOnly={false}
-                                                  required={true}
-                                                  size="normal"
-                                                  storeValue={[Function]}
-                                                  type="select"
-                                        />
-                                        <Field
-                                                  displayValue={[Function]}
-                                                  errors={null}
-                                                  label="Email auquel envoyer les réservations"
-                                                  layout="horizontal"
-                                                  name="bookingEmail"
-                                                  size="normal"
-                                                  storeValue={[Function]}
-                                                  sublabel="Merci de laisser ce champ vide si vous ne souhaitez pas recevoir d'email lors des réservations"
-                                                  type="email"
-                                        />
-                              </div>
-                              <h2
-                                        className="main-list-title"
-                              >
-                                        Infos artistiques
-                              </h2>
-                              <div
-                                        className="field-group"
-                              >
-                                        <Field
-                                                  displayMaxLength={true}
-                                                  displayValue={[Function]}
-                                                  errors={null}
-                                                  isExpanded={true}
-                                                  label="Description"
-                                                  layout="horizontal"
-                                                  maxLength={1000}
-                                                  name="description"
-                                                  rows={5}
-                                                  size="normal"
-                                                  storeValue={[Function]}
-                                                  type="textarea"
-                                        />
-                              </div>
-                    </div>
-                    <hr />
-                    <div
-                              className="field is-grouped is-grouped-centered"
-                              style={
-                                        Object {
-                                                  "justifyContent": "space-between",
-                                                }
-                              }
-                    >
-                              <div
-                                        className="control"
-                              >
-                                        <button
-                                                  className="button is-secondary is-medium"
-                                                  id="cancel-button"
-                                                  onClick={[Function]}
-                                        >
-                                                  Annuler
-                                        </button>
-                              </div>
-                              <div
-                                        className="control"
-                              >
-                                        <SubmitButton
-                                                  className="button is-primary is-medium"
-                                                  getDisabled={[Function]}
-                                                  getTitle={[Function]}
-                                                  requiredFields={Array []}
-                                                  type="submit"
-                                        >
-                                                  Enregistrer
-                                                   
-                                        </SubmitButton>
-                              </div>
-                    </div>
+            <div
+              className="field-group"
+            >
+              <Field
+                displayValue={[Function]}
+                errors={null}
+                isExpanded={true}
+                label="Titre de l'offre"
+                layout="horizontal"
+                name="name"
+                required={true}
+                size="normal"
+                storeValue={[Function]}
+              />
+              <Field
+                displayValue={[Function]}
+                errors={null}
+                label="Type"
+                layout="horizontal"
+                name="type"
+                optionLabel="proLabel"
+                optionValue="value"
+                placeholder="Sélectionnez un type d'offre"
+                required={true}
+                size="normal"
+                storeValue={[Function]}
+                sublabel="Le type d'offre ne peut pas être modifié une fois l'offre enregistrée."
+                type="select"
+              />
+            </div>
+            <div>
+              <h2
+                className="main-list-title"
+              >
+                Infos pratiques
+              </h2>
+              <div
+                className="field-group"
+              >
+                <Field
+                  debug={true}
+                  displayValue={[Function]}
+                  errors={null}
+                  label="Structure"
+                  layout="horizontal"
+                  name="offererId"
+                  placeholder="Sélectionnez une structure"
+                  readOnly={false}
+                  required={true}
+                  size="normal"
+                  storeValue={[Function]}
+                  type="select"
+                />
+                <Field
+                  displayValue={[Function]}
+                  errors={null}
+                  label="Lieu"
+                  layout="horizontal"
+                  name="venueId"
+                  options={Array []}
+                  placeholder="Sélectionnez un lieu"
+                  readOnly={false}
+                  required={true}
+                  size="normal"
+                  storeValue={[Function]}
+                  type="select"
+                />
+                <Field
+                  displayValue={[Function]}
+                  errors={null}
+                  label="Email auquel envoyer les réservations"
+                  layout="horizontal"
+                  name="bookingEmail"
+                  size="normal"
+                  storeValue={[Function]}
+                  sublabel="Merci de laisser ce champ vide si vous ne souhaitez pas recevoir d'email lors des réservations"
+                  type="email"
+                />
+              </div>
+              <h2
+                className="main-list-title"
+              >
+                Infos artistiques
+              </h2>
+              <div
+                className="field-group"
+              >
+                <Field
+                  displayMaxLength={true}
+                  displayValue={[Function]}
+                  errors={null}
+                  isExpanded={true}
+                  label="Description"
+                  layout="horizontal"
+                  maxLength={1000}
+                  name="description"
+                  rows={5}
+                  size="normal"
+                  storeValue={[Function]}
+                  type="textarea"
+                />
+              </div>
+            </div>
+            <hr />
+            <div
+              className="field is-grouped is-grouped-centered"
+              style={
+                Object {
+                  "justifyContent": "space-between",
+                }
+              }
+            >
+              <div
+                className="control"
+              >
+                <button
+                  className="button is-secondary is-medium"
+                  id="cancel-button"
+                  onClick={[Function]}
+                >
+                  Annuler
+                </button>
+              </div>
+              <div
+                className="control"
+              >
+                <SubmitButton
+                  className="button is-primary is-medium"
+                  getDisabled={[Function]}
+                  getTitle={[Function]}
+                  requiredFields={Array []}
+                  type="submit"
+                >
+                  Enregistrer
+                   
+                </SubmitButton>
+              </div>
+            </div>
           </withRouter(Connect(_Form))>
-</HeroSection>,
+        </HeroSection>,
         "handleDataRequest": [Function],
         "name": "offer",
       },
@@ -1351,14 +1340,14 @@ ShallowWrapper {
           "children": Array [
             <p
               className="subtitle"
->
+            >
               Renseignez les détails de cette offre, puis mettez-la en avant en ajoutant une ou plusieurs accroches.
-</p>,
+            </p>,
             <p
               className="fs13 pb30"
->
+            >
               Les offres payantes seront visibles dans l’application, toutefois les utilisateurs ne pourront les réserver que s’ils ont activé leur portefeuille numérique de 500 € sur Internet ou lors d’un des événements d’activation.
-</p>,
+            </p>,
             <withRouter(Connect(_Form))
               BlockComponent={null}
               Tag={null}
@@ -1374,158 +1363,152 @@ ShallowWrapper {
               handleSuccess={[Function]}
               handleSuccessNotification={null}
               handleSuccessRedirect={null}
-              method={undefined}
               name="offer"
               normalizer={null}
               onEnterKey={null}
               onEscapeKey={null}
               onSubmit={null}
-              patch={undefined}
-              readOnly={undefined}
               successNotification="Formulaire non validé"
->
+            >
               <div
-                            className="field-group"
+                className="field-group"
               >
-                            <Field
-                                          displayValue={[Function]}
-                                          errors={null}
-                                          isExpanded={true}
-                                          label="Titre de l'offre"
-                                          layout="horizontal"
-                                          name="name"
-                                          required={true}
-                                          size="normal"
-                                          storeValue={[Function]}
-                            />
-                            <Field
-                                          displayValue={[Function]}
-                                          errors={null}
-                                          label="Type"
-                                          layout="horizontal"
-                                          name="type"
-                                          optionLabel="proLabel"
-                                          optionValue="value"
-                                          options={undefined}
-                                          placeholder="Sélectionnez un type d'offre"
-                                          readOnly={undefined}
-                                          required={true}
-                                          size="normal"
-                                          storeValue={[Function]}
-                                          sublabel="Le type d'offre ne peut pas être modifié une fois l'offre enregistrée."
-                                          type="select"
-                            />
+                <Field
+                  displayValue={[Function]}
+                  errors={null}
+                  isExpanded={true}
+                  label="Titre de l'offre"
+                  layout="horizontal"
+                  name="name"
+                  required={true}
+                  size="normal"
+                  storeValue={[Function]}
+                />
+                <Field
+                  displayValue={[Function]}
+                  errors={null}
+                  label="Type"
+                  layout="horizontal"
+                  name="type"
+                  optionLabel="proLabel"
+                  optionValue="value"
+                  placeholder="Sélectionnez un type d'offre"
+                  required={true}
+                  size="normal"
+                  storeValue={[Function]}
+                  sublabel="Le type d'offre ne peut pas être modifié une fois l'offre enregistrée."
+                  type="select"
+                />
               </div>
               <div>
-                            <h2
-                                          className="main-list-title"
-                            >
-                                          Infos pratiques
-                            </h2>
-                            <div
-                                          className="field-group"
-                            >
-                                          <Field
-                                                        debug={true}
-                                                        displayValue={[Function]}
-                                                        errors={null}
-                                                        label="Structure"
-                                                        layout="horizontal"
-                                                        name="offererId"
-                                                        options={undefined}
-                                                        placeholder="Sélectionnez une structure"
-                                                        readOnly={false}
-                                                        required={true}
-                                                        size="normal"
-                                                        storeValue={[Function]}
-                                                        type="select"
-                                          />
-                                          <Field
-                                                        displayValue={[Function]}
-                                                        errors={null}
-                                                        label="Lieu"
-                                                        layout="horizontal"
-                                                        name="venueId"
-                                                        options={Array []}
-                                                        placeholder="Sélectionnez un lieu"
-                                                        readOnly={false}
-                                                        required={true}
-                                                        size="normal"
-                                                        storeValue={[Function]}
-                                                        type="select"
-                                          />
-                                          <Field
-                                                        displayValue={[Function]}
-                                                        errors={null}
-                                                        label="Email auquel envoyer les réservations"
-                                                        layout="horizontal"
-                                                        name="bookingEmail"
-                                                        size="normal"
-                                                        storeValue={[Function]}
-                                                        sublabel="Merci de laisser ce champ vide si vous ne souhaitez pas recevoir d'email lors des réservations"
-                                                        type="email"
-                                          />
-                            </div>
-                            <h2
-                                          className="main-list-title"
-                            >
-                                          Infos artistiques
-                            </h2>
-                            <div
-                                          className="field-group"
-                            >
-                                          <Field
-                                                        displayMaxLength={true}
-                                                        displayValue={[Function]}
-                                                        errors={null}
-                                                        isExpanded={true}
-                                                        label="Description"
-                                                        layout="horizontal"
-                                                        maxLength={1000}
-                                                        name="description"
-                                                        rows={5}
-                                                        size="normal"
-                                                        storeValue={[Function]}
-                                                        type="textarea"
-                                          />
-                            </div>
+                <h2
+                  className="main-list-title"
+                >
+                  Infos pratiques
+                </h2>
+                <div
+                  className="field-group"
+                >
+                  <Field
+                    debug={true}
+                    displayValue={[Function]}
+                    errors={null}
+                    label="Structure"
+                    layout="horizontal"
+                    name="offererId"
+                    placeholder="Sélectionnez une structure"
+                    readOnly={false}
+                    required={true}
+                    size="normal"
+                    storeValue={[Function]}
+                    type="select"
+                  />
+                  <Field
+                    displayValue={[Function]}
+                    errors={null}
+                    label="Lieu"
+                    layout="horizontal"
+                    name="venueId"
+                    options={Array []}
+                    placeholder="Sélectionnez un lieu"
+                    readOnly={false}
+                    required={true}
+                    size="normal"
+                    storeValue={[Function]}
+                    type="select"
+                  />
+                  <Field
+                    displayValue={[Function]}
+                    errors={null}
+                    label="Email auquel envoyer les réservations"
+                    layout="horizontal"
+                    name="bookingEmail"
+                    size="normal"
+                    storeValue={[Function]}
+                    sublabel="Merci de laisser ce champ vide si vous ne souhaitez pas recevoir d'email lors des réservations"
+                    type="email"
+                  />
+                </div>
+                <h2
+                  className="main-list-title"
+                >
+                  Infos artistiques
+                </h2>
+                <div
+                  className="field-group"
+                >
+                  <Field
+                    displayMaxLength={true}
+                    displayValue={[Function]}
+                    errors={null}
+                    isExpanded={true}
+                    label="Description"
+                    layout="horizontal"
+                    maxLength={1000}
+                    name="description"
+                    rows={5}
+                    size="normal"
+                    storeValue={[Function]}
+                    type="textarea"
+                  />
+                </div>
               </div>
               <hr />
               <div
-                            className="field is-grouped is-grouped-centered"
-                            style={
-                                          Object {
-                                                        "justifyContent": "space-between",
-                                                      }
-                            }
+                className="field is-grouped is-grouped-centered"
+                style={
+                  Object {
+                    "justifyContent": "space-between",
+                  }
+                }
               >
-                            <div
-                                          className="control"
-                            >
-                                          <button
-                                                        className="button is-secondary is-medium"
-                                                        id="cancel-button"
-                                                        onClick={[Function]}
-                                          >
-                                                        Annuler
-                                          </button>
-                            </div>
-                            <div
-                                          className="control"
-                            >
-                                          <SubmitButton
-                                                        className="button is-primary is-medium"
-                                                        getDisabled={[Function]}
-                                                        getTitle={[Function]}
-                                                        requiredFields={Array []}
-                                                        type="submit"
-                                          >
-                                                        Enregistrer
-                                                         
-                                          </SubmitButton>
-                            </div>
+                <div
+                  className="control"
+                >
+                  <button
+                    className="button is-secondary is-medium"
+                    id="cancel-button"
+                    onClick={[Function]}
+                  >
+                    Annuler
+                  </button>
+                </div>
+                <div
+                  className="control"
+                >
+                  <SubmitButton
+                    className="button is-primary is-medium"
+                    getDisabled={[Function]}
+                    getTitle={[Function]}
+                    requiredFields={Array []}
+                    type="submit"
+                  >
+                    Enregistrer
+                     
+                  </SubmitButton>
+                </div>
               </div>
-</withRouter(Connect(_Form))>,
+            </withRouter(Connect(_Form))>,
           ],
           "subtitle": undefined,
           "title": "Détails de l'offre",
@@ -1567,146 +1550,143 @@ ShallowWrapper {
               "children": Array [
                 <div
                   className="field-group"
->
+                >
                   <Field
-                                    displayValue={[Function]}
-                                    errors={null}
-                                    isExpanded={true}
-                                    label="Titre de l'offre"
-                                    layout="horizontal"
-                                    name="name"
-                                    required={true}
-                                    size="normal"
-                                    storeValue={[Function]}
+                    displayValue={[Function]}
+                    errors={null}
+                    isExpanded={true}
+                    label="Titre de l'offre"
+                    layout="horizontal"
+                    name="name"
+                    required={true}
+                    size="normal"
+                    storeValue={[Function]}
                   />
                   <Field
-                                    displayValue={[Function]}
-                                    errors={null}
-                                    label="Type"
-                                    layout="horizontal"
-                                    name="type"
-                                    optionLabel="proLabel"
-                                    optionValue="value"
-                                    options={undefined}
-                                    placeholder="Sélectionnez un type d'offre"
-                                    readOnly={undefined}
-                                    required={true}
-                                    size="normal"
-                                    storeValue={[Function]}
-                                    sublabel="Le type d'offre ne peut pas être modifié une fois l'offre enregistrée."
-                                    type="select"
+                    displayValue={[Function]}
+                    errors={null}
+                    label="Type"
+                    layout="horizontal"
+                    name="type"
+                    optionLabel="proLabel"
+                    optionValue="value"
+                    placeholder="Sélectionnez un type d'offre"
+                    required={true}
+                    size="normal"
+                    storeValue={[Function]}
+                    sublabel="Le type d'offre ne peut pas être modifié une fois l'offre enregistrée."
+                    type="select"
                   />
-</div>,
+                </div>,
                 undefined,
                 <div>
                   <h2
-                                    className="main-list-title"
+                    className="main-list-title"
                   >
-                                    Infos pratiques
+                    Infos pratiques
                   </h2>
                   <div
-                                    className="field-group"
+                    className="field-group"
                   >
-                                    <Field
-                                                      debug={true}
-                                                      displayValue={[Function]}
-                                                      errors={null}
-                                                      label="Structure"
-                                                      layout="horizontal"
-                                                      name="offererId"
-                                                      options={undefined}
-                                                      placeholder="Sélectionnez une structure"
-                                                      readOnly={false}
-                                                      required={true}
-                                                      size="normal"
-                                                      storeValue={[Function]}
-                                                      type="select"
-                                    />
-                                    <Field
-                                                      displayValue={[Function]}
-                                                      errors={null}
-                                                      label="Lieu"
-                                                      layout="horizontal"
-                                                      name="venueId"
-                                                      options={Array []}
-                                                      placeholder="Sélectionnez un lieu"
-                                                      readOnly={false}
-                                                      required={true}
-                                                      size="normal"
-                                                      storeValue={[Function]}
-                                                      type="select"
-                                    />
-                                    <Field
-                                                      displayValue={[Function]}
-                                                      errors={null}
-                                                      label="Email auquel envoyer les réservations"
-                                                      layout="horizontal"
-                                                      name="bookingEmail"
-                                                      size="normal"
-                                                      storeValue={[Function]}
-                                                      sublabel="Merci de laisser ce champ vide si vous ne souhaitez pas recevoir d'email lors des réservations"
-                                                      type="email"
-                                    />
+                    <Field
+                      debug={true}
+                      displayValue={[Function]}
+                      errors={null}
+                      label="Structure"
+                      layout="horizontal"
+                      name="offererId"
+                      placeholder="Sélectionnez une structure"
+                      readOnly={false}
+                      required={true}
+                      size="normal"
+                      storeValue={[Function]}
+                      type="select"
+                    />
+                    <Field
+                      displayValue={[Function]}
+                      errors={null}
+                      label="Lieu"
+                      layout="horizontal"
+                      name="venueId"
+                      options={Array []}
+                      placeholder="Sélectionnez un lieu"
+                      readOnly={false}
+                      required={true}
+                      size="normal"
+                      storeValue={[Function]}
+                      type="select"
+                    />
+                    <Field
+                      displayValue={[Function]}
+                      errors={null}
+                      label="Email auquel envoyer les réservations"
+                      layout="horizontal"
+                      name="bookingEmail"
+                      size="normal"
+                      storeValue={[Function]}
+                      sublabel="Merci de laisser ce champ vide si vous ne souhaitez pas recevoir d'email lors des réservations"
+                      type="email"
+                    />
                   </div>
                   <h2
-                                    className="main-list-title"
+                    className="main-list-title"
                   >
-                                    Infos artistiques
+                    Infos artistiques
                   </h2>
                   <div
-                                    className="field-group"
+                    className="field-group"
                   >
-                                    <Field
-                                                      displayMaxLength={true}
-                                                      displayValue={[Function]}
-                                                      errors={null}
-                                                      isExpanded={true}
-                                                      label="Description"
-                                                      layout="horizontal"
-                                                      maxLength={1000}
-                                                      name="description"
-                                                      rows={5}
-                                                      size="normal"
-                                                      storeValue={[Function]}
-                                                      type="textarea"
-                                    />
+                    <Field
+                      displayMaxLength={true}
+                      displayValue={[Function]}
+                      errors={null}
+                      isExpanded={true}
+                      label="Description"
+                      layout="horizontal"
+                      maxLength={1000}
+                      name="description"
+                      rows={5}
+                      size="normal"
+                      storeValue={[Function]}
+                      type="textarea"
+                    />
                   </div>
-</div>,
+                </div>,
                 <hr />,
                 <div
                   className="field is-grouped is-grouped-centered"
                   style={
-                                    Object {
-                                                      "justifyContent": "space-between",
-                                                    }
+                    Object {
+                      "justifyContent": "space-between",
+                    }
                   }
->
+                >
                   <div
-                                    className="control"
+                    className="control"
                   >
-                                    <button
-                                                      className="button is-secondary is-medium"
-                                                      id="cancel-button"
-                                                      onClick={[Function]}
-                                    >
-                                                      Annuler
-                                    </button>
+                    <button
+                      className="button is-secondary is-medium"
+                      id="cancel-button"
+                      onClick={[Function]}
+                    >
+                      Annuler
+                    </button>
                   </div>
                   <div
-                                    className="control"
+                    className="control"
                   >
-                                    <SubmitButton
-                                                      className="button is-primary is-medium"
-                                                      getDisabled={[Function]}
-                                                      getTitle={[Function]}
-                                                      requiredFields={Array []}
-                                                      type="submit"
-                                    >
-                                                      Enregistrer
-                                                       
-                                    </SubmitButton>
+                    <SubmitButton
+                      className="button is-primary is-medium"
+                      getDisabled={[Function]}
+                      getTitle={[Function]}
+                      requiredFields={Array []}
+                      type="submit"
+                    >
+                      Enregistrer
+                       
+                    </SubmitButton>
                   </div>
-</div>,
+                </div>,
               ],
               "className": null,
               "errorsPatch": Object {},
@@ -1747,7 +1727,7 @@ ShallowWrapper {
                       required={true}
                       size="normal"
                       storeValue={[Function]}
-/>,
+                    />,
                     <Field
                       displayValue={[Function]}
                       errors={null}
@@ -1756,15 +1736,13 @@ ShallowWrapper {
                       name="type"
                       optionLabel="proLabel"
                       optionValue="value"
-                      options={undefined}
                       placeholder="Sélectionnez un type d'offre"
-                      readOnly={undefined}
                       required={true}
                       size="normal"
                       storeValue={[Function]}
                       sublabel="Le type d'offre ne peut pas être modifié une fois l'offre enregistrée."
                       type="select"
-/>,
+                    />,
                     false,
                     false,
                     undefined,
@@ -1832,76 +1810,75 @@ ShallowWrapper {
                   "children": Array [
                     <h2
                       className="main-list-title"
->
+                    >
                       Infos pratiques
-</h2>,
+                    </h2>,
                     <div
                       className="field-group"
->
+                    >
                       <Field
-                                            debug={true}
-                                            displayValue={[Function]}
-                                            errors={null}
-                                            label="Structure"
-                                            layout="horizontal"
-                                            name="offererId"
-                                            options={undefined}
-                                            placeholder="Sélectionnez une structure"
-                                            readOnly={false}
-                                            required={true}
-                                            size="normal"
-                                            storeValue={[Function]}
-                                            type="select"
+                        debug={true}
+                        displayValue={[Function]}
+                        errors={null}
+                        label="Structure"
+                        layout="horizontal"
+                        name="offererId"
+                        placeholder="Sélectionnez une structure"
+                        readOnly={false}
+                        required={true}
+                        size="normal"
+                        storeValue={[Function]}
+                        type="select"
                       />
                       <Field
-                                            displayValue={[Function]}
-                                            errors={null}
-                                            label="Lieu"
-                                            layout="horizontal"
-                                            name="venueId"
-                                            options={Array []}
-                                            placeholder="Sélectionnez un lieu"
-                                            readOnly={false}
-                                            required={true}
-                                            size="normal"
-                                            storeValue={[Function]}
-                                            type="select"
+                        displayValue={[Function]}
+                        errors={null}
+                        label="Lieu"
+                        layout="horizontal"
+                        name="venueId"
+                        options={Array []}
+                        placeholder="Sélectionnez un lieu"
+                        readOnly={false}
+                        required={true}
+                        size="normal"
+                        storeValue={[Function]}
+                        type="select"
                       />
                       <Field
-                                            displayValue={[Function]}
-                                            errors={null}
-                                            label="Email auquel envoyer les réservations"
-                                            layout="horizontal"
-                                            name="bookingEmail"
-                                            size="normal"
-                                            storeValue={[Function]}
-                                            sublabel="Merci de laisser ce champ vide si vous ne souhaitez pas recevoir d'email lors des réservations"
-                                            type="email"
+                        displayValue={[Function]}
+                        errors={null}
+                        label="Email auquel envoyer les réservations"
+                        layout="horizontal"
+                        name="bookingEmail"
+                        size="normal"
+                        storeValue={[Function]}
+                        sublabel="Merci de laisser ce champ vide si vous ne souhaitez pas recevoir d'email lors des réservations"
+                        type="email"
                       />
-</div>,
+                    </div>,
                     <h2
                       className="main-list-title"
->
+                    >
                       Infos artistiques
-</h2>,
+                    </h2>,
                     <div
                       className="field-group"
->
+                    >
                       <Field
-                                            displayMaxLength={true}
-                                            displayValue={[Function]}
-                                            errors={null}
-                                            isExpanded={true}
-                                            label="Description"
-                                            layout="horizontal"
-                                            maxLength={1000}
-                                            name="description"
-                                            rows={5}
-                                            size="normal"
-                                            storeValue={[Function]}
-                                            type="textarea"
+                        displayMaxLength={true}
+                        displayValue={[Function]}
+                        errors={null}
+                        isExpanded={true}
+                        label="Description"
+                        layout="horizontal"
+                        maxLength={1000}
+                        name="description"
+                        rows={5}
+                        size="normal"
+                        storeValue={[Function]}
+                        type="textarea"
                       />
-</div>,
+                    </div>,
                   ],
                 },
                 "ref": null,
@@ -1931,14 +1908,13 @@ ShallowWrapper {
                           label="Structure"
                           layout="horizontal"
                           name="offererId"
-                          options={undefined}
                           placeholder="Sélectionnez une structure"
                           readOnly={false}
                           required={true}
                           size="normal"
                           storeValue={[Function]}
                           type="select"
-/>,
+                        />,
                         undefined,
                         <Field
                           displayValue={[Function]}
@@ -1953,7 +1929,7 @@ ShallowWrapper {
                           size="normal"
                           storeValue={[Function]}
                           type="select"
-/>,
+                        />,
                         undefined,
                         false,
                         undefined,
@@ -1967,7 +1943,7 @@ ShallowWrapper {
                           storeValue={[Function]}
                           sublabel="Merci de laisser ce champ vide si vous ne souhaitez pas recevoir d'email lors des réservations"
                           type="email"
-/>,
+                        />,
                       ],
                       "className": "field-group",
                     },
@@ -2075,7 +2051,7 @@ ShallowWrapper {
                           size="normal"
                           storeValue={[Function]}
                           type="textarea"
-/>,
+                        />,
                         false,
                         false,
                         false,
@@ -2138,29 +2114,29 @@ ShallowWrapper {
                   "children": Array [
                     <div
                       className="control"
->
+                    >
                       <button
-                                            className="button is-secondary is-medium"
-                                            id="cancel-button"
-                                            onClick={[Function]}
+                        className="button is-secondary is-medium"
+                        id="cancel-button"
+                        onClick={[Function]}
                       >
-                                            Annuler
+                        Annuler
                       </button>
-</div>,
+                    </div>,
                     <div
                       className="control"
->
+                    >
                       <SubmitButton
-                                            className="button is-primary is-medium"
-                                            getDisabled={[Function]}
-                                            getTitle={[Function]}
-                                            requiredFields={Array []}
-                                            type="submit"
+                        className="button is-primary is-medium"
+                        getDisabled={[Function]}
+                        getTitle={[Function]}
+                        requiredFields={Array []}
+                        type="submit"
                       >
-                                            Enregistrer
-                                             
+                        Enregistrer
+                         
                       </SubmitButton>
-</div>,
+                    </div>,
                   ],
                   "className": "field is-grouped is-grouped-centered",
                   "style": Object {
@@ -2178,9 +2154,9 @@ ShallowWrapper {
                         className="button is-secondary is-medium"
                         id="cancel-button"
                         onClick={[Function]}
->
+                      >
                         Annuler
-</button>,
+                      </button>,
                       "className": "control",
                     },
                     "ref": null,
@@ -2211,10 +2187,10 @@ ShallowWrapper {
                         getTitle={[Function]}
                         requiredFields={Array []}
                         type="submit"
->
+                      >
                         Enregistrer
                          
-</SubmitButton>,
+                      </SubmitButton>,
                       "className": "control",
                     },
                     "ref": null,
@@ -2268,6 +2244,7 @@ ShallowWrapper {
           "getChildContext": Object {
             "calledByRenderer": false,
           },
+          "getDerivedStateFromError": true,
           "getDerivedStateFromProps": Object {
             "hasShouldComponentUpdateBug": false,
           },

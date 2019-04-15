@@ -5,13 +5,13 @@ ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <MediationItem
     mediation={
-        Object {
-            "id": "AE",
-            "isActive": true,
-            "thumbUrl": "http://example.com/image.jpg",
-          }
+      Object {
+        "id": "AE",
+        "isActive": true,
+        "thumbUrl": "http://example.com/image.jpg",
+      }
     }
-/>,
+  />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
     "checkPropTypes": [Function],
@@ -34,22 +34,22 @@ ShallowWrapper {
           alt="accroche-AE"
           disabled={false}
           src="http://example.com/image.jpg"
-/>,
+        />,
         <br />,
         <br />,
         <div
           className="columns is-centered"
->
+        >
           <Field
-                    displayValue={[Function]}
-                    errors={null}
-                    layout="horizontal"
-                    name="isActive"
-                    size="normal"
-                    storeValue={[Function]}
-                    type="checkbox"
+            displayValue={[Function]}
+            errors={null}
+            layout="horizontal"
+            name="isActive"
+            size="normal"
+            storeValue={[Function]}
+            type="checkbox"
           />
-</div>,
+        </div>,
       ],
       "className": null,
       "errorsPatch": Object {},
@@ -121,7 +121,7 @@ ShallowWrapper {
             size="normal"
             storeValue={[Function]}
             type="checkbox"
-/>,
+          />,
           "className": "columns is-centered",
         },
         "ref": null,
@@ -161,22 +161,22 @@ ShallowWrapper {
             alt="accroche-AE"
             disabled={false}
             src="http://example.com/image.jpg"
-/>,
+          />,
           <br />,
           <br />,
           <div
             className="columns is-centered"
->
+          >
             <Field
-                        displayValue={[Function]}
-                        errors={null}
-                        layout="horizontal"
-                        name="isActive"
-                        size="normal"
-                        storeValue={[Function]}
-                        type="checkbox"
+              displayValue={[Function]}
+              errors={null}
+              layout="horizontal"
+              name="isActive"
+              size="normal"
+              storeValue={[Function]}
+              type="checkbox"
             />
-</div>,
+          </div>,
         ],
         "className": null,
         "errorsPatch": Object {},
@@ -248,7 +248,7 @@ ShallowWrapper {
               size="normal"
               storeValue={[Function]}
               type="checkbox"
-/>,
+            />,
             "className": "columns is-centered",
           },
           "ref": null,
@@ -287,6 +287,7 @@ ShallowWrapper {
           "getChildContext": Object {
             "calledByRenderer": false,
           },
+          "getDerivedStateFromError": true,
           "getDerivedStateFromProps": Object {
             "hasShouldComponentUpdateBug": false,
           },

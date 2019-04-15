@@ -4,15 +4,37 @@ exports[`src | components | pages | Signup | validation should match snapshot 1`
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <SignupValidation
-    dispatch={[Function]}
-    match={
-        Object {
-            "params": Object {
-              "token": "AAA",
+    dispatch={
+      [MockFunction] {
+        "calls": Array [
+          Array [
+            Object {
+              "config": Object {
+                "apiPath": "/validate/user/AAA",
+                "handleFail": [Function],
+                "handleSuccess": [Function],
+                "method": "PATCH",
+              },
+              "type": "REQUEST_DATA_PATCH_/VALIDATE/USER/AAA",
             },
-          }
+          ],
+        ],
+        "results": Array [
+          Object {
+            "type": "return",
+            "value": undefined,
+          },
+        ],
+      }
     }
-/>,
+    match={
+      Object {
+        "params": Object {
+          "token": "AAA",
+        },
+      }
+    }
+  />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
     "checkPropTypes": [Function],
@@ -60,6 +82,7 @@ ShallowWrapper {
           "getChildContext": Object {
             "calledByRenderer": false,
           },
+          "getDerivedStateFromError": true,
           "getDerivedStateFromProps": Object {
             "hasShouldComponentUpdateBug": false,
           },
