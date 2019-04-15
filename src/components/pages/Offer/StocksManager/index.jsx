@@ -3,10 +3,9 @@ import { compose } from 'redux'
 
 import RawStocksManager from './RawStocksManager'
 import { withFrenchQueryRouter } from 'components/hocs'
-import selectEventById from 'selectors/selectEventById'
 import selectOfferById from 'selectors/selectOfferById'
+import selectProductById from 'selectors/selectProductById'
 import selectProviderById from 'selectors/selectProviderById'
-import selectThingById from 'selectors/selectThingById'
 import selectStocksByOfferId from 'selectors/selectStocksByOfferId'
 
 function mapStateToProps(state, ownProps) {
@@ -22,26 +21,25 @@ function mapStateToProps(state, ownProps) {
     return {}
   }
 
-  const { eventId, thingId } = offer
-  const event = selectEventById(state, eventId)
-  const thing = selectThingById(state, thingId)
+  const { productId } = offer
+  const product = selectProductById(state, productId)
+  const { durationMinutes } = product || {}
 
   const stocks = selectStocksByOfferId(state, offerId)
 
-  const isEventStock = typeof event !== 'undefined'
+  const isEventStock = typeof durationMinutes !== 'undefined'
 
   const shouldPreventCreationOfSecondStock = !isEventStock && stocks.length > 0
 
-  const provider = selectProviderById(state, event && event.lastProviderId)
+  const provider = selectProviderById(state, product && product.lastProviderId)
 
   return {
-    event,
     isEventStock,
     offer,
+    product,
     provider,
     shouldPreventCreationOfSecondStock,
     stocks,
-    thing,
   }
 }
 

@@ -1,11 +1,11 @@
 import selectFormInitialValuesByStockAndOfferIdAndOffererId from '../selectFormInitialValuesByStockAndOfferIdAndOffererId'
 
-import mockStateForStockPatchTest from './mockStateForStockPatchTest'
+import mockStateForformInitialValuesTest from './mockStateForformInitialValuesTest'
 
 describe('createOfferersSelector', () => {
   it('should select the global state', () => {
     // given
-    const state = mockStateForStockPatchTest
+    const state = mockStateForformInitialValuesTest
     const stock = {
       available: 22,
       bookingLimitDatetime: '2019-03-13T23:00:00Z',

@@ -28,7 +28,7 @@ ShallowWrapper {
             "stocksIds": Array [
               "MQ",
             ],
-            "thingId": "EY",
+            "productId": "EY",
             "venueId": "CU",
           }
     }
@@ -84,14 +84,14 @@ ShallowWrapper {
                               <span
                                         className="label"
                               >
-                                        Structure : 
+                                        Structure :
                               </span>
                     </li>
                     <li>
                               <span
                                         className="label"
                               >
-                                        Lieu : 
+                                        Lieu :
                               </span>
                               Paris
                     </li>
@@ -102,7 +102,7 @@ ShallowWrapper {
                     <li
                               title={null}
                     >
-                              
+
                     </li>
                     <li>
                               <NavLink
@@ -111,7 +111,7 @@ ShallowWrapper {
                                         className="has-text-primary"
                                         to="/offres/M4?gestion"
                               >
-                                        
+
                               </NavLink>
                     </li>
                     <li />
@@ -219,14 +219,14 @@ ShallowWrapper {
                             <span
                                           className="label"
                             >
-                                          Structure : 
+                                          Structure :
                             </span>
               </li>
               <li>
                             <span
                                           className="label"
                             >
-                                          Lieu : 
+                                          Lieu :
                             </span>
                             Paris
               </li>
@@ -237,7 +237,7 @@ ShallowWrapper {
               <li
                             title={null}
               >
-                            
+
               </li>
               <li>
                             <NavLink
@@ -246,7 +246,7 @@ ShallowWrapper {
                                           className="has-text-primary"
                                           to="/offres/M4?gestion"
                             >
-                                          
+
                             </NavLink>
               </li>
               <li />
@@ -359,14 +359,14 @@ ShallowWrapper {
                   <span
                                     className="label"
                   >
-                                    Structure : 
+                                    Structure :
                   </span>
 </li>,
                 <li>
                   <span
                                     className="label"
                   >
-                                    Lieu : 
+                                    Lieu :
                   </span>
                   Paris
 </li>,
@@ -396,7 +396,7 @@ ShallowWrapper {
                     <span
                       className="label"
 >
-                      Structure : 
+                      Structure :
 </span>,
                     undefined,
                   ],
@@ -428,7 +428,7 @@ ShallowWrapper {
                     <span
                       className="label"
 >
-                      Lieu : 
+                      Lieu :
 </span>,
                     "Paris",
                   ],
@@ -464,7 +464,7 @@ ShallowWrapper {
                 <li
                   title={null}
 >
-                  
+
 </li>,
                 <li>
                   <NavLink
@@ -473,7 +473,7 @@ ShallowWrapper {
                                     className="has-text-primary"
                                     to="/offres/M4?gestion"
                   >
-                                    
+
                   </NavLink>
 </li>,
                 <li />,
@@ -520,7 +520,7 @@ ShallowWrapper {
                     className="has-text-primary"
                     to="/offres/M4?gestion"
 >
-                    
+
 </NavLink>,
                 },
                 "ref": null,
@@ -902,14 +902,14 @@ ShallowWrapper {
                                     <span
                                                 className="label"
                                     >
-                                                Structure : 
+                                                Structure :
                                     </span>
                         </li>
                         <li>
                                     <span
                                                 className="label"
                                     >
-                                                Lieu : 
+                                                Lieu :
                                     </span>
                                     Paris
                         </li>
@@ -920,7 +920,7 @@ ShallowWrapper {
                         <li
                                     title={null}
                         >
-                                    
+
                         </li>
                         <li>
                                     <NavLink
@@ -929,7 +929,7 @@ ShallowWrapper {
                                                 className="has-text-primary"
                                                 to="/offres/M4?gestion"
                                     >
-                                                
+
                                     </NavLink>
                         </li>
                         <li />
@@ -1037,14 +1037,14 @@ ShallowWrapper {
                                 <span
                                                 className="label"
                                 >
-                                                Structure : 
+                                                Structure :
                                 </span>
                 </li>
                 <li>
                                 <span
                                                 className="label"
                                 >
-                                                Lieu : 
+                                                Lieu :
                                 </span>
                                 Paris
                 </li>
@@ -1055,7 +1055,7 @@ ShallowWrapper {
                 <li
                                 title={null}
                 >
-                                
+
                 </li>
                 <li>
                                 <NavLink
@@ -1064,7 +1064,7 @@ ShallowWrapper {
                                                 className="has-text-primary"
                                                 to="/offres/M4?gestion"
                                 >
-                                                
+
                                 </NavLink>
                 </li>
                 <li />
@@ -1177,14 +1177,14 @@ ShallowWrapper {
                     <span
                                         className="label"
                     >
-                                        Structure : 
+                                        Structure :
                     </span>
 </li>,
                   <li>
                     <span
                                         className="label"
                     >
-                                        Lieu : 
+                                        Lieu :
                     </span>
                     Paris
 </li>,
@@ -1214,7 +1214,7 @@ ShallowWrapper {
                       <span
                         className="label"
 >
-                        Structure : 
+                        Structure :
 </span>,
                       undefined,
                     ],
@@ -1246,7 +1246,7 @@ ShallowWrapper {
                       <span
                         className="label"
 >
-                        Lieu : 
+                        Lieu :
 </span>,
                       "Paris",
                     ],
@@ -1282,7 +1282,7 @@ ShallowWrapper {
                   <li
                     title={null}
 >
-                    
+
 </li>,
                   <li>
                     <NavLink
@@ -1291,7 +1291,7 @@ ShallowWrapper {
                                         className="has-text-primary"
                                         to="/offres/M4?gestion"
                     >
-                                        
+
                     </NavLink>
 </li>,
                   <li />,
@@ -1338,7 +1338,7 @@ ShallowWrapper {
                       className="has-text-primary"
                       to="/offres/M4?gestion"
 >
-                      
+
 </NavLink>,
                   },
                   "ref": null,

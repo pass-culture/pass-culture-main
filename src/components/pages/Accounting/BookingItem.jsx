@@ -12,10 +12,9 @@ import React, { Component, Fragment } from 'react'
 import { connect } from 'react-redux'
 import { requestData } from 'redux-saga-data'
 
-import selectEventById from 'selectors/selectEventById'
-import selectThingById from 'selectors/selectThingById'
 import selectOfferById from 'selectors/selectOfferById'
 import selectOffererById from 'selectors/selectOffererById'
+import selectProductById from 'selectors/selectProductById'
 import selectStockById from 'selectors/selectStockById'
 import selectUserById from 'selectors/selectUserById'
 import selectVenueById from 'selectors/selectVenueById'
@@ -123,7 +122,7 @@ class BookingItem extends Component {
       event,
       offerer,
       stock,
-      thing,
+      product,
       venue,
       user,
       offerTypeLabel,
@@ -140,8 +139,8 @@ class BookingItem extends Component {
     const { email, firstName, lastName } = user || {}
     const userIdentifier =
       firstName && lastName ? `${firstName} ${lastName}` : email
-    const eventOrThing = event || thing
-    const { name } = eventOrThing || {}
+    const eventOrProduct = event || product
+    const { name } = eventOrProduct || {}
     const offererName = get(offerer, 'name')
     const venueName = get(venue, 'name')
     const { picto, message } = getBookingState(booking)
@@ -206,20 +205,18 @@ function mapStateToProps(state, ownProps) {
   const stock = selectStockById(state, stockId)
   const offerId = get(stock, 'offerId')
   const offer = selectOfferById(state, offerId)
-  const event = selectEventById(state, get(offer, 'eventId'))
-  const thing = selectThingById(state, get(offer, 'thingId'))
+  const product = selectProductById(state, get(offer, 'productId'))
   const venue = selectVenueById(state, get(offer, 'venueId'))
   const offerer = selectOffererById(state, get(venue, 'managingOffererId'))
   const user = selectUserById(state, ownProps.booking.userId)
-  const offerTypeLabel = getOfferTypeLabel(event, thing)
+  const offerTypeLabel = getOfferTypeLabel(product, product)
 
   return {
-    event,
     offer,
     offerTypeLabel,
     offerer,
+    product,
     stock,
-    thing,
     venue,
     user,
   }

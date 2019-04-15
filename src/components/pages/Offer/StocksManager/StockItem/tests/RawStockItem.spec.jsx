@@ -16,7 +16,7 @@ describe('src | components | pages | Offer | StockItem | RawStockItem ', () => {
         history: { push: jest.fn() },
         isEventStock: false,
         query: { context: () => ({}) },
-        stockPatch: {},
+        formInitialValues: {},
         stocks: [],
       }
 
@@ -41,7 +41,7 @@ describe('src | components | pages | Offer | StockItem | RawStockItem ', () => {
             id: 'TY',
           },
           query: { changeToReadOnly: jest.fn(), context: () => ({}) },
-          stockPatch: {
+          formInitialValues: {
             id: 'DG',
           },
           stocks: [],

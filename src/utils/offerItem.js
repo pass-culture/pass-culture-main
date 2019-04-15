@@ -1,4 +1,5 @@
-export function getOfferTypeLabel(event, thing) {
-  const offerType = event ? event.offerType : thing.offerType
-  return offerType && offerType.label
+import get from 'lodash.get'
+
+export function getOfferTypeLabel(product) {
+  return get(product, 'offerType.label')
 }

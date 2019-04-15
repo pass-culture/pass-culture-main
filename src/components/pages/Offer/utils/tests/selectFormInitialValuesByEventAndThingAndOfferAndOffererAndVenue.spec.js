@@ -1,6 +1,6 @@
-import { selectFormInitialValuesByEventAndThingAndOfferAndOffererAndVenue } from '../selectFormInitialValuesByEventAndThingAndOfferAndOffererAndVenue'
+import { selectFormInitialValuesByProductAndOfferAndOffererAndVenue } from '../selectFormInitialValuesByProductAndOfferAndOffererAndVenue'
 
-describe('src | components | pages | Offer | utils | selectFormInitialValuesByEventAndThingAndOfferAndOffererAndVenue', () => {
+describe('src | components | pages | Offer | utils | selectFormInitialValuesByProductAndOfferAndOffererAndVenue', () => {
   it('should build an object using initial values from offer or product (given POST or PATCH context), venue and offerer', () => {
     // given
     const state = {}
@@ -18,7 +18,7 @@ describe('src | components | pages | Offer | utils | selectFormInitialValuesByEv
       type: 'EventType.CINEMA',
       url: undefined,
     }
-    const thing = {}
+    const product = {}
     const offer = {}
     const offerer = {
       id: 'BF',
@@ -28,10 +28,10 @@ describe('src | components | pages | Offer | utils | selectFormInitialValuesByEv
     }
 
     // when
-    const value = selectFormInitialValuesByEventAndThingAndOfferAndOffererAndVenue(
+    const value = selectFormInitialValuesByProductAndOfferAndOffererAndVenue(
       state,
       event,
-      thing,
+      product,
       offer,
       offerer,
       venue
@@ -63,16 +63,16 @@ describe('src | components | pages | Offer | utils | selectFormInitialValuesByEv
     const event = {
       description: "PNL n'est plus ce qu'il.elle était",
     }
-    const thing = {}
+    const product = {}
     const offer = {}
     const offerer = {}
     const venue = {}
 
     // when
-    const value = selectFormInitialValuesByEventAndThingAndOfferAndOffererAndVenue(
+    const value = selectFormInitialValuesByProductAndOfferAndOffererAndVenue(
       state,
       event,
-      thing,
+      product,
       offer,
       offerer,
       venue
@@ -88,19 +88,19 @@ describe('src | components | pages | Offer | utils | selectFormInitialValuesByEv
     const event = {
       description: "PNL n'est plus ce qu'il.elle était",
     }
-    const thing = {}
     const offer = {
       description: '',
       id: 'AE',
     }
     const offerer = {}
+    const product = {}
     const venue = {}
 
     // when
-    const value = selectFormInitialValuesByEventAndThingAndOfferAndOffererAndVenue(
+    const value = selectFormInitialValuesByProductAndOfferAndOffererAndVenue(
       state,
       event,
-      thing,
+      product,
       offer,
       offerer,
       venue

@@ -146,14 +146,13 @@ class RawStocksManager extends Component {
 
   render() {
     const {
-      event,
       isEventStock,
       offer,
+      product,
       provider,
+      query,
       shouldPreventCreationOfSecondStock,
       stocks,
-      thing,
-      query,
     } = this.props
     const { errors, info } = this.state
     const { isCreatedEntity, readOnly } = query.context({ key: 'stock' })
@@ -179,11 +178,11 @@ class RawStocksManager extends Component {
         <div className="stocks-table-wrapper">
           <HeroSection
             title={
-              get(event, 'id')
+              isEventStock
                 ? 'Dates, horaires et prix'
-                : get(thing, 'id') && 'Prix'
+                : get(product, 'id') && 'Prix'
             }
-            subtitle={get(event, 'name') || get(thing, 'name')}
+            subtitle={get(product, 'name')}
           />
           <table
             className={classnames('table is-hoverable stocks-table', {

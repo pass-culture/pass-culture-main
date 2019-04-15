@@ -2,16 +2,14 @@ import invert from 'lodash.invert'
 
 export function collectionToPath(collectionName) {
   switch (collectionName) {
-    case 'events':
-      return 'evenements'
     case 'mediations':
       return 'accroches'
     case 'venues':
       return 'lieux'
     case 'offerers':
       return 'structures'
-    case 'things':
-      return 'objets'
+    case 'products':
+      return 'produits'
     default:
       return collectionName
   }
@@ -21,12 +19,10 @@ export function pathToCollection(path) {
   switch (path) {
     case 'accroches':
       return 'mediations'
-    case 'evenements':
-      return 'events'
     case 'lieux':
       return 'venues'
-    case 'objets':
-      return 'things'
+    case 'produits':
+      return 'products'
     case 'structures':
       return 'offerers'
     default:
@@ -36,10 +32,8 @@ export function pathToCollection(path) {
 
 export function pathToModel(path) {
   switch (path) {
-    case 'evenements':
-      return 'Event'
-    case 'objets':
-      return 'Thing'
+    case 'product':
+      return 'Product'
     default:
       return path
   }
@@ -47,10 +41,8 @@ export function pathToModel(path) {
 
 export function modelToPath(model) {
   switch (model) {
-    case 'Event':
-      return 'evenements'
-    case 'Thing':
-      return 'lieux'
+    case 'Product':
+      return 'product'
     default:
       return model
   }

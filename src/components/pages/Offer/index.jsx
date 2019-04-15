@@ -3,19 +3,18 @@ import { connect } from 'react-redux'
 import { compose } from 'redux'
 
 import RawOffer from './RawOffer'
-import selectFormInitialValuesByEventAndThingAndOfferAndOffererAndVenue from './utils/selectFormInitialValuesByEventAndThingAndOfferAndOffererAndVenue'
+import selectFormInitialValuesByProductAndOfferAndOffererAndVenue from './utils/selectFormInitialValuesByProductAndOfferAndOffererAndVenue'
 import {
   withFrenchQueryRouter,
   withRedirectToSigninWhenNotAuthenticated,
 } from 'components/hocs'
-import selectEventById from 'selectors/selectEventById'
 import selectOfferById from 'selectors/selectOfferById'
 import selectOffererById from 'selectors/selectOffererById'
+import selectProductById from 'selectors/selectProductById'
 import selectProviders from 'selectors/selectProviders'
 import selectMusicSubOptionsByMusicType from 'selectors/selectMusicSubOptionsByMusicType'
 import selectShowSubOptionsByShowType from 'selectors/selectShowSubOptionsByShowType'
 import selectStocksByOfferId from 'selectors/selectStocksByOfferId'
-import selectThingById from 'selectors/selectThingById'
 import selectTypesByIsVenueVirtual from 'selectors/selectTypesByIsVenueVirtual'
 import selectTypeByIsVenueVirtualAndOfferTypeValue from 'selectors/selectTypeByIsVenueVirtualAndOfferTypeValue'
 import selectVenueById from 'selectors/selectVenueById'
@@ -34,11 +33,8 @@ function mapStateToProps(state, ownProps) {
 
   const offer = selectOfferById(state, offerId)
 
-  const eventId = get(offer, 'eventId')
-  const event = selectEventById(state, eventId)
-
-  const thingId = get(offer, 'thingId')
-  const thing = selectThingById(state, thingId)
+  const productId = get(offer, 'productId')
+  const product = selectProductById(state, productId)
 
   const formVenueId = get(state, 'form.offer.venueId')
   const venueId = formVenueId || translatedQueryParams.venueId
@@ -49,9 +45,7 @@ function mapStateToProps(state, ownProps) {
   const types = selectTypesByIsVenueVirtual(state, isVenueVirtual)
 
   const offerTypeValue =
-    get(state, 'form.offer.type') ||
-    get(event, 'offerType.value') ||
-    get(thing, 'offerType.value')
+    get(state, 'form.offer.type') || get(product, 'offerType.value')
 
   const selectedOfferType = selectTypeByIsVenueVirtualAndOfferTypeValue(
     state,
@@ -75,17 +69,13 @@ function mapStateToProps(state, ownProps) {
 
   const stocks = selectStocksByOfferId(state, offerId)
 
-  const url =
-    get(state, 'form.offer.url') || get(event, 'url') || get(thing, 'url')
+  const url = get(state, 'form.offer.url') || get(product, 'url')
 
-  const hasEventOrThing = event || thing
-
-  const formInitialValues = selectFormInitialValuesByEventAndThingAndOfferAndOffererAndVenue(
+  const formInitialValues = selectFormInitialValuesByProductAndOfferAndOffererAndVenue(
     state,
-    event,
-    thing,
     offer,
     offerer,
+    product,
     venue
   )
   const extraData = get(state, 'form.offer.extraData') || {}
@@ -98,20 +88,18 @@ function mapStateToProps(state, ownProps) {
   const offerTypeError = get(state, 'errors.offer.type')
 
   return {
-    event,
     formInitialValues,
     formOffererId,
     formVenueId,
-    hasEventOrThing,
     musicSubOptions,
     offer,
     offerer,
     offerers,
     offerTypeError,
+    product,
     providers,
     showSubOptions,
     stocks,
-    thing,
     types,
     selectedOfferType,
     url,

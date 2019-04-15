@@ -7,7 +7,7 @@ import { Route, Router } from 'react-router-dom'
 
 import { Field } from 'pass-culture-shared'
 
-import EventOrThingFields from '../EventOrThingFields'
+import ProductFields from '../ProductFields'
 
 import mockedState from './mockedState'
 const middlewares = []
@@ -16,7 +16,7 @@ const dispatchMock = jest.fn()
 const closeInfoMock = jest.fn()
 const showInfoMock = jest.fn()
 
-describe('src | components | pages | Offer | StockItem | EventOrThingFields', () => {
+describe('src | components | pages | Offer | StockItem | ProductFields', () => {
   describe('snapshot', () => {
     it('should match snapshot', () => {
       // given
@@ -32,7 +32,7 @@ describe('src | components | pages | Offer | StockItem | EventOrThingFields', ()
       // when
       const wrapper = shallow(
         <Provider store={store}>
-          <EventOrThingFields {...initialProps} />
+          <ProductFields {...initialProps} />
         </Provider>
       )
 
@@ -58,14 +58,14 @@ describe('src | components | pages | Offer | StockItem | EventOrThingFields', ()
           },
           parseFormChild: jest.fn(),
           showInfo: showInfoMock,
-          stockPatch: {
+          formInitialValues: {
             id: 'DG',
           },
           store: mockStore(initialState),
         }
 
         // when
-        const wrapper = shallow(<EventOrThingFields {...initialProps} />)
+        const wrapper = shallow(<ProductFields {...initialProps} />)
         const expected = '/offres/TY?gestion&date=K9&stock=DG'
 
         // then
@@ -91,7 +91,7 @@ describe('src | components | pages | Offer | StockItem | EventOrThingFields', ()
             isStockReadOnly: false,
             parseFormChild: jest.fn(),
             showInfo: jest.fn(),
-            stockPatch: {
+            formInitialValues: {
               bookingLimitDatetime: null,
               eventOccurrenceId: null,
               offerId: 'UU',
@@ -116,7 +116,7 @@ describe('src | components | pages | Offer | StockItem | EventOrThingFields', ()
             <Provider store={store}>
               <Router history={history}>
                 <Route path="/test">
-                  <EventOrThingFields {...initialProps} />
+                  <ProductFields {...initialProps} />
                 </Route>
               </Router>
             </Provider>

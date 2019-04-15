@@ -13,7 +13,7 @@ import {
 import { DateField, HiddenField, NumberField } from 'components/layout/form'
 import Icon from 'components/layout/Icon'
 
-export class EventOrThingFields extends Component {
+export class ProductFields extends Component {
   static isParsedByForm = true
 
   constructor() {
@@ -132,7 +132,7 @@ export class EventOrThingFields extends Component {
   }
 }
 
-EventOrThingFields.defaultProps = {
+ProductFields.defaultProps = {
   beginningDatetime: null,
   readOnly: true,
   isEventStock: true,
@@ -140,7 +140,7 @@ EventOrThingFields.defaultProps = {
   stock: null,
 }
 
-EventOrThingFields.propTypes = {
+ProductFields.propTypes = {
   beginningDatetime: PropTypes.string,
   closeInfo: PropTypes.func.isRequired,
   dispatch: PropTypes.func.isRequired,
@@ -152,4 +152,4 @@ EventOrThingFields.propTypes = {
   stock: PropTypes.object,
 }
 
-export default EventOrThingFields
+export default ProductFields

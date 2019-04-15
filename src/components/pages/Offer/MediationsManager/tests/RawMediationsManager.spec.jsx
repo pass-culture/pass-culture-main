@@ -15,7 +15,7 @@ describe('src | components | pages | Offer | MediationsManager | RawMediationsMa
     isActive: true,
     lastProviderId: null,
     modelName: 'Offer',
-    thingId: '94',
+    productId: '94',
     venueId: 'C4',
   }
   describe('snapshot', () => {

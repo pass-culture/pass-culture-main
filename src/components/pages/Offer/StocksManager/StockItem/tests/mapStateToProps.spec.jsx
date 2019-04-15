@@ -39,13 +39,13 @@ describe('src | components | pages | Offer | StockItem | mapStateToProps', () =>
           lastProviderId: null,
           mediationsIds: ['H4'],
           modelName: 'Offer',
+          productId: 'LY',
           stocksIds: ['MU'],
-          thingId: 'LY',
           venueId: 'DA',
         },
         stockFormKey: null,
         stockIdOrNew: undefined,
-        stockPatch: {
+        formInitialValues: {
           available: 10,
           bookingLimitDatetime: null,
           bookingRecapSent: null,

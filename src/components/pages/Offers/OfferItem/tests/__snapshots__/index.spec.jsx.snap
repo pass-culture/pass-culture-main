@@ -40,7 +40,7 @@ ShallowWrapper {
                 "stocksIds": Array [
                   "MQ",
                 ],
-                "thingId": "EY",
+                "productId": "EY",
                 "venueId": "CU",
               }
         }
@@ -81,7 +81,7 @@ ShallowWrapper {
         "stocksIds": Array [
           "MQ",
         ],
-        "thingId": "EY",
+        "productId": "EY",
         "venueId": "CU",
       },
     },
@@ -116,7 +116,7 @@ ShallowWrapper {
           "stocksIds": Array [
             "MQ",
           ],
-          "thingId": "EY",
+          "productId": "EY",
           "venueId": "CU",
         },
       },

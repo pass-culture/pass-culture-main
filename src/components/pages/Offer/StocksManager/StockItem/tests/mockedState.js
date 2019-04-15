@@ -100,7 +100,7 @@ const mockedState = {
         isActive: true,
         lastProviderId: null,
         modelName: 'Offer',
-        thingId: 'LY',
+        productId: 'LY',
         venueId: 'DA',
         mediationsIds: ['H4'],
         stocksIds: ['MU'],
@@ -115,7 +115,7 @@ const mockedState = {
         isActive: false,
         lastProviderId: null,
         modelName: 'Offer',
-        thingId: 'L9',
+        productId: 'L9',
         venueId: 'DA',
         mediationsIds: [],
         stocksIds: [],
@@ -130,7 +130,7 @@ const mockedState = {
         isActive: true,
         lastProviderId: null,
         modelName: 'Offer',
-        thingId: 'KQ',
+        productId: 'KQ',
         venueId: 'DA',
         mediationsIds: ['HY'],
         stocksIds: ['MQ'],
@@ -145,7 +145,7 @@ const mockedState = {
         isActive: true,
         lastProviderId: null,
         modelName: 'Offer',
-        thingId: 'KA',
+        productId: 'KA',
         venueId: 'DA',
         mediationsIds: [],
         stocksIds: ['MM'],
@@ -160,7 +160,7 @@ const mockedState = {
         isActive: false,
         lastProviderId: null,
         modelName: 'Offer',
-        thingId: 'J9',
+        productId: 'J9',
         venueId: 'DA',
         mediationsIds: ['HU'],
         stocksIds: [],
@@ -175,7 +175,7 @@ const mockedState = {
         isActive: true,
         lastProviderId: null,
         modelName: 'Offer',
-        thingId: '9Y',
+        productId: '9Y',
         venueId: 'C4',
         mediationsIds: [],
         stocksIds: ['M9'],
@@ -190,7 +190,7 @@ const mockedState = {
         isActive: true,
         lastProviderId: null,
         modelName: 'Offer',
-        thingId: '9Q',
+        productId: '9Q',
         venueId: 'CY',
         mediationsIds: ['HQ'],
         stocksIds: ['ME'],
@@ -205,7 +205,7 @@ const mockedState = {
         isActive: false,
         lastProviderId: null,
         modelName: 'Offer',
-        thingId: '99',
+        productId: '99',
         venueId: 'CY',
         mediationsIds: [],
         stocksIds: [],
@@ -220,7 +220,7 @@ const mockedState = {
         isActive: true,
         lastProviderId: null,
         modelName: 'Offer',
-        thingId: '9A',
+        productId: '9A',
         venueId: 'C4',
         mediationsIds: ['HM'],
         stocksIds: ['MA'],
@@ -235,7 +235,7 @@ const mockedState = {
         isActive: true,
         lastProviderId: null,
         modelName: 'Offer',
-        thingId: 'HY',
+        productId: 'HY',
         venueId: 'CY',
         mediationsIds: [],
         stocksIds: ['L4'],
@@ -399,7 +399,7 @@ const mockedState = {
         price: 11,
       },
     ],
-    things: [
+    products: [
       {
         id: 'LY',
         dateModifiedAtLastProvider: '2019-03-07T10:40:03.865368Z',
@@ -413,7 +413,7 @@ const mockedState = {
         isNational: true,
         lastProviderId: null,
         mediaUrls: ['test/urls'],
-        modelName: 'Thing',
+        modelName: 'Product',
         name: 'Dormons peu soupons bien',
         offerType: {
           description:
@@ -440,7 +440,7 @@ const mockedState = {
         isNational: true,
         lastProviderId: null,
         mediaUrls: ['test/urls'],
-        modelName: 'Thing',
+        modelName: 'Product',
         name: "Autant tu t'en vas",
         offerType: {
           description:
@@ -468,7 +468,7 @@ const mockedState = {
         isNational: true,
         lastProviderId: null,
         mediaUrls: ['test/urls'],
-        modelName: 'Thing',
+        modelName: 'Product',
         name: "Dansons jusqu'en 2030",
         offerType: {
           description:
@@ -496,7 +496,7 @@ const mockedState = {
         isNational: true,
         lastProviderId: null,
         mediaUrls: ['test/urls'],
-        modelName: 'Thing',
+        modelName: 'Product',
         name: 'La première paix mondiale',
         offerType: {
           description:
@@ -524,7 +524,7 @@ const mockedState = {
         isNational: true,
         lastProviderId: null,
         mediaUrls: ['test/urls'],
-        modelName: 'Thing',
+        modelName: 'Product',
         name: 'Ravage sous un océan',
         offerType: {
           description:
@@ -552,7 +552,7 @@ const mockedState = {
         isNational: true,
         lastProviderId: null,
         mediaUrls: ['test/urls'],
-        modelName: 'Thing',
+        modelName: 'Product',
         name: 'Mensch ! Où sont les Hommes ?',
         offerType: {
           description:
@@ -580,7 +580,7 @@ const mockedState = {
         isNational: false,
         lastProviderId: null,
         mediaUrls: ['test/urls'],
-        modelName: 'Thing',
+        modelName: 'Product',
         name: 'Guerre et youpi matin',
         offerType: {
           description:
@@ -608,7 +608,7 @@ const mockedState = {
         isNational: false,
         lastProviderId: null,
         mediaUrls: ['test/urls'],
-        modelName: 'Thing',
+        modelName: 'Product',
         name: "Dansons jusqu'en 2030",
         offerType: {
           description:
@@ -636,7 +636,7 @@ const mockedState = {
         isNational: true,
         lastProviderId: null,
         mediaUrls: ['test/urls'],
-        modelName: 'Thing',
+        modelName: 'Product',
         name: 'En rentrant de Palerme',
         offerType: {
           description:
@@ -664,7 +664,7 @@ const mockedState = {
         isNational: false,
         lastProviderId: null,
         mediaUrls: ['test/urls'],
-        modelName: 'Thing',
+        modelName: 'Product',
         name: 'Sun aux lentilles',
         offerType: {
           description:

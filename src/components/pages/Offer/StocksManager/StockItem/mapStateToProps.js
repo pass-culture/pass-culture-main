@@ -1,7 +1,7 @@
 import selectFormInitialValuesByStockAndOfferIdAndOffererId from './selectFormInitialValuesByStockAndOfferIdAndOffererId'
-import selectEventById from 'selectors/selectEventById'
 import selectOfferById from 'selectors/selectOfferById'
 import selectOffererById from 'selectors/selectOffererById'
+import selectProductById from 'selectors/selectProductById'
 import selectVenueById from 'selectors/selectVenueById'
 import selectTimezoneByVenueId from 'selectors/selectTimezoneByVenueId'
 import { translateQueryParamsToApiParams } from 'utils/translate'
@@ -16,14 +16,14 @@ export default function mapStateToProps(state, ownProps) {
 
   const offerId = params.offerId
   const offer = selectOfferById(state, offerId)
-  const { eventId, venueId } = offer || {}
+  const { productId, venueId } = offer || {}
 
-  const event = selectEventById(state, eventId)
+  const product = selectProductById(state, productId)
 
   const venue = selectVenueById(state, venueId)
   const managingOffererId = venue && venue.managingOffererId
 
-  const stockPatch = selectFormInitialValuesByStockAndOfferIdAndOffererId(
+  const formInitialValues = selectFormInitialValuesByStockAndOfferIdAndOffererId(
     state,
     stock,
     offerId,
@@ -38,11 +38,11 @@ export default function mapStateToProps(state, ownProps) {
   const tz = selectTimezoneByVenueId(state, venueId)
 
   return {
-    event,
-    eventId,
     hasIban,
+    formInitialValues,
     offer,
-    stockPatch,
+    product,
+    productId,
     stockIdOrNew,
     tz,
     venue,

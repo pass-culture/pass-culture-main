@@ -4,11 +4,10 @@ describe('getOfferTypeLabel', () => {
   describe('when event exists', () => {
     it('should return event offer type label', () => {
       // given
-      const event = { offerType: { label: 'Conférence — Débat — Dédicace' } }
-      const thing = undefined
+      const product = { offerType: { label: 'Conférence — Débat — Dédicace' } }
 
       // when
-      const offerTypeLabel = getOfferTypeLabel(event, thing)
+      const offerTypeLabel = getOfferTypeLabel(product)
 
       // then
       expect(offerTypeLabel).toEqual('Conférence — Débat — Dédicace')
@@ -18,11 +17,10 @@ describe('getOfferTypeLabel', () => {
   describe('when thing exists', () => {
     it('should return thing offer type label', () => {
       // given
-      const thing = { offerType: { label: 'Jeux (Biens physiques)' } }
-      const event = undefined
+      const product = { offerType: { label: 'Jeux (Biens physiques)' } }
 
       // when
-      const offerTypeLabel = getOfferTypeLabel(event, thing)
+      const offerTypeLabel = getOfferTypeLabel(product)
 
       // then
       expect(offerTypeLabel).toEqual('Jeux (Biens physiques)')

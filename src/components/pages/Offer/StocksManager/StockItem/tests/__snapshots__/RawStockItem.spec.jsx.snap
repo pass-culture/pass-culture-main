@@ -23,7 +23,7 @@ ShallowWrapper {
           }
     }
     showInfo={[Function]}
-    stockPatch={Object {}}
+    formInitialValues={Object {}}
     stocks={Array []}
 />,
   Symbol(enzyme.__renderer__): Object {

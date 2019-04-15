@@ -147,20 +147,16 @@ test('Je peux créer une offre numérique', async t => {
     'get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_with_virtual_venue'
   )
   await navigateToNewOfferAs(user)(t)
-  const thingDescription = 'Jeux vidéo de test'
-  const thingName = 'Jeux vidéo abonnement de test'
-  const thingType = 'Jeux Vidéo'
-  const thingUrl = 'http://www.example.com'
   const { name: offererName } = offerer
   const { name: venueName } = venue
 
   // when
-  await t.typeText(nameInput, thingName)
-  await t.click(typeInput).click(typeOption.withText(thingType))
+  await t.typeText(nameInput, 'Jeux vidéo abonnement de test')
+  await t.click(typeInput).click(typeOption.withText('Jeux Vidéo'))
   await t.click(offererInput).click(offererOption.withText(offererName))
   await t.click(venueInput).click(venueOption.withText(venueName))
-  await t.typeText(urlInput, thingUrl)
-  await t.typeText(descriptionInput, thingDescription)
+  await t.typeText(urlInput, 'http://www.example.com')
+  await t.typeText(descriptionInput, 'Jeux vidéo de test')
   await t.click(submitButton)
 
   // then

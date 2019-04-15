@@ -276,16 +276,14 @@ class RawOffer extends Component {
   render() {
     const {
       currentUser,
-      event,
       formInitialValues,
-      hasEventOrThing,
       musicSubOptions,
       offer,
       offerer,
       offerers,
+      product,
       query,
       stocks,
-      thing,
       selectedOfferType,
       showSubOptions,
       types,
@@ -302,9 +300,9 @@ class RawOffer extends Component {
     } = query.context()
 
     const isEventType = get(selectedOfferType, 'type') === 'Event' || eventId
-    const eventOrThingName = get(event, 'name') || get(thing, 'name')
     const offerId = get(offer, 'id')
     const offererId = get(offerer, 'id')
+    const productName = get(product, 'name')
     const showAllForm = selectedOfferType || !isCreatedEntity
     const venueId = get(venue, 'id')
     const isOfferActive = get(offer, 'isActive')
@@ -336,7 +334,7 @@ class RawOffer extends Component {
         name="offer"
         handleDataRequest={this.handleDataRequest}>
         <HeroSection
-          subtitle={eventOrThingName && eventOrThingName.toUpperCase()}
+          subtitle={productName && productName.toUpperCase()}
           title={title}>
           <p className="subtitle">
             Renseignez les détails de cette offre, puis mettez-la en avant en
@@ -427,7 +425,7 @@ class RawOffer extends Component {
                   )}
                 </Fragment>
               )}
-              {!isCreatedEntity && hasEventOrThing && (
+              {!isCreatedEntity && product && (
                 <div className="field is-horizontal field-text">
                   <div className="field-label">
                     <label className="label" htmlFor="input_offers_name">

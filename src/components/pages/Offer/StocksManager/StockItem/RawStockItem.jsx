@@ -10,7 +10,7 @@ import { requestData } from 'redux-saga-data'
 
 import EditAndDeleteControl from './EditAndDeleteControl'
 import EventFields from './EventFields'
-import EventOrThingFields from './EventOrThingFields'
+import ProductFields from './ProductFields'
 import SubmitAndCancelControl from './SubmitAndCancelControl'
 import { errorKeyToFrenchKey } from './utils'
 
@@ -47,8 +47,8 @@ export class RawStockItem extends Component {
   }
 
   handleRequestSuccess = formResolver => () => {
-    const { query, stockPatch } = this.props
-    const { id: stockId } = stockPatch
+    const { query, formInitialValues } = this.props
+    const { id: stockId } = formInitialValues
     const nextState = { isRequestPending: false }
     this.setState(nextState, () => {
       query.changeToReadOnly(null, { id: stockId, key: 'stock' })
@@ -57,8 +57,8 @@ export class RawStockItem extends Component {
   }
 
   onFormSubmit = formValues => {
-    const { dispatch, handleSetErrors, query, stockPatch } = this.props
-    const { id: stockId } = stockPatch
+    const { dispatch, handleSetErrors, query, formInitialValues } = this.props
+    const { id: stockId } = formInitialValues
     const context = query.context({ id: stockId, key: 'stock' })
     const { method } = context
     const apiPath = `/stocks/${stockId || ''}`
@@ -99,12 +99,12 @@ export class RawStockItem extends Component {
       query,
       showInfo,
       stock,
-      stockPatch,
+      formInitialValues,
       stocks,
       tz,
     } = this.props
     const { isRequestPending, tbodyElement } = this.state
-    const { id: stockId } = stockPatch
+    const { id: stockId } = formInitialValues
     const { readOnly } = query.context({ id: stockId, key: 'stock' })
 
     return (
@@ -132,7 +132,7 @@ export class RawStockItem extends Component {
               ),
             ]
           }
-          initialValues={stockPatch}
+          initialValues={formInitialValues}
           onSubmit={this.onFormSubmit}
           render={formProps => {
             const { values, handleSubmit } = formProps
@@ -146,13 +146,13 @@ export class RawStockItem extends Component {
                   <EventFields
                     dispatch={dispatch}
                     readOnly={readOnly}
-                    stockPatch={stockPatch}
+                    formInitialValues={formInitialValues}
                     stocks={stocks}
                     tz={tz}
                     values={values}
                   />
                 )}
-                <EventOrThingFields
+                <ProductFields
                   beginningDatetime={beginningDatetime}
                   closeInfo={closeInfo}
                   dispatch={dispatch}
@@ -208,7 +208,7 @@ RawStockItem.propTypes = {
   isEventStock: PropTypes.bool.isRequired,
   offer: PropTypes.object,
   query: PropTypes.object.isRequired,
-  stockPatch: PropTypes.object.isRequired,
+  formInitialValues: PropTypes.object.isRequired,
   stocks: PropTypes.arrayOf(PropTypes.object),
   showInfo: PropTypes.func.isRequired,
 }

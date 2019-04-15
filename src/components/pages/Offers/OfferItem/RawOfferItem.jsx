@@ -30,6 +30,17 @@ class RawOfferItem extends Component {
     )
   }
 
+  buildEventLabel = remainingStock => {
+    if (remainingStock === 0) {
+      return '0 places'
+    }
+    return `encore ${pluralize(remainingStock, 'place')}`
+  }
+
+  buildProductLabel = remainingStock => {
+    return `${remainingStock} en stock`
+  }
+
   buildNumberOfParticipantsLabel = (groupSizeMin, groupSizeMax) => {
     return groupSizeMin === groupSizeMax
       ? `${groupSizeMin}`
@@ -49,20 +60,19 @@ class RawOfferItem extends Component {
     return pluralize(stockSize, 'date')
   }
 
-  buildThingNavLinkLabel = stockSize => {
+  buildProductNavLinkLabel = stockSize => {
     return `${stockSize} prix`
   }
 
   render() {
     const {
       aggregatedStock,
-      event,
       location: { search },
       maxDate,
       mediations,
       offer,
+      product,
       stocks,
-      thing,
       thumbUrl,
       offerTypeLabel,
       offerer,
@@ -73,7 +83,7 @@ class RawOfferItem extends Component {
     const { isNew } = offer || {}
     const { groupSizeMin, groupSizeMax, priceMin, priceMax } =
       aggregatedStock || {}
-    const { name } = event || thing || {}
+    const { name } = product || {}
 
     const numberOfMediations = get(mediations, 'length')
     const remainingStockQuantity = get(stocks, 'length')
@@ -82,8 +92,7 @@ class RawOfferItem extends Component {
       <li
         className={classnames('offer-item', {
           active: offer.isActive,
-          event,
-          thing,
+          product,
         })}>
         <Thumb alt="offre" src={thumbUrl} />
         <div className="list-content">
@@ -132,12 +141,15 @@ class RawOfferItem extends Component {
               <NavLink
                 className="has-text-primary"
                 to={`/offres/${offer.id}?gestion`}>
-                {event && this.buildEventNavLinkLabel(remainingStockQuantity)}
-                {thing && this.buildThingNavLinkLabel(remainingStockQuantity)}
+                {product &&
+                  this.buildProductNavLinkLabel(remainingStockQuantity)}
               </NavLink>
             </li>
             <li>{maxDate && `jusqu'au ${maxDate.format('DD/MM/YYYY')}`}</li>
             <li>{stockAlertMessage}</li>
+            {product && (
+              <li>{this.buildProductLabel(remainingStockQuantity)}</li>
+            )}
             <li>
               {priceMin === priceMax ? (
                 <Price value={priceMin || 0} />

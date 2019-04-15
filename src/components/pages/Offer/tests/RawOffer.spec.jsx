@@ -155,7 +155,7 @@ describe('src | components | pages | Offer | RawOffer ', () => {
             isActive: true,
             lastProviderId: null,
             modelName: 'Offer',
-            thingId: '94',
+            productId: '94',
             venueId: 'AQ',
           },
         }
@@ -170,7 +170,7 @@ describe('src | components | pages | Offer | RawOffer ', () => {
     })
 
     describe('when creating a new offer', () => {
-      it('should create a new Thing when no offer type', () => {
+      it('should create a new Product when no offer type', () => {
         // given
         const initialProps = {
           location: {
@@ -245,7 +245,7 @@ describe('src | components | pages | Offer | RawOffer ', () => {
     })
 
     describe('when updating the offer', () => {
-      it('should update a thing when no offer type', () => {
+      it('should update a product when no offer type', () => {
         // given
         const initialProps = {
           location: {
@@ -272,7 +272,7 @@ describe('src | components | pages | Offer | RawOffer ', () => {
           venues: [],
           offer: {
             id: 'VAG',
-            thingId: 'V24',
+            productId: 'V24',
           },
         }
 

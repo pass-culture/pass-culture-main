@@ -53,8 +53,8 @@ describe('src | components | pages | Offers | RawOfferItem', () => {
           normalizer: {
             event: { normalizer: { offers: 'offers' }, stateKey: 'events' },
             mediations: 'mediations',
+            product: { normalizer: { offers: 'offers' }, stateKey: 'things' },
             stocks: 'stocks',
-            thing: { normalizer: { offers: 'offers' }, stateKey: 'things' },
             venue: {
               normalizer: { managingOfferer: 'offerers' },
               stateKey: 'venues',
@@ -375,28 +375,28 @@ describe('src | components | pages | Offers | RawOfferItem', () => {
       })
     })
 
-    describe('when offer is a thing', () => {
+    describe('when offer is a product thing', () => {
       it('should display the correct text when 0 thing is available', () => {
         // given
-        props.thing = {
+        props.product = {
           offerType: { label: 'Une place de cinéma' },
         }
         props.stocks = []
         props.stockAlertMessage = 'plus de stock'
         props.offer = {
-          id: '1M',
           bookingEmail: 'booking.email@test.com',
           dateCreated: '2019-02-25T09:50:10.735519Z',
           dateModifiedAtLastProvider: '2019-02-25T09:50:31.598542Z',
           eventId: null,
+          id: '1M',
           idAtProviders: null,
           isActive: true,
           lastProviderId: null,
-          modelName: 'Offer',
-          thingId: 42,
-          venueId: 'BE',
           mediationsIds: ['EY'],
+          modelName: 'Offer',
+          productId: 42,
           stocksIds: ['JQ'],
+          venueId: 'BE',
         }
 
         // when
