@@ -104,7 +104,7 @@ class TiteliveThingsTest:
                       createdThumbs=0,
                       updatedThumbs=0,
                       erroredThumbs=0,
-                      Thing=1
+                      Product=1
                       )
 
     @clean_database
@@ -244,7 +244,7 @@ class TiteliveThingsTest:
                       createdThumbs=0,
                       updatedThumbs=0,
                       erroredThumbs=0,
-                      Thing=355
+                      Product=355
                       )
 
     @clean_database
@@ -280,7 +280,7 @@ class TiteliveThingsTest:
                       createdThumbs=0,
                       updatedThumbs=0,
                       erroredThumbs=0,
-                      Thing=0
+                      Product=0
                       )
 
     @clean_database
@@ -325,7 +325,7 @@ class TiteliveThingsTest:
                       createdThumbs=0,
                       updatedThumbs=0,
                       erroredThumbs=0,
-                      Thing=0
+                      Product=0
                       )
 
     @clean_database
@@ -418,5 +418,5 @@ class TiteliveThingsTest:
                       createdThumbs=0,
                       updatedThumbs=0,
                       erroredThumbs=0,
-                      Thing=0
+                      Product=0
                       )

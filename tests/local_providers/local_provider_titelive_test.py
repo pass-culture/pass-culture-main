@@ -77,7 +77,7 @@ class TiteliveTest:
                       createdThumbs=0,
                       updatedThumbs=0,
                       erroredThumbs=0,
-                      Thing=355
+                      Product=355
                       )
 
         # mock TiteliveThingThumb
@@ -102,7 +102,7 @@ class TiteliveTest:
                       createdThumbs=92,
                       updatedThumbs=0,
                       erroredThumbs=0,
-                      Thing=0
+                      Product=0
                       )
 
         assert db.session.query(func.sum(Product.thumbCount)).scalar() == 92
@@ -131,7 +131,7 @@ class TiteliveTest:
                       createdThumbs=0,
                       updatedThumbs=0,
                       erroredThumbs=0,
-                      Thing=0
+                      Product=0
                       )
 
 
