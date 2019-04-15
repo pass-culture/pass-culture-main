@@ -178,7 +178,7 @@ class Get:
             venue = create_venue(offerer)
             offer = create_event_offer(venue, event_name="L'histoire sans fin")
             stock = create_stock_from_offer(offer,
-                beginning_datetime = TEN_DAYS_FROM_NOW, end_datetime = TWENTY_DAYS_FROM_NOW)
+                                            beginning_datetime=TEN_DAYS_FROM_NOW, end_datetime=TWENTY_DAYS_FROM_NOW)
             PcObject.check_and_save(stock, user)
 
             # when
@@ -427,10 +427,15 @@ class Get:
 
             # Then
             assert response.status_code == 200
-            assert len(response.json()) == 2
             recommendations = response.json()
-            assert recommendations[0]['offer']['eventOrThing']['name'] == 'The new film'
-            assert recommendations[1]['offer']['eventOrThing']['name'] == 'Lire un livre'
+            assert len(recommendations) == 2
+
+            recommendation_names = [recommendation['offer']['eventOrThing']['name']
+                                    for recommendation in recommendations]
+            assert 'The new film' in recommendation_names
+            assert 'Lire un livre' in recommendation_names
+
+            assert 'Spectacle' not in recommendation_names
 
         @clean_database
         def when_searching_by_keywords_and_date(self, app):
