@@ -1,6 +1,7 @@
-from models import BankInformation, Stock
+from models import BankInformation, Stock, ThingType
 
 from models.offer import Offer
+from models.offer_type import ProductType, EventType
 from models.offerer import Offerer
 
 from models.user import User
@@ -18,7 +19,7 @@ def get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_u
     query = filter_users_with_at_least_one_validated_offerer_validated_user_offerer(query)
     query = query.join(BankInformation)
     query = query.join(Venue, Venue.managingOffererId == Offerer.id).join(Offer).filter(
-        (Offer.eventId != None) & \
+        (Offer.type.in_([str(event_type) for event_type in EventType])) & \
         (~Offer.stocks.any())
     )
     user = query.first()
@@ -29,7 +30,7 @@ def get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_u
                 and uo.offerer.iban:
             for venue in uo.offerer.managedVenues:
                 for offer in venue.offers:
-                    if isinstance(offer.eventOrThing, Event) \
+                    if ProductType.is_event(offer.type) \
                             and len(offer.stocks) == 0:
                         return {
                             "offer": get_offer_helper(offer),
@@ -55,7 +56,7 @@ def get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_u
                 and uo.offerer.iban:
             for venue in uo.offerer.managedVenues:
                 for offer in venue.offers:
-                    if isinstance(offer.eventOrThing, Event) \
+                    if ProductType.is_event(offer.type) \
                             and offer.stocks:
                         for stock in offer.stocks:
                             if stock.beginningDatetime and stock.endDatetime:
@@ -83,7 +84,7 @@ def get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_u
                 and uo.offerer.iban:
             for venue in uo.offerer.managedVenues:
                 for offer in venue.offers:
-                    if isinstance(offer.eventOrThing, Thing) \
+                    if ProductType.is_thing(offer.type)  \
                             and offer.stocks:
                         return {
                             "offer": get_offer_helper(offer),
@@ -99,7 +100,7 @@ def get_existing_pro_validated_user_with_validated_offerer_with_no_iban_validate
     query = filter_users_with_at_least_one_validated_offerer_validated_user_offerer(query)
     query = query.filter(Offerer.bankInformation == None)
     query = query.join(Venue).filter(Venue.offers.any(
-        (Offer.thingId != None) & \
+        (Offer.type.in_([str(thing_type) for thing_type in ThingType])) & \
         (~Offer.stocks.any())
     ))
     user = query.first()
@@ -110,7 +111,7 @@ def get_existing_pro_validated_user_with_validated_offerer_with_no_iban_validate
                 and not uo.offerer.iban:
             for venue in uo.offerer.managedVenues:
                 for offer in venue.offers:
-                    if offer.thingId and len(offer.stocks) == 0:
+                    if ProductType.is_thing(offer.type) and len(offer.stocks) == 0:
                         return {
                             "offer": get_offer_helper(offer),
                             "offerer": get_offerer_helper(uo.offerer),
@@ -123,7 +124,8 @@ def get_existing_pro_validated_user_with_validated_offerer_with_no_iban_validate
     query = User.query.filter(User.validationToken == None)
     query = filter_users_with_at_least_one_validated_offerer_validated_user_offerer(query)
     query = query.filter(Offerer.bankInformation == None)
-    query = query.join(Venue).join(Offer).filter(Offer.eventId != None)
+    query = query.join(Venue).join(Offer).filter(Offer.type.in_([str(thing_type) for thing_type in ThingType]))
+    query = query.filter(Venue.isVirtual == False)
     user = query.first()
 
     for uo in user.UserOfferers:
@@ -133,7 +135,7 @@ def get_existing_pro_validated_user_with_validated_offerer_with_no_iban_validate
             for venue in uo.offerer.managedVenues:
                 if not venue.isVirtual:
                     for offer in venue.offers:
-                        if isinstance(offer.eventOrThing, Event):
+                        if ProductType.is_event(offer.type):
                             return {
                                 "offer": get_offer_helper(offer),
                                 "offerer": get_offerer_helper(uo.offerer),

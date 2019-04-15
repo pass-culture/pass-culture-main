@@ -1,3 +1,5 @@
+from pprint import pprint
+
 import pytest
 
 from sandboxes.scripts.save_sandbox import save_sandbox
@@ -30,8 +32,8 @@ def test_save_industrial_sandbox(app):
         User=49,
         Deposit=6,
         UserOfferer=125,
-        Recommendation=102,
-        Booking=40,
+        Recommendation=105,
+        Booking=41,
     )
 
     # teardown
@@ -51,6 +53,7 @@ def test_get_all_testcafe_helpers_find_all_items(app):
 
     # then
     values = testcafe_helpers.values()
+    pprint(values)
     assert None not in values
 
     # teardown

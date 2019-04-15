@@ -66,7 +66,7 @@ def get_existing_pro_validated_user_with_validated_offerer_validated_user_offere
 def get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_with_thing_offer():
     query = User.query.filter(User.validationToken == None)
     query = filter_users_with_at_least_one_validated_offerer_validated_user_offerer(query)
-    query = query.join(Venue).join(Offer).filter(Offer.product.type in [str(event_type) for event_type in EventType])
+    query = query.join(Venue).join(Offer).filter(Offer.type.in_([str(thing_type) for thing_type in ThingType]))
     user = query.first()
 
     for uo in user.UserOfferers:
@@ -84,14 +84,14 @@ def get_existing_pro_validated_user_with_validated_offerer_validated_user_offere
 def get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_with_event_offer():
     query = User.query.filter(User.validationToken == None)
     query = filter_users_with_at_least_one_validated_offerer_validated_user_offerer(query)
-    query = query.join(Venue).join(Offer).filter(Offer.product.type in [str(thing_type) for thing_type in ThingType])
+    query = query.join(Venue).join(Offer).filter(Offer.type.in_([str(event_type) for event_type in EventType]))
     user = query.first()
 
     for uo in user.UserOfferers:
         if uo.validationToken == None and uo.offerer.validationToken == None:
             for venue in uo.offerer.managedVenues:
                 for offer in venue.offers:
-                    if ProductType.is_event(offer.product.type):
+                    if ProductType.is_event(offer.type):
                         return {
                             "offer": get_offer_helper(offer),
                             "offerer": get_offerer_helper(uo.offerer),
