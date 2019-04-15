@@ -17,7 +17,6 @@ if IS_DEV:
     API_URL = 'http://localhost'
     WEBAPP_URL = 'http://localhost:3000'
     PRO_URL = 'http://localhost:3001'
-    LOG_LEVEL = 10
 elif IS_PROD:
     API_URL = 'https://backend.passculture.beta.gouv.fr'
     WEBAPP_URL = 'https://app.passculture.beta.gouv.fr'
