@@ -8,35 +8,9 @@ ul.verso-control {
     margin: 0;
   }
 
-  // .icon-ico-like,
-  // .icon-ico-like-on {
-  //   @extend .fs44;
-  // }
-  //
-  // #verso-share-button {
-  //   @extend .fs32;
-  // }
-
   li {
     @extend .text-center;
     @extend .is-inline-block;
-
-    // .button.is-go {
-    //   .price {
-    //     font-weight: normal;
-    //     border-right: thin solid;
-    //     margin-right: 10px;
-    //     padding-right: 10px;
-    //     padding-top: 0.5em;
-    //     padding-bottom: 0.5em;
-    //     margin-top: -0.5em;
-    //     margin-bottom: -0.5em;
-    //   }
-    //
-    //   svg {
-    //     margin-right: 5px;
-    //   }
-    // }
 
     .cancel-button {
       background: transparent;
@@ -51,10 +25,22 @@ ul.verso-control {
   .verso-control span[class^='icon-'] {
     font-size: 28px;
   }
+
+  .verso-control .button-with-price .price,
+  .verso-control .button-with-price .button-label {
+    padding-left: 6px;
+    padding-right: 6px;
+  }
 }
 
 @media screen and (min-width: 371px) {
   .verso-control span[class^='icon-'] {
     font-size: 44px;
+  }
+
+  .verso-control .button-with-price .price,
+  .verso-control .button-with-price .button-label {
+    padding-left: 12px;
+    padding-right: 12px;
   }
 }
