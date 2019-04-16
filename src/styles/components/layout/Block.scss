@@ -1,0 +1,23 @@
+#modal-confirm-route-change {
+  max-width: 360px;
+
+  ul {
+    margin-right: 15px;
+    margin-left: 15px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+
+    li {    
+      text-align: left;
+      img {
+        height: 5.5rem;
+        padding-right: 10px;
+      }
+    }
+  }
+
+  .level {
+    @include dotted($primary, top);
+  }
+}

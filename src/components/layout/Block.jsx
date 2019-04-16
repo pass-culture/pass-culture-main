@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types'
 import React from 'react'
+import { Icon } from './Icon'
 
 export const Block = ({
   cancelText,
@@ -9,11 +10,16 @@ export const Block = ({
   onCancel,
 }) => {
   return (
-    <div>
-      <div className="subtitle">{text}</div>
+    <div id="modal-confirm-route-change">
+      <ul>
+        <li>
+          <Icon svg="picto-warning" />
+        </li>
+        <li>{text}</li>
+      </ul>
       <div className="level">
         <button
-          className="button is-primary level-item"
+          className="button is-secondary level-item"
           onClick={onConfirmation}
           type="button">
           {confirmText}
@@ -33,7 +39,8 @@ Block.defaultProps = {
   cancelText: 'Non',
   confirmText: 'Oui',
   text:
-    'Êtes-vous sûr de vouloir quitter cette page ? Les modifications ne seront pas enregistrées.',
+    'Êtes-vous sûr de vouloir quitter cette page ? \
+    Les modifications ne seront pas enregistrées.',
 }
 
 Block.propTypes = {
