@@ -4,8 +4,8 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 
 import BookThisButton from './BookThisButton'
-import { getPriceRangeFromStocks } from '../../../helpers'
-import currentRecommendation from '../../../selectors/currentRecommendation'
+import { getPriceRangeFromStocks } from '../../../../helpers'
+import currentRecommendation from '../../../../selectors/currentRecommendation'
 
 export const getLinkDestination = (url, search) => {
   const isValid = url && typeof url === 'string'

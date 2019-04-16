@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Link } from 'react-router-dom'
 
-import Price from '../../layout/Price'
+import Price from '../../../layout/Price'
 
 const BookThisButton = ({ linkDestination, priceValue }) => (
   <Link

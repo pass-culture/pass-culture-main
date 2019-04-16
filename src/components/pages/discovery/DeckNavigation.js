@@ -167,16 +167,19 @@ RawDeckNavigation.propTypes = {
   verticalSlideRatio: PropTypes.number,
 }
 
+const mapStateToProps = (state, ownProps) => {
+  const { recommendation } = ownProps
+  const { offerId } = recommendation
+  const isFinished = isRecommendationOfferFinished(recommendation, offerId)
+
+  return {
+    isFinished,
+  }
+}
+
 const DeckNavigation = compose(
   withRouter,
-  connect((state, ownProps) => {
-    const { recommendation } = ownProps
-    const { offerId } = recommendation
-    const isFinished = isRecommendationOfferFinished(recommendation, offerId)
-    return {
-      isFinished,
-    }
-  })
+  connect(mapStateToProps)
 )(RawDeckNavigation)
 
 export default DeckNavigation
