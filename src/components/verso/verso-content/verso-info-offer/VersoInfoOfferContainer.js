@@ -9,7 +9,7 @@ import { isRecommendationOfferFinished } from '../../../../helpers/isRecommendat
 import { selectBookables } from '../../../../selectors/selectBookables'
 import currentRecommendationSelector from '../../../../selectors/currentRecommendation'
 
-const mapStateToProps = (state, ownProps) => {
+export const mapStateToProps = (state, ownProps) => {
   const { match } = ownProps
   const { mediationId, offerId } = match.params
   const recommendation = currentRecommendationSelector(
