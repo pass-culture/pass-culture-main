@@ -13,21 +13,13 @@ import { getHeaderColor } from '../../../utils/colors'
 import { getPriceRangeFromStocks } from '../../../helpers'
 import { isRecommendationOfferFinished } from '../../../helpers/isRecommendationOfferFinished'
 import { ROOT_PATH } from '../../../utils/config'
+import { getPageY } from '../../../utils/getPageY'
 
 const toRectoDraggableBounds = {
   bottom: 0,
   left: 0,
   right: 0,
   top: 0,
-}
-
-function getPageY(event) {
-  if (window.TouchEvent && event instanceof TouchEvent) {
-    const lastTouchIndex = event.changedTouches.length - 1
-    return event.changedTouches[lastTouchIndex].pageY
-  }
-
-  return event.pageY
 }
 
 export class RawDeckNavigation extends React.PureComponent {

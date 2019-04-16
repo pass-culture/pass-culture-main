@@ -6,7 +6,7 @@ import { Route } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { assignData, requestData } from 'redux-saga-data'
 
-import Deck from './Deck'
+import DeckContainer from './deck/DeckContainer'
 import Booking from '../../booking'
 import { withRedirectToSigninWhenNotAuthenticated } from '../../hocs'
 import BackButton from '../../layout/BackButton'
@@ -146,7 +146,10 @@ export class RawDiscoveryPage extends React.PureComponent {
                 key="route-discovery-deck"
                 path="/decouverte/:offerId([A-Z0-9]+)/:mediationId([A-Z0-9]+)?/:view(verso|cancelled)?/:bookingId?/:menu(menu)?"
                 render={route => (
-                  <Deck {...route} handleDataRequest={this.handleDataRequest} />
+                  <DeckContainer
+                    {...route}
+                    handleDataRequest={this.handleDataRequest}
+                  />
                 )}
               />
             </Fragment>

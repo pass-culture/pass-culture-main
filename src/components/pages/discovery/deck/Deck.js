@@ -3,25 +3,12 @@ import { Icon } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import Draggable from 'react-draggable'
-import { connect } from 'react-redux'
-import { withRouter } from 'react-router-dom'
-import withSizes from 'react-sizes'
-import { compose } from 'redux'
 
-import Card from './Card'
-import DeckNavigation from './DeckNavigation'
-import { NB_CARDS_REMAINING_THAT_TRIGGERS_LOAD } from '../../../helpers/isRecommendationOfferFinished'
-import {
-  closeCardDetails,
-  showCardDetails,
-  flipUnflippable,
-} from '../../../reducers/card'
-import currentRecommendationSelector from '../../../selectors/currentRecommendation'
-import nextRecommendationSelector from '../../../selectors/nextRecommendation'
-import previousRecommendationSelector from '../../../selectors/previousRecommendation'
-import selectRecommendationsForDiscovery from '../../../selectors/recommendations'
+import Card from '../card'
+import DeckNavigation from '../DeckNavigation'
+import { closeCardDetails, flipUnflippable, showCardDetails, } from '../../../../reducers/card'
 
-export class RawDeck extends Component {
+class Deck extends Component {
   constructor(props) {
     super(props)
     this.currentReadRecommendationId = null
@@ -221,7 +208,7 @@ export class RawDeck extends Component {
   }
 }
 
-RawDeck.defaultProps = {
+Deck.defaultProps = {
   currentRecommendation: null,
   horizontalSlideRatio: 0.2,
   nextRecommendation: null,
@@ -231,7 +218,7 @@ RawDeck.defaultProps = {
   verticalSlideRatio: 0.1,
 }
 
-RawDeck.propTypes = {
+Deck.propTypes = {
   areDetailsVisible: PropTypes.bool.isRequired,
   currentRecommendation: PropTypes.object,
   dispatch: PropTypes.func.isRequired,
@@ -252,64 +239,5 @@ RawDeck.propTypes = {
   verticalSlideRatio: PropTypes.number,
   width: PropTypes.number.isRequired,
 }
-
-const mapStateToProps = (state, ownProps) => {
-  const { mediationId, offerId } = ownProps.match.params
-  const currentRecommendation = currentRecommendationSelector(
-    state,
-    offerId,
-    mediationId
-  )
-  const { mediation } = currentRecommendation || {}
-  const { thumbCount, tutoIndex } = mediation || {}
-
-  const recommendations = selectRecommendationsForDiscovery(state)
-  const nbRecos = recommendations ? recommendations.length : 0
-
-  const isFlipDisabled =
-    !currentRecommendation || (typeof tutoIndex === 'number' && thumbCount <= 1)
-
-  const nextLimit =
-    nbRecos > 0 &&
-    (NB_CARDS_REMAINING_THAT_TRIGGERS_LOAD >= nbRecos - 1
-      ? nbRecos - 1
-      : nbRecos - 1 - NB_CARDS_REMAINING_THAT_TRIGGERS_LOAD)
-
-  const previousLimit =
-    nbRecos > 0 &&
-    (NB_CARDS_REMAINING_THAT_TRIGGERS_LOAD < nbRecos - 1
-      ? NB_CARDS_REMAINING_THAT_TRIGGERS_LOAD + 1
-      : 0)
-
-  return {
-    areDetailsVisible: state.card.areDetailsVisible,
-    currentRecommendation,
-    draggable: state.card.draggable,
-    isEmpty: get(state, 'loading.config.isEmpty'),
-    isFlipDisabled,
-    nextLimit,
-    nextRecommendation: nextRecommendationSelector(state, offerId, mediationId),
-    previousLimit,
-    previousRecommendation: previousRecommendationSelector(
-      state,
-      offerId,
-      mediationId
-    ),
-    recommendations,
-    unFlippable: state.card.unFlippable,
-  }
-}
-
-const mapSizeToProps = ({ width, height }) => ({
-  height,
-  // NOTE -> CSS body{ max-width: 500px; }
-  width: Math.min(width, 500),
-})
-
-const Deck = compose(
-  withRouter,
-  withSizes(mapSizeToProps),
-  connect(mapStateToProps)
-)(RawDeck)
 
 export default Deck
