@@ -40,7 +40,7 @@ def generate_set_password_url(app_domain: str, user: User) -> str:
 
 
 def check_is_activation_booking(booking):
-    return booking.stock.resolvedOffer.eventOrThing.type in [str(EventType.ACTIVATION), str(ThingType.ACTIVATION)]
+    return booking.stock.resolvedOffer.product.type in [str(EventType.ACTIVATION), str(ThingType.ACTIVATION)]
 
 
 class AlreadyActivatedException(ApiErrors):

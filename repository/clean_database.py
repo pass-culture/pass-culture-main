@@ -41,5 +41,4 @@ def clean_all_database(*args, **kwargs):
     Activity.query.delete()
     UserSession.query.delete()
     Email.query.delete()
-    LocalProviderEvent.query.delete()
     db.session.commit()

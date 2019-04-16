@@ -63,13 +63,6 @@ THING_INCLUDES = [
 ]
 
 OFFER_INCLUDES = [
-    {
-        "key": "event",
-        "sub_joins": [
-            'offerType',
-            '-type'
-        ]
-    },
     'isFinished',
     'isFullyBooked',
     "mediations",
@@ -116,17 +109,14 @@ RECOMMENDATION_INCLUDES = [
             'isFinished',
             'isFullyBooked',
             "dateRange",
-            {
-                "key": "eventOrThing",
-                "sub_joins": [
-                    "offerType"
-                ]
-            },
             "mediation",
             "stocks",
             {
                 "key": "venue",
                 "sub_joins": ["managingOfferer"]
+            },
+            {
+                "key": "product",
             }
         ]
     },
@@ -142,7 +132,7 @@ BOOKING_INCLUDES = [
                 {
                     "key": "resolvedOffer",
                     "sub_joins": [
-                        "eventOrThing",
+                        "product",
                         "venue",
                         'isFinished',
                         'isFullyBooked'

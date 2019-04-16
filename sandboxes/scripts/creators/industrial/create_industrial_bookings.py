@@ -53,7 +53,7 @@ def create_industrial_bookings(
             "has-booked-activation" in user.email or \
             "has-confirmed-activation" in user.email
 
-        is_activation_offer = offer.eventOrThing.offerType['value'] == str(EventType.ACTIVATION)
+        is_activation_offer = offer.product.offerType['value'] == str(EventType.ACTIVATION)
 
         if user_has_only_activation_booked and not is_activation_offer:
             continue

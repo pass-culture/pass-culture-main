@@ -210,7 +210,7 @@ def activate_user(user_to_activate):
 
 
 def _create_response_to_get_booking_by_token(booking):
-    offer_name = booking.stock.resolvedOffer.eventOrThing.name
+    offer_name = booking.stock.resolvedOffer.product.name
     date = None
     product = booking.stock.resolvedOffer.product
     is_event = ProductType.is_event(product.type)

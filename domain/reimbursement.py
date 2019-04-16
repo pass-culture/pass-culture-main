@@ -50,7 +50,7 @@ class DigitalThingsReimbursement(ReimbursementRule):
     valid_until = None
 
     def is_relevant(self, booking, **kwargs):
-        return booking.stock.resolvedOffer.eventOrThing.isDigital
+        return booking.stock.resolvedOffer.product.isDigital
 
 
 class PhysicalOffersReimbursement(ReimbursementRule):
@@ -60,7 +60,7 @@ class PhysicalOffersReimbursement(ReimbursementRule):
     valid_until = None
 
     def is_relevant(self, booking, **kwargs):
-        eventOrThing = booking.stock.resolvedOffer.eventOrThing
+        eventOrThing = booking.stock.resolvedOffer.product
         book_offer = eventOrThing.type == str(ThingType.LIVRE_EDITION)
         return book_offer or not eventOrThing.isDigital
 
@@ -72,7 +72,7 @@ class MaxReimbursementByOfferer(ReimbursementRule):
     valid_until = None
 
     def is_relevant(self, booking, **kwargs):
-        if booking.stock.resolvedOffer.eventOrThing.isDigital:
+        if booking.stock.resolvedOffer.product.isDigital:
             return False
         else:
             return kwargs['cumulative_value'] > 20000

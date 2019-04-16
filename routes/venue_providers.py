@@ -102,5 +102,5 @@ def delete_venue_provider(id):
     vp = load_or_404(VenueProvider, id)
     ensure_current_user_has_rights(RightsType.editor,
                                    vp.venue.managingOffererId)
-    # TODO: should we also delete all the associated events/things...?
+    # TODO: should we also delete all the associated products...?
     return delete(vp)

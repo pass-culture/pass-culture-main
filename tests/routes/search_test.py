@@ -106,7 +106,7 @@ class Get:
             # then
             assert response.status_code == 200
             recommendations = response.json()
-            assert 'Training' in recommendations[0]['offer']['eventOrThing']['name']
+            assert 'Training' in recommendations[0]['offer']['product']['name']
             assert recommendations[0]['search'] == search
 
         @clean_database
@@ -188,7 +188,7 @@ class Get:
             # then
             assert response.status_code == 200
             recommendations = response.json()
-            assert recommendations[0]['offer']['eventOrThing']['name'] == "L'histoire sans fin"
+            assert recommendations[0]['offer']['product']['name'] == "L'histoire sans fin"
             assert len(recommendations) == 1
 
         @clean_database
@@ -209,7 +209,7 @@ class Get:
             # then
             assert response.status_code == 200
             recommendations = response.json()
-            assert recommendations[0]['offer']['eventOrThing']['name'] == "Vortek's"
+            assert recommendations[0]['offer']['product']['name'] == "Vortek's"
             assert len(recommendations) == 1
 
         @clean_database
@@ -234,7 +234,7 @@ class Get:
             # then
             assert response.status_code == 200
             recommendations = response.json()
-            assert 'Rencontres' in recommendations[0]['offer']['eventOrThing']['name']
+            assert 'Rencontres' in recommendations[0]['offer']['product']['name']
             assert recommendations[0]['search'] == search
 
         @clean_database
@@ -257,7 +257,7 @@ class Get:
             # then
             assert response.status_code == 200
             recommendations = response.json()
-            assert 'Rencontres' in recommendations[0]['offer']['eventOrThing']['name']
+            assert 'Rencontres' in recommendations[0]['offer']['product']['name']
 
         @clean_database
         def when_searching_by_keywords_with_partial_keyword(self, app):
@@ -279,7 +279,7 @@ class Get:
             # then
             assert response.status_code == 200
             recommendations = response.json()
-            assert 'Rencontres' in recommendations[0]['offer']['eventOrThing']['name']
+            assert 'Rencontres' in recommendations[0]['offer']['product']['name']
             assert recommendations[0]['search'] == search
 
         @clean_database
@@ -430,7 +430,7 @@ class Get:
             recommendations = response.json()
             assert len(recommendations) == 2
 
-            recommendation_names = [recommendation['offer']['eventOrThing']['name']
+            recommendation_names = [recommendation['offer']['product']['name']
                                     for recommendation in recommendations]
             assert 'The new film' in recommendation_names
             assert 'Lire un livre' in recommendation_names
@@ -532,7 +532,7 @@ class Get:
             assert response.status_code == 200
             offers = response.json()
             assert len(offers) == 1
-            assert 'Kiwi' in offers[0]['offer']['eventOrThing']['name']
+            assert 'Kiwi' in offers[0]['offer']['product']['name']
 
         @clean_database
         def when_searching_by_non_matching_date_range(self, app):
@@ -584,7 +584,7 @@ class Get:
             assert response.status_code == 200
             assert len(response.json()) == 2
             recommendations = response.json()
-            assert set([r['offer']['eventOrThing']['name'] for r in recommendations]) == \
+            assert set([r['offer']['product']['name'] for r in recommendations]) == \
                    {'The new film', 'Activation de votre Pass Culture'}
 
         @clean_database
@@ -632,7 +632,7 @@ class Get:
             assert response.status_code == 200
             assert len(response.json()) == 3
             recommendations = response.json()
-            recommendation_names = [recommendation['offer']['eventOrThing']['name'] for recommendation in
+            recommendation_names = [recommendation['offer']['product']['name'] for recommendation in
                                     recommendations]
             assert 'Activation de votre Pass Culture' in recommendation_names
 

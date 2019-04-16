@@ -23,7 +23,7 @@ def create_industrial_recommendations(mediations_by_name, offers_by_name, users_
     activation_mediation_items = [
         mediation_item
         for mediation_item in mediations_by_name.items()
-        if mediation_item[1].offer.eventOrThing.offerType['value'] == str(EventType.ACTIVATION)
+        if mediation_item[1].offer.product.offerType['value'] == str(EventType.ACTIVATION)
     ]
 
     for (user_name, user) in users_by_name.items():

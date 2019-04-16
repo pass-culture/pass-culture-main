@@ -153,7 +153,7 @@ class Post:
             assert event.durationMinutes == 60
             assert event.name == 'La pièce de théâtre'
             assert offer.type == str(EventType.SPECTACLE_VIVANT)
-            assert offer.eventOrThing.owningOfferer == offerer
+            assert offer.product.owningOfferer == offerer
 
         @clean_database
         def when_creating_a_new_event_offer_without_booking_email(self, app):
@@ -235,7 +235,7 @@ class Post:
             assert offer.isDigital
             assert offer.isNational
             assert thing.isNational
-            assert offer.eventOrThing.owningOfferer == offerer
+            assert offer.product.owningOfferer == offerer
 
         @clean_database
         def when_creating_a_new_offer_from_an_existing_thing(self, app):

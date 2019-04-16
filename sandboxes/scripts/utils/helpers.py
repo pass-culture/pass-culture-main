@@ -1,6 +1,6 @@
 def get_booking_helper(booking):
     return dict(booking._asdict(), **{
-        "eventOrThingName": booking.recommendation.offer.eventOrThing.name,
+        "eventOrThingName": booking.recommendation.offer.product.name,
         "venueName": booking.recommendation.offer.venue.name
     })
 
@@ -10,7 +10,7 @@ def get_mediation_helper(mediation):
 def get_offer_helper(offer):
     return dict(offer._asdict(), **{
         "keywordsString": '{} {}'.format(
-            offer.eventOrThing.name,
+            offer.product.name,
             offer.venue.name
         ).replace('?', ' ') \
          .replace('!', ' ') \
@@ -19,7 +19,7 @@ def get_offer_helper(offer):
          .replace('ù', 'u'),
         "venueCity": offer.venue.city,
         "venueName": offer.venue.name,
-        "thingName": offer.eventOrThing.name
+        "thingName": offer.product.name
     })
 
 def get_offerer_helper(offerer):

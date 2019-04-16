@@ -83,7 +83,7 @@ def post_offer():
         offer_type_name = request.json.get('type')
         check_offer_type_is_valid(offer_type_name)
         offer = fill_offer_with_new_data(request.json, current_user)
-        offer.eventOrThing.owningOfferer = venue.managingOfferer
+        offer.product.owningOfferer = venue.managingOfferer
 
     offer.venue = venue
     offer.bookingEmail = request.json.get('bookingEmail', None)

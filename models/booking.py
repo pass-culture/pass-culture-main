@@ -84,7 +84,7 @@ class Booking(PcObject,
     @property
     def completedUrl(self):
         offer = self.stock.resolvedOffer
-        url = offer.eventOrThing.url
+        url = offer.product.url
         if url is None:
             return None
         if not url.startswith('http'):

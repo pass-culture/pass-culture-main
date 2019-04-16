@@ -95,7 +95,7 @@ def check_offer_date(stock):
 
 def check_expenses_limits(expenses: dict, booking: Booking, find_stock=find_stock_by_id):
     stock = find_stock(booking.stockId)
-    event_or_thing = stock.resolvedOffer.eventOrThing
+    event_or_thing = stock.resolvedOffer.product
 
     if is_eligible_to_physical_things_capping(event_or_thing):
         if (expenses['physical']['actual'] + booking.value) > expenses['physical']['max']:

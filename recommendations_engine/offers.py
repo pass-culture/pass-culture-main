@@ -50,7 +50,7 @@ def score_offer(offer: Offer) -> Optional[int]:
 
     if offer.hasActiveMediation:
         common_score += 20
-    elif offer.eventOrThing.thumbCount == 0:
+    elif offer.product.thumbCount == 0:
         # we don't want to recommend offers that have neither their own
         # image nor a mediation
         return None
@@ -60,9 +60,9 @@ def score_offer(offer: Offer) -> Optional[int]:
 
     specific_score = None
     if ProductType.is_event(offer.type):
-        specific_score = specific_score_event(offer.eventOrThing)
+        specific_score = specific_score_event(offer.product)
     elif ProductType.is_thing(offer.type):
-        specific_score = specific_score_thing(offer.eventOrThing)
+        specific_score = specific_score_thing(offer.product)
 
     if specific_score is None:
         return None

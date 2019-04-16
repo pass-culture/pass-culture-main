@@ -21,6 +21,7 @@ class Offer(PcObject,
             ExtraDataMixin,
             DeactivableMixin,
             ProvidableMixin):
+    # TODO delete after migrating OVH thumbs
     thingId = Column(BigInteger,
                      index=True,
                      nullable=True)
@@ -98,9 +99,10 @@ class Offer(PcObject,
         return api_errors
 
     def updatewith_thing_or_event_data(self, thing_or_event_dict: dict):
-        owning_offerer = self.eventOrThing.owningOfferer
+        owning_offerer = self.product.owningOfferer
         if owning_offerer and owning_offerer == self.venue.managingOfferer:
-            self.eventOrThing.populateFromDict(thing_or_event_dict)
+            self.product.populateFromDict(thing_or_event_dict)
+
     @property
     def dateRange(self):
         if ProductType.is_thing(self.type) or not self.stocks:
@@ -109,11 +111,6 @@ class Offer(PcObject,
         start = min([stock.beginningDatetime for stock in self.stocks])
         end = max([stock.endDatetime for stock in self.stocks])
         return DateTimes(start, end)
-
-    # FIXME Useless property
-    @property
-    def eventOrThing(self):
-        return self.product
 
     @property
     def lastStock(self):

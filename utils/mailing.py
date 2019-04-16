@@ -61,7 +61,7 @@ def resend_email(email: Email) -> bool:
 
 def make_batch_cancellation_email(bookings, cancellation_case):
     booking = next(iter(bookings))
-    offer_name = booking.stock.resolvedOffer.eventOrThing.name
+    offer_name = booking.stock.resolvedOffer.product.name
     email_html = render_template('mails/offerer_batch_cancellation_email.html',
                                  offer_name=offer_name, bookings=bookings, cancellation_case=cancellation_case)
     email_subject = 'Annulation de réservations pour %s' % offer_name
@@ -101,7 +101,7 @@ def make_offerer_booking_recap_email_after_user_action(booking, is_cancellation=
     venue = booking.stock.resolvedOffer.venue
     user = booking.user
     stock_bookings = find_all_ongoing_bookings_by_stock(booking.stock)
-    event_or_thing = booking.stock.resolvedOffer.eventOrThing
+    event_or_thing = booking.stock.resolvedOffer.product
     human_offer_id = humanize(booking.stock.resolvedOffer.id)
     booking_is_on_event = booking.stock.beginningDatetime is not None
 
@@ -160,7 +160,7 @@ def write_object_validation_email(offerer, user_offerer, get_by_siren=api_entrep
 
 
 def make_offerer_driven_cancellation_email_for_user(booking):
-    offer_name = booking.stock.resolvedOffer.eventOrThing.name
+    offer_name = booking.stock.resolvedOffer.product.name
     offerer_name = booking.stock.resolvedOffer.venue.managingOfferer.name
     booking_value = booking.amount * booking.quantity
     booking_is_on_event = booking.stock.beginningDatetime is not None
@@ -191,7 +191,7 @@ def make_offerer_driven_cancellation_email_for_user(booking):
 
 
 def make_offerer_driven_cancellation_email_for_offerer(booking):
-    stock_name = booking.stock.resolvedOffer.eventOrThing.name
+    stock_name = booking.stock.resolvedOffer.product.name
     venue = booking.stock.resolvedOffer.venue
     user_name = booking.user.publicName
     user_email = booking.user.email
@@ -567,7 +567,7 @@ def make_offer_creation_notification_email(offer: Offer, author: User, pro_origi
             'To': ['support.passculture@beta.gouv.fr'],
             'FromEmail': 'support.passculture@beta.gouv.fr',
             'FromName': 'pass Culture',
-            'Subject': f'[Création d’offre - {location_information}] {offer.eventOrThing.name}'}
+            'Subject': f'[Création d’offre - {location_information}] {offer.product.name}'}
 
 
 def _generate_reservation_email_html_subject(booking):

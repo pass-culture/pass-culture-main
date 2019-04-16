@@ -582,7 +582,7 @@ def create_mocked_bookings(num_bookings, venue_email, name='Offer name'):
         booking.user.firstName = 'First %s' % i
         booking.user.lastName = 'Last %s' % i
         booking.stock.resolvedOffer.bookingEmail = venue_email
-        booking.stock.resolvedOffer.eventOrThing.name = name
+        booking.stock.resolvedOffer.product.name = name
         bookings.append(booking)
     return bookings
 

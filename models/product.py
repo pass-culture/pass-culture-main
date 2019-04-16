@@ -1,4 +1,5 @@
 """ model product """
+import enum
 from enum import Enum
 
 from sqlalchemy import Binary, \
@@ -23,6 +24,11 @@ from models.has_thumb_mixin import HasThumbMixin
 from models.pc_object import PcObject
 from models.providable_mixin import ProvidableMixin
 
+class BookFormat(enum.Enum):
+    AudiobookFormat = "AudiobookFormat"
+    EBook = "EBook"
+    Hardcover = "Hardcover"
+    Paperback = "Paperback"
 
 class Product(PcObject,
               Model,
