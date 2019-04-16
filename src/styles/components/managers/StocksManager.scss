@@ -1,10 +1,13 @@
 .stocks-manager {
-
   td.remaining-stock {
     color: #757575;
     font-size: 0.75rem;
     font-weight: 500;
     min-width: 75px;
+  }
+
+  .has-text-weight-bold{
+    text-transform: uppercase;
   }
 
   .info {

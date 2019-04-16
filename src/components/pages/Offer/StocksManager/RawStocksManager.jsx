@@ -135,8 +135,8 @@ class RawStocksManager extends Component {
           )}
           <td>Prix</td>
           <td>Date Limite de Réservation</td>
-          <td>{isEventStock ? 'Stock affecté' : 'Places affectées'}</td>
-          <td>{isEventStock ? 'Stock restant' : 'Places restantes'}</td>
+          <td>{isEventStock ? 'Places affectées' : 'Stock affecté'}</td>
+          <td>{isEventStock ? 'Places restantes' : 'Stock restant'}</td>
           <td>Modifier</td>
           <td>Supprimer</td>
         </tr>
