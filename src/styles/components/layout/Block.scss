@@ -1,4 +1,4 @@
-#modal-confirm-route-change {
+.confirm-change {
   max-width: 360px;
 
   ul {
@@ -11,13 +11,17 @@
     li {    
       text-align: left;
       img {
-        height: 5.5rem;
-        padding-right: 10px;
+        width: 2.5em;
+        /*padding-right: 2px;*/
       }
     }
   }
 
   .level {
     @include dotted($primary, top);
+
+    button:first-child {
+      font-weight: $weight-light;
+    }
   }
 }

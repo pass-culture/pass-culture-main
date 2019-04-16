@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import { Icon } from './Icon'
+
+import { ROOT_PATH } from '../../utils/config'
 
 export const Block = ({
   cancelText,
@@ -10,10 +11,14 @@ export const Block = ({
   onCancel,
 }) => {
   return (
-    <div id="modal-confirm-route-change">
+    <div className="confirm-change">
       <ul>
         <li>
-          <Icon svg="picto-warning" />
+          <img
+            src={`${ROOT_PATH}/icons/picto-warning-orange.png`}
+            title="picto-warning-orange"
+            alt="picto-warning-orange"
+          />
         </li>
         <li>{text}</li>
       </ul>
@@ -38,9 +43,12 @@ export const Block = ({
 Block.defaultProps = {
   cancelText: 'Non',
   confirmText: 'Oui',
-  text:
-    'Êtes-vous sûr de vouloir quitter cette page ? \
-    Les modifications ne seront pas enregistrées.',
+  text: (
+    <div className="m12">
+      Êtes-vous sûr de vouloir quitter cette page ? <br />
+      Les modifications ne seront pas enregistrées.
+    </div>
+  ),
 }
 
 Block.propTypes = {
