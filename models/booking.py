@@ -110,6 +110,28 @@ class Booking(PcObject,
                                 "Le solde de votre pass n'est pas suffisant pour effectuer cette réservation."]
         return PcObject.restize_integrity_error(ie)
 
+    CSV_HEADER = [
+        "Date de la réservation",
+        "Nom de l'offre",
+        "Nom du lieu",
+        "Nom de la structure",
+        "Quantité réservée",
+        "Prix de la réservation",
+        "Réservation annulée",
+        "Contremarque validée"
+    ]
+
+    def as_csv_row(self):
+        return [
+            self.dateCreated,
+            self.stock.offer.name,
+            self.stock.offer.venue.name,
+            self.stock.offer.venue.managingOfferer.name,
+            self.quantity,
+            self.amount,
+            self.isCancelled,
+            self.isUsed
+        ]
 
 class ActivationUser:
     CSV_HEADER = [

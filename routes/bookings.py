@@ -2,6 +2,7 @@
 from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
 
+from domain.bookings import generate_offer_bookings_details_csv
 from domain.expenses import get_expenses
 from domain.user_activation import create_initial_deposit, check_is_activation_booking
 from domain.user_emails import send_booking_recap_emails, \
@@ -11,12 +12,13 @@ from models import ApiErrors, Booking, PcObject, Stock, RightsType, EventType
 from models.pc_object import serialize
 from repository import booking_queries
 from repository.booking_queries import find_active_bookings_by_user_id, \
-find_all_bookings_for_stock_and_user
-from utils.human_ids import dehumanize, humanize
+find_all_bookings_for_stock_and_user, find_offerer_bookings
 from utils.includes import BOOKING_INCLUDES
+from utils.human_ids import dehumanize, humanize
 from utils.mailing import MailServiceException, send_raw_email
 from utils.rest import ensure_current_user_has_rights, \
-    expect_json_data
+    expect_json_data, \
+    load_or_404
 from utils.token import random_token
 from validation.bookings import check_booking_is_usable, \
     check_can_book_free_offer, \
@@ -32,7 +34,34 @@ from validation.bookings import check_booking_is_usable, \
     check_stock_booking_limit_date, \
     check_user_is_logged_in_or_email_is_provided, check_email_and_offer_id_for_anonymous_user, \
     check_booking_is_cancellable, check_stock_venue_is_validated, check_rights_for_activation_offer
+from validation.offers import check_user_has_rights_for_query
 
+from repository.user_offerer_queries import find_first_by_user_id
+
+@app.route('/bookings_csv', methods=['GET'])
+@login_required
+def get_bookings_csv():
+    toto = find_first_by_user_id(current_user.id)
+    print('toto, toto', toto)
+    print('totoid', toto.id)
+    offerer_id = current_user.id
+    venue_id = None
+    venue = None
+
+
+    # check_user_has_rights_for_query(offerer_id, venue, venue_id)
+    # ensure_current_user_has_rights(RightsType.editor, offerer_id)
+
+    bookings = find_offerer_bookings(offerer_id)
+    print('                      ')
+    print('                      ')
+    print('bookings', bookings)
+    print('offerer_id', offerer_id)
+    bookings_csv = generate_offer_bookings_details_csv(bookings)
+
+    return jsonify(
+        bookings_csv
+    ), 200
 
 @app.route('/bookings', methods=['GET'])
 @login_required
