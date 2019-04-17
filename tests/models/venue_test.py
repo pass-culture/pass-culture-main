@@ -108,6 +108,32 @@ def test_venue_raises_exeption_when_no_siret_and_no_comment(app):
         PcObject.check_and_save(venue)
 
 
+@clean_database
+@pytest.mark.standalone
+def test_venue_raises_exeption_when_siret_and_comment_but_virtual(app):
+    # given
+    offerer = create_offerer()
+    venue = create_venue(offerer, siret=None, comment="hello I've comment and siret but i'm virtual", is_virtual=True)
+
+    # when
+    with pytest.raises(ApiErrors):
+        PcObject.check_and_save(venue)
+
+
+@clean_database
+@pytest.mark.standalone
+def test_venue_can_have_siret_and_comment(app):
+    # given
+    offerer = create_offerer()
+    venue = create_venue(offerer, siret="02345678912345", comment="hello I've some comment and siret !")
+    PcObject.check_and_save(venue)
+
+    # when
+    siret = venue.siret
+
+    assert siret == "02345678912345"
+
+
 @pytest.mark.standalone
 @clean_database
 def test_nOffers(app):
