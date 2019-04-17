@@ -5,28 +5,7 @@ import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 
 import VersoContentOffer from './VersoContentOffer'
-import { selectBookables } from '../../../selectors/selectBookables'
-import currentRecommendationSelector from '../../../selectors/currentRecommendation'
-import { isRecommendationOfferFinished } from '../../../helpers'
-
-const mapStateToProps = (state, ownProps) => {
-  const { match } = ownProps
-  const { mediationId, offerId } = match.params
-  // recuperation de la recommandation
-  const recommendation = currentRecommendationSelector(
-    state,
-    offerId,
-    mediationId
-  )
-
-  const bookables = selectBookables(state, recommendation, match)
-  const isFinished = isRecommendationOfferFinished(recommendation, offerId)
-  return {
-    bookables,
-    isFinished,
-    recommendation,
-  }
-}
+import mapStateToProps from './mapStateToProps'
 
 const VersoContentOfferContainer = compose(
   withRouter,

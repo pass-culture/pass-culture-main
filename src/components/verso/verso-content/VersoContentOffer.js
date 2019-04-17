@@ -4,6 +4,7 @@ import get from 'lodash.get'
 import { capitalize } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import React, { Fragment } from 'react'
+import { requestData } from 'redux-saga-data'
 
 import {
   getDurationFromMinutes,
@@ -13,6 +14,24 @@ import { Icon } from '../../layout/Icon'
 import { navigationLink } from '../../../utils/geolocation'
 
 class VersoContentOffer extends React.PureComponent {
+  componentDidMount() {
+    const { dispatch, musicTypes, showTypes } = this.props
+    if (!musicTypes) {
+      dispatch(
+        requestData({
+          apiPath: '/musicTypes',
+        })
+      )
+    }
+    if (!showTypes) {
+      dispatch(
+        requestData({
+          apiPath: '/showTypes',
+        })
+      )
+    }
+  }
+
   renderOfferDetails() {
     const { recommendation } = this.props
     const description = get(recommendation, 'offer.eventOrThing.description')
@@ -68,7 +87,13 @@ class VersoContentOffer extends React.PureComponent {
   }
 
   renderOfferWhat() {
-    const { recommendation } = this.props
+    const {
+      musicSubType,
+      musicType,
+      recommendation,
+      showSubType,
+      showType,
+    } = this.props
     const offer = get(recommendation, 'offer')
 
     const venue = get(offer, 'venue')
@@ -86,7 +111,8 @@ class VersoContentOffer extends React.PureComponent {
     const performer = get(extraData, 'performer')
     const speaker = get(extraData, 'speaker')
     const stageDirector = get(extraData, 'stageDirector')
-    const type = get(extraData, 'musicType') || get(extraData, 'showType')
+    const type = get(musicType, 'label') || get(showType, 'label')
+    const subType = get(musicSubType, 'label') || get(showSubType, 'label')
     return (
       <div>
         <h3>Quoi ?</h3>
@@ -94,7 +120,12 @@ class VersoContentOffer extends React.PureComponent {
           <span className="is-bold">{title}</span>
           {durationMinutes && <span> - Durée {duration}</span>}
         </div>
-        {type && <div>Genre : {type}</div>}
+        {type && (
+          <div>
+            Genre : {type}
+            {subType && `/ ${subType}`}
+          </div>
+        )}
         {author && <div>Auteur : {author}</div>}
         {performer && <div>Interprête : {performer}</div>}
         {speaker && <div>Intervenant : {speaker}</div>}
@@ -168,14 +199,27 @@ class VersoContentOffer extends React.PureComponent {
 VersoContentOffer.defaultProps = {
   bookables: null,
   maxDatesShowned: 7,
+  musicSubType: null,
+  musicType: null,
+  musicTypes: null,
   recommendation: null,
+  showSubType: null,
+  showType: null,
+  showTypes: null,
 }
 
 VersoContentOffer.propTypes = {
   bookables: PropTypes.array,
+  dispatch: PropTypes.func.isRequired,
   isFinished: PropTypes.bool.isRequired,
   maxDatesShowned: PropTypes.number,
+  musicSubType: PropTypes.object,
+  musicType: PropTypes.object,
+  musicTypes: PropTypes.arrayOf(PropTypes.shape()),
   recommendation: PropTypes.object,
+  showSubType: PropTypes.object,
+  showType: PropTypes.object,
+  showTypes: PropTypes.arrayOf(PropTypes.shape()),
 }
 
 export default VersoContentOffer
