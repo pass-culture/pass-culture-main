@@ -148,15 +148,14 @@ class Offer(PcObject,
         return self.url is not None and self.url != ''
 
     @property
-    def availableStocks(self):
-        return sum(map(lambda s: s.available if s.isBookable else 0, self.stocks))
-
-    @property
     def isFinished(self):
         return all(map(lambda s: not s.isBookable, self.stocks))
 
     @property
     def isFullyBooked(self):
+        if self._has_unlimited_stock():
+            return False
+
         bookable_stocks = list(filter(lambda s: s.isBookable, self.stocks))
         total_quantity = 0
 
@@ -164,7 +163,11 @@ class Offer(PcObject,
             bookings = filter(lambda b: not b.isCancelled, stock.bookings)
             total_quantity += sum(map(lambda s: s.quantity, bookings))
 
-        return total_quantity >= self.availableStocks
+        available_stocks = sum(map(lambda s: s.available if s.isBookable else 0, self.stocks))
+        return total_quantity >= available_stocks
+
+    def _has_unlimited_stock(self):
+        return any(map(lambda s: s.available is None, self.stocks))
 
     def _type_can_only_be_offline(self):
         offline_only_things = filter(lambda thing_type: thing_type.value['offlineOnly'], ThingType)

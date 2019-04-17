@@ -315,6 +315,19 @@ class IsFullyBookedTest:
         # then
         assert offer.isFullyBooked is True
 
+    def test_returns_false_if_stocks_have_none_available_quantity(self):
+        # given
+        offer = Offer()
+        user = create_user()
+        stock1 = create_stock(available=None)
+        stock2 = create_stock(available=None)
+        create_booking(user, stock=stock1, quantity=1)
+        create_booking(user, stock=stock2, quantity=1)
+        offer.stocks = [stock1, stock2]
+
+        # then
+        assert offer.isFullyBooked is False
+
 
 @pytest.mark.standalone
 class IsFinishedTest:
