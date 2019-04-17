@@ -125,7 +125,7 @@ def test_venue_raises_exeption_when_siret_and_comment_but_virtual(app):
 def test_venue_can_have_siret_and_comment(app):
     # given
     offerer = create_offerer()
-    venue = create_venue(offerer, siret="02345678912345", comment="hello I've some comment and siret !")
+    venue = create_venue(offerer, siret="02345678912345", comment="hello I have some comment and siret !")
     PcObject.check_and_save(venue)
 
     # when

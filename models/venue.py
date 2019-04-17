@@ -37,7 +37,7 @@ OR
 CONSTRAINT_CHECK_HAS_SIRET_XOR_HAS_COMMENT_XOR_IS_VIRTUAL = """
     (siret IS NULL AND comment IS NULL AND "isVirtual" IS TRUE)
     OR (siret IS NULL AND comment IS NOT NULL AND "isVirtual" IS FALSE)
-    OR (siret IS NOT NULL AND comment IS NULL AND "isVirtual" IS FALSE)
+    OR (siret IS NOT NULL AND "isVirtual" IS FALSE)
 """
 
 
