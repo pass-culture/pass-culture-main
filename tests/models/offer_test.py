@@ -286,7 +286,7 @@ class IsFullyBookedTest:
         # then
         assert offer.isFullyBooked is True
 
-    def test_cancelled_bookings_are_ignored(self):
+    def test_returns_true_ignoring_cancelled_bookings(self):
         # given
         offer = Offer()
         offer.thing = Thing()
@@ -318,6 +318,18 @@ class IsFullyBookedTest:
 
 @pytest.mark.standalone
 class IsFinishedTest:
+    def test_returns_true_if_all_stocks_have_past_booking_limit_datetime(self):
+        # given
+        now = datetime.utcnow()
+        offer = Offer()
+        stock1 = create_stock(booking_limit_datetime=now - timedelta(weeks=3))
+        stock2 = create_stock(booking_limit_datetime=now - timedelta(weeks=2))
+        stock3 = create_stock(booking_limit_datetime=now - timedelta(weeks=1))
+        offer.stocks = [stock1, stock2, stock3]
+
+        # then
+        assert offer.isFinished is True
+
     def test_returns_false_if_any_stock_has_future_booking_limit_datetime(self):
         # given
         now = datetime.utcnow()
@@ -340,15 +352,3 @@ class IsFinishedTest:
 
         # then
         assert offer.isFinished is False
-
-    def test_returns_false_if_all_stocks_have_past_booking_limit_datetime(self):
-        # given
-        now = datetime.utcnow()
-        offer = Offer()
-        stock1 = create_stock(booking_limit_datetime=now - timedelta(weeks=3))
-        stock2 = create_stock(booking_limit_datetime=now - timedelta(weeks=2))
-        stock3 = create_stock(booking_limit_datetime=now - timedelta(weeks=1))
-        offer.stocks = [stock1, stock2, stock3]
-
-        # then
-        assert offer.isFinished is True
