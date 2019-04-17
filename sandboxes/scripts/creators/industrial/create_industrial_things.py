@@ -58,7 +58,10 @@ def create_industrial_things():
                 elif conditionalField == "musicType":
                     music_type_index = conditional_index % len(music_types)
                     music_type = music_types[music_type_index]
-                    extraData[conditionalField] = music_type['code']
+                    extraData[conditionalField] = str(music_type['code'])
+                    music_sub_type_index = conditional_index % len(music_type['children'])
+                    music_sub_type = music_type['children'][music_sub_type_index]
+                    extraData["musicSubType"] = str(music_sub_type['code'])
                 elif conditionalField == "isbn":
                     extraData[conditionalField] = random_token(13)
                 extra_data_index += 1
